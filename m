@@ -2,98 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 513F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:32:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 671E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233509AbiDFNeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42802 "EHLO
+        id S232900AbiDFNeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:34:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233411AbiDFNdH (ORCPT
+        with ESMTP id S233257AbiDFNds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:33:07 -0400
-Received: from out203-205-221-221.mail.qq.com (out203-205-221-221.mail.qq.com [203.205.221.221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B90E001
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:56:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649217375;
-        bh=aX2filfSFEj5vBMtD43q72C68TIjG2JpIiWef2rV3lg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=E28zaP7TQEUvBNeHb6QJmO473EclWSsICcw+wc9A9lnFZj7DaGqIvYaS/Jk/eruX9
-         P5Rle4I3eieJzPb5bW/Fshfx5ZBcKQ+g0lC9r/onVGlrapQVL76wQCu0CdlzsPn+h9
-         LIB7Glyi4Y+j9tyZlpcDEKermAe/fCEXZ5lFjwn0=
-Received: from localhost.localdomain ([43.227.136.188])
-        by newxmesmtplogicsvrszb6.qq.com (NewEsmtp) with SMTP
-        id E0BA308F; Wed, 06 Apr 2022 11:56:11 +0800
-X-QQ-mid: xmsmtpt1649217371t6o8amq8i
-Message-ID: <tencent_E0622D1C5669EF1F14A49D79309788C39305@qq.com>
-X-QQ-XMAILINFO: MR/iVh5QLeiepNVBjjotu9W2eBdd7jHW6cnVnmELCYwwUMVgL2mQq4KY3VBBF9
-         cPKOuTXTDxEZsF4qixtfqd9rEqGIxhPQywikdo1p4zK6aW8JCRv+ghnaJEhSe/PDDBdyImyUo3g3
-         FF87RBCNPex5ZbFSb5xi0TK3l2qycu3ow3kjef/HYctRyL0yU7W5/fSK4etKefUvPihQIEGFlKFi
-         2p14ULeSHV9jaQpUeLkzVmr01trjuwIK5i6CsLncOQkzZHI16MOgDuH1l08Pau5znM8gyFdWWmg0
-         f670YqeoVG0UQBSLVq5YoEUOlUPj52EjiaAUtC9wsDHXLLDOpnoj7OptdXktgM6H2nue8Wc1uTF9
-         i4dB8vP6/2UReWMbeeCT2h1g1F6Id2mhNrFgmR8VqyV14fvOhtfxJw/wn94xk1m42WE2nhe0T/S+
-         trgqb6HmFX8xkk7Et2jiXzrsYPrkynH2NOHv0614OMJCRSMp7lfVPpNkkZJtTqIH55WWxzRVUp2w
-         ozu+2XzgsfmuByeHJ0/bg8kVCGqSjyorX26uxCgXvB98NqLjnKXcJb0Suq9Lk+hdQXsECgHS38vs
-         +qSwLoCMuYIZXBze1POIwHK2iVwfOatcK+0Cn2JxTfVhON3aEHkHvaYjx2nTojFTFrZC19w3Ym1t
-         EFJEHNd00nqemjycOlcr6YIkBsNpHRO/eSY90vJpRJ6Qb9Q3PASWxWQLMIPrflhqoheYN9oi8XZ/
-         zgX/QZy/rVlg0bbnlth66DlfNmY4X6sguXB92Ie0aa4I0Q/itvK7t5IBMCFz47aGY7gYVaEBjejS
-         KviUvRKsHj4HkZsSavxhwAS17BvEYnzqv9urAKrq5UROP/qtGBUrIuTF5VapbZ/yqQ4oo2WPw2C6
-         ZRqeDxBW/YSkS5zbNbREQuLup5b/Q1qF4e3pWaM9WoWDmC5hUZKwdS/4ACOWTpH9dO7vzwKxNX6Z
-         Igawm7xV55OswmFA9if6y8RogZZdQ5F1ReE3czHxY=
-From:   xkernel.wang@foxmail.com
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH v3 3/3] staging: rtl8712: add two validation check in r8712_init_drv_sw()
-Date:   Wed,  6 Apr 2022 11:56:01 +0800
-X-OQ-MSGID: <20220406035601.12934-1-xkernel.wang@foxmail.com>
-In-Reply-To: <tencent_8289F062A5E3FF2C104466AF5C5A0E1B0A07@qq.com>
-References: <tencent_8289F062A5E3FF2C104466AF5C5A0E1B0A07@qq.com>
+        Wed, 6 Apr 2022 09:33:48 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DFAA7273807;
+        Wed,  6 Apr 2022 03:33:50 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8EAB223A;
+        Wed,  6 Apr 2022 03:32:23 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 923B13F718;
+        Wed,  6 Apr 2022 03:32:21 -0700 (PDT)
+Message-ID: <0c9a1581-728c-6a5c-b65d-80a4f0948d19@arm.com>
+Date:   Wed, 6 Apr 2022 11:32:16 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 1/4] iommu: Introduce device_iommu_capable()
+Content-Language: en-GB
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     joro@8bytes.org, baolu.lu@linux.intel.com,
+        andreas.noever@gmail.com, michael.jamet@intel.com,
+        mika.westerberg@linux.intel.com, YehezkelShB@gmail.com,
+        iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mario.limonciello@amd.com
+References: <cover.1649089693.git.robin.murphy@arm.com>
+ <37ec2f9f67098d0caf60dcec558fbe1756ea2621.1649089693.git.robin.murphy@arm.com>
+ <20220406052812.GA10507@lst.de>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220406052812.GA10507@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On 2022-04-06 06:28, Christoph Hellwig wrote:
+> On Tue, Apr 05, 2022 at 11:41:01AM +0100, Robin Murphy wrote:
+>> iommu_capable() only really works for systems where all IOMMU instances
+>> are completely homogeneous, and all devices are IOMMU-mapped. Implement
+>> the new variant which can give an accurate answer for whichever device
+>> the caller is actually interested in.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>
+>> v3: New patch; now that the dev_iommu_ops() work has landed we can go
+>>      straight to a proper implementation. Also s/dev/device/ to match
+>>      the precedent of device_iommu_mapped() for the public API.
+> 
+> I'm a little worrited about a method with a parameter than can be
+> NULL.
 
-_r8712_init_xmit_priv() or _r8712_init_recv_priv() returns -ENOMEM 
-when some allocations inside it failed.
-However, the caller, i.e., r8712_init_drv_sw(), does not properly 
-validate their return status, which may lead to potential wrong memory  
-access in the future.
+FWIW, the intent is that that's only temporary.
 
-Therefore, this patch adds two validation check for their return status  
-and properly jump to the corresponding error hanlding code if failures 
-happen.
+> Also usnic, vmd, and vdpa really want to use your new
+> device_iommu_capable as they check based on a device.  Just VFIO
+> is special as usual..
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
-ChangeLog:
-v1->v2 adjust the sequence of patches in this series.
-v2->v3 update the description.
- drivers/staging/rtl8712/os_intfs.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Indeed, I have those patches in my stack already, I'm just waiting for 
+this to land before I think about posting them. Once the DMA ownership 
+series lands in parallel, VFIO can also get converted and 
+iommu_capable() goes away entirely. At that point I have a patch for the 
+Arm SMMU drivers to start actually using the new device argument, but 
+Jason's new proposal now puts a twist on that...
 
-diff --git a/drivers/staging/rtl8712/os_intfs.c b/drivers/staging/rtl8712/os_intfs.c
-index 1f7ccec..0dbf8c2 100644
---- a/drivers/staging/rtl8712/os_intfs.c
-+++ b/drivers/staging/rtl8712/os_intfs.c
-@@ -308,8 +308,12 @@ int r8712_init_drv_sw(struct _adapter *padapter)
- 	ret = r8712_init_mlme_priv(padapter);
- 	if (ret)
- 		goto free_evt_priv;
--	_r8712_init_xmit_priv(&padapter->xmitpriv, padapter);
--	_r8712_init_recv_priv(&padapter->recvpriv, padapter);
-+	ret = _r8712_init_xmit_priv(&padapter->xmitpriv, padapter);
-+	if (ret)
-+		goto free_mlme_priv;
-+	ret = _r8712_init_recv_priv(&padapter->recvpriv, padapter);
-+	if (ret)
-+		goto free_xmit_priv;
- 	memset((unsigned char *)&padapter->securitypriv, 0,
- 	       sizeof(struct security_priv));
- 	timer_setup(&padapter->securitypriv.tkip_timer,
--- 
+On reflection, there's no real need for the internal method to change in 
+lock-step with the external interface. I've no objection to holding off 
+on adding that new parameter until it's reliably useful, and indeed now 
+that I'm looking at it outside the context of the entire cleanup 
+mission, that does sound like the right thing to do anyway :)
+
+(also it turns out I need to respin this patch regardless since I 
+generated it from the wrong point in my branch, where iommu_present() 
+was already gone from the context in iommu.h...)
+
+Cheers,
+Robin.
