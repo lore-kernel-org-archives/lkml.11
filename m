@@ -2,108 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4EADC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B64C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233464AbiDFNyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58064 "EHLO
+        id S233988AbiDFNzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233882AbiDFNyn (ORCPT
+        with ESMTP id S233926AbiDFNzg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:54:43 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7413D5732D7;
-        Wed,  6 Apr 2022 02:05:10 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id 10so3193558qtz.11;
-        Wed, 06 Apr 2022 02:05:10 -0700 (PDT)
+        Wed, 6 Apr 2022 09:55:36 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FBF594A12;
+        Wed,  6 Apr 2022 02:06:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JRCuLHTWWTpT7bdmuOGSkgf0tgmxSBp5myWKH11DKaQ=;
-        b=GAyDYd122vZF+TofOvJPaSwqneU0oSy2YOfu9p3cQz9nxVDPgqeXh1ioJokj7ASNZw
-         pmqCW065eAEKxFw77uVjG1yjv7OSb8kXibtdS0RvWpBhXTBdXlfxVN6Am9kKMiP8uXIr
-         WGWHq/tcI7a+po/p7Y3qeeAVR3OiTu+WPTPQsWR5ontmaUODijBdI357n9k8PQ1JSLgZ
-         LC/eX1ZxC055kc4B3WtB9cCTFjoB81ileWUg2xpClcl01UmDAcrUhCNjuN1Zdo2gaQnK
-         H8khpIKHM7YMJwvFnsyt1A9rRF8xhhzlw0uKhcc8Y67kCpFrqL5m1O65D3KEi6S6c4qB
-         uNKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JRCuLHTWWTpT7bdmuOGSkgf0tgmxSBp5myWKH11DKaQ=;
-        b=QjRX85z6Z+Fe5yUcXC2DBjJyL0ieqaDuV7jC9bDi8Kktfm9yEHAZsQk/X+iQKj7rD5
-         9mObWEJDjmlj9w1D5lqyHckb9WX7fVdfQK/44qXgbT7eFaaBSUPJIZECcHyE0Zq83ZEt
-         Te8h7orYbly74Z5dMnZQNJOr223Ge9wL2ERru14y6FOqRvVUrbueozkwOiYzxxOoUB/T
-         WTjFAbiOaMBcqm7KwLp5sPfkpIm3B4mGxcpE01mi3BYluXawIS/qtVmmVu3Qzzn2oCQb
-         omzzSRfkMjys+JiqtBVvjebJ/b5WEahPOkJlTNq25s+T3fdbUt6jR1/2sKyJjhK5L/mL
-         tFfQ==
-X-Gm-Message-State: AOAM532pqQ34Q5igZJqRsK9dLiFGeGsaHzF5sp3de4Y8WV7MWlxhECMF
-        Lp+0powaKzZZJWXAwHRph60=
-X-Google-Smtp-Source: ABdhPJxo7JcbOt+cHU5D6rFx3zwKxuPaV0EfmjOtRFFY1DLbjTGCjWHQhDB/pky8om0HcpsQe0r2pA==
-X-Received: by 2002:a05:622a:1715:b0:2e1:ce29:f805 with SMTP id h21-20020a05622a171500b002e1ce29f805mr6556754qtk.151.1649235907653;
-        Wed, 06 Apr 2022 02:05:07 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id g4-20020ac87d04000000b002e06b4674a1sm12904672qtb.61.2022.04.06.02.05.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 02:05:07 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     tytso@mit.edu
-Cc:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] ext4: remove redundant judgment
-Date:   Wed,  6 Apr 2022 09:05:01 +0000
-Message-Id: <20220406090501.2488853-1-lv.ruyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649235981; x=1680771981;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=aX+b1uqq4+PfyGSXyXG4gQ8cO/HihiWD/0mraoJeuq0=;
+  b=RWM5aX6kTc1rZfBvEoeEJE24gEdXq7gOyEHv9VEtYtkMBaoWQLJVElhY
+   kspb2rzc+/7ZQk35eA8MzHfewuT82IcLZUOfyyD/UlL+vUqda7yLPqvm/
+   oKR/ixglleSCmHsGvo3e6NCGA8UCbrdxMrgzHc6AYNzTzKTCvNkhX6bi0
+   w=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 06 Apr 2022 02:06:13 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 02:06:12 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 6 Apr 2022 02:06:12 -0700
+Received: from [10.216.50.162] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 6 Apr 2022
+ 02:06:08 -0700
+Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008
+ PMIC
+To:     Mark Brown <broonie@kernel.org>
+CC:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
+        <quic_jprakash@quicinc.com>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
+ <YkxPhcgBU3/5zu/P@sirena.org.uk>
+From:   "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
+Message-ID: <85ceeb51-56d2-4e87-c67d-c203a30ecfec@quicinc.com>
+Date:   Wed, 6 Apr 2022 14:36:04 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YkxPhcgBU3/5zu/P@sirena.org.uk>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-iput() has already handled null and non-null parameter. so there is no
-need to use if().
+On 4/5/2022 7:47 PM, Mark Brown wrote:
+> On Tue, Apr 05, 2022 at 07:20:31PM +0530, Satya Priya wrote:
+>
+>> +#include <linux/regulator/driver.h>
+>> +#include <linux/regulator/machine.h>
+> Why does the driver need machine.h?  That's usually a bug, though I
+> didn't spot anywhere where it's used so it's probably just an extra
+> header.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
----
- fs/ext4/fast_commit.c | 3 +--
- fs/ext4/namei.c       | 3 +--
- 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/fs/ext4/fast_commit.c b/fs/ext4/fast_commit.c
-index 3d72565ec6e8..e85d351a1a31 100644
---- a/fs/ext4/fast_commit.c
-+++ b/fs/ext4/fast_commit.c
-@@ -1659,8 +1659,7 @@ static int ext4_fc_replay_create(struct super_block *sb, struct ext4_fc_tl *tl,
- 	set_nlink(inode, 1);
- 	ext4_mark_inode_dirty(NULL, inode);
- out:
--	if (inode)
--		iput(inode);
-+	iput(inode);
- 	return ret;
- }
- 
-diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index e37da8d5cd0c..2fd3b24a21cd 100644
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -3363,8 +3363,7 @@ static int ext4_symlink(struct user_namespace *mnt_userns, struct inode *dir,
- 	err = ext4_add_nondir(handle, dentry, &inode);
- 	if (handle)
- 		ext4_journal_stop(handle);
--	if (inode)
--		iput(inode);
-+	iput(inode);
- 	goto out_free_encrypted_link;
- 
- err_drop_inode:
--- 
-2.25.1
+Yeah, I'll remove it. Thanks for spotting this.
 
+
+>> +	.set_voltage_sel	= pm8008_regulator_set_voltage,
+>> +	.get_voltage		= pm8008_regulator_get_voltage,
+> You shouldn't mix and match the selector and non-selector operations,
+> since the device just takes a voltage you may as well just use the
+> non-selector version for both.
+
+
+I was suggested to use set_voltage_sel on my previous posts. I think 
+I'll use get_voltage_sel to avoid mixing selector and non-selector APIs.
+
+
+> Otherwise this all looks good, just those two minor points.
