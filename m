@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C744C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:14:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232511AbiDFMQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:16:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40102 "EHLO
+        id S232541AbiDFMQF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232096AbiDFMOX (ORCPT
+        with ESMTP id S231404AbiDFMOi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:14:23 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D62893713DE;
-        Wed,  6 Apr 2022 00:56:36 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R671e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9L3PCZ_1649231791;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9L3PCZ_1649231791)
+        Wed, 6 Apr 2022 08:14:38 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C666C43370A;
+        Wed,  6 Apr 2022 00:56:45 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R611e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9L3PF9_1649231800;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9L3PF9_1649231800)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 06 Apr 2022 15:56:32 +0800
+          Wed, 06 Apr 2022 15:56:41 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -29,9 +29,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         fannaihao@baidu.com
-Subject: [PATCH v8 12/20] erofs: add anonymous inode managing page cache for data blob
-Date:   Wed,  6 Apr 2022 15:56:04 +0800
-Message-Id: <20220406075612.60298-13-jefflexu@linux.alibaba.com>
+Subject: [PATCH v8 18/20] erofs: implement fscache-based data read for inline layout
+Date:   Wed,  6 Apr 2022 15:56:10 +0800
+Message-Id: <20220406075612.60298-19-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
 References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
@@ -41,128 +41,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce one anonymous inode managing page cache for data blob. Then
-erofs could read directly from the address space of the anonymous inode
-when cache hit.
+Implement the data plane of reading data from data blobs over fscache
+for inline layout.
+
+For the heading non-inline part, the data plane for non-inline layout is
+reused, while only the tail packing part needs special handling.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/fscache.c  | 39 ++++++++++++++++++++++++++++++++++++---
- fs/erofs/internal.h |  6 ++++--
- 2 files changed, 40 insertions(+), 5 deletions(-)
+ fs/erofs/fscache.c | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
 diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-index 67a3c4935245..1c88614203d2 100644
+index 65de1c754e80..d32cb5840c6d 100644
 --- a/fs/erofs/fscache.c
 +++ b/fs/erofs/fscache.c
-@@ -5,17 +5,22 @@
- #include <linux/fscache.h>
- #include "internal.h"
+@@ -60,6 +60,40 @@ static int erofs_fscache_meta_readpage(struct file *data, struct page *page)
+ 	return ret;
+ }
  
-+static const struct address_space_operations erofs_fscache_meta_aops = {
-+};
++static int erofs_fscache_readpage_inline(struct folio *folio,
++					 struct erofs_map_blocks *map)
++{
++	struct inode *inode = folio_file_mapping(folio)->host;
++	struct super_block *sb = inode->i_sb;
++	struct erofs_buf buf = __EROFS_BUF_INITIALIZER;
++	erofs_blk_t blknr;
++	size_t offset, len;
++	void *src, *dst;
 +
- /*
-  * Create an fscache context for data blob.
-  * Return: 0 on success and allocated fscache context is assigned to @fscache,
-  *	   negative error number on failure.
-  */
- int erofs_fscache_register_cookie(struct super_block *sb,
--				  struct erofs_fscache **fscache, char *name)
-+				  struct erofs_fscache **fscache,
-+				  char *name, bool need_inode)
++	/*
++	 * For inline (tail packing) layout, the offset may be non-zero, which
++	 * can be calculated from corresponding physical address directly.
++	 */
++	offset = erofs_blkoff(map->m_pa);
++	blknr = erofs_blknr(map->m_pa);
++	len = map->m_llen;
++
++	src = erofs_read_metabuf(&buf, sb, blknr, EROFS_KMAP);
++	if (IS_ERR(src))
++		return PTR_ERR(src);
++
++	DBG_BUGON(folio_size(folio) != PAGE_SIZE);
++
++	dst = kmap(folio_page(folio, 0));
++	memcpy(dst, src + offset, len);
++	memset(dst + len, 0, PAGE_SIZE - len);
++	kunmap(folio_page(folio, 0));
++
++	erofs_put_metabuf(&buf);
++
++	return 0;
++}
++
+ static int erofs_fscache_readpage(struct file *file, struct page *page)
  {
- 	struct fscache_volume *volume = EROFS_SB(sb)->volume;
- 	struct erofs_fscache *ctx;
- 	struct fscache_cookie *cookie;
-+	int ret;
- 
- 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
- 	if (!ctx)
-@@ -25,15 +30,40 @@ int erofs_fscache_register_cookie(struct super_block *sb,
- 					name, strlen(name), NULL, 0, 0);
- 	if (!cookie) {
- 		erofs_err(sb, "failed to get cookie for %s", name);
--		kfree(name);
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err;
+ 	struct folio *folio = page_folio(page);
+@@ -85,6 +119,12 @@ static int erofs_fscache_readpage(struct file *file, struct page *page)
+ 		goto out_uptodate;
  	}
  
- 	fscache_use_cookie(cookie, false);
- 	ctx->cookie = cookie;
- 
-+	if (need_inode) {
-+		struct inode *const inode = new_inode(sb);
-+
-+		if (!inode) {
-+			erofs_err(sb, "failed to get anon inode for %s", name);
-+			ret = -ENOMEM;
-+			goto err_cookie;
-+		}
-+
-+		set_nlink(inode, 1);
-+		inode->i_size = OFFSET_MAX;
-+		inode->i_mapping->a_ops = &erofs_fscache_meta_aops;
-+		mapping_set_gfp_mask(inode->i_mapping, GFP_NOFS);
-+
-+		ctx->inode = inode;
++	/* inline readpage */
++	if (map.m_flags & EROFS_MAP_META) {
++		ret = erofs_fscache_readpage_inline(folio, &map);
++		goto out_uptodate;
 +	}
 +
- 	*fscache = ctx;
- 	return 0;
-+
-+err_cookie:
-+	fscache_unuse_cookie(ctx->cookie, NULL, NULL);
-+	fscache_relinquish_cookie(ctx->cookie, false);
-+	ctx->cookie = NULL;
-+err:
-+	kfree(ctx);
-+	return ret;
- }
- 
- void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache)
-@@ -47,6 +77,9 @@ void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache)
- 	fscache_relinquish_cookie(ctx->cookie, false);
- 	ctx->cookie = NULL;
- 
-+	iput(ctx->inode);
-+	ctx->inode = NULL;
-+
- 	kfree(ctx);
- 	*fscache = NULL;
- }
-diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index c6a3351a4d7d..3a4a344cfed3 100644
---- a/fs/erofs/internal.h
-+++ b/fs/erofs/internal.h
-@@ -99,6 +99,7 @@ struct erofs_sb_lz4_info {
- 
- struct erofs_fscache {
- 	struct fscache_cookie *cookie;
-+	struct inode *inode;
- };
- 
- struct erofs_sb_info {
-@@ -632,7 +633,8 @@ int erofs_fscache_register_fs(struct super_block *sb);
- void erofs_fscache_unregister_fs(struct super_block *sb);
- 
- int erofs_fscache_register_cookie(struct super_block *sb,
--				  struct erofs_fscache **fscache, char *name);
-+				  struct erofs_fscache **fscache,
-+				  char *name, bool need_inode);
- void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache);
- #else
- static inline int erofs_fscache_register_fs(struct super_block *sb) { return 0; }
-@@ -640,7 +642,7 @@ static inline void erofs_fscache_unregister_fs(struct super_block *sb) {}
- 
- static inline int erofs_fscache_register_cookie(struct super_block *sb,
- 						struct erofs_fscache **fscache,
--						char *name)
-+						char *name, bool need_inode)
- {
- 	return -EOPNOTSUPP;
- }
+ 	/* no-inline readpage */
+ 	mdev = (struct erofs_map_dev) {
+ 		.m_deviceid = map.m_deviceid,
 -- 
 2.27.0
 
