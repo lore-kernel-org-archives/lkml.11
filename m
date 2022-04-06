@@ -2,64 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90623C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B165C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:56:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242075AbiDFK4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48244 "EHLO
+        id S1346646AbiDFK6l (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:58:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237608AbiDFKzW (ORCPT
+        with ESMTP id S1351229AbiDFK5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:55:22 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F3E0515FAC;
-        Wed,  6 Apr 2022 00:17:16 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.90,239,1643641200"; 
-   d="scan'208";a="115876438"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 06 Apr 2022 16:17:16 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id E5F0441D0712;
-        Wed,  6 Apr 2022 16:17:14 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH] reset: Kconfig: Make RESET_RZG2L_USBPHY_CTRL depend on ARCH_RZG2L
-Date:   Wed,  6 Apr 2022 08:16:47 +0100
-Message-Id: <20220406071647.14037-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 6 Apr 2022 06:57:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0380635C05F;
+        Wed,  6 Apr 2022 00:19:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 930C661B07;
+        Wed,  6 Apr 2022 07:19:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18A23C385A3;
+        Wed,  6 Apr 2022 07:19:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649229561;
+        bh=Cz6TDzs+jZOWZjAc5HjVcIh2AZntniGosREgoBaLQnc=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=BCuqDE3dUreTJ570sFvl187t+R8w+yJTzRMfxnfED3xUvlqgWcERMWuolZJxJJwjv
+         7RKQIiy6oPlQXky50+7ipd6Q3B4DPt/y+7HqZl0oj1ZSZG2IpgN2TNla4YnOlEWoyS
+         zG9R4Nswt6z9eTM/nTp9XGCQ4XDp0fkotQ5F8msq0uIv6l23IZgaANhZzDi89nqUke
+         UxzWThZ3MEFakzK0YM1XeZ1pJWSLIfAps0+lncQehGUd5i217srChgNCdxkAMC5IkR
+         4cZ6N/kcWdoVWClbCjlonGVum9vItz8sSOkZy4UvSfhAT5fEk76OvtuHkHsFiJLuRt
+         B+jZlFNK570vQ==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH][next] iwlwifi: mei: Replace zero-length array with
+ flexible-array member
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220216195030.GA904170@embeddedor>
+References: <20220216195030.GA904170@embeddedor>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164922955689.27650.1046956549336676737.kvalo@kernel.org>
+Date:   Wed,  6 Apr 2022 07:19:18 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The USBPHY Control block is identical on Renesas RZ/G2L and RZ/V2L SoC's,
-so instead of adding dependency for each SoC's add dependency on
-ARCH_RZG2L. The ARCH_RZG2L config option is already selected by
-ARCH_R9A07G044 and ARCH_R9A07G054.
+"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- drivers/reset/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> There is a regular need in the kernel to provide a way to declare
+> having a dynamically sized set of trailing elements in a structure.
+> Kernel code should always use “flexible array members”[1] for these
+> cases. The older style of one-element or zero-length arrays should
+> no longer be used[2].
+> 
+> [1] https://en.wikipedia.org/wiki/Flexible_array_member
+> [2] https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> 
+> Link: https://github.com/KSPP/linux/issues/78
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+> Acked-by: Luca Coelho <luciano.coelho@intel.com>
 
-diff --git a/drivers/reset/Kconfig b/drivers/reset/Kconfig
-index b496028b6bfa..e0fc80e041ea 100644
---- a/drivers/reset/Kconfig
-+++ b/drivers/reset/Kconfig
-@@ -183,7 +183,7 @@ config RESET_RASPBERRYPI
- 
- config RESET_RZG2L_USBPHY_CTRL
- 	tristate "Renesas RZ/G2L USBPHY control driver"
--	depends on ARCH_R9A07G044 || COMPILE_TEST
-+	depends on ARCH_RZG2L || COMPILE_TEST
- 	help
- 	  Support for USBPHY Control found on RZ/G2L family. It mainly
- 	  controls reset and power down of the USB/PHY.
+Patch applied to wireless-next.git, thanks.
+
+c5f675748cf0 iwlwifi: mei: Replace zero-length array with flexible-array member
+
 -- 
-2.17.1
+https://patchwork.kernel.org/project/linux-wireless/patch/20220216195030.GA904170@embeddedor/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
