@@ -2,166 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D09C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB34C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 20:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234734AbiDFUxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 16:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
+        id S234940AbiDFUyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 16:54:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234488AbiDFUvn (ORCPT
+        with ESMTP id S233763AbiDFUx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 16:51:43 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440703CBF3E
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 12:07:39 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id g22so3817638edz.2
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 12:07:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linbit-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=POlr1a0iTGBoJ3bnuukX0R50RftAjAl0lTvKR+vp4fE=;
-        b=lsMjsM8hxfLRElDhpBGCBQAWVxHPdgBMTP0fgUwIURdERrRguIPnGMBktd9IeLNUl0
-         QTSMQCDikvX/cPN4g0moz7n7yXWOVjRvKJpzHbdmQloqYiAZ7qGSl0P1uWyEnLMl7bcJ
-         HVIl/2ATefvZPve2FGSxSnvynVBVVDeGqyCmU51duL5Gz88iDLthmoj7DrGz/XEBVeJx
-         TfUA1W0R58CKFNnbhiFvGEoZyqocemong5+RmVpQYF7FkgQk/ygaQM2FubSmPfq2UFvt
-         o3/f9QlfBKhhliDJUZ9nKbRTy8tu9dd4L1S+zc3gkU7pgvMH20Mnegiwv2iqGAk32ZGC
-         K2tQ==
+        Wed, 6 Apr 2022 16:53:28 -0400
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FA9FFF76;
+        Wed,  6 Apr 2022 12:09:49 -0700 (PDT)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-de3eda6b5dso4037889fac.0;
+        Wed, 06 Apr 2022 12:09:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=POlr1a0iTGBoJ3bnuukX0R50RftAjAl0lTvKR+vp4fE=;
-        b=0ryhV3mEo96ysgswOImm5UB6UVpA6d1CVbke9ZyXtDgyZ5XmsmcgVGDRTw+5V12ceC
-         zlqIktVrPDlo0t9pZV8aKNq9EUetXA+jm9e6Y/bLnWiit6AdIRvNFONDH4EdKGYcWIgI
-         2PveEak8PMEYSlpyuf143ProFNdl1UlWKYfagw5Gdsr/YmLITdFFFGbBaHC1ifG5JD+f
-         ZLqNFiPL7fEULXIvudxUCOJ+5P9uohEwxuZAu9nMOkC9JcRFfcTait5vQjZ9qU4ap6Ci
-         QCL2a4YWW9z2g2SAifHq4x+0noCPLzsqviN95FTNxVsLNx2w19xw1m3xOmoBB98NZWuZ
-         A1iw==
-X-Gm-Message-State: AOAM530eYxpyNYxiHFgUOM0mGUcnlCBXyzQvcSyIZFxrxQ0LvD1b+3RC
-        k2LHkK8noG2va2c19dtnM7LARg==
-X-Google-Smtp-Source: ABdhPJyO9677zCd7VbzMR7POWXOfRfPVkPceRUPrJkIhga3FMwv044ystxo1E0V0UEFKxVx4KhhlTA==
-X-Received: by 2002:a05:6402:2050:b0:41c:dd5e:3c63 with SMTP id bc16-20020a056402205000b0041cdd5e3c63mr10339789edb.56.1649272057830;
-        Wed, 06 Apr 2022 12:07:37 -0700 (PDT)
-Received: from localhost (85-127-190-169.dsl.dynamic.surfer.at. [85.127.190.169])
-        by smtp.gmail.com with ESMTPSA id c3-20020a17090654c300b006e4e1a3e9d5sm6404685ejp.144.2022.04.06.12.07.37
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=nkvvt5iU3/huYVMTWpqmeVmasOECJdxAJG738D8isiA=;
+        b=OKWvqx7hcaKUS/28ToViBmpMK0cuazkpiIkPLGVzHVCNju/1O0JgfrlscSu44yFLqA
+         f59T54LRbdIpBAMUM1TpK6XgrhmaKmtLuGqNJzxiCHQkEMOZvsxNXLCU328KWOEJggNc
+         Z2ReyLQ6AhvWz2cVAIanWUQcPBJVNkeXs1/zbxeAU/0V37jp1rmIxF70V4Bsi+2YhStb
+         jMcVWu4o5VXUgFQqysqIQFBmJ4vdea3Hqrv4oVk/0LZASYK5SbUFQqbzUau6sZn//eLe
+         LZlixLmp/OvajG6ThkWfDKF2HUK5fan3ob0r1EK+0VRuRAEfwN3dDNMIdnTwv7oDYnbL
+         DHtw==
+X-Gm-Message-State: AOAM532x1LV8EvZEfD3TnYzQPZ5dSXEzREBz4afbcC3RzhGlTOeCvFkJ
+        1FGwTORK3dCx+qUpo7vvUg==
+X-Google-Smtp-Source: ABdhPJw25u3J4jdicjV95QI6NUKAkXMnWtfFRhrT2nJEQpb3wVemqoBH7x9wlwuPgFzL3oA/pMeSGw==
+X-Received: by 2002:a05:6870:2103:b0:de:29de:12c4 with SMTP id f3-20020a056870210300b000de29de12c4mr4829087oae.203.1649272188810;
+        Wed, 06 Apr 2022 12:09:48 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id w1-20020a056808090100b002da82caced5sm6676892oih.3.2022.04.06.12.09.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 12:07:37 -0700 (PDT)
-From:   =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     drbd-dev@lists.linbit.com, linux-kernel@vger.kernel.org,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        linux-block@vger.kernel.org,
-        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>
-Subject: [PATCH 6/7] drdb: Switch to kvfree_rcu() API
-Date:   Wed,  6 Apr 2022 21:07:14 +0200
-Message-Id: <20220406190715.1938174-7-christoph.boehmwalder@linbit.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406190715.1938174-1-christoph.boehmwalder@linbit.com>
-References: <20220406190715.1938174-1-christoph.boehmwalder@linbit.com>
+        Wed, 06 Apr 2022 12:09:48 -0700 (PDT)
+Received: (nullmailer pid 2604082 invoked by uid 1000);
+        Wed, 06 Apr 2022 19:09:47 -0000
+Date:   Wed, 6 Apr 2022 14:09:47 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        soc@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [RESEND PATCH] arm: dts: at91: Fix boolean properties with values
+Message-ID: <Yk3leykDEKGBN8rk@robh.at.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.32.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Uladzislau Rezki (Sony)" <urezki@gmail.com>
+Boolean properties in DT are present or not present and don't take a value.
+A property such as 'foo = <0>;' evaluated to true. IOW, the value doesn't
+matter.
 
-Instead of invoking a synchronize_rcu() to free a pointer
-after a grace period we can directly make use of new API
-that does the same but in more efficient way.
+It may have been intended that 0 values are false, but there is no change
+in behavior with this patch.
 
-TO: Jens Axboe <axboe@kernel.dk>
-TO: Philipp Reisner <philipp.reisner@linbit.com>
-TO: Jason Gunthorpe <jgg@nvidia.com>
-TO: drbd-dev@lists.linbit.com
-TO: linux-block@vger.kernel.org
-Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
-Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/block/drbd/drbd_nl.c       | 9 +++------
- drivers/block/drbd/drbd_receiver.c | 6 ++----
- drivers/block/drbd/drbd_state.c    | 3 +--
- 3 files changed, 6 insertions(+), 12 deletions(-)
+Can someone apply this for 5.18 please.
 
-diff --git a/drivers/block/drbd/drbd_nl.c b/drivers/block/drbd/drbd_nl.c
-index 074b884ec225..ad6e40864b37 100644
---- a/drivers/block/drbd/drbd_nl.c
-+++ b/drivers/block/drbd/drbd_nl.c
-@@ -1612,8 +1612,7 @@ int drbd_adm_disk_opts(struct sk_buff *skb, struct genl_info *info)
- 			drbd_send_sync_param(peer_device);
- 	}
+ arch/arm/boot/dts/at91-kizbox3-hs.dts      | 2 +-
+ arch/arm/boot/dts/at91-kizbox3_common.dtsi | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/at91-kizbox3-hs.dts b/arch/arm/boot/dts/at91-kizbox3-hs.dts
+index 2799b2a1f4d2..f7d90cf1bb77 100644
+--- a/arch/arm/boot/dts/at91-kizbox3-hs.dts
++++ b/arch/arm/boot/dts/at91-kizbox3-hs.dts
+@@ -225,7 +225,7 @@ pinctrl_pio_zbe_rst: gpio_zbe_rst {
+ 		pinctrl_pio_io_reset: gpio_io_reset {
+ 			pinmux = <PIN_PB30__GPIO>;
+ 			bias-disable;
+-			drive-open-drain = <1>;
++			drive-open-drain;
+ 			output-low;
+ 		};
+ 		pinctrl_pio_input: gpio_input {
+diff --git a/arch/arm/boot/dts/at91-kizbox3_common.dtsi b/arch/arm/boot/dts/at91-kizbox3_common.dtsi
+index abe27adfa4d6..465664628419 100644
+--- a/arch/arm/boot/dts/at91-kizbox3_common.dtsi
++++ b/arch/arm/boot/dts/at91-kizbox3_common.dtsi
+@@ -211,7 +211,7 @@ pinctrl_flx4_default: flx4_i2c6_default {
+ 		pinmux = <PIN_PD12__FLEXCOM4_IO0>, //DATA
+ 		<PIN_PD13__FLEXCOM4_IO1>; //CLK
+ 		bias-disable;
+-		drive-open-drain = <1>;
++		drive-open-drain;
+ 	};
  
--	synchronize_rcu();
--	kfree(old_disk_conf);
-+	kvfree_rcu(old_disk_conf);
- 	kfree(old_plan);
- 	mod_timer(&device->request_timer, jiffies + HZ);
- 	goto success;
-@@ -2444,8 +2443,7 @@ int drbd_adm_net_opts(struct sk_buff *skb, struct genl_info *info)
- 
- 	mutex_unlock(&connection->resource->conf_update);
- 	mutex_unlock(&connection->data.mutex);
--	synchronize_rcu();
--	kfree(old_net_conf);
-+	kvfree_rcu(old_net_conf);
- 
- 	if (connection->cstate >= C_WF_REPORT_PARAMS) {
- 		struct drbd_peer_device *peer_device;
-@@ -2859,8 +2857,7 @@ int drbd_adm_resize(struct sk_buff *skb, struct genl_info *info)
- 		new_disk_conf->disk_size = (sector_t)rs.resize_size;
- 		rcu_assign_pointer(device->ldev->disk_conf, new_disk_conf);
- 		mutex_unlock(&device->resource->conf_update);
--		synchronize_rcu();
--		kfree(old_disk_conf);
-+		kvfree_rcu(old_disk_conf);
- 		new_disk_conf = NULL;
- 	}
- 
-diff --git a/drivers/block/drbd/drbd_receiver.c b/drivers/block/drbd/drbd_receiver.c
-index 0825766ce910..5e10572a4d3e 100644
---- a/drivers/block/drbd/drbd_receiver.c
-+++ b/drivers/block/drbd/drbd_receiver.c
-@@ -3751,8 +3751,7 @@ static int receive_protocol(struct drbd_connection *connection, struct packet_in
- 		drbd_info(connection, "peer data-integrity-alg: %s\n",
- 			  integrity_alg[0] ? integrity_alg : "(none)");
- 
--	synchronize_rcu();
--	kfree(old_net_conf);
-+	kvfree_rcu(old_net_conf);
- 	return 0;
- 
- disconnect_rcu_unlock:
-@@ -4120,8 +4119,7 @@ static int receive_sizes(struct drbd_connection *connection, struct packet_info
- 
- 			rcu_assign_pointer(device->ldev->disk_conf, new_disk_conf);
- 			mutex_unlock(&connection->resource->conf_update);
--			synchronize_rcu();
--			kfree(old_disk_conf);
-+			kvfree_rcu(old_disk_conf);
- 
- 			drbd_info(device, "Peer sets u_size to %lu sectors (old: %lu)\n",
- 				 (unsigned long)p_usize, (unsigned long)my_usize);
-diff --git a/drivers/block/drbd/drbd_state.c b/drivers/block/drbd/drbd_state.c
-index b8a27818ab3f..826e496821c7 100644
---- a/drivers/block/drbd/drbd_state.c
-+++ b/drivers/block/drbd/drbd_state.c
-@@ -2071,8 +2071,7 @@ static int w_after_conn_state_ch(struct drbd_work *w, int unused)
- 		conn_free_crypto(connection);
- 		mutex_unlock(&connection->resource->conf_update);
- 
--		synchronize_rcu();
--		kfree(old_conf);
-+		kvfree_rcu(old_conf);
- 	}
- 
- 	if (ns_max.susp_fen) {
+ 	pinctrl_pwm0 {
 -- 
-2.35.1
+2.32.0
 
