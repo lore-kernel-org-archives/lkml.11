@@ -2,100 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EFD1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:01:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3A09C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235331AbiDFPDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43142 "EHLO
+        id S235495AbiDFPDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235328AbiDFPC1 (ORCPT
+        with ESMTP id S235935AbiDFPDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:02:27 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509F6AAB5B
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:46:41 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id n18so1723067plg.5
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 04:46:41 -0700 (PDT)
+        Wed, 6 Apr 2022 11:03:15 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C17D30F0E4;
+        Wed,  6 Apr 2022 04:48:27 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id n6so3626615ejc.13;
+        Wed, 06 Apr 2022 04:48:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id;
-        bh=hWie3mJTAnfpzOXhn4Z/4uIgwysiFcrooHT60DVzybQ=;
-        b=CE9K9MT+Rt2kpApicMQngJo7nwda7ou2DtrFamdUZFxlh3kP15ZFuCURNlqhkQmCGY
-         2AT2p7oDzXmGjNJgBhxofiTlVwbGL2bESAobC4pPZiIEqg605SXXcDgFou2T6Acy3uno
-         QJnZeOHUhwImxP4AKwaD8eEC9R8AntNoAFKgRLD+1PiQikFBcA9KHKWkZ6x8RBW71ddk
-         xQpQaYU+zmm7wYRMe0eufz5huUYwBj5SjrudLWccRPZbmsG2S3Rjahtutr9ZdVYLEvHi
-         ectsA3dd8F3ivzbXM0WBgO0uM3BnScI145ZmiaJQMxHhcubB6TcTzGgRh4Yh5+26x18B
-         Ngdw==
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pjR3ZKgCNlG2r3MTFcz+8pEF96poMRdIaSe2ljO7/xk=;
+        b=eYL4/LuqUIxaerOgfa3GApON8QrsWa5AjqMB1adkTFYzk4SvAT1JPOjeNKLba2t+Zn
+         JfQyKbqmAEopHyZI69vxE9fnVkNnMGWMuYaP3UU1mgG0ZHwOmtTWz/oR+IXmtGrH3FnE
+         9idHtS+A0oKDBbwr0d3DsWS8g2wNi7/a+TCLLeA2Q7de6VbTENizuPvydmGz+Ti5olKu
+         NebDcUTxZ87tO5fLYItCwy5sTYAX38TKYKyW83BulP1WHFFMP4XzjDdSVHJa9mlnENZ3
+         m3we0ZjCTHRygkBYQJzyBMXvqVyzCGW8z0fQup1BmqVy+5Lkzzg/+5bb4+dEnn4y9q4e
+         oMgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=hWie3mJTAnfpzOXhn4Z/4uIgwysiFcrooHT60DVzybQ=;
-        b=A1Q+IloOcKOt2ZPOxXCMvFolA+uygHHTsMnZh3M358jUwPZ3M8kajgpqjsvziiKS64
-         mCYsraTStAdveNJjYktr+hJnYel64dy8O3eK3JZB3rkIhQZzE7W4VVexJRS7eRXQTWz3
-         mNFoVMQBfKterKIKfHOoht5tLKVqJIvkstrSTYDD22jraw3+qJwty999A7BrDmJvvoqQ
-         7A/8Sf1EquAn6/I8dIdoJOjS/n3tTAaWrKqJn9BFRSSb+jwYltcj8rAOnfCXxb312TJw
-         Zxu3LxR9MkK2/rC9i2/NDgOJv3NejRI3HF1wFQmI6QXHA0rb/Vzd6tf4bG7j3pss6LZH
-         0uWg==
-X-Gm-Message-State: AOAM531txUZ9p3OfgtiRaemFICciSHko4ZskLz4Jq+6Ms+GAskIgLa+k
-        XvZp7gGPfc9/2wh0tIYAYoY=
-X-Google-Smtp-Source: ABdhPJwNMvr7Ye7f8HN6k8CSNZ1+X2QyzDqvWOQk6MAWcVPOo0giQ96XUCTWCwbkum8M+/VAdkJAhQ==
-X-Received: by 2002:a17:902:c40e:b0:154:80a7:95c9 with SMTP id k14-20020a170902c40e00b0015480a795c9mr8546529plk.28.1649245585441;
-        Wed, 06 Apr 2022 04:46:25 -0700 (PDT)
-Received: from localhost.localdomain ([150.109.127.35])
-        by smtp.gmail.com with ESMTPSA id br2-20020a17090b0f0200b001caa0db90d3sm5578684pjb.13.2022.04.06.04.46.23
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 06 Apr 2022 04:46:24 -0700 (PDT)
-From:   zgpeng <zgpeng.linux@gmail.com>
-X-Google-Original-From: zgpeng <zgpeng@tencent.com>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org
-Subject: [PATCH] sched/fair: Simplify the scene where both local and busiest are group_fully_busy
-Date:   Wed,  6 Apr 2022 19:46:20 +0800
-Message-Id: <1649245580-27256-1-git-send-email-zgpeng@tencent.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pjR3ZKgCNlG2r3MTFcz+8pEF96poMRdIaSe2ljO7/xk=;
+        b=3VtH46O3FklSNe1CY99NXOe065j+lsHSz4CmJC9aJY/nmXWfkivROJTF29yDlgucYm
+         QyejY/RrFm2exVNp20TeswED4o5EK7hJ+E+cTXPcN0MK0BU3Kq923iiVioE7DoiPoCOT
+         DiyDzXBwPDXZ4z1+90rrgRyapGzLz+EpT3eE/XwepUE5pj/HTz6FqYNVjFAp/iIkT/jO
+         GpahZuY37lJEyYr7A9RIEbQZ/rnIQl7I/oE/VC9878xIX9Yo3Jhyba56Fs0Wx+Md7CYK
+         WKMNrIc5E6M5Rfv6Bx7pfRPcf3NaK/egurWZwW1qx4h4k8XvyQNr4ma8N65obQrCdE78
+         7QJw==
+X-Gm-Message-State: AOAM531/QllZYH8EB+AvEGNwvOP8I7i/sJvKPyLxheR9OE+ate1Pv+qA
+        WknyHENLEom3VVwsjvWIOm0=
+X-Google-Smtp-Source: ABdhPJyo0WafdMO5+IasWWGJZeUfnt2xy0e4WcgANDB0CW3P+SCtYqf61F6AiNhMSMPZ2Zwx91rqxg==
+X-Received: by 2002:a17:907:1b06:b0:6e7:f58a:9b91 with SMTP id mp6-20020a1709071b0600b006e7f58a9b91mr8070888ejc.291.1649245678783;
+        Wed, 06 Apr 2022 04:47:58 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id k19-20020a1709062a5300b006c75a94c587sm6530560eje.65.2022.04.06.04.47.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 04:47:58 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <220361fd-6375-5874-cb1c-f7c22794f64f@redhat.com>
+Date:   Wed, 6 Apr 2022 13:47:56 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 078/104] KVM: TDX: Implement interrupt injection
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <776d48b5c88ebf189ffac1eb94ef190bfc7210da.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <776d48b5c88ebf189ffac1eb94ef190bfc7210da.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When both local and busiest group are group_fully_busy type, because
-the avg_load of the group of type group_fully_busy is not calculated, the
-avg_load value is equal to 0. In this case, load balancing will not actually 
-done, because after a series of calculations in the calculate_imbalance, it 
-will be considered that load balance is not required. Therefore,it is not
-necessary to enter calculate_imbalance to do some useless work.
+Please do not duplicate code, for example:
 
-Signed-off-by: zgpeng <zgpeng@tencent.com>
-Reviewed-by: Samuel Liao <samuelliao@tencent.com>
----
- kernel/sched/fair.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
+>   
+> +void tdx_apicv_post_state_restore(struct kvm_vcpu *vcpu)
+> +{
+> +	struct vcpu_tdx *tdx = to_tdx(vcpu);
+> +
+> +	pi_clear_on(&tdx->pi_desc);
+> +	memset(tdx->pi_desc.pir, 0, sizeof(tdx->pi_desc.pir));
+> +}
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 9f75303..cc1d6c4 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -9634,6 +9634,18 @@ static struct sched_group *find_busiest_group(struct lb_env *env)
- 			 * busiest doesn't have any tasks waiting to run
- 			 */
- 			goto out_balanced;
-+
-+		if (local->group_type == group_fully_busy)
-+			/*
-+			 * If local group is group_fully_busy, the code goes here,
-+			 * the type of busiest group must also be group_fully_busy.
-+			 * Because the avg_load of the group_fully_busy type is not
-+			 * calculated at present, it is actually equal to 0. In this
-+			 * scenario, load balance is not performed. therefore, it can
-+			 * be returned directly here, and there is no need to do some
-+			 * useless work in calculate_imbalance.
-+			 */
-+			goto out_balanced;
- 	}
- 
- force_balance:
--- 
-2.9.5
+This is the same as vmx_apicv_post_state_restore.  Please write this like:
 
+void vt_apicv_post_state_restore(struct kvm_vcpu *vcpu)
+{
+	struct pi_desc *pi = vcpu_to_pi_desc(vcpu);
+	pi_clear_on(pi);
+	memset(pi->pir, 0, sizeof(pi->pir));
+}
+
+
+Otherwise,
+
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+
+Paolo
