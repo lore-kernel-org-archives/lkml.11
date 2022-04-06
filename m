@@ -2,111 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D33C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB4FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:09:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230197AbiDFMKv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:10:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53680 "EHLO
+        id S230077AbiDFMLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231847AbiDFMKd (ORCPT
+        with ESMTP id S229942AbiDFMLN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:10:33 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1B295A3C;
-        Wed,  6 Apr 2022 00:53:44 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id B19C3E0016;
-        Wed,  6 Apr 2022 07:53:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649231623;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aEHF044mvurdicWAqWTz+vjeqtSmEBRXsYOuXWhcUIE=;
-        b=b/QN8+a5O6IuWnDPBGXJBxablmzOTzv3O3zC1Q5qYmh3hnM8Ben3qtFlLnjmilYYPoZVv+
-        LY1z0SEQVOIMkXV7ipnv5VOSpdmuPMGIgpJQaiKieocdxEj56RWgje4FOSa0ip6R2wdB3r
-        ynGdDdmiO0qdQjBk9C4syeIwccxxFr/xfi3F+f1583B8x9w6ovtdfN39Zyt8Qn/9R4rFfH
-        PD8r79eUMyGAQOVn43/Hm3fyl34B6BTvQH8tISWnl7kbDZLetK2yUU/9NYlWEIvHPQBdLB
-        PWtQD7zfNHLmK23EzE5z29fr2Ix3MyaM10BFYOWV2lbb49BxEHF/kfqBwvi19A==
-Date:   Wed, 6 Apr 2022 09:52:13 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Lizhi Hou <lizhi.hou@xilinx.com>,
-        Sonal Santan <sonal.santan@xilinx.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v2 0/3] add fwnode support to reset subsystem
-Message-ID: <20220406095213.21cf3ffb@fixe.home>
-In-Reply-To: <CAL_JsqL4xY-k4ZsJDuxX6Wbevv+aNRki4WfeiXg0R-4NkqPC1w@mail.gmail.com>
-References: <20220324141237.297207-1-clement.leger@bootlin.com>
-        <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
-        <20220405092434.6e424ed4@fixe.home>
-        <YkxWeMNw9Ba0KjHM@robh.at.kernel.org>
-        <20220405175120.23fc6b2a@fixe.home>
-        <CAL_JsqLdBcAw1KPnrATHqEngRWkx6moxDODH1xV67EKAufc6_w@mail.gmail.com>
-        <CAL_JsqL4xY-k4ZsJDuxX6Wbevv+aNRki4WfeiXg0R-4NkqPC1w@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Wed, 6 Apr 2022 08:11:13 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C7E51FD5D
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:03:11 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so3091066wms.2
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 01:03:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=AsNQPl7XwXuX2WAvg4rLC1LCZqhZGP7Ik6P3va1VwEg=;
+        b=K3EdZM8mcFbYT7dtM+CtBrf3JsqmnVU8klaSh8QuC87mQ6I2UZBbBWDVsLyDXivLin
+         +jsd4iv86dMV/fc20qaYKCgbYC4D3b82pRJUIRZg+fnLTxPsbS2fM3vi3r2RX3avdCOg
+         RSZzsX884aDRmw+Kcw7u7J5IUlp1d90ao9b/1/wmYiRWgrMYW8LIBS2mdrtILsaCCH7F
+         QiWAEtxRv1+LQFpBTGK8MW89ti5EE4bAKjuH2OdImw/z+o3RsxKAS/8v9kXsKXUN4LKn
+         Mj3X0fshu+zxYBctBjVgmHfyuzKnK7YXxI2/wYgHMkxxRQvOQefR3wV1Y1+lCRgEeZUX
+         rX4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AsNQPl7XwXuX2WAvg4rLC1LCZqhZGP7Ik6P3va1VwEg=;
+        b=pGWYFJEVMYsz4X56rnT4NM33p1R4dI0l08DmGL6mQPWHvnmWnlgfceUDDDs6gzq8ri
+         VBFz4IL1lpfWpNqYd8GvXZuuWK+h01np372Kz5sWKumxgHLOMqPlCSGDCtxzrrpvFCgc
+         3bRz1vEvJyYlCiT2Mvx6eJmVsda7JuVudq7U2oxKa6a2ZIs7O+4e9AJOZWOfZJKu4lrs
+         aM/PuujPgLwjfQebWH4teAhx0WPlGAKfAk6iGlbaD5a2zLRQ/N8e5O9Y4fHvaCRzfV9X
+         BElSft+gswj/ObRNqXn7k+Z230WWnZ6sVIqI9aX4QyxrJfpr92bUSwcuWpsHY09ebeCP
+         kn3w==
+X-Gm-Message-State: AOAM530PxvLqQyU0CZhIrSu/yxSaTK8Dy20Fv2ooHcK/M3N1IN8HMSiO
+        6rkQSaLnbku0Lp2CyKRCkPBHeQ==
+X-Google-Smtp-Source: ABdhPJyEGfgOxaVvfj11uScInCMKRFZYCH/NJehxzp/gPbS+4SSjoS2Lxm7d1aUTKXwLeNu/zYb4ng==
+X-Received: by 2002:a7b:c922:0:b0:383:e7e2:4a1a with SMTP id h2-20020a7bc922000000b00383e7e24a1amr6487169wml.51.1649232188901;
+        Wed, 06 Apr 2022 01:03:08 -0700 (PDT)
+Received: from ?IPV6:2a01:e34:ed2f:f020:261f:c14c:d23b:d177? ([2a01:e34:ed2f:f020:261f:c14c:d23b:d177])
+        by smtp.googlemail.com with ESMTPSA id e9-20020a5d5009000000b002060f7faa02sm8276556wrt.116.2022.04.06.01.03.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 01:03:08 -0700 (PDT)
+Message-ID: <6419fd7b-8213-3a51-268b-a9602c770991@linaro.org>
+Date:   Wed, 6 Apr 2022 10:03:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] clocksource/drivers/renesas-ostm: Add support for RZ/V2L
+ SoC
+Content-Language: en-US
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+References: <20220406072417.14185-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <20220406072417.14185-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Tue, 5 Apr 2022 16:28:02 -0500,
-Rob Herring <robh@kernel.org> a =C3=A9crit :
+On 06/04/2022 09:24, Lad Prabhakar wrote:
+> The OSTM block is identical on Renesas RZ/G2L and RZ/V2L SoC's, so instead
+> of adding dependency for each SoC's add dependency on ARCH_RZG2L. The
+> ARCH_RZG2L config option is already selected by ARCH_R9A07G044 and
+> ARCH_R9A07G054.
+> 
+> With the above change OSTM will be enabled on RZ/V2L SoC.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>   drivers/clocksource/renesas-ostm.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/clocksource/renesas-ostm.c b/drivers/clocksource/renesas-ostm.c
+> index 21d1392637b8..8da972dc1713 100644
+> --- a/drivers/clocksource/renesas-ostm.c
+> +++ b/drivers/clocksource/renesas-ostm.c
+> @@ -224,7 +224,7 @@ static int __init ostm_init(struct device_node *np)
+>   
+>   TIMER_OF_DECLARE(ostm, "renesas,ostm", ostm_init);
+>   
+> -#ifdef CONFIG_ARCH_R9A07G044
+> +#ifdef CONFIG_ARCH_RZG2L
+
+I'm not finding this option anywhere
 
 
-> >
-> > No, the kernel already maintains its own tree of devices. You just
-> > need to use that to generate the tree. That's really not much more
-> > than nodes with a 'reg' property encoding the device and function
-> > numbers.
-> >
-> > We already support matching a PCI device to a DT node. The PCI
-> > subsystem checks if there is a corresponding DT node for each PCI
-> > device created and sets the of_node pointer if there is. For
-> > OpenFirmware systems (PPC), there always is a node. For FDT, we
-> > generally don't have a node unless there are additional
-> > non-discoverable properties. Hikey960 is an example with PCI device
-> > nodes in the DT as it has a soldered down PCIe switch with downstream
-> > devices and non-discoverable properties (e.g. reset GPIO for each
-> > port). =20
->=20
-> Here's a quick and dirty implementation creating DT nodes for PCI devices:
->=20
-> git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git dt/pop-pci-n=
-odes
-
-Ok, thanks, after looking at the branch, it appears that you expect the
-PCI nodes matching the probed PCI devices should be created by the PCI
-subsystem itself. My previous comment saying that the node would be
-created by the PCI driver itself is then wrong and I understand what
-you meant.
-
-Then, there is still a bit of magic to do to correctly fill the ranges
-for translation and then the driver "simply" have to load the dtbo and
-apply it with of_overlay_fdt_apply().
-
->=20
-> Rob
+>   static int __init ostm_probe(struct platform_device *pdev)
+>   {
+>   	struct device *dev = &pdev->dev;
 
 
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
