@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C209CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 23:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 995F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 23:38:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238136AbiDFXkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 19:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
+        id S238087AbiDFXkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 19:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237999AbiDFXjU (ORCPT
+        with ESMTP id S237885AbiDFXjT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 19:39:20 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEF5200359
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 16:37:19 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id c2so3474137pga.10
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 16:37:19 -0700 (PDT)
+        Wed, 6 Apr 2022 19:39:19 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D303B1FF232
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 16:37:15 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id j17so2438660pfi.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 16:37:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=+NHPrcfPX9j18H1X5A7gd0jrJ/hWGlXT1F/HI7wEXaE=;
-        b=4Kw/aPfSNYshRbULidJg3mB/KOVPMiK0GCp5wH59VS/zYWvSwjEnXicMwj1WCeSWsl
-         ffOVt81BMhOVDBedkEVUwIt96Q5O1IfLGGiBPoWxdTocmpqrvbhuOGg/lJjDx/TPtfDt
-         tX0fbkYLBZN8v7/ZnmjjgYrZhc/Sg1kz4+JGb3v2ZmUz3DMLZAi1OiZxMucAzcIMYeOM
-         RzyVlUG7tkOhpbK3Iee3tmClVejUMAp9Hp4gKWynCvgz/wbZ/gE89L+l26v/wFdsHezn
-         0DEQFDaANZ04J4sBJUs6nUPand5rN70bCF3EWnGbe1JIMI3JCm+n6fLRR95Zqwm5cOtT
-         J1VQ==
+        bh=vwEJdK6mP4HLwzlF0NPpDB80vAiIJPOce5ra0JhLa38=;
+        b=GlwNdB8zBVCXaFx26HpKx7WELFJMmt4kNuhMN8vvHeN5vX0zCQdLS3NJDz8Fn5CnHW
+         3xeqY1ZBMDisFyF4etaO1RPGXFVSlD8jEj2q1YJ3qTyZ1S2gizpIv5zBXI+afVoYmVUP
+         Ko4jbM0TFMXDMw8zydt1oduC4mvUu9q7FExp1ZVzvm4wdcFWJJ0LV46x0JzoFEJ1zcgW
+         MV8/FqqM20hcX0EwicLISB+WCDT8k4wl6u8qEPs+7VZEAhCyVqBEy58v2s+igTNztzXd
+         z7Da+eVH7UfNXRSFD574IS0YzwbxtFXX3YBUIDv/vN5fRZSmMxrvWla9q2U5jvwa90yi
+         RyCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=+NHPrcfPX9j18H1X5A7gd0jrJ/hWGlXT1F/HI7wEXaE=;
-        b=qm95bwS/PGqgdLQuzDzlqHlT6/KgZ+ar+C0Xz5/kRsE3Jlvdl7jEzTHbUqTqidE3kP
-         eslUFh/qzrzP6wafAduUz5pCKXE+gFhMhSuDOVw+K9oqORyL6JPKTG8A0+gr9l+5krN0
-         hh9yb+04x3klnHFsWj00xd8lUTy2EcorAB0DZIfygbnVBxQ0xLrfi2ciFBTAOyZy1iRl
-         FeW2YIRC+cewn5xokeWm0Vk2fzz4ceO9bdSb58rn/fLZrAUIjQnILzm5WIrsnGoVyu42
-         tsfwa0db2ncJm9Kk0by+qkcN519EPbFsWpYnMpQZwZ42s/Er3AxC+/6T3UfLlIbOwQTQ
-         gWBQ==
-X-Gm-Message-State: AOAM531oPE65XU8gzwttFR8o51UgNxeNfIA1iF5MtbtWWCndSNVNSUqJ
-        GGFKhX2Oy0+VrwPsUUkViXPGJQ==
-X-Google-Smtp-Source: ABdhPJyHjfczh9XOpxfDw4qG22iuv5BhD30drlpa3BlIyG2rSgrDCkxionp7n+48w9BDXCt6rELPcg==
-X-Received: by 2002:a05:6a00:884:b0:4fe:134d:81cc with SMTP id q4-20020a056a00088400b004fe134d81ccmr11250729pfj.57.1649288238812;
-        Wed, 06 Apr 2022 16:37:18 -0700 (PDT)
+        bh=vwEJdK6mP4HLwzlF0NPpDB80vAiIJPOce5ra0JhLa38=;
+        b=ddKTqp7CMkL+0nGOzPJV9QfWu8eHhYFg1Z3G491xhaLZh1yn37cpwwrQ+/WcbONLLu
+         rj8Txx3yjjUE0i+W02ZUZP2BcUErFc2HXW+x+0ATuLWjUshQrviAWeVvvhisRcutSl4N
+         G/7lWLmg7sswv2Faq8OlRMsw3T7AiHD+VtD5QsKhscETG0Dfs79qYGhVaxKVzgFQgWCR
+         yDhzVXPxt9b5OoBYt/IYzp37kuzlvRv2JiUYCqiG7KMhCZkOEVVLBn2YIIuWjTPuIiTn
+         WK7Q1uft0WU6s8Ri5aoQkVFotxZ9fCiBDElUJPErK2j/pO2s9K/pTONAGK1XKaEVZgJA
+         MCDw==
+X-Gm-Message-State: AOAM533HasXsmW9HLIMmaZf8g6Jg2CKdSz8fn6gCWy+WL0qz1S5Lunk2
+        0SQxlYtDT2K3M4tWnKtoKCNCdQXQm9HIpA==
+X-Google-Smtp-Source: ABdhPJyxcbTU9ZBcO9y89jqsqr4/jfNurjGIi6t4DNl6SvL7WcLDdfJNS9GAdP8Mq6nLARE8qXq19A==
+X-Received: by 2002:a65:57cc:0:b0:384:3370:e161 with SMTP id q12-20020a6557cc000000b003843370e161mr8998868pgr.364.1649288235387;
+        Wed, 06 Apr 2022 16:37:15 -0700 (PDT)
 Received: from platform-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id m21-20020a17090a7f9500b001c97c6bcaf4sm6903667pjl.39.2022.04.06.16.37.17
+        by smtp.gmail.com with ESMTPSA id m21-20020a17090a7f9500b001c97c6bcaf4sm6903667pjl.39.2022.04.06.16.37.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 16:37:18 -0700 (PDT)
+        Wed, 06 Apr 2022 16:37:14 -0700 (PDT)
 From:   Brad Larson <brad@pensando.io>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     arnd@arndb.de, linus.walleij@linaro.org, bgolaszewski@baylibre.com,
@@ -55,9 +55,9 @@ Cc:     arnd@arndb.de, linus.walleij@linaro.org, bgolaszewski@baylibre.com,
         brad@pensando.io, dac2@pensando.io, linux-gpio@vger.kernel.org,
         linux-spi@vger.kernel.org, linux-mmc@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 08/11] spi: cadence-quadspi: Add compatible for Pensando Elba SoC
-Date:   Wed,  6 Apr 2022 16:36:45 -0700
-Message-Id: <20220406233648.21644-9-brad@pensando.io>
+Subject: [PATCH 06/11] MAINTAINERS: Add entry for PENSANDO
+Date:   Wed,  6 Apr 2022 16:36:43 -0700
+Message-Id: <20220406233648.21644-7-brad@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220406233648.21644-1-brad@pensando.io>
 References: <20220406233648.21644-1-brad@pensando.io>
@@ -65,85 +65,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Pensando Elba SoC has the Cadence QSPI controller integrated.
-
-The quirk CQSPI_NEEDS_APB_AHB_HAZARD_WAR is added and if enabled
-a dummy readback from the controller is performed to ensure
-synchronization.
+Add entry for PENSANDO maintainer and files
 
 Signed-off-by: Brad Larson <brad@pensando.io>
 ---
 Change from V3:
-- Update due to spi-cadence-quadspi.c changes
+- Change Maintained to Supported
 
- drivers/spi/spi-cadence-quadspi.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index b0c9f62ccefb..e7bcd9d8ba37 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -38,6 +38,7 @@
- #define CQSPI_DISABLE_DAC_MODE		BIT(1)
- #define CQSPI_SUPPORT_EXTERNAL_DMA	BIT(2)
- #define CQSPI_NO_SUPPORT_WR_COMPLETION	BIT(3)
-+#define CQSPI_NEEDS_APB_AHB_HAZARD_WAR	BIT(4)
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4cb7fd127e68..456d50921b3a 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2509,6 +2509,13 @@ S:	Maintained
+ W:	http://hackndev.com
+ F:	arch/arm/mach-pxa/palmz72.*
  
- /* Capabilities */
- #define CQSPI_SUPPORTS_OCTAL		BIT(0)
-@@ -88,6 +89,7 @@ struct cqspi_st {
- 	bool			use_dma_read;
- 	u32			pd_dev_id;
- 	bool			wr_completion;
-+	bool			apb_ahb_hazard;
- };
- 
- struct cqspi_driver_platdata {
-@@ -1043,6 +1045,13 @@ static int cqspi_indirect_write_execute(struct cqspi_flash_pdata *f_pdata,
- 	if (cqspi->wr_delay)
- 		ndelay(cqspi->wr_delay);
- 
-+	/*
-+	 * If a hazard exists between the APB and AHB interfaces, perform a
-+	 * dummy readback from the controller to ensure synchronization.
-+	 */
-+	if (cqspi->apb_ahb_hazard)
-+		(void)readl(reg_base + CQSPI_REG_INDIRECTWR);
++ARM/PENSANDO ARM64 ARCHITECTURE
++M:	Brad Larson <brad@pensando.io>
++L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
++S:	Supported
++F:	Documentation/devicetree/bindings/*/pensando*
++F:	arch/arm64/boot/dts/pensando/
 +
- 	while (remaining > 0) {
- 		size_t write_words, mod_bytes;
- 
-@@ -1759,6 +1768,8 @@ static int cqspi_probe(struct platform_device *pdev)
- 			cqspi->use_dma_read = true;
- 		if (ddata->quirks & CQSPI_NO_SUPPORT_WR_COMPLETION)
- 			cqspi->wr_completion = false;
-+		if (ddata->quirks & CQSPI_NEEDS_APB_AHB_HAZARD_WAR)
-+			cqspi->apb_ahb_hazard = true;
- 
- 		if (of_device_is_compatible(pdev->dev.of_node,
- 					    "xlnx,versal-ospi-1.0"))
-@@ -1882,6 +1893,10 @@ static const struct cqspi_driver_platdata versal_ospi = {
- 	.get_dma_status = cqspi_get_versal_dma_status,
- };
- 
-+static const struct cqspi_driver_platdata pen_cdns_qspi = {
-+	.quirks = CQSPI_NEEDS_APB_AHB_HAZARD_WAR | CQSPI_DISABLE_DAC_MODE,
-+};
-+
- static const struct of_device_id cqspi_dt_ids[] = {
- 	{
- 		.compatible = "cdns,qspi-nor",
-@@ -1907,6 +1922,10 @@ static const struct of_device_id cqspi_dt_ids[] = {
- 		.compatible = "intel,socfpga-qspi",
- 		.data = (void *)&socfpga_qspi,
- 	},
-+	{
-+		.compatible = "pensando,elba-qspi",
-+		.data = &pen_cdns_qspi,
-+	},
- 	{ /* end of table */ }
- };
- 
+ ARM/PLEB SUPPORT
+ M:	Peter Chubb <pleb@gelato.unsw.edu.au>
+ S:	Maintained
 -- 
 2.17.1
 
