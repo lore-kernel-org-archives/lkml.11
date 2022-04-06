@@ -2,86 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 576E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CDE1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237119AbiDFLVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60200 "EHLO
+        id S232342AbiDFLWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:22:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245740AbiDFLVC (ORCPT
+        with ESMTP id S232960AbiDFLVa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:21:02 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93288548826
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:41:30 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id n6so2385813ejc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 00:41:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BvDX3kqlLsvwWpvH39s25kWK+Ue2MPPKZGZ4CtGKa74=;
-        b=dzjS5Dnp2AgNeZxQXr6KxbAQ7LYkYbgODlPspVMrO+tqu0eA/4UxXouMDepdmZjkp7
-         2SsXXjXSAt799+b9r3J/N2zNRdQpU0qfxVlaHevrqmPHKDqknfiFqrt1yHz2jgUdJtq4
-         K/0lXFrm5pzcQoXLsw9xqmW0/0cQxZAdBXUkWQOTQG3JaREWv9Hg7whnGN3ojnc5TNNv
-         LM5e1ZBxS74fM/7fApBMk9hyq5jd4DZ7DYgBhEtd8cFKgNFKdFZnJF4FfC2OrwbbUuRd
-         nv+iFBaVf32TrTk1tprk0eeWD+2DTF4nOGad1r5JrzalkJj5Qf7U2btnE9AzkWskMdnj
-         j6Sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BvDX3kqlLsvwWpvH39s25kWK+Ue2MPPKZGZ4CtGKa74=;
-        b=5FlHvj5mU36Nba6VOz3Iheb5pKkHeYfrOkLf29YepjaVZ1i4uHQrq1UlaTPIYIQUYa
-         RstIM/+mScEfDVUfhDIEQcSE49y5NvBeGMMtKOCDqW0HeQQrVNgpNPyQvt7MK3r3XpFK
-         Ldy55jwFvmxeb1taKlAjZDY4oVQscaykEFsbRFOxlmyFiDs5h+ylwvOKB8+bW74X40gx
-         Nnvkht3q3myv034iKesvMpvh/xmn8ZQajAhDNiIgDK0lA7mf7qk3gogznYwIZ+REvOXx
-         opm6BKDEJwC6jfq0OE0BR3kOkVOGPZZj8ECxfjBvilg/P2oVxv2EUyG5P6XM7gAMM7Gn
-         nxpw==
-X-Gm-Message-State: AOAM532u2zbsdWZ3GTBSJWqETv0uhEMs1mAOi9/5NkoYS60QvcXPcf/j
-        JDUahSvn1faTjzIr/jy3s+7d3A==
-X-Google-Smtp-Source: ABdhPJwMefSGt7p3g1TL6FQ5EJ+QANqPfr+S94kzFeANh+BVO6Z7I8zyrGJZwSgQmNw9KUBHHbx7Vw==
-X-Received: by 2002:a17:906:7943:b0:6df:e5b3:6553 with SMTP id l3-20020a170906794300b006dfe5b36553mr7060849ejo.398.1649230889147;
-        Wed, 06 Apr 2022 00:41:29 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id gn33-20020a1709070d2100b006dfcce8be86sm6187536ejc.225.2022.04.06.00.41.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 00:41:28 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Li Yang <leoyang.li@nxp.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] memory: fsl_ifc: populate child nodes of buses and mfd devices
-Date:   Wed,  6 Apr 2022 09:41:21 +0200
-Message-Id: <164923087779.11222.1123001919450990524.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220307204118.19093-1-leoyang.li@nxp.com>
-References: <20220307204118.19093-1-leoyang.li@nxp.com>
+        Wed, 6 Apr 2022 07:21:30 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15391F9776
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:43:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=gjSzDmZ8ZEg6oAu+s89H1vKfdedj6enk18MsmjGy26Q=; b=agYQaaN/zk2oC1MVsKr1tZ2MAM
+        AseKQ0ZZhsNn8lAM3BekArNNGu2ygdCGP4GIljuR9lGgCIjjCNsei4BVw7EWUZ9INnXF7xnq1cdBq
+        o0RVBKJU3YljkJc6VTeSLNpegbHCB3kpkXlxQOspr5BkynUDjo50kwb9KmgNsGkmd/lZO0oMbrezO
+        UW+K3FMNOTKbJ+ViRXHjkh+PRaxd9ICOlepteYeNxPCpYih3yPIPDdyxBocnCYjGAtnY95Wx1AxNc
+        7d/r6SJxL6JRVRB7CEJH8EAbvEVspBxl3Iu/plH+hP+duLbiSWeer1+HhyrfOhK0fyhPAtCXUN9gh
+        p5B+01zQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nc0KB-0026ZM-Gg; Wed, 06 Apr 2022 07:43:32 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 0DFD79861A5; Wed,  6 Apr 2022 09:43:31 +0200 (CEST)
+Date:   Wed, 6 Apr 2022 09:43:30 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, mbenes@suse.cz, x86@kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: drivers/gpu/drm/i915/i915.prelink.o: warning: objtool:
+ __intel_wait_for_register_fw.cold()+0xce: relocation to !ENDBR:
+ vlv_allow_gt_wake.cold+0x0
+Message-ID: <20220406074330.GD34954@worktop.programming.kicks-ass.net>
+References: <202204041241.Hw855BWm-lkp@intel.com>
+ <YkxLqznOz0ldTz5a@hirez.programming.kicks-ass.net>
+ <20220406000500.5hlaqy5zrdqsg5mg@treble>
+ <87czhv11k1.ffs@tglx>
+ <20220406053251.6dyfxrjmmgdwocfc@treble>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406053251.6dyfxrjmmgdwocfc@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 7 Mar 2022 14:41:18 -0600, Li Yang wrote:
-> Commit 98f1323959b8 was trying to replace the "simple-bus" compatible
-> with explicit bus populate in the driver.  But of_platform_populate()
-> only populates child nodes of ifc without populating child buses and
-> child mfd devices residing under ifc.  Change it to
-> of_platform_default_populate() to fix the problem.
+On Tue, Apr 05, 2022 at 10:32:51PM -0700, Josh Poimboeuf wrote:
+> More broadly, this issue could theoretically happen in some other places
+> throughout the kernel tree, since _THIS_IP_ is fundamentally unreliable
+> as currently written.
 > 
-> Fixes: 98f1323959b8 ("memory: fsl_ifc: populate child devices without relying on simple-bus")
+> So we could look at making _THIS_IP_ more predictable.
 > 
-> [...]
+> Inline asm would work better ("lea 0(%rip), %[rip]"), but then you need
+> an arch-dependent implementation...
 
-Applied, thanks!
-
-[1/1] memory: fsl_ifc: populate child nodes of buses and mfd devices
-      commit: dd8adc713b1656ce469702eba8fc1adc4db91dc4
-
-Best regards,
--- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Well, there's a ton of _THIS_IP_ instances all around, and it would be
+unfortunate to have them grow into actual code :/
