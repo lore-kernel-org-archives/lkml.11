@@ -2,125 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:13:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A7EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbiDFLPG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
+        id S234362AbiDFLPj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232989AbiDFLOW (ORCPT
+        with ESMTP id S235224AbiDFLOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:14:22 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD99E53D7F9
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:37:48 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id cs16so1641854qvb.8
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 00:37:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=d8V7VO+kcQ0mbmyy8ZkB/M+w0ELWDpQbJ0MubcHelRk=;
-        b=jOs4/FH9L11zBGxLuILPhWUWMjiRrToNmG96XfuXI7ivphTv2rrs42hglZ/8jdDE+Y
-         3qV02WGwqJ1cR+/DsdkDZtCq+F+1FZGK3NahncU7Y8gDXE3ePQBNgSpws5crAynqqDyj
-         Sj4OD7lSPJ1ELJ/Sea9K0uC+367K+Vh5e5JBJ2PSYwfwIbaG/fruHRM/kB6Kw8Le60iO
-         yFTg8f24DypMSc8QRecDAJHYaLf1/8syeQ8IMrgDHjmycskMwLCtYA0fXqdOld6BGcCD
-         ADLErlyGyPmqNxPT3izkjv7dT1oMHsTlDxIr5eS9XXvkS435TfloxtitO3iy/LnbDe5i
-         8sew==
+        Wed, 6 Apr 2022 07:14:45 -0400
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5900848782A;
+        Wed,  6 Apr 2022 00:38:03 -0700 (PDT)
+Received: by mail-ej1-f46.google.com with SMTP id yy13so2486872ejb.2;
+        Wed, 06 Apr 2022 00:38:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=d8V7VO+kcQ0mbmyy8ZkB/M+w0ELWDpQbJ0MubcHelRk=;
-        b=UB6s035bQwAsXxFo2zpNVwRh8/A8EMxTXefgEEHlwHofAll7MZQYm/+AiTVyfdJyMw
-         KLEIHpWDz7I6gMm1NdFUDXz6Kojd6VwmemVQVXZXzbD+qPrbBkKC/BAi+TxewuBPnS2k
-         qhzuTO2t427nru3YnHerS39tYJeX1GlO7oosy659fXZOrwfVWWgxJZEsF90f+w1iHvEu
-         FUPvWut02UyLeroXB02rs/AhqKzZwjwYSL1bDDoe5PRywNtRHPod61Y8O9GafLKoGwnz
-         FvfBLEnpiZp4inwOuxk0SSD8uOmijRjQ9wmrLzsFVn5uHS2TiOzn2ZFxK5H4Kxy4ck1m
-         lGKA==
-X-Gm-Message-State: AOAM530vCNWqk4EoL3KMkUlVrfncQ8buolM8X9X4dl4dAk7xjLDWDsri
-        xTnLrFbcOtSOptiV+nSmC/0=
-X-Google-Smtp-Source: ABdhPJwwnFIt4rCcIgVwjIbuX+wMIjrYrcDUM+9auTHH9TsznJEiml3Zvha9G5B1PLH7bPq7N8aumw==
-X-Received: by 2002:a0c:ffab:0:b0:443:d915:59cc with SMTP id d11-20020a0cffab000000b00443d91559ccmr6384101qvv.44.1649230667752;
-        Wed, 06 Apr 2022 00:37:47 -0700 (PDT)
-Received: from localhost ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id c1-20020a05620a0ce100b0067e0cd1746fsm8806915qkj.51.2022.04.06.00.37.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 00:37:46 -0700 (PDT)
-Message-ID: <624d434a.1c69fb81.11e99.b2b8@mx.google.com>
-X-Google-Original-Message-ID: <20220406073743.GA2487892@cgel.zte@gmail.com>
-Date:   Wed, 6 Apr 2022 07:37:43 +0000
-From:   CGEL <cgel.zte@gmail.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     akpm@linux-foundation.org, bsingharora@gmail.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>
-Subject: Re: [PATCH] delayacct: track delays from COW
-References: <20220322110444.2340748-1-yang.yang29@zte.com.cn>
- <9f9ddbf7-797a-58d8-2903-beacb2698329@redhat.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=s1nBGBz3envOphEIB9NlZFClpPpalzOLCkN7cvxbdrs=;
+        b=YSEOX0uY42lpShDH+d3nXCFVWu0w0x8Xkdpy4XdtJWt625k+bDF+1ScY1bYbY1n71W
+         /KaAacna3onn/Hj4p9QLF7wOYiKNHsOn+S6nT6TBghOUTpWe73tuolrTmS8SD2esUzKQ
+         LXwnDkhfJ50gS7lIcumlwaVaHMGqxJoiHIJiZepMPiJe2ASpfnA9tkkivtC8gtZcxEV/
+         snNjrzLvNLz2bHe2ZghuRJrDNBgy9gwVowbT3qd/LD/Jb61lWSbcRq7xQFv0QLpJmL9U
+         6EnTj4MH/KUZ0WoB4ZzsbUBIg1SsTvoPJYsvN+lw44QMdotEHzgVkblnVwjCeesiSLGt
+         8ozQ==
+X-Gm-Message-State: AOAM533XzMyblg0AejytcvxcMCkqbaZBn9Dyo/XBiMVkwCIqtBmNfNrC
+        Bpm7lhIhUigMPmFn0gWKCJk=
+X-Google-Smtp-Source: ABdhPJzpr5MkoR0Rxn2HYPDwG6+GVTIe8DS26W0rSADV+iJa9Sr6qu0qIdvW+Ng8TsAMZlsFOTBvRQ==
+X-Received: by 2002:a17:907:3d01:b0:6e0:c63b:1992 with SMTP id gm1-20020a1709073d0100b006e0c63b1992mr7423430ejc.422.1649230681805;
+        Wed, 06 Apr 2022 00:38:01 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id d7-20020a170906370700b006e7f864d7a0sm2613961ejc.131.2022.04.06.00.38.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 00:38:01 -0700 (PDT)
+Message-ID: <06b5cc53-8de6-b238-70eb-9c1d5f245f78@kernel.org>
+Date:   Wed, 6 Apr 2022 09:37:59 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9f9ddbf7-797a-58d8-2903-beacb2698329@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: sof_es8336 build failure [was: [PATCH 5.17 0000/1126] 5.17.2-rc1
+ review]
+Content-Language: en-US
+From:   Jiri Slaby <jirislaby@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        pierre-louis.bossart@linux.intel.com,
+        Mark Brown <broonie@kernel.org>,
+        yung-chuan.liao@linux.intel.com, peter.ujfalusi@linux.intel.com,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+References: <20220405070407.513532867@linuxfoundation.org>
+ <8ea245ed-eac9-1cd5-31bd-150a06378872@kernel.org>
+In-Reply-To: <8ea245ed-eac9-1cd5-31bd-150a06378872@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 09:49:46AM +0100, David Hildenbrand wrote:
-> On 22.03.22 12:04, cgel.zte@gmail.com wrote:
-> > From: Yang Yang <yang.yang29@zte.com.cn>
-> > 
-> > Delay accounting does not track the delay of COW. When tasks trigger
-> > much COW, it may spend a amount of time waiting for it. To get the
-> > impact of tasks in COW, measure the delay when it happens. This
-> > could help users to do tunnings, such as decide whether to use
-> > ksm or not.
-> > 
-> > Also update tools/accounting/getdelays.c:
-> > 
-> >     / # ./getdelays -dl -p 231
-> >     print delayacct stats ON
-> >     listen forever
-> >     PID     231
-> > 
-> >     CPU             count     real total  virtual total    delay total  delay average
-> >                      6247     1859000000     2154070021     1674255063          0.268ms
-> >     IO              count    delay total  delay average
-> >                         0              0              0ms
-> >     SWAP            count    delay total  delay average
-> >                         0              0              0ms
-> >     RECLAIM         count    delay total  delay average
-> >                         0              0              0ms
-> >     THRASHING       count    delay total  delay average
-> >                         0              0              0ms
-> >     COMPACT         count    delay total  delay average
-> >                         3          72758              0ms
-> >     COW             count    delay total  delay average
-> >                      3635      271567604              0ms
-> 
-> You should also update Documentation/accounting/delay-accounting.rst
-> most probably.
-> 
-> Overall LGTM and this might be of value not only for KSM but for anybody
-> using fork(). There will be collisions with [1], especially [2], which I
-> want to get in -next early after we have v5.18-rc1 (after rebasing [1]
-> on top of this).
-> 
-> We'll have to decide if we want to also account hugetlb wp code
-> (hugetlb_cow), and if we want to account "unsharing" here as well under
-> cow (I tend to say that we want to for simplicity). For THP, we only
-> split and don't copy, so there isn't anything to account.
->
-As for simplicity, what about account "PAGECOPY" instead of "COW"?
-"PAGECOPY" include COW and unsharing. And we may also account hugetlb
-wp in follow-up patches, based on this patch is sufficient reviewed.
+Cc some folks and change subject
 
-> [1] https://lore.kernel.org/r/20220315104741.63071-1-david@redhat.com
-> [2] https://lore.kernel.org/r/20220315104741.63071-14-david@redhat.com
+On 06. 04. 22, 9:29, Jiri Slaby wrote:
+> On 05. 04. 22, 9:12, Greg Kroah-Hartman wrote:
+>> This is the start of the stable review cycle for the 5.17.2 release.
+>> There are 1126 patches in this series, all will be posted as a response
+>> to this one.  If anyone has any issues with these being applied, please
+>> let me know.
+> ...
+>> Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+>>      ASoC: Intel: sof_es8336: use NHLT information to set dmic and SSP
 > 
-> -- 
-> Thanks,
+> Fails to build w/ suse x86_64 default config [1] (and x86_32 too):
+>  > sound/soc/intel/boards/sof_es8336.c: In function ‘sof_es8336_probe’:
+>  > sound/soc/intel/boards/sof_es8336.c:482:32: error: ‘struct 
+> snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you 
+> mean ‘link_mask’?
+>  >   482 |         if (!mach->mach_params.i2s_link_mask) {
+>  >       |                                ^~~~~~~~~~~~~
+>  >       |                                link_mask
+>  > sound/soc/intel/boards/sof_es8336.c:494:39: error: ‘struct 
+> snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you 
+> mean ‘link_mask’?
+>  >   494 |                 if (mach->mach_params.i2s_link_mask & BIT(2))
+>  >       |                                       ^~~~~~~~~~~~~
+>  >       |                                       link_mask
+>  > sound/soc/intel/boards/sof_es8336.c:496:44: error: ‘struct 
+> snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you 
+> mean ‘link_mask’?
+>  >   496 |                 else if (mach->mach_params.i2s_link_mask & 
+> BIT(1))
+>  >       |                                            ^~~~~~~~~~~~~
+>  >       |                                            link_mask
+>  > sound/soc/intel/boards/sof_es8336.c:498:45: error: ‘struct 
+> snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you 
+> mean ‘link_mask’?
+>  >   498 |                 else  if (mach->mach_params.i2s_link_mask & 
+> BIT(0))
+>  >       |                                             ^~~~~~~~~~~~~
+>  >       |                                             link_mask
 > 
-> David / dhildenb
+> So 679aa83a0fb70dcbf9e97c is missing -- but likely more is needed.
+> 
+> [1] 
+> https://raw.githubusercontent.com/SUSE/kernel-source/stable/config/x86_64/default 
+> 
+> 
+> regards,
+
+
+-- 
+js
+suse labs
