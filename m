@@ -2,122 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22949C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:34:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C74BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346202AbiDFKgU (ORCPT
+        id S1348863AbiDFKjM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57814 "EHLO
+        Wed, 6 Apr 2022 06:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236518AbiDFKfV (ORCPT
+        with ESMTP id S1357541AbiDFKhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:35:21 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC14D4B47B9;
-        Tue,  5 Apr 2022 23:56:34 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KYFcm6f5rzgYLw;
-        Wed,  6 Apr 2022 14:54:48 +0800 (CST)
-Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 6 Apr 2022 14:56:33 +0800
-Received: from [10.174.178.220] (10.174.178.220) by
- dggpemm500017.china.huawei.com (7.185.36.178) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 6 Apr 2022 14:56:32 +0800
-From:   Wenchao Hao <haowenchao@huawei.com>
-Subject: Re: [PATCH] scsi: core: always finish successfully aborted notry
- command
-To:     Mike Christie <michael.christie@oracle.com>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Hannes Reinecke <hare@suse.de>, <linux-scsi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <linfeilong@huawei.com>
-References: <20220401035020.1043239-1-haowenchao@huawei.com>
- <775f75db-edb8-8f39-2592-862756811710@oracle.com>
-Message-ID: <275178ca-1fe4-b00b-c1f4-c8c34e7f4686@huawei.com>
-Date:   Wed, 6 Apr 2022 14:56:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
-MIME-Version: 1.0
-In-Reply-To: <775f75db-edb8-8f39-2592-862756811710@oracle.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.220]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500017.china.huawei.com (7.185.36.178)
-X-CFilter-Loop: Reflected
+        Wed, 6 Apr 2022 06:37:53 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12AAF4F31A8;
+        Wed,  6 Apr 2022 00:03:33 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.90,239,1643641200"; 
+   d="scan'208";a="116905270"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 06 Apr 2022 16:03:33 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 919C0400F934;
+        Wed,  6 Apr 2022 16:03:31 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH] iio: adc: Kconfig: Make RZG2L_ADC depend on ARCH_RZG2L
+Date:   Wed,  6 Apr 2022 08:03:15 +0100
+Message-Id: <20220406070315.13862-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/4 0:58, Mike Christie wrote:
-> On 3/31/22 10:50 PM, Wenchao Hao wrote:
->> If the abort command succeed and it does not need to be retired, do not add
->> it to error handle list. 
->>
->> Adding command to error handle list is an annoying flow which would stop I/O
->> of all LUNs which shared a same HBA.
->>
->> So here if we successfully abort a command, we can finish it via
->> scsi_finish_command() which would reduce time spent on scsi_error_handler()
->>
->> Signed-off-by: Wenchao Hao <haowenchao@huawei.com>
->> ---
->>  drivers/scsi/scsi_error.c | 55 +++++++++++++++++++++------------------
->>  1 file changed, 29 insertions(+), 26 deletions(-)
->>
->> diff --git a/drivers/scsi/scsi_error.c b/drivers/scsi/scsi_error.c
->> index cdaca13ac1f1..15299603b7ee 100644
->> --- a/drivers/scsi/scsi_error.c
->> +++ b/drivers/scsi/scsi_error.c
->> @@ -173,41 +173,44 @@ scmd_eh_abort_handler(struct work_struct *work)
->>  		goto out;
->>  	}
->>  	set_host_byte(scmd, DID_TIME_OUT);
->> -	if (scsi_host_eh_past_deadline(shost)) {
->> -		SCSI_LOG_ERROR_RECOVERY(3,
->> -			scmd_printk(KERN_INFO, scmd,
->> -				    "eh timeout, not retrying "
->> -				    "aborted command\n"));
->> -		goto out;
->> -	}
->>  
->> -	spin_lock_irqsave(shost->host_lock, flags);
->> -	list_del_init(&scmd->eh_entry);
->> +	if (scsi_noretry_cmd(scmd) ||
->> +	    !scsi_cmd_retry_allowed(scmd) &&
->> +	    !scsi_eh_should_retry_cmd(scmd)) {
-> 
-> 
-> I don't think this test is correct. Did you want all ||s?
+ADC block is common on Renesas RZ/G2L and RZ/V2L SoC's, so instead of
+adding dependency for each SoC's add dependency on ARCH_RZG2L. The
+ARCH_RZG2L config option is already selected by ARCH_R9A07G044 and
+ARCH_R9A07G054.
 
-Sorry, I made a mistake, it should be "||" here.
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+ drivers/iio/adc/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> For what the patch is trying to accomplish I'm not sure if it's
-> the behavior people wanted. Do all drivers have configurable
-> abort timeouts? If an abort takes N minutes to complete ok,
-> and that's put us over the eh deadline maybe the user wanted
-> that device to be offlined.
-> .
-> 
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 71ab0a06aa82..48ace7412874 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -910,7 +910,7 @@ config ROCKCHIP_SARADC
+ 
+ config RZG2L_ADC
+ 	tristate "Renesas RZ/G2L ADC driver"
+-	depends on ARCH_R9A07G044 || COMPILE_TEST
++	depends on ARCH_RZG2L || COMPILE_TEST
+ 	help
+ 	  Say yes here to build support for the ADC found in Renesas
+ 	  RZ/G2L family.
+-- 
+2.17.1
 
-I think the changes would not affect the timeouts and deadline
-because the logic changed is after command abort successfully.
-
-We check if the command need to be retired after aborting command
-successfully, if it does not need to retry, just finish it (only
-commands aborted failed should be add to error handle list).
-
-I submit this change because we want to reduce the time spent on 
-scsi_error_handler().
-
-Do you think the change is OK? Except previous wrong "&&" which should
-be "||".
-
-Thanks, looking forward to hearing from you.
