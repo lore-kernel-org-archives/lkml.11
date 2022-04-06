@@ -2,219 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52918C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C92C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:21:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233102AbiDFNXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:23:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38646 "EHLO
+        id S233305AbiDFNXw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:23:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232858AbiDFNWN (ORCPT
+        with ESMTP id S233464AbiDFNWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:22:13 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CD649DC47
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:11:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649239862; x=1680775862;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Csi4O2nlSqUNejwpPTBdz5GRkdB1SE/vCWHLcsz0Tqg=;
-  b=KlI0rUAzXtXb97TIf6nB6BV9B28WNxPtktP5RgBXa//mmOSWCrX/ghk/
-   rdLGXO6EY8lnQzqnJXk4QnIqfOeDzngFohIiyKw/0W7Dz9FjPzJV6TjWJ
-   C+Jtf9yxY5BNN3JWePInycIDOV5X6SBXtmrG3wfKcs70HGxL5cC+K5wMy
-   73YJSjUsJMBfli/i0XffA2PPFbnqlDkKEy2NfyIsGCa1Ht4TN0NG2NVIO
-   Vp4B1NwWhKdF9ed1K7JAlItgvdUAhd8O1lf5nBFsfHXD+fOYX+VOT1dcG
-   TdclUCw2JJJtgbruc/DZM5zfEJj7jB739Oj3UnfUFUcQApEmmPkHyafJy
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="285972324"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="285972324"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 03:07:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="524405883"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 06 Apr 2022 03:07:57 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nc2Zx-0004Ic-6k;
-        Wed, 06 Apr 2022 10:07:57 +0000
-Date:   Wed, 06 Apr 2022 18:07:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/cpu] BUILD SUCCESS
- 0205f8a738ab9e62d849e88e543cfa6ce4c13163
-Message-ID: <624d6666.zWBztTsw4YSrgtzO%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Wed, 6 Apr 2022 09:22:40 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0207A36BCC1
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:13:44 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-2eafabbc80aso20230187b3.11
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 03:13:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=sNpLtjT8N1zIIINaELQa0JweQ+VPyM3S6k6MC6+RPps=;
+        b=DRkueuiaLLSvBw00To6buMVvkhuqahQLDZtud4rlCh5K4UtGSCGZKizmLbQh4qi+hd
+         Xwf3HS314TZT5b58wrt6IMEQZOXsFZda8SAYUrNeetZNHoxwbwxhNt/OUwT3lKyuus2k
+         H+ZJuecIQIethU62VZzi+uQw+KqqgovPZEJxNaKEReImPtBbDa+e1BEXoCBE69/XA82s
+         WzGwafJCe6j26oj/LZSe05SdS9r2UJz67vUSUMSAOzpy7syyIrptevyQpilHOh392Iqn
+         kn7vAQ/L/VMi4KeLxA7O3LzQtc+Zv9xrXAUhblf8asS0POPYoTIf7GcxgGwxu+NBV4h3
+         irAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=sNpLtjT8N1zIIINaELQa0JweQ+VPyM3S6k6MC6+RPps=;
+        b=eekvpHqSM9hnYMMd/ehVQrstmzikecNdgz9ZyhfD/zHpPXsSBsjE686DSX08zjxvzN
+         eDyOQEJ6BGcMwUTPEvh+/fIkThxGiCGY4f9y1i8Io7oL5c6LjBknmtiEj8xhix75zk2y
+         kM86WM3hV70GE2S2aPGZWiIXbtembcQUFt11eg/wgrglLJvqnVilE8ZhsiMi3X+Huhi1
+         TSW3E0oObDvc53Y6+FgWKruKLpOITOWhdf8JUUULRJk07+EZa2OsgqakZG+9/TcGaqqX
+         EFg1VZqTM4tcSQWbv271HLpR66XARhjvO+TIh+rwpR7t2VbexJGOnjYk3TzA54u+gBv7
+         1MYA==
+X-Gm-Message-State: AOAM532jFKonVxvXpMExDpSHV0wTuMHYIreYaaz4wFQM8KPST9AGw/6u
+        dft8V9kdisFNi863fkyhuKKCsc10tihiSuaERJNatg==
+X-Google-Smtp-Source: ABdhPJyxys7fbyhnwwlqIy9+Bx5S1uCSqejI5clAZAJcwNZucI5Le124MTq3mVCMh0/ChpejLPeAyub1ePEYUwfh4uo=
+X-Received: by 2002:a0d:ffc3:0:b0:2eb:2327:3361 with SMTP id
+ p186-20020a0dffc3000000b002eb23273361mr6287962ywf.36.1649240019674; Wed, 06
+ Apr 2022 03:13:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 6 Apr 2022 15:43:27 +0530
+Message-ID: <CA+G9fYtyterUZ6KhC1+4MOo7y92Z8MTy6NtR1SeVrstWimYy7w@mail.gmail.com>
+Subject: Re: [PATCH 5.16 0000/1017] 5.16.19-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Anders Roxell <anders.roxell@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/cpu
-branch HEAD: 0205f8a738ab9e62d849e88e543cfa6ce4c13163  x86/speculation/srbds: Do not try to turn mitigation off when not supported
+On Tue, 5 Apr 2022 at 14:02, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.16.19 release.
+> There are 1017 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.16.19-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-elapsed time: 733m
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-configs tested: 141
-configs skipped: 5
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+NOTE:
+Anders enabled extra kconfigs to reproduce Shuah reported build regression
+and proposed two additional two commits for the fix.
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-m68k                        m5407c3_defconfig
-powerpc                     pq2fads_defconfig
-sparc64                          alldefconfig
-sh                           se7206_defconfig
-powerpc                       ppc64_defconfig
-sh                          r7785rp_defconfig
-m68k                            q40_defconfig
-arm                           tegra_defconfig
-arc                            hsdk_defconfig
-arm                        shmobile_defconfig
-m68k                        mvme16x_defconfig
-riscv                            allmodconfig
-mips                  maltasmvp_eva_defconfig
-mips                      loongson3_defconfig
-mips                           gcw0_defconfig
-m68k                       bvme6000_defconfig
-i386                             alldefconfig
-arm                        spear6xx_defconfig
-powerpc                     tqm8541_defconfig
-xtensa                    smp_lx200_defconfig
-arm                          exynos_defconfig
-openrisc                            defconfig
-sh                     sh7710voipgw_defconfig
-sh                        sh7757lcr_defconfig
-arm                          badge4_defconfig
-powerpc                      arches_defconfig
-sh                             shx3_defconfig
-powerpc                 mpc834x_mds_defconfig
-xtensa                generic_kc705_defconfig
-sh                            shmin_defconfig
-sh                            migor_defconfig
-sh                      rts7751r2d1_defconfig
-openrisc                  or1klitex_defconfig
-arc                          axs101_defconfig
-m68k                                defconfig
-sh                     magicpanelr2_defconfig
-powerpc                 mpc837x_mds_defconfig
-mips                         mpc30x_defconfig
-xtensa                  nommu_kc705_defconfig
-sparc                       sparc64_defconfig
-arm                          iop32x_defconfig
-riscv             nommu_k210_sdcard_defconfig
-sh                           se7750_defconfig
-sh                   sh7770_generic_defconfig
-m68k                        stmark2_defconfig
-arm                        mvebu_v7_defconfig
-sh                 kfr2r09-romimage_defconfig
-mips                           xway_defconfig
-xtensa                    xip_kc705_defconfig
-mips                          rb532_defconfig
-m68k                        m5307c3_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220406
-arm                  randconfig-c002-20220405
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-h8300                            allyesconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220406
-s390                 randconfig-r044-20220406
-riscv                randconfig-r042-20220406
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+## Build
+* kernel: 5.16.19-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.16.y
+* git commit: 5d3da1624789df6fa741a30aa6cd98c541f25528
+* git describe: v5.16.18-1018-g5d3da1624789
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.16.y/build/v5.16=
+.18-1018-g5d3da1624789
 
-clang tested configs:
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220405
-riscv                randconfig-c006-20220405
-mips                 randconfig-c004-20220405
-arm                  randconfig-c002-20220405
-arm                        multi_v5_defconfig
-arm                          pcm027_defconfig
-powerpc                      ppc44x_defconfig
-arm                       mainstone_defconfig
-arm                       spear13xx_defconfig
-powerpc                        fsp2_defconfig
-arm                         palmz72_defconfig
-arm                         shannon_defconfig
-powerpc                       ebony_defconfig
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-hexagon              randconfig-r045-20220405
-riscv                randconfig-r042-20220405
-hexagon              randconfig-r041-20220405
+## Test Regressions (compared to v5.16.18-959-gef4d007f65de)
+No test regressions found.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+## Metric Regressions (compared to v5.16.18-959-gef4d007f65de)
+No metric regressions found.
+
+## Test Fixes (compared to v5.16.18-959-gef4d007f65de)
+No test fixes found.
+
+## Metric Fixes (compared to v5.16.18-959-gef4d007f65de)
+No metric fixes found.
+
+## Test result summary
+total: 105413, pass: 88695, fail: 1159, skip: 14378, xfail: 1181
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 291 total, 291 passed, 0 failed
+* arm64: 41 total, 41 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 40 total, 40 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 54 passed, 6 failed
+* riscv: 27 total, 22 passed, 5 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 41 total, 41 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracin[
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
