@@ -2,156 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 941E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 199B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233534AbiDFNug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:50:36 -0400
+        id S233793AbiDFNum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:50:42 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233947AbiDFNt5 (ORCPT
+        with ESMTP id S233635AbiDFNu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:49:57 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC3096D8DD2
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:19:54 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 529C223A;
-        Wed,  6 Apr 2022 04:19:54 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.10.98])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 24FC43F718;
-        Wed,  6 Apr 2022 04:19:52 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 12:19:48 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [RFC PATCH -next V2 4/7] arm64: add copy_from_user to machine
- check safe
-Message-ID: <Yk13VJwih44VsCGk@FVFF77S0Q05N>
-References: <20220406091311.3354723-1-tongtiangen@huawei.com>
- <20220406091311.3354723-5-tongtiangen@huawei.com>
+        Wed, 6 Apr 2022 09:50:29 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E776DB4D9;
+        Wed,  6 Apr 2022 04:20:40 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 236BIgjD021840;
+        Wed, 6 Apr 2022 06:18:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649243922;
+        bh=qg6EV2IZc1k/9CqC+u3u9RiNmaa89xg9kphbIADuZ+g=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=zQJGOIk/wYiqKUt6EV0CQTtSGiDru84V6lTgBPUw569T7+Wm3Jkf1U60kDwMuQA0u
+         docahuL6oiEbnx/swKDlQb4dxe55WSRlZcqf89N7AeC17drJ1gGd2qrfRJf0gBxJeu
+         QVxuADL/hRKgwqLobCco1iB4P+UqhluPNejUTd88=
+Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 236BIgWg037134
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 Apr 2022 06:18:42 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
+ Apr 2022 06:18:41 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 6 Apr 2022 06:18:41 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 236BIcf8012911;
+        Wed, 6 Apr 2022 06:18:39 -0500
+Message-ID: <f8130c2a-f51d-21fd-d999-886ce9559e9c@ti.com>
+Date:   Wed, 6 Apr 2022 14:18:38 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406091311.3354723-5-tongtiangen@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+Content-Language: en-US
+To:     Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+CC:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Michael Walle <michael@walle.cc>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux@armlinux.org.uk>, <mlichvar@redhat.com>,
+        <netdev@vger.kernel.org>, <qiangqing.zhang@nxp.com>,
+        <vladimir.oltean@nxp.com>
+References: <20220104014215.GA20062@hoboy.vegasvil.org>
+ <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
+ <e5a6f6193b86388ed7a081939b8745be@walle.cc> <877d83rjjc.fsf@kurt>
+ <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc> <87wng3pyjl.fsf@kurt>
+ <defe77d9-1a41-7112-0ef6-a12aa2b725ab@ti.com> <YkxEIZfA0H8yvrzn@lunn.ch>
+ <20220405154821.GB6509@hoboy.vegasvil.org>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+In-Reply-To: <20220405154821.GB6509@hoboy.vegasvil.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 09:13:08AM +0000, Tong Tiangen wrote:
-> Add scenarios copy_from_user to machine check safe.
-> 
-> The data copied is user data and is machine check safe, so just kill
-> the user process and isolate the error page, not necessary panic.
-> 
-> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-> ---
->  arch/arm64/include/asm/asm-uaccess.h | 16 ++++++++++++++++
->  arch/arm64/lib/copy_from_user.S      | 11 ++++++-----
->  2 files changed, 22 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/arm64/include/asm/asm-uaccess.h b/arch/arm64/include/asm/asm-uaccess.h
-> index 0557af834e03..f31c8978e1af 100644
-> --- a/arch/arm64/include/asm/asm-uaccess.h
-> +++ b/arch/arm64/include/asm/asm-uaccess.h
-> @@ -92,4 +92,20 @@ alternative_else_nop_endif
->  
->  		_asm_extable	8888b,\l;
->  	.endm
-> +
-> +	.macro user_ldp_mc l, reg1, reg2, addr, post_inc
-> +8888:		ldtr	\reg1, [\addr];
-> +8889:		ldtr	\reg2, [\addr, #8];
-> +		add	\addr, \addr, \post_inc;
-> +
-> +		_asm_extable_mc	8888b, \l;
-> +		_asm_extable_mc	8889b, \l;
-> +	.endm
-> +
-> +	.macro user_ldst_mc l, inst, reg, addr, post_inc
-> +8888:		\inst		\reg, [\addr];
-> +		add		\addr, \addr, \post_inc;
-> +
-> +		_asm_extable_mc	8888b, \l;
-> +	.endm
->  #endif
-> diff --git a/arch/arm64/lib/copy_from_user.S b/arch/arm64/lib/copy_from_user.S
-> index 34e317907524..d9d7c5291871 100644
-> --- a/arch/arm64/lib/copy_from_user.S
-> +++ b/arch/arm64/lib/copy_from_user.S
-> @@ -21,7 +21,7 @@
->   */
->  
->  	.macro ldrb1 reg, ptr, val
-> -	user_ldst 9998f, ldtrb, \reg, \ptr, \val
-> +	user_ldst_mc 9998f, ldtrb, \reg, \ptr, \val
->  	.endm
->  
->  	.macro strb1 reg, ptr, val
-> @@ -29,7 +29,7 @@
->  	.endm
->  
->  	.macro ldrh1 reg, ptr, val
-> -	user_ldst 9997f, ldtrh, \reg, \ptr, \val
-> +	user_ldst_mc 9997f, ldtrh, \reg, \ptr, \val
->  	.endm
->  
->  	.macro strh1 reg, ptr, val
-> @@ -37,7 +37,7 @@
->  	.endm
->  
->  	.macro ldr1 reg, ptr, val
-> -	user_ldst 9997f, ldtr, \reg, \ptr, \val
-> +	user_ldst_mc 9997f, ldtr, \reg, \ptr, \val
->  	.endm
->  
->  	.macro str1 reg, ptr, val
-> @@ -45,7 +45,7 @@
->  	.endm
->  
->  	.macro ldp1 reg1, reg2, ptr, val
-> -	user_ldp 9997f, \reg1, \reg2, \ptr, \val
-> +	user_ldp_mc 9997f, \reg1, \reg2, \ptr, \val
->  	.endm
->  
->  	.macro stp1 reg1, reg2, ptr, val
-> @@ -62,7 +62,8 @@ SYM_FUNC_START(__arch_copy_from_user)
->  	ret
->  
->  	// Exception fixups
-> -9997:	cmp	dst, dstin
-> +9997:	cbz	x0, 9998f			// Check machine check exception
-> +	cmp	dst, dstin
->  	b.ne	9998f
 
-If you look at the copy template, you'd see that `dstin` *is* x0.
 
-Consier if we took a non-SEA fault. The the fixup handler will overwrite x0,
-it's likely `dst` != `dstin`, and we'll branch to the byte-by-byte copy. Or if
-we're doing something odd and mmap_min_addr is 0, we can do the wrong thing the
-other way around and *not* branch to the byte-by-byte copy when we should.
-
-So this is at best confusing, but likely broken too.
-
-Thanks,
-Mark.
-
->  	// Before being absolutely sure we couldn't copy anything, try harder
->  USER(9998f, ldtrb tmp1w, [srcin])
-> -- 
-> 2.18.0.huawei.25
+On 05/04/2022 18:48, Richard Cochran wrote:
+> On Tue, Apr 05, 2022 at 03:29:05PM +0200, Andrew Lunn wrote:
 > 
+>> Maybe. Device tree is supposed to describe the hardware, not how you
+>> configure the hardware. Which PTP you using is a configuration choice,
+>> so i expect some people will argue it should not be in DT.
 > 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> +1
+> 
+> Pure DT means no configuration choices.
+> 
+> (but you find many examples that break the rules!)
+> 
+
+My point was related to one of issues described by Michael Walle in this thread:
+- supporting TS by the PHY may require also additional board support;
+- phy_has_hwtstamp() defined statically by PHY drivers without taking into account board design;
+- Kconfig option Doesn't really work with generic distro support and not allowed per-port cfg.
+
+So adding smth like "hwtstamp-en" will clear identify that this particular PHY on this particular board
+supports time stamping.
+(or hwtstamp-full/hwtstamp-rx/hwtstamp-tx).
+
+Of course, it will not help with default or dynamic selection of time stamping layer :(,
+but it will be one problem less.
+
+-- 
+Best regards,
+Grygorii, Ukraine
