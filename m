@@ -2,70 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:58:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED7BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232060AbiDFMA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60334 "EHLO
+        id S232236AbiDFMB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231759AbiDFL6q (ORCPT
+        with ESMTP id S232256AbiDFMBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:58:46 -0400
-Received: from 189.cn (ptr.189.cn [183.61.185.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF53E4A7D16
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:30:41 -0700 (PDT)
-HMM_SOURCE_IP: 10.64.8.43:54472.1734920290
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-114.242.206.180 (unknown [10.64.8.43])
-        by 189.cn (HERMES) with SMTP id 6C6EB1002AB;
-        Wed,  6 Apr 2022 15:30:37 +0800 (CST)
-Received: from  ([114.242.206.180])
-        by gateway-151646-dep-b7fbf7d79-vjdjk with ESMTP id b3fc00b12b0444a3b3ce6c4630009db5 for maarten.lankhorst@linux.intel.com;
-        Wed, 06 Apr 2022 15:30:40 CST
-X-Transaction-ID: b3fc00b12b0444a3b3ce6c4630009db5
-X-Real-From: 15330273260@189.cn
-X-Receive-IP: 114.242.206.180
-X-MEDUSA-Status: 0
-Sender: 15330273260@189.cn
-From:   Sui Jingfeng <15330273260@189.cn>
-To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/drm_modeset_helper_vtables.h: fix a typo
-Date:   Wed,  6 Apr 2022 15:30:36 +0800
-Message-Id: <20220406073036.276288-1-15330273260@189.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 6 Apr 2022 08:01:32 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21BF54A2AD
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:43:14 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id y4-20020a6bd804000000b0064c68fa4f70so1118202iob.2
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 00:43:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=MkeNPOor3tp1MVRA9nQqdb5POaUs2uj19lBDdaMJKro=;
+        b=TRDwWKi0hY/71m2qoZoVgvGvTKbJH9VzS018bABUUrAeoSmCyGMde1ZOFDpHBEuGdE
+         CI/gzhgktGN4prc8a3urQLjmTcAMkO6+4n/FlQGtv7TjS7Xinbe1nJDmpZLk3Ood/eME
+         BMBAloKbaFHkKcGIE9OuFvCSyphJY1EqLg8DVNkhbXi6qa4Z1ovm7bemrhR+Y2Mv5sbn
+         ussWvcX01NWaAfXUkG/C3Hs6YuY2aK340dWqWQxzPY/s8XwH+JEvayTaPhIVL2fmdNXE
+         i8S5ooftpW20zknhmy3cfsFId5q4EpHkNdPBy9RItdRyhPmpyrlfLG8Brkp7cTyNygO/
+         V1+w==
+X-Gm-Message-State: AOAM533KErUHAJWEcCplFe7QdS62ouUzpsybzpAP6ZFb2EOgNSMm042O
+        Nh4mDuxuqkUW/cXcsh0tXH+zZO2SdcsAmu3yXpoMHMaEzrW8
+X-Google-Smtp-Source: ABdhPJzjqrtDt3g+hvSHz2sMORelLCH2R9488TmKUkOOM8Ak87C1BQXNZkmHHmVXaulpT9M5Z9n4pFFNkLJpKX79ZXK25/41R2Bq
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a92:c244:0:b0:2ca:1a82:2364 with SMTP id
+ k4-20020a92c244000000b002ca1a822364mr3574008ilo.69.1649230994038; Wed, 06 Apr
+ 2022 00:43:14 -0700 (PDT)
+Date:   Wed, 06 Apr 2022 00:43:14 -0700
+In-Reply-To: <20220406073118.5627-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008d656e05dbf783bd@google.com>
+Subject: Re: [syzbot] general protection fault in simple_recursive_removal (2)
+From:   syzbot <syzbot+17404da5afdf21e8d612@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- change upate to update
+Hello,
 
-Signed-off-by: Sui Jingfeng <15330273260@189.cn>
----
- include/drm/drm_modeset_helper_vtables.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-diff --git a/include/drm/drm_modeset_helper_vtables.h b/include/drm/drm_modeset_helper_vtables.h
-index fdfa9f37ce05..fafa70ac1337 100644
---- a/include/drm/drm_modeset_helper_vtables.h
-+++ b/include/drm/drm_modeset_helper_vtables.h
-@@ -1384,7 +1384,7 @@ struct drm_mode_config_helper_funcs {
- 	 * starting to commit the update to the hardware.
- 	 *
- 	 * After the atomic update is committed to the hardware this hook needs
--	 * to call drm_atomic_helper_commit_hw_done(). Then wait for the upate
-+	 * to call drm_atomic_helper_commit_hw_done(). Then wait for the update
- 	 * to be executed by the hardware, for example using
- 	 * drm_atomic_helper_wait_for_vblanks() or
- 	 * drm_atomic_helper_wait_for_flip_done(), and then clean up the old
--- 
-2.25.1
+Reported-and-tested-by: syzbot+17404da5afdf21e8d612@syzkaller.appspotmail.com
 
+Tested on:
+
+commit:         ce4c854e Merge tag 'for-5.18-rc1-tag' of git://git.ker..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+kernel config:  https://syzkaller.appspot.com/x/.config?x=595bcd2109a73f9c
+dashboard link: https://syzkaller.appspot.com/bug?extid=17404da5afdf21e8d612
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1353fd30f00000
+
+Note: testing is done by a robot and is best-effort only.
