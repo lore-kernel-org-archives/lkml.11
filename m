@@ -2,104 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A8DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA83EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbiDFLlQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
+        id S229640AbiDFLll (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:41:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231946AbiDFLjE (ORCPT
+        with ESMTP id S232455AbiDFLjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:39:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5161C578E8A;
-        Wed,  6 Apr 2022 01:27:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E128460B5C;
-        Wed,  6 Apr 2022 08:27:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1F05C385A3;
-        Wed,  6 Apr 2022 08:27:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649233623;
-        bh=Ae3dks8iD/kIl3ERAKIdLoK88RU26+MC3X73BL0O6cU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mb3gs6uNGRaSV7tb6SnwKS7kBbpKzRtKqJOUxTykGyH6SGoiEiKfNcwN6JZLh2c35
-         SK66nkpV3ogntuSFPovP4QUV+b5QVzBqTgA7wfaRW2Nx3mbCQ8rW4pQwphUNf9tfuY
-         pEeBXtrgIuzhschSVCFmJYlUzQrUv/HAB/MozndYN7tlTplgaY5r+kbtUFZmG5Z3Ud
-         c/IMeAF4Yi4mN1nbZ0eCXZaYz/uXReTpFjN9/zj5Ae0cnENVwwGjoIfEXn7EN2ShcZ
-         3FvCqVL0zuqlU02QlJppmSavWowhuF1VN9UNhetOu4T1gV/3489k/Thiu8JILffg/q
-         6bVY0hjYCb+LQ==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Raed Salem <raeds@nvidia.com>
-Subject: [PATCH mlx5-next 17/17] net/mlx5: Remove not-implemented IPsec capabilities
-Date:   Wed,  6 Apr 2022 11:25:52 +0300
-Message-Id: <1044bb7b779107ff38e48e3f6553421104f3f819.1649232994.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649232994.git.leonro@nvidia.com>
-References: <cover.1649232994.git.leonro@nvidia.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 6 Apr 2022 07:39:48 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFECC5601DE;
+        Wed,  6 Apr 2022 01:27:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649233636; x=1680769636;
+  h=from:to:cc:subject:date:message-id;
+  bh=mxkKTAJbE88/K0WJ0aBJfYdx2O1wtFiDPVBLHhOOmjw=;
+  b=WF+hPYF+k2lxiae9ecAKwzqzVOS3LyZE+q/FmDv9+tcV50+05XPqzgI0
+   Jl/lX5rQ/luj+Eqx6FBOzXvKQ8Y2sYoEPLqx6O9vJowbv6Yq/FXtRFaXD
+   fBAoR70wVIUyMUiMgL9Pnh5byDZ9+jfyZUs5dYg7NS422fXrEy5oENaOV
+   k=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 06 Apr 2022 01:27:15 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 06 Apr 2022 01:27:13 -0700
+X-QCInternal: smtphost
+Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 06 Apr 2022 13:57:00 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
+        id 54D213B54; Wed,  6 Apr 2022 13:56:59 +0530 (+0530)
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org,
+        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [V2] drivers/tty/serial/qcom-geni-serial: Do stop_rx in suspend path for console if console_suspend is disabled
+Date:   Wed,  6 Apr 2022 13:56:52 +0530
+Message-Id: <1649233612-30844-1-git-send-email-quic_vnivarth@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+For the case of console_suspend disabled, if back to back suspend/resume
+test is executed, at the end of test, sometimes console would appear to
+be frozen not responding to input. This would happen because, for
+console_suspend disabled, suspend/resume routines only turn resources
+off/on but don't do a port close/open.
+As a result, during resume, some rx transactions come in before system is
+ready, malfunction of rx happens in turn resulting in console appearing
+to be stuck.
 
-Clean a capabilities enum to remove not-implemented bits.
+Do a stop_rx in suspend sequence to prevent this. start_rx is already
+present in resume sequence as part of call to set_termios which does a
+stop_rx/start_rx.
 
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec_offload.c       |  4 +---
- include/linux/mlx5/accel.h                            | 11 ++++-------
- 2 files changed, 5 insertions(+), 10 deletions(-)
+ drivers/tty/serial/qcom_geni_serial.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-index f0f44bd95cc9..37c9880719cf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-@@ -51,10 +51,8 @@ u32 mlx5_ipsec_device_caps(struct mlx5_core_dev *mdev)
- 	    MLX5_CAP_IPSEC(mdev, ipsec_crypto_esp_aes_gcm_128_decrypt))
- 		caps |= MLX5_ACCEL_IPSEC_CAP_ESP;
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 1543a60..6f767c7 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1481,6 +1481,10 @@ static int __maybe_unused qcom_geni_serial_sys_suspend(struct device *dev)
+ 	struct uart_port *uport = &port->uport;
+ 	struct qcom_geni_private_data *private_data = uport->private_data;
  
--	if (MLX5_CAP_IPSEC(mdev, ipsec_esn)) {
-+	if (MLX5_CAP_IPSEC(mdev, ipsec_esn))
- 		caps |= MLX5_ACCEL_IPSEC_CAP_ESN;
--		caps |= MLX5_ACCEL_IPSEC_CAP_TX_IV_IS_ESN;
--	}
- 
- 	/* We can accommodate up to 2^24 different IPsec objects
- 	 * because we use up to 24 bit in flow table metadata
-diff --git a/include/linux/mlx5/accel.h b/include/linux/mlx5/accel.h
-index 73e4d50a9f02..0f2596297f6a 100644
---- a/include/linux/mlx5/accel.h
-+++ b/include/linux/mlx5/accel.h
-@@ -113,13 +113,10 @@ struct mlx5_accel_esp_xfrm {
- 
- enum mlx5_accel_ipsec_cap {
- 	MLX5_ACCEL_IPSEC_CAP_DEVICE		= 1 << 0,
--	MLX5_ACCEL_IPSEC_CAP_REQUIRED_METADATA	= 1 << 1,
--	MLX5_ACCEL_IPSEC_CAP_ESP		= 1 << 2,
--	MLX5_ACCEL_IPSEC_CAP_IPV6		= 1 << 3,
--	MLX5_ACCEL_IPSEC_CAP_LSO		= 1 << 4,
--	MLX5_ACCEL_IPSEC_CAP_RX_NO_TRAILER	= 1 << 5,
--	MLX5_ACCEL_IPSEC_CAP_ESN		= 1 << 6,
--	MLX5_ACCEL_IPSEC_CAP_TX_IV_IS_ESN	= 1 << 7,
-+	MLX5_ACCEL_IPSEC_CAP_ESP		= 1 << 1,
-+	MLX5_ACCEL_IPSEC_CAP_IPV6		= 1 << 2,
-+	MLX5_ACCEL_IPSEC_CAP_LSO		= 1 << 3,
-+	MLX5_ACCEL_IPSEC_CAP_ESN		= 1 << 4,
- };
- 
- #ifdef CONFIG_MLX5_EN_IPSEC
++	/* do a stop_rx here, start_rx is handled in uart_resume_port by call to setermios */
++	if (!console_suspend_enabled && uart_console(uport))
++		uport->ops->stop_rx(uport);
++
+ 	/*
+ 	 * This is done so we can hit the lowest possible state in suspend
+ 	 * even with no_console_suspend
 -- 
-2.35.1
+Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
 
