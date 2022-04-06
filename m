@@ -2,152 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB787C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230473AbiDFMrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
+        id S229999AbiDFMsW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:48:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230116AbiDFMqy (ORCPT
+        with ESMTP id S232191AbiDFMrj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:46:54 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D375933E5;
-        Wed,  6 Apr 2022 01:50:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649235053; x=1680771053;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=4HsEIEA6lqkchGpdlbP1+HwGf7g8BXb8TpkxJaEOXhQ=;
-  b=cP5C/OuWJNLrON7iVg9mpl7M0iI1V3uf8mvOV7vozQ9Z+6QkAOTNflH3
-   YyVaHulMjEQqGxNWQ/NaOUpgwSMAmLTT3bm3BPAbOgiSfzY0rmsj3N1H/
-   xbtloU+N0VAhFuIvrCiDnkKIm0rENV3CDd994L28N8j98hOq0sko6RsrQ
-   egCo/ujOe667gMwBZfkpPNslYSvU61PmfJNBqqloR6KBFBh4L0xNfEAJC
-   E408L4NX6u13iFlFsLytyj1s9+pkjHywYHJTknAL3IrXbN0TmGiEFxSaO
-   AuBMFtRvy0fuV5l6EYT4Mq4oo4icfLgx6jLQ680SZH3yST0blpsy2xJpR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="259823733"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="259823733"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:50:53 -0700
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="570418389"
-Received: from hott-mobl.ger.corp.intel.com ([10.249.44.209])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 01:50:50 -0700
-Date:   Wed, 6 Apr 2022 11:50:47 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH 2/2] tty: Implement lookahead to process XON/XOFF
- timely
-In-Reply-To: <fce9c28e-a334-3c70-3a6a-8812f11d8fc7@kernel.org>
-Message-ID: <cf8d1e81-1811-d66f-21fc-a733bfad198@linux.intel.com>
-References: <20220405102437.4842-1-ilpo.jarvinen@linux.intel.com> <20220405102437.4842-3-ilpo.jarvinen@linux.intel.com> <YkxqGDsURPpkDM5W@smile.fi.intel.com> <fce9c28e-a334-3c70-3a6a-8812f11d8fc7@kernel.org>
+        Wed, 6 Apr 2022 08:47:39 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B91560F6
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 02:03:26 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id E32F01F38A;
+        Wed,  6 Apr 2022 09:03:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649235804; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SrjnSu7MjHBeqhbgwuRAlgVZcIuW8Y0moN9j8NoG/2Y=;
+        b=hK3uk7ZGEbYQ9rMasmKvb/ieiNW3V8pdEqG7wto/Ka98MV5hqlcBOjjzdc4iDGvzs7y9xg
+        85Q40e4pWsJt06oN+1jHiFWMw2N9AjcCZWISGJWYBC84oXU5vXpDi5XizENheFcEuWsEQu
+        dyqtnbYesQBoXzcTQPvIA7madlvgO4I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649235804;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SrjnSu7MjHBeqhbgwuRAlgVZcIuW8Y0moN9j8NoG/2Y=;
+        b=fJQD4Pq0hC66czHrzhbWHn2F86x6yzKpfmgdTskQvhKFEiSTcZCQumdQ1JHB4a9Q/UZX6u
+        RBUWyQ0efG0HWVCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AEE28139F5;
+        Wed,  6 Apr 2022 09:03:24 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id xx4BKlxXTWKPeQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 06 Apr 2022 09:03:24 +0000
+Message-ID: <b3d4255d-2a63-b2cb-bd1b-dc7812d95fe9@suse.cz>
+Date:   Wed, 6 Apr 2022 11:03:24 +0200
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-2114925272-1649235052=:1612"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 3/6] mm/slub: use stackdepot to save stack trace in
+ objects
+Content-Language: en-US
+To:     David Rientjes <rientjes@google.com>
+Cc:     Christoph Lameter <cl@linux.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Oliver Glitta <glittao@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Imran Khan <imran.f.khan@oracle.com>
+References: <20220404164112.18372-1-vbabka@suse.cz>
+ <20220404164112.18372-4-vbabka@suse.cz>
+ <5f7d33ec-1e73-cdfc-54e5-e93d346ac78@google.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <5f7d33ec-1e73-cdfc-54e5-e93d346ac78@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-2114925272-1649235052=:1612
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Wed, 6 Apr 2022, Jiri Slaby wrote:
-
-> On 05. 04. 22, 18:11, Andy Shevchenko wrote:
-> > On Tue, Apr 05, 2022 at 01:24:37PM +0300, Ilpo Järvinen wrote:
-> > > When tty is not read from, XON/XOFF may get stuck into an
-> > > intermediate buffer. As those characters are there to do software
-> > > flow-control, it is not very useful. In the case where neither end
-> > > reads from ttys, the receiving ends might not be able receive the
-> > > XOFF characters and just keep sending more data to the opposite
-> > > direction. This problem is almost guaranteed to occur with DMA
-> > > which sends data in large chunks.
-> > > 
-> > > If TTY is slow to process characters, that is, eats less than given
-> > > amount in receive_buf, invoke lookahead for the rest of the chars
-> > > to process potential XON/XOFF characters.
-> > > 
-> > > The guards necessary for ensuring the XON/XOFF character are
-> > > processed only once were added by the previous patch. All this patch
-> > > needs to do on that front is to pass the lookahead count (that can
-> > > now be non-zero) into port->client_ops->receive_buf().
-> > 
-> > ...
-> > 
-> > > +static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned
-> > > char c,
-> > > +					 bool lookahead_done)
-> > > +{
-> > > +	if (!I_IXON(tty))
-> > > +		return false;
-> > > +
-> > > +	if (c == START_CHAR(tty)) {
-> > > +		if (!lookahead_done) {
-> > > +			start_tty(tty);
-> > > +			process_echoes(tty);
-> > > +		}
-> > > +		return true;
-> > > +	}
-> > > +	if (c == STOP_CHAR(tty)) {
-> > > +		if (!lookahead_done)
-> > > +			stop_tty(tty);
-> > > +		return true;
-> > > +	}
-> > > +	return false;
-> > > +}
-> > 
-> > Looking into this I would first make a preparatory patch that splits out
-> > current code into something like
-> > 
-> > static bool __n_tty_receive_char_special_no_lookahead(struct tty_struct
-> > *tty, unsigned char c)
-> > {
-> > 	...current code...
-> > }
-> > 
-> > Then in the patch 1 you add
-> > 
-> > static bool __n_tty_receive_char_special_lookahead(struct tty_struct *tty,
-> > unsigned char c)
-> > {
-> > 	...
-> > }
-> > 
-> > static bool __n_tty_receive_char_special(struct tty_struct *tty, unsigned
-> > char c,
-> > 					 bool lookahead_done)
+On 4/5/22 23:40, David Rientjes wrote:
+>> -static void set_track(struct kmem_cache *s, void *object,
+>> +static void noinline set_track(struct kmem_cache *s, void *object,
+>>  			enum track_item alloc, unsigned long addr)
+>>  {
+>>  	struct track *p = get_track(s, object, alloc);
+>>  
+>> -#ifdef CONFIG_STACKTRACE
+>> +#ifdef CONFIG_STACKDEPOT
+>> +	unsigned long entries[TRACK_ADDRS_COUNT];
+>>  	unsigned int nr_entries;
+>>  
+>> -	metadata_access_enable();
+>> -	nr_entries = stack_trace_save(kasan_reset_tag(p->addrs),
+>> -				      TRACK_ADDRS_COUNT, 3);
+>> -	metadata_access_disable();
+>> -
+>> -	if (nr_entries < TRACK_ADDRS_COUNT)
+>> -		p->addrs[nr_entries] = 0;
+>> +	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 3);
+>> +	p->handle = stack_depot_save(entries, nr_entries, GFP_NOWAIT);
 > 
-> This should be dubbed better. Maybe n_tty_receive_char_flow_control()?
+> I think this should also have __GFP_NOWARN set since this allocation could 
+> easily fail and it would unnecessarily spam the kernel log unless we 
+> actually care about the stack trace being printed later (and the patch 
+> already indicates the allocation failed in print_track() when it matters).
+
+Good point. But turns out __stack_depot_save() adds it for us already.
+
+> Otherwise:
 > 
-> And I would place the if (I_IXON(tty)) to the caller. I am a bit lost in this
-> pseudo code, so maybe this doesn't make sense in your proposal. I have
-> something like in my mind:
-> 
-> if (I_IXON(tty))
->   return n_tty_receive_char_flow_control();
->
-> Historically, these n_tty_receive* function names were a big mess. Don't
-> produce more of that by simply prepending only "__".
+> Acked-by: David Rientjes <rientjes@google.com>
 
-Ok, I'll see what I can do.
-
-Thanks to both of you for the comments.
-
-
--- 
- i.
-
---8323329-2114925272-1649235052=:1612--
+Thanks!
