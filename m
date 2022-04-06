@@ -2,109 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08166C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:27:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76603C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233325AbiDFN3H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55514 "EHLO
+        id S233434AbiDFN3L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234065AbiDFN2X (ORCPT
+        with ESMTP id S233665AbiDFN2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:28:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D7C51BD99D
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:26:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649240771;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0ZcKsEZ8qwBQThqWn9sE6S/H8YRw8IewVlhEa4ihZuo=;
-        b=ckHTOObpm3NtPtjw/vGjnhnar2pzf/NnzNlLFhPHYcWIcMDEi6a8PclrPNgH76U4BfghDR
-        psSx4A7DlRtVyCDftr/Vd8RZ/xiLCsnoCXjLPRZEWshqdnk3ngDLgKtPhRQ7ECHXXGzGNF
-        fpnWEs9+SuHRaqd0bRVpHqrOZeZjO1w=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-260-AIsMgtwZNIGqyAF5y3K81A-1; Wed, 06 Apr 2022 06:04:22 -0400
-X-MC-Unique: AIsMgtwZNIGqyAF5y3K81A-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B59E780346E;
-        Wed,  6 Apr 2022 10:04:21 +0000 (UTC)
-Received: from tucnak.zalov.cz (unknown [10.39.195.172])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7460040CF905;
-        Wed,  6 Apr 2022 10:04:21 +0000 (UTC)
-Received: from tucnak.zalov.cz (localhost [127.0.0.1])
-        by tucnak.zalov.cz (8.16.1/8.16.1) with ESMTPS id 236A4IHC1580605
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 6 Apr 2022 12:04:19 +0200
-Received: (from jakub@localhost)
-        by tucnak.zalov.cz (8.16.1/8.16.1/Submit) id 236A4HPQ1580604;
-        Wed, 6 Apr 2022 12:04:17 +0200
-Date:   Wed, 6 Apr 2022 12:04:17 +0200
-From:   Jakub Jelinek <jakub@redhat.com>
-To:     Borislav Petkov <bp@alien8.de>, Richard Biener <rguenther@suse.de>,
-        linux-toolchains@vger.kernel.org, Michael Matz <matz@suse.de>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: older gccs and case labels producing integer constants
-Message-ID: <Yk1lodskz34cmqJ1@tucnak>
-Reply-To: Jakub Jelinek <jakub@redhat.com>
-References: <YkwQ6+tIH8GQpuct@zn.tnic>
- <7o5nn52-nqn1-oo13-s6o9-59r85r91o768@fhfr.qr>
- <onrq8p1-582o-6rs9-r682-rs9sqoq7sq6p@fhfr.qr>
- <YkwbygWj/C3XooMV@zn.tnic>
- <Yk1jC4oLnIklOTHI@tucnak>
+        Wed, 6 Apr 2022 09:28:01 -0400
+Received: from smtp1-g21.free.fr (smtp1-g21.free.fr [IPv6:2a01:e0c:1:1599::10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE55A1BE116;
+        Wed,  6 Apr 2022 03:25:47 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2a01:e35:39f2:1220:b493:280e:6d0b:57ec])
+        by smtp1-g21.free.fr (Postfix) with ESMTPS id 6577AB0052C;
+        Wed,  6 Apr 2022 12:22:18 +0200 (CEST)
+From:   Yann Droneaud <ydroneaud@opteya.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yann Droneaud <ydroneaud@opteya.com>
+Subject: [PATCH] af_unix: Escape abstract unix socket address
+Date:   Wed,  6 Apr 2022 12:22:13 +0200
+Message-Id: <20220406102213.2020784-1-ydroneaud@opteya.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yk1jC4oLnIklOTHI@tucnak>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 11:53:17AM +0200, Jakub Jelinek wrote:
-> On Tue, Apr 05, 2022 at 12:36:58PM +0200, Borislav Petkov wrote:
-> > On Tue, Apr 05, 2022 at 12:06:45PM +0200, Richard Biener wrote:
-> > > Wird auch mit gcc 11 rejected.  Kanns sein dass mit gcc 7 andere
-> > > compiler flags genommen werden?
-> > 
-> > Found it:
-> > 
-> > $ gcc -fsanitize=shift -c switch.c
-> > switch.c: In function ‘foo’:
-> > switch.c:10:7: error: case label does not reduce to an integer constant
-> >        case (((0xfc08) << 16) | (0x0101)):;
-> > 
-> > $ gcc --version
-> > gcc (SUSE Linux) 7.4.1 20190905 [gcc-7-branch revision 275407]
-> > Copyright (C) 2017 Free Software Foundation, Inc.
-> > 
-> > Something not fully backported?
-> 
-> That is rejected with -fsanitize=shift even on current trunk (in C, C++ is
-> fine).
-> C++ constexpr code has cases for ubsan builtins and internal functions,
-> but C just doesn't handle those apparently.
+Abstract unix socket address are bytes sequences up to
+108 bytes (UNIX_PATH_MAX == sizeof(struct sockaddr_un) -
+offsetof(struct sockaddr_un, sun_path)).
 
-But I think the error is actually correct.
-In C99 and later, for signed left shift the rule for x << y is that
-there is UB if (similarly to all C family) if y is negative or greater or
-equal to precision of promoted x, but for C99 also when
-((unsigned_typeof_x) x >> (precision_of_x - 1 - y)) != 0.
-That is the case above, 0xfc08 is signed int and 0xfc08 << 16 is
-0xfc080000 where (0xfc08 >> 15) is 1 and so it is UB.
-In C99 and later you need:
-	case (int)(((0xfc08U) << 16) | (0x0101)):;
-or so.
-Note, C++ has different rules (and C++20 and later only has the
-y non-negative and less than precision requirement and nothing else).
+As with any random string of bytes, printing them in
+/proc/net/unix should be done with caution to prevent
+misbehavior.
 
-	Jakub
+It would have been great to use seq_escape_mem() to escape
+the control characters in a reversible way.
+
+Unfortunately userspace might expect that NUL bytes are
+replaced with '@' characters as it's done currently.
+
+So this patch implements the following scheme: any control
+characters, including NUL, in the abstract unix socket
+addresses is replaced by '@' characters.
+
+Sadly, with such non reversible escape scheme, abstract
+addresses such as "\0\0", "\0\a", "\0\b", "\0\t", etc.
+will have the same representation: "@@".
+
+But will prevent "cat /proc/net/unix" from messing with
+terminal, and will prevent "\n" in abstract address from
+messing with parsing the list of Unix sockets.
+
+Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
+---
+ net/unix/af_unix.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index e71a312faa1e..8021efd92301 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -3340,7 +3340,8 @@ static int unix_seq_show(struct seq_file *seq, void *v)
+ 				i++;
+ 			}
+ 			for ( ; i < len; i++)
+-				seq_putc(seq, u->addr->name->sun_path[i] ?:
++				seq_putc(seq, !iscntrl(u->addr->name->sun_path[i]) ?
++					 u->addr->name->sun_path[i] :
+ 					 '@');
+ 		}
+ 		unix_state_unlock(s);
+-- 
+2.32.0
 
