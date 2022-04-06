@@ -2,91 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 284ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235955AbiDFPTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:19:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36798 "EHLO
+        id S235676AbiDFPTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236333AbiDFPR7 (ORCPT
+        with ESMTP id S236325AbiDFPR7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 11:17:59 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC67A5252F1;
-        Wed,  6 Apr 2022 05:18:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=HY9AyFTTSvyl0mlHOq1Vq0LKi+bYjw8bBCj2u/ZVLyk=; b=aDF2DGovnriLp72Za6zAVUGbsL
-        fhWT/9D+P1OKvm4m5O31hA6qWT6uPkpoRITU9hBGXBldGdHMmstMualOautB7X5SsmTO6CUuCExpc
-        30dA0WI/95RtqLgmheb/LNqrUaSikCWIlvAWMXi6uQUqIkNt/+PbqimmDrrzeV8ZJn6E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nc4bN-00ERSk-HN; Wed, 06 Apr 2022 14:17:33 +0200
-Date:   Wed, 6 Apr 2022 14:17:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Potin Lai <potin.lai@quantatw.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Patrick Williams <patrick@stwcx.xyz>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] net: mdio: aspeed: Introduce read write function
- for c22 and c45
-Message-ID: <Yk2E3X7MaJhWi32O@lunn.ch>
-References: <20220406012002.15128-1-potin.lai@quantatw.com>
- <20220406012002.15128-3-potin.lai@quantatw.com>
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E9304F7AC0;
+        Wed,  6 Apr 2022 05:18:10 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2369iVIE031133;
+        Wed, 6 Apr 2022 04:44:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649238271;
+        bh=V24Pg9flw1bNbkBXpcqZ1XDD4yowcEtZAzI4rpfzD24=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=NFBaEH2tni6szUgCBluHVeBrweVIKSj3mOzplXXjcpS4hWqn45ZmlrocHs91zEd0q
+         ThbLxFoVveL6adi1yyCvTh6WOZdl0oWqTzkR2+sM0hYshEgHrwsi+JTm19j+pkoHfJ
+         g4vUjTWHFehedQyTkOf0nPLF6yL4X0rNXqANXzhc=
+Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2369iVgs069842
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 Apr 2022 04:44:31 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
+ Apr 2022 04:44:31 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 6 Apr 2022 04:44:31 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2369iTbO021546;
+        Wed, 6 Apr 2022 04:44:30 -0500
+From:   Puranjay Mohan <p-mohan@ti.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
+        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <vigneshr@ti.com>, <kishon@ti.com>
+Subject: [RFC 11/13] soc: ti: pruss: Add helper functions to get/set PRUSS_CFG_GPMUX
+Date:   Wed, 6 Apr 2022 15:13:56 +0530
+Message-ID: <20220406094358.7895-12-p-mohan@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220406094358.7895-1-p-mohan@ti.com>
+References: <20220406094358.7895-1-p-mohan@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406012002.15128-3-potin.lai@quantatw.com>
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
-> +{
-> +	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d\n", __func__, addr,
-> +		regnum);
-> +
-> +	if (regnum & MII_ADDR_C45)
-> +		return aspeed_mdio_read_c45(bus, addr, regnum);
-> +
-> +	return aspeed_mdio_read_c22(bus, addr, regnum);
-> +}
-> +
->  static int aspeed_mdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
->  {
->  	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d, val: 0x%x\n",
->  		__func__, addr, regnum, val);
->  
-> -	/* Just clause 22 for the moment */
->  	if (regnum & MII_ADDR_C45)
-> -		return -EOPNOTSUPP;
-> +		return aspeed_mdio_write_c45(bus, addr, regnum, val);
->  
-> -	return aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C22, MDIO_C22_OP_WRITE,
-> -			      addr, regnum, val);
-> +	return aspeed_mdio_write_c22(bus, addr, regnum, val);
->  }
+From: Tero Kristo <t-kristo@ti.com>
 
-Hi Portin
+Add two new helper functions pruss_cfg_get_gpmux() & pruss_cfg_set_gpmux()
+to get and set the GP MUX mode for programming the PRUSS internal wrapper
+mux functionality as needed by usecases.
 
-Nice structure. This will helper with future cleanup where C22 and C45
-will be completely separated, and the c45 variants will be directly
-passed dev_ad and reg, rather than have to extract them from regnum.
+Co-developed-by: Suman Anna <s-anna@ti.com>
+Signed-off-by: Suman Anna <s-anna@ti.com>
+Signed-off-by: Tero Kristo <t-kristo@ti.com>
+Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+---
+ include/linux/pruss_driver.h | 44 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-A few process issues.
+diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
+index e2d5477225c6..3312281ef4c1 100644
+--- a/include/linux/pruss_driver.h
++++ b/include/linux/pruss_driver.h
+@@ -35,4 +35,48 @@ struct pruss {
+ 	struct clk *iep_clk_mux;
+ };
+ 
++/**
++ * pruss_cfg_get_gpmux() - get the current GPMUX value for a PRU device
++ * @pruss: pruss instance
++ * @pru_id: PRU identifier (0-1)
++ * @mux: pointer to store the current mux value into
++ *
++ * Return: 0 on success, or an error code otherwise
++ */
++static inline int pruss_cfg_get_gpmux(struct pruss *pruss,
++				      enum pruss_pru_id pru_id, u8 *mux)
++{
++	int ret = 0;
++	u32 val;
++
++	if (pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
++		return -EINVAL;
++
++	ret = pruss_cfg_read(pruss, PRUSS_CFG_GPCFG(pru_id), &val);
++	if (!ret)
++		*mux = (u8)((val & PRUSS_GPCFG_PRU_MUX_SEL_MASK) >>
++			    PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
++	return ret;
++}
++
++/**
++ * pruss_cfg_set_gpmux() - set the GPMUX value for a PRU device
++ * @pruss: pruss instance
++ * @pru_id: PRU identifier (0-1)
++ * @mux: new mux value for PRU
++ *
++ * Return: 0 on success, or an error code otherwise
++ */
++static inline int pruss_cfg_set_gpmux(struct pruss *pruss,
++				      enum pruss_pru_id pru_id, u8 mux)
++{
++	if (mux >= PRUSS_GP_MUX_SEL_MAX ||
++	    pru_id < 0 || pru_id >= PRUSS_NUM_PRUS)
++		return -EINVAL;
++
++	return pruss_cfg_update(pruss, PRUSS_CFG_GPCFG(pru_id),
++				PRUSS_GPCFG_PRU_MUX_SEL_MASK,
++				(u32)mux << PRUSS_GPCFG_PRU_MUX_SEL_SHIFT);
++}
++
+ #endif	/* _PRUSS_DRIVER_H_ */
+-- 
+2.17.1
 
-Please read the netdev FAQ. The subject list should indicate the tree,
-and there should be an patch 0/3 which explains the big picture of
-what the patchset does. 0/3 will then be used for the merge commit.
-
-     Andrew
