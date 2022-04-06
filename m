@@ -2,124 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AF2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:46:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66EA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232808AbiDFTsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54910 "EHLO
+        id S232606AbiDFTtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:49:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232521AbiDFTsg (ORCPT
+        with ESMTP id S232358AbiDFTso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:48:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC8B2BE95A;
-        Wed,  6 Apr 2022 10:27:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28E8E619B0;
-        Wed,  6 Apr 2022 17:27:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F3A0C385A3;
-        Wed,  6 Apr 2022 17:27:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649266070;
-        bh=KkbMhLobN1kUPbYF3z6kvOiUl+FffGQ29J+yE6RzbfE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KpOqj/1sc8kVfifET6SQ+laj1UNM5oR9gU7nJO8IZecB3y9chc9k7RSuHPvHf4Oa8
-         weuLl/40Cer9aqaBip8lU19AfVifuiUbLIMJTke2I86xckNhCqaKY38HoZegEdVcHN
-         4SI09GeOgWj8ljB5tS1phi+NEuldGIJu+biGg01FJns73NDJ05xtJdS3qz5Sti7SFU
-         r6w1dY/TRs/UXk+1U34lBW9yhdlmy+eIiNf1ZNdbFo+fKZsrZHpA0mLLqagAHo49bQ
-         DnZKdqHQOekVYmq0dDmOnoso3I/iiGS7P4YHgDau1fIPAzNenLwFCLgB4W1i5quJgY
-         M+QsqS3bu429g==
-Date:   Wed, 6 Apr 2022 18:27:44 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Satya Priya <quic_c_skakit@quicinc.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
-Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008
- PMIC
-Message-ID: <Yk3NkNK3e+fgj4eG@sirena.org.uk>
-References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
- <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
- <CAE-0n53G-atsuwqcgNvi3nvWyiO3P=pSj5zDUMYj0ELVYJE54Q@mail.gmail.com>
- <Yk1B4f51WMGIV9WB@sirena.org.uk>
- <CAE-0n53Cv_bR92M64dhdnDge_=_jeOs4VZzDhUkksN90Y7rgog@mail.gmail.com>
- <Yk21pdu16lyR8jXm@sirena.org.uk>
- <CAE-0n50C8khP2x4sgNP5xnfLVMRQj2=LChyWWx1BWL+Xgecgyw@mail.gmail.com>
- <Yk3Bfnxe/meBYokp@sirena.org.uk>
- <CAE-0n53O23=N0zkZpg87Q3EyKquLe3WLNJT8qnZz4WEor6QK7A@mail.gmail.com>
+        Wed, 6 Apr 2022 15:48:44 -0400
+Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B354330DF6;
+        Wed,  6 Apr 2022 11:34:18 -0700 (PDT)
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-e2442907a1so3500733fac.8;
+        Wed, 06 Apr 2022 11:34:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MwdIaQzbBkp+/5EU9BR9ve1JKS4NpPyKI/2bRfhgI3A=;
+        b=BA8m8LakTUEyA/n2t/pwSuNOe50fI9ZHlTFc/+MQG6tPWAUtsodlSatWMIZ0/k/466
+         zMkrXiNHyyOvhddBDyJoh7P4HdNe95zqZum/4mVdJHJQIXUSKDCf/hQgGSnC6b1fWxFk
+         omCzl97nvWVgUTO3fLS6zyO4gTZxncwFKXgWWTuEAE+jbWlL3f2qOfA5t1jK04Hic8n2
+         jrHJkvN002zIjK0OR4PykCuUaqlz8aJdfyUkkNCtXM4xAzTEBI73jev1S9+Nf8jG2IpN
+         NuXFcdJKWPXPRNBqYNHQIa8pKdNpNi3GVSc9i9Ij0sORmsdpwWZHMhNzYJjozqGQQ1rV
+         +QTQ==
+X-Gm-Message-State: AOAM533IT4TRHPqkIrKN6dNm00B/Z+Lgc0FuFqC4W9gWk5Z5dvEBgVyq
+        NBk0JXXIA03wrHKd2sGyqA==
+X-Google-Smtp-Source: ABdhPJz091hVtxjPl1dTv65qEKLx42amDqNg+LIkiEhUs1vZjalw5jmdtXldZ84sUL4miSebhuT5bQ==
+X-Received: by 2002:a05:6870:f144:b0:da:b3f:2b88 with SMTP id l4-20020a056870f14400b000da0b3f2b88mr4542392oac.295.1649270057566;
+        Wed, 06 Apr 2022 11:34:17 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id w1-20020a056808090100b002da82caced5sm6643535oih.3.2022.04.06.11.34.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 11:34:17 -0700 (PDT)
+Received: (nullmailer pid 2552073 invoked by uid 1000);
+        Wed, 06 Apr 2022 18:34:16 -0000
+Date:   Wed, 6 Apr 2022 13:34:16 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     nicolas.ferre@microchip.com, linux-arm-kernel@lists.infradead.org,
+        p.zabel@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, alexandre.belloni@bootlin.com,
+        devicetree@vger.kernel.org, sre@kernel.org, robh+dt@kernel.org
+Subject: Re: [PATCH 3/8] dt-bindings: reset: atmel,at91sam9260-reset: add
+ sama7g5 bindings
+Message-ID: <Yk3dKExnPUglpiwb@robh.at.kernel.org>
+References: <20220405112724.2760905-1-claudiu.beznea@microchip.com>
+ <20220405112724.2760905-4-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="004SQJl7509giZyq"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAE-0n53O23=N0zkZpg87Q3EyKquLe3WLNJT8qnZz4WEor6QK7A@mail.gmail.com>
-X-Cookie: Look ere ye leap.
+In-Reply-To: <20220405112724.2760905-4-claudiu.beznea@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 05 Apr 2022 14:27:19 +0300, Claudiu Beznea wrote:
+> Add documentation for SAMA7G5 reset controller. Compared with previous
+> versions of reset controllers this one contains support for resetting
+> in SoC devices (e.g. USB PHYs).
+> 
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> ---
+>  .../reset/atmel,at91sam9260-reset.yaml        | 23 +++++++++++++++++--
+>  1 file changed, 21 insertions(+), 2 deletions(-)
+> 
 
---004SQJl7509giZyq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Apr 06, 2022 at 10:21:01AM -0700, Stephen Boyd wrote:
-> Quoting Mark Brown (2022-04-06 09:36:14)
-> > On Wed, Apr 06, 2022 at 08:51:48AM -0700, Stephen Boyd wrote:
-
-> > > My guess is that this is one IC that responds to multiple i2c address=
-es.
-> > > The "main" qcom,pm8008 address is 0x8 and that supports things like
-> > > interrupts. Then there's an address for regulators at 0x9 which contr=
-ols
-> > > the handful of LDOs on the PMIC.
-
-> > So it's like the TI TWL4030 and Palmas - in which case it should
-> > probably be handled similarly?
-
-> How did those work out? I wasn't involved and I don't know what you
-> mean. Do they have multiple i2c addresses they respond to?
-
-Yes, exactly.  The main device uses i2c_new_dummy_device() to
-instantiate the extras when it probes.  See twl-core.c
-
->=20
-> > Note that the original sumbission was
-> > *also* a MFD subfunction, but using a DT compatible to match the
-> > platform device - this is the first I've heard of this being a separate
-> > I2C function.
-
-> I'm mainly looking at the dts file now. It clearly has two i2c devices
-> at 0x8 and 0x9. Maybe the regulator driver followed the mfd design
-> because the first driver for this device is an mfd.
-
-I'm guessing from the naming that they're also externally described as
-the same device - presumably it's two dies shoved together in the same
-package for some reason without being otherwise joined up.  Is the
-second device geniunely regulators only or does it have anything else
-bundled in there?
-
---004SQJl7509giZyq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJNzY8ACgkQJNaLcl1U
-h9BXDQf9HHPmN8O2BxmVgWl0924qhTw/rou4mgZ3GdP/YtQLxAe7A2e6GzabQjKE
-M/82tK6k4zp0QJtXTHsqRgdpAYintpwbabCQKzku1DHfNTFSivLhouIiFPqO+qlT
-3X6zsi8OwWHjJs7CZxJ4SeFNQ1Nwn63W+BMqeGl6K775QQ2JgRc1Qit42PZl/6SA
-nLAnL5p7F4a0WfKdw/HOWjhmjhwdI1OauB8lYVBgOWrZburTbeR9sWmnrLRYtoyI
-FHDIxwhCcM1YEj1tqxpoNuaYzWxbBY3afPPNLsGJgM20OPUlD+kDmhunV7LyidxW
-FW5Yp0vrMvbtBr9VGmtDahPoxpdO8Q==
-=qZSa
------END PGP SIGNATURE-----
-
---004SQJl7509giZyq--
+Reviewed-by: Rob Herring <robh@kernel.org>
