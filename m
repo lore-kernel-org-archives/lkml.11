@@ -2,88 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E72C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F87C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232271AbiDFTuc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
+        id S231208AbiDFTui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:50:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232417AbiDFTtg (ORCPT
+        with ESMTP id S232605AbiDFTt7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:49:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B3D518BCFD;
-        Wed,  6 Apr 2022 11:27:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7D895CE24A6;
-        Wed,  6 Apr 2022 18:27:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A197C385A1;
-        Wed,  6 Apr 2022 18:27:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269643;
-        bh=Litla4dQ6FJ4XIrqe0GBrFnwKM6GLSoVgCqTTyuj7+g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u4gTRVEmtREQeHX9NOyZ2RT/psDtnsZKTL/7LTxomCqWgMft/1x4jBB7eQjCPtIgD
-         rKGXcewE4Z71iK1Y7m3uF9rmYwqMUnMeRh9ziChagWJq6+KhqqE1FLP+jFUY3AROC0
-         Kc8uBue+hR0yBjzZ79jFnkibXxpQrKAgFSjC2ERE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 17/43] arm64: arch_timer: avoid unused function warning
-Date:   Wed,  6 Apr 2022 20:26:26 +0200
-Message-Id: <20220406182437.184811467@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-References: <20220406182436.675069715@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 6 Apr 2022 15:49:59 -0400
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52826D744B;
+        Wed,  6 Apr 2022 11:15:38 -0700 (PDT)
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-e2442907a1so3443575fac.8;
+        Wed, 06 Apr 2022 11:15:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=s3V1PFwe9rE77F+7x5UasRWtgjGiTdBLaqAI0HJqIdo=;
+        b=wGW0lgwaPEg33R0k7JDOHuzlHiRc9J9Zoxtcx4ykrNkhhmWF3D/q9ysRfAFaHniUXG
+         2C5Pa5VBSM2Rb+glf5qmBkoxkt5lppkt7WtvUd+M5quyO66Y0318vL4iFKullSDeB6Kp
+         U6EfdD6r+5myoqGz5qfb+Bm56jIjrRv3lc0yw/1ZbGUidOXYlY5A7YfLTct2M9yO2krV
+         YoG1Bxa+1v0BFmRkwuXfdm57OhclZeCd/aQYQXkSliGvfNGiRmreWPUwYd/HhHQYQgph
+         o7d2XOmpKhvtZ5aDCWBM7YGjiixrCq8c4zqbIEj76FUwLImaQvvOjVUqVWZ+aLZKAuxP
+         kBiA==
+X-Gm-Message-State: AOAM533DITv3pDLoGvith96b/Hq80Zi585799qw611bAw0iQzxJIknYW
+        H1hYSnRhQC0n2AdcLU32Tw==
+X-Google-Smtp-Source: ABdhPJxaErLxKvwtfnFiclNzDL0x+cHYc94G6xikddI1x3YgPGVmN4GtYn8wVM3GKsgnuKPy9HhmzA==
+X-Received: by 2002:a05:6870:32d6:b0:e2:1d27:bd55 with SMTP id r22-20020a05687032d600b000e21d27bd55mr4473906oac.201.1649268937372;
+        Wed, 06 Apr 2022 11:15:37 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id a17-20020a4ae931000000b0032933be7230sm5547206ooe.4.2022.04.06.11.15.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 11:15:37 -0700 (PDT)
+Received: (nullmailer pid 2525379 invoked by uid 1000);
+        Wed, 06 Apr 2022 18:15:36 -0000
+Date:   Wed, 6 Apr 2022 13:15:36 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Cc:     devicetree@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-pci@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>
+Subject: Re: [PATCH 2/3] dt-bindings: PCI: uniphier-ep: Clean up reg, clocks,
+ resets, and their names using compatible string
+Message-ID: <Yk3YyFxzonOB2N3j@robh.at.kernel.org>
+References: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
+ <1649145062-29833-3-git-send-email-hayashi.kunihiko@socionext.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1649145062-29833-3-git-send-email-hayashi.kunihiko@socionext.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Tue, 05 Apr 2022 16:51:01 +0900, Kunihiko Hayashi wrote:
+> Instead of "oneOf:" choices, use "allOf:" and "if:" to define reg, clocks,
+> resets, and their names that can be taken by the compatible string.
+> 
+> The order of their names doesn't change here.
+> 
+> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> ---
+>  .../pci/socionext,uniphier-pcie-ep.yaml       | 84 ++++++++++++-------
+>  1 file changed, 56 insertions(+), 28 deletions(-)
+> 
 
-commit 040f340134751d73bd03ee92fabb992946c55b3d upstream.
-
-arm64_1188873_read_cntvct_el0() is protected by the correct
-CONFIG_ARM64_ERRATUM_1188873 #ifdef, but the only reference to it is
-also inside of an CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND section,
-and causes a warning if that is disabled:
-
-drivers/clocksource/arm_arch_timer.c:323:20: error: 'arm64_1188873_read_cntvct_el0' defined but not used [-Werror=unused-function]
-
-Since the erratum requires that we always apply the workaround
-in the timer driver, select that symbol as we do for SoC
-specific errata.
-
-Fixes: 95b861a4a6d9 ("arm64: arch_timer: Add workaround for ARM erratum 1188873")
-Acked-by: Marc Zyngier <marc.zyngier@arm.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/arm64/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -444,6 +444,7 @@ config ARM64_ERRATUM_1024718
- config ARM64_ERRATUM_1188873
- 	bool "Cortex-A76: MRC read following MRRC read of specific Generic Timer in AArch32 might give incorrect result"
- 	default y
-+	select ARM_ARCH_TIMER_OOL_WORKAROUND
- 	help
- 	  This option adds work arounds for ARM Cortex-A76 erratum 1188873
- 
-
-
+Reviewed-by: Rob Herring <robh@kernel.org>
