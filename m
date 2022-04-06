@@ -2,79 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9BD3C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C91CDC4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 05:55:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391209AbiDFFyS (ORCPT
+        id S1388122AbiDFFyD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 01:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50252 "EHLO
+        Wed, 6 Apr 2022 01:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2360966AbiDFDoF (ORCPT
+        with ESMTP id S230108AbiDFEzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 5 Apr 2022 23:44:05 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71B816B152;
-        Tue,  5 Apr 2022 17:12:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1649203919;
-        bh=lQZC9KF3fkpp3qkV+BLTCo7NkUkmtr0bB09V3SZnVCY=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=cnGDvje0keNcFijjyhXnLHAG8r/nL0zsJTCxsXIMcILiclPaf+JAm9c6frMQJ9q+I
-         GMTutl8pRgHhaXeeXnxJvVMdm5uUxFzE5MBIv+M6A4Q4/ukFPBgl5wdwbeLfWFFHvI
-         xNgj/ZpADI9aCTmc02Qe10uXActUd0m8OG5tweLY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.100.20] ([46.142.34.239]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N49lJ-1o2OOE2uGn-0105Zq; Wed, 06
- Apr 2022 02:11:59 +0200
-Message-ID: <ca184e4d-1691-f44a-6054-b7cae52f5077@gmx.de>
-Date:   Wed, 6 Apr 2022 02:11:58 +0200
+        Wed, 6 Apr 2022 00:55:11 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D861C7C21
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 17:45:27 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id y8-20020a056e020f4800b002ca498c9655so688108ilj.20
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 17:45:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=K8hWI48Li8trbK+jUlQuleE3ZHhh2wmLyXeEDXW43vw=;
+        b=INjjPnjouXvbYBwShSiGmeMtJqnWg+kdZ7gW2gtzayLPFcXO+yZ5SDetV6PciOyaUI
+         PdAtlPjyOVd0bsSdzNCCXQPFUV0mTkfJI3870ItVvhl+OUUZJR6+bQViVg2KdTTG/gSE
+         ptP42PUooFAgm1OwA3ds/WJrlLy77shILYI7Iuxi7nzKNuNN1EuE+eWmtYTzcSDucEqP
+         5vHl0nFLaVFTvLBiylzqUI1y3h9+ndByY+wSg3bOsNdommTHR+lrwiUq5kxxHP68sLYF
+         h+uGYaWkcvC4bnxt+yu6GChFYsc0q0LVeCykd5C2cObLjZuAS7unC98Dw4D/tD5p0Ckp
+         pQDA==
+X-Gm-Message-State: AOAM533yRIBCAWe2mhwF8i4p5cLZD67qnhSeb5/aSlKpL7Wc1HXyaze4
+        kp7T1bBli53rtVbzrEIGRzCBCj0w1AKfTLUQ7stKaRi7nzgd
+X-Google-Smtp-Source: ABdhPJzwKvT+DPbOFb3e0/wxaOlCTgDcZf2KDM+dO7ftVXxNA8V5tTN2Jhg99YnAA0syhK/cF4tivFBSAouXsHOie8j/ulxusMxn
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-From:   Ronald Warsow <rwarsow@gmx.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Language: de-DE
-Subject: Re: [PATCH 5.17 0000/1126] 5.17.2-rc1 review
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:cYu9JdORc1SmR6BiCGPQiPskdZm+eavF6AOJyRHFXDBuita0uCy
- bHTYWxbw+Z/KjUN+XDezDDimJupB61QO/covhoz8VMbH7n3PPHf0hbbqitmkmoIvsflcHAR
- uk8uYDYjgRAJ/CXul5bKLbayP+pvPjYkDNGHb22DRTP721+5IaMRECB82MbiQzjZ+/f8XnP
- sWWZIj7ulfSdcy806baRQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:qnKmeB+oY6I=:MZ26Fl6Oiw4udMXe9NQlPC
- lM1BKFUII6Eh9f53H1c7laOrQcXDySDgkVqBF1epo/y3JuEPVQRuUMpbyZ4mnHbwJVAPtsIyR
- mrlTUNswGPGeBilTlDvuW/ggAOCwFToYCzWq1TbdQTjhZ1i6HpMSlF15sYutchgBON/MNx3Qi
- MjtP8MvH16tj9a3yMoKZe10gnsbNlyRw8J2qe3Z/hfB+ynBnKWbqyaOpUOGcBCGrChbYNdCd5
- nXHLbvVtK3+M77c1SIFUUQiuQjs2Ons5vucAD5gWheZ3PDMQU02bXPBjCg1wQkLaEjbujxJ9z
- peWVPz9n8PrwIf05DAl5Rg8TVSgfJcb92TtMoiXJH8LH2Rp/evPFBEas+G4W8neuZoVUjglsr
- LH31gUSpFIdQVOFzEjhyqyaCns9ysMe5mrnkzXPQ8hWJyzkO2PIMCV3rGhMYX+KgpqioDsPNr
- oIbJbQU4bKNd2v+CZtd3pwUqQpXSlMHBd9KhNsBz4aJjzN9GKtOiJOzbD0DpWMJUXKucBjlp6
- Hhsno3FhFtv8RLma7tfbq2JTkcQXNIfBYD9a8oGFkbDKWB+8h4s3YSLDq4tLSnFzUadPEdJsH
- 1BiHMu3Ll6yK71SNF7+xUsiMl3XzRyz5ACwBlMR5usA2Q2IgZapnsI7XcnyQw5BNeYpY2T8uQ
- 5kUh68CKf8L0L8uggNGMWXklu+2n0JM1FIPXLqjv8bgT/Lt0f3EvXB8B0Zc7fdPI+lsJxJjrH
- 25METSOyJpU4FacHYroEzzPOaez794jW53z2pq4MhEhp4FNYBy2i72tY/7thUKxannniM6h/m
- GLTqW4zfdZxGGeDgC944r6YTcH8Nv6ynH66P8MIkVeLaq4JC1suv8p3RF16eqKWd+4wP0ZI7/
- soVKmCxfZjaIzsV3r/ojHW6maz5puLgBNTwdeVnkYQdZ/IacQjUsdJlvswmn2q+n7Tpt73cp8
- C8ZC6Ex9GEZP1mKvPQ/axtPrHetWwDsWO2592BHu4ZaqJJX8/A3/rChASd2YoyUcEScTvXe7Z
- kJ7sCxJlrvzYd9CLHXr775XIkqw+gkEx1UjfCoOI6n4H48pMwL65JeTtegkzVxJjSPDxuljcY
- IGd7+NCbSEsWBU=
+X-Received: by 2002:a05:6e02:1d03:b0:2c7:e33f:2557 with SMTP id
+ i3-20020a056e021d0300b002c7e33f2557mr3225518ila.15.1649205926868; Tue, 05 Apr
+ 2022 17:45:26 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 17:45:26 -0700
+In-Reply-To: <0000000000000cede205dbf052bc@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006ebdf405dbf1ad65@google.com>
+Subject: Re: [syzbot] general protection fault in simple_recursive_removal (2)
+From:   syzbot <syzbot+17404da5afdf21e8d612@syzkaller.appspotmail.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hallo Greg
+syzbot has found a reproducer for the following issue on:
 
-5.17.2-rc1
+HEAD commit:    ce4c854ee868 Merge tag 'for-5.18-rc1-tag' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16258680f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=595bcd2109a73f9c
+dashboard link: https://syzkaller.appspot.com/bug?extid=17404da5afdf21e8d612
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13b7765b700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16de6637700000
 
-compiles, boots and runs on my x86_64
-(Intel i5-11400, Fedora 36 Beta)
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+17404da5afdf21e8d612@syzkaller.appspotmail.com
 
-Thanks
+general protection fault, probably for non-canonical address 0xdffffc000000002a: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000150-0x0000000000000157]
+CPU: 1 PID: 3623 Comm: udevd Not tainted 5.18.0-rc1-syzkaller-00009-gce4c854ee868 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__lock_acquire+0xd85/0x56c0 kernel/locking/lockdep.c:4899
+Code: 1a 0e 41 be 01 00 00 00 0f 86 c8 00 00 00 89 05 21 8d 1a 0e e9 bd 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 15 31 00 00 48 81 3b 20 d4 22 8f 0f 84 4f f3 ff
+RSP: 0018:ffffc90003b5f9f0 EFLAGS: 00010002
+RAX: dffffc0000000000 RBX: 0000000000000150 RCX: 0000000000000000
+RDX: 000000000000002a RSI: 0000000000000000 RDI: 0000000000000150
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+R13: ffff888079c50000 R14: 0000000000000000 R15: 0000000000000000
+FS:  00007faa8035a840(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000561474c18580 CR3: 0000000019f83000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ lock_acquire kernel/locking/lockdep.c:5641 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5606
+ down_write+0x90/0x150 kernel/locking/rwsem.c:1514
+ inode_lock include/linux/fs.h:748 [inline]
+ simple_recursive_removal+0x171/0x830 fs/libfs.c:276
+ debugfs_remove fs/debugfs/inode.c:742 [inline]
+ debugfs_remove+0x59/0x80 fs/debugfs/inode.c:736
+ blk_mq_debugfs_unregister_queue_rqos+0x34/0x70 block/blk-mq-debugfs.c:840
+ rq_qos_exit+0x1e/0xf0 block/blk-rq-qos.c:297
+ disk_release_mq block/genhd.c:1142 [inline]
+ disk_release+0x191/0x420 block/genhd.c:1168
+ device_release+0x9f/0x240 drivers/base/core.c:2229
+ kobject_cleanup lib/kobject.c:705 [inline]
+ kobject_release lib/kobject.c:736 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ kobject_put+0x1c8/0x540 lib/kobject.c:753
+ put_device+0x1b/0x30 drivers/base/core.c:3512
+ blkdev_close+0x64/0x80 block/fops.c:512
+ __fput+0x277/0x9d0 fs/file_table.c:317
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:169 [inline]
+ exit_to_user_mode_prepare+0x23c/0x250 kernel/entry/common.c:201
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:294
+ do_syscall_64+0x42/0x80 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7faa7ff25fc3
+Code: 48 ff ff ff b8 ff ff ff ff e9 3e ff ff ff 66 0f 1f 84 00 00 00 00 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89 7c 24 0c e8
+RSP: 002b:00007fff33290db8 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 00007faa8035a6a8 RCX: 00007faa7ff25fc3
+RDX: 000000000000001c RSI: 00007fff332905b8 RDI: 0000000000000008
+RBP: 0000561474c196f0 R08: 0000000000000007 R09: 0000561474c22c30
+R10: 00007faa7ffb4fc0 R11: 0000000000000246 R12: 0000000000000002
+R13: 0000561474bf8aa0 R14: 0000000000000008 R15: 0000561474bef910
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__lock_acquire+0xd85/0x56c0 kernel/locking/lockdep.c:4899
+Code: 1a 0e 41 be 01 00 00 00 0f 86 c8 00 00 00 89 05 21 8d 1a 0e e9 bd 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 da 48 c1 ea 03 <80> 3c 02 00 0f 85 15 31 00 00 48 81 3b 20 d4 22 8f 0f 84 4f f3 ff
+RSP: 0018:ffffc90003b5f9f0 EFLAGS: 00010002
 
-Tested-by: Ronald Warsow <rwarsow@gmx.de>
-
-
-Ronald
+RAX: dffffc0000000000 RBX: 0000000000000150 RCX: 0000000000000000
+RDX: 000000000000002a RSI: 0000000000000000 RDI: 0000000000000150
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+R13: ffff888079c50000 R14: 0000000000000000 R15: 0000000000000000
+FS:  00007faa8035a840(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000561474c18580 CR3: 0000000019f83000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	1a 0e                	sbb    (%rsi),%cl
+   2:	41 be 01 00 00 00    	mov    $0x1,%r14d
+   8:	0f 86 c8 00 00 00    	jbe    0xd6
+   e:	89 05 21 8d 1a 0e    	mov    %eax,0xe1a8d21(%rip)        # 0xe1a8d35
+  14:	e9 bd 00 00 00       	jmpq   0xd6
+  19:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  20:	fc ff df
+  23:	48 89 da             	mov    %rbx,%rdx
+  26:	48 c1 ea 03          	shr    $0x3,%rdx
+* 2a:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1) <-- trapping instruction
+  2e:	0f 85 15 31 00 00    	jne    0x3149
+  34:	48 81 3b 20 d4 22 8f 	cmpq   $0xffffffff8f22d420,(%rbx)
+  3b:	0f                   	.byte 0xf
+  3c:	84 4f f3             	test   %cl,-0xd(%rdi)
+  3f:	ff                   	.byte 0xff
 
