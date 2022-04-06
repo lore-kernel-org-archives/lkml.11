@@ -2,109 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E94C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:59:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33077C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235274AbiDFPBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:01:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43118 "EHLO
+        id S235587AbiDFPCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:02:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235468AbiDFPAi (ORCPT
+        with ESMTP id S235443AbiDFPBt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:00:38 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056B244E5B5;
-        Tue,  5 Apr 2022 21:50:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649220614; x=1680756614;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=O4RpktnBj9oVWn2CFbXTXcz/tlOO8+KU7JX2IGLZkdk=;
-  b=OVxoHrrB/UA4r2ZyfLnBp3dh8Wf+03/GvILywONRdaQc46jp7zjq10qj
-   vCBEUJ2t4whjN5vmVv/1Pho+M9T96IK9T3lEAQH1tliKR+VLKtqbAatqs
-   A3okzqvoLLo8aom4LPi7uE9+F3bAzFiU4hHM9uj/B6EoUCGZEMMexJYC5
-   4qDZsqLJherYOWalNQbYw/NekdAZ57EXpSitc7Swo/1v1wZh5SSgRKSsL
-   Oyzt70lpGPM78DiGITZPqbztXS916eoP0iVRh0Xna5gWdINmbOvjlBVsN
-   lXDawFkfW+rP6u0akiBDNI7dJSZ0j0+3HY93pxaHILrFkz3+DYDCyM99n
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="243089809"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="243089809"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:12 -0700
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="524302246"
-Received: from dchang1-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.29.17])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 21:50:09 -0700
-From:   Kai Huang <kai.huang@intel.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
-        len.brown@intel.com, tony.luck@intel.com,
-        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
-        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v3 07/21] x86/virt/tdx: Do TDX module global initialization
-Date:   Wed,  6 Apr 2022 16:49:19 +1200
-Message-Id: <66e6aa1dc1bade544b81120d7976cb0601f0528b.1649219184.git.kai.huang@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649219184.git.kai.huang@intel.com>
-References: <cover.1649219184.git.kai.huang@intel.com>
+        Wed, 6 Apr 2022 11:01:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A54BA2102A8;
+        Wed,  6 Apr 2022 04:46:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 078E6B8225B;
+        Wed,  6 Apr 2022 11:44:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC284C385A3;
+        Wed,  6 Apr 2022 11:44:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649245443;
+        bh=NxeimgFKXbpME/i8GbhGeyomnmNXOaXJQCJ3je+GzkE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Ib9hdNGGYkrCQaXv+Wa1skJOD2XxfidXfz1pqcxFsyXCCzxmlx4Q3Iv3zMczs0oKa
+         FQe0DNtq44xqgLu38lKgQlYFw3Ij795WPlkExr4Ro8+jAkTyioR9A9BMIhk91q9J+R
+         QabboGRB4qGh2cnlhPER2Onwrw5Q/VSEu3RqX41pc3se7y9sXoIwT3O2RDYpgi6Z8l
+         CNg8ObMUpX+4Zv4u9Bk/mM3AAvhsbWPbeyNFTQSoXvExtLE6vXtR5ciAv6Yh1XrMBw
+         O1wSUjRp0lg0zIDtO2k54+FomdDRCXHT/n5i7rQLiEC8H5aU6PZ2AIaF9+r4Ajgm4Q
+         iJs2PmQtEfQ7A==
+Received: by mail-ot1-f52.google.com with SMTP id x8-20020a9d6288000000b005b22c373759so1519896otk.8;
+        Wed, 06 Apr 2022 04:44:03 -0700 (PDT)
+X-Gm-Message-State: AOAM533HDRs+1aVPN4Log4NvSw4lyrz6mEWkVlB0UFC7qu6e/WVj85nf
+        l1xJEwSD2btu6yqjLqvrcQk+d5RhKHpwj0Adn7Q=
+X-Google-Smtp-Source: ABdhPJwgIpRNFG6qcoAVBzxDEl4cLier8VLEXG9sCYAAHpDzoTvzxVWsFwYD+jTe+LzI54KUubxiebLt/6VhtToTqKA=
+X-Received: by 2002:a05:6830:2e7:b0:5b2:68c1:182a with SMTP id
+ r7-20020a05683002e700b005b268c1182amr2838747ote.71.1649245442897; Wed, 06 Apr
+ 2022 04:44:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220405070339.801210740@linuxfoundation.org> <20220405070402.195698649@linuxfoundation.org>
+ <CAMj1kXFL4abn9xg1ZrNpFg54Pmw1Kw8OPbDpMevSjQDNg0r5Pg@mail.gmail.com> <Yk14LhswMSlPGrmJ@sashalap>
+In-Reply-To: <Yk14LhswMSlPGrmJ@sashalap>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Wed, 6 Apr 2022 13:43:51 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXHxGjO9ctZ5kSd0MZztOTZz8j02rTPJgPdANODqUH5JGg@mail.gmail.com>
+Message-ID: <CAMj1kXHxGjO9ctZ5kSd0MZztOTZz8j02rTPJgPdANODqUH5JGg@mail.gmail.com>
+Subject: Re: [PATCH 5.15 746/913] ARM: ftrace: avoid redundant loads or
+ clobbering IP
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Do the TDX module global initialization which requires calling
-TDH.SYS.INIT once on any logical cpu.
+On Wed, 6 Apr 2022 at 13:23, Sasha Levin <sashal@kernel.org> wrote:
+>
+> On Tue, Apr 05, 2022 at 12:01:19PM +0200, Ard Biesheuvel wrote:
+> >On Tue, 5 Apr 2022 at 11:54, Greg Kroah-Hartman
+> ><gregkh@linuxfoundation.org> wrote:
+> >>
+> >> From: Ard Biesheuvel <ardb@kernel.org>
+> >>
+> >> [ Upstream commit d11967870815b5ab89843980e35aab616c97c463 ]
+> >>
+> >> Tweak the ftrace return paths to avoid redundant loads of SP, as well as
+> >> unnecessary clobbering of IP.
+> >>
+> >> This also fixes the inconsistency of using MOV to perform a function
+> >> return, which is sub-optimal on recent micro-architectures but more
+> >> importantly, does not perform an interworking return, unlike compiler
+> >> generated function returns in Thumb2 builds.
+> >>
+> >> Let's fix this by popping PC from the stack like most ordinary code
+> >> does.
+> >>
+> >> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+> >> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> >> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> >
+> >Please drop all the 32-bit ARM patches authored by me from the stable
+> >queues except the ones that have fixes tags. These are highly likely
+>
+> I can drop you from future selections as well.
+>
 
-Signed-off-by: Kai Huang <kai.huang@intel.com>
----
- arch/x86/virt/vmx/tdx/tdx.c | 11 ++++++++++-
- arch/x86/virt/vmx/tdx/tdx.h |  1 +
- 2 files changed, 11 insertions(+), 1 deletion(-)
+Yes, please. Just disregard all of my patches, unless they have a
+fixes or cc:stable, or someone suggests them explicitly.
 
-diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
-index faf8355965a5..5c2f3a30be2f 100644
---- a/arch/x86/virt/vmx/tdx/tdx.c
-+++ b/arch/x86/virt/vmx/tdx/tdx.c
-@@ -463,11 +463,20 @@ static int __tdx_detect(void)
- 
- static int init_tdx_module(void)
- {
-+	int ret;
-+
-+	/* TDX module global initialization */
-+	ret = seamcall(TDH_SYS_INIT, 0, 0, 0, 0, NULL, NULL);
-+	if (ret)
-+		goto out;
-+
- 	/*
- 	 * Return -EFAULT until all steps of TDX module
- 	 * initialization are done.
- 	 */
--	return -EFAULT;
-+	ret = -EFAULT;
-+out:
-+	return ret;
- }
- 
- static void shutdown_tdx_module(void)
-diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
-index dcc1f6dfe378..f0983b1936d8 100644
---- a/arch/x86/virt/vmx/tdx/tdx.h
-+++ b/arch/x86/virt/vmx/tdx/tdx.h
-@@ -38,6 +38,7 @@ struct p_seamldr_info {
- /*
-  * TDX module SEAMCALL leaf functions
-  */
-+#define TDH_SYS_INIT		33
- #define TDH_SYS_LP_SHUTDOWN	44
- 
- struct tdx_module_output;
--- 
-2.35.1
+> >to cause an explosion of regressions, and they should have never been
+> >selected, as I don't remember anyone proposing these for stable.
+>
+> They were proposed by the bot last week
+> (https://lore.kernel.org/lkml/20220330115005.1671090-22-sashal@kernel.org/).
+>
 
+Yeah, we should really not be using a bot for that.
