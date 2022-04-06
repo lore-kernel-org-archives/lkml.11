@@ -2,118 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D69C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA38C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:42:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229993AbiDFLnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44764 "EHLO
+        id S230168AbiDFLoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231494AbiDFLnQ (ORCPT
+        with ESMTP id S232071AbiDFLnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:43:16 -0400
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36EF563CAE;
-        Wed,  6 Apr 2022 01:29:17 -0700 (PDT)
-Received: by mail-ej1-f48.google.com with SMTP id qh7so2636129ejb.11;
-        Wed, 06 Apr 2022 01:29:17 -0700 (PDT)
+        Wed, 6 Apr 2022 07:43:31 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2E83EF036;
+        Wed,  6 Apr 2022 01:30:02 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id g15-20020a17090adb0f00b001caa9a230c7so5093973pjv.5;
+        Wed, 06 Apr 2022 01:30:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=IG1tkBL/llWliJGxLdIJUi+tn1T0VL64oyH/UZUw89c=;
+        b=SuqWhpwWFVJORPBYictUdK1YVpb62bflKnyxPmSDylk4t4mpsacQXP0e0bg/5JTKEC
+         n/6nEYPEhb2+pvcdD6DgkxeqBPq1SdPAKkwd1xphOBd30FQvRZDm2RbCGYJf3db8BXSf
+         UBMyMBB++GIO9kKUpNxoHV/EqC3AocBa/CmtomvOL6DLydOBTgYprp8bpA0iILXom5qY
+         n1BQOAhvx5LqLHhtC7FOgdda3kzHsG672YGhjXKNxdORJms8ac4dxf/2e4LGsSua+MTU
+         bWEGtOBIqhN86wohnIFNLwy7wYEpYDQFQF860pwQkezrTTYsjPuxUthP5Oe5mldDiR20
+         BcJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=v2z8gRO/swq08y+iM83Fo/YT89U4twO1dtpzDAI+wds=;
-        b=bo+Urh9v+B0kSQwYll4Qm4BeXZn8u9TOLVgE4WP+QcIfu7+eOoQQBVS8o5Esa2X/P2
-         oiN0kj/Nq+JcJ5XGsKDTogBVGlX2r6I6LCO4tlULRhd5bjPiUPhyHFMn4geel5wLFuKj
-         r3EHxiRaPrHH6KihVdtQs84Df/QJF2Vh+bujoh8KiVr5ajpl+wH1buXaa8LV4nQxxWGj
-         iJhEVXvOuIzlyeX+PdVK5KS5GGfUq2erTBIqSCq3hsruPgDx+nNIxwpF+RSze0lgUjng
-         e1enkv68bHZe2ioczifY4/x4i0IDBacJb7V8OHrsD0TjBDWCjDoRxT2C4IwM2g5SuZVD
-         gQHw==
-X-Gm-Message-State: AOAM533lOUVX5QTnZGdcYi2x4sbbJl/9vtqFSxKBkGkuKz0ofguiKlHw
-        2fkk692ALNklzF5kl1YfxLRhe1Nawwo=
-X-Google-Smtp-Source: ABdhPJzHQmSDjpC1O1mIJBNaZCFY2jUV1wWvoQC5P1RqZ8q+ceuPa2kq451RXmkcGjRd0ITGO0yuaQ==
-X-Received: by 2002:a17:907:6e2a:b0:6e0:b263:37a6 with SMTP id sd42-20020a1709076e2a00b006e0b26337a6mr7259741ejc.622.1649233756378;
-        Wed, 06 Apr 2022 01:29:16 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id w14-20020a170906d20e00b006cee22553f7sm6322837ejz.213.2022.04.06.01.29.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 01:29:15 -0700 (PDT)
-Message-ID: <afeeec95-f2c3-2e58-eac6-97bf5872a042@kernel.org>
-Date:   Wed, 6 Apr 2022 10:29:11 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] tty: serial: Prepare cleanup of powerpc's asm/prom.h
-Content-Language: en-US
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-serial@vger.kernel.org
-References: <49fc0d4b6446da630b1e9f29c4bab38f8ed087bf.1648833419.git.christophe.leroy@csgroup.eu>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <49fc0d4b6446da630b1e9f29c4bab38f8ed087bf.1648833419.git.christophe.leroy@csgroup.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=IG1tkBL/llWliJGxLdIJUi+tn1T0VL64oyH/UZUw89c=;
+        b=m+bWw1lMPyDbM8iMH/K5Snp3VEjypF9vSYrhY/mEbKPgienyHdriAOa6Gb4XBsawbU
+         SDF77tQlfOgEXIQSMKET9Ail53jJhobkxbBKWi9QxZhCt9QwZyex885PfmAoNY17SAvD
+         Kt0uP7hGxXD+Qbm9Pu2aSWUukiH8MkYd+ApIYHRN/seJO4e8xE83lsCngf+yQNZUADZN
+         YwvVIvJKt79ngQ1WzF6EsScSfQD/lXus743LAWin+SD+ijGBcuFuiHJ7me9DV2Bui+Ac
+         nuBnOv8sgpiyqD1myztEchNNPgnmHDsNHKT4JKyQd9QHXrhlD9e2RtRYYPcTMzyQpl1d
+         waaw==
+X-Gm-Message-State: AOAM530TvNc/CNWOWPa0DEL/JFfIPJNbmfkvttEQKT/v2WTct1R6GHsh
+        p/TshBiU+7cNCboU8esWOSU=
+X-Google-Smtp-Source: ABdhPJzwpB0jmLPHgl0m4pBgOkxvpvOMrOed5iwoQGGrTg/E7fJwZG3bBoGNUAptXhObL+JcKmqcJQ==
+X-Received: by 2002:a17:903:40c7:b0:156:8b56:5fa1 with SMTP id t7-20020a17090340c700b001568b565fa1mr7484133pld.108.1649233802239;
+        Wed, 06 Apr 2022 01:30:02 -0700 (PDT)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id r8-20020a17090a0ac800b001c9e35d3a3asm4904977pje.24.2022.04.06.01.29.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 06 Apr 2022 01:30:01 -0700 (PDT)
+From:   Tony Huang <tonyhuang.sunplus@gmail.com>
+To:     ulf.hansson@linaro.org, robh+dt@kernel.org,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+        krzysztof.kozlowski@linaro.org
+Cc:     wells.lu@sunplus.com, lh.Kuo@sunplus.com, tony.huang@sunplus.com,
+        Tony Huang <tonyhuang.sunplus@gmail.com>
+Subject: [PATCH v6 0/2] Add mmc driver for Sunplus SP7021 SOC
+Date:   Wed,  6 Apr 2022 16:29:47 +0800
+Message-ID: <cover.1649229258.git.tonyhuang.sunplus@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220406082947.qYSiv2wsNg7yNxLwiZ0hfQmwYY4hcw8MdHNKBJUazkc@z>
 
-On 02. 04. 22, 12:20, Christophe Leroy wrote:
-> powerpc's asm/prom.h brings some headers that it doesn't
-> need itself.
-> 
-> In order to clean it up, first add missing headers in
-> users of asm/prom.h
-> 
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+This is a patch series for mmc driver for Sunplus SP7021 SOC.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control.
 
-> ---
->   drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c | 1 -
->   drivers/tty/serial/mpc52xx_uart.c           | 2 ++
->   drivers/tty/serial/pmac_zilog.c             | 1 -
->   3 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> index 6a1cd03bfe39..108af254e8f3 100644
-> --- a/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> +++ b/drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> @@ -25,7 +25,6 @@
->   #include <asm/io.h>
->   #include <asm/irq.h>
->   #include <asm/fs_pd.h>
-> -#include <asm/prom.h>
->   
->   #include <linux/serial_core.h>
->   #include <linux/kernel.h>
-> diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-> index 8a6958377764..4ec785e4f9b1 100644
-> --- a/drivers/tty/serial/mpc52xx_uart.c
-> +++ b/drivers/tty/serial/mpc52xx_uart.c
-> @@ -38,6 +38,8 @@
->   #include <linux/delay.h>
->   #include <linux/io.h>
->   #include <linux/of.h>
-> +#include <linux/of_address.h>
-> +#include <linux/of_irq.h>
->   #include <linux/of_platform.h>
->   #include <linux/clk.h>
->   
-> diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-> index 5d97c201ad88..c903085acb8d 100644
-> --- a/drivers/tty/serial/pmac_zilog.c
-> +++ b/drivers/tty/serial/pmac_zilog.c
-> @@ -51,7 +51,6 @@
->   #include <asm/irq.h>
->   
->   #ifdef CONFIG_PPC_PMAC
-> -#include <asm/prom.h>
->   #include <asm/machdep.h>
->   #include <asm/pmac_feature.h>
->   #include <asm/dbdma.h>
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
 
+Tony Huang (2):
+  dt-binding: mmc: Add mmc yaml file for Sunplus SP7021
+  mmc: Add mmc driver for Sunplus SP7021
+
+ .../devicetree/bindings/mmc/sunplus,mmc.yaml       |   62 +
+ MAINTAINERS                                        |    7 +
+ drivers/mmc/host/Kconfig                           |    9 +
+ drivers/mmc/host/Makefile                          |    1 +
+ drivers/mmc/host/sunplus-mmc.c                     | 1200 ++++++++++++++++++++
+ 5 files changed, 1279 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mmc/sunplus,mmc.yaml
+ create mode 100644 drivers/mmc/host/sunplus-mmc.c
 
 -- 
-js
-suse labs
+2.7.4
+
