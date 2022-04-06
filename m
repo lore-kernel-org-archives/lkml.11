@@ -2,72 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56AEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233926AbiDFN7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48312 "EHLO
+        id S233831AbiDFN7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233907AbiDFN5V (ORCPT
+        with ESMTP id S234044AbiDFN7S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:57:21 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348F7362FDE;
-        Wed,  6 Apr 2022 02:09:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=2bYtZaY82UR+toaii6rgTQB2neDCnsVr9ZEMwIx3gBE=;
-        b=VpHybvzSO3sJrDCGfrS+4p8/OyKo7WnJ2YQdpUZRiHkbC0oIohsCKP7QH5dGR4DN+EJlNyIrvEbDg
-         krZnJ1dMl/x8NGrpj9o6sA1ej/VIF8QkOn6QGNEtqk3ed/Ww0BtutQnJ0rbi4zwpLuUUolkZxnUfrz
-         TcvgjoqOtHB5FLpappca3IS3vM6iJQuA1YDAfCygfJ4gWFJxWklEkpsDFiqaPdybsfiooWRfzjD9op
-         wD/jsNI9K+2/TNjhDgNqOWTwC8xt3svZMbHYzNvA1nelokFE8gEGcza8Xg50hHyWbWFdHVhGZeH0ZG
-         4hSAi5Q2mpyK2GieI7mE6zNF2YAa4Pw==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000008,0.004499)], BW: [Enabled, t: (0.000016,0.000001)], RTDA: [Enabled, t: (0.065283), Hit: No, Details: v2.33.0; Id: 15.52k7j2.1fvv2599b.8gs; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Wed, 6 Apr 2022 12:09:15 +0300
-Date:   Wed, 6 Apr 2022 12:09:08 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: Re: [PATCH net] net: phy: marvell-88x2222: set proper phydev->port
-Message-ID: <20220406090908.mkpvndnsby5f3473@h-e2.ddg>
-References: <20220405150305.151573-1-i.bornyakov@metrotek.ru>
- <Ykxq0wx7eMiZCXgx@lunn.ch>
+        Wed, 6 Apr 2022 09:59:18 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D30E82DCCB9
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:51:12 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V9JW7Mc_1649213468;
+Received: from 30.225.24.86(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9JW7Mc_1649213468)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 06 Apr 2022 10:51:09 +0800
+Message-ID: <d776f073-c01d-9cc7-4302-c36c77409d69@linux.alibaba.com>
+Date:   Wed, 6 Apr 2022 10:51:08 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ykxq0wx7eMiZCXgx@lunn.ch>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [Linux-cachefs] [PATCH] fscache: Move fscache_cookies_seq_ops
+ specific code under CONFIG_PROC_FS
+Content-Language: en-US
+From:   JeffleXu <jefflexu@linux.alibaba.com>
+To:     Yue Hu <huyue2@coolpad.com>, dhowells@redhat.com,
+        linux-cachefs@redhat.com
+Cc:     zbestahu@gmail.com, linux-kernel@vger.kernel.org, zbestahu@163.com
+References: <20220402044728.9669-1-huyue2@coolpad.com>
+ <1c6b191b-4a2e-0333-b0a3-f76bcd6b6515@linux.alibaba.com>
+In-Reply-To: <1c6b191b-4a2e-0333-b0a3-f76bcd6b6515@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 06:14:11PM +0200, Andrew Lunn wrote:
-> On Tue, Apr 05, 2022 at 06:03:05PM +0300, Ivan Bornyakov wrote:
-> > phydev->port was not set and always reported as PORT_TP.
-> > Set phydev->port according to inserted SFP module.
+
+
+On 4/6/22 10:45 AM, JeffleXu wrote:
 > 
-> This is definitely something for Russell to review.
 > 
-> But i'm wondering if this is the correct place to do this? What about
-> at803x and marvell10g?
-
-I guess them need this too, but I only have HW with Marvell 88X2222.
-
-> It seems like this should be done once in the
-> core somewhere, not in each driver.
+> On 4/2/22 12:47 PM, Yue Hu wrote:
+>> fscache_cookies_seq_ops is only used in proc.c that is compiled under
+>> enabled CONFIG_PROC_FS, so move related code under this config. The
+>> same case exsits in internal.h.
+>>
+>> Also, make fscache_lru_cookie_timeout static due to no user outside
+>> of cookie.c.
+>>
+>> Signed-off-by: Yue Hu <huyue2@coolpad.com>
+>> ---
+>>  fs/fscache/cookie.c   | 4 +++-
+>>  fs/fscache/internal.h | 4 ++++
+>>  2 files changed, 7 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/fs/fscache/cookie.c b/fs/fscache/cookie.c
+>> index 9bb1ab5fe5ed..9d3cf0111709 100644
+>> --- a/fs/fscache/cookie.c
+>> +++ b/fs/fscache/cookie.c
+>> @@ -30,7 +30,7 @@ static DEFINE_SPINLOCK(fscache_cookie_lru_lock);
+>>  DEFINE_TIMER(fscache_cookie_lru_timer, fscache_cookie_lru_timed_out);
+>>  static DECLARE_WORK(fscache_cookie_lru_work, fscache_cookie_lru_worker);
+>>  static const char fscache_cookie_states[FSCACHE_COOKIE_STATE__NR] = "-LCAIFUWRD";
+>> -unsigned int fscache_lru_cookie_timeout = 10 * HZ;
+>> +static unsigned int fscache_lru_cookie_timeout = 10 * HZ;
+>>  
+>>  void fscache_print_cookie(struct fscache_cookie *cookie, char prefix)
+>>  {
+>> @@ -1069,6 +1069,7 @@ void __fscache_invalidate(struct fscache_cookie *cookie,
+>>  }
+>>  EXPORT_SYMBOL(__fscache_invalidate);
+>>  
+>> +#ifdef CONFIG_PROC_FS
+>>  /*
+>>   * Generate a list of extant cookies in /proc/fs/fscache/cookies
+>>   */
+>> @@ -1145,3 +1146,4 @@ const struct seq_operations fscache_cookies_seq_ops = {
+>>  	.stop   = fscache_cookies_seq_stop,
+>>  	.show   = fscache_cookies_seq_show,
+>>  };
+>> +#endif
 > 
->      Andrew
+> Then I'm afraid fscache_cookies_seq_stop() and
+> fscache_cookies_seq_show() also need to be wrapped with "#ifdef
+> CONFIG_PROC_F" ...
+> 
 
-Apart from sfp_parse_port(), sfp_parse_support() and
-sfp_select_interface() are also present in all
-sfp_upstream_ops->module_insert PHY callbacks.
+Sorry, fscache_cookies_seq_stop() and fscache_cookies_seq_show() have
+already been wrapped with "#ifdef CONFIG_PROC_F" in this patch. Please
+ignore the noise...
 
+-- 
+Thanks,
+Jeffle
