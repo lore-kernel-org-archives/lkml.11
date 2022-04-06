@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 252BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52918C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:21:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229602AbiDFNX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47206 "EHLO
+        id S233102AbiDFNXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233159AbiDFNWQ (ORCPT
+        with ESMTP id S232858AbiDFNWN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:22:16 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8DD33D0D8
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:11:13 -0700 (PDT)
+        Wed, 6 Apr 2022 09:22:13 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CD649DC47
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:11:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649239873; x=1680775873;
+  t=1649239862; x=1680775862;
   h=date:from:to:cc:subject:message-id:mime-version:
    content-transfer-encoding;
-  bh=Ca8ZSE276JC1CDf3dzhMRbCVn79yuby2FCsfTwD1DuI=;
-  b=SEHsBHxV/unQ8J5lVWYbcYy+dPEYZwlAlNstVOjsYnboBedGn1Mwr7Tz
-   KgYIzX7oqZIgoU6UTym12pohSZVwxXpE1SyryrTwHv23idFlHjQzKgnhH
-   AtwZ/5sOURBKoOFHbj+o7z70UrkqsPHTSsDrD53xOHQNSnsfy2jeVGM9y
-   FZuuyF0ehrN6RKgigYuKr6Ndv4m6PqQb3yjv82fv9zzDQ9IjVt5sOmNjP
-   wSXofqQ8blfoWbasstWPV1DfPE5huHCbr/lwPNxeAZCQGbtEjWsSLVNDC
-   AiifpDvenoOnTAHk+KjN9E+sg+8+udu+KptzyDvdfeTCFx1s3BNWBWWyq
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="240938004"
+  bh=Csi4O2nlSqUNejwpPTBdz5GRkdB1SE/vCWHLcsz0Tqg=;
+  b=KlI0rUAzXtXb97TIf6nB6BV9B28WNxPtktP5RgBXa//mmOSWCrX/ghk/
+   rdLGXO6EY8lnQzqnJXk4QnIqfOeDzngFohIiyKw/0W7Dz9FjPzJV6TjWJ
+   C+Jtf9yxY5BNN3JWePInycIDOV5X6SBXtmrG3wfKcs70HGxL5cC+K5wMy
+   73YJSjUsJMBfli/i0XffA2PPFbnqlDkKEy2NfyIsGCa1Ht4TN0NG2NVIO
+   Vp4B1NwWhKdF9ed1K7JAlItgvdUAhd8O1lf5nBFsfHXD+fOYX+VOT1dcG
+   TdclUCw2JJJtgbruc/DZM5zfEJj7jB739Oj3UnfUFUcQApEmmPkHyafJy
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="285972324"
 X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="240938004"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 03:07:59 -0700
+   d="scan'208";a="285972324"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 03:07:59 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="588310392"
+   d="scan'208";a="524405883"
 Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 06 Apr 2022 03:07:57 -0700
+  by orsmga006.jf.intel.com with ESMTP; 06 Apr 2022 03:07:57 -0700
 Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nc2Zx-0004IZ-6J;
+        id 1nc2Zx-0004Ic-6k;
         Wed, 06 Apr 2022 10:07:57 +0000
-Date:   Wed, 06 Apr 2022 18:07:39 +0800
+Date:   Wed, 06 Apr 2022 18:07:34 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "x86-ml" <x86@kernel.org>
 Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/misc] BUILD SUCCESS
- b86eb74098a92afd789da02699b4b0dd3f73b889
-Message-ID: <624d666b.N/M6qqNsAMgVQGfF%lkp@intel.com>
+Subject: [tip:x86/cpu] BUILD SUCCESS
+ 0205f8a738ab9e62d849e88e543cfa6ce4c13163
+Message-ID: <624d6666.zWBztTsw4YSrgtzO%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -57,12 +57,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/misc
-branch HEAD: b86eb74098a92afd789da02699b4b0dd3f73b889  x86/delay: Fix the wrong asm constraint in delay_loop()
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/cpu
+branch HEAD: 0205f8a738ab9e62d849e88e543cfa6ce4c13163  x86/speculation/srbds: Do not try to turn mitigation off when not supported
 
 elapsed time: 733m
 
-configs tested: 144
+configs tested: 141
 configs skipped: 5
 
 The following configs have been built successfully.
@@ -164,9 +164,6 @@ powerpc                          allmodconfig
 x86_64                        randconfig-a006
 x86_64                        randconfig-a004
 x86_64                        randconfig-a002
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
 i386                          randconfig-a012
 i386                          randconfig-a014
 i386                          randconfig-a016
