@@ -2,187 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC203C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:13:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234714AbiDFOPc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:15:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
+        id S234400AbiDFOPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234625AbiDFOO7 (ORCPT
+        with ESMTP id S234648AbiDFOP2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:14:59 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE64581F91
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:15:54 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id bq8so3194211ejb.10
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 03:15:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HN/hF2T3o28nadQ/y5E5FRCAcOOGpgeMQA27qzydwpk=;
-        b=MMkvKuoQYytHazFBhOjpMZjxYYrtKeORw+InYDqcKGeVymCLGqtah92z4+ZMSzGe+G
-         ByUKULQY/X790HdqbYC02VUOeRPdFLvPn72GkQINU8/NXh7wf+sEnQR5P8KjVDX10J/0
-         HSo0Hi+x2Yo9MWjxv/OaOLT+CqwIWbn46iIWJJPzXt62NayMr/CFO11vxCTwciz2g7HK
-         cwPOWIY9pcrWeXISMIiuglYFC9RCv7reuqsSxPqnB+C5T/EWo8wJnF7O3ZXIfxRK0t1H
-         guCc+6pPY+VlLuiKVlSvMWkGoDkRXMfq6wJ8Uwiy11zrYRJ+0y2QDqkyN3sKtKmnG8Fe
-         sJxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HN/hF2T3o28nadQ/y5E5FRCAcOOGpgeMQA27qzydwpk=;
-        b=m2RXWDPhdHOnvHOGlkZnS+cHWBVc0DcLk5eLUcBfzlLmMLVnKTb4cFHfYAsX4XL3q3
-         gN10mOfvtheB3vy3k8filnCrpir+wH4AbeiEtqoZYO+uJY1g71kTToQng+Po7xyA9kWj
-         D/gypT2Fui7QWCsmomva/0yE8bIEzN1/dcIo5lvRAILp7rr/2I95LL52tg4O3/+g36hS
-         v+PjFq78G5q2XwboNeIZ2kFj/iPiA686cOtLQniF2d/pUeiV0CkrClugtsIZ4CR4071o
-         kJwuaNAQw8mLmSm8M3V4emtPBhWOgBvC12mGAFX1Lly1GPDaXG+pHEHGlrDAxjRk5RUW
-         m+Fg==
-X-Gm-Message-State: AOAM530V1je+5yyxfWZ2ZAYfirN8eaVaU128UX9R73ymYH9zRUhQPr+t
-        vSBF8pKGxqr9ZZ+YMm6Tbk67LCbGuwyLuwYk
-X-Google-Smtp-Source: ABdhPJwP2X65GMx2JGHx74yiRVoSvObt6GnPixnyHYFkcaqt58Yv47hkGnTFGA/62d/3gvFpIh0Xnw==
-X-Received: by 2002:a17:906:6a02:b0:6d7:cda:2cf7 with SMTP id qw2-20020a1709066a0200b006d70cda2cf7mr7292595ejc.53.1649240150485;
-        Wed, 06 Apr 2022 03:15:50 -0700 (PDT)
-Received: from [192.168.0.184] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id j17-20020a05640211d100b00419357a2647sm7949702edw.25.2022.04.06.03.15.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 03:15:49 -0700 (PDT)
-Message-ID: <4ad9e733-7d8b-a73b-c59e-d9b6d5e58498@linaro.org>
-Date:   Wed, 6 Apr 2022 12:15:48 +0200
+        Wed, 6 Apr 2022 10:15:28 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72AF58049C
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:16:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649240186; x=1680776186;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6GizAQMbkbxuJ2LyNHkWHRdcu08MFq/YD+5rvP7Rido=;
+  b=SNEN91G57yN/BBDsnCkbdaBGM67952Baa89L/Kj6tPIRA18UUgwhP3/D
+   BRuc7RyWF/KkZXBydFv9p6mUaqBuFrWno6RAFAl4+7gimTuU6zNpEBwiB
+   rGcOOcVgsLV/wIbPIVF64zOj5mYTif8VQW4vMonZdC62LTzchf9LC8yGR
+   8rEqX0I0D7MpOkgfbsm/LoJxNNnmuG6RYltWk8aaz5RX2+s+n/8kIvmAv
+   YS/RF+O2GoUb0HrhM+tUhv88FJBXiqe5yEtNmLtnIYZKRnZeiQLhFII96
+   cS+f0Mkmqk/Wm3+j/NiP2We6DJKslYIMFaoFkrLrJthJNxVWr3VttD+FX
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="241590668"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="241590668"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 03:07:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="658468322"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 06 Apr 2022 03:07:57 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nc2Zx-0004If-7D;
+        Wed, 06 Apr 2022 10:07:57 +0000
+Date:   Wed, 06 Apr 2022 18:07:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/build] BUILD SUCCESS
+ 9f61ccc85afb061f65dd8ede7b8d4845b2f2dfce
+Message-ID: <624d6653.DHSKpkWzjey8gX8d%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] extcon: ptn5150: add usb role class support
-Content-Language: en-US
-To:     Li Jun <jun.li@nxp.com>, myungjoo.ham@samsung.com,
-        cw00.choi@samsung.com
-Cc:     linux-kernel@vger.kernel.org, frank.li@nxp.com, xu.yang_2@nxp.com
-References: <1649238142-27564-1-git-send-email-jun.li@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1649238142-27564-1-git-send-email-jun.li@nxp.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/04/2022 11:42, Li Jun wrote:
-> Add support of usb role class consumer to do role switch.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/build
+branch HEAD: 9f61ccc85afb061f65dd8ede7b8d4845b2f2dfce  x86/configs: Add x86 debugging Kconfig fragment plus docs
 
-Please mention also why you are doing this.
+elapsed time: 733m
 
-> 
-> Signed-off-by: Li Jun <jun.li@nxp.com>
-> ---
->  drivers/extcon/Kconfig          |  1 +
->  drivers/extcon/extcon-ptn5150.c | 39 +++++++++++++++++++++++++++++++++
->  2 files changed, 40 insertions(+)
-> 
-> diff --git a/drivers/extcon/Kconfig b/drivers/extcon/Kconfig
-> index 0d42e49105dd..9828ade787a8 100644
-> --- a/drivers/extcon/Kconfig
-> +++ b/drivers/extcon/Kconfig
-> @@ -132,6 +132,7 @@ config EXTCON_PTN5150
->  	tristate "NXP PTN5150 CC LOGIC USB EXTCON support"
->  	depends on I2C && (GPIOLIB || COMPILE_TEST)
->  	select REGMAP_I2C
-> +	select USB_ROLE_SWITCH
+configs tested: 120
+configs skipped: 4
 
-You do not need to select it. Driver will work without role switch,
-won't it? If it works, then probably it should be just imply.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
->  	help
->  	  Say Y here to enable support for USB peripheral and USB host
->  	  detection by NXP PTN5150 CC (Configuration Channel) logic chip.
-> diff --git a/drivers/extcon/extcon-ptn5150.c b/drivers/extcon/extcon-ptn5150.c
-> index 5b9a3cf8df26..821b0f390308 100644
-> --- a/drivers/extcon/extcon-ptn5150.c
-> +++ b/drivers/extcon/extcon-ptn5150.c
-> @@ -17,6 +17,7 @@
->  #include <linux/slab.h>
->  #include <linux/extcon-provider.h>
->  #include <linux/gpio/consumer.h>
-> +#include <linux/usb/role.h>
->  
->  /* PTN5150 registers */
->  #define PTN5150_REG_DEVICE_ID			0x01
-> @@ -52,6 +53,7 @@ struct ptn5150_info {
->  	int irq;
->  	struct work_struct irq_work;
->  	struct mutex mutex;
-> +	struct usb_role_switch *role_sw;
->  };
->  
->  /* List of detectable cables */
-> @@ -85,6 +87,12 @@ static void ptn5150_check_state(struct ptn5150_info *info)
->  		extcon_set_state_sync(info->edev, EXTCON_USB_HOST, false);
->  		gpiod_set_value_cansleep(info->vbus_gpiod, 0);
->  		extcon_set_state_sync(info->edev, EXTCON_USB, true);
-> +
-> +		ret = usb_role_switch_set_role(info->role_sw, USB_ROLE_DEVICE);
-> +		if (ret)
-> +			dev_err(info->dev, "failed to set device role: %d\n",
-> +				ret);
-> +
->  		break;
->  	case PTN5150_UFP_ATTACHED:
->  		extcon_set_state_sync(info->edev, EXTCON_USB, false);
-> @@ -95,6 +103,12 @@ static void ptn5150_check_state(struct ptn5150_info *info)
->  			gpiod_set_value_cansleep(info->vbus_gpiod, 1);
->  
->  		extcon_set_state_sync(info->edev, EXTCON_USB_HOST, true);
-> +
-> +		ret = usb_role_switch_set_role(info->role_sw, USB_ROLE_HOST);
-> +		if (ret)
-> +			dev_err(info->dev, "failed to set host role: %d\n",
-> +				ret);
-> +
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+m68k                        m5407c3_defconfig
+powerpc                     pq2fads_defconfig
+sparc64                          alldefconfig
+m68k                            q40_defconfig
+arm                           tegra_defconfig
+arc                            hsdk_defconfig
+arm                        shmobile_defconfig
+m68k                        mvme16x_defconfig
+riscv                            allmodconfig
+mips                  maltasmvp_eva_defconfig
+mips                      loongson3_defconfig
+mips                           gcw0_defconfig
+m68k                       bvme6000_defconfig
+i386                             alldefconfig
+arm                        spear6xx_defconfig
+sh                     sh7710voipgw_defconfig
+sh                        sh7757lcr_defconfig
+arm                          badge4_defconfig
+sh                            shmin_defconfig
+sh                            migor_defconfig
+sh                      rts7751r2d1_defconfig
+openrisc                  or1klitex_defconfig
+mips                         mpc30x_defconfig
+xtensa                  nommu_kc705_defconfig
+sparc                       sparc64_defconfig
+arm                          iop32x_defconfig
+riscv             nommu_k210_sdcard_defconfig
+arm                        mvebu_v7_defconfig
+sh                 kfr2r09-romimage_defconfig
+mips                           xway_defconfig
+xtensa                    xip_kc705_defconfig
+mips                          rb532_defconfig
+m68k                        m5307c3_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220405
+ia64                             allmodconfig
+ia64                             allyesconfig
+ia64                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+h8300                            allyesconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+arc                  randconfig-r043-20220406
+s390                 randconfig-r044-20220406
+riscv                randconfig-r042-20220406
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
 
+clang tested configs:
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220405
+riscv                randconfig-c006-20220405
+mips                 randconfig-c004-20220405
+arm                  randconfig-c002-20220405
+powerpc                        fsp2_defconfig
+arm                       spear13xx_defconfig
+arm                         palmz72_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+hexagon              randconfig-r045-20220405
+riscv                randconfig-r042-20220405
+hexagon              randconfig-r041-20220405
 
-Instead of having usb_role_switch_set_role() in two places, how about:
-1. setting local variable to USB_ROLE_HOST/USB_ROLE_NONE
-2. return on default
-3. one call to usb_role_switch_set_role() outside of the case?
-
-Should create less code.
-
->  		break;
->  	default:
->  		break;
-> @@ -133,6 +147,13 @@ static void ptn5150_irq_work(struct work_struct *work)
->  			extcon_set_state_sync(info->edev,
->  					EXTCON_USB, false);
->  			gpiod_set_value_cansleep(info->vbus_gpiod, 0);
-> +
-> +			ret = usb_role_switch_set_role(info->role_sw,
-> +						       USB_ROLE_NONE);
-> +			if (ret)
-> +				dev_err(info->dev,
-> +					"failed to set none role: %d\n",
-> +					ret);
->  		}
->  	}
->  
-> @@ -194,6 +215,14 @@ static int ptn5150_init_dev_type(struct ptn5150_info *info)
->  	return 0;
->  }
->  
-> +static void ptn5150_put_role_sw(void *data)
-> +{
-> +	struct ptn5150_info *info = data;
-> +
-> +	cancel_work_sync(&info->irq_work);
-
-This looks independent and should be executed always - even if getting
-role_sw in probe does not succeed.
-
-> +	usb_role_switch_put(info->role_sw);
-> +}
-> +
-
-
-
-Best regards,
-Krzysztof
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
