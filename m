@@ -2,77 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A77C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 051CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232561AbiDFTpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43362 "EHLO
+        id S232233AbiDFTql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232395AbiDFTp3 (ORCPT
+        with ESMTP id S232677AbiDFTqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:45:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B020A1E110D;
-        Wed,  6 Apr 2022 11:27:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C19361C57;
-        Wed,  6 Apr 2022 18:27:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53C7CC385A3;
-        Wed,  6 Apr 2022 18:27:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269645;
-        bh=1f90r0PPcWyC00HpJvDQcFTIRgfNox54/raYZWqCdlo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2hj8AgYaJdghULcuPho5HQJyN4Ms0g54iIOWvjNR6FCmUrexSjegxlgv1o8D1bWuh
-         V2pOAEHBnFSECA1mkbhfnnivOvON2P3vYk/EOogUAvprbWlPWe+0MA53xg8UTr9BYL
-         qIPZJxgfXh2rsSyuR0Jyjmlj6LtU9WvNi4r95pRw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 18/43] arm64: Add silicon-errata.txt entry for ARM erratum 1188873
-Date:   Wed,  6 Apr 2022 20:26:27 +0200
-Message-Id: <20220406182437.212978702@linuxfoundation.org>
+        Wed, 6 Apr 2022 15:46:25 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3683B5EBD5;
+        Wed,  6 Apr 2022 10:51:43 -0700 (PDT)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 236G7JVc002986;
+        Wed, 6 Apr 2022 17:51:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=3qnoL3A32ViFstgzgjBXHDaitO7b7rpSfdz143vPKGk=;
+ b=TR8FU7aonqtxG8ouGzmoHP3dQUxqjUVdnYma1hjHXH/4/N80pNW6NSnTohIo8j9YJ/bw
+ q3omH4X6JNAjTIcbOI1R7LZFVMOCddMPkBTxNH92dpyxA/lGR3IROMIgf5NVnFh0WsfE
+ qe+tErwLLdf1HvOp75+xLKcmcvIBnt052pVcSXk2fP/yq9Q4FqxbQNhzjWb+xir2Ql2H
+ QLIbEZBpqDUa5f0V1MW2TsuMH43gbgOvrLJGtDGdN9nZh5fjgvjMV7fyyk9LB3RGoECa
+ 5giq59aatNv64mZimb/vcDUEFUYk0dG5y4KQ1J40E6clJ4OpHFeuBwKxB29pMemEEoGF vA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f977buna9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Apr 2022 17:51:27 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 236HiFZe032736;
+        Wed, 6 Apr 2022 17:51:27 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f977bun9m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Apr 2022 17:51:27 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 236Hh9TN018159;
+        Wed, 6 Apr 2022 17:51:25 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3f6e4908m5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 06 Apr 2022 17:51:25 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 236HpMAW32899450
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 6 Apr 2022 17:51:22 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 005A74C046;
+        Wed,  6 Apr 2022 17:51:22 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AD8684C044;
+        Wed,  6 Apr 2022 17:51:16 +0000 (GMT)
+Received: from localhost.localdomain (unknown [9.211.90.125])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  6 Apr 2022 17:51:16 +0000 (GMT)
+From:   Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+To:     acme@kernel.org, jolsa@kernel.org, disgoel@linux.vnet.ibm.com
+Cc:     mpe@ellerman.id.au, linux-perf-users@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, maddy@linux.vnet.ibm.com,
+        rnsastry@linux.ibm.com, kjain@linux.ibm.com,
+        linux-kernel@vger.kernel.org, srikar@linux.vnet.ibm.com,
+        irogers@google.com
+Subject: [PATCH v2 0/4] Fix perf bench numa, futex and epoll to work with machines having #CPUs > 1K
+Date:   Wed,  6 Apr 2022 23:21:09 +0530
+Message-Id: <20220406175113.87881-1-atrajeev@linux.vnet.ibm.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-References: <20220406182436.675069715@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 3dg8eNuLQnFlErqcy5KMkXzXKig2d57D
+X-Proofpoint-ORIG-GUID: ijgm-SApZVM232V8XJqSlbh0zK3Xg7-X
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-06_09,2022-04-06_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ impostorscore=0 adultscore=0 malwarescore=0 lowpriorityscore=0 spamscore=0
+ clxscore=1011 phishscore=0 suspectscore=0 mlxscore=0 mlxlogscore=999
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204060087
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <marc.zyngier@arm.com>
+The perf benchmark for collections: numa, futex and epoll
+hits failure in system configuration with CPU's more than 1024.
+These benchmarks uses "sched_getaffinity" and "sched_setaffinity"
+in the code to work with affinity.
 
-commit e03a4e5bb7430f9294c12f02c69eb045d010e942 upstream.
+Example snippet from numa benchmark:
+<<>>
+perf: bench/numa.c:302: bind_to_node: Assertion `!(ret)' failed.
+Aborted (core dumped)
+<<>>
 
-Document that we actually work around ARM erratum 1188873
+bind_to_node function uses "sched_getaffinity" to save the cpumask.
+This fails with EINVAL because the default mask size in glibc is 1024.
 
-Fixes: 95b861a4a6d9 ("arm64: arch_timer: Add workaround for ARM erratum 1188873")
-Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- Documentation/arm64/silicon-errata.txt |    1 +
- 1 file changed, 1 insertion(+)
+Similarly in futex and epoll benchmark, uses sched_setaffinity during
+pthread_create with affinity. And since it returns EINVAL in such system
+configuration, benchmark doesn't run.
 
---- a/Documentation/arm64/silicon-errata.txt
-+++ b/Documentation/arm64/silicon-errata.txt
-@@ -55,6 +55,7 @@ stable kernels.
- | ARM            | Cortex-A57      | #834220         | ARM64_ERRATUM_834220        |
- | ARM            | Cortex-A72      | #853709         | N/A                         |
- | ARM            | Cortex-A55      | #1024718        | ARM64_ERRATUM_1024718       |
-+| ARM            | Cortex-A76      | #1188873        | ARM64_ERRATUM_1188873       |
- | ARM            | MMU-500         | #841119,#826419 | N/A                         |
- |                |                 |                 |                             |
- | Cavium         | ThunderX ITS    | #22375, #24313  | CAVIUM_ERRATUM_22375        |
+To overcome this 1024 CPUs mask size limitation of cpu_set_t,
+change the mask size using the CPU_*_S macros ie, use CPU_ALLOC to
+allocate cpumask, CPU_ALLOC_SIZE for size, CPU_SET_S to set mask bit.
 
+Fix all the relevant places in the code to use mask size which is large
+enough to represent number of possible CPU's in the system.
+
+Fix parse_setup_cpu_list function in numa bench to check if input CPU
+is online before binding task to that CPU. This is to fix failures where,
+though CPU number is within max CPU, it could happen that CPU is offline.
+Here, sched_setaffinity will result in failure when using cpumask having
+that cpu bit set in the mask.
+
+Patch 1 and Patch 2 address fix for perf bench futex and perf bench
+epoll benchmark. Patch 3 and Patch 4 address fix in perf bench numa
+benchmark
+
+Athira Rajeev (4):
+  tools/perf: Fix perf bench futex to correct usage of affinity for
+    machines with #CPUs > 1K
+  tools/perf: Fix perf bench epoll to correct usage of affinity for
+    machines with #CPUs > 1K
+  tools/perf: Fix perf numa bench to fix usage of affinity for machines
+    with #CPUs > 1K
+  tools/perf: Fix perf bench numa testcase to check if CPU used to bind
+    task is online
+
+Changelog:
+From v1 -> v2:
+ Addressed review comment from Ian Rogers to do
+ CPU_FREE in a cleaner way.
+ Added Tested-by from Disha Goel
+
+ tools/perf/bench/epoll-ctl.c           |  25 ++++--
+ tools/perf/bench/epoll-wait.c          |  25 ++++--
+ tools/perf/bench/futex-hash.c          |  26 ++++--
+ tools/perf/bench/futex-lock-pi.c       |  21 +++--
+ tools/perf/bench/futex-requeue.c       |  21 +++--
+ tools/perf/bench/futex-wake-parallel.c |  21 +++--
+ tools/perf/bench/futex-wake.c          |  22 ++++--
+ tools/perf/bench/numa.c                | 105 ++++++++++++++++++-------
+ tools/perf/util/header.c               |  43 ++++++++++
+ tools/perf/util/header.h               |   1 +
+ 10 files changed, 242 insertions(+), 68 deletions(-)
+
+-- 
+2.35.1
 
