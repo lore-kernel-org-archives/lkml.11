@@ -2,80 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B88B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84851C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:29:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236193AbiDFPa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50726 "EHLO
+        id S236256AbiDFPa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236136AbiDFPaB (ORCPT
+        with ESMTP id S236125AbiDFPao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:30:01 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5F66B7487;
-        Wed,  6 Apr 2022 05:47:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649249231; x=1680785231;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wlWFg6t46t3NvWgILYEYk3MILOUFjuxD9AUfU8kuuVg=;
-  b=TCgXXVlkyLjNyEHKq0mtGbR0eaa55oDLcIf73AJth0ZmfoyiPIa5CFBx
-   Va8rzz7S0ZYI/Nf0Ld8rWfRuFuXoEP4Jp8ahOgWWNGIh68ae2cPle3ms+
-   GpgQxFw9tfTySzKB4rlY0qjdITuk2Wqlt2UZYaEVwfnG9w9fdUl8iEqJj
-   FksQplCOKsbEKt6+pA6W6LrlezzyBiaBd9oUWCex7F+4qN/qVdG4zYtpd
-   8pRRIATzMGWWwphdVo6+CySDC7Z0jBeJUBe6Sm/aIsDCmj2SUUju8xSE+
-   T/T75MQOs9Xh0PCorKBiEqM5Y4IJ+ONrg0rIkF2wxHsccKNFWpyO/4vfE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="321729238"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="321729238"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 05:44:41 -0700
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="523909218"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 05:44:40 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nc509-000DvT-HH;
-        Wed, 06 Apr 2022 15:43:09 +0300
-Date:   Wed, 6 Apr 2022 15:43:09 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v1 1/1] pinctrl: alderlake: Fix register offsets for
- ADL-N variant
-Message-ID: <Yk2K3T0dLrBWgjPS@smile.fi.intel.com>
-References: <20220405170251.72154-1-andriy.shevchenko@linux.intel.com>
- <Yk0gnG+oqpARzC+m@lahna>
+        Wed, 6 Apr 2022 11:30:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972D43C2104;
+        Wed,  6 Apr 2022 05:51:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A4BEB8234E;
+        Wed,  6 Apr 2022 12:51:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C49C385A3;
+        Wed,  6 Apr 2022 12:51:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649249476;
+        bh=25aJM9pLZ2d0/V/4u0XywtbZPqCs8hoXhrvtX2i3dQs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CeTkoaYuAL73AQTXQ3+r4ihDSdu+hBx6bLs9ysOnKTnLHbe2HALx8nLhubbGgM2mU
+         /RR4/MbBfichbeZFBu0v0TWmQuLpcxf52RMjqWhF0ikU4sTqyfie9YzkDPclWhIq5r
+         Uh8MKVYo1Oa2ugZ+aHTP12aKQwzQbe1Zs/79cYkI1I3qLtLRJJpo3H1NnmlBVt203Y
+         DAv08kRL6ixC5i+Ee7lVSoRvNHF9Uh11Wwo+DGfG5tmjVneN0BiZN6MtxxeAdHlsnX
+         iDzLW75Sq7EZ5Ajq0eShiLscY/+/8yE3e7+10cMlP3ln7vvpvgEdkPg+tWF+755UGR
+         mBWdrLN7rUvFw==
+Date:   Wed, 6 Apr 2022 20:51:07 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Ray Jui <rjui@broadcom.com>, Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Scott Branden <sbranden@broadcom.com>,
+        Tony Lindgren <tony@atomide.com>, kernel@pengutronix.de,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v5 9/9] arm64: dts: imx8mm-kontron: fix ethernet node name
+Message-ID: <20220406125107.GO129381@dragon>
+References: <20220216074927.3619425-1-o.rempel@pengutronix.de>
+ <20220216074927.3619425-10-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yk0gnG+oqpARzC+m@lahna>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220216074927.3619425-10-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 08:09:48AM +0300, Mika Westerberg wrote:
-> On Tue, Apr 05, 2022 at 08:02:51PM +0300, Andy Shevchenko wrote:
-> > It appears that almost traditionally the N variants have deviations
-> > in the register offsets in comparison to S one. This is the case
-> > for Intel Alder Lake as well. Fix register offsets for ADL-N variant.
-> > 
-> > Fixes: 114b610b9048 ("pinctrl: alderlake: Add Intel Alder Lake-N pin controller support")
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Wed, Feb 16, 2022 at 08:49:27AM +0100, Oleksij Rempel wrote:
+> The node name of Ethernet controller should be "ethernet" instead of
+> "usbether" as required by Ethernet controller devicetree schema:
+>  Documentation/devicetree/bindings/net/ethernet-controller.yaml
 > 
-> Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> This patch can potentially affect boot loaders patching against full
+> node path instead of using device aliases.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Pushed for fixes, thanks!
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Applied, thanks!
