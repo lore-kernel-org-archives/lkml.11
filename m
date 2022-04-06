@@ -2,530 +2,261 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2963C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:07:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA1DC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234318AbiDFOJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:09:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51132 "EHLO
+        id S234396AbiDFOJW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235279AbiDFOIt (ORCPT
+        with ESMTP id S234616AbiDFOH6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:08:49 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFCFB1EE8CB;
-        Wed,  6 Apr 2022 02:57:33 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 23664JV7025461;
-        Wed, 6 Apr 2022 11:55:26 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=qgMbLXnQGitI8fYv/RT4WWwZZQQU2JxeZAtYaqPueHg=;
- b=fyZvBn5oArmTfoCjzUTGQ6raD0gDES8E9RkU1u73vn+I3tgHAHnjgCgP3JLepzq0Z6k1
- ukYkfi6okmHSHzDhDTracjM7/WOuNm1Hdge7KbRzDWSxTSvGF938weeZvDOry0byVCuG
- 0PLZjNcCPH29Ryj7wEiu8o3pTVfffcT6C3XMK6WBiMjKH5cuH15K2pbfk220ZNg0exiI
- Xd/XHbmctw4JbZqZgiuJuGcmEAcDKnq82wanEddWOfDudg6IsaLpGpZfi4b8UFvZap/C
- deneIui6WxJXC+ICPwdMv9lSW+wUDq2A/TMXvh71y4l9p9ctgxb0mEN1T6xYOdJa5W6A xQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f6du0vqtc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Apr 2022 11:55:26 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id DA4D610002A;
-        Wed,  6 Apr 2022 11:55:25 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D1B2020F2A4;
-        Wed,  6 Apr 2022 11:55:25 +0200 (CEST)
-Received: from localhost (10.75.127.47) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 6 Apr 2022 11:55:25
- +0200
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Rob Herring <robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        Stefano Stabellini <stefanos@xilinx.com>,
-        Bruce Ashfield <bruce.ashfield@xilinx.com>,
-        <arnaud.pouliquen@foss.st.com>
-Subject: [RFC PATCH v5 3/4] remoteproc: Move rproc_vdev management to remoteproc_virtio.c
-Date:   Wed, 6 Apr 2022 11:54:45 +0200
-Message-ID: <20220406095446.1187968-4-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220406095446.1187968-1-arnaud.pouliquen@foss.st.com>
-References: <20220406095446.1187968-1-arnaud.pouliquen@foss.st.com>
-MIME-Version: 1.0
+        Wed, 6 Apr 2022 10:07:58 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2063.outbound.protection.outlook.com [40.107.22.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A623E8FF4;
+        Wed,  6 Apr 2022 02:48:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UmZWimkj37LKhRiGnT86dexoKcZIyGJQ6zOtiU8dVfO2M0gi3Ubp8YaC548XRkIo38CH5xmDALnk01G6qlwSy4FTfGBCgRNAwlVuoDgeRw/i+xmsOyVK2twF5y2XZLhTpuhziQ2/8iHKGrDgAhH9SDjpag8fFFTuOS7cu1x11zXW+Uz0Alh07u2C728Yb8wqQ61MF82zbCqv/+zrKXiFMMoZkKlRKQwhlj7gq11gWrpAi9kLxYhmE4JG57B2IOkqbP1+aoU0q8cCuv8axw40r0+LIhxJsIqUqWBQq2f+rjuWesuco4TAeyyDIpig9MD3LxoVntZ7fxd8ViB7KgTzjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MBxMl+rs/WT0rXg2SGOJ+iS/lW34dizmq8i46EPjF+w=;
+ b=a3zXF2Sg31Mkx2CyMAdSJoiKo9udHxiXmRZPhFWh/IYICa7RFRa5EUapKXfpq1nLMSK7KbockCH4n2lFgZkhJCowqXKrworlvnG9t2NyMuGZ91uDaiMfXwKLfFELT6EzbGMifq5lY2EzCx2JW7XcxXcODTuS5adJfQMbUPRlgazlcq1nYFkGaIXooi6qDk72ejAX7sIXRJE9FBjW0Xsyo6UuqOz0FwXdo/EH60I5Sn4LQuMR4uBJyntUjs5gz95MHtRWhgYpNmezacONAcm8O4aGNjfnDZ3jySiBcBWgnkMFtL4XQUDbfnFn2flo+kYiX85NaAHqLvBtG0ZsoAlOLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MBxMl+rs/WT0rXg2SGOJ+iS/lW34dizmq8i46EPjF+w=;
+ b=kvACuLQbMFjxe/X9rNwYYcAg10fLvqEWtAL54hUFMfhfL+hZI1et6N/n1pGRTJdJAfiYkXQRPLMjf9Nr50ydfhbpNBjCU+xFui6he+Nw+Wj0kVdOnj4IVxQC+nKCeWhQ4TQ/2VnJiULeHjfJdUj1VPbXSNnsutuQjFUIWHBUO7M=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by DU0PR04MB9443.eurprd04.prod.outlook.com (2603:10a6:10:35b::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
+ 2022 09:48:28 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::6881:df46:ac23:1bc3]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::6881:df46:ac23:1bc3%7]) with mapi id 15.20.5123.031; Wed, 6 Apr 2022
+ 09:48:28 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        mirela.rabulea@oss.nxp.com
+Cc:     hverkuil-cisco@xs4all.nl, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] media: imx-jpeg: Correct the pixel format of rgb
+Date:   Wed,  6 Apr 2022 17:47:33 +0800
+Message-Id: <20220406094733.8562-1-ming.qian@nxp.com>
+X-Mailer: git-send-email 2.33.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-06_03,2022-04-05_01,2022-02-23_01
+X-ClientProxiedBy: SI2PR01CA0052.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:193::11) To AM6PR04MB6341.eurprd04.prod.outlook.com
+ (2603:10a6:20b:d8::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 69613151-fcca-40a7-5b2c-08da17b29a01
+X-MS-TrafficTypeDiagnostic: DU0PR04MB9443:EE_
+X-Microsoft-Antispam-PRVS: <DU0PR04MB9443730DA7A1478FD47F2A0DE7E79@DU0PR04MB9443.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8HyFQ6+wunKnC0jkgy+HdJ3SUEsEn+NClWEmafxG+nbK2efhcr/+N2dz4QECPA6PzfBDprEgbd4s5DhCh7htSq7Lq2wj6qFwf9Ja+r+3qix5yCCUdm+xg02mNBLApeJlIINj4TlsGp1ZtCo0HZMsAdf2k9evReJ3tFJ4lOoZnLpS5886OjVnUCaDGAwWOMWZwvPlme+02fEXnBX10R35RBdbD6gK8EllQSSY03wk9VTrQA67z9q9mxTscb9lT4yvIjnY1fNdTgU05c2RluyiaKIzQgm3v6HZtALMO8zuDMpuEJHrp0q3ofHNQBlaaeXdaxwkDf+bxi+hkc+9ELj/dnuu/lnv9RKea5P9ReefiAJTFArOftd6gtVM6QLfaZf/8QYXFtdEMoQcRc3t+bb01ZonOqD+CaQ74QJRnnuou1CYXA2cTFLmKPJVpt6B4pD52PTbKHwbB30eIqrCKDu1uXTzC4bA+1EJBounjljsdsPj1dxHANBErfth+CPNaISCVxBFqYPFKIKQWOSdeo9iHXDX+K0KJ5WeQpHMHNTgwenIX3kKEW5SbHO1SUWkIAbCUUBJ/pIIbk5f+xu8T528cleQ9WpaAmJLRmQbTCQAcrVF996Y04AWe46HEvbILr25cKgx1A+rC8dWGYhAWyqF6WdkyywShaXnqgE69zVEPAsKmmbg15utoxkmjTfjNixbtpYSJOf6ge9ZKvGPGNQ61w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66476007)(8676002)(6486002)(6512007)(52116002)(316002)(6666004)(4326008)(6506007)(508600001)(5660300002)(186003)(83380400001)(26005)(66556008)(1076003)(36756003)(66946007)(44832011)(38100700002)(2616005)(38350700002)(86362001)(2906002)(8936002)(7416002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2f1+cn5y9pq/8cZBgBgqfrCAZ63HRupOf4zVTjdLEr0JjccS1/MwDXohPOLW?=
+ =?us-ascii?Q?KfEKNX8EQuMhWgulFpu2e5IVo/ZAkz6WFtw5j4Sh/ljSOQCtNZB6A+tO3rAo?=
+ =?us-ascii?Q?YmQO5tHtZSEJFMRXxQ0LC9awkBuWjxZiJGgEJbyijQ9PnfxhJvXKLjsxeK9V?=
+ =?us-ascii?Q?JqC8Lj4uXGbpkiMrOHvgo11fxrS0lX17F3llXH1XNEtuAvgT14p/MORJtDik?=
+ =?us-ascii?Q?lubHFzeKsG0DUX1cdG/V8MOSI1pb/58L8bfE69+jPS5MD1viHVlHVaKbg9qI?=
+ =?us-ascii?Q?aDTJEVcKdIACnfviRgo+5kSwog26ctnhqwzVPHfqf5o3kVArpY170o2j6B1d?=
+ =?us-ascii?Q?0k7yoBq6jpBbA9Vsdlzc/GgZg3Xu2x0UuMsuxvy7rV9GjdCJY+blyzXNI6bb?=
+ =?us-ascii?Q?upy4fa6aFivTLBHjSG23QKZa0ARntnLvC/qqQlBU1Awhrt3BQH0xFUkbEsyA?=
+ =?us-ascii?Q?icyk55Icf4LXe8mLTaxIA9BusGEIiIPbolNJ0jZpLVXPOYPTlJQnOu5Jhd47?=
+ =?us-ascii?Q?o8gOc4ocRM2AwoE0PMUwCeXMwkFYgsZLnrktMJUf19AQFKKYhM2rIOCuafzf?=
+ =?us-ascii?Q?CYCWkfnyH7G6+yY6dnXvDcgSRbKKj+a7E3bd8VTzHzpeGQ7NmDKEuMMKRmmM?=
+ =?us-ascii?Q?mj37I246snIeFbuMA+9+eYWdVLv6uoz5WoDoL1OloUZQzhO10xmTdfAeBuqp?=
+ =?us-ascii?Q?+lABgH1+PpRTYun/6vDWKTv9vhbb+rWFcz6eWgSfaqrG5qTFv9ooGYUSoX5Y?=
+ =?us-ascii?Q?sngvbLeNZzFA6sEJvb+CUxe8bSoAVHS8jLe8OwiiorF2Kjfk6KbCEIEvtEXI?=
+ =?us-ascii?Q?AxMMuXWTlqx6caeG4YJPGASe+UTYqmLFUW84KWqnd4/BEe0dcmpaIjqT4h79?=
+ =?us-ascii?Q?lcryK29Rt5HUf2vID87uGnU4KOv0+BPNU0pblWhIIoGtjqSFlCosgSAlnP/h?=
+ =?us-ascii?Q?gagKgqepaJneAhxYJim7dRJKbidbAwlfmjex6WVGslKccNMXP6P+es+tTQID?=
+ =?us-ascii?Q?6jz2JMpC6dKXCXQ+nf0ghWO6vw5JAdp8mW3bY+rsd/FzoA/dK93ccQizvILj?=
+ =?us-ascii?Q?L7lYYJpgqLlrSeYNugvDpn5+hVtkylOyR7UUJrRW1wJyMUikkwVfUXsetBmR?=
+ =?us-ascii?Q?YqUA3jtiFgjhqLRhAMsxlHhWx1E/BJKsSFoLL+YiWkktKGxteFjTOv7bwYKA?=
+ =?us-ascii?Q?PAsd6RHlCetUti3NpuqLwIehYxCvjnDzu8mB2KpjR6LZq2F25TymqrM7G1qV?=
+ =?us-ascii?Q?/iw4fjAbaYhAOOlVPBaMCHrMg6340XLKFBItAHr2oV7DHbrP2CgmaSWhF1nL?=
+ =?us-ascii?Q?ZYtAWpanOBFUQrqELY+Brn4udqro2T1Id2EOdHpCPiK6mk3jln3MlFoMAjBb?=
+ =?us-ascii?Q?JHR65bBmJf9GV+7PKtoXg4nhPmvRhFH5sMPVD5jVac9ihIFv2jWYFZI6Bax6?=
+ =?us-ascii?Q?EFF5Sriqmos+7WRqYQffoaa+hOH6GvGJQjm1oRQdrmvWHJOtuZHmuYJ61IJ/?=
+ =?us-ascii?Q?5Tce4YuIrFj5mQOsNyUGudX5sGoBeyiVPqknENc2IoL6MmHYCOhxskhDqBiP?=
+ =?us-ascii?Q?1cp+YOW/3CUH5hlSNiP/E9JMfvBArY5A/k4CgBH07J0H5pteEsoIyvQnBSoX?=
+ =?us-ascii?Q?NFHQ9CDMIrNQcvESbN4CQpfUVSgRx/AtoonBs1A6jNsCJvUDpLlp8yvgfBnm?=
+ =?us-ascii?Q?uLCN/soPBh8TWjTeJqqOYxfjkzmBXaOiXxCx8ZeXcifVJncrblQ6dDY5+Yqn?=
+ =?us-ascii?Q?4Y0pJvqaxw=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 69613151-fcca-40a7-5b2c-08da17b29a01
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 09:48:28.3150
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qDSdvNgS7hQrxiL/BFtXEbzJOzOMvzdWE/CZ5aCPM5roo6Vp2bNUHbP7gT2JITpSMk1nujV/j3D86YWaOl9XIg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR04MB9443
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move functions related to the management of the rproc_vdev
-structure in the remoteproc_virtio.c.
-The aim is to decorrelate as possible the virtio management from
-the core part.
+The hardware is capable of encoding/decoding RGB and ARGB formats
+in whatever order the color components are,
+but the resulting jpegs look good
+if we start with raw data in BGR/ABGR order,
+so we will further only support V4L2_PIX_FMT_BGR24 and V4L2_PIX_FMT_ABGR32.
 
-Due to the strong correlation between the vrings and the resource table
-the rproc_alloc/parse/free_vring functions are kept in the remoteproc core.
-
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
 ---
-Update vs previous revision:
- - clean up bad rproc_free_vring call in rproc_vdev_release
----
- drivers/remoteproc/remoteproc_core.c     | 162 +----------------------
- drivers/remoteproc/remoteproc_internal.h |  11 +-
- drivers/remoteproc/remoteproc_virtio.c   | 159 +++++++++++++++++++++-
- 3 files changed, 167 insertions(+), 165 deletions(-)
+ .../media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h |  4 +--
+ .../media/platform/nxp/imx-jpeg/mxc-jpeg.c    | 34 +++++++++----------
+ .../media/platform/nxp/imx-jpeg/mxc-jpeg.h    |  2 +-
+ 3 files changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-index 081bea39daf4..bd6d3f2decc6 100644
---- a/drivers/remoteproc/remoteproc_core.c
-+++ b/drivers/remoteproc/remoteproc_core.c
-@@ -23,9 +23,7 @@
- #include <linux/panic_notifier.h>
- #include <linux/slab.h>
- #include <linux/mutex.h>
--#include <linux/dma-map-ops.h>
- #include <linux/dma-mapping.h>
--#include <linux/dma-direct.h> /* XXX: pokes into bus_dma_range */
- #include <linux/firmware.h>
- #include <linux/string.h>
- #include <linux/debugfs.h>
-@@ -383,7 +381,7 @@ int rproc_alloc_vring(struct rproc_vdev *rvdev, int i)
- 	return 0;
- }
+diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+index 356e40140987..e7e8954754b1 100644
+--- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
++++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg-hw.h
+@@ -102,11 +102,11 @@ enum mxc_jpeg_image_format {
+ 	MXC_JPEG_INVALID = -1,
+ 	MXC_JPEG_YUV420 = 0x0, /* 2 Plannar, Y=1st plane UV=2nd plane */
+ 	MXC_JPEG_YUV422 = 0x1, /* 1 Plannar, YUYV sequence */
+-	MXC_JPEG_RGB	= 0x2, /* RGBRGB packed format */
++	MXC_JPEG_BGR	= 0x2, /* BGR packed format */
+ 	MXC_JPEG_YUV444	= 0x3, /* 1 Plannar, YUVYUV sequence */
+ 	MXC_JPEG_GRAY = 0x4, /* Y8 or Y12 or Single Component */
+ 	MXC_JPEG_RESERVED = 0x5,
+-	MXC_JPEG_ARGB	= 0x6,
++	MXC_JPEG_ABGR	= 0x6,
+ };
  
--static int
-+int
- rproc_parse_vring(struct rproc_vdev *rvdev, struct fw_rsc_vdev *rsc, int i)
- {
- 	struct rproc *rproc = rvdev->rproc;
-@@ -434,164 +432,17 @@ void rproc_free_vring(struct rproc_vring *rvring)
+ #include "mxc-jpeg.h"
+diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+index 3df51d866011..8bee179c5cec 100644
+--- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
++++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
+@@ -8,7 +8,7 @@
+  * Baseline and extended sequential jpeg decoding is supported.
+  * Progressive jpeg decoding is not supported by the IP.
+  * Supports encode and decode of various formats:
+- *     YUV444, YUV422, YUV420, RGB, ARGB, Gray
++ *     YUV444, YUV422, YUV420, BGR, ABGR, Gray
+  * YUV420 is the only multi-planar format supported.
+  * Minimum resolution is 64 x 64, maximum 8192 x 8192.
+  * To achieve 8192 x 8192, modify in defconfig: CONFIG_CMA_SIZE_MBYTES=320
+@@ -73,8 +73,8 @@ static const struct mxc_jpeg_fmt mxc_formats[] = {
+ 		.flags		= MXC_JPEG_FMT_TYPE_ENC,
+ 	},
+ 	{
+-		.name		= "RGB", /*RGBRGB packed format*/
+-		.fourcc		= V4L2_PIX_FMT_RGB24,
++		.name		= "BGR", /*BGR packed format*/
++		.fourcc		= V4L2_PIX_FMT_BGR24,
+ 		.subsampling	= V4L2_JPEG_CHROMA_SUBSAMPLING_444,
+ 		.nc		= 3,
+ 		.depth		= 24,
+@@ -85,8 +85,8 @@ static const struct mxc_jpeg_fmt mxc_formats[] = {
+ 		.precision	= 8,
+ 	},
+ 	{
+-		.name		= "ARGB", /* ARGBARGB packed format */
+-		.fourcc		= V4L2_PIX_FMT_ARGB32,
++		.name		= "ABGR", /* ABGR packed format */
++		.fourcc		= V4L2_PIX_FMT_ABGR32,
+ 		.subsampling	= V4L2_JPEG_CHROMA_SUBSAMPLING_444,
+ 		.nc		= 4,
+ 		.depth		= 32,
+@@ -420,10 +420,10 @@ static enum mxc_jpeg_image_format mxc_jpeg_fourcc_to_imgfmt(u32 fourcc)
+ 		return MXC_JPEG_YUV420;
+ 	case V4L2_PIX_FMT_YUV24:
+ 		return MXC_JPEG_YUV444;
+-	case V4L2_PIX_FMT_RGB24:
+-		return MXC_JPEG_RGB;
+-	case V4L2_PIX_FMT_ARGB32:
+-		return MXC_JPEG_ARGB;
++	case V4L2_PIX_FMT_BGR24:
++		return MXC_JPEG_BGR;
++	case V4L2_PIX_FMT_ABGR32:
++		return MXC_JPEG_ABGR;
+ 	default:
+ 		return MXC_JPEG_INVALID;
  	}
- }
+@@ -697,11 +697,11 @@ static int mxc_jpeg_fixup_sof(struct mxc_jpeg_sof *sof,
+ 		sof->comp[0].h = 0x2;
+ 		break;
+ 	case V4L2_PIX_FMT_YUV24:
+-	case V4L2_PIX_FMT_RGB24:
++	case V4L2_PIX_FMT_BGR24:
+ 	default:
+ 		sof->components_no = 3;
+ 		break;
+-	case V4L2_PIX_FMT_ARGB32:
++	case V4L2_PIX_FMT_ABGR32:
+ 		sof->components_no = 4;
+ 		break;
+ 	case V4L2_PIX_FMT_GREY:
+@@ -729,11 +729,11 @@ static int mxc_jpeg_fixup_sos(struct mxc_jpeg_sos *sos,
+ 		sos->components_no = 3;
+ 		break;
+ 	case V4L2_PIX_FMT_YUV24:
+-	case V4L2_PIX_FMT_RGB24:
++	case V4L2_PIX_FMT_BGR24:
+ 	default:
+ 		sos->components_no = 3;
+ 		break;
+-	case V4L2_PIX_FMT_ARGB32:
++	case V4L2_PIX_FMT_ABGR32:
+ 		sos->components_no = 4;
+ 		break;
+ 	case V4L2_PIX_FMT_GREY:
+@@ -764,8 +764,8 @@ static unsigned int mxc_jpeg_setup_cfg_stream(void *cfg_stream_vaddr,
+ 	memcpy(cfg + offset, jpeg_soi, ARRAY_SIZE(jpeg_soi));
+ 	offset += ARRAY_SIZE(jpeg_soi);
  
--static int rproc_vdev_do_start(struct rproc_subdev *subdev)
--{
--	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
--
--	return rproc_add_virtio_dev(rvdev, rvdev->id);
--}
--
--static void rproc_vdev_do_stop(struct rproc_subdev *subdev, bool crashed)
--{
--	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
--	int ret;
--
--	ret = device_for_each_child(&rvdev->dev, NULL, rproc_remove_virtio_dev);
--	if (ret)
--		dev_warn(&rvdev->dev, "can't remove vdev child device: %d\n", ret);
--}
--
--/**
-- * rproc_rvdev_release() - release the existence of a rvdev
-- *
-- * @dev: the subdevice's dev
-- */
--static void rproc_rvdev_release(struct device *dev)
--{
--	struct rproc_vdev *rvdev = container_of(dev, struct rproc_vdev, dev);
--
--	of_reserved_mem_device_release(dev);
--
--	kfree(rvdev);
--}
--
--static int copy_dma_range_map(struct device *to, struct device *from)
--{
--	const struct bus_dma_region *map = from->dma_range_map, *new_map, *r;
--	int num_ranges = 0;
--
--	if (!map)
--		return 0;
--
--	for (r = map; r->size; r++)
--		num_ranges++;
--
--	new_map = kmemdup(map, array_size(num_ranges + 1, sizeof(*map)),
--			  GFP_KERNEL);
--	if (!new_map)
--		return -ENOMEM;
--	to->dma_range_map = new_map;
--	return 0;
--}
--
--static void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev)
-+void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev)
- {
- 	if (rvdev && rproc)
- 		list_add_tail(&rvdev->node, &rproc->rvdevs);
- }
- 
--static void rproc_remove_rvdev(struct rproc_vdev *rvdev)
-+void rproc_remove_rvdev(struct rproc_vdev *rvdev)
- {
- 	if (rvdev)
- 		list_del(&rvdev->node);
- }
--
--static struct rproc_vdev *
--rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
--{
--	struct rproc_vdev *rvdev;
--	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
--	char name[16];
--	int i, ret;
--
--	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
--	if (!rvdev)
--		return ERR_PTR(-ENOMEM);
--
--	kref_init(&rvdev->refcount);
--
--	rvdev->id = rvdev_data->id;
--	rvdev->rproc = rproc;
--	rvdev->index = rvdev_data->index;
--
--	/* Initialise vdev subdevice */
--	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
--	rvdev->dev.parent = &rproc->dev;
--	rvdev->dev.release = rproc_rvdev_release;
--	dev_set_name(&rvdev->dev, "%s#%s", dev_name(rvdev->dev.parent), name);
--	dev_set_drvdata(&rvdev->dev, rvdev);
--
--	ret = device_register(&rvdev->dev);
--	if (ret) {
--		put_device(&rvdev->dev);
--		return ERR_PTR(ret);
--	}
--
--	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
--	if (ret)
--		goto free_rvdev;
--
--	/* Make device dma capable by inheriting from parent's capabilities */
--	set_dma_ops(&rvdev->dev, get_dma_ops(rproc->dev.parent));
--
--	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
--					   dma_get_mask(rproc->dev.parent));
--	if (ret) {
--		dev_warn(&rvdev->dev,
--			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
--			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
--	}
--
--	/* parse the vrings */
--	for (i = 0; i < rsc->num_of_vrings; i++) {
--		ret = rproc_parse_vring(rvdev, rsc, i);
--		if (ret)
--			goto free_rvdev;
--	}
--
--	/* remember the resource offset*/
--	rvdev->rsc_offset = rvdev_data->rsc_offset;
--
--	/* allocate the vring resources */
--	for (i = 0; i < rsc->num_of_vrings; i++) {
--		ret = rproc_alloc_vring(rvdev, i);
--		if (ret)
--			goto unwind_vring_allocations;
--	}
--
--	rproc_add_rvdev(rproc, rvdev);
--
--	rvdev->subdev.start = rproc_vdev_do_start;
--	rvdev->subdev.stop = rproc_vdev_do_stop;
--
--	rproc_add_subdev(rproc, &rvdev->subdev);
--
--	return rvdev;
--
--unwind_vring_allocations:
--	for (i--; i >= 0; i--)
--		rproc_free_vring(&rvdev->vring[i]);
--free_rvdev:
--	device_unregister(&rvdev->dev);
--	return ERR_PTR(ret);
--}
--
--static void rproc_rvdev_remove_device(struct rproc_vdev *rvdev)
--{
--	struct rproc *rproc = rvdev->rproc;
--	struct rproc_vring *rvring;
--	int id;
--
--	for (id = 0; id < ARRAY_SIZE(rvdev->vring); id++) {
--		rvring = &rvdev->vring[id];
--		rproc_free_vring(rvring);
--	}
--
--	rproc_remove_subdev(rproc, &rvdev->subdev);
--	rproc_remove_rvdev(rvdev);
--	device_unregister(&rvdev->dev);
--}
--
- /**
-  * rproc_handle_vdev() - handle a vdev fw resource
-  * @rproc: the remote processor
-@@ -662,13 +513,6 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
- 	return 0;
- }
- 
--void rproc_vdev_release(struct kref *ref)
--{
--	struct rproc_vdev *rvdev = container_of(ref, struct rproc_vdev, refcount);
--
--	rproc_rvdev_remove_device(rvdev);
--}
--
- /**
-  * rproc_handle_trace() - handle a shared trace buffer resource
-  * @rproc: the remote processor
-diff --git a/drivers/remoteproc/remoteproc_internal.h b/drivers/remoteproc/remoteproc_internal.h
-index 99f2ff88079f..f82f9a5378ae 100644
---- a/drivers/remoteproc/remoteproc_internal.h
-+++ b/drivers/remoteproc/remoteproc_internal.h
-@@ -41,14 +41,14 @@ struct rproc_vdev_data {
- 
- /* from remoteproc_core.c */
- void rproc_release(struct kref *kref);
--irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
--void rproc_vdev_release(struct kref *ref);
- int rproc_of_parse_firmware(struct device *dev, int index,
- 			    const char **fw_name);
- 
- /* from remoteproc_virtio.c */
--int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id);
--int rproc_remove_virtio_dev(struct device *dev, void *data);
-+struct rproc_vdev *rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data);
-+void rproc_rvdev_remove_device(struct rproc_vdev *rvdev);
-+irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
-+void rproc_vdev_release(struct kref *ref);
- 
- /* from remoteproc_debugfs.c */
- void rproc_remove_trace_file(struct dentry *tfile);
-@@ -98,6 +98,7 @@ static inline void  rproc_char_device_remove(struct rproc *rproc)
- 
- void rproc_free_vring(struct rproc_vring *rvring);
- int rproc_alloc_vring(struct rproc_vdev *rvdev, int i);
-+int rproc_parse_vring(struct rproc_vdev *rvdev, struct fw_rsc_vdev *rsc, int i);
- 
- phys_addr_t rproc_va_to_pa(void *cpu_addr);
- int rproc_trigger_recovery(struct rproc *rproc);
-@@ -110,6 +111,8 @@ struct resource_table *rproc_elf_find_loaded_rsc_table(struct rproc *rproc,
- 						       const struct firmware *fw);
- struct rproc_mem_entry *
- rproc_find_carveout_by_name(struct rproc *rproc, const char *name, ...);
-+void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev);
-+void rproc_remove_rvdev(struct rproc_vdev *rvdev);
- 
- static inline int rproc_prepare_device(struct rproc *rproc)
- {
-diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
-index 70ab496d0431..e2e796ab2fd8 100644
---- a/drivers/remoteproc/remoteproc_virtio.c
-+++ b/drivers/remoteproc/remoteproc_virtio.c
-@@ -9,7 +9,9 @@
-  * Brian Swetland <swetland@google.com>
-  */
- 
-+#include <linux/dma-direct.h>
- #include <linux/dma-map-ops.h>
-+#include <linux/dma-mapping.h>
- #include <linux/export.h>
- #include <linux/of_reserved_mem.h>
- #include <linux/remoteproc.h>
-@@ -23,6 +25,25 @@
- 
- #include "remoteproc_internal.h"
- 
-+static int copy_dma_range_map(struct device *to, struct device *from)
-+{
-+	const struct bus_dma_region *map = from->dma_range_map, *new_map, *r;
-+	int num_ranges = 0;
-+
-+	if (!map)
-+		return 0;
-+
-+	for (r = map; r->size; r++)
-+		num_ranges++;
-+
-+	new_map = kmemdup(map, array_size(num_ranges + 1, sizeof(*map)),
-+			  GFP_KERNEL);
-+	if (!new_map)
-+		return -ENOMEM;
-+	to->dma_range_map = new_map;
-+	return 0;
-+}
-+
- static struct rproc_vdev *vdev_to_rvdev(struct virtio_device *vdev)
- {
- 	return container_of(vdev->dev.parent, struct rproc_vdev, dev);
-@@ -339,7 +360,7 @@ static void rproc_virtio_dev_release(struct device *dev)
-  *
-  * Return: 0 on success or an appropriate error value otherwise
-  */
--int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
-+static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
- {
- 	struct rproc *rproc = rvdev->rproc;
- 	struct device *dev = &rvdev->dev;
-@@ -447,10 +468,144 @@ int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
-  *
-  * Return: 0
-  */
--int rproc_remove_virtio_dev(struct device *dev, void *data)
-+static int rproc_remove_virtio_dev(struct device *dev, void *data)
- {
- 	struct virtio_device *vdev = dev_to_virtio(dev);
- 
- 	unregister_virtio_device(vdev);
- 	return 0;
- }
-+
-+static int rproc_vdev_do_start(struct rproc_subdev *subdev)
-+{
-+	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
-+
-+	return rproc_add_virtio_dev(rvdev, rvdev->id);
-+}
-+
-+static void rproc_vdev_do_stop(struct rproc_subdev *subdev, bool crashed)
-+{
-+	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
-+	int ret;
-+
-+	ret = device_for_each_child(&rvdev->dev, NULL, rproc_remove_virtio_dev);
-+	if (ret)
-+		dev_warn(&rvdev->dev, "can't remove vdev child device: %d\n", ret);
-+}
-+
-+/**
-+ * rproc_rvdev_release() - release the existence of a rvdev
-+ *
-+ * @dev: the subdevice's dev
-+ */
-+static void rproc_rvdev_release(struct device *dev)
-+{
-+	struct rproc_vdev *rvdev = container_of(dev, struct rproc_vdev, dev);
-+
-+	of_reserved_mem_device_release(dev);
-+
-+	kfree(rvdev);
-+}
-+
-+struct rproc_vdev *
-+rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
-+{
-+	struct rproc_vdev *rvdev;
-+	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
-+	char name[16];
-+	int i, ret;
-+
-+	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
-+	if (!rvdev)
-+		return ERR_PTR(-ENOMEM);
-+
-+	kref_init(&rvdev->refcount);
-+
-+	rvdev->id = rvdev_data->id;
-+	rvdev->rproc = rproc;
-+	rvdev->index = rvdev_data->index;
-+
-+	/* Initialise vdev subdevice */
-+	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
-+	rvdev->dev.parent = &rproc->dev;
-+	rvdev->dev.release = rproc_rvdev_release;
-+	dev_set_name(&rvdev->dev, "%s#%s", dev_name(rvdev->dev.parent), name);
-+	dev_set_drvdata(&rvdev->dev, rvdev);
-+
-+	ret = device_register(&rvdev->dev);
-+	if (ret) {
-+		put_device(&rvdev->dev);
-+		return ERR_PTR(ret);
-+	}
-+
-+	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
-+	if (ret)
-+		goto free_rvdev;
-+
-+	/* Make device dma capable by inheriting from parent's capabilities */
-+	set_dma_ops(&rvdev->dev, get_dma_ops(rproc->dev.parent));
-+
-+	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
-+					   dma_get_mask(rproc->dev.parent));
-+	if (ret) {
-+		dev_warn(&rvdev->dev,
-+			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
-+			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
-+	}
-+
-+	/* parse the vrings */
-+	for (i = 0; i < rsc->num_of_vrings; i++) {
-+		ret = rproc_parse_vring(rvdev, rsc, i);
-+		if (ret)
-+			goto free_rvdev;
-+	}
-+
-+	/* remember the resource offset*/
-+	rvdev->rsc_offset = rvdev_data->rsc_offset;
-+
-+	/* allocate the vring resources */
-+	for (i = 0; i < rsc->num_of_vrings; i++) {
-+		ret = rproc_alloc_vring(rvdev, i);
-+		if (ret)
-+			goto unwind_vring_allocations;
-+	}
-+
-+	rproc_add_rvdev(rproc, rvdev);
-+
-+	rvdev->subdev.start = rproc_vdev_do_start;
-+	rvdev->subdev.stop = rproc_vdev_do_stop;
-+
-+	rproc_add_subdev(rproc, &rvdev->subdev);
-+
-+	return rvdev;
-+
-+unwind_vring_allocations:
-+	for (i--; i >= 0; i--)
-+		rproc_free_vring(&rvdev->vring[i]);
-+free_rvdev:
-+	device_unregister(&rvdev->dev);
-+	return ERR_PTR(ret);
-+}
-+
-+void rproc_rvdev_remove_device(struct rproc_vdev *rvdev)
-+{
-+	struct rproc *rproc = rvdev->rproc;
-+	struct rproc_vring *rvring;
-+	int id;
-+
-+	for (id = 0; id < ARRAY_SIZE(rvdev->vring); id++) {
-+		rvring = &rvdev->vring[id];
-+		rproc_free_vring(rvring);
-+	}
-+
-+	rproc_remove_subdev(rproc, &rvdev->subdev);
-+	rproc_remove_rvdev(rvdev);
-+	device_unregister(&rvdev->dev);
-+}
-+
-+void rproc_vdev_release(struct kref *ref)
-+{
-+	struct rproc_vdev *rvdev = container_of(ref, struct rproc_vdev, refcount);
-+
-+	rproc_rvdev_remove_device(rvdev);
-+}
+-	if (fourcc == V4L2_PIX_FMT_RGB24 ||
+-	    fourcc == V4L2_PIX_FMT_ARGB32) {
++	if (fourcc == V4L2_PIX_FMT_BGR24 ||
++	    fourcc == V4L2_PIX_FMT_ABGR32) {
+ 		memcpy(cfg + offset, jpeg_app14, sizeof(jpeg_app14));
+ 		offset += sizeof(jpeg_app14);
+ 	} else {
+@@ -1277,9 +1277,9 @@ static u32 mxc_jpeg_get_image_format(struct device *dev,
+ 	 * encoded with 3 components have RGB colorspace, see Recommendation
+ 	 * ITU-T T.872 chapter 6.5.3 APP14 marker segment for colour encoding
+ 	 */
+-	if (fourcc == V4L2_PIX_FMT_YUV24 || fourcc == V4L2_PIX_FMT_RGB24) {
++	if (fourcc == V4L2_PIX_FMT_YUV24 || fourcc == V4L2_PIX_FMT_BGR24) {
+ 		if (header->app14_tf == V4L2_JPEG_APP14_TF_CMYK_RGB)
+-			fourcc = V4L2_PIX_FMT_RGB24;
++			fourcc = V4L2_PIX_FMT_BGR24;
+ 		else
+ 			fourcc = V4L2_PIX_FMT_YUV24;
+ 	}
+diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h
+index 9c9da32b2125..6e8c5aa7d956 100644
+--- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h
++++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.h
+@@ -17,7 +17,7 @@
+ #define MXC_JPEG_FMT_TYPE_RAW		1
+ #define MXC_JPEG_DEFAULT_WIDTH		1280
+ #define MXC_JPEG_DEFAULT_HEIGHT		720
+-#define MXC_JPEG_DEFAULT_PFMT		V4L2_PIX_FMT_RGB24
++#define MXC_JPEG_DEFAULT_PFMT		V4L2_PIX_FMT_BGR24
+ #define MXC_JPEG_MIN_WIDTH		64
+ #define MXC_JPEG_MIN_HEIGHT		64
+ #define MXC_JPEG_MAX_WIDTH		0x2000
 -- 
-2.25.1
+2.33.0
 
