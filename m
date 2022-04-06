@@ -2,66 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C20C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46FD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:37:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233612AbiDFNjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:39:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60638 "EHLO
+        id S233687AbiDFNj1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:39:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233516AbiDFNid (ORCPT
+        with ESMTP id S233498AbiDFNjG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:38:33 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24C40694D72;
-        Wed,  6 Apr 2022 03:40:08 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 2C0281F40636
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649241606;
-        bh=7x+nafxlBp5slkvgaNHZ+WTlE5AOPwQOWURWpk9wYds=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=WvM4AxJT5v8G2rRw2CopA5DESuuTsABtYXNNfCttxpuRH+ot2RvsHNdm7pF8jFyq0
-         SaIi66hQEifySViIVm2zfQjRbV6nG2VuxtRhTZsXu6DMVLxGyYvUmpChMS985pUaEx
-         OXTHxqHJOKQ1BZWRwur5ThF4Bc0FXNb6xSbXMtDTjZnUB7mSl+KxUCork3hCZ/8ZcS
-         BIhkE6NnMpZKlqBYEsdYVdL92IRpIc+5/nvpzJKbh6twDjDeI0k/iSRXzLlfq7mT8a
-         CJ5vFAbWlvxyDuui7dFiisEDmelHKSIVQH1z0V47tTRATOaopLFUdk1976fNevc8yH
-         pcMAfA/mwu+vQ==
-Message-ID: <2449070b-d7e1-122f-abe6-4148855a9aba@collabora.com>
-Date:   Wed, 6 Apr 2022 12:40:02 +0200
+        Wed, 6 Apr 2022 09:39:06 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730976984C2
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:40:46 -0700 (PDT)
+Received: from kwepemi500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KYKmb0ZQpz1HBYK;
+        Wed,  6 Apr 2022 18:01:51 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500002.china.huawei.com (7.221.188.171) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 18:02:17 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 6 Apr 2022 18:02:16 +0800
+Message-ID: <99acc7d2-a11b-250b-f614-18077fb76cc0@huawei.com>
+Date:   Wed, 6 Apr 2022 18:02:15 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 3/3] dt-bindings: display: mediatek: Correct disp_aal
- binding for MT8192
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
-        robh+dt@kernel.org, krzk+dt@kernel.org
-Cc:     matthias.bgg@gmail.com, p.zabel@pengutronix.de, airlied@linux.ie,
-        yongqiang.niu@mediatek.com, jason-jh.lin@mediatek.com,
-        nancy.lin@mediatek.com, allen-kh.cheng@mediatek.com,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
- <20220406094654.29722-4-rex-bc.chen@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220406094654.29722-4-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [RFC PATCH -next V2 1/7] x86: fix copy_mc_to_user compile error
+To:     Borislav Petkov <bp@alien8.de>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>
+References: <20220406091311.3354723-1-tongtiangen@huawei.com>
+ <20220406091311.3354723-2-tongtiangen@huawei.com> <Yk1bu88TcjXw/iU4@zn.tnic>
+From:   Tong Tiangen <tongtiangen@huawei.com>
+In-Reply-To: <Yk1bu88TcjXw/iU4@zn.tnic>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 06/04/22 11:46, Rex-BC Chen ha scritto:
-> The driver data for MT8192 is the same with MT8183. Therefore, we
-> correct it.
+
+
+在 2022/4/6 17:22, Borislav Petkov 写道:
+> On Wed, Apr 06, 2022 at 09:13:05AM +0000, Tong Tiangen wrote:
+>> The follow patch
 > 
-> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> There's no concept of "follow patch" in git - you need to explain this
+> differently.
+> 
+>> will add copy_mc_to_user to include/linux/uaccess.h, X86
+>> must declare Implemented to avoid compile error.
+> 
+> I don't know what that means. Try again pls.
+> 
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+This description is not good, will redescribe it in next version.
 
-...though, from what I know, you should also move MT8195 down there!
+Here I describe the reasons for this:
+
+Patch 3/7 in patchset[1] introduce copy_mc_to_user() in 
+include/linux/uaccess.h and the prototype is:
+
+     static inline unsigned long __must_check
+     copy_mc_to_user(void *dst, const void *src, size_t cnt)
+
+The prototype in x86 is:
+
+     unsigned long __must_check
+     copy_mc_to_user(void *to, const void *from, unsigned len);
+
+This two are a little different, so I added the follow code to x86 to
+avoid prototype conflict compile error.
+
+     #define copy_mc_to_user copy_mc_to_user
+
+In addition, I think this #define should be added here.
+
+[1]https://patchwork.kernel.org/project/linux-mm/cover/20220406091311.3354723-1-tongtiangen@huawei.com/
+
+Thanks.
+Tong.
