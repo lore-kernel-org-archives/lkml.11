@@ -2,137 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4E33C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2EA1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:02:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235212AbiDFPEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37986 "EHLO
+        id S235415AbiDFPEu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:04:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236187AbiDFPDb (ORCPT
+        with ESMTP id S235551AbiDFPD5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:03:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 748361E817D;
-        Wed,  6 Apr 2022 04:50:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 6 Apr 2022 11:03:57 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB27E59CD5C;
+        Wed,  6 Apr 2022 05:35:44 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7944617FF;
-        Wed,  6 Apr 2022 11:48:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98576C385A3;
-        Wed,  6 Apr 2022 11:48:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649245701;
-        bh=Eqm4FO9yfmN8qKPSd+0DsUNWznpY+VAjxNHYra7fkmM=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Vey/thLylG7lNXXBB4Bh6eXwOZ5KtUaoluhAWSPBTSeyyk0rRS+akzEz+ylI+Q8Vl
-         GTG9p6GQ4R2tb3RfdSy+mYBJLH4uWNCudezLEeRTp6NRuv+uIUViUpeBbnGnmcB3+L
-         u4+Cd+0UI3meT6bp9DJDa6z2dl4ptypybce3M7fFg4UHWwXG02j2iMuqK0k7MDRC+n
-         5lyvMefAPQGLUo5fQjzM11/ftR1elb5rRDYW8/ElqH5VFIr3W0RZX/TT1Q+ER+k7zn
-         0K7eh+kvDXJvdeqtiwXmRSVWTVDXifwXO6SrRVYDuWMrHru/86ageWYPKQJJmV6cjX
-         lrRsxcg3cDuUQ==
-Message-ID: <6306fba71325483a1ea22fa73250c8777ea647d7.camel@kernel.org>
-Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
- inodes
-From:   Jeff Layton <jlayton@kernel.org>
-To:     =?ISO-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>,
-        Xiubo Li <xiubli@redhat.com>
-Cc:     Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 06 Apr 2022 07:48:19 -0400
-In-Reply-To: <87zgky8n0o.fsf@brahms.olymp>
-References: <20220401133243.1075-1-lhenriques@suse.de>
-         <d6407dd1-b6df-4de4-fe37-71b765b2088a@redhat.com>
-         <878rsia391.fsf@brahms.olymp>
-         <6ba91390-83e8-8702-2729-dc432abd3cc5@redhat.com>
-         <87zgky8n0o.fsf@brahms.olymp>
-Content-Type: text/plain; charset="ISO-8859-15"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        by smtp-out2.suse.de (Postfix) with ESMTPS id E4D871F38A;
+        Wed,  6 Apr 2022 12:34:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649248445; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0nalfo9aZQbfkaPJuevJGokBEgQRD+uQYrkQD6gB7I4=;
+        b=KnYKVlfeHPMyilOcIFdUGMPu9r3dGgiiP6b6g3iqYs7P7z+HApBHhX+dBKa+rAxMwoCzk/
+        dg98WZO0/vINblwwOMXnut2d/CPTwuTqw0PAWBlxnu68NY1RuP6utcWIooPP0isFIo5fMH
+        1UEtmSKuTwYCuXqAX4V4tq+60L3rCPk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649248445;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0nalfo9aZQbfkaPJuevJGokBEgQRD+uQYrkQD6gB7I4=;
+        b=rXRGROhunSQ1f00/MAy/JciTOqeqeqi5VvnJSxZLPFwLoZqZnbqthl3seAY5aFOiN+kJc7
+        NyXvBabuFn1PdVAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7816413A8E;
+        Wed,  6 Apr 2022 12:34:05 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id OXpFGr2ITWLcZQAAMHmgww
+        (envelope-from <dkirjanov@suse.de>); Wed, 06 Apr 2022 12:34:05 +0000
+Message-ID: <857f3f9c-abc3-779e-d03b-76c23f6e13af@suse.de>
+Date:   Wed, 6 Apr 2022 15:33:49 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3] myri10ge: fix an incorrect free for skb in
+ myri10ge_sw_tso
+Content-Language: ru
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, christopher.lee@cspi.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220406035556.730-1-xiam0nd.tong@gmail.com>
+From:   Denis Kirjanov <dkirjanov@suse.de>
+In-Reply-To: <20220406035556.730-1-xiam0nd.tong@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-04-06 at 12:33 +0100, Luís Henriques wrote:
-> Xiubo Li <xiubli@redhat.com> writes:
+
+
+4/6/22 06:55, Xiaomeng Tong Ð¿Ð¸ÑˆÐµÑ‚:
+> All remaining skbs should be released when myri10ge_xmit fails to
+> transmit a packet. Fix it within another skb_list_walk_safe.
 > 
-> > On 4/6/22 6:57 PM, Luís Henriques wrote:
-> > > Xiubo Li <xiubli@redhat.com> writes:
-> > > 
-> > > > On 4/1/22 9:32 PM, Luís Henriques wrote:
-> > > > > When doing DIO on an encrypted node, we need to invalidate the page cache in
-> > > > > the range being written to, otherwise the cache will include invalid data.
-> > > > > 
-> > > > > Signed-off-by: Luís Henriques <lhenriques@suse.de>
-> > > > > ---
-> > > > >    fs/ceph/file.c | 11 ++++++++++-
-> > > > >    1 file changed, 10 insertions(+), 1 deletion(-)
-> > > > > 
-> > > > > Changes since v1:
-> > > > > - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
-> > > > > - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
-> > > > > 
-> > > > > Note: I'm not really sure this last change is required, it doesn't really
-> > > > > affect generic/647 result, but seems to be the most correct.
-> > > > > 
-> > > > > diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-> > > > > index 5072570c2203..b2743c342305 100644
-> > > > > --- a/fs/ceph/file.c
-> > > > > +++ b/fs/ceph/file.c
-> > > > > @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
-> > > > >    	if (ret < 0)
-> > > > >    		return ret;
-> > > > >    -	ceph_fscache_invalidate(inode, false);
-> > > > > +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
-> > > > >    	ret = invalidate_inode_pages2_range(inode->i_mapping,
-> > > > >    					    pos >> PAGE_SHIFT,
-> > > > >    					    (pos + count - 1) >> PAGE_SHIFT);
-> > > > The above has already invalidated the pages, why doesn't it work ?
-> > > I suspect the reason is because later on we loop through the number of
-> > > pages, call copy_page_from_iter() and then ceph_fscrypt_encrypt_pages().
-> > 
-> > Checked the 'copy_page_from_iter()', it will do the kmap for the pages but will
-> > kunmap them again later. And they shouldn't update the i_mapping if I didn't
-> > miss something important.
-> > 
-> > For 'ceph_fscrypt_encrypt_pages()' it will encrypt/dencrypt the context inplace,
-> > IMO if it needs to map the page and it should also unmap it just like in
-> > 'copy_page_from_iter()'.
-> > 
-> > I thought it possibly be when we need to do RMW, it may will update the
-> > i_mapping when reading contents, but I checked the code didn't find any 
-> > place is doing this. So I am wondering where tha page caches come from ? If that
-> > page caches really from reading the contents, then we should discard it instead
-> > of flushing it back ?
-> > 
-> > BTW, what's the problem without this fixing ? xfstest fails ?
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> ---
 > 
-> Yes, generic/647 fails if you run it with test_dummy_encryption.  And I've
-> also checked that the RMW code was never executed in this test.
+> changes since v2:
+>   - free all remaining skbs. (Xiaomeng Tong)
 > 
-> But yeah I have assumed (perhaps wrongly) that the kmap/kunmap could
-> change the inode->i_mapping. 
+> changes since v1:
+>   - remove the unneeded assignmnets. (Xiaomeng Tong)
 > 
-
-No, kmap/unmap are all about high memory and 32-bit architectures. Those
-functions are usually no-ops on 64-bit arches.
-
-> In my debugging this seemed to be the case
-> for the O_DIRECT path.  That's why I added this extra call here.
+> v2:https://lore.kernel.org/lkml/20220405000553.21856-1-xiam0nd.tong@gmail.com/
+> v1:https://lore.kernel.org/lkml/20220319052350.26535-1-xiam0nd.tong@gmail.com/
 > 
+> ---
+>   drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 6 ++----
+>   1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+> index 50ac3ee2577a..21d2645885ce 100644
+> --- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+> +++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+> @@ -2903,11 +2903,9 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
+>   		status = myri10ge_xmit(curr, dev);
+>   		if (status != 0) {
+>   			dev_kfree_skb_any(curr);
+> -			if (segs != NULL) {
+> -				curr = segs;
+> -				segs = next;
+> +			skb_list_walk_safe(next, curr, next) {
+>   				curr->next = NULL;
+> -				dev_kfree_skb_any(segs);
+> +				dev_kfree_skb_any(curr);
 
-I agree with Xiubo that we really shouldn't need to invalidate multiple
-times.
+why can't we just do the following?
+         skb_list_walk_safe(segs, skb, nskb) {
+                 status = myri10ge_xmit(curr, dev);
+                 if (err)
+                         break;
 
-I guess in this test, we have a DIO write racing with an mmap read
-Probably what's happening is either that we can't invalidate the page
-because it needs to be cleaned, or the mmap read is racing in just after
-the invalidate occurs but before writeback.
+         }
 
-In any case, it might be interesting to see whether you're getting
--EBUSY back from the new invalidate_inode_pages2 calls with your patch.
+         /* Free all of the segments. */
+         skb_list_walk_safe(segs, skb, nskb) {
+                 if (err)
+                         kfree_skb(skb);
+                 else
+                         consume_skb(skb);
+         }
+         return err;
 
--- 
-Jeff Layton <jlayton@kernel.org>
+
+>   			}
+>   			goto drop;
+>   		}
