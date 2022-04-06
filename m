@@ -2,97 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 628A3C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D154C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236317AbiDFVjn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
+        id S236474AbiDFVjw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237713AbiDFViV (ORCPT
+        with ESMTP id S238667AbiDFVjH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:38:21 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D7B19E0BB;
-        Wed,  6 Apr 2022 13:57:21 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id n8so3064726plh.1;
-        Wed, 06 Apr 2022 13:57:21 -0700 (PDT)
+        Wed, 6 Apr 2022 17:39:07 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C236813F00
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 14:16:11 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id u14so3761986pjj.0
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 14:16:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=M3MEvVhFzzQotX/HtGN33NXma/P1r5Q4BewBuovNpfY=;
-        b=XThIusyP5gQrtUaD6/zthwHE8c5RPOKm8a5sKlDsSfVlC3gBySFZCk8aB3u05C/ivD
-         rxv+JtND51CbSMLRJjT81jDR93ah53ZuuGD1RymF1mpBshKQnQLBFlvEkra2onYWqq+L
-         pUY59TCqy0MMb8vaA2mWAa164mXvybUnI2G/TsBLuioD1KXAgCOGBfVbCb+NGsFnVkpQ
-         Tv6pX+ytgvOs31+mPiQ7Jq48g5jbueAs16RkYXpYyuZyrUXdp6fg5+clPaHZ5gcsNS4p
-         0uh1yOutod6DU796aTgsFw++n0lg0W24wO13lXfCn6G/ABJdTPkvW+XycvNIdwe6eS3u
-         TQqA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tJyA8Psl3YHMPqRVK9xE2ZJSKTmC/2/5ZzNk4f8mImo=;
+        b=Bl0mLNt+vWjiKOe66L4+QBLhF2XVQ6jtKWOoPUdu1zRU48S2QnOdJF7cVgpslyEtoS
+         0NBNzuSwCaREZJ9nt0h9xV0pRTIKhb3B5qQiOVvluwtnIv5yLUx8T3jRxFTX63SdEqKF
+         LMpGbdoO5VSu0NDV3yun66sPc2uQ9scmBchZU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=M3MEvVhFzzQotX/HtGN33NXma/P1r5Q4BewBuovNpfY=;
-        b=pb5w6NudaaqIH+GNXJPMCC8O5oJDm06DxT53ltpB99HoePSeaOXQhDDQSztHI9rq/3
-         U0NO7o7ToxaM9X92gBCP7Xssp99RaP/pWxYjEQV00z630xrKcTlzWh6FcN9FvNyjXW6I
-         obUfS0N/x6w9IYoicbEj5gU7mNigh6V1dBxiPlNxtZGAqxn5vhm8TVpLBq8Fwn56YAMO
-         8haZwkesYqPzuY6LgGk0D4BDpyi6NJ0Kn9JtUEvIrGhwbV25SCle5X+daPBfX83T4E6B
-         lR+J0VWAhPu91/siAC4UJNGzrf6TNbER/o/+DOGgtDZmtxQUsLk/GiO+a4rBQW+VY2ny
-         0qoQ==
-X-Gm-Message-State: AOAM5336gZOSoeKIXNBcGvE38GQLxezmJIgAWnFcSqIPNZzjodywyGQl
-        9F0/nokfO/VjK22w3jyuz12ACpUgGbM=
-X-Google-Smtp-Source: ABdhPJyc7wOVogs1ZMhi7IpPK+ws8sRGaM/8iHCg7kxdSQXEs5Vl5E+/v+8rkTWC2xtBzq/Fugxo/Q==
-X-Received: by 2002:a17:903:41c8:b0:154:7d05:9829 with SMTP id u8-20020a17090341c800b001547d059829mr10396053ple.41.1649278640617;
-        Wed, 06 Apr 2022 13:57:20 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id v13-20020a17090a088d00b001c64d30fa8bsm5257426pjc.1.2022.04.06.13.57.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 13:57:19 -0700 (PDT)
-Message-ID: <8b4692ca-7877-e086-3097-9835caee0735@gmail.com>
-Date:   Wed, 6 Apr 2022 13:57:16 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tJyA8Psl3YHMPqRVK9xE2ZJSKTmC/2/5ZzNk4f8mImo=;
+        b=0/L91plymPgivcbfxCHuClf3YNWnGblifVr+Z3wnjVF+CMoEbfiAQ4r7HwYijyaqZs
+         cbqUl7KA8QOp14lC4RSruPLtXD4LvqFWsrh6+4TVsAQUM4V2FZGpj7kf9VmWu6FQk1YA
+         FgL3RnvQAjJ35qEnAKd3IFtMhuDLCJQeGVHcA3AtI+twxcs8UrircoJoiyMoKnQiDY46
+         /i4c15zrA83IqEZlh03sWOgDzIRbalA2Bl5w41pKpNDPhPb/nG6ozejB+FWbiPthkZZN
+         1utaZnqUlJU8+VMBqflKIZ/ELeNpML+zX9EnyuDfKQwCi7HBaJ5YUklGOcki/24bNEVB
+         oHzQ==
+X-Gm-Message-State: AOAM533P1HzT3ZUSV5C+3hom0ZhMyewU3dyraX2/pxrxZ9tQVfvR+juR
+        MJl9Ic+dLGS8zm/caFH8RrHT+w==
+X-Google-Smtp-Source: ABdhPJwdAJPWKqrvBsZQfH7MXUEMK0KiWte+EpNNHaFtUte3M51uejqFxyfwibKpFuzB6N4Gi4dT1w==
+X-Received: by 2002:a17:902:b941:b0:14d:af72:3f23 with SMTP id h1-20020a170902b94100b0014daf723f23mr10677730pls.6.1649279771300;
+        Wed, 06 Apr 2022 14:16:11 -0700 (PDT)
+Received: from chromium.org (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id 207-20020a6217d8000000b004fdd5af8885sm19926585pfx.22.2022.04.06.14.16.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 14:16:10 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 21:16:09 +0000
+From:   Prashant Malani <pmalani@chromium.org>
+To:     Akihiko Odaki <akihiko.odaki@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
+Subject: Re: [PATCH] platform/chrome: cros_ec_typec: Check for EC driver
+Message-ID: <Yk4DGZfpYbK8dofL@chromium.org>
+References: <20220404041101.6276-1-akihiko.odaki@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 4.9 00/43] 4.9.310-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220406182436.675069715@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404041101.6276-1-akihiko.odaki@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/6/22 11:26, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.9.310 release.
-> There are 43 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Fri, 08 Apr 2022 18:24:27 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.310-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+Hi Akihiko,
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+Thanks for the patch.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+On Apr 04 13:11, Akihiko Odaki wrote:
+> The EC driver may not be initialized when cros_typec_probe is called,
+> particulary when CONFIG_CROS_EC_CHARDEV=m.
+> 
+> Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
+> ---
+>  drivers/platform/chrome/cros_ec_typec.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
+> index 4bd2752c0823..7cb2e35c4ded 100644
+> --- a/drivers/platform/chrome/cros_ec_typec.c
+> +++ b/drivers/platform/chrome/cros_ec_typec.c
+> @@ -1084,6 +1084,9 @@ static int cros_typec_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	ec_dev = dev_get_drvdata(&typec->ec->ec->dev);
+> +	if (!ec_dev)
+> +		return -EPROBE_DEFER;
+> +
+
+Just a quick check: are you still seeing this issue with 5.18-rc1, which
+contains a null check for the parent EC device [1] ?
+
+Thanks,
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/platform/chrome?id=ffebd90532728086007038986900426544e3df4e
