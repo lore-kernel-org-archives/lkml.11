@@ -2,203 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4315C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70EEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236168AbiDFJxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38362 "EHLO
+        id S241440AbiDFKAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240336AbiDFJuj (ORCPT
+        with ESMTP id S1345042AbiDFJ6l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:50:39 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052424863A0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 23:24:00 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KYDwt4sB2z9sT7;
-        Wed,  6 Apr 2022 08:23:42 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 50ACN8q_GpOR; Wed,  6 Apr 2022 08:23:42 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KYDwp5BVCz9sTC;
-        Wed,  6 Apr 2022 08:23:38 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9BA4C8B776;
-        Wed,  6 Apr 2022 08:23:38 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id MdPgQrRTrO0q; Wed,  6 Apr 2022 08:23:38 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.200])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0E0338B779;
-        Wed,  6 Apr 2022 08:23:37 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2366NRgr390706
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 6 Apr 2022 08:23:27 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2366NRDH390705;
-        Wed, 6 Apr 2022 08:23:27 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v2 5/5] powerpc/8xx: Use kmalloced data structure instead of global static
-Date:   Wed,  6 Apr 2022 08:23:21 +0200
-Message-Id: <c8f0866ee013113d5e28948943cf0586e49f5353.1649226186.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649226186.git.christophe.leroy@csgroup.eu>
-References: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649226186.git.christophe.leroy@csgroup.eu>
+        Wed, 6 Apr 2022 05:58:41 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A831D2517
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 23:26:18 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2eb543fe73eso15432177b3.5
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 23:26:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=J+VJq0Ch2RV8datEtKffrP2BGCGcGG2IKlEbXzz13QE=;
+        b=G4Pi8B7NI0TpkYGeXGhejMJYTsRrpAwlQvVGiOmrDW0hAg3qKpoQUfic/+C7u3CQ4V
+         mnlQffgjQ8dSs3k45hB2pS659VsmuDWPQwF3w5cdLVKTG4gCdLHoO65cgcoTpoD8A7F3
+         1M2UKKxtBdZkB0I2zSCwecAyS++7G15CzFtO8Xut7wWK31aBmoHLRNOgC5oNpUB720Hz
+         YUgyMnxS2yX+z/rPNG/vqjMC93TJnVHd7tWstsXwJ5v38XVANySWoztzpINwhUhZ36R3
+         Wd1axtsf+RXsptrMLM2g1ioMZi+4NCLFUMyiMcb/wSNDrbqX2BSnc9z3LRFCqjk+qK1K
+         RIbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=J+VJq0Ch2RV8datEtKffrP2BGCGcGG2IKlEbXzz13QE=;
+        b=HW3eYM/neF5ArhaVckMj698wr6f7h/U44uG9zVgJvkf7Rmbwgm675nf96sHTH54Tbs
+         Yd9iYBK+BPgu4629gTcIBificgFfo4i66YN/EP20wiT6DtZhhRWw56u/EU1MXPI49evN
+         pU9lcilloLiQyztW+1lmHj/Yzxyf9WIJdrmUQ6lzqldQoBRNV3pEhfxMgrc7fqPVnJFP
+         cxVMGWBrn/Kwr6A++LUDBVP63pxfk2IneKDvh8K12nIftmWwCTj/9jK8I/rZpwHs4fGI
+         UDfaDoOovXp8FNTW2D4newVW45gLHG1akRiq0WYxo32ig3E7NoQ+CyhjcLJL8TQ7HUY8
+         fybQ==
+X-Gm-Message-State: AOAM5328FzQWxO/ARo3rLkYCtbXsuEJrEMaa/xTTsB2oDxUsFDuxHfO2
+        iZpOrPbUwafnqGDMfrPiLZuTf3UcfCaLMVnwFK4Bcg==
+X-Google-Smtp-Source: ABdhPJw6Sqq3nwKvWfdkQgSA0iDvRDR0bPlF2GaPiNdgVATlhYliSRHllsXkrppjla6irlf7iNavcKQa7v8tlcWxnF4=
+X-Received: by 2002:a81:e90c:0:b0:2db:d63e:56ff with SMTP id
+ d12-20020a81e90c000000b002dbd63e56ffmr6136242ywm.60.1649226377788; Tue, 05
+ Apr 2022 23:26:17 -0700 (PDT)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1649226200; l=4190; s=20211009; h=from:subject:message-id; bh=gbAm6QkVkPnZ9c9BYkFQVy/zbFCRmgtesziyGYwG0T8=; b=7tAnJYtkABQY90NQl2CUyeB25iRMMGXhQU4j2Vb31dr+qH1A1BcJP+hudSdZ0zuAr4bwIfT1eOqF FtupuI72CU1qN9gd+RN+PHTirbcXOlIWxLbYmSYB6aQhQ6OLgu8n
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+References: <20220405070407.513532867@linuxfoundation.org>
+In-Reply-To: <20220405070407.513532867@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 6 Apr 2022 11:56:06 +0530
+Message-ID: <CA+G9fYtJK7aaT6uyvZ3LEaCUDprSPPBVS87nTStAitCkg-UJOQ@mail.gmail.com>
+Subject: Re: [PATCH 5.17 0000/1126] 5.17.2-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a kmalloced data structure to store interrupt controller internal
-data instead of static global variables.
+On Tue, 5 Apr 2022 at 13:09, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.17.2 release.
+> There are 1126 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.17.2-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.17.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/platforms/8xx/cpm1-ic.c | 48 +++++++++++++++++-----------
- 1 file changed, 30 insertions(+), 18 deletions(-)
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-diff --git a/arch/powerpc/platforms/8xx/cpm1-ic.c b/arch/powerpc/platforms/8xx/cpm1-ic.c
-index 6f9765597a6d..a18fc7c99f83 100644
---- a/arch/powerpc/platforms/8xx/cpm1-ic.c
-+++ b/arch/powerpc/platforms/8xx/cpm1-ic.c
-@@ -10,29 +10,33 @@
- #include <linux/platform_device.h>
- #include <asm/cpm1.h>
- 
--static cpic8xx_t __iomem *cpic_reg;
--
--static struct irq_domain *cpm_pic_host;
-+struct cpm_pic_data {
-+	cpic8xx_t __iomem *reg;
-+	struct irq_domain *host;
-+};
- 
- static void cpm_mask_irq(struct irq_data *d)
- {
-+	struct cpm_pic_data *data = irq_data_get_irq_chip_data(d);
- 	unsigned int cpm_vec = (unsigned int)irqd_to_hwirq(d);
- 
--	clrbits32(&cpic_reg->cpic_cimr, (1 << cpm_vec));
-+	clrbits32(&data->reg->cpic_cimr, (1 << cpm_vec));
- }
- 
- static void cpm_unmask_irq(struct irq_data *d)
- {
-+	struct cpm_pic_data *data = irq_data_get_irq_chip_data(d);
- 	unsigned int cpm_vec = (unsigned int)irqd_to_hwirq(d);
- 
--	setbits32(&cpic_reg->cpic_cimr, (1 << cpm_vec));
-+	setbits32(&data->reg->cpic_cimr, (1 << cpm_vec));
- }
- 
- static void cpm_end_irq(struct irq_data *d)
- {
-+	struct cpm_pic_data *data = irq_data_get_irq_chip_data(d);
- 	unsigned int cpm_vec = (unsigned int)irqd_to_hwirq(d);
- 
--	out_be32(&cpic_reg->cpic_cisr, (1 << cpm_vec));
-+	out_be32(&data->reg->cpic_cisr, (1 << cpm_vec));
- }
- 
- static struct irq_chip cpm_pic = {
-@@ -42,29 +46,31 @@ static struct irq_chip cpm_pic = {
- 	.irq_eoi = cpm_end_irq,
- };
- 
--static int cpm_get_irq(void)
-+static int cpm_get_irq(struct irq_desc *desc)
- {
-+	struct cpm_pic_data *data = irq_desc_get_handler_data(desc);
- 	int cpm_vec;
- 
- 	/*
- 	 * Get the vector by setting the ACK bit and then reading
- 	 * the register.
- 	 */
--	out_be16(&cpic_reg->cpic_civr, 1);
--	cpm_vec = in_be16(&cpic_reg->cpic_civr);
-+	out_be16(&data->reg->cpic_civr, 1);
-+	cpm_vec = in_be16(&data->reg->cpic_civr);
- 	cpm_vec >>= 11;
- 
--	return irq_linear_revmap(cpm_pic_host, cpm_vec);
-+	return irq_linear_revmap(data->host, cpm_vec);
- }
- 
- static void cpm_cascade(struct irq_desc *desc)
- {
--	generic_handle_irq(cpm_get_irq());
-+	generic_handle_irq(cpm_get_irq(desc));
- }
- 
- static int cpm_pic_host_map(struct irq_domain *h, unsigned int virq,
- 			    irq_hw_number_t hw)
- {
-+	irq_set_chip_data(virq, h->host_data);
- 	irq_set_status_flags(virq, IRQ_LEVEL);
- 	irq_set_chip_and_handler(virq, &cpm_pic, handle_fasteoi_irq);
- 	return 0;
-@@ -79,13 +85,18 @@ static int cpm_pic_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct resource *res;
- 	int irq;
-+	struct cpm_pic_data *data;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res)
- 		return -ENODEV;
- 
--	cpic_reg = devm_ioremap(dev, res->start, resource_size(res));
--	if (!cpic_reg)
-+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->reg = devm_ioremap(dev, res->start, resource_size(res));
-+	if (!data->reg)
- 		return -ENODEV;
- 
- 	irq = platform_get_irq(pdev, 0);
-@@ -93,19 +104,20 @@ static int cpm_pic_probe(struct platform_device *pdev)
- 		return irq;
- 
- 	/* Initialize the CPM interrupt controller. */
--	out_be32(&cpic_reg->cpic_cicr,
-+	out_be32(&data->reg->cpic_cicr,
- 		 (CICR_SCD_SCC4 | CICR_SCC_SCC3 | CICR_SCB_SCC2 | CICR_SCA_SCC1) |
- 		 ((virq_to_hw(irq) / 2) << 13) | CICR_HP_MASK);
- 
--	out_be32(&cpic_reg->cpic_cimr, 0);
-+	out_be32(&data->reg->cpic_cimr, 0);
- 
--	cpm_pic_host = irq_domain_add_linear(dev->of_node, 64, &cpm_pic_host_ops, NULL);
--	if (!cpm_pic_host)
-+	data->host = irq_domain_add_linear(dev->of_node, 64, &cpm_pic_host_ops, data);
-+	if (!data->host)
- 		return -ENODEV;
- 
-+	irq_set_handler_data(irq, data);
- 	irq_set_chained_handler(irq, cpm_cascade);
- 
--	setbits32(&cpic_reg->cpic_cicr, CICR_IEN);
-+	setbits32(&data->reg->cpic_cicr, CICR_IEN);
- 
- 	return 0;
- }
--- 
-2.35.1
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+## Build
+* kernel: 5.17.2-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.17.y
+* git commit: 9ffb4937f7d30ba53f0992a8ba66689cf60f967a
+* git describe: v5.17.1-1127-g9ffb4937f7d3
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.17.y/build/v5.17=
+.1-1127-g9ffb4937f7d3
+
+## Test Regressions (compared to v5.17.1-1123-g290ba5383d2c)
+No test regressions found.
+
+## Metric Regressions (compared to v5.17.1-1123-g290ba5383d2c)
+No metric regressions found.
+
+## Test Fixes (compared to v5.17.1-1123-g290ba5383d2c)
+No test fixes found.
+
+## Metric Fixes (compared to v5.17.1-1123-g290ba5383d2c)
+No metric fixes found.
+
+## Test result summary
+total: 97365, pass: 81969, fail: 2175, skip: 13221, xfail: 0
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 291 total, 291 passed, 0 failed
+* arm64: 40 total, 40 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 40 total, 40 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 54 passed, 6 failed
+* riscv: 27 total, 22 passed, 5 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 41 total, 41 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-test[
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
