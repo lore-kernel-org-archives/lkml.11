@@ -2,127 +2,325 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 468B5C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20139C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237055AbiDFVkb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
+        id S236457AbiDFVkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237885AbiDFVip (ORCPT
+        with ESMTP id S238848AbiDFVjU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:38:45 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED3A217982;
-        Wed,  6 Apr 2022 14:00:32 -0700 (PDT)
+        Wed, 6 Apr 2022 17:39:20 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE2D63AA;
+        Wed,  6 Apr 2022 14:19:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1649278833; x=1680814833;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=S/RUYgJiJDHB7xj8zcZPP8Nba0qoMBr1iDzWuUq4ooM=;
-  b=BFG+AfrLxKrsTOM2H2eEXEg/F3vjones0/CYf+6wxFzUD1OvyS0Z7x55
-   QTUPQUHhuxe2SmUxBcGdRCN74gP/Jbe7bhFb6roVthpcmJFEEEGWiIho4
-   K0cF/w9eUBBn64D9cKCduvVWOe/ZLdvVRKEiUo/XixN0Dkvpr2rESB10s
-   U=;
-X-IronPort-AV: E=Sophos;i="5.90,240,1643673600"; 
-   d="scan'208";a="77373843"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-54c9d11f.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 06 Apr 2022 21:00:30 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1e-54c9d11f.us-east-1.amazon.com (Postfix) with ESMTPS id BF0E7C0271;
-        Wed,  6 Apr 2022 21:00:24 +0000 (UTC)
-Received: from EX13D02UWB002.ant.amazon.com (10.43.161.160) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Wed, 6 Apr 2022 21:00:24 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
- EX13D02UWB002.ant.amazon.com (10.43.161.160) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Wed, 6 Apr 2022 21:00:23 +0000
-Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
- (172.19.181.128) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
- Server id 15.0.1497.32 via Frontend Transport; Wed, 6 Apr 2022 21:00:23 +0000
-Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
-        id 134A62510; Wed,  6 Apr 2022 21:00:22 +0000 (UTC)
-From:   Ali Saidi <alisaidi@amazon.com>
-To:     <leo.yan@linaro.org>
-CC:     <Nick.Forrington@arm.com>, <acme@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <alisaidi@amazon.com>,
-        <andrew.kilroy@arm.com>, <benh@kernel.crashing.org>,
-        <german.gomez@arm.com>, <james.clark@arm.com>,
-        <john.garry@huawei.com>, <jolsa@kernel.org>, <kjain@linux.ibm.com>,
-        <lihuafei1@huawei.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
-        <mingo@redhat.com>, <namhyung@kernel.org>, <peterz@infradead.org>,
-        <will@kernel.org>
-Subject: Re: [PATCH v4 2/4] perf arm-spe: Use SPE data source for neoverse cores
-Date:   Wed, 6 Apr 2022 21:00:17 +0000
-Message-ID: <20220406210017.11887-1-alisaidi@amazon.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220404151218.GA898573@leoy-ThinkPad-X240s>
-References: <20220404151218.GA898573@leoy-ThinkPad-X240s>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649279971; x=1680815971;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=O4axOIQp0ZaB/KJu1/zFF3/16KbTtDOrEVUBXwk9oaY=;
+  b=T0AuC1F4ZTZiiS+f6i3br0KlHLtDOkB3aGrcfn4BGliubo86p/yyNsQq
+   2o4K4/3dVwt+5+HPjaHvwAnbNB0YmjB0l6vX8JicNFYTWxenzjRZQAuxm
+   CSx2LdnoPESrrWZQyp9uQ9hQfLafHBSlMTrbGT+nEYY/C8EdTEoDcGE8G
+   o=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 06 Apr 2022 14:19:31 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 14:19:31 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 6 Apr 2022 14:19:31 -0700
+Received: from [10.110.122.192] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 6 Apr 2022
+ 14:19:29 -0700
+Message-ID: <d7219276-186c-1c00-a41f-0b87d6318dd6@quicinc.com>
+Date:   Wed, 6 Apr 2022 14:19:29 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] drm/msm/dp: enhance both connect and disconnect
+ pending_timeout handle
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
+        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
+        <daniel@ffwll.ch>, <dmitry.baryshkov@linaro.org>,
+        <robdclark@gmail.com>, <sean@poorly.run>, <vkoul@kernel.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1649182627-8068-1-git-send-email-quic_khsieh@quicinc.com>
+ <CAE-0n50OYgSfhMcw2N_dd8LzxBXxoGhb0ToASsHGY=VPDa0zVg@mail.gmail.com>
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+In-Reply-To: <CAE-0n50OYgSfhMcw2N_dd8LzxBXxoGhb0ToASsHGY=VPDa0zVg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Apr 2022 15:12:18  +0000, Leo Yan wrote:
-> On Sun, Apr 03, 2022 at 08:33:37PM +0000, Ali Saidi wrote:
 
-[...]
+On 4/5/2022 12:48 PM, Stephen Boyd wrote:
+> Quoting Kuogee Hsieh (2022-04-05 11:17:07)
+>> HPD plugin handle is responsible for setting up main link and depend on
+> Is "HPD plugin handle" a function? Can you use the function name?
+>
+>> user space frame work to start video stream. Similarly, HPD unplugged
+>> handle is responsible for tearing down main link and depend on user space
+>> frame work to stop video stream. Connect_pending_timeout and disconnect_
+> Is 'Connect_pending_timeout' actually 'dp_connect_pending_timeout()'? If
+> so, it would be clearer if the function name is used.
+>
+>> pending_timeout are fired after 5 seconds timer expired to tear down main
+>> link and video stream and restore DP driver state into known default
+>> DISCONNECTED state in the case of frame work does not response uevent
+> s/frame work/framework/
+> s/response/respond to/
+>
+>> original from DP driver so that DP driver can recover gracefully.
+> This part of the sentence doesn't make sense to me.
+>
+>> The original connect_pending_timeout and disconnect_pending_timeout were
+>> not implemented correctly. This patch enhance both timeout functions to
+> s/enhance/fixes/
+>
+>> tear down main link and video stream correctly once timer is fired.
+>>
+>> Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
+>>
+> Nitpick: Drop newline.
+>
+>> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+>> ---
+>>   drivers/gpu/drm/msm/dp/dp_ctrl.c    | 34 ++++++++++++++++++++++++--
+>>   drivers/gpu/drm/msm/dp/dp_ctrl.h    |  1 +
+>>   drivers/gpu/drm/msm/dp/dp_display.c | 48 +++++++++++++++++++++++++++----------
+>>   3 files changed, 68 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>> index dcd0126..3f4cf6d 100644
+>> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>> @@ -1910,7 +1910,7 @@ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl)
+>>          return ret;
+>>   }
+>>
+>> -int dp_ctrl_off(struct dp_ctrl *dp_ctrl)
+>> +int dp_ctrl_off_link(struct dp_ctrl *dp_ctrl)
+>>   {
+>>          struct dp_ctrl_private *ctrl;
+>>          struct dp_io *dp_io;
+>> @@ -1926,7 +1926,37 @@ int dp_ctrl_off(struct dp_ctrl *dp_ctrl)
+>>
+>>          dp_catalog_ctrl_mainlink_ctrl(ctrl->catalog, false);
+>>
+>> -       dp_catalog_ctrl_reset(ctrl->catalog);
+>> +       ret = dp_power_clk_enable(ctrl->power, DP_CTRL_PM, false);
+>> +       if (ret) {
+>> +               DRM_ERROR("Failed to disable link clocks. ret=%d\n", ret);
+>> +       }
+>> +
+>> +       DRM_DEBUG_DP("Before, phy=%x init_count=%d power_on=%d\n",
+>> +               (u32)(uintptr_t)phy, phy->init_count, phy->power_count);
+> Please don't recast pointer prints with %x. Use %p to print pointers.
+>
+>> +
+>> +       phy_power_off(phy);
+>> +
+>> +       DRM_DEBUG_DP("After, phy=%x init_count=%d power_on=%d\n",
+>> +               (u32)(uintptr_t)phy, phy->init_count, phy->power_count);
+> It doesn't look good to be peeking inside struct phy. I wonder why that
+> isn't an opaque struct. Either way, please don't print the struct
+> members.
 
-> > The latter logic is why I think it's perfectly acceptable to use HITM to
-> > indicate a peer cache-to-cache transfer, however since others don't feel that way
-> > let me propose a single additional snooping type PERF_MEM_SNOOP_PEER that
-> > indicates some peer of the hierarchy below the originating core sourced the
-> > data.  This clears up the definition that line came from from a peer and may or
-> > may not have been modified, but it doesn't add a lot of implementation dependant
-> > functionality into the SNOOP API. 
-> > 
-> > We could use the mem-level to indicate the level of the cache hierarchy we had
-> > to get to before the snoop traveled upward, which seems like what x86 is doing
-> > here.
-> 
-> It makes sense to me that to use the highest cache level as mem-level.
-> Please add comments in the code for this, this would be useful for
-> understanding the code.
+both init_count and power_count are very important to debug "clock stuck 
+at off" issues.
 
-Ok.
+Can we keep them here?
 
-> > PEER_CORE -> MEM_SNOOP_PEER + L2
-> > PEER_CLSTR -> MEM_SNOOP_PEER + L3
-> > PEER_LCL_CLSTR -> MEM_SNOOP_PEER + L3 (since newer neoverse cores don't support
-> > the clusters and the existing commercial implementations don't have them).
-> 
-> Generally, this idea is fine for me.
+>> +
+>> +       return ret;
+>> +}
+>> +
+>> +int dp_ctrl_off(struct dp_ctrl *dp_ctrl)
+>> +{
+>> +       struct dp_ctrl_private *ctrl;
+>> +       struct dp_io *dp_io;
+>> +       struct phy *phy;
+>> +       int ret = 0;
+> Drop useless assignment please
+>
+>> +
+>> +       if (!dp_ctrl)
+> How is this possible? Please remove useless checks.
+>
+>> +               return -EINVAL;
+>> +
+>> +       ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
+>> +       dp_io = &ctrl->parser->io;
+>> +       phy = dp_io->phy;
+>> +
+>> +       dp_catalog_ctrl_mainlink_ctrl(ctrl->catalog, false);
+>>
+>>          ret = dp_power_clk_enable(ctrl->power, DP_STREAM_PM, false);
+>>          if (ret)
+>> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+>> index 178b774..56bf7c5 100644
+>> --- a/drivers/gpu/drm/msm/dp/dp_display.c
+>> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+>> @@ -593,10 +593,16 @@ static int dp_connect_pending_timeout(struct dp_display_private *dp, u32 data)
+>>
+>>          mutex_lock(&dp->event_mutex);
+>>
+>> +       /*
+>> +        * main link had been setup but video is not ready yet
+>> +        * only tear down main link
+>> +        */
+>>          state = dp->hpd_state;
+>>          if (state == ST_CONNECT_PENDING) {
+>> -               dp->hpd_state = ST_CONNECTED;
+>>                  DRM_DEBUG_DP("type=%d\n", dp->dp_display.connector_type);
+>> +               dp_ctrl_off_link(dp->ctrl);
+>> +               dp_display_host_phy_exit(dp);
+>> +               dp->hpd_state = ST_DISCONNECTED;
+>>          }
+>>
+>>          mutex_unlock(&dp->event_mutex);
+>> @@ -645,6 +651,7 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+>>                  if (dp->link->sink_count == 0) {
+>>                          dp_display_host_phy_exit(dp);
+>>                  }
+>> +               dp_display_usbpd_disconnect_cb(&dp->pdev->dev);
+> The name of this function is very confusing. It would be nice to rename
+> it to something like dp_display_notify_disconnect() and skip
+>
+>>                  mutex_unlock(&dp->event_mutex);
+>>                  return 0;
+>>          }
+>> @@ -661,19 +668,19 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
+>>                  return 0;
+>>          }
+>>
+>> -       dp->hpd_state = ST_DISCONNECT_PENDING;
+>> -
+>>          /* disable HPD plug interrupts */
+>>          dp_catalog_hpd_config_intr(dp->catalog, DP_DP_HPD_PLUG_INT_MASK, false);
+>>
+>> -       /*
+>> -        * We don't need separate work for disconnect as
+>> -        * connect/attention interrupts are disabled
+>> -        */
+> Why is this comment removed? Because a work is actually used? Why can't
+> we call dp_display_send_hpd_notification() directly?
+There may have circular locking issue since we have hold event_mutex 
+already.
+>
+>>          dp_display_usbpd_disconnect_cb(&dp->pdev->dev);
+>>
+>> -       /* start sentinel checking in case of missing uevent */
+>> -       dp_add_event(dp, EV_DISCONNECT_PENDING_TIMEOUT, 0, DP_TIMEOUT_5_SECOND);
+>> +       if (state == ST_DISPLAY_OFF) {
+>> +               dp->hpd_state = ST_DISCONNECTED;
+>> +
+> Drop extra newline please
+>
+>> +       } else {
+>> +               /* start sentinel checking in case of missing uevent */
+>> +               dp_add_event(dp, EV_DISCONNECT_PENDING_TIMEOUT, 0, DP_TIMEOUT_5_SECOND);
+>> +               dp->hpd_state = ST_DISCONNECT_PENDING;
+> It looks like dp_add_event() should check the event and change
+> dp->hpd_state sometimes. Then this code would be simply adding an event
+> and dp_add_event() would be changing the hpd_state while scheduling the
+> work.
 
-Great.  
+this will increase dp_add_event() burdens a lots since it has to looking 
+into each event.
 
-Now the next tricky thing. Since we're not using HITM for recording the memory
-events, the question becomes for the c2c output should we output the SNOOP_PEER
-events as if they are HITM events with a clarification in the perf-c2c man page
-or effectively duplicate all the lcl_hitm logic, which is a fair amount,  in
-perf c2c to add a column and sort option? 
+Also not every hpd_state change go through dp_add_event.
 
-> Following your suggestion, if we connect the concepts PoC and PoU in Arm
-> reference manual, we can extend the snooping mode with MEM_SNOOP_POU
-> (for PoU) and MEM_SNOOP_POC (for PoC), so:
-> 
-> PEER_CORE -> MEM_SNOOP_POU + L2
-> PEER_LCL_CLSTR -> MEM_SNOOP_POU + L3
-> PEER_CLSTR -> MEM_SNOOP_POC + L3
-> 
-> Seems to me, we could consider for this.  If this is over complexity or
-> even I said any wrong concepts for this, please use your method.
-
-I think this adds a lot of complexity and reduces clarity. Some systems
-implement coherent icaches and the PoU would be the L1 cache, others don't so
-that would be the L2 (or wherever there is a unified cache). Similarly, with the
-point of coherency, some systems would consider that dram, but other systems
-have transparent LLCs and it would be the LLC. 
-
-Thanks,
-Ali
-
+>
+>> +       }
+>>
+>>          /* signal the disconnect event early to ensure proper teardown */
+>>          dp_display_handle_plugged_change(&dp->dp_display, false);
+>> @@ -695,10 +702,16 @@ static int dp_disconnect_pending_timeout(struct dp_display_private *dp, u32 data
+>>
+>>          mutex_lock(&dp->event_mutex);
+>>
+>> +       /*
+>> +        * main link had been set up and video is ready
+>> +        * tear down main link, video stream and phy
+> because disconnect event never came and we need to get back to a default
+> sane state?
+yes, the default state is DISCONNECTED, therefore we better stop video 
+and  tear down main link.
+>
+>> +        */
+>>          state =  dp->hpd_state;
+>>          if (state == ST_DISCONNECT_PENDING) {
+>> -               dp->hpd_state = ST_DISCONNECTED;
+>>                  DRM_DEBUG_DP("type=%d\n", dp->dp_display.connector_type);
+>> +               dp_ctrl_off(dp->ctrl);
+>> +               dp_display_host_phy_exit(dp);
+>> +               dp->hpd_state = ST_DISCONNECTED;
+>>          }
+>>
+>>          mutex_unlock(&dp->event_mutex);
+>> @@ -1571,6 +1584,12 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+>>
+>>          mutex_lock(&dp_display->event_mutex);
+>>
+>> +       state =  dp_display->hpd_state;
+> s/=  /= /
+>
+> Drop extra space after '=' please.
+>
+>> +       if (state == ST_DISCONNECTED) {
+>> +               mutex_unlock(&dp_display->event_mutex);
+>> +               return rc;
+>> +       }
+>> +
+>>          /* stop sentinel checking */
+>>          dp_del_event(dp_display, EV_CONNECT_PENDING_TIMEOUT);
+>>
+>> @@ -1588,8 +1607,6 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
+>>                  return rc;
+>>          }
+>>
+>> -       state =  dp_display->hpd_state;
+>> -
+>>          if (state == ST_DISPLAY_OFF)
+>>                  dp_display_host_phy_init(dp_display);
+>>
+>> @@ -1638,13 +1655,18 @@ int msm_dp_display_disable(struct msm_dp *dp, struct drm_encoder *encoder)
+>>          /* stop sentinel checking */
+>>          dp_del_event(dp_display, EV_DISCONNECT_PENDING_TIMEOUT);
+>>
+>> +       state =  dp_display->hpd_state;
+> s/=  /= /
+>
+> Drop extra space after '=' please.
+>
+>> +       if (state == ST_DISCONNECTED || state == ST_DISPLAY_OFF) {
+>> +               mutex_unlock(&dp_display->event_mutex);
+>> +               return rc;
+>> +       }
+>> +
+>>          dp_display_disable(dp_display, 0);
+>>
+>>          rc = dp_display_unprepare(dp);
+>>          if (rc)
+>>                  DRM_ERROR("DP display unprepare failed, rc=%d\n", rc);
+>>
+>> -       state =  dp_display->hpd_state;
+>>          if (state == ST_DISCONNECT_PENDING) {
+>>                  /* completed disconnection */
+>>                  dp_display->hpd_state = ST_DISCONNECTED;
