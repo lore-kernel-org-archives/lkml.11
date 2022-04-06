@@ -2,155 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C315C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E087C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239992AbiDFR5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:57:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43684 "EHLO
+        id S239922AbiDFR5m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239693AbiDFR5F (ORCPT
+        with ESMTP id S239758AbiDFR5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:57:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1DD641A771E
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:06:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649261211;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=U2QzSBkwn7Yafa/16sbGGbBUM4FbySeU5GGeHJm/Jx0=;
-        b=env1f3IYLBLUN0bDvO5fF8B61UkIhGpjGygidOmSM6sNxq2RRqUQk+b68iXXTSj+PrM2/k
-        2MtvZZsFpN9JPSFJ1ntmxscdtgciLV6J5p6g7Yrv/z+9R/fDWeJuxc1hQKjCEvvhkRmNRn
-        H5eZjl4EoDk/wgCQafJPX5DP5sAAZ5k=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-12-l_pP4vIKNVOfLT1dI12TEQ-1; Wed, 06 Apr 2022 12:06:50 -0400
-X-MC-Unique: l_pP4vIKNVOfLT1dI12TEQ-1
-Received: by mail-wm1-f72.google.com with SMTP id x8-20020a7bc768000000b0038e73173886so1513826wmk.6
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 09:06:49 -0700 (PDT)
+        Wed, 6 Apr 2022 13:57:07 -0400
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02293305B22;
+        Wed,  6 Apr 2022 09:07:12 -0700 (PDT)
+Received: by mail-oi1-f176.google.com with SMTP id 12so2831088oix.12;
+        Wed, 06 Apr 2022 09:07:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=U2QzSBkwn7Yafa/16sbGGbBUM4FbySeU5GGeHJm/Jx0=;
-        b=2PPqW6vIRgiq9mbuj3sIoRDtAlTyLOF6YXX7RXtCNOJi+dtUgwp5yvC0dZlK8bDLN5
-         kOf8UT0gqmEw86AntuLOJ3pZ/bUob0+AjwWqE8SMzJtKFHBO9+zVSfB8ZHi8y0bZcJH0
-         Q0LykdKqt2Tmn8Doj21VFZ26jy1Aug9rPyFweHXKfiv586P0iPqoDJeTYVlIYMoUOwsm
-         ZPPCjSr4q0h4i9hbCabzO8fNolrerwazY3clwSJJR4R+twaKy9oaeXPF3qW9Z8FoPhm0
-         MX2znxhmxIjJRzIqgH4useh38gb3dV3g8sOSiHOXTN6Mj4Xmmyg4vI6bTAL1WaVhXvU5
-         erVA==
-X-Gm-Message-State: AOAM533PESef2Z8vZhno9DV97xVnbF5F0RzcJj2YhhAYV2AELR+CVyxM
-        vhNemvABmA2SZnXMY618kYcjoZ5eXnho8qLZuHJ+A3e83/cCUSsTmcYtfcuTenmzCbzRNSHqd+O
-        qCbibKsw3hKvhQgrh33/rHUzKZx7gLwK5qb5A+dmi171AbIRsklzWcKB11PrqJ7JhweVdO5uGc2
-        M=
-X-Received: by 2002:a05:600c:3b26:b0:38c:8358:4b84 with SMTP id m38-20020a05600c3b2600b0038c83584b84mr8262645wms.185.1649261208783;
-        Wed, 06 Apr 2022 09:06:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwrWRPcdVNxxa0OQoFxVtMgEvN6P53Xni3VcPZinWUwk/8XrPqG2DL56DBxegaE9MICKK7T2Q==
-X-Received: by 2002:a05:600c:3b26:b0:38c:8358:4b84 with SMTP id m38-20020a05600c3b2600b0038c83584b84mr8262596wms.185.1649261208370;
-        Wed, 06 Apr 2022 09:06:48 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id f1-20020a1c6a01000000b0038c9f6a3634sm5038899wmc.7.2022.04.06.09.06.47
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mi0PlXno3D6jBV7awtJNZHmVjzTuCmSnSrCiUvwpU7E=;
+        b=ixA+1+fWlID6n92LIWvIyDbKuSPpFwo/ptM4XSfETNyHRztEoISeuDm5oZOuBfejFA
+         cdz3ZZJx4uvmM3qrCfDt1fX5xa/W47mHPv43UE1MiViOzbrzXPWzy5HB/69wFAR/UvgS
+         l8D0qbFbcX4en5QUcqp2oHfbOL7BM4jMbyBFsG8JP3Wye62z/mkBRT4bvZ/ZnVL8npBJ
+         kh0l2C25nNAeQTJxLjxMqzCd+ZIMAC33ljbzKaG4YBb8aYjDMcDsNONcT+pecjDvM3Ym
+         my9d+7ELK8uqzb6N41hDEUv4NO9lIb9nOlZ8a1D8YZXDV+F7d0BpTrC6pwpP8oOofjkz
+         PpYQ==
+X-Gm-Message-State: AOAM530WwdKiwYs1OJ3zYCBky39w8xkAL/bqm9GAGo1uKfNSJbG8VYE+
+        9hX6gnUS8TyELR3hXA6I1A==
+X-Google-Smtp-Source: ABdhPJyf9cDvzdnJyrz88zNtK+fVSdGACNFc6ZhTULEzyvDAXPx26QtcqONjw4TvsYhTPVBvMs061A==
+X-Received: by 2002:a05:6808:2183:b0:2da:6d62:6ec6 with SMTP id be3-20020a056808218300b002da6d626ec6mr3895459oib.51.1649261230982;
+        Wed, 06 Apr 2022 09:07:10 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id mj27-20020a0568700d9b00b000de29e1d6adsm4905187oab.16.2022.04.06.09.07.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 09:06:48 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Helge Deller <deller@gmx.de>, Sam Ravnborg <sam@ravnborg.org>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Zheyu Ma <zheyuma97@gmail.com>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Subject: [RFC PATCH 4/5] fbdev: Fix some race conditions between fbmem and sysfb
-Date:   Wed,  6 Apr 2022 18:06:31 +0200
-Message-Id: <20220406160632.496684-5-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406160632.496684-1-javierm@redhat.com>
-References: <20220406160632.496684-1-javierm@redhat.com>
+        Wed, 06 Apr 2022 09:07:10 -0700 (PDT)
+Received: (nullmailer pid 2334572 invoked by uid 1000);
+        Wed, 06 Apr 2022 16:07:09 -0000
+Date:   Wed, 6 Apr 2022 11:07:09 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     krzk+dt@kernel.org, linux-crypto@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, robh+dt@kernel.org,
+        heiko@sntech.de, herbert@gondor.apana.org.au,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 29/33] clk: rk3399: use proper crypto0 name
+Message-ID: <Yk26rQaTfZ1QvLN0@robh.at.kernel.org>
+References: <20220401201804.2867154-1-clabbe@baylibre.com>
+ <20220401201804.2867154-30-clabbe@baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220401201804.2867154-30-clabbe@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The platform devices registered in sysfb match with a firmware-based fbdev
-or DRM driver, that are used to have early graphics using framebuffers set
-up by the system firmware.
+On Fri, 01 Apr 2022 20:18:00 +0000, Corentin Labbe wrote:
+> RK3399 has 2 crypto instance, named crypto0 and crypto1 in the TRM.
+> Only reset for crypto1 is correctly named, but crypto0 is not.
+> Since nobody use them, add a 0 to be consistent with the TRM and crypto1 entries.
+> 
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+>  include/dt-bindings/clock/rk3399-cru.h | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
 
-Real DRM drivers later are probed and remove all conflicting framebuffers,
-leading to these platform devices for generic drivers to be unregistered.
-
-But the current solution has two issues that this patch fixes:
-
-1) It is a layering violation for the fbdev core to unregister a device
-   that was registered by sysfb.
-
-   Instead, the sysfb_try_unregister() helper function can be called for
-   sysfb to attempt unregistering the device if is the one registered.
-
-2) The sysfb_init() function could be called after a DRM driver is probed
-   and requested to unregister devices for drivers with a conflicting fb.
-
-   To prevent this, disable any future sysfb platform device registration
-   by calling sysfb_disable(), if a driver requested to remove conflicting
-   framebuffers with remove_conflicting_framebuffers().
-
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
----
-
- drivers/video/fbdev/core/fbmem.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
-index c1bfb8df9cba..acf641b05d11 100644
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -19,6 +19,7 @@
- #include <linux/kernel.h>
- #include <linux/major.h>
- #include <linux/slab.h>
-+#include <linux/sysfb.h>
- #include <linux/mm.h>
- #include <linux/mman.h>
- #include <linux/vt.h>
-@@ -1588,7 +1589,10 @@ static void do_remove_conflicting_framebuffers(struct apertures_struct *a,
- 				 * unregister_framebuffer() function that takes it.
- 				 */
- 				mutex_unlock(&registration_lock);
--				platform_device_unregister(to_platform_device(device));
-+				if (!sysfb_try_unregister(device)) {
-+					/* sysfb didn't register this device, unregister it */
-+					platform_device_unregister(to_platform_device(device));
-+				}
- 				mutex_lock(&registration_lock);
- 				/*
- 				 * Restart the removal now that the platform device
-@@ -1781,6 +1785,17 @@ int remove_conflicting_framebuffers(struct apertures_struct *a,
- 		do_free = true;
- 	}
- 
-+	/*
-+	 * If a driver asked to unregister a platform device registered by
-+	 * sysfb, then can be assumed that this is a driver for a display
-+	 * that is set up by the system firmware and has a generic driver.
-+	 *
-+	 * Drivers for devices that don't have a generic driver will never
-+	 * ask for this, so let's assume that a real driver for the display
-+	 * was already probed and prevent sysfb to register devices later.
-+	 */
-+	sysfb_disable();
-+
- 	mutex_lock(&registration_lock);
- 	do_remove_conflicting_framebuffers(a, name, primary);
- 	mutex_unlock(&registration_lock);
--- 
-2.35.1
-
+Acked-by: Rob Herring <robh@kernel.org>
