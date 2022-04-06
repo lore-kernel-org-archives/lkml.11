@@ -2,125 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 335D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:52:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E24AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:52:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238324AbiDFQy3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39448 "EHLO
+        id S238138AbiDFQyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238177AbiDFQyH (ORCPT
+        with ESMTP id S238049AbiDFQyY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:54:07 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E646425E26;
-        Wed,  6 Apr 2022 07:18:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649254700; x=1680790700;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=YmIXCsMYCeWATU+in/DRP/A6BQR/Ctfd6i0hCV0gooc=;
-  b=CVBXtslYTFZCA78N6EHW3ul0Xe+Ar+6XGgrOapCFNo7L0S0nIPGnpJng
-   culcypL0+uADdR6lDw5shmyRxv/kEjPg/HdoTqTZYnRq8JEsstACxklb1
-   /6xxpHR8/ObXyEXsrLeujodLpmcgKJ55YK8nGmbLfiqsbEaPDNbmQ/sfj
-   zscj5c+7xL5H79JPBBwKjcQqKY2YM8Ik3O2rIw2er/DdmKcqLLuO3K8go
-   wyQwhrgTQ8oYZWIj7bw2VAgNGb/wjASeG8wUbaYbVnc7PWBRhTROfoC7d
-   Yxxw1TLfogXhS7AeOlb6qPiTO0yWR1s3c5fsy5xr9Pe4tsAnSiJo/vvt+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="258646143"
-X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
-   d="scan'208";a="258646143"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 07:06:24 -0700
-X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
-   d="scan'208";a="642065188"
-Received: from mrice-x13.amr.corp.intel.com (HELO [10.209.59.160]) ([10.209.59.160])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 07:06:22 -0700
-Message-ID: <b92a20b9-f645-8637-d665-747b27eb65f6@linux.intel.com>
-Date:   Wed, 6 Apr 2022 09:06:21 -0500
+        Wed, 6 Apr 2022 12:54:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0688945CFC1
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:18:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649254705;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ODOVaz/edmhBMoEaKgg2w+ntcwg87Ta6yU5ilJ/7uSY=;
+        b=hAJblArK92wXhIjvmcbOlhTB6zUXxNJdaR0/p3Kz9ZCXCMKbBGAVMMCWsusvz8qK7luAAL
+        v1S1RXlC0S646SVRqHGYamDwMNKZfW9EzcPVpn2PI6nd0yZq+4M2BNNqU2QyKXF4hEf6RK
+        E4/Lok9hgN0tBcTA/rouZ9aGfenmkiY=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-377-vj0khCuwOVaN4szukj7f8A-1; Wed, 06 Apr 2022 10:18:24 -0400
+X-MC-Unique: vj0khCuwOVaN4szukj7f8A-1
+Received: by mail-qv1-f69.google.com with SMTP id im8-20020a056214246800b00443d3d3956dso3574338qvb.22
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:18:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=ODOVaz/edmhBMoEaKgg2w+ntcwg87Ta6yU5ilJ/7uSY=;
+        b=6B/SFyQdbJYU35TA1G8AvLMKa/Xhk8gy/J2XPqLfXFSauSdEkLPCEpM9Spj4RoAwNV
+         ZMtcoHJs6Na6DrCJqh2Bqsbhhr1vr7NzsUd41b0o49Qrz2VOl2w8VeDuGpakDETC71/r
+         6E+1L1tzSJcAtUElLytFsZRphBve05OUoD9sfOwbSYcmkCBpFW2f0OsdOnQ+1jjrmzjo
+         LFMNU3/iDtNfezS8D5FyWNR4CQk+ogQ9cdFU//MAvPK2RqGxlH8MB9DKjDerT/N6Ggo6
+         CjZWctBx0ocFI7gXTiqIlrytGQAKqWxWq1GN+JV3GG74XUxbA0vVIZgRD4R87dxCtuh+
+         dp7g==
+X-Gm-Message-State: AOAM530WIWzI4KuMKKiDkHn4H90sy8z/vNR9I9YXG9gavkOd8hFPJmKP
+        xLJeACPXOuRBrwwToGhK38I6MEMq5B+/pp2dpMVD+v2fqiB9eE21yR+NW09ItOgS/EmKI0Bundd
+        uvOVKHggMVnS2kShK0bcSblr1XHqYLrdRHp8+vb4g/l47VELE8UCp3H9ckJbaNFj6PHu4Tas=
+X-Received: by 2002:ad4:5b8f:0:b0:443:5663:12ad with SMTP id 15-20020ad45b8f000000b00443566312admr7625119qvp.93.1649254703934;
+        Wed, 06 Apr 2022 07:18:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz5Ek+S4hfi61dB9TIY5eREbgIsa4+FJaeRcA2oPQoc6YVwJZraRCwA7foiQ+eI3V9hRLSlOQ==
+X-Received: by 2002:ad4:5b8f:0:b0:443:5663:12ad with SMTP id 15-20020ad45b8f000000b00443566312admr7625091qvp.93.1649254703704;
+        Wed, 06 Apr 2022 07:18:23 -0700 (PDT)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id a6-20020ae9e806000000b0067ba5a8a2a7sm9427968qkg.134.2022.04.06.07.18.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 07:18:23 -0700 (PDT)
+Subject: Re: [PATCH] fpga: altera-pr-ip: fix unsigned comparison with less
+ than zero
+To:     Marco Pagani <marpagan@redhat.com>,
+        Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
+        Xu Yilun <yilun.xu@intel.com>
+Cc:     linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220405185349.220607-1-marpagan@redhat.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <d39cdc4c-0dc5-f929-17fa-ffbaf9e767c7@redhat.com>
+Date:   Wed, 6 Apr 2022 07:18:21 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: sof_es8336 build failure [was: [PATCH 5.17 0000/1126] 5.17.2-rc1
- review]
+In-Reply-To: <20220405185349.220607-1-marpagan@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Mark Brown <broonie@kernel.org>,
-        yung-chuan.liao@linux.intel.com, peter.ujfalusi@linux.intel.com,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-References: <20220405070407.513532867@linuxfoundation.org>
- <8ea245ed-eac9-1cd5-31bd-150a06378872@kernel.org>
- <06b5cc53-8de6-b238-70eb-9c1d5f245f78@kernel.org>
- <Yk2HbuCEaSSh8sKc@kroah.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <Yk2HbuCEaSSh8sKc@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+On 4/5/22 11:53 AM, Marco Pagani wrote:
+> Fix the "comparison with less than zero" warning reported by
+> cppcheck for the unsigned (size_t) parameter "count" of the
+> "alt_pr_fpga_write()" function.
+>
+> Signed-off-by: Marco Pagani <marpagan@redhat.com>
+> ---
+>   drivers/fpga/altera-pr-ip-core.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/fpga/altera-pr-ip-core.c b/drivers/fpga/altera-pr-ip-core.c
+> index be0667968d33..2ff3d8e46a0c 100644
+> --- a/drivers/fpga/altera-pr-ip-core.c
+> +++ b/drivers/fpga/altera-pr-ip-core.c
+> @@ -108,7 +108,7 @@ static int alt_pr_fpga_write(struct fpga_manager *mgr, const char *buf,
+>   	u32 *buffer_32 = (u32 *)buf;
+>   	size_t i = 0;
+>   
+> -	if (count <= 0)
+> +	if (count == 0)
+>   		return -EINVAL;
 
-On 4/6/22 07:28, Greg Kroah-Hartman wrote:
-> On Wed, Apr 06, 2022 at 09:37:59AM +0200, Jiri Slaby wrote:
->> Cc some folks and change subject
->>
->> On 06. 04. 22, 9:29, Jiri Slaby wrote:
->>> On 05. 04. 22, 9:12, Greg Kroah-Hartman wrote:
->>>> This is the start of the stable review cycle for the 5.17.2 release.
->>>> There are 1126 patches in this series, all will be posted as a response
->>>> to this one.  If anyone has any issues with these being applied, please
->>>> let me know.
->>> ...
->>>> Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
->>>>       ASoC: Intel: sof_es8336: use NHLT information to set dmic and SSP
->>>
->>> Fails to build w/ suse x86_64 default config [1] (and x86_32 too):
->>>   > sound/soc/intel/boards/sof_es8336.c: In function ‘sof_es8336_probe’:
->>>   > sound/soc/intel/boards/sof_es8336.c:482:32: error: ‘struct
->>> snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you
->>> mean ‘link_mask’?
->>>   >   482 |         if (!mach->mach_params.i2s_link_mask) {
->>>   >       |                                ^~~~~~~~~~~~~
->>>   >       |                                link_mask
->>>   > sound/soc/intel/boards/sof_es8336.c:494:39: error: ‘struct
->>> snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you
->>> mean ‘link_mask’?
->>>   >   494 |                 if (mach->mach_params.i2s_link_mask & BIT(2))
->>>   >       |                                       ^~~~~~~~~~~~~
->>>   >       |                                       link_mask
->>>   > sound/soc/intel/boards/sof_es8336.c:496:44: error: ‘struct
->>> snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you
->>> mean ‘link_mask’?
->>>   >   496 |                 else if (mach->mach_params.i2s_link_mask &
->>> BIT(1))
->>>   >       |                                            ^~~~~~~~~~~~~
->>>   >       |                                            link_mask
->>>   > sound/soc/intel/boards/sof_es8336.c:498:45: error: ‘struct
->>> snd_soc_acpi_mach_params’ has no member named ‘i2s_link_mask’; did you
->>> mean ‘link_mask’?
->>>   >   498 |                 else  if (mach->mach_params.i2s_link_mask &
->>> BIT(0))
->>>   >       |                                             ^~~~~~~~~~~~~
->>>   >       |                                             link_mask
->>>
->>> So 679aa83a0fb70dcbf9e97c is missing -- but likely more is needed.
->>>
->>> [1] https://raw.githubusercontent.com/SUSE/kernel-source/stable/config/x86_64/default
->>>
->>>
-> 
-> Offending commit now dropped, thanks!
+Reviewed-by: Tom Rix <trix@redhat.com>
 
-It's fine, this was part of a large series for a set of platforms based 
-on the ES8336 and ES8326 codec, but it's still WIP with patches from 
-Mauro for specific devices, UCM changes needed and the ES8326 still in 
-review. This can hardly qualify for inclusion in a stable branch.
+>   
+>   	/* Write out the complete 32-bit chunks */
+
