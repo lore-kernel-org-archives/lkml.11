@@ -2,92 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E07C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:01:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240672AbiDFLDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
+        id S244411AbiDFLFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354322AbiDFLCi (ORCPT
+        with ESMTP id S1348045AbiDFLEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:02:38 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C3C528D3C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:29:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=3JjTLPdPSJ39pHGd48spiEl6+cFumvV5r8fxCWUxCn8=; b=iMWpYPXE1d5UMEh0IGNfqV2tw2
-        zwxa7xHlEXejRaAzN8IGTYL6QpUh1jyBQJ2Fz7YuuyPy22PFi3t/uNFdfRDjI6UBsEY9hgxbu8L0T
-        Np2bfr3DZJbZ4VhJbgF6s9qfBWz7F12mW9CqsdOk7bOro0UjKZ3UHc3qUacQlg/ukLr8qM72eKSBb
-        sPD7f8/zGyC9Ne7uag23Tsb/sm7s3U1Uti0ysQf+Ux6JZCXMRVOX5JBKiNem2JmcPauflWA51+iRW
-        UoKoei2rx3gtJvFaTC6luDjg2O0jVMg5cMLz5mpfN43IFaEXynVWeI7lZxNC5OUrl1nRFNzDgWQ0P
-        kWruCcKg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nc06N-0026Gw-GH; Wed, 06 Apr 2022 07:29:16 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 46E959861A5; Wed,  6 Apr 2022 09:29:13 +0200 (CEST)
-Date:   Wed, 6 Apr 2022 09:29:13 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, mbenes@suse.cz, x86@kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: drivers/gpu/drm/i915/i915.prelink.o: warning: objtool:
- __intel_wait_for_register_fw.cold()+0xce: relocation to !ENDBR:
- vlv_allow_gt_wake.cold+0x0
-Message-ID: <20220406072913.GC34954@worktop.programming.kicks-ass.net>
-References: <202204041241.Hw855BWm-lkp@intel.com>
- <YkxLqznOz0ldTz5a@hirez.programming.kicks-ass.net>
- <20220406000500.5hlaqy5zrdqsg5mg@treble>
- <87czhv11k1.ffs@tglx>
- <20220406053251.6dyfxrjmmgdwocfc@treble>
+        Wed, 6 Apr 2022 07:04:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028073C4FF5;
+        Wed,  6 Apr 2022 00:30:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F26BB82104;
+        Wed,  6 Apr 2022 07:30:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07BFCC385A5;
+        Wed,  6 Apr 2022 07:30:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649230252;
+        bh=eYdWTt2rirp2tWBk2+Da44BCaw85451hbniPa4XSUhk=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=Top/RpAxLRyzjlpDFLbd5XH0lIINhunvRcHwjq6ScGrrrzodbJOgT2sCC89VD2G57
+         zz30ln39xPALVsysnFDObmmsd4wOgAkyE0NLlNjmkDcC0R6V0aoNKIJCr2dJ+5aZbZ
+         0sdPwl21K6v4mXzPUyQE80idkMoKrTnnlDV28zsGGshKM8McW8e/6q3ZF0VH8D3zoV
+         BcoftTLT9lPFZLss6TyUxKeqzjIAzcu8bTAS2KUac7Ey+iXxA8YHrb87rxkEIpg8CS
+         RG2EuS8egbo+EkwLa4JC+fBc6waZ2/832r9xj0euZ267Kv370+bOufGcYLg6RSdpWO
+         OCmo+mR3wnGhQ==
+Message-ID: <55cd5349e58c44113ae976e04ea4c6dc0cfba66d.camel@kernel.org>
+Subject: Re: [PATCH V3 17/30] x86/sgx: Support modifying SGX page type
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@alien8.de,
+        luto@kernel.org, mingo@redhat.com, linux-sgx@vger.kernel.org,
+        x86@kernel.org, seanjc@google.com, kai.huang@intel.com,
+        cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 06 Apr 2022 10:32:02 +0300
+In-Reply-To: <70962fc4-1624-2fd8-4d8d-f1a31001e165@intel.com>
+References: <cover.1648847675.git.reinette.chatre@intel.com>
+         <bac6e77fe04100d6bfebd4e13aa9b916f82bfea6.1648847675.git.reinette.chatre@intel.com>
+         <Ykvqf3Ws6jlN5g+p@kernel.org>
+         <b41d81ebcb6934765d7f37d4ce95baa16ec9b5d2.camel@kernel.org>
+         <d8cc2142-c50d-fbd9-425f-01e279c9a0f1@intel.com>
+         <94f62e19a630792f78e3c48895dfb792ecb02c6c.camel@kernel.org>
+         <70962fc4-1624-2fd8-4d8d-f1a31001e165@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.42.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406053251.6dyfxrjmmgdwocfc@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 10:32:51PM -0700, Josh Poimboeuf wrote:
-> On Wed, Apr 06, 2022 at 02:46:22AM +0200, Thomas Gleixner wrote:
-> > On Tue, Apr 05 2022 at 17:05, Josh Poimboeuf wrote:
-> > > On Tue, Apr 05, 2022 at 04:01:15PM +0200, Peter Zijlstra wrote:
-> > >
-> > > But objtool is complaining about a real problem (albeit with a cryptic
-> > > warning).  I don't think we want to paper over that. See patch.
-> > >
-> > > Also, are in-tree users of trace_printk() even allowed??
-> > 
-> > See the comment in the header file you are patching:
-> > 
-> >  * This is intended as a debugging tool for the developer only.
-> >  * Please refrain from leaving trace_printks scattered around in
-> >  * your code. (Extra memory is used for special buffers that are
-> >  * allocated when trace_printk() is used.)
-> 
-> So what do we do ... send a nastygram?  
+On Tue, 2022-04-05 at 11:59 -0700, Reinette Chatre wrote:
+> Hi Jarkko,
+>=20
+> On 4/5/2022 11:41 AM, Jarkko Sakkinen wrote:
+> > On Tue, 2022-04-05 at 10:05 -0700, Reinette Chatre wrote:
+> > > Hi Jarkko,
+> > >=20
+> > > On 4/5/2022 8:34 AM, Jarkko Sakkinen wrote:
+> > > > On Tue, 2022-04-05 at 10:06 +0300, Jarkko Sakkinen wrote:
+> > >=20
+> > > > > >=20
+> > > > >=20
+> > > > > To be coherent with other names, this should be
+> > > > > SGX_IOC_ENCLAVE_MODIFY_TYPES.
+> > >=20
+> > > This is not such a clear change request to me:
+> > >=20
+> > > SGX_IOC_ENCLAVE_ADD_PAGES - add multiple pages
+> > > SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS - restrict multiple permissions
+> > > SGX_IOC_ENCLAVE_REMOVE_PAGES - remove multiple pages
+> > > SGX_IOC_ENCLAVE_MODIFY_TYPE - set a single type
+> > >=20
+> > > Perhaps it should rather be SGX_IOC_ENCLAVE_SET_TYPE to indicate that
+> > > there is a single target type as opposed to the possibility
+> > > of multiple source types (TCS and regular pages can be trimmed).
+> > >=20
+> > > >=20
+>=20
+> What is your opinion about what the ioctl() name should be? I prefer
+> to obtain a confirmation from you since you originally [1] requested
+> SGX_IOC_ENCLAVE_MODIFY_TYPE.
 
-Best would be for Steve to send a patch removing them all:
+s/TYPE/TYPES/g i.e. SGX_IOC_ENCLAVE_MODIFY_TYPES is fine.
+>=20
+> > > > This should take only page type given that flags are zeroed:
+> > > >=20
+> > > > EPCM(DS:RCX).R :=3D 0;
+> > > > EPCM(DS:RCX).W :=3D 0;
+> > > > EPCM(DS:RCX).X :=3D 0;=20
+> > > >=20
+> > >=20
+> > > ok, this was how it was done in V1 [1] and I can go back to that.
+> >=20
+> > I would name the fields as "flags" and "page_type" just to align
+> > names with SGX instead of trying to mimim "posix names". Otherwise,=C2=
+=A0
+> > I support that.
+>=20
+> I will move this ioctl() to use "page_type" instead of "secinfo"
+> within struct sgx_enclave_modify_type.
+>=20
+> Your guidance of "flags" is not clear to me. I assume that you
+> refer to the field for struct sgx_enclave_restrict_permissions
+> where I think "permissions" to only contain the new permissions
+> would be more appropriate. None of the other values in
+> secinfo.flags are relevant.
 
+I'm fine with your permissions field to the restrict ioctl.
 
-arch/powerpc/kvm/book3s_xics.c:#define XICS_DBG(fmt...) trace_printk(fmt)
-drivers/gpu/drm/i915/gt/intel_gtt.h:#define DBG(...) trace_printk(__VA_ARGS__)
-drivers/gpu/drm/i915/i915_gem.h:#define GEM_TRACE(...) trace_printk(__VA_ARGS__)
-drivers/gpu/drm/i915/i915_gem.h:        trace_printk(__VA_ARGS__);                                      \
-drivers/hwtracing/stm/dummy_stm.c:      trace_printk("[%u:%u] [pkt: %x/%x] (%llx)\n", master, channel,
-drivers/infiniband/hw/hfi1/trace_dbg.h: trace_printk(fmt, ##__VA_ARGS__)
-drivers/tty/n_tty.c:# define n_tty_trace(f, args...)    trace_printk(f, ##args)
-drivers/usb/early/xhci-dbc.c:#define    xdbc_trace      trace_printk
-fs/ext4/inline.c:       trace_printk("inode %lu\n", dir->i_ino);
-fs/ext4/inline.c:               trace_printk("de: off %u rlen %u name %.*s nlen %u ino %u\n",
+>=20
+> Reinette
+>=20
+> [1] https://lore.kernel.org/linux-sgx/Yav9g4+L8zg48DRf@iki.fi/
+>=20
 
-
-All except i915 use CPP tokens that don't exist, local developer really
-has to take effort to enable it. i915 crud depends on a CONFIG_ symbols
-that all{yes,mod}config will happily set for you,
+BR, Jarkko
