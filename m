@@ -2,228 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C371C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F02C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238751AbiDFRVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34936 "EHLO
+        id S238908AbiDFRVd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:21:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238834AbiDFRUZ (ORCPT
+        with ESMTP id S238828AbiDFRVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:20:25 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CB2320DB6;
-        Wed,  6 Apr 2022 08:18:23 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id k23so3728567wrd.8;
-        Wed, 06 Apr 2022 08:18:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=U40qc6GQ+SYodTIzBOdqOZLwZjwjzDI8PPMpjuLO23M=;
-        b=qGKYV5W384zdQNQ8zw1aGodGOdwK21gS5pz/8yEd9vW0X5PoY6zkvso/jy0OD2ZpMl
-         R6cGMhidVv1PRHXyAaPP34WONoy9IJuyWOY3emvm4Pc+Qa0/ymhjs+k0p3UAMRjQ+bYP
-         S1Rbh1ffDrpxOH/N0luR86LQVoWz3wpcez7Eu7PpGXY4HjxsXBn136wgErywTkxrbtL4
-         gr0iQDR4xH6CCvfaUACbfC311BeaKXYn8VbIodSo173OK9I7wfNVegD4wBes3R2AfHCU
-         AvEfr4/J7RLiLGyHmQC0ixgvXmzLB1h6SNh2w4lY9ytIRlqnH6/1n3XGymYCLzEFLco+
-         GXAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=U40qc6GQ+SYodTIzBOdqOZLwZjwjzDI8PPMpjuLO23M=;
-        b=O98jNvcPlf7gYGZn8jtRWy616QyxSuFE2WOM1fblkpojeVW9qBZZwnqas7P2hsOiAI
-         DLD720cCJOsmSDbtBxbUa15osxmroKvigjrEO+a+j3qT6DyxMnOB4djwspzeEkLi6Gn9
-         pG6UReDoTWR2thMae9YtEhfVQllFPakFnAcjccJfS4VgWWhdh/hfhRh7kBQl9si59LXu
-         iuf2rCj4uf9+kdDuYg4XCRBrzXRFgJqM8e1Sgp7HdiCXe0ozCOPffqCzU0wxaVFZS0Gh
-         QCx7bJLuv/5Ed1x3Fvr3jNYaFpZOpOy6dzq+zMtK7vwr7PxpacOcS35pkqH9Xgokzkk4
-         VB4g==
-X-Gm-Message-State: AOAM533hY4AvpUGioLtHhQjh1p/FIeu1gQ2HnSukaa7CfpRWhQX4CLVG
-        pNQuZ9rjXTtSmLc6uCnGrJs=
-X-Google-Smtp-Source: ABdhPJyCYjrUpOXRKUOMNlOKspcPqmHHJD1TpshBOnLqE/8upHaCgOAE57aqeMsyScW3cblgtmrGfw==
-X-Received: by 2002:a5d:528b:0:b0:203:d928:834c with SMTP id c11-20020a5d528b000000b00203d928834cmr7312065wrv.500.1649258302003;
-        Wed, 06 Apr 2022 08:18:22 -0700 (PDT)
-Received: from orome (pd9e518f7.dip0.t-ipconnect.de. [217.229.24.247])
-        by smtp.gmail.com with ESMTPSA id s10-20020adf978a000000b002060c258514sm10062623wrb.23.2022.04.06.08.18.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 08:18:20 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 17:18:18 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Brian Silverman <bsilver16384@gmail.com>
-Cc:     Brian Silverman <brian.silverman@bluerivertech.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Dan Murphy <dmurphy@ti.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:CAN NETWORK DRIVERS" <linux-can@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>
-Subject: Re: [RFC PATCH] can: m_can: Add driver for M_CAN hardware in NVIDIA
- devices
-Message-ID: <Yk2vOj8wKi4FdPg2@orome>
-References: <20220106002514.24589-1-brian.silverman@bluerivertech.com>
+        Wed, 6 Apr 2022 13:21:09 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173FC4A481A
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 08:19:46 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id D8F643201FB7;
+        Wed,  6 Apr 2022 11:19:44 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Wed, 06 Apr 2022 11:19:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:reply-to:sender:subject:subject:to:to; s=fm3; bh=GCOCd
+        LBvER1uJBwqDC45zH4ip40h8EDSqkmzj6WuqzU=; b=zPfsw7WVg7lfi3ByClDpx
+        0pg9uXOgZUC08+l+yyQFqE/eWFZSlTarVl1MDvLMXRaa/2/ZjcdDop5ig6LPxi2i
+        j4kYOFR+TfFnmhQjpjSW6gsIDoqKEK0PWamdmqO+JnFlJmkgHejLe0IiZyGxWjQD
+        9WWj7qlEhpZgWgBRjHaasWpxWQcFb7zMrClnM1yQnyvYCssZt0ow5jkcZLYVsEk3
+        c0XziZ6YfQ/WRX92FzBENRpSTtmiPTNyw4WE1xi78f5AM4FX9p2aBudIvQmyECGh
+        LbL6zIfdkVXNwSezQziFhLdIx4tgP4C1PXbuT26IiS3FN7uLTovmozdRHHoz6Wsg
+        w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:reply-to:sender
+        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm3; bh=GCOCdLBvER1uJBwqDC45zH4ip40h8
+        EDSqkmzj6WuqzU=; b=OMSf9dZuR5EciBZYw7arT4M33IWjH+Ipyhk6Cd7wYEOza
+        HMk/7C/mj6f0/M8yxDOjreUfQh75YaBjABO/8bsuvZPjvjNTEG2qKyu3lgvslmV3
+        rYMKZTWZVAQWASYCBawcC403d7dEaQDbB6ktvqtHcMrpKbDtwJjffRcG7FLJVPrb
+        DFPy6QA3t94cQWyzizf0hHmhExwOwtvQTYscmk84E9LGpgc7jdzNm02a3B9kkwGo
+        Tt95wUjhhdunZJFqi2w0/VfS6YCobp5rPgUh5IHQn7R0KovLFxG43hHvnD/UQEu1
+        kRQ/y3ACK7zjDl5Eiv+J8omBHjVjbS+zJ50CcI2YA==
+X-ME-Sender: <xms:kK9NYkb6uA4DBfA1VhVtFd-GjdCTw2hUFHlrkkL01e0SA_ryq2arzQ>
+    <xme:kK9NYvaPGyoYOGeNVYXxj5q75S5YjoQtGWo_TcZh3a6gXV2yNrFYsL-r2RtPcuch1
+    YhPFKpMXb9HzseiWQ>
+X-ME-Received: <xmr:kK9NYu-nO7Pw0kLuLbej1oiHsIETt54ut4V3_p_nq_wXIz8nlj9YSwDXnQ10Pl60VwJatrPXb6NYBiS-GA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejiedgkeekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffojghfrhggtgfgsehtqhertdertdejnecuhfhrohhmpegkihcu
+    jggrnhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeekgf
+    fgleejfeegjedttefhhedvgfffvdeffeekjeetgffhtedvudffkeegleettdenucevlhhu
+    shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhessh
+    gvnhhtrdgtohhm
+X-ME-Proxy: <xmx:kK9NYuqmfkA0lZnbCC_0S0XBb7aMx4CabcwqEsmFO5ZZxEzCt4iBAA>
+    <xmx:kK9NYvoR30di7gP_JbKssVimrCzfYbEAA_iawWkdLqh147OZ-A44nQ>
+    <xmx:kK9NYsTff-Mwx5RyoJAslxvoKwpSX52hrK59EsvuGoDQ0RLKC7-uyQ>
+    <xmx:kK9NYi1Wk9ymmcq9f9_8IsaEBWT8YGgw7OvhMgv__L2oNastjYGrJw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 6 Apr 2022 11:19:44 -0400 (EDT)
+From:   Zi Yan <zi.yan@sent.com>
+To:     David Hildenbrand <david@redhat.com>, linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Eric Ren <renzhengeek@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Oscar Salvador <osalvador@suse.de>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Zi Yan <ziy@nvidia.com>
+Subject: [PATCH v10 4/5] mm: cma: use pageblock_order as the single alignment
+Date:   Wed,  6 Apr 2022 11:18:57 -0400
+Message-Id: <20220406151858.3149821-5-zi.yan@sent.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406151858.3149821-1-zi.yan@sent.com>
+References: <20220406151858.3149821-1-zi.yan@sent.com>
+Reply-To: Zi Yan <ziy@nvidia.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="BsOhgM1lSoA88Bvi"
-Content-Disposition: inline
-In-Reply-To: <20220106002514.24589-1-brian.silverman@bluerivertech.com>
-User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Zi Yan <ziy@nvidia.com>
 
---BsOhgM1lSoA88Bvi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Now alloc_contig_range() works at pageblock granularity. Change CMA
+allocation, which uses alloc_contig_range(), to use pageblock_nr_pages
+alignment.
 
-On Wed, Jan 05, 2022 at 04:25:09PM -0800, Brian Silverman wrote:
-> It's a M_TTCAN with some NVIDIA-specific glue logic and clocks. The
-> existing m_can driver works with it after handling the glue logic.
->=20
-> The code is a combination of pieces from m_can_platform and NVIDIA's
-> driver [1].
->=20
-> [1] https://github.com/hartkopp/nvidia-t18x-can/blob/master/r32.2.1/nvidi=
-a/drivers/net/can/mttcan/hal/m_ttcan.c
->=20
-> Signed-off-by: Brian Silverman <brian.silverman@bluerivertech.com>
-> ---
-> I ran into bugs with the error handling in NVIDIA's m_ttcan driver, so I
-> switched to m_can which has been much better. I'm looking for feedback
-> on whether I should ensure rebasing hasn't broken anything, write up DT
-> documentation, and submit this patch for real. The driver works great,
-> but I've got some questions about submitting it.
->=20
-> question: This has liberal copying of GPL code from NVIDIA's
-> non-upstreamed m_ttcan driver. Is that OK?
->=20
-> corollary: I don't know what any of this glue logic does. I do know the
-> device doesn't work without it. I can't find any documentation of what
-> these addresses do.
->=20
-> question: There is some duplication between this and m_can_platform. It
-> doesn't seem too bad to me, but is this the preferred way to do it or is
-> there another alternative?
->=20
-> question: Do new DT bindings need to be in the YAML format, or is the
-> .txt one OK?
->=20
->  drivers/net/can/m_can/Kconfig       |  10 +
->  drivers/net/can/m_can/Makefile      |   1 +
->  drivers/net/can/m_can/m_can_tegra.c | 362 ++++++++++++++++++++++++++++
->  3 files changed, 373 insertions(+)
->  create mode 100644 drivers/net/can/m_can/m_can_tegra.c
+Signed-off-by: Zi Yan <ziy@nvidia.com>
+---
+ include/linux/cma.h    | 4 ++--
+ include/linux/mmzone.h | 5 +----
+ mm/page_alloc.c        | 4 ++--
+ 3 files changed, 5 insertions(+), 8 deletions(-)
 
-Sorry for the late reply, I completely missed this. I think along with
-the DT bindings it'd be great if you could provide DT updates for the
-platform that you tested this on so we can get that upstream as well.
+diff --git a/include/linux/cma.h b/include/linux/cma.h
+index a6f637342740..63873b93deaa 100644
+--- a/include/linux/cma.h
++++ b/include/linux/cma.h
+@@ -17,11 +17,11 @@
+ #define CMA_MAX_NAME 64
+=20
+ /*
+- * TODO: once the buddy -- especially pageblock merging and alloc_contig_r=
+ange()
++ *  the buddy -- especially pageblock merging and alloc_contig_range()
+  * -- can deal with only some pageblocks of a higher-order page being
+  *  MIGRATE_CMA, we can use pageblock_nr_pages.
+  */
+-#define CMA_MIN_ALIGNMENT_PAGES MAX_ORDER_NR_PAGES
++#define CMA_MIN_ALIGNMENT_PAGES pageblock_nr_pages
+ #define CMA_MIN_ALIGNMENT_BYTES (PAGE_SIZE * CMA_MIN_ALIGNMENT_PAGES)
+=20
+ struct cma;
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index 46ffab808f03..aab70355d64f 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -54,10 +54,7 @@ enum migratetype {
+ 	 *
+ 	 * The way to use it is to change migratetype of a range of
+ 	 * pageblocks to MIGRATE_CMA which can be done by
+-	 * __free_pageblock_cma() function.  What is important though
+-	 * is that a range of pageblocks must be aligned to
+-	 * MAX_ORDER_NR_PAGES should biggest page be bigger than
+-	 * a single pageblock.
++	 * __free_pageblock_cma() function.
+ 	 */
+ 	MIGRATE_CMA,
+ #endif
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 2148d3d00a70..29bb5177a7f5 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -9000,8 +9000,8 @@ int __alloc_contig_migrate_range(struct compact_contr=
+ol *cc,
+  *			be either of the two.
+  * @gfp_mask:	GFP mask to use during compaction
+  *
+- * The PFN range does not have to be pageblock or MAX_ORDER_NR_PAGES
+- * aligned.  The PFN range must belong to a single zone.
++ * The PFN range does not have to be pageblock aligned. The PFN range must
++ * belong to a single zone.
+  *
+  * The first thing this routine does is attempt to MIGRATE_ISOLATE all
+  * pageblocks in the range.  Once isolated, the pageblocks should not
+--=20
+2.35.1
 
-I don't know much about CAN so I can't comment on those pieces, so just
-a few thoughts on the integration bits.
-
-> diff --git a/drivers/net/can/m_can/m_can_tegra.c b/drivers/net/can/m_can/=
-m_can_tegra.c
-[...]
-> +static int m_can_tegra_probe(struct platform_device *pdev)
-> +{
-[...]
-> +	ret =3D clk_set_parent(can_clk, pclk);
-> +	if (ret) {
-> +		goto probe_fail;
-> +	}
-> +
-> +	ret =3D fwnode_property_read_u32(dev_fwnode(&pdev->dev), "can-clk-rate"=
-, &rate);
-> +	if (ret) {
-> +		goto probe_fail;
-> +	}
-> +
-> +	new_rate =3D clk_round_rate(can_clk, rate);
-> +	if (!new_rate)
-> +		dev_warn(&pdev->dev, "incorrect CAN clock rate\n");
-> +
-> +	ret =3D clk_set_rate(can_clk, new_rate > 0 ? new_rate : rate);
-> +	if (ret) {
-> +		goto probe_fail;
-> +	}
-> +
-> +	ret =3D clk_set_rate(host_clk, new_rate > 0 ? new_rate : rate);
-> +	if (ret) {
-> +		goto probe_fail;
-> +	}
-> +
-> +	if (core_clk) {
-> +		ret =3D fwnode_property_read_u32(dev_fwnode(&pdev->dev), "core-clk-rat=
-e", &rate);
-> +		if (ret) {
-> +			goto probe_fail;
-> +		}
-> +		new_rate =3D clk_round_rate(core_clk, rate);
-> +		if (!new_rate)
-> +			dev_warn(&pdev->dev, "incorrect CAN_CORE clock rate\n");
-> +
-> +		ret =3D clk_set_rate(core_clk, new_rate > 0 ? new_rate : rate);
-> +		if (ret) {
-> +			goto probe_fail;
-> +		}
-> +	}
-
-Can all of this clock setup not be simplified by using the standard
-assigned-clocks, assigned-clock-parent and assigned-clock-rates DT
-properties?
-
-> +
-> +	res =3D platform_get_resource_byname(pdev, IORESOURCE_MEM, "m_can");
-> +	addr =3D devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(addr)) {
-> +		ret =3D PTR_ERR(addr);
-> +		goto probe_fail;
-> +	}
-> +
-> +	irq =3D platform_get_irq_byname(pdev, "int0");
-> +	if (irq < 0) {
-> +		ret =3D -ENODEV;
-> +		goto probe_fail;
-> +	}
-
-If there's only one of these, it doesn't make much sense to name them.
-But perhaps this can be discussed when reviewing the DT bindings.
-
-[...]
-> +static const struct of_device_id m_can_of_table[] =3D {
-> +	{ .compatible =3D "nvidia,tegra194-m_can", .data =3D NULL },
-
-We typically name the compatible string after the IP block name. The TRM
-references this as simply "CAN", so I think "nvidia,tegra194-can" would
-be more in line with what we use for existing Tegra hardware.
-
-Thierry
-
---BsOhgM1lSoA88Bvi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmJNrzgACgkQ3SOs138+
-s6H85hAAjpQPOGIqFtsZNbZ6ZNiio0A9LQhmCQTjcW2fIixt0g7Yqk4Hn8Df1FAg
-fJibRWvhio+Yor4JWUIP9NsntbgywoKoUSO1rX+LX66KP0Q23laOft/oYZc3soAu
-kVBeL4JsvcwJOKY1K/smty4OY2zC6G4fojBdYnc6kQhoFyTKxER9Tx6/RTRgDz/n
-8vbWejOjxEgrAJpJ+a/xKPCDf8N0qfXLITcdT2v29HAorgL8QmTnYZ3ky2ROMEKn
-BD08Dw14Fe45NCm98H/ACd4sFBuLKmaB2B9P+XlZVO4z8LDxAvpdHPoghD/nfGTa
-IV0RlDYgwpsq+hfwkucjNaznaQxK7uIYobCp8jqZXdqkxNELRCa+W/4Fk64b3oHQ
-f0r9HJWDFRkU/8XWFP2fxNvP52HhM1bAJIgoO/F2xLprgIjcniQCT1wbuGBkICxM
-g0mf7W0pbzHT2drCnaolNNTB2Zugey5ulbf0pFe88x9taFr2H0P3anEVJyasMJM/
-u0PFhTxcSd4osAV/eWNDYv4qE2pVASHt7TssKpPfiNdcu8+7BT0zKqqZfSG+NoLC
-Buh5kX8GP+hFpj1E8eQZfTztaL1R3dsJRCRB0i/V7do2KpSnTxUoC0XVVNBdevJZ
-OXzSVUXyfKhEnAsmp5It1Eso1iVTmMA5iO80O4T+ynxbK0DYfbw=
-=Nf/A
------END PGP SIGNATURE-----
-
---BsOhgM1lSoA88Bvi--
