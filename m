@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61EAEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80958C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbiDFTKO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
+        id S229718AbiDFTLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229896AbiDFTJu (ORCPT
+        with ESMTP id S230176AbiDFTLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:09:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A604E29689F;
-        Wed,  6 Apr 2022 11:28:38 -0700 (PDT)
+        Wed, 6 Apr 2022 15:11:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C93282B33;
+        Wed,  6 Apr 2022 11:28:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E9F661B89;
-        Wed,  6 Apr 2022 18:28:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A997C385A1;
-        Wed,  6 Apr 2022 18:28:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0E26B8253A;
+        Wed,  6 Apr 2022 18:28:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3951CC385A3;
+        Wed,  6 Apr 2022 18:28:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649269717;
-        bh=Goa4g0zbim0vnm+bp9tRkQHl3Ukj/fLPgZH3yx7JRis=;
+        s=korg; t=1649269695;
+        bh=F8uuznHn4+qQNfOl3xbyGgObdn518zMlTYxyggh8fRI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aY9rEclhdfGKOVE0tftOjd2sX7USGbu7+jRNAPuPeqAbIQc6ofGRFA089KrAzwsYB
-         ks1TH2a0BXN/acW/kEmrzLNMvRlX5w/buCTU5owr3nelDFrHlOFZqeztvZJlQXAwp3
-         pgMGiRq91eT5S3P5i7L/PLVGgaQiCm1deLszKnSo=
+        b=z56bzeEkRWaXBFV2hL1gwvMSRRu7dNWBVOitZ1Ts8WRaK/Dg8HYiv3Ey5Spy4PVIp
+         WMiKsRFgdsit2OjJqhWQWaxZhSZAKv8e7rtDoRp69PfxBnqouZXAQX6fV8BrhMQoXZ
+         culIepix6twfOTl9zgGjndefy0adx1sg8jjbP+FI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Catalin Marinas <catalin.marinas@arm.com>,
         James Morse <james.morse@arm.com>
-Subject: [PATCH 4.9 31/43] arm64: entry: Move trampoline macros out of ifdefd section
-Date:   Wed,  6 Apr 2022 20:26:40 +0200
-Message-Id: <20220406182437.585030542@linuxfoundation.org>
+Subject: [PATCH 4.9 29/43] arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
+Date:   Wed,  6 Apr 2022 20:26:38 +0200
+Message-Id: <20220406182437.527213548@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
 References: <20220406182436.675069715@linuxfoundation.org>
@@ -52,51 +52,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-commit 13d7a08352a83ef2252aeb464a5e08dfc06b5dfd upstream.
+commit 6c5bf79b69f911560fbf82214c0971af6e58e682 upstream.
 
-The macros for building the kpti trampoline are all behind
-CONFIG_UNMAP_KERNEL_AT_EL0, and in a region that outputs to the
-.entry.tramp.text section.
+Systems using kpti enter and exit the kernel through a trampoline mapping
+that is always mapped, even when the kernel is not. tramp_valias is a macro
+to find the address of a symbol in the trampoline mapping.
 
-Move the macros out so they can be used to generate other kinds of
-trampoline. Only the symbols need to be guarded by
-CONFIG_UNMAP_KERNEL_AT_EL0 and appear in the .entry.tramp.text section.
+Adding extra sets of vectors will expand the size of the entry.tramp.text
+section to beyond 4K. tramp_valias will be unable to generate addresses
+for symbols beyond 4K as it uses the 12 bit immediate of the add
+instruction.
+
+As there are now two registers available when tramp_alias is called,
+use the extra register to avoid the 4K limit of the 12 bit immediate.
 
 Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+[ Removed SDEI for backport ]
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/entry.S |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ arch/arm64/kernel/entry.S |   11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
 --- a/arch/arm64/kernel/entry.S
 +++ b/arch/arm64/kernel/entry.S
-@@ -896,12 +896,7 @@ __ni_sys_trace:
- 
- 	.popsection				// .entry.text
- 
--#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
--/*
-- * Exception vectors trampoline.
-- */
--	.pushsection ".entry.tramp.text", "ax"
--
-+	// Move from tramp_pg_dir to swapper_pg_dir
- 	.macro tramp_map_kernel, tmp
- 	mrs	\tmp, ttbr1_el1
- 	sub	\tmp, \tmp, #SWAPPER_DIR_SIZE
-@@ -980,6 +975,11 @@ __ni_sys_trace:
- 	.endr
+@@ -97,9 +97,12 @@
+ .org .Lventry_start\@ + 128	// Did we overflow the ventry slot?
  	.endm
  
-+#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
-+/*
-+ * Exception vectors trampoline.
-+ */
-+	.pushsection ".entry.tramp.text", "ax"
- 	.align	11
- ENTRY(tramp_vectors)
- 	generate_tramp_vector
+-	.macro tramp_alias, dst, sym
++	.macro tramp_alias, dst, sym, tmp
+ 	mov_q	\dst, TRAMP_VALIAS
+-	add	\dst, \dst, #(\sym - .entry.tramp.text)
++	adr_l	\tmp, \sym
++	add	\dst, \dst, \tmp
++	adr_l	\tmp, .entry.tramp.text
++	sub	\dst, \dst, \tmp
+ 	.endm
+ 
+ 	// This macro corrupts x0-x3. It is the caller's duty
+@@ -254,10 +257,10 @@ alternative_else_nop_endif
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ 	bne	4f
+ 	msr	far_el1, x29
+-	tramp_alias	x30, tramp_exit_native
++	tramp_alias	x30, tramp_exit_native, x29
+ 	br	x30
+ 4:
+-	tramp_alias	x30, tramp_exit_compat
++	tramp_alias	x30, tramp_exit_compat, x29
+ 	br	x30
+ #endif
+ 	.else
 
 
