@@ -2,162 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 670BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E636C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236158AbiDFP3p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
+        id S236230AbiDFPaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235821AbiDFP3P (ORCPT
+        with ESMTP id S236226AbiDFPaI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:29:15 -0400
-Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8CF561230
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:29:09 -0700 (PDT)
-Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-df22f50e0cso2713193fac.3
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 05:29:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google;
-        h=date:from:to:subject:message-id:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=f9uUO1j3Pv/5fo7aHMxUGqKZLMa4C4Cbm+pCSR0pZdg=;
-        b=Jgn1UZ4t04iIJsvgNJOclG2gtp7Az/+qysNdFnh3eLRkCs+8SzZAHC/1WjOVLWQMh/
-         PzmtRz7Wuv1otNj2iwwR/t8RxAWBwq/SL24Pq2pJJZUqURusxQwV1J3DCX5o9Cp0OY1e
-         OjBqIMZ2PfAS2qXVbVSQbAj79dZrvfnx9WJujiLQ0uZP8KHzcs3siWWFRujYH+Cp3KHx
-         9p4L3rozr4sl9jwpP0MLavEy3LFOc6pQnGLgNCVExt5n9kgB2YWZEzu/MCG88B0nlUYy
-         PxxJbJ+hI15qzgqJ2shzKQ3An7yVR5UKdqr1VI72+5z2umJ7jpddHjn/7Nos+V6ZGxIM
-         LGPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:content-transfer-encoding;
-        bh=f9uUO1j3Pv/5fo7aHMxUGqKZLMa4C4Cbm+pCSR0pZdg=;
-        b=bEdS9GVj7koJtuAtVWlaGXZdxK9IN/CRAwgdM+k7iiv1kJ5B8NduBLO3zsP9xvW3X0
-         l2S9FUwC331tIS+n/j64xkzNblZSKRKXV30Tg39hrG6PCXlRpTBa9SRwQXITVcLxdlyw
-         b0iKPRNLNHLZM+1+UyXXMFne02+0+NLjR0/j0LzOQjKkA8TAoo/RvmCrgLZylH/hHmIV
-         XIK4rq5Tf5GaabsRb7/5x1aWtt/qIYeQjCBdBZtSJHopIBu5h836h5fZ+UtMXIY5XHH9
-         +zz8/rIdBJNpw3s+Oy1bWgbbON+zhIZBNIp0DQtuN3NqfPLyC1fzsr1D9VN/ES3O07Ah
-         kLHw==
-X-Gm-Message-State: AOAM5312JlOKNfhUOwF7ZbtIJD7Tus7u+wg0RXRe8dnqzfKmz+j3+0wS
-        r8oDQ2ebHxrO9aF4kJtVPQ+gVw==
-X-Google-Smtp-Source: ABdhPJxQAh7U7BTJOVmhbyWXNLrCv5Youq0bLX6t3zA8GC5zw7+zx9Xbj6Cz7ncvfDCYrPI+MjDeag==
-X-Received: by 2002:a05:6870:1cc:b0:e1:fabc:6e03 with SMTP id n12-20020a05687001cc00b000e1fabc6e03mr3753415oad.16.1649248148501;
-        Wed, 06 Apr 2022 05:29:08 -0700 (PDT)
-Received: from fedora ([2804:14d:8084:84c6:2e13:8e30:84f7:1597])
-        by smtp.gmail.com with ESMTPSA id t4-20020a0568301e2400b005c9781086d9sm6575055otr.9.2022.04.06.05.29.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 05:29:08 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 09:29:04 -0300
-From:   =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>
-To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: ad7266: convert probe to full device-managed
-Message-ID: <Yk2HkOcjQhOo6y2X@fedora>
+        Wed, 6 Apr 2022 11:30:08 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00764C7F2B
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 05:47:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649249258; x=1680785258;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LBiWos/7vIQfxzMwmc/gkSDmEHJmLEltysz/kK1siK4=;
+  b=DUKlcm0NjfsHjvKqitUX3gOf105L64yCsgzvr/4/BhZe2Huux5AVTtBx
+   ySaZ4+fV65cli4nAdUlgllCQn8wXTYWWSx36kOmjrYQpzCaOE9WX77Qt/
+   A/W/T8F18ml1kqZDp6eSLY859jQUJhKqly7sddkiLgeQKBBDhr5vQ70+L
+   LFoMaY0NmA8UXb4YO9c7epD2hK+hdXmiqtP02aP9KWDyynqNk2NQNVzy9
+   ZU8yR8SKrPkFlx9O/kZrPswixd3PwOuNarjTa8sSBwcTy38aUW1VmvSmK
+   ejkoVu8BcNlHC2eApqeQTpKXK3IqWoqa6L/QauALZMOn+q0su0Aq9ieK0
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="324203775"
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="324203775"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 05:45:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
+   d="scan'208";a="658511189"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 06 Apr 2022 05:45:02 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nc51x-0004Ph-9b;
+        Wed, 06 Apr 2022 12:45:01 +0000
+Date:   Wed, 6 Apr 2022 20:44:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: drivers/macintosh/via-pmu.c:1758: undefined reference to
+ `rtc_tm_to_time64'
+Message-ID: <202204062028.JBkAuoVN-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert probe functions to device-managed variants, with exception of
-the regulator, which required a devm_add_action_or_reset() hook
-registration.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   3e732ebf7316ac83e8562db7e64cc68aec390a18
+commit: f9b3cd24578401e7a392974b3353277286e49cee Kconfig.debug: make DEBUG_INFO selectable from a choice
+date:   13 days ago
+config: m68k-randconfig-p001-20220406 (https://download.01.org/0day-ci/archive/20220406/202204062028.JBkAuoVN-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f9b3cd24578401e7a392974b3353277286e49cee
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout f9b3cd24578401e7a392974b3353277286e49cee
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
 
-Signed-off-by: Maíra Canal <maira.canal@usp.br>
----
- drivers/iio/adc/ad7266.c | 43 +++++++++++++---------------------------
- 1 file changed, 14 insertions(+), 29 deletions(-)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-index c17d9b5fbaf6..4f8f07d5c1a3 100644
---- a/drivers/iio/adc/ad7266.c
-+++ b/drivers/iio/adc/ad7266.c
-@@ -378,6 +378,11 @@ static const char * const ad7266_gpio_labels[] = {
- 	"ad0", "ad1", "ad2",
- };
- 
-+static void ad7266_reg_disable(void *reg)
-+{
-+	regulator_disable(reg);
-+}
-+
- static int ad7266_probe(struct spi_device *spi)
- {
- 	struct ad7266_platform_data *pdata = spi->dev.platform_data;
-@@ -398,9 +403,13 @@ static int ad7266_probe(struct spi_device *spi)
- 		if (ret)
- 			return ret;
- 
-+		ret = devm_add_action_or_reset(&spi->dev, ad7266_reg_disable, st->reg);
-+		if (ret)
-+			return ret;
-+
- 		ret = regulator_get_voltage(st->reg);
- 		if (ret < 0)
--			goto error_disable_reg;
-+			return ret;
- 
- 		st->vref_mv = ret / 1000;
- 	} else {
-@@ -423,7 +432,7 @@ static int ad7266_probe(struct spi_device *spi)
- 						      GPIOD_OUT_LOW);
- 				if (IS_ERR(st->gpios[i])) {
- 					ret = PTR_ERR(st->gpios[i]);
--					goto error_disable_reg;
-+					return ret;
- 				}
- 			}
- 		}
-@@ -459,35 +468,12 @@ static int ad7266_probe(struct spi_device *spi)
- 	spi_message_add_tail(&st->single_xfer[1], &st->single_msg);
- 	spi_message_add_tail(&st->single_xfer[2], &st->single_msg);
- 
--	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-+	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, &iio_pollfunc_store_time,
- 		&ad7266_trigger_handler, &iio_triggered_buffer_setup_ops);
- 	if (ret)
--		goto error_disable_reg;
--
--	ret = iio_device_register(indio_dev);
--	if (ret)
--		goto error_buffer_cleanup;
--
--	return 0;
--
--error_buffer_cleanup:
--	iio_triggered_buffer_cleanup(indio_dev);
--error_disable_reg:
--	if (!IS_ERR(st->reg))
--		regulator_disable(st->reg);
--
--	return ret;
--}
--
--static void ad7266_remove(struct spi_device *spi)
--{
--	struct iio_dev *indio_dev = spi_get_drvdata(spi);
--	struct ad7266_state *st = iio_priv(indio_dev);
-+		return ret;
- 
--	iio_device_unregister(indio_dev);
--	iio_triggered_buffer_cleanup(indio_dev);
--	if (!IS_ERR(st->reg))
--		regulator_disable(st->reg);
-+	return devm_iio_device_register(&spi->dev, indio_dev);
- }
- 
- static const struct spi_device_id ad7266_id[] = {
-@@ -502,7 +488,6 @@ static struct spi_driver ad7266_driver = {
- 		.name	= "ad7266",
- 	},
- 	.probe		= ad7266_probe,
--	.remove		= ad7266_remove,
- 	.id_table	= ad7266_id,
- };
- module_spi_driver(ad7266_driver);
+All errors (new ones prefixed by >>):
+
+   m68k-linux-ld: drivers/macintosh/via-pmu.o: in function `pmu_set_rtc_time':
+>> drivers/macintosh/via-pmu.c:1758: undefined reference to `rtc_tm_to_time64'
+   m68k-linux-ld: drivers/macintosh/via-pmu-event.o: in function `input_report_key':
+>> include/linux/input.h:425: undefined reference to `input_event'
+   m68k-linux-ld: drivers/macintosh/via-pmu-event.o: in function `input_report_switch':
+   include/linux/input.h:445: undefined reference to `input_event'
+   m68k-linux-ld: drivers/macintosh/via-pmu-event.o: in function `via_pmu_event_init':
+>> drivers/macintosh/via-pmu-event.c:38: undefined reference to `input_allocate_device'
+>> m68k-linux-ld: drivers/macintosh/via-pmu-event.c:53: undefined reference to `input_register_device'
+>> m68k-linux-ld: drivers/macintosh/via-pmu-event.c:55: undefined reference to `input_free_device'
+   m68k-linux-ld: drivers/macintosh/via-cuda.o: in function `cuda_set_rtc_time':
+   drivers/macintosh/via-cuda.c:796: undefined reference to `rtc_tm_to_time64'
+
+
+vim +1758 drivers/macintosh/via-pmu.c
+
+0792a2c8e0bbda Finn Thain 2018-09-11  1752  
+0792a2c8e0bbda Finn Thain 2018-09-11  1753  int pmu_set_rtc_time(struct rtc_time *tm)
+0792a2c8e0bbda Finn Thain 2018-09-11  1754  {
+0792a2c8e0bbda Finn Thain 2018-09-11  1755  	u32 now;
+0792a2c8e0bbda Finn Thain 2018-09-11  1756  	struct adb_request req;
+0792a2c8e0bbda Finn Thain 2018-09-11  1757  
+0792a2c8e0bbda Finn Thain 2018-09-11 @1758  	now = lower_32_bits(rtc_tm_to_time64(tm) + RTC_OFFSET);
+0792a2c8e0bbda Finn Thain 2018-09-11  1759  	if (pmu_request(&req, NULL, 5, PMU_SET_RTC,
+0792a2c8e0bbda Finn Thain 2018-09-11  1760  	                now >> 24, now >> 16, now >> 8, now) < 0)
+0792a2c8e0bbda Finn Thain 2018-09-11  1761  		return -ENXIO;
+0792a2c8e0bbda Finn Thain 2018-09-11  1762  	pmu_wait_complete(&req);
+0792a2c8e0bbda Finn Thain 2018-09-11  1763  	if (req.reply_len != 0)
+0792a2c8e0bbda Finn Thain 2018-09-11  1764  		pr_err("%s: got %d byte reply\n", __func__, req.reply_len);
+0792a2c8e0bbda Finn Thain 2018-09-11  1765  	return 0;
+0792a2c8e0bbda Finn Thain 2018-09-11  1766  }
+0792a2c8e0bbda Finn Thain 2018-09-11  1767  
+
+:::::: The code at line 1758 was first introduced by commit
+:::::: 0792a2c8e0bbda3605b8d42c6b9635be7b19982a macintosh: Use common code to access RTC
+
+:::::: TO: Finn Thain <fthain@telegraphics.com.au>
+:::::: CC: Michael Ellerman <mpe@ellerman.id.au>
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
