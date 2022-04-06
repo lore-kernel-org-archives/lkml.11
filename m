@@ -2,92 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F3F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E30FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231253AbiDFTq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43322 "EHLO
+        id S231901AbiDFTrC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232556AbiDFTq2 (ORCPT
+        with ESMTP id S231789AbiDFTpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:46:28 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EAFD12B5E0;
-        Wed,  6 Apr 2022 10:27:57 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id i27so5693396ejd.9;
-        Wed, 06 Apr 2022 10:27:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=xxCKDvKnzlNmqyD52b0jxmYNrkhxIBtLbpCHK1k0Wm4=;
-        b=Go6jjY9HwVfN8849F/tu3wLhHCF2+be7CREncdaWcwWytkGDGtl/+gL5l+SeEVopv0
-         mmwdwL7xUZ+F48FleaVc8S3vVCLkO7sNQcY1YiMatQdpTq54DRmEuyhosLl7KnabRVev
-         tdwQsxzVm2jBHpqDxzca1hEBjsCY6ogdUMsc0x9xw6MhzfENSTllPkCoy79P5UelDYy2
-         yPztHGAh430TzrnVSj2MhGghMtcZ5Ft8pt9QwHi8fakodQdm782zk+cQffOF41U2rzRU
-         25h9BWMNonR0QCZ0uYtxnT5vlDvj4orkArsiAQRShuonVk4y0rdfD5fn0skc9Qx5NyUr
-         4wyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=xxCKDvKnzlNmqyD52b0jxmYNrkhxIBtLbpCHK1k0Wm4=;
-        b=p5kLKQKpj2rxj+WhUgumcy5LQJ9gPHiINgtkfLhPS8HnxDOw6pGSVYGvWjyRwAy6nf
-         RyFIlyp/V/YoksyqjnRO8mr8hi2DuPgvIOXHVI5HttumDckfLGCUZW7d4vDWXsrorpuK
-         duaSpeesMCkmc4zqKoIf6G8hpeOLYMrY9RyC7OupL8laW39uzWWEn4W5B5SleBwy8/tX
-         TlOOmQHq1s83pdJFh4XzsypnrFMiLJUf6VBRtwCBIPXGqmrRCG3qISVU0LaTWVwVS9cZ
-         Qq+6khCXMy07zPZXWlmtJvjG+k3s6g5WTaSKpe41i9vlDgScSr4+sIVOJ10dCYZlC3g2
-         HUdA==
-X-Gm-Message-State: AOAM532ciNAUyapkT/IUliDHBifkT9tgKSrgtjARh/0IAbMzKkwGuX6u
-        VmbC5sOpq9odyHTnHGkVHbnMzUn3Y/k=
-X-Google-Smtp-Source: ABdhPJx8WufAEKheFrGyDVjFFwqIVn7YLi7ZNhhs0FTnMcKuGlnpHHFX5oHQnsi8jJiAJ08+Gk6OHw==
-X-Received: by 2002:a17:906:acf:b0:6e7:681e:b4b6 with SMTP id z15-20020a1709060acf00b006e7681eb4b6mr9552820ejf.61.1649266075691;
-        Wed, 06 Apr 2022 10:27:55 -0700 (PDT)
-Received: from [192.168.3.2] (p5dd1ed70.dip0.t-ipconnect.de. [93.209.237.112])
-        by smtp.googlemail.com with ESMTPSA id j8-20020aa7c0c8000000b0041934547989sm8273597edp.55.2022.04.06.10.27.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 10:27:55 -0700 (PDT)
-Message-ID: <c1350e15546652aedf2b9f0c1cf207a950afbeb7.camel@gmail.com>
-Subject: Re: [PATCH  v2 0/4] rpmb subsystem, uapi and virtio-rpmb driver
-From:   Bean Huo <huobean@gmail.com>
-To:     Alex =?ISO-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, maxim.uvarov@linaro.org,
-        joakim.bech@linaro.org, ulf.hansson@linaro.org,
-        ilias.apalodimas@linaro.org, arnd@linaro.org,
-        ruchika.gupta@linaro.org, tomas.winkler@intel.com,
-        yang.huang@intel.com, bing.zhu@intel.com,
-        Matti.Moell@opensynergy.com, hmo@opensynergy.com,
-        linux-mmc@vger.kernel.org, linux-scsi@vger.kernel.org
-Date:   Wed, 06 Apr 2022 19:27:53 +0200
-In-Reply-To: <87ee2ajuky.fsf@linaro.org>
-References: <20220405093759.1126835-1-alex.bennee@linaro.org>
-         <8b3ce88f65fd11523a4d2daab3c617f7089eb1ce.camel@gmail.com>
-         <87r16bk013.fsf@linaro.org>
-         <aeb64d1c4bbddfd8463c07a40ab1fc78be0d158d.camel@gmail.com>
-         <87ee2ajuky.fsf@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0-1 
+        Wed, 6 Apr 2022 15:45:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4CB1DE59B;
+        Wed,  6 Apr 2022 11:09:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B891461C4B;
+        Wed,  6 Apr 2022 18:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B317FC385A3;
+        Wed,  6 Apr 2022 18:09:24 +0000 (UTC)
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Josef Bacik <josef@toxicpanda.com>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Chris Mason <clm@fb.com>, David Sterba <dsterba@suse.com>,
+        Will Deacon <will@kernel.org>, linux-fsdevel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/3] Avoid live-lock in btrfs fault-in+uaccess loop
+Date:   Wed,  6 Apr 2022 19:09:19 +0100
+Message-Id: <20220406180922.1522433-1-catalin.marinas@arm.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
->=20
-> Can you point be to where the UFS driver does it's current RPMB
-> stuff?
->=20
+I finally got around to reviving this series. However, I simplified it
+from v2 and focussed on solving the btrfs search_ioctl() problem only:
 
-If you want to understand the UFS RPMB functionality/command sequence,
-you can refer to the ufs-utils tool, it is much like mmc-utils.
+https://lore.kernel.org/r/20211201193750.2097885-1-catalin.marinas@arm.com
 
-https://github.com/westerndigitalcorporation/ufs-utils/blob/dev/ufs_rpmb.c
+The btrfs search_ioctl() function can potentially live-lock on arm64
+with MTE enabled due to a fault_in_writeable() + copy_to_user_nofault()
+unbounded loop. The uaccess can fault in the middle of a page (MTE tag
+check fault) even if a prior fault_in_writeable() successfully wrote to
+the beginning of that page. The btrfs loop always restarts the fault-in
+loop from the beginning of the user buffer, hence the live-lock.
 
-> >=20
-> > Kind regards,
-> > Bean
->=20
->=20
+The series introduces fault_in_subpage_writeable() together with the
+arm64 probing counterpart and the btrfs fix.
+
+I don't think with the current kernel anything other than btrfs
+search_ioctl() can live-lock. The buffered file I/O can already cope
+with current fault_in_*() + copy_*_user() loops (the uaccess makes
+progress). Direct I/O either goes via GUP + kernel mapping access (and
+memcpy() can't fault) or, if the user buffer is not PAGE aligned, it may
+fall back to buffered I/O. So we really only care about
+fault_in_writeable(), hence this simplified series. If at some point
+we'll need to address other places, we can expand the sub-page probing
+to the other fault_in_*() functions.
+
+Thanks.
+
+Catalin Marinas (3):
+  mm: Add fault_in_subpage_writeable() to probe at sub-page granularity
+  arm64: Add support for user sub-page fault probing
+  btrfs: Avoid live-lock in search_ioctl() on hardware with sub-page
+    faults
+
+ arch/Kconfig                     |  7 +++++++
+ arch/arm64/Kconfig               |  1 +
+ arch/arm64/include/asm/mte.h     |  1 +
+ arch/arm64/include/asm/uaccess.h | 15 +++++++++++++++
+ arch/arm64/kernel/mte.c          | 30 ++++++++++++++++++++++++++++++
+ fs/btrfs/ioctl.c                 |  7 ++++++-
+ include/linux/pagemap.h          |  1 +
+ include/linux/uaccess.h          | 22 ++++++++++++++++++++++
+ mm/gup.c                         | 29 +++++++++++++++++++++++++++++
+ 9 files changed, 112 insertions(+), 1 deletion(-)
 
