@@ -2,136 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2212C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2585C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231491AbiDFM00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56886 "EHLO
+        id S232940AbiDFM0r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232901AbiDFM0D (ORCPT
+        with ESMTP id S232810AbiDFM0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:26:03 -0400
-Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5853F23A3BD
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:10:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1649232651; x=1680768651;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=OXlW7XMsm7YkB8BmULX0rKO6acP3cTihzhxzw0jjfqc=;
-  b=kcN2TUI/+EzjGey45MWuvNtbkq0FK4bRBy9dV160jhDrxzn9yNsH5bj4
-   B7bfiPpKquM9Nnnfby3+8b841JgC8BxezPhc82pfaIJG455O04Uw+rBHM
-   IWFSgEcDDI7QJ8jNYoGa7yKsB3Jr6e57RylVXv4pC8n+firxQGPWtbJnT
-   3h2ii8hyO0yFc+3q6vSQHEb9b/5x2JRR4h8tviHeuM5b2QPCICMg2rWxN
-   U9aYJUybM+kw6hQYFlzo8gRvh1edjR4UJIA0GAqQCBtpQOe2DkcUFhPMw
-   M6bB0ZMfrdSOBvj0tAdhwvuRX8fVA2iibTJOq7eR+zwiA4AtuMOPi12wg
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,239,1643644800"; 
-   d="scan'208";a="197220759"
-Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 06 Apr 2022 16:10:47 +0800
-IronPort-SDR: nF4bIdbir6tW54lJVvUQyRZIS3rw6aVEmfkYoyQumGdLxvjXuyntHiVOdNUGB3oibnUMyam31o
- vE2KW82SA/tcY1F9Ic3sNVNExy5VD5fqVkDOAGLPoR3mC05rC9INWqJXvZQQU0snWQdxVeKvAN
- FxQhwA0AcJjCrhfN5OTHSZxNyNWm8Aq3Hn/3euOVWw4FyEhjkDQGwIc8UKC2elHazJms4UWlxA
- comP//c5KkNpkJjYAfj2JFIgp/42mDJMrcPoboljKg1iX19vNL2U+Rgye5sh9rGf8ix1NQR86N
- n8Ev3/IStfDPP9LOCs5HPS8y
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 Apr 2022 00:41:30 -0700
-IronPort-SDR: zogS5gFxZKZDzO+nS7PyogULYokmOHnthX3HAgZXpvseAocuZGokAB0VrGO6iSh4MwidrBg3I5
- 6MZq7gFFjBCfHMUeLLjoac62A9JaoSSPBn3qAnEO9NZ4gSfi6M/HXegCt0YM6IbI0hKVHtf1os
- ZjK56zti9zt6RBAOpFq/g/jrDJr2W97XT2rvx4oQsR26Z0KDY5cHSNR7KxDUMA5FsVdoYo2eCj
- soKyixMgCNvg+Pr+pk49yPXnEXL39FT2Tk099JTuokEZDR0V//4CoTZE731/eP0EVgPbA7eRNO
- RiI=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 Apr 2022 01:10:49 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KYHJS2Mg7z1SHwl
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 01:10:48 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1649232647; x=1651824648; bh=OXlW7XMsm7YkB8BmULX0rKO6acP3cTihzhx
-        zw0jjfqc=; b=o4BCjSaKcmUeC3V/ysxboezAk7mt0Fxzqh0MWkY8sT2l+gU7jPB
-        Kdld9C6XDIdwdhu6MiqU1d/sFMaFZp1s88kGT8889lanvnwC5C8AIwciYM+n0oHv
-        v8DNdpfzNAnjxkMmWc8SAOte06L8HEC5Aaq0RJ3++HsG5s0JRjox/1O/RVWyl8QV
-        csjgkizdLNStKiwYAn6XM9sdJYrB3kTdTlk3xh1VqjcLqZnatbHvvIiBNcoawOPo
-        TlPhnPSSi8mM80a14xE+5tRgZNdUKq+STK7pG4aKau780AYeHKeAm1wTs8z6wem3
-        vskcmDgDMic33lD85Uly6zeGQTyojauhR1A==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id t5kjtjyLHI90 for <linux-kernel@vger.kernel.org>;
-        Wed,  6 Apr 2022 01:10:47 -0700 (PDT)
-Received: from [10.149.53.254] (washi.fujisawa.hgst.com [10.149.53.254])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KYHJR0CwQz1Rvlx;
-        Wed,  6 Apr 2022 01:10:46 -0700 (PDT)
-Message-ID: <a984b4d6-bc7d-ef81-8bd6-34d50127174d@opensource.wdc.com>
-Date:   Wed, 6 Apr 2022 17:10:45 +0900
+        Wed, 6 Apr 2022 08:26:06 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC1322EC118;
+        Wed,  6 Apr 2022 01:12:17 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 64D3F23A;
+        Wed,  6 Apr 2022 01:12:17 -0700 (PDT)
+Received: from e122247.kfn.arm.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 81F0B3F718;
+        Wed,  6 Apr 2022 01:12:15 -0700 (PDT)
+From:   Gilad Ben-Yossef <gilad@benyossef.com>
+To:     Gilad Ben-Yossef <gilad@benyossef.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Cristian Marussi <cristian.marussi@arm.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] crypto: ccree: use fine grained DMA mapping dir
+Date:   Wed,  6 Apr 2022 11:11:39 +0300
+Message-Id: <20220406081139.1963615-3-gilad@benyossef.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220406081139.1963615-1-gilad@benyossef.com>
+References: <20220406081139.1963615-1-gilad@benyossef.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/2] libata: Inline ata_qc_new_init() in
- ata_scsi_qc_new()
-Content-Language: en-US
-To:     John Garry <john.garry@huawei.com>, Christoph Hellwig <hch@lst.de>
-Cc:     linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-scsi@vger.kernel.org
-References: <1649083990-207133-1-git-send-email-john.garry@huawei.com>
- <1649083990-207133-3-git-send-email-john.garry@huawei.com>
- <20220405055252.GA23698@lst.de>
- <f7bbb09f-562f-fce2-cd16-a1c67fc334b5@opensource.wdc.com>
- <febb03e4-ea1d-c7e1-58a6-fa564c902af0@huawei.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <febb03e4-ea1d-c7e1-58a6-fa564c902af0@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/6/22 16:16, John Garry wrote:
-> On 06/04/2022 02:48, Damien Le Moal wrote:
->> On 4/5/22 14:52, Christoph Hellwig wrote:
->>> On Mon, Apr 04, 2022 at 10:53:10PM +0800, John Garry wrote:
->>>> From: Christoph Hellwig <hch@lst.de>
->>>>
->>>> It is a bit pointless to have ata_qc_new_init() in libata-core.c 
->>>> since it
->>>> pokes scsi internals, so inline it in ata_scsi_qc_new() (in 
->>>> libata-scsi.c).
->>>>
->>>> <Christoph, please provide signed-off-by>
->>>> [jpg, Take Christoph's change from list and form into a patch]
->>>> Signed-off-by: John Garry <john.garry@huawei.com>
->>>
->>> Signed-off-by: Christoph Hellwig <hch@lst.de>
->>>
->>> Although I still think merging the two patches into one to avoid all
->>> the churn would be much better.
->>
->> I agree. Let's merge these 2 patches.
-> 
-> I'd say that they are distinct changes.
-> 
-> Anyway, if that is the preference then who shall be the author? 
-> Considering I did most effort I will be and add Christoph as 
-> co-developed-by - please let me know if not ok.
+Use a fine grained specification of DMA mapping directions
+in certain cases, allowing both a more optimized operation
+as well as shushing out a harmless, though persky
+dma-debug warning.
 
-Works for me.
+Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
 
-> 
-> thanks,
-> John
+---
+ drivers/crypto/ccree/cc_buffer_mgr.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
-
+diff --git a/drivers/crypto/ccree/cc_buffer_mgr.c b/drivers/crypto/ccree/cc_buffer_mgr.c
+index 11e0278c8631..6140e4927322 100644
+--- a/drivers/crypto/ccree/cc_buffer_mgr.c
++++ b/drivers/crypto/ccree/cc_buffer_mgr.c
+@@ -356,12 +356,14 @@ void cc_unmap_cipher_request(struct device *dev, void *ctx,
+ 			      req_ctx->mlli_params.mlli_dma_addr);
+ 	}
+ 
+-	dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_BIDIRECTIONAL);
+-	dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
+-
+ 	if (src != dst) {
+-		dma_unmap_sg(dev, dst, req_ctx->out_nents, DMA_BIDIRECTIONAL);
++		dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_TO_DEVICE);
++		dma_unmap_sg(dev, dst, req_ctx->out_nents, DMA_FROM_DEVICE);
+ 		dev_dbg(dev, "Unmapped req->dst=%pK\n", sg_virt(dst));
++		dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
++	} else {
++		dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_BIDIRECTIONAL);
++		dev_dbg(dev, "Unmapped req->src=%pK\n", sg_virt(src));
+ 	}
+ }
+ 
+@@ -377,6 +379,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
+ 	u32 dummy = 0;
+ 	int rc = 0;
+ 	u32 mapped_nents = 0;
++	int src_direction = (src != dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL);
+ 
+ 	req_ctx->dma_buf_type = CC_DMA_BUF_DLLI;
+ 	mlli_params->curr_pool = NULL;
+@@ -399,7 +402,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
+ 	}
+ 
+ 	/* Map the src SGL */
+-	rc = cc_map_sg(dev, src, nbytes, DMA_BIDIRECTIONAL, &req_ctx->in_nents,
++	rc = cc_map_sg(dev, src, nbytes, src_direction, &req_ctx->in_nents,
+ 		       LLI_MAX_NUM_OF_DATA_ENTRIES, &dummy, &mapped_nents);
+ 	if (rc)
+ 		goto cipher_exit;
+@@ -416,7 +419,7 @@ int cc_map_cipher_request(struct cc_drvdata *drvdata, void *ctx,
+ 		}
+ 	} else {
+ 		/* Map the dst sg */
+-		rc = cc_map_sg(dev, dst, nbytes, DMA_BIDIRECTIONAL,
++		rc = cc_map_sg(dev, dst, nbytes, DMA_FROM_DEVICE,
+ 			       &req_ctx->out_nents, LLI_MAX_NUM_OF_DATA_ENTRIES,
+ 			       &dummy, &mapped_nents);
+ 		if (rc)
+@@ -456,6 +459,7 @@ void cc_unmap_aead_request(struct device *dev, struct aead_request *req)
+ 	struct aead_req_ctx *areq_ctx = aead_request_ctx(req);
+ 	unsigned int hw_iv_size = areq_ctx->hw_iv_size;
+ 	struct cc_drvdata *drvdata = dev_get_drvdata(dev);
++	int src_direction = (req->src != req->dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL);
+ 
+ 	if (areq_ctx->mac_buf_dma_addr) {
+ 		dma_unmap_single(dev, areq_ctx->mac_buf_dma_addr,
+@@ -514,13 +518,11 @@ void cc_unmap_aead_request(struct device *dev, struct aead_request *req)
+ 		sg_virt(req->src), areq_ctx->src.nents, areq_ctx->assoc.nents,
+ 		areq_ctx->assoclen, req->cryptlen);
+ 
+-	dma_unmap_sg(dev, req->src, areq_ctx->src.mapped_nents,
+-		     DMA_BIDIRECTIONAL);
++	dma_unmap_sg(dev, req->src, areq_ctx->src.mapped_nents, src_direction);
+ 	if (req->src != req->dst) {
+ 		dev_dbg(dev, "Unmapping dst sgl: req->dst=%pK\n",
+ 			sg_virt(req->dst));
+-		dma_unmap_sg(dev, req->dst, areq_ctx->dst.mapped_nents,
+-			     DMA_BIDIRECTIONAL);
++		dma_unmap_sg(dev, req->dst, areq_ctx->dst.mapped_nents, DMA_FROM_DEVICE);
+ 	}
+ 	if (drvdata->coherent &&
+ 	    areq_ctx->gen_ctx.op_type == DRV_CRYPTO_DIRECTION_DECRYPT &&
+@@ -843,7 +845,7 @@ static int cc_aead_chain_data(struct cc_drvdata *drvdata,
+ 		else
+ 			size_for_map -= authsize;
+ 
+-		rc = cc_map_sg(dev, req->dst, size_for_map, DMA_BIDIRECTIONAL,
++		rc = cc_map_sg(dev, req->dst, size_for_map, DMA_FROM_DEVICE,
+ 			       &areq_ctx->dst.mapped_nents,
+ 			       LLI_MAX_NUM_OF_DATA_ENTRIES, &dst_last_bytes,
+ 			       &dst_mapped_nents);
+@@ -1056,7 +1058,8 @@ int cc_map_aead_request(struct cc_drvdata *drvdata, struct aead_request *req)
+ 		size_to_map += authsize;
+ 	}
+ 
+-	rc = cc_map_sg(dev, req->src, size_to_map, DMA_BIDIRECTIONAL,
++	rc = cc_map_sg(dev, req->src, size_to_map,
++		       (req->src != req->dst ? DMA_TO_DEVICE : DMA_BIDIRECTIONAL),
+ 		       &areq_ctx->src.mapped_nents,
+ 		       (LLI_MAX_NUM_OF_ASSOC_DATA_ENTRIES +
+ 			LLI_MAX_NUM_OF_DATA_ENTRIES),
 -- 
-Damien Le Moal
-Western Digital Research
+2.25.1
+
