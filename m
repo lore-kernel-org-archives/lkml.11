@@ -2,125 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:14:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D1DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357322AbiDFKQj (ORCPT
+        id S1356160AbiDFKQv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53158 "EHLO
+        Wed, 6 Apr 2022 06:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239848AbiDFKPf (ORCPT
+        with ESMTP id S1350735AbiDFKHd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:15:35 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937203BD257;
-        Tue,  5 Apr 2022 20:32:24 -0700 (PDT)
-X-UUID: ee9315ccb60b4dfa9d5938f31a8092b2-20220406
-X-UUID: ee9315ccb60b4dfa9d5938f31a8092b2-20220406
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <jia-wei.chang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1518079559; Wed, 06 Apr 2022 11:32:19 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 6 Apr 2022 11:32:18 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 6 Apr 2022 11:32:18 +0800
-Message-ID: <41781640ceee45e763bb0f3d6c765fea76826fa5.camel@mediatek.com>
-Subject: Re: [PATCH 1/3] dt-bindings: devfreq: mediatek: add mtk cci devfreq
- dt-bindings
-From:   Jia-Wei Chang <jia-wei.chang@mediatek.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-CC:     <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <fan.chen@mediatek.com>,
-        <louis.yu@mediatek.com>, <roger.lu@mediatek.com>,
-        <Allen-yy.Lin@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <hsinyi@google.com>,
-        Jia-Wei Chang <jia-wei.chang@mediatek.corp-partner.google.com>
-Date:   Wed, 6 Apr 2022 11:32:18 +0800
-In-Reply-To: <ac0e3336-f9eb-def9-68ea-ab49e2c467a1@kernel.org>
-References: <20220307122513.11822-1-jia-wei.chang@mediatek.com>
-         <20220307122513.11822-2-jia-wei.chang@mediatek.com>
-         <bf418e08-2e32-5e61-abd8-abb0d8f5c080@canonical.com>
-         <13482b1b4244df5c0c0a4d6a60cdb2a7ba88500a.camel@mediatek.com>
-         <aa34eccf-ef08-4a8f-7a6c-7fbd05bd54b6@kernel.org>
-         <126e0905c2eb9f22a0be46dd7aa8ac891622346d.camel@mediatek.com>
-         <ac0e3336-f9eb-def9-68ea-ab49e2c467a1@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 6 Apr 2022 06:07:33 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548BA11D;
+        Tue,  5 Apr 2022 23:37:23 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id j17so149742pfi.9;
+        Tue, 05 Apr 2022 23:37:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FQQt7+yobA+b0Z1BhiU8usjPaq4hXnJ7fnVB/29gryw=;
+        b=W6d70wd7S/Bv79cRQA8+RDhX9uuxwccal05yNA2C/njdkP6kIVCxmn1DErmU9BnQMM
+         DQsXLsSfLgXDKMc8NKB+RjZdAfo29DJ/+Q5BpuxmHPzqi12Nx5vTDpntyqgpbFt9gn1m
+         canTOV00Ivf1Z3XlTUKYEOrTj9ypDdqkHngEPZI/6QcksQYQEDzbBFF2kAtnHjySn9m5
+         /PAOfgdIUM99ghaZ65eUSAurY+oj1YGqgGkIEHcg6t+kArRq2Pty1SeLEKJZcprrAegq
+         z5kTQh+N9u+DKM4/TsH/xcgJSW+YR7W3s4DqGOA4A+hTjoVM99joxyF5nwPVoa5AKrjU
+         LWBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=FQQt7+yobA+b0Z1BhiU8usjPaq4hXnJ7fnVB/29gryw=;
+        b=fNxQx6h91W0tUsn5IspfPXQhmd35dcsxgJzA+c7tWMWssxG0cXUkk+zcNGHCbtUIAH
+         1FL9+/10uLmY2gCbloCPZUQes7ebHvi0yLG61LQoHxv8l7funyLN/B2eegog8VsTk47I
+         EViGgvMYkuoA7gezr1JR2JXKkm5LnuuWlTUJ3r5PIbtyFf5qbghO5nmbNC5Ui6Q2P3b1
+         v6QlEhlxO73TCnFeXWXGM1Mjyjj9t/ZSHBl7SvwrtI/qdA4M2UjJn8jdJ9FO+QhqoWu1
+         jVBV7S+5SyEm+unxY572cAFehfqqw2rkQZf83K2aResjpPYcKpLz2o1A9W7hyBpLPfdy
+         0QOA==
+X-Gm-Message-State: AOAM530FfeTj2bDdNpqjI3WB/ckq17uXQ4CFRFeEupQb9Z0aNmDEID+c
+        Lw9WVRrcvyQw7a0vWUjJI6I=
+X-Google-Smtp-Source: ABdhPJwXdf/ennUM/lzhinl+XP81CRe1e/sjNoZtpFl9HWmQamnh2LX+gQEXs7wnys4JzkrTwIpSwQ==
+X-Received: by 2002:a05:6a00:1a12:b0:4fd:a5b4:b4c0 with SMTP id g18-20020a056a001a1200b004fda5b4b4c0mr7287467pfv.16.1649227042913;
+        Tue, 05 Apr 2022 23:37:22 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.111])
+        by smtp.gmail.com with ESMTPSA id bt18-20020a056a00439200b004faad3ae59esm17286650pfb.95.2022.04.05.23.37.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 23:37:22 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/4] KVM: x86/xen: Remove the redundantly included header file lapic.h
+Date:   Wed,  6 Apr 2022 14:37:12 +0800
+Message-Id: <20220406063715.55625-2-likexu@tencent.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406063715.55625-1-likexu@tencent.com>
+References: <20220406063715.55625-1-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-04-02 at 13:31 +0200, Krzysztof Kozlowski wrote:
-> On 01/04/2022 15:39, Jia-Wei Chang wrote:
-> > > > > 
-> > > > > > +
-> > > > > > +  operating-points-v2:
-> > > > > > +    description:
-> > > > > > +      For details, please refer to
-> > > > > > +      Documentation/devicetree/bindings/opp/opp-v2.yaml
-> > > > > > +
-> > > > > > +  opp-table: true
-> > > > > 
-> > > > > Same comments as your CPU freq bindings apply.
-> > > > 
-> > > > mtk-cci-devfreq is a new driver and its arch is same as
-> > > > mediatek-
-> > > > cpufreq so that the properties of mtk-cci are refer to
-> > > > mediatek-
-> > > > cpufreq 
-> > > > bindings.
-> > > > operating-point-v2 is used to determine the voltage and
-> > > > frequency
-> > > > of
-> > > > dvfs which is further utilized by mtk-cci-devfreq.
-> > > 
-> > > "operating-point-v2" is understood, but the same as in cpufreq
-> > > bindings,
-> > > I am questioning why do you have "opp-table: true". It's a bit
-> > > confusing, so maybe I miss something?
-> > 
-> > Yes, you're correct.
-> > "opp-table: true" should be removed.
-> > I messed it up.
-> 
-> No, I think I was wrong. The opp-table pretty frequently is embedded
-> in
-> the the device node itself. The operating-points-v2 references it.
-> 
-> You don't use it in the example, but it might be a valid usage, so it
-> can stay. Sorry for the confusion, it passed some time since I looked
-> at
-> OPP bindings.
+The header lapic.h is included more than once, remove one of them.
 
-You remind me of "opp-table: true" and the reason why I use it here is
-exactly as you mentioned. Sorry I was not familiar enough with this to
-respond it clearly and confidently.
+Signed-off-by: Like Xu <likexu@tencent.com>
+---
+Note: repeated as https://lore.kernel.org/kvm/20220401001442.100637-1-yang.lee@linux.alibaba.com/
 
-I think it is proper to keep "opp-table: true" and add a complete opp
-table information in dts example here as well.
+ arch/x86/kvm/xen.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Thanks for your comments.
-
-> 
-> 
-> Best regards,
-> Krzysztof
+diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
+index 7e7c8a5bff52..610beba35907 100644
+--- a/arch/x86/kvm/xen.c
++++ b/arch/x86/kvm/xen.c
+@@ -8,7 +8,6 @@
+ 
+ #include "x86.h"
+ #include "xen.h"
+-#include "lapic.h"
+ #include "hyperv.h"
+ #include "lapic.h"
+ 
+-- 
+2.35.1
 
