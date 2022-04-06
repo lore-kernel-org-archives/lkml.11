@@ -2,92 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57FC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D609BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232635AbiDFNKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34524 "EHLO
+        id S232295AbiDFNLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232648AbiDFNKO (ORCPT
+        with ESMTP id S232672AbiDFNK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:10:14 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FDE2BFC1B
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 19:39:55 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KY7y7322fzdZTR;
-        Wed,  6 Apr 2022 10:39:27 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 6 Apr 2022 10:39:53 +0800
-Subject: Re: [PATCH] filemap: remove obsolete comment in lock_page
-To:     Matthew Wilcox <willy@infradead.org>
-CC:     <akpm@linux-foundation.org>, <dhowells@redhat.com>,
-        <william.kucharski@oracle.com>, <vbabka@suse.cz>,
-        <kirill.shutemov@linux.intel.com>, <hannes@cmpxchg.org>,
-        <agruenba@redhat.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220402062218.30709-1-linmiaohe@huawei.com>
- <YksPkskcR6AdMaZf@casper.infradead.org>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <c728cb4c-6a87-94b6-b087-bbf2b55af35c@huawei.com>
-Date:   Wed, 6 Apr 2022 10:39:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Wed, 6 Apr 2022 09:10:56 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA095F38F1;
+        Wed,  6 Apr 2022 02:45:37 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2369iFWd108739;
+        Wed, 6 Apr 2022 04:44:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649238255;
+        bh=zgzNCrg2jxb2fMhf7Xl7w052aCeYSvcx7BoVAy9SRiQ=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=A/ceEQ1+xCVGdMhG4IJWdicZYBXElFeYzWE175OdYmLX9imSiL6NsIx+50xmiNF5+
+         PKHdnXubjD7KJ5kZBoQr+d1VMAVMtlfyvR/80ZAToKlRuaJyGJSEFhLwFEHHqTU1yV
+         r0oTS7WW+Ck1D/D5DovH55wjQGqLHUJcAG8x8tq8=
+Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2369iFdg014796
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 6 Apr 2022 04:44:15 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
+ Apr 2022 04:44:15 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 6 Apr 2022 04:44:15 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2369iDtw025691;
+        Wed, 6 Apr 2022 04:44:14 -0500
+From:   Puranjay Mohan <p-mohan@ti.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
+        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <vigneshr@ti.com>, <kishon@ti.com>
+Subject: [RFC 05/13] remoteproc: pru: Configure firmware based on client setup
+Date:   Wed, 6 Apr 2022 15:13:50 +0530
+Message-ID: <20220406094358.7895-6-p-mohan@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220406094358.7895-1-p-mohan@ti.com>
+References: <20220406094358.7895-1-p-mohan@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <YksPkskcR6AdMaZf@casper.infradead.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/4 23:32, Matthew Wilcox wrote:
-> On Sat, Apr 02, 2022 at 02:22:18PM +0800, Miaohe Lin wrote:
->> lock_page needs the caller to have a reference on the page->mapping inode
->> due to sync_page. Also lock_page_nosync is introduced which does not do a
->> sync_page via commit db37648cd6ce ("[PATCH] mm: non syncing lock_page()").
->> But commit 7eaceaccab5f ("block: remove per-queue plugging") kills off the
->> old plugging along with aops->sync_page() and lock_page_nosync. So there
->> is no need to have a reference on the page->mapping inode when calling
->> lock_page anymore. Remove this obsolete and confusing comment.
->>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> 
-> Thanks.  I'll fix up the changelog (some of the tenses are a little
-> strange) and take this through my pagecache tree.
+From: Tero Kristo <t-kristo@ti.com>
 
-Many thanks for doing this. :)
+Client device node property firmware-name is now used to configure
+firmware for the PRU instances. The default firmware is also
+restored once releasing the PRU resource.
 
-> 
->>  include/linux/pagemap.h | 3 ---
->>  1 file changed, 3 deletions(-)
->>
->> diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
->> index 993994cd943a..8dfe8e49c427 100644
->> --- a/include/linux/pagemap.h
->> +++ b/include/linux/pagemap.h
->> @@ -908,9 +908,6 @@ static inline void folio_lock(struct folio *folio)
->>  		__folio_lock(folio);
->>  }
->>  
->> -/*
->> - * lock_page may only be called if we have the page's inode pinned.
->> - */
->>  static inline void lock_page(struct page *page)
->>  {
->>  	struct folio *folio;
->> -- 
->> 2.23.0
->>
-> 
-> .
-> 
+Co-developed-by: Suman Anna <s-anna@ti.com>
+Signed-off-by: Suman Anna <s-anna@ti.com>
+Signed-off-by: Tero Kristo <t-kristo@ti.com>
+Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+---
+ drivers/remoteproc/pru_rproc.c | 35 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/drivers/remoteproc/pru_rproc.c b/drivers/remoteproc/pru_rproc.c
+index d06b763e995e..2977eb50631b 100644
+--- a/drivers/remoteproc/pru_rproc.c
++++ b/drivers/remoteproc/pru_rproc.c
+@@ -171,6 +171,23 @@ void pru_control_set_reg(struct pru_rproc *pru, unsigned int reg,
+ 	spin_unlock_irqrestore(&pru->rmw_lock, flags);
+ }
+ 
++/**
++ * pru_rproc_set_firmware() - set firmware for a pru core
++ * @rproc: the rproc instance of the PRU
++ * @fw_name: the new firmware name, or NULL if default is desired
++ *
++ * Return: 0 on success, or errno in error case.
++ */
++static int pru_rproc_set_firmware(struct rproc *rproc, const char *fw_name)
++{
++	struct pru_rproc *pru = rproc->priv;
++
++	if (!fw_name)
++		fw_name = pru->fw_name;
++
++	return rproc_set_firmware(rproc, fw_name);
++}
++
+ static struct rproc *__pru_rproc_get(struct device_node *np, int index)
+ {
+ 	struct device_node *rproc_np = NULL;
+@@ -231,6 +248,8 @@ struct rproc *pru_rproc_get(struct device_node *np, int index,
+ 	struct rproc *rproc;
+ 	struct pru_rproc *pru;
+ 	struct device *dev;
++	const char *fw_name;
++	int ret;
+ 
+ 	try_module_get(THIS_MODULE);
+ 
+@@ -257,7 +276,21 @@ struct rproc *pru_rproc_get(struct device_node *np, int index,
+ 	if (pru_id)
+ 		*pru_id = pru->id;
+ 
++	ret = of_property_read_string_index(np, "firmware-name", index,
++					    &fw_name);
++	if (!ret) {
++		ret = pru_rproc_set_firmware(rproc, fw_name);
++		if (ret) {
++			dev_err(dev, "failed to set firmware: %d\n", ret);
++			goto err;
++		}
++	}
++
+ 	return rproc;
++
++err:
++	pru_rproc_put(rproc);
++	return ERR_PTR(ret);
+ }
+ EXPORT_SYMBOL_GPL(pru_rproc_get);
+ 
+@@ -277,6 +310,8 @@ void pru_rproc_put(struct rproc *rproc)
+ 
+ 	pru = rproc->priv;
+ 
++	pru_rproc_set_firmware(rproc, NULL);
++
+ 	mutex_lock(&pru->lock);
+ 
+ 	if (!pru->client_np) {
+-- 
+2.17.1
 
