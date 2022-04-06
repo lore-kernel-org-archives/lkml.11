@@ -2,167 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A332C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EBD9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 08:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347176AbiDFID0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 04:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47058 "EHLO
+        id S230227AbiDFIEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 04:04:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577417AbiDFIBK (ORCPT
+        with ESMTP id S1579846AbiDFIB7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 04:01:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3D03878D5;
-        Tue,  5 Apr 2022 18:13:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95224B8202A;
-        Wed,  6 Apr 2022 01:13:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F295C385B5;
-        Wed,  6 Apr 2022 01:13:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649207607;
-        bh=K2W88sa0e40FhxFM51hz1PVnPS6fYU/JKW4DlHd0JHk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=HYGAzAvDvERjww1332qf4HBWmEBr8lBkHk5nMmpuHlcrS5xNhnbKDRvGd28nZ+kpN
-         TyR2NMK9JSTMkmDUMQaAIe7sJuDWPs3BEWWckbImQOQQVb12qZhWymF9E6XURIGl3a
-         ywXDWYdzLFYuIqxnrYkVbVipI7/38HCnjQcchEcsY3kjjiFKEn/sLMMxn3BglHVeeM
-         CTPK108iZ1bfDOO75pm6RvAA1YcwofguWk2pYis7TDML2vBzhBJ34KsSC3mLhVZZoL
-         RvjsW2J22HTbg1jpz9AndAsh4y5a+5KueCNel9rddnbDEZXBMQY2wLAx8cB7K3Bdi8
-         GCpVhnbxbQaPg==
-Received: by mail-ua1-f41.google.com with SMTP id j9so949629uap.13;
-        Tue, 05 Apr 2022 18:13:27 -0700 (PDT)
-X-Gm-Message-State: AOAM531T555rIXPdxkj5Ghg328Wx6M2IqnznVf5Ai87HpmZwWR2EkB65
-        opRePyXrYgbnWaYanlaPaQzk+dW17QcMl2RG2Vw=
-X-Google-Smtp-Source: ABdhPJwdlBT6DWcyITpQFk0eYMxDLklydODShGdQh3Dhz3gy5pvAEE1D7qv3EMRUsxW3oJsG0Lv+XReYvs2gnjTTYBE=
-X-Received: by 2002:a67:efc3:0:b0:325:4fcf:60bf with SMTP id
- s3-20020a67efc3000000b003254fcf60bfmr1892801vsp.51.1649207606157; Tue, 05 Apr
- 2022 18:13:26 -0700 (PDT)
+        Wed, 6 Apr 2022 04:01:59 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2135.outbound.protection.outlook.com [40.107.215.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F2A1ED9C9;
+        Tue,  5 Apr 2022 18:20:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ltcvV+C7kil5CYjCysURQLuzPIKMQweHN21HRD3MalEfYvafa48qgPYvjt7ACzfHSkDe31Vx0/cczFb2vblADHryq6rt/zXmMCbnLJHuFlQ8Nui78dqIixWRbtqeNe0etrdFd2shFCIaMYz1M2q6omRu6iV9cfbC0y9gbHj4XBXiH5Q30bd4VZTLtVMvEAfYh03cbg9uKWE2INwvVpppsMvjkTBvPn4NZJ8O9Auc65VN5BSqiqEsKwj1a2mE/tgvPIh4Z9py0jy6hsWI2G1C9Yxtbf8Si+gl1UjfD1InNciVQ3HJ/FgY50oe2L8J9VgFTiip4f6pZ/auSZM0WyN3mQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VXb9X5yBGCE/Yv1MuBWWaiCSAPduSoTpjKKur/aLeSI=;
+ b=gPZKvqdTH67ShqIF/CkqzGendt5v1HzepLECXXwnAQSOnWXJ31RtPGcEK6t0nBg3JKktTBiSqd0/cJBv14kq9DNETVmo55pHO/3nNLmjZh4X8eokMiQkXHkWiXzjGO1OIAExHYSSC2E3lk96Cvi5jpMYlm8KQKq7VA+eUg2sJsf+COQRo2UHmmcddVOblcl2m/RkEUOzFH96KhWE0ZNpvnvtXTPmN1QBFLejFhREC1eAcLqIVYals3aGWHkynhaJXOmYWDn6FKg6EJv+dYw6Onc3VvAXrzRkcbbXV3RpCzxcxzcaFY6dHhA0XCNIRiJD0YdT40ExWA1Cjkp0+r+7Qw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=quantatw.com; dmarc=pass action=none header.from=quantatw.com;
+ dkim=pass header.d=quantatw.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=quantacorp.onmicrosoft.com; s=selector2-quantacorp-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VXb9X5yBGCE/Yv1MuBWWaiCSAPduSoTpjKKur/aLeSI=;
+ b=0ovV/7CGM0iqTZYCadk41YcZ3qRazwVf1NubxR84oqX5Ow//fZVokL2fBUosF2+m+NKuzgWE+4psExRbjtWdIJDkaW+3Iy+rOosSbBzV/8NLEe4OM8vvRvIkrNE6RYWKKVKmPlMhg1/j4x7Asqv+RwYFHTR3kjH4s2I5h+uCndQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=quantatw.com;
+Received: from HK0PR04MB3282.apcprd04.prod.outlook.com (2603:1096:203:89::17)
+ by TYZPR04MB4446.apcprd04.prod.outlook.com (2603:1096:400:4::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
+ 2022 01:20:24 +0000
+Received: from HK0PR04MB3282.apcprd04.prod.outlook.com
+ ([fe80::9c61:c8e7:d1ad:c65f]) by HK0PR04MB3282.apcprd04.prod.outlook.com
+ ([fe80::9c61:c8e7:d1ad:c65f%6]) with mapi id 15.20.5123.031; Wed, 6 Apr 2022
+ 01:20:24 +0000
+From:   Potin Lai <potin.lai@quantatw.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Cc:     Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai@quantatw.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/3] net: mdio: aspeed: Introduce read write function for c22 and c45
+Date:   Wed,  6 Apr 2022 09:20:01 +0800
+Message-Id: <20220406012002.15128-3-potin.lai@quantatw.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220406012002.15128-1-potin.lai@quantatw.com>
+References: <20220406012002.15128-1-potin.lai@quantatw.com>
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR02CA0129.apcprd02.prod.outlook.com
+ (2603:1096:202:16::13) To HK0PR04MB3282.apcprd04.prod.outlook.com
+ (2603:1096:203:89::17)
 MIME-Version: 1.0
-References: <CAJF2gTQkGZnwXrXsbx8drL0AicVpOMW=JmOcrieuvyEf91XPhg@mail.gmail.com>
- <mhng-cfa7bfb9-bab8-423c-85ad-ecd407d6e806@palmer-ri-x1c9>
-In-Reply-To: <mhng-cfa7bfb9-bab8-423c-85ad-ecd407d6e806@palmer-ri-x1c9>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Wed, 6 Apr 2022 09:13:15 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTQgU=V+snWp7a8_txsX49BzAct1nkB18k-p4BZEd+s+eQ@mail.gmail.com>
-Message-ID: <CAJF2gTQgU=V+snWp7a8_txsX49BzAct1nkB18k-p4BZEd+s+eQ@mail.gmail.com>
-Subject: Re: [next] riscv: Linux next-20220404 riscv defconfig builds failed.
-To:     Palmer Dabbelt <palmer@rivosinc.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Guo Ren <guoren@linux.alibaba.com>,
-        =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: de17ab40-fbf0-45f6-3bb9-08da176ba058
+X-MS-TrafficTypeDiagnostic: TYZPR04MB4446:EE_
+X-Microsoft-Antispam-PRVS: <TYZPR04MB4446412794F9BB3729BC27A78EE79@TYZPR04MB4446.apcprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VRmOV9V+9IflT4yWaIQRAE/tnJeWfA/t3YpAFbTgNj/YGer5SujYEpYPLyMLofnC7W+iukcWO6cpM1Judu/1DE4nXd2SEjXaImOOwh4F13qhlO992+uVBIRFS+rrHbS0zs6RB8bGtGvTPa9SZhNCm23fbQC28AFi4EdB/AH0ZaqKoZrX6Guzq+nUKEoV7aOJm5SHzV74+cdYNIadRuV9Th7mVaFOnr98i7utYMTZO9XD0QcEr+y8Zn/Q7Tk/PMZP/89ToX2OfsP8ETFVPYgcDVi915vFNuGFY3Jgw5o8WTfodfofzMFyk6Vi2qZquki4MpcwVngyQEGne/YfkFnpG1BwoCgKKMlgvzl8WJlC1ZuLIjNYuPcqNmFP0SfYbzEYp+bfIRnXFXQG/Wx8VSeVMHJ4Ij3bTBwSkXAVIWUWdkRa5emdciLauA3KYtbvJ1Qfee9DoOQFKieplrPN6Pjyqjo9acILSF77kUhgPL+eiPqbBSy7T/PzAPJu3jBrFKsviSfYB2/uaHWXyEuTZeRA4OlmWzNEikpQ2NWMvxga6skQhMPGq83xnffsBQeXNKRBgm9aT3fEM0EOfNxXDQPcvhiiGaFWiiSK/2SJ19oObUojATD8NFjWV7Nv3LERie91tLVC/bM2SVVHdMNhEIthBWIf+uE5ulE6t2Hi/1l+Yb/JOaDk67Ob3FS53bG6z1FrWLxMNv2DDVBqSDSsDCjyUg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR04MB3282.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(66946007)(5660300002)(52116002)(38350700002)(38100700002)(6506007)(6666004)(8676002)(6512007)(66476007)(66556008)(2616005)(4326008)(110136005)(86362001)(8936002)(186003)(6486002)(26005)(7416002)(36756003)(44832011)(316002)(1076003)(2906002)(54906003)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?W8xK0ze5vRSxxIuIZcccbufg7lpFySRS/QY3xGx4lgj69zFi8aE4bLCP0Ivy?=
+ =?us-ascii?Q?mfHUr0/44AI479+7ItMswTwKA7Rt1aPuwPzDn3qFFr8Ytau4YXjQy/nSKgiD?=
+ =?us-ascii?Q?OMTmXGVaiUStfyeO0g68LCNj00ZqXkY3XJCdaE/TMI5scQJPhdwakl7bsSt3?=
+ =?us-ascii?Q?KDBNVtBXT9LkYW7as6H6/zOlAb9ZvxqV4YxgnLxn3NdMjjNU9hosJLfwZL/1?=
+ =?us-ascii?Q?Y8FIXZbccwjU1ygjLfBTTbZbmY4lw9p+rBvvJb/6nR04Zy7tMmPWbcWum8VT?=
+ =?us-ascii?Q?TedxmzCiH8PRnq4RKh339+Vg75O3e8P3P1Cn+s7wELYCNx62knBQKYw8n/Q+?=
+ =?us-ascii?Q?pK4E1F+S4eAqpS55EHQT2weL2z/wn4bXxhnIfqt6Kw1z8gIMPCyh/Th9o5L6?=
+ =?us-ascii?Q?I0OLKFM7HXopxMnkPSfa0lTA6PsbK72rsujWmUewazoPwml3dMNbR0QFmOEq?=
+ =?us-ascii?Q?2ApeGvSzkY0CY/LuTbxUJWANYj6tTJP2V6gHgSGhKm6nrhNL8fxnJjMHNwYv?=
+ =?us-ascii?Q?87SorH811Hu1sujNnqifybkpFfgsF785WlFLcE1HoMgKqoJaN6LKcTftvddj?=
+ =?us-ascii?Q?OPGPSCyXvb/8OwE7IeKvTnN6lkiQXQgyQGIO2O+J3hvVUFHedJXad6LnUzPH?=
+ =?us-ascii?Q?s1b4JW6NSsm0JhFW1ppKbtDtkccS0W8o/TY+gfGviHLb2GaSD6bya0Xmjng2?=
+ =?us-ascii?Q?ftFu1MZDWVXgkUQmDkp/1V31F+TJjJXyfcf53M9JmF9c8T2QEz3fWwLNhJ+H?=
+ =?us-ascii?Q?llgS7W1R773JOpKan0g/JURl1cKrqky0Dazo6zTtDQWk8BUsaCe4NVDYwhYv?=
+ =?us-ascii?Q?z+NyNaXQ4LiNG6Nq+Y3Bg+X8naAa78UvkxGRu4lAOXYXvmLu+4GSGOayxCtV?=
+ =?us-ascii?Q?pJxCEKBlglVr6mipq++cIQGXmcxc2NpiLfgjUkE0fLkObtGhlvLENBBJ4ONw?=
+ =?us-ascii?Q?rDp7f0GdFqqp/7kvTyigVS5WBTr96inWl4l8M8VF0zeiZhXQyAy6lR/CJ1la?=
+ =?us-ascii?Q?8wBQhxtEJItPq+AclLWLxHFsOyAzKEXeXVwweoCDGFw/Qy2utPmewgz9N42w?=
+ =?us-ascii?Q?Z3LO1Qz6mbbB85mF7ZGVp+cWMQbQT7Zq1gmsZ79vrRsizSke1hYM/6aT/VPb?=
+ =?us-ascii?Q?lza2hfZECcmihJ9zruWjuvLyNcKS+yVZf68920WoYso504vV9NZ6/lFDkjBw?=
+ =?us-ascii?Q?5CnRjHQqtfZ72g0E5YAmcJJBP5JlkyulbWKb977Lawh7gUpPNGwni1cROZQw?=
+ =?us-ascii?Q?hyXBeQ3yDYC7QiYrZvWG5vzKABL09BXDDfMQWD1mvdqE8o1p3zKsc+/QHWus?=
+ =?us-ascii?Q?5iwhSVGeJcQ2HeN+N9CpgsXu779fmF9wcX1jDMSNS1ieOgAkSyKqDyuClAyx?=
+ =?us-ascii?Q?W7eb1jzAiuHp73PcinGxYEpdt+baHKt12G+6dg4c/GO/Tx6LPCHebwdtacQC?=
+ =?us-ascii?Q?p7r+MVUN0hz03eIiKwXg551cVARxTB377GEB64KWlYlYkRiVqXIJEBj0eTCz?=
+ =?us-ascii?Q?UGQI/SSL79YxRaNcZMuY0e2zKiWYlUSy3/aY74VylnQmczqbabQRaVaFhhC/?=
+ =?us-ascii?Q?iZ777KIM7oLq3+NGi5EVZtZvhMa+KX1WM6Xja4b8pYJGu+suB9yAwTWu0iz5?=
+ =?us-ascii?Q?E6jlp2lRkVNzXfMxZYwq0EwX/894myWlu69f1OMlnWpIqRCFoYwFcZ3SzI6+?=
+ =?us-ascii?Q?QGMS8tUo2fO1yoT++gK2Pt6m93STz/Rqz9LOyOC3xp109u+b4WUzaht8vq9l?=
+ =?us-ascii?Q?GCoWG9xhaHuZInt4+IgaiTZLfPdDwPI=3D?=
+X-OriginatorOrg: quantatw.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: de17ab40-fbf0-45f6-3bb9-08da176ba058
+X-MS-Exchange-CrossTenant-AuthSource: HK0PR04MB3282.apcprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 01:20:24.6360
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 179b0327-07fc-4973-ac73-8de7313561b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: x9GYlawlNqdzFjLvB3oOkYTee1LAYs7nbk8Zu+h3u9lW5c5UesEtakpAwzS5e03t0KLeVX4HV63f6Le/seQFpA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR04MB4446
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 12:15 AM Palmer Dabbelt <palmer@rivosinc.com> wrote:
->
-> On Mon, 04 Apr 2022 22:17:24 PDT (-0700), guoren@kernel.org wrote:
-> > On Tue, Apr 5, 2022 at 12:57 AM Nathan Chancellor <nathan@kernel.org> wrote:
-> >>
-> >> On Mon, Apr 04, 2022 at 03:28:41PM +0530, Naresh Kamboju wrote:
-> >> > Linux next-20220404 riscv defconfig builds failed.
-> >> >
-> >> > Regressions found on riscv:
-> >> >    - riscv-riscv-clang-14-defconfig
-> >> >    - riscv-riscv-gcc-10-defconfig
-> >> >    - riscv-riscv-clang-13-defconfig
-> >> >    - riscv-riscv-clang-12-defconfig
-> >> >    - riscv-riscv-clang-11-defconfig
-> >> >    - riscv-riscv-gcc-11-defconfig
-> >> >    - riscv-riscv-gcc-8-defconfig
-> >> >    - riscv-riscv-gcc-9-defconfig
-> >> >    - riscv-riscv-clang-nightly-defconfig
-> >> >
-> >> >
-> >> > arch/riscv/kernel/compat_signal.c:7:10: fatal error:
-> >> > linux/tracehook.h: No such file or directory
-> >> >   7 | #include <linux/tracehook.h>
-> >> >     |          ^~~~~~~~~~~~~~~~~~~
-> >> > compilation terminated.
-> >> > make[3]: *** [scripts/Makefile.build:289:
-> >> > arch/riscv/kernel/compat_signal.o] Error 1
-> >>
-> >> For what it's worth, I also see:
-> >>
-> >> $ make -skj"$(nproc)" ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- defconfig all
-> >> arch/riscv/kernel/compat_vdso/compat_vdso.lds.S:3:10: fatal error: ../vdso/vdso.lds.S: No such file or directory
-> >>     3 | #include <../vdso/vdso.lds.S>
-> >>       |          ^~~~~~~~~~~~~~~~~~~~
-> >> compilation terminated.
-> >> make[2]: *** [scripts/Makefile.build:462: arch/riscv/kernel/compat_vdso/compat_vdso.lds] Error 1
-> >> arch/riscv/kernel/compat_vdso/rt_sigreturn.S:3:10: fatal error: ../vdso/rt_sigreturn.S: No such file or directory
-> >>     3 | #include <../vdso/rt_sigreturn.S>
-> >>       |          ^~~~~~~~~~~~~~~~~~~~~~~~
-> >> compilation terminated.
-> >> arch/riscv/kernel/compat_vdso/note.S:3:10: fatal error: ../vdso/note.S: No such file or directory
-> >>     3 | #include <../vdso/note.S>
-> >>       |          ^~~~~~~~~~~~~~~~
-> >> compilation terminated.
-> >> arch/riscv/kernel/compat_vdso/getcpu.S:3:10: fatal error: ../vdso/getcpu.S: No such file or directory
-> >>     3 | #include <../vdso/getcpu.S>
-> >>       |          ^~~~~~~~~~~~~~~~~~
-> >> compilation terminated.
-> >> make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/rt_sigreturn.o] Error 1
-> >> make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/note.o] Error 1
-> >> make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/getcpu.o] Error 1
-> >> arch/riscv/kernel/compat_vdso/flush_icache.S:3:10: fatal error: ../vdso/flush_icache.S: No such file or directory
-> >>     3 | #include <../vdso/flush_icache.S>
-> >>       |          ^~~~~~~~~~~~~~~~~~~~~~~~
-> >> compilation terminated.
-> >> make[2]: *** [arch/riscv/kernel/compat_vdso/Makefile:43: arch/riscv/kernel/compat_vdso/flush_icache.o] Error 1
-> >>
-> >> I am guessing this code was never tested with $(srctree) == $(objtree).
-> > Thx for pointing it out:
-> > I always use:
-> > make -skj"$(nproc)" ARCH=riscv
-> > CROSS_COMPILE=riscv64-unknown-linux-gnu- EXTRA_CFLAGS+=-g
-> > O=../build-riscv/ defconfig all
-> >
-> > When I change to:
-> > make -skj"$(nproc)" ARCH=riscv
-> > CROSS_COMPILE=riscv64-unknown-linux-gnu- EXTRA_CFLAGS+=-g defconfig
-> > all
-> >
-> > I got your problem.
->
-> Just to be clear: this one wasn't supposed to go in via the csky tree,
-> and had other build issues that were being found by the autobuilders
-> (which is why it hadn't gone in via the riscv tree).  I do in-tree
-> builds somewhat regularly so that probably would have caught it if
-> nothing else did, but my guess is that some other autobuilder would have
-> found it first (some of the earlier patches
-The problem and other build issues (arm64 & 5.18-rc1 conflict) all
-have been solved in v12:
-https://lore.kernel.org/linux-riscv/20220405071314.3225832-1-guoren@kernel.org/
+Add following additional functions to move out the implementation from
+aspeed_mdio_read() and aspeed_mdio_write().
 
->
-> Guo: please stop pushing things to linux-next that break the builds
-> and/or aren't aimed at your tree.  This just makes things unnecessarly
-> complicated.  If you don't want to deal with the build issues that's OK,
-> just LMK when you send the patch sets out and I'll deal with them, but
-> having linux-next's build break causes fallout for a lot of users.
-Yesterday, I made my
-https://github.com/c-sky/csky-linux/commits/linux-next with
-linux-5.18-rc1 tag commit version.
-So this only affected linux-next-20220404.
+c22:
+ - aspeed_mdio_read_c22()
+ - aspeed_mdio_write_c22()
 
+c45:
+ - aspeed_mdio_read_c45()
+ - aspeed_mdio_write_c45()
 
+Signed-off-by: Potin Lai <potin.lai@quantatw.com>
+---
+ drivers/net/mdio/mdio-aspeed.c | 46 +++++++++++++++++++++++++---------
+ 1 file changed, 34 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
+index f22be2f069e9..5becddb56117 100644
+--- a/drivers/net/mdio/mdio-aspeed.c
++++ b/drivers/net/mdio/mdio-aspeed.c
+@@ -79,17 +79,10 @@ static int aspeed_mdio_get_data(struct mii_bus *bus)
+ 	return FIELD_GET(ASPEED_MDIO_DATA_MIIRDATA, data);
+ }
+ 
+-static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
++static int aspeed_mdio_read_c22(struct mii_bus *bus, int addr, int regnum)
+ {
+ 	int rc;
+ 
+-	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d\n", __func__, addr,
+-		regnum);
+-
+-	/* Just clause 22 for the moment */
+-	if (regnum & MII_ADDR_C45)
+-		return -EOPNOTSUPP;
+-
+ 	rc = aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C22, MDIO_C22_OP_READ,
+ 			    addr, regnum, 0);
+ 	if (rc < 0)
+@@ -98,17 +91,46 @@ static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
+ 	return aspeed_mdio_get_data(bus);
+ }
+ 
++static int aspeed_mdio_write_c22(struct mii_bus *bus, int addr, int regnum,
++				 u16 val)
++{
++	return aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C22, MDIO_C22_OP_WRITE,
++			      addr, regnum, val);
++}
++
++static int aspeed_mdio_read_c45(struct mii_bus *bus, int addr, int regnum)
++{
++	/* TODO: add c45 support */
++	return -EOPNOTSUPP;
++}
++
++static int aspeed_mdio_write_c45(struct mii_bus *bus, int addr, int regnum,
++				 u16 val)
++{
++	/* TODO: add c45 support */
++	return -EOPNOTSUPP;
++}
++
++static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
++{
++	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d\n", __func__, addr,
++		regnum);
++
++	if (regnum & MII_ADDR_C45)
++		return aspeed_mdio_read_c45(bus, addr, regnum);
++
++	return aspeed_mdio_read_c22(bus, addr, regnum);
++}
++
+ static int aspeed_mdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
+ {
+ 	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d, val: 0x%x\n",
+ 		__func__, addr, regnum, val);
+ 
+-	/* Just clause 22 for the moment */
+ 	if (regnum & MII_ADDR_C45)
+-		return -EOPNOTSUPP;
++		return aspeed_mdio_write_c45(bus, addr, regnum, val);
+ 
+-	return aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C22, MDIO_C22_OP_WRITE,
+-			      addr, regnum, val);
++	return aspeed_mdio_write_c22(bus, addr, regnum, val);
+ }
+ 
+ static int aspeed_mdio_probe(struct platform_device *pdev)
 -- 
-Best Regards
- Guo Ren
+2.17.1
 
-ML: https://lore.kernel.org/linux-csky/
