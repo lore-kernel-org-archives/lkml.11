@@ -2,171 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 839F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C681C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236280AbiDFPsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:48:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
+        id S236508AbiDFPss (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:48:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236945AbiDFPry (ORCPT
+        with ESMTP id S237047AbiDFPr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:47:54 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D0C2C2EDD
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:05:24 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id f18so2543581edc.5
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 06:05:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PM54LwgT2Mgw5AMkSV1qMvIZs90k76HVAm+mIhFW/Ko=;
-        b=dDSmSxNu4cKou0wKKJy2RxvoXv2oI6xKR2vY3pb3rpGtbFJSq+v9Sour4amtkG8OmK
-         /mIlDVEuFioJxUYt/uLZELUgdXQw0ov1GNV1lrpYe6lLXJddt79EqvJAQITLd3WaNVH7
-         RZkDvqmMSe65o+jVNmIxDSjYRyulxd4z4O6RUWbk8rC6zzIUeWQYB0okxXTU0SvhHXZA
-         FOlx5xH2zFxCf3OE8/9JHhuxHDnwAY1LJRZbWwasq6aNf43sSQc+pAeLfaWwXG6joBqH
-         7NUBr0fvlYsspSPTWRfWfZ9QRS8Vfkb6O9IoizmZOkjDfsVP23+M9cveQTa0tzHjUgJl
-         d64Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PM54LwgT2Mgw5AMkSV1qMvIZs90k76HVAm+mIhFW/Ko=;
-        b=idPM+BQR9ud6AeurUrLKzphM+7CvuA6Xpf4bqyJkxVfO9Xw0US5oJ7jRepCKSjBIFV
-         kcHg+talwQP4Dj+ojVAmz+/vIRDRtGf240NCkYH2tjMQn0E/ReAL1yBUNEtZ6r9Hz0v3
-         NbbKlg0J0CZl6wv2EdNoejg1CZnH7Q5KX7/2Rl47/Ms3af+cURSFT8GTtzD9Ml5w/C+J
-         UdE7v5K4SlMV45m1qh7DyvDdAbd7w1MwfTe+QIUcfPxBISRR5E15f42YdAWAfwgEkyJy
-         EqXdM46c695qAfHgst/twMu966fKwiV8SlIJDdOQYRE3bwcSEy+NA7rehuONlXSWHf0Z
-         7txg==
-X-Gm-Message-State: AOAM531nC5edEDaJtlSlxRKX8on5PsOKCSU+br5iVXtkX3a9UbVduJpN
-        QHlHIezAzuAWecYJzZcFyvFXtg==
-X-Google-Smtp-Source: ABdhPJyAEVGuwpVr2eJbNmM3Bn7rwdqn15Yyq6WvWvI8cuWdHW0Fh3+ITY+ecK+a12QzHGzVyv/MtQ==
-X-Received: by 2002:a05:6402:34cf:b0:419:75b1:99ad with SMTP id w15-20020a05640234cf00b0041975b199admr8672622edc.228.1649250322915;
-        Wed, 06 Apr 2022 06:05:22 -0700 (PDT)
-Received: from google.com (30.171.91.34.bc.googleusercontent.com. [34.91.171.30])
-        by smtp.gmail.com with ESMTPSA id j22-20020a50ed16000000b00419366b2146sm8158326eds.43.2022.04.06.06.05.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 06:05:22 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 13:05:18 +0000
-From:   Quentin Perret <qperret@google.com>
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Steven Price <steven.price@arm.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        kvm list <kvm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        Linux API <linux-api@vger.kernel.org>, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
+        Wed, 6 Apr 2022 11:47:58 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB9E3CF4B6
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:06:13 -0700 (PDT)
+Received: from kwepemi500009.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KYPLc10vxzBs3R;
+        Wed,  6 Apr 2022 20:43:04 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi500009.china.huawei.com (7.221.188.199) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 20:47:14 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 6 Apr 2022 20:47:13 +0800
+Message-ID: <e269a621-ed0e-c74c-9cf6-f81c44c1fbcd@huawei.com>
+Date:   Wed, 6 Apr 2022 20:47:12 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [RFC PATCH -next V2 2/7] arm64: fix page_address return value in
+ copy_highpage
+To:     Mark Rutland <mark.rutland@arm.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Nakajima, Jun" <jun.nakajima@intel.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        David Hildenbrand <david@redhat.com>,
-        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v5 00/13] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <Yk2QDmvKR2ipsA29@google.com>
-References: <YkQzfjgTQaDd2E2T@google.com>
- <YkSaUQX89ZEojsQb@google.com>
- <80aad2f9-9612-4e87-a27a-755d3fa97c92@www.fastmail.com>
- <YkcTTY4YjQs5BRhE@google.com>
- <83fd55f8-cd42-4588-9bf6-199cbce70f33@www.fastmail.com>
- <YksIQYdG41v3KWkr@google.com>
- <Ykslo2eo2eRXrpFR@google.com>
- <eefc3c74-acca-419c-8947-726ce2458446@www.fastmail.com>
- <Ykwbqv90C7+8K+Ao@google.com>
- <54acbba9-f4fd-48c1-9028-d596d9f63069@www.fastmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <54acbba9-f4fd-48c1-9028-d596d9f63069@www.fastmail.com>
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        <james.morse@arm.com>
+References: <20220406091311.3354723-1-tongtiangen@huawei.com>
+ <20220406091311.3354723-3-tongtiangen@huawei.com>
+ <Yk1pz7IYwEyGDVNV@FVFF77S0Q05N>
+From:   Tong Tiangen <tongtiangen@huawei.com>
+In-Reply-To: <Yk1pz7IYwEyGDVNV@FVFF77S0Q05N>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tuesday 05 Apr 2022 at 10:51:36 (-0700), Andy Lutomirski wrote:
-> Let's try actually counting syscalls and mode transitions, at least approximately.  For non-direct IO (DMA allocation on guest side, not straight to/from pagecache or similar):
-> 
-> Guest writes to shared DMA buffer.  Assume the guest is smart and reuses the buffer.
-> Guest writes descriptor to shared virtio ring.
-> Guest rings virtio doorbell, which causes an exit.
-> *** guest -> hypervisor -> host ***
-> host reads virtio ring (mmaped shared memory)
-> host does pread() to read the DMA buffer or reads mmapped buffer
-> host does the IO
-> resume guest
-> *** host -> hypervisor -> guest ***
-> 
-> This is essentially optimal in terms of transitions.  The data is copied on the guest side (which may well be mandatory depending on what guest userspace did to initiate the IO) and on the host (which may well be mandatory depending on what the host is doing with the data).
-> 
-> Now let's try straight-from-guest-pagecache or otherwise zero-copy on the guest side.  Without nondestructive changes, the guest needs a bounce buffer and it looks just like the above.  One extra copy, zero extra mode transitions.  With nondestructive changes, it's a bit more like physical hardware with an IOMMU:
-> 
-> Guest shares the page.
-> *** guest -> hypervisor ***
-> Hypervisor adds a PTE.  Let's assume we're being very optimal and the host is not synchronously notified.
-> *** hypervisor -> guest ***
-> Guest writes descriptor to shared virtio ring.
-> Guest rings virtio doorbell, which causes an exit.
-> *** guest -> hypervisor -> host ***
-> host reads virtio ring (mmaped shared memory)
-> 
-> mmap  *** syscall ***
-> host does the IO
-> munmap *** syscall, TLBI ***
-> 
-> resume guest
-> *** host -> hypervisor -> guest ***
-> Guest unshares the page.
-> *** guest -> hypervisor ***
-> Hypervisor removes PTE.  TLBI.
-> *** hypervisor -> guest ***
-> 
-> This is quite expensive.  For small IO, pread() or splice() in the host may be a lot faster.  Even for large IO, splice() may still win.
 
-Right, that would work nicely for pages that are shared transiently, but
-less so for long-term shares. But I guess your proposal below should do
-the trick.
 
-> I can imagine clever improvements.  First, let's get rid of mmap() + munmap().  Instead use a special device mapping with special semantics, not regular memory.  (mmap and munmap are expensive even ignoring any arch and TLB stuff.)  The rule is that, if the page is shared, access works, and if private, access doesn't, but it's still mapped.  The hypervisor and the host cooperate to make it so.
+在 2022/4/6 18:22, Mark Rutland 写道:
+> On Wed, Apr 06, 2022 at 09:13:06AM +0000, Tong Tiangen wrote:
+>> Function page_address return void, fix it.
+>>
+>> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+> 
+> This looks like a sensible cleanup, but the commit title and message aren't
+> that clear.
+> 
+> Can you please make this:
+> 
+> | arm64: fix types in copy_highpage()
+> |
+> | In copy_highpage() the `kto` and `kfrom` local variables are pointers to
+> | struct page, but these are used to hold arbitrary pointers to kernel memory.
+> | Each call to page_address() returns a void pointer to memory associated with
+> | the relevant page, and copy_page() expects void pointers to this memory.
+> |
+> | This inconsistency was introduced in commit:
+> |
+> |   2563776b41c31908 ("arm64: mte: Tags-aware copy_{user_,}highpage() implementations")
+> |
+> | ... and while this doesn't appear to be harmful in practice it is clearly wrong.
+> |
+> | Correct this by making `kto` and `kfrom` void pointers.
+> |
+> | Fixes: 2563776b41c31908 ("arm64: mte: Tags-aware copy_{user_,}highpage() implementations")
+> 
+> With that:
+> 
+> Acked-by: Mark Rutland <mark.rutland@arm.com>
+> 
+> Thanks,
+> Mark.
+> 
 
-As long as the page can't be GUP'd I _think_ this shouldn't be a
-problem. We can have the hypervisor re-inject the fault in the host. And
-the host fault handler will deal with it just fine if the fault was
-taken from userspace (inject a SEGV), or from the kernel through uaccess
-macros. But we do get into issues if the host kernel can be tricked into
-accessing the page via e.g. kmap(). I've been able to trigger this by
-strace-ing a userspace process which passes a pointer to private memory
-to a syscall. strace will inspect the syscall argument using
-process_vm_readv(), which will pin_user_pages_remote() and access the
-page via kmap(), and then we're in trouble. But preventing GUP would
-prevent this by construction I think?
+OK, sure , will do in next version.
 
-FWIW memfd_secret() did look like a good solution to this, but it lacks
-the bidirectional notifiers with KVM that is offered by this patch
-series, which is needed to allow KVM to handle guest faults, and also
-offers a good framework to support future extensions (e.g.
-hypervisor-assisted page migration, swap, ...). So yes, ideally
-pKVM would use a kind of hybrid between memfd_secret and the private fd
-proposed here, or something else providing similar properties.
+Thanks.
+Tong.
 
-Thanks,
-Quentin
+>> ---
+>>   arch/arm64/mm/copypage.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/arm64/mm/copypage.c b/arch/arm64/mm/copypage.c
+>> index b5447e53cd73..0dea80bf6de4 100644
+>> --- a/arch/arm64/mm/copypage.c
+>> +++ b/arch/arm64/mm/copypage.c
+>> @@ -16,8 +16,8 @@
+>>   
+>>   void copy_highpage(struct page *to, struct page *from)
+>>   {
+>> -	struct page *kto = page_address(to);
+>> -	struct page *kfrom = page_address(from);
+>> +	void *kto = page_address(to);
+>> +	void *kfrom = page_address(from);
+>>   
+>>   	copy_page(kto, kfrom);
+>>   
+>> -- 
+>> 2.18.0.huawei.25
+>>
+>>
+>> _______________________________________________
+>> linux-arm-kernel mailing list
+>> linux-arm-kernel@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> .
