@@ -2,101 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64FBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:17:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0118C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234722AbiDFOR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
+        id S234511AbiDFOTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234666AbiDFOQ4 (ORCPT
+        with ESMTP id S234670AbiDFORW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:16:56 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B8E468259;
-        Tue,  5 Apr 2022 18:59:16 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id p17so694499plo.9;
-        Tue, 05 Apr 2022 18:59:16 -0700 (PDT)
+        Wed, 6 Apr 2022 10:17:22 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4198A4B6D0A;
+        Wed,  6 Apr 2022 03:20:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZzrJzEO0/L2Fv829K067oD4D3q7XNJ2h/EQeJLl1REM=;
-        b=crfzt8upCMe531ZqNzG/w5bacK5PoIW4zpIg4VPCySNfIR4TuTFO9yLeKP+EdVSktl
-         X2FZ8jEYUBS1z4hWJJTcu/FOuTwdq86di8oGNSnznOCPTF/6GcE1Zud5GJ4h43fmlJ3z
-         9Fa2HVJrw29fx190k5u/msgzpHQxA9W9p7z5HyZjvP4gnPXrOsPaq+2TACfFaDmB+NOU
-         ziu+dJ76nHNm+l+f+Onwda91vgKX/F+4SsOUf4T714JGyIxo/6I4L+RPVb/if4O36omE
-         CNYwrX5aDZvupPhnCUnXE5McdYEJBnwt+m5EU+u6pZKswsptj1FqXMY3OxqVOU0I/rEt
-         Qx/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZzrJzEO0/L2Fv829K067oD4D3q7XNJ2h/EQeJLl1REM=;
-        b=ImYFy+kwxfOlyl4x80ulBBOf9LO5UcAAfLkmdqrxu+G9kwyNUJAq4i7CIRj8m7FoGi
-         ABmQj1HVkpWycNsLd+j4wBGoFPdkh1UG93wdLi4GzqTi6Z9JpOo5w97ts7x460Ze37kk
-         M7Jox0hKMhPMzkkD8wgELxttYt7NA/ihJpIrSiElcuZa8jJUQN1/vr19omGxBQMKU8Bv
-         lWQpEQx+WEVoALcPGNToL5lHLzXzhSdUDz2NLs9rI6xJgdLct/+8FtMURTsInHY0gn8M
-         n8gaeA4dKI2tDXnXwyP5Gz3jp6H+50tKczPkxHThyuPX3p6SVNGG4XVll8zl1rs/pwJO
-         jZKA==
-X-Gm-Message-State: AOAM531gKnOl5IA5DzLDbSyvC1v4LYLA+9DMB4EGCzBckSJBekd8lZbw
-        xLU/gpUCgAqaA8znKYTU/iE=
-X-Google-Smtp-Source: ABdhPJxOmc+ENShQLno2fdpX+smu2f45tUg5mi9v08ko8E+JA+jXcFa/qde6p4zCEfgeWe2swp2VDg==
-X-Received: by 2002:a17:90b:4b43:b0:1c9:85b0:2db8 with SMTP id mi3-20020a17090b4b4300b001c985b02db8mr7272803pjb.23.1649210356350;
-        Tue, 05 Apr 2022 18:59:16 -0700 (PDT)
-Received: from localhost.localdomain ([180.150.111.33])
-        by smtp.gmail.com with ESMTPSA id x17-20020a17090ab01100b001ca8458964esm3712185pjq.18.2022.04.05.18.59.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 18:59:15 -0700 (PDT)
-From:   Jamie Bainbridge <jamie.bainbridge@gmail.com>
-To:     Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Jamie Bainbridge <jamie.bainbridge@gmail.com>,
-        Manish Chopra <manish.chopra@cavium.com>,
-        Ariel Elior <ariel.elior@cavium.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] qede: confirm skb is allocated before using
-Date:   Wed,  6 Apr 2022 11:58:09 +1000
-Message-ID: <b86829347bc923c3b48487a941925292f103588d.1649210237.git.jamie.bainbridge@gmail.com>
-X-Mailer: git-send-email 2.35.1
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649240452; x=1680776452;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=fa/Ha9oQ3GPaWNoRX1ZTgl4Zm+Xk49psP6xFi1hTzpc=;
+  b=QPpGmf3HupmKwLxjLEVhwgr8q3LHkqWhzdruPY2/wiLkq5t6+R47YVCZ
+   UUZbWOrmlZeWs0Z1qCRSSVl++YQFJSokmUlbOBLPdPm5Td/z+Wfq2Wn11
+   qhIVCMl5/cQOawkidYuTfDF9UIMra8M9PRBdnrGCNw9cJP7LHiE0QSykz
+   k=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 06 Apr 2022 02:38:49 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 02:38:49 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 6 Apr 2022 02:38:48 -0700
+Received: from [10.216.50.162] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 6 Apr 2022
+ 02:38:44 -0700
+Subject: Re: [PATCH V9 4/6] regulator: Add a regulator driver for the PM8008
+ PMIC
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_collinsd@quicinc.com>,
+        <quic_subbaram@quicinc.com>, <quic_jprakash@quicinc.com>
+References: <1649166633-25872-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1649166633-25872-5-git-send-email-quic_c_skakit@quicinc.com>
+ <CAE-0n53G-atsuwqcgNvi3nvWyiO3P=pSj5zDUMYj0ELVYJE54Q@mail.gmail.com>
+From:   "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
+Message-ID: <d9662032-57af-8316-9747-5083077f2050@quicinc.com>
+Date:   Wed, 6 Apr 2022 15:08:41 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE-0n53G-atsuwqcgNvi3nvWyiO3P=pSj5zDUMYj0ELVYJE54Q@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
-Message-ID: <20220406015809.BYTfoI1SIleINf4Sk9BItIT3hCCLv1fnpdaFsq5ofuA@z>
 
-qede_build_skb() assumes build_skb() always works and goes straight
-to skb_reserve(). However, build_skb() can fail under memory pressure.
-This results in a kernel panic because the skb to reserve is NULL.
 
-Add a check in case build_skb() failed to allocate and return NULL.
+On 4/6/2022 12:39 AM, Stephen Boyd wrote:
+> Quoting Satya Priya (2022-04-05 06:50:31)
+>> diff --git a/drivers/regulator/qcom-pm8008-regulator.c b/drivers/regulator/qcom-pm8008-regulator.c
+>> new file mode 100644
+>> index 0000000..0f6d5cb
+>> --- /dev/null
+>> +++ b/drivers/regulator/qcom-pm8008-regulator.c
+>> @@ -0,0 +1,205 @@
+> [...]
+>> +
+>> +static struct platform_driver pm8008_regulator_driver = {
+> Why isn't this an i2c driver?
 
-The NULL return is handled correctly in callers to qede_build_skb().
 
-Fixes: 8a8633978b842 ("qede: Add build_skb() support.")
-Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
----
- drivers/net/ethernet/qlogic/qede/qede_fp.c | 3 +++
- 1 file changed, 3 insertions(+)
+The parent mfd driver(qcom-pm8008.c) uses i2c to communicate, this is 
+the child to that and hence we don't use i2c driver here.
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-index b242000a77fd8db322672e541df074be9b5ce9ef..b7cc36589f592e995e3a12bb80bc7c8e3af7dc42 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-@@ -748,6 +748,9 @@ qede_build_skb(struct qede_rx_queue *rxq,
- 	buf = page_address(bd->data) + bd->page_offset;
- 	skb = build_skb(buf, rxq->rx_buf_seg_size);
- 
-+	if (unlikely(!skb))
-+		return NULL;
-+
- 	skb_reserve(skb, pad);
- 	skb_put(skb, len);
- 
--- 
-2.35.1
 
+>> +       .driver = {
+>> +               .name           = "qcom,pm8008-regulators",
+>> +       },
+>> +       .probe  = pm8008_regulator_probe,
+>> +};
