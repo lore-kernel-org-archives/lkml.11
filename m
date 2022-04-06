@@ -2,135 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87582C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D818C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 15:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236473AbiDFPv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 11:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
+        id S236683AbiDFPxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 11:53:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236488AbiDFPvj (ORCPT
+        with ESMTP id S236578AbiDFPw2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 11:51:39 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D3F1587A0;
-        Wed,  6 Apr 2022 06:11:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649250693; x=1680786693;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=dhKZFE7l+zk7iULmf3peuVOi1f+iSF+Jfyv10og7Xqg=;
-  b=K+B+TTuPShb+CIS2OhycOLA0rPPpcVS8C1jshFWIZBOJVeVTK8tvvV9v
-   RzKXDAziLWqC+QXEO6hbGsq7a7u4RimL4Y6+RZoF/1Czk+nKAc09DqNL7
-   0Oyevl9S3XamrbbYZJ41mThbu9FmUwJiN6FQ4sDIQyjVzp3hBpD3W0BwS
-   AWK3iTD9gV4qv10rLHU7zen0O0zBIsY0GO3DTQHg7CCKCcrMrrwrL0bLu
-   c2sB97wGzsLzjDGCTVb57gJuYjskHqRL7RIducPPqLiMnfEvqJeRu0SxZ
-   RF7Pskf6fqxVPGaZKct15pwk78xYsXSSEVPlD4tjhoWQpDd6Sq6YsHD1w
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="324208113"
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="324208113"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 06:09:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,239,1643702400"; 
-   d="scan'208";a="697364975"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 06 Apr 2022 06:09:54 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 8585B405; Wed,  6 Apr 2022 16:05:55 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Michael Walle <michael@walle.cc>
-Subject: [PATCH v5 4/4] device property: Constify fwnode APIs that uses fwnode_get_next_parent()
-Date:   Wed,  6 Apr 2022 16:05:52 +0300
-Message-Id: <20220406130552.30930-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406130552.30930-1-andriy.shevchenko@linux.intel.com>
-References: <20220406130552.30930-1-andriy.shevchenko@linux.intel.com>
+        Wed, 6 Apr 2022 11:52:28 -0400
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88B139B2A4;
+        Wed,  6 Apr 2022 06:14:32 -0700 (PDT)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1nc5Ti-0001n7-Cl; Wed, 06 Apr 2022 15:13:42 +0200
+Message-ID: <eed1cea4-409a-f03e-5c31-e82d49bb2101@maciej.szmigiero.name>
+Date:   Wed, 6 Apr 2022 15:13:35 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-6-seanjc@google.com>
+ <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
+ <YkshgrUaF4+MrrXf@google.com>
+ <7caee33a-da0f-00be-3195-82c3d1cd4cb4@maciej.szmigiero.name>
+ <YkzxXw1Aznv4zX0a@google.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying the
+ instruction
+In-Reply-To: <YkzxXw1Aznv4zX0a@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Due to fwnode_get_next_parent() used to be called against the parameters
-of some of fwnode APIs those parameters have no const qualifier. However,
-after switching to fwnode_for_each_parent_node() API now it's possible to
-constify the parameters. Do it for good.
+On 6.04.2022 03:48, Sean Christopherson wrote:
+> On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
+(..)
+>> Also, I'm not sure that even the proposed updated code above will
+>> actually restore the L1-requested next_rip correctly on L1 -> L2
+>> re-injection (will review once the full version is available).
+> 
+> Spoiler alert, it doesn't.  Save yourself the review time.  :-)
+> 
+> The missing piece is stashing away the injected event on nested VMRUN.  Those
+> events don't get routed through the normal interrupt/exception injection code and
+> so the next_rip info is lost on the subsequent #NPF.
+> 
+> Treating soft interrupts/exceptions like they were injected by KVM (which they
+> are, technically) works and doesn't seem too gross.  E.g. when prepping vmcb02
+> 
+> 	if (svm->nrips_enabled)
+> 		vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
+> 	else if (boot_cpu_has(X86_FEATURE_NRIPS))
+> 		vmcb02->control.next_rip    = vmcb12_rip;
+> 
+> 	if (is_evtinj_soft(vmcb02->control.event_inj)) {
+> 		svm->soft_int_injected = true;
+> 		svm->soft_int_csbase = svm->vmcb->save.cs.base;
+> 		svm->soft_int_old_rip = vmcb12_rip;
+> 		if (svm->nrips_enabled)
+> 			svm->soft_int_next_rip = svm->nested.ctl.next_rip;
+> 		else
+> 			svm->soft_int_next_rip = vmcb12_rip;
+> 	}
+> 
+> And then the VMRUN error path just needs to clear soft_int_injected.
 
-The affected functions are:
+I am also a fan of parsing EVENTINJ from VMCB12 into relevant KVM
+injection structures (much like EXITINTINFO is parsed), as I said to
+Maxim two days ago [1].
+Not only for software {interrupts,exceptions} but for all incoming
+events (again, just like EXITINTINFO).
 
-	fwnode_get_next_parent_dev()
-	fwnode_get_nth_parent()
-	fwnode_is_ancestor_of()
+However, there is another issue related to L1 -> L2 event re-injection
+using standard KVM event injection mechanism: it mixes the L1 injection
+state with the L2 one.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v5: new patch
- drivers/base/property.c  | 7 +++----
- include/linux/property.h | 9 ++++-----
- 2 files changed, 7 insertions(+), 9 deletions(-)
+Specifically for SVM:
+* When re-injecting a NMI into L2 NMI-blocking is enabled in
+vcpu->arch.hflags (shared between L1 and L2) and IRET intercept is
+enabled.
 
-diff --git a/drivers/base/property.c b/drivers/base/property.c
-index 839ee7f3ee12..79e0adfa1e24 100644
---- a/drivers/base/property.c
-+++ b/drivers/base/property.c
-@@ -594,7 +594,7 @@ EXPORT_SYMBOL_GPL(fwnode_get_next_parent);
-  * The caller of this function is expected to call put_device() on the returned
-  * device when they are done.
-  */
--struct device *fwnode_get_next_parent_dev(struct fwnode_handle *fwnode)
-+struct device *fwnode_get_next_parent_dev(const struct fwnode_handle *fwnode)
- {
- 	struct fwnode_handle *parent;
- 	struct device *dev;
-@@ -639,8 +639,7 @@ EXPORT_SYMBOL_GPL(fwnode_count_parents);
-  * The caller is responsible for calling fwnode_handle_put() for the returned
-  * node.
-  */
--struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwnode,
--					    unsigned int depth)
-+struct fwnode_handle *fwnode_get_nth_parent(const struct fwnode_handle *fwnode, unsigned int depth)
- {
- 	struct fwnode_handle *parent;
- 
-@@ -664,7 +663,7 @@ EXPORT_SYMBOL_GPL(fwnode_get_nth_parent);
-  *
-  * Returns true if @ancestor is an ancestor of @child. Otherwise, returns false.
-  */
--bool fwnode_is_ancestor_of(struct fwnode_handle *ancestor, struct fwnode_handle *child)
-+bool fwnode_is_ancestor_of(const struct fwnode_handle *ancestor, const struct fwnode_handle *child)
- {
- 	struct fwnode_handle *parent;
- 
-diff --git a/include/linux/property.h b/include/linux/property.h
-index fc24d45632eb..119bf7d6a02f 100644
---- a/include/linux/property.h
-+++ b/include/linux/property.h
-@@ -91,11 +91,10 @@ struct fwnode_handle *fwnode_get_next_parent(struct fwnode_handle *fwnode);
- 	for (parent = fwnode_get_parent(fwnode); parent;	\
- 	     parent = fwnode_get_next_parent(parent))
- 
--struct device *fwnode_get_next_parent_dev(struct fwnode_handle *fwnode);
--unsigned int fwnode_count_parents(const struct fwnode_handle *fwn);
--struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwn,
--					    unsigned int depth);
--bool fwnode_is_ancestor_of(struct fwnode_handle *ancestor, struct fwnode_handle *child);
-+struct device *fwnode_get_next_parent_dev(const struct fwnode_handle *fwnode);
-+unsigned int fwnode_count_parents(const struct fwnode_handle *fwnode);
-+struct fwnode_handle *fwnode_get_nth_parent(const struct fwnode_handle *fwnode, unsigned int depth);
-+bool fwnode_is_ancestor_of(const struct fwnode_handle *ancestor, const struct fwnode_handle *child);
- struct fwnode_handle *fwnode_get_next_child_node(
- 	const struct fwnode_handle *fwnode, struct fwnode_handle *child);
- struct fwnode_handle *fwnode_get_next_available_child_node(
--- 
-2.35.1
+This is incorrect, since it is L1 that is responsible for enforcing NMI
+blocking for NMIs that it injects into its L2.
+Also, *L2* being the target of such injection definitely should not block
+further NMIs for *L1*.
 
+* When re-injecting a *hardware* IRQ into L2 GIF is checked (previously
+even on the BUG_ON() level), while L1 should be able to inject even when
+L2 GIF is off,
+
+With the code in my previous patch set I planned to use
+exit_during_event_injection() to detect such case, but if we implement
+VMCB12 EVENTINJ parsing we can simply add a flag that the relevant event
+comes from L1, so its normal injection side-effects should be skipped.
+
+By the way, the relevant VMX code also looks rather suspicious,
+especially for the !enable_vnmi case.
+
+Thanks,
+Maciej
+
+[1]: https://lore.kernel.org/kvm/7d67bc6f-00ac-7c07-f6c2-c41b2f0d35a1@maciej.szmigiero.name/
