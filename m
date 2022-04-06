@@ -2,76 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B557C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9109BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 11:17:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240268AbiDFLQv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 07:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49206 "EHLO
+        id S243795AbiDFLTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 07:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235522AbiDFLQD (ORCPT
+        with ESMTP id S242518AbiDFLSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 07:16:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A783A53F7A8;
-        Wed,  6 Apr 2022 00:38:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 444B7B82141;
-        Wed,  6 Apr 2022 07:38:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1117AC385A3;
-        Wed,  6 Apr 2022 07:38:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649230717;
-        bh=RPPLRiPKvyfwNpU9DC7rnc/UmIxwMryzTBJ2jG8C1pM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=EcRfiyQlp8ztr7mxkgd0oHf3/vWP/rKjV5Rj1nhrJWP2MbKlzWh0Kzr8dzUil2oWX
-         Ue7aRICOG+6YnroxtuRDbAYrgoeuFt0EqNrOwcJGAqEnWWTTR+QHOJyOnOxuKYYPEG
-         21YO4e9zW+40BiBopG1Rs3+/M5ulkzJvlEYDyiThl5lDLUKeTZC0hPq5Zd3CYvXBFR
-         BIiW2xB2lOyZso7BRrLXj1eDHvYuUIi7ieauCUPmef+AiQaFXXM2/ghCailF139EEm
-         U27iIQBNEA9e3iig8FLZlEpAQYEPLnxgG2F0vTJV+gCrUIlZYmfHxwjh+OP/71kmeC
-         W5AYyt4mMOSvw==
-Received: by mail-wm1-f42.google.com with SMTP id p26-20020a05600c1d9a00b0038ccbff1951so2285122wms.1;
-        Wed, 06 Apr 2022 00:38:36 -0700 (PDT)
-X-Gm-Message-State: AOAM530Nm4tVaOR3LvyYi/8Cb4b/UkOKmGeCMtV42+VY/PCxs+/AU9w6
-        OjrXdGQ2lCU/8n2cAisz6r3YlwuCnV18j5WfRxY=
-X-Google-Smtp-Source: ABdhPJxaeqfciTDXCDjrEADLPNZyoksoREiuI0fsn1OZswRJclWU6hUgOuaBXJGBusVLkwuFnxep7UIMYAqnoluJliY=
-X-Received: by 2002:a1c:f219:0:b0:38c:782c:3bb with SMTP id
- s25-20020a1cf219000000b0038c782c03bbmr6112432wmc.94.1649230715337; Wed, 06
- Apr 2022 00:38:35 -0700 (PDT)
+        Wed, 6 Apr 2022 07:18:15 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7351B47CD1F
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 00:40:04 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id s2so1741092pfh.6
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 00:40:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1QYq8NuVe9FN1D3vwLDp5oNe5+OPIXHbOpbj0ZnKIIo=;
+        b=I0WUDB/A3XT+HHA+8xdWDIxHNPYG1oNh9YCaF3Z6OGT7ASDzbHM55p2/UUQDrZEgQa
+         EMani0C9pII6a6RDj7NeJT9y/yuOtT/8kLbCKQHHwGqfbiAF073eLiaBiHjtaVfN0x5q
+         bNvRDkc9MUhQb1nl+7JnuQZvAJU/fjiPy3ZEgPk2QaQg8cEPBfcT9k5yWjJ3imKGPJrR
+         yFL50pYQzWgkfTIm4DEN5nVsrvoTtqwKJhAgODeDLyCdd2zzb/o5bLgbK89e2IdVjnnT
+         HLIAI1TtCXYJMp7K8PxT8KQhoRtzpDtreaYfYLMEbhuMxg3Jq0K2MffRYK+F4ZCWNV7i
+         eZoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1QYq8NuVe9FN1D3vwLDp5oNe5+OPIXHbOpbj0ZnKIIo=;
+        b=44HDAYuZOLvmZbQvyTvH5Gt47bUjrvKGYgzgzIdAEOUBnQEjfsdn2cprw/L7mcm9HB
+         yQOOwkgZElCxHJD5IuZGLN8VbKrQ7DLyc4j+EaAU5Z2k5uwfAV6efcEZ+ILO3o+e1Tao
+         5JHhH+QZ4CdJJzwXcnQvOkcMZyVHMzrFgqweVODt0qFu/IeTXCbxZ7JAQEbIQ9P5sobm
+         PiLkQejZ9Z34nfR+OinsJPl8ICLoBLId6Gk68hrXoVSes+RCaET5lNLQELm10zXd6Y4p
+         AMzx5vNDdUKhg0gAIceLEEqd78eNzFu3ICmKto8XmFzAKYJZJ/iHMGp+KsDX9jjOK1l1
+         FVNg==
+X-Gm-Message-State: AOAM530dzRlbp7fq+A5+rnlMYe9Nddov4U9NU/AHA1moSOCIQmjXHMds
+        KShzciEX4q+pfhROu6arYDi0FuJvHQ9EdOsk6s0=
+X-Google-Smtp-Source: ABdhPJyCF7VtDld/Bk1zsR0RI1ioU48r8W3y5GNMOO89Tl7mj4ykPWLwgQlMOtVnjrpXkiRt/uw7CM0Ijf43uSZoHFs=
+X-Received: by 2002:a63:4f46:0:b0:382:56b2:f8 with SMTP id p6-20020a634f46000000b0038256b200f8mr6098889pgl.90.1649230803905;
+ Wed, 06 Apr 2022 00:40:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220203083658.559803-1-arnd@kernel.org> <Yk0z9zVaUpVcn30j@infradead.org>
-In-Reply-To: <Yk0z9zVaUpVcn30j@infradead.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 6 Apr 2022 09:38:19 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1g3rhEAN7P4hpCNzX+jJY4WDJW0je_miUGmz327tV6cg@mail.gmail.com>
-Message-ID: <CAK8P3a1g3rhEAN7P4hpCNzX+jJY4WDJW0je_miUGmz327tV6cg@mail.gmail.com>
-Subject: Re: [PATCH] [v2] ARM: sa1100/assabet: move dmabounce hack to ohci driver
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        USB list <linux-usb@vger.kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220401115018.9335-1-xiam0nd.tong@gmail.com>
+In-Reply-To: <20220401115018.9335-1-xiam0nd.tong@gmail.com>
+From:   Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
+Date:   Wed, 6 Apr 2022 09:39:52 +0200
+Message-ID: <CAMeQTsaPve23sNNm0Xkg9=8kqeN0SQp056Xyiva4pe2B7K37RQ@mail.gmail.com>
+Subject: Re: [PATCH] drm/gma500: fix a missing break in psb_intel_crtc_mode_set
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Dave Airlie <airlied@redhat.com>,
+        Alan Cox <alan@linux.intel.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 8:32 AM Christoph Hellwig <hch@infradead.org> wrote:
+On Fri, Apr 1, 2022 at 1:50 PM Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
 >
-> Just curious, where does this stand currently?
+> Instead of exiting the loop as expected when an entry is found, the
+> list_for_each_entry() continues until the traversal is complete.
+> when found the entry, add a break after the switch statement.
+>
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-I am not aware of any remaining problems, but I am waiting for Russell to review
-it again. Russell, can you have a look now, so we can try to get this into 4.19?
+Thanks for the patch
+Applied to drm-misc-next
 
-Let me know if you need me to resend the patch, or have a look at the archive[1]
-link for the current version [1].
-
-        Arnd
-
-[1] https://lore.kernel.org/all/20220203083658.559803-1-arnd@kernel.org/
+> ---
+>  drivers/gpu/drm/gma500/psb_intel_display.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/gma500/psb_intel_display.c b/drivers/gpu/drm/gma500/psb_intel_display.c
+> index dc467996cce4..9a5ea06a1a8e 100644
+> --- a/drivers/gpu/drm/gma500/psb_intel_display.c
+> +++ b/drivers/gpu/drm/gma500/psb_intel_display.c
+> @@ -135,6 +135,8 @@ static int psb_intel_crtc_mode_set(struct drm_crtc *crtc,
+>                         is_tv = true;
+>                         break;
+>                 }
+> +
+> +               break;
+>         }
+>         drm_connector_list_iter_end(&conn_iter);
+>
+> --
+> 2.17.1
+>
