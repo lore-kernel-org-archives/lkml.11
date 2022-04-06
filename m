@@ -2,255 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B051AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3564C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231951AbiDFNME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34254 "EHLO
+        id S233033AbiDFNNz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:13:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232859AbiDFNLA (ORCPT
+        with ESMTP id S233595AbiDFNMt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:11:00 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99505F474E;
-        Wed,  6 Apr 2022 02:45:39 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2369iY2K108785;
-        Wed, 6 Apr 2022 04:44:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649238274;
-        bh=OskuzPfkNKjmgGxwDEWjMFzgc0nXe4l8jI+0wfywHIw=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=Qg/m55LMAU/AcyFOrNbJOCsQyJ9SOYXlVu19ZOJgYracME127VVaj2tIwHHd0grV9
-         KecFIqBbzRJ0byzcTDlMcOwtwkPwIQxp/Df/PTWEmBm1xZoMUIZE/fQcEm6GJShhVK
-         Ht3SUi8IOgaaTO+0LzZSbQTrQQSczkgPYVyYbR3Q=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2369iYrW113189
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Apr 2022 04:44:34 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Apr 2022 04:44:33 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Apr 2022 04:44:34 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2369iWal025938;
-        Wed, 6 Apr 2022 04:44:33 -0500
-From:   Puranjay Mohan <p-mohan@ti.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
-        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <vigneshr@ti.com>, <kishon@ti.com>
-Subject: [RFC 12/13] dt-bindings: net: Add ICSSG Ethernet Driver bindings
-Date:   Wed, 6 Apr 2022 15:13:57 +0530
-Message-ID: <20220406094358.7895-13-p-mohan@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406094358.7895-1-p-mohan@ti.com>
-References: <20220406094358.7895-1-p-mohan@ti.com>
+        Wed, 6 Apr 2022 09:12:49 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085B14E1D1E;
+        Wed,  6 Apr 2022 02:49:44 -0700 (PDT)
+X-UUID: 61da098c1a8f4141b6812e69d4ab8532-20220406
+X-UUID: 61da098c1a8f4141b6812e69d4ab8532-20220406
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <axe.yang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1250012946; Wed, 06 Apr 2022 17:38:39 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 6 Apr 2022 17:38:38 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 6 Apr 2022 17:38:37 +0800
+Message-ID: <d7c0b9573e32d68c25444e48e6df1bba0eb64262.camel@mediatek.com>
+Subject: Re: [PATCH v9 1/3] dt-bindings: mmc: mtk-sd: extend interrupts and
+ pinctrls properties
+From:   Axe Yang <axe.yang@mediatek.com>
+To:     Rob Herring <robh@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>
+CC:     Chaotian Jing <chaotian.jing@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        "Yoshihiro Shimoda" <yoshihiro.shimoda.uh@renesas.com>,
+        Satya Tangirala <satyat@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Lucas Stach <dev@lynxeye.de>,
+        Eric Biggers <ebiggers@google.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Kiwoong Kim <kwmad.kim@samsung.com>,
+        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        <linux-mmc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Date:   Wed, 6 Apr 2022 17:38:37 +0800
+In-Reply-To: <Ykc53EmCaA7TadRK@robh.at.kernel.org>
+References: <20220329032913.8750-1-axe.yang@mediatek.com>
+         <20220329032913.8750-2-axe.yang@mediatek.com>
+         <CAPDyKFqoTN1pF-L6qCHxpdMCmPtHP0aHHaDURN2QJsN3v+wZBw@mail.gmail.com>
+         <Ykc53EmCaA7TadRK@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a YAML binding document for the ICSSG Programmable real time unit
-based Ethernet driver. This driver uses the PRU and PRUSS consumer APIs
-to interface the PRUs and load/run the firmware for supporting ethernet
-functionality.
+On Fri, 2022-04-01 at 12:43 -0500, Rob Herring wrote:
+> On Fri, Apr 01, 2022 at 11:22:13AM +0200, Ulf Hansson wrote:
+> > On Tue, 29 Mar 2022 at 05:29, Axe Yang <axe.yang@mediatek.com>
+> > wrote:
+> > > 
+> > > Extend interrupts and pinctrls for SDIO wakeup interrupt feature.
+> > > This feature allow SDIO devices alarm asynchronous interrupt to
+> > > host
+> > > even when host stop providing clock to SDIO card. An extra wakeup
+> > > interrupt and pinctrl states for SDIO DAT1 pin state switching
+> > > are
+> > > required in this scenario.
+> > > 
+> > > Signed-off-by: Axe Yang <axe.yang@mediatek.com>
+> > > ---
+> > >  .../devicetree/bindings/mmc/mtk-sd.yaml         | 17
+> > > ++++++++++++++++-
+> > >  1 file changed, 16 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> > > b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> > > index 297ada03e3de..3872a6ce2867 100644
+> > > --- a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> > > +++ b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> > > @@ -69,12 +69,22 @@ properties:
+> > >        - const: ahb_cg
+> > > 
+> > >    interrupts:
+> > > -    maxItems: 1
+> > > +    description:
+> > > +      Should at least contain MSDC GIC interrupt. To support
+> > > SDIO in-band wakeup, an extended
+> > > +      interrupt is required and be configured as wakeup source
+> > > irq.
+> > 
+> > If I understand correctly, the extended interrupt (a GPIO irq) may
+> > not
+> > necessarily share the same interrupt parent as the primary device
+> > interrupt.
+> > 
+> > Perhaps it's then better to extend this with "interrupts-extended"
+> > instead. See Documentation/devicetree/bindings/interrupt-
+> > controller/interrupts.txt.
+> 
+> 'interrupts-extended' is interchangeable with 'interrupts'. For
+> schemas, 
+> use 'interrupts' and the tools take care of supporting both forms.
+> 
 
-Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
----
- .../bindings/net/ti,icssg-prueth.yaml         | 172 ++++++++++++++++++
- 1 file changed, 172 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+hello Ulf, you are right, the wakeup interrupt(parent is &pio) do not
+share same parent as primary interrupt(parent is &gic). And as you
+said, I am using "interrupts-extended" to declare the wakeup irq, see
+commit message in patch 3/3:
+         &mmcX {
+                 ...
+                 interrupts-extended = <...>,
+                                       <&pio xxx IRQ_TYPE_LEVEL_LOW>;
+                 ...
+                 pinctrl-names = "default", "state_uhs", "state_eint";
+                 ...
+                 pinctrl-2 = <&mmc2_pins_eint>;
+                 ...
+                 cap-sdio-irq;
+                 keep-power-in-suspend;
+                 wakeup-source;
+                 ...
+         };
 
-diff --git a/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml b/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-new file mode 100644
-index 000000000000..8b8acb69e43e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-@@ -0,0 +1,172 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/ti,icssg-prueth.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: |+
-+  Texas Instruments ICSSG PRUSS Ethernet
-+
-+maintainers:
-+  - Puranjay Mohan <p-mohan@ti.com>
-+
-+description: |+
-+  Ethernet based on the Programmable Real-Time Unit and Industrial Communication Subsystem.
-+
-+allOf:
-+  - $ref: /schemas/remoteproc/ti,pru-consumer.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,am654-icssg-prueth  # for AM65x SoC family
-+
-+  sram:
-+    description: |
-+      phandle to MSMC SRAM node
-+
-+  dmas:
-+    description: |
-+      list of phandles and specifiers to UDMA as specified in bindings/dma/ti/k3-udma.txt.
-+
-+  dma-names:
-+    items:
-+      - const: tx0-0
-+      - const: tx0-1
-+      - const: tx0-2
-+      - const: tx0-3
-+      - const: tx1-0
-+      - const: tx1-1
-+      - const: tx1-2
-+      - const: tx1-3
-+      - const: rx0
-+      - const: rx1
-+
-+  ethernet-ports:
-+    type: object
-+    properties:
-+      '#address-cells':
-+        const: 1
-+      '#size-cells':
-+        const: 0
-+
-+    patternProperties:
-+      port@[0-1]:
-+        type: object
-+        description: ICSSG PRUETH external ports
-+
-+        $ref: ethernet-controller.yaml#
-+
-+        properties:
-+          reg:
-+            items:
-+              - enum: [0, 1]
-+            description: ICSSG PRUETH port number
-+
-+          ti,syscon-rgmii-delay:
-+            $ref: /schemas/types.yaml#/definitions/phandle-array
-+            description:
-+              phandle to system controller node and register offset
-+              to ICSSG control register for RGMII transmit delay
-+
-+        required:
-+          - reg
-+
-+    additionalProperties: false
-+
-+  ti,mii-g-rt:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: |
-+      phandle to MII_G_RT module's syscon regmap.
-+
-+  ti,mii-rt:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: |
-+      phandle to MII_RT module's syscon regmap
-+
-+  interrupts:
-+    description: |
-+      Interrupt specifiers to TX timestamp IRQ.
-+
-+  interrupt-names:
-+    items:
-+      - const: tx_ts0
-+      - const: tx_ts1
-+
-+required:
-+  - compatible
-+  - sram
-+  - ti,mii-g-rt
-+  - dmas
-+  - dma-names
-+  - ethernet-ports
-+  - interrupts
-+  - interrupt-names
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+
-+    /* Example k3-am654 base board SR2.0, dual-emac */
-+        pruss2_eth: pruss2_eth {
-+                compatible = "ti,am654-icssg-prueth";
-+                pinctrl-names = "default";
-+                pinctrl-0 = <&icssg2_rgmii_pins_default>;
-+                sram = <&msmc_ram>;
-+
-+                ti,prus = <&pru2_0>, <&rtu2_0>, <&tx_pru2_0>, <&pru2_1>, <&rtu2_1>, <&tx_pru2_1>;
-+                firmware-name = "ti-pruss/am65x-pru0-prueth-fw.elf",
-+                                "ti-pruss/am65x-rtu0-prueth-fw.elf",
-+                                "ti-pruss/am65x-txpru0-prueth-fw.elf",
-+                                "ti-pruss/am65x-pru1-prueth-fw.elf",
-+                                "ti-pruss/am65x-rtu1-prueth-fw.elf",
-+                                "ti-pruss/am65x-txpru1-prueth-fw.elf";
-+                ti,pruss-gp-mux-sel = <2>,      /* MII mode */
-+                                      <2>,
-+                                      <2>,
-+                                      <2>,      /* MII mode */
-+                                      <2>,
-+                                      <2>;
-+                ti,mii-g-rt = <&icssg2_mii_g_rt>;
-+                dmas = <&main_udmap 0xc300>, /* egress slice 0 */
-+                       <&main_udmap 0xc301>, /* egress slice 0 */
-+                       <&main_udmap 0xc302>, /* egress slice 0 */
-+                       <&main_udmap 0xc303>, /* egress slice 0 */
-+                       <&main_udmap 0xc304>, /* egress slice 1 */
-+                       <&main_udmap 0xc305>, /* egress slice 1 */
-+                       <&main_udmap 0xc306>, /* egress slice 1 */
-+                       <&main_udmap 0xc307>, /* egress slice 1 */
-+                       <&main_udmap 0x4300>, /* ingress slice 0 */
-+                       <&main_udmap 0x4301>, /* ingress slice 1 */
-+                       <&main_udmap 0x4302>, /* mgmnt rsp slice 0 */
-+                       <&main_udmap 0x4303>; /* mgmnt rsp slice 1 */
-+                dma-names = "tx0-0", "tx0-1", "tx0-2", "tx0-3",
-+                            "tx1-0", "tx1-1", "tx1-2", "tx1-3",
-+                            "rx0", "rx1";
-+                interrupts = <24 0 2>, <25 1 3>;
-+                interrupt-names = "tx_ts0", "tx_ts1";
-+                ethernet-ports {
-+                        #address-cells = <1>;
-+                        #size-cells = <0>;
-+                        pruss2_emac0: port@0 {
-+                                reg = <0>;
-+                                phy-handle = <&pruss2_eth0_phy>;
-+                                phy-mode = "rgmii-rxid";
-+                                interrupts-extended = <&icssg2_intc 24>;
-+                                ti,syscon-rgmii-delay = <&scm_conf 0x4120>;
-+                                /* Filled in by bootloader */
-+                                local-mac-address = [00 00 00 00 00 00];
-+                        };
-+
-+                        pruss2_emac1: port@1 {
-+                                reg = <1>;
-+                                phy-handle = <&pruss2_eth1_phy>;
-+                                phy-mode = "rgmii-rxid";
-+                                interrupts-extended = <&icssg2_intc 25>;
-+                                ti,syscon-rgmii-delay = <&scm_conf 0x4124>;
-+                                /* Filled in by bootloader */
-+                                local-mac-address = [00 00 00 00 00 00];
-+                        };
-+                };
-+        };
--- 
-2.17.1
+But the wakup interrupt is for SDIO only, in most instances, MSDC is
+been used as eMMC/SD card host, they do not need this interrupt. So as
+Rob suggested, I think we'd better keep using 'interrupts'. And I will
+update the description for 'interrupts', suggest to use 'interrupts-
+extended' to declare SDIO wakeup interrupt.
+
+And 'interrupt-names' is a good idea, I will add this property to
+document too. Thank you for the advice.
+
+Regards,
+Axe
+
 
