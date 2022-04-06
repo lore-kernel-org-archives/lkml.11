@@ -2,213 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DA37C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4535C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237043AbiDFQDX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:03:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52190 "EHLO
+        id S237087AbiDFQEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236731AbiDFQCG (ORCPT
+        with ESMTP id S237073AbiDFQDz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:02:06 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE18278C52;
-        Wed,  6 Apr 2022 06:32:33 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id C08961F7AE;
-        Wed,  6 Apr 2022 13:32:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649251951; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=fRYpW0cKkoFsVs1W48NO42/Imz4z4xmT/W/n6IF74TY=;
-        b=D3hjbmmd26QzFyFTDA48Xbsqomr7pFOECORnOpXG1KTLfMV7NWnPZNb1whNYDl0jBJdcyN
-        9ueIMQSlDdUzEDsxOSGDBOtP8iwqmksJZYEGIjGRb1l2Miof/x0AR5AO08NskWCwyPRTk8
-        l+gQ7z7loZ9aHCWiaiJSchJerdgl6cE=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 89BE3139F5;
-        Wed,  6 Apr 2022 13:32:31 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id CqxIIG+WTWLhAwAAMHmgww
-        (envelope-from <jgross@suse.com>); Wed, 06 Apr 2022 13:32:31 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>
-Subject: [PATCH] xen/balloon: fix page onlining when populating new zone
-Date:   Wed,  6 Apr 2022 15:32:29 +0200
-Message-Id: <20220406133229.15979-1-jgross@suse.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 6 Apr 2022 12:03:55 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43954967D8;
+        Wed,  6 Apr 2022 06:34:55 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id ot30so4242137ejb.12;
+        Wed, 06 Apr 2022 06:34:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=yoT8S//D770vY3WgW13o5h7gy26zZL3xUZVY0D1xI6I=;
+        b=OKY/Oe2bpatMWaw7vBgaG0P60ZrBk2oUeIRtq6TjKIsKtgU33Bi98lS9vRxfBOVs12
+         sBgypLxIrid8xr32V6QtCPgDBenafkPoly7NKF1tkA8amXEgxdCZKHcQh+ww6J+shesQ
+         3ufPIoLM2G7cdngFuZdX5hlWxVJXEwkqCa6FImka3W4SALriS0RlRcFFeKJBsdQGy+4C
+         MGBk9SBOzbekOm1IxDpGeSxvwARzlPVTsLbgK+xbdiNHkddo/GDrsO5CNYcslprWntAt
+         Vqa4ysQ+jZ2gG7C2CKmWZ0LrPrnMZsMdHAr2Jsb4rW1BaT6BIV8nGziTKPXGIoLWZAm5
+         1Bdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=yoT8S//D770vY3WgW13o5h7gy26zZL3xUZVY0D1xI6I=;
+        b=plzIuRlsUkzhDhDI2kVKZ/mbs6yJkCBpc2MsochAmbYQTzqpIUht5NnodKRe+7UO1C
+         ZXnTpk8GcfraLHFRN8PgyOoUO/zO9bkM8EKrrv+lb4NWXaRxk7aMPOzYMMszKqI7Yv+p
+         xGJhh3oTM2DAxMlfxktP1zO04Yng6estD8Lf5S6wjeMBlAVB9JGxxEwGymGuPi7DuxLV
+         AlqbgdpAwkjXgAPANPvJ/d/Ef5BMvrPzfgFWqqvXKVbhncvTbhZqZ/FoTjZ+lVmXdKpu
+         Z70rBZZoGLwZvcoJlGEd5JFYVxevhHHgBRqU+WHAbooqrJNvXnF5SQxtMOPjJUTyMqYg
+         76ug==
+X-Gm-Message-State: AOAM530eWYDUP0nNaPgCO0DVYhVOyBRi3XWoErzgRtfglzeBJ7IM/D55
+        uIPnAi3gxUgqpWgOiz8YykGdw6C79XiVFJ8McbTBQs90ssifkw==
+X-Google-Smtp-Source: ABdhPJx5i2eoEp7I2rY0229o1dYOKIKuh1vnzQC48AwjR8p6JjH3s9hUSj0yFqtcgLd4+fE8BGA4QYWpey/PVg6NVxs=
+X-Received: by 2002:a17:907:7704:b0:6cf:48ac:b4a8 with SMTP id
+ kw4-20020a170907770400b006cf48acb4a8mr8213309ejc.305.1649252094031; Wed, 06
+ Apr 2022 06:34:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220228140838.622021-1-benjamin.gaignard@collabora.com>
+ <eefa63b3-2a4d-4470-9a4e-517087ebcfaf@collabora.com> <CAHCN7xL2uZTMy30FGfDkDK4Lym6wvfr_MTv7QwtchrkTXMQiuw@mail.gmail.com>
+ <79a9c925-d930-ad23-dc53-9ebc16d1328a@collabora.com> <3f778844-f655-74a7-0a00-05caa84eca35@collabora.com>
+ <CAHCN7xLy2381AFLWhLxk5YuRV7C=OwLX=XPXONX8sbkg-SqMjA@mail.gmail.com>
+ <CAHCN7xJWQa-uXb0-+CSvAr1JhFmQYt80Q=uGvaY8uyptNcfbgw@mail.gmail.com>
+ <163202bd-ea51-e80a-1481-568fae25b045@collabora.com> <CAHCN7x+AwNauiyaVL=NGARkmxWOL9uLS5-AO4TjkvLGNQ=3r+Q@mail.gmail.com>
+ <bb462ee8-7bf9-5574-7cc2-098cc66e5ef0@collabora.com> <CAHCN7x+DTjeP7zQJYPyqzdz=hXWjz6Br0v1sWh4n1J3TJPb+9g@mail.gmail.com>
+ <8d23c99a-4ad0-e65a-0134-12f5d119e8bb@collabora.com> <CAHCN7x+YuXFrMe6dYo_VhkG7ey1jcPTpOMCM1=qoTivZO9U2Rw@mail.gmail.com>
+ <f495aa2b-81f7-a3cd-a6dd-cc5ae5f0a81f@collabora.com> <439e5c67e66dfff8f44f63787e2cdb8379f87446.camel@ndufresne.ca>
+ <a1069c94-4c3c-ee4d-738a-752bb1d12dac@collabora.com>
+In-Reply-To: <a1069c94-4c3c-ee4d-738a-752bb1d12dac@collabora.com>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Wed, 6 Apr 2022 08:34:42 -0500
+Message-ID: <CAHCN7x+hvYjoZFA6uaTXq-XfLMck-ht7Z-VzzvGpkh7H7BBbEQ@mail.gmail.com>
+Subject: Re: [PATCH v4 00/15] Move HEVC stateless controls out of staging
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com,
+        Chen-Yu Tsai <wens@csie.org>,
+        "jernej.skrabec" <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        linux-media <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev, kernel <kernel@collabora.com>,
+        knaerzche@gmail.com, jc@kynesim.co.uk
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When onlining a new memory page in a guest the Xen balloon driver is
-adding it to the ballooned pages instead making it available to be
-used immediately. This is meant to enable to add a new upper memory
-limit to a guest via hotplugging memory, without having to assign the
-new memory in one go.
+On Wed, Apr 6, 2022 at 8:05 AM Benjamin Gaignard
+<benjamin.gaignard@collabora.com> wrote:
+>
+>
+> Le 06/04/2022 =C3=A0 15:02, Nicolas Dufresne a =C3=A9crit :
+> > Le mercredi 06 avril 2022 =C3=A0 14:50 +0200, Benjamin Gaignard a =C3=
+=A9crit :
+> >>> default=3D1 value=3D1
+> >>> 1: Frame-Based
+> >>>                    hevc_start_code 0x00a40a96 (menu)   : min=3D1 max=
+=3D1
+> >>> default=3D1 value=3D1
+> >>> 1: Annex B Start Code
+> >> It is the same so that suggest the issue is coming from GStreamer plug=
+in.
+> > Can you report the GStreamer commit hash you have building on ? Also pl=
+ease
+> > validate the creation date of the plugin (libgstv4l2codecs.so) against =
+your
+> > source update date. Reminder that GStreamer is now mono-repo (just in c=
+ase).
+> >
+> > https://gitlab.freedesktop.org/benjamin.gaignard1/gstreamer/-/tree/HEVC=
+_aligned_with_kernel_5.15
+> > Hash: 54b7c1f98084c85d103446cc3f2edce42ad53b0f
+> >
+> > Benjamin, can you confirm you have no local changes and this is the has=
+h you are
+> > building from ?
+>
+> Yes that is the hash I'm using without local changes
 
-In case the upper memory limit will be raised above 4G, the new memory
-will populate the ZONE_NORMAL memory zone, which wasn't populated
-before. The newly populated zone won't be added to the list of zones
-looked at by the page allocator though, as only zones with available
-memory are being added, and the memory isn't yet available as it is
-ballooned out.
+I was on (gstreamer-HEVC_aligned_with_kernel_5.15) with a hash of
+4b78eaa48c0c924afd57f85c47396b77497e69f8
 
-This will result in the new memory being assigned to the guest, but
-without the allocator being able to use it.
+Benjamin's hash wasn't listed before, but I did a git pull, and now it is.
 
-When running as a PV guest the situation is even worse: when having
-been started with less memory than allowed, and the upper limit being
-lower than 4G, ballooning up will have the same effect as hotplugging
-new memory. This is due to the usage of the zone device functionality
-since commit 9e2369c06c8a ("xen: add helpers to allocate unpopulated
-memory") for creating mappings of other guest's pages, which as a side
-effect is being used for PV guest ballooning, too.
+I've checked out that hash, and I am rebuilding it now. I'll report my
+findings when it's done.  It's building on the imx8mq, so it may take
+some time.
 
-Fix this by checking in xen_online_page() whether the new memory page
-will be the first in a new zone. If this is the case, add another page
-to the balloon and use the first memory page of the new chunk as a
-replacement for this now ballooned out page. This will result in the
-newly populated zone containing one page being available for the page
-allocator, which in turn will lead to the zone being added to the
-allocator.
+adam
 
-Cc: stable@vger.kernel.org
-Fixes: 9e2369c06c8a ("xen: add helpers to allocate unpopulated memory")
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Signed-off-by: Juergen Gross <jgross@suse.com>
----
- drivers/xen/balloon.c | 72 ++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 65 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/xen/balloon.c b/drivers/xen/balloon.c
-index dfe26fa17e95..f895c54c4c65 100644
---- a/drivers/xen/balloon.c
-+++ b/drivers/xen/balloon.c
-@@ -355,14 +355,77 @@ static enum bp_state reserve_additional_memory(void)
- 	return BP_ECANCELED;
- }
- 
-+static struct page *alloc_page_for_balloon(gfp_t gfp)
-+{
-+	struct page *page;
-+
-+	page = alloc_page(gfp);
-+	if (page == NULL)
-+		return NULL;
-+
-+	adjust_managed_page_count(page, -1);
-+	xenmem_reservation_scrub_page(page);
-+
-+	return page;
-+}
-+
-+static void add_page_to_balloon(struct page *page)
-+{
-+	xenmem_reservation_va_mapping_reset(1, &page);
-+	balloon_append(page);
-+}
-+
- static void xen_online_page(struct page *page, unsigned int order)
- {
- 	unsigned long i, size = (1 << order);
- 	unsigned long start_pfn = page_to_pfn(page);
- 	struct page *p;
-+	struct zone *zone;
- 
- 	pr_debug("Online %lu pages starting at pfn 0x%lx\n", size, start_pfn);
- 	mutex_lock(&balloon_mutex);
-+	zone = page_zone(pfn_to_page(start_pfn));
-+
-+	/*
-+	 * In case a new memory zone is going to be populated, we need to
-+	 * ensure at least one page is made available for the memory allocator.
-+	 * As the number of pages per zone is updated only after a batch of
-+	 * pages having been added, use the number of managed pages as an
-+	 * additional indicator for a new zone.
-+	 * Otherwise this zone won't be added to the zonelist resulting in the
-+	 * zone's memory not usable by the kernel.
-+	 * Add an already valid page to the balloon and replace it with the
-+	 * first page of the to be added new memory chunk.
-+	 */
-+	if (!populated_zone(zone) && !managed_zone(zone)) {
-+		xen_pfn_t frame;
-+
-+		pr_info("Populating new zone\n");
-+
-+		p = alloc_page_for_balloon(GFP_ATOMIC);
-+		if (!p) {
-+			pr_err("Failed to allocate replacement balloon page!\n");
-+			pr_err("New onlined memory might not be usable.\n");
-+		} else {
-+			kmap_flush_unused();
-+			add_page_to_balloon(p);
-+			flush_tlb_all();
-+			frame = xen_page_to_gfn(p);
-+			xenmem_reservation_decrease(1, &frame);
-+			balloon_stats.current_pages--;
-+		}
-+
-+		p = pfn_to_page(start_pfn);
-+		frame = page_to_xen_pfn(p);
-+		if (xenmem_reservation_increase(1, &frame) > 0) {
-+			xenmem_reservation_va_mapping_update(1, &p, &frame);
-+			free_reserved_page(p);
-+			balloon_stats.current_pages++;
-+
-+			start_pfn++;
-+			size--;
-+		}
-+	}
- 	for (i = 0; i < size; i++) {
- 		p = pfn_to_page(start_pfn + i);
- 		balloon_append(p);
-@@ -452,14 +515,12 @@ static enum bp_state decrease_reservation(unsigned long nr_pages, gfp_t gfp)
- 		nr_pages = ARRAY_SIZE(frame_list);
- 
- 	for (i = 0; i < nr_pages; i++) {
--		page = alloc_page(gfp);
-+		page = alloc_page_for_balloon(gfp);
- 		if (page == NULL) {
- 			nr_pages = i;
- 			state = BP_EAGAIN;
- 			break;
- 		}
--		adjust_managed_page_count(page, -1);
--		xenmem_reservation_scrub_page(page);
- 		list_add(&page->lru, &pages);
- 	}
- 
-@@ -480,11 +541,8 @@ static enum bp_state decrease_reservation(unsigned long nr_pages, gfp_t gfp)
- 	list_for_each_entry_safe(page, tmp, &pages, lru) {
- 		frame_list[i++] = xen_page_to_gfn(page);
- 
--		xenmem_reservation_va_mapping_reset(1, &page);
--
- 		list_del(&page->lru);
--
--		balloon_append(page);
-+		add_page_to_balloon(page);
- 	}
- 
- 	flush_tlb_all();
--- 
-2.34.1
-
+>
+> Benjamin
+>
+> >
+> > regards,
+> > Nicolas
+> >
