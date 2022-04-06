@@ -2,92 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14EE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A72DCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:02:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbiDFNEA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48578 "EHLO
+        id S231622AbiDFNEG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230438AbiDFNCV (ORCPT
+        with ESMTP id S232684AbiDFNDI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:02:21 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3700D5BE775;
-        Wed,  6 Apr 2022 02:27:09 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id q142so1708219pgq.9;
-        Wed, 06 Apr 2022 02:27:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=ld9hXJBuPgc9K87ld4siRPnyEnw7v/554KsebgNr2z4=;
-        b=MGbUsahalDB/WfCcd63SJ0yfgouaivWJfOPEuI7d3H5i06UZG81C5+KvpBV5uK17Mo
-         oRUdRI1Ax0+8+oFZUwvc3wqibe9G6keLbb8FZ0WVtN/lFxoA1HQ66bZcePhVBeXMdJzy
-         7wSEkoH0/IHM/ON6fuFD4qh5/tfeGBlUWkR72VplqKTlCyIqRhpHuCVueX2ScUud2eiG
-         9vy2o5X2c5rwGYDJVTXJjiP/kxBiev1zyuMbWdycPT5ZXFDtdThi8wE8AgY34MR6Cgj2
-         4ICJcaih9KnSo6ZJhBRa8l5HsctZH4d1YuEPKihFQot+hNJ5phS226CKsl19yDAmScjC
-         XrDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=ld9hXJBuPgc9K87ld4siRPnyEnw7v/554KsebgNr2z4=;
-        b=X8tlBf+617XVGuVcPBXSuL5fGhGCphVSF3UmwOel/YWpf5gGU5/6sDe6BpukoGz+9Z
-         8l6sBOo/jtYX1OYHdVJGmFsiRvOOch+lOdGyqcMbWpcV4YdLmTBB43iRKiiI4tG0KA4G
-         zhTy50/qOT5yN2rkA6P+5oQVYJA4BjQeCuyHDaeGPO3nnpaS742Z9guTnNMXuqhecI+7
-         PjTJqXBpCsYxUUH4Cd/OGbfcY2AX7vqWkv3lyoFoMpay5fH/WARSGC9O80tuWplBBn/G
-         eNAQ/diIB0uR6X7tPJHPCPZaYX0iT/eX1Khj6bag+VYGN1+oH7UTvcslyZNb9GlcXfyG
-         UoWQ==
-X-Gm-Message-State: AOAM530rkmN/pRhFtv7vv4GjoT152oqZ/J7CrN8nd6o3HRKSDtpqEyFD
-        PX4cNRTaHpASmedCaIgJblYqyKpCPtNP46LJ9uE=
-X-Google-Smtp-Source: ABdhPJwc0l/XWr2ummHiBwi8nf1XrS7yVBBJXqwVH1Gny9aonoXybVWDyKOWDfh+yadhX7T+l0Ev0A==
-X-Received: by 2002:a63:51:0:b0:398:a2b7:be6 with SMTP id 78-20020a630051000000b00398a2b70be6mr4250857pga.214.1649237226613;
-        Wed, 06 Apr 2022 02:27:06 -0700 (PDT)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [71.19.144.195])
-        by smtp.gmail.com with ESMTPSA id n18-20020a056a0007d200b004fdac35672fsm17470406pfu.68.2022.04.06.02.27.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 02:27:06 -0700 (PDT)
-Message-ID: <624d5cea.1c69fb81.d0e6b.e9c9@mx.google.com>
-Date:   Wed, 06 Apr 2022 02:27:06 -0700 (PDT)
-X-Google-Original-Date: Wed, 06 Apr 2022 09:26:59 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-Subject: RE: [PATCH 5.10 000/599] 5.10.110-rc1 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        Wed, 6 Apr 2022 09:03:08 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C68C72EBA52
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 02:31:21 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 68EC11EC0426;
+        Wed,  6 Apr 2022 11:30:34 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649237434;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=xNgJ94p4O9/k4M97cHEVb1as3sdFhq6bklaCMoaeeII=;
+        b=D+gBk2yuR9SEsd0Mv7pdVbeS7OW8wP5r2HdSNg67PqFOGHrMF+/DzjFd/Pq8IG0O5zy7IV
+        Ol/u/cWZT9AO/A0GloXQeM+lXzxx4ahCQ7gQ/o0eY2iT7BI6lPqXnuAQ3tA+Z4b87twfSs
+        ZgpQ9pnqoLP/toYJxz+T+U7qmAJSz+8=
+Date:   Wed, 6 Apr 2022 11:30:36 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Carroll, Lewis" <Lewis.Carroll@amd.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "Karny, Wyes" <Wyes.Karny@amd.com>,
+        "Limonciello, Mario" <Mario.Limonciello@amd.com>,
+        "Shenoy, Gautham Ranjal" <gautham.shenoy@amd.com>,
+        "Narayan, Ananth" <Ananth.Narayan@amd.com>,
+        "Rao, Bharata Bhasker" <bharata@amd.com>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "chang.seok.bae@intel.com" <chang.seok.bae@intel.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "metze@samba.org" <metze@samba.org>,
+        "zhengqi.arch@bytedance.com" <zhengqi.arch@bytedance.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>
+Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
+Message-ID: <Yk1dvBS4BPCPYt+t@zn.tnic>
+References: <20220405130021.557880-1-wyes.karny@amd.com>
+ <YkxMtx9zdk+nH33r@zn.tnic>
+ <MN2PR12MB3949923BCD8B368F8269565BFAE49@MN2PR12MB3949.namprd12.prod.outlook.com>
+ <Ykyo00r8aIibvLpP@zn.tnic>
+ <MN2PR12MB394969DC4BAF9B91A0E8A560FAE49@MN2PR12MB3949.namprd12.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <MN2PR12MB394969DC4BAF9B91A0E8A560FAE49@MN2PR12MB3949.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue,  5 Apr 2022 09:24:54 +0200, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.10.110 release.
-> There are 599 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 07 Apr 2022 07:01:33 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.110-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+On Tue, Apr 05, 2022 at 09:49:27PM +0000, Carroll, Lewis wrote:
+> Just when I thought I was being thorough. Any of the above will block the
+> cpuidle driver from loading. As will absence of _CST ACPI methods (add that
+> as a fourth cause).
 
-5.10.110-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+Yah, put that all in the text over prefer_mwait_c1_over_halt() pls.
 
+> We will have to see what we can sanitize. The original performance observation
+> (packet loss in a networking application) led to discovery of lots of cycles
+> in the various go-to-sleep-via-halt and wake-from-halt-via-IPI functions. Wyes
+> collected the raw data on the relative idle+wake-up latency and included that
+> in the commit msg. Think of that delta as the root cause of the performance
+> regression in this case.
+
+You don't have to write novels - just leave enough breadcrumbs so that
+people looking at this in the future know *why* this was done.
+
+> Yes we are saying use MWAIT instead of HLT on all known (as of today) Zen
+> uarch CPUs (AMD >= 17h and Hygon).
+
+Wyes in his reply from today says that the logic is not that simple so
+you folks need to define clearly which cases are we talking about here:
+
+Zen uarch, MWAIT CPUID bit set/clear, MONITOR bug, <other feature bits>,
+etc.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
