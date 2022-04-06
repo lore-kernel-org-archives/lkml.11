@@ -2,121 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7598CC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84AB6C433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442131AbiDFJeD (ORCPT
+        id S1378902AbiDFJdL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47022 "EHLO
+        Wed, 6 Apr 2022 05:33:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1580078AbiDFJUu (ORCPT
+        with ESMTP id S1581107AbiDFJVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:20:50 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31EF493CFC;
-        Tue,  5 Apr 2022 23:12:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=KJplMlY6FbMHXb00APduirYkXbPmkHGLgNPqITMnbRw=; b=FzmvEI8vSyn/6nQja0s8YlHSY0
-        VDIJQLy1X4LI11OTVAkB6p326avuiTOtvq2tK01CFEmRmJZniiUIlrJg/db2cSTeDn3BnK8UtHfjF
-        Hd1hHxoqa6l/bKmvn3BzIE6FjfaXuaMc9OhFqzcPs+adC89RRP4OMsXsbWyNUW2cBrtl5M/scW3ZS
-        Lj8VFF3S7A0P+Y7SFdYmalWsj7RB2JqjV08XsKmJ3qf+aOpT+udOnE8mWIW2gFbPgyfgNH4Aa9T+U
-        aVTywWUtPfgoEjBt9A1bREnQu97JQ8co8hwjDhGO3IKqdOsRHdta/aN9o7O5SYaY592Y3lH6IO3v3
-        O45eCcag==;
-Received: from 213-225-3-188.nat.highway.a1.net ([213.225.3.188] helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nbyuI-003zMC-Aw; Wed, 06 Apr 2022 06:12:42 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Coly Li <colyli@suse.de>, Mike Snitzer <snitzer@redhat.com>,
-        Song Liu <song@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Phillip Lougher <phillip@squashfs.org.uk>,
-        linux-block@vger.kernel.org, dm-devel@redhat.com,
-        linux-kernel@vger.kernel.org, linux-bcache@vger.kernel.org,
-        linux-raid@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org
-Subject: [PATCH 3/5] target/pscsi: remove pscsi_get_bio
-Date:   Wed,  6 Apr 2022 08:12:26 +0200
-Message-Id: <20220406061228.410163-4-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220406061228.410163-1-hch@lst.de>
-References: <20220406061228.410163-1-hch@lst.de>
+        Wed, 6 Apr 2022 05:21:24 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7113115CB75;
+        Tue,  5 Apr 2022 19:48:13 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=dtcccc@linux.alibaba.com;NM=1;PH=DS;RN=27;SR=0;TI=SMTPD_---0V9JnNS5_1649213273;
+Received: from 30.39.96.171(mailfrom:dtcccc@linux.alibaba.com fp:SMTPD_---0V9JnNS5_1649213273)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 06 Apr 2022 10:47:55 +0800
+Message-ID: <b8c08e6f-bb34-7266-0dbc-1e673b6a965c@linux.alibaba.com>
+Date:   Wed, 6 Apr 2022 10:47:53 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v2 0/4] Introduce group balancer
+Content-Language: en-US
+To:     Zefan Li <lizefan.x@bytedance.com>, Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Tejun Heo <tj@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michael Wang <yun.wang@linux.alibaba.com>,
+        Cruz Zhao <cruzzhao@linux.alibaba.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Miguel Ojeda <ojeda@kernel.org>,
+        Chris Down <chris@chrisdown.name>,
+        Vipin Sharma <vipinsh@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     linux-kernel@vger.kernel.org, cgroups@vger.kernel.org
+References: <20220308092629.40431-1-dtcccc@linux.alibaba.com>
+From:   Tianchen Ding <dtcccc@linux.alibaba.com>
+In-Reply-To: <20220308092629.40431-1-dtcccc@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove pscsi_get_bio and simplify the code flow in the only caller.
+Ping~
+Any idea for this patchset? :-)
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Martin K. Petersen <martin.petersen@oracle.com>
----
- drivers/target/target_core_pscsi.c | 28 ++--------------------------
- 1 file changed, 2 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/target/target_core_pscsi.c b/drivers/target/target_core_pscsi.c
-index ff292b75e23f9..77bd3af4b2bf8 100644
---- a/drivers/target/target_core_pscsi.c
-+++ b/drivers/target/target_core_pscsi.c
-@@ -821,23 +821,6 @@ static void pscsi_bi_endio(struct bio *bio)
- 	bio_put(bio);
- }
- 
--static inline struct bio *pscsi_get_bio(int nr_vecs)
--{
--	struct bio *bio;
--	/*
--	 * Use bio_malloc() following the comment in for bio -> struct request
--	 * in block/blk-core.c:blk_make_request()
--	 */
--	bio = bio_kmalloc(GFP_KERNEL, nr_vecs);
--	if (!bio) {
--		pr_err("PSCSI: bio_kmalloc() failed\n");
--		return NULL;
--	}
--	bio->bi_end_io = pscsi_bi_endio;
--
--	return bio;
--}
--
- static sense_reason_t
- pscsi_map_sg(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
- 		struct request *req)
-@@ -878,12 +861,10 @@ pscsi_map_sg(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
- 			if (!bio) {
- new_bio:
- 				nr_vecs = bio_max_segs(nr_pages);
--				/*
--				 * Calls bio_kmalloc() and sets bio->bi_end_io()
--				 */
--				bio = pscsi_get_bio(nr_vecs);
-+				bio = bio_kmalloc(GFP_KERNEL, nr_vecs);
- 				if (!bio)
- 					goto fail;
-+				bio->bi_end_io = pscsi_bi_endio;
- 
- 				if (rw)
- 					bio_set_op_attrs(bio, REQ_OP_WRITE, 0);
-@@ -912,11 +893,6 @@ pscsi_map_sg(struct se_cmd *cmd, struct scatterlist *sgl, u32 sgl_nents,
- 					goto fail;
- 				}
- 
--				/*
--				 * Clear the pointer so that another bio will
--				 * be allocated with pscsi_get_bio() above.
--				 */
--				bio = NULL;
- 				goto new_bio;
- 			}
- 
--- 
-2.30.2
+On 2022/3/8 17:26, Tianchen Ding wrote:
+> Modern platform are growing fast on CPU numbers. To achieve better
+> utility of CPU resource, multiple apps are starting to sharing the CPUs.
+> 
+> What we need is a way to ease confliction in share mode,
+> make groups as exclusive as possible, to gain both performance
+> and resource efficiency.
+> 
+> The main idea of group balancer is to fulfill this requirement
+> by balancing groups of tasks among groups of CPUs, consider this
+> as a dynamic demi-exclusive mode. Task trigger work to settle it's
+> group into a proper partition (minimum predicted load), then try
+> migrate itself into it. To gradually settle groups into the most
+> exclusively partition.
+> 
+> GB can be seen as an optimize policy based on load balance,
+> it obeys the main idea of load balance and makes adjustment
+> based on that.
+> 
+> Our test on ARM64 platform with 128 CPUs shows that,
+> throughput of sysbench memory is improved about 25%,
+> and redis-benchmark is improved up to about 10%.
+> 
+> See each patch for detail:
+> The 1st patch introduces infrastructure.
+> The 2nd patch introduces detail about partition info.
+> The 3rd patch is the main part of group balancer.
+> The 4th patch is about stats.
+> 
+> v2:
+> Put partition info and period settings to cpuset subsys of cgroup_v2.
+> 
+> v1: https://lore.kernel.org/all/98f41efd-74b2-198a-839c-51b785b748a6@linux.alibaba.com/
+> 
+> Michael Wang (1):
+>    sched: Introduce group balancer
+> 
+> Tianchen Ding (3):
+>    sched, cpuset: Introduce infrastructure of group balancer
+>    cpuset: Handle input of partition info for group balancer
+>    cpuset, gb: Add stat for group balancer
+> 
+>   include/linux/cpuset.h   |   5 +
+>   include/linux/sched.h    |   5 +
+>   include/linux/sched/gb.h |  70 ++++++
+>   init/Kconfig             |  12 +
+>   kernel/cgroup/cpuset.c   | 405 +++++++++++++++++++++++++++++++-
+>   kernel/sched/Makefile    |   1 +
+>   kernel/sched/core.c      |   5 +
+>   kernel/sched/debug.c     |  10 +-
+>   kernel/sched/fair.c      |  26 ++-
+>   kernel/sched/gb.c        | 487 +++++++++++++++++++++++++++++++++++++++
+>   kernel/sched/sched.h     |  14 ++
+>   11 files changed, 1037 insertions(+), 3 deletions(-)
+>   create mode 100644 include/linux/sched/gb.h
+>   create mode 100644 kernel/sched/gb.c
+> 
 
