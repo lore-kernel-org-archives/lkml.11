@@ -2,70 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8A3C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD193C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:56:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239881AbiDFR5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38382 "EHLO
+        id S239654AbiDFR6C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:58:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239752AbiDFR5G (ORCPT
+        with ESMTP id S239711AbiDFR5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:57:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1FEF7196083
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:06:49 -0700 (PDT)
+        Wed, 6 Apr 2022 13:57:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36AF9C31C3
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 09:06:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649261208;
+        s=mimecast20190719; t=1649261212;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gnVQUL3ppm1TNC7utGALyGd2EAWXx63qYM1Qkn/cJqo=;
-        b=MuV7334vlIWYXSmVtBfmVi34AVFIlpXf5F0IrFc8AaL2cXjpEV1So9h4Mws4xTNNOHwy2t
-        jC+PZZ4vDahvkx4MAZX7jZiYSqeXMRVk1zTL259QEzxOcdxgyDha+GO9TSNBFti4WZivgp
-        j28R+xpf0sjdPWb/iTqkHgcTPNvfb5Q=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=4FhXBUnLq/AeYpcQ43hIiOOWtFlBWzfoVNvi0Bsh0Mg=;
+        b=Bj7jYjRTgA27PWqK4phuuDKm0/fOdZmtyPdtONAVvAE/B7at75HMgS7yeLEwoLZlxyy6mC
+        oycH+2iEoxdVTbcFQ9THAFoqLm6or6Fu9p2bpiHLsRIq++NIS/fgIGy/2tiCjs10j4cPQ7
+        ENdDKaoNJPhEceKi7vOxQBMYE4WZe2I=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-590-_o-iFnlpMo2SdvaJ8OKCUw-1; Wed, 06 Apr 2022 12:06:47 -0400
-X-MC-Unique: _o-iFnlpMo2SdvaJ8OKCUw-1
-Received: by mail-wm1-f71.google.com with SMTP id z16-20020a05600c0a1000b0038bebbd8548so3160450wmp.3
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 09:06:46 -0700 (PDT)
+ us-mta-583--lmWiG-UNke42XNIkdXcfg-1; Wed, 06 Apr 2022 12:06:51 -0400
+X-MC-Unique: -lmWiG-UNke42XNIkdXcfg-1
+Received: by mail-wr1-f70.google.com with SMTP id x17-20020adfbb51000000b002060ff71a3bso652534wrg.22
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 09:06:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gnVQUL3ppm1TNC7utGALyGd2EAWXx63qYM1Qkn/cJqo=;
-        b=CSFm+uVx2yTrQFKqaaNcqReVLFt+1n96DFuNm01EhSjlpgomzC9HLkrsCeHuNckVRU
-         ivsbkDBOTL9/jbQOIzIzUJF4beFjyeR9ZNMEx3MHbWnhIzS8+uJFGvzLGskVySZNjnhL
-         5opXeKRrabaBG3xcYPBjg+OHMvmnDKpBQCvd3zAt3UEpSW1S421xqQ/b9sSjXH77E931
-         jGj6i5ArJv2GxMdihxk7CvhdiAWDOjgrIiRp4yR2xgTRv5HTVWD5Avuz11Nq0k66GcCV
-         42f9QlMAv5ZkUbbv8nIgL+BCXMgdCFlXr9QuWbuzoX+LNlzTYAI49vzPe98Ou1sy98Tv
-         2KWw==
-X-Gm-Message-State: AOAM531eIS+6QzzcVogWT1jP04T1Myfj+moYCPj0M6uD46JgO1kW7GSe
-        qzxbBJofIxGmELtpuLaT++tU2s6PYZ+8COC2wwo5IQ4eXXbAiVy1eltigmOjNxUYB5TgDC5ckHM
-        sKbWcN7YnLPHUyvqa/gEjRlJ+AMiTGl4cNibtws1YmmLd3gx6w3TutJHOu6wbQSDh4nEnJsJCf9
-        0=
-X-Received: by 2002:a5d:6152:0:b0:205:bcf3:2cc with SMTP id y18-20020a5d6152000000b00205bcf302ccmr7424210wrt.158.1649261205826;
-        Wed, 06 Apr 2022 09:06:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzP58khqgo3xreoQlsQ9J6H4ICR/oggJkDwVoOSBbhaMF0ILCTdOLy/FcqT9y3kQS3YNkwSwQ==
-X-Received: by 2002:a5d:6152:0:b0:205:bcf3:2cc with SMTP id y18-20020a5d6152000000b00205bcf302ccmr7424188wrt.158.1649261205542;
-        Wed, 06 Apr 2022 09:06:45 -0700 (PDT)
+        bh=4FhXBUnLq/AeYpcQ43hIiOOWtFlBWzfoVNvi0Bsh0Mg=;
+        b=QmVUTOvidpEYk+3vcCPTJgg7uGbUAcW6OO/p6DVhzrKlxIN9ek/8FmX7F/V8+YNO4/
+         kHOhg53wOZbkRZZtXCTXrS3TkKlyz8Qwvob4bekWO96Tb3OF4UCopHQE8WB6E88wxpim
+         C5znNavIapcWYVKvtEheYjrsWIKOaqz6WJsSV970Ca4cLRI8iWTFv1L2e0F3FmvVOfds
+         EREGMPtYfmzP6pHKhh3DUN5AqwM14ZtOFZOmjaLDKGM4kxg5/B3FfiruEelPrQaQzTjh
+         iA97+HVRqI8C8Oo9e7C+PeSVHOTwB8IipQp7NMHqR+7ng2zxQsZtedUffXh08XsNW4df
+         R8hA==
+X-Gm-Message-State: AOAM533kB9r0BZzIQOdpyKkHV0/ScneJECWCOrvgjjxlgQ33qaZtsAsj
+        0gj6HHJmVmUGT5Csod479WCnk6P0ir5ZzvrUyKRRBpwFeR5w6Wib/P4RZG6OOTEXg8AvGwATqS7
+        tyUowSdpcwP+TPsfYKnqvWA2e0KIoLgmpr9NabO5+bL5sBIODk8z0DUG0T81c9CWhHqUVJfSSnY
+        g=
+X-Received: by 2002:adf:dd4d:0:b0:203:f178:b78b with SMTP id u13-20020adfdd4d000000b00203f178b78bmr7137246wrm.93.1649261209890;
+        Wed, 06 Apr 2022 09:06:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxjTyMg4XL89qFWV3gB2V/HQc1uQjBder3TeH9rKQDOsGox6TANK3aF+8wdzRe76EhPl9Zl5g==
+X-Received: by 2002:adf:dd4d:0:b0:203:f178:b78b with SMTP id u13-20020adfdd4d000000b00203f178b78bmr7137221wrm.93.1649261209641;
+        Wed, 06 Apr 2022 09:06:49 -0700 (PDT)
 Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id f1-20020a1c6a01000000b0038c9f6a3634sm5038899wmc.7.2022.04.06.09.06.44
+        by smtp.gmail.com with ESMTPSA id f1-20020a1c6a01000000b0038c9f6a3634sm5038899wmc.7.2022.04.06.09.06.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 09:06:45 -0700 (PDT)
+        Wed, 06 Apr 2022 09:06:49 -0700 (PDT)
 From:   Javier Martinez Canillas <javierm@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
         Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Zack Rusin <zackr@vmware.com>,
         Javier Martinez Canillas <javierm@redhat.com>,
-        Borislav Petkov <bp@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [RFC PATCH 2/5] firmware: sysfb: Add helpers to unregister a pdev and disable registration
-Date:   Wed,  6 Apr 2022 18:06:29 +0200
-Message-Id: <20220406160632.496684-3-javierm@redhat.com>
+        Hans de Goede <hdegoede@redhat.com>,
+        Ilya Trukhanov <lahvuun@gmail.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Peter Jones <pjones@redhat.com>, linux-fbdev@vger.kernel.org,
+        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org
+Subject: [RFC PATCH 5/5] Revert "fbdev: Prevent probing generic drivers if a FB is already registered"
+Date:   Wed,  6 Apr 2022 18:06:32 +0200
+Message-Id: <20220406160632.496684-6-javierm@redhat.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220406160632.496684-1-javierm@redhat.com>
 References: <20220406160632.496684-1-javierm@redhat.com>
@@ -75,133 +79,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These can be used by subsystems to unregister a platform device registered
-by sysfb and also to disable future platform device registration in sysfb.
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+This reverts commit fb561bf9abde49f7e00fdbf9ed2ccf2d86cac8ee.
+
+With
+
+commit 27599aacbaefcbf2af7b06b0029459bbf682000d
+Author: Thomas Zimmermann <tzimmermann@suse.de>
+Date:   Tue Jan 25 10:12:18 2022 +0100
+
+    fbdev: Hot-unplug firmware fb devices on forced removal
+
+this should be fixed properly and we can remove this somewhat hackish
+check here (e.g. this won't catch drm drivers if fbdev emulation isn't
+enabled).
+
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Zack Rusin <zackr@vmware.com>
+Cc: Javier Martinez Canillas <javierm@redhat.com>
+Cc: Zack Rusin <zackr@vmware.com>
+Cc: Hans de Goede <hdegoede@redhat.com>
+Cc: Ilya Trukhanov <lahvuun@gmail.com>
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Cc: Peter Jones <pjones@redhat.com>
+Cc: linux-fbdev@vger.kernel.org
 Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 ---
 
- drivers/firmware/sysfb.c | 47 +++++++++++++++++++++++++++++++++++-----
- include/linux/sysfb.h    | 19 ++++++++++++++++
- 2 files changed, 60 insertions(+), 6 deletions(-)
+ drivers/video/fbdev/efifb.c    | 11 -----------
+ drivers/video/fbdev/simplefb.c | 11 -----------
+ 2 files changed, 22 deletions(-)
 
-diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
-index b032f40a92de..08ae78c083f1 100644
---- a/drivers/firmware/sysfb.c
-+++ b/drivers/firmware/sysfb.c
-@@ -34,21 +34,52 @@
- #include <linux/screen_info.h>
- #include <linux/sysfb.h>
+diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
+index ea42ba6445b2..edca3703b964 100644
+--- a/drivers/video/fbdev/efifb.c
++++ b/drivers/video/fbdev/efifb.c
+@@ -351,17 +351,6 @@ static int efifb_probe(struct platform_device *dev)
+ 	char *option = NULL;
+ 	efi_memory_desc_t md;
  
-+static struct platform_device *pd;
-+static DEFINE_MUTEX(load_lock);
-+static bool disabled;
-+
-+void sysfb_disable(void)
-+{
-+	mutex_lock(&load_lock);
-+	disabled = true;
-+	mutex_unlock(&load_lock);
-+}
-+EXPORT_SYMBOL_GPL(sysfb_disable);
-+
-+bool sysfb_try_unregister(struct device *dev)
-+{
-+	bool ret = true;
-+
-+	mutex_lock(&load_lock);
-+	if (!pd || pd != to_platform_device(dev))
-+		return false;
-+
-+	platform_device_unregister(to_platform_device(dev));
-+	pd = NULL;
-+	mutex_unlock(&load_lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(sysfb_try_unregister);
-+
- static __init int sysfb_init(void)
- {
- 	struct screen_info *si = &screen_info;
- 	struct simplefb_platform_data mode;
--	struct platform_device *pd;
- 	const char *name;
- 	bool compatible;
--	int ret;
-+	int ret = 0;
-+
-+	mutex_lock(&load_lock);
-+	if (disabled)
-+		goto unlock_mutex;
+-	/*
+-	 * Generic drivers must not be registered if a framebuffer exists.
+-	 * If a native driver was probed, the display hardware was already
+-	 * taken and attempting to use the system framebuffer is dangerous.
+-	 */
+-	if (num_registered_fb > 0) {
+-		dev_err(&dev->dev,
+-			"efifb: a framebuffer is already registered\n");
+-		return -EINVAL;
+-	}
+-
+ 	if (screen_info.orig_video_isVGA != VIDEO_TYPE_EFI || pci_dev_disabled)
+ 		return -ENODEV;
  
- 	/* try to create a simple-framebuffer device */
- 	compatible = sysfb_parse_mode(si, &mode);
- 	if (compatible) {
- 		pd = sysfb_create_simplefb(si, &mode);
- 		if (!IS_ERR(pd))
--			return 0;
-+			goto unlock_mutex;
- 	}
+diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simplefb.c
+index 94fc9c6d0411..0ef41173325a 100644
+--- a/drivers/video/fbdev/simplefb.c
++++ b/drivers/video/fbdev/simplefb.c
+@@ -413,17 +413,6 @@ static int simplefb_probe(struct platform_device *pdev)
+ 	struct simplefb_par *par;
+ 	struct resource *res, *mem;
  
- 	/* if the FB is incompatible, create a legacy framebuffer device */
-@@ -60,8 +91,10 @@ static __init int sysfb_init(void)
- 		name = "platform-framebuffer";
+-	/*
+-	 * Generic drivers must not be registered if a framebuffer exists.
+-	 * If a native driver was probed, the display hardware was already
+-	 * taken and attempting to use the system framebuffer is dangerous.
+-	 */
+-	if (num_registered_fb > 0) {
+-		dev_err(&pdev->dev,
+-			"simplefb: a framebuffer is already registered\n");
+-		return -EINVAL;
+-	}
+-
+ 	if (fb_get_options("simplefb", NULL))
+ 		return -ENODEV;
  
- 	pd = platform_device_alloc(name, 0);
--	if (!pd)
--		return -ENOMEM;
-+	if (!pd) {
-+		ret = -ENOMEM;
-+		goto unlock_mutex;
-+	}
- 
- 	sysfb_apply_efi_quirks(pd);
- 
-@@ -73,9 +106,11 @@ static __init int sysfb_init(void)
- 	if (ret)
- 		goto err;
- 
--	return 0;
-+	goto unlock_mutex;
- err:
- 	platform_device_put(pd);
-+unlock_mutex:
-+	mutex_unlock(&load_lock);
- 	return ret;
- }
- 
-diff --git a/include/linux/sysfb.h b/include/linux/sysfb.h
-index 9857518f4cdd..2bbc0ed9b0dd 100644
---- a/include/linux/sysfb.h
-+++ b/include/linux/sysfb.h
-@@ -55,6 +55,25 @@ struct efifb_dmi_info {
- 	int flags;
- };
- 
-+#ifdef CONFIG_SYSFB
-+
-+void sysfb_disable(void);
-+bool sysfb_try_unregister(struct device *dev);
-+
-+#else /* CONFIG_SYSFB */
-+
-+void sysfb_disable(void)
-+{
-+
-+}
-+
-+bool sysfb_try_unregister(struct device *dev)
-+{
-+	return false;
-+}
-+
-+#endif /* CONFIG_SYSFB */
-+
- #ifdef CONFIG_EFI
- 
- extern struct efifb_dmi_info efifb_dmi_list[];
 -- 
 2.35.1
 
