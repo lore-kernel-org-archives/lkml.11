@@ -2,132 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C719DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F16C433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 07:10:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235366AbiDFHIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 03:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35332 "EHLO
+        id S237232AbiDFHIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 03:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232673AbiDFGZU (ORCPT
+        with ESMTP id S1347877AbiDFGNb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 02:25:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE7AA4A51D0
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 22:24:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649222682;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=huf2PKqN+sIoLvexLuqlbsgpQJkarDnuScbIKuVkilk=;
-        b=Rhn4qTtML6bPwFh++s6QBJnOOGNrUKEFoq75dm++v4qxQ6hBPv4TaTU2oJCipvnHOMLc1o
-        KoQCsSym9sa5YbEizWuCUR7d4ommWCeBQ2FT+fs0smeV2g+ggQSmrUi3HJGp4gOP2AJpU0
-        /hXebR8tjcnCqfkQmhBeRbSwAu+QMlw=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-60-PKEESI0ZMsySipjdBIilMQ-1; Wed, 06 Apr 2022 01:24:41 -0400
-X-MC-Unique: PKEESI0ZMsySipjdBIilMQ-1
-Received: by mail-pj1-f71.google.com with SMTP id oj16-20020a17090b4d9000b001c7552b7546so3092363pjb.8
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 22:24:41 -0700 (PDT)
+        Wed, 6 Apr 2022 02:13:31 -0400
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506E61DAF95
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 22:17:55 -0700 (PDT)
+Received: by mail-oi1-x236.google.com with SMTP id k10so1407043oia.0
+        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 22:17:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=vanguardiasur-com-ar.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EaYNgx8KbJOaAquzTTA9wZHzyzdVTdSankAvb1CZzyQ=;
+        b=x5n6cdCJEE/VCj3mLhng1qEaAEHHuW6CnLjYyMKJ8C5R5ZP0Q7JKSOAngNXZvEssT6
+         qYwF0nXkMrFHlG642wUJQ96R8zpKlbaA/iAu1W8vgASVZWN7754Y3hfqO2OLH7MlHlKO
+         ME6PI4A7vIvIay1Q1f8uJsQT4BK9tIPX8xmd/ugQJKSMeeEZPAKla6chmuZzSlbn/t7P
+         mGKdo/EHI/X1JEU3CvMq6WouABaUMJBGUExshvChDadmSyo+WH+DcM5YIqYJa+roV5UP
+         F0HGy42FpfZK4jAnq9YXXQQ5XGQc9/lIKTTMJwH4O9fdpI4TOuVX59WoOrmEpLxIWeL0
+         B4Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=huf2PKqN+sIoLvexLuqlbsgpQJkarDnuScbIKuVkilk=;
-        b=QDe8hdDl1QALipedVS4kLGWi8LcGZq1E6cn4EMe+S8GIt3Oaiucf2L/L+xPsgCva2e
-         +2sNkSp4W0vlAIkHmpMqLlCjDKtkIeFXS7HbMmlDQxXeTe924fLsTQS0E1osXp7qY2XP
-         bSHLci6njGbi5DW7muWin4j/Tp9+pAW0KNyAkDPAVWgoraDVfGz0NVuAfnE/icbzR9t+
-         AYM4oeNoofMv8v1yOWGDvEvinvca9NbQLphPKRYsR63CEklBdzi1hLUfbtxbY4aNwU1d
-         jTxWOVBSs9u1cTrGhQjhdLEWGWBkK8tA8lhmyGe9DWtuMGuL3GKjWjVWhyoHtmRsKMcO
-         h8OA==
-X-Gm-Message-State: AOAM5308wJKL6Bv50t/tqT+dvCDZtOSMtkdyTsJK5genzewq8vFZ/t7c
-        0JGJiQ9wzOlW3DRxJ65/JhDOw373GF8hX1mf1NyXmOW6TI/ZUBgiBEKh6ssRXw6zrwB8sU6Q2jl
-        CSP8w/DZRwUvYtAy5zlVaKc3pQAj7TNHg3py4q9RDan8sDGaxdjP7qFzcjz9elfnfa+IxY9Xc2w
-        ==
-X-Received: by 2002:a63:6a88:0:b0:398:54fb:85ba with SMTP id f130-20020a636a88000000b0039854fb85bamr5779114pgc.88.1649222680384;
-        Tue, 05 Apr 2022 22:24:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx5kMQCqiOjFSx0LMWpJ63fH2khDgzJ4KLeeovNhYeXBYYMYVTDzKjet77CSVAFFBQaXEsTfA==
-X-Received: by 2002:a63:6a88:0:b0:398:54fb:85ba with SMTP id f130-20020a636a88000000b0039854fb85bamr5779095pgc.88.1649222680048;
-        Tue, 05 Apr 2022 22:24:40 -0700 (PDT)
-Received: from [10.72.13.31] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w22-20020a17090aea1600b001ca91b7542esm3873061pjy.51.2022.04.05.22.24.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Apr 2022 22:24:39 -0700 (PDT)
-Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
- inodes
-To:     =?UTF-8?Q?Lu=c3=ads_Henriques?= <lhenriques@suse.de>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220401133243.1075-1-lhenriques@suse.de>
-From:   Xiubo Li <xiubli@redhat.com>
-Message-ID: <5146f7a8-94c1-a7aa-db2d-d3ae98c5b83a@redhat.com>
-Date:   Wed, 6 Apr 2022 13:24:33 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EaYNgx8KbJOaAquzTTA9wZHzyzdVTdSankAvb1CZzyQ=;
+        b=YmrhWsVJ284FWMpVXuYq726Bd5n/m29rworkMKNc9mCuTet80+DbXBaB9ZkkySQiy6
+         pCh2jJUAyB+emL2MqfmIf2A4YIw8A67Ct1YQXsNOlzOfsVkv0bFjdTlzM+W+8s4+BKOU
+         qSjCBputK+S3YeitCOG+QRxNx4IBBoT8c2aSmFPPjLiT09t1gl7oBRyzKHb3QOOgW3aL
+         4AqqOHaVpq8E/+8j0x1gX4OjeSHWw3pucA2J6yAngYvefulLXp9xKpkyCJiOR8gHmDHR
+         i+wOENW3TUaCEKzigtMKjvSbGUQ5YoeXPmdzzCu/joU27wyD3Vvtisxn4yBVC4M40ZMk
+         u+DA==
+X-Gm-Message-State: AOAM531xHtKAiYWp+LNblcCeI4Aqtx1c9M+lQvFVfOfkwAvYBcZpPUES
+        wKTtsJNPddCo1a3XESRQsXaUbg==
+X-Google-Smtp-Source: ABdhPJznshMWCCRKhfXQIHf+0aM9ZllfI4xIqhhI3AR7UIbt17C0rKLn8MOFpYfzpZrwKU3Nu8zULQ==
+X-Received: by 2002:aca:f286:0:b0:2da:58ba:c578 with SMTP id q128-20020acaf286000000b002da58bac578mr2846902oih.127.1649222274622;
+        Tue, 05 Apr 2022 22:17:54 -0700 (PDT)
+Received: from eze-laptop ([2803:9800:98c2:8470:9f4:8e2a:88e5:ec01])
+        by smtp.gmail.com with ESMTPSA id gk6-20020a0568703c0600b000de4880b357sm6038605oab.50.2022.04.05.22.17.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 22:17:53 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 02:17:48 -0300
+From:   Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel@collabora.com, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-staging@lists.linux.dev
+Subject: Re: [PATCH v3 15/24] media: rkvdec: Move H264 SPS validation in
+ rkvdec-h264
+Message-ID: <Yk0ifIfQmk9n5vyu@eze-laptop>
+References: <20220405204426.259074-1-nicolas.dufresne@collabora.com>
+ <20220405204426.259074-16-nicolas.dufresne@collabora.com>
 MIME-Version: 1.0
-In-Reply-To: <20220401133243.1075-1-lhenriques@suse.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405204426.259074-16-nicolas.dufresne@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Apr 05, 2022 at 04:44:16PM -0400, Nicolas Dufresne wrote:
+> No function change, this moves H264 specific validation into the H264
+> specific code. This is in preparation of improving this validation and
+> reusing at streamone.
+> 
+> Signed-off-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 
-On 4/1/22 9:32 PM, Luís Henriques wrote:
-> When doing DIO on an encrypted node, we need to invalidate the page cache in
-> the range being written to, otherwise the cache will include invalid data.
->
-> Signed-off-by: Luís Henriques <lhenriques@suse.de>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+
 > ---
->   fs/ceph/file.c | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
->
-> Changes since v1:
-> - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
-> - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
->
-> Note: I'm not really sure this last change is required, it doesn't really
-> affect generic/647 result, but seems to be the most correct.
->
-> diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-> index 5072570c2203..b2743c342305 100644
-> --- a/fs/ceph/file.c
-> +++ b/fs/ceph/file.c
-> @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
->   	if (ret < 0)
->   		return ret;
->   
-> -	ceph_fscache_invalidate(inode, false);
-> +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
->   	ret = invalidate_inode_pages2_range(inode->i_mapping,
->   					    pos >> PAGE_SHIFT,
->   					    (pos + count - 1) >> PAGE_SHIFT);
-> @@ -1895,6 +1895,15 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
->   		req->r_inode = inode;
->   		req->r_mtime = mtime;
->   
-> +		if (IS_ENCRYPTED(inode) && (iocb->ki_flags & IOCB_DIRECT)) {
-> +			ret = invalidate_inode_pages2_range(
-> +				inode->i_mapping,
-> +				write_pos >> PAGE_SHIFT,
-> +				(write_pos + write_len - 1) >> PAGE_SHIFT);
-> +			if (ret < 0)
-> +				dout("invalidate_inode_pages2_range returned %d\n", ret);
-> +		}
-
-Shouldn't we fail it if the 'invalidate_inode_pages2_range()' fails here ?
-
--- Xiubo
-
+>  drivers/staging/media/rkvdec/rkvdec-h264.c | 23 ++++++++++++++++++++++
+>  drivers/staging/media/rkvdec/rkvdec.c      | 23 ++++++----------------
+>  drivers/staging/media/rkvdec/rkvdec.h      |  1 +
+>  3 files changed, 30 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/staging/media/rkvdec/rkvdec-h264.c b/drivers/staging/media/rkvdec/rkvdec-h264.c
+> index 8d44a884a52e..0dcbcb1bac80 100644
+> --- a/drivers/staging/media/rkvdec/rkvdec-h264.c
+> +++ b/drivers/staging/media/rkvdec/rkvdec-h264.c
+> @@ -1137,9 +1137,32 @@ static int rkvdec_h264_run(struct rkvdec_ctx *ctx)
+>  	return 0;
+>  }
+>  
+> +static int rkvdec_h264_try_ctrl(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl)
+> +{
+> +	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS) {
+> +		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
+> +		/*
+> +		 * TODO: The hardware supports 10-bit and 4:2:2 profiles,
+> +		 * but it's currently broken in the driver.
+> +		 * Reject them for now, until it's fixed.
+> +		 */
+> +		if (sps->chroma_format_idc > 1)
+> +			/* Only 4:0:0 and 4:2:0 are supported */
+> +			return -EINVAL;
+> +		if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
+> +			/* Luma and chroma bit depth mismatch */
+> +			return -EINVAL;
+> +		if (sps->bit_depth_luma_minus8 != 0)
+> +			/* Only 8-bit is supported */
+> +			return -EINVAL;
+> +	}
+> +	return 0;
+> +}
 > +
->   		/* Set up the assertion */
->   		if (rmw) {
->   			/*
->
-
+>  const struct rkvdec_coded_fmt_ops rkvdec_h264_fmt_ops = {
+>  	.adjust_fmt = rkvdec_h264_adjust_fmt,
+>  	.start = rkvdec_h264_start,
+>  	.stop = rkvdec_h264_stop,
+>  	.run = rkvdec_h264_run,
+> +	.try_ctrl = rkvdec_h264_try_ctrl,
+>  };
+> diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
+> index 2df8cf4883e2..e3d44d5b35f3 100644
+> --- a/drivers/staging/media/rkvdec/rkvdec.c
+> +++ b/drivers/staging/media/rkvdec/rkvdec.c
+> @@ -29,23 +29,12 @@
+>  
+>  static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
+>  {
+> -	if (ctrl->id == V4L2_CID_STATELESS_H264_SPS) {
+> -		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
+> -		/*
+> -		 * TODO: The hardware supports 10-bit and 4:2:2 profiles,
+> -		 * but it's currently broken in the driver.
+> -		 * Reject them for now, until it's fixed.
+> -		 */
+> -		if (sps->chroma_format_idc > 1)
+> -			/* Only 4:0:0 and 4:2:0 are supported */
+> -			return -EINVAL;
+> -		if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
+> -			/* Luma and chroma bit depth mismatch */
+> -			return -EINVAL;
+> -		if (sps->bit_depth_luma_minus8 != 0)
+> -			/* Only 8-bit is supported */
+> -			return -EINVAL;
+> -	}
+> +	struct rkvdec_ctx *ctx = container_of(ctrl->handler, struct rkvdec_ctx, ctrl_hdl);
+> +	const struct rkvdec_coded_fmt_desc *desc = ctx->coded_fmt_desc;
+> +
+> +	if (desc->ops->try_ctrl)
+> +		return desc->ops->try_ctrl(ctx, ctrl);
+> +
+>  	return 0;
+>  }
+>  
+> diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/media/rkvdec/rkvdec.h
+> index 2f4ea1786b93..9df0fba799a4 100644
+> --- a/drivers/staging/media/rkvdec/rkvdec.h
+> +++ b/drivers/staging/media/rkvdec/rkvdec.h
+> @@ -72,6 +72,7 @@ struct rkvdec_coded_fmt_ops {
+>  	void (*done)(struct rkvdec_ctx *ctx, struct vb2_v4l2_buffer *src_buf,
+>  		     struct vb2_v4l2_buffer *dst_buf,
+>  		     enum vb2_buffer_state result);
+> +	int (*try_ctrl)(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl);
+>  };
+>  
+>  struct rkvdec_coded_fmt_desc {
+> -- 
+> 2.34.1
+> 
