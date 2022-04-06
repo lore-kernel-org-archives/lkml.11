@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B93C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:52:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D75C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:52:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236731AbiDFVyN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:54:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45048 "EHLO
+        id S236839AbiDFVyT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:54:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236813AbiDFVwg (ORCPT
+        with ESMTP id S236798AbiDFVwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:52:36 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1469514003;
-        Wed,  6 Apr 2022 14:46:46 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id j20-20020a17090ae61400b001ca9553d073so4147189pjy.5;
-        Wed, 06 Apr 2022 14:46:46 -0700 (PDT)
+        Wed, 6 Apr 2022 17:52:35 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8E5A181;
+        Wed,  6 Apr 2022 14:46:36 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id w7so3665687pfu.11;
+        Wed, 06 Apr 2022 14:46:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FOiXrhcG6D/pgTVrD2sfYvvtxc1rOGgLTAX3yAXgAyg=;
-        b=dzhEs0/Gl46vON03WgC0ZE+tJJnHFz9sOIIZfvGENgGRO0GqIcBBN/dfm+oCnvlIqR
-         /00inBjjRrLQfPz5MEC4skO8ScF9B8JXM+sEwOYaXVqESCz2o/RO9bpF2tTEV7ePSEbT
-         gsXQRrUIAk4BMh81ovZsbldkulHgB2VNgM4aD8ILvwQRAufJPnBFfgNvoh3hVsRoLYsj
-         qLlsIvF9F4wcKGLWto//Jns+P36RmkP0o0k/ysx+HYlP1fVJO00xWV4dVimWPlOvsb1u
-         Z4+W9WNyeu37d/LyoBAr4FoC42YRvGgAqgHxEuHnMyAXmCH+Kff0nGmXzRx0ksyKX9sV
-         9S1Q==
+        bh=tAkFR+6vhq0o/UUKOqeWc9uPJoN5WXdSoZFQuuhB/hI=;
+        b=bzbT6J2rgm/qYgWCGsRl0Bjoi13VafBGsuibq7P7WOH3DJ+fTwNs36UvugO7KgAhRW
+         O6iQyRJ69joIyW7F2lw0tITOk1kQOur9BSAH2y8teHCZFnVhe4Ndd+AaL+S/r4m+bGs+
+         rn4iXs7Hm/QXDJAytjB02xXIakTR6CW5XyLEm6evbcAh8diR85qgUBxpDGrPuO2+LqvD
+         t31EVd7PTSQuTciEkYEtWnWeeyWKGbaNBq4Rz+g++Mx00fuqweGosuWD/d7SvI82Ed6N
+         RSREDA3ygOEXaF+OK66exIm4bHX+2swqNiQO0L+LE+J5imWC3XJB5pZDr1UlQQOFaq8K
+         wchg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FOiXrhcG6D/pgTVrD2sfYvvtxc1rOGgLTAX3yAXgAyg=;
-        b=vo0Ux4ZURbxYrXXb7+E1ilnWImd2GTyccNBZdwqtjsQb+ocscBdO/7LmTHRsJhJ6tJ
-         ESIGlZVCy27CN288NEgTSVWrXpHI1/LVax5guqqSM/eYTjh6aTzevZ0Fj1KZqVxHq+x5
-         DgLBrflINGJrFmJRD3XJR85vQu9MRuw5hgKBEiLywyJ2L0YSPl1uxt5xSQDmtnsBOZrU
-         +IV7+pCkDpkwaR6zAZK+EIlJAeIbJIC4orJo359bntTbmkgQFjdu8j3oSMeP8SR8hKmf
-         /LEsNJ3ROkK36PvncRL5nkRaQTqspIy7VoUcwVrT5KbEwbEF72be3AlwOu4suTXlKNNG
-         XE4g==
-X-Gm-Message-State: AOAM530/gHdPzCpHzUNwYFbSJnvKK7j/H8NRtvUtbKEW+V7o7gzXzUZM
-        QQIHF0KfCubTptpQuC0v5Nw=
-X-Google-Smtp-Source: ABdhPJz8KOodY8ZEChxwY54mOwiDCUIVYspex6hh4QMtjenDXwdFB75EIkFfIReAIp1yjreSaPYADw==
-X-Received: by 2002:a17:902:b183:b0:153:59db:f860 with SMTP id s3-20020a170902b18300b0015359dbf860mr10552529plr.19.1649281605624;
-        Wed, 06 Apr 2022 14:46:45 -0700 (PDT)
+        bh=tAkFR+6vhq0o/UUKOqeWc9uPJoN5WXdSoZFQuuhB/hI=;
+        b=LQNnFcbVMRpKsP/OMp15JDX/Ac6VEoh2jxFhgrqjkXPX8gkN+Al0JUg3fr7aqErn0P
+         KvztbArQQ+k/MphMop2rGfAXkLwWjPci3P5jk4DBLV+6WQTk5FU3xmUmQnexJ5o/QUVK
+         w9z2p5rj23NhfKBXl70xRklkMDWJtjlCv7pO5pK2bc9mQkgSM6vSuSWT0PzrUhwyGozZ
+         /v5KtSxwi3r+7q6/u59RTm+L44/gUcneyrBwBTXr7Efg4U51/xxAQczqZeX6PFjssbFs
+         HC34PvN2kzaa7kXu5/Cj9mcqR4DsZMzjhe3ZnVFAugNYz6gEAbGrm2Bl5owiVusCxcUo
+         UPGQ==
+X-Gm-Message-State: AOAM5332/oPe2t8X7WVtPJPel6VfyAziKjxk/ECxgwHfYJRUolGGUsVB
+        vsMtIgvhEMN4l7gh4qBUxbg=
+X-Google-Smtp-Source: ABdhPJz/PjnrL7EshfGJWR8+rAUeniiBE61/tDJkSnK+WydzixgBjZDKWQAzo2+3/4l3ggQUrTfajw==
+X-Received: by 2002:a63:f005:0:b0:381:f11:730c with SMTP id k5-20020a63f005000000b003810f11730cmr8448018pgh.156.1649281596386;
+        Wed, 06 Apr 2022 14:46:36 -0700 (PDT)
 Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
-        by smtp.gmail.com with ESMTPSA id w4-20020a056a0014c400b004fb0c7b3813sm20854671pfu.134.2022.04.06.14.46.44
+        by smtp.gmail.com with ESMTPSA id y16-20020a63b510000000b00398d8b19bbfsm17217112pge.23.2022.04.06.14.46.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 14:46:44 -0700 (PDT)
+        Wed, 06 Apr 2022 14:46:35 -0700 (PDT)
 From:   Rob Clark <robdclark@gmail.com>
 To:     dri-devel@lists.freedesktop.org
 Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
@@ -59,9 +59,9 @@ Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v3 07/10] drm/msm/gem: Rework vma lookup and pin
-Date:   Wed,  6 Apr 2022 14:46:23 -0700
-Message-Id: <20220406214636.1156978-8-robdclark@gmail.com>
+Subject: [PATCH v3 04/10] drm/msm/gem: Split out inuse helper
+Date:   Wed,  6 Apr 2022 14:46:20 -0700
+Message-Id: <20220406214636.1156978-5-robdclark@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220406214636.1156978-1-robdclark@gmail.com>
 References: <20220406214636.1156978-1-robdclark@gmail.com>
@@ -73,131 +73,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Rob Clark <robdclark@chromium.org>
 
-Combines duplicate vma lookup in the get_and_pin path.
+Prep for a following patch, where it gets a bit more complicated.
 
 Signed-off-by: Rob Clark <robdclark@chromium.org>
-Reviewed-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 ---
- drivers/gpu/drm/msm/msm_gem.c | 50 ++++++++++++++++++-----------------
- 1 file changed, 26 insertions(+), 24 deletions(-)
+ drivers/gpu/drm/msm/msm_gem.c     | 2 +-
+ drivers/gpu/drm/msm/msm_gem.h     | 1 +
+ drivers/gpu/drm/msm/msm_gem_vma.c | 9 +++++++--
+ 3 files changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
-index deafae6feaa8..218744a490a4 100644
+index a4f61972667b..f96d1dc72021 100644
 --- a/drivers/gpu/drm/msm/msm_gem.c
 +++ b/drivers/gpu/drm/msm/msm_gem.c
-@@ -376,39 +376,40 @@ put_iova_vmas(struct drm_gem_object *obj)
- 	}
- }
- 
--static int get_iova_locked(struct drm_gem_object *obj,
--		struct msm_gem_address_space *aspace, uint64_t *iova,
-+static struct msm_gem_vma *get_vma_locked(struct drm_gem_object *obj,
-+		struct msm_gem_address_space *aspace,
- 		u64 range_start, u64 range_end)
- {
- 	struct msm_gem_vma *vma;
--	int ret = 0;
- 
- 	GEM_WARN_ON(!msm_gem_is_locked(obj));
- 
- 	vma = lookup_vma(obj, aspace);
- 
- 	if (!vma) {
-+		int ret;
-+
- 		vma = add_vma(obj, aspace);
- 		if (IS_ERR(vma))
--			return PTR_ERR(vma);
-+			return vma;
- 
- 		ret = msm_gem_init_vma(aspace, vma, obj->size,
- 			range_start, range_end);
- 		if (ret) {
- 			del_vma(vma);
--			return ret;
-+			return ERR_PTR(ret);
+@@ -938,7 +938,7 @@ void msm_gem_describe(struct drm_gem_object *obj, struct seq_file *m,
+ 				name, comm ? ":" : "", comm ? comm : "",
+ 				vma->aspace, vma->iova,
+ 				vma->mapped ? "mapped" : "unmapped",
+-				vma->inuse);
++				msm_gem_vma_inuse(vma));
+ 			kfree(comm);
  		}
-+	} else {
-+		GEM_WARN_ON(vma->iova < range_start);
-+		GEM_WARN_ON((vma->iova + obj->size) > range_end);
- 	}
  
--	*iova = vma->iova;
--	return 0;
-+	return vma;
+diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
+index 947ff7d9b471..1b7f0f0b88bf 100644
+--- a/drivers/gpu/drm/msm/msm_gem.h
++++ b/drivers/gpu/drm/msm/msm_gem.h
+@@ -61,6 +61,7 @@ struct msm_gem_vma {
+ int msm_gem_init_vma(struct msm_gem_address_space *aspace,
+ 		struct msm_gem_vma *vma, int npages,
+ 		u64 range_start, u64 range_end);
++bool msm_gem_vma_inuse(struct msm_gem_vma *vma);
+ void msm_gem_purge_vma(struct msm_gem_address_space *aspace,
+ 		struct msm_gem_vma *vma);
+ void msm_gem_unmap_vma(struct msm_gem_address_space *aspace,
+diff --git a/drivers/gpu/drm/msm/msm_gem_vma.c b/drivers/gpu/drm/msm/msm_gem_vma.c
+index 64906594fc65..dc2ae097805e 100644
+--- a/drivers/gpu/drm/msm/msm_gem_vma.c
++++ b/drivers/gpu/drm/msm/msm_gem_vma.c
+@@ -37,6 +37,11 @@ msm_gem_address_space_get(struct msm_gem_address_space *aspace)
+ 	return aspace;
  }
  
--static int msm_gem_pin_iova(struct drm_gem_object *obj,
--		struct msm_gem_address_space *aspace)
-+static int msm_gem_pin_iova(struct drm_gem_object *obj, struct msm_gem_vma *vma)
++bool msm_gem_vma_inuse(struct msm_gem_vma *vma)
++{
++	return !!vma->inuse;
++}
++
+ /* Actually unmap memory for the vma */
+ void msm_gem_purge_vma(struct msm_gem_address_space *aspace,
+ 		struct msm_gem_vma *vma)
+@@ -44,7 +49,7 @@ void msm_gem_purge_vma(struct msm_gem_address_space *aspace,
+ 	unsigned size = vma->node.size << PAGE_SHIFT;
+ 
+ 	/* Print a message if we try to purge a vma in use */
+-	if (GEM_WARN_ON(vma->inuse > 0))
++	if (GEM_WARN_ON(msm_gem_vma_inuse(vma)))
+ 		return;
+ 
+ 	/* Don't do anything if the memory isn't mapped */
+@@ -100,7 +105,7 @@ msm_gem_map_vma(struct msm_gem_address_space *aspace,
+ void msm_gem_close_vma(struct msm_gem_address_space *aspace,
+ 		struct msm_gem_vma *vma)
  {
- 	struct msm_gem_object *msm_obj = to_msm_bo(obj);
--	struct msm_gem_vma *vma;
- 	struct page **pages;
- 	int ret, prot = IOMMU_READ;
+-	if (GEM_WARN_ON(vma->inuse > 0 || vma->mapped))
++	if (GEM_WARN_ON(msm_gem_vma_inuse(vma) || vma->mapped))
+ 		return;
  
-@@ -426,15 +427,11 @@ static int msm_gem_pin_iova(struct drm_gem_object *obj,
- 	if (GEM_WARN_ON(msm_obj->madv != MSM_MADV_WILLNEED))
- 		return -EBUSY;
- 
--	vma = lookup_vma(obj, aspace);
--	if (GEM_WARN_ON(!vma))
--		return -EINVAL;
--
- 	pages = get_pages(obj);
- 	if (IS_ERR(pages))
- 		return PTR_ERR(pages);
- 
--	ret = msm_gem_map_vma(aspace, vma, prot, msm_obj->sgt, obj->size);
-+	ret = msm_gem_map_vma(vma->aspace, vma, prot, msm_obj->sgt, obj->size);
- 
- 	if (!ret)
- 		msm_obj->pin_count++;
-@@ -446,19 +443,18 @@ static int get_and_pin_iova_range_locked(struct drm_gem_object *obj,
- 		struct msm_gem_address_space *aspace, uint64_t *iova,
- 		u64 range_start, u64 range_end)
- {
--	u64 local;
-+	struct msm_gem_vma *vma;
- 	int ret;
- 
- 	GEM_WARN_ON(!msm_gem_is_locked(obj));
- 
--	ret = get_iova_locked(obj, aspace, &local,
--		range_start, range_end);
--
--	if (!ret)
--		ret = msm_gem_pin_iova(obj, aspace);
-+	vma = get_vma_locked(obj, aspace, range_start, range_end);
-+	if (IS_ERR(vma))
-+		return PTR_ERR(vma);
- 
-+	ret = msm_gem_pin_iova(obj, vma);
- 	if (!ret)
--		*iova = local;
-+		*iova = vma->iova;
- 
- 	return ret;
- }
-@@ -500,10 +496,16 @@ int msm_gem_get_and_pin_iova(struct drm_gem_object *obj,
- int msm_gem_get_iova(struct drm_gem_object *obj,
- 		struct msm_gem_address_space *aspace, uint64_t *iova)
- {
--	int ret;
-+	struct msm_gem_vma *vma;
-+	int ret = 0;
- 
- 	msm_gem_lock(obj);
--	ret = get_iova_locked(obj, aspace, iova, 0, U64_MAX);
-+	vma = get_vma_locked(obj, aspace, 0, U64_MAX);
-+	if (IS_ERR(vma)) {
-+		ret = PTR_ERR(vma);
-+	} else {
-+		*iova = vma->iova;
-+	}
- 	msm_gem_unlock(obj);
- 
- 	return ret;
+ 	spin_lock(&aspace->lock);
 -- 
 2.35.1
 
