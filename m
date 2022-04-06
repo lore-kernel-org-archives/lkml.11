@@ -2,75 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D71AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22390C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381507AbiDFJdV (ORCPT
+        id S1358055AbiDFJcx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57900 "EHLO
+        Wed, 6 Apr 2022 05:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1579852AbiDFJUm (ORCPT
+        with ESMTP id S1582058AbiDFJVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:20:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EED31B2C46;
-        Tue,  5 Apr 2022 19:14:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7BFAFB81FB5;
-        Wed,  6 Apr 2022 02:14:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 478D5C385A0;
-        Wed,  6 Apr 2022 02:14:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649211284;
-        bh=7oxtU6dReocTjrAPtmbWJeUxLA98brvJonekBTXb0r8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pglIEobHodK+J/xTI/lixv4yCnW3MqVBTFnJgba4A4VhII6Y06FqiyubCK0sOnIOH
-         McKjnnN9eT9TDs2PFrrqJVuGdMjZiMwkYwU4rSX6pRy2N0VasXk4BkhB+408IWIzRR
-         EFsu/3EMzxbXtwIkxGPyhYqBwEQNKk0OEP/EhG3Qkedsn7V/q8kjMeaKjGdHEQE+6w
-         49qrJ9N3TR6OKitMwIP7aYT/FHaDpHp4ogIy6kc1MPd2aqPhzDPb1h7bIfkgTOTYeK
-         +9hdF4FwdtTZUdAIOs6v+pWuCGWYpE6RkLeMaULPbcalB6lEFAvwQRVIy9MfhLv08V
-         SDagjTCxDyt+g==
-Date:   Wed, 6 Apr 2022 10:14:37 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>,
-        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH v1 2/8] ARM: dts: imx6qdl-vicut1/vicutgo: Rename
- backlight to backlight_lcd
-Message-ID: <20220406021437.GH129381@dragon>
-References: <20220221095312.3692669-1-o.rempel@pengutronix.de>
- <20220221095312.3692669-2-o.rempel@pengutronix.de>
+        Wed, 6 Apr 2022 05:21:43 -0400
+Received: from out203-205-221-191.mail.qq.com (out203-205-221-191.mail.qq.com [203.205.221.191])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EFE1717B4
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 20:50:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1649217050;
+        bh=NKBQjU5IhN7Smi6bhWovIayNOgoinAmwlLxAmwsJtL4=;
+        h=From:To:Cc:Subject:Date;
+        b=JwWrKzjxxAel84uiu5CHpI6cfZzbwbhhRZ7gMaEbdCw34yOr3W9hKL2gTeYfrEX0U
+         k+BJBGPaauwcoBxJktYekWXQPlD6+X3fms+1Hfz+/N2OWoc75LC3t7DpbrIV8sqVyi
+         yENDm9LbfsdYvjnrLfNJRpiHoUga52EaMXbqTS80=
+Received: from localhost.localdomain ([43.227.136.188])
+        by newxmesmtplogicsvrsza5.qq.com (NewEsmtp) with SMTP
+        id CAF15C39; Wed, 06 Apr 2022 11:50:47 +0800
+X-QQ-mid: xmsmtpt1649217047t2ia44wgy
+Message-ID: <tencent_4387F32851FE6B81C0329BE44E719450440A@qq.com>
+X-QQ-XMAILINFO: OaoBA5NOFC/jwAQ1vk4YzPONfF7qyLOhF15ze7ebY/CHnYf3KXrIF+PJDkOgyw
+         6fJ63tPd8vv8i0i7IvA+m380u3vlfSQQcBzpLNlmY+RWbpb6+nlEATw5DsgD39jpg2mUJfe6SNnA
+         pCsYkBCvN7qmUfHpirVNMYEBYr8tl8U7W+XTtJIFr9ebcZh6RmU4bPBxYJ7KXfna7wVpcjeN4gX8
+         IXMD7BEbYOjVsIZUMae9x7REpvDi8wEQis/bsCu54gbx3XOYQQ/cFr08Y4iQ21k+HhmEqvtkiomH
+         7U0VhYSj9Cho6a+MwpQaMoRPp/PmgdD/Ren77He3JhIpaEpfl4g/NsJXuNjEJ3rW0COgakzdzhe7
+         DRqodi31nv6PtxOk8aPwv1ge68JaG8EO4UoP6Bv2PGpZ+ubJlOfwN4GW+MI60168vEXF5lr6FRfm
+         8z6bRC9lyit+6ellocGyO1naSMGfaLv4Wi1iI0PMr4zbw6q3aIXPPd9oKXA2V/CVf2fa4apfd8gd
+         G15NkK6ELJJ6/qK2rsMq81ktprl3A/eNrm7QkbDb2bbaNPR6YoA52F4EtYl99gYoF5aUrVhprnKs
+         GUN2ELB5KjL65hFAJ6BOBut4uFGWCibQYcK9BOEhlBCXFGEzmFk5nzuC/7LIqEEY9pEDL0sCcuj1
+         s4GRV6v4EpazL+yCN3jjDXL1H5HnWAJ8apA82mbfjh6U+iGBkOiWlQhV3iV6DWamUfmgYAepM2Eo
+         TVREaOc4JpPPPqs8FAtkmgZV0xsap0ITiucDWss+lP/87HYQPVtiWl+xUJSLjdp6SkXP6BaMW7K+
+         AoLswbAT3JGqLSilD3nONWv2TCiXjG+OBtMjcFyVxDLWh4PC7/BmS4eWRlahay9uVLvj48DHhs41
+         EAFB1ykwEFmBaKLxQx/SqogyZ72MUWwKhva2Tuk1BPHR70H4f93q1EcCJLJ20/qdqvsEdV6qGeWd
+         S6Q//0g0NDBUpFscBADXDzrRIJW3Nv
+From:   xkernel.wang@foxmail.com
+To:     gregkh@linuxfoundation.org
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH v2] staging: rtl8723bs: fix potential memory leak in rtw_init_drv_sw()
+Date:   Wed,  6 Apr 2022 11:50:33 +0800
+X-OQ-MSGID: <20220406035033.12771-1-xkernel.wang@foxmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220221095312.3692669-2-o.rempel@pengutronix.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 10:53:06AM +0100, Oleksij Rempel wrote:
-> From: David Jander <david@protonic.nl>
-> 
-> We have two backlight sources on this boards. Use more specific name for
-> the LCD backlight to see the difference.
-> 
-> Signed-off-by: David Jander <david@protonic.nl>
-> Signed-off-by: Robin van der Gracht <robin@protonic.nl>
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Applied, thanks!
+In rtw_init_drv_sw(), there are various init functions are called to 
+populate the padapter structure and some checks for their return value.
+However, except for the first one error path, the other five error paths 
+do not properly release the previous allocated resources, which leads to 
+various memory leaks.
+
+This patch fixes this and keeps the success and error separate.
+
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+---
+ChangeLog:
+v1->v2 update the description.
+ drivers/staging/rtl8723bs/os_dep/os_intfs.c | 60 +++++++++++----------
+ 1 file changed, 31 insertions(+), 29 deletions(-)
+
+diff --git a/drivers/staging/rtl8723bs/os_dep/os_intfs.c b/drivers/staging/rtl8723bs/os_dep/os_intfs.c
+index 0a8c24e..1bf6fc0 100644
+--- a/drivers/staging/rtl8723bs/os_dep/os_intfs.c
++++ b/drivers/staging/rtl8723bs/os_dep/os_intfs.c
+@@ -664,51 +664,36 @@ void rtw_reset_drv_sw(struct adapter *padapter)
+ 
+ u8 rtw_init_drv_sw(struct adapter *padapter)
+ {
+-	u8 ret8 = _SUCCESS;
+-
+ 	rtw_init_default_value(padapter);
+ 
+ 	rtw_init_hal_com_default_value(padapter);
+ 
+-	if (rtw_init_cmd_priv(&padapter->cmdpriv)) {
+-		ret8 = _FAIL;
+-		goto exit;
+-	}
++	if (rtw_init_cmd_priv(&padapter->cmdpriv))
++		return _FAIL;
+ 
+ 	padapter->cmdpriv.padapter = padapter;
+ 
+-	if (rtw_init_evt_priv(&padapter->evtpriv)) {
+-		ret8 = _FAIL;
+-		goto exit;
+-	}
++	if (rtw_init_evt_priv(&padapter->evtpriv))
++		goto free_cmd_priv;
+ 
+-
+-	if (rtw_init_mlme_priv(padapter) == _FAIL) {
+-		ret8 = _FAIL;
+-		goto exit;
+-	}
++	if (rtw_init_mlme_priv(padapter) == _FAIL)
++		goto free_evt_priv;
+ 
+ 	init_mlme_ext_priv(padapter);
+ 
+-	if (_rtw_init_xmit_priv(&padapter->xmitpriv, padapter) == _FAIL) {
+-		ret8 = _FAIL;
+-		goto exit;
+-	}
++	if (_rtw_init_xmit_priv(&padapter->xmitpriv, padapter) == _FAIL)
++		goto free_mlme_ext;
+ 
+-	if (_rtw_init_recv_priv(&padapter->recvpriv, padapter) == _FAIL) {
+-		ret8 = _FAIL;
+-		goto exit;
+-	}
++	if (_rtw_init_recv_priv(&padapter->recvpriv, padapter) == _FAIL)
++		goto free_xmit_priv;
+ 	/*  add for CONFIG_IEEE80211W, none 11w also can use */
+ 	spin_lock_init(&padapter->security_key_mutex);
+ 
+ 	/*  We don't need to memset padapter->XXX to zero, because adapter is allocated by vzalloc(). */
+ 	/* memset((unsigned char *)&padapter->securitypriv, 0, sizeof (struct security_priv)); */
+ 
+-	if (_rtw_init_sta_priv(&padapter->stapriv) == _FAIL) {
+-		ret8 = _FAIL;
+-		goto exit;
+-	}
++	if (_rtw_init_sta_priv(&padapter->stapriv) == _FAIL)
++		goto free_recv_priv;
+ 
+ 	padapter->stapriv.padapter = padapter;
+ 	padapter->setband = GHZ24_50;
+@@ -719,9 +704,26 @@ u8 rtw_init_drv_sw(struct adapter *padapter)
+ 
+ 	rtw_hal_dm_init(padapter);
+ 
+-exit:
++	return _SUCCESS;
++
++free_recv_priv:
++	_rtw_free_recv_priv(&padapter->recvpriv);
++
++free_xmit_priv:
++	_rtw_free_xmit_priv(&padapter->xmitpriv);
++
++free_mlme_ext:
++	free_mlme_ext_priv(&padapter->mlmeextpriv);
+ 
+-	return ret8;
++	rtw_free_mlme_priv(&padapter->mlmepriv);
++
++free_evt_priv:
++	rtw_free_evt_priv(&padapter->evtpriv);
++
++free_cmd_priv:
++	rtw_free_cmd_priv(&padapter->cmdpriv);
++
++	return _FAIL;
+ }
+ 
+ void rtw_cancel_all_timer(struct adapter *padapter)
+-- 
