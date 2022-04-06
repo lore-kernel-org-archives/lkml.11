@@ -2,105 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96AB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64FBBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:17:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234242AbiDFORJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52094 "EHLO
+        id S234722AbiDFOR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234453AbiDFOQv (ORCPT
+        with ESMTP id S234666AbiDFOQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:16:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3FA164F0C8
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:18:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649240220;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Gl9lzH2B8iXtNv+PmQrHe3XVaVHAWUpzZOHHKPgN0ss=;
-        b=IO/1qyTj1T/w+bQmj+3MHKoYKvtP7/Mebo85xQBeHeyg3rlxleORzomutqAKfGtx5UhGn8
-        QMv5OOBl7YpDb1C1H0Ra1CWFnLc+16WcZjQmFM4WX6B4Cm+eCjdrXOO2mfgYvSyop4z+BL
-        0LmAestc0sW+PKyqZ0MVjsNlFcYMYw8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-595-GKo8ae7zNg6o77SSGIC75Q-1; Wed, 06 Apr 2022 06:13:33 -0400
-X-MC-Unique: GKo8ae7zNg6o77SSGIC75Q-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 976FC1C068E6;
-        Wed,  6 Apr 2022 10:13:32 +0000 (UTC)
-Received: from tucnak.zalov.cz (unknown [10.39.195.172])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5743540316C;
-        Wed,  6 Apr 2022 10:13:32 +0000 (UTC)
-Received: from tucnak.zalov.cz (localhost [127.0.0.1])
-        by tucnak.zalov.cz (8.16.1/8.16.1) with ESMTPS id 236ADTpr1580645
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 6 Apr 2022 12:13:29 +0200
-Received: (from jakub@localhost)
-        by tucnak.zalov.cz (8.16.1/8.16.1/Submit) id 236ADSnS1580644;
-        Wed, 6 Apr 2022 12:13:28 +0200
-Date:   Wed, 6 Apr 2022 12:13:27 +0200
-From:   Jakub Jelinek <jakub@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Borislav Petkov <bp@alien8.de>, linux-toolchains@vger.kernel.org,
-        Michael Matz <matz@suse.de>,
-        Richard Biener <rguenther@suse.de>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: older gccs and case labels producing integer constants
-Message-ID: <Yk1nx2dwh6e3YFHu@tucnak>
-Reply-To: Jakub Jelinek <jakub@redhat.com>
-References: <YkwQ6+tIH8GQpuct@zn.tnic>
- <Ykw0wzdab0ICUFvy@hirez.programming.kicks-ass.net>
+        Wed, 6 Apr 2022 10:16:56 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B8E468259;
+        Tue,  5 Apr 2022 18:59:16 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id p17so694499plo.9;
+        Tue, 05 Apr 2022 18:59:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZzrJzEO0/L2Fv829K067oD4D3q7XNJ2h/EQeJLl1REM=;
+        b=crfzt8upCMe531ZqNzG/w5bacK5PoIW4zpIg4VPCySNfIR4TuTFO9yLeKP+EdVSktl
+         X2FZ8jEYUBS1z4hWJJTcu/FOuTwdq86di8oGNSnznOCPTF/6GcE1Zud5GJ4h43fmlJ3z
+         9Fa2HVJrw29fx190k5u/msgzpHQxA9W9p7z5HyZjvP4gnPXrOsPaq+2TACfFaDmB+NOU
+         ziu+dJ76nHNm+l+f+Onwda91vgKX/F+4SsOUf4T714JGyIxo/6I4L+RPVb/if4O36omE
+         CNYwrX5aDZvupPhnCUnXE5McdYEJBnwt+m5EU+u6pZKswsptj1FqXMY3OxqVOU0I/rEt
+         Qx/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZzrJzEO0/L2Fv829K067oD4D3q7XNJ2h/EQeJLl1REM=;
+        b=ImYFy+kwxfOlyl4x80ulBBOf9LO5UcAAfLkmdqrxu+G9kwyNUJAq4i7CIRj8m7FoGi
+         ABmQj1HVkpWycNsLd+j4wBGoFPdkh1UG93wdLi4GzqTi6Z9JpOo5w97ts7x460Ze37kk
+         M7Jox0hKMhPMzkkD8wgELxttYt7NA/ihJpIrSiElcuZa8jJUQN1/vr19omGxBQMKU8Bv
+         lWQpEQx+WEVoALcPGNToL5lHLzXzhSdUDz2NLs9rI6xJgdLct/+8FtMURTsInHY0gn8M
+         n8gaeA4dKI2tDXnXwyP5Gz3jp6H+50tKczPkxHThyuPX3p6SVNGG4XVll8zl1rs/pwJO
+         jZKA==
+X-Gm-Message-State: AOAM531gKnOl5IA5DzLDbSyvC1v4LYLA+9DMB4EGCzBckSJBekd8lZbw
+        xLU/gpUCgAqaA8znKYTU/iE=
+X-Google-Smtp-Source: ABdhPJxOmc+ENShQLno2fdpX+smu2f45tUg5mi9v08ko8E+JA+jXcFa/qde6p4zCEfgeWe2swp2VDg==
+X-Received: by 2002:a17:90b:4b43:b0:1c9:85b0:2db8 with SMTP id mi3-20020a17090b4b4300b001c985b02db8mr7272803pjb.23.1649210356350;
+        Tue, 05 Apr 2022 18:59:16 -0700 (PDT)
+Received: from localhost.localdomain ([180.150.111.33])
+        by smtp.gmail.com with ESMTPSA id x17-20020a17090ab01100b001ca8458964esm3712185pjq.18.2022.04.05.18.59.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 18:59:15 -0700 (PDT)
+From:   Jamie Bainbridge <jamie.bainbridge@gmail.com>
+To:     Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Jamie Bainbridge <jamie.bainbridge@gmail.com>,
+        Manish Chopra <manish.chopra@cavium.com>,
+        Ariel Elior <ariel.elior@cavium.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] qede: confirm skb is allocated before using
+Date:   Wed,  6 Apr 2022 11:58:09 +1000
+Message-ID: <b86829347bc923c3b48487a941925292f103588d.1649210237.git.jamie.bainbridge@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <Ykw0wzdab0ICUFvy@hirez.programming.kicks-ass.net>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220406015809.BYTfoI1SIleINf4Sk9BItIT3hCCLv1fnpdaFsq5ofuA@z>
 
-On Tue, Apr 05, 2022 at 02:23:31PM +0200, Peter Zijlstra wrote:
-> On Tue, Apr 05, 2022 at 11:50:35AM +0200, Borislav Petkov wrote:
-> > Hi folks,
-> > 
-> > I'm starting to see failures like this on allmodconfig builds:
-> > 
-> > sound/usb/midi.c: In function ‘snd_usbmidi_out_endpoint_create’:
-> > sound/usb/midi.c:1389:2: error: case label does not reduce to an integer constant
-> >   case (((0xfc08) << 16) | (0x0101)):
-> >   ^~~~
-> > 
-> > (The case statement is a macro but it evaluates to what I have there)
-> > 
-> > and that thing fails with
-> > 
-> > $ gcc --version
-> > gcc (SUSE Linux) 7.5.0
-> > 
-> > although it doesn't have any problems building with newer compilers.
-> > 
-> > I'm presuming older gccs consider those case statements signed ints and
-> > the following fixes it:
-> > 
-> >   case ((((unsigned int)0xfc08) << 16) | (0x0101)):
-> > 
-> > and I guess we can whack the couple of occurrences but what I'm
-> > wondering is why does this work with newer gccs?
-> 
-> IIRC GCC-8 fixed a bunch of -wrapv issues. Could be this is one of them
-> I suppose.
+qede_build_skb() assumes build_skb() always works and goes straight
+to skb_reserve(). However, build_skb() can fail under memory pressure.
+This results in a kernel panic because the skb to reserve is NULL.
 
-If we are talking about -fsanitize=shift -fwrapv, then that is
-https://gcc.gnu.org/PR68418 , i.e. it was fixed already for GCC 6.
+Add a check in case build_skb() failed to allocate and return NULL.
 
-	Jakub
+The NULL return is handled correctly in callers to qede_build_skb().
+
+Fixes: 8a8633978b842 ("qede: Add build_skb() support.")
+Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+---
+ drivers/net/ethernet/qlogic/qede/qede_fp.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+index b242000a77fd8db322672e541df074be9b5ce9ef..b7cc36589f592e995e3a12bb80bc7c8e3af7dc42 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+@@ -748,6 +748,9 @@ qede_build_skb(struct qede_rx_queue *rxq,
+ 	buf = page_address(bd->data) + bd->page_offset;
+ 	skb = build_skb(buf, rxq->rx_buf_seg_size);
+ 
++	if (unlikely(!skb))
++		return NULL;
++
+ 	skb_reserve(skb, pad);
+ 	skb_put(skb, len);
+ 
+-- 
+2.35.1
 
