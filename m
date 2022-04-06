@@ -2,105 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55AD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:51:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BB19C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233809AbiDFNxN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58004 "EHLO
+        id S234086AbiDFNxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234434AbiDFNwv (ORCPT
+        with ESMTP id S233555AbiDFNxZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:52:51 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C0DF57A89E;
-        Wed,  6 Apr 2022 04:40:26 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2369iAKI124025;
-        Wed, 6 Apr 2022 04:44:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649238250;
-        bh=4Z/SWcBdgq7gJXZF6aYCxpS+F1uJ0waLtD4QLHJH0F4=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=qzDoZRJGYv4ZT2wUdA1kWyW0e7Cd2oVKOZwUtvd4g2dpM7HWa0DsG6FiMyRytmQyf
-         UYyQoh3tJKe5hespHNrqNkbNByZC2pEUOC2Arw8qqIO1sylO0ytm+q8MsDl6s/2r+o
-         muZ++ndTfBNz3sBmoC+Z57XILV6anPN1xD7ZNW+g=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2369iAJ6069701
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Apr 2022 04:44:10 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Apr 2022 04:44:10 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Apr 2022 04:44:10 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2369i86x107588;
-        Wed, 6 Apr 2022 04:44:09 -0500
-From:   Puranjay Mohan <p-mohan@ti.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
-        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <vigneshr@ti.com>, <kishon@ti.com>
-Subject: [RFC 03/13] remoteproc: pru: Make sysfs entries read-only for PRU client driven boots
-Date:   Wed, 6 Apr 2022 15:13:48 +0530
-Message-ID: <20220406094358.7895-4-p-mohan@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406094358.7895-1-p-mohan@ti.com>
-References: <20220406094358.7895-1-p-mohan@ti.com>
+        Wed, 6 Apr 2022 09:53:25 -0400
+Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 478CF48B850
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 02:04:24 -0700 (PDT)
+X-UUID: 2a68b10bd70c4878b239404787f1c2ac-20220406
+X-UUID: 2a68b10bd70c4878b239404787f1c2ac-20220406
+Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
+        (envelope-from <lienze@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 745961270; Wed, 06 Apr 2022 17:03:06 +0800
+X-ns-mid: postfix-624D5787-6421288226
+Received: from localhost.localdomain (unknown [172.30.60.63])
+        by cs2c.com.cn (NSMail) with ESMTPSA id 99FDF383C642;
+        Wed,  6 Apr 2022 09:04:07 +0000 (UTC)
+From:   Enze Li <lienze@kylinos.cn>
+To:     phil@philpotter.co.uk
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] cdrom: make EXPORT_SYMBOL follow exported function
+Date:   Wed,  6 Apr 2022 17:03:37 +0800
+Message-Id: <20220406090337.1116708-1-lienze@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suman Anna <s-anna@ti.com>
+Currently, some EXPORT_SYMBOL declarations do not follow the exported
+function, which affects the readability of the code.  To maintain
+consistency, move these EXPORT_SYMBOL declarations to the correct
+position to improve the readability of the code.
 
-The PRU remoteproc driver is not configured for 'auto-boot' by default,
-and allows to be booted either by in-kernel PRU client drivers or by
-userspace using the generic remoteproc sysfs interfaces. The sysfs
-interfaces should not be permitted to change the remoteproc firmwares
-or states when a PRU is being managed by an in-kernel client driver.
-Use the newly introduced remoteproc generic 'sysfs_read_only' flag to
-provide these restrictions by setting and clearing it appropriately
-during the PRU acquire and release steps.
-
-Signed-off-by: Suman Anna <s-anna@ti.com>
-Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+Signed-off-by: Enze Li <lienze@kylinos.cn>
 ---
- drivers/remoteproc/pru_rproc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/cdrom/cdrom.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/remoteproc/pru_rproc.c b/drivers/remoteproc/pru_rproc.c
-index 7a35b400287a..9fed3e0372d3 100644
---- a/drivers/remoteproc/pru_rproc.c
-+++ b/drivers/remoteproc/pru_rproc.c
-@@ -231,6 +231,7 @@ struct rproc *pru_rproc_get(struct device_node *np, int index,
+diff --git a/drivers/cdrom/cdrom.c b/drivers/cdrom/cdrom.c
+index 7bd10d63ddbe..2d9dce967c90 100644
+--- a/drivers/cdrom/cdrom.c
++++ b/drivers/cdrom/cdrom.c
+@@ -648,6 +648,7 @@ int register_cdrom(struct gendisk *disk, struct cdrom_device_info *cdi)
+ 	mutex_unlock(&cdrom_mutex);
+ 	return 0;
+ }
++EXPORT_SYMBOL(register_cdrom);
+ #undef ENSURE
+ 
+ void unregister_cdrom(struct cdrom_device_info *cdi)
+@@ -663,6 +664,7 @@ void unregister_cdrom(struct cdrom_device_info *cdi)
+ 
+ 	cd_dbg(CD_REG_UNREG, "drive \"/dev/%s\" unregistered\n", cdi->name);
+ }
++EXPORT_SYMBOL(unregister_cdrom);
+ 
+ int cdrom_get_media_event(struct cdrom_device_info *cdi,
+ 			  struct media_event_desc *med)
+@@ -690,6 +692,7 @@ int cdrom_get_media_event(struct cdrom_device_info *cdi,
+ 	memcpy(med, &buffer[sizeof(*eh)], sizeof(*med));
+ 	return 0;
+ }
++EXPORT_SYMBOL(cdrom_get_media_event);
+ 
+ static int cdrom_get_random_writable(struct cdrom_device_info *cdi,
+ 			      struct rwrt_feature_desc *rfd)
+@@ -1206,6 +1209,7 @@ int cdrom_open(struct cdrom_device_info *cdi, struct block_device *bdev,
+ 	cdi->use_count--;
+ 	return ret;
+ }
++EXPORT_SYMBOL(cdrom_open);
+ 
+ /* This code is similar to that in open_for_data. The routine is called
+    whenever an audio play operation is requested.
+@@ -1301,6 +1305,7 @@ void cdrom_release(struct cdrom_device_info *cdi, fmode_t mode)
+ 			cdo->tray_move(cdi, 1);
  	}
+ }
++EXPORT_SYMBOL(cdrom_release);
  
- 	pru->client_np = np;
-+	rproc->sysfs_read_only = true;
+ static int cdrom_read_mech_status(struct cdrom_device_info *cdi, 
+ 				  struct cdrom_changer_info *buf)
+@@ -1383,6 +1388,7 @@ int cdrom_number_of_slots(struct cdrom_device_info *cdi)
+ 	kfree(info);
+ 	return nslots;
+ }
++EXPORT_SYMBOL(cdrom_number_of_slots);
  
- 	mutex_unlock(&pru->lock);
  
-@@ -265,6 +266,7 @@ void pru_rproc_put(struct rproc *rproc)
- 	}
+ /* If SLOT < 0, unload the current slot.  Otherwise, try to load SLOT. */
+@@ -1582,6 +1588,7 @@ void init_cdrom_command(struct packet_command *cgc, void *buf, int len,
+ 	cgc->data_direction = type;
+ 	cgc->timeout = CDROM_DEF_TIMEOUT;
+ }
++EXPORT_SYMBOL(init_cdrom_command);
  
- 	pru->client_np = NULL;
-+	rproc->sysfs_read_only = false;
- 	mutex_unlock(&pru->lock);
+ /* DVD handling */
  
- 	put_device(&rproc->dev);
+@@ -2000,6 +2007,7 @@ int cdrom_mode_sense(struct cdrom_device_info *cdi,
+ 	cgc->data_direction = CGC_DATA_READ;
+ 	return cdo->generic_packet(cdi, cgc);
+ }
++EXPORT_SYMBOL(cdrom_mode_sense);
+ 
+ int cdrom_mode_select(struct cdrom_device_info *cdi,
+ 		      struct packet_command *cgc)
+@@ -2015,6 +2023,7 @@ int cdrom_mode_select(struct cdrom_device_info *cdi,
+ 	cgc->data_direction = CGC_DATA_WRITE;
+ 	return cdo->generic_packet(cdi, cgc);
+ }
++EXPORT_SYMBOL(cdrom_mode_select);
+ 
+ static int cdrom_read_subchannel(struct cdrom_device_info *cdi,
+ 				 struct cdrom_subchnl *subchnl, int mcn)
+@@ -2893,6 +2902,7 @@ int cdrom_get_last_written(struct cdrom_device_info *cdi, long *last_written)
+ 	*last_written = toc.cdte_addr.lba;
+ 	return 0;
+ }
++EXPORT_SYMBOL(cdrom_get_last_written);
+ 
+ /* return the next writable block. also for udf file system. */
+ static int cdrom_get_next_writable(struct cdrom_device_info *cdi,
+@@ -3430,18 +3440,7 @@ int cdrom_ioctl(struct cdrom_device_info *cdi, struct block_device *bdev,
+ 
+ 	return -ENOSYS;
+ }
+-
+-EXPORT_SYMBOL(cdrom_get_last_written);
+-EXPORT_SYMBOL(register_cdrom);
+-EXPORT_SYMBOL(unregister_cdrom);
+-EXPORT_SYMBOL(cdrom_open);
+-EXPORT_SYMBOL(cdrom_release);
+ EXPORT_SYMBOL(cdrom_ioctl);
+-EXPORT_SYMBOL(cdrom_number_of_slots);
+-EXPORT_SYMBOL(cdrom_mode_select);
+-EXPORT_SYMBOL(cdrom_mode_sense);
+-EXPORT_SYMBOL(init_cdrom_command);
+-EXPORT_SYMBOL(cdrom_get_media_event);
+ 
+ #ifdef CONFIG_SYSCTL
+ 
 -- 
-2.17.1
+2.25.1
 
