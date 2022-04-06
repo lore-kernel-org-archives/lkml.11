@@ -2,76 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F87C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D369DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231208AbiDFTui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58994 "EHLO
+        id S232447AbiDFTus (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232605AbiDFTt7 (ORCPT
+        with ESMTP id S232220AbiDFTuU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:49:59 -0400
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52826D744B;
-        Wed,  6 Apr 2022 11:15:38 -0700 (PDT)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-e2442907a1so3443575fac.8;
-        Wed, 06 Apr 2022 11:15:38 -0700 (PDT)
+        Wed, 6 Apr 2022 15:50:20 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8B528F83B
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:22:39 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id q26so3457814edc.7
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 10:22:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=pdJD0sEz6JwadVVPr09JFw5k3V85Yh/6gSBnE158MpY=;
+        b=fvdNsxkRy3WWly5FIzP7B0aqEiXB88vpmchkCe+qdiFRcqBjIEW7bEwTJhNBIi+Udp
+         x6v2sIHGISgtnSFjsWnbTCI/qq/UIk4LTD4K0Lxoxld2aj5nN09atQQ0TLZlATTXu/l6
+         LudZ1GbQSbyyx9VAqVs6gMYlkR+Cr3OnV3/z2OXPlAJ4NYzOqYEQ2cPOGCU+BnEuoSuk
+         UuxN/gyz/Atf3qYAos0j9x1Q/LXk1PWrDlPC3FRExAJQE8gj4b+Q3KzejN2C9V4hAA5B
+         kq4DwToVP6IJEGVtUFxuz1VbflO0U7At7hll8YHGunlmFrx6kUwg56+8acN0yc3ubqun
+         eQvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=s3V1PFwe9rE77F+7x5UasRWtgjGiTdBLaqAI0HJqIdo=;
-        b=wGW0lgwaPEg33R0k7JDOHuzlHiRc9J9Zoxtcx4ykrNkhhmWF3D/q9ysRfAFaHniUXG
-         2C5Pa5VBSM2Rb+glf5qmBkoxkt5lppkt7WtvUd+M5quyO66Y0318vL4iFKullSDeB6Kp
-         U6EfdD6r+5myoqGz5qfb+Bm56jIjrRv3lc0yw/1ZbGUidOXYlY5A7YfLTct2M9yO2krV
-         YoG1Bxa+1v0BFmRkwuXfdm57OhclZeCd/aQYQXkSliGvfNGiRmreWPUwYd/HhHQYQgph
-         o7d2XOmpKhvtZ5aDCWBM7YGjiixrCq8c4zqbIEj76FUwLImaQvvOjVUqVWZ+aLZKAuxP
-         kBiA==
-X-Gm-Message-State: AOAM533DITv3pDLoGvith96b/Hq80Zi585799qw611bAw0iQzxJIknYW
-        H1hYSnRhQC0n2AdcLU32Tw==
-X-Google-Smtp-Source: ABdhPJxaErLxKvwtfnFiclNzDL0x+cHYc94G6xikddI1x3YgPGVmN4GtYn8wVM3GKsgnuKPy9HhmzA==
-X-Received: by 2002:a05:6870:32d6:b0:e2:1d27:bd55 with SMTP id r22-20020a05687032d600b000e21d27bd55mr4473906oac.201.1649268937372;
-        Wed, 06 Apr 2022 11:15:37 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id a17-20020a4ae931000000b0032933be7230sm5547206ooe.4.2022.04.06.11.15.36
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=pdJD0sEz6JwadVVPr09JFw5k3V85Yh/6gSBnE158MpY=;
+        b=JBMjgD0ug8wtiBfN3lJu7HjLOxvzT9o5haY8jbdNFa7iKxr5XSVsCu7cb5xRFE9n6K
+         UEJltKxZYogdaIhWQKROiBse6AQmv76QLpzV8tdVTvevwUiq77ruKDfgo5UIvmFub5KD
+         T5ihtxj8JzOhCrImEK3f6GBMvnsiVBm1hDNLtU6AZkXStm36Vf9s9/MLCP4yYL/yfxep
+         ai27ZcVJohrATKpzDxhZuZEG27jZYkXoOTMzUm0Zg2CcrT6O8QVQXInyTs49oCJi3q1A
+         QSXpeUqpf3MpnnFuLif098HsFc/HFLsZZYvmtp5tJ25Y184ftv/l0g6n2KJKoLjnRPpm
+         2elA==
+X-Gm-Message-State: AOAM533WoQK4CM02Bygh0F8l5YVyI/vrNnnb+q6KVk0Gnxj8r5HCSzo5
+        utl6D2gBddGhUeGYcGAyDmk=
+X-Google-Smtp-Source: ABdhPJyyp3Tik/xLKv/T9iImv2aa39sxGQbc2ut7VH4ZAYYM1I3/7Ab7q13INWl44i3OuioMWgWEow==
+X-Received: by 2002:a50:9d0f:0:b0:416:95a3:1611 with SMTP id v15-20020a509d0f000000b0041695a31611mr9953294ede.77.1649265757668;
+        Wed, 06 Apr 2022 10:22:37 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id da19-20020a056402177300b00413583e0996sm7912730edb.14.2022.04.06.10.22.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 11:15:37 -0700 (PDT)
-Received: (nullmailer pid 2525379 invoked by uid 1000);
-        Wed, 06 Apr 2022 18:15:36 -0000
-Date:   Wed, 6 Apr 2022 13:15:36 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Cc:     devicetree@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-pci@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>
-Subject: Re: [PATCH 2/3] dt-bindings: PCI: uniphier-ep: Clean up reg, clocks,
- resets, and their names using compatible string
-Message-ID: <Yk3YyFxzonOB2N3j@robh.at.kernel.org>
-References: <1649145062-29833-1-git-send-email-hayashi.kunihiko@socionext.com>
- <1649145062-29833-3-git-send-email-hayashi.kunihiko@socionext.com>
+        Wed, 06 Apr 2022 10:22:37 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH v2 3/5] staging: r8188eu: use round_up() instead of _RND8()
+Date:   Wed,  6 Apr 2022 19:22:17 +0200
+Message-Id: <20220406172219.15565-4-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406172219.15565-1-straube.linux@gmail.com>
+References: <20220406172219.15565-1-straube.linux@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1649145062-29833-3-git-send-email-hayashi.kunihiko@socionext.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 05 Apr 2022 16:51:01 +0900, Kunihiko Hayashi wrote:
-> Instead of "oneOf:" choices, use "allOf:" and "if:" to define reg, clocks,
-> resets, and their names that can be taken by the compatible string.
-> 
-> The order of their names doesn't change here.
-> 
-> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-> ---
->  .../pci/socionext,uniphier-pcie-ep.yaml       | 84 ++++++++++++-------
->  1 file changed, 56 insertions(+), 28 deletions(-)
-> 
+Use in-kernel round_up() instead of custom _RND8().
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+v2: no changes
+
+ drivers/staging/r8188eu/hal/rtl8188eu_xmit.c    | 6 +++---
+ drivers/staging/r8188eu/include/osdep_service.h | 8 --------
+ 2 files changed, 3 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
+index 9bd2428514de..2feae03a271b 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
++++ b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
+@@ -437,7 +437,7 @@ bool rtl8188eu_xmitframe_complete(struct adapter *adapt, struct xmit_priv *pxmit
+ 	pfirstframe = pxmitframe;
+ 	len = xmitframe_need_length(pfirstframe) + TXDESC_SIZE + (pfirstframe->pkt_offset * PACKET_OFFSET_SZ);
+ 	pbuf_tail = len;
+-	pbuf = _RND8(pbuf_tail);
++	pbuf = round_up(pbuf_tail, 8);
+ 
+ 	/*  check pkt amount in one bulk */
+ 	desc_cnt = 0;
+@@ -488,7 +488,7 @@ bool rtl8188eu_xmitframe_complete(struct adapter *adapt, struct xmit_priv *pxmit
+ 
+ 		len = xmitframe_need_length(pxmitframe) + TXDESC_SIZE + (pxmitframe->pkt_offset * PACKET_OFFSET_SZ);
+ 
+-		if (_RND8(pbuf + len) > MAX_XMITBUF_SZ) {
++		if (round_up(pbuf + len, 8) > MAX_XMITBUF_SZ) {
+ 			pxmitframe->agg_num = 1;
+ 			pxmitframe->pkt_offset = 1;
+ 			break;
+@@ -511,7 +511,7 @@ bool rtl8188eu_xmitframe_complete(struct adapter *adapt, struct xmit_priv *pxmit
+ 
+ 		/*  handle pointer and stop condition */
+ 		pbuf_tail = pbuf + len;
+-		pbuf = _RND8(pbuf_tail);
++		pbuf = round_up(pbuf_tail, 8);
+ 
+ 		pfirstframe->agg_num++;
+ 		if (MAX_TX_AGG_PACKET_NUMBER == pfirstframe->agg_num)
+diff --git a/drivers/staging/r8188eu/include/osdep_service.h b/drivers/staging/r8188eu/include/osdep_service.h
+index 388c22751d09..ff44c4a37b9d 100644
+--- a/drivers/staging/r8188eu/include/osdep_service.h
++++ b/drivers/staging/r8188eu/include/osdep_service.h
+@@ -96,14 +96,6 @@ static inline void flush_signals_thread(void)
+ 
+ #define _RND(sz, r) ((((sz)+((r)-1))/(r))*(r))
+ 
+-static inline u32 _RND8(u32 sz)
+-{
+-	u32	val;
+-
+-	val = ((sz >> 3) + ((sz & 7) ? 1: 0)) << 3;
+-	return val;
+-}
+-
+ static inline u32 _RND128(u32 sz)
+ {
+ 	u32	val;
+-- 
+2.35.1
+
