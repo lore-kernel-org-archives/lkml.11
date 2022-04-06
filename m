@@ -2,91 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E62CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:24:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C827C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbiDFV0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:26:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
+        id S235528AbiDFV0G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235209AbiDFVZn (ORCPT
+        with ESMTP id S235701AbiDFVZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 17:25:43 -0400
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD35B6;
-        Wed,  6 Apr 2022 13:21:01 -0700 (PDT)
-Received: by mail-pl1-f176.google.com with SMTP id j8so2951085pll.11;
-        Wed, 06 Apr 2022 13:21:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3mCDtib46azYhoHX+oJIxgCRBmS2BXiXfAVoUab2E94=;
-        b=G/IakRoTiAI0cvScoaTKDrEAtYKZlUYKKy1nKDsjiU+2JCkytRwqvIhWSlYkzzu2UP
-         /pC8bSSOL9fXe1mntksjHBwt4/qDkr49OyaQdYurlfKhU3iB2T/LWCxGviFSxYqzktns
-         ditxD6t8mR2QT/2g+Fo8NsvnUD09JKot3+3tJduNVRminyvWw0sJOk1f9rVLyXdRp+MV
-         1/15Ra1zkLd3GyrzmeT6KWROsuFtBZHjRg9lxjDh8oCfzNz3Cu0YPBb5VJreliZquwsc
-         W6RMZtepyu6DRTxXOL3LTjjtSUCu6iQpJ+SHUQwm9vsnnG2NJyT2+EYtYR7xsj+dOfNn
-         zjIA==
-X-Gm-Message-State: AOAM530LnSArg00wUxm7sZxts/G5W1SBNK0/D9KLfDwYH8QwHnDDOYjV
-        EDW5zrt6ihIYJiiNOpEBRps=
-X-Google-Smtp-Source: ABdhPJxMJ3dzw7N9XtYfZUeTBt4fqiJFyiCzT9SQ10HzjeqEzZaDG86sXBMGiVqyHmM+u0AmHyV3iQ==
-X-Received: by 2002:a17:90b:3a81:b0:1c6:834e:cd61 with SMTP id om1-20020a17090b3a8100b001c6834ecd61mr11840281pjb.149.1649276461210;
-        Wed, 06 Apr 2022 13:21:01 -0700 (PDT)
-Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
-        by smtp.gmail.com with ESMTPSA id y12-20020a17090a784c00b001c6bdafc995sm5468971pjl.3.2022.04.06.13.20.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 13:21:00 -0700 (PDT)
-Message-ID: <b95bdfa9-4373-8f54-677e-4a764061c61c@acm.org>
-Date:   Wed, 6 Apr 2022 13:20:58 -0700
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE6E387;
+        Wed,  6 Apr 2022 13:21:11 -0700 (PDT)
+Received: from quad ([82.142.17.26]) by mrelayeu.kundenserver.de (mreue107
+ [212.227.15.183]) with ESMTPSA (Nemesis) id 1MJEpp-1nIc2t18Tj-00KhmC; Wed, 06
+ Apr 2022 22:15:28 +0200
+From:   Laurent Vivier <laurent@vivier.eu>
+To:     linux-kernel@vger.kernel.org
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-m68k@lists.linux-m68k.org,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-rtc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Laurent Vivier <laurent@vivier.eu>
+Subject: [PATCH v16 2/4] rtc: goldfish: use gf_ioread32()/gf_iowrite32()
+Date:   Wed,  6 Apr 2022 22:15:21 +0200
+Message-Id: <20220406201523.243733-3-laurent@vivier.eu>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406201523.243733-1-laurent@vivier.eu>
+References: <20220406201523.243733-1-laurent@vivier.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 0/4] rpmb subsystem, uapi and virtio-rpmb driver
-Content-Language: en-US
-To:     Bean Huo <huobean@gmail.com>,
-        =?UTF-8?Q?Alex_Benn=c3=a9e?= <alex.bennee@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, maxim.uvarov@linaro.org,
-        joakim.bech@linaro.org, ulf.hansson@linaro.org,
-        ilias.apalodimas@linaro.org, arnd@linaro.org,
-        ruchika.gupta@linaro.org, tomas.winkler@intel.com,
-        yang.huang@intel.com, bing.zhu@intel.com,
-        Matti.Moell@opensynergy.com, hmo@opensynergy.com,
-        linux-mmc@vger.kernel.org, linux-scsi@vger.kernel.org
-References: <20220405093759.1126835-1-alex.bennee@linaro.org>
- <8b3ce88f65fd11523a4d2daab3c617f7089eb1ce.camel@gmail.com>
- <87r16bk013.fsf@linaro.org>
- <aeb64d1c4bbddfd8463c07a40ab1fc78be0d158d.camel@gmail.com>
- <87ee2ajuky.fsf@linaro.org>
- <c18a2b359046a14250cafa5a619dbe53f2872b5a.camel@gmail.com>
- <e72812a9-1e5b-a826-d490-62ed23d94116@acm.org>
- <310d20a04bdaf40672592d9ffa950606d2ceaff7.camel@gmail.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <310d20a04bdaf40672592d9ffa950606d2ceaff7.camel@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:440bktU+LghY03EMHGCKgFXTVMJpkJ4k9h7er7klmnABur2bVos
+ U10voJxwau+eTzJihzRv/oyVj4t73P7k4Wbpc5T3aBeeN97Ymmmk1MaQoOgzHhKDeLFWr/l
+ dHpz3prcD/4eLTyQA9uORG3qDIKkonE4J+jfLJu6uBnvK5/LKQ00954R1NmuvdZjNkGfbxi
+ /pP7oTTDvudFDZaXO1hzw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:BMwy4i+q7T8=:5fTMTNfg5EfyaH8FCAGKcT
+ bY/jyPCHg4DIuZEq6O9GgO3Uq20MPHhXNtG0IlQ8OJ6Y8kbv7bxVEpgeRwmc7xFrBmQUA0Xco
+ Gan5iFxqd8fC5JVuy9/yDdjxMq9RDIGnx+GwJBlBKxQzcpbZhaq3lrgsVLl6WSQE2q4di/hKB
+ 72NGZ4OXVTNUeW2R/VUtZ4FbfdSrsDXRa3hBUXKumScH5e7VwN6SVBS34DDWMhRZ1EyUVGWpk
+ nGZjbvJ0QhtB5OVMipGHd/qiyKfZtZG7Q5Meb37Vl8ZYYU47ztHXgmG8N/z2qJtip1tgsKdCM
+ t7BuQScWNnp9N7l+OrqIlWoeCIX31AnZy5MX9mI4JH0hjN6IfGkHN8EIhRApay0rKghr1U+xR
+ BnfmHn5JSMPJTSNDn/gKbCkji2RjYNPZwlEU1WbPgIB3giTeIS99luZkxQr7lWs5PmGvY5Juv
+ TVKgxszJe8/USQT4tP82rJOFrK5q6i/U8WaSD/QJC3BZ9x0LYp8ew052O2KzzkoHzQKkjHX+T
+ KIf3EBPl+lxFPAAqA2nc9hO7u8g/wJSmSxybSd190LGUA0KruV4Hn1SSXR7cmz6T7L6q4gk6s
+ rWVrTTEncGTi4fjAgAlnsWYbN++CuAwIUR5NTEmFAmoQdv3T7ecijP0ur0zHDozYLOuDfoSe2
+ N8a86xDoKPAjbn8V7T3mCoeKW54ATEdzeAHaeQKn+MrlaxSkQXAGnRI/bqJwvXE8fOTk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/6/22 11:12, Bean Huo wrote:
-> It is from the ufs-utils.
-> 
-> So, do you vote to add the UFS RPMB driver based on this new framework
-> to resolve this conflict?
+replace readl()/writel() by gf_ioread32()/gf_iowrite32()
+as done for goldfish-tty.
 
-Are any applications using the RPMB code from ufs-utils? It seems to me 
-that the ufs-utils code doe not handle SCSI unit attentions correctly. 
-If a POWER ON unit attention is received as reply to a SECURITY PROTOCOL 
-OUT transaction, the write counter should be reread instead of retrying 
-the SECURITY PROTOCOL OUT command with the same write counter.
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+---
+ drivers/rtc/rtc-goldfish.c | 31 ++++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
 
-Regarding adding a UFS RPMB driver: that seems useful to me since 
-multiple applications make use of the UFS RPMB functionality. My 
-understanding is that currently storageproxyd multiplexes UFS RPMB 
-accesses in Android.
+diff --git a/drivers/rtc/rtc-goldfish.c b/drivers/rtc/rtc-goldfish.c
+index 7ab95d052644..eb1929b0cbb6 100644
+--- a/drivers/rtc/rtc-goldfish.c
++++ b/drivers/rtc/rtc-goldfish.c
+@@ -10,6 +10,7 @@
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/rtc.h>
++#include <linux/goldfish.h>
+ 
+ #define TIMER_TIME_LOW		0x00	/* get low bits of current time  */
+ 					/*   and update TIMER_TIME_HIGH  */
+@@ -41,8 +42,8 @@ static int goldfish_rtc_read_alarm(struct device *dev,
+ 	rtcdrv = dev_get_drvdata(dev);
+ 	base = rtcdrv->base;
+ 
+-	rtc_alarm_low = readl(base + TIMER_ALARM_LOW);
+-	rtc_alarm_high = readl(base + TIMER_ALARM_HIGH);
++	rtc_alarm_low = gf_ioread32(base + TIMER_ALARM_LOW);
++	rtc_alarm_high = gf_ioread32(base + TIMER_ALARM_HIGH);
+ 	rtc_alarm = (rtc_alarm_high << 32) | rtc_alarm_low;
+ 
+ 	do_div(rtc_alarm, NSEC_PER_SEC);
+@@ -50,7 +51,7 @@ static int goldfish_rtc_read_alarm(struct device *dev,
+ 
+ 	rtc_time64_to_tm(rtc_alarm, &alrm->time);
+ 
+-	if (readl(base + TIMER_ALARM_STATUS))
++	if (gf_ioread32(base + TIMER_ALARM_STATUS))
+ 		alrm->enabled = 1;
+ 	else
+ 		alrm->enabled = 0;
+@@ -71,18 +72,18 @@ static int goldfish_rtc_set_alarm(struct device *dev,
+ 
+ 	if (alrm->enabled) {
+ 		rtc_alarm64 = rtc_tm_to_time64(&alrm->time) * NSEC_PER_SEC;
+-		writel((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
+-		writel(rtc_alarm64, base + TIMER_ALARM_LOW);
+-		writel(1, base + TIMER_IRQ_ENABLED);
++		gf_iowrite32((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
++		gf_iowrite32(rtc_alarm64, base + TIMER_ALARM_LOW);
++		gf_iowrite32(1, base + TIMER_IRQ_ENABLED);
+ 	} else {
+ 		/*
+ 		 * if this function was called with enabled=0
+ 		 * then it could mean that the application is
+ 		 * trying to cancel an ongoing alarm
+ 		 */
+-		rtc_status_reg = readl(base + TIMER_ALARM_STATUS);
++		rtc_status_reg = gf_ioread32(base + TIMER_ALARM_STATUS);
+ 		if (rtc_status_reg)
+-			writel(1, base + TIMER_CLEAR_ALARM);
++			gf_iowrite32(1, base + TIMER_CLEAR_ALARM);
+ 	}
+ 
+ 	return 0;
+@@ -98,9 +99,9 @@ static int goldfish_rtc_alarm_irq_enable(struct device *dev,
+ 	base = rtcdrv->base;
+ 
+ 	if (enabled)
+-		writel(1, base + TIMER_IRQ_ENABLED);
++		gf_iowrite32(1, base + TIMER_IRQ_ENABLED);
+ 	else
+-		writel(0, base + TIMER_IRQ_ENABLED);
++		gf_iowrite32(0, base + TIMER_IRQ_ENABLED);
+ 
+ 	return 0;
+ }
+@@ -110,7 +111,7 @@ static irqreturn_t goldfish_rtc_interrupt(int irq, void *dev_id)
+ 	struct goldfish_rtc *rtcdrv = dev_id;
+ 	void __iomem *base = rtcdrv->base;
+ 
+-	writel(1, base + TIMER_CLEAR_INTERRUPT);
++	gf_iowrite32(1, base + TIMER_CLEAR_INTERRUPT);
+ 
+ 	rtc_update_irq(rtcdrv->rtc, 1, RTC_IRQF | RTC_AF);
+ 
+@@ -128,8 +129,8 @@ static int goldfish_rtc_read_time(struct device *dev, struct rtc_time *tm)
+ 	rtcdrv = dev_get_drvdata(dev);
+ 	base = rtcdrv->base;
+ 
+-	time_low = readl(base + TIMER_TIME_LOW);
+-	time_high = readl(base + TIMER_TIME_HIGH);
++	time_low = gf_ioread32(base + TIMER_TIME_LOW);
++	time_high = gf_ioread32(base + TIMER_TIME_HIGH);
+ 	time = (time_high << 32) | time_low;
+ 
+ 	do_div(time, NSEC_PER_SEC);
+@@ -149,8 +150,8 @@ static int goldfish_rtc_set_time(struct device *dev, struct rtc_time *tm)
+ 	base = rtcdrv->base;
+ 
+ 	now64 = rtc_tm_to_time64(tm) * NSEC_PER_SEC;
+-	writel((now64 >> 32), base + TIMER_TIME_HIGH);
+-	writel(now64, base + TIMER_TIME_LOW);
++	gf_iowrite32((now64 >> 32), base + TIMER_TIME_HIGH);
++	gf_iowrite32(now64, base + TIMER_TIME_LOW);
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
 
-Thanks,
-
-Bart.
