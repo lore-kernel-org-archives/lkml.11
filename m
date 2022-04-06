@@ -2,191 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 212B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:19:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A66C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233337AbiDFNV1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
+        id S231814AbiDFNVd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:21:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232527AbiDFNVQ (ORCPT
+        with ESMTP id S232299AbiDFNVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:21:16 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C02C62E2AF;
-        Wed,  6 Apr 2022 03:04:53 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 6A8431F43901
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649239455;
-        bh=vFZRSUCtzPmI05FbkG5koMycIxN2nba9jZW7kLwOcfM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z4Vk7efUMCoApCY0Gl4KRXzkQIm19g5H5ymp3IUIMtqQ68duLQ4OnQ/osMDQftCgX
-         Hiw1XB27d6hmcCIUNlUQU0L6WOxMkyE9GLNiH/Sfuf88roOSG3PXosQhxUq1PqxlFr
-         h81KxqflxYfgLRGh7kdWbc1/XjDR2Elgx4NzPp2HIX5g8u2Z/1dcD0P5ATPW6HNO8Z
-         +3NfB6ZSMMqrhn+/IcZ5c1gf7OlGAcqsMZscyP5IJ8p8oNeW8CpLqJ65cA1Qv2zSn8
-         jf0b36XFRY7QYRvHErHA436VdjeRFpFtfDgKYn83a/Xeh2ec3VW0ev5BcGuQNv8om5
-         DeRrZJnzbe11Q==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     broonie@kernel.org
-Cc:     matthias.bgg@gmail.com, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        nfraprado@collabora.com, kernel@collabora.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 1/7] spi: mt65xx: Simplify probe function with devm_spi_alloc_master
-Date:   Wed,  6 Apr 2022 12:04:03 +0200
-Message-Id: <20220406100409.93113-2-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406100409.93113-1-angelogioacchino.delregno@collabora.com>
-References: <20220406100409.93113-1-angelogioacchino.delregno@collabora.com>
+        Wed, 6 Apr 2022 09:21:06 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D7055CD15
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 03:04:36 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id k124-20020a1ca182000000b0038c9cf6e2a6so1321925wme.0
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 03:04:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Gsn/KVUZ2ef93UgRqhOePHB9TxRguehEszYRtNa4ZMI=;
+        b=NCWYdNcW45PTe6kKF0w+n8KY1aKTNCTcXWUn9Vd1Y+0HeE5v6VGX56SvDvtTWTcwvn
+         foA/h57PkpDokJjifQ0W/rTHCw6AxOfDck6Yq/ES/yfX94n8dRjUnemTpjYP1qPqPEci
+         fNfHE77j5zc+jbDIO9yC9EKgcCtmpjWmjQJ5M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=Gsn/KVUZ2ef93UgRqhOePHB9TxRguehEszYRtNa4ZMI=;
+        b=HpV/WqMpk0IUiLOLdQDsieaMS6lglecdD99f18ayqAD85Bgolt7xcidYZSY9H6Nt3Q
+         n8R63djLfzaWrLZ5mLHUV/G97ejV2D8lkzNODmfIZu713d1583RhbAZvJUJCjj/BPnAh
+         PKhC8a8ua/gL0+gbDnA2JM84xQlqA9H9Mhg3jYXmBlyxrfV7rbDhBWNU+2wmWGC0B8Ne
+         BHeOmWmsXUwN2cMbv0sRXTxoo5Xlb6hBp71+xZ50rOiH6f+ewJpj4gfWB37QLzQVIhaD
+         sTj/gRYiAapd2561NMJLecEd4o27gNBjnEgoifiQKXKIpfaycDkpsurTGxUok/hk0/Z7
+         2PQQ==
+X-Gm-Message-State: AOAM533iwzEz3rwcnz6k2qBgMea5zZsi7hJlXA/KCcfnVqKA5MEfDUBo
+        w5+mUYrbeqQSeuFWymAt3U482A==
+X-Google-Smtp-Source: ABdhPJxpJ2B8ipfnst6KF5vUfg2vrUjZLgS+eJ7m2geRcChNtFKQ+Ox79lRxUALgsfwgkDOKI1RUvQ==
+X-Received: by 2002:a05:600c:a47:b0:37c:965:2b6f with SMTP id c7-20020a05600c0a4700b0037c09652b6fmr6743785wmq.31.1649239448406;
+        Wed, 06 Apr 2022 03:04:08 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id bk1-20020a0560001d8100b002061d6bdfd0sm5286345wrb.63.2022.04.06.03.04.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 03:04:08 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 12:04:06 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Sui Jingfeng <15330273260@189.cn>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drm/drm_modeset_helper_vtables.h: fix a typo
+Message-ID: <Yk1llmSuQEmtCk1Y@phenom.ffwll.local>
+Mail-Followup-To: Sui Jingfeng <15330273260@189.cn>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20220406073036.276288-1-15330273260@189.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406073036.276288-1-15330273260@189.cn>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Switch to the devm variant of spi_alloc_master() to save some gotos.
-This patch is a cleanup that brings no functional changes.
+On Wed, Apr 06, 2022 at 03:30:36PM +0800, Sui Jingfeng wrote:
+>  change upate to update
+> 
+> Signed-off-by: Sui Jingfeng <15330273260@189.cn>
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/spi/spi-mt65xx.c | 46 ++++++++++++++--------------------------
- 1 file changed, 16 insertions(+), 30 deletions(-)
+Applied to drm-misc-next, thanks for the patch.
+-Daniel
 
-diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-index 1a0b3208dfca..4f53c3446bc0 100644
---- a/drivers/spi/spi-mt65xx.c
-+++ b/drivers/spi/spi-mt65xx.c
-@@ -794,7 +794,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 	const struct of_device_id *of_id;
- 	int i, irq, ret, addr_bits;
- 
--	master = spi_alloc_master(&pdev->dev, sizeof(*mdata));
-+	master = devm_spi_alloc_master(&pdev->dev, sizeof(*mdata));
- 	if (!master) {
- 		dev_err(&pdev->dev, "failed to alloc spi master\n");
- 		return -ENOMEM;
-@@ -815,8 +815,7 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 	of_id = of_match_node(mtk_spi_of_match, pdev->dev.of_node);
- 	if (!of_id) {
- 		dev_err(&pdev->dev, "failed to probe of_node\n");
--		ret = -EINVAL;
--		goto err_put_master;
-+		return -EINVAL;
- 	}
- 
- 	mdata = spi_master_get_devdata(master);
-@@ -837,16 +836,13 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 		if (mdata->pad_num < 0) {
- 			dev_err(&pdev->dev,
- 				"No 'mediatek,pad-select' property\n");
--			ret = -EINVAL;
--			goto err_put_master;
-+			return -EINVAL;
- 		}
- 
- 		mdata->pad_sel = devm_kmalloc_array(&pdev->dev, mdata->pad_num,
- 						    sizeof(u32), GFP_KERNEL);
--		if (!mdata->pad_sel) {
--			ret = -ENOMEM;
--			goto err_put_master;
--		}
-+		if (!mdata->pad_sel)
-+			return -ENOMEM;
- 
- 		for (i = 0; i < mdata->pad_num; i++) {
- 			of_property_read_u32_index(pdev->dev.of_node,
-@@ -855,24 +851,19 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 			if (mdata->pad_sel[i] > MT8173_SPI_MAX_PAD_SEL) {
- 				dev_err(&pdev->dev, "wrong pad-sel[%d]: %u\n",
- 					i, mdata->pad_sel[i]);
--				ret = -EINVAL;
--				goto err_put_master;
-+				return -EINVAL;
- 			}
- 		}
- 	}
- 
- 	platform_set_drvdata(pdev, master);
- 	mdata->base = devm_platform_ioremap_resource(pdev, 0);
--	if (IS_ERR(mdata->base)) {
--		ret = PTR_ERR(mdata->base);
--		goto err_put_master;
--	}
-+	if (IS_ERR(mdata->base))
-+		return PTR_ERR(mdata->base);
- 
- 	irq = platform_get_irq(pdev, 0);
--	if (irq < 0) {
--		ret = irq;
--		goto err_put_master;
--	}
-+	if (irq < 0)
-+		return irq;
- 
- 	if (!pdev->dev.dma_mask)
- 		pdev->dev.dma_mask = &pdev->dev.coherent_dma_mask;
-@@ -881,41 +872,38 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 			       IRQF_TRIGGER_NONE, dev_name(&pdev->dev), master);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to register irq (%d)\n", ret);
--		goto err_put_master;
-+		return ret;
- 	}
- 
- 	mdata->parent_clk = devm_clk_get(&pdev->dev, "parent-clk");
- 	if (IS_ERR(mdata->parent_clk)) {
--		ret = PTR_ERR(mdata->parent_clk);
- 		dev_err(&pdev->dev, "failed to get parent-clk: %d\n", ret);
--		goto err_put_master;
-+		return PTR_ERR(mdata->parent_clk);
- 	}
- 
- 	mdata->sel_clk = devm_clk_get(&pdev->dev, "sel-clk");
- 	if (IS_ERR(mdata->sel_clk)) {
--		ret = PTR_ERR(mdata->sel_clk);
- 		dev_err(&pdev->dev, "failed to get sel-clk: %d\n", ret);
--		goto err_put_master;
-+		return PTR_ERR(mdata->sel_clk);
- 	}
- 
- 	mdata->spi_clk = devm_clk_get(&pdev->dev, "spi-clk");
- 	if (IS_ERR(mdata->spi_clk)) {
--		ret = PTR_ERR(mdata->spi_clk);
- 		dev_err(&pdev->dev, "failed to get spi-clk: %d\n", ret);
--		goto err_put_master;
-+		return PTR_ERR(mdata->spi_clk);
- 	}
- 
- 	ret = clk_prepare_enable(mdata->spi_clk);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to enable spi_clk (%d)\n", ret);
--		goto err_put_master;
-+		return ret;
- 	}
- 
- 	ret = clk_set_parent(mdata->sel_clk, mdata->parent_clk);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to clk_set_parent (%d)\n", ret);
- 		clk_disable_unprepare(mdata->spi_clk);
--		goto err_put_master;
-+		return ret;
- 	}
- 
- 	mdata->spi_clk_hz = clk_get_rate(mdata->spi_clk);
-@@ -963,8 +951,6 @@ static int mtk_spi_probe(struct platform_device *pdev)
- 
- err_disable_runtime_pm:
- 	pm_runtime_disable(&pdev->dev);
--err_put_master:
--	spi_master_put(master);
- 
- 	return ret;
- }
+> ---
+>  include/drm/drm_modeset_helper_vtables.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/drm/drm_modeset_helper_vtables.h b/include/drm/drm_modeset_helper_vtables.h
+> index fdfa9f37ce05..fafa70ac1337 100644
+> --- a/include/drm/drm_modeset_helper_vtables.h
+> +++ b/include/drm/drm_modeset_helper_vtables.h
+> @@ -1384,7 +1384,7 @@ struct drm_mode_config_helper_funcs {
+>  	 * starting to commit the update to the hardware.
+>  	 *
+>  	 * After the atomic update is committed to the hardware this hook needs
+> -	 * to call drm_atomic_helper_commit_hw_done(). Then wait for the upate
+> +	 * to call drm_atomic_helper_commit_hw_done(). Then wait for the update
+>  	 * to be executed by the hardware, for example using
+>  	 * drm_atomic_helper_wait_for_vblanks() or
+>  	 * drm_atomic_helper_wait_for_flip_done(), and then clean up the old
+> -- 
+> 2.25.1
+> 
+
 -- 
-2.35.1
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
