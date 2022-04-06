@@ -2,129 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D369DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 270C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 19:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232447AbiDFTus (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 15:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33428 "EHLO
+        id S232837AbiDFTvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 15:51:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232220AbiDFTuU (ORCPT
+        with ESMTP id S232849AbiDFTu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 15:50:20 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8B528F83B
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:22:39 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id q26so3457814edc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 10:22:38 -0700 (PDT)
+        Wed, 6 Apr 2022 15:50:28 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25147127BCF
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 10:10:20 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id y10so3027695pfa.7
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 10:10:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pdJD0sEz6JwadVVPr09JFw5k3V85Yh/6gSBnE158MpY=;
-        b=fvdNsxkRy3WWly5FIzP7B0aqEiXB88vpmchkCe+qdiFRcqBjIEW7bEwTJhNBIi+Udp
-         x6v2sIHGISgtnSFjsWnbTCI/qq/UIk4LTD4K0Lxoxld2aj5nN09atQQ0TLZlATTXu/l6
-         LudZ1GbQSbyyx9VAqVs6gMYlkR+Cr3OnV3/z2OXPlAJ4NYzOqYEQ2cPOGCU+BnEuoSuk
-         UuxN/gyz/Atf3qYAos0j9x1Q/LXk1PWrDlPC3FRExAJQE8gj4b+Q3KzejN2C9V4hAA5B
-         kq4DwToVP6IJEGVtUFxuz1VbflO0U7At7hll8YHGunlmFrx6kUwg56+8acN0yc3ubqun
-         eQvg==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7LtKSzkUnN8oqI99/lZipJjXqpkcAstNhdyBktayhLU=;
+        b=szyYYejNiRJ9KPBM4F/rUVAjpTskMrE9UtUPw6chSBquxFQy2rNV4WB6FBFTREc2PM
+         yCvC3xibLom8551y6ZqowtIEtDorpHSETyiAWhWBNS01oCD044+A+bm4esUo9IcMQpYK
+         99qhJtMw7bRljfL8WnZqnC6QYMF1osRRMpKOdoZVQb8L4JBkhQ5lVd6jQrYU9GO3SGPS
+         LEnsaDsSTG3pMbalYhqWDfFaQd1N6cEdIVPFIb3IY0W9je9D0gyb26C/6XxDat0ek2Nh
+         6aasrKc3W6Y1/qfAiWCjaGNc9fdWkiYLYjCeJ9jazocZd9/j2jVEEytDBLimAiX97QCo
+         GSkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pdJD0sEz6JwadVVPr09JFw5k3V85Yh/6gSBnE158MpY=;
-        b=JBMjgD0ug8wtiBfN3lJu7HjLOxvzT9o5haY8jbdNFa7iKxr5XSVsCu7cb5xRFE9n6K
-         UEJltKxZYogdaIhWQKROiBse6AQmv76QLpzV8tdVTvevwUiq77ruKDfgo5UIvmFub5KD
-         T5ihtxj8JzOhCrImEK3f6GBMvnsiVBm1hDNLtU6AZkXStm36Vf9s9/MLCP4yYL/yfxep
-         ai27ZcVJohrATKpzDxhZuZEG27jZYkXoOTMzUm0Zg2CcrT6O8QVQXInyTs49oCJi3q1A
-         QSXpeUqpf3MpnnFuLif098HsFc/HFLsZZYvmtp5tJ25Y184ftv/l0g6n2KJKoLjnRPpm
-         2elA==
-X-Gm-Message-State: AOAM533WoQK4CM02Bygh0F8l5YVyI/vrNnnb+q6KVk0Gnxj8r5HCSzo5
-        utl6D2gBddGhUeGYcGAyDmk=
-X-Google-Smtp-Source: ABdhPJyyp3Tik/xLKv/T9iImv2aa39sxGQbc2ut7VH4ZAYYM1I3/7Ab7q13INWl44i3OuioMWgWEow==
-X-Received: by 2002:a50:9d0f:0:b0:416:95a3:1611 with SMTP id v15-20020a509d0f000000b0041695a31611mr9953294ede.77.1649265757668;
-        Wed, 06 Apr 2022 10:22:37 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id da19-20020a056402177300b00413583e0996sm7912730edb.14.2022.04.06.10.22.36
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7LtKSzkUnN8oqI99/lZipJjXqpkcAstNhdyBktayhLU=;
+        b=4nJV4HGoC/6NXuv0O7JcE9l1/7gnkId+qUEo+3nn9UtB0MuNX3ll7PanEIDWZ0/tj6
+         g1ZFf2WxL78up7JU4jh+PuGkDechFGOgl5kD2QLZ4MO4+063TuHQiky0A0L3kZjv9nVg
+         /O05ca2VmljjnwE0L5UhUH8v6Xz2rrlO4lV926AGNVgHMYrGylF6vO+XUUTUN8v/KU52
+         cV3SYNfG8tQVG2cejv8mja/i70SIOCXZJfv9G1Q/biC+4LYjrMiIlBrIJ+Wv9woFI0/B
+         goTVBcwpODNvhTWBfANfA6Eo8EcH9jQLUfnOAxf3fWv0bf13L3AE0o6kRysrOwq2SmdM
+         Fg2Q==
+X-Gm-Message-State: AOAM533b7XGXs8idGtSgPpY32Qn0UuJs6W+ayt6X2md+m2TtcyEEv88a
+        lLqu3ELctxD6OZlEwfb39VgI0g==
+X-Google-Smtp-Source: ABdhPJwcnYR09PCjCTXsOMwrWEfpikUVJwf7Z7hTmU+S5NLdqIB/dPizVC6lvjacF7n4gg7NLQMtzg==
+X-Received: by 2002:a63:e30a:0:b0:385:fcae:d4a9 with SMTP id f10-20020a63e30a000000b00385fcaed4a9mr8191931pgh.85.1649265019331;
+        Wed, 06 Apr 2022 10:10:19 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id z2-20020aa79902000000b004fb05c04b53sm21035334pff.103.2022.04.06.10.10.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 10:22:37 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH v2 3/5] staging: r8188eu: use round_up() instead of _RND8()
-Date:   Wed,  6 Apr 2022 19:22:17 +0200
-Message-Id: <20220406172219.15565-4-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406172219.15565-1-straube.linux@gmail.com>
-References: <20220406172219.15565-1-straube.linux@gmail.com>
+        Wed, 06 Apr 2022 10:10:18 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 17:10:15 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 5/8] KVM: SVM: Re-inject INT3/INTO instead of retrying
+ the instruction
+Message-ID: <Yk3Jd6xAfgVoFgLc@google.com>
+References: <20220402010903.727604-1-seanjc@google.com>
+ <20220402010903.727604-6-seanjc@google.com>
+ <a47217da0b6db4f1b6b6c69a9dc38350b13ac17c.camel@redhat.com>
+ <YkshgrUaF4+MrrXf@google.com>
+ <7caee33a-da0f-00be-3195-82c3d1cd4cb4@maciej.szmigiero.name>
+ <YkzxXw1Aznv4zX0a@google.com>
+ <eed1cea4-409a-f03e-5c31-e82d49bb2101@maciej.szmigiero.name>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <eed1cea4-409a-f03e-5c31-e82d49bb2101@maciej.szmigiero.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use in-kernel round_up() instead of custom _RND8().
+On Wed, Apr 06, 2022, Maciej S. Szmigiero wrote:
+> On 6.04.2022 03:48, Sean Christopherson wrote:
+> > On Mon, Apr 04, 2022, Maciej S. Szmigiero wrote:
+> (..)
+> > > Also, I'm not sure that even the proposed updated code above will
+> > > actually restore the L1-requested next_rip correctly on L1 -> L2
+> > > re-injection (will review once the full version is available).
+> > 
+> > Spoiler alert, it doesn't.  Save yourself the review time.  :-)
+> > 
+> > The missing piece is stashing away the injected event on nested VMRUN.  Those
+> > events don't get routed through the normal interrupt/exception injection code and
+> > so the next_rip info is lost on the subsequent #NPF.
+> > 
+> > Treating soft interrupts/exceptions like they were injected by KVM (which they
+> > are, technically) works and doesn't seem too gross.  E.g. when prepping vmcb02
+> > 
+> > 	if (svm->nrips_enabled)
+> > 		vmcb02->control.next_rip    = svm->nested.ctl.next_rip;
+> > 	else if (boot_cpu_has(X86_FEATURE_NRIPS))
+> > 		vmcb02->control.next_rip    = vmcb12_rip;
+> > 
+> > 	if (is_evtinj_soft(vmcb02->control.event_inj)) {
+> > 		svm->soft_int_injected = true;
+> > 		svm->soft_int_csbase = svm->vmcb->save.cs.base;
+> > 		svm->soft_int_old_rip = vmcb12_rip;
+> > 		if (svm->nrips_enabled)
+> > 			svm->soft_int_next_rip = svm->nested.ctl.next_rip;
+> > 		else
+> > 			svm->soft_int_next_rip = vmcb12_rip;
+> > 	}
+> > 
+> > And then the VMRUN error path just needs to clear soft_int_injected.
+> 
+> I am also a fan of parsing EVENTINJ from VMCB12 into relevant KVM
+> injection structures (much like EXITINTINFO is parsed), as I said to
+> Maxim two days ago [1].
+> Not only for software {interrupts,exceptions} but for all incoming
+> events (again, just like EXITINTINFO).
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
----
-v2: no changes
+Ahh, I saw that fly by, but somehow I managed to misread what you intended.
 
- drivers/staging/r8188eu/hal/rtl8188eu_xmit.c    | 6 +++---
- drivers/staging/r8188eu/include/osdep_service.h | 8 --------
- 2 files changed, 3 insertions(+), 11 deletions(-)
+I like the idea of populating vcpu->arch.interrupt/exception as "injected" events.
+KVM prioritizes "injected" over other nested events, so in theory it should work
+without too much fuss.  I've ran through a variety of edge cases in my head and
+haven't found anything that would be fundamentally broken.  I think even live
+migration would work.
 
-diff --git a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
-index 9bd2428514de..2feae03a271b 100644
---- a/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188eu_xmit.c
-@@ -437,7 +437,7 @@ bool rtl8188eu_xmitframe_complete(struct adapter *adapt, struct xmit_priv *pxmit
- 	pfirstframe = pxmitframe;
- 	len = xmitframe_need_length(pfirstframe) + TXDESC_SIZE + (pfirstframe->pkt_offset * PACKET_OFFSET_SZ);
- 	pbuf_tail = len;
--	pbuf = _RND8(pbuf_tail);
-+	pbuf = round_up(pbuf_tail, 8);
- 
- 	/*  check pkt amount in one bulk */
- 	desc_cnt = 0;
-@@ -488,7 +488,7 @@ bool rtl8188eu_xmitframe_complete(struct adapter *adapt, struct xmit_priv *pxmit
- 
- 		len = xmitframe_need_length(pxmitframe) + TXDESC_SIZE + (pxmitframe->pkt_offset * PACKET_OFFSET_SZ);
- 
--		if (_RND8(pbuf + len) > MAX_XMITBUF_SZ) {
-+		if (round_up(pbuf + len, 8) > MAX_XMITBUF_SZ) {
- 			pxmitframe->agg_num = 1;
- 			pxmitframe->pkt_offset = 1;
- 			break;
-@@ -511,7 +511,7 @@ bool rtl8188eu_xmitframe_complete(struct adapter *adapt, struct xmit_priv *pxmit
- 
- 		/*  handle pointer and stop condition */
- 		pbuf_tail = pbuf + len;
--		pbuf = _RND8(pbuf_tail);
-+		pbuf = round_up(pbuf_tail, 8);
- 
- 		pfirstframe->agg_num++;
- 		if (MAX_TX_AGG_PACKET_NUMBER == pfirstframe->agg_num)
-diff --git a/drivers/staging/r8188eu/include/osdep_service.h b/drivers/staging/r8188eu/include/osdep_service.h
-index 388c22751d09..ff44c4a37b9d 100644
---- a/drivers/staging/r8188eu/include/osdep_service.h
-+++ b/drivers/staging/r8188eu/include/osdep_service.h
-@@ -96,14 +96,6 @@ static inline void flush_signals_thread(void)
- 
- #define _RND(sz, r) ((((sz)+((r)-1))/(r))*(r))
- 
--static inline u32 _RND8(u32 sz)
--{
--	u32	val;
--
--	val = ((sz >> 3) + ((sz & 7) ? 1: 0)) << 3;
--	return val;
--}
--
- static inline u32 _RND128(u32 sz)
+I think I'd prefer to do that in a follow-up series so that nVMX can be converted
+at the same time?  It's a bit absurd to add the above soft int code knowing that,
+at least in theory, simply populating the right software structs would automagically
+fix the bug.  But manually handling the soft int case first would be safer in the
+sense that we'd still have a fix for the soft int case if it turns out that populating
+vcpu->arch.interrupt/exception isn't as straightfoward as it seems.
+
+> However, there is another issue related to L1 -> L2 event re-injection
+> using standard KVM event injection mechanism: it mixes the L1 injection
+> state with the L2 one.
+> 
+> Specifically for SVM:
+> * When re-injecting a NMI into L2 NMI-blocking is enabled in
+> vcpu->arch.hflags (shared between L1 and L2) and IRET intercept is
+> enabled.
+> 
+> This is incorrect, since it is L1 that is responsible for enforcing NMI
+> blocking for NMIs that it injects into its L2.
+
+Ah, I see what you're saying.  I think :-)  IIUC, we can fix this bug without any
+new flags, just skip the side effects if the NMI is being injected into L2.
+
+@@ -3420,6 +3424,10 @@ static void svm_inject_nmi(struct kvm_vcpu *vcpu)
+        struct vcpu_svm *svm = to_svm(vcpu);
+
+        svm->vmcb->control.event_inj = SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_NMI;
++
++       if (is_guest_mode(vcpu))
++               return;
++
+        vcpu->arch.hflags |= HF_NMI_MASK;
+        if (!sev_es_guest(vcpu->kvm))
+                svm_set_intercept(svm, INTERCEPT_IRET);
+
+and for nVMX:
+
+@@ -4598,6 +4598,9 @@ static void vmx_inject_nmi(struct kvm_vcpu *vcpu)
  {
- 	u32	val;
--- 
-2.35.1
+        struct vcpu_vmx *vmx = to_vmx(vcpu);
 
++       if (is_guest_mode(vcpu))
++               goto inject_nmi;
++
+        if (!enable_vnmi) {
+                /*
+                 * Tracking the NMI-blocked state in software is built upon
+@@ -4619,6 +4622,7 @@ static void vmx_inject_nmi(struct kvm_vcpu *vcpu)
+                return;
+        }
+
++inject_nmi:
+        vmcs_write32(VM_ENTRY_INTR_INFO_FIELD,
+                        INTR_TYPE_NMI_INTR | INTR_INFO_VALID_MASK | NMI_VECTOR);
+
+
+> Also, *L2* being the target of such injection definitely should not block
+> further NMIs for *L1*.
+
+Actually, it should block NMIs for L1.  From L1's perspective, the injection is
+part of VM-Entry.  That's a single gigantic instruction, thus there is no NMI window
+until VM-Entry completes from L1's perspetive.  Any exit that occurs on vectoring
+an injected event and is handled by L0 should not be visible to L1, because from
+L1's perspective it's all part of VMRUN/VMLAUNCH/VMRESUME.  So blocking new events
+because an NMI (or any event) needs to be reinjected for L2 is correct.
+
+> * When re-injecting a *hardware* IRQ into L2 GIF is checked (previously
+> even on the BUG_ON() level), while L1 should be able to inject even when
+> L2 GIF is off,
+
+Isn't that just a matter of tweaking the assertion to ignore GIF if L2 is
+active?  Hmm, or deleting the assertion altogether, it's likely doing more harm
+than good at this point.
+
+> With the code in my previous patch set I planned to use
+> exit_during_event_injection() to detect such case, but if we implement
+> VMCB12 EVENTINJ parsing we can simply add a flag that the relevant event
+> comes from L1, so its normal injection side-effects should be skipped.
+
+Do we still need a flag based on the above?  Honest question... I've been staring
+at all this for the better part of an hour and may have lost track of things.
+
+> By the way, the relevant VMX code also looks rather suspicious,
+> especially for the !enable_vnmi case.
+
+I think it's safe to say we can ignore edge cases for !enable_vnmi.  It might even
+be worth trying to remove that support again (Paolo tried years ago), IIRC the
+only Intel CPUs that don't support virtual NMIs are some funky Yonah SKUs.
+
+> Thanks,
+> Maciej
+> 
+> [1]: https://lore.kernel.org/kvm/7d67bc6f-00ac-7c07-f6c2-c41b2f0d35a1@maciej.szmigiero.name/
