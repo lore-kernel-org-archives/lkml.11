@@ -2,207 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE583C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C5CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 14:09:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234259AbiDFOLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 10:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56344 "EHLO
+        id S234451AbiDFOLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 10:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234359AbiDFOJT (ORCPT
+        with ESMTP id S234333AbiDFOJ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 10:09:19 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1BF4ED0C5;
+        Wed, 6 Apr 2022 10:09:28 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB0B4ED0CA;
         Wed,  6 Apr 2022 03:05:49 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id t7so3377653qta.10;
-        Wed, 06 Apr 2022 03:05:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2VSAsL2CXxrE77kXFBa8TcwGi/LVtFh7YwP75sQ1TkA=;
-        b=nFH8nSv8u2z2VrycbL7jcP3CAcHZjP/EULtXO9QHdvJOZEKn1TCzlLXc86GXCi7Mmd
-         6OT7TIZ2Q7dJ0U6hVtjdLAIGIQDv9QeeBRJZ4FoPsPOuwqpWlhUW0SSa9GGQZrBK1pSC
-         SYrltpIS39/4lZyqixcMZsrTh/rNTPis01lrBX7rikZlN7xLrQ1986ikQmhJ/rWGmZ/i
-         q+YH4DqQcEtmG5icR7TWQd/CXEexRIXvNFTL1J5v1ODkMCUZVLPhrhO/0kRTVsreKJJV
-         reLzEOgygvOshNCTIsLmubVYawMMiKqMdP/5krBi5ySqz8xGYXe+w52VPQkOPGli3U07
-         GGoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2VSAsL2CXxrE77kXFBa8TcwGi/LVtFh7YwP75sQ1TkA=;
-        b=5etS1P1jT0bCPZT+g4mIKsotL5ijQXTWGOcH/V9aghMHSOCm9BaDq2DIB1l7KTYQr4
-         TM4gXbZQTCvYPjYwJtqdsP+d3/2SZ+XqWw5CWGOueKhv3I2e3mGfUTQf5IzFKArpmw4u
-         8IKBHiFRulTmHq0x1hFSpbBIuUPuJwjmJ/T9Mamu0WZBTLjPqm4hqqcPaiESiVl7uB7C
-         OERTnbUc5dSgAU9i+k5PCZFFKcNwNYYmRx0je5qjLvvdimbtGmIIKhiOsBETSqcw3XgU
-         mjkq65DJHByYcZXSY7zispF7MwH+Ps7OIyTrp05LEhWmt0vWs1vUlPJaSuU7x0EGsibd
-         lOrQ==
-X-Gm-Message-State: AOAM532K/Ez3B6HWirwEd+Fh0LHyQHdLJv2ZTJSpqfYZlh9tWR9qmGtB
-        NJtzjL3sz69Qwy/wM7cAgNIq7bJQKM2zS27n6Fs=
-X-Google-Smtp-Source: ABdhPJzJ51LUKgHNsZSqfo2DF9g+oizaRLxeUSLiFI7JUgaZgBlMXR+GkcR82KzMkbYV3Pw7dmxC8tAPKSbyI0Y+ZMA=
-X-Received: by 2002:a05:622a:82:b0:2e1:d61d:81ec with SMTP id
- o2-20020a05622a008200b002e1d61d81ecmr6628223qtw.674.1649239528097; Wed, 06
- Apr 2022 03:05:28 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 8C96C1F43915
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649239459;
+        bh=R0eDnRvnMRlkoH4jk3J8OAKkFlYr2/OFWVtkmjDP4oI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PkBylaI3czVCG7HcbAwWWJx/RxXB+iz+Ocq6KAHfgsJboDp9vlmPLtgJxMYKt5aSv
+         LuBJzLi5iwfRCtnarO2zYhEDWK7TQV7Xh9trEQ3T7IaICTIz/gD8rtbXGDw/iFQrQ5
+         F4owFcEW2OxpV3THtuFPPo2zgOSxie1Yet4lgPXhTUMufrMhLKq+k2vq5dcAHYO4Jq
+         IWM9zH3EezRw70yWgHTUG9s9JCMXQnrrszkRVVhs6jAYlRNW309hL2DtjYuO3h7HTj
+         ARhU2UXPaR/3WDEF5F9TZRqXrJnMdCMhvR8RlWZjLq290k5WrHMSJfK7gFu8WkzIFv
+         VxAlzNnxhNrlw==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     broonie@kernel.org
+Cc:     matthias.bgg@gmail.com, linux-spi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        nfraprado@collabora.com, kernel@collabora.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH 7/7] spi: mt65xx: Fix definitions indentation
+Date:   Wed,  6 Apr 2022 12:04:09 +0200
+Message-Id: <20220406100409.93113-8-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406100409.93113-1-angelogioacchino.delregno@collabora.com>
+References: <20220406100409.93113-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-References: <20220323064944.1351923-1-peng.fan@oss.nxp.com> <20220323064944.1351923-3-peng.fan@oss.nxp.com>
-In-Reply-To: <20220323064944.1351923-3-peng.fan@oss.nxp.com>
-From:   Daniel Baluta <daniel.baluta@gmail.com>
-Date:   Wed, 6 Apr 2022 13:05:16 +0300
-Message-ID: <CAEnQRZB1LL=d3SBCgNomPErBvzEgTVtbBE_PH=V60v-_9UObEg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] remoteproc: imx_dsp_rproc: use common rproc_elf_load_segments
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     bjorn.andersson@linaro.org,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        "S.j. Wang" <shengjiu.wang@nxp.com>,
-        linux-remoteproc@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Peng Fan <peng.fan@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 1:34 AM Peng Fan (OSS) <peng.fan@oss.nxp.com> wrote:
->
-> From: Peng Fan <peng.fan@nxp.com>
->
-> remoteproc elf loader supports the specific case that segments
-> have PT_LOAD and memsz/filesz set to zero, so no duplicate
-> code.
->
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Some definitions at the beginning of this file were wrongly
+indented: fix the indentation for all of these and, while at
+it, also move the MTK_SPI_IDLE and MTK_SPI_PAUSED down, as to
+implicitly group the hardware related definitions to the
+software (driver) related ones.
 
-I think this change OK, but we have a case with the DSP were
-reads/writes should be done in multiples of 32/64.
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/spi/spi-mt65xx.c | 132 +++++++++++++++++++--------------------
+ 1 file changed, 66 insertions(+), 66 deletions(-)
 
-We need a way to provide our own "memcpy" function to be used by
-rproc_elf_load_segments.
+diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
+index 8bd0b7335ea0..9733520effb8 100644
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -19,79 +19,79 @@
+ #include <linux/spi/spi.h>
+ #include <linux/dma-mapping.h>
+ 
+-#define SPI_CFG0_REG                      0x0000
+-#define SPI_CFG1_REG                      0x0004
+-#define SPI_TX_SRC_REG                    0x0008
+-#define SPI_RX_DST_REG                    0x000c
+-#define SPI_TX_DATA_REG                   0x0010
+-#define SPI_RX_DATA_REG                   0x0014
+-#define SPI_CMD_REG                       0x0018
+-#define SPI_STATUS0_REG                   0x001c
+-#define SPI_PAD_SEL_REG                   0x0024
+-#define SPI_CFG2_REG                      0x0028
+-#define SPI_TX_SRC_REG_64                 0x002c
+-#define SPI_RX_DST_REG_64                 0x0030
+-#define SPI_CFG3_IPM_REG                  0x0040
+-
+-#define SPI_CFG0_SCK_HIGH_OFFSET          0
+-#define SPI_CFG0_SCK_LOW_OFFSET           8
+-#define SPI_CFG0_CS_HOLD_OFFSET           16
+-#define SPI_CFG0_CS_SETUP_OFFSET          24
+-#define SPI_ADJUST_CFG0_CS_HOLD_OFFSET    0
+-#define SPI_ADJUST_CFG0_CS_SETUP_OFFSET   16
+-
+-#define SPI_CFG1_CS_IDLE_OFFSET           0
+-#define SPI_CFG1_PACKET_LOOP_OFFSET       8
+-#define SPI_CFG1_PACKET_LENGTH_OFFSET     16
+-#define SPI_CFG1_GET_TICK_DLY_OFFSET      29
+-#define SPI_CFG1_GET_TICK_DLY_OFFSET_V1   30
+-
+-#define SPI_CFG1_GET_TICK_DLY_MASK        0xe0000000
+-#define SPI_CFG1_GET_TICK_DLY_MASK_V1     0xc0000000
+-
+-#define SPI_CFG1_CS_IDLE_MASK             0xff
+-#define SPI_CFG1_PACKET_LOOP_MASK         0xff00
+-#define SPI_CFG1_PACKET_LENGTH_MASK       0x3ff0000
+-#define SPI_CFG1_IPM_PACKET_LENGTH_MASK   GENMASK(31, 16)
+-#define SPI_CFG2_SCK_HIGH_OFFSET          0
+-#define SPI_CFG2_SCK_LOW_OFFSET           16
+-
+-#define SPI_CMD_ACT                  BIT(0)
+-#define SPI_CMD_RESUME               BIT(1)
+-#define SPI_CMD_RST                  BIT(2)
+-#define SPI_CMD_PAUSE_EN             BIT(4)
+-#define SPI_CMD_DEASSERT             BIT(5)
+-#define SPI_CMD_SAMPLE_SEL           BIT(6)
+-#define SPI_CMD_CS_POL               BIT(7)
+-#define SPI_CMD_CPHA                 BIT(8)
+-#define SPI_CMD_CPOL                 BIT(9)
+-#define SPI_CMD_RX_DMA               BIT(10)
+-#define SPI_CMD_TX_DMA               BIT(11)
+-#define SPI_CMD_TXMSBF               BIT(12)
+-#define SPI_CMD_RXMSBF               BIT(13)
+-#define SPI_CMD_RX_ENDIAN            BIT(14)
+-#define SPI_CMD_TX_ENDIAN            BIT(15)
+-#define SPI_CMD_FINISH_IE            BIT(16)
+-#define SPI_CMD_PAUSE_IE             BIT(17)
+-#define SPI_CMD_IPM_NONIDLE_MODE     BIT(19)
+-#define SPI_CMD_IPM_SPIM_LOOP        BIT(21)
+-#define SPI_CMD_IPM_GET_TICKDLY_OFFSET    22
++#define SPI_CFG0_REG			0x0000
++#define SPI_CFG1_REG			0x0004
++#define SPI_TX_SRC_REG			0x0008
++#define SPI_RX_DST_REG			0x000c
++#define SPI_TX_DATA_REG			0x0010
++#define SPI_RX_DATA_REG			0x0014
++#define SPI_CMD_REG			0x0018
++#define SPI_STATUS0_REG			0x001c
++#define SPI_PAD_SEL_REG			0x0024
++#define SPI_CFG2_REG			0x0028
++#define SPI_TX_SRC_REG_64		0x002c
++#define SPI_RX_DST_REG_64		0x0030
++#define SPI_CFG3_IPM_REG		0x0040
++
++#define SPI_CFG0_SCK_HIGH_OFFSET	0
++#define SPI_CFG0_SCK_LOW_OFFSET		8
++#define SPI_CFG0_CS_HOLD_OFFSET		16
++#define SPI_CFG0_CS_SETUP_OFFSET	24
++#define SPI_ADJUST_CFG0_CS_HOLD_OFFSET	0
++#define SPI_ADJUST_CFG0_CS_SETUP_OFFSET	16
++
++#define SPI_CFG1_CS_IDLE_OFFSET		0
++#define SPI_CFG1_PACKET_LOOP_OFFSET	8
++#define SPI_CFG1_PACKET_LENGTH_OFFSET	16
++#define SPI_CFG1_GET_TICK_DLY_OFFSET	29
++#define SPI_CFG1_GET_TICK_DLY_OFFSET_V1	30
++
++#define SPI_CFG1_GET_TICK_DLY_MASK	0xe0000000
++#define SPI_CFG1_GET_TICK_DLY_MASK_V1	0xc0000000
++
++#define SPI_CFG1_CS_IDLE_MASK		0xff
++#define SPI_CFG1_PACKET_LOOP_MASK	0xff00
++#define SPI_CFG1_PACKET_LENGTH_MASK	0x3ff0000
++#define SPI_CFG1_IPM_PACKET_LENGTH_MASK	GENMASK(31, 16)
++#define SPI_CFG2_SCK_HIGH_OFFSET	0
++#define SPI_CFG2_SCK_LOW_OFFSET		16
++
++#define SPI_CMD_ACT			BIT(0)
++#define SPI_CMD_RESUME			BIT(1)
++#define SPI_CMD_RST			BIT(2)
++#define SPI_CMD_PAUSE_EN		BIT(4)
++#define SPI_CMD_DEASSERT		BIT(5)
++#define SPI_CMD_SAMPLE_SEL		BIT(6)
++#define SPI_CMD_CS_POL			BIT(7)
++#define SPI_CMD_CPHA			BIT(8)
++#define SPI_CMD_CPOL			BIT(9)
++#define SPI_CMD_RX_DMA			BIT(10)
++#define SPI_CMD_TX_DMA			BIT(11)
++#define SPI_CMD_TXMSBF			BIT(12)
++#define SPI_CMD_RXMSBF			BIT(13)
++#define SPI_CMD_RX_ENDIAN		BIT(14)
++#define SPI_CMD_TX_ENDIAN		BIT(15)
++#define SPI_CMD_FINISH_IE		BIT(16)
++#define SPI_CMD_PAUSE_IE		BIT(17)
++#define SPI_CMD_IPM_NONIDLE_MODE	BIT(19)
++#define SPI_CMD_IPM_SPIM_LOOP		BIT(21)
++#define SPI_CMD_IPM_GET_TICKDLY_OFFSET	22
+ 
+ #define SPI_CMD_IPM_GET_TICKDLY_MASK	GENMASK(24, 22)
+-#define SPI_CFG3_IPM_HALF_DUPLEX_DIR		BIT(2)
+-#define SPI_CFG3_IPM_HALF_DUPLEX_EN		BIT(3)
+-#define MT8173_SPI_MAX_PAD_SEL 3
++#define SPI_CFG3_IPM_HALF_DUPLEX_DIR	BIT(2)
++#define SPI_CFG3_IPM_HALF_DUPLEX_EN	BIT(3)
++#define MT8173_SPI_MAX_PAD_SEL		3
+ 
+-#define MTK_SPI_PAUSE_INT_STATUS 0x2
++#define MTK_SPI_PAUSE_INT_STATUS	0x2
++
++#define MTK_SPI_MAX_FIFO_SIZE		32U
++#define MTK_SPI_PACKET_SIZE		1024
++#define MTK_SPI_IPM_PACKET_SIZE		SZ_64K
++#define MTK_SPI_32BITS_MASK		(0xffffffff)
+ 
+ #define MTK_SPI_IDLE 0
+ #define MTK_SPI_PAUSED 1
+ 
+-#define MTK_SPI_MAX_FIFO_SIZE 32U
+-#define MTK_SPI_PACKET_SIZE 1024
+-#define MTK_SPI_IPM_PACKET_SIZE SZ_64K
+-#define MTK_SPI_32BITS_MASK  (0xffffffff)
+-
+ #define DMA_ADDR_EXT_BITS (36)
+ #define DMA_ADDR_DEF_BITS (32)
+ 
+-- 
+2.35.1
 
-> ---
->  drivers/remoteproc/imx_dsp_rproc.c | 95 +-----------------------------
->  1 file changed, 1 insertion(+), 94 deletions(-)
->
-> diff --git a/drivers/remoteproc/imx_dsp_rproc.c b/drivers/remoteproc/imx_dsp_rproc.c
-> index 2abee78df96e..eee3c44c2146 100644
-> --- a/drivers/remoteproc/imx_dsp_rproc.c
-> +++ b/drivers/remoteproc/imx_dsp_rproc.c
-> @@ -649,99 +649,6 @@ static int imx_dsp_rproc_add_carveout(struct imx_dsp_rproc *priv)
->         return 0;
->  }
->
-> -/**
-> - * imx_dsp_rproc_elf_load_segments() - load firmware segments to memory
-> - * @rproc: remote processor which will be booted using these fw segments
-> - * @fw: the ELF firmware image
-> - *
-> - * This function specially checks if memsz is zero or not, otherwise it
-> - * is mostly same as rproc_elf_load_segments().
-> - */
-> -static int imx_dsp_rproc_elf_load_segments(struct rproc *rproc,
-> -                                          const struct firmware *fw)
-> -{
-> -       struct device *dev = &rproc->dev;
-> -       u8 class = fw_elf_get_class(fw);
-> -       u32 elf_phdr_get_size = elf_size_of_phdr(class);
-> -       const u8 *elf_data = fw->data;
-> -       const void *ehdr, *phdr;
-> -       int i, ret = 0;
-> -       u16 phnum;
-> -
-> -       ehdr = elf_data;
-> -       phnum = elf_hdr_get_e_phnum(class, ehdr);
-> -       phdr = elf_data + elf_hdr_get_e_phoff(class, ehdr);
-> -
-> -       /* go through the available ELF segments */
-> -       for (i = 0; i < phnum; i++, phdr += elf_phdr_get_size) {
-> -               u64 da = elf_phdr_get_p_paddr(class, phdr);
-> -               u64 memsz = elf_phdr_get_p_memsz(class, phdr);
-> -               u64 filesz = elf_phdr_get_p_filesz(class, phdr);
-> -               u64 offset = elf_phdr_get_p_offset(class, phdr);
-> -               u32 type = elf_phdr_get_p_type(class, phdr);
-> -               void *ptr;
-> -
-> -               /*
-> -                *  There is a case that with PT_LOAD type, the
-> -                *  filesz = memsz = 0. If memsz = 0, rproc_da_to_va
-> -                *  should return NULL ptr, then error is returned.
-> -                *  So this case should be skipped from the loop.
-> -                *  Add !memsz checking here.
-> -                */
-> -               if (type != PT_LOAD || !memsz)
-> -                       continue;
-> -
-> -               dev_dbg(dev, "phdr: type %d da 0x%llx memsz 0x%llx filesz 0x%llx\n",
-> -                       type, da, memsz, filesz);
-> -
-> -               if (filesz > memsz) {
-> -                       dev_err(dev, "bad phdr filesz 0x%llx memsz 0x%llx\n",
-> -                               filesz, memsz);
-> -                       ret = -EINVAL;
-> -                       break;
-> -               }
-> -
-> -               if (offset + filesz > fw->size) {
-> -                       dev_err(dev, "truncated fw: need 0x%llx avail 0x%zx\n",
-> -                               offset + filesz, fw->size);
-> -                       ret = -EINVAL;
-> -                       break;
-> -               }
-> -
-> -               if (!rproc_u64_fit_in_size_t(memsz)) {
-> -                       dev_err(dev, "size (%llx) does not fit in size_t type\n",
-> -                               memsz);
-> -                       ret = -EOVERFLOW;
-> -                       break;
-> -               }
-> -
-> -               /* grab the kernel address for this device address */
-> -               ptr = rproc_da_to_va(rproc, da, memsz, NULL);
-> -               if (!ptr) {
-> -                       dev_err(dev, "bad phdr da 0x%llx mem 0x%llx\n", da,
-> -                               memsz);
-> -                       ret = -EINVAL;
-> -                       break;
-> -               }
-> -
-> -               /* put the segment where the remote processor expects it */
-> -               if (filesz)
-> -                       memcpy(ptr, elf_data + offset, filesz);
-> -
-> -               /*
-> -                * Zero out remaining memory for this segment.
-> -                *
-> -                * This isn't strictly required since dma_alloc_coherent already
-> -                * did this for us. albeit harmless, we may consider removing
-> -                * this.
-> -                */
-> -               if (memsz > filesz)
-> -                       memset(ptr + filesz, 0, memsz - filesz);
-> -       }
-> -
-> -       return ret;
-> -}
-> -
->  /* Prepare function for rproc_ops */
->  static int imx_dsp_rproc_prepare(struct rproc *rproc)
->  {
-> @@ -808,7 +715,7 @@ static const struct rproc_ops imx_dsp_rproc_ops = {
->         .start          = imx_dsp_rproc_start,
->         .stop           = imx_dsp_rproc_stop,
->         .kick           = imx_dsp_rproc_kick,
-> -       .load           = imx_dsp_rproc_elf_load_segments,
-> +       .load           = rproc_elf_load_segments,
->         .parse_fw       = rproc_elf_load_rsc_table,
->         .sanity_check   = rproc_elf_sanity_check,
->         .get_boot_addr  = rproc_elf_get_boot_addr,
-> --
-> 2.25.1
->
