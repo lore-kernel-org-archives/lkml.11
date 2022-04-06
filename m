@@ -2,292 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD38C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5C57C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236813AbiDFVzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:55:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42326 "EHLO
+        id S236368AbiDFVzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236834AbiDFVwg (ORCPT
+        with ESMTP id S236069AbiDFVzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:52:36 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389041ADA5;
-        Wed,  6 Apr 2022 14:46:55 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id g15-20020a17090adb0f00b001caa9a230c7so7050069pjv.5;
-        Wed, 06 Apr 2022 14:46:55 -0700 (PDT)
+        Wed, 6 Apr 2022 17:55:10 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57059F70
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 14:50:56 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id m30so5182986wrb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 14:50:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YPzsprcAWsqrwWakA9Ciodx92zg09lPCp1+8pJTWeds=;
-        b=kdbzt1tG4Q+iXEUS2HYgVvOqb1rXJiVH+ppx6xZcJNktLBqKJTH86fnTQy3rQZzmxu
-         K1et1JfqTjeL5rUhovd0J+nsMv9lllBILH0kEFGGHRhtsgt7FNNDvDbJUkKXfUwI7bGf
-         Oo+jeBtnsQW8t7M2/TnNrBeKKg9kfGrbmygNXK7cEs71AqW8W/NUe3nMZmnW01DETjg1
-         xdYej1tRmR9WTckYFqaaBuitaETl/x51FDyQyAVNdzX0S6UWZURR9j1UrhospI4riZpr
-         lY9lr/mQuU3Ghi2P4WrBLqJlcFEOaUbuCWooln6ycyxFe0T0LZRrF6fvw8NE5AVPAEii
-         MUKw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ctkfWR9bwdMoGeWels/5BpQ7XWMNAq7SYEfgxZw7Pak=;
+        b=b8ok8D2tdxUGnElGaaf3DwjFFBoxpOffvCR+9ft/ESApaeDqixS8CjzHXxuNzc9Wn3
+         rRWah9UTC/MsgWn79FDHbEREiMVaCUKUFj8LX0PKWslMVFn+tmalnDwnKxIJ6E0WXzdP
+         qoCNLku+AEO4W7HiQ+LrKF6mHXKTfByXh9/2bhkklzydm+QHdegSLJOSh24ucH6dutoe
+         oHngQjHGMuXgY3syTudv5tz9UxubPIVZpueQQjP+coU+Mk4D5MRbr0j8+0b9ea5OWrBR
+         R0G7qNWtyrGQq29s3/rU2Y/bxcjQSG3SE55eivLvRNAhsgUqqvFvuQbpto//knv/DULx
+         LFwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YPzsprcAWsqrwWakA9Ciodx92zg09lPCp1+8pJTWeds=;
-        b=v69FbnHpLauYPRjv6mcObdMHZdG+/wSa1S+7shdfXCcSQ/zBIuXYcltNaufpJxHyMv
-         01eL8TAURrBTRM8AwITfo3Uqmmiz/ycY5ZTdiXg4Qr7WpjB+q23OBNJPj0NptAzuYzy+
-         HcYz4Uw17waggdxsZrGM0Q1/uwf3Pa/CDCVePa8Wbgv/hd2gfvMhYJ5MVhxcGIi/3C8p
-         q6wTPBvSfAdyxboUxEJiyB93eLZjRBRlFASHV3JMyA6E0saMk0nAPutIsTm0DmIi/IGC
-         OA5mZOapzSbdZ1QXLKc1AzHfJ+eOHLUc/+6qo5J4Qt5jNQvakpOQMX9QxRAZ0l9ChEOP
-         CK0Q==
-X-Gm-Message-State: AOAM532sayUUsvbKNxg2TMqSA+DEhVDezHbi0dH3HW4mP1XHmN0Wk1jl
-        7x9UvjFK8voNorX/xfLD8dk=
-X-Google-Smtp-Source: ABdhPJwYumXvLka0QXC7th+Qn497ZDA703hb5H9vrZff6ta8ovqmT+6VgvS7bP5o3bY0wRnmQ953tQ==
-X-Received: by 2002:a17:90a:b00f:b0:1c9:9205:433 with SMTP id x15-20020a17090ab00f00b001c992050433mr12061046pjq.116.1649281614677;
-        Wed, 06 Apr 2022 14:46:54 -0700 (PDT)
-Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
-        by smtp.gmail.com with ESMTPSA id x36-20020a634a24000000b0039cc6fff510sm20503pga.58.2022.04.06.14.46.53
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ctkfWR9bwdMoGeWels/5BpQ7XWMNAq7SYEfgxZw7Pak=;
+        b=se/KrQd0emeAdu8cuKnHjM4cNOHyYvJ1niGTyIGxYhDqUNaGvagI6av7HtuTenGizE
+         lroF6eZwZorlpjmrebMCnP6uxPw31Th1TkzBkh9hSMad0sRxeAxxvMn8gWBEpFmKb4jb
+         WEHNH7A2AHYX1IYxgpGJC+tZJ93yoIjuKUZbfJ0uvtgeEpHEuwP6ua/H8I7uNcVbeF5s
+         kDdzNSScjj1hvosNJk8Aa/eb3xUBejx4rgGfF1WngBpXgWnw3L7HlKLjykwR1Jss1gkF
+         jBX49ITjWOUGTDL2fouv8mjt3HVEQfqkUeWQOhWsbySu6zmcXSCc1F7Auz9W3hWO4ZEF
+         QSEw==
+X-Gm-Message-State: AOAM531Sezm22efYr/vyZLRrqPNsz5vGRg2BMwbf28/bfbQWDoYJZ6ok
+        b2AboIAHp74VBKGaUkFaETc=
+X-Google-Smtp-Source: ABdhPJyRHsDWgldGsWPKliidhg48rYOQCvv/fpi0Ag45OOjfpgtLsKmrSWc9bf44Ad+Hg58lMWY8KQ==
+X-Received: by 2002:a05:6000:2c7:b0:205:cb41:2a82 with SMTP id o7-20020a05600002c700b00205cb412a82mr7819657wry.395.1649281854803;
+        Wed, 06 Apr 2022 14:50:54 -0700 (PDT)
+Received: from alaa-emad ([197.57.159.73])
+        by smtp.gmail.com with ESMTPSA id l2-20020a5d5602000000b00206120e0b0fsm12555207wrv.18.2022.04.06.14.50.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 14:46:53 -0700 (PDT)
-From:   Rob Clark <robdclark@gmail.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Rob Clark <robdclark@chromium.org>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Emma Anholt <emma@anholt.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v3 10/10] drm/msm: Add a way for userspace to allocate GPU iova
-Date:   Wed,  6 Apr 2022 14:46:26 -0700
-Message-Id: <20220406214636.1156978-11-robdclark@gmail.com>
+        Wed, 06 Apr 2022 14:50:54 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     outreachy@lists.linux.dev
+Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
+        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH v2] staging: rtl8712: remove unnecessary parentheses
+Date:   Wed,  6 Apr 2022 23:50:51 +0200
+Message-Id: <20220406215051.20483-1-eng.alaamohamedsoliman.am@gmail.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220406214636.1156978-1-robdclark@gmail.com>
-References: <20220406214636.1156978-1-robdclark@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+Reported by checkpatch:
 
-The motivation at this point is mainly native userspace mesa driver in a
-VM guest.  The one remaining synchronous "hotpath" is buffer allocation,
-because guest needs to wait to know the bo's iova before it can start
-emitting cmdstream/state that references the new bo.  By allocating the
-iova in the guest userspace, we no longer need to wait for a response
-from the host, but can just rely on the allocation request being
-processed before the cmdstream submission.  Allocation failures (OoM,
-etc) would just be treated as context-lost (ie. GL_GUILTY_CONTEXT_RESET)
-or subsequent allocations (or readpix, etc) can raise GL_OUT_OF_MEMORY.
+CHECK: Unnecessary parentheses around param->u.crypt.key[16]: 85
+CHECK: Unnecessary parentheses around param->u.crypt.key[24]: 87
+CHECK: Unnecessary parentheses around padapter->mlmepriv: 603
+CHECK: Unnecessary parentheses around wrqu->encoding: 1497
+CHECK: Unnecessary parentheses around wrqu->encoding: 1592
+CHECK: Unnecessary parentheses around padapter->mlmepriv: 1593
+CHECK: Unnecessary parentheses around wrqu->param: 1673
+CHECK: Unnecessary parentheses around pmlmepriv->scanned_queue.lock: 1967
+CHECK: Unnecessary parentheses around pmlmepriv->scanned_queue.lock: 1977
+CHECK: Unnecessary parentheses around pmlmepriv->scanned_queue.lock: 1999
 
-v2: Fix inuse check
-v3: Change mismatched iova case to -EBUSY
-
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
 ---
- drivers/gpu/drm/msm/adreno/adreno_gpu.c | 10 ++++++
- drivers/gpu/drm/msm/msm_drv.c           | 21 +++++++++++
- drivers/gpu/drm/msm/msm_gem.c           | 48 +++++++++++++++++++++++++
- drivers/gpu/drm/msm/msm_gem.h           |  8 +++++
- drivers/gpu/drm/msm/msm_gem_vma.c       |  2 ++
- include/uapi/drm/msm_drm.h              |  3 ++
- 6 files changed, 92 insertions(+)
+Changes in v2:
+	- Edit commit subject
+	- Edit commit message
+	- Fix the same check in more lines
+	- Remove space before '.skey' in
+"memcpy(psta->tkiptxmickey.skey," in lines 84 and 86.
+---
+ drivers/staging/rtl8712/rtl871x_ioctl_linux.c | 24 +++++++++----------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-index 6385ab06632f..4caae0229518 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-@@ -281,6 +281,16 @@ int adreno_get_param(struct msm_gpu *gpu, struct msm_file_private *ctx,
- 	case MSM_PARAM_SUSPENDS:
- 		*value = gpu->suspend_count;
- 		return 0;
-+	case MSM_PARAM_VA_START:
-+		if (ctx->aspace == gpu->aspace)
-+			return -EINVAL;
-+		*value = ctx->aspace->va_start;
-+		return 0;
-+	case MSM_PARAM_VA_SIZE:
-+		if (ctx->aspace == gpu->aspace)
-+			return -EINVAL;
-+		*value = ctx->aspace->va_size;
-+		return 0;
- 	default:
- 		DBG("%s: invalid param: %u", gpu->name, param);
- 		return -EINVAL;
-diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-index d618953d33ea..34e2169308b4 100644
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -722,6 +722,23 @@ static int msm_ioctl_gem_info_iova(struct drm_device *dev,
- 	return msm_gem_get_iova(obj, ctx->aspace, iova);
- }
+diff --git a/drivers/staging/rtl8712/rtl871x_ioctl_linux.c b/drivers/staging/rtl8712/rtl871x_ioctl_linux.c
+index 3b6926613257..e11332352285 100644
+--- a/drivers/staging/rtl8712/rtl871x_ioctl_linux.c
++++ b/drivers/staging/rtl8712/rtl871x_ioctl_linux.c
+@@ -81,10 +81,10 @@ static inline void handle_pairwise_key(struct sta_info *psta,
+ 	memcpy(psta->x_UncstKey.skey, param->u.crypt.key,
+ 	       (param->u.crypt. key_len > 16 ? 16 : param->u.crypt.key_len));
+ 	if (strcmp(param->u.crypt.alg, "TKIP") == 0) { /* set mic key */
+-		memcpy(psta->tkiptxmickey. skey,
+-		       &(param->u.crypt.key[16]), 8);
+-		memcpy(psta->tkiprxmickey. skey,
+-		       &(param->u.crypt.key[24]), 8);
++		memcpy(psta->tkiptxmickey.skey,
++		       &param->u.crypt.key[16], 8);
++		memcpy(psta->tkiprxmickey.skey,
++		       &param->u.crypt.key[24], 8);
+ 		padapter->securitypriv. busetkipkey = false;
+ 		mod_timer(&padapter->securitypriv.tkip_timer,
+ 			  jiffies + msecs_to_jiffies(50));
+@@ -600,7 +600,7 @@ static int r8711_wx_get_name(struct net_device *dev,
+ 	u32 ht_ielen = 0;
+ 	char *p;
+ 	u8 ht_cap = false;
+-	struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
++	struct	mlme_priv	*pmlmepriv = &padapter->mlmepriv;
+ 	struct wlan_bssid_ex *pcur_bss = &pmlmepriv->cur_network.network;
+ 	u8 *prates;
  
-+static int msm_ioctl_gem_info_set_iova(struct drm_device *dev,
-+		struct drm_file *file, struct drm_gem_object *obj,
-+		uint64_t iova)
-+{
-+	struct msm_drm_private *priv = dev->dev_private;
-+	struct msm_file_private *ctx = file->driver_priv;
-+
-+	if (!priv->gpu)
-+		return -EINVAL;
-+
-+	/* Only supported if per-process address space is supported: */
-+	if (priv->gpu->aspace == ctx->aspace)
-+		return -EOPNOTSUPP;
-+
-+	return msm_gem_set_iova(obj, ctx->aspace, iova);
-+}
-+
- static int msm_ioctl_gem_info(struct drm_device *dev, void *data,
- 		struct drm_file *file)
+@@ -1494,7 +1494,7 @@ static int r8711_wx_set_enc(struct net_device *dev,
+ 	u32 keyindex_provided;
+ 	struct NDIS_802_11_WEP	 wep;
+ 	enum NDIS_802_11_AUTHENTICATION_MODE authmode;
+-	struct iw_point *erq = &(wrqu->encoding);
++	struct iw_point *erq = &wrqu->encoding;
+ 	struct _adapter *padapter = netdev_priv(dev);
+ 
+ 	key = erq->flags & IW_ENCODE_INDEX;
+@@ -1589,8 +1589,8 @@ static int r8711_wx_get_enc(struct net_device *dev,
  {
-@@ -736,6 +753,7 @@ static int msm_ioctl_gem_info(struct drm_device *dev, void *data,
- 	switch (args->info) {
- 	case MSM_INFO_GET_OFFSET:
- 	case MSM_INFO_GET_IOVA:
-+	case MSM_INFO_SET_IOVA:
- 		/* value returned as immediate, not pointer, so len==0: */
- 		if (args->len)
+ 	uint key;
+ 	struct _adapter *padapter = netdev_priv(dev);
+-	struct iw_point *erq = &(wrqu->encoding);
+-	struct	mlme_priv	*pmlmepriv = &(padapter->mlmepriv);
++	struct iw_point *erq = &wrqu->encoding;
++	struct	mlme_priv	*pmlmepriv = &padapter->mlmepriv;
+ 	union Keytype *dk = padapter->securitypriv.DefKey;
+ 
+ 	if (!check_fwstate(pmlmepriv, _FW_LINKED)) {
+@@ -1670,7 +1670,7 @@ static int r871x_wx_set_auth(struct net_device *dev,
+ 				union iwreq_data *wrqu, char *extra)
+ {
+ 	struct _adapter *padapter = netdev_priv(dev);
+-	struct iw_param *param = (struct iw_param *)&(wrqu->param);
++	struct iw_param *param = (struct iw_param *)&wrqu->param;
+ 	int paramid;
+ 	int paramval;
+ 	int ret = 0;
+@@ -1964,7 +1964,7 @@ static int r871x_get_ap_info(struct net_device *dev,
+ 		return -EINVAL;
+ 	data[32] = 0;
+ 
+-	spin_lock_irqsave(&(pmlmepriv->scanned_queue.lock), irqL);
++	spin_lock_irqsave(&pmlmepriv->scanned_queue.lock, irqL);
+ 	phead = &queue->queue;
+ 	plist = phead->next;
+ 	while (1) {
+@@ -1974,7 +1974,7 @@ static int r871x_get_ap_info(struct net_device *dev,
+ 		if (!mac_pton(data, bssid)) {
+ 			netdev_info(dev, "r8712u: Invalid BSSID '%s'.\n",
+ 				    (u8 *)data);
+-			spin_unlock_irqrestore(&(pmlmepriv->scanned_queue.lock),
++			spin_unlock_irqrestore(&pmlmepriv->scanned_queue.lock,
+ 					       irqL);
  			return -EINVAL;
-@@ -760,6 +778,9 @@ static int msm_ioctl_gem_info(struct drm_device *dev, void *data,
- 	case MSM_INFO_GET_IOVA:
- 		ret = msm_ioctl_gem_info_iova(dev, file, obj, &args->value);
- 		break;
-+	case MSM_INFO_SET_IOVA:
-+		ret = msm_ioctl_gem_info_set_iova(dev, file, obj, args->value);
-+		break;
- 	case MSM_INFO_SET_NAME:
- 		/* length check should leave room for terminating null: */
- 		if (args->len >= sizeof(msm_obj->name)) {
-diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
-index bf4af17e2f1e..3ee30b8a76bd 100644
---- a/drivers/gpu/drm/msm/msm_gem.c
-+++ b/drivers/gpu/drm/msm/msm_gem.c
-@@ -525,6 +525,54 @@ int msm_gem_get_iova(struct drm_gem_object *obj,
- 	return ret;
- }
- 
-+static int clear_iova(struct drm_gem_object *obj,
-+		      struct msm_gem_address_space *aspace)
-+{
-+	struct msm_gem_vma *vma = lookup_vma(obj, aspace);
-+
-+	if (!vma)
-+		return 0;
-+
-+	if (msm_gem_vma_inuse(vma))
-+		return -EBUSY;
-+
-+	msm_gem_purge_vma(vma->aspace, vma);
-+	msm_gem_close_vma(vma->aspace, vma);
-+	del_vma(vma);
-+
-+	return 0;
-+}
-+
-+/*
-+ * Get the requested iova but don't pin it.  Fails if the requested iova is
-+ * not available.  Doesn't need a put because iovas are currently valid for
-+ * the life of the object.
-+ *
-+ * Setting an iova of zero will clear the vma.
-+ */
-+int msm_gem_set_iova(struct drm_gem_object *obj,
-+		     struct msm_gem_address_space *aspace, uint64_t iova)
-+{
-+	int ret = 0;
-+
-+	msm_gem_lock(obj);
-+	if (!iova) {
-+		ret = clear_iova(obj, aspace);
-+	} else {
-+		struct msm_gem_vma *vma;
-+		vma = get_vma_locked(obj, aspace, iova, iova + obj->size);
-+		if (IS_ERR(vma)) {
-+			ret = PTR_ERR(vma);
-+		} else if (GEM_WARN_ON(vma->iova != iova)) {
-+			clear_iova(obj, aspace);
-+			ret = -EBUSY;
-+		}
-+	}
-+	msm_gem_unlock(obj);
-+
-+	return ret;
-+}
-+
- /*
-  * Unpin a iova by updating the reference counts. The memory isn't actually
-  * purged until something else (shrinker, mm_notifier, destroy, etc) decides
-diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
-index 38d66e1248b1..efa2e5c19f1e 100644
---- a/drivers/gpu/drm/msm/msm_gem.h
-+++ b/drivers/gpu/drm/msm/msm_gem.h
-@@ -38,6 +38,12 @@ struct msm_gem_address_space {
- 
- 	/* @faults: the number of GPU hangs associated with this address space */
- 	int faults;
-+
-+	/** @va_start: lowest possible address to allocate */
-+	uint64_t va_start;
-+
-+	/** @va_size: the size of the address space (in bytes) */
-+	uint64_t va_size;
- };
- 
- struct msm_gem_address_space *
-@@ -144,6 +150,8 @@ struct msm_gem_vma *msm_gem_get_vma_locked(struct drm_gem_object *obj,
- 					   struct msm_gem_address_space *aspace);
- int msm_gem_get_iova(struct drm_gem_object *obj,
- 		struct msm_gem_address_space *aspace, uint64_t *iova);
-+int msm_gem_set_iova(struct drm_gem_object *obj,
-+		struct msm_gem_address_space *aspace, uint64_t iova);
- int msm_gem_get_and_pin_iova_range(struct drm_gem_object *obj,
- 		struct msm_gem_address_space *aspace, uint64_t *iova,
- 		u64 range_start, u64 range_end);
-diff --git a/drivers/gpu/drm/msm/msm_gem_vma.c b/drivers/gpu/drm/msm/msm_gem_vma.c
-index 6f9a402450f9..354f91aff573 100644
---- a/drivers/gpu/drm/msm/msm_gem_vma.c
-+++ b/drivers/gpu/drm/msm/msm_gem_vma.c
-@@ -182,6 +182,8 @@ msm_gem_address_space_create(struct msm_mmu *mmu, const char *name,
- 	spin_lock_init(&aspace->lock);
- 	aspace->name = name;
- 	aspace->mmu = mmu;
-+	aspace->va_start = va_start;
-+	aspace->va_size  = size;
- 
- 	drm_mm_init(&aspace->mm, va_start, size);
- 
-diff --git a/include/uapi/drm/msm_drm.h b/include/uapi/drm/msm_drm.h
-index 794ad1948497..3c7b097c4e3d 100644
---- a/include/uapi/drm/msm_drm.h
-+++ b/include/uapi/drm/msm_drm.h
-@@ -84,6 +84,8 @@ struct drm_msm_timespec {
- #define MSM_PARAM_SYSPROF    0x0b  /* WO: 1 preserves perfcntrs, 2 also disables suspend */
- #define MSM_PARAM_COMM       0x0c  /* WO: override for task->comm */
- #define MSM_PARAM_CMDLINE    0x0d  /* WO: override for task cmdline */
-+#define MSM_PARAM_VA_START   0x0e  /* RO: start of valid GPU iova range */
-+#define MSM_PARAM_VA_SIZE    0x0f  /* RO: size of valid GPU iova range (bytes) */
- 
- /* For backwards compat.  The original support for preemption was based on
-  * a single ring per priority level so # of priority levels equals the #
-@@ -135,6 +137,7 @@ struct drm_msm_gem_new {
- #define MSM_INFO_GET_IOVA	0x01   /* get iova, returned by value */
- #define MSM_INFO_SET_NAME	0x02   /* set the debug name (by pointer) */
- #define MSM_INFO_GET_NAME	0x03   /* get debug name, returned by pointer */
-+#define MSM_INFO_SET_IOVA	0x04   /* set the iova, passed by value */
- 
- struct drm_msm_gem_info {
- 	__u32 handle;         /* in */
+ 		}
+@@ -1996,7 +1996,7 @@ static int r871x_get_ap_info(struct net_device *dev,
+ 		}
+ 		plist = plist->next;
+ 	}
+-	spin_unlock_irqrestore(&(pmlmepriv->scanned_queue.lock), irqL);
++	spin_unlock_irqrestore(&pmlmepriv->scanned_queue.lock, irqL);
+ 	if (pdata->length >= 34) {
+ 		if (copy_to_user((u8 __user *)pdata->pointer + 32,
+ 		    (u8 *)&pdata->flags, 1))
 -- 
 2.35.1
 
