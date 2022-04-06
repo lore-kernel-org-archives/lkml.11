@@ -2,141 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34ADEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:42:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 13:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233424AbiDFNoI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 09:44:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45448 "EHLO
+        id S233428AbiDFNo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 09:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233598AbiDFNnw (ORCPT
+        with ESMTP id S233598AbiDFNoP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 09:43:52 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D65512631;
-        Wed,  6 Apr 2022 03:51:19 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KYLMP4fygzBs2q;
-        Wed,  6 Apr 2022 18:28:33 +0800 (CST)
-Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 6 Apr 2022 18:32:44 +0800
-Received: from [10.174.178.220] (10.174.178.220) by
- dggpemm500017.china.huawei.com (7.185.36.178) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 6 Apr 2022 18:32:43 +0800
-Subject: Re: [REQUEST DISCUSS]: speed up SCSI error handle for host with
- massive devices
-To:     Hannes Reinecke <hare@suse.de>,
-        Mike Christie <michael.christie@oracle.com>,
-        Steffen Maier <maier@linux.ibm.com>,
-        <linux-scsi@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Lee Duncan <lduncan@suse.com>,
-        John Garry <john.garry@huawei.com>
-CC:     Wu Bo <wubo40@huawei.com>, Feilong Lin <linfeilong@huawei.com>,
-        <zhangjian013@huawei.com>
-References: <71e09bb4-ff0a-23fe-38b4-fe6425670efa@huawei.com>
- <cd7bda98-2160-9271-9520-e98d1fe00ea5@linux.ibm.com>
- <331aafe1-df9b-cae4-c958-9cf1800e389a@huawei.com>
- <64d5a997-a1bf-7747-072d-711a8248874d@suse.de>
- <c4baacf1-0e86-9660-45f7-50ebc853e6af@huawei.com>
- <1dd69d03-b4f6-ab20-4923-0995b40f045d@suse.de>
- <d2f2c89f-c048-4f04-4d95-27958f0fa46a@huawei.com>
- <78d41ec1-b30c-f6d2-811c-e0e4adbc8f01@oracle.com>
- <84b38f16-2a32-f361-43e5-34bce1012e71@oracle.com>
- <769bcd36-4818-8470-2daa-49ac5c05b33a@suse.de>
-From:   Wenchao Hao <haowenchao@huawei.com>
-Message-ID: <90e4af07-074c-1f60-e64a-e6dbe9a5c1bb@huawei.com>
-Date:   Wed, 6 Apr 2022 18:32:43 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.1
+        Wed, 6 Apr 2022 09:44:15 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F9E6B07F6;
+        Wed,  6 Apr 2022 03:51:40 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 5357A1F40EEA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649242298;
+        bh=au3kCGpBvELGj1O6aCEDgSZw3PDmNnTwCgo2ZapgbJY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=k8lcVf8I9OjzL+Yob0GKMFrCpB3OMWOSdFSJ1vEdCc/3LPY7XhF7g1KGHrHyO7+Je
+         akVMl7CsoT5V5aCZINzeQhUH3RmtO9hQyQdMsksPUFuULZiaZVd7i/CI08Yx0999Qc
+         uKMhT0MPfHPsCxFNq3wbodLtSinV4mCnKSe+cwWmSz1Bi9RAIMl5ZoguOabgGmDeoM
+         W2tiM8+ihWlLanFyMB1oKFA3yGBon14UGi/jwC7d12ikEczIYrXo8dHHsAA2tPDWtP
+         zpSLlIDK0j0/ObDa8X5bXKRqjWkuXUbN+HivTzFDsR7F2AgbuzmpX2TksYqkyRS0Na
+         bv7dX0vBwdH1Q==
+Message-ID: <0e6d110d-0637-2be8-cab0-9d936668fa7b@collabora.com>
+Date:   Wed, 6 Apr 2022 12:51:34 +0200
 MIME-Version: 1.0
-In-Reply-To: <769bcd36-4818-8470-2daa-49ac5c05b33a@suse.de>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 3/3] dt-bindings: display: mediatek: Correct disp_aal
+ binding for MT8192
 Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>
+Cc:     "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        =?UTF-8?B?WW9uZ3FpYW5nIE5pdSAo54mb5rC45by6KQ==?= 
+        <yongqiang.niu@mediatek.com>,
+        =?UTF-8?B?SmFzb24tSkggTGluICjmnpfnnb/npaUp?= 
+        <Jason-JH.Lin@mediatek.com>,
+        =?UTF-8?B?TmFuY3kgTGluICjmnpfmrKPonqIp?= <Nancy.Lin@mediatek.com>,
+        =?UTF-8?B?QWxsZW4tS0ggQ2hlbmcgKOeoi+WGoOWLsyk=?= 
+        <Allen-KH.Cheng@mediatek.com>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Project_Global_Chrome_Upstream_Group 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+References: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
+ <20220406094654.29722-4-rex-bc.chen@mediatek.com>
+ <2449070b-d7e1-122f-abe6-4148855a9aba@collabora.com>
+ <4ed2dc24d600fa73b91bb411391c98a5bf4f8d8b.camel@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <4ed2dc24d600fa73b91bb411391c98a5bf4f8d8b.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.220]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500017.china.huawei.com (7.185.36.178)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/4 13:28, Hannes Reinecke wrote:
-> On 4/3/22 19:17, Mike Christie wrote:
->> On 4/3/22 12:14 PM, Mike Christie wrote:
->>> We could share code with scsi_ioctl_reset as well. Drivers that support
->>> TMFs via that ioctl already expect queuecommand to be possibly in the
->>> middle of a run and IO not yet timed out. For example, the code to
->>> block a queue and reset the device could be used for the new EH and
->>> SG_SCSI_RESET_DEVICE handling.
+Il 06/04/22 12:48, Rex-BC Chen ha scritto:
+> On Wed, 2022-04-06 at 18:40 +0800, AngeloGioacchino Del Regno wrote:
+>> Il 06/04/22 11:46, Rex-BC Chen ha scritto:
+>>> The driver data for MT8192 is the same with MT8183. Therefore, we
+>>> correct it.
 >>>
+>>> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 >>
->> Hannes or others,
+>> Reviewed-by: AngeloGioacchino Del Regno <
+>> angelogioacchino.delregno@collabora.com>
 >>
->> How do parallel SCSI drivers support scsi_ioctl_reset? Is is not fully
->> supported and more only used for controlled testing?
+>> ...though, from what I know, you should also move MT8195 down there!
 > 
-> That's actually a problem in scsi_ioctl_reset(); it really should wait for all I/O to quiesce. Currently it just sets the 'tmf' flag and calls into the various reset functions.
+> Hello Angelo,
 > 
-> But really, I'd rather get my EH rework in before we're start discussing modifying EH behaviour.
-> Let me repost it ...
+> Thanks for your review.
+> But for MT8195, disp_aal is using the same compatible with MT8173.
 > 
-> Cheers,
+>  From the MT8195 project DTS is using:
 > 
-> Hannes
+> aal0: disp_aal@1c005000 {
+> 	compatible = "mediatek,mt8195-disp-aal",
+> 		     "mediatek,mt8173-disp-aal";
+> 	reg = <0 0x1c005000 0 0x1000>;
+> 	interrupts = <GIC_SPI 641 IRQ_TYPE_LEVEL_HIGH 0>;
+> 	power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
+> 	clocks = <&vdosys0 CLK_VDO0_DISP_AAL0>;
+> 	mediatek,gce-client-reg =
+> 		 <&gce0 SUBSYS_1c00XXXX 0x5000 0x1000>;
+> };
+> 
+> BRs,
+> Rex
+> 
 
-Hi hannes:
+I'm sorry Rex, I've just realized - I was confusing this one with the
+8195 gamma binding instead!
 
-According to the statistic, following scenario would cause an abort failed can be handled by LUN reset:
-1. The task execute of disk's FW is abnormal;
-2. Intermittent bit errors or intermittent disconnection;
-3. FW do not response IO;
-
-Following scenario can not be handled by LUN reset:
-1. Disk HW issue, LUN reset can not be handled;
-2. DDR UNC in disk, can not fix, the only way is to power off then power on
-3. FW of disk is out of service, can not fix, the only way is to power off then power on
-
-And the statistic shows most command abort failed can be handled by LUN reset.
-
-So we plan to design a lightweight timeout handle flow as following:
-
-                 if disable lightweight EH(default)
-scsi_times_out  ====================================> origin EH flow
-   ||                            
-   || if enable lightweight EH 
-   || 
-   \/
-do not using current timeout flow, and branch to another flow which perform following steps:
-
-abort command
-   ||
-   || failed
-   || 
-   \/
-stop single LUN's I/O (need to wait LUN's failed command number equal to busy command  number)
-   ||
-   || failed  (according to our statistic, 90% reset LUN would succeed)
-   ||
-   \/
-reset single LUN
-   ||
-   ||           if host with multi LUNs timeout
-   || failed =====================================> perform Host reset
-   ||                                                   ||
-   ||                                                   || failed
-   ||                                                   ||
-   || <=================================================//
-   ||
-   \/
-offline disk
-
-Since it's a lightweight EH, we prefer offline disk once reset LUN failed.
-These changes would not affect origin EH flow. The advantage of this design is it would not affect
-other LUNs of same host.
+Cheers,
+Angelo
