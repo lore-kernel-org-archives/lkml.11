@@ -2,89 +2,271 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60266C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:49:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 09:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229916AbiDFJvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 05:51:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
+        id S231370AbiDFJvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 05:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445308AbiDFJtY (ORCPT
+        with ESMTP id S1454037AbiDFJuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 05:49:24 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A68407E11
-        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 21:42:13 -0700 (PDT)
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com [209.85.210.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id F3CE13F1C7
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 04:42:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1649220132;
-        bh=Mt/wIr8VCHfxx+fAT86RPcS+1hpBF4cXlsZS+mb9xdE=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=AJm7OcHo+jKsizFx5bgGTXdyZwZsHUTlzArajW5zO8k8CR0FhLLEsck1I1fTe58TM
-         XNRhoBTnelVc64r2XZAjHTKZyHSPfE00Kg9JV6so2yA5jKek6rnjDYwiUvh8h6drDz
-         W8WkKzPdHhJF0xPcvENmfNZNYsoCAUy7rSm1hpMUREVYvnY6rjU5cJQ0J/Uxd9x3wn
-         Rtv+WvPYw5SAyyO7BP8YG6piwqW6s+yPKi4otdR/CPfTbzj1jQ23LTKmh9iLjCJh0z
-         DouvyTkS/6Apc80DgXXVzebSnFR55Q7PM8RIC4iTMd8DLDTAy4e6KD9fCmbN/MEqFy
-         jtnkBudDBNkCA==
-Received: by mail-ot1-f72.google.com with SMTP id w7-20020a9d6747000000b005b25c9036fdso775436otm.5
-        for <linux-kernel@vger.kernel.org>; Tue, 05 Apr 2022 21:42:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Mt/wIr8VCHfxx+fAT86RPcS+1hpBF4cXlsZS+mb9xdE=;
-        b=xm2ZHHmuCs3EMigHkHlap9dHl/9zCsBIqIRz+jlAfJpqJC2ZF3iYi6MJR0f4CC6bUG
-         PxYBZon/8IBAWvBHmrgZZ9mSjwvcpjv7bPQVi0rX+TFvhED6ao/5RgeRgBifBogPp4JA
-         tVVBS5nvXQzTdB1wKjOAHr+08F8vVPO9aSw5HiLSGH7c5VsJX7+T9VKnwxJ9K3rtwmIu
-         ivlPPF+vUyvmBiXKHMhDF9Pi6ALOljrE6IeWlP8a7hsFy46RYloaTDJv5Gg1CnMlKpnU
-         rD/aAov8M5wpcoZ511bCT4jo1txyeKAhy/NHPoJyfnNlKpAA3KpLp+HDqdhwuzcARCtp
-         vdBw==
-X-Gm-Message-State: AOAM531p6hByh+KAqc0fPd3+q5pKd/y9DFdGgtsI6RXDnyZs4BW4duyO
-        09m29uzlhL5jCuz+1y7v+C+qjSfKXGokdIsPCd3aWXv5N02/8TjWNG/f8Y+XpdqJiWqNxPq6H2Y
-        qfx67OLirCeCdxh27xwE3ESw0PIr99JCOUrdZNQFbJnk4aZJFW1GctDQXdQ==
-X-Received: by 2002:a05:6830:2456:b0:5ce:7f4:c702 with SMTP id x22-20020a056830245600b005ce07f4c702mr2472250otr.269.1649220130605;
-        Tue, 05 Apr 2022 21:42:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwHon0m0wisgENa7vRcxIQKSklrsxRLeAHmcisDb0KZ+faoRnPeYjrTDc6wEXCRXA5PMWMjLRWCaPLy2KtTmTE=
-X-Received: by 2002:a05:6830:2456:b0:5ce:7f4:c702 with SMTP id
- x22-20020a056830245600b005ce07f4c702mr2472245otr.269.1649220130353; Tue, 05
- Apr 2022 21:42:10 -0700 (PDT)
+        Wed, 6 Apr 2022 05:50:13 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D03F488CFA
+        for <linux-kernel@vger.kernel.org>; Tue,  5 Apr 2022 23:23:54 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KYDws4Slmz9sT3;
+        Wed,  6 Apr 2022 08:23:41 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id uKaguoLpcrD8; Wed,  6 Apr 2022 08:23:41 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KYDwp4tHCz9sT7;
+        Wed,  6 Apr 2022 08:23:38 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 895F08B765;
+        Wed,  6 Apr 2022 08:23:38 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id whQAlKyBKpaE; Wed,  6 Apr 2022 08:23:38 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.200])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 097878B776;
+        Wed,  6 Apr 2022 08:23:37 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2366NR2V390698
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 6 Apr 2022 08:23:27 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2366NRLC390697;
+        Wed, 6 Apr 2022 08:23:27 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH v2 3/5] powerpc/8xx: Convert CPM1 interrupt controller to platform_device
+Date:   Wed,  6 Apr 2022 08:23:19 +0200
+Message-Id: <fb80d0b2077312079c49da0296e25591578771cd.1649226186.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649226186.git.christophe.leroy@csgroup.eu>
+References: <d3a7dc832d905bed14b35d83410cdb69a7ba20e8.1649226186.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-References: <20220325035735.4745-1-chris.chiu@canonical.com>
-In-Reply-To: <20220325035735.4745-1-chris.chiu@canonical.com>
-From:   Chris Chiu <chris.chiu@canonical.com>
-Date:   Wed, 6 Apr 2022 12:41:58 +0800
-Message-ID: <CABTNMG2z33a6FgsBPbj=cFN9umVdhF8nXwsnVkkF--PYbeGS7Q@mail.gmail.com>
-Subject: Re: [PATCH v3 0/2] rtl8xxxu: Fill up more TX information
-To:     kvalo@kernel.org, Jes.Sorensen@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     code@reto-schneider.ch, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1649226200; l=5823; s=20211009; h=from:subject:message-id; bh=xqxqeBrgaxS9ROwACOUCccr8atstrvPPHD45jHzNfOg=; b=owf4S2LcPL4rGS0t/Wg/3jQvA54SRf7sWE4GRvzzJlUACcMyhN24/9r/cXhZ0/PCpq/3A7p3IsL8 rVi3JB1FA0j3DdmB+sXeY75IFG0EDY4aGEJ1flU5KwkekjGCKOB0
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 11:57 AM Chris Chiu <chris.chiu@canonical.com> wrote:
->
-> The antenna information is missing in rtl8xxxu and txrate is NULL
-> in 8188cu and 8192cu. Fill up the missing information for iw
-> commands.
->
-> Chris Chiu (2):
->   rtl8xxxu: feed antenna information for cfg80211
->   rtl8xxxu: fill up txrate info for gen1 chips
->
->  .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 104 +++++++++++++-----
->  1 file changed, 75 insertions(+), 29 deletions(-)
->
-> --
-> 2.25.1
->
+In the same logic as commit be7ecbd240b2 ("soc: fsl: qe: convert QE
+interrupt controller to platform_device"), convert CPM1 interrupt
+controller to platform_device.
 
-Gentle ping. Any comment or suggestion is appreciated. Thanks
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/platforms/8xx/cpm1-ic.c    | 90 ++++++++++++++-----------
+ arch/powerpc/platforms/8xx/m8xx_setup.c | 14 ----
+ arch/powerpc/platforms/8xx/pic.c        |  2 -
+ 3 files changed, 50 insertions(+), 56 deletions(-)
+
+diff --git a/arch/powerpc/platforms/8xx/cpm1-ic.c b/arch/powerpc/platforms/8xx/cpm1-ic.c
+index d22b4fc2d4cf..6f9765597a6d 100644
+--- a/arch/powerpc/platforms/8xx/cpm1-ic.c
++++ b/arch/powerpc/platforms/8xx/cpm1-ic.c
+@@ -7,7 +7,6 @@
+ #include <linux/kernel.h>
+ #include <linux/interrupt.h>
+ #include <linux/irqdomain.h>
+-#include <linux/of_irq.h>
+ #include <linux/platform_device.h>
+ #include <asm/cpm1.h>
+ 
+@@ -43,7 +42,7 @@ static struct irq_chip cpm_pic = {
+ 	.irq_eoi = cpm_end_irq,
+ };
+ 
+-int cpm_get_irq(void)
++static int cpm_get_irq(void)
+ {
+ 	int cpm_vec;
+ 
+@@ -58,11 +57,14 @@ int cpm_get_irq(void)
+ 	return irq_linear_revmap(cpm_pic_host, cpm_vec);
+ }
+ 
++static void cpm_cascade(struct irq_desc *desc)
++{
++	generic_handle_irq(cpm_get_irq());
++}
++
+ static int cpm_pic_host_map(struct irq_domain *h, unsigned int virq,
+ 			    irq_hw_number_t hw)
+ {
+-	pr_debug("cpm_pic_host_map(%d, 0x%lx)\n", virq, hw);
+-
+ 	irq_set_status_flags(virq, IRQ_LEVEL);
+ 	irq_set_chip_and_handler(virq, &cpm_pic, handle_fasteoi_irq);
+ 	return 0;
+@@ -72,56 +74,64 @@ static const struct irq_domain_ops cpm_pic_host_ops = {
+ 	.map = cpm_pic_host_map,
+ };
+ 
+-unsigned int __init cpm_pic_init(void)
++static int cpm_pic_probe(struct platform_device *pdev)
+ {
+-	struct device_node *np = NULL;
+-	struct resource res;
+-	unsigned int sirq = 0, hwirq;
+-	int ret;
+-
+-	pr_debug("cpm_pic_init\n");
+-
+-	np = of_find_compatible_node(NULL, NULL, "fsl,cpm1-pic");
+-	if (np == NULL)
+-		np = of_find_compatible_node(NULL, "cpm-pic", "CPM");
+-	if (np == NULL) {
+-		printk(KERN_ERR "CPM PIC init: can not find cpm-pic node\n");
+-		return sirq;
+-	}
++	struct device *dev = &pdev->dev;
++	struct resource *res;
++	int irq;
+ 
+-	ret = of_address_to_resource(np, 0, &res);
+-	if (ret)
+-		goto end;
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -ENODEV;
+ 
+-	cpic_reg = ioremap(res.start, resource_size(&res));
+-	if (cpic_reg == NULL)
+-		goto end;
++	cpic_reg = devm_ioremap(dev, res->start, resource_size(res));
++	if (!cpic_reg)
++		return -ENODEV;
+ 
+-	sirq = irq_of_parse_and_map(np, 0);
+-	if (!sirq)
+-		goto end;
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
+ 
+ 	/* Initialize the CPM interrupt controller. */
+-	hwirq = (unsigned int)virq_to_hw(sirq);
+ 	out_be32(&cpic_reg->cpic_cicr,
+-	    (CICR_SCD_SCC4 | CICR_SCC_SCC3 | CICR_SCB_SCC2 | CICR_SCA_SCC1) |
+-		((hwirq/2) << 13) | CICR_HP_MASK);
++		 (CICR_SCD_SCC4 | CICR_SCC_SCC3 | CICR_SCB_SCC2 | CICR_SCA_SCC1) |
++		 ((virq_to_hw(irq) / 2) << 13) | CICR_HP_MASK);
+ 
+ 	out_be32(&cpic_reg->cpic_cimr, 0);
+ 
+-	cpm_pic_host = irq_domain_add_linear(np, 64, &cpm_pic_host_ops, NULL);
+-	if (cpm_pic_host == NULL) {
+-		printk(KERN_ERR "CPM2 PIC: failed to allocate irq host!\n");
+-		sirq = 0;
+-		goto end;
+-	}
++	cpm_pic_host = irq_domain_add_linear(dev->of_node, 64, &cpm_pic_host_ops, NULL);
++	if (!cpm_pic_host)
++		return -ENODEV;
++
++	irq_set_chained_handler(irq, cpm_cascade);
+ 
+ 	setbits32(&cpic_reg->cpic_cicr, CICR_IEN);
+ 
+-end:
+-	of_node_put(np);
+-	return sirq;
++	return 0;
++}
++
++static const struct of_device_id cpm_pic_match[] = {
++	{
++		.compatible = "fsl,cpm1-pic",
++	}, {
++		.type = "cpm-pic",
++		.compatible = "CPM",
++	}, {},
++};
++
++static struct platform_driver cpm_pic_driver = {
++	.driver	= {
++		.name		= "cpm-pic",
++		.of_match_table	= cpm_pic_match,
++	},
++	.probe	= cpm_pic_probe,
++};
++
++static int __init cpm_pic_init(void)
++{
++	return platform_driver_register(&cpm_pic_driver);
+ }
++arch_initcall(cpm_pic_init);
+ 
+ /*
+  * The CPM can generate the error interrupt when there is a race condition
+diff --git a/arch/powerpc/platforms/8xx/m8xx_setup.c b/arch/powerpc/platforms/8xx/m8xx_setup.c
+index df4d57d07f9a..a03ba0ad7312 100644
+--- a/arch/powerpc/platforms/8xx/m8xx_setup.c
++++ b/arch/powerpc/platforms/8xx/m8xx_setup.c
+@@ -28,9 +28,6 @@
+ 
+ #include "mpc8xx.h"
+ 
+-extern int cpm_pic_init(void);
+-extern int cpm_get_irq(void);
+-
+ /* A place holder for time base interrupts, if they are ever enabled. */
+ static irqreturn_t timebase_interrupt(int irq, void *dev)
+ {
+@@ -208,11 +205,6 @@ void __noreturn mpc8xx_restart(char *cmd)
+ 	panic("Restart failed\n");
+ }
+ 
+-static void cpm_cascade(struct irq_desc *desc)
+-{
+-	generic_handle_irq(cpm_get_irq());
+-}
+-
+ /* Initialize the internal interrupt controllers.  The number of
+  * interrupts supported can vary with the processor type, and the
+  * 82xx family can have up to 64.
+@@ -221,14 +213,8 @@ static void cpm_cascade(struct irq_desc *desc)
+  */
+ void __init mpc8xx_pics_init(void)
+ {
+-	int irq;
+-
+ 	if (mpc8xx_pic_init()) {
+ 		printk(KERN_ERR "Failed interrupt 8xx controller  initialization\n");
+ 		return;
+ 	}
+-
+-	irq = cpm_pic_init();
+-	if (irq)
+-		irq_set_chained_handler(irq, cpm_cascade);
+ }
+diff --git a/arch/powerpc/platforms/8xx/pic.c b/arch/powerpc/platforms/8xx/pic.c
+index 04a6abf14c29..eaa16338cc4b 100644
+--- a/arch/powerpc/platforms/8xx/pic.c
++++ b/arch/powerpc/platforms/8xx/pic.c
+@@ -14,8 +14,6 @@
+ 
+ #define PIC_VEC_SPURRIOUS      15
+ 
+-extern int cpm_get_irq(struct pt_regs *regs);
+-
+ static struct irq_domain *mpc8xx_pic_host;
+ static unsigned long mpc8xx_cached_irq_mask;
+ static sysconf8xx_t __iomem *siu_reg;
+-- 
+2.35.1
+
