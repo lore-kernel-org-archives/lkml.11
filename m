@@ -2,51 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C67C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 23:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B56C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 23:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236884AbiDFXIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 19:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46170 "EHLO
+        id S237765AbiDFXIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 19:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237622AbiDFXHJ (ORCPT
+        with ESMTP id S237742AbiDFXHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 19:07:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F77C2BB10
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 16:04:58 -0700 (PDT)
+        Wed, 6 Apr 2022 19:07:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FD02DF12
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 16:05:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649286297;
+        s=mimecast20190719; t=1649286311;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7ksHuD9EsHcVMNVLSmO/uWKDVO0pBQnbXvRVLyq28ew=;
-        b=hUX9eL1TSguN8ln+wOxFf0VGksfkZopujDB3GzyyhnbF4EIkyhJqOkEWO10+Z0DUgX+8vq
-        7/8vch4tRDjJ8P/9fWvCqbfsll/j9kXT4GhbS8a2mPsj0za9tOgCDytcsCwqBt0UoGtowT
-        8VdMeT1zwbeYNGzbNZznu7571Y7J1QM=
+        bh=ZPIF1lnuFY1VaJnMo3U9hHoejTUrv0b/el6dnUkPPmY=;
+        b=AIOAi5wZDHqMCbd0ZTztOgtdW7GQTxyMtW0gUFHjI9yOsHXvQwzs0sPNJvHNSIr0bFhpZ9
+        QqblkaJTX5n7rGVdGNQF79lQqOTEWl751cH09VldV3RbyszKukehTEKqNvLSpXG/R+eO+s
+        3Mar9NpQ6darJ3EeWFS5Ktdxh6feXw8=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-177-dI7o37mHPsuDVVUf2e_fkA-1; Wed, 06 Apr 2022 19:04:53 -0400
-X-MC-Unique: dI7o37mHPsuDVVUf2e_fkA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+ us-mta-370-WrO849moOIOcI7sLOnhlUw-1; Wed, 06 Apr 2022 19:05:08 -0400
+X-MC-Unique: WrO849moOIOcI7sLOnhlUw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 49EDE85A5BC;
-        Wed,  6 Apr 2022 23:04:53 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 068C5811E76;
+        Wed,  6 Apr 2022 23:05:08 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.37.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DAF4640CF910;
-        Wed,  6 Apr 2022 23:04:51 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7CFC4C28102;
+        Wed,  6 Apr 2022 23:05:06 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH 12/14] cifs: Expose netfs subrequest debug ID and index in
- read tracepoints
+Subject: [PATCH 14/14] mm, netfs,
+ fscache: Stop read optimisation when folio removed from pagecache
 From:   David Howells <dhowells@redhat.com>
 To:     linux-cachefs@redhat.com
-Cc:     Steve French <sfrench@samba.org>,
+Cc:     Rohith Surabattula <rohiths.msft@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Steve French <sfrench@samba.org>,
         Shyam Prasad N <nspmangalore@gmail.com>,
         Rohith Surabattula <rohiths.msft@gmail.com>,
         linux-cifs@vger.kernel.org, dhowells@redhat.com,
@@ -56,306 +58,281 @@ Cc:     Steve French <sfrench@samba.org>,
         Jeff Layton <jlayton@redhat.com>, linux-cifs@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mm@kvack.org
-Date:   Thu, 07 Apr 2022 00:04:51 +0100
-Message-ID: <164928629102.457102.17739324885642025232.stgit@warthog.procyon.org.uk>
+Date:   Thu, 07 Apr 2022 00:05:05 +0100
+Message-ID: <164928630577.457102.8519251179327601178.stgit@warthog.procyon.org.uk>
 In-Reply-To: <164928615045.457102.10607899252434268982.stgit@warthog.procyon.org.uk>
 References: <164928615045.457102.10607899252434268982.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Expose the netfs request debug ID and subrequest index in the
-smb3_read_enter, smb3_read_done and smb3_read_err tracepoints to match the
-netfs tracepoints for convenient grepping.
+Fscache has an optimisation by which reads from the cache are skipped until
+we know that (a) there's data there to be read and (b) that data isn't
+entirely covered by pages resident in the netfs pagecache.  This is done
+with two flags manipulated by fscache_note_page_release():
 
-Also expose the xid in some tracepoints where it is now available by virtue
-of being stashed in the cifs_io_subrequest struct.
+	if (...
+	    test_bit(FSCACHE_COOKIE_HAVE_DATA, &cookie->flags) &&
+	    test_bit(FSCACHE_COOKIE_NO_DATA_TO_READ, &cookie->flags))
+		clear_bit(FSCACHE_COOKIE_NO_DATA_TO_READ, &cookie->flags);
 
-In future, the write tracepoints should be able to expose this also.
+where the NO_DATA_TO_READ flag causes cachefiles_prepare_read() to indicate
+that netfslib should download from the server or clear the page instead.
 
+The fscache_note_page_release() function is intended to be called from
+->releasepage() - but that only gets called if PG_private or PG_private_2
+is set - and currently the former is at the discretion of the netfs and the
+latter is only set whilst a page is being written to the cache, so
+sometimes we miss clearing the optimisation.
+
+Fix this by adding an extra address_space operation, ->removing folio(),
+and flag, AS_NOTIFY_REMOVING_FOLIO.  The operation is called if the flag is
+set when a folio is removed from the pagecache.  The flag should be set if
+a non-NULL cookie is obtained from fscache and cleared in ->evict_inode()
+before truncate_inode_pages_final() is called.
+
+This can be tested by reading some data and then dropping caches.  The
+number of times the new op is called is counted in /proc/fs/fscache/stats:
+
+	RdHelp : DR=0 RA=4100 RP=0 WB=0 WBZ=0 rm=131072 <----
+
+Reported-by: Rohith Surabattula <rohiths.msft@gmail.com>
 Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Matthew Wilcox <willy@infradead.org>
 cc: Steve French <sfrench@samba.org>
 cc: Shyam Prasad N <nspmangalore@gmail.com>
 cc: Rohith Surabattula <rohiths.msft@gmail.com>
 cc: linux-cifs@vger.kernel.org
 ---
 
- fs/cifs/smb2pdu.c |   35 ++++++++-----
- fs/cifs/trace.h   |  144 ++++++++++++++++++++++++++++++++++++++++++++++-------
- 2 files changed, 147 insertions(+), 32 deletions(-)
+ fs/afs/file.c           |    1 +
+ fs/afs/inode.c          |    1 +
+ fs/afs/internal.h       |    2 ++
+ fs/cifs/cifsfs.c        |    1 +
+ fs/cifs/file.c          |    1 +
+ fs/cifs/fscache.c       |    3 +++
+ fs/netfs/internal.h     |    1 +
+ fs/netfs/misc.c         |   13 ++++++++++++-
+ fs/netfs/stats.c        |    9 ++++++---
+ include/linux/fs.h      |    2 ++
+ include/linux/netfs.h   |    1 +
+ include/linux/pagemap.h |    1 +
+ mm/filemap.c            |   15 +++++++++++++++
+ 13 files changed, 47 insertions(+), 4 deletions(-)
 
-diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
-index 952f242bee55..9a828b56d95a 100644
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -4041,10 +4041,12 @@ smb2_new_read_req(void **buf, unsigned int *total_len,
- 	req->Length = cpu_to_le32(io_parms->length);
- 	req->Offset = cpu_to_le64(io_parms->offset);
+diff --git a/fs/afs/file.c b/fs/afs/file.c
+index 1398b3fc6fef..b833f440903d 100644
+--- a/fs/afs/file.c
++++ b/fs/afs/file.c
+@@ -54,6 +54,7 @@ const struct address_space_operations afs_file_aops = {
+ 	.launder_folio	= afs_launder_folio,
+ 	.releasepage	= netfs_releasepage,
+ 	.invalidate_folio = netfs_invalidate_folio,
++	.removing_folio	= netfs_removing_folio,
+ 	.write_begin	= afs_write_begin,
+ 	.write_end	= afs_write_end,
+ 	.writepage	= afs_writepage,
+diff --git a/fs/afs/inode.c b/fs/afs/inode.c
+index 12d2438661fc..6b8891402df5 100644
+--- a/fs/afs/inode.c
++++ b/fs/afs/inode.c
+@@ -790,6 +790,7 @@ void afs_evict_inode(struct inode *inode)
  
--	trace_smb3_read_enter(0 /* xid */,
--			io_parms->persistent_fid,
--			io_parms->tcon->tid, io_parms->tcon->ses->Suid,
--			io_parms->offset, io_parms->length);
-+	trace_smb3_read_enter(rdata ? rdata->rreq->debug_id : 0,
-+			      rdata ? rdata->subreq.debug_index : 0,
-+			      rdata ? rdata->xid : 0,
-+			      io_parms->persistent_fid,
-+			      io_parms->tcon->tid, io_parms->tcon->ses->Suid,
-+			      io_parms->offset, io_parms->length);
- #ifdef CONFIG_CIFS_SMB_DIRECT
- 	/*
- 	 * If we want to do a RDMA write, fill in and append
-@@ -4174,12 +4176,16 @@ smb2_readv_callback(struct mid_q_entry *mid)
+ 	ASSERTCMP(inode->i_ino, ==, vnode->fid.vnode);
+ 
++	clear_bit(AS_NOTIFY_REMOVING_FOLIO, &inode->i_mapping->flags);
+ 	truncate_inode_pages_final(&inode->i_data);
+ 
+ 	afs_set_cache_aux(vnode, &aux);
+diff --git a/fs/afs/internal.h b/fs/afs/internal.h
+index 7b7ef945dc78..7756217dab09 100644
+--- a/fs/afs/internal.h
++++ b/fs/afs/internal.h
+@@ -686,6 +686,8 @@ static inline void afs_vnode_set_cache(struct afs_vnode *vnode,
+ {
+ #ifdef CONFIG_AFS_FSCACHE
+ 	vnode->netfs_ctx.cache = cookie;
++	if (cookie)
++		set_bit(AS_NOTIFY_REMOVING_FOLIO, &vnode->vfs_inode.i_mapping->flags);
  #endif
- 	if (rdata->result && rdata->result != -ENODATA) {
- 		cifs_stats_fail_inc(tcon, SMB2_READ_HE);
--		trace_smb3_read_err(rdata->xid,
-+		trace_smb3_read_err(rdata->rreq->debug_id,
-+				    rdata->subreq.debug_index,
-+				    rdata->xid,
- 				    rdata->req->cfile->fid.persistent_fid,
- 				    tcon->tid, tcon->ses->Suid, rdata->offset,
- 				    rdata->bytes, rdata->result);
- 	} else
--		trace_smb3_read_done(0 /* xid */,
-+		trace_smb3_read_done(rdata->rreq->debug_id,
-+				     rdata->subreq.debug_index,
-+				     rdata->xid,
- 				     rdata->req->cfile->fid.persistent_fid,
- 				     tcon->tid, tcon->ses->Suid,
- 				     rdata->offset, rdata->got_bytes);
-@@ -4260,7 +4266,9 @@ smb2_async_readv(struct cifs_io_subrequest *rdata)
- 			     &rdata->credits);
- 	if (rc) {
- 		cifs_stats_fail_inc(io_parms.tcon, SMB2_READ_HE);
--		trace_smb3_read_err(rdata->xid, io_parms.persistent_fid,
-+		trace_smb3_read_err(rdata->rreq->debug_id,
-+				    rdata->subreq.debug_index,
-+				    rdata->xid, io_parms.persistent_fid,
- 				    io_parms.tcon->tid,
- 				    io_parms.tcon->ses->Suid,
- 				    io_parms.offset, io_parms.length, rc);
-@@ -4311,22 +4319,23 @@ SMB2_read(const unsigned int xid, struct cifs_io_parms *io_parms,
- 		if (rc != -ENODATA) {
- 			cifs_stats_fail_inc(io_parms->tcon, SMB2_READ_HE);
- 			cifs_dbg(VFS, "Send error in read = %d\n", rc);
--			trace_smb3_read_err(xid,
-+			trace_smb3_read_err(0, 0, xid,
- 					    req->PersistentFileId,
- 					    io_parms->tcon->tid, ses->Suid,
- 					    io_parms->offset, io_parms->length,
- 					    rc);
- 		} else
--			trace_smb3_read_done(xid, req->PersistentFileId, io_parms->tcon->tid,
-+			trace_smb3_read_done(0, 0, xid,
-+					     req->PersistentFileId, io_parms->tcon->tid,
- 					     ses->Suid, io_parms->offset, 0);
- 		free_rsp_buf(resp_buftype, rsp_iov.iov_base);
- 		cifs_small_buf_release(req);
- 		return rc == -ENODATA ? 0 : rc;
- 	} else
--		trace_smb3_read_done(xid,
--				    req->PersistentFileId,
--				    io_parms->tcon->tid, ses->Suid,
--				    io_parms->offset, io_parms->length);
-+		trace_smb3_read_done(0, 0, xid,
-+				     req->PersistentFileId,
-+				     io_parms->tcon->tid, ses->Suid,
-+				     io_parms->offset, io_parms->length);
+ }
  
- 	cifs_small_buf_release(req);
- 
-diff --git a/fs/cifs/trace.h b/fs/cifs/trace.h
-index 6cecf302dcfd..c85cf0971eee 100644
---- a/fs/cifs/trace.h
-+++ b/fs/cifs/trace.h
-@@ -21,6 +21,62 @@
- 
- /* For logging errors in read or write */
- DECLARE_EVENT_CLASS(smb3_rw_err_class,
-+	TP_PROTO(unsigned int rreq_debug_id,
-+		 unsigned int rreq_debug_index,
-+		 unsigned int xid,
-+		 __u64	fid,
-+		 __u32	tid,
-+		 __u64	sesid,
-+		 __u64	offset,
-+		 __u32	len,
-+		 int	rc),
-+	TP_ARGS(rreq_debug_id, rreq_debug_index,
-+		xid, fid, tid, sesid, offset, len, rc),
-+	TP_STRUCT__entry(
-+		__field(unsigned int, rreq_debug_id)
-+		__field(unsigned int, rreq_debug_index)
-+		__field(unsigned int, xid)
-+		__field(__u64, fid)
-+		__field(__u32, tid)
-+		__field(__u64, sesid)
-+		__field(__u64, offset)
-+		__field(__u32, len)
-+		__field(int, rc)
-+	),
-+	TP_fast_assign(
-+		__entry->rreq_debug_id = rreq_debug_id;
-+		__entry->rreq_debug_index = rreq_debug_index;
-+		__entry->xid = xid;
-+		__entry->fid = fid;
-+		__entry->tid = tid;
-+		__entry->sesid = sesid;
-+		__entry->offset = offset;
-+		__entry->len = len;
-+		__entry->rc = rc;
-+	),
-+	TP_printk("\tR=%08x[%x] xid=%u sid=0x%llx tid=0x%x fid=0x%llx offset=0x%llx len=0x%x rc=%d",
-+		  __entry->rreq_debug_id, __entry->rreq_debug_index,
-+		  __entry->xid, __entry->sesid, __entry->tid, __entry->fid,
-+		  __entry->offset, __entry->len, __entry->rc)
-+)
+diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+index d07cb28652f2..125d303c5038 100644
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -404,6 +404,7 @@ cifs_free_inode(struct inode *inode)
+ static void
+ cifs_evict_inode(struct inode *inode)
+ {
++	clear_bit(AS_NOTIFY_REMOVING_FOLIO, &inode->i_mapping->flags);
+ 	truncate_inode_pages_final(&inode->i_data);
+ 	if (inode->i_state & I_PINNING_FSCACHE_WB)
+ 		cifs_fscache_unuse_inode_cookie(inode, true);
+diff --git a/fs/cifs/file.c b/fs/cifs/file.c
+index 12663d9d1e51..71f96701e602 100644
+--- a/fs/cifs/file.c
++++ b/fs/cifs/file.c
+@@ -3923,6 +3923,7 @@ const struct address_space_operations cifs_addr_ops = {
+ 	.direct_IO = cifs_direct_io,
+ 	.invalidate_folio = netfs_invalidate_folio,
+ 	.launder_folio = cifs_launder_folio,
++	.removing_folio	= netfs_removing_folio,
+ 	/*
+ 	 * TODO: investigate and if useful we could add an cifs_migratePage
+ 	 * helper (under an CONFIG_MIGRATION) in the future, and also
+diff --git a/fs/cifs/fscache.c b/fs/cifs/fscache.c
+index bb1c3a372de4..5d8464bed798 100644
+--- a/fs/cifs/fscache.c
++++ b/fs/cifs/fscache.c
+@@ -108,6 +108,9 @@ void cifs_fscache_get_inode_cookie(struct inode *inode)
+ 				       &cifsi->uniqueid, sizeof(cifsi->uniqueid),
+ 				       &cd, sizeof(cd),
+ 				       i_size_read(&cifsi->vfs_inode));
++	if (cifsi->netfs_ctx.cache)
++		set_bit(AS_NOTIFY_REMOVING_FOLIO, inode->i_mapping->flags);
 +
-+#define DEFINE_SMB3_RW_ERR_EVENT(name)          \
-+DEFINE_EVENT(smb3_rw_err_class, smb3_##name,    \
-+	TP_PROTO(unsigned int rreq_debug_id,	\
-+		 unsigned int rreq_debug_index,		\
-+		 unsigned int xid,			\
-+		 __u64	fid,				\
-+		 __u32	tid,				\
-+		 __u64	sesid,				\
-+		 __u64	offset,				\
-+		 __u32	len,				\
-+		 int	rc),				\
-+	TP_ARGS(rreq_debug_id, rreq_debug_index, xid, fid, tid, sesid, offset, len, rc))
+ }
+ 
+ void cifs_fscache_unuse_inode_cookie(struct inode *inode, bool update)
+diff --git a/fs/netfs/internal.h b/fs/netfs/internal.h
+index bc4db520d5c7..f373b9da6258 100644
+--- a/fs/netfs/internal.h
++++ b/fs/netfs/internal.h
+@@ -114,6 +114,7 @@ extern atomic_t netfs_n_rh_write_begin;
+ extern atomic_t netfs_n_rh_write_done;
+ extern atomic_t netfs_n_rh_write_failed;
+ extern atomic_t netfs_n_rh_write_zskip;
++extern atomic_t netfs_n_rh_remove_folio;
+ 
+ 
+ static inline void netfs_stat(atomic_t *stat)
+diff --git a/fs/netfs/misc.c b/fs/netfs/misc.c
+index a9e8abfa89f8..59ac380c2b08 100644
+--- a/fs/netfs/misc.c
++++ b/fs/netfs/misc.c
+@@ -178,7 +178,18 @@ int netfs_releasepage(struct page *page, gfp_t gfp)
+ 		folio_wait_fscache(folio);
+ 	}
+ 
+-	fscache_note_page_release(netfs_i_cookie(folio_inode(folio)));
+ 	return true;
+ }
+ EXPORT_SYMBOL(netfs_releasepage);
 +
-+DEFINE_SMB3_RW_ERR_EVENT(read_err);
++/**
++ * netfs_removing_folio - Notification of a folio about to be removed
++ * @mapping: The pagecache about to be altered
++ * @folio: The folio about to be removed
++ */
++void netfs_removing_folio(struct address_space *mapping, struct folio *folio)
++{
++	netfs_stat(&netfs_n_rh_remove_folio);
++	fscache_note_page_release(netfs_i_cookie(mapping->host));
++}
++EXPORT_SYMBOL(netfs_removing_folio);
+diff --git a/fs/netfs/stats.c b/fs/netfs/stats.c
+index 85aef51cc6cf..9a0c49540979 100644
+--- a/fs/netfs/stats.c
++++ b/fs/netfs/stats.c
+@@ -28,17 +28,20 @@ atomic_t netfs_n_rh_write_begin;
+ atomic_t netfs_n_rh_write_done;
+ atomic_t netfs_n_rh_write_failed;
+ atomic_t netfs_n_rh_write_zskip;
++atomic_t netfs_n_rh_remove_folio;
+ 
+ void netfs_stats_show(struct seq_file *m)
+ {
+-	seq_printf(m, "RdHelp : DR=%u RA=%u RP=%u WB=%u WBZ=%u rr=%u sr=%u\n",
++	seq_printf(m, "RdHelp : rr=%u sr=%u\n",
++		   atomic_read(&netfs_n_rh_rreq),
++		   atomic_read(&netfs_n_rh_sreq));
++	seq_printf(m, "RdHelp : DR=%u RA=%u RP=%u WB=%u WBZ=%u rm=%u\n",
+ 		   atomic_read(&netfs_n_rh_dio_read),
+ 		   atomic_read(&netfs_n_rh_readahead),
+ 		   atomic_read(&netfs_n_rh_readpage),
+ 		   atomic_read(&netfs_n_rh_write_begin),
+ 		   atomic_read(&netfs_n_rh_write_zskip),
+-		   atomic_read(&netfs_n_rh_rreq),
+-		   atomic_read(&netfs_n_rh_sreq));
++		   atomic_read(&netfs_n_rh_remove_folio));
+ 	seq_printf(m, "RdHelp : ZR=%u sh=%u sk=%u\n",
+ 		   atomic_read(&netfs_n_rh_zero),
+ 		   atomic_read(&netfs_n_rh_short_read),
+diff --git a/include/linux/fs.h b/include/linux/fs.h
+index bbde95387a23..269327d36bd7 100644
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -360,6 +360,8 @@ struct address_space_operations {
+ 	sector_t (*bmap)(struct address_space *, sector_t);
+ 	void (*invalidate_folio) (struct folio *, size_t offset, size_t len);
+ 	int (*releasepage) (struct page *, gfp_t);
++	void (*removing_folio)(struct address_space *mapping,
++			       struct folio *folio);
+ 	void (*freepage)(struct page *);
+ 	ssize_t (*direct_IO)(struct kiocb *, struct iov_iter *iter);
+ 	/*
+diff --git a/include/linux/netfs.h b/include/linux/netfs.h
+index b503d13061f4..717114531da9 100644
+--- a/include/linux/netfs.h
++++ b/include/linux/netfs.h
+@@ -316,6 +316,7 @@ extern int netfs_write_begin(struct file *, struct address_space *,
+ 			     void **);
+ extern void netfs_invalidate_folio(struct folio *folio, size_t offset, size_t length);
+ extern int netfs_releasepage(struct page *page, gfp_t gfp_flags);
++extern void netfs_removing_folio(struct address_space *mapping, struct folio *folio);
+ 
+ extern void netfs_subreq_terminated(struct netfs_io_subrequest *, ssize_t, bool);
+ extern void netfs_get_subrequest(struct netfs_io_subrequest *subreq,
+diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+index 993994cd943a..976b56180700 100644
+--- a/include/linux/pagemap.h
++++ b/include/linux/pagemap.h
+@@ -199,6 +199,7 @@ enum mapping_flags {
+ 	/* writeback related tags are not used */
+ 	AS_NO_WRITEBACK_TAGS = 5,
+ 	AS_LARGE_FOLIO_SUPPORT = 6,
++	AS_NOTIFY_REMOVING_FOLIO,	/* Call aops->removing_folio() */
+ };
+ 
+ /**
+diff --git a/mm/filemap.c b/mm/filemap.c
+index 3a5ffb5587cd..1cacf11369d9 100644
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -209,6 +209,20 @@ static void filemap_unaccount_folio(struct address_space *mapping,
+ 		folio_account_cleaned(folio, inode_to_wb(mapping->host));
+ }
+ 
++/*
++ * Note that a page is about to be removed from the pagecache.  If a page that
++ * is about to be removed had been copied to the cache, then in future fscache
++ * won't be able to skip checking in the cache.  We do, however, need to do the
++ * notification before the removal lest we race with the page being brought
++ * back again.
++ */
++static void fscache_notify_removing_page(struct address_space *mapping,
++					 struct folio *folio)
++{
++	if (unlikely(test_bit(AS_NOTIFY_REMOVING_FOLIO, &mapping->flags)))
++		mapping->a_ops->removing_folio(mapping, folio);
++}
 +
-+/* For logging errors in other file I/O ops */
-+DECLARE_EVENT_CLASS(smb3_other_err_class,
- 	TP_PROTO(unsigned int xid,
- 		__u64	fid,
- 		__u32	tid,
-@@ -52,8 +108,8 @@ DECLARE_EVENT_CLASS(smb3_rw_err_class,
- 		__entry->offset, __entry->len, __entry->rc)
- )
- 
--#define DEFINE_SMB3_RW_ERR_EVENT(name)          \
--DEFINE_EVENT(smb3_rw_err_class, smb3_##name,    \
-+#define DEFINE_SMB3_OTHER_ERR_EVENT(name)	\
-+DEFINE_EVENT(smb3_other_err_class, smb3_##name, \
- 	TP_PROTO(unsigned int xid,		\
- 		__u64	fid,			\
- 		__u32	tid,			\
-@@ -63,15 +119,67 @@ DEFINE_EVENT(smb3_rw_err_class, smb3_##name,    \
- 		int	rc),			\
- 	TP_ARGS(xid, fid, tid, sesid, offset, len, rc))
- 
--DEFINE_SMB3_RW_ERR_EVENT(write_err);
--DEFINE_SMB3_RW_ERR_EVENT(read_err);
--DEFINE_SMB3_RW_ERR_EVENT(query_dir_err);
--DEFINE_SMB3_RW_ERR_EVENT(zero_err);
--DEFINE_SMB3_RW_ERR_EVENT(falloc_err);
-+DEFINE_SMB3_OTHER_ERR_EVENT(write_err);
-+DEFINE_SMB3_OTHER_ERR_EVENT(query_dir_err);
-+DEFINE_SMB3_OTHER_ERR_EVENT(zero_err);
-+DEFINE_SMB3_OTHER_ERR_EVENT(falloc_err);
- 
- 
- /* For logging successful read or write */
- DECLARE_EVENT_CLASS(smb3_rw_done_class,
-+	TP_PROTO(unsigned int rreq_debug_id,
-+		 unsigned int rreq_debug_index,
-+		 unsigned int xid,
-+		 __u64	fid,
-+		 __u32	tid,
-+		 __u64	sesid,
-+		 __u64	offset,
-+		 __u32	len),
-+	TP_ARGS(rreq_debug_id, rreq_debug_index,
-+		xid, fid, tid, sesid, offset, len),
-+	TP_STRUCT__entry(
-+		__field(unsigned int, rreq_debug_id)
-+		__field(unsigned int, rreq_debug_index)
-+		__field(unsigned int, xid)
-+		__field(__u64, fid)
-+		__field(__u32, tid)
-+		__field(__u64, sesid)
-+		__field(__u64, offset)
-+		__field(__u32, len)
-+	),
-+	TP_fast_assign(
-+		__entry->rreq_debug_id = rreq_debug_id;
-+		__entry->rreq_debug_index = rreq_debug_index;
-+		__entry->xid = xid;
-+		__entry->fid = fid;
-+		__entry->tid = tid;
-+		__entry->sesid = sesid;
-+		__entry->offset = offset;
-+		__entry->len = len;
-+	),
-+	TP_printk("R=%08x[%x] xid=%u sid=0x%llx tid=0x%x fid=0x%llx offset=0x%llx len=0x%x",
-+		  __entry->rreq_debug_id, __entry->rreq_debug_index,
-+		  __entry->xid, __entry->sesid, __entry->tid, __entry->fid,
-+		  __entry->offset, __entry->len)
-+)
-+
-+#define DEFINE_SMB3_RW_DONE_EVENT(name)         \
-+DEFINE_EVENT(smb3_rw_done_class, smb3_##name,   \
-+	TP_PROTO(unsigned int rreq_debug_id,	\
-+		 unsigned int rreq_debug_index,	\
-+		 unsigned int xid,		\
-+		__u64	fid,			\
-+		__u32	tid,			\
-+		__u64	sesid,			\
-+		__u64	offset,			\
-+		__u32	len),			\
-+	TP_ARGS(rreq_debug_id, rreq_debug_index, xid, fid, tid, sesid, offset, len))
-+
-+DEFINE_SMB3_RW_DONE_EVENT(read_enter);
-+DEFINE_SMB3_RW_DONE_EVENT(read_done);
-+
-+/* For logging successful other op */
-+DECLARE_EVENT_CLASS(smb3_other_done_class,
- 	TP_PROTO(unsigned int xid,
- 		__u64	fid,
- 		__u32	tid,
-@@ -100,8 +208,8 @@ DECLARE_EVENT_CLASS(smb3_rw_done_class,
- 		__entry->offset, __entry->len)
- )
- 
--#define DEFINE_SMB3_RW_DONE_EVENT(name)         \
--DEFINE_EVENT(smb3_rw_done_class, smb3_##name,   \
-+#define DEFINE_SMB3_OTHER_DONE_EVENT(name)         \
-+DEFINE_EVENT(smb3_other_done_class, smb3_##name,   \
- 	TP_PROTO(unsigned int xid,		\
- 		__u64	fid,			\
- 		__u32	tid,			\
-@@ -110,16 +218,14 @@ DEFINE_EVENT(smb3_rw_done_class, smb3_##name,   \
- 		__u32	len),			\
- 	TP_ARGS(xid, fid, tid, sesid, offset, len))
- 
--DEFINE_SMB3_RW_DONE_EVENT(write_enter);
--DEFINE_SMB3_RW_DONE_EVENT(read_enter);
--DEFINE_SMB3_RW_DONE_EVENT(query_dir_enter);
--DEFINE_SMB3_RW_DONE_EVENT(zero_enter);
--DEFINE_SMB3_RW_DONE_EVENT(falloc_enter);
--DEFINE_SMB3_RW_DONE_EVENT(write_done);
--DEFINE_SMB3_RW_DONE_EVENT(read_done);
--DEFINE_SMB3_RW_DONE_EVENT(query_dir_done);
--DEFINE_SMB3_RW_DONE_EVENT(zero_done);
--DEFINE_SMB3_RW_DONE_EVENT(falloc_done);
-+DEFINE_SMB3_OTHER_DONE_EVENT(write_enter);
-+DEFINE_SMB3_OTHER_DONE_EVENT(query_dir_enter);
-+DEFINE_SMB3_OTHER_DONE_EVENT(zero_enter);
-+DEFINE_SMB3_OTHER_DONE_EVENT(falloc_enter);
-+DEFINE_SMB3_OTHER_DONE_EVENT(write_done);
-+DEFINE_SMB3_OTHER_DONE_EVENT(query_dir_done);
-+DEFINE_SMB3_OTHER_DONE_EVENT(zero_done);
-+DEFINE_SMB3_OTHER_DONE_EVENT(falloc_done);
- 
  /*
-  * For handle based calls other than read and write, and get/set info
+  * Delete a page from the page cache and free it. Caller has to make
+  * sure the page is locked and that nobody else uses it - or that usage
+@@ -219,6 +233,7 @@ void __filemap_remove_folio(struct folio *folio, void *shadow)
+ 	struct address_space *mapping = folio->mapping;
+ 
+ 	trace_mm_filemap_delete_from_page_cache(folio);
++	fscache_notify_removing_page(mapping, folio);
+ 	filemap_unaccount_folio(mapping, folio);
+ 	page_cache_delete(mapping, folio, shadow);
+ }
 
 
