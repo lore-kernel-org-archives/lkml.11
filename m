@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36380C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:18:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F760C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 18:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240484AbiDFSUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 14:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32990 "EHLO
+        id S240418AbiDFSUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 14:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241573AbiDFST0 (ORCPT
+        with ESMTP id S241572AbiDFST0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 14:19:26 -0400
 Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2091.outbound.protection.outlook.com [40.107.117.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C6EC0560;
-        Wed,  6 Apr 2022 10:01:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21E5BB6E60;
+        Wed,  6 Apr 2022 10:01:23 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hzwF1sei2REk72Br4iQHiVBEej/f9c1o6GmQU3uPDXLR6Q2janAATCVyzRW5mFBH49nSDUQT+ZbRAtVklatUfjzOqvp6mXpqq6kTNnZsLNYazKAVjmnbSMsd00kbM6U0kJETXQyveL7rKzIapXuR3TuHXjkFl9oCRm+BkrF67IA5oO9M0u4efPIYsc5p9j/+NJ9v6ss+q7KkkQmpNiFYMJxR9wLfKSETVEgqvsbBLMZPw5nQ24CB/n0wLhufo8CV5kUIYLaLOlh/Z5ecLGAMEVepOb+tJhFTl1VHPqWL2hzxB9+3RzReGu6IoHngeoQjW+RZ4jyqzKYQcaoyrJ/zBQ==
+ b=oQ6Mp8BykhMGYm8HwNn4HTU7u/Im2qc8aQbsoAItG3/ZKz9fbrMvyvHA/zi+bwfpuoFYweu43batrxxcMyDunPi1wV57a7j4iXCeiIjw480e9jc6Fz5ueE2Ww8Sss8x+dHiNVxTQ2Etr/wBA+atrXV5lJNIJCe8t/cG2mEZ2cetsyQXVmHXg+vLbsryuw0nckHInaOVNesDUMERDu+D5HqHkoiQRy477t4fDrwLy1RX03T1g7rAUy1XiQGYTQfEmDIV+fW6cGoOTiuIyEpebwXwyBf5ResKZXKrDDo7z4PxGEUpa2ixoMvNhgS+cCXKXY+8pw3xH9ri3zE56GoUYVQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VXb9X5yBGCE/Yv1MuBWWaiCSAPduSoTpjKKur/aLeSI=;
- b=lFnKwbFgwSQewCS8G72L4SkNNp40LLwKihN80L5uDNrG5OnCTLzehsHlSXRnewbYEPBbAYi6Zpt5OnqrYqGlkJB9LzCH3FO6UQz9AGoXrd7Klo6M3vfekb2pAOONixnuyR1AQG0H0OrVI+K6Ri2uCpF0L5l+fl5VHe8flsasQR2i/0CgCW095jzNvSa80OhPNB+/iLvuCntk/ozNYovsTepAySEuDKONp/BDDDaXVxm5QzQYDqZgNqbcm2PycKdVD1rFE1ls7LdhdXvVwolTANK/vC9Z/R6YdtW0BOHs17GABKl8zr616+jtvcXEvMOY3Gu5tOyLWgrNl3QJjSr+wQ==
+ bh=W7RhM/ksXWdB7tb0U0+50mmjtbB54vz2QjNNhKipKxQ=;
+ b=JbTJ17ICntFAcOxlKTAqw3KrU3HRoXSggnspC8xy5X0xR2YhZRiDJJrciE08FigKPh/XD0ssmcZ5FAgwqhFFLNzAaMbAhXJ5fgVIuhwtA0s9al/OlxyF9FK04O/zGFW5yk24m274DQkP1bHIubHFxrcnMIKvagRzp9VjphjKlkWJjJb3zUFdQrkB0s6Qq6D67q0EdduBkv1loLtCCAh5sSIdqlt6/01WOSJ6uZuOZwEy4CcBBCF0l3rtraIdT35EBAtCXclCe6MCfJ9xoZ0ch26j0lt8Ys+1xJFsutbJGmjlEmDB4gzFAjojZ79CLZk95ntUMzwQJUkz5Ayku3KXHQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=quantatw.com; dmarc=pass action=none header.from=quantatw.com;
  dkim=pass header.d=quantatw.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=quantacorp.onmicrosoft.com; s=selector2-quantacorp-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VXb9X5yBGCE/Yv1MuBWWaiCSAPduSoTpjKKur/aLeSI=;
- b=TJ8uwOryV9SIN5c0U5xCMPT1DTJwE7OOun6mwI0xWRtL3MHDilGyxU5pTxEFp19AJcd48NksAuP2Lmb0iu9/MA/K8FoBd7caX7wqkRTGnBcby0doJML97U+TVHNbMxFDl7Pb8f4pm1pYCOl0ab5QeW42jLBcg7yR+nH6y7/x40I=
+ bh=W7RhM/ksXWdB7tb0U0+50mmjtbB54vz2QjNNhKipKxQ=;
+ b=DEUeAQ+FtZxVGLqYNVhD5vvr5DEqhPPrPrFMS9XrkLqGFDSPe0G26yKdjAne2nTVkUXfiEYfRI/YZotmwcRLldtD2V2R5mWziUcOVTXVCO+1V+qgi2t3mDX8Y9GcW1MHlucpMDwc5lYg6mPREZsNrdba9M0631FTVv0oOrB50Vk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=quantatw.com;
 Received: from HK0PR04MB3282.apcprd04.prod.outlook.com (2603:1096:203:89::17)
  by PUZPR04MB5204.apcprd04.prod.outlook.com (2603:1096:301:bf::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.19; Wed, 6 Apr
- 2022 17:01:21 +0000
+ 2022 17:01:20 +0000
 Received: from HK0PR04MB3282.apcprd04.prod.outlook.com
  ([fe80::9c61:c8e7:d1ad:c65f]) by HK0PR04MB3282.apcprd04.prod.outlook.com
  ([fe80::9c61:c8e7:d1ad:c65f%6]) with mapi id 15.20.5123.031; Wed, 6 Apr 2022
- 17:01:21 +0000
+ 17:01:20 +0000
 From:   Potin Lai <potin.lai@quantatw.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -51,162 +51,88 @@ Cc:     Patrick Williams <patrick@stwcx.xyz>, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
         Potin Lai <potin.lai@quantatw.com>
-Subject: [PATCH net-next RESEND v2 2/3] net: mdio: aspeed: Introduce read write function for c22 and c45
-Date:   Thu,  7 Apr 2022 01:00:54 +0800
-Message-Id: <20220406170055.28516-3-potin.lai@quantatw.com>
+Subject: [PATCH net-next RESEND v2 0/3] Add Clause 45 support for Aspeed MDIO
+Date:   Thu,  7 Apr 2022 01:00:52 +0800
+Message-Id: <20220406170055.28516-1-potin.lai@quantatw.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406170055.28516-1-potin.lai@quantatw.com>
-References: <20220406170055.28516-1-potin.lai@quantatw.com>
 Content-Type: text/plain
 X-ClientProxiedBy: HK2PR02CA0148.apcprd02.prod.outlook.com
  (2603:1096:202:16::32) To HK0PR04MB3282.apcprd04.prod.outlook.com
  (2603:1096:203:89::17)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 87c61efc-83d8-4fa9-cd92-08da17ef12f5
+X-MS-Office365-Filtering-Correlation-Id: 9d68b442-f42f-44c3-d954-08da17ef123b
 X-MS-TrafficTypeDiagnostic: PUZPR04MB5204:EE_
-X-Microsoft-Antispam-PRVS: <PUZPR04MB520473A11ABFAAB08F81A14C8EE79@PUZPR04MB5204.apcprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <PUZPR04MB5204BCB8B8312A5C18671FB08EE79@PUZPR04MB5204.apcprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ren9hDA4e+8v7f5c1OE2OKwbg3NwkaFelHbtUJFF8B9TynWRID9Tl7H7vWc8FNtXa3LsTnipZQrddSzifdapBC3bliSN9yphRb3zxewOyRmW4Sn1QZ6p8N5ztLtCds4tFKiMVBoz+tjzGgW3PGMzRA5aXpjPgAqqF6hlnINBJGsBy3a59IX4ZQmcRHPiFNBPY4nrc3X0kugoxQ+FPO7iIVEmX07J4bnY7ibaIUKSMSjzfHpPIa2w7UuOOLHIPgC7QguAHUZGTzn97vS3cseWvlImpBIjh4MoNJpInFeFa/Hcb2H9QN/wEng0PCI9/XTH503WGbeGx0jKgbsUQD7t4X/xzETFUonxEs/HUv6d8+1hfNLx1Tcd67+A2FuZlvfAgk6KM/Sy3HXVO6P8SWayztNeMMPejiLHeSGb5bR1jkxU5pZNjlgLmTrVmeiWTkF12wewfclnanlSDnc2noP3qg2evC2i7Oht8I5A6dKlIZ68vCYCJAVUBT4Mro8A5Qj3recUXOlQEjXHrVk9LKVjuej7v7dE4ab6s0GDYv5b4go02BGFrXibKFtdBgo5lDIboNj2GFhSkf0Od9s6BkLjWx07HXS1SbuWKpxpdaWrLm1i00R0E/nC4cki7WyIP5x1Rf34imggiZKuT3+M9g/kG96l7vKAMBD8Dg4iQ9YeVZjtMXzxZtkclLAu9ARHmC94hDs0xEOERlFUkzb84/KZWw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR04MB3282.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(5660300002)(38350700002)(26005)(7416002)(6512007)(36756003)(2906002)(6506007)(52116002)(186003)(508600001)(44832011)(38100700002)(6486002)(8936002)(110136005)(107886003)(4326008)(8676002)(66476007)(66556008)(1076003)(54906003)(66946007)(86362001)(2616005)(316002)(6666004);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: Y4QlwVqcZE+i12e/fQF5ufCJu1cUKWhYv1ot5Tp5+vPMNNtvdfMi0WDNbzrOh4dJ3h7VrTit9Rw9xI8uctlw1rplhVruTRRQ7+DJORbuD+SpCRJOgfojYLhtgd/8G0JQSB70cnRLYdqC8hMHj+XF+YGaYhRRGwcpc58RgyPKsA+Qz6zscVpR+S68p0eTVwvGC8SmY3QdMu4Yhb7SxlP7NhubyC3K8VRvVvGaFo61U0TfegOflJrDjZIGxqkmUWnKCkwv9kUMJgFmoN3OADQHwjEjKHA75kbrXxdg0ohx+k0HUrr3eJdIfgiUyTJPISY7eQQGW3DDRJgYzkCtXx/JE/P97d37weMMh0iKZIHfMBjB8gKy4gvSvsdTUJmlW+moO2CfIicuuPY9XTJvFyPmv3c9QZvRlPDd1/e+dsG2+vlsNPnFerqj7NpPGMYlYSxiLpsIPz+Fcbmlljk/iBYsX2Qp4oFALaUfqffHalLNLK3BBJVhbqDZE+vRcS8Qsod+qn8TSmOZSEH2lYB8X/UdRl4aII7FHoOAFihso92oKcsNCw7585R0le6fxN+GtyRlfW1qo5zXZp+ctuLzXLr3BiiX2kj6qd09MkneeTd9jv9tuNW/gnpuMAtQSFM2z4ox78nJKuRNT3ONfjbeuxFNPUIQyFTY8JNfQHVLoYrUSjOE2o+w7a3tEERiI78fhnf+y0pdDrDt2TH3vUNIeY2dGPr5N6/UgRWBgCkNVyhHOaNSAvNRuC+ZpGjwFwLVqjc5mWXpmCy/cIdkzG+wx4NBeX/8OEkOAdQEGCJY14UZIww=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR04MB3282.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(5660300002)(38350700002)(26005)(7416002)(6512007)(36756003)(2906002)(6506007)(52116002)(186003)(508600001)(44832011)(38100700002)(4744005)(6486002)(8936002)(110136005)(107886003)(4326008)(8676002)(66476007)(66556008)(1076003)(54906003)(66946007)(966005)(86362001)(2616005)(316002)(6666004);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ygTYtSb98gnQ5ZFsq4p4yDGD7JmFCZJVIQspdf9VG06jJ3Y/t2fYxXIvta2b?=
- =?us-ascii?Q?xRe+/g3Gx607loUHvzodKozBUq49irhYLQRSWJOLFWamui+DmbHr2hiBjpln?=
- =?us-ascii?Q?EKocgIWyHwuRzgh/F+evtU+OZoRKhpDk3a+hhDZAaqkLWlYakasaIM3FH1Wl?=
- =?us-ascii?Q?tpRkudCk0//LQrQaXNXgxYSBT9iLpXNb3z4akGKELCE7pIoR+33fS9xkt1c6?=
- =?us-ascii?Q?xYoI2PGoB3sUTkALWhU4cSnLp9ZiAAU4nesPH85XxMeUxp88RmVXO/ZVzCuZ?=
- =?us-ascii?Q?vDA+mNXms39gYwK3SaCnkvpN1P+2Pf/6boXbUJjYp5zfLM9wXyh4pzXDyPuU?=
- =?us-ascii?Q?oydtihoZ94YqhZaUQ41/e+qV5bU7odzJP0Bn4HNNHBCh3I6V60OcBDUZbW8S?=
- =?us-ascii?Q?kwuTvZdMsiFoiHB8XmpmeJEKIPdlZk9dmAP7qVidmx2fnwZdZwDBEfVARetB?=
- =?us-ascii?Q?rqros6YBjaDRXn3lEEVUu4CiSUKyMsQ+ItPUPlwvXnOOSpLHafuSu8/VkpOh?=
- =?us-ascii?Q?rdvXfUOvMJrOuCNFUqDdxbjnZKQMJj/EKnlWQBUC0X26rhOGaV8zqFhSzrl5?=
- =?us-ascii?Q?oP8zTLlan46wTo3VMguZMAfqHfUCm0qV1frPhA0jmZPjaDFLPkTwbPOBLKP/?=
- =?us-ascii?Q?wRBHZxVjvHkC3MdTE9d2tX0eOW6R+vPZRhuYrlUwU3ZYy4k1KGNxjbeSuc6Z?=
- =?us-ascii?Q?2TKMXKntmG6FpUWjAxkfSkFPxu6sos7RpnAOcIySEjedjxyiRSqowAVVdGvo?=
- =?us-ascii?Q?lIA4we8X5F+B1rWfHBnSC7ygMwg3T8SE4M4nJKlA2GrAb+Hyy3F/nNIv3CCe?=
- =?us-ascii?Q?VQCFkPTWI43//HsrzCqPALCbmznRXrvar9Gnp7jdylSrjtfLBEtCbYu5QyGU?=
- =?us-ascii?Q?8XE/XAnrQljHUhpDZNAkHuw8SfXxhVWtaXUDOpdTqZN/3Yc09h2sRSCS8ZCf?=
- =?us-ascii?Q?svKbdMKb+deWblD3ZiXSBb1ylxlqZ4Gw0DfxfmYTilubqKucjDUm0XqTLkoy?=
- =?us-ascii?Q?8IDC2iZIkt1t7UZFwv9Pxniwt23yNM3Pi8aLuGENsPM/xXUL5pmgLrIUr4Vy?=
- =?us-ascii?Q?hRq3o8W6nZkYHCVNEfFPyp6lBFV19ZiFM84Unj3xopWU9Snp6Klhinoa6LET?=
- =?us-ascii?Q?SeuwRwOwwMsJj9O3ILnjeGLm6FAnZoC9o8Xpew771PkD2PnflugajaAtkMCk?=
- =?us-ascii?Q?SZNJCoht2l5LP386yksYMNOJlKpsosOXtpLeo0JyOChm5pE90HrifR6Ghy4k?=
- =?us-ascii?Q?ZQWu+I0Kh7mjhqouE72vn9vtFBa3qEF8oHBJGKsujBXX7g6771XJh7+6K8JK?=
- =?us-ascii?Q?qXosR+c3/KpRKHn0+7hkn77DK0iGNX/NE2qboJwyjCei+UTH1sEdzHwWBBeE?=
- =?us-ascii?Q?5Y95F9uFARpHdzEyiLrWMDs0DOXiBpoYnpCOHRSLG7vYbVZSY9kZ6fVdPqRx?=
- =?us-ascii?Q?rBDR8hQrt1kBG0svcpNuIMyBnUjLz9BH2O3AihVHs+4yWFNWVBEMC0Okn9M9?=
- =?us-ascii?Q?QIMtdQNcIOHTpl//iMOjMK0OR+vzpGQaFUDJ+bKjks43eOk8a7biY5MA0qbE?=
- =?us-ascii?Q?Qh0viAS/5rOVeog0B9QNVzdXWwMArYYpJh7+Oc3G1PwmEpx150YbLXHgwzjq?=
- =?us-ascii?Q?3PccVXtsOUz5GrPYkNSSM8uqoljk3W6oBDWaM21UtvHBVfX7BwksZNRvQGOm?=
- =?us-ascii?Q?zxtUCyPdRczFG31hF6k1hJdICOz4DREgBVw83IQ8qaMJrF7SkFSLYtm/L50g?=
- =?us-ascii?Q?X9n5EXynt5hjMkTqnIVgg0pUL+M9DTI=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?S+Tk7EgT8X1YPpJd/7LF6OpPgnIrxz6TTw2fw7In5RhB6epJPBi2LauDdFsj?=
+ =?us-ascii?Q?6GgnIFbFpbM++f4ynToAmea2q979AGqXJqBZonjUpFH3JUaX7OC1GbhFLom4?=
+ =?us-ascii?Q?1gOngYxXF/6rFo2MdltqhZ0HQ4aj++x28x/BOXZ1fsqnurfOOBVl87h1fQ03?=
+ =?us-ascii?Q?tp5Y5rEzZ/YeRAD8HCJKKyAtm4c+EV013nx8l2yVJxdDgVq8mx7OKUIVbJxJ?=
+ =?us-ascii?Q?KHIxxhJUrYvAAmUvsCrVUkSTKskNi2aM4T97p8VgbMam/a5IMCuABYAkIUbi?=
+ =?us-ascii?Q?0oOQPacgkWKlakKKhrZezpPdPhbecg4CeaLravKyhRivO2IcdS0HLvRQoVpv?=
+ =?us-ascii?Q?nadXYMN6CjBj9bhmAtrfFApwxBuWyUyvKI5GUmNiuRXaemWk6/5ws4MFWBdn?=
+ =?us-ascii?Q?oAzK5Cn3eOwssL8DAhRS7mB0PcRTckteQOUicogn9nXRQ5lBy4Vwr9EVk2uc?=
+ =?us-ascii?Q?ulc+71FW90xXFSdA+sQgph4zu92X+zm9+z3mLTTQcFBAfA6+gRfs+3xRm9US?=
+ =?us-ascii?Q?duiNbO8gMuWPv7c0lqOBF0vj0d0RME7uOcnzcZIudTkhaZHdkdFBFPZjZJbO?=
+ =?us-ascii?Q?lCDlOd4/xMnPKPbShC/j3byv2f7LVBpOENDMRVzpD/VwFkjgJGDfl3bWfQNj?=
+ =?us-ascii?Q?RNRd8FEsqKstmnnsmDpnYdaTKE5QPnk3fbEcg8zB6I+j3ORs5szyR4WwBrV+?=
+ =?us-ascii?Q?NoKG7nJd8cLImfzoNoTXwcijmHw81OheHPRFt2MEfvPxnuDbxBXzGRHVIMmh?=
+ =?us-ascii?Q?8pJI3KWFFLH8+bbtWZUBrMEuAdDTm/H9/cJvs3IpMAEz1hcjuWBjGZN4pIU7?=
+ =?us-ascii?Q?X9ccRr6Ooedg9QYCot0eyq/ozM758f+yFv0OkySXfd1vz9Qz40PzJOVet6J4?=
+ =?us-ascii?Q?KDybqv3trgoyAo9ZHNO0l8ZdpZZ3rqbJnBk9G/4MdE43to2jcMe0+YI63BrE?=
+ =?us-ascii?Q?LbkK3C26bJwZ33ZeYn5UybZZF5nkwLgGZrp7xmwACVmXIo8t2HD0zfenrEHt?=
+ =?us-ascii?Q?Rca2CHx9U8IOBAk9TxopgH1/lJsPCUbqFQHg8bIYlqCW4BiHvCl7D+/KQoeK?=
+ =?us-ascii?Q?GZctSrAOSMnUfAwBL5QYXtce737DTjCVOnXeNAY8+FxQLDmHdxSimBajIYFF?=
+ =?us-ascii?Q?seX5qtlPlqoiPa1b3gJup8HfZxx8aKYddGFUL3tRy8xkHhPxsCnc0+ScH/jb?=
+ =?us-ascii?Q?iWmOnDU+JXT7n6YWxZfXhxCwKq0M36aCUfQmPWEiepSawldWWErh9ZpRjNso?=
+ =?us-ascii?Q?NUdQpN18wix4HKh0O56+/KtiogfpFLdOEYQOK7gYhKP/+oOGDnQoolC1kzKk?=
+ =?us-ascii?Q?lRsY8OusNBBAIttz0zk83qTwDfI9X6a56qMcNb71gAC8vMjf2TRnYEg0eZD9?=
+ =?us-ascii?Q?Nzai/vLFMVdy9kd8TS73N96PRUeNoFZZ7esMAyYdBfmUM3kPwAg+dtT4boqa?=
+ =?us-ascii?Q?kvdR4dMVlp/z0pEhyoL1pe9YDXS7JGbMTl1IosgLHqe0pVDK57NK9QBj4GoA?=
+ =?us-ascii?Q?3qNjsMvAmvnxk97NqdYfoDmWUX8QASa6SKAl2txfRxJEkldcqsJEGr09YgIf?=
+ =?us-ascii?Q?laIzio7PrLONgCuftyJk/QSlGflIMsRyas0MyT6dfGoG2+WMqZ/ilTYb3Ytt?=
+ =?us-ascii?Q?nRuzXOfPyC8n1JM56RjlV+GZPVwmzpZMwp3q6hTrp/ugdCUGkyF01NeSfBrg?=
+ =?us-ascii?Q?X+ptJYKrcD+gdYsO1qhb6URs2V/fsx7pIAaCX26rAlh/u7AVxrlToAnbZ+YW?=
+ =?us-ascii?Q?x8TpYw0G779duDQ2PncRUzLXkSlAdLs=3D?=
 X-OriginatorOrg: quantatw.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 87c61efc-83d8-4fa9-cd92-08da17ef12f5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d68b442-f42f-44c3-d954-08da17ef123b
 X-MS-Exchange-CrossTenant-AuthSource: HK0PR04MB3282.apcprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 17:01:21.0317
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 17:01:19.8599
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 179b0327-07fc-4973-ac73-8de7313561b2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: z+XSGwxLcGfphvXytfNwZ8I0oMq2F4MIh+Ef4eOYmW6Vhb2YBz9dq6m3Zav/T3UVXVN6SRbBLwRXeHFvS3YztQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: fERIHk685oUFV6L/4s57XuV7VNUN2BswhLZ2QVfVRtrQC4GhwPwDO2YG8kDxNUZv7+JtgfL4FCzt44BGYtvcgg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PUZPR04MB5204
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add following additional functions to move out the implementation from
-aspeed_mdio_read() and aspeed_mdio_write().
+This patch series add Clause 45 support for Aspeed MDIO driver, and
+separate c22 and c45 implementation into different functions.
 
-c22:
- - aspeed_mdio_read_c22()
- - aspeed_mdio_write_c22()
 
-c45:
- - aspeed_mdio_read_c45()
- - aspeed_mdio_write_c45()
+LINK: [v1] https://lore.kernel.org/all/20220329161949.19762-1-potin.lai@quantatw.com/
 
-Signed-off-by: Potin Lai <potin.lai@quantatw.com>
----
- drivers/net/mdio/mdio-aspeed.c | 46 +++++++++++++++++++++++++---------
- 1 file changed, 34 insertions(+), 12 deletions(-)
+Changes v1 --> v2:
+ - add C45 to probe_capabilities
+ - break one patch into 3 small patches
 
-diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
-index f22be2f069e9..5becddb56117 100644
---- a/drivers/net/mdio/mdio-aspeed.c
-+++ b/drivers/net/mdio/mdio-aspeed.c
-@@ -79,17 +79,10 @@ static int aspeed_mdio_get_data(struct mii_bus *bus)
- 	return FIELD_GET(ASPEED_MDIO_DATA_MIIRDATA, data);
- }
- 
--static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
-+static int aspeed_mdio_read_c22(struct mii_bus *bus, int addr, int regnum)
- {
- 	int rc;
- 
--	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d\n", __func__, addr,
--		regnum);
--
--	/* Just clause 22 for the moment */
--	if (regnum & MII_ADDR_C45)
--		return -EOPNOTSUPP;
--
- 	rc = aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C22, MDIO_C22_OP_READ,
- 			    addr, regnum, 0);
- 	if (rc < 0)
-@@ -98,17 +91,46 @@ static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
- 	return aspeed_mdio_get_data(bus);
- }
- 
-+static int aspeed_mdio_write_c22(struct mii_bus *bus, int addr, int regnum,
-+				 u16 val)
-+{
-+	return aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C22, MDIO_C22_OP_WRITE,
-+			      addr, regnum, val);
-+}
-+
-+static int aspeed_mdio_read_c45(struct mii_bus *bus, int addr, int regnum)
-+{
-+	/* TODO: add c45 support */
-+	return -EOPNOTSUPP;
-+}
-+
-+static int aspeed_mdio_write_c45(struct mii_bus *bus, int addr, int regnum,
-+				 u16 val)
-+{
-+	/* TODO: add c45 support */
-+	return -EOPNOTSUPP;
-+}
-+
-+static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
-+{
-+	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d\n", __func__, addr,
-+		regnum);
-+
-+	if (regnum & MII_ADDR_C45)
-+		return aspeed_mdio_read_c45(bus, addr, regnum);
-+
-+	return aspeed_mdio_read_c22(bus, addr, regnum);
-+}
-+
- static int aspeed_mdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
- {
- 	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d, val: 0x%x\n",
- 		__func__, addr, regnum, val);
- 
--	/* Just clause 22 for the moment */
- 	if (regnum & MII_ADDR_C45)
--		return -EOPNOTSUPP;
-+		return aspeed_mdio_write_c45(bus, addr, regnum, val);
- 
--	return aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C22, MDIO_C22_OP_WRITE,
--			      addr, regnum, val);
-+	return aspeed_mdio_write_c22(bus, addr, regnum, val);
- }
- 
- static int aspeed_mdio_probe(struct platform_device *pdev)
+Potin Lai (3):
+  net: mdio: aspeed: move reg accessing part into separate functions
+  net: mdio: aspeed: Introduce read write function for c22 and c45
+  net: mdio: aspeed: Add c45 support
+
+ drivers/net/mdio/mdio-aspeed.c | 123 ++++++++++++++++++++++++---------
+ 1 file changed, 89 insertions(+), 34 deletions(-)
+
 -- 
 2.17.1
 
