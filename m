@@ -2,133 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D893EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:09:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5419FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 17:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238578AbiDFRLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 13:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36106 "EHLO
+        id S238606AbiDFRMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 13:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238599AbiDFRK5 (ORCPT
+        with ESMTP id S238264AbiDFRMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 13:10:57 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B6B17E37A
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:32:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649255560; x=1680791560;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version:content-transfer-encoding;
-  bh=D2k6neIoq0HuAMjXdsRZhn8IXAOS7zwhgg73BXGOJrA=;
-  b=T2kyJ+lcCfFwJRcwFB3pwl//gpVY7V9ZO4Y9bkJrRSXsLHq4t8SwycJm
-   Mlt4CM3zHUCJ19obuRtAU7PyJxjD25NpvQZQUqEEaHnNemAj2TQheJPj3
-   Vwlvdg2RjmlbPaneaPvq9CFD6PE6knP/7wrIjwJR87F9F+LEKkyv67ks2
-   Xt/gyb15sJ+5poi7MkiAY52C5lWwP+QsgWCkOyxq49SWQx5xiHgAw09mO
-   siTb1WNReBJpOzLw+7bk5h7ecqHD2+JvMig+/RGVjoNbCwoAMWNAYSFcB
-   M4/5ssvlfvmk5rAMxDlYFp1lz16lSPz1XrAL9jzd7i4rxYSYvcpRdlza6
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="261058191"
-X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
-   d="scan'208";a="261058191"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 07:26:52 -0700
-X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
-   d="scan'208";a="722540100"
-Received: from mgrabins-mobl.ger.corp.intel.com (HELO localhost) ([10.249.141.83])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 07:26:47 -0700
-From:   Jani Nikula <jani.nikula@intel.com>
-To:     Christian =?utf-8?Q?K=C3=B6nig?= <christian.koenig@amd.com>,
-        Grigory Vasilyev <h0tc0d3@gmail.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Melissa Wen <mwen@igalia.com>
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Jiawei Gu <Jiawei.Gu@amd.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/amdgpu: Senseless code and unnecessary memset
-In-Reply-To: <614a4844-fa5d-8b8e-0628-894394f31608@amd.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220405173632.2663-1-h0tc0d3@gmail.com>
- <614a4844-fa5d-8b8e-0628-894394f31608@amd.com>
-Date:   Wed, 06 Apr 2022 17:26:44 +0300
-Message-ID: <874k3670ez.fsf@intel.com>
+        Wed, 6 Apr 2022 13:12:10 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C154E6EC8
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 07:39:01 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id r13so4730184ejd.5
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 07:39:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=bNgbs4OFoMS67Fuie7ANLOacB2yAm3W1OqcmJK7OTVs=;
+        b=T3DXX5LG80TAa5jhmJ+hte2Ix47PFwLQvw5UwWPX9g32qhjfIyHWJebu9Nt9r7Mj9W
+         dv1snFPDRtjBXz71iZfGVNqClfUe8yw0Cy8+myiPXcuvLDpTjv9tl+RaU020Mga7LMnQ
+         0gW3uYenqx5E5WEfzZgXNUj/9z8V5Z8VJWwRh4YKmgbnuJSOF/zmUN2ZocyY6I/bWiC4
+         eKPVA41/UCls5yuYaOhsLtRkwN64bbkClmst3p4PyR8tRUacjcYx+wslxpczeBaZK26/
+         WfMHCqCkHbd4zLB/bo7OuoES4GmOkoRY5SJA7IUQD+HHumC7Jph3jZJm9OJAmdJBgzfo
+         i9tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bNgbs4OFoMS67Fuie7ANLOacB2yAm3W1OqcmJK7OTVs=;
+        b=G/pJJNKGQbJicJ1cvp6Ss5/Gn8n7naXrNs4ljJ0JpucgN9KscsOUC7vQcLu9hd59gT
+         yd5P+Y5AVeU26f3UlGxnbvgCTcoXfwDLgL06w4vLgiWE4wChOrhzj3a5r5ay0y4k83cY
+         yEtNB4yEAuUpA80+i3CUjNP5zp65dvu0486EeG/ZqSZ9bRzbVPmO06HAjeo9gU3O2ayI
+         e9V+3Z9ASFAxvhsvPgzMtxBvvCRQW1IQr2kq2ZRReVGGmT+qmsWsLdTRye6pMjlSKkPO
+         k+HYlG8fOlGDYY0gxcKp2unrJOmV3xB8HSRXYjhEkCM6awy6EFjAraSU0jhIIp17p2aT
+         9Faw==
+X-Gm-Message-State: AOAM533aLCM+8oUO1F6nzxCPe3Zy4N/SivAA3clwoQJGpsSkfyntq98W
+        afTc6lpBGJA3a9joyQO0K6PijZafD+bEgjfp
+X-Google-Smtp-Source: ABdhPJzFAvgJatJMKx+tNpSSM2jv7GTFRgW2LwYez4TX7bmlyDUdenfPvyu611vrk4BD9KB6g4C0Fw==
+X-Received: by 2002:a17:907:1c06:b0:6df:b257:cbb3 with SMTP id nc6-20020a1709071c0600b006dfb257cbb3mr8547652ejc.631.1649255939485;
+        Wed, 06 Apr 2022 07:38:59 -0700 (PDT)
+Received: from [192.168.0.185] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id y8-20020a50d8c8000000b0041c80bb88c7sm7528932edj.8.2022.04.06.07.38.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 07:38:59 -0700 (PDT)
+Message-ID: <9326aee4-744e-9eeb-a5dd-b86e43b6c4c0@linaro.org>
+Date:   Wed, 6 Apr 2022 16:38:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] arm64: dts: qcom: Add sc7180-gelarshie
+Content-Language: en-US
+To:     Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>,
+        agross@kernel.org
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220406094156.3191-1-chenxiangrui@huaqin.corp-partner.google.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220406094156.3191-1-chenxiangrui@huaqin.corp-partner.google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 05 Apr 2022, Christian K=C3=B6nig <christian.koenig@amd.com> wrote:
-> Am 05.04.22 um 19:36 schrieb Grigory Vasilyev:
->> Using memset on local arrays before exiting the function is pointless.
->> Compilator will remove this code. Also for local arrays is preferable to
->> use {0} instead of memset. Mistakes are often made when working with
->> memset.
->
-> Well actually memset is preferred when working with structures which are=
-=20
-> given to the hardware parser because {0} won't initialize paddings.
+On 06/04/2022 11:41, Mars Chen wrote:
+> Add device tree for Gelarshie, a trogdor variant
+> 
+> Signed-off-by: Mars Chen <chenxiangrui@huaqin.corp-partner.google.com>
 
-Not that I'd know anything that's going on here... but it sure seems
-strange to me to be passing unpacked structures where the padding might
-matter to a "hardware parser".
+Hi,
 
-*shrug*
+I think I saw this some days ago... Isn't this a v2? If yes, please mark
+it in subject and add a changelog describing what you did. See also:
+https://elixir.bootlin.com/linux/v5.13/source/Documentation/process/submitting-patches.rst
 
+Did you address all the comments you received before? At mine looks not
+addressed... :(
 
-BR,
-Jani.
-
-
->
-> So please don't use {0} in any of the atom bios code.
->
-> Regards,
-> Christian.
->
->>
->> Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
->> ---
->>   drivers/gpu/drm/amd/amdgpu/atom.c | 8 +-------
->>   1 file changed, 1 insertion(+), 7 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/amd/amdgpu/atom.c b/drivers/gpu/drm/amd/amd=
-gpu/atom.c
->> index be9d61bcb8ae..537e48fbbe6b 100644
->> --- a/drivers/gpu/drm/amd/amdgpu/atom.c
->> +++ b/drivers/gpu/drm/amd/amdgpu/atom.c
->> @@ -1538,11 +1538,9 @@ struct atom_context *amdgpu_atom_parse(struct car=
-d_info *card, void *bios)
->>   int amdgpu_atom_asic_init(struct atom_context *ctx)
->>   {
->>   	int hwi =3D CU16(ctx->data_table + ATOM_DATA_FWI_PTR);
->> -	uint32_t ps[16];
->> +	uint32_t ps[16] =3D {0};
->>   	int ret;
->>=20=20=20
->> -	memset(ps, 0, 64);
->> -
->>   	ps[0] =3D cpu_to_le32(CU32(hwi + ATOM_FWI_DEFSCLK_PTR));
->>   	ps[1] =3D cpu_to_le32(CU32(hwi + ATOM_FWI_DEFMCLK_PTR));
->>   	if (!ps[0] || !ps[1])
->> @@ -1551,10 +1549,6 @@ int amdgpu_atom_asic_init(struct atom_context *ct=
-x)
->>   	if (!CU16(ctx->cmd_table + 4 + 2 * ATOM_CMD_INIT))
->>   		return 1;
->>   	ret =3D amdgpu_atom_execute_table(ctx, ATOM_CMD_INIT, ps);
->> -	if (ret)
->> -		return ret;
->> -
->> -	memset(ps, 0, 64);
->>=20=20=20
->>   	return ret;
->>   }
->
-
---=20
-Jani Nikula, Intel Open Source Graphics Center
+Best regards,
+Krzysztof
