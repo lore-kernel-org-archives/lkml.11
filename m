@@ -2,95 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A8F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:38:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E8F4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 16:39:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238116AbiDFQkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 12:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
+        id S238000AbiDFQlg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 12:41:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237721AbiDFQkd (ORCPT
+        with ESMTP id S238003AbiDFQlE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 12:40:33 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E128325FD70
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 06:59:37 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id p10so4193774lfa.12
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 06:59:37 -0700 (PDT)
+        Wed, 6 Apr 2022 12:41:04 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8269D14F112
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 08:04:41 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id bg10so4917157ejb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 08:04:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=1+/9uGNU/c0SUbZVyjyQElYWMN/Sm+TEsoVZ+LA9Dwg=;
-        b=sznZSgTKnvb3REJi+cKW4bbvW2SCuFJQeNMNdl1UK7abPOiMjmtBnyzm3jiH38FVML
-         VSaVoJ5E6zEvkyXLndR+PxA6JfqZOwO6KtDnV3hez/Arx1Wtr4A25zH315UtaVoxDi5P
-         qFcS703uo8+eCkYtqLlPLafWcmeP+ifwLeVAe03BNOLF4H9lxO5ZZe/Xf4Bpls+X/DMu
-         SShkA7IapxBRcfJHuqFR9okeFEiN4BDX3egCL6iDe31BuBf0v17dtMD/P7kpjJ+Y20yR
-         kJplnuy3A6Uz2FV4BzeDv41iVYc/oyvyhoZWTayKoXIDk9gF2f/VcI5GAXVJ06lwcs26
-         fryA==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=K83QqN2TxY26LIsNqPOFqQj4RdSJx9FOQNvgzvuZmLM=;
+        b=S76zFo6lTopI23NWz49rYyKL0VY9HmiQIhm0j9JwBS+kwvGWrYzAqNGpqMRGM5+FqU
+         IWTebSGm8alAtk80hu+VEVU+NQP60TesndetmIuOCNZSLjMZQ8x6Ta0oOEHl+dD+wViW
+         kOXVv6AgQ0JLzjnYy+scqMkHC8RKbF2+IK3+I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=1+/9uGNU/c0SUbZVyjyQElYWMN/Sm+TEsoVZ+LA9Dwg=;
-        b=2YLgubzTyNm7bHVtEirJCkuDVP6HuU+owaPw5uQr+vdRRCzSISo0fEvpB/4qHE8jHg
-         b2kvzB7eVGSnMnSFJ7NY/0Tx3x58hW0ATrfoGw/q/P/Xpm3LmaQ3F9kl4HEzpWjPa+Pz
-         HZSfgLs3MNV9gp5V6n+sqOzysfG8TMFAYGrB10ikzzg8etjrxNkQs7ReS0yw/trRHD8I
-         mdOVHWhRAgCekIQaEb6fSo2KMggYrsHL8+T/fSU/kk3xoTWmdDXxsuhRVyYCz4mSr8kX
-         1gzaOX55MuJWmW3TgGUvRHOqNigmlB1rylx6XCRvmPm/J92UqwCuAC5Kxkyydu+asp8S
-         X9og==
-X-Gm-Message-State: AOAM5326CChTVVed4V0OmA1ASCGE8qObv7tuEGuT/Ext5bpR63N/RVDq
-        MdUd4Um/Fy3eRLONLb6Lk+K8U5eUV9g2nhqIbo/zNw==
-X-Google-Smtp-Source: ABdhPJy+0n1cWazIOvM6G43K7umQC1gfmdgukS3y10rRQbQb5twaDBgVfSuwfuLHCtMeQCgHu4RbYXGpEVOB3q64a7Q=
-X-Received: by 2002:ac2:4e98:0:b0:448:3039:d170 with SMTP id
- o24-20020ac24e98000000b004483039d170mr6407391lfr.233.1649253576150; Wed, 06
- Apr 2022 06:59:36 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=K83QqN2TxY26LIsNqPOFqQj4RdSJx9FOQNvgzvuZmLM=;
+        b=KYDJzCA699HQ0TlMeZLuFVxnr8ka4zZNos1Jzp8Q11RMLLrI7KpPdyN6LCdIvOEpbU
+         vvNwvpwuLmLNU1DcGaS0XUBwc5Khho7B808F80XKBlxc9goe1kPn5ByOeP1yX+q8a7Bh
+         TxRWRcgixX5twgrkqASL35nBTsZKhZfR9PoTv3LRI0VhdnpY7lyMadxjpQh8AS85sQbm
+         AscAitDx3ZbBC4DpyJluocCEgrEcwBO4rVu45n7XTGwejWW2Dkxy5gP3i3E91WXaZ/eH
+         GgiWFKeKB8z53Dino4RAwC/K/IZdOaj2Cj8NMGrfE+Fevt+ZMMx5ymEwQ/v4KfgOofng
+         CvOg==
+X-Gm-Message-State: AOAM533xDUDQH45RIqCKC8VVW4Qk/QYO2F1Ef+p8vDJKYoyRD/81h8uy
+        R+lQN0BWs77ARWO2SZEKA/zpa874rGscjX49dsQ=
+X-Google-Smtp-Source: ABdhPJxIb03R8vZ1f2fcYYIQ9tThEzSzEEQltqwbIcuHAa7BtBOcZA8xWunuocwYv/CUPoLTeg6vIg==
+X-Received: by 2002:a17:907:6d9e:b0:6df:bb09:10eb with SMTP id sb30-20020a1709076d9e00b006dfbb0910ebmr8518951ejc.409.1649257479766;
+        Wed, 06 Apr 2022 08:04:39 -0700 (PDT)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
+        by smtp.gmail.com with ESMTPSA id jr16-20020a170906a99000b006e4c05e8919sm6613247ejb.35.2022.04.06.08.04.36
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 08:04:39 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id w4so3623892wrg.12
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 08:04:36 -0700 (PDT)
+X-Received: by 2002:a5d:674d:0:b0:206:163c:f70c with SMTP id
+ l13-20020a5d674d000000b00206163cf70cmr6914842wrw.679.1649257476052; Wed, 06
+ Apr 2022 08:04:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220321115059.21803-1-wsa+renesas@sang-engineering.com>
- <20220321115059.21803-9-wsa+renesas@sang-engineering.com> <CAPDyKFqwgxhRPBabxfUTC+8UVegWrTg3F0nRn3PoToiO2DWtvQ@mail.gmail.com>
- <Yk1JA4TWO9bTt0kb@ninjato>
-In-Reply-To: <Yk1JA4TWO9bTt0kb@ninjato>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 6 Apr 2022 15:58:59 +0200
-Message-ID: <CAPDyKFpMAE9mYXUBEsVSm-9EHAC-o5hTxgKNUjYYvo0dzqfEZg@mail.gmail.com>
-Subject: Re: [RFC PATCH 08/10] mmc: core: improve API to make clear hw_reset
- from bus_ops is for cards
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-mmc@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <1649229362-31183-1-git-send-email-quic_vnivarth@quicinc.com>
+In-Reply-To: <1649229362-31183-1-git-send-email-quic_vnivarth@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Wed, 6 Apr 2022 08:04:24 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XieM5MHMBBV9d7jrbiN+8RVdo6=_XSNf9L-yqEZUTO_Q@mail.gmail.com>
+Message-ID: <CAD=FV=XieM5MHMBBV9d7jrbiN+8RVdo6=_XSNf9L-yqEZUTO_Q@mail.gmail.com>
+Subject: Re: [V3 0/3] arch: arm64: dts: qcom: Configure cts sleep pinctrl to bias-bus-hold
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        quic_msavaliy@quicinc.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 6 Apr 2022 at 10:02, Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
->
->
-> > > To make it unambiguous that bus_ops->hw_reset() is for cards and not for
-> > > controllers, we a) add 'card' to the function name and b) make the
-> > > function argument mmc_card instead of mmc_host. All users are converted,
-> > > too.
-> >
-> > Again b) is sufficient in my opinion. All bus_ops are for cards, while
-> > host_ops are for hosts.
->
-> Okay, this argument I buy right away.
->
-> > Also, there may be some corner cases where b) can't be done, like the
-> > ->remove() bus_ops for example. In that case, we either have to make
-> > more re-structuring of the code of simply live with that there may be
-> > some special cases.
->
-> With the above argument, I could even imaging to simply drop this patch?
-> That keeps 'host' consistently as the default argument? All given that
-> 'bus_ops' are for cards anyway.
+Hi,
 
-I have no strong opinion around this.
+On Wed, Apr 6, 2022 at 12:16 AM Vijaya Krishna Nivarthi
+<quic_vnivarth@quicinc.com> wrote:
+>
+> WLAN rail was leaking power during RBSC/sleep even after turning BT off.
+> Change sleep pinctrl configuration to handle same.
+>
+> ---
+> v3: apply same change to active state and other sc7280*.dts* as well
+> v2: used bias-bus-hold as per review comments
+> v1: intial patch used bias-disable for sleep pinctrl in sc7280-idp only
+> ---
+>
+> Vijaya Krishna Nivarthi (3):
+>   arch: arm64: dts: qcom: Configure cts sleep pinctrl to bias-bus-hold
+>   arch: arm64: dts: qcom: Configure cts sleep pinctrl to bias-bus-hold
+>   arch: arm64: dts: qcom: Configure cts sleep pinctrl to bias-bus-hold
+>
+>  arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dts | 12 ++++++------
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi                   | 12 ++++++------
+>  arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi                 | 13 ++++++++-----
+>  3 files changed, 20 insertions(+), 17 deletions(-)
 
-Perhaps one simply needs to make a patch to convert them (most of
-them) to take a "card" as an in-parameter to really see if that
-improves the understanding of code.
+Probably the subject of all the patches should be modified to talk
+about what each patch is applying to. Having 3 identically named
+patches is not ideal.
 
-Kind regards
-Uffe
+I'll let Bjorn chime in on whether he'd rather adjust the subject
+himself or whether he'd rather you re-send. In any case, with the
+subject modified then for all 3 patches:
+
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
