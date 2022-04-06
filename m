@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB19C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:13:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 12:14:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231545AbiDFMPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 08:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50690 "EHLO
+        id S232511AbiDFMQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 08:16:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231508AbiDFMOW (ORCPT
+        with ESMTP id S232096AbiDFMOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 08:14:22 -0400
-Received: from out199-16.us.a.mail.aliyun.com (out199-16.us.a.mail.aliyun.com [47.90.199.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A88D425E01;
-        Wed,  6 Apr 2022 00:56:34 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R351e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9Ko7Ui_1649231788;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9Ko7Ui_1649231788)
+        Wed, 6 Apr 2022 08:14:23 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D62893713DE;
+        Wed,  6 Apr 2022 00:56:36 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R671e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V9L3PCZ_1649231791;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V9L3PCZ_1649231791)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 06 Apr 2022 15:56:29 +0800
+          Wed, 06 Apr 2022 15:56:32 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -29,9 +29,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
         fannaihao@baidu.com
-Subject: [PATCH v8 10/20] erofs: register fscache volume
-Date:   Wed,  6 Apr 2022 15:56:02 +0800
-Message-Id: <20220406075612.60298-11-jefflexu@linux.alibaba.com>
+Subject: [PATCH v8 12/20] erofs: add anonymous inode managing page cache for data blob
+Date:   Wed,  6 Apr 2022 15:56:04 +0800
+Message-Id: <20220406075612.60298-13-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
 References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
@@ -41,157 +41,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A new fscache based mode is going to be introduced for erofs, in which
-case on-demand read semantics is implemented through fscache.
-
-As the first step, register fscache volume for each erofs filesystem.
-That means, data blobs can not be shared among erofs filesystems. In the
-following iteration, we are going to introduce the domain semantics, in
-which case several erofs filesystems can belong to one domain, and data
-blobs can be shared among these erofs filesystems of one domain.
+Introduce one anonymous inode managing page cache for data blob. Then
+erofs could read directly from the address space of the anonymous inode
+when cache hit.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/Kconfig    | 10 ++++++++++
- fs/erofs/Makefile   |  1 +
- fs/erofs/fscache.c  | 37 +++++++++++++++++++++++++++++++++++++
- fs/erofs/internal.h | 13 +++++++++++++
- fs/erofs/super.c    |  7 +++++++
- 5 files changed, 68 insertions(+)
- create mode 100644 fs/erofs/fscache.c
+ fs/erofs/fscache.c  | 39 ++++++++++++++++++++++++++++++++++++---
+ fs/erofs/internal.h |  6 ++++--
+ 2 files changed, 40 insertions(+), 5 deletions(-)
 
-diff --git a/fs/erofs/Kconfig b/fs/erofs/Kconfig
-index f57255ab88ed..3d05265e3e8e 100644
---- a/fs/erofs/Kconfig
-+++ b/fs/erofs/Kconfig
-@@ -98,3 +98,13 @@ config EROFS_FS_ZIP_LZMA
- 	  systems will be readable without selecting this option.
- 
- 	  If unsure, say N.
-+
-+config EROFS_FS_ONDEMAND
-+	bool "EROFS fscache-based ondemand-read"
-+	depends on CACHEFILES_ONDEMAND && (EROFS_FS=m && FSCACHE || EROFS_FS=y && FSCACHE=y)
-+	default n
-+	help
-+	  EROFS is mounted from data blobs and on-demand read semantics is
-+	  implemented through fscache.
-+
-+	  If unsure, say N.
-diff --git a/fs/erofs/Makefile b/fs/erofs/Makefile
-index 8a3317e38e5a..99bbc597a3e9 100644
---- a/fs/erofs/Makefile
-+++ b/fs/erofs/Makefile
-@@ -5,3 +5,4 @@ erofs-objs := super.o inode.o data.o namei.o dir.o utils.o pcpubuf.o sysfs.o
- erofs-$(CONFIG_EROFS_FS_XATTR) += xattr.o
- erofs-$(CONFIG_EROFS_FS_ZIP) += decompressor.o zmap.o zdata.o
- erofs-$(CONFIG_EROFS_FS_ZIP_LZMA) += decompressor_lzma.o
-+erofs-$(CONFIG_EROFS_FS_ONDEMAND) += fscache.o
 diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-new file mode 100644
-index 000000000000..7a6d0239ebb1
---- /dev/null
+index 67a3c4935245..1c88614203d2 100644
+--- a/fs/erofs/fscache.c
 +++ b/fs/erofs/fscache.c
-@@ -0,0 +1,37 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (C) 2022, Alibaba Cloud
-+ */
-+#include <linux/fscache.h>
-+#include "internal.h"
+@@ -5,17 +5,22 @@
+ #include <linux/fscache.h>
+ #include "internal.h"
+ 
++static const struct address_space_operations erofs_fscache_meta_aops = {
++};
 +
-+int erofs_fscache_register_fs(struct super_block *sb)
-+{
-+	struct erofs_sb_info *sbi = EROFS_SB(sb);
-+	struct fscache_volume *volume;
-+	char *name;
-+	int ret = 0;
+ /*
+  * Create an fscache context for data blob.
+  * Return: 0 on success and allocated fscache context is assigned to @fscache,
+  *	   negative error number on failure.
+  */
+ int erofs_fscache_register_cookie(struct super_block *sb,
+-				  struct erofs_fscache **fscache, char *name)
++				  struct erofs_fscache **fscache,
++				  char *name, bool need_inode)
+ {
+ 	struct fscache_volume *volume = EROFS_SB(sb)->volume;
+ 	struct erofs_fscache *ctx;
+ 	struct fscache_cookie *cookie;
++	int ret;
+ 
+ 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
+ 	if (!ctx)
+@@ -25,15 +30,40 @@ int erofs_fscache_register_cookie(struct super_block *sb,
+ 					name, strlen(name), NULL, 0, 0);
+ 	if (!cookie) {
+ 		erofs_err(sb, "failed to get cookie for %s", name);
+-		kfree(name);
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto err;
+ 	}
+ 
+ 	fscache_use_cookie(cookie, false);
+ 	ctx->cookie = cookie;
+ 
++	if (need_inode) {
++		struct inode *const inode = new_inode(sb);
 +
-+	name = kasprintf(GFP_KERNEL, "erofs,%s", sbi->opt.fsid);
-+	if (!name)
-+		return -ENOMEM;
++		if (!inode) {
++			erofs_err(sb, "failed to get anon inode for %s", name);
++			ret = -ENOMEM;
++			goto err_cookie;
++		}
 +
-+	volume = fscache_acquire_volume(name, NULL, NULL, 0);
-+	if (IS_ERR_OR_NULL(volume)) {
-+		erofs_err(sb, "failed to register volume for %s", name);
-+		ret = volume ? PTR_ERR(volume) : -EOPNOTSUPP;
-+		volume = NULL;
++		set_nlink(inode, 1);
++		inode->i_size = OFFSET_MAX;
++		inode->i_mapping->a_ops = &erofs_fscache_meta_aops;
++		mapping_set_gfp_mask(inode->i_mapping, GFP_NOFS);
++
++		ctx->inode = inode;
 +	}
 +
-+	sbi->volume = volume;
-+	kfree(name);
+ 	*fscache = ctx;
+ 	return 0;
++
++err_cookie:
++	fscache_unuse_cookie(ctx->cookie, NULL, NULL);
++	fscache_relinquish_cookie(ctx->cookie, false);
++	ctx->cookie = NULL;
++err:
++	kfree(ctx);
 +	return ret;
-+}
+ }
+ 
+ void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache)
+@@ -47,6 +77,9 @@ void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache)
+ 	fscache_relinquish_cookie(ctx->cookie, false);
+ 	ctx->cookie = NULL;
+ 
++	iput(ctx->inode);
++	ctx->inode = NULL;
 +
-+void erofs_fscache_unregister_fs(struct super_block *sb)
-+{
-+	struct erofs_sb_info *sbi = EROFS_SB(sb);
-+
-+	fscache_relinquish_volume(sbi->volume, NULL, false);
-+	sbi->volume = NULL;
-+}
+ 	kfree(ctx);
+ 	*fscache = NULL;
+ }
 diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index 05a97533b1e9..952a2f483f94 100644
+index c6a3351a4d7d..3a4a344cfed3 100644
 --- a/fs/erofs/internal.h
 +++ b/fs/erofs/internal.h
-@@ -74,6 +74,7 @@ struct erofs_mount_opts {
- 	unsigned int max_sync_decompress_pages;
- #endif
- 	unsigned int mount_opt;
-+	char *fsid;
+@@ -99,6 +99,7 @@ struct erofs_sb_lz4_info {
+ 
+ struct erofs_fscache {
+ 	struct fscache_cookie *cookie;
++	struct inode *inode;
  };
  
- struct erofs_dev_context {
-@@ -146,6 +147,9 @@ struct erofs_sb_info {
- 	/* sysfs support */
- 	struct kobject s_kobj;		/* /sys/fs/erofs/<devname> */
- 	struct completion s_kobj_unregister;
-+
-+	/* fscache support */
-+	struct fscache_volume *volume;
- };
+ struct erofs_sb_info {
+@@ -632,7 +633,8 @@ int erofs_fscache_register_fs(struct super_block *sb);
+ void erofs_fscache_unregister_fs(struct super_block *sb);
  
- #define EROFS_SB(sb) ((struct erofs_sb_info *)(sb)->s_fs_info)
-@@ -618,6 +622,15 @@ static inline int z_erofs_load_lzma_config(struct super_block *sb,
- }
- #endif	/* !CONFIG_EROFS_FS_ZIP */
+ int erofs_fscache_register_cookie(struct super_block *sb,
+-				  struct erofs_fscache **fscache, char *name);
++				  struct erofs_fscache **fscache,
++				  char *name, bool need_inode);
+ void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache);
+ #else
+ static inline int erofs_fscache_register_fs(struct super_block *sb) { return 0; }
+@@ -640,7 +642,7 @@ static inline void erofs_fscache_unregister_fs(struct super_block *sb) {}
  
-+/* fscache.c */
-+#ifdef CONFIG_EROFS_FS_ONDEMAND
-+int erofs_fscache_register_fs(struct super_block *sb);
-+void erofs_fscache_unregister_fs(struct super_block *sb);
-+#else
-+static inline int erofs_fscache_register_fs(struct super_block *sb) { return 0; }
-+static inline void erofs_fscache_unregister_fs(struct super_block *sb) {}
-+#endif
-+
- #define EFSCORRUPTED    EUCLEAN         /* Filesystem is corrupted */
- 
- #endif	/* __EROFS_INTERNAL_H */
-diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index 0c4b41130c2f..6590ed1b7d3b 100644
---- a/fs/erofs/super.c
-+++ b/fs/erofs/super.c
-@@ -601,6 +601,12 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 	sbi->devs = ctx->devs;
- 	ctx->devs = NULL;
- 
-+	if (erofs_is_fscache_mode(sb)) {
-+		err = erofs_fscache_register_fs(sb);
-+		if (err)
-+			return err;
-+	}
-+
- 	err = erofs_read_superblock(sb);
- 	if (err)
- 		return err;
-@@ -757,6 +763,7 @@ static void erofs_kill_sb(struct super_block *sb)
- 
- 	erofs_free_dev_context(sbi->devs);
- 	fs_put_dax(sbi->dax_dev);
-+	erofs_fscache_unregister_fs(sb);
- 	kfree(sbi);
- 	sb->s_fs_info = NULL;
+ static inline int erofs_fscache_register_cookie(struct super_block *sb,
+ 						struct erofs_fscache **fscache,
+-						char *name)
++						char *name, bool need_inode)
+ {
+ 	return -EOPNOTSUPP;
  }
 -- 
 2.27.0
