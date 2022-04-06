@@ -2,137 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD64C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 401D9C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 10:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348124AbiDFKJG (ORCPT
+        id S1349042AbiDFKJO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 06:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
+        Wed, 6 Apr 2022 06:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348736AbiDFKHC (ORCPT
+        with ESMTP id S1353520AbiDFKIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 06:07:02 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2076.outbound.protection.outlook.com [40.107.220.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79A7E2494B;
-        Tue,  5 Apr 2022 23:35:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S0LV4utRvBL9PiVyXg0O3u5J0YMgqqpC60ceoB8F3jZcYM87pvXU10B+PHMQpzXKJH8qD2dPXIM+WtlQXN8SrBSQx+KYYjSlCnouBZz1fgsfTKasbqcI+uwG7otlbEhwVfRFgxVnX86ck+ZGDCUCIBztOfT+CXbHUpU8cIwcjCvGbnFkzzCIdE/6lnJfzB04O5NGTPX0LzJ9LSeVe/UuDMNx21QnRxH7clrKa7KiKUFgxXuqusO8fo6Nu0oP/czc+LnSDrONcQssyK3+o+y+luS9PdPKSO09v+L0PQE2I9+1L1ySy7Roeng+zaGtt8mxx+EztVetGTJdKOr5Yiybfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jb+LtWe1krJpWmlvEgjq+Z8PkUwRd5RU8PfxThJ3fYA=;
- b=QefB6E717TAYV7Lr+eA2gPVUeNp5RgoIt4OOOmVjWdu91rNxWtzahZSKva2+AtB+hb62ReJeoIzUCDXCZmcn+Y4xO9Dh8ZfDbc9CSxSwZmCm+UzrVszpvcKbNpfFx/bXyyt28pyT/ptHPM3EVZxT2QNmYqGtCjU/KVzVO+O57a7KP48X+XlrOBCxQAsdysi1dZU5curn+B2HsANs6fp3BbR5IfbNt/gaImL5Xhpy+NicjYZB4lnBuULS4Yr6UhElY5BFIfwVWwJ8cRCIgA4flAO1BK9HLJy7ugwMScgX80ryqf4IR3pdaFuS8xjPSinYSFzQdOSJYQanKs357LxaVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=intel.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jb+LtWe1krJpWmlvEgjq+Z8PkUwRd5RU8PfxThJ3fYA=;
- b=uJxTbYoDqG0Ed/cZ6QUo7bv3mtgs0rxJxDS/vt6y1BZ+PYIcVODiWbKWY2s/sC5Fh2xXi9tH2JrBaG7Mgi9NWCDnEwL6p0Sr+epTWfsiGn6L880WTsB66r4Cn+nvsksErOyXT101p/VhCSxcnoaJMI6sVxVgA8LMFzbNAXLaK0o=
-Received: from DS7PR03CA0352.namprd03.prod.outlook.com (2603:10b6:8:55::32) by
- BY5PR12MB4997.namprd12.prod.outlook.com (2603:10b6:a03:1d6::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
- 2022 06:35:57 +0000
-Received: from DM6NAM11FT051.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:55:cafe::e0) by DS7PR03CA0352.outlook.office365.com
- (2603:10b6:8:55::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21 via Frontend
- Transport; Wed, 6 Apr 2022 06:35:57 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT051.mail.protection.outlook.com (10.13.172.243) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5144.20 via Frontend Transport; Wed, 6 Apr 2022 06:35:56 +0000
-Received: from ethanolx50f7host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 6 Apr
- 2022 01:35:55 -0500
-From:   Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-To:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>
-CC:     Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>,
-        <hpa@zytor.com>, Yazen Ghannam <yazen.ghannam@amd.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        <linux-edac@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <x86@kernel.org>
-Subject: [RFC PATCH 0/5] Handle corrected machine check interrupt storms
-Date:   Wed, 6 Apr 2022 01:35:37 -0500
-Message-ID: <20220406063542.183946-1-Smita.KoralahalliChannabasappa@amd.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 6 Apr 2022 06:08:00 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3833D10DB;
+        Tue,  5 Apr 2022 23:37:28 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id i11so1121004plg.12;
+        Tue, 05 Apr 2022 23:37:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9h7cNl4OV6dWhSGgkfELugf4Gfp2Bajmd0kV8a3QGTU=;
+        b=C4DawLXtXk+rbfCbIFt3NucikB71x43F7DrvMn0qUSBlrwT4xDhU/0qd1oSzSL240R
+         31/Cr9C3aHZPiTPqMsghgNRAsmjxPJk0fGU9pbJLJ0awDX1vcMbFZp3K5niBYcsJ2W0b
+         R0HnSkwF7FRVYojuj+nVUYVQFvdl6c8+q6v+bOvB6+uHpKJ0woAvyTqWZmk7eNkz4alR
+         /z7WOU9q/UpoRQgqv7tPro3nC8Uq3+KIC8gaWKLE8mw7El4AhmP9uoJ7xoqbh9d9aCjT
+         N2tt5QXigus2k/sBnx3fY4WEXVdFJy/cEC96hF6ORXCa4ZudFaLzYATxQuS+TAf9LmRF
+         MGTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9h7cNl4OV6dWhSGgkfELugf4Gfp2Bajmd0kV8a3QGTU=;
+        b=p4i25TeCWfbUbon7GzVFtyH3OnpvQMFCMe2F3CbBNCfEOJVoURRuocU7+8K2F2w50e
+         jekcp1o7y/5NGLbnAAAxo9it+uH6htQIWd6exqlEh3Stf7AYkhH65dWkkUfuBUKvR5gl
+         MJa37Wtrbks59kkSLTa1RaPypd3n9ossaM7k/nu/shMItORNg84Vi9SA0nCEV+ng4ctH
+         bd0rJT6oDN8dQnqMYeXnBM2FZ4flrUkm9AUDblWzJ1KwTwg+W6nLsGYtuf8s9O4+gO0W
+         r8diVXoFQ3ISssIh4tibK3FTGLKwTnfQ/7xwcilYZcMcW+PXlDp98RadY39npuqaRIxG
+         JG8w==
+X-Gm-Message-State: AOAM531Wd7rzyIUi/3dzXp2h9Y0JzSnG/Sz8+JNIdxkSWIpf31qDlu9h
+        wRX0egz508GOilokYxcu8vM=
+X-Google-Smtp-Source: ABdhPJwrTO2KH9oUuLhDamqRuJXyZOqUzpzCZeW3brJG+JSapGjT6GsplV0VRM3CR8DorVxwtKPhgg==
+X-Received: by 2002:a17:902:ced0:b0:153:f78e:c43f with SMTP id d16-20020a170902ced000b00153f78ec43fmr7139450plg.64.1649227047778;
+        Tue, 05 Apr 2022 23:37:27 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.111])
+        by smtp.gmail.com with ESMTPSA id bt18-20020a056a00439200b004faad3ae59esm17286650pfb.95.2022.04.05.23.37.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 23:37:27 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/4] selftests: kvm/x86/xen: Replace a comma in the xen_shinfo_test with semicolon
+Date:   Wed,  6 Apr 2022 14:37:14 +0800
+Message-Id: <20220406063715.55625-4-likexu@tencent.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220406063715.55625-1-likexu@tencent.com>
+References: <20220406063715.55625-1-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1f0e4fe8-0caa-4973-82c9-08da1797b4e2
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4997:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB49979AABBD8466D7C6D223B790E79@BY5PR12MB4997.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: clfM2WRtsfLIUOV4sViy4OYlXNyR8foSyhX2la7c7FLh1QbuwZnGGlvwNaNyJFiIEYjQMfRpv8UjSrZ4ENEzhy/mpAeRB9t7KwFlrktJ9fGi8OMP8Soo/QhugRwH6m8kG83N1ckHDDpMhMbG3gc2yvSOO7pI62vGRELbv237I3nwhx8ylN35HN/9N7J6zW7jmBtmN4oj6P5FPHk4/Y5SMtb+50AdPp/hU8Rdhs0XT59KHo9DjtufNriPJUd8NJtspeuLLOeDxAlXDidX8ZeQhbh8kOlr3C028vvNQ9WewINz/bjju4eWmx7hg2JyMgbnqF0NdLdNx0joLEBg41wyta3lWS9AAW30jYGrgAnKbnVCv4Bitf/FbR/NHxUBDYXcahy7mhNpD5I14DpQcCtgCaQue2jrPvQoZv18I6F8jSeY791bW3x1KIeukKAjwCqIR+XPgSQaJEkavV6q60Lv1k0j24FtBXO6PWH5tE/AEQviIi4xsqIhRl0GtubsF4bcPml626fmh8U3zWkgmzPciskHYSbfP3Zg3a2ODXqdDepG5IacZw+gAsWvqZK7sAB+b4JHuoziaHNbySjo/Jw7TfgJ1TG+KzUZmRgprUlztv3C7eIaexrVUfp6jkxhax+spAyewFbAtysRzOOEfUsAr5pl5mOFyFHS1I2UFl011AU2Gad2yueOgaJwFtPbVOZJDmQVj2ADQuiTMkRbStz9ig==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(336012)(508600001)(86362001)(426003)(8936002)(82310400005)(2616005)(5660300002)(26005)(186003)(16526019)(1076003)(6666004)(47076005)(7696005)(83380400001)(40460700003)(110136005)(36756003)(70206006)(70586007)(316002)(2906002)(8676002)(4326008)(81166007)(356005)(54906003)(36860700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 06:35:56.7496
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f0e4fe8-0caa-4973-82c9-08da1797b4e2
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT051.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4997
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the logic of handling Intel's corrected machine check interrupt
-storms to AMD's threshold interrupts.
++WARNING: Possible comma where semicolon could be used
++#397: FILE: tools/testing/selftests/kvm/x86_64/xen_shinfo_test.c:700:
+++				tmr.type = KVM_XEN_VCPU_ATTR_TYPE_TIMER,
+++				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_GET_ATTR, &tmr);
 
-First two patches are from Tony which cleans up the existing storm
-handling for Intel and proposes per CPU per bank storm handling.
+Fixes: 25eaeebe710c ("KVM: x86/xen: Add self tests for KVM_XEN_HVM_CONFIG_EVTCHN_SEND")
+Signed-off-by: Like Xu <likexu@tencent.com>
+---
+ tools/testing/selftests/kvm/x86_64/xen_shinfo_test.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Third and fourth patches do some cleanup and refactoring on the CMCI
-storm handling in order to extend similar workaround for AMD's threshold
-interrupt storms. These two patches could be merged into Tony's second
-patch of CMCI storm mitigation.
-
-AMD's storm mitigation for threshold interrupts also relies on per CPU
-per bank approach similar to Intel. But unlike CMCI storm handling it does
-not set thresholds to reduce rate of interrupts on a storm. Rather it
-turns off the interrupt on the current CPU and bank if there is a storm
-and re-enables back the interrupts when the storm subsides.
-
-It is okay to turn off threshold interrupts on AMD systems as other error
-severities continue to be handled even if the threshold interrupts are
-turned off. Uncorrected errors will generate a #MC and deferred errors
-have a unique separate deferred error interrupt. The final patch adds
-support for handling threshold interrupt storms on AMD systems.
-
-Smita Koralahalli (3):
-  x86/mce: Introduce a function pointer mce_handle_storm
-  x86/mce: Move storm handling to core.
-  x86/mce: Handle AMD threshold interrupt storms
-
-Tony Luck (2):
-  x86/mce: Remove old CMCI storm mitigation code
-  x86/mce: Add per-bank CMCI storm mitigation
-
- arch/x86/kernel/cpu/mce/amd.c      |  49 ++++++++
- arch/x86/kernel/cpu/mce/core.c     | 129 +++++++++++++++++----
- arch/x86/kernel/cpu/mce/intel.c    | 179 +++++++----------------------
- arch/x86/kernel/cpu/mce/internal.h |  42 +++++--
- 4 files changed, 231 insertions(+), 168 deletions(-)
-
+diff --git a/tools/testing/selftests/kvm/x86_64/xen_shinfo_test.c b/tools/testing/selftests/kvm/x86_64/xen_shinfo_test.c
+index d9d9d1deec45..5e6f40633ea6 100644
+--- a/tools/testing/selftests/kvm/x86_64/xen_shinfo_test.c
++++ b/tools/testing/selftests/kvm/x86_64/xen_shinfo_test.c
+@@ -702,7 +702,7 @@ int main(int argc, char *argv[])
+ 
+ 			case 14:
+ 				memset(&tmr, 0, sizeof(tmr));
+-				tmr.type = KVM_XEN_VCPU_ATTR_TYPE_TIMER,
++				tmr.type = KVM_XEN_VCPU_ATTR_TYPE_TIMER;
+ 				vcpu_ioctl(vm, VCPU_ID, KVM_XEN_VCPU_GET_ATTR, &tmr);
+ 				TEST_ASSERT(tmr.u.timer.port == EVTCHN_TIMER,
+ 					    "Timer port not returned");
 -- 
-2.17.1
+2.35.1
 
