@@ -2,64 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AAD2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6536C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  6 Apr 2022 21:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236276AbiDFVWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 17:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46220 "EHLO
+        id S235883AbiDFVYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 17:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235554AbiDFVWA (ORCPT
+        with ESMTP id S235625AbiDFVXf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 17:22:00 -0400
-Received: from baldur.buserror.net (baldur.buserror.net [165.227.176.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F003AE65
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 13:16:06 -0700 (PDT)
-Received: from [2601:449:8480:af0::46ce]
-        by baldur.buserror.net with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <oss@buserror.net>)
-        id 1ncC2J-006Lmc-Cd; Wed, 06 Apr 2022 15:13:51 -0500
-Message-ID: <7c2261ee00920aa6f8e6aeef98d99d34944957ab.camel@buserror.net>
-From:   Scott Wood <oss@buserror.net>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 06 Apr 2022 15:13:50 -0500
-In-Reply-To: <20220323174342.56187-1-andriy.shevchenko@linux.intel.com>
-References: <20220323174342.56187-1-andriy.shevchenko@linux.intel.com>
-Organization: Red Hat
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Wed, 6 Apr 2022 17:23:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D59F02DFD56
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 13:19:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D544B61604
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 20:19:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29AF5C385A7;
+        Wed,  6 Apr 2022 20:19:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649276363;
+        bh=RtNdJqRZV8HgUIHxnAIh/9MvAQCncAUWPPm40ZR4lxs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gMaYfjtk687ZfG2+n5ZHYW56vsLN6+/6HHCD+ZJjotwKcIVFX1U8mp2UwsMBUMO2c
+         WWxD0p7BPvD/1p2fD17WOkVJRldDjWcZajtOAREdtk0bDIVZfk8V5DrtqznwYzMzGj
+         6cVH0UJtJ93sj+bluUCogxe/zCMWI4ffE3OJUI6steh4f7Kjh0nEDS49mDqRFpCxg6
+         zxsH8ed33R9L5QmBNrCaeMat8EiAdN8co5yR4Z0LZQ0/rqidSY04wdR6Mw9QCQY5on
+         //ssOTvQk+EVPmoiNl+szprHEvycXU9SPXrDttY0cvUOsLZqkOQP0LhDMbSRLh66An
+         6JQ2fPfwMXt0A==
+Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1ncC7c-00GGaJ-IN; Wed, 06 Apr 2022 22:19:20 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     alsa-devel@alsa-project.org
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        "Hans de Goede" <hdegoede@redhat.com>,
+        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jie Yang <yang.jie@linux.intel.com>,
+        Liam Girdwood <liam.r.girdwood@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 1/4] ASoC: Intel: sof_es8336: simplify speaker gpio naming
+Date:   Wed,  6 Apr 2022 22:19:15 +0200
+Message-Id: <3008c576ca45d5cc99ad4a18d1d30de45a0aff80.1649275618.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1649275618.git.mchehab@kernel.org>
+References: <cover.1649275618.git.mchehab@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2601:449:8480:af0::46ce
-X-SA-Exim-Rcpt-To: andriy.shevchenko@linux.intel.com, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, brgl@bgdev.pl, linus.walleij@linaro.org
-X-SA-Exim-Mail-From: oss@buserror.net
-Subject: Re: [PATCH v1 1/1] powerpc/83xx/mpc8349emitx: Get rid of of_node
- assignment
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on baldur.buserror.net)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-03-23 at 19:43 +0200, Andy Shevchenko wrote:
-> Let GPIO library to assign of_node from the parent device.
-> This allows to move GPIO library and drivers to use fwnode
-> APIs instead of being stuck with OF-only interfaces.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  arch/powerpc/platforms/83xx/mcu_mpc8349emitx.c | 14 +++++---------
->  1 file changed, 5 insertions(+), 9 deletions(-)
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-Acked-by: Scott Wood <oss@buserror.net>
+In preparation for the support of an additional gpio for headphone
+control, rename GPIOs to make explicit references to speakers and
+gpio0 or gpio1.
 
--Scott
+No functionality change.
 
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
+
+See [PATCH v4 0/4] at: https://lore.kernel.org/all/cover.1649275618.git.mchehab@kernel.org/
+
+ sound/soc/intel/boards/sof_es8336.c | 42 ++++++++++++++---------------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
+
+diff --git a/sound/soc/intel/boards/sof_es8336.c b/sound/soc/intel/boards/sof_es8336.c
+index 5e0529aa4f1d..e4829a376b79 100644
+--- a/sound/soc/intel/boards/sof_es8336.c
++++ b/sound/soc/intel/boards/sof_es8336.c
+@@ -27,7 +27,7 @@
+ #define SOF_ES8336_SSP_CODEC(quirk)		((quirk) & GENMASK(3, 0))
+ #define SOF_ES8336_SSP_CODEC_MASK		(GENMASK(3, 0))
+ 
+-#define SOF_ES8336_TGL_GPIO_QUIRK		BIT(4)
++#define SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK	BIT(4)
+ #define SOF_ES8336_ENABLE_DMIC			BIT(5)
+ #define SOF_ES8336_JD_INVERTED			BIT(6)
+ 
+@@ -39,7 +39,7 @@ MODULE_PARM_DESC(quirk, "Board-specific quirk override");
+ 
+ struct sof_es8336_private {
+ 	struct device *codec_dev;
+-	struct gpio_desc *gpio_pa;
++	struct gpio_desc *gpio_speakers;
+ 	struct snd_soc_jack jack;
+ 	struct list_head hdmi_pcm_list;
+ 	bool speaker_en;
+@@ -51,19 +51,19 @@ struct sof_hdmi_pcm {
+ 	int device;
+ };
+ 
+-static const struct acpi_gpio_params pa_enable_gpio = { 0, 0, true };
+-static const struct acpi_gpio_mapping acpi_es8336_gpios[] = {
+-	{ "pa-enable-gpios", &pa_enable_gpio, 1 },
++static const struct acpi_gpio_params speakers_enable_gpio0 = { 0, 0, true };
++static const struct acpi_gpio_mapping acpi_speakers_enable_gpio0[] = {
++	{ "speakers-enable-gpios", &speakers_enable_gpio0, 1 },
+ 	{ }
+ };
+ 
+-static const struct acpi_gpio_params quirk_pa_enable_gpio = { 1, 0, true };
+-static const struct acpi_gpio_mapping quirk_acpi_es8336_gpios[] = {
+-	{ "pa-enable-gpios", &quirk_pa_enable_gpio, 1 },
++static const struct acpi_gpio_params speakers_enable_gpio1 = { 1, 0, true };
++static const struct acpi_gpio_mapping acpi_speakers_enable_gpio1[] = {
++	{ "speakers-enable-gpios", &speakers_enable_gpio1, 1 },
+ 	{ }
+ };
+ 
+-static const struct acpi_gpio_mapping *gpio_mapping = acpi_es8336_gpios;
++static const struct acpi_gpio_mapping *gpio_mapping = acpi_speakers_enable_gpio0;
+ 
+ static void log_quirks(struct device *dev)
+ {
+@@ -71,8 +71,8 @@ static void log_quirks(struct device *dev)
+ 	dev_info(dev, "quirk SSP%ld\n",  SOF_ES8336_SSP_CODEC(quirk));
+ 	if (quirk & SOF_ES8336_ENABLE_DMIC)
+ 		dev_info(dev, "quirk DMIC enabled\n");
+-	if (quirk & SOF_ES8336_TGL_GPIO_QUIRK)
+-		dev_info(dev, "quirk TGL GPIO enabled\n");
++	if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
++		dev_info(dev, "Speakers GPIO1 quirk enabled\n");
+ 	if (quirk & SOF_ES8336_JD_INVERTED)
+ 		dev_info(dev, "quirk JD inverted enabled\n");
+ }
+@@ -88,7 +88,7 @@ static int sof_es8316_speaker_power_event(struct snd_soc_dapm_widget *w,
+ 	else
+ 		priv->speaker_en = true;
+ 
+-	gpiod_set_value_cansleep(priv->gpio_pa, priv->speaker_en);
++	gpiod_set_value_cansleep(priv->gpio_speakers, priv->speaker_en);
+ 
+ 	return 0;
+ }
+@@ -233,8 +233,8 @@ static int sof_es8336_quirk_cb(const struct dmi_system_id *id)
+ {
+ 	quirk = (unsigned long)id->driver_data;
+ 
+-	if (quirk & SOF_ES8336_TGL_GPIO_QUIRK)
+-		gpio_mapping = quirk_acpi_es8336_gpios;
++	if (quirk & SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
++		gpio_mapping = acpi_speakers_enable_gpio1;
+ 
+ 	return 1;
+ }
+@@ -257,7 +257,7 @@ static const struct dmi_system_id sof_es8336_quirk_table[] = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "IP3 tech"),
+ 			DMI_MATCH(DMI_BOARD_NAME, "WN1"),
+ 		},
+-		.driver_data = (void *)(SOF_ES8336_TGL_GPIO_QUIRK)
++		.driver_data = (void *)(SOF_ES8336_SPEAKERS_EN_GPIO1_QUIRK)
+ 	},
+ 	{}
+ };
+@@ -585,10 +585,10 @@ static int sof_es8336_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_warn(codec_dev, "unable to add GPIO mapping table\n");
+ 
+-	priv->gpio_pa = gpiod_get_optional(codec_dev, "pa-enable", GPIOD_OUT_LOW);
+-	if (IS_ERR(priv->gpio_pa)) {
+-		ret = dev_err_probe(dev, PTR_ERR(priv->gpio_pa),
+-				    "could not get pa-enable GPIO\n");
++	priv->gpio_speakers = gpiod_get_optional(codec_dev, "speakers-enable", GPIOD_OUT_LOW);
++	if (IS_ERR(priv->gpio_speakers)) {
++		ret = dev_err_probe(dev, PTR_ERR(priv->gpio_speakers),
++				    "could not get speakers-enable GPIO\n");
+ 		goto err_put_codec;
+ 	}
+ 
+@@ -604,7 +604,7 @@ static int sof_es8336_probe(struct platform_device *pdev)
+ 
+ 	ret = devm_snd_soc_register_card(dev, card);
+ 	if (ret) {
+-		gpiod_put(priv->gpio_pa);
++		gpiod_put(priv->gpio_speakers);
+ 		dev_err(dev, "snd_soc_register_card failed: %d\n", ret);
+ 		goto err_put_codec;
+ 	}
+@@ -622,7 +622,7 @@ static int sof_es8336_remove(struct platform_device *pdev)
+ 	struct snd_soc_card *card = platform_get_drvdata(pdev);
+ 	struct sof_es8336_private *priv = snd_soc_card_get_drvdata(card);
+ 
+-	gpiod_put(priv->gpio_pa);
++	gpiod_put(priv->gpio_speakers);
+ 	device_remove_software_node(priv->codec_dev);
+ 	put_device(priv->codec_dev);
+ 
+-- 
+2.35.1
 
