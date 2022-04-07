@@ -2,189 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6696EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2C53C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343903AbiDGO1I (ORCPT
+        id S1343920AbiDGO1L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36514 "EHLO
+        Thu, 7 Apr 2022 10:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbiDGO1F (ORCPT
+        with ESMTP id S1343900AbiDGO1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 10:27:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C33189A03;
-        Thu,  7 Apr 2022 07:24:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D015561C65;
-        Thu,  7 Apr 2022 14:24:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19C17C385A4;
-        Thu,  7 Apr 2022 14:24:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649341455;
-        bh=w14ZPYdK01Rmbqc8luZ4J6X6VeW7r2KK5+F7YTyBwz4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TAywI+GpgGL/Hf8yI/GiNlm9V0dtjIj9Bvl5Gu4n2WRg/h7qkd/wJYaCSqlt9cqQe
-         fmNv865oCZado3Q6vyk2+lOqad6zUlSl/UsBVWG0hNDkQvL4wDTOrnXozI8fHJggof
-         rs1HdivX/eU+DNFyI7xMA/CKAls9YF/shkA24ZcFnDaOTQOtB3RLxQHyvsUNMLoq2Z
-         l5djZGerUM2bENo/OBKaLrS8agNtgFPak3QAFtgFBUHj5QJmaVTySEvpWKXKVdUwkr
-         D28tWH1kajSkzEUI+goASr/y2KNmCtXje9f+geWHPshF6yubJii+Gb9xHwC3PJ7N5Z
-         BgMvOFK3AWovA==
-Date:   Thu, 7 Apr 2022 22:24:05 +0800
-From:   Gao Xiang <xiang@kernel.org>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com
-Subject: Re: [PATCH v8 17/20] erofs: implement fscache-based data read for
- non-inline layout
-Message-ID: <Yk70BTzzoaOvET5c@debian>
-Mail-Followup-To: Jeffle Xu <jefflexu@linux.alibaba.com>,
-        dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com
-References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
- <20220406075612.60298-18-jefflexu@linux.alibaba.com>
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF64189A38
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:24:19 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id 2so5768393pjw.2
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 07:24:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+nK9SRbUB5i4er0Nc2x3M4CSJ4RiMR6/wcutg0xiHzE=;
+        b=BG9bTY9/90nnq5XMYGSYghQLUjR1HPYPk0BdlmCStQ6lZrcNzo5f+9DX5UTIzB7zi8
+         APQCLYf+sAbyni171SWwk5wHsnAJh3TBFYYWEW0AJKEIjSC8hPAMSSi0Ryd6e+ASdeze
+         AQfdcRAGMOo1XFE1iO6sXphVXM5mN3F4Huo/EzXiJz0pHxWBmjW3LXF1krbLhe9rgtgc
+         xT8JBUdz4dR6CqVvVUFPci+xTirov06jCjeT+Cs6GXPH8RJH6dXllou0SDB0hJxZtgbB
+         8cU3t7A4Rcj9iuRMAo5qAygcSb6L2soxaLvkLsDBLcRlUI9SETudzAkqC8xDF7vfqhWk
+         2EoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+nK9SRbUB5i4er0Nc2x3M4CSJ4RiMR6/wcutg0xiHzE=;
+        b=m99PX9lvHb/vTV0pJQjsjc69ic9ffRbeMTvZm9EupAWX7tbJCUSDOog3zRqM+y06Mn
+         0K7TvDqCHzHMwfApOLo60J//5pcREN12gYfpaJgJqSfWNg6zSq17o7TNNmLPcRpNcNQG
+         XE8EiWb4MXMQzgwNPr3l/XLEO7v2ZujQdbzHl6kfDWTeWq1N9AsCR5W4yGFbIoW91q7z
+         ECgc+fuDYxZxox/44GVNgR1S16lPhNS5jew/AZxv1RmaAd/qY9mB4sdmk6aOQsWy0Lqh
+         4YksbrGuRteyVaKHZqeyEhU/uXgH48GtA6M1uSAgXPgBEXNAM365xipI6MJO9zhXYyH2
+         jL0g==
+X-Gm-Message-State: AOAM532umnJQsVY370g2qYMB1a1rKuhyzk6hLA3g6eWpq2RgQscwyBVU
+        cEW0h6+K7AxHU2NjPeweLc12RQ==
+X-Google-Smtp-Source: ABdhPJyWjpOUQOpPX3P6u/QFz5ac/xm/7Q+g/Trta+CDcME4Mv0B0mlxTYchvtAIU5o9eTnl6nrBTg==
+X-Received: by 2002:a17:902:d486:b0:157:1cc0:48bd with SMTP id c6-20020a170902d48600b001571cc048bdmr11887plg.108.1649341410446;
+        Thu, 07 Apr 2022 07:23:30 -0700 (PDT)
+Received: from x1.hsd1.or.comcast.net ([2601:1c2:1001:7090:172d:8708:69ef:da3a])
+        by smtp.gmail.com with ESMTPSA id v3-20020a056a00148300b004fb04acde5dsm22499353pfu.166.2022.04.07.07.23.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 07:23:30 -0700 (PDT)
+From:   Drew Fustini <dfustini@baylibre.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Dave Gerlach <d-gerlach@ti.com>, Suman Anna <s-anna@ti.com>,
+        Tony Lindgren <tony@atomide.com>, Nishanth Menon <nm@ti.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Drew Fustini <dfustini@baylibre.com>
+Subject: [PATCH v2] dt-bindings: soc: ti: wkup_m3_ipc: convert bindings to json-schema
+Date:   Thu,  7 Apr 2022 07:17:51 -0700
+Message-Id: <20220407141750.2289293-1-dfustini@baylibre.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220406075612.60298-18-jefflexu@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 03:56:09PM +0800, Jeffle Xu wrote:
-> Implement the data plane of reading data from data blobs over fscache
-> for non-inline layout.
-> 
-> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
-> ---
->  fs/erofs/fscache.c  | 52 +++++++++++++++++++++++++++++++++++++++++++++
->  fs/erofs/inode.c    |  5 +++++
->  fs/erofs/internal.h |  2 ++
->  3 files changed, 59 insertions(+)
-> 
-> diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-> index 158cc273f8fb..65de1c754e80 100644
-> --- a/fs/erofs/fscache.c
-> +++ b/fs/erofs/fscache.c
-> @@ -60,10 +60,62 @@ static int erofs_fscache_meta_readpage(struct file *data, struct page *page)
->  	return ret;
->  }
->  
-> +static int erofs_fscache_readpage(struct file *file, struct page *page)
-> +{
-> +	struct folio *folio = page_folio(page);
-> +	struct inode *inode = folio_file_mapping(folio)->host;
-> +	struct super_block *sb = inode->i_sb;
-> +	struct erofs_map_blocks map;
-> +	struct erofs_map_dev mdev;
-> +	erofs_off_t pos;
-> +	loff_t pstart;
-> +	int ret = 0;
-> +
-> +	DBG_BUGON(folio_size(folio) != EROFS_BLKSIZ);
-> +
-> +	pos = folio_pos(folio);
-> +	map.m_la = pos;
-> +
-> +	ret = erofs_map_blocks(inode, &map, EROFS_GET_BLOCKS_RAW);
-> +	if (ret)
-> +		goto out_unlock;
-> +
-> +	if (!(map.m_flags & EROFS_MAP_MAPPED)) {
-> +		folio_zero_range(folio, 0, folio_size(folio));
-> +		goto out_uptodate;
-> +	}
-> +
-> +	/* no-inline readpage */
-> +	mdev = (struct erofs_map_dev) {
-> +		.m_deviceid = map.m_deviceid,
-> +		.m_pa = map.m_pa,
-> +	};
-> +
-> +	ret = erofs_map_dev(sb, &mdev);
-> +	if (ret)
-> +		goto out_unlock;
-> +
-> +	pstart = mdev.m_pa + (pos - map.m_la);
-> +	ret = erofs_fscache_read_folios(mdev.m_fscache->cookie,
-> +			folio_file_mapping(folio), folio_pos(folio),
-> +			folio_size(folio), pstart);
-> +
-> +out_uptodate:
-> +	if (!ret)
-> +		folio_mark_uptodate(folio);
-> +out_unlock:
-> +	folio_unlock(folio);
-> +	return ret;
-> +}
-> +
->  static const struct address_space_operations erofs_fscache_meta_aops = {
->  	.readpage = erofs_fscache_meta_readpage,
->  };
->  
-> +const struct address_space_operations erofs_fscache_access_aops = {
-> +	.readpage = erofs_fscache_readpage,
-> +};
-> +
->  /*
->   * Get the page cache of data blob at the index offset.
->   * Return: up to date page on success, ERR_PTR() on failure.
-> diff --git a/fs/erofs/inode.c b/fs/erofs/inode.c
-> index e8b37ba5e9ad..88b51b5fb53f 100644
-> --- a/fs/erofs/inode.c
-> +++ b/fs/erofs/inode.c
-> @@ -296,7 +296,12 @@ static int erofs_fill_inode(struct inode *inode, int isdir)
->  		err = z_erofs_fill_inode(inode);
->  		goto out_unlock;
->  	}
-> +
+Convert the wkup_m3_ipc bindings documentation to json-schema.
 
-unnecessary modification.
+Link: https://lore.kernel.org/linux-arm-kernel/20220221125522.l3tntb6i7yjxp6vb@flattered/
+Suggested-by: Nishanth Menon <nm@ti.com>
+Signed-off-by: Drew Fustini <dfustini@baylibre.com>
+---
+ .../bindings/soc/ti/wkup_m3_ipc.txt           | 57 -------------
+ .../bindings/soc/ti/wkup_m3_ipc.yaml          | 81 +++++++++++++++++++
+ 2 files changed, 81 insertions(+), 57 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt
+ create mode 100644 Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.yaml
 
-Otherwise looks good:
-Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Changes in v2:
+- removed unnecessary line breaks and shorten property descriptions
 
-Thanks,
-Gao Xiang
+diff --git a/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt b/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt
+deleted file mode 100644
+index 401550487ed6..000000000000
+--- a/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt
++++ /dev/null
+@@ -1,57 +0,0 @@
+-Wakeup M3 IPC Driver
+-=====================
+-
+-The TI AM33xx and AM43xx family of devices use a small Cortex M3 co-processor
+-(commonly referred to as Wakeup M3 or CM3) to help with various low power tasks
+-that cannot be controlled from the MPU, like suspend/resume and certain deep
+-C-states for CPU Idle. Once the wkup_m3_ipc driver uses the wkup_m3_rproc driver
+-to boot the wkup_m3, it handles communication with the CM3 using IPC registers
+-present in the SoC's control module and a mailbox. The wkup_m3_ipc exposes an
+-API to allow the SoC PM code to execute specific PM tasks.
+-
+-Wkup M3 Device Node:
+-====================
+-A wkup_m3_ipc device node is used to represent the IPC registers within an
+-SoC.
+-
+-Required properties:
+---------------------
+-- compatible:		Should be,
+-				"ti,am3352-wkup-m3-ipc" for AM33xx SoCs
+-				"ti,am4372-wkup-m3-ipc" for AM43xx SoCs
+-- reg:			Contains the IPC register address space to communicate
+-			with the Wakeup M3 processor
+-- interrupts:		Contains the interrupt information for the wkup_m3
+-			interrupt that signals the MPU.
+-- ti,rproc:		phandle to the wkup_m3 rproc node so the IPC driver
+-			can boot it.
+-- mboxes:		phandles used by IPC framework to get correct mbox
+-			channel for communication. Must point to appropriate
+-			mbox_wkupm3 child node.
+-
+-Example:
+---------
+-/* AM33xx */
+-	l4_wkup: l4_wkup@44c00000 {
+-		...
+-
+-		scm: scm@210000 {
+-			compatible = "ti,am3-scm", "simple-bus";
+-			reg = <0x210000 0x2000>;
+-			#address-cells = <1>;
+-			#size-cells = <1>;
+-			ranges = <0 0x210000 0x2000>;
+-
+-			...
+-
+-			wkup_m3_ipc: wkup_m3_ipc@1324 {
+-				compatible = "ti,am3352-wkup-m3-ipc";
+-				reg = <0x1324 0x24>;
+-				interrupts = <78>;
+-				ti,rproc = <&wkup_m3>;
+-				mboxes = <&mailbox &mbox_wkupm3>;
+-			};
+-
+-			...
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.yaml b/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.yaml
+new file mode 100644
+index 000000000000..50cc89c2d1c3
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.yaml
+@@ -0,0 +1,81 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/ti/wkup_m3_ipc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Wakeup M3 IPC device
++
++maintainers:
++  - Dave Gerlach <d-gerlach@ti.com>
++  - Drew Fustini <dfustini@baylibre.com>
++
++description: |+
++  The TI AM33xx and AM43xx family of devices use a small Cortex M3 co-processor
++  (commonly referred to as Wakeup M3 or CM3) to help with various low power tasks
++  that cannot be controlled from the MPU, like suspend/resume and certain deep
++  C-states for CPU Idle. Once the wkup_m3_ipc driver uses the wkup_m3_rproc driver
++  to boot the wkup_m3, it handles communication with the CM3 using IPC registers
++  present in the SoC's control module and a mailbox. The wkup_m3_ipc exposes an
++  API to allow the SoC PM code to execute specific PM tasks.
++
++  Wkup M3 Device Node
++  ====================
++  A wkup_m3_ipc device node is used to represent the IPC registers within an
++  SoC.
++
++properties:
++  compatible:
++    enum:
++      - ti,am3352-wkup-m3-ipc # for AM33xx SoCs
++      - ti,am4372-wkup-m3-ipc # for AM43xx SoCs
++
++  reg:
++    description:
++      The IPC register address space to communicate with the Wakeup M3 processor
++    maxItems: 1
++
++  interrupts:
++    description: wkup_m3 interrupt that signals the MPU
++    maxItems: 1
++
++  ti,rproc:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      phandle to the wkup_m3 rproc node so the IPC driver can boot it
++
++  mboxes:
++    description:
++      phandles used by IPC framework to get correct mbox
++      channel for communication. Must point to appropriate
++      mbox_wkupm3 child node.
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - ti,rproc
++  - mboxes
++
++additionalProperties: false
++
++examples:
++  - |
++    soc {
++        #address-cells = <1>;
++        #size-cells = <1>;
++
++        mailbox: mailbox {
++            #mbox-cells = <1>;
++        };
++
++        wkup_m3_ipc: wkup_m3_ipc@1324 {
++           compatible = "ti,am3352-wkup-m3-ipc";
++           reg = <0x1324 0x24>;
++           interrupts = <78>;
++           ti,rproc = <&wkup_m3>;
++           mboxes = <&mailbox &mbox_wkupm3>;
++        };
++    };
++...
+-- 
+2.32.0
 
->  	inode->i_mapping->a_ops = &erofs_raw_access_aops;
-> +#ifdef CONFIG_EROFS_FS_ONDEMAND
-> +	if (erofs_is_fscache_mode(inode->i_sb))
-> +		inode->i_mapping->a_ops = &erofs_fscache_access_aops;
-> +#endif
->  
->  out_unlock:
->  	erofs_put_metabuf(&buf);
-> diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-> index e186051f0640..336d19647c96 100644
-> --- a/fs/erofs/internal.h
-> +++ b/fs/erofs/internal.h
-> @@ -642,6 +642,8 @@ int erofs_fscache_register_cookie(struct super_block *sb,
->  void erofs_fscache_unregister_cookie(struct erofs_fscache **fscache);
->  
->  struct folio *erofs_fscache_get_folio(struct super_block *sb, pgoff_t index);
-> +
-> +extern const struct address_space_operations erofs_fscache_access_aops;
->  #else
->  static inline int erofs_fscache_register_fs(struct super_block *sb) { return 0; }
->  static inline void erofs_fscache_unregister_fs(struct super_block *sb) {}
-> -- 
-> 2.27.0
-> 
