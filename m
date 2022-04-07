@@ -2,99 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E74D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245085AbiDGMGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58606 "EHLO
+        id S245041AbiDGMGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245105AbiDGMF5 (ORCPT
+        with ESMTP id S239537AbiDGMG2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:05:57 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E5D46CA0E9;
-        Thu,  7 Apr 2022 05:03:26 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 7 Apr 2022 20:02:58
- +0800 (GMT+08:00)
-X-Originating-IP: [10.181.226.201]
-Date:   Thu, 7 Apr 2022 20:02:58 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Oliver Neukum" <oneukum@suse.com>
-Cc:     linux-kernel@vger.kernel.org, chris@zankel.net, jcmvbkbc@gmail.com,
-        mustafa.ismail@intel.com, shiraz.saleem@intel.com, jgg@ziepe.ca,
-        wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, jes@trained-monkey.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        alexander.deucher@amd.com, linux-xtensa@linux-xtensa.org,
-        linux-rdma@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-hippi@sunsite.dk,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linma@zju.edu.cn
-Subject: Re: Re: [PATCH 02/11] drivers: usb: host: Fix deadlock in
- oxu_bus_suspend()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.8 build 20200806(7a9be5e8)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <8ed7760a-471d-19a2-0a3b-1e0fc3a27281@suse.com>
-References: <cover.1649310812.git.duoming@zju.edu.cn>
- <8b1201dc7554a2ab3ca555a2b6e2747761603d19.1649310812.git.duoming@zju.edu.cn>
- <8ed7760a-471d-19a2-0a3b-1e0fc3a27281@suse.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Thu, 7 Apr 2022 08:06:28 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC57C31DE
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:04:27 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id b24so6108512edu.10
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 05:04:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=TUagL1wODEikqUkLow3v0XH4BykbzucN8xEfLth78H4=;
+        b=nnqmHk9r0F5jBw+maKTb6Sufj2aR12l7WrSCYLy+X52Zpl4xvhm3vApI8BfPZ/FSca
+         HwzngoAMEytBgAXx1PNW+b2tl/TAti6xietSCob3HMt5mlOCiubX6i0Ggn4mfdljUpps
+         vNPg1+Y/lvjLyBJkgf3IEKYOp8t7Hm7W1yCXMrJ+77edH7nDm23GGZz6eKW9LeWK/P0D
+         zrTb8WSUD9w/KXU7BR0oL/kdGJksFN6WXoMWdRCT9V4DeGEWHZiGfSyTnraS9eQsxGm8
+         eG83cMtly6GLGHunfjX/WRKVpeXQL0tuWbMK3qcGDVQZkfB3qmjO0N48MHzDLDytvW5w
+         LYsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TUagL1wODEikqUkLow3v0XH4BykbzucN8xEfLth78H4=;
+        b=KOcF7tcrEavL9l+OklZT79XCOKdkJmmCX+5G29OSRTaq2JPXfdVsnEGnxAj0w7Wbtc
+         R1jKxVOVGWVYK5nwQn9edshAxzatc2A8Xl9vaZ91ZML56uUXFGLzzZBuPVFO43svG3n2
+         80DsCMi/NI2YMGSN2ToIibl6icI8GyJQoyhhYYZ103CiGw04LrGxwqqqBjPLNKxT/dbh
+         WUWX3agxg+hLoD+e5xiDjQnxr4zAYq3T5PAPAastMj2tJhsa7H+0aoMa8ot24Hj40axo
+         e17gxTqqw7zJYVBjAJzco4PdO/ELjBvozVCs1TmeOgcTG/TjR+KqCPlSqdHkwtlz5YDu
+         /ENQ==
+X-Gm-Message-State: AOAM531Sfj0LE8A5zhRZTDSJDlDIwXAPsFzFo7xotcaWvI7qiElywRuA
+        U/c2h31fcudEHxCx78+G2escwg==
+X-Google-Smtp-Source: ABdhPJxdmNVJ/HA/fsikeQAjG7ODJWyGCaxh4P4WauvZgQ4v3hxlwTN/dO22tLf5iCaB6uKilwN9NQ==
+X-Received: by 2002:aa7:d1d0:0:b0:41c:c19e:a0d6 with SMTP id g16-20020aa7d1d0000000b0041cc19ea0d6mr13790784edp.179.1649333065649;
+        Thu, 07 Apr 2022 05:04:25 -0700 (PDT)
+Received: from [192.168.0.187] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id f2-20020a170906390200b006e7f5fedbe7sm4073522eje.3.2022.04.07.05.04.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 05:04:25 -0700 (PDT)
+Message-ID: <65a57655-2311-0f9d-8667-851755aaec1f@linaro.org>
+Date:   Thu, 7 Apr 2022 14:04:24 +0200
 MIME-Version: 1.0
-Message-ID: <4170b816.3f4a8.18003e801f8.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgAXj2Ly0k5i+UeSAQ--.26944W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgQNAVZdtZE08wABsj
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] spi: atmel,quadspi: Define lan966x QSPI
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>, Mark Brown <broonie@kernel.org>
+Cc:     Manohar.Puri@microchip.com, UNGLinuxDriver@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        devicetree@vger.kernel.org, kavyasree.kotagiri@microchip.com,
+        krzk+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        nicolas.ferre@microchip.com, robh+dt@kernel.org,
+        tudor.ambarus@microchip.com
+References: <Yk7Ex5ltaxC7Z+N6@sirena.org.uk>
+ <20220407112345.148316-1-michael@walle.cc> <Yk7LjrvqSLbzPYkw@sirena.org.uk>
+ <561bbc1cf43c3795eee67e10537ba365@walle.cc>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <561bbc1cf43c3795eee67e10537ba365@walle.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sCgpPbiBUaHUsIDcgQXByIDIwMjIgMTA6MDE6NDMgKzAyMDAgT2xpdmVyIE5ldWt1bSB3
-cm90ZToKCj4gT24gMDcuMDQuMjIgMDg6MzMsIER1b21pbmcgWmhvdSB3cm90ZToKPiA+IFRoZXJl
-IGlzIGEgZGVhZGxvY2sgaW4gb3h1X2J1c19zdXNwZW5kKCksIHdoaWNoIGlzIHNob3duIGJlbG93
-Ogo+ID4KPiA+ICAgIChUaHJlYWQgMSkgICAgICAgICAgICAgIHwgICAgICAoVGhyZWFkIDIpCj4g
-PiAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IHRpbWVyX2FjdGlvbigpCj4gPiBveHVfYnVz
-X3N1c3BlbmQoKSAgICAgICAgICB8ICBtb2RfdGltZXIoKQo+ID4gIHNwaW5fbG9ja19pcnEoKSAv
-LygxKSAgICAgfCAgKHdhaXQgYSB0aW1lKQo+ID4gIC4uLiAgICAgICAgICAgICAgICAgICAgICAg
-fCBveHVfd2F0Y2hkb2coKQo+ID4gIGRlbF90aW1lcl9zeW5jKCkgICAgICAgICAgfCAgc3Bpbl9s
-b2NrX2lycSgpIC8vKDIpCj4gPiAgKHdhaXQgdGltZXIgdG8gc3RvcCkgICAgICB8ICAuLi4KPiA+
-Cj4gPiBXZSBob2xkIG94dS0+bG9jayBpbiBwb3NpdGlvbiAoMSkgb2YgdGhyZWFkIDEsIGFuZCB1
-c2UKPiA+IGRlbF90aW1lcl9zeW5jKCkgdG8gd2FpdCB0aW1lciB0byBzdG9wLCBidXQgdGltZXIg
-aGFuZGxlcgo+ID4gYWxzbyBuZWVkIG94dS0+bG9jayBpbiBwb3NpdGlvbiAoMikgb2YgdGhyZWFk
-IDIuIEFzIGEgcmVzdWx0LAo+ID4gb3h1X2J1c19zdXNwZW5kKCkgd2lsbCBibG9jayBmb3JldmVy
-Lgo+ID4KPiA+IFRoaXMgcGF0Y2ggZXh0cmFjdHMgZGVsX3RpbWVyX3N5bmMoKSBmcm9tIHRoZSBw
-cm90ZWN0aW9uIG9mCj4gPiBzcGluX2xvY2tfaXJxKCksIHdoaWNoIGNvdWxkIGxldCB0aW1lciBo
-YW5kbGVyIHRvIG9idGFpbgo+ID4gdGhlIG5lZWRlZCBsb2NrLgo+IEdvb2QgY2F0Y2guCj4gPiBT
-aWduZWQtb2ZmLWJ5OiBEdW9taW5nIFpob3UgPGR1b21pbmdAemp1LmVkdS5jbj4KPiA+IC0tLQo+
-ID4gIGRyaXZlcnMvdXNiL2hvc3Qvb3h1MjEwaHAtaGNkLmMgfCAyICsrCj4gPiAgMSBmaWxlIGNo
-YW5nZWQsIDIgaW5zZXJ0aW9ucygrKQo+ID4KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3VzYi9o
-b3N0L294dTIxMGhwLWhjZC5jIGIvZHJpdmVycy91c2IvaG9zdC9veHUyMTBocC1oY2QuYwo+ID4g
-aW5kZXggYjc0MTY3MDUyNWUuLmVlNDAzZGYzMzA5IDEwMDY0NAo+ID4gLS0tIGEvZHJpdmVycy91
-c2IvaG9zdC9veHUyMTBocC1oY2QuYwo+ID4gKysrIGIvZHJpdmVycy91c2IvaG9zdC9veHUyMTBo
-cC1oY2QuYwo+ID4gQEAgLTM5MDksOCArMzkwOSwxMCBAQCBzdGF0aWMgaW50IG94dV9idXNfc3Vz
-cGVuZChzdHJ1Y3QgdXNiX2hjZCAqaGNkKQo+ID4gIAkJfQo+ID4gIAl9Cj4gPiAgCj4gPiArCXNw
-aW5fdW5sb2NrX2lycSgmb3h1LT5sb2NrKTsKPiA+ICAJLyogdHVybiBvZmYgbm93LWlkbGUgSEMg
-Ki8KPiA+ICAJZGVsX3RpbWVyX3N5bmMoJm94dS0+d2F0Y2hkb2cpOwo+ID4gKwlzcGluX2xvY2tf
-aXJxKCZveHUtPmxvY2spOwo+ID4gIAllaGNpX2hhbHQob3h1KTsKPiA+ICAJaGNkLT5zdGF0ZSA9
-IEhDX1NUQVRFX1NVU1BFTkRFRDsKPiA+ICAKPiAKPiBXaGF0IGlzIHRoZSBsb2NrIHByb3RlY3Rp
-bmcgYXQgdGhhdCBzdGFnZT8gV2h5IG5vdCBqdXN0IGRyb3AgaXQgZWFybGllci4KCkkgdGhpbmsg
-dGhlcmUgaXMgYSByYWNlIGNvbmRpdGlvbiBiZXR3ZWVuIG94dV9idXNfc3VzcGVuZCgpIGFuZCBv
-eHVfc3RvcCgpLApzbyBJIHRoaW5rIHdlIGNvdWxkIG5vdCBkcm9wIHRoZSBveHUtPmxvY2sgZWFy
-bGllci4KCiAgICAgICAgICAgICAgIChUaHJlYWQgMSkgICAgICAgICAgICAgICB8ICAgICAgICAg
-KFRocmVhZCAyKQogb3h1X2J1c19zdXNwZW5kKCkgICAgICAgICAgICAgICAgICAgICAgfCBveHVf
-c3RvcCgpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IAogaGNkLT5z
-dGF0ZSA9IEhDX1NUQVRFX1NVU1BFTkRFRDsgICAgICAgfCAgc3Bpbl9sb2NrX2lycSgmb3h1LT5s
-b2NrKTsKIC4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgCiB3cml0ZWwo
-bWFzaywgJm94dS0+cmVncy0+aW50cl9lbmFibGUpOyB8ICAuLi4KICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIHwgIHdyaXRlbCgwLCAmb3h1LT5yZWdzLT5pbnRyX2VuYWJs
-ZSk7CiByZWFkbCgmb3h1LT5yZWdzLT5pbnRyX2VuYWJsZSk7ICAgICAgICB8CgpUaGUgb3h1LT5y
-ZWdzLT5pbnRyX2VuYWJsZSBpcyBzZXQgdG8gMCBpbiBveHVfc3RvcCgpLCBhbmQgdGhlIHJlYWRs
-KCkgaW4Kb3h1X2J1c19zdXNwZW5kKCkgd2lsbCByZWFkIHRoZSB3cm9uZyB2YWx1ZS4KClRoYW5r
-cyBhIGxvdCBmb3IgeW91ciB0aW1lIGFuZCBhZHZpY2UuIElmIHlvdSBoYXZlIHF1ZXN0aW9ucywg
-d2VsY29tZSB0byBhc2sgbWUuCgpCZXN0IHJlZ2FyZHMsCkR1b21pbmcgWmhvdQo=
+On 07/04/2022 13:41, Michael Walle wrote:
+> Am 2022-04-07 13:31, schrieb Mark Brown:
+>> On Thu, Apr 07, 2022 at 01:23:45PM +0200, Michael Walle wrote:
+>>> The subject should also be prefixed with "dt-bindings: ".
+>>
+>> I tend to complain about people doing that.
+> 
+> After all it is mentioned to use that prefix in
+> Documentation/devicetree/bindings/submitting-patches.rst. I try to
+> remember when submitting SPI related bindings.
+
+From my point of view, the dt-bindings prefix is still expected, just
+after "spi:" (and other Marks' subsystems), because that's I am
+filtering the bindings.
+
+Your submissions had the prefix in wrong place, this one patch does not
+have it all. :(
+
+Best regards,
+Krzysztof
