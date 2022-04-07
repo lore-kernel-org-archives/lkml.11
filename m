@@ -2,194 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC9CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F14C0C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243905AbiDGJld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
+        id S236744AbiDGJn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243952AbiDGJlI (ORCPT
+        with ESMTP id S243954AbiDGJmm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:41:08 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1F01BB816
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:39:02 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id EEFF91F85A;
-        Thu,  7 Apr 2022 09:39:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649324340; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=t80M3AxgwPtFqBrAe3eNHmWvOG2zVPYy43qfmNkj2UM=;
-        b=qt5W8Jyn9g+xgxIpsFNHAe1jRMg+ww9Hwr/2wces4xQ6LPSHQrPrlRsGY+8Xv7n+f2OxGf
-        x1uZyqDArGdHlMfem7DcN6viT33f+H9GiS03IuWqZcaHygPJ410EmdfvqX5TQXY3+hFMxV
-        hkiqfiqYKOpqRY4fWR5ONLyUptPfrEw=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C04CA13A66;
-        Thu,  7 Apr 2022 09:39:00 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id zjJlLTSxTmKcMQAAMHmgww
-        (envelope-from <jgross@suse.com>); Thu, 07 Apr 2022 09:39:00 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>
-Subject: [PATCH] xen/balloon: don't use PV mode extra memory for zone device allocations
-Date:   Thu,  7 Apr 2022 11:38:57 +0200
-Message-Id: <20220407093857.1485-1-jgross@suse.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 7 Apr 2022 05:42:42 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2BABE9D0;
+        Thu,  7 Apr 2022 02:40:42 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id a19so582870oie.7;
+        Thu, 07 Apr 2022 02:40:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FcHUUuQouyt/oY/Z43CP8YAaehl/b4UABsbX648Cgqw=;
+        b=kBXvEADXYwY9BuAhBBmGchud4VtpU+9Lx9yTtwSP8/g3Hec0qg42N61sBeBSCYW8jC
+         ux0tIR1TwlGJLD+RFvHbuaBYNmqKECfoqoLfaZm6QhtXezxd6dDMX5hVN3dxX0FQ2ffF
+         MoujfsLpP6CVygYGjFkN5vxvsNVwhz+tdcvDQW+3l/mmeCcCDnaOFrTUOEVPzGcWhTXL
+         I7tTEM0Iv05tnvclQxPvffVRZPviEGlpx0SD25bn8JiQO8w/U/cDwlgmn0nkJrNhzgIF
+         3fFAd1m4sxb5UzRKdnQ27vl7uMrRsjFkJVN3NfsJh+RwrsDjwCCvWCV6nOcUo4qBD88r
+         IrtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=FcHUUuQouyt/oY/Z43CP8YAaehl/b4UABsbX648Cgqw=;
+        b=G38HdHlp7TNZsIGKVupaGpnsK6R6aRBh66wFb5qRbWArfB5NSAmnC5+gsr0JBHVnRl
+         vIBUujWY4Bq6t2yGD7cxMXbKNIlmRRMHJGDjSdE/0iOhjXebJLMr+Fv/cpoetu5lTAk0
+         oGimRnsE9VGu4nZw0EYZV5nJsGV+h8rAdP24o7kz/ZBzmK03QzVb4ElsNc6HrPyt9hjI
+         DSf6FrFatnS+/eNghFzARDT3U03qiWTDkft2WWClKO0Vri8SQCi6/z292csp+Enf9ReA
+         A53CbWL+yTr3kj72QlQaXpQP5ABVXU6CX5rC3uae6sx9piFQxEd1lCkkUialEMka0BJC
+         KsUg==
+X-Gm-Message-State: AOAM533I8zfTQBINcTHFN4SsQkq/O+4+hYW/4rHaWL7+rw7rbWGtaUZW
+        ClVDyPtHuffQ+b0wWGj5YWc=
+X-Google-Smtp-Source: ABdhPJwvBfUmqwK9rfS2jeAGA7uvk8UX3yAunbKvOTQM+QhppJvvPmT+e/wpWG2NQevnNdYHxurrng==
+X-Received: by 2002:a05:6808:1719:b0:2f9:ab58:73db with SMTP id bc25-20020a056808171900b002f9ab5873dbmr974460oib.201.1649324442287;
+        Thu, 07 Apr 2022 02:40:42 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id r6-20020a0568301ac600b005cdbc6e62a9sm7665966otc.39.2022.04.07.02.40.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 02:40:41 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 7 Apr 2022 02:40:40 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 000/597] 5.10.110-rc2 review
+Message-ID: <20220407094040.GC3041848@roeck-us.net>
+References: <20220406133013.264188813@linuxfoundation.org>
+ <fce71421-6afc-9f8c-31a2-a71fccb3259d@roeck-us.net>
+ <CADVatmPpDpcX-0NYBUgVjNtgB_EjXL7GO5bfuTH2yGR6DB5_jg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADVatmPpDpcX-0NYBUgVjNtgB_EjXL7GO5bfuTH2yGR6DB5_jg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When running as a Xen PV guest use the extra memory (memory which isn't
-allocated for the guest at boot time) only for ballooning purposes and
-not for zone device allocations. This will remove some code without any
-lack of functionality.
+On Thu, Apr 07, 2022 at 10:35:27AM +0100, Sudip Mukherjee wrote:
+> On Thu, Apr 7, 2022 at 10:10 AM Guenter Roeck <linux@roeck-us.net> wrote:
+> >
+> > On 4/6/22 06:43, Greg Kroah-Hartman wrote:
+> > > This is the start of the stable review cycle for the 5.10.110 release.
+> > > There are 597 patches in this series, all will be posted as a response
+> > > to this one.  If anyone has any issues with these being applied, please
+> > > let me know.
+> > >
+> > > Responses should be made by Fri, 08 Apr 2022 13:27:53 +0000.
+> > > Anything received after that time might be too late.
+> > >
+> >
+> > I still see the same build error. This is with v5.10.109-600-g45fdcc9dc72a.
+> 
+> 45fdcc9dc72a was rc1.
+> 
+> rc2 is f8a7d8111f45 which is v5.10.109-598-gf8a7d8111f45
 
-While at it move some code to get rid of another #ifdef.
+Hmm, you are correct, but I just tried v5.10.109-598-gf8a7d8111f45 and
+get (almost) the same error.
 
-Remove a comment which is stale since some time now.
+fs/binfmt_elf.c: In function 'fill_note_info':
+fs/binfmt_elf.c:2056:53: error: 'regs' undeclared
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
----
- drivers/xen/balloon.c           | 54 ++++++++++++++-------------------
- drivers/xen/unpopulated-alloc.c | 33 --------------------
- 2 files changed, 23 insertions(+), 64 deletions(-)
+I'll restart my build server; it seems to have missed some of the changes.
 
-diff --git a/drivers/xen/balloon.c b/drivers/xen/balloon.c
-index dfe26fa17e95..617a7f4f07a8 100644
---- a/drivers/xen/balloon.c
-+++ b/drivers/xen/balloon.c
-@@ -689,29 +689,34 @@ void xen_free_ballooned_pages(unsigned int nr_pages, struct page **pages)
- }
- EXPORT_SYMBOL(xen_free_ballooned_pages);
- 
--#if defined(CONFIG_XEN_PV) && !defined(CONFIG_XEN_UNPOPULATED_ALLOC)
--static void __init balloon_add_region(unsigned long start_pfn,
--				      unsigned long pages)
-+static void __init balloon_add_regions(void)
- {
-+#if defined(CONFIG_XEN_PV)
-+	unsigned long start_pfn, pages;
- 	unsigned long pfn, extra_pfn_end;
-+	unsigned int i;
- 
--	/*
--	 * If the amount of usable memory has been limited (e.g., with
--	 * the 'mem' command line parameter), don't add pages beyond
--	 * this limit.
--	 */
--	extra_pfn_end = min(max_pfn, start_pfn + pages);
-+	for (i = 0; i < XEN_EXTRA_MEM_MAX_REGIONS; i++) {
-+		pages = xen_extra_mem[i].n_pfns;
-+		if (!pages)
-+			continue;
- 
--	for (pfn = start_pfn; pfn < extra_pfn_end; pfn++) {
--		/* totalram_pages and totalhigh_pages do not
--		   include the boot-time balloon extension, so
--		   don't subtract from it. */
--		balloon_append(pfn_to_page(pfn));
--	}
-+		start_pfn = xen_extra_mem[i].start_pfn;
- 
--	balloon_stats.total_pages += extra_pfn_end - start_pfn;
--}
-+		/*
-+		 * If the amount of usable memory has been limited (e.g., with
-+		 * the 'mem' command line parameter), don't add pages beyond
-+		 * this limit.
-+		 */
-+		extra_pfn_end = min(max_pfn, start_pfn + pages);
-+
-+		for (pfn = start_pfn; pfn < extra_pfn_end; pfn++)
-+			balloon_append(pfn_to_page(pfn));
-+
-+		balloon_stats.total_pages += extra_pfn_end - start_pfn;
-+	}
- #endif
-+}
- 
- static int __init balloon_init(void)
- {
-@@ -745,20 +750,7 @@ static int __init balloon_init(void)
- 	register_sysctl_table(xen_root);
- #endif
- 
--#if defined(CONFIG_XEN_PV) && !defined(CONFIG_XEN_UNPOPULATED_ALLOC)
--	{
--		int i;
--
--		/*
--		 * Initialize the balloon with pages from the extra memory
--		 * regions (see arch/x86/xen/setup.c).
--		 */
--		for (i = 0; i < XEN_EXTRA_MEM_MAX_REGIONS; i++)
--			if (xen_extra_mem[i].n_pfns)
--				balloon_add_region(xen_extra_mem[i].start_pfn,
--						   xen_extra_mem[i].n_pfns);
--	}
--#endif
-+	balloon_add_regions();
- 
- 	task = kthread_run(balloon_thread, NULL, "xen-balloon");
- 	if (IS_ERR(task)) {
-diff --git a/drivers/xen/unpopulated-alloc.c b/drivers/xen/unpopulated-alloc.c
-index a8b41057c382..a39f2d36dd9c 100644
---- a/drivers/xen/unpopulated-alloc.c
-+++ b/drivers/xen/unpopulated-alloc.c
-@@ -230,39 +230,6 @@ void xen_free_unpopulated_pages(unsigned int nr_pages, struct page **pages)
- }
- EXPORT_SYMBOL(xen_free_unpopulated_pages);
- 
--#ifdef CONFIG_XEN_PV
--static int __init init(void)
--{
--	unsigned int i;
--
--	if (!xen_domain())
--		return -ENODEV;
--
--	if (!xen_pv_domain())
--		return 0;
--
--	/*
--	 * Initialize with pages from the extra memory regions (see
--	 * arch/x86/xen/setup.c).
--	 */
--	for (i = 0; i < XEN_EXTRA_MEM_MAX_REGIONS; i++) {
--		unsigned int j;
--
--		for (j = 0; j < xen_extra_mem[i].n_pfns; j++) {
--			struct page *pg =
--				pfn_to_page(xen_extra_mem[i].start_pfn + j);
--
--			pg->zone_device_data = page_list;
--			page_list = pg;
--			list_count++;
--		}
--	}
--
--	return 0;
--}
--subsys_initcall(init);
--#endif
--
- static int __init unpopulated_init(void)
- {
- 	int ret;
--- 
-2.34.1
-
+Guenter
