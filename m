@@ -2,120 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 826DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 03:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 079F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 03:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232251AbiDGDMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 23:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50804 "EHLO
+        id S239794AbiDGDMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 23:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233995AbiDGDMH (ORCPT
+        with ESMTP id S233995AbiDGDM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 23:12:07 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A4B227C58;
-        Wed,  6 Apr 2022 20:10:08 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id l7so2665674ejn.2;
-        Wed, 06 Apr 2022 20:10:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6G3zddOtH8eyIxvQmfflWw1/4QptoCpMZ2g0zuWQJE4=;
-        b=nsb1zr3FcdGj2BTMPaxGW4jXWziAfDjqWTGNOM/ere5rA+I7OedBX9FN9atCOecIGt
-         pcRc2c5DFkGY8a6Ik0Uh5YRSD4muI4yDahqMHXN5KbWzCAWmeGpNXHAapwijgrzbh/up
-         +0DkhUUKfgYpP2iDFI/+qEhD+4SYlRQ9Iff104cFNNsllrvGRgvhnYlQ9OJPxOkLf9zR
-         lYKVizquQRl/Ex5NNdnNtZPZBiSOdRXGpOpTFGT+1vYsPK1wDGbaha2BYIqt7p6Odlsj
-         onYQ4aCvJg47l+RjUblnRAhl0N9pEIqc2hcZYeb9ah2tbLPodebxcFdTGLUaTi9mqnfa
-         KsEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6G3zddOtH8eyIxvQmfflWw1/4QptoCpMZ2g0zuWQJE4=;
-        b=8O+Rsf1118BbJCg+TdNedraZdvCMfz9ORYGvuaRsPJk7Mt0SaPjAtvLqjYwF3BJz4y
-         pnweLzvxNpfagM2cIVn+H4zA2Jhqye6VOl+jPnGwfydqykXm1Lhb5TbJDTMGVz7f3gMU
-         asIDCOWg47tB13aQnQMKXpYSHOh42D5TuMAiDMLG5eaufpjiiUH7ag2Q0CT73048K1bM
-         yZnMZIC1LaLj38yp8Qlb6bwz/CL1FzghxXhhzd/BUWV7HmsW7sE0gN2IclpyldWQdhkr
-         1UhRojzYAyAKgk/sggmYnx+nggFDdKraT2TQ1D/tT0e6qEicg5bCUv28eGh6Pf4boYfa
-         dPHQ==
-X-Gm-Message-State: AOAM532vYDlsQd/q3pQrZEdeHGXU0V9PS595Ql7ye1PQEq68KglBC1BJ
-        HI0czn8wciAVA0chFizaA1MFAVcqg0HLPmdzMEk=
-X-Google-Smtp-Source: ABdhPJxI9ltkUnnn2XwyGKwQSgLHlnE+U25/ZiqM/ZnUB51X94ZZgD8fddLhu8IXGk5t/J2oDvKOAQMOqIcgdVtZyC0=
-X-Received: by 2002:a17:906:3a15:b0:6cf:ea4e:a1cc with SMTP id
- z21-20020a1709063a1500b006cfea4ea1ccmr11755209eje.753.1649301007335; Wed, 06
- Apr 2022 20:10:07 -0700 (PDT)
+        Wed, 6 Apr 2022 23:12:29 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B662228AAF;
+        Wed,  6 Apr 2022 20:10:30 -0700 (PDT)
+Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KYmYR1DzczgYNL;
+        Thu,  7 Apr 2022 11:08:43 +0800 (CST)
+Received: from localhost.localdomain (10.175.127.227) by
+ kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Apr 2022 11:10:27 +0800
+From:   Zhang Wensheng <zhangwensheng5@huawei.com>
+To:     <josef@toxicpanda.com>, <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <nbd@other.debian.org>
+Subject: [PATCH -next v2] nbd: fix possible overflow on 'first_minor' in nbd_dev_add()
+Date:   Thu, 7 Apr 2022 11:25:05 +0800
+Message-ID: <20220407032505.3797948-1-zhangwensheng5@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220407024001.11761-1-hbh25y@gmail.com>
-In-Reply-To: <20220407024001.11761-1-hbh25y@gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Thu, 7 Apr 2022 11:09:41 +0800
-Message-ID: <CAD-N9QV27nJW=_goZKB0666Nq1pNphbgoHeYn_FmSkkJh9vyKg@mail.gmail.com>
-Subject: Re: [PATCH v2] usb: misc: fix improper handling of refcount in uss720_probe()
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemi500016.china.huawei.com (7.221.188.220)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 10:40 AM Hangyu Hua <hbh25y@gmail.com> wrote:
->
-> usb_put_dev shouldn't be called when uss720_probe succeeds because of
-> priv->usbdev. At the same time, priv->usbdev shouldn't be set to NULL
-> before destroy_priv in uss720_disconnect because usb_put_dev is in
-> destroy_priv.
->
-> Fix this by moving priv->usbdev = NULL after usb_put_dev.
+When 'index' is a big numbers, it may become negative which forced
+to 'int'. then 'index << part_shift' might overflow to a positive
+value that is not greater than '0xfffff', then sysfs might complains
+about duplicate creation. Because of this, move the 'index' judgment
+to the front will fix it and be better.
 
-Hi Hangyu,
+Fixes: b0d9111a2d53 ("nbd: use an idr to keep track of nbd devices")
+Fixes: 940c264984fd ("nbd: fix possible overflow for 'first_minor' in nbd_dev_add()")
+Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+---
+v1->v2:
+- add the line "disk->first_minor = index << part_shift;" which has
+been deleted by mistake in v1.
 
-good catch as priv->usbdev is still used after the probe function.
+ drivers/block/nbd.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-I agree with this patch.
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 5a1f98494ddd..9448aacbcf0f 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -1800,17 +1800,7 @@ static struct nbd_device *nbd_dev_add(int index, unsigned int refs)
+ 	refcount_set(&nbd->refs, 0);
+ 	INIT_LIST_HEAD(&nbd->list);
+ 	disk->major = NBD_MAJOR;
+-
+-	/* Too big first_minor can cause duplicate creation of
+-	 * sysfs files/links, since index << part_shift might overflow, or
+-	 * MKDEV() expect that the max bits of first_minor is 20.
+-	 */
+ 	disk->first_minor = index << part_shift;
+-	if (disk->first_minor < index || disk->first_minor > MINORMASK) {
+-		err = -EINVAL;
+-		goto out_free_work;
+-	}
+-
+ 	disk->minors = 1 << part_shift;
+ 	disk->fops = &nbd_fops;
+ 	disk->private_data = nbd;
+@@ -1915,8 +1905,19 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
+ 	if (!netlink_capable(skb, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+-	if (info->attrs[NBD_ATTR_INDEX])
++	if (info->attrs[NBD_ATTR_INDEX]) {
+ 		index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
++
++		/*
++		 * Too big first_minor can cause duplicate creation of
++		 * sysfs files/links, since index << part_shift might overflow, or
++		 * MKDEV() expect that the max bits of first_minor is 20.
++		 */
++		if (index < 0 || index > MINORMASK >> part_shift) {
++			printk(KERN_ERR "nbd: illegal input index %d\n", index);
++			return -EINVAL;
++		}
++	}
+ 	if (!info->attrs[NBD_ATTR_SOCKETS]) {
+ 		printk(KERN_ERR "nbd: must specify at least one socket\n");
+ 		return -EINVAL;
+-- 
+2.31.1
 
-Reviewed-by: Dongliang Mu <mudongliangabcd@gmail.com>
-
->
-> Fixes: dcb4b8ad6a44 ("misc/uss720: fix memory leak in uss720_probe")
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> ---
->
-> v2: fix a stupid UAF in the previous version.
->
->  drivers/usb/misc/uss720.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/usb/misc/uss720.c b/drivers/usb/misc/uss720.c
-> index 748139d26263..0be8efcda15d 100644
-> --- a/drivers/usb/misc/uss720.c
-> +++ b/drivers/usb/misc/uss720.c
-> @@ -71,6 +71,7 @@ static void destroy_priv(struct kref *kref)
->
->         dev_dbg(&priv->usbdev->dev, "destroying priv datastructure\n");
->         usb_put_dev(priv->usbdev);
-> +       priv->usbdev = NULL;
->         kfree(priv);
->  }
->
-> @@ -736,7 +737,6 @@ static int uss720_probe(struct usb_interface *intf,
->         parport_announce_port(pp);
->
->         usb_set_intfdata(intf, pp);
-> -       usb_put_dev(usbdev);
->         return 0;
->
->  probe_abort:
-> @@ -754,7 +754,6 @@ static void uss720_disconnect(struct usb_interface *intf)
->         usb_set_intfdata(intf, NULL);
->         if (pp) {
->                 priv = pp->private_data;
-> -               priv->usbdev = NULL;
->                 priv->pp = NULL;
->                 dev_dbg(&intf->dev, "parport_remove_port\n");
->                 parport_remove_port(pp);
-> --
-> 2.25.1
->
