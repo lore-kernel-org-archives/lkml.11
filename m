@@ -2,120 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 969B1C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A648FC43219
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345488AbiDGQA7 (ORCPT
+        id S1345524AbiDGQBB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 12:00:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48818 "EHLO
+        Thu, 7 Apr 2022 12:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345462AbiDGQAP (ORCPT
+        with ESMTP id S1345318AbiDGQAP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 12:00:15 -0400
-Received: from 13.mo582.mail-out.ovh.net (13.mo582.mail-out.ovh.net [188.165.56.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25F1D39B1
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:58:12 -0700 (PDT)
-Received: from player796.ha.ovh.net (unknown [10.111.172.176])
-        by mo582.mail-out.ovh.net (Postfix) with ESMTP id 345C923A8D
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 15:19:30 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player796.ha.ovh.net (Postfix) with ESMTPSA id 9BEC22932FE43;
-        Thu,  7 Apr 2022 15:19:24 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-99G003fbe37ff8-48bc-4f04-b220-b5b9d6c02b3b,
-                    5995496A90EC26C6A3824F4C00BBD29EFE55D398) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wolfram Sang <wsa@kernel.org>, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH v2 00/10] clk: switch to simple i2c probe function
-Date:   Thu,  7 Apr 2022 17:18:21 +0200
-Message-Id: <20220407151831.2371706-1-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF4F0DEB88
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:58:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649347093;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F86S7/jVljKeJi5i7UbpgEL1TrxLGT0mtgQ9nWHsD+Q=;
+        b=GT5SHMhTdbc1IxxJLN+lIsWz+S0nJwDRRzk7QezNJPQRpk4kjI5ZXIHrw5vVKZMNcnQscg
+        YxGekRHh6NP/EbEQT8W1MwYdekj4f0+B5MR2VgFhNk4FbQxu3BKZY4BVQTlbX7Ix3BTecO
+        bom+x0/G8TJhXVdaEHAz9HgJaSQ24Z4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-527-sVScqA1_OkSe29gB6dSomg-1; Thu, 07 Apr 2022 11:58:12 -0400
+X-MC-Unique: sVScqA1_OkSe29gB6dSomg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1ACE42A59555;
+        Thu,  7 Apr 2022 15:58:12 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.192.50])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3D80354AC84;
+        Thu,  7 Apr 2022 15:58:10 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 30/31] KVM: selftests: Move Hyper-V VP assist page enablement out of evmcs.h
+Date:   Thu,  7 Apr 2022 17:56:44 +0200
+Message-Id: <20220407155645.940890-31-vkuznets@redhat.com>
+In-Reply-To: <20220407155645.940890-1-vkuznets@redhat.com>
+References: <20220407155645.940890-1-vkuznets@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 72620546474870406
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejkedgkeejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series of patches updates i2c probes in clk to use the simple
-probe variant (simple as in "single argument"), probe_new, following
-one of two scenarios.
+Hyper-V VP assist page is not eVMCS specific, it is also used for
+enlightened nSVM. Move the code to vendor neutral place.
 
-In the first scenario, the existing probe function
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ tools/testing/selftests/kvm/Makefile          |  2 +-
+ .../selftests/kvm/include/x86_64/evmcs.h      | 40 +------------------
+ .../selftests/kvm/include/x86_64/hyperv.h     | 31 ++++++++++++++
+ .../testing/selftests/kvm/lib/x86_64/hyperv.c | 21 ++++++++++
+ .../testing/selftests/kvm/x86_64/evmcs_test.c |  1 +
+ 5 files changed, 56 insertions(+), 39 deletions(-)
+ create mode 100644 tools/testing/selftests/kvm/lib/x86_64/hyperv.c
 
-int (*probe)(struct i2c_client *client, const struct i2c_device_id *id);
-
-(see struct i2c_driver in include/linux/i2c.h) doesn't use the id
-argument, so it can be trivially converted to
-
-int (*probe_new)(struct i2c_client *client);
-
-and the i2c_driver declaration updated to use .probe_new instead of
-.probe.
-
-In the second scenario, the probe function does use the id argument.
-In this case, the relevant part of the calling code,
-
-        /*
-         * When there are no more users of probe(),
-         * rename probe_new to probe.
-         */
-        if (driver->probe_new)
-                status = driver->probe_new(client);
-        else if (driver->probe)
-                status = driver->probe(client,
-                                       i2c_match_id(driver->id_table, client));
-        else
-                status = -EINVAL;
-
-(from drivers/i2c/i2c-core-base.c) is moved down into the probe
-function, typically along the lines of
-
-const struct i2c_device_id *id = i2c_match_id(ids, id);
-
-where ids is the i2c_device_id table. The latter needs to be declared
-before the probe function; as suggested by Wolfram Sang, the full
-definition is moved above the probe function.
-
-Changes since v1:
-  - the pair of patches have been split up into a single patch series
-    with one patch per modified file, and the commit titles adjusted
-    accordingly
-  - renesas-pcie has been added
-
-
-Stephen Kitt (10):
-  clk: cdce706: use simple i2c probe function
-  clk: cdce925: use i2c_match_id and simple i2c probe
-  clk: cs2000-cp: use simple i2c probe function
-  clk: max9485: use simple i2c probe function
-  clk: si514: use simple i2c probe function
-  clk: si5341: use simple i2c probe function
-  clk: si5351: use i2c_match_id and simple i2c probe
-  clk: si544: use i2c_match_id and simple i2c probe
-  clk: si570: use i2c_match_id and simple i2c probe
-  clk: renesas-pcie: use simple i2c probe function
-
- drivers/clk/clk-cdce706.c      |  5 ++---
- drivers/clk/clk-cdce925.c      | 24 ++++++++++++------------
- drivers/clk/clk-cs2000-cp.c    |  5 ++---
- drivers/clk/clk-max9485.c      |  5 ++---
- drivers/clk/clk-renesas-pcie.c |  4 ++--
- drivers/clk/clk-si514.c        |  5 ++---
- drivers/clk/clk-si5341.c       |  5 ++---
- drivers/clk/clk-si5351.c       | 24 ++++++++++++------------
- drivers/clk/clk-si544.c        | 22 +++++++++++-----------
- drivers/clk/clk-si570.c        | 24 ++++++++++++------------
- 10 files changed, 59 insertions(+), 64 deletions(-)
-
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index c3ba9505b368..f2e6c4594399 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -38,7 +38,7 @@ ifeq ($(ARCH),riscv)
+ endif
+ 
+ LIBKVM = lib/assert.c lib/elf.c lib/io.c lib/kvm_util.c lib/rbtree.c lib/sparsebit.c lib/test_util.c lib/guest_modes.c lib/perf_test_util.c
+-LIBKVM_x86_64 = lib/x86_64/apic.c lib/x86_64/processor.c lib/x86_64/vmx.c lib/x86_64/svm.c lib/x86_64/ucall.c lib/x86_64/handlers.S
++LIBKVM_x86_64 = lib/x86_64/apic.c lib/x86_64/hyperv.c lib/x86_64/processor.c lib/x86_64/vmx.c lib/x86_64/svm.c lib/x86_64/ucall.c lib/x86_64/handlers.S
+ LIBKVM_aarch64 = lib/aarch64/processor.c lib/aarch64/ucall.c lib/aarch64/handlers.S lib/aarch64/spinlock.c lib/aarch64/gic.c lib/aarch64/gic_v3.c lib/aarch64/vgic.c
+ LIBKVM_s390x = lib/s390x/processor.c lib/s390x/ucall.c lib/s390x/diag318_test_handler.c
+ LIBKVM_riscv = lib/riscv/processor.c lib/riscv/ucall.c
+diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+index 36c0a67d8602..026586b53013 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
++++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+@@ -10,6 +10,7 @@
+ #define SELFTEST_KVM_EVMCS_H
+ 
+ #include <stdint.h>
++#include "hyperv.h"
+ #include "vmx.h"
+ 
+ #define u16 uint16_t
+@@ -20,27 +21,6 @@
+ 
+ extern bool enable_evmcs;
+ 
+-struct hv_nested_enlightenments_control {
+-	struct {
+-		__u32 directhypercall:1;
+-		__u32 reserved:31;
+-	} features;
+-	struct {
+-		__u32 reserved;
+-	} hypercallControls;
+-} __packed;
+-
+-/* Define virtual processor assist page structure. */
+-struct hv_vp_assist_page {
+-	__u32 apic_assist;
+-	__u32 reserved1;
+-	__u64 vtl_control[3];
+-	struct hv_nested_enlightenments_control nested_control;
+-	__u8 enlighten_vmentry;
+-	__u8 reserved2[7];
+-	__u64 current_nested_vmcs;
+-} __packed;
+-
+ struct hv_enlightened_vmcs {
+ 	u32 revision_id;
+ 	u32 abort;
+@@ -246,31 +226,15 @@ struct hv_enlightened_vmcs {
+ #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_ENLIGHTENMENTSCONTROL    BIT(15)
+ #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_ALL                      0xFFFF
+ 
+-#define HV_X64_MSR_VP_ASSIST_PAGE		0x40000073
+-#define HV_X64_MSR_VP_ASSIST_PAGE_ENABLE	0x00000001
+-#define HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_SHIFT	12
+-#define HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_MASK	\
+-		(~((1ull << HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_SHIFT) - 1))
+-
+ #define HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH 0x10000031
+ 
+ extern struct hv_enlightened_vmcs *current_evmcs;
+-extern struct hv_vp_assist_page *current_vp_assist;
+ 
+ int vcpu_enable_evmcs(struct kvm_vm *vm, int vcpu_id);
+ 
+-static inline int enable_vp_assist(uint64_t vp_assist_pa, void *vp_assist)
++static inline void evmcs_enable(void)
+ {
+-	u64 val = (vp_assist_pa & HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_MASK) |
+-		HV_X64_MSR_VP_ASSIST_PAGE_ENABLE;
+-
+-	wrmsr(HV_X64_MSR_VP_ASSIST_PAGE, val);
+-
+-	current_vp_assist = vp_assist;
+-
+ 	enable_evmcs = true;
+-
+-	return 0;
+ }
+ 
+ static inline int evmcs_vmptrld(uint64_t vmcs_pa, void *vmcs)
+diff --git a/tools/testing/selftests/kvm/include/x86_64/hyperv.h b/tools/testing/selftests/kvm/include/x86_64/hyperv.h
+index 1e34dd7c5075..095c15fc5381 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/hyperv.h
++++ b/tools/testing/selftests/kvm/include/x86_64/hyperv.h
+@@ -189,4 +189,35 @@
+ 
+ #define HYPERV_LINUX_OS_ID ((u64)0x8100 << 48)
+ 
++#define HV_X64_MSR_VP_ASSIST_PAGE		0x40000073
++#define HV_X64_MSR_VP_ASSIST_PAGE_ENABLE	0x00000001
++#define HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_SHIFT	12
++#define HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_MASK	\
++		(~((1ull << HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_SHIFT) - 1))
++
++struct hv_nested_enlightenments_control {
++	struct {
++		__u32 directhypercall:1;
++		__u32 reserved:31;
++	} features;
++	struct {
++		__u32 reserved;
++	} hypercallControls;
++} __packed;
++
++/* Define virtual processor assist page structure. */
++struct hv_vp_assist_page {
++	__u32 apic_assist;
++	__u32 reserved1;
++	__u64 vtl_control[3];
++	struct hv_nested_enlightenments_control nested_control;
++	__u8 enlighten_vmentry;
++	__u8 reserved2[7];
++	__u64 current_nested_vmcs;
++} __packed;
++
++extern struct hv_vp_assist_page *current_vp_assist;
++
++int enable_vp_assist(uint64_t vp_assist_pa, void *vp_assist);
++
+ #endif /* !SELFTEST_KVM_HYPERV_H */
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/hyperv.c b/tools/testing/selftests/kvm/lib/x86_64/hyperv.c
+new file mode 100644
+index 000000000000..a8c6b156f92d
+--- /dev/null
++++ b/tools/testing/selftests/kvm/lib/x86_64/hyperv.c
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * tools/testing/selftests/kvm/lib/x86_64/hyperv.c
++ *
++ * Copyright (C) 2021, Red Hat Inc.
++ */
++#include <stdint.h>
++#include "processor.h"
++#include "hyperv.h"
++
++int enable_vp_assist(uint64_t vp_assist_pa, void *vp_assist)
++{
++	uint64_t val = (vp_assist_pa & HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_MASK) |
++		HV_X64_MSR_VP_ASSIST_PAGE_ENABLE;
++
++	wrmsr(HV_X64_MSR_VP_ASSIST_PAGE, val);
++
++	current_vp_assist = vp_assist;
++
++	return 0;
++}
+diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
+index 411c4dbeac09..32ec43a8b101 100644
+--- a/tools/testing/selftests/kvm/x86_64/evmcs_test.c
++++ b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
+@@ -105,6 +105,7 @@ void guest_code(struct vmx_pages *vmx_pages, vm_vaddr_t pgs_gpa)
+ 	GUEST_SYNC(2);
+ 
+ 	enable_vp_assist(vmx_pages->vp_assist_gpa, vmx_pages->vp_assist);
++	evmcs_enable();
+ 
+ 	GUEST_ASSERT(vmx_pages->vmcs_gpa);
+ 	GUEST_ASSERT(prepare_for_vmx_operation(vmx_pages));
 -- 
-2.27.0
+2.35.1
 
