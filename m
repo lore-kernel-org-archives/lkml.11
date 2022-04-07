@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C135CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2844C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234304AbiDGBNS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33324 "EHLO
+        id S233533AbiDGBNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234247AbiDGBMy (ORCPT
+        with ESMTP id S234180AbiDGBM4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:12:54 -0400
+        Wed, 6 Apr 2022 21:12:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70637180234;
-        Wed,  6 Apr 2022 18:10:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857F6181B29;
+        Wed,  6 Apr 2022 18:10:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D290AB82691;
-        Thu,  7 Apr 2022 01:10:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F602C385B4;
-        Thu,  7 Apr 2022 01:10:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C706B82695;
+        Thu,  7 Apr 2022 01:10:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64874C385AA;
+        Thu,  7 Apr 2022 01:10:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649293850;
-        bh=AbRLW6KpKD4tIN4tfMldWC0Y7qjHWvaSMDBU+t7g3Ps=;
+        s=k20201202; t=1649293853;
+        bh=RuSQpMbX+u7nDjOX7UuFFC9DdR5u87Bu5cQd4/zrhrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R5JSUP+rx5nUwVraQtnucFOaZoEyT/Sr8SeB+97OeB8B+oulNy67ITuC+WEEZAg1A
-         MwxifkgceBqePhGMIY8+A52W3ZwUdAoHCZOqJPYaq17n3zY5MdjexpjjSjzM7q+YAF
-         mylISJiIALxWRL5CEGBCCjkgFRFLvfGk6aLtua/k3+LO95BPEyoWvcxPPx280i73xb
-         X1iy+ePGPafnyWSQW89SBSkYmxM+RCwVhxbwy+SDhTo7f0R02aMsk2uFF/CnU8WUGW
-         wdcPyh0w0Uclm5Hqq9mJfb4Ybc5mbGSh7nI+GacVB05hx3kkr+bol9eL/8RU1XbgfI
-         PT1HusjdfCMfQ==
+        b=MxGzCzQ9w/w41YSW/ZMLds3KRjzEgLahAWy6vuWDTZYzhhHsecKFvF6tp6UTEIrrS
+         BQ7klPG2xPW2EoEF0/4eD42ZfxUx3RtH+XiNUm4tjj2ZISRySKhrVbymuBtXX7COmQ
+         DpTayzrZJq3sZZT4y5Z/dKqg46zkI0jc/1N0+StoSnwnU5URPiRb+U2MZhoJvmYadV
+         VfzkuzLaZMCViSCUYPzrOVbvhWCgpQ6fpRuhRLVOXvwIZI9IrCB0V32aTHqbzhQML+
+         m2RI1gvl0IhWL9/v7vo2OK9tXHqDlFtK6l6icJVrGhnN1Rea26G/B7kowqtTR4J5zJ
+         6aWAghzWIxd/Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-input@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 10/31] Input: stmfts - fix reference leak in stmfts_input_open
-Date:   Wed,  6 Apr 2022 21:10:08 -0400
-Message-Id: <20220407011029.113321-10-sashal@kernel.org>
+Cc:     Andreas Gruenbacher <agruenba@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, rpeterso@redhat.com,
+        cluster-devel@redhat.com
+Subject: [PATCH AUTOSEL 5.17 12/31] gfs2: Disable page faults during lockless buffered reads
+Date:   Wed,  6 Apr 2022 21:10:10 -0400
+Message-Id: <20220407011029.113321-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011029.113321-1-sashal@kernel.org>
 References: <20220407011029.113321-1-sashal@kernel.org>
@@ -54,51 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-[ Upstream commit 26623eea0da3476446909af96c980768df07bbd9 ]
+[ Upstream commit 52f3f033a5dbd023307520af1ff551cadfd7f037 ]
 
-pm_runtime_get_sync() will increment pm usage counter even it
-failed. Forgetting to call pm_runtime_put_noidle will result
-in reference leak in stmfts_input_open, so we should fix it.
+During lockless buffered reads, filemap_read() holds page cache page
+references while trying to copy data to the user-space buffer.  The
+calling process isn't holding the inode glock, but the page references
+it holds prevent those pages from being removed from the page cache, and
+that prevents the underlying inode glock from being moved to another
+node.  Thus, we can end up in the same kinds of distributed deadlock
+situations as with normal (non-lockless) buffered reads.
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Link: https://lore.kernel.org/r/20220317131604.53538-1-zhengyongjun3@huawei.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Fix that by disabling page faults during lockless reads as well.
+
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/touchscreen/stmfts.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/gfs2/file.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
-index bc11203c9cf7..72e0b767e1ba 100644
---- a/drivers/input/touchscreen/stmfts.c
-+++ b/drivers/input/touchscreen/stmfts.c
-@@ -339,11 +339,11 @@ static int stmfts_input_open(struct input_dev *dev)
- 
- 	err = pm_runtime_get_sync(&sdata->client->dev);
- 	if (err < 0)
--		return err;
-+		goto out;
- 
- 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
- 	if (err)
--		return err;
-+		goto out;
- 
- 	mutex_lock(&sdata->mutex);
- 	sdata->running = true;
-@@ -366,7 +366,9 @@ static int stmfts_input_open(struct input_dev *dev)
- 				 "failed to enable touchkey\n");
+diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
+index 8c39a8571b1f..79741d05e562 100644
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -956,14 +956,16 @@ static ssize_t gfs2_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
+ 			return ret;
+ 		iocb->ki_flags &= ~IOCB_DIRECT;
  	}
- 
--	return 0;
-+out:
-+	pm_runtime_put_noidle(&sdata->client->dev);
-+	return err;
- }
- 
- static void stmfts_input_close(struct input_dev *dev)
++	pagefault_disable();
+ 	iocb->ki_flags |= IOCB_NOIO;
+ 	ret = generic_file_read_iter(iocb, to);
+ 	iocb->ki_flags &= ~IOCB_NOIO;
++	pagefault_enable();
+ 	if (ret >= 0) {
+ 		if (!iov_iter_count(to))
+ 			return ret;
+ 		written = ret;
+-	} else {
++	} else if (ret != -EFAULT) {
+ 		if (ret != -EAGAIN)
+ 			return ret;
+ 		if (iocb->ki_flags & IOCB_NOWAIT)
 -- 
 2.35.1
 
