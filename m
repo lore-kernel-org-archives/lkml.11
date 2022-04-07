@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF093C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B71C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245081AbiDGMFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54314 "EHLO
+        id S245141AbiDGMFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241637AbiDGMEi (ORCPT
+        with ESMTP id S243446AbiDGMEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:04:38 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8300BC1CB9
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:02:36 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KZ0JZ2FbbzBs6c;
-        Thu,  7 Apr 2022 19:58:22 +0800 (CST)
+        Thu, 7 Apr 2022 08:04:41 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7A4C31DF
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:02:37 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KZ0Nt3rWCz1HBdm;
+        Thu,  7 Apr 2022 20:02:06 +0800 (CST)
 Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.21; Thu, 7 Apr 2022 20:02:34 +0800
 Received: from ubuntu1804.huawei.com (10.67.175.36) by
  dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 20:02:33 +0800
+ 15.1.2308.21; Thu, 7 Apr 2022 20:02:34 +0800
 From:   Chen Zhongjin <chenzhongjin@huawei.com>
 To:     <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
@@ -33,9 +33,9 @@ CC:     <jthierry@redhat.com>, <catalin.marinas@arm.com>,
         <will@kernel.org>, <mark.rutland@arm.com>, <ardb@kernel.org>,
         <masahiroy@kernel.org>, <jpoimboe@redhat.com>,
         <peterz@infradead.org>, <ycote@redhat.com>
-Subject: [RFC PATCH v3 10/13] objtool: arm64: Accept non-instruction data in code sections
-Date:   Thu, 7 Apr 2022 20:01:38 +0800
-Message-ID: <20220407120141.43801-11-chenzhongjin@huawei.com>
+Subject: [RFC PATCH v3 12/13] objtool: arm64: Ignore replacement section for alternative callback
+Date:   Thu, 7 Apr 2022 20:01:40 +0800
+Message-ID: <20220407120141.43801-13-chenzhongjin@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220407120141.43801-1-chenzhongjin@huawei.com>
 References: <20220407120141.43801-1-chenzhongjin@huawei.com>
@@ -51,48 +51,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Julien Thierry <jthierry@redhat.com>
 
-The compiler can generate some '0x0' words in code sections to pad the
-end of functions. Also some pesudo-instructions can generate data in
-code sections.
-Record these instructions which can't be decoded as ignored for
-objtool check.
+ARM64_CB_PATCH doesn't have static replacement instructions. Skip
+trying to validate the alternative section.
 
 Signed-off-by: Julien Thierry <jthierry@redhat.com>
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
 ---
- tools/objtool/arch/arm64/decode.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ tools/objtool/arch/arm64/special.c | 11 +++++++++++
+ tools/objtool/check.c              |  3 +++
+ 2 files changed, 14 insertions(+)
 
-diff --git a/tools/objtool/arch/arm64/decode.c b/tools/objtool/arch/arm64/decode.c
-index b62addece734..d2522ef43101 100644
---- a/tools/objtool/arch/arm64/decode.c
-+++ b/tools/objtool/arch/arm64/decode.c
-@@ -389,8 +389,23 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
+diff --git a/tools/objtool/arch/arm64/special.c b/tools/objtool/arch/arm64/special.c
+index a70b91e8bd7d..8bb1ebd2132a 100644
+--- a/tools/objtool/arch/arm64/special.c
++++ b/tools/objtool/arch/arm64/special.c
+@@ -4,6 +4,17 @@
  
- 	switch (aarch64_get_insn_class(insn)) {
- 	case AARCH64_INSN_CLS_UNKNOWN:
--		WARN("can't decode instruction at %s:0x%lx", sec->name, offset);
--		return -1;
-+		/*
-+		 * There are a few reasons that non-valid opcodes in code sections:
-+		 * - For LDR ops, assembler can generate the data to be
-+		 *   loaded in the code section
-+		 * - Compiler/assembler can generate zeroes to pad function that
-+		 *   do not end on 8-byte alignment
-+		 * - Some pseudo-instructions can also generate data in code
-+		 *   section
-+		 *
-+		 * Record these data as ignored so that they won't cause fault
-+		 */
-+		if (insn == 0x0)
-+			*type = INSN_NOP;
-+		else if (record_invalid_insn(sec, offset, false))
-+			return -1;
+ void arch_handle_alternative(unsigned short feature, struct special_alt *alt)
+ {
++	/*
++	 * ARM64_CB_PATCH has no alternative instruction.
++	 * a callback is called at alternative replacement time
++	 * to dynamically change the original instructions.
++	 *
++	 * ARM64_CB_PATCH is the last ARM64 feature, it's value changes
++	 * every time a new feature is added. So the orig/alt region
++	 * length are used to detect those alternatives
++	 */
++	if (alt->orig_len && !alt->new_len)
++		alt->skip_alt = true;
+ }
+ 
+ bool arch_support_alt_relocation(struct special_alt *special_alt,
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index b2135da41f48..596974030382 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -1647,6 +1647,9 @@ static int add_special_section_alts(struct objtool_file *file)
+ 				continue;
+ 			}
+ 
++			if (special_alt->skip_alt && !special_alt->new_len)
++				continue;
 +
-+		break;
- 	case AARCH64_INSN_CLS_DP_IMM:
- 		/* Mov register to and from SP are aliases of add_imm */
- 		if (aarch64_insn_is_add_imm(insn) ||
+ 			ret = handle_group_alt(file, special_alt, orig_insn,
+ 					       &new_insn);
+ 			if (ret)
 -- 
 2.17.1
 
