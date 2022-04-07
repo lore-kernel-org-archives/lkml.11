@@ -2,97 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68565C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:41:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240439AbiDGNn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 09:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56530 "EHLO
+        id S1343711AbiDGNng (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 09:43:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343852AbiDGNnF (ORCPT
+        with ESMTP id S1343880AbiDGNnQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 09:43:05 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61781A183
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 06:41:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649338863; x=1680874863;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=Ed54NXbJJI7Rw4e9sYio4n1il0ylHLWLAnh/F3tjv5k=;
-  b=AUd6i+gBGL9hpOq3H5VWuBPq9L9A4a6qHMG8LlqwdIHLgYrqEeKXx8Yk
-   Uo10RDQraIWbyjOgM5ZgkYShX9yeJOLZe5Tzbx7Axxrdu0DjXLdky2YLs
-   Nq1nL+LV8Nlhoc3fRyy1LMD0Q8nFbKs67rUCKgzslqJkLtf/jBKDNmJz1
-   6aU2ZElDlHFjYiFlGihGw+sxL+celUBJUJumzrGBPnd/6p/qIonx2bWFs
-   CCTiT8y7JeHvcReH8gdIbtBB8XtqHL7yJdkhV1hQswYvijohRN0Ff3GPL
-   bi1VYvfnMTY+x1ZzLoJhCVJOhcs/tLCCPKAQSIFe89KKWUoBS2+8xIEVg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10309"; a="241916203"
-X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
-   d="asc'?scan'208";a="241916203"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 06:40:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
-   d="asc'?scan'208";a="571055512"
-Received: from zhen-hp.sh.intel.com (HELO zhen-hp) ([10.239.159.108])
-  by orsmga008.jf.intel.com with ESMTP; 07 Apr 2022 06:40:46 -0700
-Date:   Thu, 7 Apr 2022 21:20:54 +0800
-From:   Zhenyu Wang <zhenyuw@linux.intel.com>
-To:     Zhi Wang <zhi.wang.linux@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org,
-        Zhi Wang <zhi.a.wang@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Vivi Rodrigo <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhi Wang <zhi.a.wang@intel.com>
-Subject: Re: [PATCH v9 1/3] i915/gvt: Separate the MMIO tracking table from
- GVT-g
-Message-ID: <20220407132054.GJ1089@zhen-hp.sh.intel.com>
-Reply-To: Zhenyu Wang <zhenyuw@linux.intel.com>
-References: <20220407071945.72148-1-zhi.a.wang@intel.com>
- <20220407071945.72148-2-zhi.a.wang@intel.com>
+        Thu, 7 Apr 2022 09:43:16 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6F127B38
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 06:41:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=74PS8gP8R7QSv7wDPjxMrGmI/chpbWr92QAHIh9FKHQ=; b=IkEHrck5evsyXCvHJjhJFDqRe7
+        MKO4XbmW1buUih3ZFgYRb+doKN2RDmupP3AtpfjaSAvRxJBSJ6Kq5eILoGdRBkllRwMckLuLlTdw1
+        IejvFTj3E4nxW3OrdBOkSAj7dDTJMbj9aPKzR+J9hcwy1kczQeCsXFCXLDJ8jscKrXFJ1HqFeJTyG
+        XK3GnMYtx24bwuLTwd474UEXgIeZcMP9cviBdDt5xGgUM+eh4B3AMyFgtYbUCPvUx2/DH+3Y1jWgq
+        BPfSAVO0NuwqPxVNWiE1pr7sqv9/ieP+7IvvDpUuCMxG2ovM4PPzGnh/2LVFcu5P9p9e4s5804xqt
+        gHJwozxA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ncSNp-00CCNM-SL; Thu, 07 Apr 2022 13:41:09 +0000
+Date:   Thu, 7 Apr 2022 06:41:09 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Mario Limonciello <mario.limonciello@amd.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        Suthikulpanit Suravee <Suravee.Suthikulpanit@amd.com>,
+        Hegde Vasant <Vasant.Hegde@amd.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/2] iommu/amd: Enable swiotlb in all cases
+Message-ID: <Yk7p9fhIhvaHw9dF@infradead.org>
+References: <20220404204723.9767-1-mario.limonciello@amd.com>
+ <20220404204723.9767-2-mario.limonciello@amd.com>
+ <f7039f1f-81ef-2fab-4ade-728316b54942@arm.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="twz1s1Hj1O0rHoT0"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220407071945.72148-2-zhi.a.wang@intel.com>
+In-Reply-To: <f7039f1f-81ef-2fab-4ade-728316b54942@arm.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Apr 07, 2022 at 02:31:44PM +0100, Robin Murphy wrote:
+> FWIW it's also broken for another niche case where
+> iommu_default_passthrough() == false at init, but the user later changes a
+> 32-bit device's default domain type to passthrough via sysfs, such that it
+> starts needing regular dma-direct bouncing.
 
---twz1s1Hj1O0rHoT0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Yeah.
 
-On 2022.04.07 03:19:43 -0400, Zhi Wang wrote:
-> From: Zhi Wang <zhi.a.wang@gmail.com>
->=20
-> To support the new mdev interfaces and the re-factor patches from
-> Christoph, which moves the GVT-g code into a dedicated module, the GVT-g
-> MMIO tracking table needs to be separated from GVT-g.
->
-
-Looks fine to me. Thanks!
-
-Reviewed-by: Zhenyu Wang <zhenyuw@linux.intel.com>
-
---twz1s1Hj1O0rHoT0
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EARECAB0WIQTXuabgHDW6LPt9CICxBBozTXgYJwUCYk7lLAAKCRCxBBozTXgY
-J6juAJ4/fE3Ex93O/3BhoMK0jebj1njtVwCfXDscbKT5PuPP5NWW0hwjYVTpv44=
-=VtR0
------END PGP SIGNATURE-----
-
---twz1s1Hj1O0rHoT0--
+We also have yet another issue:  swiotlb is not allocate if there is
+no memory outside the 4GB physical address space.  I think I can fix
+that easily after my swiotlb init series goes in, before that it
+would be a bit of a mess spread over all the architectures.
