@@ -2,97 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C50F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:32:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B220C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241814AbiDGHeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36656 "EHLO
+        id S241821AbiDGHey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234761AbiDGHeB (ORCPT
+        with ESMTP id S230211AbiDGHet (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:34:01 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1298541BF
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:32:02 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id 149EB32009E5;
-        Thu,  7 Apr 2022 03:32:00 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Thu, 07 Apr 2022 03:32:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=A2uzp1VB6qZPb9v+8
-        i65Ac3fQAGNJ0BYUHWC15GyxfQ=; b=OUk4rI03fHtv6kIgxgfmeIX3tHzmfemxg
-        KFBHtlRVYjKaCgH6ekKV0jrMbRkICFT0WPfLCsHaDk62uaR8xXs4TUOew/O3lVI7
-        3RBy9IC/rMNEboLdPBzMTrQgppSrq22KmyoeUfKtnLWvlP1sWlKam2motp6imT5A
-        RflsV5/zRNAt452+QimRdT2EXbtlRs226T/kjlspQgVOrsOv0faPdxg+25++LOyf
-        8GYlIGALKnUxrFwAy8TR0qh2td26Q9Ii+PC9YYpt3TBeNE9ytyYx2DQvHd/W6FjN
-        8tAX+mTKKQALdHelQw7cKwSeWXDyiInqajol1yq7HbyZkXMHaYgMw==
-X-ME-Sender: <xms:bpNOYszjB3nKKKA0xMPFOHdihootxN1s9LBteo1H2-xOURBxeObI2g>
-    <xme:bpNOYgRiC88WpcWZ5KPc2kKgtXaQ157ck0VCHxWuykXVUvdbEJ5k2PIGgYOqQxxK9
-    9pZ2ojYcdttEuvPiZ4>
-X-ME-Received: <xmr:bpNOYuWr-Cz9BxR2rbcTcP_wTadj_etgKPwfGmv_s6ZwjY4ZfJSkEC9pICbgrFlLLjnU4rPkaJWI07K-dZDI1-hfxlkjR1LvONE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejjedguddvvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvufgjkfhfgggtsehttdertddttddvnecuhfhrohhmpefhihhnnhcu
-    vfhhrghinhcuoehfthhhrghinheslhhinhhugidqmheikehkrdhorhhgqeenucggtffrrg
-    htthgvrhhnpeffudfhgeefvdeitedugfelueegheekkeefveffhfeiveetledvhfdtveff
-    teeuudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hfthhhrghinheslhhinhhugidqmheikehkrdhorhhg
-X-ME-Proxy: <xmx:bpNOYqhaUOIh_7ORD6SOs3eKYlST4yOp3aHFbcXlDdnU11FDZKJJaA>
-    <xmx:bpNOYuBNzQzOHRum7i7F15freBvK3Nc1-ksfI81iTwXmcvztZSzNNg>
-    <xmx:bpNOYrIEyHJVR_o3Mu-H61HRX5v6AcJ4_ixmNuNdtHIYrjUDInnP2A>
-    <xmx:b5NOYq1X7lewgIgPuglWsbZfAXyTy1yACogGCfWDLM3658WyLIeAqg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 7 Apr 2022 03:31:56 -0400 (EDT)
-Date:   Thu, 7 Apr 2022 17:31:03 +1000 (AEST)
-From:   Finn Thain <fthain@linux-m68k.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-cc:     linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] macintosh: fix via-pmu and via-cuda build errors
-In-Reply-To: <20220407023700.7216-1-rdunlap@infradead.org>
-Message-ID: <7ddb26a1-be89-813f-8dcc-4bebaf8f5636@linux-m68k.org>
-References: <20220407023700.7216-1-rdunlap@infradead.org>
+        Thu, 7 Apr 2022 03:34:49 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890D2177D38
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:32:49 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id d7so5329185edn.11
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 00:32:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+EUKtGXqpzIiuM97OU9EnfIBqXUuugdodntp3RmpB2g=;
+        b=MLD6Pa+acykChUKYnfN5TlyaI2DFI3571kmJ0xwMHyfkfJkDEmnAFhXVSgHmKhSdUU
+         CZQ1lyks55pzyVktHVoYFbNKKG8kXahI6EhIs8eGSfn1O9f3ntDxN5C6Y/zTn90o+YQ8
+         EhWiMs6RJVWYj0ehCvlPSAWsXpJ9W0C3Nw5DvvPo0IdrQvYQyWS0yh/3cKz7SAE5VvtF
+         3CeyNI4eGh3tkj20VQ95XOGK8FZFWFF3B6WEUxCxFGdxVPMnAW9+8iZdoBEKMk7ogPHa
+         92G465mJCWogofCCre/3YYA+mwoaqVb026bmzJ/K6K8lcgj+t+xx5V3ZEDCeftNXbHDo
+         wlag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+EUKtGXqpzIiuM97OU9EnfIBqXUuugdodntp3RmpB2g=;
+        b=4dz0N1HAs2P3U0NtHX8afinA9aDLgxRsrV9te7rQfN4rBlAjQwNTpxk8+hRSC0noH4
+         P50WtscvQqiElBn3AYyAVEttBsgz+8eCCP7/9ZjW/sM60v1sO0H4wfh0u7dyxjwEZKOQ
+         al2J8jmnZWB0jn6l26KpPFlDv5rKeYym2fUWvIrcOTpZ3JDW6yZ6rrdOb3Xs36fbY7Fl
+         cdfocA6hqqDIpqkz3QxGIFVjgoqQDG4Re8EsKpasq1yiGJvHerZAjSz0Wnm53HUIbT/1
+         d2861XGrF6fRpnQd0fiiMeaWVcEZPgvJQ8xZS0ufhcEgmoOg/1QAxi8qR1V4KLGcI+Q5
+         rl1A==
+X-Gm-Message-State: AOAM5315wGe0V//e4b+iHx9Jid+6nSx3S38rLzFgO0QyLz3CpuPJbwm6
+        Km16yT4fQaEV+FVmeBGd/zOWWA==
+X-Google-Smtp-Source: ABdhPJyIpHoo5CyU+omZm76Ir2AEajIb5A/rhFDOmn6KNjdwWWGCZXA1IvhboAVJ40Su1x4Bx+KhiQ==
+X-Received: by 2002:a50:f106:0:b0:41c:d793:3ae5 with SMTP id w6-20020a50f106000000b0041cd7933ae5mr12892876edl.390.1649316768155;
+        Thu, 07 Apr 2022 00:32:48 -0700 (PDT)
+Received: from [192.168.0.185] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id lj11-20020a170906f9cb00b006e8402c3379sm32496ejb.58.2022.04.07.00.32.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 00:32:47 -0700 (PDT)
+Message-ID: <f3f5c297-a94b-9544-5673-3da3188623f9@linaro.org>
+Date:   Thu, 7 Apr 2022 09:32:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/3] dt-bindings: dmaengine: qcom: gpi: add compatible for
+ sm8350/sm8350
+Content-Language: en-US
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org
+References: <20220406132508.1029348-1-vkoul@kernel.org>
+ <20220406132508.1029348-2-vkoul@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220406132508.1029348-2-vkoul@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 6 Apr 2022, Randy Dunlap wrote:
-
-> When CONFIG_RTC_CLASS is not set, rtc_tm_to_time64() is not defined.
+On 06/04/2022 15:25, Vinod Koul wrote:
+> Add the compatible for newer qcom socs with gpi dma i.e qcom sm8350 and
+> sm8450.
 > 
-> ...
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/dma/qcom,gpi.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> m68k-linux-ld: drivers/macintosh/via-pmu.o: in function `pmu_set_rtc_time':
-> drivers/macintosh/via-pmu.c:1758: undefined reference to `rtc_tm_to_time64'
-> m68k-linux-ld: drivers/macintosh/via-cuda.o: in function `cuda_set_rtc_time':
-> drivers/macintosh/via-cuda.c:797: undefined reference to `rtc_tm_to_time64'
-> 
-> ...
-> This is a big hammer type of patch. We could possibly do (a) some
-> conditional code blocks for RTC_CLASS 
 
-rtc_tm_to_time64() call sites also appear in several other files without 
-conditionals:
 
-arch/powerpc/kernel/time.c
-arch/powerpc/platforms/8xx/m8xx_setup.c
-arch/powerpc/platforms/maple/time.c
-arch/powerpc/platforms/powermac/time.c
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Why not use mktime64() instead? That seems to be a common pattern for this 
-kind of thing (without needing conditional code).
+
+Best regards,
+Krzysztof
