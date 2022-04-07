@@ -2,109 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BCDDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1AA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230194AbiDGUog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47322 "EHLO
+        id S230334AbiDGUo4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:44:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230367AbiDGUoL (ORCPT
+        with ESMTP id S230211AbiDGUol (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:44:11 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C065396E15
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:34:10 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id l7so7845490ejn.2
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:34:10 -0700 (PDT)
+        Thu, 7 Apr 2022 16:44:41 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B673B38DE
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:39:12 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id w21so9606876wra.2
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:39:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lgadCIuDHSONda5a8AlBMiHSHORPXO/YIVbS7AR7TQA=;
-        b=HJcyO+iyzMqE/sQyRjthCVW+qXowVaN11+BZizM5k1G161UQb2N9kNPsp7GKv6z+zo
-         CWHEYiTS1J5yuneRxmPcMImj6LTHI3O4XD5500mf93f9iofku7I3jOFqQFvk/pY7KsE7
-         iSrnxlwj22PC9mHQtg4bmj1wQszLTcPWQnwqH04EQeLVJu96yveMmTal53PCAYWhxk0j
-         GCUl1IuKda4n0K7ksYu7wy7xxLhFmyGapDNwVxM0UfyCnlrTWTALpG3vSc8RD0lhAZGO
-         89DeWEHs0PCYfK1Ozss6ps4moEu7BPtdZtBd+AyPRD064enE7bwxNMy3urL/mbFZp9oD
-         cMgQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fqtKr787N6Vy1cwaYaYZc9PI8pUmju7Cz4kLVR3rNO0=;
+        b=xd/uN/+Wfa0+DJziXe7CM988LNaoE/LluwkoUHTwQ9+zH3ooZE1UWwe7s2BIb3c1My
+         +esS9mC72qFXdlzWLyQnaolMh3gfwuzHDc4OALOUZAkHKljGW/17t6SY2BefhYkzmR9j
+         s5w/ym9EyM1G11gyyb8n0f1speuoHsrdCRrMjd4uydyz+uNmsUAz2Bv2uvCsmDDbUTht
+         CMAS2VmtJcNiWBQiF3YDbR+DbtTez2CXIt3x89DCv1ZWbq5FeH4kLl8vdIT0pt/NjK/4
+         BvErXNsFnFwcldyNvMR5l37DqHw/QXSkKDJ/R0HYkjnkdQD1vH1yozKEsvj1CUz6ui5/
+         zp4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lgadCIuDHSONda5a8AlBMiHSHORPXO/YIVbS7AR7TQA=;
-        b=Wnq2ZaoE2lBEddEPO5qayvBaXacMoHJ4VYt5+eGSgNxAQUvQWwcv55vrw9nqalYeny
-         Ocy3b4x11SS/0/SgQbZLJikKWtcRTJ/2q5mFK3HE+gX6RyyXGxCTs568CNyFTGdgMWFV
-         UYQzxhJeDqeoX4jFGg896pRiNPqXokG1/D8ilelFS4aHkHUmLdGGDAt8l7XJN5I2AP7U
-         E9Ccuei/tL+GAVJ2V0r1n36wzqMs7J1kfKKeMOruvgJmL5NK+fynnfFDqhnUAXpTOU1q
-         YjC/17QZIOx0X4/LvBn3Th/rElUGeJbe7vsFi1W9Lk8kcv+FJeigWKR3lhbUXoE2nBPD
-         nsGQ==
-X-Gm-Message-State: AOAM533N/wOYZnwLiL4spbDRjkoBXoMLT/pPVHsNfeiJlTvh3LS2C429
-        gR0QXpo75DvdncNP02GYp+ZTIQ==
-X-Google-Smtp-Source: ABdhPJwg2fPFcOmOxRETaOJJDkf4GoOxHDtuoVYZsGbXoaBOj8r/RXDTmCiJ+hztxHnvqqxDzS2f5Q==
-X-Received: by 2002:a17:907:7ba6:b0:6df:ee7d:10f2 with SMTP id ne38-20020a1709077ba600b006dfee7d10f2mr15400650ejc.98.1649363648703;
-        Thu, 07 Apr 2022 13:34:08 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id p13-20020a50d88d000000b0041cd1a083f7sm6134799edj.1.2022.04.07.13.34.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 13:34:07 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/2] arm64: dts: mediatek: align thermal zone node names with dtschema
-Date:   Thu,  7 Apr 2022 22:34:02 +0200
-Message-Id: <20220407203402.33356-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220407203402.33356-1-krzysztof.kozlowski@linaro.org>
-References: <20220407203402.33356-1-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fqtKr787N6Vy1cwaYaYZc9PI8pUmju7Cz4kLVR3rNO0=;
+        b=pQ+lGmcfBSx3AIn4VDascaup9eMl4XLaCzyunh5ojy3eyxXwRE64s20JEAKwLPKdsH
+         KNJHk0WgyNvNGvkzgkRVJVUbrUUZKc5r63bJ9SORY30RNfvxQXjNSCFYjPoNTvAeWxtS
+         SycxhObeDAx2rGqAoc/zHdONAesIFIbLj4wmMgTXOzKDR3cnsCcRPo4I+YjeMLiqllWb
+         V06iV4C3G9On11bImPA2rjcbikaHCSGNxKPkMhhzdoDlKFK0p7p2QbVLI+Z2XGBp2L9B
+         SsqRenUYmIh/uIGUKVwdJzigwmjAo8X61ilURDg9G6pNWjovF/O9OnL6ni5zE2OxnQrZ
+         a6vA==
+X-Gm-Message-State: AOAM530t5WeIyg56ZDvCsAqiNYFhbQ/sYfhoeGzskpjLfWb5miFSkcU5
+        br+IVaqpDGjm7+Oirsctu1iHhNxb+8imzEEx
+X-Google-Smtp-Source: ABdhPJzFnUZMpklEvBXqWfIprKr3SeUKOVHJYtNHafYjioDtHTrl0Yu/4IrS7rpVQtAYsGOUPaDGmQ==
+X-Received: by 2002:a05:600c:28cd:b0:38e:72c5:5259 with SMTP id h13-20020a05600c28cd00b0038e72c55259mr13665875wmd.176.1649363951008;
+        Thu, 07 Apr 2022 13:39:11 -0700 (PDT)
+Received: from [192.168.0.187] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id f11-20020a7bcc0b000000b0037e0c362b6dsm8584615wmh.31.2022.04.07.13.39.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 13:39:10 -0700 (PDT)
+Message-ID: <8fa6212c-a914-dcc4-c852-32a3948db99f@linaro.org>
+Date:   Thu, 7 Apr 2022 22:39:09 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] arm64: dts: synaptics: add DT for AS370-RDK
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+Cc:     SoC Team <soc@kernel.org>, Rob Herring <robh@kernel.org>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>
+References: <20210820173108.01d5c6de@xhacker.debian>
+ <29e96ece-8541-a7a2-c6a9-453be6644eed@canonical.com>
+ <20210820182708.51d13e29@xhacker.debian>
+ <CAK8P3a2vkZVt1bb7-iDGaSHp20U9d8QXu6AcrUMceJSS9Q_-4Q@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAK8P3a2vkZVt1bb7-iDGaSHp20U9d8QXu6AcrUMceJSS9Q_-4Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Align the name of thermal zone node to dtschema to fix warnings like:
+On 20/08/2021 21:55, Arnd Bergmann wrote:
+> On Fri, Aug 20, 2021 at 12:27 PM Jisheng Zhang
+> <Jisheng.Zhang@synaptics.com> wrote:
+>> On Fri, 20 Aug 2021 11:59:30 +0200 Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
+>>> On 20/08/2021 11:31, Jisheng Zhang wrote:
+>>>
+>>> There is no such binding. You need to update the bindings file (first
+>>> patch in the series).
+>>
+>> This is my plan ;) In fact, "berlin4ct" related binding is also missing.
+>> I want to convert Documentation/devicetree/bindings/arm/syna.txt
+>> to yaml, then add missing bindings. But it's too late for 5.15,
+>>
+>> If it's fine to keep as370.dtsi without board user(s), we can drop
+>> this patch. I will solve this issue in next development window.
+> 
+> Yes, doing it for the next cycle is ok.
 
-  arch/arm64/boot/dts/mediatek/mt8173-elm.dt.yaml:
-    thermal-zones: 'cpu_thermal' does not match any of the regexes: '^[a-zA-Z][a-zA-Z0-9\\-]{1,12}-thermal$', 'pinctrl-[0-9]+'
+Hi Arnd and Jisheng,
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm64/boot/dts/mediatek/mt8173.dtsi | 2 +-
- arch/arm64/boot/dts/mediatek/mt8183.dtsi | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+This patch was discussed in Aug 2021 and since then there was no resend.
+I assume that AD370 will not get a board, so I propose to pick up my
+removal patch:
+https://lore.kernel.org/all/YRbDNInfG7caSr2r@robh.at.kernel.org/
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index acb775ca682e..9811f92faa56 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -273,7 +273,7 @@ cpum_ck: oscillator2 {
- 	};
- 
- 	thermal-zones {
--		cpu_thermal: cpu_thermal {
-+		cpu_thermal: cpu-thermal {
- 			polling-delay-passive = <1000>; /* milliseconds */
- 			polling-delay = <1000>; /* milliseconds */
- 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index 3129e7783902..151877fa6bfd 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -823,7 +823,7 @@ thermal: thermal@1100b000 {
- 		};
- 
- 		thermal_zones: thermal-zones {
--			cpu_thermal: cpu_thermal {
-+			cpu_thermal: cpu-thermal {
- 				polling-delay-passive = <100>;
- 				polling-delay = <500>;
- 				thermal-sensors = <&thermal 0>;
--- 
-2.32.0
+I will resend it.
 
+Best regards,
+Krzysztof
