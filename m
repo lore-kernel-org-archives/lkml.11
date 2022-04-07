@@ -2,256 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC63C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1851C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229537AbiDGURx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
+        id S229578AbiDGUR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiDGURp (ORCPT
+        with ESMTP id S229531AbiDGURq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:17:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B7254488CDE
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:14:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649362401;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eXSOuQeCYTD72y4Xo1UTiURod41sQfVrbEsc1IcuHsY=;
-        b=dMRpyR3lnKFCL7Ew3FaTZAbPzivt31j9vFFS6IIIoryDdeIX6cgIC+h3P12FiAdtgrvVkT
-        urQqV+uqY7adwGcXWvJ6GLMl0k9v4WKNTkxDpJXuPhcR4d3pZ0xjhzxlkQltUWG+cmd7iQ
-        4emlA8pJlFGz3JILdYfiWtPmxTeXb9g=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-295-NHLBsDf4MN64P7ISEGuxHg-1; Thu, 07 Apr 2022 16:03:02 -0400
-X-MC-Unique: NHLBsDf4MN64P7ISEGuxHg-1
-Received: by mail-wm1-f70.google.com with SMTP id bg8-20020a05600c3c8800b0038e6a989925so1767286wmb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:03:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eXSOuQeCYTD72y4Xo1UTiURod41sQfVrbEsc1IcuHsY=;
-        b=eVy/AB6Xaf0hg4SdzFyq2sW7Ez3JNlCXoK246eYqQkRjkcCBJMy+b78o89PJMBpdcH
-         eiP5fB02X9jf9Jf0avHCovwXVK/xx+ckjDsbdJtYx3MZ650MOi8pp7twWAT5vGdiwCj5
-         AKDzSvvd8i/c7ghdzzELpU/tz6OtRRkGGt/ek9xnIWaa1z/1dqD2qKBPGWUbQp8FS9ub
-         xB9p5fKJcNjwxTHmmFvOw1TWPoQrPI02Eam9ICsy2O94NBhlBlH06IQu109Nt5dVcUmK
-         m2fHawZSxyueWxsTLReFJMCcrNhNwHp+AV4jyewc2B1lkLnuwXamwQTnSpiSbHs6E8uY
-         d7Tg==
-X-Gm-Message-State: AOAM533s7kyqYY/Unang/D24e31m0xC45GAKT54fprIQHH8+5MVlolbF
-        euZ/l76+MOM3tWfs6R6oBq5dElZuOJbl1WltVW8NIKr7/QK5A0e3zOIEw2voHn8GZU1HCievL1n
-        MOIw8iqJ8iGxu64nCDrpOojAVYHrxrO39CXUCnjd/hqyasAXmlgu/CxAuruMnWsY9+WQIUqzIw0
-        Y=
-X-Received: by 2002:a05:600c:3009:b0:381:194a:8cb5 with SMTP id j9-20020a05600c300900b00381194a8cb5mr14371875wmh.43.1649361781036;
-        Thu, 07 Apr 2022 13:03:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzdVrchp6+fH6bFHOo2gCCwpez8T6oth+OyDwzFP+IdgOSajN+NtmKi8IXgiPU7SpRh+LyMoA==
-X-Received: by 2002:a05:600c:3009:b0:381:194a:8cb5 with SMTP id j9-20020a05600c300900b00381194a8cb5mr14371846wmh.43.1649361780754;
-        Thu, 07 Apr 2022 13:03:00 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id f15-20020a0560001a8f00b002078f74ccd2sm1048712wry.36.2022.04.07.13.02.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 13:03:00 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     dri-devel@lists.freedesktop.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Chen-Yu Tsai <wens@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Mark Brown <broonie@kernel.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH 2/5] dt-bindings: display: ssd1307fb: Extend schema for SPI controllers
-Date:   Thu,  7 Apr 2022 22:02:01 +0200
-Message-Id: <20220407200205.28838-3-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407200205.28838-1-javierm@redhat.com>
-References: <20220407200205.28838-1-javierm@redhat.com>
+        Thu, 7 Apr 2022 16:17:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92BF12DCCA8;
+        Thu,  7 Apr 2022 13:14:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8EE93B82989;
+        Thu,  7 Apr 2022 20:14:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A593FC385A0;
+        Thu,  7 Apr 2022 20:14:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649362469;
+        bh=VAe4f8woe+oOvEao0tOm8tWrif27cNn6I2hPfNOSIRk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Hn3IJwhz7whA82PH78dNop3SRZpPGYtcotoPuz7FhS17+7iQnVY0qHZ+u1PlCA1vL
+         D6Z9F8ukM/140n02Afmg6Y38iv9AxGJJiM055+y0lsoyIY9ZhHMUxjb9PJNkWiJFeK
+         fuEN8HgzPHWm/wTC4TN6QZWDo8huOj+GgOmcSV/BQvQC7Lnx6S9xw3+3rlGGr5SLuI
+         5Qny1/NSuMkAxZoM91jhsi+UVd3aJ/zSkl8kKM4Ly/0Lxu/hiGQ/BbBQF1TnR3/zOM
+         9IvrsKSe5e7QbVmv2gumSCcTE+aMnC8A5joydfx2Aepn5xprYElt/rH68kFdEytbir
+         xrpxliLRo2wiw==
+Date:   Thu, 7 Apr 2022 22:14:25 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Stephen Kitt <steve@sk2.org>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 04/10] clk: max9485: use simple i2c probe function
+Message-ID: <Yk9GIVlPk+WaxaE6@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Stephen Kitt <steve@sk2.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220407151831.2371706-1-steve@sk2.org>
+ <20220407151831.2371706-5-steve@sk2.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="GW6ZZYSWduuWngtR"
+Content-Disposition: inline
+In-Reply-To: <20220407151831.2371706-5-steve@sk2.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Solomon SSD130x OLED displays can either have an I2C or SPI interface,
-add to the schema the compatible strings, properties and examples for SPI.
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
----
+--GW6ZZYSWduuWngtR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
- .../bindings/display/solomon,ssd1307fb.yaml   | 89 +++++++++++++++----
- 1 file changed, 71 insertions(+), 18 deletions(-)
+On Thu, Apr 07, 2022 at 05:18:25PM +0200, Stephen Kitt wrote:
+> The i2c probe function here doesn't use the id information provided in
+> its second argument, so the single-parameter i2c probe function
+> ("probe_new") can be used instead.
+>=20
+> This avoids scanning the identifier tables during probes.
+>=20
+> Signed-off-by: Stephen Kitt <steve@sk2.org>
 
-diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-index 46207f2c12b8..05e7975296a7 100644
---- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-+++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-@@ -31,6 +31,15 @@ properties:
-               - solomon,ssd1307-i2c
-               - solomon,ssd1309-i2c
- 
-+      # SSD130x SPI controllers
-+      - items:
-+          - enum:
-+              - sinowealth,sh1106-spi
-+              - solomon,ssd1305-spi
-+              - solomon,ssd1306-spi
-+              - solomon,ssd1307-spi
-+              - solomon,ssd1309-spi
-+
-   reg:
-     maxItems: 1
- 
-@@ -40,9 +49,14 @@ properties:
-   reset-gpios:
-     maxItems: 1
- 
-+  dc-gpios:
-+    maxItems: 1
-+
-   vbat-supply:
-     description: The supply for VBAT
- 
-+  spi-max-frequency: true
-+
-   solomon,height:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     default: 16
-@@ -148,19 +162,10 @@ allOf:
-       properties:
-         compatible:
-           contains:
--            const: sinowealth,sh1106-i2c
--    then:
--      properties:
--        solomon,dclk-div:
--          default: 1
--        solomon,dclk-frq:
--          default: 5
--
--  - if:
--      properties:
--        compatible:
--          contains:
--            const: solomon,ssd1305-i2c
-+            enum:
-+              - sinowealth,sh1106-i2c
-+              - solomon,ssd1305-i2c
-+              - solomon,ssd1305-spi
-     then:
-       properties:
-         solomon,dclk-div:
-@@ -172,7 +177,9 @@ allOf:
-       properties:
-         compatible:
-           contains:
--            const: solomon,ssd1306-i2c
-+            enum:
-+              - solomon,ssd1306-i2c
-+              - solomon,ssd1306-spi
-     then:
-       properties:
-         solomon,dclk-div:
-@@ -184,7 +191,9 @@ allOf:
-       properties:
-         compatible:
-           contains:
--            const: solomon,ssd1307-i2c
-+            enum:
-+              - solomon,ssd1307-i2c
-+              - solomon,ssd1307-spi
-     then:
-       properties:
-         solomon,dclk-div:
-@@ -198,7 +207,9 @@ allOf:
-       properties:
-         compatible:
-           contains:
--            const: solomon,ssd1309-i2c
-+            enum:
-+              - solomon,ssd1309-i2c
-+              - solomon,ssd1309-spi
-     then:
-       properties:
-         solomon,dclk-div:
-@@ -206,6 +217,21 @@ allOf:
-         solomon,dclk-frq:
-           default: 10
- 
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - sinowealth,sh1106-spi
-+              - solomon,ssd1305-spi
-+              - solomon,ssd1306-spi
-+              - solomon,ssd1307-spi
-+              - solomon,ssd1309-spi
-+    then:
-+      required:
-+        - spi-max-frequency
-+        - dc-gpios
-+
- additionalProperties: false
- 
- examples:
-@@ -214,14 +240,14 @@ examples:
-             #address-cells = <1>;
-             #size-cells = <0>;
- 
--            ssd1307: oled@3c {
-+            ssd1307_i2c: oled@3c {
-                     compatible = "solomon,ssd1307-i2c";
-                     reg = <0x3c>;
-                     pwms = <&pwm 4 3000>;
-                     reset-gpios = <&gpio2 7>;
-             };
- 
--            ssd1306: oled@3d {
-+            ssd1306_i2c: oled@3d {
-                     compatible = "solomon,ssd1306-i2c";
-                     reg = <0x3c>;
-                     pwms = <&pwm 4 3000>;
-@@ -232,3 +258,30 @@ examples:
-                     solomon,lookup-table = /bits/ 8 <0x3f 0x3f 0x3f 0x3f>;
-             };
-     };
-+  - |
-+    spi {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            ssd1307_spi: oled@0 {
-+                    compatible = "solomon,ssd1307-spi";
-+                    reg = <0x0>;
-+                    pwms = <&pwm 4 3000>;
-+                    reset-gpios = <&gpio2 7>;
-+                    dc-gpios = <&gpio2 8>;
-+                    spi-max-frequency = <10000000>;
-+            };
-+
-+            ssd1306_spi: oled@1 {
-+                    compatible = "solomon,ssd1306-spi";
-+                    reg = <0x1>;
-+                    pwms = <&pwm 4 3000>;
-+                    reset-gpios = <&gpio2 7>;
-+                    dc-gpios = <&gpio2 8>;
-+                    spi-max-frequency = <10000000>;
-+                    solomon,com-lrremap;
-+                    solomon,com-invdir;
-+                    solomon,com-offset = <32>;
-+                    solomon,lookup-table = /bits/ 8 <0x3f 0x3f 0x3f 0x3f>;
-+            };
-+    };
--- 
-2.35.1
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
+
+--GW6ZZYSWduuWngtR
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJPRiEACgkQFA3kzBSg
+KbY0YhAAoOwXGBf6vyw4CmIfGgTTl8gW8Edu86MycfVI5cTvb/AnvKXEvTQuum7s
+B96TOT9URGi/DFlpSfHPAVlM1M6u4FrpWVf2f3z+X7h5jNRnThZI7DO7twmd28nb
+OWcwU5kUriiozDCwKAPE0TgibCVThQV+U2Fp4NC7S4LI5hikNqle0inCpqcwRA4H
+yGsoeTK7xIi478uBWy55CtVHtpk9cuO1fy/z1jzmZmnb1ziKSpB6bdpdqIhs7CQc
+xPNi7CgWjAOLTEG/GDkeql+wti7f5pJIcBwNBNuemRUEbH0WY1uZdSGMTTx8UGj+
+B/OYKRu/zgsUtAQwMl7CbRhVJQqlrBwGG7aFkjARQBu+QIgwnowS/Fr3Wgni1hWE
+h17bZyJAN14eSJba9x9YyfO2rRbKAMG98FInwUNBghoF0fybDoe8aS+SY7QipXe+
+lac7r742cB5Mp8wtyaThWMHn8WumLzjefuzFAyUb4k+Qm+Ev4SQQqg50x04OETOE
+OkTFj0s/k6A26xV4RQCbQBk1PPzDq049ujR0GeZjU5SbhW9d7E2xSfFYe8v3lSVV
+xCkB0PrJWPHO62F9rZF7LRevWQhdQ1+9mCdpnRDpyoWgVKk+lNaddnFLz+TBcB+Q
+iVwy77DqjCeshgBnY9kvS/23+BBiq4Xhwiya2tM1+mtdYCGPTC4=
+=VnKf
+-----END PGP SIGNATURE-----
+
+--GW6ZZYSWduuWngtR--
