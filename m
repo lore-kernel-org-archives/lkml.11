@@ -2,84 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D169C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:51:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF974C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244555AbiDGKxz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 06:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45858 "EHLO
+        id S244567AbiDGKyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 06:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244545AbiDGKxw (ORCPT
+        with ESMTP id S232029AbiDGKyh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 06:53:52 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B0BE6164;
-        Thu,  7 Apr 2022 03:51:52 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 98F1221117;
-        Thu,  7 Apr 2022 10:51:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649328711;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=l1Tzxv44rv0NjNRX4WlYNhE5cU//xGlEDNhpdKJU4PQ=;
-        b=22WOQxpzIbLL/gHYhoRUeNZsZwNXDn8q7nXiDhJ9x5xh2epQ/bJTHWJU5YAcw+dpBOdJC0
-        HWSutIPaFZBmZcv8PIpyJKClsQKZ4kGoT7xe/kYTQqnzvaodKaBAsbQgHiRVjX+VBAcC9F
-        hnfjeINBtMi74UqV2J74zhHWIpoufNw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649328711;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=l1Tzxv44rv0NjNRX4WlYNhE5cU//xGlEDNhpdKJU4PQ=;
-        b=1qasprG3GnuRkCPq23tnKm4YcOmWoOAZz7RmjrLzwIqVc5DKs+iNhlxrTA6xYzuH9voXam
-        Xkd85YDfLqNmWvAw==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 9FAD0A3B82;
-        Thu,  7 Apr 2022 10:51:50 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 596A6DA80E; Thu,  7 Apr 2022 12:47:48 +0200 (CEST)
-Date:   Thu, 7 Apr 2022 12:47:48 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     cgel.zte@gmail.com
-Cc:     dsterba@suse.cz, clm@fb.com, dsterba@suse.com,
-        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lv.ruyi@zte.com.cn
-Subject: Re: [PATCH] Btrfs: remove redundant judgment
-Message-ID: <20220407104748.GD15609@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, cgel.zte@gmail.com, clm@fb.com,
-        dsterba@suse.com, josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lv.ruyi@zte.com.cn
-References: <20220406130453.GB15609@suse.cz>
- <20220407015700.2489671-1-lv.ruyi@zte.com.cn>
+        Thu, 7 Apr 2022 06:54:37 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A52F53055C
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 03:52:37 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6FE9212FC;
+        Thu,  7 Apr 2022 03:52:37 -0700 (PDT)
+Received: from [192.168.178.6] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D26323F5A1;
+        Thu,  7 Apr 2022 03:52:35 -0700 (PDT)
+Message-ID: <786190b3-b2cb-464d-9808-325d774c62a5@arm.com>
+Date:   Thu, 7 Apr 2022 12:52:28 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407015700.2489671-1-lv.ruyi@zte.com.cn>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [Linux 5.18-rc1] WARNING: CPU: 1 PID: 0 at
+ kernel/sched/fair.c:3355 update_blocked_averages
+Content-Language: en-US
+To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+References: <b86541ea-7d96-5a24-1b65-37c24c70d3ff@gnuweeb.org>
+ <f71d132d-02a0-918c-ab2b-3234d0d492a4@arm.com>
+ <675544de-3369-e26e-65ba-3b28fff5c126@gnuweeb.org>
+ <000457c2-57af-95e3-7dff-2cbd99f0de5f@arm.com>
+ <7f4b3fbf-c7c6-22cb-019b-520ad6a663aa@gnuweeb.org>
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+In-Reply-To: <7f4b3fbf-c7c6-22cb-019b-520ad6a663aa@gnuweeb.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 01:57:00AM +0000, cgel.zte@gmail.com wrote:
-> < Ok, we can drop the check, have you looked if there are more similar
-> < places to update?
-> I found six by coccinelle, but they are in different paths.Should I
-> send one patch or six?
+On 06/04/2022 22:34, Ammar Faizi wrote:
+> On 4/6/22 7:21 PM, Dietmar Eggemann wrote:
+>> On 05/04/2022 15:13, Ammar Faizi wrote:
+>>> On 4/5/22 7:21 PM, Dietmar Eggemann wrote:
 
-As this is a simple change it can be in one patch, provided that it's
-the same logic (dropping inode check before iput).
+[...]
 
-I've found only 2 instances with this coccinelle script:
+> Not familiar with CFS stuff, but here...
+> 
+> ===============
+> ammarfaizi2@integral2:~$ mount | grep "cgroup2\|\bcpu\b"
+> cgroup2 on /sys/fs/cgroup type cgroup2
+> (rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot)
+> ammarfaizi2@integral2:~$ cat /sys/fs/cgroup/unified/cgroup.controllers
+> cat: /sys/fs/cgroup/unified/cgroup.controllers: No such file or directory
+> ammarfaizi2@integral2:~$ ls /sys/fs/cgroup/{cpu,cpuacct}
+> ls: cannot access '/sys/fs/cgroup/cpu': No such file or directory
+> ls: cannot access '/sys/fs/cgroup/cpuacct': No such file or directory
 
-@@
-expression E;
-@@
+[...]
 
-* if (E)
-*       iput(E);
---
+Looks like 21.10 finally abandoned legacy cgroup v1 and switched to v2
+completely, which is now mounted under /sys/fs/cgroup .
 
-not sure where you found 6.
+So your /sys/fs/cgroup/cgroup.controllers should contain `cpu`.
+
+Can you check if any of the cpu.max files under /sys/fs/cgroup has
+something else then `max 100000` ?
+
+Background is that if this is the case, cgroups (i.e. cfs_rqs) might be
+throttled and this could be related to what you see. I haven't
+stress-test it so far with active CFS BW ctrl (cfs_rq throttling).
+
+> Update:
+> So far I have been using and torturing my machine for a day, but
+> still couldn't reproduce the issue. It seems I hit a rarely
+> happened bug. I will continue using this until 5.18-rc2 before
+> recompile my kernel.
+
+Thanks.
