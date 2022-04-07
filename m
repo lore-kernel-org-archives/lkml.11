@@ -2,69 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF417C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4DB8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbiDGUb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57774 "EHLO
+        id S229791AbiDGUdC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbiDGUbP (ORCPT
+        with ESMTP id S229852AbiDGUct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:31:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815582E933C;
-        Thu,  7 Apr 2022 13:15:28 -0700 (PDT)
+        Thu, 7 Apr 2022 16:32:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0CC2FB198;
+        Thu,  7 Apr 2022 13:17:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DE1E61EDF;
-        Thu,  7 Apr 2022 20:15:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E67A2C385A4;
-        Thu,  7 Apr 2022 20:15:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2DC9EB82980;
+        Thu,  7 Apr 2022 20:09:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CDE7C385A4;
+        Thu,  7 Apr 2022 20:09:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649362527;
-        bh=YcLjImFP4RaQwQQLM+DUBkeXsMZ0ABelfYLt5rl8ZJo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=LxDS4vSJbwyGtlTWwUEa9MZHPxat/S9yBdUFdRmlQdzVNh229fNGLLRkMpbI+WyAn
-         KdUSvA2B7If3Eah5orDFv7LgjXho5M8PIK8CZfjo6GkF6JPXrXkKOp6RWBVa1eZsTf
-         ssVTuZg9kumoezcEKhEX8RjAAZeZAoi+YGasnurvvrJg8wP6nzzFDrsT5e8jlzX0he
-         Tg5+o1LmDdQrCUvVHmgtccvCT52X8hasgqI270M3290WPiViofNTMkmDU8diau3vOg
-         gHLoNV4YhURTK5ApJ8O4ox2/UxviiRh6b2Z0cvP5ElYsDECnKF8M6pbjHJbh8Lj4vM
-         zEnQVSuItl/ag==
-Date:   Thu, 7 Apr 2022 22:15:24 +0200
+        s=k20201202; t=1649362158;
+        bh=A4/AzbWjitUbjirM7/ydBpWaRSNBSrPwtnLuXdyc/MU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lyH4Q2P4HkDYq7/TtiyUjfK8WuBdDRj/YgcBTUanXsjyLBeKqldFbQMYUGrdMS9/H
+         EbgL4P5fr3DZCq1epjuIo4EhOGnS2dd2T54sT7SbJqaLcGgHJvZ2eCVb51FdZVzBnd
+         Vm43695JfJA1VCOV+fOJANgAq2pkvkFwUVlK07R2xsQllKtzV4IQriHNLqCyHAh0/k
+         dGy0FZT1KxLH5oXVnuX1HO3kPeyDF8KpRDyMuSSnbiP+WILhz4sqll2jTZzMQ1vcmy
+         H+eylayuhm1/n/hHQwLp6mniElSPnhQPs0nzATpDRo+NIWxwhAHGOr+UzsA834x/s4
+         SprzIvE8eTRng==
+Date:   Thu, 7 Apr 2022 22:09:15 +0200
 From:   Wolfram Sang <wsa@kernel.org>
 To:     Stephen Kitt <steve@sk2.org>
 Cc:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 01/10] clk: cdce706: use simple i2c probe function
-Message-ID: <Yk9GXDF5MOF574CG@shikoro>
+Message-ID: <Yk9E6wOtIxnmCwkm@shikoro>
 Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
         Stephen Kitt <steve@sk2.org>,
         Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org
+References: <20220407151831.2371706-1-steve@sk2.org>
+ <20220407151831.2371706-2-steve@sk2.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="T6soNZcCxtM6oc+D"
+        protocol="application/pgp-signature"; boundary="X/S6ZsKhA/2CDvFL"
 Content-Disposition: inline
-In-Reply-To: <20220407151831.2371706-11-steve@sk2.org>
- <20220407151831.2371706-10-steve@sk2.org>
- <20220407151831.2371706-9-steve@sk2.org>
- <20220407151831.2371706-8-steve@sk2.org>
- <20220407151831.2371706-7-steve@sk2.org>
- <20220407151831.2371706-6-steve@sk2.org>
- <20220407151831.2371706-5-steve@sk2.org>
- <20220407151831.2371706-4-steve@sk2.org>
- <20220407151831.2371706-3-steve@sk2.org>
- <20220407151831.2371706-2-steve@sk2.org>
+In-Reply-To: <20220407151831.2371706-2-steve@sk2.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---T6soNZcCxtM6oc+D
+--X/S6ZsKhA/2CDvFL
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
@@ -81,24 +74,24 @@ On Thu, Apr 07, 2022 at 05:18:22PM +0200, Stephen Kitt wrote:
 Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
 
---T6soNZcCxtM6oc+D
+--X/S6ZsKhA/2CDvFL
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJPRlwACgkQFA3kzBSg
-KbYrUQ/+JSPUvf5QADstvq1hDha/ZuwVQmf9RTz5K1BNOgS2w8qnDr6zqe+ve6GK
-WGIv0iC3l9PJPs6bXgf2mnjVPd/JaXPTAtsU7q72J4k+Qiqv/vVoUJEQtxZDBjps
-fhFAXEy0a6YiSKIwsg7LnJ7IqqnBRkju6pp0LWpZ2z73tOhrFXtNwz6IlwSK4lN3
-oEDOgrNRYZh1/KmotDVuWcBrhCI5KvkaamRaEH5u3ZoDR6tannXSVDmowkQ6uYYv
-NDqo1Qj5EzpuggzJYZ34/iwMSaSsO7RMh/7IzE5o62+IeBp0x59L88Ncs9rRuntd
-d5/IEiEkKEKZU3GgBMN0P3k9Xa360WEuvKcRdKJhDBcL/56ACG+uarKzEcrBN3wH
-4OvVBYk3hXdhTiQa8TtyVMNtpvnSQCVGQUpe9Lw4BaYtyM4IAYbKnR4fc39WVtCA
-qLgHYnGkibKn26jYEKLX6AqHTIcd3G/2gfxCo9Hps8ff3uN6sqgwqg66biNcXrZE
-ZHRnTZ7gWKpuyK29AJ4bhLIZiMllcfr7sIr6YrMRIh8Cf6+kjHMM813RlNYLUxOp
-mOhrOqe8L5QSeAJAwuyVxcw5WFWYc5AXi3yBUYACMHPF2BDGk239Ygj56dFldJvP
-DjFrviBmAZu3qWnQyKt/aFMW3YM5D1YiIKMTBApUZhBv5Lk/ZhQ=
-=1TtR
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJPROYACgkQFA3kzBSg
+KbZnCA/8DPZitLAB9IgjOgu6tWf0yjJPWfSk8iS/jSOQ/ZNjIBWR6mFqaVFAkGYS
+JV7yMM7aBL/hx3mqM5oo1KvR061AHn7x1HMdaSmTiKQMIMCfiFki9BKBv6ougd69
+RtOo97FGq+pNwYQsXc28DkZKH/H2ddJK2sCOXBxPML2yIZUzcnPZFpFMp1Dv1DZ1
+Wruq9RXl9c3mr3GnoWD1IXbSbEBIv7OQOdQEWr8W5SeWhsbmbJejb0ks1xn580jm
+8nOI0ZYI6q2ytjOor8irtikMbPrCEUKs5NmLG8HyXeBrEACsYmgFJeqXXULgJpEa
+fTAR2stu1HlFkriLlsRfn5OOM+tIyq9ICR0YCVIe1mdrjs2cM9EadJcJz6ketTdZ
+7f7BPQJlG1BF9RHAK32EoYhFi09GJwj70jtUmh/I/p4+TG7wTdTNgwNRSyZd9iS9
+TmAPrYYWrtU69btf4PADSSmGolLAi+yrszSklQTTwTpMGvOhQhDzP59eI4PCr/ua
+KsSJ3is7u7gJUsXbG3puChMzJMvGcT4jhWlpNXC5wAoJh5i1V2+0cK8741dYxrp1
+41YhbfNmfGQ7nrdOtHJlyeANlDvleClCoH1u3HeBHm+14dW40xOQQE+NzKKf/VyS
+cmrvC4ZKfCvYe9DB/VEGGJR+Th/0LjeoVH8JOZ/gBRnQUoYP6mc=
+=9I0p
 -----END PGP SIGNATURE-----
 
---T6soNZcCxtM6oc+D--
+--X/S6ZsKhA/2CDvFL--
