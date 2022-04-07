@@ -2,158 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:04:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C98C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344422AbiDGPGL (ORCPT
+        id S1344439AbiDGPGW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45624 "EHLO
+        Thu, 7 Apr 2022 11:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344418AbiDGPGI (ORCPT
+        with ESMTP id S1344418AbiDGPGM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:06:08 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6CD1B29DC
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:04:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649343845; x=1680879845;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version:content-transfer-encoding;
-  bh=Y3VPFPEBEueMVx8dW2rbCqqe+xkFwaxTb9dysb5/jW4=;
-  b=SvpNrF/ZCwWO0p9BEUgbfJx/b7lZ7cDiKr6M/fQvkNRoTZ3PLs42A5ED
-   9RQpPrBwVkt8sVSBvdtPOfmURXuc5aLm571IB5vAZ9x8x9Bu9kIqRbS0a
-   0KCvoupiS74T/UwAT5D2PltvBlkTmgiLoawWnxIL+yCG+nL290CAe7aTv
-   d9ASxR8cvKC5qFXf+79Oypx6UN8CJMZ2MhNkY5N8fx0h4YnYhG4DmAkl0
-   mPejXBqwuaGt9YtgMuQoO1KtESwRqgy6xhcrmExrmppn3sHzH/UcofIEa
-   a4OikKwZMgAoqr1iIsKSW6TPg33WVfHiU2qwxH86nidbmmITu9zdLynCu
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10309"; a="258943885"
-X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
-   d="scan'208";a="258943885"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 08:03:46 -0700
-X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
-   d="scan'208";a="571089386"
-Received: from kgibala-mobl.ger.corp.intel.com (HELO localhost) ([10.249.142.48])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 08:03:41 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Zhi Wang <zhi.wang.linux@gmail.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org
-Cc:     Zhi Wang <zhi.a.wang@gmail.com>, Christoph Hellwig <hch@lst.de>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Vivi Rodrigo <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhi Wang <zhi.a.wang@intel.com>
-Subject: Re: [PATCH v9 1/3] i915/gvt: Separate the MMIO tracking table from
- GVT-g
-In-Reply-To: <20220407071945.72148-2-zhi.a.wang@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220407071945.72148-1-zhi.a.wang@intel.com>
- <20220407071945.72148-2-zhi.a.wang@intel.com>
-Date:   Thu, 07 Apr 2022 18:03:38 +0300
-Message-ID: <874k35541h.fsf@intel.com>
+        Thu, 7 Apr 2022 11:06:12 -0400
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396E11EF9C0;
+        Thu,  7 Apr 2022 08:04:11 -0700 (PDT)
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-de48295467so6646097fac.2;
+        Thu, 07 Apr 2022 08:04:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rIFirC+hrkJJZLD+rhTVtR0S3qBIL5Kp1loYfP1qXKs=;
+        b=YsG4dnwrd95oUeeUcGkuSji7n8zU4Rcb5paVLjrmpxslmtIrXCf36RwGob57OXEH37
+         qq6DvlB4JgP5H2yaQi+LFYKMyL526O5j0QSo6ctk2rtVnMW52QvJh+I52CuKXNMAAfZ3
+         MhQay3yDRmkCekqnTOOghtIYlCTPG6UnvVfzPO5yp5uC3NcKGRO64TIx9qDbIFpYEMS8
+         ZitZev/+imywMELjZ1n5zHFTxT8ltvpcuU4Jnl5ifwgxnFbfmsF9laBTXkuvzKUufI3q
+         6EUgWKIpn/ah+jLbABAnXHab0DrURt2+LiSpMYMTfwKoj9ZLcMjOryv6xbYDinJXKeXu
+         IMKg==
+X-Gm-Message-State: AOAM531oTBh58Eby/IdC7+ZuvcywXS0gKezQiXmVGwsQWdCRvtqFDMDh
+        61zUClqMqIiAYkuJKhbOOg==
+X-Google-Smtp-Source: ABdhPJxwquMJUiYkV4ltSOgoQUwGo+ob/LNkodx/eg5e/D6v7vXATUJuGCiGgcXyfb4oNPEV/gL0qQ==
+X-Received: by 2002:a05:6870:80cc:b0:e2:6a85:1ed3 with SMTP id r12-20020a05687080cc00b000e26a851ed3mr1484019oab.146.1649343850502;
+        Thu, 07 Apr 2022 08:04:10 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id h186-20020acab7c3000000b002ef5106248asm7664344oif.45.2022.04.07.08.04.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 08:04:10 -0700 (PDT)
+Received: (nullmailer pid 1086295 invoked by uid 1000);
+        Thu, 07 Apr 2022 15:04:09 -0000
+Date:   Thu, 7 Apr 2022 10:04:09 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
+Cc:     krzk@kernel.org, tglx@linutronix.de, daniel.lezcano@linaro.org,
+        kernel@axis.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, alim.akhtar@samsung.com,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 1/4] dt-bindings: timer: exynos4210-mct: Add ARTPEC-8
+ MCT support
+Message-ID: <Yk79acnuZE1Wj/3s@robh.at.kernel.org>
+References: <20220407074432.424578-1-vincent.whitchurch@axis.com>
+ <20220407074432.424578-2-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220407074432.424578-2-vincent.whitchurch@axis.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 07 Apr 2022, Zhi Wang <zhi.wang.linux@gmail.com> wrote:
-> diff --git a/drivers/gpu/drm/i915/intel_gvt.h b/drivers/gpu/drm/i915/inte=
-l_gvt.h
-> index d7d3fb6186fd..7665d7cf0bdd 100644
-> --- a/drivers/gpu/drm/i915/intel_gvt.h
-> +++ b/drivers/gpu/drm/i915/intel_gvt.h
-> @@ -26,7 +26,17 @@
->=20=20
->  struct drm_i915_private;
->=20=20
-> +#include <linux/kernel.h>
+On Thu, Apr 07, 2022 at 09:44:29AM +0200, Vincent Whitchurch wrote:
+> The ARTPEC-8 has an MCT with 4 global and 8 local timer interrupts.
+> 
+> The SoC has a quad-core Cortex-A53 and a single-core Cortex-A5 which
+> share one MCT with one global and eight local timers.  The Cortex-A53
+> and Cortex-A5 do not have cache-coherency between them, and therefore
+> run two separate kernels.
+> 
+> The Cortex-A53 boots first and starts the global free-running counter
+> and also registers a clock events device using the global timer.  (This
+> global timer clock events is usually replaced by arch timer clock events
+> for each of the cores.)
+> 
+> When the A5 boots (via the A53), it should not use the global timer
+> interrupts or write to the global timer registers.  This is because even
+> if there are four global comparators, the control bits for all four are
+> in the same registers, and we would need to synchronize between the
+> cpus.  Instead, the global timer FRC (already started by the A53) should
+> be used as the clock source, and one of the local timers which are not
+> used by the A53 can be used for clock events on the A5.
+> 
+> To support this hardware, add a compatible for the MCT as well as two
+> new properties to describe the hardware-mandated sharing of the FRC and
+> dedicating local timers to specific processors.
+> 
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> ---
+> 
+> Notes:
+>     v3:
+>     - Add all required bindings for ARTPEC-8 in one patch
+>     - Rename and split local-timer-only to samsung,local-timers and
+>       samsung,frc-shared
+>     - Restrict above properties to the ARTPEC-8 compatible.
+>     - Rewrite descriptions of properties to hopefully describe hardware.
+>     
+>     v2:
+>     - Use devicetree property instead of module parameter.
+> 
+>  .../timer/samsung,exynos4210-mct.yaml         | 26 +++++++++++++++++++
+>  1 file changed, 26 insertions(+)
 
-You only need <linux/types.h>. Please add it before the forward
-declaration above.
+What's this based on? Doesn't apply on v5.18-rc1.
 
-> +
->  #ifdef CONFIG_DRM_I915_GVT
-> +
-> +struct intel_gvt_mmio_table_iter {
-> +	struct drm_i915_private *i915;
-> +	void *data;
-> +	int (*handle_mmio_cb)(struct intel_gvt_mmio_table_iter *iter,
-> +			      u32 offset, u32 size);
-> +};
-> +
->  int intel_gvt_init(struct drm_i915_private *dev_priv);
->  void intel_gvt_driver_remove(struct drm_i915_private *dev_priv);
->  int intel_gvt_init_device(struct drm_i915_private *dev_priv);
-> @@ -34,6 +44,7 @@ void intel_gvt_clean_device(struct drm_i915_private *de=
-v_priv);
->  int intel_gvt_init_host(void);
->  void intel_gvt_sanitize_options(struct drm_i915_private *dev_priv);
->  void intel_gvt_resume(struct drm_i915_private *dev_priv);
-> +int intel_gvt_iterate_mmio_table(struct intel_gvt_mmio_table_iter *iter);
->  #else
->  static inline int intel_gvt_init(struct drm_i915_private *dev_priv)
->  {
-> @@ -51,6 +62,16 @@ static inline void intel_gvt_sanitize_options(struct d=
-rm_i915_private *dev_priv)
->  static inline void intel_gvt_resume(struct drm_i915_private *dev_priv)
->  {
->  }
-> +
-> +unsigned long intel_gvt_get_device_type(struct drm_i915_private *i915)
-> +{
-> +	return 0;
-> +}
-
-The CONFIG_DRM_I915_GVT=3Dy counterpart for this is in mmio.h. Should be
-both in the same header.
-
-> +
-> +int intel_gvt_iterate_mmio_table(struct intel_gvt_mmio_table_iter *iter)
-> +{
-> +	return 0;
-> +}
->  #endif
->=20=20
->  #endif /* _INTEL_GVT_H_ */
-> diff --git a/drivers/gpu/drm/i915/intel_gvt_mmio_table.c b/drivers/gpu/dr=
-m/i915/intel_gvt_mmio_table.c
-> new file mode 100644
-> index 000000000000..d29491a6d209
-> --- /dev/null
-> +++ b/drivers/gpu/drm/i915/intel_gvt_mmio_table.c
-> @@ -0,0 +1,1290 @@
-> +// SPDX-License-Identifier: MIT
-> +/*
-> + * Copyright =C2=A9 2020 Intel Corporation
-> + */
-> +
-> +#include "i915_drv.h"
-> +#include "i915_reg.h"
-> +#include "display/vlv_dsi_pll_regs.h"
-> +#include "gt/intel_gt_regs.h"
-> +#include "intel_mchbar_regs.h"
-> +#include "i915_pvinfo.h"
-> +#include "intel_gvt.h"
-> +#include "gvt/gvt.h"
-
-Generally we have the include lists sorted.
-
-Other than the nitpicks above, the series is
-
-Acked-by: Jani Nikula <jani.nikula@intel.com>
-
-
-BR,
-Jani.
-
-
---=20
-Jani Nikula, Intel Open Source Graphics Center
+Rob
