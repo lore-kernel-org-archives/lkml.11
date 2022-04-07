@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 273B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:46:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B469DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243413AbiDGIsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46386 "EHLO
+        id S243419AbiDGIsX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243378AbiDGIr7 (ORCPT
+        with ESMTP id S243302AbiDGIrf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:47:59 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E27194AA3;
-        Thu,  7 Apr 2022 01:45:59 -0700 (PDT)
+        Thu, 7 Apr 2022 04:47:35 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3054C433;
+        Thu,  7 Apr 2022 01:45:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649321159; x=1680857159;
+  t=1649321135; x=1680857135;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=7mWO7vcx1uyojbdgOBUIlkHgQkLQR+hGDwEJlvIQ+iE=;
-  b=RiwqiHZe7dv/+z4cJR7bRnwH/aEF+c6egUZZvznNnb0I6uNvqGqY/KHc
-   x5f3STK0K8T6i7O3Ce3fl9FULr1gDOiZW172lqZhtxXUziz7vAYY1OviF
-   KybamcDIYLZS+zagxB3QnK3RI8b8Dq09g/GgPmIeZyXNgsgwqVkmGMU+P
-   4=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 07 Apr 2022 01:45:58 -0700
+  bh=dZ4qdIHawZkU6fiaRAkBGEP+XutjgAITMv4DeCK5r7c=;
+  b=qLQi4hPTbASo1PQrYmpgL7w8Qhl7q42sKrStXBp3R7/SGVYfG5IblUjp
+   DvLBTADplEnmmGiIBA0N3iQVzH8c6A7uWy1Auu6QEahto88uBheNgu97S
+   uKV0gwz2drPDUfea76wBF2Km1CRWJw9tk8DrtDe0q3COJ2jabaSn2h9Lm
+   g=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 07 Apr 2022 01:45:35 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 01:45:58 -0700
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 01:45:34 -0700
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Apr 2022 01:45:58 -0700
+ 15.2.986.22; Thu, 7 Apr 2022 01:45:34 -0700
 Received: from c-sanm-linux.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Apr 2022 01:45:52 -0700
+ 15.2.986.22; Thu, 7 Apr 2022 01:45:28 -0700
 From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
 To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
         "Bjorn Andersson" <bjorn.andersson@linaro.org>,
@@ -53,9 +53,9 @@ CC:     <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
         <quic_pkondeti@quicinc.com>, <quic_ppratap@quicinc.com>,
         <quic_kriskura@quicinc.com>, <quic_vpulyala@quicinc.com>,
         Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Subject: [PATCH v12 6/6] arm64: dts: qcom: sc7280: Add wakeup-source property for USB node
-Date:   Thu, 7 Apr 2022 14:15:04 +0530
-Message-ID: <1649321104-31322-7-git-send-email-quic_c_sanm@quicinc.com>
+Subject: [PATCH v12 2/6] usb: dwc3: qcom: Add helper functions to enable,disable wake irqs
+Date:   Thu, 7 Apr 2022 14:15:00 +0530
+Message-ID: <1649321104-31322-3-git-send-email-quic_c_sanm@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1649321104-31322-1-git-send-email-quic_c_sanm@quicinc.com>
 References: <1649321104-31322-1-git-send-email-quic_c_sanm@quicinc.com>
@@ -68,28 +68,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding wakeup-source property for USB controller in SC7280.
-This property is added to inform that the USB controller is
-wake up capable and to conditionally power down the phy during
-system suspend.
+Adding helper functions to enable,disable wake irqs to make
+the code simple and readable.
 
 Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/dwc3/dwc3-qcom.c | 58 ++++++++++++++++++++------------------------
+ 1 file changed, 26 insertions(+), 32 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index f0b64be..046262a 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -2916,6 +2916,7 @@
- 				phys = <&usb_1_hsphy>, <&usb_1_ssphy>;
- 				phy-names = "usb2-phy", "usb3-phy";
- 				maximum-speed = "super-speed";
-+				wakeup-source;
- 			};
- 		};
+diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
+index 6cba990..7352124 100644
+--- a/drivers/usb/dwc3/dwc3-qcom.c
++++ b/drivers/usb/dwc3/dwc3-qcom.c
+@@ -296,50 +296,44 @@ static void dwc3_qcom_interconnect_exit(struct dwc3_qcom *qcom)
+ 	icc_put(qcom->icc_path_apps);
+ }
  
++static void dwc3_qcom_enable_wakeup_irq(int irq)
++{
++	if (!irq)
++		return;
++
++	enable_irq(irq);
++	enable_irq_wake(irq);
++}
++
++static void dwc3_qcom_disable_wakeup_irq(int irq)
++{
++	if (!irq)
++		return;
++
++	disable_irq_wake(irq);
++	disable_irq_nosync(irq);
++}
++
+ static void dwc3_qcom_disable_interrupts(struct dwc3_qcom *qcom)
+ {
+-	if (qcom->hs_phy_irq) {
+-		disable_irq_wake(qcom->hs_phy_irq);
+-		disable_irq_nosync(qcom->hs_phy_irq);
+-	}
++	dwc3_qcom_disable_wakeup_irq(qcom->hs_phy_irq);
+ 
+-	if (qcom->dp_hs_phy_irq) {
+-		disable_irq_wake(qcom->dp_hs_phy_irq);
+-		disable_irq_nosync(qcom->dp_hs_phy_irq);
+-	}
++	dwc3_qcom_disable_wakeup_irq(qcom->dp_hs_phy_irq);
+ 
+-	if (qcom->dm_hs_phy_irq) {
+-		disable_irq_wake(qcom->dm_hs_phy_irq);
+-		disable_irq_nosync(qcom->dm_hs_phy_irq);
+-	}
++	dwc3_qcom_disable_wakeup_irq(qcom->dm_hs_phy_irq);
+ 
+-	if (qcom->ss_phy_irq) {
+-		disable_irq_wake(qcom->ss_phy_irq);
+-		disable_irq_nosync(qcom->ss_phy_irq);
+-	}
++	dwc3_qcom_disable_wakeup_irq(qcom->ss_phy_irq);
+ }
+ 
+ static void dwc3_qcom_enable_interrupts(struct dwc3_qcom *qcom)
+ {
+-	if (qcom->hs_phy_irq) {
+-		enable_irq(qcom->hs_phy_irq);
+-		enable_irq_wake(qcom->hs_phy_irq);
+-	}
++	dwc3_qcom_enable_wakeup_irq(qcom->hs_phy_irq);
+ 
+-	if (qcom->dp_hs_phy_irq) {
+-		enable_irq(qcom->dp_hs_phy_irq);
+-		enable_irq_wake(qcom->dp_hs_phy_irq);
+-	}
++	dwc3_qcom_enable_wakeup_irq(qcom->dp_hs_phy_irq);
+ 
+-	if (qcom->dm_hs_phy_irq) {
+-		enable_irq(qcom->dm_hs_phy_irq);
+-		enable_irq_wake(qcom->dm_hs_phy_irq);
+-	}
++	dwc3_qcom_enable_wakeup_irq(qcom->dm_hs_phy_irq);
+ 
+-	if (qcom->ss_phy_irq) {
+-		enable_irq(qcom->ss_phy_irq);
+-		enable_irq_wake(qcom->ss_phy_irq);
+-	}
++	dwc3_qcom_enable_wakeup_irq(qcom->ss_phy_irq);
+ }
+ 
+ static int dwc3_qcom_suspend(struct dwc3_qcom *qcom)
 -- 
 2.7.4
 
