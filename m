@@ -2,94 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 338C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:16:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE21C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345647AbiDGQSJ (ORCPT
+        id S1345675AbiDGQTS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 12:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57160 "EHLO
+        Thu, 7 Apr 2022 12:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345703AbiDGQRm (ORCPT
+        with ESMTP id S1345668AbiDGQTN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 12:17:42 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B6312082
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:15:40 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id kw18so6017591pjb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 09:15:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pjmFekv8jDwjPEFoUA7K+aTQqc3Lv+ZZUAGbkfR0nhI=;
-        b=REXPQfxvAcns+qRUBa9udhfUz0fCCn+7TO+QFD3ATUcXTx2Phkp/eVe23ASEjcWXQV
-         QCWUG/TN5909B7ITNddW45R2t5Nn0L+HnPDKPIAE3TUvrTe5ALH9E9uCBu4wPVENnyH4
-         I4+BTTaYUn07QJvrBv/XnCbWfOc3DDPUx5d4JMCCWsjCQ24YHLivS+aulwih+wIp+p9u
-         3E6wGA6ouQzwZoH1JuHVWifo6VTDovIKz/hOCbFL2BjA2R0lADQVaflz5XofhNWQAGnt
-         6a3OMKtKv8JeWvf8pr1wp8lAbHgf06ChlK+lTBHq3gYvaVUXkSr03+NcDP3LuuGPgkHp
-         y0jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pjmFekv8jDwjPEFoUA7K+aTQqc3Lv+ZZUAGbkfR0nhI=;
-        b=CPiwO1C77+nVAXnpqY3Jkg04gAm96F+luqWZm/0ockSW/7xO3vXQ+exFWbGxM66VXC
-         WeTdJS7e/NSxaFHn7h/V7TcRFKRJFbTfi4yxbVnrz0P0JtBNPg3Ys64Y22V5Kwb8+f6y
-         tFv4a7CPps2/iEpnXimJAuhKmjnaxJUimj65D2G2QYHLTXI10E38O9AJq0VK3WvtJALk
-         c5Wkn2Pt/AehXvY9IDominqFCszYQCl8GjPNx0RYfFH29XKEshUQVIPl+wPGZgTlr8Rh
-         G/TrZcKYTuPf1mm54arR6fxbd6xJz4upUBlgt8AcVUMGUXo/toeChavmE7gWIZeix1Nd
-         g+vA==
-X-Gm-Message-State: AOAM531xsnzvzcFPaZ/aWua6/FyvywgeBNAllSiJii40KMMvmCe1lYWc
-        nypOfbDbbVThLDsd33wb3JR22g==
-X-Google-Smtp-Source: ABdhPJyyrQ71dJva+gEqAi8WgQYtWeT60fGgpZLIS3NYZpUvh4J8u8RD/czp1XiotgUuR8s75Zz2zQ==
-X-Received: by 2002:a17:902:d4c1:b0:153:d493:3f1 with SMTP id o1-20020a170902d4c100b00153d49303f1mr14704352plg.102.1649348139813;
-        Thu, 07 Apr 2022 09:15:39 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h21-20020a056a001a5500b004fb71896e49sm22593891pfv.25.2022.04.07.09.15.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 09:15:39 -0700 (PDT)
-Date:   Thu, 7 Apr 2022 16:15:35 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: x86: hyper-v: Avoid writing to TSC page without an
- active vCPU
-Message-ID: <Yk8OJ5Y1IKky9cnz@google.com>
-References: <20220407154754.939923-1-vkuznets@redhat.com>
+        Thu, 7 Apr 2022 12:19:13 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0741E7464;
+        Thu,  7 Apr 2022 09:17:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=MWMYUvxxQQl/e+7TuhjQmN5IAfBuJmlz8AgqJFrsH/c=; b=yds/9JiPwd9ffHz9HM5fkQNGzw
+        2hOLVRjwJBMDkFbVnaIQ2EZBWtYRgvuHQmCmu3LQQY0X77m23scuTVKQgEfeQN1BIjXMh+KsVZ5vD
+        DYoIjmHbQlZWXMl3sy0ZvMhVNZbvomXzEyXUYF31HCFLQnQNkvvHY/wW0d7K/NmM2Jkc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ncUPO-00Efak-3f; Thu, 07 Apr 2022 17:50:54 +0200
+Date:   Thu, 7 Apr 2022 17:50:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 04/14] dt-bindings: arm: mediatek: document WED
+ binding for MT7622
+Message-ID: <Yk8IXno6sjkHVf4g@lunn.ch>
+References: <20220405195755.10817-1-nbd@nbd.name>
+ <20220405195755.10817-5-nbd@nbd.name>
+ <d0bffa9a-0ea6-0f59-06b2-7eef3c746de1@linaro.org>
+ <e3ea7381-87e3-99e1-2277-80835ec42f15@nbd.name>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220407154754.939923-1-vkuznets@redhat.com>
+In-Reply-To: <e3ea7381-87e3-99e1-2277-80835ec42f15@nbd.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022, Vitaly Kuznetsov wrote:
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 676705ad1e23..3460bcd75bf2 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -979,10 +979,10 @@ enum hv_tsc_page_status {
->  	HV_TSC_PAGE_GUEST_CHANGED,
->  	/* TSC page MSR was written by KVM userspace, update pending */
->  	HV_TSC_PAGE_HOST_CHANGED,
-> +	/* TSC page needs to be updated due to internal KVM changes */
-> +	HV_TSC_PAGE_KVM_CHANGED,
+> > Isn't this a network offload engine? If yes, then probably it should be
+> > in "net/".
+> It's not a network offload engine by itself. It's a SoC component that
+> connects to the offload engine and controls a MTK PCIe WLAN device,
+> intercepting interrupts and DMA rings in order to be able to inject packets
+> coming in from the offload engine.
 
-Why add KVM_CHANGED?  I don't see any reason to differentiate between userspace
-and KVM, and using KVM_CHANGED for the kvm_vm_ioctl_set_clock() case is wrong as
-that is very much a userspace initiated update, not a KVM update.
+Hi Felix
 
->  	/* TSC page was properly set up and is currently active  */
->  	HV_TSC_PAGE_SET,
-> -	/* TSC page is currently being updated and therefore is inactive */
-> -	HV_TSC_PAGE_UPDATING,
->  	/* TSC page was set up with an inaccessible GPA */
->  	HV_TSC_PAGE_BROKEN,
->  };
+Maybe turn the question around. Can it be used for something other
+than networking? If not, then somewhere under net seems reasonable.
+
+     Andrew
