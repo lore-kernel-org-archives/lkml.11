@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B12C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59CBAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238603AbiDGB0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:26:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60572 "EHLO
+        id S238283AbiDGB0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239615AbiDGBTX (ORCPT
+        with ESMTP id S239666AbiDGBT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:19:23 -0400
+        Wed, 6 Apr 2022 21:19:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D271AC422;
-        Wed,  6 Apr 2022 18:14:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0BB01AE19A;
+        Wed,  6 Apr 2022 18:14:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F04DB8268C;
-        Thu,  7 Apr 2022 01:14:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CBD6C385A3;
-        Thu,  7 Apr 2022 01:14:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF6C9B82692;
+        Thu,  7 Apr 2022 01:14:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F6EDC385A8;
+        Thu,  7 Apr 2022 01:14:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294087;
-        bh=kPunzNQI93rtW/+0Eyu9lHowQwG7urzc55cxsv3IxVg=;
+        s=k20201202; t=1649294090;
+        bh=s/wM9yw1sAuIFJAp3+xxsTnu7j5+IlJj2gurHg09ouM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h9KjL4aoVgwD1R1D9L1Kgb/UnwLJMN4qStJnmref3shjjOR5wIry1pRaFczya4jqY
-         Sg2dwZqFwEGwLv4/aszv8B/V5QAFRSXsyoiEAWXiE4fc0WTeHXp9dyui4q8YORuSZJ
-         igEA/E/Tbpz45/+ju5HLjBgsSUxL4EfDwW8C8lO+9mNOmnoA/eEerutx8HLmags1eZ
-         lJQX/sR03gLDkfl+NUcthfu1PAv3UAJhEt2/P2SXvaacSkxHpECCkRE3rCXya+APtB
-         bONUnVoWuUOTPqYPD0gf9lbJgOEjd849B0E0kxq5GrJj08l7kQ4bZerv/v7dLFJDud
-         UVE4QN7Gbr66A==
+        b=MBauZixEz6txklnhEftxCdpEjKUczEmBADysQ4Cx2o4BEXP5tm0Gh4rzydc3MMXBQ
+         sE9RRsqDrgycRk38aghqYqRS47Nvh2PanGVceXAwjGTsFMMBPNM76v2aeq0gAb8Uh+
+         inP5DVN8Kkphodg6DBT8YPyC+W4x1x/XgX8OF+CN22m2CBwK/3hZ1CCJO+hxGVswh4
+         aJGTC8FsdL8StMLW/O8RIceg5vyxMvVC3GNuXGImDUE7P2Zu6K9TEkMMHVQY+KO9uU
+         42s1xSMosJK5NCmwcvExXH8fNUtxbfEpvkrzDCY+Eu5IbrOHldRwXgLjXG5Ap529qt
+         dz1EwbirGCmog==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
-        perex@perex.cz, tiwai@suse.com, jeremy.szu@canonical.com,
-        wse@tuxedocomputers.com, hui.wang@canonical.com,
-        tanureal@opensource.cirrus.com, cam@neo-zeon.de,
-        kailang@realtek.com, sami@loone.fi, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.10 13/25] ALSA: hda/realtek: Enable headset mic on Lenovo P360
-Date:   Wed,  6 Apr 2022 21:14:01 -0400
-Message-Id: <20220407011413.114662-13-sashal@kernel.org>
+Cc:     Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 15/25] vhost_vdpa: don't setup irq offloading when irq_num < 0
+Date:   Wed,  6 Apr 2022 21:14:03 -0400
+Message-Id: <20220407011413.114662-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011413.114662-1-sashal@kernel.org>
 References: <20220407011413.114662-1-sashal@kernel.org>
@@ -54,33 +53,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Zhu Lingshan <lingshan.zhu@intel.com>
 
-[ Upstream commit 5a8738571747c1e275a40b69a608657603867b7e ]
+[ Upstream commit cce0ab2b2a39072d81f98017f7b076f3410ef740 ]
 
-Lenovo P360 is another platform equipped with ALC897, and it needs
-ALC897_FIXUP_HEADSET_MIC_PIN quirk to make its headset mic work.
+When irq number is negative(e.g., -EINVAL), the virtqueue
+may be disabled or the virtqueues are sharing a device irq.
+In such case, we should not setup irq offloading for a virtqueue.
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Link: https://lore.kernel.org/r/20220325160501.705221-1-kai.heng.feng@canonical.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+Link: https://lore.kernel.org/r/20220222115428.998334-3-lingshan.zhu@intel.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/vhost/vdpa.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 3bd37c02ce0e..91042c445c8c 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -10861,6 +10861,7 @@ static const struct snd_pci_quirk alc662_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x144d, 0xc051, "Samsung R720", ALC662_FIXUP_IDEAPAD),
- 	SND_PCI_QUIRK(0x14cd, 0x5003, "USI", ALC662_FIXUP_USI_HEADSET_MODE),
- 	SND_PCI_QUIRK(0x17aa, 0x1036, "Lenovo P520", ALC662_FIXUP_LENOVO_MULTI_CODECS),
-+	SND_PCI_QUIRK(0x17aa, 0x1057, "Lenovo P360", ALC897_FIXUP_HEADSET_MIC_PIN),
- 	SND_PCI_QUIRK(0x17aa, 0x32ca, "Lenovo ThinkCentre M80", ALC897_FIXUP_HEADSET_MIC_PIN),
- 	SND_PCI_QUIRK(0x17aa, 0x32cb, "Lenovo ThinkCentre M70", ALC897_FIXUP_HEADSET_MIC_PIN),
- 	SND_PCI_QUIRK(0x17aa, 0x32cf, "Lenovo ThinkCentre M950", ALC897_FIXUP_HEADSET_MIC_PIN),
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index e4d60009d908..04578aa87e4d 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -97,8 +97,11 @@ static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
+ 		return;
+ 
+ 	irq = ops->get_vq_irq(vdpa, qid);
++	if (irq < 0)
++		return;
++
+ 	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+-	if (!vq->call_ctx.ctx || irq < 0)
++	if (!vq->call_ctx.ctx)
+ 		return;
+ 
+ 	vq->call_ctx.producer.token = vq->call_ctx.ctx;
 -- 
 2.35.1
 
