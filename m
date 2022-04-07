@@ -2,117 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 428E8C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F047DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:32:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235490AbiDGJeg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:34:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40892 "EHLO
+        id S234876AbiDGJe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236013AbiDGJeb (ORCPT
+        with ESMTP id S243809AbiDGJeq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:34:31 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3F2F4635
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:32:30 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id j2so8639873ybu.0
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 02:32:30 -0700 (PDT)
+        Thu, 7 Apr 2022 05:34:46 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29CDA113D29;
+        Thu,  7 Apr 2022 02:32:41 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id z8so5070632oix.3;
+        Thu, 07 Apr 2022 02:32:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=62l7lWpaWnFmcE5KSw9n2JkqXdoamhD8Hh1gAz788Uk=;
-        b=7Fjzbh/Sm8gK8nPro6LV1yjqabTxBJm9qCUowc7ncFl93HYSSGb9TiVbsEdolByulW
-         ZLNWYJEfgx8FrYP+nw6wIKw2btBuNy8ozUjteagSt1oB9S0Gwklnc/YahTkGDoCAOVix
-         igRidMJGzQkSVhJ8WyRhWtc5CPkC4PywYzDFRQbvSM9MfSW/NuRIFK+Vpmncji+7guox
-         3twrJWYdvfKqfZ7HAuNlGEC1BFnSWQmX7d8lI/BeFue1mJqg24pYDaufEm4lQb1csQmD
-         A5JApUHZ4D8oW4Rvs0vPoys0IxVWBR7SGOofo1Ws07IF6BHdGY1SKEdLygAspaXdMr2C
-         2QGA==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ki3aFUkfa/hYhXGKcxrSTgut7tX0oEYaBor2VxuoPfQ=;
+        b=bxp6Gri8o+/lC4w71i2SH86SerM7v5q9sJ44t/ctydWnb3aZcF/PUjPrneW6hbfg5f
+         CeDXFVs0YymkSP0C42Yj5S5Hs0/OpDrFMjty1i/DJ02SjQLO35ESODXZs7de0cYMolZ0
+         3vu97B1sO4XZ67rORVN7eL0wNx7v4WN55QFQMasu/ujHfY9ok/av3Ynm6BLdhVR1+mDK
+         tIUCr7q0n0CR0fgY3+9BzOZRyUvkCgC81+W9RXdk5tG0kUpApC17gCG7Wg8mrRE9YeQj
+         LDa5FjvgbflnVRtUnGxuxvfVNiGevMSHDcKGh/BJxMUzEuvtv+6vbjomMAN0ChwxiK0r
+         ssEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=62l7lWpaWnFmcE5KSw9n2JkqXdoamhD8Hh1gAz788Uk=;
-        b=dOCilzYti1RiaINmAICn3cVt0leT15O1tNNbexsqEeizn+K+ysL8/L/3o14gkQazGv
-         0l6GB2+IbavM1aUFwvVyYNqU4PW+A0eMHZaoOq8U9mUmV6dzGpAdr6ouA4BA247PfXr3
-         gFl2WjsqROL5zgxF2MP7FaBNRhX/2inANeRUGugKJ8fVZh/HI/m0YD149PiyVFxX0oFc
-         L5UaYFr2PZjQlfkcSUeSbgSnIdJLjeX8kEyGYG0TnzD2f+UYfMwJBOq7R+xz2MHfNoJS
-         KeYKVfuyvwHQnyhsx44pGL0g0AlyXQFp/UKkVk9UYRFIsmt0qTanPspSCGskJvNVlN+c
-         Gv9A==
-X-Gm-Message-State: AOAM533rLYk4Cf/+A/Q0I1K1YdQEHpCUWSzNR/RsaJ0w4aTk9SrL/bt8
-        3WoL1P1xMOfD1xDhhKjhNCzMdUFrG442cOIe+HiFXAhSgbOZ+Q==
-X-Google-Smtp-Source: ABdhPJxI566MWWnks/diHDfuyZ06GeRsNBqBd4+xL9zJswWBt/4Jez9cug6L1kUO3ogC8RY5GmBkb7nkHJVFFDzZ+ew=
-X-Received: by 2002:a25:ab42:0:b0:633:883b:3e21 with SMTP id
- u60-20020a25ab42000000b00633883b3e21mr9941442ybi.132.1649323949480; Thu, 07
- Apr 2022 02:32:29 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=Ki3aFUkfa/hYhXGKcxrSTgut7tX0oEYaBor2VxuoPfQ=;
+        b=ZP4vuceZqpvHKWwu34dEYCyzUoS/wql8wWKHhtOEJL5B6hO0AahF+aVHFGfFp9H1cY
+         okCu4H2Ahlw70HvjZ1dF18xTOqLZJ/msO6MSpwKVceaRfqGvf8/qDtjHW+ZuFfpWl+mc
+         9e0Zd850ARfQ00etAdy5Kw2feu7HtzpQ5yX9e6/cIUE9AIAdw2hytIdBEBeDpTq5XAhZ
+         /lrDUDNct4vX5u09rsOvmfC/T8/o7ye+woaw4mEAVfPQLz4+vQskKqrFZohTty9XC1Is
+         SYtuKEpE3XNflv68652HwYtZGMLxo5l/YR613pApUOnzgpC47y6u0Ho10jAs8u7l8Uvu
+         kYXA==
+X-Gm-Message-State: AOAM533W79n5RNSoQybsDmSZ+Mm95MuE1xPkKStu3M91R94zhVkAe62F
+        1ALhGtksLCeHqzO3YiG651A=
+X-Google-Smtp-Source: ABdhPJz3rOPAJ9zdDgpQ5CxxG3fQ0AEe+TLUq9Xu3mJv9MqWsjo29/yfJn31XR1whemmprWjOQ1lWw==
+X-Received: by 2002:a05:6808:2023:b0:2da:5b6a:a526 with SMTP id q35-20020a056808202300b002da5b6aa526mr5511859oiw.264.1649323960499;
+        Thu, 07 Apr 2022 02:32:40 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id i21-20020a056830011500b005cdc3cdacb5sm7859527otp.57.2022.04.07.02.32.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 02:32:39 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 7 Apr 2022 02:32:38 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.9 00/43] 4.9.310-rc1 review
+Message-ID: <20220407093238.GA3041848@roeck-us.net>
+References: <20220406182436.675069715@linuxfoundation.org>
 MIME-Version: 1.0
-References: <20220407064008.71869-1-pizhenwei@bytedance.com>
-In-Reply-To: <20220407064008.71869-1-pizhenwei@bytedance.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Thu, 7 Apr 2022 17:31:52 +0800
-Message-ID: <CAMZfGtXr6rnjb4QR8Tce-WcTEWTDTwOjnCGDYV2NFooXDGxzyA@mail.gmail.com>
-Subject: Re: [PATCH] mm: fix kernel NULL pointer dereference in page_vma_mapped_walk
-To:     zhenwei pi <pizhenwei@bytedance.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 2:43 PM zhenwei pi <pizhenwei@bytedance.com> wrote:
->
-> size_to_hstate(4K) returns NULL pointer, this leads kernel BUG in
-> function page_vma_mapped_walk.
->
->  BUG: kernel NULL pointer dereference, address: 0000000000000028
->  #PF: supervisor read access in kernel mode
->  #PF: error_code(0x0000) - not-present page
->  PGD 102a8b067 P4D 102a8b067 PUD 102a88067 PMD 0
->  Oops: 0000 [#1] PREEMPT SMP NOPTI
->  CPU: 0 PID: 16 Comm: kworker/0:1 Kdump: loaded Tainted: G   M        E     5.18.0-rc1.bm.1-amd64 #3
->  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.0-0-gd239552ce722-prebuilt.qemu.org 04/01/2014
->  Workqueue: events mce_gen_pool_process
->  RIP: 0010:page_vma_mapped_walk+0x4aa/0x850
->  Code: 8b 77 20 48 89 c2 4c 89 ef e8 b2 c4 02 00 49 89 c4 48 89 43 30 48 85 c0 0f 84 a7 fd ff ff 48 89 ef e8 fa 9c 02 00 49 8d 7d 74 <83> 78 28 09 0f 84 1e 03 00 00 48 89 7b 38 e8 a3 cc 60 00 48 89 df
->  RSP: 0018:ffffc9000008bc58 EFLAGS: 00010246
->  RAX: 0000000000000000 RBX: ffffc9000008bca0 RCX: 0000000000000009
->  RDX: 0000000000200000 RSI: ffffffff82b4a460 RDI: ffff88810ac5c3f4
->  RBP: 0000000000001000 R08: 0000000000001000 R09: 0000000000000000
->  R10: 0000000000000000 R11: 0000000000000007 R12: ffff888072cafd10
->  R13: ffff88810ac5c380 R14: ffff888101afc440 R15: 0000000000000000
->  FS:  0000000000000000(0000) GS:ffff88823fc00000(0000) knlGS:0000000000000000
->  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->  CR2: 0000000000000028 CR3: 0000000106ca2002 CR4: 0000000000772ef0
->  PKRU: 55555554
->  Call Trace:
->   <TASK>
->   ? preempt_count_add+0x68/0xa0
->   page_mapped_in_vma+0xb4/0x230
->   collect_procs.part.35+0x11b/0x440
->   hwpoison_user_mappings+0x165/0x5b0
->   ? zone_pcp_enable+0x16/0x30
->   memory_failure+0xbea/0xd90
->   ? _printk+0x58/0x6f
->   uc_decode_notifier+0x4b/0xd0
->   blocking_notifier_call_chain+0x60/0x90
->   mce_gen_pool_process+0x3c/0x60
->   process_one_work+0x1c2/0x390
->   ? process_one_work+0x390/0x390
->   worker_thread+0x30/0x360
->   ? process_one_work+0x390/0x390
->   kthread+0xe6/0x110
->   ? kthread_complete_and_exit+0x20/0x20
->   ret_from_fork+0x1f/0x30
->   </TASK>
->
-> Fixes: 2aff7a4755bed ("mm: Convert page_vma_mapped_walk to work on PFNs")
-> Signed-off-by: zhenwei pi <pizhenwei@bytedance.com>
+On Wed, Apr 06, 2022 at 08:26:09PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.310 release.
+> There are 43 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Fri, 08 Apr 2022 18:24:27 +0000.
+> Anything received after that time might be too late.
+> 
 
-Good catch.
+Build results:
+	total: 163 pass: 161 fail: 2
+Failed builds:
+	arm64:allnoconfig
+	arm64:tinyconfig
+Qemu test results:
+	total: 397 pass: 397 fail: 0
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+arch/arm64/kernel/cpu_errata.c: In function 'is_spectrev2_safe':
+arch/arm64/kernel/cpu_errata.c:829:39: error: 'arm64_bp_harden_smccc_cpus' undeclared 
 
-Thanks.
+arch/arm64/kernel/cpu_errata.c: In function 'spectre_bhb_enable_mitigation':
+arch/arm64/kernel/cpu_errata.c:839:39: error: '__hardenbp_enab' undeclared
+
+arch/arm64/kernel/cpu_errata.c:879:42: error: 'bp_hardening_data' undeclared
+
+Guenter
