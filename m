@@ -2,100 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4817FC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 291E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:22:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346065AbiDGRW7 (ORCPT
+        id S1346081AbiDGRX5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
+        Thu, 7 Apr 2022 13:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiDGRW5 (ORCPT
+        with ESMTP id S233096AbiDGRXw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:22:57 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C303E22;
-        Thu,  7 Apr 2022 10:20:57 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-de3ca1efbaso7069557fac.9;
-        Thu, 07 Apr 2022 10:20:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rwhEiY9odJROCRAy+Ndxe/cp+ZV49XR/EL4wYOpAE08=;
-        b=IIUUip01Dqt5QiwJ/erRQUjGGkM6va0LGj10SXbl1yeuvdrUag2BL9+ZE6FIYVXigL
-         SSHewX4d9bFiJtKezNgpdA9uArp7uu1Yme51d/4VsXJc0OQpmT8e/LVGpfkHwcU05Dxv
-         R0sZ42oUn466RSwjOipkaJjAw8gY7QFYNTgKBEqATDpvgSdgCoWFvpeRGytESUDHaIVc
-         JZzmGJrCyFlk8bz4uIt3JvuQ2TaTRaQQ2jGRRp9cxO0jTjO8o3zW9MFAdTbKdPIlzOX9
-         o15Q9HD+lz/JKeBZ12niMjd4/loko+sp7P8ftYoLb1zbDgQv+htegkEOsSX0RmVGXRuO
-         gaNg==
-X-Gm-Message-State: AOAM5326JifmjyuVw3Y5MjKjQUBnnff6hTd7L0fhPbkPY321Tbhr7HP5
-        5NPCUs9JTbxpg9kb7z/bIg==
-X-Google-Smtp-Source: ABdhPJzOkKryYuGQU1yXI/kalRRJK9WAgKPBFsBxb61733YyUlHX5uXdCZkO25oICRI+DQ0DnHBrxQ==
-X-Received: by 2002:a05:6870:d1c8:b0:e2:b03:1d44 with SMTP id b8-20020a056870d1c800b000e20b031d44mr6489525oac.162.1649352056351;
-        Thu, 07 Apr 2022 10:20:56 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 65-20020aca0544000000b002f980b50140sm3707530oif.18.2022.04.07.10.20.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 10:20:56 -0700 (PDT)
-Received: (nullmailer pid 1485057 invoked by uid 1000);
-        Thu, 07 Apr 2022 17:20:55 -0000
-Date:   Thu, 7 Apr 2022 12:20:55 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v2 01/14] dt-bindings: net: mediatek: add optional
- properties for the SoC ethernet core
-Message-ID: <Yk8ddwmSiFg3pslA@robh.at.kernel.org>
-References: <20220405195755.10817-1-nbd@nbd.name>
- <20220405195755.10817-2-nbd@nbd.name>
+        Thu, 7 Apr 2022 13:23:52 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D270BC0F;
+        Thu,  7 Apr 2022 10:21:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=wpn/cFs7ICqDTKdxfQRTWuXVXhkklSg4ezYfXgfOPzE=; b=j+1wU3y0FcEcwb25+1IusqjMCD
+        fjuyD0pji3sns2Syg1LqjS8C0aS9qh+PYurWg4idi1CEC9lNYz//3U5OwqCJXa3C6RZWGwR+U0TOz
+        hzEBtQLnCUvCqixN8V16o8fIi3w1nWdfcHtQppY65JHvkpcVZzH67xQpEXL3HiCNqOJrM5HFZnNni
+        EosTrt05nmIp/4j2NtrkNkoLUjMUDqmzDdlVHMp0EGCQ3IIS4veD1mctF9IlMDXef9gbUwYoM1v2g
+        3agmhkzHCNLPx/s8LdBs13CeyvM3BEhUjTUXl3xa+22+/7p3nI90n8uP4CX8HRLhtPyri6DfI88Bz
+        CDxBoQzg==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1ncVRg-002CRe-Bt; Thu, 07 Apr 2022 10:57:22 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1ncVRf-0002QJ-PW; Thu, 07 Apr 2022 10:57:19 -0600
+From:   Logan Gunthorpe <logang@deltatee.com>
+To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Cc:     Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Logan Gunthorpe <logang@deltatee.com>
+Date:   Thu,  7 Apr 2022 10:57:13 -0600
+Message-Id: <20220407165713.9243-8-logang@deltatee.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220407165713.9243-1-logang@deltatee.com>
+References: <20220407165713.9243-1-logang@deltatee.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405195755.10817-2-nbd@nbd.name>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, guoqing.jiang@linux.dev, logang@deltatee.com
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+Subject: [PATCH v1 7/7] md/raid5: Annotate functions that hold device_lock with __must_hold
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 09:57:42PM +0200, Felix Fietkau wrote:
-> From: Lorenzo Bianconi <lorenzo@kernel.org>
-> 
-> Introduce dma-coherent, cci-control and hifsys optional properties to
-> the mediatek ethernet controller bindings
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> ---
->  Documentation/devicetree/bindings/net/mediatek-net.txt | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/mediatek-net.txt b/Documentation/devicetree/bindings/net/mediatek-net.txt
-> index 72d03e07cf7c..13cb12ee4ed6 100644
-> --- a/Documentation/devicetree/bindings/net/mediatek-net.txt
-> +++ b/Documentation/devicetree/bindings/net/mediatek-net.txt
-> @@ -41,6 +41,12 @@ Required properties:
->  - mediatek,pctl: phandle to the syscon node that handles the ports slew rate
->  	and driver current: only for MT2701 and MT7623 SoC
->  
-> +Optional properties:
-> +- dma-coherent: present if dma operations are coherent
-> +- mediatek,cci-control: phandle to the cache coherent interconnect node
+A handful of functions note the device_lock must be held with a comment
+but this is not comprehensive. Many other functions hold the lock when
+taken so add an __must_hold() to each call to annotate when the lock is
+held.
 
-There's a common property for this already. See CCI-400 binding.
+This makes it a bit easier to analyse device_lock.
 
-> +- mediatek,hifsys: phandle to the mediatek hifsys controller used to provide
-> +	various clocks and reset to the system.
-> +
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+---
+ drivers/md/raid5.c | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
-This series is adding a handful of new properties. Please convert the 
-binding to DT schema first.
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+index fa955d23c88f..b53000a917df 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -79,18 +79,21 @@ static inline int stripe_hash_locks_hash(struct r5conf *conf, sector_t sect)
+ }
+ 
+ static inline void lock_device_hash_lock(struct r5conf *conf, int hash)
++	__acquires(&conf->device_lock)
+ {
+ 	spin_lock_irq(conf->hash_locks + hash);
+ 	spin_lock(&conf->device_lock);
+ }
+ 
+ static inline void unlock_device_hash_lock(struct r5conf *conf, int hash)
++	__releases(&conf->device_lock)
+ {
+ 	spin_unlock(&conf->device_lock);
+ 	spin_unlock_irq(conf->hash_locks + hash);
+ }
+ 
+ static inline void lock_all_device_hash_locks_irq(struct r5conf *conf)
++	__acquires(&conf->device_lock)
+ {
+ 	int i;
+ 	spin_lock_irq(conf->hash_locks);
+@@ -100,6 +103,7 @@ static inline void lock_all_device_hash_locks_irq(struct r5conf *conf)
+ }
+ 
+ static inline void unlock_all_device_hash_locks_irq(struct r5conf *conf)
++	__releases(&conf->device_lock)
+ {
+ 	int i;
+ 	spin_unlock(&conf->device_lock);
+@@ -164,6 +168,7 @@ static bool stripe_is_lowprio(struct stripe_head *sh)
+ }
+ 
+ static void raid5_wakeup_stripe_thread(struct stripe_head *sh)
++	__must_hold(&sh->raid_conf->device_lock)
+ {
+ 	struct r5conf *conf = sh->raid_conf;
+ 	struct r5worker_group *group;
+@@ -211,6 +216,7 @@ static void raid5_wakeup_stripe_thread(struct stripe_head *sh)
+ 
+ static void do_release_stripe(struct r5conf *conf, struct stripe_head *sh,
+ 			      struct list_head *temp_inactive_list)
++	__must_hold(&conf->device_lock)
+ {
+ 	int i;
+ 	int injournal = 0;	/* number of date pages with R5_InJournal */
+@@ -296,6 +302,7 @@ static void do_release_stripe(struct r5conf *conf, struct stripe_head *sh,
+ 
+ static void __release_stripe(struct r5conf *conf, struct stripe_head *sh,
+ 			     struct list_head *temp_inactive_list)
++	__must_hold(&conf->device_lock)
+ {
+ 	if (atomic_dec_and_test(&sh->count))
+ 		do_release_stripe(conf, sh, temp_inactive_list);
+@@ -350,9 +357,9 @@ static void release_inactive_stripe_list(struct r5conf *conf,
+ 	}
+ }
+ 
+-/* should hold conf->device_lock already */
+ static int release_stripe_list(struct r5conf *conf,
+ 			       struct list_head *temp_inactive_list)
++	__must_hold(&conf->device_lock)
+ {
+ 	struct stripe_head *sh, *t;
+ 	int count = 0;
+@@ -629,6 +636,10 @@ static struct stripe_head *__find_stripe(struct r5conf *conf, sector_t sector,
+  * This is because some failed devices may only affect one
+  * of the two sections, and some non-in_sync devices may
+  * be insync in the section most affected by failed devices.
++ *
++ * Most calls to this function hold &conf->device_lock. Calls
++ * in raid5_run() do not require the lock as no other threads
++ * have been started yet.
+  */
+ int raid5_calc_degraded(struct r5conf *conf)
+ {
+@@ -5278,6 +5289,7 @@ static void handle_stripe(struct stripe_head *sh)
+ }
+ 
+ static void raid5_activate_delayed(struct r5conf *conf)
++	__must_hold(&conf->device_lock)
+ {
+ 	if (atomic_read(&conf->preread_active_stripes) < IO_THRESHOLD) {
+ 		while (!list_empty(&conf->delayed_list)) {
+@@ -5295,9 +5307,9 @@ static void raid5_activate_delayed(struct r5conf *conf)
+ }
+ 
+ static void activate_bit_delay(struct r5conf *conf,
+-	struct list_head *temp_inactive_list)
++		struct list_head *temp_inactive_list)
++	__must_hold(&conf->device_lock)
+ {
+-	/* device_lock is held */
+ 	struct list_head head;
+ 	list_add(&head, &conf->bitmap_list);
+ 	list_del_init(&conf->bitmap_list);
+@@ -5522,6 +5534,7 @@ static struct bio *chunk_aligned_read(struct mddev *mddev, struct bio *raid_bio)
+  * handle_list.
+  */
+ static struct stripe_head *__get_priority_stripe(struct r5conf *conf, int group)
++	__must_hold(&conf->device_lock)
+ {
+ 	struct stripe_head *sh, *tmp;
+ 	struct list_head *handle_list = NULL;
+@@ -6393,8 +6406,7 @@ static int  retry_aligned_read(struct r5conf *conf, struct bio *raid_bio,
+ static int handle_active_stripes(struct r5conf *conf, int group,
+ 				 struct r5worker *worker,
+ 				 struct list_head *temp_inactive_list)
+-		__releases(&conf->device_lock)
+-		__acquires(&conf->device_lock)
++		__must_hold(&conf->device_lock)
+ {
+ 	struct stripe_head *batch[MAX_STRIPE_BATCH], *sh;
+ 	int i, batch_size = 0, hash;
+-- 
+2.30.2
 
-Rob
