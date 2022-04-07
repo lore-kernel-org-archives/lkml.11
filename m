@@ -2,144 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C64FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB9EFC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:56:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345234AbiDGP6M (ORCPT
+        id S1345243AbiDGP65 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43954 "EHLO
+        Thu, 7 Apr 2022 11:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229955AbiDGP6I (ORCPT
+        with ESMTP id S231648AbiDGP6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:58:08 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BF5186C2;
-        Thu,  7 Apr 2022 08:56:08 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id qh7so11710742ejb.11;
-        Thu, 07 Apr 2022 08:56:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oCLMqmvOfrGHdJ8J/9MpyAUq5T7nSt9PnJCJFfJ9Ovk=;
-        b=Jjdme6TkPQCxRndLVwSWEmXsH+5XV2u2wSD04m/9PtSYUTEIxnH8bdqjxBptswdOsp
-         oxAvvcbc7H2zLtAt21L8MuOwjYBAnen2avSBzWvPbErnOR7m+TYSW/f1cqk46bUbIDg4
-         1at3cXZOxStoj/ryZamYb7saJkKz5YcvF/CRv48rljNPKqMaRI1oxxqmupBYLxNPXaNc
-         IJuIm+Qgy+Lb5sswyGQ1lk//qot5tbLKY6/xS5ku5hIUn0gvQLLoy2BC6bjqmesnnpJ7
-         oWq90Tiq1nEeW+VFKl5p1oTmpme6j01Nrcc1TikdH5tcw9hyb0WAX3Wqmb2SwAcj3k/J
-         pEoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oCLMqmvOfrGHdJ8J/9MpyAUq5T7nSt9PnJCJFfJ9Ovk=;
-        b=qO9FuAfFWHA/VC9C7Xd7hyqI7J5P0gL54z2YIJKVMzQfVL1D+8nMOMRbMdcDlkLhOX
-         Sx0NLCcucmVJUPjxqrkatO/1JkWLCCPSxW0kjZrq5JAoZa05ZGL3H3rC0/1vkbJ5wD0A
-         As80bfVkGiV2uKYv9ejZyrDU+fEHTgCJDvQ3LnLRizQqxV1w8fTKDUY2CJwQGHD1rxV2
-         OekkWIBnfCdjdiurCRLf2AtXOc8DOxSMXvib78WxoxWTEd9WJQfMgCyMxjcTGg8qZFcW
-         0h9dDcVdaP/nR5rlkm6xyuMGZBe5hSmHvk+0uwayBsY/KTNtNGYUoMEBaYNOcC7ase5z
-         C+dA==
-X-Gm-Message-State: AOAM531iuk4Phab/Jz451uwSmkovuPe07oCSE83RAyMMClQWL2s0B7Jc
-        jP3h5eTNHSUXrEUPg2Wamlk=
-X-Google-Smtp-Source: ABdhPJwmsBMWfmYtE1epMAcbjNmECu4QuUPr2e6Y7Rp+be9nlQcvwEIUjIorCFTMM79og/wYaRSnPg==
-X-Received: by 2002:a17:906:314b:b0:6d6:da31:e545 with SMTP id e11-20020a170906314b00b006d6da31e545mr14619905eje.125.1649346966605;
-        Thu, 07 Apr 2022 08:56:06 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id er22-20020a170907739600b006e7e873ed6csm5228123ejc.53.2022.04.07.08.56.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 08:56:06 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <8e0280ab-c7aa-5d01-a36f-93d0d0d79e25@redhat.com>
-Date:   Thu, 7 Apr 2022 17:56:05 +0200
+        Thu, 7 Apr 2022 11:58:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C713CC535
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:56:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649347013;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=X5YpQDJ2ZqHtZdXucI2jljoyY6ImRCjw0xnUfICVFA8=;
+        b=jJyHkGM2tElekyXHKFkUCpKXIoBg0tJ27jTlKt2eLwyixr7qr3j76BPwSIrp/Pclni8SyG
+        MRKIBZIWhN9Hyl6jMhD+RKp5R8RLrAX6PH/kIfbap+lLFk9c25N45j1I1b+GKyuav/+ANz
+        G8gRg71a3tQOb/igQCEmPRHsJdJJf8k=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-628-c2Zs9M8hM6Ko6lRV16KP2g-1; Thu, 07 Apr 2022 11:56:51 -0400
+X-MC-Unique: c2Zs9M8hM6Ko6lRV16KP2g-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2D9D6801E95;
+        Thu,  7 Apr 2022 15:56:51 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.192.50])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2664854AC84;
+        Thu,  7 Apr 2022 15:56:48 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 01/31] KVM: x86: hyper-v: Resurrect dedicated KVM_REQ_HV_TLB_FLUSH flag
+Date:   Thu,  7 Apr 2022 17:56:15 +0200
+Message-Id: <20220407155645.940890-2-vkuznets@redhat.com>
+In-Reply-To: <20220407155645.940890-1-vkuznets@redhat.com>
+References: <20220407155645.940890-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 092/104] KVM: TDX: Handle TDX PV HLT hypercall
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
-        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
-        Connor Kuehl <ckuehl@redhat.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <6da55adb2ddb6f287ebd46aad02cfaaac2088415.1646422845.git.isaku.yamahata@intel.com>
- <282d4cd1-d1f7-663c-a965-af587f77ee5a@redhat.com>
- <Yk79A4EdiZoVQMsV@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <Yk79A4EdiZoVQMsV@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/7/22 17:02, Sean Christopherson wrote:
-> On Thu, Apr 07, 2022, Paolo Bonzini wrote:
->> On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
->>> +	bool interrupt_disabled = tdvmcall_p1_read(vcpu);
->>
->> Where is R12 documented for TDG.VP.VMCALL<Instruction.HLT>?
->>
->>> +		 * Virtual interrupt can arrive after TDG.VM.VMCALL<HLT> during
->>> +		 * the TDX module executing.  On the other hand, KVM doesn't
->>> +		 * know if vcpu was executing in the guest TD or the TDX module.
->>
->> I don't understand this; why isn't it enough to check PI.ON or something
->> like that as part of HLT emulation?
-> 
-> Ooh, I think I remember what this is.  This is for the case where the virtual
-> interrupt is recognized, i.e. set in vmcs.RVI, between the STI and "HLT".  KVM
-> doesn't have access to RVI and the interrupt is no longer in the PID (because it
-> was "recognized".  It doesn't get delivered in the guest because the TDCALL
-> completes before interrupts are enabled.
-> 
-> I lobbied to get this fixed in the TDX module by immediately resuming the guest
-> in this case, but obviously that was unsuccessful.
+In preparation to implementing fine-grained Hyper-V TLB flush and
+Direct TLB flush, resurrect dedicated KVM_REQ_HV_TLB_FLUSH request
+bit. As KVM_REQ_TLB_FLUSH_GUEST is a stronger operation, clear
+KVM_REQ_HV_TLB_FLUSH request in kvm_service_local_tlb_flush_requests()
+when KVM_REQ_TLB_FLUSH_GUEST was also requested.
 
-So the TDX module sets RVI while in an STI interrupt shadow.  So far so 
-good.  Then:
+No functional change intended.
 
-- it receives the HLT TDCALL from the guest.  The interrupt shadow at 
-this point is gone.
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/include/asm/kvm_host.h | 2 ++
+ arch/x86/kvm/hyperv.c           | 4 ++--
+ arch/x86/kvm/x86.c              | 7 ++++++-
+ 3 files changed, 10 insertions(+), 3 deletions(-)
 
-- it knows that there is an interrupt that can be delivered (RVI > PPR 
-&& EFLAGS.IF=1, the other conditions of 29.2.2 don't matter)
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 3460bcd75bf2..488934fadc3a 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -105,6 +105,8 @@
+ 	KVM_ARCH_REQ_FLAGS(30, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
+ #define KVM_REQ_MMU_FREE_OBSOLETE_ROOTS \
+ 	KVM_ARCH_REQ_FLAGS(31, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
++#define KVM_REQ_HV_TLB_FLUSH \
++	KVM_ARCH_REQ_FLAGS(32, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
+ 
+ #define CR0_RESERVED_BITS                                               \
+ 	(~(unsigned long)(X86_CR0_PE | X86_CR0_MP | X86_CR0_EM | X86_CR0_TS \
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index e235c1d43f83..b60bad29caf8 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -1876,11 +1876,11 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 	 * analyze it here, flush TLB regardless of the specified address space.
+ 	 */
+ 	if (all_cpus) {
+-		kvm_make_all_cpus_request(kvm, KVM_REQ_TLB_FLUSH_GUEST);
++		kvm_make_all_cpus_request(kvm, KVM_REQ_HV_TLB_FLUSH);
+ 	} else {
+ 		sparse_set_to_vcpu_mask(kvm, sparse_banks, valid_bank_mask, vcpu_mask);
+ 
+-		kvm_make_vcpus_request_mask(kvm, KVM_REQ_TLB_FLUSH_GUEST, vcpu_mask);
++		kvm_make_vcpus_request_mask(kvm, KVM_REQ_HV_TLB_FLUSH, vcpu_mask);
+ 	}
+ 
+ ret_success:
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index e9647614dc8c..3c54f6804b7b 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -3341,7 +3341,12 @@ void kvm_service_local_tlb_flush_requests(struct kvm_vcpu *vcpu)
+ 	if (kvm_check_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu))
+ 		kvm_vcpu_flush_tlb_current(vcpu);
+ 
+-	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu))
++	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu)) {
++		kvm_vcpu_flush_tlb_guest(vcpu);
++		kvm_clear_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
++	}
++
++	if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu))
+ 		kvm_vcpu_flush_tlb_guest(vcpu);
+ }
+ EXPORT_SYMBOL_GPL(kvm_service_local_tlb_flush_requests);
+-- 
+2.35.1
 
-- it forwards the HLT TDCALL nevertheless, to a clueless hypervisor that 
-has no way to glean either RVI or PPR?
-
-It's absurd that this be treated as anything but a bug.
-
-
-Until that is fixed, KVM needs to do something like:
-
-- every time a bit is set in PID.PIR, set tdx->buggy_hlt_workaround = 1
-
-- every time TDG.VP.VMCALL<HLT> is received, 
-xchg(&tdx->buggy_hlt_workaround, 0) and return immediately to the guest 
-if it is 1.
-
-Basically an internal version of PID.ON.
-
->>> +		details.full = td_state_non_arch_read64(
->>> +			to_tdx(vcpu), TD_VCPU_STATE_DETAILS_NON_ARCH);
->>
->> TDX documentation says "the meaning of the field may change with Intel TDX
->> module version", where is this field documented?  I cannot find any "other
->> guest state" fields in the TDX documentation.
-> 
-> IMO we should put a stake in the ground and refuse to accept code that consumes
-> "non-architectural" state.  It's all software, having non-architectural APIs is
-> completely ridiculous.
-
-Having them is fine, *using* them to work around undocumented bugs is 
-the ridiculous part.
-
-You didn't answer the other question, which is "Where is R12 documented 
-for TDG.VP.VMCALL<Instruction.HLT>?" though...  Should I be worried? :)
-
-
-Paolo
