@@ -2,130 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9184C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:16:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CFABC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234840AbiDGLSb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 07:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53214 "EHLO
+        id S241880AbiDGLSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 07:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244802AbiDGLST (ORCPT
+        with ESMTP id S244782AbiDGLSN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 07:18:19 -0400
-Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [81.169.146.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A9B70CD1;
-        Thu,  7 Apr 2022 04:16:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649330173;
+        Thu, 7 Apr 2022 07:18:13 -0400
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F8A6A01E;
+        Thu,  7 Apr 2022 04:16:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649330159;
     s=strato-dkim-0002; d=goldelico.com;
-    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
     From:Subject:Sender;
-    bh=ghuIHOXwcBIPtNzAtXxIIrMgvWMfEspBSWPIcijGCo0=;
-    b=lzV7xcfX/NnVZKB2WsRCTREkq6y1NvR6MFt70ozwrwoK7e4D/lrT6EpMQONq3PnuPS
-    hDrDIYhC1OFobcDxQH/vTUQXCT1tz0AavoFfOzFWw67vxmKkbxi8dEeU42SPbIOxBT4o
-    JGepwZTTUmN2yypLrJ3TKrc6qeHy95z20Us907dZ4FZcmJ3zKq6x+Y8gmvfTXMnVoiGb
-    JXkzdTfFo0V38Q+eN7Dy/jsI3Cb18UpyXNkmMKY77YmE902LbMi+o95Nwn23nMtRolqj
-    qxkb1E0a1vLlNCrGqydsxx0eaIVYBWbxR+iVUvu/2kV483bRaKBOtnrgvAmcJtu0AwLy
-    3dJw==
+    bh=XDaMI+4EBmGzpAUX/OBVolCDz/2DUisSrJKiCD/9MvE=;
+    b=S9f/Upmjtl4bOpU4uELMwYuwzEhCC13kefSZU9WN7g0JgHiRfsDxdR95xH1E6KbzY5
+    hw0sw7nh5sJ5U6mjUC0G04rN0AMTZXsvhtlbU2mc/egKb3IeJHhGFuviOMcT9zL2XjOR
+    3E2armbpwAvf8OJXPzgkCc/vr+hKL9XkHtSNQ8wWSD3N51qcONJRdZMq9oORKrCKBMIF
+    fIPNrkpgDniDEyvZEOjjNH6kGIFy0hkjS6AAUEIVOHS0AahP43Ke9D10l2xOOmFxasOR
+    piQBIVqqv7sawpGhgVbdBsThDXmrb93qIIVit9LqlK+UprzBTWh/1d6Lw7ih1TDG61ZY
+    +Ong==
 Authentication-Results: strato.com;
     dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1KHeBQyh+ITDDFsCr4="
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3i8MRqg=="
 X-RZG-CLASS-ID: mo00
-Received: from iMac.fritz.box
+Received: from imac.fritz.box
     by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy37BGCjxD
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+    with ESMTPSA id k708cfy37BFxjx7
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
         (Client did not present a certificate);
-    Thu, 7 Apr 2022 13:16:12 +0200 (CEST)
+    Thu, 7 Apr 2022 13:15:59 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
+Subject: Re: [PATCH v17 6/6] drm/bridge: display-connector: add ddc-en gpio
+ support
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-To:     Andrzej Hajda <andrzej.hajda@intel.com>,
+In-Reply-To: <Yk6TJgdoSqthWUiz@pendragon.ideasonboard.com>
+Date:   Thu, 7 Apr 2022 13:15:58 +0200
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Neil Armstrong <narmstrong@baylibre.com>,
         Robert Foss <robert.foss@linaro.org>,
         Paul Boddie <paul@boddie.org.uk>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
         Paul Cercueil <paul@crapouillou.net>,
         Maxime Ripard <maxime@cerno.tech>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Cc:     Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
         dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
-        letux-kernel@openphoenux.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: [PATCH v18 1/3] drm/bridge: display-connector: add ddc-en gpio support
-Date:   Thu,  7 Apr 2022 13:16:09 +0200
-Message-Id: <3607e924b7c0cf0be956c0d49894be1442dbda41.1649330171.git.hns@goldelico.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <cover.1649330170.git.hns@goldelico.com>
-References: <cover.1649330170.git.hns@goldelico.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        letux-kernel@openphoenux.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <30CEC20F-5EE5-448E-9610-3805E18952A6@goldelico.com>
+References: <cover.1649262368.git.hns@goldelico.com>
+ <bf90de303a5dbc587517fe4a1bb437e198b90198.1649262368.git.hns@goldelico.com>
+ <Yk6TJgdoSqthWUiz@pendragon.ideasonboard.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+X-Mailer: Apple Mail (2.3445.104.21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"hdmi-connector.yaml" bindings defines an optional property
-"ddc-en-gpios" for a single gpio to enable DDC operation.
+Hi Laurent,
 
-Usually this controls +5V power on the HDMI connector.
-This +5V may also be needed for HPD.
+> Am 07.04.2022 um 09:30 schrieb Laurent Pinchart =
+<laurent.pinchart@ideasonboard.com>:
+>=20
+> Hi Nikolaus,
+>=20
+> Thank you for the patch.
+>=20
+> On Wed, Apr 06, 2022 at 06:26:08PM +0200, H. Nikolaus Schaller wrote:
+>> "hdmi-connector.yaml" bindings defines an optional property
+>> "ddc-en-gpios" for a single gpio to enable DDC operation.
+>>=20
+>> Usually this controls +5V power on the HDMI connector.
+>> This +5V may also be needed for HPD.
+>>=20
+>> This was not reflected in code but is needed to make the CI20
+>> board work.
+>>=20
+>> Now, the driver activates the ddc gpio after probe and
+>> deactivates after remove so it is "almost on".
+>>=20
+>> But only if this driver is loaded (and not e.g. blacklisted
+>> as module).
+>>=20
+>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+>=20
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-This was not reflected in code but is needed to make the CI20
-board work.
+Added to v18 (which is needed to remove some now redundant patches
+and fix a detail in the ingenic-drm driver).
 
-Now, the driver activates the ddc gpio after probe and
-deactivates after remove so it is "almost on".
-
-But only if this driver is loaded (and not e.g. blacklisted
-as module).
-
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
----
- drivers/gpu/drm/bridge/display-connector.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/drivers/gpu/drm/bridge/display-connector.c b/drivers/gpu/drm/bridge/display-connector.c
-index d24f5b90feabf..e4d52a7e31b71 100644
---- a/drivers/gpu/drm/bridge/display-connector.c
-+++ b/drivers/gpu/drm/bridge/display-connector.c
-@@ -24,6 +24,7 @@ struct display_connector {
- 	int			hpd_irq;
- 
- 	struct regulator	*dp_pwr;
-+	struct gpio_desc	*ddc_en;
- };
- 
- static inline struct display_connector *
-@@ -345,6 +346,17 @@ static int display_connector_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	/* enable DDC */
-+	if (type == DRM_MODE_CONNECTOR_HDMIA) {
-+		conn->ddc_en = devm_gpiod_get_optional(&pdev->dev, "ddc-en",
-+						       GPIOD_OUT_HIGH);
-+
-+		if (IS_ERR(conn->ddc_en)) {
-+			dev_err(&pdev->dev, "Couldn't get ddc-en gpio\n");
-+			return PTR_ERR(conn->ddc_en);
-+		}
-+	}
-+
- 	conn->bridge.funcs = &display_connector_bridge_funcs;
- 	conn->bridge.of_node = pdev->dev.of_node;
- 
-@@ -373,6 +385,9 @@ static int display_connector_remove(struct platform_device *pdev)
- {
- 	struct display_connector *conn = platform_get_drvdata(pdev);
- 
-+	if (conn->ddc_en)
-+		gpiod_set_value(conn->ddc_en, 0);
-+
- 	if (conn->dp_pwr)
- 		regulator_disable(conn->dp_pwr);
- 
--- 
-2.33.0
+BR and thanks for review,
+Nikolaus
 
