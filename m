@@ -2,183 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A173C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF15EC43219
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236911AbiDGBd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60794 "EHLO
+        id S238348AbiDGBdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240475AbiDGBUB (ORCPT
+        with ESMTP id S240465AbiDGBUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 21:20:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757FD182DA1;
-        Wed,  6 Apr 2022 18:16:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DAAEB82690;
-        Thu,  7 Apr 2022 01:16:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7993C385A3;
-        Thu,  7 Apr 2022 01:16:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294194;
-        bh=k25EnSYBuBHACKjBV50Gd+fEfovRN5hpv6egPbQrWPY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S/+dYpLqR2sQGWxsuruR4uTbN6Q/1Fj9jUdwn7/HoGmzKIJOEmCPiJbowLOgjQvWt
-         JMtn/fzoIPxwKL/TZcP+8zy0rk6i7ugASPGcam7IZHZuD1cdAxKpZcNv+LzvbGF6IH
-         Z3n2VH2FuEPeWJZfUSUFKAQbMv9QdPV7Enk54tZxk6+gWgRYMLWAW7ER4Ie8zUmIb3
-         zYJzq3hQ9Uk1WONICaYuWY13qlnEkqHeluTz95Usn8dC/SKhqn6RcyOhUhNcYuDI8a
-         xhvQF0SwUcQYS2bpZunOjdudkLthjPxMMPFMhlMBaKKp854sMpjImI0frr9oZKF3GN
-         p7Vs90OtRcQcw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
-        wangborong@cdjrlc.com, linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 07/11] MIPS: lantiq: check the return value of kzalloc()
-Date:   Wed,  6 Apr 2022 21:16:04 -0400
-Message-Id: <20220407011609.115258-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011609.115258-1-sashal@kernel.org>
-References: <20220407011609.115258-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA46181D89
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 18:16:30 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id u8-20020a170903124800b0015195a5826cso1967779plh.4
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 18:16:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=bNkFmzFNlQeAcnvu9GC9OTshsJeI+rH6kiFRlwb3YBU=;
+        b=K8Gs9++5sAjjhKmOk+cuBZV91Fgx1F2Mc9/ihaqPTpvvoSDaAbLdCPmuZPTlG68if4
+         P+L4S4dZumJgdSzNaEYVh+GredXixyyYlIw20G4uFBWxPVYkE4B4SKiO/claX7T8fsqZ
+         973YmBn98DfC32Jfkfmhgw6w0dQlXY+5zJIAo0HS7siO1awykxEQcHKvmgE2C7Wulzf+
+         yCe+cXmw+ol7FZCVBquExv//U+Raiq+r8EeVZnh/Gvh67wftRg0AnrEFREcqmr/YtDAx
+         MWqy6tOmw/VyRjst4kEyYRT0NdHa9vj5NDXg6tBeIW1fR0zgikI1q556ZrgXu7cgVb66
+         SJCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=bNkFmzFNlQeAcnvu9GC9OTshsJeI+rH6kiFRlwb3YBU=;
+        b=kmbAhDVGFbekpJFBU0ZfwL7J+TDMMdYDRy3k6YS1o3DrMBE9jyrhXLeHFt3KwHOm1P
+         i257D8C2oCUyLT2oF9GYR5+UJT0A5oCZnwr26eEfPV2fgmQeIJ2Fi+WCZrIPzDTA1U4n
+         cgm3OY+9UlIReH0shpuz9SuvSte7xAMurtoaq4ajZE1aYsJ3o86KGupmKi11pvg2BjOS
+         ismT6tdLGJAb08+R1dbHRSS5lgQDXsITPapMVyr/XPpT8Zj3cS+MhYH+Vm78aaBI++AN
+         0b4mgjhXf3vZ/bTCA6j4qU8cvdBb85F17kgIQgGr0y9+4bAmT9U9gyxZ3Gv3sTbYu3th
+         y/nA==
+X-Gm-Message-State: AOAM53377pn1F9o2ZXEhawkt2ZTBN2RPyr5NLl0+fYRyPUQEdjQqsyZI
+        7DjrZ82gQMPXlGdvUHxJA+oTxpNFrrWZ
+X-Google-Smtp-Source: ABdhPJw3H13JfmsLMr/v01PnuQI5IQ6Tom5pq0QlYE+3A76jaQsbAEjlYFdMr4kCXy4hfGM3I3np0WoSyb7z
+X-Received: from rananta-virt.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1bcc])
+ (user=rananta job=sendgmr) by 2002:a17:902:7088:b0:156:1aa9:79eb with SMTP id
+ z8-20020a170902708800b001561aa979ebmr11197910plk.71.1649294189989; Wed, 06
+ Apr 2022 18:16:29 -0700 (PDT)
+Date:   Thu,  7 Apr 2022 01:16:05 +0000
+In-Reply-To: <20220407011605.1966778-1-rananta@google.com>
+Message-Id: <20220407011605.1966778-11-rananta@google.com>
+Mime-Version: 1.0
+References: <20220407011605.1966778-1-rananta@google.com>
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH v5 10/10] selftests: KVM: aarch64: Add KVM_REG_ARM_FW_REG(3)
+ to get-reg-list
+From:   Raghavendra Rao Ananta <rananta@google.com>
+To:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Raghavendra Rao Anata <rananta@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+Add the register KVM_REG_ARM_FW_REG(3)
+(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3) to the base_regs[] of
+get-reg-list.
 
-[ Upstream commit 34123208bbcc8c884a0489f543a23fe9eebb5514 ]
-
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check the
-return value of it to prevent potential wrong memory access or
-memory leak.
-
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
 ---
- arch/mips/lantiq/falcon/sysctrl.c |  2 ++
- arch/mips/lantiq/xway/gptu.c      |  2 ++
- arch/mips/lantiq/xway/sysctrl.c   | 46 ++++++++++++++++++++-----------
- 3 files changed, 34 insertions(+), 16 deletions(-)
+ tools/testing/selftests/kvm/aarch64/get-reg-list.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/mips/lantiq/falcon/sysctrl.c b/arch/mips/lantiq/falcon/sysctrl.c
-index 82bbd0e2e298..714d92659489 100644
---- a/arch/mips/lantiq/falcon/sysctrl.c
-+++ b/arch/mips/lantiq/falcon/sysctrl.c
-@@ -169,6 +169,8 @@ static inline void clkdev_add_sys(const char *dev, unsigned int module,
- {
- 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
- 
-+	if (!clk)
-+		return;
- 	clk->cl.dev_id = dev;
- 	clk->cl.con_id = NULL;
- 	clk->cl.clk = clk;
-diff --git a/arch/mips/lantiq/xway/gptu.c b/arch/mips/lantiq/xway/gptu.c
-index e304aabd6678..7d4081d67d61 100644
---- a/arch/mips/lantiq/xway/gptu.c
-+++ b/arch/mips/lantiq/xway/gptu.c
-@@ -124,6 +124,8 @@ static inline void clkdev_add_gptu(struct device *dev, const char *con,
- {
- 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
- 
-+	if (!clk)
-+		return;
- 	clk->cl.dev_id = dev_name(dev);
- 	clk->cl.con_id = con;
- 	clk->cl.clk = clk;
-diff --git a/arch/mips/lantiq/xway/sysctrl.c b/arch/mips/lantiq/xway/sysctrl.c
-index e0af39b33e28..293ebb833659 100644
---- a/arch/mips/lantiq/xway/sysctrl.c
-+++ b/arch/mips/lantiq/xway/sysctrl.c
-@@ -313,6 +313,8 @@ static void clkdev_add_pmu(const char *dev, const char *con, bool deactivate,
- {
- 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
- 
-+	if (!clk)
-+		return;
- 	clk->cl.dev_id = dev;
- 	clk->cl.con_id = con;
- 	clk->cl.clk = clk;
-@@ -336,6 +338,8 @@ static void clkdev_add_cgu(const char *dev, const char *con,
- {
- 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
- 
-+	if (!clk)
-+		return;
- 	clk->cl.dev_id = dev;
- 	clk->cl.con_id = con;
- 	clk->cl.clk = clk;
-@@ -354,24 +358,28 @@ static void clkdev_add_pci(void)
- 	struct clk *clk_ext = kzalloc(sizeof(struct clk), GFP_KERNEL);
- 
- 	/* main pci clock */
--	clk->cl.dev_id = "17000000.pci";
--	clk->cl.con_id = NULL;
--	clk->cl.clk = clk;
--	clk->rate = CLOCK_33M;
--	clk->rates = valid_pci_rates;
--	clk->enable = pci_enable;
--	clk->disable = pmu_disable;
--	clk->module = 0;
--	clk->bits = PMU_PCI;
--	clkdev_add(&clk->cl);
-+	if (clk) {
-+		clk->cl.dev_id = "17000000.pci";
-+		clk->cl.con_id = NULL;
-+		clk->cl.clk = clk;
-+		clk->rate = CLOCK_33M;
-+		clk->rates = valid_pci_rates;
-+		clk->enable = pci_enable;
-+		clk->disable = pmu_disable;
-+		clk->module = 0;
-+		clk->bits = PMU_PCI;
-+		clkdev_add(&clk->cl);
-+	}
- 
- 	/* use internal/external bus clock */
--	clk_ext->cl.dev_id = "17000000.pci";
--	clk_ext->cl.con_id = "external";
--	clk_ext->cl.clk = clk_ext;
--	clk_ext->enable = pci_ext_enable;
--	clk_ext->disable = pci_ext_disable;
--	clkdev_add(&clk_ext->cl);
-+	if (clk_ext) {
-+		clk_ext->cl.dev_id = "17000000.pci";
-+		clk_ext->cl.con_id = "external";
-+		clk_ext->cl.clk = clk_ext;
-+		clk_ext->enable = pci_ext_enable;
-+		clk_ext->disable = pci_ext_disable;
-+		clkdev_add(&clk_ext->cl);
-+	}
- }
- 
- /* xway socs can generate clocks on gpio pins */
-@@ -391,9 +399,15 @@ static void clkdev_add_clkout(void)
- 		char *name;
- 
- 		name = kzalloc(sizeof("clkout0"), GFP_KERNEL);
-+		if (!name)
-+			continue;
- 		sprintf(name, "clkout%d", i);
- 
- 		clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
-+		if (!clk) {
-+			kfree(name);
-+			continue;
-+		}
- 		clk->cl.dev_id = "1f103000.cgu";
- 		clk->cl.con_id = name;
- 		clk->cl.clk = clk;
+diff --git a/tools/testing/selftests/kvm/aarch64/get-reg-list.c b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
+index 281c08b3fdd2..7049c31aa443 100644
+--- a/tools/testing/selftests/kvm/aarch64/get-reg-list.c
++++ b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
+@@ -691,6 +691,7 @@ static __u64 base_regs[] = {
+ 	KVM_REG_ARM_FW_REG(0),
+ 	KVM_REG_ARM_FW_REG(1),
+ 	KVM_REG_ARM_FW_REG(2),
++	KVM_REG_ARM_FW_REG(3),
+ 	KVM_REG_ARM_FW_FEAT_BMAP_REG(0),	/* KVM_REG_ARM_STD_BMAP */
+ 	KVM_REG_ARM_FW_FEAT_BMAP_REG(1),	/* KVM_REG_ARM_STD_HYP_BMAP */
+ 	KVM_REG_ARM_FW_FEAT_BMAP_REG(2),	/* KVM_REG_ARM_VENDOR_HYP_BMAP */
 -- 
-2.35.1
+2.35.1.1094.g7c7d902a7c-goog
 
