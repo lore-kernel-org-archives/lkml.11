@@ -2,80 +2,692 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5790BC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:26:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D38F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244226AbiDGK2m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 06:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35080 "EHLO
+        id S242775AbiDGKaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 06:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244236AbiDGK2f (ORCPT
+        with ESMTP id S244265AbiDGKaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 06:28:35 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C89E972DC;
-        Thu,  7 Apr 2022 03:26:29 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 110738125;
-        Thu,  7 Apr 2022 10:24:06 +0000 (UTC)
-Date:   Thu, 7 Apr 2022 13:26:27 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Keerthy <j-keerthy@ti.com>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/4] clocksource/drivers/timer-ti-dm: Update defines for
- am6 for inline functions
-Message-ID: <Yk68U6Kbs/ws42f8@atomide.com>
-References: <20220407071006.37031-1-tony@atomide.com>
- <20220407071006.37031-2-tony@atomide.com>
- <9671f0a5-6860-8a75-d65e-345ce890cd88@linaro.org>
- <Yk6drKxwOSVdrKp+@atomide.com>
- <7f3cbdf3-401c-6c30-20fa-b5121bd3f63d@linaro.org>
- <Yk6mb1HjEH4H/b7p@atomide.com>
+        Thu, 7 Apr 2022 06:30:09 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590FFF61E4
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 03:27:51 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id e1so3897137ile.2
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 03:27:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc:content-transfer-encoding;
+        bh=c2ljWgP/eqU8wqD1f5AHEa0qe4TYK8IE+KrCBtQimaw=;
+        b=Q5bTA0cMq9l1MJH4lvA30XWtjW4rp1D1xxBM68GjL9Eg6GiVQscdiz8oPB1ThhETxa
+         zzdFXpohU8Df3ffYBI5waUNKURStEMeygvo9FmURemR5Y/xoGXp70cRthruzuQggwA5R
+         11fR/y9ofkWPqVHZhazgTmizhs5s7VyHBpyoM39pbulkhHJubgOVrdnoOQ6jMMZGGyj5
+         ZQz9tpD9VgryNz4OZdk2Fsmf8OEIiRD9liKaNJgmr7jXBpaAcWvwt9WKpNt9EM1bW5gB
+         zVANTT7qv3w6ysD4c0WoT7DfGFqFyTs5SkTqGeIDLdcLZGLXmq6uNyWepX+7q42IGYsp
+         L8Mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc:content-transfer-encoding;
+        bh=c2ljWgP/eqU8wqD1f5AHEa0qe4TYK8IE+KrCBtQimaw=;
+        b=y6BCuJOFhiZLFu0frXuaGEAzroJW3tIPQgTv7PJXG8I6qrfab8eoaKR+qshLiAfQGI
+         8bwbKFPYMsSPYHwvzLVaN4RBpre3GVHItRart3hPF8VKT76ykV+qH3iZbX9QxoBK/ESg
+         /3NGScVGqR/+POtyD8CQJIaHdirrsyO6sEdTMl99r74j9xjEX/pn1uU3IzlP1uYBTanM
+         ZvVo1iyxnQZl3Yp25MSJOqyaBIR6aqtRX1lFGLWR15ZT+xZta3cWUZovkf9fhYxWwUsI
+         yDW1wIAwhoK4tugChbkchR9fEoRFnVMKKMKSFe35jcypNeb9roPjxI9JNS1NNnfq5+MX
+         D/Qw==
+X-Gm-Message-State: AOAM532Xvudo9o2HqolzkEgdgMxbyvt+6ovGr9HoM0Qmu3cO9WVWmpy9
+        0rWb7cSJ+GJZjvHm8HbA6+mcebWd65jMj255eF4=
+X-Google-Smtp-Source: ABdhPJwT1j9mXF/I3a+r9E4Ck7BsgljiuDzaCPag16p1AWFT3ePZm6zkDTEmTom89lWnm9DFYETXJu/T3hPVzmWRjLM=
+X-Received: by 2002:a05:6e02:1c07:b0:2c9:bdfa:caa5 with SMTP id
+ l7-20020a056e021c0700b002c9bdfacaa5mr6121375ilh.100.1649327270581; Thu, 07
+ Apr 2022 03:27:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yk6mb1HjEH4H/b7p@atomide.com>
+References: <YktYX2OnLtyobRYD@kernel.org> <Ykto1FgmPMMCysbI@dev-arch.thelio-3990X>
+In-Reply-To: <Ykto1FgmPMMCysbI@dev-arch.thelio-3990X>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Thu, 7 Apr 2022 12:27:14 +0200
+Message-ID: <CA+icZUVKgLLJvNF6ZU1e7Hjr_FsJO7x0gsGL6Jje1nv2ukhueA@mail.gmail.com>
+Subject: Re: Build perf with clang, failure with libperf
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Tony Lindgren <tony@atomide.com> [220407 08:50]:
-> * Daniel Lezcano <daniel.lezcano@linaro.org> [220407 08:23]:
-> > On 07/04/2022 10:15, Tony Lindgren wrote:
-> > > * Daniel Lezcano <daniel.lezcano@linaro.org> [220407 08:01]:
-> > > > On 07/04/2022 09:10, Tony Lindgren wrote:
-> > > > > @@ -251,7 +251,8 @@ int omap_dm_timers_active(void);
-> > > > >     * The below are inlined to optimize code size for system timers. Other code
-> > > > >     * should not need these at all.
-> > > > >     */
-> > > > > -#if defined(CONFIG_ARCH_OMAP1) || defined(CONFIG_ARCH_OMAP2PLUS)
-> > > > > +#if defined(CONFIG_ARCH_OMAP1) || defined(CONFIG_ARCH_OMAP2PLUS) || \
-> > > > > +	defined(CONFIG_ARCH_K3)
-> > > > 
-> > > > Why not replace the above by CONFIG_OMAP_DM_TIMER ?
-> > > 
-> > > Hmm that's a good question for why it was not that way earlier.
-> > > 
-> > > This series changes things for tristate "OMAP dual-mode timer driver" if
-> > > ARCH_K3 || COMPILE_TEST though. So the inline stubs are still needed for
-> > > COMPILE_TEST it seems.
-> > 
-> > But if ARCH_K3 or COMPILE_TEST is set, CONFIG_DM_TIMER is also set, no?
-> 
-> Right but I suspect that COMPILE_TEST will produce a build error on other
-> architectures. I need to check that though, maybe that is no longer the
-> case.
+On Mon, Apr 4, 2022 at 11:53 PM Nathan Chancellor <nathan@kernel.org> wrote=
+:
+>
+> Hi Arnaldo,
+>
+> On Mon, Apr 04, 2022 at 05:43:11PM -0300, Arnaldo Carvalho de Melo wrote:
+> > Hi,
+> >
+> >       Trying to apply Sedat's patch something changed in my system,
+> > and that patch wasn't enough, so I had to first apply this one:
+> >
+> > commit 173b552663419f40bcd3cf9df4f68285cac72727
+> > Author: Arnaldo Carvalho de Melo <acme@redhat.com>
+> > Date:   Mon Apr 4 17:28:48 2022 -0300
+> >
+> >     tools build: Use $(shell ) instead of `` to get embedded libperl's =
+ccopts
+> >
+> >     Just like its done for ldopts and for both in tools/perf/Makefile.c=
+onfig.
+> >
+> >     Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
+> >
+> >       $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
+> >
+> >     And we need to do it to allow for building with versions of clang w=
+here
+> >     some gcc options selected by distros are not available.
+> >
+> >     Cc: Adrian Hunter <adrian.hunter@intel.com>
+> >     Cc: Fangrui Song <maskray@google.com>
+> >     Cc: Florian Fainelli <f.fainelli@gmail.com>
+> >     Cc: Ian Rogers <irogers@google.com>
+> >     Cc: Jiri Olsa <jolsa@kernel.org>
+> >     Cc: John Keeping <john@metanate.com>
+> >     Cc: Leo Yan <leo.yan@linaro.org>
+> >     Cc: Michael Petlan <mpetlan@redhat.com>
+> >     Cc: Namhyung Kim <namhyung@kernel.org>
+> >     Cc: Nathan Chancellor <nathan@kernel.org>
+> >     Cc: Nick Desaulniers <ndesaulniers@google.com>
+> >     Cc: Sedat Dilek <sedat.dilek@gmail.com>
+> >     Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+> >
+> > diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefil=
+e
+> > index 1480910c792e2cb3..90774b60d31b2b8e 100644
+> > --- a/tools/build/feature/Makefile
+> > +++ b/tools/build/feature/Makefile
+> > @@ -217,7 +217,7 @@ strip-libs =3D $(filter-out -l%,$(1))
+> >  PERL_EMBED_LDOPTS =3D $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/=
+null)
+> >  PERL_EMBED_LDFLAGS =3D $(call strip-libs,$(PERL_EMBED_LDOPTS))
+> >  PERL_EMBED_LIBADD =3D $(call grep-libs,$(PERL_EMBED_LDOPTS))
+> > -PERL_EMBED_CCOPTS =3D `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
+> > +PERL_EMBED_CCOPTS =3D $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/=
+null)
+> >  FLAGS_PERL_EMBED=3D$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+> >
+> >  $(OUTPUT)test-libperl.bin:
+> >
+> > ----------------------------------------------------- 8< --------------=
+-----
+> >
+> > After this I go on filtering out some of the gcc options that clang
+> > doesn't grok:
+> >
+> > diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefil=
+e
+> > index 90774b60d31b2b8e..bbc5e263e02385ed 100644
+> > --- a/tools/build/feature/Makefile
+> > +++ b/tools/build/feature/Makefile
+> > @@ -215,9 +215,12 @@ grep-libs  =3D $(filter -l%,$(1))
+> >  strip-libs =3D $(filter-out -l%,$(1))
+> >
+> >  PERL_EMBED_LDOPTS =3D $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/=
+null)
+> > +PERL_EMBED_LDOPTS :=3D $(filter-out -specs=3D%,$(PERL_EMBED_LDOPTS))
+> >  PERL_EMBED_LDFLAGS =3D $(call strip-libs,$(PERL_EMBED_LDOPTS))
+> >  PERL_EMBED_LIBADD =3D $(call grep-libs,$(PERL_EMBED_LDOPTS))
+> >  PERL_EMBED_CCOPTS =3D $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/=
+null)
+> > +PERL_EMBED_CCOPTS :=3D $(filter-out -ffat-lto-objects, $(PERL_EMBED_CC=
+OPTS))
+> > +PERL_EMBED_CCOPTS :=3D $(filter-out -specs=3D%,$(PERL_EMBED_CCOPTS))
+> >  FLAGS_PERL_EMBED=3D$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+> >
+> >  $(OUTPUT)test-libperl.bin:
+> >
+> > ----------------------------------------------------- 8< --------------=
+-----
+> >
+> > And then get to the problems at the end of this message, which seem
+> > similar to the problem described here:
+> >
+> > From  Nathan Chancellor <>
+> > Subject       [PATCH] mwifiex: Remove unnecessary braces from HostCmd_S=
+ET_SEQ_NO_BSS_INFO
+> >
+> > https://lkml.org/lkml/2020/9/1/135
+> >
+> > So perhaps in this case its better to disable that
+> > -Werror,-Wcompound-token-split-by-macro when building with clang?
+>
+> Yes, I think that is probably the best solution. As far as I can tell,
+> at least in this file and context, the warning appears harmless, as the
+> "create a GNU C statement expression from two different macros" is very
+> much intentional, based on the presence of PERL_USE_GCC_BRACE_GROUPS.
+> The warning is fixed in upstream Perl by just avoiding creating GNU C
+> statement expressions using STMT_START and STMT_END:
+>
+> https://github.com/Perl/perl5/issues/18780
+> https://github.com/Perl/perl5/pull/18984
+>
+> If I am reading the source code correctly, an alternative to disabling
+> the warning would be specifying -DPERL_GCC_BRACE_GROUPS_FORBIDDEN but it
+> seems like that might end up impacting more than just this site,
+> according to the issue discussion above.
+>
 
-We could use IS_ENABLED(CONFIG_OMAP_DM_TIMER), but looks like we can now
-just move the __omap_dm_timer_* inline functions to timer-ti-dm.c instead.
+Thanks for the pointer Nathan.
 
-I'll do that and repost after some testing.
+As said I hit the problem with Debian's perl v5.34.
 
-Regards,
+Checking perl5 Git reveals:
 
-Tony
+"skip using gcc brace groups for STMT_START/END"
+https://github.com/Perl/perl5/commit/7169efc77525df70484a824bff4ceebd1fafc7=
+60
+
+"Partially Revert "skip using gcc brace groups for STMT_START/END""
+https://github.com/Perl/perl5/commit/e08ee3cb66f362c4901846a46014cfdfcd6032=
+6c
+
+Perl v5.34.x seems not to have these changes:
+https://github.com/Perl/perl5/compare/v5.34.0...v5.34.1
+
+Unsure if there exists a real fix for perl5.
+
+- Sedat -
+
+> Cheers,
+> Nathan
+>
+> > ----------------------------------------------------- 8< --------------=
+-----
+> >
+> > =E2=AC=A2[acme@toolbox perf]$ cat /tmp/build/perf/feature/test-libperl.=
+make.output
+> > In file included from test-libperl.c:3:
+> > In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+> > In file included from /usr/lib64/perl5/CORE/hv.h:659:
+> > In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+> > In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: error: '(' and '{' tokens =
+introducing statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:38: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                      ^~~~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_ST=
+ART'
+> > #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+> >                               ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: note: '{' token is here
+> >     ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:49: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                                 ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: error: '}' and ')' tokens =
+terminating statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:87:41: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> >     v ^=3D (v>>23);                       \
+> >                                         ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:150:5: note: ')' token is here
+> >     ZAPHOD32_SCRAMBLE32(state[0],0x9fade23b);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:88:3: note: expanded from macro '=
+ZAPHOD32_SCRAMBLE32'
+> > } STMT_END
+> >   ^~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_EN=
+D'
+> > #   define STMT_END     )
+> >                         ^
+> > In file included from test-libperl.c:3:
+> > In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+> > In file included from /usr/lib64/perl5/CORE/hv.h:659:
+> > In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+> > In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:151:5: error: '(' and '{' tokens =
+introducing statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_SCRAMBLE32(state[1],0xaa6f908d);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:38: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                      ^~~~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_ST=
+ART'
+> > #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+> >                               ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:151:5: note: '{' token is here
+> >     ZAPHOD32_SCRAMBLE32(state[1],0xaa6f908d);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:49: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                                 ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:151:5: error: '}' and ')' tokens =
+terminating statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_SCRAMBLE32(state[1],0xaa6f908d);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:87:41: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> >     v ^=3D (v>>23);                       \
+> >                                         ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:151:5: note: ')' token is here
+> >     ZAPHOD32_SCRAMBLE32(state[1],0xaa6f908d);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:88:3: note: expanded from macro '=
+ZAPHOD32_SCRAMBLE32'
+> > } STMT_END
+> >   ^~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_EN=
+D'
+> > #   define STMT_END     )
+> >                         ^
+> > In file included from test-libperl.c:3:
+> > In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+> > In file included from /usr/lib64/perl5/CORE/hv.h:659:
+> > In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+> > In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:152:5: error: '(' and '{' tokens =
+introducing statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_SCRAMBLE32(state[2],0xcdf6b72d);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:38: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                      ^~~~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_ST=
+ART'
+> > #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+> >                               ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:152:5: note: '{' token is here
+> >     ZAPHOD32_SCRAMBLE32(state[2],0xcdf6b72d);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:49: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                                 ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:152:5: error: '}' and ')' tokens =
+terminating statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_SCRAMBLE32(state[2],0xcdf6b72d);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:87:41: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> >     v ^=3D (v>>23);                       \
+> >                                         ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:152:5: note: ')' token is here
+> >     ZAPHOD32_SCRAMBLE32(state[2],0xcdf6b72d);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:88:3: note: expanded from macro '=
+ZAPHOD32_SCRAMBLE32'
+> > } STMT_END
+> >   ^~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_EN=
+D'
+> > #   define STMT_END     )
+> >                         ^
+> > In file included from test-libperl.c:3:
+> > In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+> > In file included from /usr/lib64/perl5/CORE/hv.h:659:
+> > In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+> > In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:156:5: error: '(' and '{' tokens =
+introducing statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 1/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:116:37: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> > #define ZAPHOD32_MIX(v0,v1,v2,text) STMT_START {                       =
+       \
+> >                                     ^~~~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_ST=
+ART'
+> > #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+> >                               ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:156:5: note: '{' token is here
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 1/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:116:48: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> > #define ZAPHOD32_MIX(v0,v1,v2,text) STMT_START {                       =
+       \
+> >                                                ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:156:5: error: '}' and ')' tokens =
+terminating statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 1/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:124:32: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> >     v2 =3D ROTR32(v2, 7) ^ v0;   \
+> >                                ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:156:5: note: ')' token is here
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 1/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:125:3: note: expanded from macro =
+'ZAPHOD32_MIX'
+> > } STMT_END
+> >   ^~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_EN=
+D'
+> > #   define STMT_END     )
+> >                         ^
+> > In file included from test-libperl.c:3:
+> > In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+> > In file included from /usr/lib64/perl5/CORE/hv.h:659:
+> > In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+> > In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:157:5: error: '(' and '{' tokens =
+introducing statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 2/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:116:37: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> > #define ZAPHOD32_MIX(v0,v1,v2,text) STMT_START {                       =
+       \
+> >                                     ^~~~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_ST=
+ART'
+> > #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+> >                               ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:157:5: note: '{' token is here
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 2/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:116:48: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> > #define ZAPHOD32_MIX(v0,v1,v2,text) STMT_START {                       =
+       \
+> >                                                ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:157:5: error: '}' and ')' tokens =
+terminating statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 2/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:124:32: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> >     v2 =3D ROTR32(v2, 7) ^ v0;   \
+> >                                ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:157:5: note: ')' token is here
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 2/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:125:3: note: expanded from macro =
+'ZAPHOD32_MIX'
+> > } STMT_END
+> >   ^~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_EN=
+D'
+> > #   define STMT_END     )
+> >                         ^
+> > In file included from test-libperl.c:3:
+> > In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+> > In file included from /usr/lib64/perl5/CORE/hv.h:659:
+> > In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+> > In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:158:5: error: '(' and '{' tokens =
+introducing statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 3/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:116:37: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> > #define ZAPHOD32_MIX(v0,v1,v2,text) STMT_START {                       =
+       \
+> >                                     ^~~~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_ST=
+ART'
+> > #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+> >                               ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:158:5: note: '{' token is here
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 3/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:116:48: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> > #define ZAPHOD32_MIX(v0,v1,v2,text) STMT_START {                       =
+       \
+> >                                                ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:158:5: error: '}' and ')' tokens =
+terminating statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 3/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:124:32: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> >     v2 =3D ROTR32(v2, 7) ^ v0;   \
+> >                                ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:158:5: note: ')' token is here
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 3/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:125:3: note: expanded from macro =
+'ZAPHOD32_MIX'
+> > } STMT_END
+> >   ^~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_EN=
+D'
+> > #   define STMT_END     )
+> >                         ^
+> > In file included from test-libperl.c:3:
+> > In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+> > In file included from /usr/lib64/perl5/CORE/hv.h:659:
+> > In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+> > In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:159:5: error: '(' and '{' tokens =
+introducing statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 4/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:116:37: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> > #define ZAPHOD32_MIX(v0,v1,v2,text) STMT_START {                       =
+       \
+> >                                     ^~~~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_ST=
+ART'
+> > #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+> >                               ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:159:5: note: '{' token is here
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 4/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:116:48: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> > #define ZAPHOD32_MIX(v0,v1,v2,text) STMT_START {                       =
+       \
+> >                                                ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:159:5: error: '}' and ')' tokens =
+terminating statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 4/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:124:32: note: expanded from macro=
+ 'ZAPHOD32_MIX'
+> >     v2 =3D ROTR32(v2, 7) ^ v0;   \
+> >                                ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:159:5: note: ')' token is here
+> >     ZAPHOD32_MIX(state[0],state[1],state[2],"ZAPHOD32 SEED-STATE A 4/4"=
+);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:125:3: note: expanded from macro =
+'ZAPHOD32_MIX'
+> > } STMT_END
+> >   ^~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_EN=
+D'
+> > #   define STMT_END     )
+> >                         ^
+> > In file included from test-libperl.c:3:
+> > In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+> > In file included from /usr/lib64/perl5/CORE/hv.h:659:
+> > In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+> > In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:162:5: error: '(' and '{' tokens =
+introducing statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_SCRAMBLE32(state[0],0xc95d22a9);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:38: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                      ^~~~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_ST=
+ART'
+> > #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+> >                               ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:162:5: note: '{' token is here
+> >     ZAPHOD32_SCRAMBLE32(state[0],0xc95d22a9);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:49: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                                 ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:162:5: error: '}' and ')' tokens =
+terminating statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_SCRAMBLE32(state[0],0xc95d22a9);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:87:41: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> >     v ^=3D (v>>23);                       \
+> >                                         ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:162:5: note: ')' token is here
+> >     ZAPHOD32_SCRAMBLE32(state[0],0xc95d22a9);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:88:3: note: expanded from macro '=
+ZAPHOD32_SCRAMBLE32'
+> > } STMT_END
+> >   ^~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_EN=
+D'
+> > #   define STMT_END     )
+> >                         ^
+> > In file included from test-libperl.c:3:
+> > In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+> > In file included from /usr/lib64/perl5/CORE/hv.h:659:
+> > In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+> > In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:163:5: error: '(' and '{' tokens =
+introducing statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_SCRAMBLE32(state[1],0x8497242b);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:38: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                      ^~~~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_ST=
+ART'
+> > #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+> >                               ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:163:5: note: '{' token is here
+> >     ZAPHOD32_SCRAMBLE32(state[1],0x8497242b);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:49: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                                 ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:163:5: error: '}' and ')' tokens =
+terminating statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_SCRAMBLE32(state[1],0x8497242b);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:87:41: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> >     v ^=3D (v>>23);                       \
+> >                                         ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:163:5: note: ')' token is here
+> >     ZAPHOD32_SCRAMBLE32(state[1],0x8497242b);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:88:3: note: expanded from macro '=
+ZAPHOD32_SCRAMBLE32'
+> > } STMT_END
+> >   ^~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:738:21: note: expanded from macro 'STMT_EN=
+D'
+> > #   define STMT_END     )
+> >                         ^
+> > In file included from test-libperl.c:3:
+> > In file included from /usr/lib64/perl5/CORE/perl.h:4085:
+> > In file included from /usr/lib64/perl5/CORE/hv.h:659:
+> > In file included from /usr/lib64/perl5/CORE/hv_func.h:34:
+> > In file included from /usr/lib64/perl5/CORE/sbox32_hash.h:4:
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:164:5: error: '(' and '{' tokens =
+introducing statement expression appear in different macro expansion contex=
+ts [-Werror,-Wcompound-token-split-by-macro]
+> >     ZAPHOD32_SCRAMBLE32(state[2],0x9c5cc4e9);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:38: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                      ^~~~~~~~~~
+> > /usr/lib64/perl5/CORE/perl.h:737:29: note: expanded from macro 'STMT_ST=
+ART'
+> > #   define STMT_START   (void)( /* gcc supports "({ STATEMENTS; })" */
+> >                               ^
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:164:5: note: '{' token is here
+> >     ZAPHOD32_SCRAMBLE32(state[2],0x9c5cc4e9);
+> >     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > /usr/lib64/perl5/CORE/zaphod32_hash.h:80:49: note: expanded from macro =
+'ZAPHOD32_SCRAMBLE32'
+> > #define ZAPHOD32_SCRAMBLE32(v,prime) STMT_START {  \
+> >                                                 ^
+> > fatal error: too many errors emitted, stopping now [-ferror-limit=3D]
+> > 20 errors generated.
+> > =E2=AC=A2[acme@toolbox perf]$
