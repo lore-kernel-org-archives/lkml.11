@@ -2,183 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A75C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:26:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2236BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235737AbiDGM2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:28:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47170 "EHLO
+        id S241781AbiDGM3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233391AbiDGM2P (ORCPT
+        with ESMTP id S240927AbiDGM3E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:28:15 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BA636E22;
-        Thu,  7 Apr 2022 05:26:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649334374; x=1680870374;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=iTZzYUc3DKHNmdGcZSnyOy4wKMQaLzWyd9bsE0CeL1A=;
-  b=EjDhWoPoo/oX3dkUdD+7xD1s5PyFIK9bGeSaxj2+yk7eSWfsgyimieCa
-   qkIZk3XQJNM5wVIAGSwIV0JXUfwDvnAT1ZdwgBuq9igiD+4VKuJgLo/zO
-   UIoK4jNQrsL1thtFsTTphGCqFXYakOJXfS2pG7pKmo5z7Y9BlxXrgCFFl
-   +EEMsLzGaubEc5Ys2EIXKPIGgh04P1i+s/D66D95G9GRYIDCBLDR5LbPA
-   KLQt9x/unpE1x4VPOnqDEApeK2MeCMGiZ+7D0lP63R3a5a9thk76XYAhW
-   b7OjHHu9sVZRGFK3EYuDfFAbHByCoHSipVjnjlLJA5pwLm98qp9HjPpnB
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,242,1643698800"; 
-   d="scan'208";a="159281847"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Apr 2022 05:26:14 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 7 Apr 2022 05:26:12 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
- Transport; Thu, 7 Apr 2022 05:26:12 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gKURowuBs1aEMU7Nj60GVqn7y1jACDGHe3MIA8Fa0MI5AQO3mSeD3+vXn0zHnsrJMY7DFbxrzPqvjH9JrGM2QzA9il5gt0EmncdBnOH2kkDa1FBO0HHSPivEP8f2YEIDHt0Z5h5ncKIYiieEFJpoQ4QgJalOAPbvqYmc0+E6myOmhrc4/aNTwvhzh4xTiykNDIef6jXudAXAdtZSi3QuIM0FVjPGMO5wOaDvkAY+hq5RgC+d3yRGf/GkHrw6KN52ipmQeqXnmu0Hyps3ZZ13yFFDtfGD9qRgl7WFjrewcz5xXsoAskd02+San3Nj1lxtijI5EodoYAJSvh4kLeSZ0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iTZzYUc3DKHNmdGcZSnyOy4wKMQaLzWyd9bsE0CeL1A=;
- b=acySxtl9VCXpxT4veivRtB1RMmrSAT4gtgWaExKiSnd5UyvWxHDqvpu53cah/XC5eXq1BNArcAbB33YgJg56ctTBl9DY3C6lUANqBrG0HNvFhQqPz3hMb/KtDZgB4Yuhfbs3iU1ZAAYsWzS7he6TAr2epqZXTPdxFWY2TE19HP9l5gICcADfybsf8LBDly3YrJxXwx+wJoVisyLoSc87HzstoiuAzHullPqk5+NbvaeJOsxqnxpcL+QseaTCd4tL51EFbtjZlt8iDahtBvEAXxcTLZtPPWrGP4hV+egwz0EzmBCy+sRPTU3qgzve85WAfC2cnQheAnKRgtQgNZ+c8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        Thu, 7 Apr 2022 08:29:04 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD49527C0
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:27:02 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id h19so5316802pfv.1
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 05:27:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iTZzYUc3DKHNmdGcZSnyOy4wKMQaLzWyd9bsE0CeL1A=;
- b=X4LwLhaktd1zyfbFJ+YwjiGMiE7MfnzRQgc8W0p0hyOkgArCQdpjq9AoB7DuGlV4m6/lKy17XP+EHjY67BcYoA9EogMuKR54djOg13657ONnb23fw6YbBB10R6t65ZgVxrKyKPuSdN6roQmgmA4iOkue9mfxi4b4RfH7Y2wdca0=
-Received: from SA2PR11MB4874.namprd11.prod.outlook.com (2603:10b6:806:f9::23)
- by PH7PR11MB5959.namprd11.prod.outlook.com (2603:10b6:510:1e2::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Thu, 7 Apr
- 2022 12:26:08 +0000
-Received: from SA2PR11MB4874.namprd11.prod.outlook.com
- ([fe80::7cb5:d2dd:7e5:c812]) by SA2PR11MB4874.namprd11.prod.outlook.com
- ([fe80::7cb5:d2dd:7e5:c812%9]) with mapi id 15.20.5144.022; Thu, 7 Apr 2022
- 12:26:08 +0000
-From:   <Tudor.Ambarus@microchip.com>
-To:     <Kavyasree.Kotagiri@microchip.com>, <arnd@arndb.de>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <alexandre.belloni@bootlin.com>, <olof@lixom.net>,
-        <soc@kernel.org>, <Nicolas.Ferre@microchip.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <Manohar.Puri@microchip.com>
-Subject: Re: [PATCH 2/2] ARM: dts: lan966x-pcb8291: Add QSPI0 and SPI NOR
- memory nodes
-Thread-Topic: [PATCH 2/2] ARM: dts: lan966x-pcb8291: Add QSPI0 and SPI NOR
- memory nodes
-Thread-Index: AQHYSnqnYtcLxIsM/ES5CAIgG5IE5g==
-Date:   Thu, 7 Apr 2022 12:26:08 +0000
-Message-ID: <42c1968a-c966-2104-9e39-f46b491462ca@microchip.com>
-References: <20220407105835.10962-1-kavyasree.kotagiri@microchip.com>
- <20220407105835.10962-3-kavyasree.kotagiri@microchip.com>
-In-Reply-To: <20220407105835.10962-3-kavyasree.kotagiri@microchip.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f2812fcd-394d-471c-6a0f-08da1891cb1f
-x-ms-traffictypediagnostic: PH7PR11MB5959:EE_
-x-microsoft-antispam-prvs: <PH7PR11MB595942D8FFBE2F9DF954ACF2F0E69@PH7PR11MB5959.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qE8/GvOrFPM6vqPWvWzmZZJv0EvPISTdwqoj8Fm5GefrJj1k/ZxLlr3avxI+u1SiulpBxHOz47BNulKN/CqPYNiALR4jE+1k5XO5XKC4lDAF3BoYk0mrZ0FJn9xSp3SCZVorHztStHJOhe652hG9E0EOAScLPWOQ2m14h/zi8icmk+MLi7ewcSxd4vTTMYf7c4H6P7SnqOIvVf+mAJmOdJLuNIZTsBYUwhAxMr5277GLbYw+9bW+4dDwjkSq7KwenEfb/5s5nr+O83tUrMs8gcUeaSaYamKpXZVF9ssD79+rsMU04nP/D0pK7ABiNCOcA5u+fdEX4CPgHYFZTMdyqg4gQGuzbPhVsMXfSxMrXM4fQA1UqE+3K9p8KcBAoaValsMgnb3QrpmluKRosTilXAwu2T0r0AqKk1cnodxBJFkT2dbOJQYbijsnHTtTYISxrNMbK5q44EKoC7H95UZiYilj7jqg7Nba1Itgn6hbe6waim0BGQd+yIeFA9KZWO3Az1RXCQ0IS4I1q4fLdzKhmAnAaKmShZ8ktG7jvTmuvKtr13BohLe9sMrxjxdYkF2Ou3CE18uSJwbZkFHI+j1f9b9J9uyOZBtbUaJxW6Vo5LZ+YxgErwwwORXspI5gUv3/P5mYlth3O482AUHirbtPWfgkG1IdVXwfZkmLnHigZI4Hhx8JNueIK1fAWDemSGl2gY1iILosQAE9YZ8y5BEZVyvSWqAhQIAvk0lK9xn71fveY7/5loUdTl4/QpdfGTsstW9heOc/aM2coKzipgpq7QhKUn1E+CH3jHYYqMeIF/knno4rdKgpa43n0HJSKD0iK2JcurNaFmMckRqy0rbCNV61Ui/xyGqSqvK7e2CNTyc=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA2PR11MB4874.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(26005)(186003)(31686004)(5660300002)(86362001)(8936002)(316002)(2906002)(6636002)(110136005)(54906003)(38100700002)(6506007)(6486002)(53546011)(38070700005)(83380400001)(966005)(508600001)(66556008)(4326008)(31696002)(66446008)(91956017)(107886003)(6512007)(36756003)(76116006)(2616005)(64756008)(8676002)(66946007)(66476007)(122000001)(71200400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Q3JjOTN6VGRYUW82YytrM0tZQm40Z0VkMFJWcG8xVkZPTHoxU1Zvc0VwaFRR?=
- =?utf-8?B?WnNoOVNYR3RkdnVFR1Y0SFZ2aDdISmliOUIwaVIveklCVHlWNWd1Y1VkSkYr?=
- =?utf-8?B?ZCs2dVZTNTM4YlVYNWZYUlJYOVQzSzRqRFArWDlaM1ByMXhBTHY1YUtkaWl5?=
- =?utf-8?B?V3N1TTU1VHUrbnZrTGVnOXlydjFUT05CMGtibnkxMmV0bWkvQkVKZXVDWmt4?=
- =?utf-8?B?dm12N1pVMG1CMmc1Q1VKVTdwTUJvVW14WTlLTjFFYlNscmFvNGVMb2pOTUxW?=
- =?utf-8?B?QXY0UkxmWkNBQ3NXbGhKSDU4TjE0OWs3ZXFoRWRjRVI2ZUx3VmRlMm9mWGtz?=
- =?utf-8?B?UVhHMk5rVnpYOUkvYUd5aUxBdmw5KzJ4OEFtbTEyMWFmMmlHMDJCMjhvUmNM?=
- =?utf-8?B?VDdOSkhTV1pwNFd1ZVIveHlnNmpDanJFYW9CU1dXbStuSXJ5a1ZwelBuemZs?=
- =?utf-8?B?MjNiUDI2MnV1OWpNOGh3ek01Ymk5Vk9tT1laSlVDTDBWYWlqZ1YwU2pxQTB4?=
- =?utf-8?B?NmY3Rm5Cdmp1N1d2K2h5VUVHcmRZenZKTy9lbFJUWHl1Q3lDKzlBNGhMMmwz?=
- =?utf-8?B?dERKaTlrczU3bGxmdEF5ZGR4Y2o5V2JQZmtSbkFGa1VYT2tkdnlNNXVlQmc2?=
- =?utf-8?B?R3Y1dS9aSmRXakJjT0s1TTFuYVJZOFNJRS9kTWtNMDBlNXpacnNEY216MnJM?=
- =?utf-8?B?bmVZeUlzelhhRGl6OGo0cnlvZXk1SUVSamx0NXd0b3ZGRCttd3NjNkp4d0Z2?=
- =?utf-8?B?WDMxMFl1V0p2bHd0b3ZHNTNkUUp3QVBxYlVHYlBWNzRPQ09jcDEzc2gvd0Rw?=
- =?utf-8?B?cEFVWElIMTE2QllWbVFkcnNsVXEzcEt5TkF5NzdYVXRtLzJCcW9QZEVFdDIz?=
- =?utf-8?B?a3VqZDZNOWZlak5TS3NEWUNHV0xNRFNvcytvOEpmY3I5Y3BHYzBmSURsSzZX?=
- =?utf-8?B?TzlZc3E2bzVqM1BKR2xiUU1RTHc3ajJ5M2lxZ0VvQTdUY3R3S0IvdEJxNXU2?=
- =?utf-8?B?eElpczNhdE9zRjQ1cVdKUGdqOExDYkVRdlh3V0RCeXVtZFIySjJRUFQ0cUda?=
- =?utf-8?B?bXdqWTRrYWZPZlg4eUxNSmM0TlFTdW1qTS9Rdnl6QXdpYVA4b1ZFOTZQdnlD?=
- =?utf-8?B?RTFOS3VOTWdtNmRlVlloNmhBWk11eC83bUd0UHJ1Q3ZYWm5tME5pcWMvUDFk?=
- =?utf-8?B?Z2VoL2FWT002VzBnMm42c2dxUjZaaG9CdTFFZVl6VjhmbkZpQ3cvcy9uamRF?=
- =?utf-8?B?cittTk04VmEwc3ovWXR5RzZ1WkJjM2k1WDBrajE4cmZhNU9MbUtzZkZCbFJa?=
- =?utf-8?B?V1c4dzNlZnYxbXFKZkxMeGh0OHJjbzI4c0VwMUh4L1h2NDBJL0tWcG5XSjJS?=
- =?utf-8?B?SG9DOXFCandkRkRzbkhNZ1RzNXRxY1dCUW1JYlRJcXdSTkl1NmZRVUtVK3pD?=
- =?utf-8?B?dUlKeU9WL3RVQWVjU2FpZFEwNFhMR3JoMmNueURsOXN3MFJpOGVwRlFKVVZB?=
- =?utf-8?B?bUFFRW1GVmZydm5uUEJyeTJNZFdYdFJSMWhycUNLMlhOejJwRy9vdDZaYjlT?=
- =?utf-8?B?SWpYTnIxeWErajdQSStlZVR0SVhPcnBDZjFnbTBmcDFHV3FDMDk1N0d3WDM5?=
- =?utf-8?B?TlhZWjBMdXVMZ0dVS20vamI3MVdPQ2kxdm9IVmNVMWxpMmlIK2VKd1hoNUxu?=
- =?utf-8?B?bFI1SFFYMEtmVjZIVmdwNE42aHJ4YUhkL3VKSWRNaEdUUmxXT3AyUXNpZTZV?=
- =?utf-8?B?ejlvc2xTckpVdnpMSExTcldyY0JxUThlT2tWV09jZGw4b09nT2Z4VGVCUysr?=
- =?utf-8?B?djV4citObmRRVXcwSFZpNnFLU2ZTdjhIYTViYzJlOE80ZnE3bFVGTS9TZmlZ?=
- =?utf-8?B?UGJHeVBoOTFRWk0zZnBJQUdVbWU2NzN1ejFxbXNDZHVmcEExVUdLb0dHbjlI?=
- =?utf-8?B?bEFpbDRueWF6RGZVak13MHhrdHdpcmVZVm9tWGNHVEZ6QlBoREFpS2hUZzgz?=
- =?utf-8?B?WDV4Z0JPbEVOakJuZlpIVmp2WlYrTCt1YlNBNzJ1bkY1VTVJYzR4dEdEYU4v?=
- =?utf-8?B?V0lndzV0Zk1MRW5lYjl2c3ZMQ1ZrSFFLVGFBQUkza3JwZjV4L2JlME1oYkhm?=
- =?utf-8?B?VFVTMTBmWTZkd0hZTDZ3TW5wU3RYV043TUt4Qm15Uk1mM0tRYS96OUlBbUpD?=
- =?utf-8?B?bXY5Z2F4K1RPeEtFWHozWHVXZmxYOUMrb09ROGw1U2pjMHBqMUtRNGNmb1p0?=
- =?utf-8?B?L3JQMVNhMHdxaFlBTSt6N1c1WlhGS2hTV0dxZllqdVRPbEIyR3NxRHYxbG82?=
- =?utf-8?B?ZHVTeGFXT05ScUs5UXZNVnFJeGJ2VWJ2aVFIa2lOQWxHQ2lPYisvTmdsNm5R?=
- =?utf-8?Q?ewVaJWTb3zZXOsF4=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9ACDD16A79A90241A149CAA0CBFC947A@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=e4vDhMzvy3YOkQ9zBYte/XQ0KAaKC9sgRay0l4XcsQ4=;
+        b=Bqewqm4sEfX65AFnOPS0H7hoOh025r+5pYa8XlINcT2djuUhGa6YdGxA9fbeqTDjyg
+         KNtHn/NyR4r8d1UtL+8HCu4ZpWyiP9m8nMNO03pun9+9VycNNhbAm+kV+OdaSmYBIG/2
+         hUS/5hyIarlKQ8/ItJ8HSwmZvo+skzd3cQqErxhDDrFnII7RLenCkb+HhEO7SUE8qZy7
+         a/KoPg3mdOYv/v1mngtLvR7tSu5EKLzMuaNP+yUg78pVzp8wra7ZbIL5ZZAhfuPOnJd9
+         n09rOzspRyLAXyB4z8aS6blEAkmGjgvVil66LuisUz6u+DUJA8sR4XtiZgfvc5dGa4KV
+         Q5oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=e4vDhMzvy3YOkQ9zBYte/XQ0KAaKC9sgRay0l4XcsQ4=;
+        b=jmsLhe015ofVkBJAI0//TWVO1/Pzy1C69sjpPVXPLOSuYOUOFtYhW2PULUARmVsAZQ
+         vd0YW274R8QGHAPMPJzcIkzm1PK4YH8sgxWVn73RclUD+/vAYkGneBKfVFOFnDBX1Zqw
+         m4gP3dGO1PK9eGVhgyYA+xcjsb3P+h5RJD2XEaQWrLaKUlEtzWh20/6s+yqlDkQ7PUDR
+         2Ewt75SFAxnFyUfiOqpOimNs5BAlci+5oU64Mx2bHQUJM0e8ZcR5B/Qh3/CDEUkznYfN
+         GZNgG/tbndjtHEQUljYqVjbj+4cqJ6yP60wl1SGWf9tBQzA0hWNXhG7LvB6ZkQoheTTX
+         k3Cg==
+X-Gm-Message-State: AOAM5330vV+iTN2AREy+EY7jZpx2LDhe05UNh6BYRd1crLfw6wgvumbp
+        c7CyPh8puFyhMGHVMiqFCKo=
+X-Google-Smtp-Source: ABdhPJwOlATfxqxS2ks4E6hH4T/LM8RgkhDLs8dUgp/0TaEV149xG1yRI4wgWT+SoUXPa+Z/j0poHw==
+X-Received: by 2002:a63:5317:0:b0:399:58e9:882b with SMTP id h23-20020a635317000000b0039958e9882bmr11120930pgb.306.1649334422001;
+        Thu, 07 Apr 2022 05:27:02 -0700 (PDT)
+Received: from hyeyoo ([114.29.24.243])
+        by smtp.gmail.com with ESMTPSA id ay9-20020a056a00300900b004fae1346aa1sm20786357pfb.122.2022.04.07.05.26.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 05:27:00 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 21:26:53 +0900
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 08/10] mm/slab: Allow dynamic kmalloc() minimum alignment
+Message-ID: <Yk7YjeXDYRJwt7zb@hyeyoo>
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
+ <20220405135758.774016-9-catalin.marinas@arm.com>
+ <Yk5endPQFHc/pB1W@ip-172-31-19-208.ap-northeast-1.compute.internal>
+ <Yk6lz0UYyKIv5ibI@arm.com>
+ <Yk6sWNBSwNRbLdfZ@hyeyoo>
+ <Yk6wSNz38Bv1lrmB@arm.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA2PR11MB4874.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f2812fcd-394d-471c-6a0f-08da1891cb1f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2022 12:26:08.2098
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YjTcYGRDrESOSD6/WZwkGol3gD6nY2r31Wa3TDaUS6wB6wruuTrPW4CP33h9BkPw9lQNYUp905pCHd2+VVCNq6DPprCHAAXQ4eGG5NOAdOo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5959
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yk6wSNz38Bv1lrmB@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gNC83LzIyIDEzOjU4LCBLYXZ5YXNyZWUgS290YWdpcmkgd3JvdGU6DQo+IEVuYWJsZSBRU1BJ
-MCBjb250cm9sbGVyIGFuZCBzc3QyNnZmMDE2YiBTUEktTk9SIGZsYXNoIHByZXNlbnQgb24gaXQu
-DQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBLYXZ5YXNyZWUgS290YWdpcmkgPGthdnlhc3JlZS5rb3Rh
-Z2lyaUBtaWNyb2NoaXAuY29tPg0KPiAtLS0NCj4gIGFyY2gvYXJtL2Jvb3QvZHRzL2xhbjk2Nngt
-cGNiODI5MS5kdHMgfCAxNSArKysrKysrKysrKysrKysNCj4gIDEgZmlsZSBjaGFuZ2VkLCAxNSBp
-bnNlcnRpb25zKCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vYm9vdC9kdHMvbGFuOTY2
-eC1wY2I4MjkxLmR0cyBiL2FyY2gvYXJtL2Jvb3QvZHRzL2xhbjk2NngtcGNiODI5MS5kdHMNCj4g
-aW5kZXggMzI4MWFmOTBhYzZkLi45OWQ5NmQ0NjY2MWQgMTAwNjQ0DQo+IC0tLSBhL2FyY2gvYXJt
-L2Jvb3QvZHRzL2xhbjk2NngtcGNiODI5MS5kdHMNCj4gKysrIGIvYXJjaC9hcm0vYm9vdC9kdHMv
-bGFuOTY2eC1wY2I4MjkxLmR0cw0KPiBAQCAtNjIsMyArNjIsMTggQEANCj4gICZ3YXRjaGRvZyB7
-DQo+ICAJc3RhdHVzID0gIm9rYXkiOw0KPiAgfTsNCj4gKw0KPiArJnFzcGkwIHsNCj4gKwlzdGF0
-dXMgPSAib2theSI7DQo+ICsNCj4gKwlzcGktZmxhc2hAMCB7DQo+ICsJCWNvbXBhdGlibGUgPSAi
-amVkZWMsc3BpLW5vciI7DQo+ICsJCXJlZyA9IDwwPjsNCj4gKwkJc3BpLW1heC1mcmVxdWVuY3kg
-PSA8MjAwMDAwMDA+Ow0KDQpZb3Ugc2hvdWxkIGRlc2NyaWJlIHRoZSBmbGFzaCdzIG1heGltdW0g
-ZnJlcXVlbmN5Og0K4oCiIEhpZ2gtU3BlZWQgQ2xvY2sgRnJlcXVlbmN5Og0KLSAyLjdWLTMuNlY6
-IDEwNCBNSHogbWF4aW11bQ0KLSAyLjNWLTMuNlY6IDgwIE1IeiBtYXhpbXVtDQoNCmh0dHBzOi8v
-d3cxLm1pY3JvY2hpcC5jb20vZG93bmxvYWRzL2FlbURvY3VtZW50cy9kb2N1bWVudHMvTVBEL1By
-b2R1Y3REb2N1bWVudHMvRGF0YVNoZWV0cy9TU1QyNlZGMDE2Qi0yLjVWLTMuMFYtMTYtTWJpdC1T
-ZXJpYWwtUXVhZC1JTy0lMjhTUUklMjktRmxhc2gtTWVtb3J5LTIwMDA1MjYyRy5wZGYNCg0KPiAr
-CQkjYWRkcmVzcy1jZWxscyA9IDwxPjsNCj4gKwkJI3NpemUtY2VsbHMgPSA8MT47DQo+ICsJCXNw
-aS10eC1idXMtd2lkdGggPSA8ND47DQo+ICsJCXNwaS1yeC1idXMtd2lkdGggPSA8ND47DQo+ICsJ
-CW0yNXAsZmFzdC1yZWFkOw0KPiArCX07DQo+ICt9Ow0KDQo=
+On Thu, Apr 07, 2022 at 10:35:04AM +0100, Catalin Marinas wrote:
+> On Thu, Apr 07, 2022 at 06:18:16PM +0900, Hyeonggon Yoo wrote:
+> > On Thu, Apr 07, 2022 at 09:50:23AM +0100, Catalin Marinas wrote:
+> > > On Thu, Apr 07, 2022 at 03:46:37AM +0000, Hyeonggon Yoo wrote:
+> > > > On Tue, Apr 05, 2022 at 02:57:56PM +0100, Catalin Marinas wrote:
+> > > > > --- a/mm/slab_common.c
+> > > > > +++ b/mm/slab_common.c
+> > > > > @@ -838,9 +838,18 @@ void __init setup_kmalloc_cache_index_table(void)
+> > > > >  	}
+> > > > >  }
+> > > > >  
+> > > > > -static void __init
+> > > > > +unsigned int __weak arch_kmalloc_minalign(void)
+> > > > > +{
+> > > > > +	return ARCH_KMALLOC_MINALIGN;
+> > > > > +}
+> > > > > +
+> > > > 
+> > > > As ARCH_KMALLOC_ALIGN and arch_kmalloc_minalign() may not be same after
+> > > > patch 10, I think s/ARCH_KMALLOC_ALIGN/arch_kmalloc_minalign/g
+> > > > for every user of it would be more correct?
+> > > 
+> > > Not if the code currently using ARCH_KMALLOC_MINALIGN needs a constant.
+> > > Yes, there probably are a few places where the code can cope with a
+> > > dynamic arch_kmalloc_minalign() but there are two other cases where a
+> > > constant is needed:
+> > > 
+> > > 1. As a BUILD_BUG check because the code is storing some flags in the
+> > >    bottom bits of a pointer. A smaller ARCH_KMALLOC_MINALIGN works just
+> > >    fine here.
+> > > 
+> > > 2. As a static alignment for DMA requirements. That's where the newly
+> > >    exposed ARCH_DMA_MINALIGN should be used.
+> > > 
+> > > Note that this series doesn't make the situation any worse than before
+> > > since ARCH_DMA_MINALIGN stays at 128 bytes for arm64. Current users can
+> > > evolve to use a dynamic alignment in future patches. My main aim with
+> > > this series is to be able to create kmalloc-64 caches on arm64.
+> > 
+> > AFAIK there are bunch of drivers that directly calls kmalloc().
+> 
+> Well, lots of drivers call kmalloc() ;).
+> 
+> > It becomes tricky when e.g.) a driver allocates just 32 bytes,
+> > but architecture requires it to be 128-byte aligned.
+> 
+> That's the current behaviour, a 32 byte allocation would return an
+> object from kmalloc-128. I want to reduce this to at least kmalloc-64
+> (or smaller) if the CPU/SoC allows it.
+
+Yeah I agree the change is worth :) Thanks for the work.
+
+> > That's why everything allocated from kmalloc() need to be aligned in
+> > ARCH_DMA_MINALIGN.
+> 
+> I don't get your conclusion here. Would you mind explaining?
+
+What I wanted to say was that, why ARCH_DMA_MINALIGN should be
+different from ARCH_KMALLOC_MINALIGN.
+
+I thought the two were basically same thing. Instead of
+decoupling them, I thought just decreasing them in runtime makes more sense.
+
+> > So I'm yet skeptical on decoupling ARCH_DMA/KMALLOC_MINALIGN. Instead
+> > of decoupling it, I'm more into dynamically decreasing it.
+> 
+> The reason for decoupling is mostly that there are some static uses of
+> ARCH_KMALLOC_MINALIGN as per point 1 above. The other is the
+> __assume_kmalloc_alignment attribute. We shouldn't have such assumed
+> alignment larger than what a dynamic kmalloc() would return. To me it
+> makes a lot more sense for ARCH_KMALLOC_MINALIGN to be the minimum
+> guaranteed in a kernel build but kmalloc() returning a larger alignment
+> at run-time than the other way around.
+
+But yeah, considering the problems you mentioned, it seems unavoidable
+to decouple them.
+
+Thank you for explanation and I will review slab part soon.
+
+> Thanks.
+> 
+> -- 
+> Catalin
+
+-- 
+Thanks,
+Hyeonggon
