@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14A35C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:23:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238557AbiDGBZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60702 "EHLO
+        id S238572AbiDGBZ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:25:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239516AbiDGBTT (ORCPT
+        with ESMTP id S239643AbiDGBTY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:19:19 -0400
+        Wed, 6 Apr 2022 21:19:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D8DF1A8FF0;
-        Wed,  6 Apr 2022 18:14:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFD31AB9D5;
+        Wed,  6 Apr 2022 18:14:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41A8561DB0;
-        Thu,  7 Apr 2022 01:14:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A916C385A3;
-        Thu,  7 Apr 2022 01:14:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C09161DAE;
+        Thu,  7 Apr 2022 01:14:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 092F1C385A3;
+        Thu,  7 Apr 2022 01:14:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294076;
-        bh=rmjlrZ3jRBAG1u+k/uE6IQjsP8+3rNHHrRvB1TBMCIc=;
+        s=k20201202; t=1649294091;
+        bh=ssJYHvkpscxFMbUpBVyB4ceTVTGzImrTC1CGpjG5HWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S9ftank2rUUH02RET8lUiYj5EiyHfsflHDl8bcdO9Iv1N/dTSkE8CT/JP5BwVsOhd
-         8r+hZ7t9FbpvszynBkNJrPfzCTmB6lw9ZFTmdEbpguI29ARB1O3+t/yjlHCUWq16sG
-         s2jDxHWvXmc9wB+yrBVNyEBoQxrhatt7IHOh4hRi9FoGO0JhHJPYFKktdyA+Rjery3
-         HSxKos3jCRz9U1BRiS9H+SzrgmKKpdFk38zkF5EqkQbMSYaJ4ClwqiNDb+TbOpqqrE
-         Of6DWPd0TUVNaeiBfvBQSJsYxEyJ+SAXRGAlooVG9uA3RJvwMmcOI0r/QCucN1iNXb
-         8dfiEI+NTFNBQ==
+        b=bwgPh9yx1BbQQAsWcsNs8baz/Of5ugypD59iBKwqnZje2fcnkhMQC9nRTq59K3xlF
+         xE6DMh0HUGjaoiNNz/DhQNhn0iW1r5xFJuKXnq38WAXeWLmMQ3+pQWIjdP8UEIvre6
+         CuEPFbSMW7HWa+tdaoUpF07w3XewzH5PSJ3YxsUdmczwUSbGPhewKofm/guVnKoakV
+         iGD73bTb9AjyEu70eY2R2tQqEHswppDTDTNRnHAtbv75RSd2gfEHROnw8QRGzuD3Eh
+         qqY1Mx1dxFJOawnfcZ89QgEnq7cGZGBQcghGbNIFLt8nEn3LJDn/eMn/of8ddlOZCz
+         rcv4VhUYUcDqw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andre Przywara <andre.przywara@arm.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>, a.zummo@towertech.it,
-        wens@csie.org, samuel@sholland.org, linux-rtc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.10 10/25] rtc: sun6i: Fix time overflow handling
-Date:   Wed,  6 Apr 2022 21:13:58 -0400
-Message-Id: <20220407011413.114662-10-sashal@kernel.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 5.10 16/25] tools/virtio: compile with -pthread
+Date:   Wed,  6 Apr 2022 21:14:04 -0400
+Message-Id: <20220407011413.114662-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011413.114662-1-sashal@kernel.org>
 References: <20220407011413.114662-1-sashal@kernel.org>
@@ -54,78 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
 
-[ Upstream commit 9f6cd82eca7e91a0d0311242a87c6aa3c2737968 ]
+[ Upstream commit f03560a57c1f60db6ac23ffd9714e1c69e2f95c7 ]
 
-Using "unsigned long" for UNIX timestamps is never a good idea, and
-comparing the value of such a variable against U32_MAX does not do
-anything useful on 32-bit systems.
+When using pthreads, one has to compile and link with -lpthread,
+otherwise e.g. glibc is not guaranteed to be reentrant.
 
-Use the proper time64_t type when dealing with timestamps, and avoid
-cutting down the time range unnecessarily. This also fixes the flawed
-check for the alarm time being too far into the future.
+This replaces -lpthread.
 
-The check for this condition is actually somewhat theoretical, as the
-RTC counts till 2033 only anyways, and 2^32 seconds from now is not
-before the year 2157 - at which point I hope nobody will be using this
-hardware anymore.
-
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220211122643.1343315-4-andre.przywara@arm.com
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-sun6i.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ tools/virtio/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/rtc/rtc-sun6i.c b/drivers/rtc/rtc-sun6i.c
-index f2818cdd11d8..52b36b7c6129 100644
---- a/drivers/rtc/rtc-sun6i.c
-+++ b/drivers/rtc/rtc-sun6i.c
-@@ -138,7 +138,7 @@ struct sun6i_rtc_dev {
- 	const struct sun6i_rtc_clk_data *data;
- 	void __iomem *base;
- 	int irq;
--	unsigned long alarm;
-+	time64_t alarm;
+diff --git a/tools/virtio/Makefile b/tools/virtio/Makefile
+index 0d7bbe49359d..1b25cc7c64bb 100644
+--- a/tools/virtio/Makefile
++++ b/tools/virtio/Makefile
+@@ -5,7 +5,8 @@ virtio_test: virtio_ring.o virtio_test.o
+ vringh_test: vringh_test.o vringh.o virtio_ring.o
  
- 	struct clk_hw hw;
- 	struct clk_hw *int_osc;
-@@ -510,10 +510,8 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
- 	struct sun6i_rtc_dev *chip = dev_get_drvdata(dev);
- 	struct rtc_time *alrm_tm = &wkalrm->time;
- 	struct rtc_time tm_now;
--	unsigned long time_now = 0;
--	unsigned long time_set = 0;
--	unsigned long time_gap = 0;
--	int ret = 0;
-+	time64_t time_now, time_set;
-+	int ret;
- 
- 	ret = sun6i_rtc_gettime(dev, &tm_now);
- 	if (ret < 0) {
-@@ -528,9 +526,7 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
- 		return -EINVAL;
- 	}
- 
--	time_gap = time_set - time_now;
--
--	if (time_gap > U32_MAX) {
-+	if ((time_set - time_now) > U32_MAX) {
- 		dev_err(dev, "Date too far in the future\n");
- 		return -EINVAL;
- 	}
-@@ -539,7 +535,7 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
- 	writel(0, chip->base + SUN6I_ALRM_COUNTER);
- 	usleep_range(100, 300);
- 
--	writel(time_gap, chip->base + SUN6I_ALRM_COUNTER);
-+	writel(time_set - time_now, chip->base + SUN6I_ALRM_COUNTER);
- 	chip->alarm = time_set;
- 
- 	sun6i_rtc_setaie(wkalrm->enabled, chip);
+ CFLAGS += -g -O2 -Werror -Wno-maybe-uninitialized -Wall -I. -I../include/ -I ../../usr/include/ -Wno-pointer-sign -fno-strict-overflow -fno-strict-aliasing -fno-common -MMD -U_FORTIFY_SOURCE -include ../../include/linux/kconfig.h
+-LDFLAGS += -lpthread
++CFLAGS += -pthread
++LDFLAGS += -pthread
+ vpath %.c ../../drivers/virtio ../../drivers/vhost
+ mod:
+ 	${MAKE} -C `pwd`/../.. M=`pwd`/vhost_test V=${V}
 -- 
 2.35.1
 
