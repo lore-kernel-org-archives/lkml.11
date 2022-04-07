@@ -2,123 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45288C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48695C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:36:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344101AbiDGOgx (ORCPT
+        id S1344025AbiDGOi5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
+        Thu, 7 Apr 2022 10:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344162AbiDGOgn (ORCPT
+        with ESMTP id S237013AbiDGOiy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:36:43 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BB11E5A42
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:34:14 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id i27so11246228ejd.9
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 07:34:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZMc3AfG5H7Eoze1riLsoKQySy0boPTnHcGifTlbw67U=;
-        b=ACt2wLpnHluTK801WClxUNjv0T9X0tOd4oKiCIIrZ9eNjavRSu/0d5x723ScrD6OQJ
-         4ycrRvTpZwenEIWc5szrw7Xy7HZlT+y1tGmDJX1OMZr31b6onPuNIXxnElG8KwNEHG8v
-         7cO8koLd+3k74YrxsfvbF4gSaFYQmeSEhO1sAvwcmL/frMNgxZdh5zphOLrEI0Sir9er
-         DC9hAsYxXq9WhYZGMdDJ0rR2BpvJwQH5Utv5DyHXDBxGVwcgUk5UG0UAy1cblo+jn8md
-         HomLK/kqgRoT+SxkiPmU1UQqoCsxtMxO6f0uP0EAexdHFKupYpNvhem6YnmogCUO6aYv
-         /jyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZMc3AfG5H7Eoze1riLsoKQySy0boPTnHcGifTlbw67U=;
-        b=GGn+tQxBbo30gEuzWyqJkrQ11rVy60wqO4G6UqxXmjTvRkLb9TveykCo0mEe7jI+/S
-         7K4j3Bv9iR2kNyHX9UYgb+29GUYgMDY6go+DWj59HAUCOHdWnW+KEpjOvL3/VphJrgQH
-         xAOKIuxYtlxXMKh1FAseqYVleji4DBV+KtyZucUzbJqwH3smsQMld4EEbbNyb/r4a/9m
-         6jqAwX5/wiD65a97pP6VztWqGtV+hYI+zC9V7wW3CzYJbv4SeAO6vFZaFZuGpecm1JEe
-         52dmEivf3kwZcJ9FxIXcZK6ZFBfSqh6G/qOU5rdAVOuNfKr6O1BeN0VLvC3XT4KcQTEA
-         jFSw==
-X-Gm-Message-State: AOAM530xNtP6+4c56mamPCmzlDq/zJa/eXo9507qDuvlDCQbXmq/ZHpc
-        wxd/oO5qJg4XWATClobw8ybSnw==
-X-Google-Smtp-Source: ABdhPJwXyL4FeMCVoeo0dwl9+9FIwF5PtSlfyv2y65g/77g1GH8eFdummy9lPfT8/0+oXckSp7xQIw==
-X-Received: by 2002:a17:906:9c8e:b0:6df:f6bf:7902 with SMTP id fj14-20020a1709069c8e00b006dff6bf7902mr13552991ejc.191.1649342050635;
-        Thu, 07 Apr 2022 07:34:10 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id r18-20020a05640251d200b0041d1600ab09sm107835edd.54.2022.04.07.07.34.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 07:34:10 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: align SPI NOR node name with dtschema
-Date:   Thu,  7 Apr 2022 16:34:05 +0200
-Message-Id: <20220407143405.295907-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Thu, 7 Apr 2022 10:38:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B3213858C;
+        Thu,  7 Apr 2022 07:36:53 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649342157;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oPpZ0m/EoTYA7DrLIFgnk4y1wQaBSP5g0/ujxGiQvG4=;
+        b=JFPSDWgcDH5/nzr9OLV61NtbaX5cpcuOs0hCg8p6nRk238Xbe0DHd2splLnhZ405VuJZu6
+        xgEvmbSFbT/qtWM9R9GrfswIOAjgDSzfsfV2CB+7/DW5obz6l9CJwCl66hMhg4n6mZ+nsq
+        aNtV9/xHjb0xq6rrikMXHYDKy2ZmNYHRuYTnNi4kjix/MIL0MchiXeuf3Hlmf+ZKuC9dwE
+        ZmaxHiDtf0s1V6eIY211e/y9mKy4SCwts89QsH9DlYpczA64TfX9Tk+P8jw2fHQapThy1V
+        oxxOqPfVyQnyApAm5w5/Lr4rQlnQpgnbvny6d+WM8SuwKit/G68ZhHRtEChmwA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649342157;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oPpZ0m/EoTYA7DrLIFgnk4y1wQaBSP5g0/ujxGiQvG4=;
+        b=jbnaZA7raEVl7ThYX+0bKwEQFI//kGVTC1fXb4kYxTvQG3olAl4sxy4B0WZmtBbTd/SJsB
+        2DGlpoopNMzpHwCw==
+To:     Helge Deller <deller@gmx.de>, Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Wei Liu <wei.liu@kernel.org>,
+        Xiaoming Ni <nixiaoming@huawei.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Marco Elver <elver@google.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Phil Auld <pauld@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Wang Qing <wangqing@vivo.com>, rcu@vger.kernel.org
+Subject: Re: [PATCH printk v2 09/12] printk: add functions to prefer direct
+ printing
+In-Reply-To: <b746d99e-729f-ca0d-5d30-6d803d1cd833@gmx.de>
+References: <20220405132535.649171-1-john.ogness@linutronix.de>
+ <20220405132535.649171-10-john.ogness@linutronix.de>
+ <Yk61Q+w7tWTjh8xl@alley> <b746d99e-729f-ca0d-5d30-6d803d1cd833@gmx.de>
+Date:   Thu, 07 Apr 2022 16:41:55 +0206
+Message-ID: <87zgkxnepg.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The node names should be generic and SPI NOR dtschema expects "flash".
+On 2022-04-07, Helge Deller <deller@gmx.de> wrote:
+>>>  - emergency reboot/shutdown
+>>>  - cpu and rcu stalls
+>>>  - hard and soft lockups
+>>>  - hung tasks
+>>>  - warn
+>>>  - sysrq
+>
+> I agree that those needs direct printing.
+> Did you maybe checked how much (e.g. in percentage) of a normal log is
+> then still left to be printed threadened?  Just in case it's not much,
+> is there still a benefit to introduce threadened printing?
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/mtd/hisilicon,fmc-spi-nor.txt | 2 +-
- Documentation/devicetree/bindings/spi/spi-davinci.txt           | 2 +-
- Documentation/devicetree/bindings/spi/spi-pl022.yaml            | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+A "normal" log can still contain many many messages. There have been
+reports [0] where the system died because _printk_ killed it. This was
+not any of the scenarios that we want direct printing for. It was just a
+lot of messages that some driver wanted to output.
 
-diff --git a/Documentation/devicetree/bindings/mtd/hisilicon,fmc-spi-nor.txt b/Documentation/devicetree/bindings/mtd/hisilicon,fmc-spi-nor.txt
-index 74981520d6dd..a99de13c7ccd 100644
---- a/Documentation/devicetree/bindings/mtd/hisilicon,fmc-spi-nor.txt
-+++ b/Documentation/devicetree/bindings/mtd/hisilicon,fmc-spi-nor.txt
-@@ -17,7 +17,7 @@ spi-nor-controller@10000000 {
- 	reg = <0x10000000 0x1000>, <0x14000000 0x1000000>;
- 	reg-names = "control", "memory";
- 	clocks = <&clock HI3519_FMC_CLK>;
--	spi-nor@0 {
-+	flash@0 {
- 		compatible = "jedec,spi-nor";
- 		reg = <0>;
- 	};
-diff --git a/Documentation/devicetree/bindings/spi/spi-davinci.txt b/Documentation/devicetree/bindings/spi/spi-davinci.txt
-index 200c7fc7b089..f012888656ec 100644
---- a/Documentation/devicetree/bindings/spi/spi-davinci.txt
-+++ b/Documentation/devicetree/bindings/spi/spi-davinci.txt
-@@ -78,7 +78,7 @@ spi0:spi@20bf0000 {
- 	interrupts			= <338>;
- 	clocks				= <&clkspi>;
- 
--	flash: n25q032@0 {
-+	flash: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "st,m25p32";
-diff --git a/Documentation/devicetree/bindings/spi/spi-pl022.yaml b/Documentation/devicetree/bindings/spi/spi-pl022.yaml
-index bda45ff3d294..0e382119c64f 100644
---- a/Documentation/devicetree/bindings/spi/spi-pl022.yaml
-+++ b/Documentation/devicetree/bindings/spi/spi-pl022.yaml
-@@ -143,7 +143,7 @@ examples:
-         <&dma_controller 24 0>;
-       dma-names = "rx", "tx";
- 
--      m25p80@1 {
-+      flash@1 {
-         compatible = "st,m25p80";
-         reg = <1>;
-         spi-max-frequency = <12000000>;
--- 
-2.32.0
+Until now the response was always to reduce printk usage or avoid it
+altogether. printk has a bad reputation because it is so unpredictable
+and expensive. So we are fixing printk. With threaded printers, we make
+a dramatic change. printk becomes 100% lockless and consistently quite
+fast. You can use it to debug or log messages within any code in the
+kernel and not need to worry about horrible latencies being introduced.
 
+For drivers that start dumping tons of messages, there is no concern
+that the system will die because of the messages.
+
+> Or another example, e.g. when running on a slow console (the best
+> testcase I know of is a 9600 baud serial port), where some printks are
+> threadened. Then a warn printk() has to be shown, doesn't it mean all
+> threadened printks have to be flushed (waited for) until the warning
+> can be shown. Will there then still be a measureable time benefit?
+
+Now you are talking about something else, unrelated to the threaded
+printing. A warn is considered a serious non-normal event. In this case,
+printk temporarily falls back to the direct, slow, unpredictable,
+printk-caller-context behavior we know today.
+
+If we see that direct printing is being used during normal operation
+(i.e. developers are performing warns just for fun), then we should not
+mark warns for direct printing. We will need to get some real-world
+experience here, but the goal is that systems do not use direct printing
+unless a real serious emergency is going on. Otherwise, the system risks
+dying because of the messages rather than the problem being reported.
+
+John
+
+[0] https://lore.kernel.org/all/20190306171943.12345598@oasis.local.home
