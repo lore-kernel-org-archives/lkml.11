@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C26CBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:39:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243964AbiDGJlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:41:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38918 "EHLO
+        id S243940AbiDGJlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243860AbiDGJk1 (ORCPT
+        with ESMTP id S243881AbiDGJke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:40:27 -0400
+        Thu, 7 Apr 2022 05:40:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4A61B2154;
-        Thu,  7 Apr 2022 02:38:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001381B7567
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:38:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89590B826EC;
-        Thu,  7 Apr 2022 09:38:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00DF9C385A9;
-        Thu,  7 Apr 2022 09:38:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B16BB826EC
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:38:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 225A9C385A4;
+        Thu,  7 Apr 2022 09:38:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649324301;
-        bh=uIwgR3pVWQ2tLhHj07s4Etx3NDjbjW6eqYEftcbaJ9w=;
+        s=k20201202; t=1649324312;
+        bh=5s9OskJhRbRG2UiHya741d2AQEc7gXNCfqv7+61bHTo=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=ewszGuCnjWBBxeWe2aGzoWNNNNMjuHKnmxSX+XWKgZNRjVicp+Ep0zw9knfu4lVdC
-         flciZcPQ8r1QqzTVPlfDRekWIPuEd2P1cR6ldDpo4Ve3dLeXr2ITVmLt/gMGrexJMf
-         Ssa4x1iRBOPlHg21pxLfbxk5xxyN8+CFAYz5TI5wek43ZpehMNNWfyO68rhXWj0bXi
-         7KjYlpMqFhyMFMBMLloAOTVgG+EWWZ8DTFij3snbVsi12vbwMDblHlsmLf1aJhUvXb
-         Al+EWZ3ASFhSoy6VhYA44n9D66mrSacxhgOc3WFp8B1ulSwVWVbn97H5hbMpgLp0dT
-         ovGl2UlfDlaFA==
+        b=oSgF3ttao0gVuOlFBOMt9yHpO0kCnAqrr5505QzbDPd51pMmOkIeBjYcQRtVRyGyP
+         Ait3GuJuxl0/lyEPOO4Yf1AciPnd5o3Rd6UmadIK6jXimksRI2/q/QI7GfhL1og0f8
+         F6sKXWjfmQQ4Flol+icFsLEmIGMmrSm6bN00haeFXqCqdpm6W5o2m0QaQt4+lM9sbs
+         fwtOS8sWrSWcg5SE2Pyoq7Gn2rcmpwi4TnsOLybt/P1gf7xJVUPwLiBLS3aa9V9W1A
+         2lCl6vYS7ej/9+1Rn4IHNx95h1v9aaKr5YDa+hHBXezAn6TPRcVsue0kemWQfKEp+7
+         Xj0dRH+U6rSmg==
 From:   Mark Brown <broonie@kernel.org>
-To:     daniel.baluta@nxp.com, Jaroslav Kysela <perex@perex.cz>,
-        lgirdwood@gmail.com, christophe.jaillet@wanadoo.fr,
-        Takashi Iwai <tiwai@suse.com>,
-        pierre-louis.bossart@linux.intel.com,
-        ranjani.sridharan@linux.intel.com, kai.vehmanen@linux.intel.com
-Cc:     sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <3bbf03cfd1966bc6fb6dd0939e039fc161078a61.1647757329.git.christophe.jaillet@wanadoo.fr>
-References: <3bbf03cfd1966bc6fb6dd0939e039fc161078a61.1647757329.git.christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH] ASoC: SOF: topology: Avoid open coded arithmetic in memory allocation
-Message-Id: <164932429871.3844153.12183120087286124160.b4-ty@kernel.org>
-Date:   Thu, 07 Apr 2022 10:38:18 +0100
+To:     rf@opensource.cirrus.com
+Cc:     patches@opensource.cirrus.com, dan.carpenter@oracle.com,
+        lkp@intel.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220404113252.1152659-1-rf@opensource.cirrus.com>
+References: <20220404113252.1152659-1-rf@opensource.cirrus.com>
+Subject: Re: [PATCH] ASoC: simple-card-utils: Avoid NULL deref in asoc_simple_set_tdm()
+Message-Id: <164932431085.3844153.445127549627667818.b4-ty@kernel.org>
+Date:   Thu, 07 Apr 2022 10:38:30 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -52,9 +49,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 20 Mar 2022 07:22:26 +0100, Christophe JAILLET wrote:
-> Use kcalloc() instead of kzalloc()+open coded multiplication.
-> This is safer and saves a few lines of code.
+On Mon, 4 Apr 2022 12:32:52 +0100, Richard Fitzgerald wrote:
+> Don't dereference simple_dai before it has been checked for NULL.
 > 
 > 
 
@@ -64,8 +60,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: SOF: topology: Avoid open coded arithmetic in memory allocation
-      commit: 0a480df0b87a75b315cc6eef62bfb597111ee630
+[1/1] ASoC: simple-card-utils: Avoid NULL deref in asoc_simple_set_tdm()
+      commit: 51a630a7051f7f4f1cfdd64c20c7110f9907c230
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
