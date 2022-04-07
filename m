@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C354C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3464C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345099AbiDGPqg (ORCPT
+        id S1345062AbiDGPqn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
+        Thu, 7 Apr 2022 11:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345025AbiDGPqO (ORCPT
+        with ESMTP id S1345065AbiDGPqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:46:14 -0400
+        Thu, 7 Apr 2022 11:46:17 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B5B6BF978
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:44:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A34C1C8C
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:44:14 -0700 (PDT)
 Received: from dude03.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::39])
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <p.zabel@pengutronix.de>)
-        id 1ncUIn-0007bF-EW; Thu, 07 Apr 2022 17:44:05 +0200
+        id 1ncUIs-0007bF-17; Thu, 07 Apr 2022 17:44:10 +0200
 From:   Philipp Zabel <p.zabel@pengutronix.de>
 To:     devicetree@vger.kernel.org
 Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
         Neil Armstrong <narmstrong@baylibre.com>,
         linux-kernel@vger.kernel.org,
-        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
-Subject: [PATCH 08/14] dt-bindings: reset: snps,axs10x-reset: Convert to yaml
-Date:   Thu,  7 Apr 2022 17:43:32 +0200
-Message-Id: <20220407154338.4190674-8-p.zabel@pengutronix.de>
+        Peter Griffin <peter.griffin@linaro.org>
+Subject: [PATCH 12/14] dt-bindings: reset: st,sti-picophyreset: Convert to yaml
+Date:   Thu,  7 Apr 2022 17:43:36 +0200
+Message-Id: <20220407154338.4190674-12-p.zabel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220407154338.4190674-1-p.zabel@pengutronix.de>
 References: <20220407154338.4190674-1-p.zabel@pengutronix.de>
@@ -43,110 +43,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the device tree bindings for the AXS10x reset controller to YAML
-schema to allow participating in DT validation.
+Convert the device tree bindings for the STMicroelectronics STi
+SoftReset controller to YAML schema to allow participating in DT
+validation.
 
 Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Cc: Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
+Cc: Peter Griffin <peter.griffin@linaro.org>
 ---
- .../bindings/reset/snps,axs10x-reset.txt      | 33 -------------
- .../bindings/reset/snps,axs10x-reset.yaml     | 48 +++++++++++++++++++
- 2 files changed, 48 insertions(+), 33 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/reset/snps,axs10x-reset.txt
- create mode 100644 Documentation/devicetree/bindings/reset/snps,axs10x-reset.yaml
+ .../bindings/reset/st,sti-picophyreset.txt    | 42 -----------------
+ .../reset/st,stih407-picophyreset.yaml        | 47 +++++++++++++++++++
+ 2 files changed, 47 insertions(+), 42 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/reset/st,sti-picophyreset.txt
+ create mode 100644 Documentation/devicetree/bindings/reset/st,stih407-picophyreset.yaml
 
-diff --git a/Documentation/devicetree/bindings/reset/snps,axs10x-reset.txt b/Documentation/devicetree/bindings/reset/snps,axs10x-reset.txt
+diff --git a/Documentation/devicetree/bindings/reset/st,sti-picophyreset.txt b/Documentation/devicetree/bindings/reset/st,sti-picophyreset.txt
 deleted file mode 100644
-index 32d8435a41df..000000000000
---- a/Documentation/devicetree/bindings/reset/snps,axs10x-reset.txt
+index 9ca27761f811..000000000000
+--- a/Documentation/devicetree/bindings/reset/st,sti-picophyreset.txt
 +++ /dev/null
-@@ -1,33 +0,0 @@
--Binding for the AXS10x reset controller
+@@ -1,42 +0,0 @@
+-STMicroelectronics STi family Sysconfig Picophy SoftReset Controller
+-=============================================================================
 -
--This binding describes the ARC AXS10x boards custom IP-block which allows
--to control reset signals of selected peripherals. For example DW GMAC, etc...
--This block is controlled via memory-mapped register (AKA CREG) which
--represents up-to 32 reset lines.
+-This binding describes a reset controller device that is used to enable and
+-disable on-chip PicoPHY USB2 phy(s) using "softreset" control bits found in
+-the STi family SoC system configuration registers.
 -
--As of today only the following lines are used:
-- - DW GMAC - line 5
+-The actual action taken when softreset is asserted is hardware dependent.
+-However, when asserted it may not be possible to access the hardware's
+-registers and after an assert/deassert sequence the hardware's previous state
+-may no longer be valid.
 -
--This binding uses the common reset binding[1].
--
--[1] Documentation/devicetree/bindings/reset/reset.txt
+-Please refer to Documentation/devicetree/bindings/reset/reset.txt
+-for common reset controller binding usage.
 -
 -Required properties:
--- compatible: should be "snps,axs10x-reset".
--- reg: should always contain pair address - length: for creg reset
--  bits register.
--- #reset-cells: from common reset binding; Should always be set to 1.
+-- compatible: Should be "st,stih407-picophyreset"
+-- #reset-cells: 1, see below
 -
 -Example:
--	reset: reset-controller@11220 {
--		compatible = "snps,axs10x-reset";
+-
+-	picophyreset: picophyreset-controller {
+-		compatible = "st,stih407-picophyreset";
 -		#reset-cells = <1>;
--		reg = <0x11220 0x4>;
 -	};
 -
--Specifying reset lines connected to IP modules:
--	ethernet@.... {
--		....
--		resets = <&reset 5>;
--		....
+-Specifying picophyreset control of devices
+-=======================================
+-
+-Device nodes should specify the reset channel required in their "resets"
+-property, containing a phandle to the picophyreset device node and an
+-index specifying which channel to use, as described in
+-Documentation/devicetree/bindings/reset/reset.txt.
+-
+-Example:
+-
+-	usb2_picophy0: usbpicophy@0 {
+-		resets = <&picophyreset STIH407_PICOPHY0_RESET>;
 -	};
-diff --git a/Documentation/devicetree/bindings/reset/snps,axs10x-reset.yaml b/Documentation/devicetree/bindings/reset/snps,axs10x-reset.yaml
+-
+-Macro definitions for the supported reset channels can be found in:
+-include/dt-bindings/reset/stih407-resets.h
+diff --git a/Documentation/devicetree/bindings/reset/st,stih407-picophyreset.yaml b/Documentation/devicetree/bindings/reset/st,stih407-picophyreset.yaml
 new file mode 100644
-index 000000000000..a75db3d405af
+index 000000000000..329ae4ae1a10
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/reset/snps,axs10x-reset.yaml
-@@ -0,0 +1,48 @@
++++ b/Documentation/devicetree/bindings/reset/st,stih407-picophyreset.yaml
+@@ -0,0 +1,47 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/reset/snps,axs10x-reset.yaml#
++$id: http://devicetree.org/schemas/reset/st,stih407-picophyreset.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: AXS10x reset controller
++title: STMicroelectronics STi family Sysconfig Picophy SoftReset Controller
 +
 +maintainers:
-+  - Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
++  - Peter Griffin <peter.griffin@linaro.org>
 +
 +description: |
-+  This binding describes the ARC AXS10x boards custom IP-block which allows
-+  to control reset signals of selected peripherals. For example DW GMAC, etc...
-+  This block is controlled via memory-mapped register (AKA CREG) which
-+  represents up-to 32 reset lines.
-+  As of today only the following lines are used:
-+   - DW GMAC - line 5
++  This binding describes a reset controller device that is used to enable and
++  disable on-chip PicoPHY USB2 phy(s) using "softreset" control bits found in
++  the STi family SoC system configuration registers.
++
++  The actual action taken when softreset is asserted is hardware dependent.
++  However, when asserted it may not be possible to access the hardware's
++  registers and after an assert/deassert sequence the hardware's previous state
++  may no longer be valid.
 +
 +properties:
 +  compatible:
-+    const: snps,axs10x-reset
-+
-+  reg:
-+    maxItems: 1
++    const: st,stih407-picophyreset
 +
 +  '#reset-cells':
 +    const: 1
 +
 +required:
 +  - compatible
-+  - reg
 +  - '#reset-cells'
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    reset: reset-controller@11220 {
-+        compatible = "snps,axs10x-reset";
++    #include <dt-bindings/reset/stih407-resets.h>
++
++    picophyreset: picophyreset-controller {
++        compatible = "st,stih407-picophyreset";
 +        #reset-cells = <1>;
-+        reg = <0x11220 0x4>;
 +    };
 +
-+    // Specifying reset lines connected to IP modules:
-+    ethernet {
-+        resets = <&reset 5>;
++    // Specifying picophyreset control of devices
++    usb2_picophy0: usbpicophy {
++        resets = <&picophyreset STIH407_PICOPHY0_RESET>;
 +    };
 -- 
 2.30.2
