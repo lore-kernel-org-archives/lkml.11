@@ -2,99 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED5D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB1B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344626AbiDGP0I (ORCPT
+        id S1344625AbiDGP04 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56630 "EHLO
+        Thu, 7 Apr 2022 11:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344611AbiDGP0G (ORCPT
+        with ESMTP id S1344635AbiDGP0w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:26:06 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F9C2207A1D;
-        Thu,  7 Apr 2022 08:22:14 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app3 (Coremail) with SMTP id cC_KCgAHWsqPAU9iX1KVAQ--.48077S2;
-        Thu, 07 Apr 2022 23:21:55 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     dan.carpenter@oracle.com
-Cc:     jgg@ziepe.ca, mustafa.ismail@intel.com, shiraz.saleem@intel.com,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH V2 09/11] drivers: infiniband: hw: Fix deadlock in irdma_cleanup_cm_core()
-Date:   Thu,  7 Apr 2022 23:21:50 +0800
-Message-Id: <20220407152150.19971-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgAHWsqPAU9iX1KVAQ--.48077S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Aw13Ar15Xw1rZryxZrWrXwb_yoW8AryUpr
-        47Ww1Skryq9F42ka18Xw1kAF93Xw4kXFWqvryqv395ZFs3XFyUAFnFyr1qqFZ8JF9Fgrs3
-        GF1rZryrCasIvr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkS1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r10
-        6r15McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
-        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjfUOGQDUUUUU
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgYNAVZdtZE+egADsg
+        Thu, 7 Apr 2022 11:26:52 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A91B21B2FD;
+        Thu,  7 Apr 2022 08:24:52 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B208112FC;
+        Thu,  7 Apr 2022 08:24:46 -0700 (PDT)
+Received: from [10.1.26.146] (e127744.cambridge.arm.com [10.1.26.146])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1E6743F73B;
+        Thu,  7 Apr 2022 08:24:41 -0700 (PDT)
+Subject: Re: [PATCH v4 2/4] perf arm-spe: Use SPE data source for neoverse
+ cores
+To:     Ali Saidi <alisaidi@amazon.com>, Leo Yan <leo.yan@linaro.org>
+Cc:     Nick.Forrington@arm.com, acme@kernel.org,
+        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
+        benh@kernel.crashing.org, james.clark@arm.com,
+        john.garry@huawei.com, jolsa@kernel.org, kjain@linux.ibm.com,
+        lihuafei1@huawei.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        mark.rutland@arm.com, mathieu.poirier@linaro.org, mingo@redhat.com,
+        namhyung@kernel.org, peterz@infradead.org, will@kernel.org
+References: <20220328130547.GA360814@leoy-ThinkPad-X240s>
+ <20220329143214.12707-1-alisaidi@amazon.com>
+ <4710b4b2-5dcd-00a4-3976-1bd5340f401d@arm.com>
+ <20220331124425.GB1704284@leoy-ThinkPad-X240s>
+From:   German Gomez <german.gomez@arm.com>
+Message-ID: <da902ef2-df87-ed71-275b-f7b41d1afc9a@arm.com>
+Date:   Thu, 7 Apr 2022 16:24:35 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <20220331124425.GB1704284@leoy-ThinkPad-X240s>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a deadlock in irdma_cleanup_cm_core(), which is shown
-below:
+Hi,
 
-   (Thread 1)              |      (Thread 2)
-                           | irdma_schedule_cm_timer()
-irdma_cleanup_cm_core()    |  add_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | irdma_cm_timer_tick()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+On 31/03/2022 13:44, Leo Yan wrote:
+> [...]
+>>> I'd like to do this in a separate patch, but I have one other proposal. The
+>>> Neoverse cores L2 is strictly inclusive of the L1, so even if it's in the L1,
+>>> it's also in the L2. Given that the Graviton systems and afaik the Ampere
+>>> systems don't have any cache between the L2 and the SLC, thus anything from
+>>> PEER_CORE, LCL_CLSTR, or PEER_CLSTR would hit in the L2, perhaps we
+>>> should just set L2 for these cases? German, are you good with this for now? 
+>> Sorry for the delay. I'd like to also check this with someone. I'll try
+>> to get back asap. In the meantime, if this approach is also OK with Leo,
+>> I think it would be fine by me.
 
-We hold cm_core->ht_lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need cm_core->ht_lock in position (2) of thread 2.
-As a result, irdma_cleanup_cm_core() will block forever.
+Sorry for the delay. Yeah setting it to L2 indeed looks reasonable for
+now. Somebody brought up the case of running SPE in a heterogeneous 
+system, but also we think might be beyond the scope of this change.
 
-This patch removes the check of timer_pending(), because
-the del_timer_sync() function will just return directly
-if there isn't a pending lock. As a result, the lock is
-redundant, because there is no resource it could protect.
+One very minor nit though. Would you be ok with renaming LCL to LOCAL 
+and CLSTR to CLUSTER? I sometimes mistead the former as "LLC".
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in V2:
-  - Remove the check of timer_pending().
-  - Remove the redundant lock.
+> Thanks for the checking internally.  Let me just bring up my another
+> thinking (sorry that my suggestion is float): another choice is we set
+> ANY_CACHE as cache level if we are not certain the cache level, and
+> extend snoop field to indicate the snooping logics, like:
+>
+>   PERF_MEM_SNOOP_PEER_CORE
+>   PERF_MEM_SNOOP_LCL_CLSTR
+>   PERF_MEM_SNOOP_PEER_CLSTR
+>
+> Seems to me, we doing this is not only for cache level, it's more
+> important for users to know the variant cost for involving different
+> snooping logics.
+>
+> Thanks,
+> Leo
 
- drivers/infiniband/hw/irdma/cm.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+I see there's been some more messages I need to catch up with. Is the 
+intention to extend the PERF_MEM_* flags for this cset, or will it be
+left for a later change?
 
-diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
-index dedb3b7edd8..4b6b1065f85 100644
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -3251,10 +3251,7 @@ void irdma_cleanup_cm_core(struct irdma_cm_core *cm_core)
- 	if (!cm_core)
- 		return;
- 
--	spin_lock_irqsave(&cm_core->ht_lock, flags);
--	if (timer_pending(&cm_core->tcp_timer))
--		del_timer_sync(&cm_core->tcp_timer);
--	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
-+	del_timer_sync(&cm_core->tcp_timer);
- 
- 	destroy_workqueue(cm_core->event_wq);
- 	cm_core->dev->ws_reset(&cm_core->iwdev->vsi);
--- 
-2.17.1
+In any case, I'd be keen to take another look at it and try to bring
+some more eyes into this.
 
+Thanks,
+German
