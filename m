@@ -2,103 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9689C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8311C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230246AbiDGUuY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40844 "EHLO
+        id S231136AbiDGUuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:50:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230232AbiDGUuM (ORCPT
+        with ESMTP id S230415AbiDGUuJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:50:12 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C021639BDA1
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:42:33 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2eafabbc80aso74654197b3.11
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:42:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cRs+Utv0bTIZPi+vQmKGar4cBWgLOZK71/Ro9IeVqw4=;
-        b=Buk9C9oiM+HkYw7Mv+cJeR/Hls1sxoiGDZ5rZRp+oI3t1Fs/KF09Qh5WGhgevX6+nf
-         4hELHaMgJ2GwlPL4ZSE5gHaEDk4yyUWkwbZs5smhYHXlNLd6V/65OehYjua8pGqmQR02
-         Bi77bvRucjKjSzA64gTgUhTGuElaLed7eBm4/5WKj6XAe00dl8JWFZeP1xJypdfCb9lq
-         9kayZsMTDZNeC+JqVXDxk2wYDF2v46EPRAOETexUjYNGcCCtln+fn6XL+ZKIkOmKzBa+
-         7vOfXkhUHLfykdVsGF56kMD6eydE7gsDhkcvaizmoATDZccES6wHbOIhmRq1rxGHsqD2
-         mxwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cRs+Utv0bTIZPi+vQmKGar4cBWgLOZK71/Ro9IeVqw4=;
-        b=Vg1hWePL+gfk6p91idCiT8YtfuXkrAJZzt6HE0WAfhUx1gHexsf8YURkEBaTUd4cis
-         tlh827Z/RX3xDYltP1tCjK8gsG9BTKSYU9L88MejtU96Llj4RLSYv1jcdPD3GV/x0PL2
-         BqNj1KUL2KvernLSIxoCqnVvSW8XghoQee2s5ZniK+afYa3qUMUP4QkK3iVtrOk4Icqt
-         TmWN4n5m+NjYCy2VTrWcPw3rRmVXyQfGliYCnQffSPcp2PT6TaVjKoFQLnxFBgdzmSWl
-         vAu0wiVc8TXlC0iH992rYRSdVwMdgIegd9Us7bUT6XCmtXOZJyRjPrpjl4Pe9N/ZMZtb
-         cZwg==
-X-Gm-Message-State: AOAM5312hLfN9UsbFdyaJ9zrba3TQouvl9WeXoIwSi/Xk3TaXqyzxCuD
-        IYzTY7zx0mA2GJDER7yBxiwS4lp/6iOGGJwigi1slg==
-X-Google-Smtp-Source: ABdhPJzXoseSIM+fkHPEcykLSfHutPaBoAw5VhzO9y9DZzxiy/OVlWbQjDJ94QLmeRRPVFCO6hnJEVIPsk6RpYLaqYU=
-X-Received: by 2002:a81:5dc5:0:b0:2eb:3feb:686c with SMTP id
- r188-20020a815dc5000000b002eb3feb686cmr13733449ywb.268.1649364152378; Thu, 07
- Apr 2022 13:42:32 -0700 (PDT)
+        Thu, 7 Apr 2022 16:50:09 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911103988BE
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:42:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649364161; x=1680900161;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=oC6fuHK9F6NYJsF+kVLNp7o1JKibw/eWNeX86rZRFJk=;
+  b=P770ilvcQ4n1vua4hqN9Rv76QpxD20c1PBlcF5eup4CP7AFIpyRxHw/W
+   3bd91ECRC1hraIDFBSicEqSJ5IwvIZd6+kJHcWdm618Mh0MmZqSWHP4X2
+   nADi2YKgGCngU36FKvFQtO1GqmLb3bgxx74xWUHzY4jigwb5LMbN9jDG8
+   9MIzRJn/xq3w72r3Ol6kljHQ3ohagOveugXpNERWmHNj+QD1LRU4gQTo3
+   W6vGrFcYr8YjosGdiS3R2+ChF2OdC/5QdhDynoL1IRWKul/DysdpPtrjT
+   thJYTHbxn3IWH1HTzpDfxLCdmSm4Bjpw/dyxtZJawM3inKuCqt9ayV8an
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="261417526"
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="261417526"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 12:30:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="659195549"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 07 Apr 2022 12:30:49 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ncXqC-0005hr-RV;
+        Thu, 07 Apr 2022 19:30:48 +0000
+Date:   Fri, 8 Apr 2022 03:30:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [peterz-queue:sched/wip.freezer 1/5] include/linux/lockdep.h:286:61:
+ error: invalid type argument of '->' (have 'spinlock_t' {aka 'struct
+ spinlock'})
+Message-ID: <202204080315.hci59d2B-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220405091750.3076973-1-arnd@kernel.org>
-In-Reply-To: <20220405091750.3076973-1-arnd@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 7 Apr 2022 22:42:20 +0200
-Message-ID: <CACRpkdbVHOyq_dt7dtr8htzQqJ0BbL2K4_p1HX97miJJ4qnUnQ@mail.gmail.com>
-Subject: Re: [PATCH 00/12] ARM: ARMv5 multiplatform conversions
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Hartley Sweeten <hsweeten@visionengravers.com>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Hubert Feurstein <hubert.feurstein@contec.at>,
-        Lukasz Majewski <lukma@denx.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Imre Kaloz <kaloz@openwrt.org>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Simtec Linux Team <linux@simtec.co.uk>,
-        Liviu Dudau <Liviu.Dudau@arm.com>,
-        Sudeep Holla <Sudeep.Holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, patches@opensource.cirrus.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 11:18 AM Arnd Bergmann <arnd@kernel.org> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git sched/wip.freezer
+head:   ed5b8f90d21512ee2392f35dbb0ab867c66d243d
+commit: 422f0905663b42f6f9ad8a7ec6c5962c7c6ff9f3 [1/5] sched,signal,ptrace: Rework TASK_TRACED, TASK_STOPPED
+config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20220408/202204080315.hci59d2B-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=422f0905663b42f6f9ad8a7ec6c5962c7c6ff9f3
+        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+        git fetch --no-tags peterz-queue sched/wip.freezer
+        git checkout 422f0905663b42f6f9ad8a7ec6c5962c7c6ff9f3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv prepare
 
-These two:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> Arnd Bergmann (12):
->   ARM: rework endianess selection
->   ARM: ixp4xx: enable multiplatform support
+All errors (new ones prefixed by >>):
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Tested-by: Linus Walleij <linus.walleij@linaro.org>
+   In file included from arch/riscv/include/asm/bug.h:83,
+                    from include/linux/bug.h:5,
+                    from include/linux/mmdebug.h:5,
+                    from include/linux/mm.h:6,
+                    from arch/riscv/kernel/asm-offsets.c:10:
+   include/linux/sched/signal.h: In function 'signal_wake_up':
+>> include/linux/lockdep.h:286:61: error: invalid type argument of '->' (have 'spinlock_t' {aka 'struct spinlock'})
+     286 | #define lockdep_is_held(lock)           lock_is_held(&(lock)->dep_map)
+         |                                                             ^~
+   include/asm-generic/bug.h:121:32: note: in definition of macro 'WARN_ON'
+     121 |         int __ret_warn_on = !!(condition);                              \
+         |                                ^~~~~~~~~
+   include/linux/lockdep.h:316:9: note: in expansion of macro 'lockdep_assert'
+     316 |         lockdep_assert(lockdep_is_held(l) != LOCK_STATE_NOT_HELD)
+         |         ^~~~~~~~~~~~~~
+   include/linux/lockdep.h:316:24: note: in expansion of macro 'lockdep_is_held'
+     316 |         lockdep_assert(lockdep_is_held(l) != LOCK_STATE_NOT_HELD)
+         |                        ^~~~~~~~~~~~~~~
+   include/linux/sched/signal.h:442:9: note: in expansion of macro 'lockdep_assert_held'
+     442 |         lockdep_assert_held(t->sighand->siglock);
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/sched/signal.h: In function 'ptrace_signal_wake_up':
+>> include/linux/lockdep.h:286:61: error: invalid type argument of '->' (have 'spinlock_t' {aka 'struct spinlock'})
+     286 | #define lockdep_is_held(lock)           lock_is_held(&(lock)->dep_map)
+         |                                                             ^~
+   include/asm-generic/bug.h:121:32: note: in definition of macro 'WARN_ON'
+     121 |         int __ret_warn_on = !!(condition);                              \
+         |                                ^~~~~~~~~
+   include/linux/lockdep.h:316:9: note: in expansion of macro 'lockdep_assert'
+     316 |         lockdep_assert(lockdep_is_held(l) != LOCK_STATE_NOT_HELD)
+         |         ^~~~~~~~~~~~~~
+   include/linux/lockdep.h:316:24: note: in expansion of macro 'lockdep_is_held'
+     316 |         lockdep_assert(lockdep_is_held(l) != LOCK_STATE_NOT_HELD)
+         |                        ^~~~~~~~~~~~~~~
+   include/linux/sched/signal.h:452:9: note: in expansion of macro 'lockdep_assert_held'
+     452 |         lockdep_assert_held(t->sighand->siglock);
+         |         ^~~~~~~~~~~~~~~~~~~
+   make[2]: *** [scripts/Makefile.build:120: arch/riscv/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1194: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
-I booted on the Gateway GW-2348 which has some ethernet,
-PCI and compact flash, LED and a button, so I could test a
-whole lot of stuff.
 
-However when switching over to multiplatform I needed to severely
-overhaul the ixp4xx_defconfig for it to bring the same drivers in as
-before, I will send my patch for that which I think need to go in in
-tandem with this rework for a smooth transition.
+vim +286 include/linux/lockdep.h
 
-Yours,
-Linus Walleij
+f607c668577481 Peter Zijlstra 2009-07-20  285  
+f8319483f57f1c Peter Zijlstra 2016-11-30 @286  #define lockdep_is_held(lock)		lock_is_held(&(lock)->dep_map)
+f8319483f57f1c Peter Zijlstra 2016-11-30  287  #define lockdep_is_held_type(lock, r)	lock_is_held_type(&(lock)->dep_map, (r))
+f607c668577481 Peter Zijlstra 2009-07-20  288  
+
+:::::: The code at line 286 was first introduced by commit
+:::::: f8319483f57f1ca22370f4150bb990aca7728a67 locking/lockdep: Provide a type check for lock_is_held
+
+:::::: TO: Peter Zijlstra <peterz@infradead.org>
+:::::: CC: Dave Chinner <david@fromorbit.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
