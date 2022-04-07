@@ -2,85 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 356DDC4321E
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B4B4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344947AbiDGPmH (ORCPT
+        id S1344927AbiDGPpI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37054 "EHLO
+        Thu, 7 Apr 2022 11:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344927AbiDGPmF (ORCPT
+        with ESMTP id S230196AbiDGPpA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:42:05 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7C41EAF6
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:39:46 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id j2so10337867ybu.0
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 08:39:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7AvsbPAce0Zm6SYyVd62fnUo12PcDxQJ27rYPHvZXRk=;
-        b=fjf7AWP69YJT4yeCWiQ0Q8ftWxK8OFZ+N67gnbo3o6nyyculc49nYEaiY3+3mNt88a
-         QQLOSGwOBjL0m5FpnH243EgzIiVW0onVdIFl8P3bUjyPICLjifpkeqCDmnK2l6Bjfnjo
-         62kWjJW67FKBB54YHj3YItis4vE3R7Zu6RNDivVeE4mIJ8+ZOj1yVhziXuH4OTC/rKbi
-         8nTk5qSSAlET0R/46a6sOmLkwZkD60zFjAI3KXQNEdkOTalUeJXvmUChKo4CP9WApCbB
-         sb2adlunIsp+BM3iFfxxM09PR+36SWgToNnqj35aTpqOYIb2k5w8OurF71n4cYTnxQWO
-         YluA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7AvsbPAce0Zm6SYyVd62fnUo12PcDxQJ27rYPHvZXRk=;
-        b=w9tSRWTEXGdwr1RA/Q5fY+ukgO6Yo+ICPDWceA8Vfut81fe4uN5XKsbFsWjXW1Fugt
-         1IllBnEAHkRwJvZBJBQT4IjIG9iDsMMkiP1yyteV9jRu5s/c0/4eTku4qTeid+nlfPmi
-         ZiWQ3J9bjoVqNgbN7786DkXHq9L53cO5kAmxrtP2KUa2VFZV4wOD22uDXfIdMyLW8HXq
-         QIP1O6w114VxhKjcFDA+rOeMnQSkuDQ03WZqeh2rvf415JIycImr8j/BrZvkrEymFvwT
-         Lszay9/Z0hWFm4o+iV56iLmzrqP/c4rpEGSf1EPPlwAi1R7PRk1W0iXWHMwNvSMEntiH
-         Yl8w==
-X-Gm-Message-State: AOAM532JT8pTPmigEPibPJzuzi7WaqKO0dlyverlzF3OYbLoHlaV6Mx4
-        /XGwZhDamU7XHqgK/KuB9MPKRmbbW0baX2cjtgFzrg==
-X-Google-Smtp-Source: ABdhPJyhsGdF3cMRU0ODbyZoaVZ+2NHLKO70Ar7Zh7PvM+7yCGYcTkNyyLmxFo2geEJGDUM/lTdHjxS55wTDpYGiWIg=
-X-Received: by 2002:a25:f441:0:b0:611:4f60:aab1 with SMTP id
- p1-20020a25f441000000b006114f60aab1mr10641308ybe.598.1649345985425; Thu, 07
- Apr 2022 08:39:45 -0700 (PDT)
+        Thu, 7 Apr 2022 11:45:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69627939BF;
+        Thu,  7 Apr 2022 08:43:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F32E461D47;
+        Thu,  7 Apr 2022 15:42:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8E46C385AA;
+        Thu,  7 Apr 2022 15:42:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649346179;
+        bh=gB6qi54d2h5pYe5VdRbfcHtzEy9P9t7ZoE/wMPpDl2Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=etCiQjRp5QAY7KYYzDp64vznmp799wma5cIcAVeOXg8cJLNIpXU/fZuRwxtBwpAq1
+         nw/GgudlPiHkWnYEB5Xt7dsC/+sgYBeA2zW/sSgYtEbkJg2Lgoa0qgLOwnH07WssoX
+         wSYsVG4zaqb9J3EV64p1yGTJGMynE81igFF/K/r8FIhlYbg54ii3zknJBTXeXkZVyg
+         p0hKWuDAV83RwJ9CHPrCzMJJttjzwDeKb5ydwVCq+rdvGt/m/D+AsRFVFmPUwTz7ao
+         e0Q6v6R4yqqn9+DuchK/BXLyfuKiVEHWpdEKrnou6cBd/E69gAV3UJqJseYUnZLbDA
+         ipVRNk5AeB0oA==
+Date:   Thu, 7 Apr 2022 10:42:57 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Yicong Yang <yangyicong@hisilicon.com>
+Cc:     bhelgaas@google.com, rafael@kernel.org, lenb@kernel.org,
+        linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [PATCH] PCI/ACPI: Decouple the negotiation of ASPM and other
+ PCIe services
+Message-ID: <20220407154257.GA235990@bhelgaas>
 MIME-Version: 1.0
-References: <20220406172600.1141083-1-jeffreyjilinux@gmail.com>
- <20220406223141.51881854@kernel.org> <CAMzD94T_wo=5x5mzm6NgjgSyTrj6koCqg_ia50HeKZnGp73C6w@mail.gmail.com>
-In-Reply-To: <CAMzD94T_wo=5x5mzm6NgjgSyTrj6koCqg_ia50HeKZnGp73C6w@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 7 Apr 2022 08:39:34 -0700
-Message-ID: <CANn89iL=Yw1RmzH4qL1_jyM1D-aLrn-E2UiXh3YsFOZjc9y_cQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net-core: rx_otherhost_dropped to core_stats
-To:     Brian Vazquez <brianvv@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Jeffrey Ji <jeffreyjilinux@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jeffrey Ji <jeffreyji@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220407131602.14727-1-yangyicong@hisilicon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 8:36 AM Brian Vazquez <brianvv@google.com> wrote:
->
-> Looks good to me, thanks Jeffrey.
->
-> Reviewed-by: Brian Vazquez <brianvv@google.com>
+[+cc Rafael]
 
+On Thu, Apr 07, 2022 at 09:16:02PM +0800, Yicong Yang wrote:
+> Currently we regard ASPM as a necessary PCIe service and if it's disabled
+> by pcie_aspm=off we cannot enable other services like AER and hotplug.
+> However the ASPM is just one of the PCIe services and other services
+> mentioned no dependency on this. So this patch decouples the negotiation
+> of ASPM and other PCIe services, then we can make use of other services
+> in the absence of ASPM.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Why do you want to boot with "pcie_aspm=off"?  If we have to use a
+PCI-related parameter to boot, something is already wrong, so if
+there's a problem that requires ASPM to be disabled, we should fix
+that first.
 
-Thank you.
+If there's a known hardware or firmware issue with ASPM, we should
+quirk it so users don't have to discover this parameter.
+
+> Aaron Sierra tried to fix this originally:
+> https://lore.kernel.org/linux-pci/20190702201318.GC128603@google.com/
+
+Yes.  My question from that review is still open:
+
+  But Rafael added ACPI_PCIE_REQ_SUPPORT with 415e12b23792 ("PCI/ACPI:
+  Request _OSC control once for each root bridge (v3)") [1], apparently
+  related to a bug [2].  I assume there was some reason for requiring
+  all those things together, so I'd really like his comments.
+
+  [1] https://git.kernel.org/linus/415e12b23792
+  [2] https://bugzilla.kernel.org/show_bug.cgi?id=20232
+
+Rafael clearly said in [1] that we need to:
+
+  ... check if all of the requisite _OSC support bits are set before
+  calling acpi_pci_osc_control_set() for a given root complex.
+
+We would still need to explain why Rafael thought all these _OSC
+support bits were required, but now they're not.
+
+_OSC does not negotiate directly for control of ASPM (though of course
+it *does* negotiate for control of the PCIe Capability, which contains
+the ASPM control bits), but the PCI Firmware spec, r3.3, sec 4.5.3, has
+this comment in a sample _OSC implementation:
+
+  // Only allow native hot plug control if the OS supports:
+  // * ASPM
+  // * Clock PM
+  // * MSI/MSI-X
+
+which matches the current ACPI_PCIE_REQ_SUPPORT.
+
+So I think I would approach this by reworking the _OSC negotiation so
+we always advertise "OSC_PCI_ASPM_SUPPORT | OSC_PCI_CLOCK_PM_SUPPORT"
+if CONFIG_PCIEASPM=y.
+
+Advertising support for ASPM doesn't mean Linux has to actually
+*enable* it, so we could make a different mechanism to prevent use of
+ASPM if we have a device or platform quirk or we're booting with
+"pcie_aspm=off".
+
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> ---
+>  drivers/acpi/pci_root.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
+> index 6f9e75d14808..16fa7c5a11ad 100644
+> --- a/drivers/acpi/pci_root.c
+> +++ b/drivers/acpi/pci_root.c
+> @@ -37,8 +37,6 @@ static int acpi_pci_root_scan_dependent(struct acpi_device *adev)
+>  }
+>  
+>  #define ACPI_PCIE_REQ_SUPPORT (OSC_PCI_EXT_CONFIG_SUPPORT \
+> -				| OSC_PCI_ASPM_SUPPORT \
+> -				| OSC_PCI_CLOCK_PM_SUPPORT \
+>  				| OSC_PCI_MSI_SUPPORT)
+>  
+>  static const struct acpi_device_id root_device_ids[] = {
+> -- 
+> 2.24.0
+> 
