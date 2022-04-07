@@ -2,116 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9558AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:23:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346291AbiDGRZW (ORCPT
+        id S1346300AbiDGRZ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47324 "EHLO
+        Thu, 7 Apr 2022 13:25:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346170AbiDGRYR (ORCPT
+        with ESMTP id S1346172AbiDGRYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 13:24:17 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81D133E07;
-        Thu,  7 Apr 2022 10:22:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:MIME-Version:Message-Id:Date:Cc:To:From
-        :references:content-disposition:in-reply-to;
-        bh=Rh0EdEfVAD3LFkwOeFqoKK6fKePqsB8IaNskci6Qleo=; b=ehhkv6TOCZi3EMvIL/7cxCKUmL
-        1ofmwTSG0njRc1Ym+cYBjgYnGVBuqk3qlIWCAbSNb8GdtduaM7qoPcr/7ff6Jvy7aSZ6ait7hgzAW
-        hTmOoJRZnHSKFjHVivyBgqMNiojIQrkWphmLP1u1j+LuYF3qplGhTY7Tru67Cnyl6T4Peptg9pGs3
-        3J6ncnboeDKbeJCaJALPD/3W/EpGCVATPKw3Zf5ixuAXNJj/jNnsAugZWCwrleAD51LHdhxceonXf
-        4bW3loWffn2d1FMjxKY9sfQwCTsO/gfmBOVo98QOweD4MaighgYFFT+2/M1sm6AaK7Og8gYVnAKJh
-        1bLAX+/w==;
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
-        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1ncVG1-002CHk-9v; Thu, 07 Apr 2022 10:45:19 -0600
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1ncVFz-0002DZ-O2; Thu, 07 Apr 2022 10:45:15 -0600
-From:   Logan Gunthorpe <logang@deltatee.com>
-To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>
-Cc:     Shaohua Li <shli@kernel.org>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>,
-        Logan Gunthorpe <logang@deltatee.com>
-Date:   Thu,  7 Apr 2022 10:45:03 -0600
-Message-Id: <20220407164511.8472-1-logang@deltatee.com>
-X-Mailer: git-send-email 2.30.2
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044DA2DA85
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:22:12 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id b2-20020a17090a010200b001cb0c78db57so3716018pjb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 10:22:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=She3iuzrzbaRPTDd7X1kPR3PqaIMp+t50YFOrpufiXk=;
+        b=IxfhMKVqwDA57n3w64UxRNmCnwWO8EYUJOMKmVANIi45zdJ2IUS1jg2dE3mgR2kjnV
+         NCWxfyBol7MXkbweK9+2Swr/MgmO91Pf7SaAlCYtF9OyPZ2H6ZYe7fK/JQVb8Uk7I6NG
+         AGzIwD+Rc/fteCao/lmkMVt+rRXToa0OAjUTQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=She3iuzrzbaRPTDd7X1kPR3PqaIMp+t50YFOrpufiXk=;
+        b=CyA28BZxWa2lomV9F4eSkgmdJPveOiyIS/AH4cVY1bcwKq+90FvFQFWcne/Pi/8VHC
+         eqWlQvXWq9oux5JbFl87ovqQ21cTobz1TZzrOgOGzurxOGEZHEkp8bbK8zu98Qc5yTAX
+         9CPiJg4HOAj9Ba3u1P4/DMmIek/905Ubk6vokXHocBgF/dmvo5DjXXayJNCjoQTWsQYA
+         uI+kHtHAKegGhSnOvdNs36/aZS7xxdCOL9NW2/dTOOypbQgk5G3EV/61gQpbXdOoqPl/
+         ze4zolHf4O4xGFvD0CI1Dbv2iRN5oBtna2PgGIMS5Xt16o7cK5Rd8fqERAhLkztD84UZ
+         nWyA==
+X-Gm-Message-State: AOAM532J1Hnxpkl1oeYLn6Fi+gAn2jTYoyY+U/Bgr4iGxxsvS5DhxtuA
+        RLPOakOARATASlQHPaDcJJwotw==
+X-Google-Smtp-Source: ABdhPJztnYKWD0X7iGmVdvLXP4E9csn/kOzp+ih1iJwiRFjwqK6xCqUyjfuNRE/7cSV8KpsXM4p/Ng==
+X-Received: by 2002:a17:90b:4f8e:b0:1c7:3652:21bc with SMTP id qe14-20020a17090b4f8e00b001c7365221bcmr16931794pjb.38.1649352131931;
+        Thu, 07 Apr 2022 10:22:11 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:693e:9ca0:42a0:6bf7])
+        by smtp.gmail.com with UTF8SMTPSA id a38-20020a056a001d2600b004f70d5e92basm23833193pfx.34.2022.04.07.10.22.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 10:22:11 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 10:22:09 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_pkondeti@quicinc.com, quic_ppratap@quicinc.com,
+        quic_kriskura@quicinc.com, quic_vpulyala@quicinc.com
+Subject: Re: [PATCH v12 1/6] usb: dwc3: core: Host wake up support from
+ system suspend
+Message-ID: <Yk8dwZqo7WnoolOd@google.com>
+References: <1649321104-31322-1-git-send-email-quic_c_sanm@quicinc.com>
+ <1649321104-31322-2-git-send-email-quic_c_sanm@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, shli@kernel.org, guoqing.jiang@linux.dev, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v1 0/8] Improve Raid5 Lock Contention
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1649321104-31322-2-git-send-email-quic_c_sanm@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Apr 07, 2022 at 02:14:59PM +0530, Sandeep Maheswaram wrote:
+> During suspend read the status of all port and set hs phy mode
+> based on current speed. Use this hs phy mode to configure wakeup
+> interrupts in qcom glue driver.
+> 
+> Also check during suspend if any wakeup capable devices are
+> connected to the controller (directly or through hubs), if there
+> are none set a flag to indicate that the PHY is powered
+> down during suspend.
+> 
+> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+> ---
+>  drivers/usb/dwc3/core.c | 29 ++++++++++++++++++++---------
+>  drivers/usb/dwc3/core.h |  4 ++++
+>  drivers/usb/dwc3/host.c | 25 +++++++++++++++++++++++++
+>  3 files changed, 49 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+> index 1170b80..b102a22 100644
+> --- a/drivers/usb/dwc3/core.c
+> +++ b/drivers/usb/dwc3/core.c
+> @@ -32,6 +32,7 @@
+>  #include <linux/usb/gadget.h>
+>  #include <linux/usb/of.h>
+>  #include <linux/usb/otg.h>
+> +#include <linux/usb/hcd.h>
+>  
+>  #include "core.h"
+>  #include "gadget.h"
+> @@ -1723,6 +1724,7 @@ static int dwc3_probe(struct platform_device *pdev)
+>  
+>  	platform_set_drvdata(pdev, dwc);
+>  	dwc3_cache_hwparams(dwc);
+> +	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
+>  
+>  	spin_lock_init(&dwc->lock);
+>  	mutex_init(&dwc->mutex);
+> @@ -1865,6 +1867,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+>  {
+>  	unsigned long	flags;
+>  	u32 reg;
+> +	struct usb_hcd  *hcd = platform_get_drvdata(dwc->xhci);
+>  
+>  	switch (dwc->current_dr_role) {
+>  	case DWC3_GCTL_PRTCAP_DEVICE:
+> @@ -1877,10 +1880,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+>  		dwc3_core_exit(dwc);
+>  		break;
+>  	case DWC3_GCTL_PRTCAP_HOST:
+> -		if (!PMSG_IS_AUTO(msg)) {
+> -			dwc3_core_exit(dwc);
+> -			break;
+> -		}
+> +		dwc3_set_phy_speed_mode(dwc);
+>  
+>  		/* Let controller to suspend HSPHY before PHY driver suspends */
+>  		if (dwc->dis_u2_susphy_quirk ||
+> @@ -1896,6 +1896,16 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+>  
+>  		phy_pm_runtime_put_sync(dwc->usb2_generic_phy);
+>  		phy_pm_runtime_put_sync(dwc->usb3_generic_phy);
+> +
+> +		if (!PMSG_IS_AUTO(msg)) {
+> +			if (device_may_wakeup(dwc->dev) &&
+> +			    usb_wakeup_enabled_descendants(hcd->self.root_hub)) {
 
-I've been doing some work trying to improve the bulk write performance of
-raid5 on large systems with fast NVMe drives. The bottleneck appears
-largely to be lock contention on the hash_lock and device_lock. This
-series improves the situation slightly by addressing a couple of low
-hanging fruit ways to take the lock fewer times in the request path.
+Did you ever try whether you could use device_children_wakeup_capable() from
+[1] instead of usb_wakeup_enabled_descendants()?
 
-Patch 5 adjusts how batching works by keeping a reference to the
-previous stripe_head in raid5_make_request(). Under most situtations,
-this removes the need to take the hash_lock in stripe_add_to_batch_list()
-which should reduce the number of times the lock is taken by a factor of
-about 2.
+[1] https://patchwork.kernel.org/project/linux-usb/patch/1635753224-23975-2-git-send-email-quic_c_sanm@quicinc.com/#24566065
 
-Patch 8 pivots the way raid5_make_request() works. Before the patch, the
-code must find the stripe_head for every 4KB page in the request, so each
-stripe head must be found once for every data disk. The patch changes this
-so that all the data disks can be added to a stripe_head at once and the
-number of times the stripe_head must be found (and thus the number of
-times the hash_lock is taken) should be reduced by a factor roughly equal
-to the number of data disks.
+> +				dwc->phy_power_off = false;
+> +			} else {
+> +				dwc->phy_power_off = true;
+> +				dwc3_core_exit(dwc);
+> +			}
+> +		}
+>  		break;
+>  	case DWC3_GCTL_PRTCAP_OTG:
+>  		/* do nothing during runtime_suspend */
+> @@ -1939,11 +1949,12 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
+>  		break;
+>  	case DWC3_GCTL_PRTCAP_HOST:
+>  		if (!PMSG_IS_AUTO(msg)) {
+> -			ret = dwc3_core_init_for_resume(dwc);
+> -			if (ret)
+> -				return ret;
+> -			dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
+> -			break;
+> +			if (dwc->phy_power_off) {
+> +				ret = dwc3_core_init_for_resume(dwc);
+> +				if (ret)
+> +					return ret;
+> +				dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
+> +			}
+>  		}
+>  		/* Restore GUSB2PHYCFG bits that were modified in suspend */
+>  		reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
+> diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
+> index 5c9d467..de58995 100644
+> --- a/drivers/usb/dwc3/core.h
+> +++ b/drivers/usb/dwc3/core.h
+> @@ -1154,6 +1154,9 @@ struct dwc3 {
+>  
+>  	bool			phys_ready;
+>  
+> +	unsigned int            hs_phy_mode;
+> +	bool			phy_power_off;
+> +
+>  	struct ulpi		*ulpi;
+>  	bool			ulpi_ready;
+>  
+> @@ -1537,6 +1540,7 @@ int dwc3_core_soft_reset(struct dwc3 *dwc);
+>  #if IS_ENABLED(CONFIG_USB_DWC3_HOST) || IS_ENABLED(CONFIG_USB_DWC3_DUAL_ROLE)
+>  int dwc3_host_init(struct dwc3 *dwc);
+>  void dwc3_host_exit(struct dwc3 *dwc);
+> +void dwc3_set_phy_speed_mode(struct dwc3 *dwc);
+>  #else
+>  static inline int dwc3_host_init(struct dwc3 *dwc)
+>  { return 0; }
+> diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
+> index eda8719..74e7d92 100644
+> --- a/drivers/usb/dwc3/host.c
+> +++ b/drivers/usb/dwc3/host.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/platform_device.h>
+>  
+>  #include "core.h"
+> +#include "../host/xhci.h"
+>  
+>  static void dwc3_host_fill_xhci_irq_res(struct dwc3 *dwc,
+>  					int irq, char *name)
+> @@ -138,3 +139,27 @@ void dwc3_host_exit(struct dwc3 *dwc)
+>  {
+>  	platform_device_unregister(dwc->xhci);
+>  }
+> +
+> +void dwc3_set_phy_speed_mode(struct dwc3 *dwc)
 
-The remaining patches are just cleanup and prep patches for those two
-patches.
+IMO the name is a bit confusing, it suggests that the speed at which
+the PHY operates is changed, which isn't the case. I suggest to change
+the name to dwc3_determine_phy_speed_mode() (or something similar).
 
-Doing apples to apples testing this series on a small VM with 5 ram disks,
-I saw a bandwidth increase of roughly 14% and lock contentions on the
-hash_lock (as reported by lock stat) reduced by more than a factor of
-5 (though is still significantly contended).
-
-Testing on larger systems with NVMe drives saw similar small bandwidth
-increases from 3% to 20% depending on the parameters. Oddly small arrays
-had larger gains, likely due to them having lower starting bandwidths; I
-would have expected larger gains with larger arrays (seeing there
-should have been even fewer locks taken in raid5_make_request()).
-
-Logan
-
---
-
-Logan Gunthorpe (8):
-  md/raid5: Refactor raid5_make_request loop
-  md/raid5: Move stripe_add_to_batch_list() call out of add_stripe_bio()
-  md/raid5: Move common stripe count increment code into __find_stripe()
-  md/raid5: Make common label for schedule/retry in raid5_make_request()
-  md/raid5: Keep a reference to last stripe_head for batch
-  md/raid5: Refactor add_stripe_bio()
-  md/raid5: Check all disks in a stripe_head for reshape progress
-  md/raid5: Pivot raid5_make_request()
-
- drivers/md/raid5.c | 442 +++++++++++++++++++++++++++------------------
- drivers/md/raid5.h |   1 +
- 2 files changed, 270 insertions(+), 173 deletions(-)
-
-
-base-commit: 3123109284176b1532874591f7c81f3837bbdc17
---
-2.30.2
+> +{
+> +
+> +	int i, num_ports;
+> +	u32 reg;
+> +	struct usb_hcd	*hcd = platform_get_drvdata(dwc->xhci);
+> +	struct xhci_hcd	*xhci_hcd = hcd_to_xhci(hcd);
+> +
+> +	dwc->hs_phy_mode = 0;
+> +
+> +	reg = readl(&xhci_hcd->cap_regs->hcs_params1);
+> +
+> +	num_ports = HCS_MAX_PORTS(reg);
+> +	for (i = 0; i < num_ports; i++) {
+> +		reg = readl(&xhci_hcd->op_regs->port_status_base + i * NUM_PORT_REGS);
+> +		if (reg & PORT_PE) {
+> +			if (DEV_HIGHSPEED(reg) || DEV_FULLSPEED(reg))
+> +				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_HS;
+> +			else if (DEV_LOWSPEED(reg))
+> +				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_LS;
+> +		}
+> +	}
+> +}
+> -- 
+> 2.7.4
+> 
