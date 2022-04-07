@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF94FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 19:29:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10011C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 19:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbiDGTbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 15:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
+        id S231309AbiDGTbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 15:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230457AbiDGTaq (ORCPT
+        with ESMTP id S231219AbiDGTav (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 15:30:46 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911B629B7DC
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:28:39 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id bg10so12976928ejb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 12:28:39 -0700 (PDT)
+        Thu, 7 Apr 2022 15:30:51 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB37629AE28
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:28:35 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id i27so12928501ejd.9
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 12:28:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wnTbVdy3uat7re2/juPonFklxWNyK89ebuwaKNLBbWU=;
-        b=bHEgGFlejC0vA5GIGYJCTRgW+62fOE07VV1oIh0ULpSxNPVDs7Crq8tng1eP3bPCrr
-         MZejo/w74kPfI5tmypAEQNOw/08WlUNbWKariIeozihTmnO+8rB7XbLD5EnbQFtf5yHR
-         KXFO/D3lm1DqtgxbypU98uHO6/Kjsv/kbn1NRyRA7ffAwvxXwCN1zMqk8/YQGCH2P85b
-         b+05e+MzDSmtp6Sz2ENZyioygmJT+pOFIbDY0FpVQ2PUWHoGjDqx6MUBo1v4BE9HRNB6
-         bsqphuASgGWefs25oLSr2NM0LQuHnV/gvAMzfTEp8y6defaTuhCNtSL1wr62j0JPgqGa
-         7eXw==
+        bh=TqnfFy/w5L8PNXWjZ8pBP5o6bpYqg195r5wJAqZzJso=;
+        b=S0kjE+2qCuvEZ1CmUheOO7iZmHfj9QkPQUdmiTDhrKhsIXps+vyYg4r0AoAGJInCxi
+         T5A1u37Etw4Vhc43pIa+rxhlK+cQ+qSl0jyDRPgVFYFkKSIg6aUtmfrT7kUZrSlu1Hvx
+         tmRvmFG8KC0IrrhOpsK/6u4UeFIKMatBbftbDOvjZilcwLdL1TR207Syk1W4HfrQt7Sm
+         WgnyQNilrGwsrX9f3pb81FPjl/jdrWpAtsrTkMfYL7ue9a/2YHdYVPfbpgzMjq8mePx4
+         bg42CDN7Acs+axwkiSy4Ni5/4DyOy1SYs60CGaAznvrSUUThTg4crKZjScdSGEqnYQrv
+         UwMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wnTbVdy3uat7re2/juPonFklxWNyK89ebuwaKNLBbWU=;
-        b=GDcI4gxK4cFgCKN0rPctmSz9TsFa2ct/eIixm3XSik0Jg9kRh/GCRqT1wAkF1+pgFS
-         lhZ5ghD8gPft1gV9POfNjPALKolw5BcvmXkCkLVS1oRDQUaBnQ46mB+fWP+HSXYlQ0pG
-         jxPFhUy0XLvg3TeCt2tGSGXkGORZy2P+BDReJ+RgiQyKIaD/Exz0f0QcZgnMPvqpaT1e
-         SQCSvB/5X7whUIWM8WoTyORXuP42Nj+wi7t+czn5e8hCC0hemGdC5YkTchlEgWoIAIYG
-         pHWt9IhyDB7PHHvtYcAC3So7srKtsRc3pknAjun0W5sX/uQsmZhDGiXlKB88H9+J4huL
-         kd4g==
-X-Gm-Message-State: AOAM531mlhIrveDQGiNVs/bWLf2ccOFcYUhT++88OgFtm84z2gklKvHO
-        DhHdmaSMW6m0aQqS8MH988Q=
-X-Google-Smtp-Source: ABdhPJw46DX5p9tNemvjd8lEzMNSiQDkXYThLCxegQUrEqGXGes/Jno7y/w1kC/1LeRIyYPy5J//UA==
-X-Received: by 2002:a17:907:7252:b0:6df:75cc:615e with SMTP id ds18-20020a170907725200b006df75cc615emr15235818ejc.683.1649359706161;
-        Thu, 07 Apr 2022 12:28:26 -0700 (PDT)
+        bh=TqnfFy/w5L8PNXWjZ8pBP5o6bpYqg195r5wJAqZzJso=;
+        b=reYz9Ef9RUIMAr5sYN1ZnC/TBXgNYJoQP/hnIkSQRXJCAhDZHvfLz3jp+ffFU73ALN
+         vBEuYqlMx/qst8Dh3SUblx3MM9ltj7zfQvT1lrj7XcNpmfqt59wsgv1cVLcusnCafwB8
+         ZZry5CZVJoMBDBRmkSrkpfBrMN7OsDJBSpDds7rtQScPp2HJInY9icJX2WdP6an2mWVe
+         1cys8IeHSoBGZy44qHxzwT6DtrMjQrKPwa3akEfkT1hLUNIOJngKwZ2JbqAHPzNINrQF
+         gV0CQBCz1Myioh9AP7Tq0DKhvtO442kz/8hnQ+itf69tZL09HydH6966PWo99pAabPy2
+         Hauw==
+X-Gm-Message-State: AOAM532J812i5O41eZ77iG//Q9hKgHU3QyuTu6x46TFcTS+SnLdU0ZOM
+        NACQqdwawK05HIYawkXRbDg=
+X-Google-Smtp-Source: ABdhPJyJpZX0eq9WO/d5bSjQFmCX1ob68cON0CQmf4s3b3e0ce4GcXHLW2Gh1FUHL/wxwhKB6176CQ==
+X-Received: by 2002:a17:906:2bd7:b0:6cd:f89d:c828 with SMTP id n23-20020a1709062bd700b006cdf89dc828mr15003377ejg.232.1649359704644;
+        Thu, 07 Apr 2022 12:28:24 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id k14-20020a50e18e000000b0041b6f23f7f6sm9652798edl.22.2022.04.07.12.28.25
+        by smtp.gmail.com with ESMTPSA id k14-20020a50e18e000000b0041b6f23f7f6sm9652798edl.22.2022.04.07.12.28.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 12:28:25 -0700 (PDT)
+        Thu, 07 Apr 2022 12:28:24 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 4/8] staging: r8188eu: remove unused fields from struct eeprom_priv
-Date:   Thu,  7 Apr 2022 21:28:15 +0200
-Message-Id: <20220407192819.10661-5-straube.linux@gmail.com>
+Subject: [PATCH 2/8] staging: r8188eu: move struct rt_firmware to rtw_fw.h
+Date:   Thu,  7 Apr 2022 21:28:13 +0200
+Message-Id: <20220407192819.10661-3-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407192819.10661-1-straube.linux@gmail.com>
 References: <20220407192819.10661-1-straube.linux@gmail.com>
@@ -65,28 +65,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove unused fields from struct eeprom_priv.
+Move the rt_firmware structure to the header rtw_fw.h to have firmware
+related things in one place.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/include/rtw_eeprom.h | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/staging/r8188eu/include/drv_types.h | 6 +-----
+ drivers/staging/r8188eu/include/rtw_fw.h    | 5 +++++
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/include/rtw_eeprom.h b/drivers/staging/r8188eu/include/rtw_eeprom.h
-index 3e8d3bb48903..d8d48ace356c 100644
---- a/drivers/staging/r8188eu/include/rtw_eeprom.h
-+++ b/drivers/staging/r8188eu/include/rtw_eeprom.h
-@@ -11,10 +11,7 @@
+diff --git a/drivers/staging/r8188eu/include/drv_types.h b/drivers/staging/r8188eu/include/drv_types.h
+index 09fc27082f7c..ffab2ee0848a 100644
+--- a/drivers/staging/r8188eu/include/drv_types.h
++++ b/drivers/staging/r8188eu/include/drv_types.h
+@@ -35,6 +35,7 @@
+ #include "rtw_ap.h"
+ #include "rtw_br_ext.h"
+ #include "rtl8188e_hal.h"
++#include "rtw_fw.h"
  
- struct eeprom_priv {
- 	u8		bautoload_fail_flag;
--	u8		bloadfile_fail_flag;
--	u8		bloadmac_fail_flag;
- 	u8		mac_addr[ETH_ALEN] __aligned(2); /* PermanentAddress */
--	u16		channel_plan;
- 	u8		EepromOrEfuse;
- 	u8		efuse_eeprom_data[HWSET_MAX_SIZE_512] __aligned(4);
- };
+ #define DRIVERVERSION	"v4.1.4_6773.20130222"
+ 
+@@ -116,11 +117,6 @@ struct registry_priv {
+ 
+ #define MAX_CONTINUAL_URB_ERR		4
+ 
+-struct rt_firmware {
+-	u8 *data;
+-	u32 size;
+-};
+-
+ struct dvobj_priv {
+ 	struct adapter *if1;
+ 
+diff --git a/drivers/staging/r8188eu/include/rtw_fw.h b/drivers/staging/r8188eu/include/rtw_fw.h
+index c4b1a8370b4a..8f74157ee9ac 100644
+--- a/drivers/staging/r8188eu/include/rtw_fw.h
++++ b/drivers/staging/r8188eu/include/rtw_fw.h
+@@ -4,6 +4,11 @@
+ #ifndef __RTW_FW_H__
+ #define __RTW_FW_H__
+ 
++struct rt_firmware {
++	u8 *data;
++	u32 size;
++};
++
+ #include "drv_types.h"
+ 
+ int rtl8188e_firmware_download(struct adapter *padapter);
 -- 
 2.35.1
 
