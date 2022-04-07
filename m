@@ -2,115 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56AA0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:11:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FCBDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240150AbiDGHNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58694 "EHLO
+        id S241483AbiDGHOe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239827AbiDGHMX (ORCPT
+        with ESMTP id S240247AbiDGHO3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:12:23 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4724827B0F;
-        Thu,  7 Apr 2022 00:10:23 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 926728161;
-        Thu,  7 Apr 2022 07:07:58 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, Keerthy <j-keerthy@ti.com>,
-        Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH 4/4] clocksource/drivers/timer-ti-dm: Make timer selectable for ARCH_K3
-Date:   Thu,  7 Apr 2022 10:10:06 +0300
-Message-Id: <20220407071006.37031-4-tony@atomide.com>
+        Thu, 7 Apr 2022 03:14:29 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E0E63206A
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:12:28 -0700 (PDT)
+Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220407071226epoutp035c304e136ec031270effd8a4c3a888cb~ji8BE3DTR2081420814epoutp03V
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:12:26 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220407071226epoutp035c304e136ec031270effd8a4c3a888cb~ji8BE3DTR2081420814epoutp03V
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1649315546;
+        bh=l7xJjaagiLTfCODKz8+QKDCkzzsU969u/zrB90J2OgI=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=CNy6XJCnXD2b3t/C+iOIQAwWSCnS+3+FEO9K6DRW/G7F5fx2fMXeCJp2LtqU14zAL
+         vdVP5AxkV6YiGSkb/pt5nJEa5y5i4y7FjEhYnRXkUKNsBaL6IDTMKAaeqIbANhnXXr
+         xyKo1dh7U2lHnhTSx8VhpTZ4+0bX3r+lJdJ2f70A=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220407071225epcas2p339c2289b6c7c5b32d7fc99e7942bf385~ji8AjpAl61510115101epcas2p3e;
+        Thu,  7 Apr 2022 07:12:25 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.88]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4KYsyc0Z88z4x9Pv; Thu,  7 Apr
+        2022 07:12:24 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        FD.26.25540.7DE8E426; Thu,  7 Apr 2022 16:12:23 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220407071223epcas2p2f25428844528dbd505d1b49e0778133d~ji79_RzF93109231092epcas2p20;
+        Thu,  7 Apr 2022 07:12:23 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220407071223epsmtrp2aa847720b15dccbeb1552341fa698391~ji799ccbE0860608606epsmtrp2_;
+        Thu,  7 Apr 2022 07:12:23 +0000 (GMT)
+X-AuditID: b6c32a47-81bff700000063c4-95-624e8ed7aee4
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        4D.96.24342.6DE8E426; Thu,  7 Apr 2022 16:12:23 +0900 (KST)
+Received: from localhost.localdomain (unknown [10.229.9.51]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220407071222epsmtip1b87c83bb15ef3fd808e69de7d47aed6e~ji79vSI-K2313523135epsmtip1j;
+        Thu,  7 Apr 2022 07:12:22 +0000 (GMT)
+From:   Jaewon Kim <jaewon02.kim@samsung.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-samsung-soc@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chanho Park <chanho61.park@samsung.com>,
+        Jaewon Kim <jaewon02.kim@samsung.com>
+Subject: [PATCH v3 0/1] tty: serial: samsung: add spin_lock in console_write
+Date:   Thu,  7 Apr 2022 16:16:18 +0900
+Message-Id: <20220407071619.102249-1-jaewon02.kim@samsung.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407071006.37031-1-tony@atomide.com>
-References: <20220407071006.37031-1-tony@atomide.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuphk+LIzCtJLcpLzFFi42LZdljTQvd6n1+SwdkXMhYP5m1js7i8X9ui
+        efF6NosdDUdYLd7NlbE4f34Du8Wmx9dYLS7vmsNmMeP8PiaLM4t72R24PDat6mTz2D93DbvH
+        5iX1Hn1bVjF6fN4kF8AalW2TkZqYklqkkJqXnJ+SmZduq+QdHO8cb2pmYKhraGlhrqSQl5ib
+        aqvk4hOg65aZA3SSkkJZYk4pUCggsbhYSd/Opii/tCRVISO/uMRWKbUgJafAvECvODG3uDQv
+        XS8vtcTK0MDAyBSoMCE74+rp+SwF31grJv79xNrA+JCli5GTQ0LARKJ5Ti9TFyMXh5DADkaJ
+        /5fnM0M4nxgl1sy8CZX5xijRtWoLG0zLpEnz2SESexkllt19ygSSEBL4yCgx91gyiM0moC3x
+        ff1iVpAiEYHTjBKHtx8Fc5hBluxq/w7UwcEhLOAj8WyJFkgDi4CqxJymi+wgNq+AnURnbzcT
+        xDZ5ie5/f1gg4oISJ2c+AbOZgeLNW2eD3SohcI9d4tyZDqiPXCTWn3oNdaqwxKvjW9ghbCmJ
+        z+/2QsWLJY73fGeCaG5glDh75wArRMJYYtazdkaQ45gFNCXW79IHMSUElCWO3ILayyfRcfgv
+        O0SYV6KjTQiiUU3i/tRzUNNlJCYdWQl1vofE912HWCDhEyvR1b+JZQKj/Cwk38xC8s0shL0L
+        GJlXMYqlFhTnpqcWGxUYw2M1OT93EyM4WWq572Cc8faD3iFGJg7GQ4wSHMxKIrxVuT5JQrwp
+        iZVVqUX58UWlOanFhxhNgeE7kVlKNDkfmK7zSuINTSwNTMzMDM2NTA3MlcR5vVI2JAoJpCeW
+        pGanphakFsH0MXFwSjUwLVftaFg7Oa9fQnTOi2Ihu8OTPGQPTd3VNGPKr657U/yj3u//5HZV
+        SGjC/KUaZzibnVU+1mtdv2nC8SFyt6ZyQYdcyKnqKZJc7IKW92XXPRVbZ2F+e8lqLZslv9KP
+        G65YkBOz9KyVeemiGXzqwmEbTl3g8VzHbVFm4xR/lGtR/bXt/g+1SrYlqr99IuvGLaJwpM0/
+        8crLyQ3zry7WElF0fuc/R+yTskjz/IqvR7stt889rbbx4+uyl5H9p3ez/X0sce+P2PuV/9d7
+        FL29HJzoJmYTXjF1j/CBq8+1uiyWFmcKsbxyfnDZ3qTtI/ME1b21N2fo2m1ovmxpor7DOIAt
+        5cC089m+z5hzr3q9ld3yWomlOCPRUIu5qDgRAD8hCEcfBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrLLMWRmVeSWpSXmKPExsWy7bCSnO71Pr8kg7O7GS0ezNvGZnF5v7ZF
+        8+L1bBY7Go6wWrybK2Nx/vwGdotNj6+xWlzeNYfNYsb5fUwWZxb3sjtweWxa1cnmsX/uGnaP
+        zUvqPfq2rGL0+LxJLoA1issmJTUnsyy1SN8ugSvj6un5LAXfWCsm/v3E2sD4kKWLkZNDQsBE
+        YtKk+exdjFwcQgK7GSUunOyCSshILH/WxwZhC0vcbznCClH0nlHi3dNmsCI2AW2J7+sXgyVE
+        BM4zSkx+/IYNxGEW2MMosWb2d2aQKmEBX4kd/96CjWIRUJWY03SRHcTmFbCT6OztZoJYIS/R
+        /e8PC0RcUOLkzCdgNjNQvHnrbOYJjHyzkKRmIUktYGRaxSiZWlCcm55bbFhgmJdarlecmFtc
+        mpeul5yfu4kRHMJamjsYt6/6oHeIkYmD8RCjBAezkghvVa5PkhBvSmJlVWpRfnxRaU5q8SFG
+        aQ4WJXHeC10n44UE0hNLUrNTUwtSi2CyTBycUg1M0yQVmX2bypeJ38hyqowPKzllGKjkfNRw
+        x+Vwe8GuSyaJ8n53+I1/scq/zlBuWez9+MJT3qy4e2o/XlXN3cXFMaF5okHKwh279O/06Qdd
+        1Tq/avfjE5Uls826WDKTcn2u5egd8NFeU/bm/Y+iz4E/H/6VeWWk8c0+zuuhd5sWyzqlTxy1
+        WmckTSZMdFj8xvHA5m6fmMjXEUInZkSKXTLLWcsn/Dej8blWj7X6vrKomzYePAcuP/vJ4PF7
+        TsWG6t2HBD4dCNq2aJbCvnnVH7TNX/DNW7K77aqLyKsXMaaFJiY74/8Hn2JSsWpiZZh70/D4
+        G7bdiaKLt61fLcMxr/rFhkSb+PMNVcUvrTdFeT5RYinOSDTUYi4qTgQAOin67tACAAA=
+X-CMS-MailID: 20220407071223epcas2p2f25428844528dbd505d1b49e0778133d
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220407071223epcas2p2f25428844528dbd505d1b49e0778133d
+References: <CGME20220407071223epcas2p2f25428844528dbd505d1b49e0778133d@epcas2p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's make timer-ti-dm selectable for ARCH_K3, and add a separate option
-for OMAP_DM_SYSTIMER as there should be no need for it on ARCH_K3.
+When console and printk log are printed at the same time,
+they are called through tty driver and console driver concurrently.
+In this case, this could lead to potintial issue that
+data loss or fifo full.
 
-For older TI SoCs, we are already selecting OMAP_DM_TIMER in
-arch/arm/mach-omap*/Kconfig. For mach-omap2, we need to now also select
-OMAP_DM_SYSTIMER.
+This issue also occurred with other drivers and has been fixed.
+"serial: amba-pl011: lock console writes against interrupts"
+ - https://lkml.org/lkml/2012/2/1/495
 
-Cc: Keerthy <j-keerthy@ti.com>
-Cc: Nishanth Menon <nm@ti.com>
-Cc: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
 ---
- arch/arm/mach-omap2/Kconfig  | 2 ++
- drivers/clocksource/Kconfig  | 8 +++++++-
- drivers/clocksource/Makefile | 2 +-
- 3 files changed, 10 insertions(+), 2 deletions(-)
+Changes since v2:
+ - value of lock is chanaged to true/false
 
-diff --git a/arch/arm/mach-omap2/Kconfig b/arch/arm/mach-omap2/Kconfig
---- a/arch/arm/mach-omap2/Kconfig
-+++ b/arch/arm/mach-omap2/Kconfig
-@@ -105,6 +105,7 @@ config ARCH_OMAP2PLUS
- 	select MACH_OMAP_GENERIC
- 	select MEMORY
- 	select MFD_SYSCON
-+	select OMAP_DM_SYSTIMER
- 	select OMAP_DM_TIMER
- 	select OMAP_GPMC
- 	select PINCTRL
-@@ -160,6 +161,7 @@ config SOC_OMAP2420
- 	bool "OMAP2420 support"
- 	depends on ARCH_OMAP2
- 	default y
-+	select OMAP_DM_SYSTIMER
- 	select OMAP_DM_TIMER
- 	select SOC_HAS_OMAP2_SDRC
- 
-diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -22,7 +22,7 @@ config CLKEVT_I8253
- config I8253_LOCK
- 	bool
- 
--config OMAP_DM_TIMER
-+config OMAP_DM_SYSTIMER
- 	bool
- 	select TIMER_OF
- 
-@@ -56,6 +56,12 @@ config DIGICOLOR_TIMER
- 	help
- 	  Enables the support for the digicolor timer driver.
- 
-+config OMAP_DM_TIMER
-+	tristate "OMAP dual-mode timer driver" if ARCH_K3 || COMPILE_TEST
-+	select TIMER_OF
-+	help
-+	  Enables the support for the TI dual-mode timer driver.
-+
- config DW_APB_TIMER
- 	bool "DW APB timer driver" if COMPILE_TEST
- 	help
-diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
---- a/drivers/clocksource/Makefile
-+++ b/drivers/clocksource/Makefile
-@@ -18,7 +18,7 @@ obj-$(CONFIG_CLKSRC_MMIO)	+= mmio.o
- obj-$(CONFIG_DAVINCI_TIMER)	+= timer-davinci.o
- obj-$(CONFIG_DIGICOLOR_TIMER)	+= timer-digicolor.o
- obj-$(CONFIG_OMAP_DM_TIMER)	+= timer-ti-dm.o
--obj-$(CONFIG_OMAP_DM_TIMER)	+= timer-ti-dm-systimer.o
-+obj-$(CONFIG_OMAP_DM_SYSTIMER)	+= timer-ti-dm-systimer.o
- obj-$(CONFIG_DW_APB_TIMER)	+= dw_apb_timer.o
- obj-$(CONFIG_DW_APB_TIMER_OF)	+= dw_apb_timer_of.o
- obj-$(CONFIG_FTTMR010_TIMER)	+= timer-fttmr010.o
+Changes since v1:
+ - locked variable type changed bool from int
+ - spin_lock() changed to spin_lock_irqsave()
+
+Jaewon Kim (1):
+  tty: serial: samsung: add spin_lock for interrupt and console_write
+
+ drivers/tty/serial/samsung_tty.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
 -- 
 2.35.1
+
