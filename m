@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 042B3C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13A71C35294
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239938AbiDGB3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60698 "EHLO
+        id S239967AbiDGB3p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240502AbiDGBUC (ORCPT
+        with ESMTP id S240481AbiDGBUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:20:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57662E9C8A;
-        Wed,  6 Apr 2022 18:17:44 -0700 (PDT)
+        Wed, 6 Apr 2022 21:20:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF111834D0;
+        Wed,  6 Apr 2022 18:16:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6ECA61DA8;
-        Thu,  7 Apr 2022 01:17:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86189C385A1;
-        Thu,  7 Apr 2022 01:17:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B87A6B81E7F;
+        Thu,  7 Apr 2022 01:16:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59023C385AB;
+        Thu,  7 Apr 2022 01:16:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294263;
-        bh=3ppEylpC7rhu28q+aEoJtZCc0LGAVmNPdASS3x9Q/nI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Y/3yPw88I2TXt40rMhZPAVWgh4ui+Z05YBlFoIKU3EGf/RiTaWSALXcAf36konCws
-         mI5S3z7TfFvB6KdPbAJMjMZOynyl2od4AW78xGv/qniZjaxq4qQ1UzkMmuRci6tmFz
-         SNip0y8cCnIVFkzpWizTgzT0ZdgyQCqPJ7WbWvzCDkCCcWsJQ/soINEVBLL8iFu0Et
-         QnWUtNA4nQfESy441GGvpAotkfbs5dIEAKZ2pWwkbkaEeBJxIeVOosSZNhKbqPt+Jc
-         AEBq8P1md4dJSnFrVK77PJ0Pw7w8iBxZ0RpCQ6tR1EDpJUP+0yv+39s7s5Px7iA4ps
-         RTtu8OJwuc17w==
+        s=k20201202; t=1649294196;
+        bh=lHiWW5REvsGzwImfar+7okrV0/z47MbErYMvXscxuWY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AmQN0cB0fg/31EjO3mLZDct3bLzHST+8rcpcMCuT/Gw+tIV+t2M/fzmlEG3QeuVyV
+         YHKopcL8B8Iga3/rnLBH6EiHIwZfGECzpE2KMwFdajYxbPVz4DoJ7WoZ82cA3GXYlp
+         YOltAARBS7yoD+odh4F5JB/mBSeiDC0eQYrepkAiL5WE1dghKJC7TjVXzUQbx+08zN
+         8CuzYneoc8FsILo19yyQ+PCQcsUmHu8g8Yk3W7balfkQrW9vmpA/LYSR5hj4GVQrub
+         JRRiLjAL3uws6FuPJ7ew7jsBw8J5ld6GY4pVDaX/nPL05zcYb00QFLQx5IHqM8h77C
+         ZSAlQYSzw9ZOA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bob Peterson <rpeterso@redhat.com>,
-        syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, cluster-devel@redhat.com
-Subject: [PATCH AUTOSEL 4.9 1/7] gfs2: assign rgrp glock before compute_bitstructs
-Date:   Wed,  6 Apr 2022 21:17:34 -0400
-Message-Id: <20220407011740.115717-1-sashal@kernel.org>
+Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
+        philipp.reisner@linbit.com, lars.ellenberg@linbit.com,
+        christoph.boehmwalder@linbit.com, drbd-dev@lists.linbit.com,
+        linux-block@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 08/11] drbd: remove usage of list iterator variable after loop
+Date:   Wed,  6 Apr 2022 21:16:05 -0400
+Message-Id: <20220407011609.115258-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407011609.115258-1-sashal@kernel.org>
+References: <20220407011609.115258-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,65 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Peterson <rpeterso@redhat.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-[ Upstream commit 428f651cb80b227af47fc302e4931791f2fb4741 ]
+[ Upstream commit 901aeda62efa21f2eae937bccb71b49ae531be06 ]
 
-Before this patch, function read_rindex_entry called compute_bitstructs
-before it allocated a glock for the rgrp. But if compute_bitstructs found
-a problem with the rgrp, it called gfs2_consist_rgrpd, and that called
-gfs2_dump_glock for rgd->rd_gl which had not yet been assigned.
+In preparation to limit the scope of a list iterator to the list
+traversal loop, use a dedicated pointer to iterate through the list [1].
 
-read_rindex_entry
-   compute_bitstructs
-      gfs2_consist_rgrpd
-         gfs2_dump_glock <---------rgd->rd_gl was not set.
+Since that variable should not be used past the loop iteration, a
+separate variable is used to 'remember the current location within the
+loop'.
 
-This patch changes read_rindex_entry so it assigns an rgrp glock before
-calling compute_bitstructs so gfs2_dump_glock does not reference an
-unassigned pointer. If an error is discovered, the glock must also be
-put, so a new goto and label were added.
+To either continue iterating from that position or skip the iteration
+(if the previous iteration was complete) list_prepare_entry() is used.
 
-Reported-by: syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com
-Signed-off-by: Bob Peterson <rpeterso@redhat.com>
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/r/20220331220349.885126-1-jakobkoschel@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/rgrp.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/block/drbd/drbd_main.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/fs/gfs2/rgrp.c b/fs/gfs2/rgrp.c
-index 56a94535c246..7a7dc8ea93ea 100644
---- a/fs/gfs2/rgrp.c
-+++ b/fs/gfs2/rgrp.c
-@@ -917,15 +917,15 @@ static int read_rindex_entry(struct gfs2_inode *ip)
- 	rgd->rd_bitbytes = be32_to_cpu(buf.ri_bitbytes);
- 	spin_lock_init(&rgd->rd_rsspin);
+diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
+index 5e3885f5729b..c3e4f9d83b29 100644
+--- a/drivers/block/drbd/drbd_main.c
++++ b/drivers/block/drbd/drbd_main.c
+@@ -195,7 +195,7 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
+ 		unsigned int set_size)
+ {
+ 	struct drbd_request *r;
+-	struct drbd_request *req = NULL;
++	struct drbd_request *req = NULL, *tmp = NULL;
+ 	int expect_epoch = 0;
+ 	int expect_size = 0;
  
--	error = compute_bitstructs(rgd);
--	if (error)
--		goto fail;
--
- 	error = gfs2_glock_get(sdp, rgd->rd_addr,
- 			       &gfs2_rgrp_glops, CREATE, &rgd->rd_gl);
- 	if (error)
- 		goto fail;
- 
-+	error = compute_bitstructs(rgd);
-+	if (error)
-+		goto fail_glock;
-+
- 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
- 	rgd->rd_flags &= ~(GFS2_RDF_UPTODATE | GFS2_RDF_PREFERRED);
- 	if (rgd->rd_data > sdp->sd_max_rg_data)
-@@ -942,6 +942,7 @@ static int read_rindex_entry(struct gfs2_inode *ip)
- 	}
- 
- 	error = 0; /* someone else read in the rgrp; free it and ignore it */
-+fail_glock:
- 	gfs2_glock_put(rgd->rd_gl);
- 
- fail:
+@@ -249,8 +249,11 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
+ 	 * to catch requests being barrier-acked "unexpectedly".
+ 	 * It usually should find the same req again, or some READ preceding it. */
+ 	list_for_each_entry(req, &connection->transfer_log, tl_requests)
+-		if (req->epoch == expect_epoch)
++		if (req->epoch == expect_epoch) {
++			tmp = req;
+ 			break;
++		}
++	req = list_prepare_entry(tmp, &connection->transfer_log, tl_requests);
+ 	list_for_each_entry_safe_from(req, r, &connection->transfer_log, tl_requests) {
+ 		if (req->epoch != expect_epoch)
+ 			break;
 -- 
 2.35.1
 
