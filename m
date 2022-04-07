@@ -2,106 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE967C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F57C41535
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:30:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239779AbiDGB3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60862 "EHLO
+        id S239604AbiDGB2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240498AbiDGBUC (ORCPT
+        with ESMTP id S240441AbiDGBUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:20:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0992FAAB5A;
-        Wed,  6 Apr 2022 18:17:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0F8DB8268C;
-        Thu,  7 Apr 2022 01:17:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69954C385A1;
-        Thu,  7 Apr 2022 01:17:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294256;
-        bh=UQmEn963an1N+8324q6nVW42Vd6cGd++y0TYi1GY9Vo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V2nn+8AWgMU/UvMnl5M73iHmAu/4OdJj3K5v3AyVLS/4iisjss0EQesqn9Mt6Yo4J
-         O5TV1CNa6B57SBrwbAUJmN7l750dTONz7Ws+2QACkBrGtfdEH3II2HMrGG9J0cgtw+
-         80GJQARPsP70dPvmWnnTipJMbP0gh1j+KXzTPJvpAV5OvJMldHSz3o2xM7HbuyHw8s
-         +mqJum3JSsoODVpmBDdrkv4wJqRNOLdJc5xPp2AOkke8z97zIY5qAmhELRzbsMKDO7
-         NNtWxiMxMmp7bjItBoUchwA0au+yWwwsetDmJ4eBwnjGHYOxh1864LheA57H8S2XI7
-         TXX5TaCTfaaFA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        philipp.reisner@linbit.com, lars.ellenberg@linbit.com,
-        christoph.boehmwalder@linbit.com, drbd-dev@lists.linbit.com,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 7/8] drbd: remove usage of list iterator variable after loop
-Date:   Wed,  6 Apr 2022 21:16:44 -0400
-Message-Id: <20220407011645.115412-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011645.115412-1-sashal@kernel.org>
-References: <20220407011645.115412-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        Wed, 6 Apr 2022 21:20:00 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0C51864BE
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 18:16:21 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id x3-20020a17090a6c0300b001cab7230b41so2580392pjj.9
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 18:16:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=sXF/n8xvBk0FaoqPxko9Blx99fwDwCfccorRyyHCGmI=;
+        b=Ku987wK6rt+m7eJsyZLO6atNDPGpbqe4iAXnvp/z+wT4OAEoeg5o3OAlVCchPx2L90
+         102SSaR5cOkN6fP9KK1z++y2/yupbiYjbDvWjD2Qece4MWsVopP3FCXHX4y/zHjbpWC1
+         gPOj/Frc3z6/rMyZik2wcjHitIQ4/twgDnejS7ftwlIb7sbfGEUikTJBplt2AK2+GVaZ
+         07sKnoPUR6sFzjL+MzpauXdv8UdFJexw9xi8RG6979lRl0UQdLY95bXFxQyCZdMoIbFU
+         0VtliYgcNZH8l/+6VtdO2QrethSXUAVc7WRMaO/7ps9olTMrNkeZKKeVqELA9bxuRt6C
+         2ERA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=sXF/n8xvBk0FaoqPxko9Blx99fwDwCfccorRyyHCGmI=;
+        b=clB213SGUMLm5wLi0e1ccGoJKTnTYPS5m5P8uKIfS8juTUnsqiGBxKKDl8mf+64UiR
+         SehVS19Hy1sIPlUWQdsAHHNDOUNI5+y5Hfr7vHWvvg8fAEjFtBgh0owiflVGXFfguNGK
+         KluTMcefPXPX1nvBWVW5J132h+FDXvs5x0SeTf/eVslI0eRTYXemxgWDNKWuf3n8pgf1
+         Slzrce51O2T35VLUC3ecbkUX30kHkCZfgPGswW47oMLjgK1B2OgXRxZrrKU/ah6OErwx
+         XiW+n/f9fiVxQYULbZZ9S/T1g2x27CkWFn7tk92W8bFzpdUeW61nrELp1uNXGuYTLltU
+         EEug==
+X-Gm-Message-State: AOAM53044A1ZW4HOe6ilgVig5D/KIIfhb45gmLGpp4hX82JqW4iNJNNl
+        7nT1ghsxqtAy99izMDQoKL0Qx9FyjAlF
+X-Google-Smtp-Source: ABdhPJw2dezSQVSintcsyWAePk4VuF7JuHzdsneJX2UxM+MFRSiIefC4mvBoj4uqrdxw8cb/zhGbCkzWilbb
+X-Received: from rananta-virt.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1bcc])
+ (user=rananta job=sendgmr) by 2002:a05:6a00:440c:b0:4fa:da3f:251c with SMTP
+ id br12-20020a056a00440c00b004fada3f251cmr11599625pfb.73.1649294181092; Wed,
+ 06 Apr 2022 18:16:21 -0700 (PDT)
+Date:   Thu,  7 Apr 2022 01:16:00 +0000
+In-Reply-To: <20220407011605.1966778-1-rananta@google.com>
+Message-Id: <20220407011605.1966778-6-rananta@google.com>
+Mime-Version: 1.0
+References: <20220407011605.1966778-1-rananta@google.com>
+X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Subject: [PATCH v5 05/10] Docs: KVM: Rename psci.rst to hypercalls.rst
+From:   Raghavendra Rao Ananta <rananta@google.com>
+To:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Raghavendra Rao Anata <rananta@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+Since the doc also covers general hypercalls' details,
+rather than just PSCI, and the fact that the bitmap firmware
+registers' details will be added to this doc, rename the file
+to a more appropriate name- hypercalls.rst.
 
-[ Upstream commit 901aeda62efa21f2eae937bccb71b49ae531be06 ]
-
-In preparation to limit the scope of a list iterator to the list
-traversal loop, use a dedicated pointer to iterate through the list [1].
-
-Since that variable should not be used past the loop iteration, a
-separate variable is used to 'remember the current location within the
-loop'.
-
-To either continue iterating from that position or skip the iteration
-(if the previous iteration was complete) list_prepare_entry() is used.
-
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Link: https://lore.kernel.org/r/20220331220349.885126-1-jakobkoschel@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+Reviewed-by: Oliver Upton <oupton@google.com>
 ---
- drivers/block/drbd/drbd_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ Documentation/virt/kvm/arm/{psci.rst => hypercalls.rst} | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename Documentation/virt/kvm/arm/{psci.rst => hypercalls.rst} (100%)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index b998e3abca7a..1e02cb60b65b 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -195,7 +195,7 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
- 		unsigned int set_size)
- {
- 	struct drbd_request *r;
--	struct drbd_request *req = NULL;
-+	struct drbd_request *req = NULL, *tmp = NULL;
- 	int expect_epoch = 0;
- 	int expect_size = 0;
- 
-@@ -249,8 +249,11 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
- 	 * to catch requests being barrier-acked "unexpectedly".
- 	 * It usually should find the same req again, or some READ preceding it. */
- 	list_for_each_entry(req, &connection->transfer_log, tl_requests)
--		if (req->epoch == expect_epoch)
-+		if (req->epoch == expect_epoch) {
-+			tmp = req;
- 			break;
-+		}
-+	req = list_prepare_entry(tmp, &connection->transfer_log, tl_requests);
- 	list_for_each_entry_safe_from(req, r, &connection->transfer_log, tl_requests) {
- 		if (req->epoch != expect_epoch)
- 			break;
+diff --git a/Documentation/virt/kvm/arm/psci.rst b/Documentation/virt/kvm/arm/hypercalls.rst
+similarity index 100%
+rename from Documentation/virt/kvm/arm/psci.rst
+rename to Documentation/virt/kvm/arm/hypercalls.rst
 -- 
-2.35.1
+2.35.1.1094.g7c7d902a7c-goog
 
