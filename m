@@ -2,121 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AABB6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 18:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD13C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 18:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346821AbiDGSXd (ORCPT
+        id S1346831AbiDGSXs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 14:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55106 "EHLO
+        Thu, 7 Apr 2022 14:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232921AbiDGSX2 (ORCPT
+        with ESMTP id S229602AbiDGSXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 14:23:28 -0400
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6B014FB92;
-        Thu,  7 Apr 2022 11:21:27 -0700 (PDT)
-Received: by mail-oi1-f179.google.com with SMTP id e189so6482999oia.8;
-        Thu, 07 Apr 2022 11:21:27 -0700 (PDT)
+        Thu, 7 Apr 2022 14:23:46 -0400
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA93E230088;
+        Thu,  7 Apr 2022 11:21:44 -0700 (PDT)
+Received: by mail-ot1-f50.google.com with SMTP id x8-20020a9d6288000000b005b22c373759so4460859otk.8;
+        Thu, 07 Apr 2022 11:21:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=ZUuPSTjprXcNKfHzz7Qs6snhyaATcmWPUoU1Mkt9TqE=;
-        b=PSpFrJdTKG6d76MSNzRPeUe7Sde17JDZyVWanVuhOVK6G3PPu3nwD0pFBlhdYtJbao
-         Vk1917gZ9ue7U9xQmu1MmGOxazvDawUsFO2AOUYUvV8MZrysyiR2xDToL7aNBjVyF4Lx
-         Ts/vzThIS7W/9baI4LoosSuUx9PVDLJqEmApGQ3X//y7zf85miQdIiKasclbkqYpkTre
-         1DH8f22Vk45abq4+ynz20u730NGHHHQ4a4o/eKoXRRaRG53Lh14GYhTRFp49eaiklnSQ
-         nzBRmg+FTjbbyV5Xz692tlcBZYcW4IyGds3Fh9yYwHqYzP8P0BlVZiJyMNrs+RcKHKnA
-         ZCxA==
-X-Gm-Message-State: AOAM533CECPaBelGBGgD3TTa5jt5koHSlVfsxsfJHaJMGEylxpuK5q05
-        4jF2VYb536Y1GirDhWCMMw==
-X-Google-Smtp-Source: ABdhPJzQ3QKekxOUT9F9yPRhqnVy0KNHkDXdjNZeiEbzCTGOSGHeI4SuJc+WaERnqIJopniAaB0DrA==
-X-Received: by 2002:a05:6808:1202:b0:2f9:c7b4:fd56 with SMTP id a2-20020a056808120200b002f9c7b4fd56mr351609oil.55.1649355686314;
-        Thu, 07 Apr 2022 11:21:26 -0700 (PDT)
+        bh=2hNMT7KARfpwFjaUghpjAic4Rl2sTIlf2SxCKPU+sSI=;
+        b=cG05VYEakiKczoVgoaGNpAch1xu0OPrUyUjUuEGfKVywvwlmcPK50R6V0FwxbtslIe
+         bB+bynJGl64I59rZZtMSE9PwsIKOdH/6Zkd9L9OzHr9wZ7xr9oR2++BtJJcrd7PCCATX
+         Pz3KTgPjiWTEt29fYdakVJl3HbSt12jJyReDSxR5xthnhRtGBIsRBfOdu2JNA7VS5Olf
+         Aqy+MywWbpIDCj0lunTp8Z10J0RDlerFbzCn1hOecB1sXAdOHmDGeSTtGMheCQuDncsw
+         E/NjyTMhIOE63AVzMmZGSn7e07g1uTsbNuScGYfohReDX5zgWA6H/O49UlmZNjJ9UTbs
+         awCA==
+X-Gm-Message-State: AOAM530y7iXaqalZ93h5BuLz1sKlTddZ7+ab76fia8sXE77V/XGF0Lup
+        gMCiK+eZ/4zQkinRLzk6vA==
+X-Google-Smtp-Source: ABdhPJz7RkdhTIn4wcJGlHStYCbpgCVoWUrpkBI47f4JnZAAF8rAz8/Ip0cnFGg+1peDAVDJlRQALA==
+X-Received: by 2002:a9d:6f08:0:b0:5b2:26c4:22b2 with SMTP id n8-20020a9d6f08000000b005b226c422b2mr5404084otq.294.1649355704268;
+        Thu, 07 Apr 2022 11:21:44 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id u22-20020a4ae696000000b0032158ab4ce9sm7507715oot.26.2022.04.07.11.21.25
+        by smtp.gmail.com with ESMTPSA id f21-20020a056830205500b005cdb59d5d34sm8078898otp.81.2022.04.07.11.21.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 11:21:26 -0700 (PDT)
-Received: (nullmailer pid 1732024 invoked by uid 1000);
-        Thu, 07 Apr 2022 18:21:25 -0000
-Date:   Thu, 7 Apr 2022 13:21:25 -0500
+        Thu, 07 Apr 2022 11:21:43 -0700 (PDT)
+Received: (nullmailer pid 1732585 invoked by uid 1000);
+        Thu, 07 Apr 2022 18:21:43 -0000
+Date:   Thu, 7 Apr 2022 13:21:43 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: mtd: jedec,spi-nor: remove unneeded
- properties
-Message-ID: <Yk8rpUXmfmULMVjr@robh.at.kernel.org>
-References: <20220407142004.292782-1-krzysztof.kozlowski@linaro.org>
+To:     Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Wei Xu <xuwei5@hisilicon.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH] dt-bindings: reset: Drop the hisilicon,hi6220-reset
+ binding
+Message-ID: <Yk8rt/udNN5fSmgu@robh.at.kernel.org>
+References: <20220407145802.4060130-1-p.zabel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220407142004.292782-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220407145802.4060130-1-p.zabel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 04:20:04PM +0200, Krzysztof Kozlowski wrote:
-> After conversion the jedec,spi-nor DT schema to reference other schemas
-> (SPI and MTD) and use unevaluatedProperties, several properties are
-> redundant.
+On Thu, 07 Apr 2022 16:58:02 +0200, Philipp Zabel wrote:
+> The hisilicon,hi6220-sysctrl, hisilicon,hi6220-mediactrl, and
+> hisilicon,hi6220-aoctrl controllers are already described in:
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>   Documentation/devicetree/bindings/arm/hisilicon/controller/sysctrl.yaml
+>   Documentation/devicetree/bindings/arm/hisilicon/controller/hi6220-domain-ctrl.yaml
+> 
+> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
 > ---
->  .../devicetree/bindings/mtd/jedec,spi-nor.yaml        | 11 -----------
->  1 file changed, 11 deletions(-)
+>  .../bindings/reset/hisilicon,hi6220-reset.txt | 37 -------------------
+>  1 file changed, 37 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/reset/hisilicon,hi6220-reset.txt
 > 
-> diff --git a/Documentation/devicetree/bindings/mtd/jedec,spi-nor.yaml b/Documentation/devicetree/bindings/mtd/jedec,spi-nor.yaml
-> index 4abfb4cfc157..708e7f88fd92 100644
-> --- a/Documentation/devicetree/bindings/mtd/jedec,spi-nor.yaml
-> +++ b/Documentation/devicetree/bindings/mtd/jedec,spi-nor.yaml
-> @@ -50,10 +50,6 @@ properties:
->      minItems: 1
->      maxItems: 2
->  
-> -  spi-max-frequency: true
-> -  spi-rx-bus-width: true
-> -  spi-tx-bus-width: true
-> -
->    m25p,fast-read:
->      type: boolean
->      description:
-> @@ -74,14 +70,9 @@ properties:
->        be used on such systems, to denote the absence of a reliable reset
->        mechanism.
->  
-> -  label: true
-> -
->    partitions:
->      type: object
->  
-> -  '#address-cells': true
-> -  '#size-cells': true
 
-These are needed for 'partition' nodes.
-
-> -
->  patternProperties:
->    # Note: use 'partitions' node for new users
->    '^partition@':
-> @@ -99,8 +90,6 @@ examples:
->          #size-cells = <0>;
->  
->          flash@0 {
-> -            #address-cells = <1>;
-> -            #size-cells = <1>;
->              compatible = "spansion,m25p80", "jedec,spi-nor";
->              reg = <0>;
->              spi-max-frequency = <40000000>;
-> -- 
-> 2.32.0
-> 
-> 
+Applied, thanks!
