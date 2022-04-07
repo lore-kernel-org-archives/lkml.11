@@ -2,196 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 917DBC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229819AbiDGUdT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:33:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
+        id S230005AbiDGUdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229762AbiDGUdM (ORCPT
+        with ESMTP id S229929AbiDGUdU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:33:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D96030F9CA
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:18:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9509E61EE5
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 20:18:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA2FC385A4;
-        Thu,  7 Apr 2022 20:18:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1649362691;
-        bh=ri7xT8MCx8mwYgjZZIPM9V0zwZwR3Rdo4TKvPfNTfd0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=xBbKyofi0Z7kXY4nRilQftAnBHdLY0oC81M9HNli7qkV8OWhTGjAwIYx7MbeamNgc
-         U4hlm0L+KpoOZ+kLyp6QUxBdL1unJTB0tlcYBqjkWc2FX6Y/WE1sr08kewZSq76gy5
-         xj4iUIe4oPSivbqKNlQRaT7k3VoH5/OayM8eL/QA=
-Date:   Thu, 7 Apr 2022 13:18:09 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Nico Pache <npache@redhat.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Rafael Aquini <aquini@redhat.com>,
-        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Christoph von Recklinghausen <crecklin@redhat.com>,
-        Don Dutile <ddutile@redhat.com>,
-        "Herton R . Krzesinski" <herton@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>,
-        Darren Hart <dvhart@infradead.org>
-Subject: Re: [PATCH v6] oom_kill.c: futex: Don't OOM reap the VMA containing
- the robust_list_head
-Message-Id: <20220407131809.f2d256541e2c039c434c0d72@linux-foundation.org>
-In-Reply-To: <20220407184254.3612387-1-npache@redhat.com>
-References: <20220407184254.3612387-1-npache@redhat.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Thu, 7 Apr 2022 16:33:20 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BDA4ECFA
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:18:37 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id x17so2454949lfa.10
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:18:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=539tKapVnhTf+rr/UYXZW8Cq7Ffl8HHTv+MpMPMBGwU=;
+        b=ffo6LfUuDcD6KO3JYi4Bph7AGnw9CfbScz/u0s/+boAFG7UTH2D4eV4A9G5S1n6Llp
+         MyhQArAjnTTLRhZahWihXQWI+3bLYesLkmBOK1ffEgvcrrBsmi2zY/eNLm9eYG8HGfr0
+         fVHMnwDXny2Kr09j7dKRgeIHQc9UWgqJlsrkbbpMdLGujwyCnH8JQaKTIpcZGRgMHPQX
+         uhl55nyqi7NvGXWRAReZ879L1RbS25Y+QYZMBiQHFeKreSIOkqmg17F9gay/cwSOdVRB
+         ptExR9O7EmEyFV5VenF12VqrgrprAmwEnA95kjwS4LQGqzgn/gcr2evW0L5OpWkgvg35
+         Lm4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=539tKapVnhTf+rr/UYXZW8Cq7Ffl8HHTv+MpMPMBGwU=;
+        b=CUJDXuC3cNF/i/Fhl2yq1aGUrkaUISixGOkQbSuNOuiErlzLBoT9/oggjWfyOQK52C
+         3pzHemXpGqIORUeZugAUEUDtATBhcO3C85Mqbu7ox4oql5wUUlClnt2sjucYkDPzFnVX
+         +2hDaJ7KEiyGYcH278sDt8kJd2ubHRVVVc7byonOpNn+QCNVOFk8YJt/NMMFo7npTI/u
+         XAjC3iMJWjq6fnWckqhqgpWUMYEDck17Ouia2xSEnwEZo5+9/u+kvLsaVWv3X2nqU/Qs
+         B7RPdTDbfmjG4lca5XzxvK4ejSpM+us9v1ZKtYiqPs3OOup6y2v9O8HTmoGU5zB2Dxtn
+         mSJw==
+X-Gm-Message-State: AOAM530cTjfo19rY5pc9z0lXNZunG7s/NsBqCDQSuHhglznVwqqndjVi
+        4dyIA2j3/CA95dwm6jIlqr4fv06Clo+Mcm60
+X-Google-Smtp-Source: ABdhPJwjCz/scWlPU6Kt2+e4Q1dq3Q08NUjCeAlPsLiSPT5fACZSj0YnzfNW6uP0kVDbmCFlTABcmw==
+X-Received: by 2002:a2e:9092:0:b0:24b:4cd4:ca5a with SMTP id l18-20020a2e9092000000b0024b4cd4ca5amr667427ljg.260.1649360438002;
+        Thu, 07 Apr 2022 12:40:38 -0700 (PDT)
+Received: from [192.168.1.102] (88-113-46-102.elisa-laajakaista.fi. [88.113.46.102])
+        by smtp.gmail.com with ESMTPSA id f17-20020a2e1f11000000b00247f8eb86a7sm1968503ljf.108.2022.04.07.12.40.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 12:40:37 -0700 (PDT)
+Message-ID: <e41c26c2-8aa4-cfd2-27b0-eb011f45eda0@linaro.org>
+Date:   Thu, 7 Apr 2022 22:40:27 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] arm64: dts: qcom: sm8450: delete incorrect ufs
+ interconnect fields
+Content-Language: en-US
+To:     Jonathan Marek <jonathan@marek.ca>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-arm-msm@vger.kernel.org
+References: <20220407172145.31903-1-jonathan@marek.ca>
+From:   Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+In-Reply-To: <20220407172145.31903-1-jonathan@marek.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu,  7 Apr 2022 14:42:54 -0400 Nico Pache <npache@redhat.com> wrote:
+On 4/7/22 20:21, Jonathan Marek wrote:
+> Upstream sm8450.dtsi has #interconnect-cells = <2>; so these are wrong.
+> Ignored and undocumented with upstream UFS driver so delete for now.
 
-> The pthread struct is allocated on PRIVATE|ANONYMOUS memory [1] which can
-> be targeted by the oom reaper. This mapping is used to store the futex
-> robust list head; the kernel does not keep a copy of the robust list and
-> instead references a userspace address to maintain the robustness during
-> a process death. A race can occur between exit_mm and the oom reaper that
-> allows the oom reaper to free the memory of the futex robust list before
-> the exit path has handled the futex death:
+Basically the description was added by a commit 462c5c0aa798 ("dt-bindings: ufs:
+qcom,ufs: convert to dtschema").
+
+It's questionable, if an example in the new yaml file is totally correct
+in connection to the discussed issue.
+
+> Fixes: aa2d0bf04a3c ("arm64: dts: qcom: sm8450: add interconnect nodes")
+> Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+> ---
+>   arch/arm64/boot/dts/qcom/sm8450.dtsi | 3 ---
+>   1 file changed, 3 deletions(-)
 > 
->     CPU1                               CPU2
-> ------------------------------------------------------------------------
->     page_fault
->     do_exit "signal"
->     wake_oom_reaper
->                                         oom_reaper
->                                         oom_reap_task_mm (invalidates mm)
->     exit_mm
->     exit_mm_release
->     futex_exit_release
->     futex_cleanup
->     exit_robust_list
->     get_user (EFAULT- can't access memory)
-> 
-> If the get_user EFAULT's, the kernel will be unable to recover the
-> waiters on the robust_list, leaving userspace mutexes hung indefinitely.
-> 
-> Use the robust_list address stored in the kernel to skip the VMA that holds
-> it, allowing a successful futex_cleanup.
-> 
-> Theoretically a failure can still occur if there are locks mapped as
-> PRIVATE|ANON; however, the robust futexes are a best-effort approach.
-> This patch only strengthens that best-effort.
-> 
-> The following case can still fail:
-> robust head (skipped) -> private lock (reaped) -> shared lock (skipped)
-> 
-> Reproducer: https://gitlab.com/jsavitz/oom_futex_reproducer
+> diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+> index 2c18e1ef9e82d..90cdbec3cac99 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+> @@ -1663,9 +1663,6 @@ ufs_mem_hc: ufshc@1d84000 {
+>   
+>   			iommus = <&apps_smmu 0xe0 0x0>;
+>   
+> -			interconnects = <&aggre1_noc MASTER_UFS_MEM &mc_virt SLAVE_EBI1>,
+> -					<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_UFS_MEM_CFG>;
+> -			interconnect-names = "ufs-ddr", "cpu-ufs";
+>   			clock-names =
+>   				"core_clk",
+>   				"bus_aggr_clk",
 
-Should this fix be backported into -stable kernels?
+You may look at https://lore.kernel.org/linux-arm-msm/20220310221934.1560729-1-vladimir.zapolskiy@linaro.org/
 
-> --- a/include/linux/oom.h
-> +++ b/include/linux/oom.h
-> @@ -106,7 +106,8 @@ static inline vm_fault_t check_stable_address_space(struct mm_struct *mm)
->  	return 0;
->  }
->  
-> -bool __oom_reap_task_mm(struct mm_struct *mm);
-> +bool __oom_reap_task_mm(struct mm_struct *mm, struct robust_list_head
-> +		__user *robust_list);
-
-Should explicitly include futex.h
-
->  long oom_badness(struct task_struct *p,
->  		unsigned long totalpages);
-> diff --git a/mm/mmap.c b/mm/mmap.c
-> index 3aa839f81e63..c14fe6f8e9a5 100644
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@ -3126,7 +3126,8 @@ void exit_mmap(struct mm_struct *mm)
->  		 * to mmu_notifier_release(mm) ensures mmu notifier callbacks in
->  		 * __oom_reap_task_mm() will not block.
->  		 */
-> -		(void)__oom_reap_task_mm(mm);
-> +		(void)__oom_reap_task_mm(mm, current->robust_list);
-> +
->  		set_bit(MMF_OOM_SKIP, &mm->flags);
->  	}
->  
-> diff --git a/mm/oom_kill.c b/mm/oom_kill.c
-> index 7ec38194f8e1..727cfc3bd284 100644
-> --- a/mm/oom_kill.c
-> +++ b/mm/oom_kill.c
-> @@ -509,9 +509,11 @@ static DECLARE_WAIT_QUEUE_HEAD(oom_reaper_wait);
->  static struct task_struct *oom_reaper_list;
->  static DEFINE_SPINLOCK(oom_reaper_lock);
->  
-> -bool __oom_reap_task_mm(struct mm_struct *mm)
-> +bool __oom_reap_task_mm(struct mm_struct *mm, struct robust_list_head
-> +		__user *robust_list)
->  {
-
-It's pretty sad to make such a low-level function aware of futex
-internals.  How about making it a more general `void *skip_area'?
-
->  	struct vm_area_struct *vma;
-> +	unsigned long head = (unsigned long) robust_list;
->  	bool ret = true;
->  
->  	/*
-> @@ -526,6 +528,11 @@ bool __oom_reap_task_mm(struct mm_struct *mm)
->  		if (vma->vm_flags & (VM_HUGETLB|VM_PFNMAP))
->  			continue;
->  
-> +		if (vma->vm_start <= head && vma->vm_end > head) {
-
-This check as you have it is making assumptions about the length of the
-area at *robust_list and about that area's relation to the area
-represented by the vma.
-
-So if this is to be made more generic, we'd also need skip_area_len so
-we can perform a full overlap check.
-
-I dunno, maybe not worth it at this time, what do others think.
-
-But the special-casing in here is pretty painful.
-
-> +			pr_info("oom_reaper: skipping vma, contains robust_list");
-> +			continue;
-> +		}
-> +
->  		/*
->  		 * Only anonymous pages have a good chance to be dropped
->  		 * without additional steps which we cannot afford as we
-> @@ -587,7 +594,7 @@ static bool oom_reap_task_mm(struct task_struct *tsk, struct mm_struct *mm)
->  	trace_start_task_reaping(tsk->pid);
->  
->  	/* failed to reap part of the address space. Try again later */
-> -	ret = __oom_reap_task_mm(mm);
-> +	ret = __oom_reap_task_mm(mm, tsk->robust_list);
->  	if (!ret)
->  		goto out_finish;
->  
-> @@ -1190,7 +1197,8 @@ SYSCALL_DEFINE2(process_mrelease, int, pidfd, unsigned int, flags)
->  	 * Check MMF_OOM_SKIP again under mmap_read_lock protection to ensure
->  	 * possible change in exit_mmap is seen
->  	 */
-> -	if (!test_bit(MMF_OOM_SKIP, &mm->flags) && !__oom_reap_task_mm(mm))
-> +	if (!test_bit(MMF_OOM_SKIP, &mm->flags) &&
-> +			!__oom_reap_task_mm(mm, p->robust_list))
->  		ret = -EAGAIN;
->  	mmap_read_unlock(mm);
->  
-> -- 
-> 2.35.1
+--
+Best wishes,
+Vladimir
