@@ -2,89 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B90CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:07:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45168C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:09:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238319AbiDGLJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 07:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        id S241257AbiDGLL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 07:11:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234265AbiDGLJi (ORCPT
+        with ESMTP id S233754AbiDGLLV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 07:09:38 -0400
-X-Greylist: delayed 94491 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Apr 2022 04:07:36 PDT
-Received: from mail.codelabs.ch (mail.codelabs.ch [109.202.192.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CF75007D;
-        Thu,  7 Apr 2022 04:07:35 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.codelabs.ch (Postfix) with ESMTP id 8AC6B220002;
-        Thu,  7 Apr 2022 13:07:32 +0200 (CEST)
-Received: from mail.codelabs.ch ([127.0.0.1])
-        by localhost (fenrir.codelabs.ch [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id H1ereBzHd7rt; Thu,  7 Apr 2022 13:07:31 +0200 (CEST)
-Received: from skyhawk.codelabs.ch (unknown [IPv6:2a02:168:860f:0:34fa:d8d6:c16a:a546])
-        by mail.codelabs.ch (Postfix) with ESMTPSA id 6A8E3220001;
-        Thu,  7 Apr 2022 13:07:31 +0200 (CEST)
-From:   Reto Buerki <reet@codelabs.ch>
-To:     tglx@linutronix.de, dwmw2@infradead.org
-Cc:     x86@kernel.org, kvm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, joro@8bytes.org,
-        pbonzini@redhat.com, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, maz@misterjones.org,
-        decui@microsoft.com
-Subject: [PATCH] x86/msi: Fix msi message data shadow struct
-Date:   Thu,  7 Apr 2022 13:06:47 +0200
-Message-Id: <20220407110647.67372-1-reet@codelabs.ch>
-In-Reply-To: <87pmltzwtr.ffs@tglx>
-References: <87pmltzwtr.ffs@tglx>
+        Thu, 7 Apr 2022 07:11:21 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56F1183BD;
+        Thu,  7 Apr 2022 04:09:21 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 5DCE721117;
+        Thu,  7 Apr 2022 11:09:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649329760;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=98548563aIgFxuTbEGhuFrrjF0oRxSf7O8rE+4waoDU=;
+        b=g4l9K/uvaXiqTrh3Weo9re3njIkaiqWsHhVzlu2BUyNo8+Kh97Oe45WKq1IDepkLQ+TCXq
+        DWZCwJ6llV/96zFlTJlkAQsQx4ls9hq9WD2RvRBSCuqRBeaTM2glq5AusAaLjUIyrHa8sw
+        Gci42F79V2a/ZAc58R5BDeZFhJPA1GM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649329760;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=98548563aIgFxuTbEGhuFrrjF0oRxSf7O8rE+4waoDU=;
+        b=LI5tM34lmFPs2XvK0D3ZAkCwGn99zxxeFnUMWJtRtT3TH/8rccyWZ9R4XYqXWwEnLrQoGV
+        +Yxxp19aOb7tPGDQ==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 47FA2A3B88;
+        Thu,  7 Apr 2022 11:09:20 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 314E5DA80E; Thu,  7 Apr 2022 13:05:18 +0200 (CEST)
+Date:   Thu, 7 Apr 2022 13:05:18 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Chris Mason <clm@fb.com>, David Sterba <dsterba@suse.com>,
+        Will Deacon <will@kernel.org>, linux-fsdevel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] btrfs: Avoid live-lock in search_ioctl() on
+ hardware with sub-page faults
+Message-ID: <20220407110518.GE15609@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>, Chris Mason <clm@fb.com>,
+        David Sterba <dsterba@suse.com>, Will Deacon <will@kernel.org>,
+        linux-fsdevel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220406180922.1522433-1-catalin.marinas@arm.com>
+ <20220406180922.1522433-4-catalin.marinas@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406180922.1522433-4-catalin.marinas@arm.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The x86 MSI message data is 32 bits in total and is either in
-compatibility or remappable format, see Intel Virtualization Technology
-for Directed I/O, section 5.1.2.
+On Wed, Apr 06, 2022 at 07:09:22PM +0100, Catalin Marinas wrote:
+> Commit a48b73eca4ce ("btrfs: fix potential deadlock in the search
+> ioctl") addressed a lockdep warning by pre-faulting the user pages and
+> attempting the copy_to_user_nofault() in an infinite loop. On
+> architectures like arm64 with MTE, an access may fault within a page at
+> a location different from what fault_in_writeable() probed. Since the
+> sk_offset is rewound to the previous struct btrfs_ioctl_search_header
+> boundary, there is no guaranteed forward progress and search_ioctl() may
+> live-lock.
+> 
+> Use fault_in_subpage_writeable() instead of fault_in_writeable() to
+> ensure the permission is checked at the right granularity (smaller than
+> PAGE_SIZE).
+> 
+> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> Fixes: a48b73eca4ce ("btrfs: fix potential deadlock in the search ioctl")
+> Reported-by: Al Viro <viro@zeniv.linux.org.uk>
 
-Fixes: 6285aa50736 ("x86/msi: Provide msi message shadow structs")
-Co-developed-by: Adrian-Ken Rueegsegger <ken@codelabs.ch>
-Signed-off-by: Adrian-Ken Rueegsegger <ken@codelabs.ch>
-Signed-off-by: Reto Buerki <reet@codelabs.ch>
----
- arch/x86/include/asm/msi.h | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
-
-diff --git a/arch/x86/include/asm/msi.h b/arch/x86/include/asm/msi.h
-index b85147d75626..d71c7e8b738d 100644
---- a/arch/x86/include/asm/msi.h
-+++ b/arch/x86/include/asm/msi.h
-@@ -12,14 +12,17 @@ int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
- /* Structs and defines for the X86 specific MSI message format */
- 
- typedef struct x86_msi_data {
--	u32	vector			:  8,
--		delivery_mode		:  3,
--		dest_mode_logical	:  1,
--		reserved		:  2,
--		active_low		:  1,
--		is_level		:  1;
--
--	u32	dmar_subhandle;
-+	union {
-+		struct {
-+			u32	vector			:  8,
-+				delivery_mode		:  3,
-+				dest_mode_logical	:  1,
-+				reserved		:  2,
-+				active_low		:  1,
-+				is_level		:  1;
-+		};
-+		u32	dmar_subhandle;
-+	};
- } __attribute__ ((packed)) arch_msi_msg_data_t;
- #define arch_msi_msg_data	x86_msi_data
- 
--- 
-2.30.2
-
+Acked-by: David Sterba <dsterba@suse.com>
