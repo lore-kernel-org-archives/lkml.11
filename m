@@ -2,233 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D46C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB758C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiDGUag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55120 "EHLO
+        id S229623AbiDGUan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbiDGUaZ (ORCPT
+        with ESMTP id S229626AbiDGUa0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:30:25 -0400
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B37488BF1;
-        Thu,  7 Apr 2022 13:14:27 -0700 (PDT)
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-e1dcc0a327so7641417fac.1;
-        Thu, 07 Apr 2022 13:14:26 -0700 (PDT)
+        Thu, 7 Apr 2022 16:30:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D09F488BF4
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:14:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649362449;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6ujVDZk4U6RzShQ/rIDRVpIv+f7MFQZhzBrH2NX9HlA=;
+        b=cPKtw1A1OeiDPilpaBVOTQ17rwePe2jR9Ai8on/DXhip3ZDTbTGtWd1ytU6sJ9gJzhoV3n
+        QnkCXUaJRuyMaerIC4jrqvVMbT60NoR32Iu34ZsAw+ZRObrBxfYidNB+OFNoM1qZE29UY8
+        ACqXld4fRwDUe4gaL8zj2i8qOQzsLyc=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-465-BQFb96o1NBuLGBZ4_ZvBkA-1; Thu, 07 Apr 2022 16:03:01 -0400
+X-MC-Unique: BQFb96o1NBuLGBZ4_ZvBkA-1
+Received: by mail-wm1-f72.google.com with SMTP id h65-20020a1c2144000000b0038e9ce3b29cso296650wmh.2
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:03:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=m8g+U9TYp/KmmutHAdrKb6oEqOtOebbJJ9ukyAtaTjY=;
-        b=XJcnhIpiYMOxhngocfK+VpucVypVNKWVH2ng3I8RijRkOd3swiqTfL8jFy0tSrDsY+
-         hXaULqkx1jxW4vIVVvwqRnpjf+cYvcj541XGwtZW9cgajD6EFUQu5vRnhPwTKfBtmQMp
-         WhBBjn2zzBD4hQk+JgedEVj8PpfVuGF9/tS5Pjy8Wm5ca4hTGWZFVfEV79cC4cHuAvfh
-         jzqboWNJ0Vjs78e4nkD6gj1ePU3Mu0NYJqX2k6TxyPFPF/G2c9ZGxQifRtId/0wevGak
-         07FL8jc9+95kzqReIO5aXZl/EBd38sVxnSR5E6n9P6vqLnQz9fj/br3IPoDzXKNKf6An
-         MFEQ==
-X-Gm-Message-State: AOAM53196iJTGLtwCyVm1uje7/IdiF8kFKuUTVYlbn0dr5IA/S5fL16n
-        AYFZExe7TAMDPHxkVuEtC5UHkXg3KQ==
-X-Google-Smtp-Source: ABdhPJzeXgT9Q5IYKIz+EYQMeOpGd8AuneYxtVUaG+rzCa3QCbyIQNYh9GDr8IdPqVbaFIKA/vvucQ==
-X-Received: by 2002:a54:4792:0:b0:2ef:7562:dcd7 with SMTP id o18-20020a544792000000b002ef7562dcd7mr6434763oic.263.1649361846938;
-        Thu, 07 Apr 2022 13:04:06 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id ay5-20020a056820150500b00320f8a179d0sm8193572oob.30.2022.04.07.13.04.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6ujVDZk4U6RzShQ/rIDRVpIv+f7MFQZhzBrH2NX9HlA=;
+        b=tQXLirChw9xBBPOXb38ghFGJmzIxFtObTRquIcYLjyZdCXlMgTqO84r767NAb414KL
+         WlGYzGMoK3wnTddY6K5q+gOwiV8tb7D4KE7pyddJP0nn2yRd9YJEB/NR2rz5LAe66u/n
+         whhrj6VLkbDheLEQwN3ayNF/dGivqs21RQHJFJN9n9jUe15XMOnE7WoeenhCFdxSd4vh
+         HfLrGRrIgVq36k2Jc6kiHayndtzucyefj3e+m+wtQ8WJxXmP0ylVubRiu70Xff0w2iSR
+         LzkFvbxakttn2I/99nN+ckAWqsyK9aoq1jZz1qkh4G6rmwvgO32nfJyGIA861xXSVViZ
+         MN2w==
+X-Gm-Message-State: AOAM532eeCnhkIuWAcrZTT/FChy32AuUbCEdtbFbPQSROLXLBL1fWsxd
+        W94x3QkoIyQtHMPSkOrF4hmL1iZE/LoHcSZlHXvsBErqdgp7DT0pf9aWx8+i95C88DgpV0jPMqz
+        lDnB94lbk+Xffp/X7n8Mme1WpkjLcXubvSlKzCFrQ/TJjtL+kYXYv2xFeyTgnLGHkLB+d3Jaa04
+        k=
+X-Received: by 2002:a7b:cd1a:0:b0:38c:720a:a123 with SMTP id f26-20020a7bcd1a000000b0038c720aa123mr13899252wmj.5.1649361779801;
+        Thu, 07 Apr 2022 13:02:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyVyONRQEvtL645zP8TFrYruvkYYBDs16vpp3BQmLOliyy4X90HgJIz+51Rgv9qnGmJHkP1ig==
+X-Received: by 2002:a7b:cd1a:0:b0:38c:720a:a123 with SMTP id f26-20020a7bcd1a000000b0038c720aa123mr13899228wmj.5.1649361779545;
+        Thu, 07 Apr 2022 13:02:59 -0700 (PDT)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id f15-20020a0560001a8f00b002078f74ccd2sm1048712wry.36.2022.04.07.13.02.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 13:04:06 -0700 (PDT)
-Received: (nullmailer pid 1873984 invoked by uid 1000);
-        Thu, 07 Apr 2022 20:04:05 -0000
-Date:   Thu, 7 Apr 2022 15:04:05 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     devicetree@vger.kernel.org,
+        Thu, 07 Apr 2022 13:02:59 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     dri-devel@lists.freedesktop.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Chen-Yu Tsai <wens@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Mark Brown <broonie@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-kernel@vger.kernel.org, Stephen Warren <swarren@nvidia.com>
-Subject: Re: [PATCH 14/14] dt-bindings: reset: Convert to yaml
-Message-ID: <Yk9DtXO/yUIO45gN@robh.at.kernel.org>
-References: <20220407154338.4190674-1-p.zabel@pengutronix.de>
- <20220407154338.4190674-14-p.zabel@pengutronix.de>
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH 1/5] dt-bindings: display: ssd1307fb: Deprecate fbdev compatible strings
+Date:   Thu,  7 Apr 2022 22:02:00 +0200
+Message-Id: <20220407200205.28838-2-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407200205.28838-1-javierm@redhat.com>
+References: <20220407200205.28838-1-javierm@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407154338.4190674-14-p.zabel@pengutronix.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 05:43:38PM +0200, Philipp Zabel wrote:
-> Convert the common reset controller and reset consumer device tree
-> bindings to YAML schema.
+The current compatible strings for SSD130x I2C controllers contain an -fb
+suffix, this seems to indicate that are for a fbdev driver. But the DT is
+supposed to describe the hardware and not Linux implementation details.
 
-In general, common bindings should go in DT schema repo:
+Let's deprecate those compatible strings and add a new enum that contains
+compatible strings that don't have a -fb suffix. These will be matched by
+the ssd130x-i2c DRM driver.
 
-https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/reset/reset.yaml
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+---
 
+ .../bindings/display/solomon,ssd1307fb.yaml   | 36 ++++++++++++-------
+ 1 file changed, 24 insertions(+), 12 deletions(-)
 
-Though part of the issue is dtschema is dual licensed and all the 
-exsting text is GPL2, so permission to relicense is needed. That's why 
-the schemas are just the schema and little description ATM. Shouldn't 
-be too hard here with Stephen/NVIDIA being the only copyright holder.
+diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+index ade61d502edd..46207f2c12b8 100644
+--- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
++++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+@@ -12,12 +12,24 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    enum:
+-      - sinowealth,sh1106-i2c
+-      - solomon,ssd1305fb-i2c
+-      - solomon,ssd1306fb-i2c
+-      - solomon,ssd1307fb-i2c
+-      - solomon,ssd1309fb-i2c
++    oneOf:
++      # Deprecated compatible strings
++      - items:
++          - enum:
++              - solomon,ssd1305fb-i2c
++              - solomon,ssd1306fb-i2c
++              - solomon,ssd1307fb-i2c
++              - solomon,ssd1309fb-i2c
++        deprecated: true
++
++      # SSD130x I2C controllers
++      - items:
++          - enum:
++              - sinowealth,sh1106-i2c
++              - solomon,ssd1305-i2c
++              - solomon,ssd1306-i2c
++              - solomon,ssd1307-i2c
++              - solomon,ssd1309-i2c
+ 
+   reg:
+     maxItems: 1
+@@ -148,7 +160,7 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: solomon,ssd1305fb-i2c
++            const: solomon,ssd1305-i2c
+     then:
+       properties:
+         solomon,dclk-div:
+@@ -160,7 +172,7 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: solomon,ssd1306fb-i2c
++            const: solomon,ssd1306-i2c
+     then:
+       properties:
+         solomon,dclk-div:
+@@ -172,7 +184,7 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: solomon,ssd1307fb-i2c
++            const: solomon,ssd1307-i2c
+     then:
+       properties:
+         solomon,dclk-div:
+@@ -186,7 +198,7 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: solomon,ssd1309fb-i2c
++            const: solomon,ssd1309-i2c
+     then:
+       properties:
+         solomon,dclk-div:
+@@ -203,14 +215,14 @@ examples:
+             #size-cells = <0>;
+ 
+             ssd1307: oled@3c {
+-                    compatible = "solomon,ssd1307fb-i2c";
++                    compatible = "solomon,ssd1307-i2c";
+                     reg = <0x3c>;
+                     pwms = <&pwm 4 3000>;
+                     reset-gpios = <&gpio2 7>;
+             };
+ 
+             ssd1306: oled@3d {
+-                    compatible = "solomon,ssd1306fb-i2c";
++                    compatible = "solomon,ssd1306-i2c";
+                     reg = <0x3c>;
+                     pwms = <&pwm 4 3000>;
+                     reset-gpios = <&gpio2 7>;
+-- 
+2.35.1
 
-> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-> Cc: Stephen Warren <swarren@nvidia.com>
-> ---
->  .../bindings/reset/reset-consumer.yaml        | 72 ++++++++++++++++++
->  .../bindings/reset/reset-controller.yaml      | 50 +++++++++++++
->  .../devicetree/bindings/reset/reset.txt       | 75 -------------------
->  3 files changed, 122 insertions(+), 75 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/reset/reset-consumer.yaml
->  create mode 100644 Documentation/devicetree/bindings/reset/reset-controller.yaml
->  delete mode 100644 Documentation/devicetree/bindings/reset/reset.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/reset/reset-consumer.yaml b/Documentation/devicetree/bindings/reset/reset-consumer.yaml
-> new file mode 100644
-> index 000000000000..e17229eb49c0
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/reset/reset-consumer.yaml
-> @@ -0,0 +1,72 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +# Copyright 2012 Stephen Warren <swarren@nvidia.com>
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/reset/reset-consumer.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Common reset signal consumer bindings
-> +
-> +maintainers:
-> +  - Philipp Zabel <p.zabel@pengutronix.de>
-> +
-> +description: |
-> +  Hardware blocks typically receive a reset signal. This signal is generated by
-> +  a reset provider (e.g. power management or clock module) and received by a
-> +  reset consumer (the module being reset, or a module managing when a sub-
-> +  ordinate module is reset). This binding exists to represent the consumers of
-> +  reset signals provided by reset controllers.
-> +
-> +  A reset signal is represented by the phandle of the provider, plus a reset
-> +  specifier - a list of DT cells that represents the reset signal within the
-> +  provider. The length (number of cells) and semantics of the reset specifier
-> +  are dictated by the binding of the reset provider, although common schemes
-> +  are described below.
-> +
-> +  A word on where to place reset signal consumers in device tree: It is possible
-> +  in hardware for a reset signal to affect multiple logically separate HW blocks
-> +  at once. In this case, it would be unwise to represent this reset signal in
-> +  the DT node of each affected HW block, since if activated, an unrelated block
-> +  may be reset. Instead, reset signals should be represented in the DT node
-> +  where it makes most sense to control it; this may be a bus node if all
-> +  children of the bus are affected by the reset signal, or an individual HW
-> +  block node for dedicated reset signals. The intent of this binding is to give
-> +  appropriate software access to the reset signals in order to manage the HW,
-> +  rather than to slavishly enumerate the reset signal that affects each HW
-> +  block.
-> +
-> +select: true
-> +
-> +properties:
-> +  resets:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    description: |
-> +      List of phandle and reset specifier pairs, one pair for each reset signal
-> +      that affects the device, or that the device manages.
-> +      Note: if the reset provider specifies '0' for "#reset-cells", then only
-> +      the phandle portion of the pair will appear.
-> +
-> +  reset-names:
-> +    description: |
-> +      List of reset signal name strings sorted in the same order as the resets
-> +      property. Consumers drivers will use "reset-names" to match reset signal
-> +      names with reset specifiers.
-> +
-> +additionalProperties: true
-> +
-> +examples:
-> +  - |
-> +    // A device with a single reset signal named "reset".
-> +    device {
-> +        resets = <&rst 20>;
-> +        reset-names = "reset";
-> +    };
-> +  - |
-> +    // A bus that controls the reset signal of each of four subordinate
-> +    // devices. Consider for example a bus that fails to operate unless no
-> +    // child device has reset asserted.
-> +    bus {
-> +        resets = <&rst 10>, <&rst 11>, <&rst 12>, <&rst 11>;
-> +        reset-names = "i2s1", "i2s2", "dma", "mixer";
-> +    };
-> +...
-> diff --git a/Documentation/devicetree/bindings/reset/reset-controller.yaml b/Documentation/devicetree/bindings/reset/reset-controller.yaml
-> new file mode 100644
-> index 000000000000..33468f94f4c2
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/reset/reset-controller.yaml
-> @@ -0,0 +1,50 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +# Copyright 2021 Stephen Warren <swarren@nvidia.com>
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/reset/reset-controller.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Common reset controller provider bindings
-> +
-> +maintainers:
-> +  - Philipp Zabel <p.zabel@pengutronix.de>
-> +
-> +description: |
-> +  This binding is intended to represent the hardware reset signals present
-> +  internally in most IC (SoC, FPGA, ...) designs. Reset signals for whole
-> +  standalone chips are most likely better represented as GPIOs, although there
-> +  are likely to be exceptions to this rule.
-> +
-> +  Hardware blocks typically receive a reset signal. This signal is generated by
-> +  a reset provider (e.g. power management or clock module) and received by a
-> +  reset consumer (the module being reset, or a module managing when a sub-
-> +  ordinate module is reset). This binding exists to represent the provider of
-> +  one or more reset signals.
-> +
-> +select:
-> +  anyOf:
-> +    - properties:
-> +        $nodename:
-> +          pattern: '^reset-controller'
-
-This actually serves no purpose unless you made #reset-cells required. 
-If the node name matches, the schema will be applied and be true whether 
-#reset-cells is present or not.
-
-We were trying to define the node name for providers, but that breaks in 
-cases of nodes that are multiple providers which as you know is common 
-in this case. So we need to come up with another way of encouraging 
-standard node names.
-
-> +    - required:
-> +        - '#reset-cells'
-> +
-> +properties:
-> +  '#reset-cells':
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-
-'#.*-cells' has a type already. The only thing you can really put here 
-would be some constraint on the range of number of cells allowed and a 
-description.
-
-> +
-> +additionalProperties: true
-> +
-> +examples:
-> +  - |
-> +    // A reset controller providing multiple reset controls
-> +    rst: reset-controller {
-> +        #reset-cells = <1>;
-> +    };
-> +
-> +    // A reset consumer receiving a single reset signal with index 0
-> +    peripheral {
-> +        resets = <&rst 0>;
-> +    };
-> +...
