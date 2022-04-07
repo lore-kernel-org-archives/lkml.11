@@ -2,141 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 790E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A272C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242793AbiDGIEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
+        id S240095AbiDGIEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242639AbiDGIDR (ORCPT
+        with ESMTP id S242647AbiDGIDR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 04:03:17 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3E41563F2;
-        Thu,  7 Apr 2022 01:01:15 -0700 (PDT)
-X-UUID: cde36f341dc24f3aa45014f8950ef632-20220407
-X-UUID: cde36f341dc24f3aa45014f8950ef632-20220407
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 741500693; Thu, 07 Apr 2022 16:01:10 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 7 Apr 2022 16:01:08 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Apr 2022 16:01:07 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v6 24/34] iommu/mediatek: Just move code position in hw_init
-Date:   Thu, 7 Apr 2022 15:57:16 +0800
-Message-ID: <20220407075726.17771-25-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220407075726.17771-1-yong.wu@mediatek.com>
-References: <20220407075726.17771-1-yong.wu@mediatek.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E277C1575AC;
+        Thu,  7 Apr 2022 01:01:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DEFB61E9C;
+        Thu,  7 Apr 2022 08:01:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 935E9C385A4;
+        Thu,  7 Apr 2022 08:01:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649318477;
+        bh=rXlzViCFaC+xoZUZ/5dyGf0DsTW1RH+U5PQqazQNM78=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=EPJSqSDgdnI5Jd4YwMBYCA/uHa32dYMlbfV4KCsCcxR9OOI86jL108jQT+TsVvjPT
+         WImzj9N9xbi8jlzUJHvVVbW3E7Ns5LGYR2nnXp547WDnsBZOllWC5sikDQbdARBnAT
+         Yy9jZpt3K0XpNa26kcrUM2JjRW6fjBk9JUY1/ry9VKOtu7Wpj1OAB3/0aJjsyLfuhz
+         IJvBR6JkvTSFJfGD8MGEfcHFbINjSEAV3Q5+zKY+Nq+ZlNa8MuQ6LEOUYoRImip+N3
+         1a36dkEewbr4prWXM7IOHvFu+1hfkNQT8jxSRvQCmqbBbeWAb2Pf3k+NhCRQ41ibZr
+         YIe5ehPKxk9jw==
+Message-ID: <59464d43-189f-9637-8660-a8cd7e769eff@kernel.org>
+Date:   Thu, 7 Apr 2022 11:01:13 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 1/2] dt-bindings: usb: Add documentation for AM62 USB
+ Wrapper module
+Content-Language: en-US
+To:     Aswath Govindraju <a-govindraju@ti.com>
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220406135214.6989-1-a-govindraju@ti.com>
+ <20220406135214.6989-2-a-govindraju@ti.com>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <20220406135214.6989-2-a-govindraju@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No functional change too, prepare for mt8195 IOMMU support bank functions.
-Some global control settings are in bank0 while the other banks have
-their bank independent setting. Here only move the global control
-settings and the independent registers together.
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/mtk_iommu.c | 48 +++++++++++++++++++--------------------
- 1 file changed, 24 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index cb99c1d01f28..6b238ad55cbe 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -803,30 +803,6 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 	}
- 	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
- 
--	regval = F_L2_MULIT_HIT_EN |
--		F_TABLE_WALK_FAULT_INT_EN |
--		F_PREETCH_FIFO_OVERFLOW_INT_EN |
--		F_MISS_FIFO_OVERFLOW_INT_EN |
--		F_PREFETCH_FIFO_ERR_INT_EN |
--		F_MISS_FIFO_ERR_INT_EN;
--	writel_relaxed(regval, data->base + REG_MMU_INT_CONTROL0);
--
--	regval = F_INT_TRANSLATION_FAULT |
--		F_INT_MAIN_MULTI_HIT_FAULT |
--		F_INT_INVALID_PA_FAULT |
--		F_INT_ENTRY_REPLACEMENT_FAULT |
--		F_INT_TLB_MISS_FAULT |
--		F_INT_MISS_TRANSACTION_FIFO_FAULT |
--		F_INT_PRETETCH_TRANSATION_FIFO_FAULT;
--	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
--
--	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_LEGACY_IVRP_PADDR))
--		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
--	else
--		regval = lower_32_bits(data->protect_base) |
--			 upper_32_bits(data->protect_base);
--	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
--
- 	if (data->enable_4GB &&
- 	    MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_VLD_PA_RNG)) {
- 		/*
-@@ -860,6 +836,30 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 	}
- 	writel_relaxed(regval, data->base + REG_MMU_MISC_CTRL);
- 
-+	regval = F_L2_MULIT_HIT_EN |
-+		F_TABLE_WALK_FAULT_INT_EN |
-+		F_PREETCH_FIFO_OVERFLOW_INT_EN |
-+		F_MISS_FIFO_OVERFLOW_INT_EN |
-+		F_PREFETCH_FIFO_ERR_INT_EN |
-+		F_MISS_FIFO_ERR_INT_EN;
-+	writel_relaxed(regval, data->base + REG_MMU_INT_CONTROL0);
-+
-+	regval = F_INT_TRANSLATION_FAULT |
-+		F_INT_MAIN_MULTI_HIT_FAULT |
-+		F_INT_INVALID_PA_FAULT |
-+		F_INT_ENTRY_REPLACEMENT_FAULT |
-+		F_INT_TLB_MISS_FAULT |
-+		F_INT_MISS_TRANSACTION_FIFO_FAULT |
-+		F_INT_PRETETCH_TRANSATION_FIFO_FAULT;
-+	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
-+
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_LEGACY_IVRP_PADDR))
-+		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
-+	else
-+		regval = lower_32_bits(data->protect_base) |
-+			 upper_32_bits(data->protect_base);
-+	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
-+
- 	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
- 			     dev_name(data->dev), (void *)data)) {
- 		writel_relaxed(0, data->base + REG_MMU_PT_BASE_ADDR);
--- 
-2.18.0
+On 06/04/2022 16:52, Aswath Govindraju wrote:
+> Add bindings for the TI's AM62 wrapper module for the Synopsys USBSS-DRD
+> controller.
+> 
+> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+> ---
 
+Reviewed-by: Roger Quadros <rogerq@kernel.org>
+
+--
+cheers,
+-roger
