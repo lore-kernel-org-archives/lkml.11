@@ -2,96 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:04:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0363CC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245041AbiDGMGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36056 "EHLO
+        id S233736AbiDGMIP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239537AbiDGMG2 (ORCPT
+        with ESMTP id S234578AbiDGMH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:06:28 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC57C31DE
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:04:27 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id b24so6108512edu.10
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 05:04:27 -0700 (PDT)
+        Thu, 7 Apr 2022 08:07:28 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8D30C4E13
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:05:23 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id n6so10294192ejc.13
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 05:05:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=TUagL1wODEikqUkLow3v0XH4BykbzucN8xEfLth78H4=;
-        b=nnqmHk9r0F5jBw+maKTb6Sufj2aR12l7WrSCYLy+X52Zpl4xvhm3vApI8BfPZ/FSca
-         HwzngoAMEytBgAXx1PNW+b2tl/TAti6xietSCob3HMt5mlOCiubX6i0Ggn4mfdljUpps
-         vNPg1+Y/lvjLyBJkgf3IEKYOp8t7Hm7W1yCXMrJ+77edH7nDm23GGZz6eKW9LeWK/P0D
-         zrTb8WSUD9w/KXU7BR0oL/kdGJksFN6WXoMWdRCT9V4DeGEWHZiGfSyTnraS9eQsxGm8
-         eG83cMtly6GLGHunfjX/WRKVpeXQL0tuWbMK3qcGDVQZkfB3qmjO0N48MHzDLDytvW5w
-         LYsg==
+        bh=bwsyQ5Vu4W5RWwfy6VtuRb8dpLJkggv+g3kZE12CFcQ=;
+        b=Tgo1TI51TajsJx0sXfbOwR5Gyu9coBohhsu8zhdZpA5kKuZTg8NJboDw/1NK+7+giS
+         63z3ioCQc/KKpkCRyUx1Kql1U0zHvzD2P+/4t1emulGnKynZOlcd40K5G4UbsZaCWuAG
+         WcJcqH+2My0E/GLm6+1ysAUPqpBiuwkB/Vk/BtyU67L3p+ibRJGDzA3J23HKmFE22/PQ
+         /2Hr4TZpBJx3jL0uIwyDjYIP5eg7tNEawLpH78UFM6f39HNe6u0bIaJ8TCnEt/hqXxel
+         +/k51tILeOrMFz8JeqTe5wa2qG3pKBEqqoYZl9ekM9Y3LMDG+wBH/HuFSwQgX+hGf/sn
+         b0Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=TUagL1wODEikqUkLow3v0XH4BykbzucN8xEfLth78H4=;
-        b=KOcF7tcrEavL9l+OklZT79XCOKdkJmmCX+5G29OSRTaq2JPXfdVsnEGnxAj0w7Wbtc
-         R1jKxVOVGWVYK5nwQn9edshAxzatc2A8Xl9vaZ91ZML56uUXFGLzzZBuPVFO43svG3n2
-         80DsCMi/NI2YMGSN2ToIibl6icI8GyJQoyhhYYZ103CiGw04LrGxwqqqBjPLNKxT/dbh
-         WUWX3agxg+hLoD+e5xiDjQnxr4zAYq3T5PAPAastMj2tJhsa7H+0aoMa8ot24Hj40axo
-         e17gxTqqw7zJYVBjAJzco4PdO/ELjBvozVCs1TmeOgcTG/TjR+KqCPlSqdHkwtlz5YDu
-         /ENQ==
-X-Gm-Message-State: AOAM531Sfj0LE8A5zhRZTDSJDlDIwXAPsFzFo7xotcaWvI7qiElywRuA
-        U/c2h31fcudEHxCx78+G2escwg==
-X-Google-Smtp-Source: ABdhPJxdmNVJ/HA/fsikeQAjG7ODJWyGCaxh4P4WauvZgQ4v3hxlwTN/dO22tLf5iCaB6uKilwN9NQ==
-X-Received: by 2002:aa7:d1d0:0:b0:41c:c19e:a0d6 with SMTP id g16-20020aa7d1d0000000b0041cc19ea0d6mr13790784edp.179.1649333065649;
-        Thu, 07 Apr 2022 05:04:25 -0700 (PDT)
+        bh=bwsyQ5Vu4W5RWwfy6VtuRb8dpLJkggv+g3kZE12CFcQ=;
+        b=SYR1DBKkwL4d7fcatoluilDOIMgiXCxIqRyOUVyeutiiO9PzuqF7xPcYVl5HI7/Eeb
+         qWrUwZ8mcKaIHx+SbgUzti+PPBB7Qy51ttW2IdOcKnyZboEtNYO90p5geOgG7fsCuydL
+         BAs33Oq3E6PN+l5MmNG4lRIfjwFOnZmTXmrU8GDJPsbm35sMCW25Cu+LqCVMMIVO88Kl
+         pWH0iqBFkgK7vAjNEbH+w0RWmYFF8GXLGYf7sJd1Ca4AovR5EdjPLpJ4W7bpZ2fVZVue
+         MKU6WD4I3z9uNvHi61mdx+IdCSCqNSFi0YMaGesUloj8pcdiBHriwKmB3h89tb7wiG1Z
+         tgWw==
+X-Gm-Message-State: AOAM531BLdqXDdgatZtWMpX1z9Qf+zSd2x/skgO9Xxe0SkX3IU65b5Bk
+        bL5rh3xVyM/j6QUSybpHMVSsXg==
+X-Google-Smtp-Source: ABdhPJw306Xv8hi4MiEDFStVaE0H2lWBzMserAaLf5q9MTAVjR/RGdsOIDq6FnIZCvCQRrdAPOBNOA==
+X-Received: by 2002:a17:907:6ea4:b0:6e1:260e:a232 with SMTP id sh36-20020a1709076ea400b006e1260ea232mr13324944ejc.15.1649333121669;
+        Thu, 07 Apr 2022 05:05:21 -0700 (PDT)
 Received: from [192.168.0.187] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id f2-20020a170906390200b006e7f5fedbe7sm4073522eje.3.2022.04.07.05.04.24
+        by smtp.gmail.com with ESMTPSA id j8-20020aa7c0c8000000b0041934547989sm9247017edp.55.2022.04.07.05.05.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 05:04:25 -0700 (PDT)
-Message-ID: <65a57655-2311-0f9d-8667-851755aaec1f@linaro.org>
-Date:   Thu, 7 Apr 2022 14:04:24 +0200
+        Thu, 07 Apr 2022 05:05:21 -0700 (PDT)
+Message-ID: <bc71266a-50c9-ef0f-6bc1-20df79782d32@linaro.org>
+Date:   Thu, 7 Apr 2022 14:05:20 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
 Subject: Re: [PATCH] spi: atmel,quadspi: Define lan966x QSPI
 Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>, Mark Brown <broonie@kernel.org>
-Cc:     Manohar.Puri@microchip.com, UNGLinuxDriver@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        devicetree@vger.kernel.org, kavyasree.kotagiri@microchip.com,
-        krzk+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        nicolas.ferre@microchip.com, robh+dt@kernel.org,
-        tudor.ambarus@microchip.com
-References: <Yk7Ex5ltaxC7Z+N6@sirena.org.uk>
- <20220407112345.148316-1-michael@walle.cc> <Yk7LjrvqSLbzPYkw@sirena.org.uk>
- <561bbc1cf43c3795eee67e10537ba365@walle.cc>
+To:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        broonie@kernel.org, robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        claudiu.beznea@microchip.com, tudor.ambarus@microchip.com,
+        linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, Manohar.Puri@microchip.com
+References: <20220407105420.10765-1-kavyasree.kotagiri@microchip.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <561bbc1cf43c3795eee67e10537ba365@walle.cc>
+In-Reply-To: <20220407105420.10765-1-kavyasree.kotagiri@microchip.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/04/2022 13:41, Michael Walle wrote:
-> Am 2022-04-07 13:31, schrieb Mark Brown:
->> On Thu, Apr 07, 2022 at 01:23:45PM +0200, Michael Walle wrote:
->>> The subject should also be prefixed with "dt-bindings: ".
->>
->> I tend to complain about people doing that.
+On 07/04/2022 12:54, Kavyasree Kotagiri wrote:
+> LAN966x SoC supports 3 QSPI controllers. Each of them support
+> data and clock frequency upto 100Mhz DDR and QUAD protocol.
 > 
-> After all it is mentioned to use that prefix in
-> Documentation/devicetree/bindings/submitting-patches.rst. I try to
-> remember when submitting SPI related bindings.
+> Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+> ---
+>  Documentation/devicetree/bindings/spi/atmel,quadspi.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/spi/atmel,quadspi.yaml b/Documentation/devicetree/bindings/spi/atmel,quadspi.yaml
+> index 1d493add4053..100d6e7f2748 100644
+> --- a/Documentation/devicetree/bindings/spi/atmel,quadspi.yaml
+> +++ b/Documentation/devicetree/bindings/spi/atmel,quadspi.yaml
+> @@ -19,6 +19,7 @@ properties:
+>        - microchip,sam9x60-qspi
+>        - microchip,sama7g5-qspi
+>        - microchip,sama7g5-ospi
+> +      - microchip,lan966x-qspi
 
-From my point of view, the dt-bindings prefix is still expected, just
-after "spi:" (and other Marks' subsystems), because that's I am
-filtering the bindings.
-
-Your submissions had the prefix in wrong place, this one patch does not
-have it all. :(
+Expect the comment you got about wildcard, please also put it in
+alphabetical order. As you can check, the other entries are ordered.
 
 Best regards,
 Krzysztof
