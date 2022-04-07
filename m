@@ -2,114 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BAF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A228C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345678AbiDGQUm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 12:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33682 "EHLO
+        id S229904AbiDGQXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 12:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbiDGQUj (ORCPT
+        with ESMTP id S1345717AbiDGQXc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 12:20:39 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8531EFE2F
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:18:11 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id b21so10524537lfb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 09:18:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cs-iitr-ac-in.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wjO0bs1qvXp5AP5h5pS2WCcaezCLjsHDm5T0Nl0HxQY=;
-        b=ghBT/e4ySWCB0ovgQR8E03ayNEJigtDReWTbUsMXn/TLVJWCV9WApQT02QFREECsyD
-         s/HktNUEtI3RVxP2V2zPzpA5moJaxOJYdhwcM7+KdzPzGXRJhk/jaH1psFS7Y++lFj2n
-         VVLnIUvxVmBFmfkBh0ERTAQ2VFtTinCjFJSmxNaZN92z0Yx0bDvI3lu4XCWsTN8Q5DGO
-         Y98s6aH+yyFnKYK5Kuk/M3ahk2/wdpPU1Z+/97AmhOKLPExaC8reR6gYRtH5dh3tRhYy
-         T/hUP867TYL3Q2ER8ffKJcjtCV7SbOCLCLyquwEMJkRIqAeP/wiq4AG1OlG7vN0dZvI7
-         WIxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wjO0bs1qvXp5AP5h5pS2WCcaezCLjsHDm5T0Nl0HxQY=;
-        b=lRmkkL2+HTSxPf3YNKQHK5XbtC7vb7lyA6uOqRgBxU3Gve0jPzQkzXWxzqlA6nmkZ8
-         uwATlTHcucbmsxslz4ZL3uiI/3gpi9FnYzy8rFA3UjWjwwpOqw8whTpLsr7GlrHdQwLo
-         /+Gk93QGG4QX/NW8LR4BSe5AUvytjgk/rptyrB5Cq9zOSRZW8GbxEFWvkiERt8xd77wo
-         IJT29gD2KYJCPNo+yu+45F9AY9PcZGl0rPj7tfD5MbMA5dnTk173xC90gW3HOVTSKRf2
-         qOdOxMV2wIC2LbepXm5goMJNp4lqgbj+qUTUtq01vKynihyUIbcnaEfLhz4nQboLtJ2a
-         F4aQ==
-X-Gm-Message-State: AOAM5301glS2RGh7SSFOcrzBNpLVAcvJt0Vd9NxkACp1Cl29yMhlVpJx
-        qWcRNMmwGbxBCi1kORkIsclolkN4R33qE4EFe8LPoewYmE7zLy1s
-X-Google-Smtp-Source: ABdhPJx1AntGzS/rBalHe6cpDFXldbK0o8QTe7Iu4ifkfngxq4NABQay5eYCVKcNzCDUc0j4GKW3Mg4laLmQa6ViisA=
-X-Received: by 2002:a05:6512:3c6:b0:44a:b66d:6d04 with SMTP id
- w6-20020a05651203c600b0044ab66d6d04mr10174664lfp.428.1649348265832; Thu, 07
- Apr 2022 09:17:45 -0700 (PDT)
+        Thu, 7 Apr 2022 12:23:32 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2BA1E6F84;
+        Thu,  7 Apr 2022 09:21:19 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 237Aq1HB000624;
+        Thu, 7 Apr 2022 18:21:04 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=UVkF1Bcf9hpHGFk32BlULgFhoGv/Na+BE/LaIs1dpXY=;
+ b=JM7qiOt4ZeweUv+HHbWQ0CbzixBwWZ05Sgx2tn1XTyL0tCTJiFYJ6dWg3xpEZxS4lHck
+ IrSNHK0OasclWU5tk50kv1LXA2eVEr3BLm6oV03QkShtrZnFz6o0A7IHJvKklAUXS1ne
+ fdrTXJ2chKSZYvnnf04hK5NJQZT/kAkxx4zjv+0R0qGl8fMSYVQ9+f3UI3NKBp56/H/l
+ RdGW5uxV/Fe7A23MH/XE5mil1h7A39slraKfo0enZ3M0vS0MuBn/7iIBUjqbW8zTnTd6
+ UUpNVQbugrF8KlG/waBSNp3MRct5jurrbdQ8+aoY/WsKb6fsQZXJlc1/PaCL8UmXMuXv fA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f9wr7jaqq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Apr 2022 18:21:04 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 91AAA100034;
+        Thu,  7 Apr 2022 18:21:03 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8A22D220FBF;
+        Thu,  7 Apr 2022 18:21:03 +0200 (CEST)
+Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 7 Apr 2022 18:21:03
+ +0200
+From:   Valentin Caron <valentin.caron@foss.st.com>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 1/2] ARM: dts: stm32: add RTC node on stm32mp131
+Date:   Thu, 7 Apr 2022 18:20:41 +0200
+Message-ID: <20220407162042.361956-2-valentin.caron@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220407162042.361956-1-valentin.caron@foss.st.com>
+References: <20220407162042.361956-1-valentin.caron@foss.st.com>
 MIME-Version: 1.0
-References: <20220407120945.31030-1-mahak_g@cs.iitr.ac.in> <alpine.DEB.2.22.394.2204071414080.2213@hadrien>
-In-Reply-To: <alpine.DEB.2.22.394.2204071414080.2213@hadrien>
-From:   MAHAK GUPTA <mahak_g@cs.iitr.ac.in>
-Date:   Thu, 7 Apr 2022 21:47:09 +0530
-Message-ID: <CANnaPbD7C8kvz-fK4js=zprck58=Yxp8h+wBLmXfQNKsHMDytw@mail.gmail.com>
-Subject: Re: [PATCH] staging: rtl8712: fix camel case in function r8712_generate_ie
-To:     Julia Lawall <julia.lawall@inria.fr>
-Cc:     Larry.Finger@lwfinger.net, florian.c.schilhabel@googlemail.com,
-        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-07_03,2022-04-07_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 5:44 PM Julia Lawall <julia.lawall@inria.fr> wrote:
->
->
->
-> On Thu, 7 Apr 2022, Mahak Gupta wrote:
->
-> > Adhere to linux kernel coding style.
-> >
-> > Reported by checkpatch:
-> >
-> > CHECK: Avoid CamelCase: <beaconPeriod>
->
-> As another patch, you could also adjust the structure field name.
->
-> julia
->
-> >
-> > Signed-off-by: Mahak Gupta <mahak_g@cs.iitr.ac.in>
-> > ---
-> >  drivers/staging/rtl8712/ieee80211.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/staging/rtl8712/ieee80211.c b/drivers/staging/rtl8712/ieee80211.c
-> > index f926809b1021..7d8f1a29d18a 100644
-> > --- a/drivers/staging/rtl8712/ieee80211.c
-> > +++ b/drivers/staging/rtl8712/ieee80211.c
-> > @@ -162,13 +162,13 @@ int r8712_generate_ie(struct registry_priv *registrypriv)
-> >       uint sz = 0;
-> >       struct wlan_bssid_ex *dev_network = &registrypriv->dev_network;
-> >       u8 *ie = dev_network->IEs;
-> > -     u16 beaconPeriod = (u16)dev_network->Configuration.BeaconPeriod;
-> > +     u16 beacon_period = (u16)dev_network->Configuration.BeaconPeriod;
-> >
-> >       /*timestamp will be inserted by hardware*/
-> >       sz += 8;
-> >       ie += sz;
-> >       /*beacon interval : 2bytes*/
-> > -     *(__le16 *)ie = cpu_to_le16(beaconPeriod);
-> > +     *(__le16 *)ie = cpu_to_le16(beacon_period);
-> >       sz += 2;
-> >       ie += 2;
-> >       /*capability info*/
-> > --
-> > 2.17.1
-> >
-> >
-> >
+Add RTC node with compatible, clock, and interrupt properties
+on stm32mp131.
 
-Sure, on it. Thanks.
+Add clk_rtc_k fixed clock for RTC.
 
-Mahak
+Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
+Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
+---
+ arch/arm/boot/dts/stm32mp131.dtsi | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/arch/arm/boot/dts/stm32mp131.dtsi b/arch/arm/boot/dts/stm32mp131.dtsi
+index 1708c79b5254..9b1c87edd613 100644
+--- a/arch/arm/boot/dts/stm32mp131.dtsi
++++ b/arch/arm/boot/dts/stm32mp131.dtsi
+@@ -75,6 +75,12 @@ clk_pll4_r: clk-pll4_r {
+ 			compatible = "fixed-clock";
+ 			clock-frequency = <99000000>;
+ 		};
++
++		clk_rtc_k: clk-rtc-k {
++			#clock-cells = <0>;
++			compatible = "fixed-clock";
++			clock-frequency = <32768>;
++		};
+ 	};
+ 
+ 	intc: interrupt-controller@a0021000 {
+@@ -218,6 +224,15 @@ iwdg2: watchdog@5a002000 {
+ 			status = "disabled";
+ 		};
+ 
++		rtc: rtc@5c004000 {
++			compatible = "st,stm32mp1-rtc";
++			reg = <0x5c004000 0x400>;
++			interrupts-extended = <&exti 19 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clk_pclk4>, <&clk_rtc_k>;
++			clock-names = "pclk", "rtc_ck";
++			status = "disabled";
++		};
++
+ 		bsec: efuse@5c005000 {
+ 			compatible = "st,stm32mp15-bsec";
+ 			reg = <0x5c005000 0x400>;
+-- 
+2.25.1
+
