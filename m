@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8CDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D88C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236041AbiDGBUj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:20:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
+        id S237231AbiDGBUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237343AbiDGBQI (ORCPT
+        with ESMTP id S236480AbiDGBQp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:16:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778A9181DAF;
-        Wed,  6 Apr 2022 18:12:21 -0700 (PDT)
+        Wed, 6 Apr 2022 21:16:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8601947B3;
+        Wed,  6 Apr 2022 18:12:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1E7E61DA8;
-        Thu,  7 Apr 2022 01:12:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28CC0C385A1;
-        Thu,  7 Apr 2022 01:12:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5BD7CB82694;
+        Thu,  7 Apr 2022 01:12:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 468EAC385A1;
+        Thu,  7 Apr 2022 01:12:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649293940;
-        bh=8Eyzmrf4fHO/R4UgorIum0ZxR6EXxJppZCNGHEPJ16k=;
+        s=k20201202; t=1649293945;
+        bh=ssJYHvkpscxFMbUpBVyB4ceTVTGzImrTC1CGpjG5HWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HzR2m0pOtt/KhvTl5DV/pGORQ5Y3727ZurDljHvg0zFAGPM7/R9gAytjpHGxukVdE
-         pz4Y9tTk1JhOU3YEW4qR3xd9AVlC4wF/Agojk3PIBty42HqH9KwyS4jUH/m6tIvEXC
-         yVBLU1yLyZSZGZfS+Tdd42XL8sKEbV1wA1S4mKDCIgQajrhJxTE1D5YVY/LFf3ulBu
-         Ytfys/jNMn7+ISLFCq6ktEkF7q7iyIbhQ79g+9SPB46VsqCRodyd1krSlgnsFSaBiH
-         7R0swea766ZUWzPY6t4+Enoi9lqjJLhoMIWFALFMyjWKdhZLYJQqTQj3XyJmG8dEEo
-         HyjxgoXlE1l+g==
+        b=i1zTnDqj2rRwhVuK/M+swJq1kukpQkYg7FT8LBZp7lSvdBoGcH+QdPztyg/2Z5aTC
+         N2QNb4ZpAuBJIIhqW4+rKDEbO1BAROI9EMJXhPukP4Gq9oSxdGkHZWanSWaTzAc8db
+         len+RJgLrveZd59CAR6zW0o9FnII2FSfUgQfgBdAEXi19j1cw6XnN71jj+xbAS8bqj
+         r90Te+qKceckxJ1elFu0xSty+PQjAOQ3U6XMoPF43EoKYf8EudjuloQ4Brx+BvAK4U
+         JyjMfdLSCIxeEX3VDyXwIMw3eJ5XvkQvt+rd5lE8Y3p/rATZw25MR9350R9qy5ZG9n
+         0auxtyrm7XHCw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, ebiederm@xmission.com, iii@linux.ibm.com,
-        linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 17/30] s390/traps: improve panic message for translation-specification exception
-Date:   Wed,  6 Apr 2022 21:11:27 -0400
-Message-Id: <20220407011140.113856-17-sashal@kernel.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 5.16 20/30] tools/virtio: compile with -pthread
+Date:   Wed,  6 Apr 2022 21:11:30 -0400
+Message-Id: <20220407011140.113856-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011140.113856-1-sashal@kernel.org>
 References: <20220407011140.113856-1-sashal@kernel.org>
@@ -53,49 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
 
-[ Upstream commit f09354ffd84eef3c88efa8ba6df05efe50cfd16a ]
+[ Upstream commit f03560a57c1f60db6ac23ffd9714e1c69e2f95c7 ]
 
-There are many different types of translation exceptions but only a
-translation-specification exception leads to a kernel panic since it
-indicates corrupted page tables, which must never happen.
+When using pthreads, one has to compile and link with -lpthread,
+otherwise e.g. glibc is not guaranteed to be reentrant.
 
-Improve the panic message so it is a bit more obvious what this is about.
+This replaces -lpthread.
 
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/kernel/traps.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ tools/virtio/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/s390/kernel/traps.c b/arch/s390/kernel/traps.c
-index 2b780786fc68..ead721965b9f 100644
---- a/arch/s390/kernel/traps.c
-+++ b/arch/s390/kernel/traps.c
-@@ -142,10 +142,10 @@ static inline void do_fp_trap(struct pt_regs *regs, __u32 fpc)
- 	do_trap(regs, SIGFPE, si_code, "floating point exception");
- }
+diff --git a/tools/virtio/Makefile b/tools/virtio/Makefile
+index 0d7bbe49359d..1b25cc7c64bb 100644
+--- a/tools/virtio/Makefile
++++ b/tools/virtio/Makefile
+@@ -5,7 +5,8 @@ virtio_test: virtio_ring.o virtio_test.o
+ vringh_test: vringh_test.o vringh.o virtio_ring.o
  
--static void translation_exception(struct pt_regs *regs)
-+static void translation_specification_exception(struct pt_regs *regs)
- {
- 	/* May never happen. */
--	panic("Translation exception");
-+	panic("Translation-Specification Exception");
- }
- 
- static void illegal_op(struct pt_regs *regs)
-@@ -374,7 +374,7 @@ static void (*pgm_check_table[128])(struct pt_regs *regs) = {
- 	[0x0f]		= hfp_divide_exception,
- 	[0x10]		= do_dat_exception,
- 	[0x11]		= do_dat_exception,
--	[0x12]		= translation_exception,
-+	[0x12]		= translation_specification_exception,
- 	[0x13]		= special_op_exception,
- 	[0x14]		= default_trap_handler,
- 	[0x15]		= operand_exception,
+ CFLAGS += -g -O2 -Werror -Wno-maybe-uninitialized -Wall -I. -I../include/ -I ../../usr/include/ -Wno-pointer-sign -fno-strict-overflow -fno-strict-aliasing -fno-common -MMD -U_FORTIFY_SOURCE -include ../../include/linux/kconfig.h
+-LDFLAGS += -lpthread
++CFLAGS += -pthread
++LDFLAGS += -pthread
+ vpath %.c ../../drivers/virtio ../../drivers/vhost
+ mod:
+ 	${MAKE} -C `pwd`/../.. M=`pwd`/vhost_test V=${V}
 -- 
 2.35.1
 
