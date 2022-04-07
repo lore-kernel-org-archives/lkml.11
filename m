@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00495C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D5FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235564AbiDGBOv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:14:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35966 "EHLO
+        id S236427AbiDGBPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234695AbiDGBNz (ORCPT
+        with ESMTP id S234590AbiDGBOd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:13:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022F2186F99;
-        Wed,  6 Apr 2022 18:11:17 -0700 (PDT)
+        Wed, 6 Apr 2022 21:14:33 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B95818649C;
+        Wed,  6 Apr 2022 18:11:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F18A61DA8;
-        Thu,  7 Apr 2022 01:11:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0A2AC385A7;
-        Thu,  7 Apr 2022 01:11:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5D5E8CE2684;
+        Thu,  7 Apr 2022 01:11:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA948C385A3;
+        Thu,  7 Apr 2022 01:11:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649293876;
-        bh=UT6iZwY7jem/7gxVLDXdPr07ACopg5hx7u0zUA9Bg+g=;
+        s=k20201202; t=1649293882;
+        bh=zeyKZE8740RxC0fLVa0ngmzOPV4kdSKGulQZT2SyRhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mgDpHAEMenMvfVrCuLVhuNRclHvh9+SNKKgn4pnQuLfGkDJ6xNgHgyfwRk2zVS1G0
-         6UyozbY1k5RnErhwBM5G/sDYxAy/koX36EXVe11Y9qfDlvUQWtoNHk0iQI85yEpmbI
-         oZU2pEbxgZzolAY9SZcjBYuORVWBGT1SlU3rEitFMYeaVWGaKFsCqyxPKKBJOJtaD3
-         3zwZNMBbbhlyjmmB/JfHWKzTPFWKcBQQFhoTdD97LbZ1mKJDe2XULxPy3IQu0oh9GI
-         dqpnHh6+UMwhsfPeSZ2spRPuL0sAzpB3cWYG5EOwA9sYLZ1/05N9H54PKeg5FWeME4
-         S1ZBOl0k07NrQ==
+        b=QRImdtlKzCkcxpHCXJMnxLQV9oK+iiKN8MDv6qkCH+fx7BDGoc6IeG4KWOHNzXd4R
+         9xFzZaSHA4CMU707HMqNywJaCi8YvTnXhFH4a1P4t3nVNkqM49hCPO8fl598QMEVSS
+         GTAtaN59qsd8iZhxRl2H+XkXsEI0UwFH4gbUUH3U5I3XuSgk6w0bRnD9vfEOsgLsxc
+         z2wrBbbFOXwAsZ3nS0gkIA/FRT1CvoI/yCLG64LA+6O865TRTq+jX3K8DnfuVayZdv
+         2SUcs5GxsJfvdQZnmrprrLEKbA6m+08Jn42WESg8C6EtwkpniU7OFnUvmXPmUmoU6/
+         ruUMdzCOGv3rA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anton Eidelman <anton.eidelman@gmail.com>,
-        Anton Eidelman <anton@lightbitslabs.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
+Cc:     Guo Xuenan <guoxuenan@huawei.com>, Hulk Robot <hulkci@huawei.com>,
         Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
-        axboe@fb.com, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 23/31] nvme-multipath: fix hang when disk goes live over reconnect
-Date:   Wed,  6 Apr 2022 21:10:21 -0400
-Message-Id: <20220407011029.113321-23-sashal@kernel.org>
+        "Darrick J . Wong" <djwong@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, viro@zeniv.linux.org.uk,
+        linux-fsdevel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 25/31] fs: fix an infinite loop in iomap_fiemap
+Date:   Wed,  6 Apr 2022 21:10:23 -0400
+Message-Id: <20220407011029.113321-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011029.113321-1-sashal@kernel.org>
 References: <20220407011029.113321-1-sashal@kernel.org>
@@ -54,163 +53,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anton Eidelman <anton.eidelman@gmail.com>
+From: Guo Xuenan <guoxuenan@huawei.com>
 
-[ Upstream commit a4a6f3c8f61c3cfbda4998ad94596059ad7e4332 ]
+[ Upstream commit 49df34221804cfd6384135b28b03c9461a31d024 ]
 
-nvme_mpath_init_identify() invoked from nvme_init_identify() fetches a
-fresh ANA log from the ctrl.  This is essential to have an up to date
-path states for both existing namespaces and for those scan_work may
-discover once the ctrl is up.
+when get fiemap starting from MAX_LFS_FILESIZE, (maxbytes - *len) < start
+will always true , then *len set zero. because of start offset is beyond
+file size, for erofs filesystem it will always return iomap.length with
+zero,iomap iterate will enter infinite loop. it is necessary cover this
+corner case to avoid this situation.
 
-This happens in the following cases:
-  1) A new ctrl is being connected.
-  2) An existing ctrl is successfully reconnected.
-  3) An existing ctrl is being reset.
+------------[ cut here ]------------
+WARNING: CPU: 7 PID: 905 at fs/iomap/iter.c:35 iomap_iter+0x97f/0xc70
+Modules linked in: xfs erofs
+CPU: 7 PID: 905 Comm: iomap Tainted: G        W         5.17.0-rc8 #27
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+RIP: 0010:iomap_iter+0x97f/0xc70
+Code: 85 a1 fc ff ff e8 71 be 9c ff 0f 1f 44 00 00 e9 92 fc ff ff e8 62 be 9c ff 0f 0b b8 fb ff ff ff e9 fc f8 ff ff e8 51 be 9c ff <0f> 0b e9 2b fc ff ff e8 45 be 9c ff 0f 0b e9 e1 fb ff ff e8 39 be
+RSP: 0018:ffff888060a37ab0 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff888060a37bb0 RCX: 0000000000000000
+RDX: ffff88807e19a900 RSI: ffffffff81a7da7f RDI: ffff888060a37be0
+RBP: 7fffffffffffffff R08: 0000000000000000 R09: ffff888060a37c20
+R10: ffff888060a37c67 R11: ffffed100c146f8c R12: 7fffffffffffffff
+R13: 0000000000000000 R14: ffff888060a37bd8 R15: ffff888060a37c20
+FS:  00007fd3cca01540(0000) GS:ffff888108780000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020010820 CR3: 0000000054b92000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ iomap_fiemap+0x1c9/0x2f0
+ erofs_fiemap+0x64/0x90 [erofs]
+ do_vfs_ioctl+0x40d/0x12e0
+ __x64_sys_ioctl+0xaa/0x1c0
+ do_syscall_64+0x35/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+ </TASK>
+---[ end trace 0000000000000000 ]---
+watchdog: BUG: soft lockup - CPU#7 stuck for 26s! [iomap:905]
 
-While in (1) ctrl->namespaces is empty, (2 & 3) may have namespaces, and
-nvme_read_ana_log() may call nvme_update_ns_ana_state().
-
-This result in a hang when the ANA state of an existing namespace changes
-and makes the disk live: nvme_mpath_set_live() issues IO to the namespace
-through the ctrl, which does NOT have IO queues yet.
-
-See sample hang below.
-
-Solution:
-- nvme_update_ns_ana_state() to call set_live only if ctrl is live
-- nvme_read_ana_log() call from nvme_mpath_init_identify()
-  therefore only fetches and parses the ANA log;
-  any erros in this process will fail the ctrl setup as appropriate;
-- a separate function nvme_mpath_update()
-  is called in nvme_start_ctrl();
-  this parses the ANA log without fetching it.
-  At this point the ctrl is live,
-  therefore, disks can be set live normally.
-
-Sample failure:
-    nvme nvme0: starting error recovery
-    nvme nvme0: Reconnecting in 10 seconds...
-    block nvme0n6: no usable path - requeuing I/O
-    INFO: task kworker/u8:3:312 blocked for more than 122 seconds.
-          Tainted: G            E     5.14.5-1.el7.elrepo.x86_64 #1
-    Workqueue: nvme-wq nvme_tcp_reconnect_ctrl_work [nvme_tcp]
-    Call Trace:
-     __schedule+0x2a2/0x7e0
-     schedule+0x4e/0xb0
-     io_schedule+0x16/0x40
-     wait_on_page_bit_common+0x15c/0x3e0
-     do_read_cache_page+0x1e0/0x410
-     read_cache_page+0x12/0x20
-     read_part_sector+0x46/0x100
-     read_lba+0x121/0x240
-     efi_partition+0x1d2/0x6a0
-     bdev_disk_changed.part.0+0x1df/0x430
-     bdev_disk_changed+0x18/0x20
-     blkdev_get_whole+0x77/0xe0
-     blkdev_get_by_dev+0xd2/0x3a0
-     __device_add_disk+0x1ed/0x310
-     device_add_disk+0x13/0x20
-     nvme_mpath_set_live+0x138/0x1b0 [nvme_core]
-     nvme_update_ns_ana_state+0x2b/0x30 [nvme_core]
-     nvme_update_ana_state+0xca/0xe0 [nvme_core]
-     nvme_parse_ana_log+0xac/0x170 [nvme_core]
-     nvme_read_ana_log+0x7d/0xe0 [nvme_core]
-     nvme_mpath_init_identify+0x105/0x150 [nvme_core]
-     nvme_init_identify+0x2df/0x4d0 [nvme_core]
-     nvme_init_ctrl_finish+0x8d/0x3b0 [nvme_core]
-     nvme_tcp_setup_ctrl+0x337/0x390 [nvme_tcp]
-     nvme_tcp_reconnect_ctrl_work+0x24/0x40 [nvme_tcp]
-     process_one_work+0x1bd/0x360
-     worker_thread+0x50/0x3d0
-
-Signed-off-by: Anton Eidelman <anton@lightbitslabs.com>
-Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Guo Xuenan <guoxuenan@huawei.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+[djwong: fix some typos]
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c      |  1 +
- drivers/nvme/host/multipath.c | 25 +++++++++++++++++++++++--
- drivers/nvme/host/nvme.h      |  4 ++++
- 3 files changed, 28 insertions(+), 2 deletions(-)
+ fs/ioctl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index fd4720d37cc0..25952dfdc580 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -4402,6 +4402,7 @@ void nvme_start_ctrl(struct nvme_ctrl *ctrl)
- 	if (ctrl->queue_count > 1) {
- 		nvme_queue_scan(ctrl);
- 		nvme_start_queues(ctrl);
-+		nvme_mpath_update(ctrl);
- 	}
- }
- EXPORT_SYMBOL_GPL(nvme_start_ctrl);
-diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index ff775235534c..0e137148f5f7 100644
---- a/drivers/nvme/host/multipath.c
-+++ b/drivers/nvme/host/multipath.c
-@@ -634,8 +634,17 @@ static void nvme_update_ns_ana_state(struct nvme_ana_group_desc *desc,
- 	ns->ana_grpid = le32_to_cpu(desc->grpid);
- 	ns->ana_state = desc->state;
- 	clear_bit(NVME_NS_ANA_PENDING, &ns->flags);
--
--	if (nvme_state_is_live(ns->ana_state))
-+	/*
-+	 * nvme_mpath_set_live() will trigger I/O to the multipath path device
-+	 * and in turn to this path device.  However we cannot accept this I/O
-+	 * if the controller is not live.  This may deadlock if called from
-+	 * nvme_mpath_init_identify() and the ctrl will never complete
-+	 * initialization, preventing I/O from completing.  For this case we
-+	 * will reprocess the ANA log page in nvme_mpath_update() once the
-+	 * controller is ready.
-+	 */
-+	if (nvme_state_is_live(ns->ana_state) &&
-+	    ns->ctrl->state == NVME_CTRL_LIVE)
- 		nvme_mpath_set_live(ns);
- }
+diff --git a/fs/ioctl.c b/fs/ioctl.c
+index 1ed097e94af2..85f7e4ee6924 100644
+--- a/fs/ioctl.c
++++ b/fs/ioctl.c
+@@ -173,7 +173,7 @@ int fiemap_prep(struct inode *inode, struct fiemap_extent_info *fieinfo,
  
-@@ -722,6 +731,18 @@ static void nvme_ana_work(struct work_struct *work)
- 	nvme_read_ana_log(ctrl);
- }
+ 	if (*len == 0)
+ 		return -EINVAL;
+-	if (start > maxbytes)
++	if (start >= maxbytes)
+ 		return -EFBIG;
  
-+void nvme_mpath_update(struct nvme_ctrl *ctrl)
-+{
-+	u32 nr_change_groups = 0;
-+
-+	if (!ctrl->ana_log_buf)
-+		return;
-+
-+	mutex_lock(&ctrl->ana_lock);
-+	nvme_parse_ana_log(ctrl, &nr_change_groups, nvme_update_ana_state);
-+	mutex_unlock(&ctrl->ana_lock);
-+}
-+
- static void nvme_anatt_timeout(struct timer_list *t)
- {
- 	struct nvme_ctrl *ctrl = from_timer(ctrl, t, anatt_timer);
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index a162f6c6da6e..55f5e4f560a3 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -776,6 +776,7 @@ void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
- void nvme_mpath_remove_disk(struct nvme_ns_head *head);
- int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id);
- void nvme_mpath_init_ctrl(struct nvme_ctrl *ctrl);
-+void nvme_mpath_update(struct nvme_ctrl *ctrl);
- void nvme_mpath_uninit(struct nvme_ctrl *ctrl);
- void nvme_mpath_stop(struct nvme_ctrl *ctrl);
- bool nvme_mpath_clear_current_path(struct nvme_ns *ns);
-@@ -850,6 +851,9 @@ static inline int nvme_mpath_init_identify(struct nvme_ctrl *ctrl,
- "Please enable CONFIG_NVME_MULTIPATH for full support of multi-port devices.\n");
- 	return 0;
- }
-+static inline void nvme_mpath_update(struct nvme_ctrl *ctrl)
-+{
-+}
- static inline void nvme_mpath_uninit(struct nvme_ctrl *ctrl)
- {
- }
+ 	/*
 -- 
 2.35.1
 
