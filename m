@@ -2,69 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:52:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4704C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344301AbiDGOyY (ORCPT
+        id S1344321AbiDGO4G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:54:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
+        Thu, 7 Apr 2022 10:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241089AbiDGOyV (ORCPT
+        with ESMTP id S1344324AbiDGO4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:54:21 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4572D4C96;
-        Thu,  7 Apr 2022 07:52:19 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2A1D3240013;
-        Thu,  7 Apr 2022 14:52:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649343138;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7kE93EQdeX/78I13r54jYxB9RFr1bELvDiK/AcybMWg=;
-        b=BnbNHHSvwabukydz7YNOnjhZfd/kJNVkIjlJIRJ8ByrO1ycXW+J/XnHNoHmR8jw5pmBpu4
-        ZJWgbKzA/xi9MX39Bvp9kjAcygeD/SN9F2P7yl4aPVWFmllVIK3JFw2tqo6xL1ipPC6mig
-        4y2wGFLT6rBfRDuYmHp1lSVd9gCxUK3/7LQytvWXhEpJrbFylOCE5dyAsS2X/oNliFn0es
-        fKi5yn6gyOIVy86LZLNCOEcleY1m/egZINhDV2hCuYWhABIBOGDz/kTVhls/Lp2B3k9CM5
-        YobGQGh9SEG2JbW4Eou3D31LSLARZnfmyr/+tK448Obl2kcV93oaVvvXV29n+w==
-Date:   Thu, 7 Apr 2022 16:52:14 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] dt-bindings: align SPI NOR node name with dtschema
-Message-ID: <20220407165214.725ae8f0@xps13>
-In-Reply-To: <20220407143405.295907-1-krzysztof.kozlowski@linaro.org>
-References: <20220407143405.295907-1-krzysztof.kozlowski@linaro.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Thu, 7 Apr 2022 10:56:03 -0400
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA941EC616;
+        Thu,  7 Apr 2022 07:54:02 -0700 (PDT)
+Received: by mail-wm1-f53.google.com with SMTP id q20so3732750wmq.1;
+        Thu, 07 Apr 2022 07:54:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=2quiVS5lI5pGNZBTe6ox280MwNH8HDfpHT/u6CqkRgw=;
+        b=gAnBl+rvIlAkU9wTLEnNidVtiZobjTRlf9wimgDNjjMSZwlqQU9joua7Wf57vPV2Ip
+         jvTS534nNCaNprQjMDIXuk86UWOD6X1HWplVQUhns8n206klFAE69lketsdWfsKglKMf
+         6ZLixFZF5aJQ4Tf9kDxHgC13jq30Ayv+3uyljTpEbEzjws2pFHXhj3WAhjJRetmr0IAY
+         IZ6adGpneXOjqqlJ3DunHiix1VEMSFZiuZ4AfWDvtJhA5dvrHVT/RG8QKxM276y1AM0+
+         xNUoKdKZQH2HOfcX/BoJb4bzmzX9eor+3rMgsybtU+NE2VHnyR9RA4X9mjhIrWjJb3j/
+         m00Q==
+X-Gm-Message-State: AOAM531GccRLzCStfuQDorY4De2PMHKjzX/NC8/PDQeCedO2Z13ykm3s
+        ulG0SEg8KcuavmSLYJZNpxS8+QcDUvw=
+X-Google-Smtp-Source: ABdhPJxDy17/TTh6YO6BE6Y3WkyWgxgVz/eJY3iQUSot3fbp2xBJvmrxpW+mu86675CUHKgw4Q5FVQ==
+X-Received: by 2002:a1c:46c5:0:b0:38e:6a96:1aa0 with SMTP id t188-20020a1c46c5000000b0038e6a961aa0mr12777360wma.186.1649343233891;
+        Thu, 07 Apr 2022 07:53:53 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id n65-20020a1c2744000000b003862bfb509bsm7732264wmn.46.2022.04.07.07.53.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 07:53:53 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 14:53:51 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Wei Liu <wei.liu@kernel.org>,
+        Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>,
+        kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
+        sthemmin@microsoft.com, Michael Kelley <mikelley@microsoft.com>
+Subject: [GIT PULL] Hyper-V fixes for 5.18-rc2
+Message-ID: <20220407145351.n5nnpcp4rqusrqnh@liuwe-devbox-debian-v2>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+Hi Linus,
 
-krzysztof.kozlowski@linaro.org wrote on Thu,  7 Apr 2022 16:34:05 +0200:
+The following changes since commit f443e374ae131c168a065ea1748feac6b2e76613:
 
-> The node names should be generic and SPI NOR dtschema expects "flash".
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+  Linux 5.17 (2022-03-20 13:14:17 -0700)
 
-Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
+are available in the Git repository at:
 
-Thanks,
-Miqu=C3=A8l
+  ssh://git@gitolite.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git tags/hyperv-fixes-signed-20220407
+
+for you to fetch changes up to eaa03d34535872d29004cb5cf77dc9dec1ba9a25:
+
+  Drivers: hv: vmbus: Replace smp_store_mb() with virt_store_mb() (2022-04-06 13:31:58 +0000)
+
+----------------------------------------------------------------
+hyperv-fixes for 5.18-rc2
+  - Correctly propagate coherence information for VMbus devices (Michael
+    Kelley)
+  - Disable balloon and memory hot-add on ARM64 temporarily (Boqun Feng)
+  - Use barrier to prevent reording when reading ring buffer (Michael
+    Kelley)
+  - Use virt_store_mb in favour of smp_store_mb (Andrea Parri)
+  - Fix VMbus device object initialization (Andrea Parri)
+  - Deactivate sysctl_record_panic_msg on isolated guest (Andrea Parri)
+  - Fix a crash when unloading VMbus module (Guilherme G. Piccoli)
+----------------------------------------------------------------
+Andrea Parri (Microsoft) (3):
+      Drivers: hv: vmbus: Deactivate sysctl_record_panic_msg by default in isolated guests
+      Drivers: hv: vmbus: Fix initialization of device object in vmbus_device_register()
+      Drivers: hv: vmbus: Replace smp_store_mb() with virt_store_mb()
+
+Boqun Feng (2):
+      Drivers: hv: balloon: Support status report for larger page sizes
+      Drivers: hv: balloon: Disable balloon and hot-add accordingly
+
+Guilherme G. Piccoli (1):
+      Drivers: hv: vmbus: Fix potential crash on module unload
+
+Michael Kelley (3):
+      Drivers: hv: vmbus: Propagate VMbus coherence to each VMbus device
+      PCI: hv: Propagate coherence from VMbus device to PCI device
+      Drivers: hv: vmbus: Prevent load re-ordering when reading ring buffer
+
+ drivers/hv/channel_mgmt.c           |  6 ++--
+ drivers/hv/hv_balloon.c             | 49 +++++++++++++++++++++++++---
+ drivers/hv/hv_common.c              | 11 +++++++
+ drivers/hv/ring_buffer.c            | 11 ++++++-
+ drivers/hv/vmbus_drv.c              | 65 ++++++++++++++++++++++++++++++-------
+ drivers/pci/controller/pci-hyperv.c |  9 +++++
+ include/asm-generic/mshyperv.h      |  1 +
+ 7 files changed, 132 insertions(+), 20 deletions(-)
