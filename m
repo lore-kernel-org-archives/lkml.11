@@ -2,130 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C584BC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14203C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244260AbiDGKcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 06:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50870 "EHLO
+        id S244279AbiDGKdH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 06:33:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiDGKc0 (ORCPT
+        with ESMTP id S240653AbiDGKdC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 06:32:26 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35295BC11
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 03:30:26 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EA39523A;
-        Thu,  7 Apr 2022 03:30:25 -0700 (PDT)
-Received: from bogus (unknown [10.57.43.163])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EFE073F5A1;
-        Thu,  7 Apr 2022 03:30:24 -0700 (PDT)
-Date:   Thu, 7 Apr 2022 11:30:22 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     =?utf-8?B?546L5pOO?= <wangqing@vivo.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        wangqing <11112896@bbktel.com>
-Subject: Re: [PATCH] arch_topology: support parsing cache topology from DT
-Message-ID: <20220407103022.fim3cvpnzfngyzkt@bogus>
-References: <1649236680-4340-1-git-send-email-wangqing@vivo.com>
- <20220406110655.iimv6s4godvgfwoq@bogus>
- <SL2PR06MB3082F70F1F4CE661288103C1BDE69@SL2PR06MB3082.apcprd06.prod.outlook.com>
+        Thu, 7 Apr 2022 06:33:02 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F98252E4E;
+        Thu,  7 Apr 2022 03:31:02 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id qh7so9812816ejb.11;
+        Thu, 07 Apr 2022 03:31:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bOp7/tC9bFhm53CLsSm24svzgwwfQBWtUDQnB+bIBuE=;
+        b=KXwh36Kseg3CVGevbGAE8a3Ax24ainsjSrWTaHc30TLr2jSFkdYRDP0MaSryXI8M4v
+         FBHfLFYpoaQGSX3GW2cn0FoJDmWZ1vY3c3fg+wtOnngvNO9fE1sDRwmM6BGgex1DwxnF
+         r4oLScN+3qnwGdSh7+7vGPHJ1nZj0pdz8DUgZEw73PY1+09R25O6X9g0y/cs1VDWQ6pv
+         zV/3gMcje94ykVaOdS1+CfDw6AGlQ9cM/Szvnq8SvH1mSJj6CZ77tt22yeMFUhscgNni
+         QxdGGaxRWKPWZXYuyzF9XzYRAt78E0o4Df2jSqk1sXM15r8hDe8ygGJ3e6wiHffdLIaw
+         Lrog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bOp7/tC9bFhm53CLsSm24svzgwwfQBWtUDQnB+bIBuE=;
+        b=Axg6plfRyVgrPeUHrlrylxowvoZllcY2QjEv3NCroSDHjELHvvLY/XAQonCg58nfES
+         H+WW/rNyMhL1mlQhkyH0FcY28xXVjrOKCQtYCG2JVobEQMkTDkhDaZwX5lbq/5JHlyU0
+         X8mD7hpKC2efx1g9fazg+pQsJ9QjFE0o6W0Twzy8qF8ozkT9ku4BFwnJvu4IZ0dkq9u9
+         AaACILdDWKGhWmL9WSuulUbyajN9h1CFuGUvw1YD48OrUi1ILgJ0qrLFCQhtuHwb1HuT
+         ywWPCQ2bHyjqjUANaLRfxoGoZ+KPBORXWb241RlD+sGeom4bsWzHD4TYzqzwhdqWZsuq
+         X9xg==
+X-Gm-Message-State: AOAM532q7qxI1dHW+B7aNf6sbiv9P3tV14n9ke8GxfMgi04QIYGYlqlx
+        bf1BxGl3ou86LXdnEyxp4/g=
+X-Google-Smtp-Source: ABdhPJwqHs9nH5lpOjXcb6/qKvV0pCQNXS3T+Kk1mOdvii1ND6yeM2aFqKeCAbxHGyh62D14O+e0lg==
+X-Received: by 2002:a17:907:8a19:b0:6e8:a7e:5f50 with SMTP id sc25-20020a1709078a1900b006e80a7e5f50mr12871020ejc.322.1649327461054;
+        Thu, 07 Apr 2022 03:31:01 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm7413573ejz.57.2022.04.07.03.30.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 03:31:00 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Michael Walle <michael@walle.cc>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: [PATCH net-next 00/15] net: Remove use of list iterator after loop body
+Date:   Thu,  7 Apr 2022 12:28:45 +0200
+Message-Id: <20220407102900.3086255-1-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <SL2PR06MB3082F70F1F4CE661288103C1BDE69@SL2PR06MB3082.apcprd06.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 03:11:51AM +0000, 王擎 wrote:
-> 
-> >> From: wangqing <11112896@bbktel.com>
-> >> 
-> >> When ACPI is not enabled, we can parse cache topolopy from DT:
-> >> *             cpu0: cpu@000 {
-> >> *                     next-level-cache = <&L2_1>;
-> >> *                     L2_1: l2-cache {
-> >> *                              compatible = "cache";
-> >> *                             next-level-cache = <&L3_1>;
-> >> *                      };
-> >> *                     L3_1: l3-cache {
-> >> *                              compatible = "cache";
-> >> *                      };
-> >> *             };
-> >> *
-> >> *             cpu1: cpu@001 {
-> >> *                     next-level-cache = <&L2_1>;
-> >> *             };
-> >> *             cpu2: cpu@002 {
-> >> *                     L2_2: l2-cache {
-> >> *                              compatible = "cache";
-> >> *                             next-level-cache = <&L3_1>;
-> >> *                     };
-> >> *             };
-> >> *
-> >> *             cpu3: cpu@003 {
-> >> *                     next-level-cache = <&L2_2>;
-> >> *             };
-> >> cache_topology hold the pointer describing "next-level-cache", 
-> >> it can describe the cache topology of every level.
-> >> 
-> >> Expand the use of llc_sibling when ACPI is not enabled.
-> >>
-> >
-> >You seem to have posted this patch as part of the series first. One patch
-> >was rejected and then you post this without any history. It confuses if you
-> >don't provide all the background/history.
->
-> Yes, the series contains several parts, the sched_domain part was rejected
-> temporary. But it has nothing to do with this patch, that's why I took it apart.
+When the list iterator loop does not exit early the list iterator variable
+contains a type-confused pointer to a 'bogus' list element computed based
+on the head [1].
 
-That's not correct if you plan to use it there. Currently no users so no need
-to add.
+Often a 'found' variable is used to ensure the list iterator
+variable is only accessed after the loop body if the loop did exit early
+(using a break or goto).
 
-> The background doesn't matter, let's focus on this patch itself.
->
+In other cases that list iterator variable is used in
+combination to access the list member which reverses the invocation of
+container_of() and brings back a "safe" pointer to the head of the list.
 
-It depends, some people might find it useful, so better to provide it.
-One can ignore if that is not needed or if they are already aware.
+Since, due to this code patten, there were quite a few bugs discovered [2],
+Linus concluded that the rule should be to never use the list iterator
+after the loop and introduce a dedicated pointer for that [3].
 
-> >
-> >Having said that, NACK for this patch as it stands. We have
-> >drivers/base/cacheinfo.c which has all the parsing of cache information.
-> >IIRC we already consider LLC but highlight if anything is particularly
-> >missing. I am unable to follow/understand with you commit message. 
-> 
-> cacheinfo.c just describes the properties of the cache, It can't describe
-> the cache topology, some like cpuinfo and cpu topology.
-> 
+With the new gnu11 standard, it will now be possible to limit the scope
+of the list iterator variable to the traversal loop itself by defining
+the variable within the for loop.
+This, however, requires to remove all uses of the list iterator after
+the loop.
 
-Not 100% correct. We do have info about sharing there.
+Based on input from Paolo Abeni [4], Vinicius Costa Gomes [5], and
+Jakub Kicinski [6], I've splitted all the net-next related changes into
+two patch sets, where this is part 1.
 
-> llc_sibling is not used at all if ACPI is not enabled, because llc_id
-> always be -1, and cpu_coregroup_mask() always return the core_sibling.
->
+Link: https://lwn.net/Articles/887097/ [1]
+Link: https://lore.kernel.org/linux-kernel/20220217184829.1991035-4-jakobkoschel@gmail.com/ [2]
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [3]
+Link: https://lore.kernel.org/linux-kernel/7393b673c626fd75f2b4f8509faa5459254fb87c.camel@redhat.com/ [4]
+Link: https://lore.kernel.org/linux-kernel/877d8a3sww.fsf@intel.com/ [5]
+Link: https://lore.kernel.org/linux-kernel/20220403205502.1b34415d@kernel.org/ [6]
 
-You can use of_find_last_level_cache or something similar and remove load
-of duplicated code you have in this patch.
-
-> Why not get the cache topology from DT if the arch support GENERIC_ARCH_TOPOLOGY.
->
-
-Sure but if the intended use is for scheduler, please include relevant people
-as there are quite a few threads around the topic recently and disintegrating
-and throwing patches at random with different set of people is not going to
-help make progress. If this is intended for Arm64 platforms, I suggest to
-keep these 2 in the loop as they are following few other threads and gives
-them full picture of intended use-case.
-
-Vincent Guittot <vincent.guittot@linaro.org>
-Dietmar Eggemann <dietmar.eggemann@arm.com>
-
---
-Regards,
-Sudeep
