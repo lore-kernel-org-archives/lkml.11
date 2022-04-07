@@ -2,121 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 827BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235608AbiDGJsX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43458 "EHLO
+        id S243962AbiDGJsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231882AbiDGJsS (ORCPT
+        with ESMTP id S231882AbiDGJsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:48:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1B453FBEF
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:46:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649324776;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Thu, 7 Apr 2022 05:48:46 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41A4DB2EE;
+        Thu,  7 Apr 2022 02:46:45 -0700 (PDT)
+Date:   Thu, 07 Apr 2022 09:46:42 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649324803;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=CIrkyxw2ltSATsongCKPkeTXMJ2u05ZyiioovqE8L0s=;
-        b=XOfPxoDk9VCcvJYem46YEBw3tYjh8uvmu8n+694jbfSz/1w2ziGeEfRbahUXzmv36uwbqS
-        h7JabP+wWTcE5poq9U53zO9RmvpySR31rPhi5xP5eNARGxvZQlunAhlAYhq8B2WwIqglGF
-        vZ3slaU32ANsYstlrM1DAVMj4TasVvM=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-198--2P25L-bNzivvLEzGm_LRg-1; Thu, 07 Apr 2022 05:46:15 -0400
-X-MC-Unique: -2P25L-bNzivvLEzGm_LRg-1
-Received: by mail-wm1-f71.google.com with SMTP id m3-20020a05600c3b0300b0038e74402cb6so2714624wms.8
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 02:46:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=CIrkyxw2ltSATsongCKPkeTXMJ2u05ZyiioovqE8L0s=;
-        b=mvjzeVywDx/WKnvtNfgAi410++eiHZoloOsZGKPBtQKAAG/5v2ssKiU5WW+kPKogKZ
-         r5hv/PckGg3GREAQ1j/cPX+eVjsvqYfX1umXw5nSSaX+c+P49I4h2QF6zXZeRFR9vY7t
-         fy9oASEKf0kGOsCv9DiJaD0+Qx7/VuLkd4qk2FmyvllPeg+WLnUGQjHutmcNbuj84Hjd
-         KQBGxY9aDehhuOqDYVdEaZWZs3PYKHrG/J5LEYgIQQqDYHLZF3ewpA7ATrnuec867lWg
-         zkzWZVsWzYvdr+oGBL8neiCcPsc80GAfqWuD5TKLYFahbH6QTwzagIFGAgh5pz8O64hx
-         vFEg==
-X-Gm-Message-State: AOAM531sK+kGvhHTrrQTW5FDYCENIBFgl5ASCrHdnWWUBGFqPFJhicjw
-        7Q24HhbVk/7YldbQbPV7XX2itHurcNIKa5aXfTXdskhyvytHpx/zMiDFtnRGlohbphnuYbVfoZQ
-        0U9Pyp5ab8kfktFWXsEE0ZYfQ
-X-Received: by 2002:a1c:f005:0:b0:38c:b6d5:5c2a with SMTP id a5-20020a1cf005000000b0038cb6d55c2amr11560875wmb.89.1649324774614;
-        Thu, 07 Apr 2022 02:46:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzaV/O4sc8yI66xNvj9tArkavzQBoS8J9F6Pviebz+CdcTWfctMEO9PWcH/8H60MajLM0j21Q==
-X-Received: by 2002:a1c:f005:0:b0:38c:b6d5:5c2a with SMTP id a5-20020a1cf005000000b0038cb6d55c2amr11560857wmb.89.1649324774387;
-        Thu, 07 Apr 2022 02:46:14 -0700 (PDT)
-Received: from ?IPV6:2a09:80c0:192:0:20af:34be:985b:b6c8? ([2a09:80c0:192:0:20af:34be:985b:b6c8])
-        by smtp.gmail.com with ESMTPSA id l28-20020a05600c1d1c00b0038e72a95ec4sm8249142wms.13.2022.04.07.02.46.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 02:46:13 -0700 (PDT)
-Message-ID: <1028ca3c-5b6c-d95e-9372-ae64b1fcbc82@redhat.com>
-Date:   Thu, 7 Apr 2022 11:46:13 +0200
+        bh=DbcNs/iB+XHJ6Q7gAFJap5zTd8ARrfJfHlYKmBThiXE=;
+        b=yS2L3KDCPdDnM1D+svjkOqGnCGy+g/T+BW7rt79b64zOGMbnxb4L78BL2rIFzxGXjtQbkb
+        cozBd4ez5LQQTcqTHK6GU1vy8EZvVgu456SSeelQ7FeMzAHkDD0Qka+GNNRPPWw4lX5jV+
+        9r9WGXmDjo++ugGQWfyFzZCsWw71Ip5bfbiPYMlq7opuymJcu+GQThbUXe3QZ4hJ9KDtlZ
+        pt6QRuMMBk5vh3Jcpp2n5Na0NSMlEP8L++E13SWq34WJNmcxIkRNaLdFvgsYpNCpRtDPdN
+        Gi5q9nLRdIMrvOP//QPo5X3yZdZmMAojSLN5W9nVfukLf9XDzZYTK61BDb4DJg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649324803;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DbcNs/iB+XHJ6Q7gAFJap5zTd8ARrfJfHlYKmBThiXE=;
+        b=nFn9IhC+LEQo8j6MKUVQ7N9LkK9Y7US2MlV3tVCIh2O+oLGvtrBgc8bhLFKenMuGj2B7Ww
+        Qda4RmOOKjyPBbDA==
+From:   "tip-bot2 for Nick Desaulniers" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/extable: Prefer local labels in .set directives
+Cc:     Bernardo Meurer Costa <beme@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220329202148.2379697-1-ndesaulniers@google.com>
+References: <20220329202148.2379697-1-ndesaulniers@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] mm, page_alloc: fix build_zonerefs_node()
-Content-Language: en-US
-To:     Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>, stable@vger.kernel.org,
-        =?UTF-8?Q?Marek_Marczykowski-G=c3=b3recki?= 
-        <marmarek@invisiblethingslab.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Wei Yang <richard.weiyang@gmail.com>
-References: <20220407093221.1090-1-jgross@suse.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220407093221.1090-1-jgross@suse.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164932480205.389.17976490285637093019.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07.04.22 11:32, Juergen Gross wrote:
-> Since commit 9d3be21bf9c0 ("mm, page_alloc: simplify zonelist
-> initialization") only zones with free memory are included in a built
-> zonelist. This is problematic when e.g. all memory of a zone has been
-> ballooned out.
-> 
-> Use populated_zone() when building a zonelist as it has been done
-> before that commit.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 9d3be21bf9c0 ("mm, page_alloc: simplify zonelist initialization")
-> Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-> Signed-off-by: Juergen Gross <jgross@suse.com>
-> ---
->  mm/page_alloc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index bdc8f60ae462..3d0662af3289 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -6128,7 +6128,7 @@ static int build_zonerefs_node(pg_data_t *pgdat, struct zoneref *zonerefs)
->  	do {
->  		zone_type--;
->  		zone = pgdat->node_zones + zone_type;
-> -		if (managed_zone(zone)) {
-> +		if (populated_zone(zone)) {
->  			zoneref_set_zone(zone, &zonerefs[nr_zones++]);
->  			check_highest_zone(zone_type);
->  		}
+The following commit has been merged into the x86/urgent branch of tip:
 
-Let's see if we have to find another way to properly handle fadump.
+Commit-ID:     334865b2915c33080624e0d06f1c3e917036472c
+Gitweb:        https://git.kernel.org/tip/334865b2915c33080624e0d06f1c3e917036472c
+Author:        Nick Desaulniers <ndesaulniers@google.com>
+AuthorDate:    Tue, 29 Mar 2022 13:21:45 -07:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Thu, 07 Apr 2022 11:27:02 +02:00
 
-Acked-by: David Hildenbrand <david@redhat.com>
+x86/extable: Prefer local labels in .set directives
 
--- 
-Thanks,
+Bernardo reported an error that Nathan bisected down to
+(x86_64) defconfig+LTO_CLANG_FULL+X86_PMEM_LEGACY.
 
-David / dhildenb
+    LTO     vmlinux.o
+  ld.lld: error: <instantiation>:1:13: redefinition of 'found'
+  .set found, 0
+              ^
 
+  <inline asm>:29:1: while in macro instantiation
+  extable_type_reg reg=%eax, type=(17 | ((0) << 16))
+  ^
+
+This appears to be another LTO specific issue similar to what was folded
+into commit 4b5305decc84 ("x86/extable: Extend extable functionality"),
+where the `.set found, 0` in DEFINE_EXTABLE_TYPE_REG in
+arch/x86/include/asm/asm.h conflicts with the symbol for the static
+function `found` in arch/x86/kernel/pmem.c.
+
+Assembler .set directive declare symbols with global visibility, so the
+assembler may not rename such symbols in the event of a conflict. LTO
+could rename static functions if there was a conflict in C sources, but
+it cannot see into symbols defined in inline asm.
+
+The symbols are also retained in the symbol table, regardless of LTO.
+
+Give the symbols .L prefixes making them locally visible, so that they
+may be renamed for LTO to avoid conflicts, and to drop them from the
+symbol table regardless of LTO.
+
+Fixes: 4b5305decc84 ("x86/extable: Extend extable functionality")
+Reported-by: Bernardo Meurer Costa <beme@google.com>
+Debugged-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+Link: https://lore.kernel.org/r/20220329202148.2379697-1-ndesaulniers@google.com
+---
+ arch/x86/include/asm/asm.h | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
+index c878fed..fbcfec4 100644
+--- a/arch/x86/include/asm/asm.h
++++ b/arch/x86/include/asm/asm.h
+@@ -154,24 +154,24 @@
+ 
+ # define DEFINE_EXTABLE_TYPE_REG \
+ 	".macro extable_type_reg type:req reg:req\n"						\
+-	".set found, 0\n"									\
+-	".set regnr, 0\n"									\
++	".set .Lfound, 0\n"									\
++	".set .Lregnr, 0\n"									\
+ 	".irp rs,rax,rcx,rdx,rbx,rsp,rbp,rsi,rdi,r8,r9,r10,r11,r12,r13,r14,r15\n"		\
+ 	".ifc \\reg, %%\\rs\n"									\
+-	".set found, found+1\n"									\
+-	".long \\type + (regnr << 8)\n"								\
++	".set .Lfound, .Lfound+1\n"								\
++	".long \\type + (.Lregnr << 8)\n"							\
+ 	".endif\n"										\
+-	".set regnr, regnr+1\n"									\
++	".set .Lregnr, .Lregnr+1\n"								\
+ 	".endr\n"										\
+-	".set regnr, 0\n"									\
++	".set .Lregnr, 0\n"									\
+ 	".irp rs,eax,ecx,edx,ebx,esp,ebp,esi,edi,r8d,r9d,r10d,r11d,r12d,r13d,r14d,r15d\n"	\
+ 	".ifc \\reg, %%\\rs\n"									\
+-	".set found, found+1\n"									\
+-	".long \\type + (regnr << 8)\n"								\
++	".set .Lfound, .Lfound+1\n"								\
++	".long \\type + (.Lregnr << 8)\n"							\
+ 	".endif\n"										\
+-	".set regnr, regnr+1\n"									\
++	".set .Lregnr, .Lregnr+1\n"								\
+ 	".endr\n"										\
+-	".if (found != 1)\n"									\
++	".if (.Lfound != 1)\n"									\
+ 	".error \"extable_type_reg: bad register argument\"\n"					\
+ 	".endif\n"										\
+ 	".endm\n"
