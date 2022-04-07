@@ -2,211 +2,424 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 836FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 04:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96648C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 04:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240718AbiDGEez (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 00:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47626 "EHLO
+        id S240720AbiDGEkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 00:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240674AbiDGEeU (ORCPT
+        with ESMTP id S236972AbiDGEkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 00:34:20 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452111E869E;
-        Wed,  6 Apr 2022 21:32:22 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id bh17so8285066ejb.8;
-        Wed, 06 Apr 2022 21:32:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fnlZDRRS7PR+XhZFKAMVuyrkTCKVrR39UF+kw4DUCS0=;
-        b=BM9yF4lax9++9+ia/3A+nNKqN4zI6aKd9ErEK1F9b9SLYKIxtr/GuRoFFKh01k+5Gl
-         7FYHRR/KzDJ1DMWQgccwTYACFks3lG9azjO5G93lyabu9XFUF338NE+BtZRzEbJN8LG3
-         Bx0En7Cg1wBs4tXHuI+88Z7xY74SAzL2t2DSKMYVzMfnOeGqu49IEGF+jlvOn9l0ANhF
-         d50+VqMjiUIZQuYIFujVSLXMX9olUig6tOoBtGBtgZQBu8v8Ft8pWPiRWRD6mF11N5cZ
-         NDzgWg+Gagqm5NWS3ZyyuBfELYhxu53g37Hz834vXKEhgL7L2wVltekkBi7gaHfBp5Wv
-         Kc9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fnlZDRRS7PR+XhZFKAMVuyrkTCKVrR39UF+kw4DUCS0=;
-        b=CDbjziNummREBnzuEpBs5xm0EYJeyvUWiblHCQyXljvqQr087GyRnCoPo8Z8kJpV2C
-         zGDnl0jyTMIfMRzTs3czKQQNDQ0W6L3ad+jvEAABuyloOQM61C7EK/BzChcM/4bYQCaB
-         nsODnlrj+2VzPJfgPWmVNJTsyIBGCDOMiTbBhYr7N+DdkhUDzaxJ620A37ikRQ2C+sm/
-         L5iQGtzhhHwpbrD+lFTH5/0+rzkjbz+g9bwP+F7a9dpGwsNwaJXOuq43wmZ8asoTgeks
-         L8tlxHHsXprtwyzi8CVQp0zux6Uzp6iz0uIX4F+pGb7fNq1kFLJTKrsEan6SdklbyfFa
-         zfOw==
-X-Gm-Message-State: AOAM531ZiEZRR2UE84tfvKUBxp4CNsjTSO2KpvhtKS/a5FbGkp9POCt+
-        JKzKZZWD9kqMOvFMAEDKx0M=
-X-Google-Smtp-Source: ABdhPJzz9E6ugccX49b5so3/0qNL929ZI5Flwv/RHmpUhYr2mojndRYy9BSupaQ4p5pdfzbcYFNLEQ==
-X-Received: by 2002:a17:907:60c8:b0:6da:83f0:9eaa with SMTP id hv8-20020a17090760c800b006da83f09eaamr11172034ejc.605.1649305940725;
-        Wed, 06 Apr 2022 21:32:20 -0700 (PDT)
-Received: from anparri.mshome.net (host-87-11-75-174.retail.telecomitalia.it. [87.11.75.174])
-        by smtp.gmail.com with ESMTPSA id ke11-20020a17090798eb00b006e7fbf53398sm3531341ejc.129.2022.04.06.21.32.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 21:32:20 -0700 (PDT)
-From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-To:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Hu <weh@microsoft.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Wilczynski <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Cc:     linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Subject: [PATCH 6/6] PCI: hv: Fix synchronization between channel callback and hv_compose_msi_msg()
-Date:   Thu,  7 Apr 2022 06:30:28 +0200
-Message-Id: <20220407043028.379534-7-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220407043028.379534-1-parri.andrea@gmail.com>
-References: <20220407043028.379534-1-parri.andrea@gmail.com>
+        Thu, 7 Apr 2022 00:40:47 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8B82AEC
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 21:38:42 -0700 (PDT)
+Received: from epcas1p4.samsung.com (unknown [182.195.41.48])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220407043837epoutp01584d2713fcca5dc4271b3aebf65c5f89~jg1trhu3Z1948019480epoutp01j
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 04:38:37 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220407043837epoutp01584d2713fcca5dc4271b3aebf65c5f89~jg1trhu3Z1948019480epoutp01j
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1649306317;
+        bh=VHmiI3d9Xut6qR1GYICSsDU2ZZOA18eRLKHPPyc307U=;
+        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+        b=gsLIui/26xmkGg1aggE86NzFbPATs+W5xDdBC7PqVyhV9A8IItAFFbyCp5m3ig1oQ
+         HrSE8zos0LU7JVxVlQhTLVesGxXIgoH2/N86f0tjDlarHycEODlt3LJlcAeYAPpLJp
+         3UMZmlu6EWdyBhKkn0UDHkFSCAGvD2g0l4dSXiMQ=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220407043836epcas1p13f0f98ede8308b35b0f47a79dfa6b61b~jg1szUUrR0490404904epcas1p1P;
+        Thu,  7 Apr 2022 04:38:36 +0000 (GMT)
+Received: from epsmges1p2.samsung.com (unknown [182.195.38.235]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4KYpY61BKFz4x9QC; Thu,  7 Apr
+        2022 04:38:34 +0000 (GMT)
+Received: from epcas1p2.samsung.com ( [182.195.41.46]) by
+        epsmges1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        77.DB.08277.9CA6E426; Thu,  7 Apr 2022 13:38:33 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas1p4.samsung.com (KnoxPortal) with ESMTPA id
+        20220407043833epcas1p4c3282e9e8cfcff21a51689e6d2293050~jg1qYaJLo2685326853epcas1p4M;
+        Thu,  7 Apr 2022 04:38:33 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220407043833epsmtrp1a1bcb069d063580f30896571bb102714~jg1qXh0UA0407204072epsmtrp1R;
+        Thu,  7 Apr 2022 04:38:33 +0000 (GMT)
+X-AuditID: b6c32a36-1edff70000002055-71-624e6ac9a435
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        D7.30.24342.9CA6E426; Thu,  7 Apr 2022 13:38:33 +0900 (KST)
+Received: from [10.113.221.102] (unknown [10.113.221.102]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220407043833epsmtip2893e9265cfc281b777249027ed4cd0b3~jg1qDrOc40096900969epsmtip2c;
+        Thu,  7 Apr 2022 04:38:33 +0000 (GMT)
+Subject: Re: [RFC PATCH 1/2] soc: rockchip: power-domain: Manage resource
+ conflicts with firmware
+To:     Brian Norris <briannorris@chromium.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Elaine Zhang <zhangqing@rock-chips.com>,
+        linux-pm@vger.kernel.org, Doug Anderson <dianders@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+From:   Chanwoo Choi <cw00.choi@samsung.com>
+Organization: Samsung Electronics
+Message-ID: <c8664eae-4a10-bd1a-8898-01b96c05331e@samsung.com>
+Date:   Thu, 7 Apr 2022 14:04:09 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101
+        Thunderbird/59.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220405184816.RFC.1.Ib865f199d15221eab4ff77f70bd7e9e2eb04d32f@changeid>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrDJsWRmVeSWpSXmKPExsWy7bCmnu6pLL8kg/vWFps+vme1OLvsIJvF
+        /0evgaymN+wWmx5fY7W4vGsOm8Xn3iOMFp8e/Ge2uN24gs3i1sSbTA5cHrMbLrJ4bF5S7/F3
+        1n4Wj74tqxg9tl+bx+zxeZNcAFtUtk1GamJKapFCal5yfkpmXrqtkndwvHO8qZmBoa6hpYW5
+        kkJeYm6qrZKLT4CuW2YO0GFKCmWJOaVAoYDE4mIlfTubovzSklSFjPziElul1IKUnALTAr3i
+        xNzi0rx0vbzUEitDAwMjU6DChOyM2atWsRW8CKy4NIGrgXGqYxcjJ4eEgInE4ScnmbsYuTiE
+        BHYwSrRM/cYO4XxilPi19iArhPONUaJzwk5WmJa2F0uhWvYySvTuXsMI4bxnlDg+v40JpEpY
+        IFni+7FGsCoRgaWMEje2vwNLMAvcYJTonqEEYrMJaEnsf3GDDcTmF1CUuPrjMSOIzStgJzH3
+        4Ad2EJtFQEVi1sz5LCC2qECYxMltLVA1ghInZz4Bi3MCxc8972SEmC8ucevJfKhd8hLb384B
+        O0JCYAuHxN1bc5khfnCR2HhvKhuELSzx6vgWdghbSuJlfxs7REMzo0TDi9uMEE4Po8TRZ30s
+        EFXGEvuXTgZawQG0QlNi/S59iLCixM7fc6Gu4JN497WHFaREQoBXoqNNCKJEWeLyg7tMELak
+        xOL2TrYJjEqzkPwzC8kPs5D8MAth2QJGllWMYqkFxbnpqcWGBUbw+E7Oz93ECE62WmY7GCe9
+        /aB3iJGJg/EQowQHs5IIb1WuT5IQb0piZVVqUX58UWlOavEhRlNgCE9klhJNzgem+7ySeEMT
+        SwMTMyNjEwtDM0Mlcd5V004nCgmkJ5akZqemFqQWwfQxcXBKNTCZ98RWyP6uMzspcHQKq4WG
+        5cF/565P/rP/pezSGe/N4loy70vd3z3rfijT2bv+gosnMPr/FuBgaMsrs97xe7UJY63qXgPr
+        JrNtfQqnQtoYKsR36nIqsVeHbWm4K/s4MmR6XG3EZPsY/j16pb7TDrcquspmGH3eLTWFoTTF
+        Y87lOXVKS478au6f8HnlJM7f0sWmGmdX5/crij5vrS971pjkLOAkMit5X+Xd99YO3l9N67gc
+        79+xW8257dJkXpOEH9P+35j4mnXy8+OXfhiYS++vsBGyyn7253XG8S++AS0HT8m1hKdldz5w
+        Xv55kWdmeVWW4cqz04wClmcvXW/8ZcahExJFy+S8F7G8XlmptE+JpTgj0VCLuag4EQBlqM7u
+        PwQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprOIsWRmVeSWpSXmKPExsWy7bCSvO7JLL8kgyVT5C02fXzPanF22UE2
+        i/+PXgNZTW/YLTY9vsZqcXnXHDaLz71HGC0+PfjPbHG7cQWbxa2JN5kcuDxmN1xk8di8pN7j
+        76z9LB59W1Yxemy/No/Z4/MmuQC2KC6blNSczLLUIn27BK6M2atWsRW8CKy4NIGrgXGqYxcj
+        J4eEgIlE24ulzF2MXBxCArsZJS5sWMgOkZCUmHbxKFCCA8gWljh8uBii5i1QzaxmFpAaYYFk
+        ie/HGsGaRQSWMkr07//FBuIwC9xglJh+fBsLRMt9RonuyT+YQVrYBLQk9r+4wQZi8wsoSlz9
+        8ZgRxOYVsJOYe/AD2GoWARWJWTPng60QFQiT2LnkMRNEjaDEyZlPwOKcQPFzzzvBepkF1CX+
+        zLvEDGGLS9x6Mp8JwpaX2P52DvMERuFZSNpnIWmZhaRlFpKWBYwsqxglUwuKc9Nziw0LDPNS
+        y/WKE3OLS/PS9ZLzczcxguNOS3MH4/ZVH/QOMTJxMB5ilOBgVhLhrcr1SRLiTUmsrEotyo8v
+        Ks1JLT7EKM3BoiTOe6HrZLyQQHpiSWp2ampBahFMlomDU6qByXBP+fkK6V0dK1fIq0nMFNlS
+        NHG2zONtxcqzzEO9/nyL+jI74XFc8bKm88fqKjJzl91ZHfB/9bvtJsvPMisGxIlXSe5ViRPl
+        VNwj/vKuxfyctiqXsjVnRQpvPg+Y/ay7sbn+6ckNW//8tbJJuR08L+ihaOMF8fbC2Ny5Alu2
+        ztv4NyjfRVmlny3xHcPnKIOnHZL1fFGmJrnPvRM/uBYH75q7k+HpgicJq7obZc1+GjO+dOMV
+        /1uxdM6px63ld+aoSE14M6dmX9ztnx8EmFISUsQlJ3AEbJ1iHLQqXH3ixhmB74+yHjW1FDPI
+        e9mgZ5vxSlfwyGVztyl99jqb9347elA1Wd577a/DfyvnvExQVGIpzkg01GIuKk4EAIyYoecq
+        AwAA
+X-CMS-MailID: 20220407043833epcas1p4c3282e9e8cfcff21a51689e6d2293050
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: SVC_REQ_APPROVE
+CMS-TYPE: 101P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220406094558epcas1p4fa0c77a5acd6b73c192f6b19136cd5f9
+References: <20220406014842.2771799-1-briannorris@chromium.org>
+        <CGME20220406094558epcas1p4fa0c77a5acd6b73c192f6b19136cd5f9@epcas1p4.samsung.com>
+        <20220405184816.RFC.1.Ib865f199d15221eab4ff77f70bd7e9e2eb04d32f@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dexuan wrote:
+Hi Brian,
 
-  "[...]  when we disable AccelNet, the host PCI VSP driver sends a
-   PCI_EJECT message first, and the channel callback may set
-   hpdev->state to hv_pcichild_ejecting on a different CPU.  This can
-   cause hv_compose_msi_msg() to exit from the loop and 'return', and
-   the on-stack variable 'ctxt' is invalid.  Now, if the response
-   message from the host arrives, the channel callback will try to
-   access the invalid 'ctxt' variable, and this may cause a crash."
+Thanks for very detailed description.
+I understand this issue.
 
-Schematically:
+Instead of adding the specific function for only rockchip,
+how about adding new function pointer (like block/unblock or start/stop and others)
+into 'struct generic_pm_domain'? And add new pm_genpd_* function
+to control the power domain. Because it is better to use subsystem interface.
 
-  Hyper-V sends PCI_EJECT msg
-    hv_pci_onchannelcallback()
-      state = hv_pcichild_ejecting
-                                       hv_compose_msi_msg()
-                                         alloc and init comp_pkt
-                                         state == hv_pcichild_ejecting
-  Hyper-V sends VM_PKT_COMP msg
-    hv_pci_onchannelcallback()
-      retrieve address of comp_pkt
-                                         'free' comp_pkt and return
-      comp_pkt->completion_func()
+Best Regards,
+Chanwoo Choi
 
-Dexuan also showed how the crash can be triggered after introducing
-suitable delays in the driver code, thus validating the 'assumption'
-that the host can still normally respond to the guest's compose_msi
-request after the host has started to eject the PCI device.
 
-Fix the synchronization by leveraging the requestor lock as follows:
+On 4/6/22 10:48 AM, Brian Norris wrote:
+> On RK3399 platforms, power domains are managed mostly by the kernel
+> (drivers/soc/rockchip/pm_domains.c), but there are a few exceptions
+> where ARM Trusted Firmware has to be involved:
+> 
+> (1) system suspend/resume
+> (2) DRAM DVFS (a.k.a., "ddrfreq")
+> 
+> Exception (1) does not cause much conflict, since the kernel has
+> quiesced itself by the time we make the relevant PSCI call.
+> 
+> Exception (2) can cause conflict, because of two actions:
+> 
+> (a) ARM Trusted Firmware needs to read/modify/write the PMU_BUS_IDLE_REQ
+>     register to idle the memory controller domain; the kernel driver
+>     also has to touch this register for other domains.
+> (b) ARM Trusted Firmware needs to manage the clocks associated with
+>     these domains.
+> 
+> To elaborate on (b): idling a power domain has always required ungating
+> an array of clocks; see this old explanation from Rockchip:
+> https://lore.kernel.org/linux-arm-kernel/54503C19.9060607@rock-chips.com/
+> 
+> Historically, ARM Trusted Firmware has avoided this issue by using a
+> special PMU_CRU_GATEDIS_CON0 register -- this register ungates all the
+> necessary clocks -- when idling the memory controller. Unfortunately,
+> we've found that this register is not 100% sufficient; it does not turn
+> the relevant PLLs on [0].
+> 
+> So it's possible to trigger issues with something like the following:
+> 
+> 1. enable a power domain (e.g., RK3399_PD_VDU) -- kernel will
+>    temporarily enable relevant clocks/PLLs, then turn them back off
+>    2. a PLL (e.g., PLL_NPLL) is part of the clock tree for
+>       RK3399_PD_VDU's clocks but otherwise unused; NPLL is disabled
+> 3. perform a ddrfreq transition (rk3399_dmcfreq_target() -> ...
+>    drivers/clk/rockchip/clk-ddr.c / ROCKCHIP_SIP_DRAM_FREQ)
+>    4. ARM Trusted Firmware unagates VDU clocks (via PMU_CRU_GATEDIS_CON0)
+>    5. ARM Trusted firmware idles the memory controller domain
+>    6. Step 5 waits on the VDU domain/clocks, but NPLL is still off
+> 
+> i.e., we hang the system.
+> 
+> So for (b), we need to at a minimum manage the relevant PLLs on behalf
+> of firmware. It's easier to simply manage the whole clock tree, in a
+> similar way we do in rockchip_pd_power().
+> 
+> For (a), we need to provide mutual exclusion betwen rockchip_pd_power()
+> and firmware. To resolve that, we simply grab the PMU mutex and release
+> it when ddrfreq is done.
+> 
+> The Chromium OS kernel has been carrying versions of part of this hack
+> for a while, based on some new custom notifiers [1]. I've rewritten as a
+> simple function call between the drivers, which is OK because:
+> 
+>  * the PMU driver isn't enabled, and we don't have this problem at all
+>    (the firmware should have left us in an OK state, and there are no
+>    runtime conflicts); or
+>  * the PMU driver is present, and is a single instance.
+> 
+> And the power-domain driver cannot be removed, so there's no lifetime
+> management to worry about.
+> 
+> For completeness, there's a 'dmc_pmu_mutex' to guard (likely
+> theoretical?) probe()-time races. It's OK for the memory controller
+> driver to start running before the PMU, because the PMU will avoid any
+> critical actions during the block() sequence.
+> 
+> [0] The RK3399 TRM for PMU_CRU_GATEDIS_CON0 only talks about ungating
+>     clocks. Based on experimentation, we've found that it does not power
+>     up the necessary PLLs.
+> 
+> [1] CHROMIUM: soc: rockchip: power-domain: Add notifier to dmc driver
+>     https://chromium-review.googlesource.com/q/I242dbd706d352f74ff706f5cbf42ebb92f9bcc60
+>     Notably, the Chromium solution only handled conflict (a), not (b).
+>     In practice, item (b) wasn't a problem in many cases because we
+>     never managed to fully power off PLLs. Now that the (upstream) video
+>     decoder driver performs runtime clock management, we often power off
+>     NPLL.
+> 
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> ---
+> 
+>  drivers/soc/rockchip/pm_domains.c | 118 ++++++++++++++++++++++++++++++
+>  include/soc/rockchip/pm_domains.h |  25 +++++++
+>  2 files changed, 143 insertions(+)
+>  create mode 100644 include/soc/rockchip/pm_domains.h
+> 
+> diff --git a/drivers/soc/rockchip/pm_domains.c b/drivers/soc/rockchip/pm_domains.c
+> index 1b029e494274..bc0afc52299b 100644
+> --- a/drivers/soc/rockchip/pm_domains.c
+> +++ b/drivers/soc/rockchip/pm_domains.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/io.h>
+>  #include <linux/iopoll.h>
+>  #include <linux/err.h>
+> +#include <linux/mutex.h>
+>  #include <linux/pm_clock.h>
+>  #include <linux/pm_domain.h>
+>  #include <linux/of_address.h>
+> @@ -16,6 +17,7 @@
+>  #include <linux/clk.h>
+>  #include <linux/regmap.h>
+>  #include <linux/mfd/syscon.h>
+> +#include <soc/rockchip/pm_domains.h>
+>  #include <dt-bindings/power/px30-power.h>
+>  #include <dt-bindings/power/rk3036-power.h>
+>  #include <dt-bindings/power/rk3066-power.h>
+> @@ -139,6 +141,109 @@ struct rockchip_pmu {
+>  #define DOMAIN_RK3568(name, pwr, req, wakeup)		\
+>  	DOMAIN_M(name, pwr, pwr, req, req, req, wakeup)
+>  
+> +/*
+> + * Dynamic Memory Controller may need to coordinate with us -- see
+> + * rockchip_pmu_block().
+> + *
+> + * dmc_pmu_mutex protects registration-time races, so DMC driver doesn't try to
+> + * block() while we're initializing the PMU.
+> + */
+> +static DEFINE_MUTEX(dmc_pmu_mutex);
+> +static struct rockchip_pmu *dmc_pmu;
+> +
+> +/*
+> + * Block PMU transitions and make sure they don't interfere with ARM Trusted
+> + * Firmware operations. There are two conflicts, noted in the comments below.
+> + *
+> + * Caller must unblock PMU transitions via rockchip_pmu_unblock().
+> + */
+> +int rockchip_pmu_block(void)
+> +{
+> +	struct rockchip_pmu *pmu;
+> +	struct generic_pm_domain *genpd;
+> +	struct rockchip_pm_domain *pd;
+> +	int i, ret;
+> +
+> +	mutex_lock(&dmc_pmu_mutex);
+> +
+> +	/* No PMU (yet)? Then we just block rockchip_pmu_probe(). */
+> +	if (!dmc_pmu)
+> +		return 0;
+> +	pmu = dmc_pmu;
+> +
+> +	/*
+> +	 * mutex blocks all idle transitions: we can't touch the
+> +	 * PMU_BUS_IDLE_REQ (our ".idle_offset") register while ARM Trusted
+> +	 * Firmware might be using it.
+> +	 */
+> +	mutex_lock(&pmu->mutex);
+> +
+> +	/*
+> +	 * Power domain clocks: Per Rockchip, we *must* keep certain clocks
+> +	 * enabled for the duration of power-domain transitions. Most
+> +	 * transitions are handled by this driver, but some cases (in
+> +	 * particular, DRAM DVFS / memory-controller idle) must be handled by
+> +	 * firmware. Firmware can handle most clock management via a special
+> +	 * "ungate" register (PMU_CRU_GATEDIS_CON0), but unfortunately, this
+> +	 * doesn't handle PLLs. We can assist this transition by doing the
+> +	 * clock management on behalf of firmware.
+> +	 */
+> +	for (i = 0; i < pmu->genpd_data.num_domains; i++) {
+> +		genpd = pmu->genpd_data.domains[i];
+> +		if (genpd) {
+> +			pd = to_rockchip_pd(genpd);
+> +			ret = clk_bulk_enable(pd->num_clks, pd->clks);
+> +			if (ret < 0) {
+> +				dev_err(pmu->dev,
+> +					"failed to enable clks for domain '%s': %d\n",
+> +					genpd->name, ret);
+> +				goto err;
+> +			}
+> +		}
+> +	}
+> +
+> +	return 0;
+> +
+> +err:
+> +	for (i = i - 1; i >= 0; i--) {
+> +		genpd = pmu->genpd_data.domains[i];
+> +		if (genpd) {
+> +			pd = to_rockchip_pd(genpd);
+> +			clk_bulk_disable(pd->num_clks, pd->clks);
+> +		}
+> +	}
+> +	mutex_unlock(&pmu->mutex);
+> +	mutex_unlock(&dmc_pmu_mutex);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(rockchip_pmu_block);
+> +
+> +/* Unblock PMU transitions. */
+> +void rockchip_pmu_unblock(void)
+> +{
+> +	struct rockchip_pmu *pmu;
+> +	struct generic_pm_domain *genpd;
+> +	struct rockchip_pm_domain *pd;
+> +	int i;
+> +
+> +	if (dmc_pmu) {
+> +		pmu = dmc_pmu;
+> +		for (i = 0; i < pmu->genpd_data.num_domains; i++) {
+> +			genpd = pmu->genpd_data.domains[i];
+> +			if (genpd) {
+> +				pd = to_rockchip_pd(genpd);
+> +				clk_bulk_disable(pd->num_clks, pd->clks);
+> +			}
+> +		}
+> +
+> +		mutex_unlock(&pmu->mutex);
+> +	}
+> +
+> +	mutex_unlock(&dmc_pmu_mutex);
+> +}
+> +EXPORT_SYMBOL_GPL(rockchip_pmu_unblock);
+> +
+>  static bool rockchip_pmu_domain_is_idle(struct rockchip_pm_domain *pd)
+>  {
+>  	struct rockchip_pmu *pmu = pd->pmu;
+> @@ -690,6 +795,12 @@ static int rockchip_pm_domain_probe(struct platform_device *pdev)
+>  
+>  	error = -ENODEV;
+>  
+> +	/*
+> +	 * Prevent any rockchip_pmu_block() from racing with the remainder of
+> +	 * setup (clocks, register initialization).
+> +	 */
+> +	mutex_lock(&dmc_pmu_mutex);
+> +
+>  	for_each_available_child_of_node(np, node) {
+>  		error = rockchip_pm_add_one_domain(pmu, node);
+>  		if (error) {
+> @@ -719,10 +830,17 @@ static int rockchip_pm_domain_probe(struct platform_device *pdev)
+>  		goto err_out;
+>  	}
+>  
+> +	/* We only expect one PMU. */
+> +	if (!WARN_ON_ONCE(dmc_pmu))
+> +		dmc_pmu = pmu;
+> +
+> +	mutex_unlock(&dmc_pmu_mutex);
+> +
+>  	return 0;
+>  
+>  err_out:
+>  	rockchip_pm_domain_cleanup(pmu);
+> +	mutex_unlock(&dmc_pmu_mutex);
+>  	return error;
+>  }
+>  
+> diff --git a/include/soc/rockchip/pm_domains.h b/include/soc/rockchip/pm_domains.h
+> new file mode 100644
+> index 000000000000..7dbd941fc937
+> --- /dev/null
+> +++ b/include/soc/rockchip/pm_domains.h
+> @@ -0,0 +1,25 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright 2022, The Chromium OS Authors. All rights reserved.
+> + */
+> +
+> +#ifndef __SOC_ROCKCHIP_PM_DOMAINS_H__
+> +#define __SOC_ROCKCHIP_PM_DOMAINS_H__
+> +
+> +#ifdef CONFIG_ROCKCHIP_PM_DOMAINS
+> +
+> +int rockchip_pmu_block(void);
+> +void rockchip_pmu_unblock(void);
+> +
+> +#else /* CONFIG_ROCKCHIP_PM_DOMAINS */
+> +
+> +static inline int rockchip_pmu_block(void)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline void rockchip_pmu_unblock(void) { }
+> +
+> +#endif /* CONFIG_ROCKCHIP_PM_DOMAINS */
+> +
+> +#endif /* __SOC_ROCKCHIP_PM_DOMAINS_H__ */
+> 
 
-  - Before 'return'-ing in hv_compose_msi_msg(), remove the ID (while
-    holding the requestor lock) associated to the completion packet.
 
-  - Retrieve the address *and call ->completion_func() within a same
-    (requestor) critical section in hv_pci_onchannelcallback().
-
-Fixes: de0aa7b2f97d3 ("PCI: hv: Fix 2 hang issues in hv_compose_msi_msg()")
-Reported-by: Wei Hu <weh@microsoft.com>
-Reported-by: Dexuan Cui <decui@microsoft.com>
-Suggested-by: Michael Kelley <mikelley@microsoft.com>
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
----
-The "Fixes:" tag is mainly a reference: a back-port would depend
-on the entire series (which, in turn, shouldn't be backported to
-commits preceding bf5fd8cae3c8f).
-
- drivers/pci/controller/pci-hyperv.c | 33 +++++++++++++++++++++++------
- 1 file changed, 27 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index c1322ac37cda9..f1d794f8a5ef1 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -1695,7 +1695,7 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- 			struct pci_create_interrupt3 v3;
- 		} int_pkts;
- 	} __packed ctxt;
--
-+	u64 trans_id;
- 	u32 size;
- 	int ret;
- 
-@@ -1757,10 +1757,10 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- 		goto free_int_desc;
- 	}
- 
--	ret = vmbus_sendpacket(hpdev->hbus->hdev->channel, &ctxt.int_pkts,
--			       size, (unsigned long)&ctxt.pci_pkt,
--			       VM_PKT_DATA_INBAND,
--			       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
-+	ret = vmbus_sendpacket_getid(hpdev->hbus->hdev->channel, &ctxt.int_pkts,
-+				     size, (unsigned long)&ctxt.pci_pkt,
-+				     &trans_id, VM_PKT_DATA_INBAND,
-+				     VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
- 	if (ret) {
- 		dev_err(&hbus->hdev->device,
- 			"Sending request for interrupt failed: 0x%x",
-@@ -1839,6 +1839,15 @@ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- 
- enable_tasklet:
- 	tasklet_enable(&channel->callback_event);
-+	/*
-+	 * The completion packet on the stack becomes invalid after 'return';
-+	 * remove the ID from the VMbus requestor if the identifier is still
-+	 * mapped to/associated with the packet.  (The identifier could have
-+	 * been 're-used', i.e., already removed and (re-)mapped.)
-+	 *
-+	 * Cf. hv_pci_onchannelcallback().
-+	 */
-+	vmbus_request_addr_match(channel, trans_id, (unsigned long)&ctxt.pci_pkt);
- free_int_desc:
- 	kfree(int_desc);
- drop_reference:
-@@ -2717,6 +2726,7 @@ static void hv_pci_onchannelcallback(void *context)
- 	struct pci_dev_inval_block *inval;
- 	struct pci_dev_incoming *dev_message;
- 	struct hv_pci_dev *hpdev;
-+	unsigned long flags;
- 
- 	buffer = kmalloc(bufferlen, GFP_ATOMIC);
- 	if (!buffer)
-@@ -2751,8 +2761,11 @@ static void hv_pci_onchannelcallback(void *context)
- 		switch (desc->type) {
- 		case VM_PKT_COMP:
- 
--			req_addr = chan->request_addr_callback(chan, req_id);
-+			lock_requestor(chan, flags);
-+			req_addr = __vmbus_request_addr_match(chan, req_id,
-+							      VMBUS_RQST_ADDR_ANY);
- 			if (req_addr == VMBUS_RQST_ERROR) {
-+				unlock_requestor(chan, flags);
- 				dev_warn_ratelimited(&hbus->hdev->device,
- 						     "Invalid transaction ID %llx\n",
- 						     req_id);
-@@ -2760,9 +2773,17 @@ static void hv_pci_onchannelcallback(void *context)
- 			}
- 			comp_packet = (struct pci_packet *)req_addr;
- 			response = (struct pci_response *)buffer;
-+			/*
-+			 * Call ->completion_func() within the critical section to make
-+			 * sure that the packet pointer is still valid during the call:
-+			 * here 'valid' means that there's a task still waiting for the
-+			 * completion, and that the packet data is still on the waiting
-+			 * task's stack.  Cf. hv_compose_msi_msg().
-+			 */
- 			comp_packet->completion_func(comp_packet->compl_ctxt,
- 						     response,
- 						     bytes_recvd);
-+			unlock_requestor(chan, flags);
- 			break;
- 
- 		case VM_PKT_DATA_INBAND:
 -- 
-2.25.1
-
+Best Regards,
+Chanwoo Choi
+Samsung Electronics
