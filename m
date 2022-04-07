@@ -2,108 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2BA0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8415C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238833AbiDGB1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60794 "EHLO
+        id S238626AbiDGB1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:27:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240124AbiDGBTt (ORCPT
+        with ESMTP id S240144AbiDGBTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 21:19:49 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667CF1B72D5
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 18:15:26 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id f3so4096150pfe.2
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 18:15:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=67SY53azgMzssWukWO6AXIcinf82Rf3nAPDHa+IqhlQ=;
-        b=MAChzFYtQNICmdqrAExZPki5u6vHj8GTdTxZag/4bzDo5W0JLbWW6l6+FFUu0DfxUv
-         FKfiuSO1uStfSFwNQeE0B+UVoKFkVi/m+lLYyALFmpro8YhHsZf94gaxcRRObJHuAtjd
-         SomWigjKFA8Gpnwv2dXshTTEgFoNSEldpEsZz69sqt8HhjJptP+BLWIQZyaLxrnXj9Uq
-         8e8PXhkO3wmyz51WzhtR+A8a2wCmhqk+G9xi2qYckCHDEfYKu25n6a8D10zhaRrPKdtX
-         DFIjVVhyHhoJO/oHc+Q+6Hrce3hc22q7eUHm5LivJrvIjwpaAAFfKV4WfINKMgSzQpqJ
-         I/mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=67SY53azgMzssWukWO6AXIcinf82Rf3nAPDHa+IqhlQ=;
-        b=pbJa3OBhfbUNPLJwGhQciGSVA0xzCKb5htGDArCw51v+Q1evRLCxsii4IavCbvwhnk
-         rtooHwLRpIC0WXF5uYbmSxx3wJixS4qJoWh2/kDgwDgFCMvZT3KG5sQOl7soQq3AMgEW
-         hF4ZRjmoBEojGXSUpho8g8yVn2vwvG1szAdM/DlIqWopsnbWfD3iL1o0VXI6VkJ27Xfb
-         3sZqd/wQKe2lNApXYGJkA/8YMnSO3Qkj2Z9euMpEF5nO//2NDc8Hg57voEICRG7lDfBB
-         lOcS/MBrS9Je0RJvBIxRZwsJrsXKCcQfor8C4mO08hQRxlqTK6D3FgHIrGaNqbOkgH/O
-         hl0g==
-X-Gm-Message-State: AOAM5333i+PCeX2IDkXaSmF8Mm6JcJzaJdZuCI4BVqRKr36DAtHjkD8N
-        nwOmfOTLTEBgCS5nTBL2mzQ=
-X-Google-Smtp-Source: ABdhPJwMtjvF2nONDR+8O7Bl75hwcWR5WOrYWpJ3XCFloXajc6Ermx4Tgo5BXGtkU1c535Vprd9R4w==
-X-Received: by 2002:a63:3d4b:0:b0:386:322:ff8c with SMTP id k72-20020a633d4b000000b003860322ff8cmr9472270pga.385.1649294126189;
-        Wed, 06 Apr 2022 18:15:26 -0700 (PDT)
-Received: from localhost.localdomain ([119.3.119.18])
-        by smtp.gmail.com with ESMTPSA id w16-20020a63af10000000b0039953dfaa19sm6842108pge.20.2022.04.06.18.15.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 18:15:25 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     patrik.r.jakobsson@gmail.com
-Cc:     airlied@linux.ie, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, xiam0nd.tong@gmail.com
-Subject: Re: [PATCH] drm/gma500: fix a missing break in psb_driver_load
-Date:   Thu,  7 Apr 2022 09:15:19 +0800
-Message-Id: <20220407011519.13951-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <CAMeQTsbK+Akk0m3UUCx-U9F6ju_OVM0R6uZN5KB-Gu6C6Do1pw@mail.gmail.com>
-References: <CAMeQTsbK+Akk0m3UUCx-U9F6ju_OVM0R6uZN5KB-Gu6C6Do1pw@mail.gmail.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E5461B72EC;
+        Wed,  6 Apr 2022 18:15:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8AA4B82690;
+        Thu,  7 Apr 2022 01:15:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2793C385A6;
+        Thu,  7 Apr 2022 01:15:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649294124;
+        bh=KDyBu00OoGqVZJyw1V+wQek+wRt9uM3e6Q3Id61XIKI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=r0fwh12cxdtaBHmj0rkU5YSh1mM3s99wnFrx6eRfkvOFnYFJE8nCrWfGUDPRKKyBk
+         3zlFcsYf7lX07iTlbp4vVm/FI7jeyXfT4Qp/cQ6mpFGauxKN5n2JbyiCNK3JbSpghX
+         RcrlFlN0BPLfJsGMtOXU58w/PzzWk+cNd8govzknkjKwD+aLdNa63IWyrRlXiOnnj7
+         SjV8gL8mKa9uCd99ISmFliR7Y3RNdo634Y1ZxxBqlUClBmVU9psgSy/dQXH8pZZq1U
+         mVeeWfCGG7miofKgYxvM77MmHqcGQGUhfE51j7tDhnJDSqKA5eANPEgipKjmyio5ss
+         Gk3XdmJ0LXNDQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Bob Peterson <rpeterso@redhat.com>,
+        syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, cluster-devel@redhat.com
+Subject: [PATCH AUTOSEL 5.4 01/17] gfs2: assign rgrp glock before compute_bitstructs
+Date:   Wed,  6 Apr 2022 21:15:05 -0400
+Message-Id: <20220407011521.115014-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 6 Apr 2022 09:27:19 +0200, Patrik Jakobsson wrote:
-> On Fri, Apr 1, 2022 at 1:58 PM Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
-> >
-> > Instead of exiting the loop as expected when an entry is found, the
-> > list_for_each_entry() continues until the traversal is complete. To
-> > avoid potential executing 'ret = gma_backlight_init(dev);' repeatly,
-> > break the loop when the entry is found.
-> >
-> > Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> > ---
-> >  drivers/gpu/drm/gma500/psb_drv.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/drivers/gpu/drm/gma500/psb_drv.c b/drivers/gpu/drm/gma500/psb_drv.c
-> > index 2aff54d505e2..b61a8b0eea38 100644
-> > --- a/drivers/gpu/drm/gma500/psb_drv.c
-> > +++ b/drivers/gpu/drm/gma500/psb_drv.c
-> > @@ -402,6 +402,9 @@ static int psb_driver_load(struct drm_device *dev, unsigned long flags)
-> >                         ret = gma_backlight_init(dev);
-> >                         break;
-> >                 }
-> > +
-> > +               if (!ret)
-> > +                       break;
-> 
-> Hi,
-> We cannot do it like this either. If the first connector isn't LVDS or
-> MIPI we would just break out of the iteration because ret is
-> presumably 0 at start and gma_backlight_init() would never run.
-> 
-> -Patrik
+From: Bob Peterson <rpeterso@redhat.com>
 
-Yes, you are correct. I have sent a v2 patch[1]: just goto out; when found.
-Please check it, thank you very much.
+[ Upstream commit 428f651cb80b227af47fc302e4931791f2fb4741 ]
 
-[1]: https://lore.kernel.org/all/20220406113143.10699-1-xiam0nd.tong@gmail.com/
+Before this patch, function read_rindex_entry called compute_bitstructs
+before it allocated a glock for the rgrp. But if compute_bitstructs found
+a problem with the rgrp, it called gfs2_consist_rgrpd, and that called
+gfs2_dump_glock for rgd->rd_gl which had not yet been assigned.
 
---
-Xiaomeng Tong
+read_rindex_entry
+   compute_bitstructs
+      gfs2_consist_rgrpd
+         gfs2_dump_glock <---------rgd->rd_gl was not set.
+
+This patch changes read_rindex_entry so it assigns an rgrp glock before
+calling compute_bitstructs so gfs2_dump_glock does not reference an
+unassigned pointer. If an error is discovered, the glock must also be
+put, so a new goto and label were added.
+
+Reported-by: syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/gfs2/rgrp.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/fs/gfs2/rgrp.c b/fs/gfs2/rgrp.c
+index c056ed5c6df3..767d188e5e50 100644
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -925,15 +925,15 @@ static int read_rindex_entry(struct gfs2_inode *ip)
+ 	rgd->rd_bitbytes = be32_to_cpu(buf.ri_bitbytes);
+ 	spin_lock_init(&rgd->rd_rsspin);
  
-> 
-> >         }
-> >         drm_connector_list_iter_end(&conn_iter);
-> >
-> > --
-> > 2.17.1
+-	error = compute_bitstructs(rgd);
+-	if (error)
+-		goto fail;
+-
+ 	error = gfs2_glock_get(sdp, rgd->rd_addr,
+ 			       &gfs2_rgrp_glops, CREATE, &rgd->rd_gl);
+ 	if (error)
+ 		goto fail;
+ 
++	error = compute_bitstructs(rgd);
++	if (error)
++		goto fail_glock;
++
+ 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
+ 	rgd->rd_flags &= ~(GFS2_RDF_UPTODATE | GFS2_RDF_PREFERRED);
+ 	if (rgd->rd_data > sdp->sd_max_rg_data)
+@@ -950,6 +950,7 @@ static int read_rindex_entry(struct gfs2_inode *ip)
+ 	}
+ 
+ 	error = 0; /* someone else read in the rgrp; free it and ignore it */
++fail_glock:
+ 	gfs2_glock_put(rgd->rd_gl);
+ 
+ fail:
+-- 
+2.35.1
+
