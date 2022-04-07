@@ -2,172 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E563C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 03:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6230C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 03:24:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239988AbiDGDYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 23:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46104 "EHLO
+        id S238744AbiDGD0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 23:26:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240455AbiDGDWU (ORCPT
+        with ESMTP id S229601AbiDGD0i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 23:22:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14413136C0A
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 20:19:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649301557;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HxLz3zyHyqBNEl5mzLYOYDAekjUvwtI7JSOgfNa7qL0=;
-        b=W32fv6OMSaSmxoAiJ8Jfi8HgwVzkUK25h+DYq7YxG8EeA12IiPgWKNdW7nIqBefE0KJR/r
-        2SOUgi9HFffUGwal0fQfM2dCBGNdm6d+VxQeNeRBFHZqUKAQkdHhm6WEDuVF9qAO4e4M8s
-        BMQ9o6yUsCFYvGPNIIz9JyMRjCshWJE=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-318-LiLMm_LqO36FX2BuPpmi3g-1; Wed, 06 Apr 2022 23:19:16 -0400
-X-MC-Unique: LiLMm_LqO36FX2BuPpmi3g-1
-Received: by mail-pj1-f71.google.com with SMTP id oj16-20020a17090b4d9000b001c7552b7546so4979067pjb.8
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 20:19:16 -0700 (PDT)
+        Wed, 6 Apr 2022 23:26:38 -0400
+Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC5733E0C
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 20:24:39 -0700 (PDT)
+Received: by mail-vs1-xe32.google.com with SMTP id r1so2427756vsi.12
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 20:24:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VXDoG2g2jwih4Ta9g6SsrLn0dnPRuy1eOEj+ZKrL1z0=;
+        b=Z4BeYKfpWPYRzcHAxen+yREF0lc1qo4VdR5KzsT0cfZjxxnF1Z29F5RCDuxxSTp5uQ
+         3RyRHjpSt4YcVLD6TTcb7BEFmkw/QbX2ZMf489+9mEySejhjZGdwbnGGgplOd1jwH+fd
+         wIp7/NnZ9iyfV5j9Mq+A9ogFhxQT2hNGFnmDCuJTTATa2JWvEosbVebQDLu/9M3mH2XW
+         EfBL5zM1kvN0s/DNhKM51dS5e80jIrpf1M9D+zYru8BHaXbVc8fxuZLQSXaTtT8ag9FT
+         omstZc/WVRk+I7i/H6VlTT7Kx7M5pC8YnQF+pdTgN4k7RfHsB1J9gKWIlL2GkN+9o5wL
+         mgug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=HxLz3zyHyqBNEl5mzLYOYDAekjUvwtI7JSOgfNa7qL0=;
-        b=0mUIbM18K5G3Vw6eJpwaYGRKFffRZuyVkdc+I8sZdjrg8E+aiTfjHuByhshS3boY20
-         wSNO7X7KfcW7aWUt25ovSchxB/Wa2BkfW1HpueQWs5QVaoFPJaPufAzggS66/Bhus6tR
-         1h3PRhta0lRN7E3CpnNMwWwUTQ5mLEDt8ZNAomqrS35AwGPr39/iEcbiYA6aHLnHy1GA
-         3iUNUPsJ6A5/hHBBaZdCL6EKO1Zc3tZoNB9nA63qi2cjnCoOH7G4ydCu7xIR1b5bgq8o
-         Q+lB2TvvMf4jGbvUv3ccMD3NO+lZHaMi3EKhaFNLhI9HgglfBkb7j2lwfd66Q4va/r4k
-         3C8A==
-X-Gm-Message-State: AOAM532JbM+SeHfuP5/uKfUZeQ/QvqxrnjP8tCypBgR0QW6UcNm3SBkY
-        yOgV/PvuavzQaasRQOPNjsWAHmiplN5kxWCJI6zvKtltzLhI6LQja8M+q21q94CJ8HIkgEYK6Ts
-        F31iZDmpm0XNK/LIdBgdXGwLrMnW6ZMwZmDi0Bzfq6wbkvMwO6Jw4Nif/lfPTHCokCszJQMIwdQ
-        ==
-X-Received: by 2002:a17:903:32c9:b0:154:3a2d:fa89 with SMTP id i9-20020a17090332c900b001543a2dfa89mr11669548plr.3.1649301554749;
-        Wed, 06 Apr 2022 20:19:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy47UeQA/BP4Recw3IDaoEcCmADnEMZ9FV5jr8lqu5QzGPbvQbcgymjzAy4WASLErv/HqHk3g==
-X-Received: by 2002:a17:903:32c9:b0:154:3a2d:fa89 with SMTP id i9-20020a17090332c900b001543a2dfa89mr11669531plr.3.1649301554379;
-        Wed, 06 Apr 2022 20:19:14 -0700 (PDT)
-Received: from [10.72.13.31] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id k14-20020aa7820e000000b004f7134a70cdsm20010617pfi.61.2022.04.06.20.19.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 20:19:13 -0700 (PDT)
-Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
- inodes
-To:     =?UTF-8?Q?Lu=c3=ads_Henriques?= <lhenriques@suse.de>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220401133243.1075-1-lhenriques@suse.de>
-From:   Xiubo Li <xiubli@redhat.com>
-Message-ID: <cd8418a0-e0dc-c5ae-d49d-6248bb6fc4d6@redhat.com>
-Date:   Thu, 7 Apr 2022 11:19:09 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VXDoG2g2jwih4Ta9g6SsrLn0dnPRuy1eOEj+ZKrL1z0=;
+        b=L5pHm6emfiwHH7qaj7ORAzk67BQq9hJsKJdRbwa2o0/Trub/A90bZGtR27UsAW7/je
+         qPxgXh7qx+wIh0dwdbsmfmMphqAzDVM1RdED7MCcYeqwPwekjISOZltMfXBGmoRrF+Lo
+         daqoQFfMZz81gLAVZK0qt3mszJg3UgEaPY2SSKfJYbc4mzT3eL8qufIniHS9xfnZw2/a
+         qcyomYn/d2F/BAkMGe0fnC2V/suTAzyfUAvMNACbmyvVje9z19DtzTiDR4MbBm7ZcHgo
+         qjQ7qC1MSWtg9b0gT7/3fXA1j3gr7uJBMDqbT+idLk6KeQtf8YiLL9VBf8AuBALg3yDk
+         YfTQ==
+X-Gm-Message-State: AOAM530ThEZz0npip5ULPSLShH6Jcp5fZ28KCW+hl2d5YJNENQRdEjJV
+        T/T558ioVcRxdS79y6p/HQoKziobqj3ly0pcgDhxpg==
+X-Google-Smtp-Source: ABdhPJwrQQIytIzXL/+SDkqLEJGG+5KzqTudCk9LM36GaMAN5lfZyghvmm3JxJvTyb4WWqBgS87nhXIBfGcmOQSDBs8=
+X-Received: by 2002:a05:6102:5cc:b0:320:9bd2:3823 with SMTP id
+ v12-20020a05610205cc00b003209bd23823mr3900955vsf.81.1649301878415; Wed, 06
+ Apr 2022 20:24:38 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220401133243.1075-1-lhenriques@suse.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20220407031525.2368067-1-yuzhao@google.com>
+In-Reply-To: <20220407031525.2368067-1-yuzhao@google.com>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Wed, 6 Apr 2022 21:24:27 -0600
+Message-ID: <CAOUHufZ8x5B-e+Wwgrh+qWryf8dAbfMWVEE0s-AfwZ-H7DouQg@mail.gmail.com>
+Subject: Re: [PATCH v10 00/14] Multi-Gen LRU Framework
+To:     Stephen Rothwell <sfr@rothwell.id.au>,
+        Linux-MM <linux-mm@kvack.org>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Luis,
-
-Please try the following patch, to see could it resolve your issue:
-
-
-diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-index 5d39d8e54273..3507e4066de4 100644
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -2011,6 +2011,7 @@ static ssize_t ceph_read_iter(struct kiocb *iocb, 
-struct iov_iter *to)
-                      ceph_cap_string(got));
-
-                 if (ci->i_inline_version == CEPH_INLINE_NONE) {
-+ filemap_invalidate_lock(inode->i_mapping);
-                         if (!retry_op &&
-                             (iocb->ki_flags & IOCB_DIRECT) &&
-                             !IS_ENCRYPTED(inode)) {
-@@ -2021,6 +2022,7 @@ static ssize_t ceph_read_iter(struct kiocb *iocb, 
-struct iov_iter *to)
-                         } else {
-                                 ret = ceph_sync_read(iocb, to, &retry_op);
-                         }
-+ filemap_invalidate_unlock(inode->i_mapping);
-                 } else {
-                         retry_op = READ_INLINE;
-                 }
-@@ -2239,11 +2241,13 @@ static ssize_t ceph_write_iter(struct kiocb 
-*iocb, struct iov_iter *from)
-
-                 /* we might need to revert back to that point */
-                 data = *from;
-+               filemap_invalidate_lock(inode->i_mapping);
-                 if ((iocb->ki_flags & IOCB_DIRECT) && !IS_ENCRYPTED(inode))
-                         written = ceph_direct_read_write(iocb, &data, 
-snapc,
-&prealloc_cf);
-                 else
-                         written = ceph_sync_write(iocb, &data, pos, snapc);
-+               filemap_invalidate_unlock(inode->i_mapping);
-                 if (direct_lock)
-                         ceph_end_io_direct(inode);
-                 else
-
-
-
-On 4/1/22 9:32 PM, Luís Henriques wrote:
-> When doing DIO on an encrypted node, we need to invalidate the page cache in
-> the range being written to, otherwise the cache will include invalid data.
+On Wed, Apr 6, 2022 at 9:15 PM Yu Zhao <yuzhao@google.com> wrote:
 >
-> Signed-off-by: Luís Henriques <lhenriques@suse.de>
-> ---
->   fs/ceph/file.c | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
->
-> Changes since v1:
-> - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
-> - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
->
-> Note: I'm not really sure this last change is required, it doesn't really
-> affect generic/647 result, but seems to be the most correct.
->
-> diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-> index 5072570c2203..b2743c342305 100644
-> --- a/fs/ceph/file.c
-> +++ b/fs/ceph/file.c
-> @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
->   	if (ret < 0)
->   		return ret;
->   
-> -	ceph_fscache_invalidate(inode, false);
-> +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
->   	ret = invalidate_inode_pages2_range(inode->i_mapping,
->   					    pos >> PAGE_SHIFT,
->   					    (pos + count - 1) >> PAGE_SHIFT);
-> @@ -1895,6 +1895,15 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
->   		req->r_inode = inode;
->   		req->r_mtime = mtime;
->   
-> +		if (IS_ENCRYPTED(inode) && (iocb->ki_flags & IOCB_DIRECT)) {
-> +			ret = invalidate_inode_pages2_range(
-> +				inode->i_mapping,
-> +				write_pos >> PAGE_SHIFT,
-> +				(write_pos + write_len - 1) >> PAGE_SHIFT);
-> +			if (ret < 0)
-> +				dout("invalidate_inode_pages2_range returned %d\n", ret);
-> +		}
-> +
->   		/* Set up the assertion */
->   		if (rmw) {
->   			/*
->
+> TLDR
+> ====
+> The current page reclaim is too expensive in terms of CPU usage and it
+> often makes poor choices about what to evict. This patchset offers an
+> alternative solution that is performant, versatile and
+> straightforward.
 
+<snipped>
+
+> Summery
+> =======
+> The facts are:
+> 1. The independent lab results and the real-world applications
+>    indicate substantial improvements; there are no known regressions.
+> 2. Thrashing prevention, working set estimation and proactive reclaim
+>    work out of the box; there are no equivalent solutions.
+> 3. There is a lot of new code; nobody has demonstrated smaller changes
+>    with similar effects.
+>
+> Our options, accordingly, are:
+> 1. Given the amount of evidence, the reported improvements will likely
+>    materialize for a wide range of workloads.
+> 2. Gauging the interest from the past discussions [22][23][24], the
+>    new features will likely be put to use for both personal computers
+>    and data centers.
+> 3. Based on Google's track record, the new code will likely be well
+>    maintained in the long term. It'd be more difficult if not
+>    impossible to achieve similar effects on top of the current
+>    active/inactive LRU.
+
+Hi Stephen,
+
+Can you please include this patchset in linux-next? Git repo for you to fetch:
+
+https://linux-mm.googlesource.com/mglru for-linux-next
+
+My goal is to get additional test coverage before I send a pull
+request for 5.19 to Linus.
+
+I've explored all avenues, but ultimately I've failed to rally
+substantial support from the MM stakeholders [1]. There are no pending
+technical issues against this patchset [2]. What is more concerning
+are the fundamental disagreements on priorities, methodologies, etc.
+that are not specific to this patchset and have been hindering our
+progress as a collective. (Cheers to the mutual dissatisfaction.)
+
+While we plan to discuss those issues during the LSFMM next month, it
+doesn't seem reasonable to leave this patchset hanging in the air,
+since it has reached its maturity a while ago and there are strong
+demands from downstream kernels as well as a large user base. Thus I
+sent that pull request to Linus a couple of weeks ago, implying that
+he would have to make the final decision soon.
+
+I hope this gives enough background about what's been going on with
+this patchset. If you decide to take it and it causes you any
+troubles, please feel free to yell at me.
+
+Thanks!
+
+[1] https://lore.kernel.org/r/20220104202227.2903605-1-yuzhao@google.com/
+[2] https://lore.kernel.org/r/20220326010003.3155137-1-yuzhao@google.com/
