@@ -2,70 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76715C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 04:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB23C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 04:43:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237759AbiDGEpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 00:45:01 -0400
+        id S240790AbiDGEpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 00:45:06 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240741AbiDGEov (ORCPT
+        with ESMTP id S240747AbiDGEox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 00:44:51 -0400
-X-Greylist: delayed 929 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 21:42:47 PDT
-Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5717CAA028;
-        Wed,  6 Apr 2022 21:42:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=EfIKsaYvyjyauPGrMP
-        2ATwQhkAeB9k1V30Eckhc73WU=; b=QVvV7HlffafRhLjS6UzAS5PDgFj0i7qGpL
-        UPFo1p7UhSkojB7VTinJ82SltZDmmEbYziEbvYA7f0kRunqUELLOuUW3ebEIpkFg
-        JXL8afOpdqU5TE97QVJ4HVHDjVGoM4mC81uwyUWvw/uUrsaNmFdYIyCxaxHYmVpH
-        kWpYqL7Zw=
-Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp2 (Coremail) with SMTP id GtxpCgCHNL0ZaE5iFqljAA--.8487S4;
-        Thu, 07 Apr 2022 12:27:15 +0800 (CST)
-From:   Yuanjun Gong <ruc_gongyuanjun@163.com>
-To:     Yuanjun Gong <ruc_gongyuanjun@163.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] mips: cpc: Fix refcount leak in mips_cpc_default_phys_base
-Date:   Thu,  7 Apr 2022 12:26:57 +0800
-Message-Id: <20220407042657.28614-1-ruc_gongyuanjun@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: GtxpCgCHNL0ZaE5iFqljAA--.8487S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWruw45tw15Zr4xtw1xKw45KFg_yoW3ArcEgF
-        1Iv34xArW5CF1vvFZ7Zw4Sgrn8Cw1rWrWSyw1v9FWUt3yYyr45Jan3Cr93Zws5uryakrs8
-        Gr4Yvasrta1xtjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sR_yxR3UUUUU==
-X-Originating-IP: [202.112.113.212]
-X-CM-SenderInfo: 5uxfsw5rqj53pdqm30i6rwjhhfrp/xtbB0APb5WEsp2TMPAAAsT
+        Thu, 7 Apr 2022 00:44:53 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64329BB0A0;
+        Wed,  6 Apr 2022 21:42:48 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id a6so8453206ejk.0;
+        Wed, 06 Apr 2022 21:42:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=IBqPOS9QHe+JJ1knT5EDEfSF4t5LcFtWDmlgHbBMhvA=;
+        b=mraPced7Vb+0aMa+6xkhCQHTp+CsZEIqXKzf7RH55AZR2n4cOJvyzpEhm3ZwfskBpQ
+         ftDW2snMQvZiWTcXQ3TStUOK77GXazfDCqvMa2qNWWn8BGMw2gnx30jC1k4309ow9TAc
+         9C46CLz/+RWxStgcmmCzpByGmE9cIbB0HBFQbamUk5JCkTw7Cz+hh42M0ohVG6Q82i+u
+         JHPe98uACGr4DEa6m+fO45j2bCBxaA/pRsN2dt7aDqaqzy4g3Dw4Lp0UREArB1M/h9Nx
+         KB9bSYRwLrgCfHwoAOqh/iUIKIA8WKMtiIhLFBB+uqww1uoiwSmOJBO/ACjFGHgoL9vW
+         Blxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=IBqPOS9QHe+JJ1knT5EDEfSF4t5LcFtWDmlgHbBMhvA=;
+        b=8IqiuH1evFPZh7DXprz+vW6N8zN03/JhkWx1hq3vi6J4BeNXGz/ik7q1akIB1zbK+r
+         EoUbfPEsYXAiTqf5rNhuc/VsxeGFc6umRoL2M4Y22z1Oi9PdvPDRCx86qxBm/jSgdkxr
+         IZZugxbfGGRzMn0vCuYQYAXk2IfUSDshf/hWAWVNgbGMfpZ3M+fbJ+V2JGf6lbFQoLGr
+         h1bt/p7x3+gzd4MISJUt0QRswVpQsGmFjXKFsa+B8sndTCszfe1oJ7cuI4m2HT132tvS
+         KCgOqR+zFJ4MXzjyBlsyFdjeYjgaElx3JbUVgt5ODyVRRKy1gDDYZQ2dUwFiYLW/3zeC
+         oPdg==
+X-Gm-Message-State: AOAM531DUj9Rrjpcx0sthceCRcM4up4StR5FALqhVhdi7SgkOLcB/u7i
+        Tvf1mj16EDEDxYtRiVDlfEE=
+X-Google-Smtp-Source: ABdhPJxLJCKSENJThJGXDyEAuiOLtuQqO5MxkmrIvMBPZspDL7/ZilnNbfE6svYfBQeIPtWYS8TbrQ==
+X-Received: by 2002:a17:906:b107:b0:6e0:a25a:af6e with SMTP id u7-20020a170906b10700b006e0a25aaf6emr11606494ejy.359.1649306566930;
+        Wed, 06 Apr 2022 21:42:46 -0700 (PDT)
+Received: from anparri.mshome.net (host-87-11-75-174.retail.telecomitalia.it. [87.11.75.174])
+        by smtp.gmail.com with ESMTPSA id e3-20020a170906374300b006e7f060bf6asm4199455ejc.207.2022.04.06.21.42.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 21:42:46 -0700 (PDT)
+From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+To:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Martin Petersen <martin.petersen@oracle.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+Subject: [PATCH 1/2] scsi: storvsc: Print value of invalid ID in storvsc_on_channel_callback()
+Date:   Thu,  7 Apr 2022 06:40:33 +0200
+Message-Id: <20220407044034.379971-2-parri.andrea@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220407044034.379971-1-parri.andrea@gmail.com>
+References: <20220407044034.379971-1-parri.andrea@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+That being useful for debugging purposes.
 
-Add the missing of_node_put() to release the refcount incremented
-by of_find_compatible_node().
-
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
 ---
- arch/mips/kernel/mips-cpc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/storvsc_drv.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/kernel/mips-cpc.c b/arch/mips/kernel/mips-cpc.c
-index 17aff13cd7ce..3e386f7e1545 100644
---- a/arch/mips/kernel/mips-cpc.c
-+++ b/arch/mips/kernel/mips-cpc.c
-@@ -28,6 +28,7 @@ phys_addr_t __weak mips_cpc_default_phys_base(void)
- 	cpc_node = of_find_compatible_node(of_root, NULL, "mti,mips-cpc");
- 	if (cpc_node) {
- 		err = of_address_to_resource(cpc_node, 0, &res);
-+		of_node_put(cpc_node);
- 		if (!err)
- 			return res.start;
- 	}
+diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
+index 9a0bba5a51a71..67ae2b5b1d5bb 100644
+--- a/drivers/scsi/storvsc_drv.c
++++ b/drivers/scsi/storvsc_drv.c
+@@ -1334,7 +1334,8 @@ static void storvsc_on_channel_callback(void *context)
+ 				/* Transaction 'rqst_id' corresponds to tag 'rqst_id - 1' */
+ 				scmnd = scsi_host_find_tag(shost, rqst_id - 1);
+ 				if (scmnd == NULL) {
+-					dev_err(&device->device, "Incorrect transaction ID\n");
++					dev_err(&device->device, "Invalid transaction ID %llx\n",
++						rqst_id);
+ 					continue;
+ 				}
+ 				request = (struct storvsc_cmd_request *)scsi_cmd_priv(scmnd);
 -- 
-2.17.1
+2.25.1
 
