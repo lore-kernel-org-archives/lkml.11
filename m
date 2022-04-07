@@ -2,75 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 561C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B9EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343621AbiDGNTs (ORCPT
+        id S1343625AbiDGNT5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 09:19:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50406 "EHLO
+        Thu, 7 Apr 2022 09:19:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241658AbiDGNTi (ORCPT
+        with ESMTP id S244230AbiDGNTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 09:19:38 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2751CABFD;
-        Thu,  7 Apr 2022 06:17:34 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KZ21w02ShzgYFr;
-        Thu,  7 Apr 2022 21:15:48 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 7 Apr 2022 21:17:33 +0800
-From:   Yicong Yang <yangyicong@hisilicon.com>
-To:     <bhelgaas@google.com>, <rafael@kernel.org>, <lenb@kernel.org>
-CC:     <linux-pci@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yangyicong@hisilicon.com>,
-        <linuxarm@huawei.com>
-Subject: [PATCH] PCI/ACPI: Decouple the negotiation of ASPM and other PCIe services
-Date:   Thu, 7 Apr 2022 21:16:02 +0800
-Message-ID: <20220407131602.14727-1-yangyicong@hisilicon.com>
-X-Mailer: git-send-email 2.31.0
+        Thu, 7 Apr 2022 09:19:42 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A9425C5AE
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 06:17:42 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id m16so4866577plx.3
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 06:17:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xaFEdMdha8h42RWuuCwkqr0VCzd2sB+RNX9htkQaFF8=;
+        b=Q4WySDtp3npUzYr7LCaMAKpcChHDjH5EtYUxBS5WjOSTpOpufANpns13Wj+Gr5G4fd
+         4PLyrEBAHnA8hP7wi5Fp4DWo3gcHnsvGkCyd9de+rZCEyRvhfh+9OyU43/6ViKKekO3t
+         ACFLGS30cXfOQMNSCfPt8RKp3Z/31TLN7JJLVJHkGsuC8p+owLhPH1Jmuaowilivo7tK
+         VJjHd2wg0+tNykHOV//TkfGAyTOj1fc/5aM8aqbyUgrgZDMQteysSqAFbFCCMB2llKt+
+         RIGkunul47ZCrDyTAnmjYJweTgzfRcLRQ0qiyCL6wyUIX0BAF95+9a+hsJhych8H1lSg
+         ScGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xaFEdMdha8h42RWuuCwkqr0VCzd2sB+RNX9htkQaFF8=;
+        b=co/vLwE4fZSAaIIG618gomKAIjxvJlRVBklZenGirytIxPsKa0qiO+RJfsrY9dTcT0
+         tlfAPUuv+fbneEgUWQV8w4NCcy002l6Qx9n7Oz9HbzPxEEhWuNhcCFXPpQaZAx/Djtyu
+         jx+heM6N4WNX90htVJ/2c/15M/lFTtvt33LRuPCfDVHEfGgv3qERBs37Io9owSzi4myL
+         V/DP95F4Zhw+Db90P6CY3PqzCEgV6Y0Wrr+MLxUzWSWUHYXgGFbanimL3kYNrhG7N3oa
+         LMG1zVFjQOt4ptv7aWLbsniA4h9KyHAwisj+U02AGyNpRvjhtq1SDK/Q7MVu4q1M6I7j
+         iZkA==
+X-Gm-Message-State: AOAM530dVI4++CGWR/CsukzBcExNNWq4gWkAgVFxZlSIU5avqaknT7ZB
+        b06/nxeV3kxZDyMa34smL5rjpw==
+X-Google-Smtp-Source: ABdhPJzAIA6zaue5y4/HWCW1DduN5qnV98L+dQLWSOQjhzJalpap83t1+9GZcLK+U+u0+q/rNrvpXQ==
+X-Received: by 2002:a17:90b:4c12:b0:1c6:f450:729d with SMTP id na18-20020a17090b4c1200b001c6f450729dmr16146151pjb.190.1649337462055;
+        Thu, 07 Apr 2022 06:17:42 -0700 (PDT)
+Received: from localhost ([139.177.225.245])
+        by smtp.gmail.com with ESMTPSA id d5-20020a056a0024c500b004fae56b2921sm22997159pfv.167.2022.04.07.06.17.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 06:17:41 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 21:17:38 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Guo Zhengkui <guozhengkui@vivo.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        zhengkui_guo@outlook.com
+Subject: Re: [PATCH] userfaultfd/selftests: use swap() instead of open coding
+ it
+Message-ID: <Yk7kJsk6Y+ASF7ZA@FVFYT0MHHV2J.usts.net>
+References: <20220407123141.4998-1-guozhengkui@vivo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220407123141.4998-1-guozhengkui@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently we regard ASPM as a necessary PCIe service and if it's disabled
-by pcie_aspm=off we cannot enable other services like AER and hotplug.
-However the ASPM is just one of the PCIe services and other services
-mentioned no dependency on this. So this patch decouples the negotiation
-of ASPM and other PCIe services, then we can make use of other services
-in the absence of ASPM.
+On Thu, Apr 07, 2022 at 08:31:41PM +0800, Guo Zhengkui wrote:
+> Address the following coccicheck warning:
+> 
+> tools/testing/selftests/vm/userfaultfd.c:1536:21-22: WARNING opportunity
+> for swap().
+> tools/testing/selftests/vm/userfaultfd.c:1540:33-34: WARNING opportunity
+> for swap().
+> 
+> by using swap() for the swapping of variable values and drop
+> `tmp_area` that is not needed any more.
+> 
+> `swap()` macro in userfaultfd.c is introduced in commit 681696862bc18
+> ("selftests: vm: remove dependecy from internal kernel macros")
+> 
+> It has been tested with gcc (Debian 8.3.0-6) 8.3.0.
+> 
+> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
 
-Aaron Sierra tried to fix this originally:
-https://lore.kernel.org/linux-pci/20190702201318.GC128603@google.com/
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
 
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
----
- drivers/acpi/pci_root.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
-index 6f9e75d14808..16fa7c5a11ad 100644
---- a/drivers/acpi/pci_root.c
-+++ b/drivers/acpi/pci_root.c
-@@ -37,8 +37,6 @@ static int acpi_pci_root_scan_dependent(struct acpi_device *adev)
- }
- 
- #define ACPI_PCIE_REQ_SUPPORT (OSC_PCI_EXT_CONFIG_SUPPORT \
--				| OSC_PCI_ASPM_SUPPORT \
--				| OSC_PCI_CLOCK_PM_SUPPORT \
- 				| OSC_PCI_MSI_SUPPORT)
- 
- static const struct acpi_device_id root_device_ids[] = {
--- 
-2.24.0
-
+Thanks.
