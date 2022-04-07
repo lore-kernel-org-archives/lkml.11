@@ -2,84 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA4FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F65C43219
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344142AbiDGOkx (ORCPT
+        id S1344158AbiDGOlm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34844 "EHLO
+        Thu, 7 Apr 2022 10:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbiDGOks (ORCPT
+        with ESMTP id S1344139AbiDGOll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:40:48 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 358B11A7766;
-        Thu,  7 Apr 2022 07:38:42 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 7 Apr 2022 22:38:13
- +0800 (GMT+08:00)
-X-Originating-IP: [10.181.226.201]
-Date:   Thu, 7 Apr 2022 22:38:13 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Jason Gunthorpe" <jgg@ziepe.ca>
-Cc:     "Dan Carpenter" <dan.carpenter@oracle.com>,
-        linux-kernel@vger.kernel.org, chris@zankel.net, jcmvbkbc@gmail.com,
-        mustafa.ismail@intel.com, shiraz.saleem@intel.com,
-        wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, jes@trained-monkey.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        alexander.deucher@amd.com, linux-xtensa@linux-xtensa.org,
-        linux-rdma@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-hippi@sunsite.dk,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: Re: Re: [PATCH 09/11] drivers: infiniband: hw: Fix deadlock in
- irdma_cleanup_cm_core()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.8 build 20200806(7a9be5e8)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220407142355.GV64706@ziepe.ca>
-References: <cover.1649310812.git.duoming@zju.edu.cn>
- <4069b99042d28c8e51b941d9e698b99d1656ed33.1649310812.git.duoming@zju.edu.cn>
- <20220407112455.GK3293@kadam>
- <1be0c02d.3f701.1800416ef60.Coremail.duoming@zju.edu.cn>
- <20220407142355.GV64706@ziepe.ca>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Thu, 7 Apr 2022 10:41:41 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 352611B2156
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:38:59 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id n126-20020a1c2784000000b0038e8af3e788so2256810wmn.1
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 07:38:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+HrqUl2stcAnQOvkV/cLC8sh1bdsuE9uaYRM3SC8TAI=;
+        b=QC/NBWbz8s242GqiqGVCxZjqkf65n2BOMSMdySwx5OMCnmpmfgmy2Gl0mqkViPk58A
+         B0hFl228YREAAGFp1bTWTBF48v9/vcamAwhlivD7F9RoAWhkxTVUUszkElVwniFp+KSW
+         153YOYtKLxloRx116E1JbzBPjjKXbUaIisB8A=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+HrqUl2stcAnQOvkV/cLC8sh1bdsuE9uaYRM3SC8TAI=;
+        b=pPMLT6wOPZWlTBe/cU2DenZLe+xblAR60lt+6vrF+BmRfguMV12LoKt9wslznlbPrR
+         HUQhONLHaFLoDM7U1J64BELR6XCLEGHMsK49E8elk/N5drjLLiLOwNkIii7H07N2HgcD
+         Y76HWd3mzfXWPTfjjlKF/ntMJzLwN1k8b7bqnoEOv2zQDVT/ruf8/MRT8gr3y2thmVYX
+         RJ3ynboQEUMPhVFxF7Davk95QUv4Qdq6b/4f3LY8gm2PfccUt1ZzS38szFVzNqryujGj
+         YsTfgmI7xqHgkt+pioY5o2xBywkTzSWTg4SG646zfKR4GOr/Q2OSYf2BO48BjGkv0mFR
+         g68Q==
+X-Gm-Message-State: AOAM533NBu2whfGyppcqfb/O5cGOX1iuG/LeYD1mhcwLo33qXuefEltE
+        oF5yPJfNpA3wItiDwlKv6DLU7A==
+X-Google-Smtp-Source: ABdhPJxSm1o4AJPWmwSiOwXUcoOrfrDDoE6QavOVO+5QTW+urJsTAfmBJCV6RwoUxCRXXNUmmjXF1A==
+X-Received: by 2002:a1c:f605:0:b0:37b:b5de:89a0 with SMTP id w5-20020a1cf605000000b0037bb5de89a0mr12345916wmc.88.1649342337820;
+        Thu, 07 Apr 2022 07:38:57 -0700 (PDT)
+Received: from google.com ([37.228.205.1])
+        by smtp.gmail.com with ESMTPSA id bg8-20020a05600c3c8800b0038e4c5967besm7983010wmb.3.2022.04.07.07.38.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 07:38:57 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 14:38:55 +0000
+From:   Fabio Baltieri <fabiobaltieri@chromium.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] dt-bindings: update google,cros-ec-pwm
+ documentation
+Message-ID: <Yk73f9yyxy5LBC+V@google.com>
+References: <20220331125818.3776912-1-fabiobaltieri@chromium.org>
+ <20220331125818.3776912-4-fabiobaltieri@chromium.org>
+ <Yk20uTE/Vdm2c6jI@robh.at.kernel.org>
 MIME-Version: 1.0
-Message-ID: <403bbe08.3fc24.18004762739.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgB3HwBV905iIZ2UAQ--.29189W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg4NAVZdtZE9jgAGsa
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yk20uTE/Vdm2c6jI@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sCgpPbiBUaHUsIDcgQXByIDIwMjIgMTE6MjM6NTUgLTAzMDAgSmFzb24gR3VudGhvcnBl
-IHdyb3RlOgoKPiA+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1h
-L2NtLmMgYi9kcml2ZXJzL2luZmluaWJhbmQvaHcvaXJkbWEvY20uYwo+ID4gPiA+IGluZGV4IGRl
-ZGIzYjdlZGQ4Li4wMTlkZDhiZmUwOCAxMDA2NDQKPiA+ID4gPiArKysgYi9kcml2ZXJzL2luZmlu
-aWJhbmQvaHcvaXJkbWEvY20uYwo+ID4gPiA+IEBAIC0zMjUyLDggKzMyNTIsMTEgQEAgdm9pZCBp
-cmRtYV9jbGVhbnVwX2NtX2NvcmUoc3RydWN0IGlyZG1hX2NtX2NvcmUgKmNtX2NvcmUpCj4gPiA+
-ID4gIAkJcmV0dXJuOwo+ID4gPiA+ICAKPiA+ID4gPiAgCXNwaW5fbG9ja19pcnFzYXZlKCZjbV9j
-b3JlLT5odF9sb2NrLCBmbGFncyk7Cj4gPiA+ID4gLQlpZiAodGltZXJfcGVuZGluZygmY21fY29y
-ZS0+dGNwX3RpbWVyKSkKPiA+ID4gPiArCWlmICh0aW1lcl9wZW5kaW5nKCZjbV9jb3JlLT50Y3Bf
-dGltZXIpKSB7Cj4gPiA+ID4gKwkJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmY21fY29yZS0+aHRf
-bG9jaywgZmxhZ3MpOwo+ID4gPiA+ICAJCWRlbF90aW1lcl9zeW5jKCZjbV9jb3JlLT50Y3BfdGlt
-ZXIpOwo+ID4gPiA+ICsJCXNwaW5fbG9ja19pcnFzYXZlKCZjbV9jb3JlLT5odF9sb2NrLCBmbGFn
-cyk7Cj4gPiA+ID4gKwl9Cj4gPiA+ID4gIAlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZjbV9jb3Jl
-LT5odF9sb2NrLCBmbGFncyk7Cj4gPiA+IAo+ID4gPiBUaGlzIGxvY2sgZG9lc24ndCBzZWVtIHRv
-IGJlIHByb3RlY3RpbmcgYW55dGhpbmcuICBBbHNvIGRvIHdlIG5lZWQgdG8KPiA+ID4gY2hlY2sg
-dGltZXJfcGVuZGluZygpPyAgSSB0aGluayB0aGUgZGVsX3RpbWVyX3N5bmMoKSBmdW5jdGlvbiB3
-aWxsIGp1c3QKPiA+ID4gcmV0dXJuIGRpcmVjdGx5IGlmIHRoZXJlIGlzbid0IGEgcGVuZGluZyBs
-b2NrPwo+ID4gCj4gPiBUaGFua3MgYSBsb3QgZm9yIHlvdXIgYWR2aWNlLCBJIHdpbGwgcmVtb3Zl
-IHRoZSB0aW1lcl9wZW5kaW5nKCkgYW5kIHRoZQo+ID4gcmVkdW5kYW50IGxvY2suCj4gCj4gRG9l
-cyBkZWxfdGltZXJfc3luYyB3b3JrIHdpdGggYSBzZWxmLXJlc2NoZWR1bGluZyB0aW1lciBsaWtl
-IHRoaXMgaGFzPwoKVGhlIGRlbF90aW1lcl9zeW5jKCkgd2lsbCBraWxsIHRoZSB0aW1lciBhbHRo
-b3VnaCBpdCBpcyBzZWxmLXJlc2NoZWR1bGluZy4KV2UgY291bGQgdXNlIG90aGVyIGZ1bmN0aW9u
-cyB0byBhcm91c2UgdGltZXIgYWdhaW4gYmVzaWRlcyB0aW1lciBoYW5kbGVyIGl0c2VsZi4KCkJl
-c3QgcmVnYXJkcywKRHVvbWluZyBaaG91Cg==
+Hi Rob,
+
+On Wed, Apr 06, 2022 at 10:41:45AM -0500, Rob Herring wrote:
+> On Thu, Mar 31, 2022 at 12:58:17PM +0000, Fabio Baltieri wrote:
+> > Update google,cros-ec-pwm node documentation to mention the
+> > google,use_pwm_type property.
+> > 
+> > Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
+> > ---
+> >  .../devicetree/bindings/pwm/google,cros-ec-pwm.yaml         | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+> > index 4cfbffd8414a..9c895c990ed8 100644
+> > --- a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+> > +++ b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+> > @@ -19,6 +19,12 @@ description: |
+> >  properties:
+> >    compatible:
+> >      const: google,cros-ec-pwm
+> > +
+> > +  google,use-pwm-type:
+> > +    description:
+> > +      Use PWM types (CROS_EC_PWM_DT_<...>) instead of generic channels.
+> > +    type: boolean
+> 
+> Either do a new compatible string if the cell interpretation is mutually 
+> exclusive (channel number vs. type) or split the number space for the 
+> 1st cell between type and channel number. IOW, set a bit (31?) to 
+> signify the number is a type, not a channel.
+
+Split the number space was my first (tentative) implementation as well,
+but it turns out that the PWM subsystem really wants channels to be
+zero-based[1], so I don't think flags or bitmasks are really an option.
+
+New compatible sounds good though, I'll rework a v3 with that change.
+
+Thanks!
+Fabio
+
+[1] https://elixir.bootlin.com/linux/v5.17/source/drivers/pwm/core.c#L423
+
+-- 
+Fabio Baltieri
