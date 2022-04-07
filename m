@@ -2,83 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B80C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:06:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A12F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236630AbiDGMIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40460 "EHLO
+        id S237703AbiDGMIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:08:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245095AbiDGMHh (ORCPT
+        with ESMTP id S237148AbiDGMIl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:07:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B172C31D7
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:05:28 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ncQt6-0002Hk-5U; Thu, 07 Apr 2022 14:05:20 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1ncQt3-0006v5-3a; Thu, 07 Apr 2022 14:05:17 +0200
-Date:   Thu, 7 Apr 2022 14:05:17 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     alexandru.tachici@analog.com, andrew@lunn.ch, davem@davemloft.net,
-        devicetree@vger.kernel.org, hkallweit1@gmail.com,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, robh+dt@kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH v5 0/7] net: phy: adin1100: Add initial support for
- ADIN1100 industrial PHY
-Message-ID: <20220407120347.GA25348@pengutronix.de>
-References: <20220324112620.46963-1-alexandru.tachici@analog.com>
- <20220324160041.0d775df8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Thu, 7 Apr 2022 08:08:41 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131EAB0A4C;
+        Thu,  7 Apr 2022 05:06:40 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id C4B5F1F85A;
+        Thu,  7 Apr 2022 12:06:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649333198; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=UpuTzjjU3dwrDNlWUgU1m4VL7JE5wjWtlut0wOZ6+Us=;
+        b=bamm/WXnOVYE8ZOho6XQUe7FCEZovOUuJfhlzWNhhXeUA04h7c/K9EahBbNmRzY3a1B0GV
+        PYCeX6iSGlyPLVgg+TcAICaXy7ccBN1LFAaAz/36KVQU1wVrrWfK5NFQkqu3UV7fDyUDHl
+        I7ddY451v2TFm/p8DP18Y42M5VrwxQE=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 851E113485;
+        Thu,  7 Apr 2022 12:06:38 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 1/lNH87TTmIFBQAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 07 Apr 2022 12:06:38 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, Michal Hocko <mhocko@suse.com>
+Subject: [PATCH v2] mm, page_alloc: fix build_zonerefs_node()
+Date:   Thu,  7 Apr 2022 14:06:37 +0200
+Message-Id: <20220407120637.9035-1-jgross@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220324160041.0d775df8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 14:02:55 up 8 days, 32 min, 75 users,  load average: 0.70, 0.46,
- 0.32
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 04:00:41PM -0700, Jakub Kicinski wrote:
-> On Thu, 24 Mar 2022 13:26:13 +0200 alexandru.tachici@analog.com wrote:
-> > The ADIN1100 is a low power single port 10BASE-T1L transceiver designed for
-> > industrial Ethernet applications and is compliant with the IEEE 802.3cg
-> > Ethernet standard for long reach 10 Mb/s Single Pair Ethernet.
-> 
-> # Form letter - net-next is closed
-> 
-> We have already sent the networking pull request for 5.18
-> and therefore net-next is closed for new drivers, features,
-> code refactoring and optimizations. We are currently accepting
-> bug fixes only.
-> 
-> Please repost when net-next reopens after 5.18-rc1 is cut.
-> 
-> RFC patches sent for review only are obviously welcome at any time.
+Since commit 6aa303defb74 ("mm, vmscan: only allocate and reclaim from
+zones with pages managed by the buddy allocator") only zones with free
+memory are included in a built zonelist. This is problematic when e.g.
+all memory of a zone has been ballooned out when zonelists are being
+rebuilt.
 
-Hi Alexandru net-next is open now, you can rebase and resend this
-patches.
+The decision whether to rebuild the zonelists when onlining new memory
+is done based on populated_zone() returning 0 for the zone the memory
+will be added to. The new zone is added to the zonelists only, if it
+has free memory pages (managed_zone() returns a non-zero value) after
+the memory has been onlined. This implies, that onlining memory will
+always free the added pages to the allocator immediately, but this is
+not true in all cases: when e.g. running as a Xen guest the onlined
+new memory will be added only to the ballooned memory list, it will be
+freed only when the guest is being ballooned up afterwards.
 
-Regards,
-Oleksij
+Another problem with using managed_zone() for the decision whether a
+zone is being added to the zonelists is, that a zone with all memory
+used will in fact be removed from all zonelists in case the zonelists
+happen to be rebuilt.
+
+Use populated_zone() when building a zonelist as it has been done
+before that commit.
+
+Cc: stable@vger.kernel.org
+Fixes: 6aa303defb74 ("mm, vmscan: only allocate and reclaim from zones with pages managed by the buddy allocator")
+Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Acked-by: Michal Hocko <mhocko@suse.com>
+---
+V2:
+- updated commit message (Michal Hocko)
+---
+ mm/page_alloc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index bdc8f60ae462..3d0662af3289 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -6128,7 +6128,7 @@ static int build_zonerefs_node(pg_data_t *pgdat, struct zoneref *zonerefs)
+ 	do {
+ 		zone_type--;
+ 		zone = pgdat->node_zones + zone_type;
+-		if (managed_zone(zone)) {
++		if (populated_zone(zone)) {
+ 			zoneref_set_zone(zone, &zonerefs[nr_zones++]);
+ 			check_highest_zone(zone_type);
+ 		}
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.34.1
+
