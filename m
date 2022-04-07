@@ -2,61 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63EF0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7288CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243502AbiDGJBb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44676 "EHLO
+        id S243540AbiDGJCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243471AbiDGJBR (ORCPT
+        with ESMTP id S243527AbiDGJCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:01:17 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D462E0ACB
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:59:18 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id c4so7625534qtx.1
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 01:59:18 -0700 (PDT)
+        Thu, 7 Apr 2022 05:02:06 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056091C16DC;
+        Thu,  7 Apr 2022 02:00:06 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id b33so1639597qkp.13;
+        Thu, 07 Apr 2022 02:00:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=OX+no6hxlL1LIUDogEtqqTuM8con6ykQVZQuQa/oUy8=;
-        b=hYah8tsQYWe1mMuS/KWbwp8nTrfF4SWp7eSFvSSqrfNvuDwAYzvs78sRiO9XQo1OwH
-         UzeTDIIq1sLfgXSqOlHBamT0dQcaNN/h/eJ+1NEUDYpIRcQHDuWsCUW/Qa9tNW3rB+tE
-         ZBQpCzCSK7a/lwyES3oGZ2WcyuqGjj0jSVQ6ufLV97js2QehrnwAg1TC+58FzFpaKbWV
-         ouCgWQ5EP7Y2fvAJcvjg5I+SugKBuJ+CTJiS5gAXeaUhHM1aC9o6X7G5gkliNDV/kUS9
-         RknXfaMXSW0wxD90YzzOzex0v05TZK53bD2Xmk+DBVyeqlp7ujj/+xHk91KpEHJEpuHC
-         jJ2Q==
+        bh=aN5mT5XseTWatVt6bcoD7NMS4LCdVfX/RptWXKAKrc0=;
+        b=mjoxyh9PZQCMkXRODxS+PxWgXjsdqxNe2k2AN5KmOdIO23yaKL9DVwQMPWJAU3RjAq
+         uHxtahIMFBRZVDsQ9uST4zpdlMD7fToCXeeYyHx2Swg8w2ODthjwsQs7fxM9KCLLM7DG
+         a7a8A/GWuUrjqNfXHWTZbI6PPOrQlXsfi4fKOE/XtY2DEVfG31t77tED+xEpKlolAECs
+         VRpL5j1Dcctai9NhIG8H8PeEgP0alA0FCxq71csFsYp7CU+AlZyY0CDnqvDwk/0easu1
+         AnU0SvkgLANK+kwW+NIavdi1xzfannMx9MMNDMDSMB29O7BJfggSdvoe4nWRCNoJ3pOH
+         5rBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=OX+no6hxlL1LIUDogEtqqTuM8con6ykQVZQuQa/oUy8=;
-        b=R1pH7FNAhuP3RFeBMQe6gbI5nXuJ7QVa/KRRWFzoURKkNilbfAlZaeolemM1Hrv0fb
-         STtpvRlJ8wNNCf5LqjTKtaE2UzDJpqT9yBOMXnGOykURlLTRrptC6TKPyBW2cTXOptCp
-         7J2LZQNqG9j+PdvmMgn15L6EgEfLWdj9/jj2A9Z/V/ubSm+paVXbuFkBNGb0d6cen/ki
-         jQd9vU2p+QtxlbB5+5J5zxowDuZW/gSC+azkixWU8+UbeelWJ4jOFXb+bC3McgZA5o8m
-         X9H2gJovbZRU3YNNb1KgHW6JwMp33imaLaVIQ9XU4AcClSlMCLQC5Ign7ayeIOcQ2Oj9
-         0pIA==
-X-Gm-Message-State: AOAM530aD9wZTdRYyudoubNWuYGzeSKRFFrk4gbbWMOKwauUZJFTbWpO
-        IIo2MLFebNkXqhYbkh7AjuYz/mnceEg=
-X-Google-Smtp-Source: ABdhPJz7xzi5mr7zKa8f0PYWMQ7BluOjgYnDYgdNZXFsK+psH9rt0Rn8kgo5vYCKFiVIEyDBZJyoiA==
-X-Received: by 2002:a05:622a:1cb:b0:2e2:27da:74c4 with SMTP id t11-20020a05622a01cb00b002e227da74c4mr10821609qtw.462.1649321957587;
-        Thu, 07 Apr 2022 01:59:17 -0700 (PDT)
+        bh=aN5mT5XseTWatVt6bcoD7NMS4LCdVfX/RptWXKAKrc0=;
+        b=epRUl1grlvtnq0ZtijSnsSWcNZhUghK/Pu4iPiNskS2CF0FdV9cpu5FxTsD9LRQj3k
+         AVRj40LIwxEq8TSPuh95hg1LxFaHK5FFIvyPOASvGKEMyva6bh3vGVW5hHv18+Ctls0I
+         kLReysKeG7yHvNzvxEYBW3043VLyDWWgqTSgF44iHJbQj1ErevqaoJRjQ6VjzZbm+nXG
+         mnati1kiOiW5zMmXq7CKyUsKxt8olOFHf01RFJNthGKE5nSjznc/NXhJhe5ZspbJyXzS
+         uBBaGlVZ+jL+SC05hc8pRTqOpeUIUO6Dw4ZW+AqTqBqeYVfKb+TeXoFhMZPR3P8woIPd
+         01YQ==
+X-Gm-Message-State: AOAM531uYjvDFpRthw7oOPp/xA1kFUcvfqEC5uObVV39M5zyc33qs7mm
+        UyT3loS8kjCPQBEG4onhLu0=
+X-Google-Smtp-Source: ABdhPJxqgFtzM+fnzFFy+amc+0Yve7WLUJ2aiCFsq7jk9FKpT9bpqOFs2IvxrX2BataVLBGpo+jkUg==
+X-Received: by 2002:a37:98c4:0:b0:69a:e14:16a2 with SMTP id a187-20020a3798c4000000b0069a0e1416a2mr255460qke.610.1649322005048;
+        Thu, 07 Apr 2022 02:00:05 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id d22-20020a05620a167600b0067d8efed4d4sm11508829qko.26.2022.04.07.01.59.14
+        by smtp.gmail.com with ESMTPSA id a23-20020a05620a103700b00699d49c511dsm4689750qkk.104.2022.04.07.02.00.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 01:59:17 -0700 (PDT)
+        Thu, 07 Apr 2022 02:00:04 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: lv.ruyi@zte.com.cn
-To:     jk@ozlabs.org, joel@jms.id.au
-Cc:     alistair@popple.id.au, eajames@linux.ibm.com,
-        linux-fsi@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] fsi: master-ast-cf: Fix missing of_node_put in fsi_master_acf_probe
-Date:   Thu,  7 Apr 2022 08:59:11 +0000
-Message-Id: <20220407085911.2491719-1-lv.ruyi@zte.com.cn>
+To:     kishon@ti.com, vkoul@kernel.org
+Cc:     krzysztof.kozlowski@linaro.org, alim.akhtar@samsung.com,
+        lv.ruyi@zte.com.cn, linux-phy@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] phy: samsung: fix missing of_node_put()
+Date:   Thu,  7 Apr 2022 08:59:58 +0000
+Message-Id: <20220407085958.2491783-1-lv.ruyi@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -66,34 +68,27 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-of_parse_phandle returns node pointer with refcount incremented, use
-of_node_put() on it when done.
+of_parse_phandle returns node pointer with refcount incremented,
+use of_node_put() on it when done.
 
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 ---
- drivers/fsi/fsi-master-ast-cf.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/phy/samsung/phy-exynos5250-sata.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/fsi/fsi-master-ast-cf.c b/drivers/fsi/fsi-master-ast-cf.c
-index 24292acdbaf8..5f608ef8b53c 100644
---- a/drivers/fsi/fsi-master-ast-cf.c
-+++ b/drivers/fsi/fsi-master-ast-cf.c
-@@ -1324,12 +1324,14 @@ static int fsi_master_acf_probe(struct platform_device *pdev)
- 		}
- 		master->cvic = devm_of_iomap(&pdev->dev, np, 0, NULL);
- 		if (IS_ERR(master->cvic)) {
-+			of_node_put(np);
- 			rc = PTR_ERR(master->cvic);
- 			dev_err(&pdev->dev, "Error %d mapping CVIC\n", rc);
- 			goto err_free;
- 		}
- 		rc = of_property_read_u32(np, "copro-sw-interrupts",
- 					  &master->cvic_sw_irq);
-+		of_node_put(np);
- 		if (rc) {
- 			dev_err(&pdev->dev, "Can't find coprocessor SW interrupt\n");
- 			goto err_free;
+diff --git a/drivers/phy/samsung/phy-exynos5250-sata.c b/drivers/phy/samsung/phy-exynos5250-sata.c
+index 9ec234243f7c..6c305a3fe187 100644
+--- a/drivers/phy/samsung/phy-exynos5250-sata.c
++++ b/drivers/phy/samsung/phy-exynos5250-sata.c
+@@ -187,6 +187,7 @@ static int exynos_sata_phy_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 
+ 	sata_phy->client = of_find_i2c_device_by_node(node);
++	of_node_put(node);
+ 	if (!sata_phy->client)
+ 		return -EPROBE_DEFER;
+ 
 -- 
 2.25.1
 
