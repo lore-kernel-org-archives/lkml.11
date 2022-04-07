@@ -2,98 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C85DC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED5D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344602AbiDGPZs (ORCPT
+        id S1344626AbiDGP0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
+        Thu, 7 Apr 2022 11:26:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344609AbiDGPZo (ORCPT
+        with ESMTP id S1344611AbiDGP0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:25:44 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243C1217383
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:23:42 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id x20so6787588edi.12
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 08:23:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=SRJLkMyHvzi95y55Vn5Iq6WvE2FMbtq9vylE1+a7zq4=;
-        b=FUhf0Yz9rc3d4pIj7ttd/N6bOFguOSqX0iP2Dj3sEZHZM8bY7Vn/J9Am/GtNHIdv0p
-         HOormLf5sdc/+pw28UHba8FOquWhPSDcoiOENy6xWdRqk2D6gcr/x3DaRN3cKLcIUTEp
-         qL5OA2o3TQHIlbMjx7Saqa4+WRlko39bz8RoIyrGVwtqKFrviQnw5pB8K7q1Ph+QeaDO
-         zR1A8m/jTaYCG4NGdMyRmjnUFFGwyM+tBsjYeb7UfWRMKCZ0UhZ1Vzey86C48XeECYK2
-         yNxMK03PJ9b9GguOpi4FtgXwrAsmMDpxpY+GkL4WiQBuYRuASHbQrsWzR2mes0EJ8fbY
-         ywqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=SRJLkMyHvzi95y55Vn5Iq6WvE2FMbtq9vylE1+a7zq4=;
-        b=36F45hqBgAQGJyPz72eeXWbDiEyDs/T+emyLG+D7oP0ZSsYPdPAABTudtxwUpz8z5v
-         NbAykYXjxv9RSo23vu0ofgBjDBB2fkXqfU1PaU3rZwt5ZQHwQfA92GdFUNflWH+FBt/S
-         1B2eAQN2pj3NO1YqRYTL3mzO9dmEL6LD0+mpZx3SvOzA+0qzpWgSmo9SXnSIkQzMOlYY
-         QRdAcsK42Jd0JIFcQeYxmcVrhGjmnkxrwtMilpTESF0yt1CyR8nX4hrkEJ1R/kMyWqnq
-         IY3X1PuQ2y/nQj34sUnohoL6zjcxRPSNLE+61SH2WLC6IkO2B+U8SAzXfV+AkEclxVdu
-         nkvw==
-X-Gm-Message-State: AOAM531Mhh8ioEEkMaFXdgPi4jd2Nf37i0J3CG3N+kUO/A1/7eqfyey7
-        MdLoLFooqBkj67x04JbC3AS92Q==
-X-Google-Smtp-Source: ABdhPJxpe8sU19S4ZyP0NmK+CtJZABE3mnsomrt0BfI1Ai2vqC4WVJcaC76McVCKILcMcHQzBik/0g==
-X-Received: by 2002:a05:6402:207a:b0:41d:80c:45 with SMTP id bd26-20020a056402207a00b0041d080c0045mr3671422edb.248.1649345021527;
-        Thu, 07 Apr 2022 08:23:41 -0700 (PDT)
-Received: from [192.168.0.187] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id k22-20020a170906971600b006e840b36f5asm375813ejx.91.2022.04.07.08.23.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 08:23:41 -0700 (PDT)
-Message-ID: <67f75e49-e0c1-463f-da39-4a2efe7cce3c@linaro.org>
-Date:   Thu, 7 Apr 2022 17:23:40 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] dt-bindings: align SPI NOR node name with dtschema
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220407143405.295907-1-krzysztof.kozlowski@linaro.org>
- <Yk8AJcFRmYEryqra@sirena.org.uk>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <Yk8AJcFRmYEryqra@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Thu, 7 Apr 2022 11:26:06 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F9C2207A1D;
+        Thu,  7 Apr 2022 08:22:14 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app3 (Coremail) with SMTP id cC_KCgAHWsqPAU9iX1KVAQ--.48077S2;
+        Thu, 07 Apr 2022 23:21:55 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     dan.carpenter@oracle.com
+Cc:     jgg@ziepe.ca, mustafa.ismail@intel.com, shiraz.saleem@intel.com,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH V2 09/11] drivers: infiniband: hw: Fix deadlock in irdma_cleanup_cm_core()
+Date:   Thu,  7 Apr 2022 23:21:50 +0800
+Message-Id: <20220407152150.19971-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgAHWsqPAU9iX1KVAQ--.48077S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Aw13Ar15Xw1rZryxZrWrXwb_yoW8AryUpr
+        47Ww1Skryq9F42ka18Xw1kAF93Xw4kXFWqvryqv395ZFs3XFyUAFnFyr1qqFZ8JF9Fgrs3
+        GF1rZryrCasIvr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkS1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r10
+        6r15McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
+        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
+        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
+        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
+        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvE
+        x4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjfUOGQDUUUUU
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgYNAVZdtZE+egADsg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/04/2022 17:15, Mark Brown wrote:
-> On Thu, Apr 07, 2022 at 04:34:05PM +0200, Krzysztof Kozlowski wrote:
->> The node names should be generic and SPI NOR dtschema expects "flash".
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> ---
->>  Documentation/devicetree/bindings/mtd/hisilicon,fmc-spi-nor.txt | 2 +-
->>  Documentation/devicetree/bindings/spi/spi-davinci.txt           | 2 +-
->>  Documentation/devicetree/bindings/spi/spi-pl022.yaml            | 2 +-
-> 
-> Acked-by: Mark Brown <broonie@kernel.org>
-> 
-> but it would be easier to split this into per subsystem stuff.
+There is a deadlock in irdma_cleanup_cm_core(), which is shown
+below:
 
-With DTS changes I had 22 patches, so splitting is a trade-off. If
-that's preferred (actually can reduce conflicts), I'll split it and send
-a v2.
+   (Thread 1)              |      (Thread 2)
+                           | irdma_schedule_cm_timer()
+irdma_cleanup_cm_core()    |  add_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | irdma_cm_timer_tick()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-Best regards,
-Krzysztof
+We hold cm_core->ht_lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need cm_core->ht_lock in position (2) of thread 2.
+As a result, irdma_cleanup_cm_core() will block forever.
+
+This patch removes the check of timer_pending(), because
+the del_timer_sync() function will just return directly
+if there isn't a pending lock. As a result, the lock is
+redundant, because there is no resource it could protect.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+Changes in V2:
+  - Remove the check of timer_pending().
+  - Remove the redundant lock.
+
+ drivers/infiniband/hw/irdma/cm.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
+index dedb3b7edd8..4b6b1065f85 100644
+--- a/drivers/infiniband/hw/irdma/cm.c
++++ b/drivers/infiniband/hw/irdma/cm.c
+@@ -3251,10 +3251,7 @@ void irdma_cleanup_cm_core(struct irdma_cm_core *cm_core)
+ 	if (!cm_core)
+ 		return;
+ 
+-	spin_lock_irqsave(&cm_core->ht_lock, flags);
+-	if (timer_pending(&cm_core->tcp_timer))
+-		del_timer_sync(&cm_core->tcp_timer);
+-	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
++	del_timer_sync(&cm_core->tcp_timer);
+ 
+ 	destroy_workqueue(cm_core->event_wq);
+ 	cm_core->dev->ws_reset(&cm_core->iwdev->vsi);
+-- 
+2.17.1
+
