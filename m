@@ -2,53 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D1AC35295
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3CCDC4707A
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:30:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240232AbiDGB3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60854 "EHLO
+        id S239871AbiDGB3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:29:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240493AbiDGBUC (ORCPT
+        with ESMTP id S240496AbiDGBUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 21:20:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595A938A2;
-        Wed,  6 Apr 2022 18:17:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6900531359;
+        Wed,  6 Apr 2022 18:17:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D1A4B8268E;
-        Thu,  7 Apr 2022 01:17:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65BC6C385A1;
-        Thu,  7 Apr 2022 01:17:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25251B81E79;
+        Thu,  7 Apr 2022 01:17:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A61FC385A3;
+        Thu,  7 Apr 2022 01:17:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294236;
-        bh=xhmdDEoKotcUO/7eHbPi3dL9BFugG1l1EDjl/avpqzE=;
+        s=k20201202; t=1649294254;
+        bh=dtq5FuBVkY2H3IbPkUyxFDs+51izOINGRqjrJWWyk6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qMOeJ13Z3X/NrAxFeWLAivbCkY0W5kIvZCDuMAC8q44SQfVP+9WplztmzfwZDifcc
-         B+s0lpuv0rHIrwAoS7oXcwdR1+h0KxZgedzSo9dcHxzihgkoNEBX7kYfwfcdcXoJRe
-         wiXB/+UpFjdQmbEWr64Lni42mHpHhdDwD4KLoUJvmPtyqbk+SbGIEU8xQJBp/cHhD5
-         N7hw9fvnLqZY5OBAefOL9mltgFP+4jQwfrCD3o9cSbxCS3EiF61Us0H7CA/JdodP3o
-         dFriuZmUu9rkqnPUW8R6gcLnzE+gLXpEbcz747kgUhnJP7Q0Z/CaTL2Zn28ucWwmEx
-         pJC2BwOXQsN5Q==
+        b=bvfZ9UHnPaqyebCS3tpUPXGpHVTigcCKBntXNG48Hx3kTssIC+h65POdr8DB9WRGn
+         3TCep4VVzg8yX7uh4IxA+WwgjkjlnrQs9uoIgqg7sI8Tw0zHbiEPeyiemTPc41mZVW
+         5noIfYKuWjJGFM3i/YW6cLYy/hpq23q7MMsQpwpGhUkD8YE57Wsy009kSY1wF173mZ
+         4DAOvC8+kyxYznuGlZVr8x1kV73acDww5EKlY8dZTb4B9vGayeG0+/nLFw1ccBsjfe
+         A2RJ4dIGyfz6wrw45HhlfHKDnI37GDK6DLv1gNf+DXerVvLR9diCwFrdaqp/Jms3t0
+         IkyOeGAvYnujw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Gow <davidgow@google.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        viro@zeniv.linux.org.uk, linux-um@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 2/8] um: Cleanup syscall_handler_t definition/cast, fix warning
-Date:   Wed,  6 Apr 2022 21:16:39 -0400
-Message-Id: <20220407011645.115412-2-sashal@kernel.org>
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
+        wangborong@cdjrlc.com, linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 6/8] MIPS: lantiq: check the return value of kzalloc()
+Date:   Wed,  6 Apr 2022 21:16:43 -0400
+Message-Id: <20220407011645.115412-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011645.115412-1-sashal@kernel.org>
 References: <20220407011645.115412-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,65 +52,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit f4f03f299a56ce4d73c5431e0327b3b6cb55ebb9 ]
+[ Upstream commit 34123208bbcc8c884a0489f543a23fe9eebb5514 ]
 
-The syscall_handler_t type for x86_64 was defined as 'long (*)(void)',
-but always cast to 'long (*)(long, long, long, long, long, long)' before
-use. This now triggers a warning (see below).
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to check the
+return value of it to prevent potential wrong memory access or
+memory leak.
 
-Define syscall_handler_t as the latter instead, and remove the cast.
-This simplifies the code, and fixes the warning.
-
-Warning:
-In file included from ../arch/um/include/asm/processor-generic.h:13
-                 from ../arch/x86/um/asm/processor.h:41
-                 from ../include/linux/rcupdate.h:30
-                 from ../include/linux/rculist.h:11
-                 from ../include/linux/pid.h:5
-                 from ../include/linux/sched.h:14
-                 from ../include/linux/ptrace.h:6
-                 from ../arch/um/kernel/skas/syscall.c:7:
-../arch/um/kernel/skas/syscall.c: In function ‘handle_syscall’:
-../arch/x86/um/shared/sysdep/syscalls_64.h:18:11: warning: cast between incompatible function types from ‘long int (*)(void)’ to ‘long int (*)(long int,  long int,  long int,  long int,  long int,  long int)’ [
--Wcast-function-type]
-   18 |         (((long (*)(long, long, long, long, long, long)) \
-      |           ^
-../arch/x86/um/asm/ptrace.h:36:62: note: in definition of macro ‘PT_REGS_SET_SYSCALL_RETURN’
-   36 | #define PT_REGS_SET_SYSCALL_RETURN(r, res) (PT_REGS_AX(r) = (res))
-      |                                                              ^~~
-../arch/um/kernel/skas/syscall.c:46:33: note: in expansion of macro ‘EXECUTE_SYSCALL’
-   46 |                                 EXECUTE_SYSCALL(syscall, regs));
-      |                                 ^~~~~~~~~~~~~~~
-
-Signed-off-by: David Gow <davidgow@google.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/um/shared/sysdep/syscalls_64.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/mips/lantiq/falcon/sysctrl.c |  2 ++
+ arch/mips/lantiq/xway/gptu.c      |  2 ++
+ arch/mips/lantiq/xway/sysctrl.c   | 46 ++++++++++++++++++++-----------
+ 3 files changed, 34 insertions(+), 16 deletions(-)
 
-diff --git a/arch/x86/um/shared/sysdep/syscalls_64.h b/arch/x86/um/shared/sysdep/syscalls_64.h
-index 8a7d5e1da98e..1e6875b4ffd8 100644
---- a/arch/x86/um/shared/sysdep/syscalls_64.h
-+++ b/arch/x86/um/shared/sysdep/syscalls_64.h
-@@ -10,13 +10,12 @@
- #include <linux/msg.h>
- #include <linux/shm.h>
+diff --git a/arch/mips/lantiq/falcon/sysctrl.c b/arch/mips/lantiq/falcon/sysctrl.c
+index 82bbd0e2e298..714d92659489 100644
+--- a/arch/mips/lantiq/falcon/sysctrl.c
++++ b/arch/mips/lantiq/falcon/sysctrl.c
+@@ -169,6 +169,8 @@ static inline void clkdev_add_sys(const char *dev, unsigned int module,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
  
--typedef long syscall_handler_t(void);
-+typedef long syscall_handler_t(long, long, long, long, long, long);
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = NULL;
+ 	clk->cl.clk = clk;
+diff --git a/arch/mips/lantiq/xway/gptu.c b/arch/mips/lantiq/xway/gptu.c
+index e304aabd6678..7d4081d67d61 100644
+--- a/arch/mips/lantiq/xway/gptu.c
++++ b/arch/mips/lantiq/xway/gptu.c
+@@ -124,6 +124,8 @@ static inline void clkdev_add_gptu(struct device *dev, const char *con,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
  
- extern syscall_handler_t *sys_call_table[];
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev_name(dev);
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+diff --git a/arch/mips/lantiq/xway/sysctrl.c b/arch/mips/lantiq/xway/sysctrl.c
+index c05bed624075..1b1142c7bb85 100644
+--- a/arch/mips/lantiq/xway/sysctrl.c
++++ b/arch/mips/lantiq/xway/sysctrl.c
+@@ -313,6 +313,8 @@ static void clkdev_add_pmu(const char *dev, const char *con, bool deactivate,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
  
- #define EXECUTE_SYSCALL(syscall, regs) \
--	(((long (*)(long, long, long, long, long, long)) \
--	  (*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
-+	(((*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
- 		 		      UPT_SYSCALL_ARG2(&regs->regs), \
- 				      UPT_SYSCALL_ARG3(&regs->regs), \
- 				      UPT_SYSCALL_ARG4(&regs->regs), \
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+@@ -336,6 +338,8 @@ static void clkdev_add_cgu(const char *dev, const char *con,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
+ 
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+@@ -354,24 +358,28 @@ static void clkdev_add_pci(void)
+ 	struct clk *clk_ext = kzalloc(sizeof(struct clk), GFP_KERNEL);
+ 
+ 	/* main pci clock */
+-	clk->cl.dev_id = "17000000.pci";
+-	clk->cl.con_id = NULL;
+-	clk->cl.clk = clk;
+-	clk->rate = CLOCK_33M;
+-	clk->rates = valid_pci_rates;
+-	clk->enable = pci_enable;
+-	clk->disable = pmu_disable;
+-	clk->module = 0;
+-	clk->bits = PMU_PCI;
+-	clkdev_add(&clk->cl);
++	if (clk) {
++		clk->cl.dev_id = "17000000.pci";
++		clk->cl.con_id = NULL;
++		clk->cl.clk = clk;
++		clk->rate = CLOCK_33M;
++		clk->rates = valid_pci_rates;
++		clk->enable = pci_enable;
++		clk->disable = pmu_disable;
++		clk->module = 0;
++		clk->bits = PMU_PCI;
++		clkdev_add(&clk->cl);
++	}
+ 
+ 	/* use internal/external bus clock */
+-	clk_ext->cl.dev_id = "17000000.pci";
+-	clk_ext->cl.con_id = "external";
+-	clk_ext->cl.clk = clk_ext;
+-	clk_ext->enable = pci_ext_enable;
+-	clk_ext->disable = pci_ext_disable;
+-	clkdev_add(&clk_ext->cl);
++	if (clk_ext) {
++		clk_ext->cl.dev_id = "17000000.pci";
++		clk_ext->cl.con_id = "external";
++		clk_ext->cl.clk = clk_ext;
++		clk_ext->enable = pci_ext_enable;
++		clk_ext->disable = pci_ext_disable;
++		clkdev_add(&clk_ext->cl);
++	}
+ }
+ 
+ /* xway socs can generate clocks on gpio pins */
+@@ -391,9 +399,15 @@ static void clkdev_add_clkout(void)
+ 		char *name;
+ 
+ 		name = kzalloc(sizeof("clkout0"), GFP_KERNEL);
++		if (!name)
++			continue;
+ 		sprintf(name, "clkout%d", i);
+ 
+ 		clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
++		if (!clk) {
++			kfree(name);
++			continue;
++		}
+ 		clk->cl.dev_id = "1f103000.cgu";
+ 		clk->cl.con_id = name;
+ 		clk->cl.clk = clk;
 -- 
 2.35.1
 
