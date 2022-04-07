@@ -2,109 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A85A0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:17:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D70C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:18:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346040AbiDGRTc (ORCPT
+        id S1346053AbiDGRUc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34580 "EHLO
+        Thu, 7 Apr 2022 13:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241991AbiDGRT2 (ORCPT
+        with ESMTP id S229838AbiDGRU0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:19:28 -0400
-Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7891B12B75B;
-        Thu,  7 Apr 2022 10:17:03 -0700 (PDT)
-Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-d6ca46da48so7020656fac.12;
-        Thu, 07 Apr 2022 10:17:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5EG0rJLTD+MbvhnF4oQMsvQXhv9+LU3aJVkGQ/n7roQ=;
-        b=4b6UcrOrQdEUlTZtFQ6iU0ip8n9gBe+v687a1udsFePLy8TOoYPFg7/3IfiwzkiO+d
-         ksa7pauJSQcpd7lInAdfv+kWnzZ1vL3Q1TWdzE34v/AGQsWNZonkoRIbtpL0w2aGz4n+
-         SyfQnRIAZfJHiUxcEsEUjrHzSuduj66aRd1Dmu4tCnCYGxkUdMXiyL+DUHgyRyOrX1Uy
-         alZ81CFUCKR0KnS91fv3mTRNGNTG2xS34tbrXv3i257w7f91hjBno7lX+wSMrCFStlXa
-         XDJVNyWY5qywNELRmnsQI4Xg9WVVucYC+3fD60vLjQpeweSR92X0WC8nbuH/x1GyWQpF
-         1obQ==
-X-Gm-Message-State: AOAM530bqNf9/8g4kInyu6sesUqlvbRdVnnsBQuTm+Uv/KoX/hzVOBiB
-        E3vHc2k5dGJ7LdCZA4Rf+A==
-X-Google-Smtp-Source: ABdhPJwAwF992HhuCgRfD4AbhjABaBZXkoVS6JYTmRcVMCykjLHu4LCaNf8nJMk6mYL3QdIrniYUkA==
-X-Received: by 2002:a05:6870:d14d:b0:e1:e253:99e8 with SMTP id f13-20020a056870d14d00b000e1e25399e8mr6484169oac.23.1649351816358;
-        Thu, 07 Apr 2022 10:16:56 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id pn22-20020a0568704d1600b000e27271d76fsm531821oab.58.2022.04.07.10.16.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 10:16:55 -0700 (PDT)
-Received: (nullmailer pid 1462273 invoked by uid 1000);
-        Thu, 07 Apr 2022 17:16:55 -0000
-Date:   Thu, 7 Apr 2022 12:16:55 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 05/14] dt-bindings: arm: mediatek: document the pcie
- mirror node on MT7622
-Message-ID: <Yk8chzNBsRZR8e1q@robh.at.kernel.org>
-References: <20220405195755.10817-1-nbd@nbd.name>
- <20220405195755.10817-6-nbd@nbd.name>
- <4bafe244-6a3d-d0ec-59d3-3f3f00e71caf@linaro.org>
- <318163cb-c771-c7eb-73ba-35c66f7d0e68@nbd.name>
+        Thu, 7 Apr 2022 13:20:26 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EF26FA0A;
+        Thu,  7 Apr 2022 10:18:25 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id AA302212CA;
+        Thu,  7 Apr 2022 17:18:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649351903; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IImX9u7hyHMtT/465kPC3r5ZAKcGOJ6gEaqJKDZXu+4=;
+        b=u/kLU55iYahiedriKEFkcAQ8KFcb4vhyT05qsST6PrHv8vtLgwKrg6EFn9frww2zlDJd5V
+        W6MsikanQWB9VYdWMTeOy8DQtiWgMGziiQs88kPhkNNpe6+wAXc/kOd3dhUYKakDQMll9I
+        4WDDYSr85bnBgYT1w/DNjrIJErGrJ6Y=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649351903;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IImX9u7hyHMtT/465kPC3r5ZAKcGOJ6gEaqJKDZXu+4=;
+        b=Q+80xPDcUy3Afcej8bwNXUBIzcuuqTLgnS0kSiHH6ZFmwQCAkTh+vrPzAYyNDY0oTggTd+
+        +Etqhrux+iN7qzBw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C07A013485;
+        Thu,  7 Apr 2022 17:18:22 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id HZOKJN4cT2J8IwAAMHmgww
+        (envelope-from <colyli@suse.de>); Thu, 07 Apr 2022 17:18:22 +0000
+Message-ID: <7b796b3e-2fd9-00bc-5410-1097512162be@suse.de>
+Date:   Fri, 8 Apr 2022 01:18:20 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <318163cb-c771-c7eb-73ba-35c66f7d0e68@nbd.name>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [PATCH v2] md: bcache: check the return value of kzalloc() in
+ detached_dev_do_request()
+Content-Language: en-US
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     linux-bcache@vger.kernel.org, kent.overstreet@gmail.com,
+        linux-kernel@vger.kernel.org
+References: <20220303015544.32186-1-baijiaju1990@gmail.com>
+From:   Coly Li <colyli@suse.de>
+In-Reply-To: <20220303015544.32186-1-baijiaju1990@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 01:01:06PM +0200, Felix Fietkau wrote:
-> 
-> On 06.04.22 10:20, Krzysztof Kozlowski wrote:
-> > On 05/04/2022 21:57, Felix Fietkau wrote:
-> > > From: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > 
-> > > This patch adds the pcie mirror document bindings for MT7622 SoC.
-> > > The feature is used for intercepting PCIe MMIO access for the WED core
-> > > Add related info in mediatek-net bindings.
-> > > 
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> > > ---
-> > >  .../mediatek/mediatek,mt7622-pcie-mirror.yaml | 42 +++++++++++++++++++
-> > 
-> > Eh, I wanted to ask to not put it inside arm/, but judging by your usage
-> > - you did not create drivers for both of these (WED and PCIe mirror).
-> > 
-> > You only need them to expose address spaces via syscon.
-> > 
-> > This actually looks hacky. Either WED and PCIe mirror are part of
-> > network driver, then add the address spaces via "reg". If they are not,
-> > but instead they are separate blocks, why you don't have drivers for them?
-> The code that uses the WED block is built into the Ethernet driver, but not
-> all SoCs that use this ethernet core have it. Also, there are two WED
-> blocks, and I'm not sure if future SoCs might have a different number of
-> them at some point.
-> The WED code also needs to access registers of the ethernet MAC.
-> One reason for having a separate device is this:
-> As long as WED is not in use, ethernet supports coherent DMA for increased
-> performance. When the first wireless device attaches to WED, IO coherency
-> gets disabled and the ethernet DMA rings are cleaned up and allocated again,
-> this time with the struct device of WED (which doesn't have the dma-coherent
-> property).
+On 3/3/22 9:55 AM, Jia-Ju Bai wrote:
+> The function kzalloc() in detached_dev_do_request() can fail, so its
+> return value should be checked.
+>
+> Fixes: bc082a55d25c ("bcache: fix inaccurate io state for detached bcache devices")
+> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+> ---
+> v2:
+> * Fix the error handling code when ddip is NULL.
+>    Thank Coly for good advice.
+>
+> ---
+>   drivers/md/bcache/request.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+>
+> diff --git a/drivers/md/bcache/request.c b/drivers/md/bcache/request.c
+> index d15aae6c51c1..673a680240a9 100644
+> --- a/drivers/md/bcache/request.c
+> +++ b/drivers/md/bcache/request.c
+> @@ -1107,6 +1107,12 @@ static void detached_dev_do_request(struct bcache_device *d, struct bio *bio,
+>   	 * which would call closure_get(&dc->disk.cl)
+>   	 */
+>   	ddip = kzalloc(sizeof(struct detached_dev_io_private), GFP_NOIO);
+> +	if (!ddip) {
+> +		bio->bi_status = BLK_STS_RESOURCE;
+> +		bio->bi_end_io(bio);
+> +		return;
+> +	}
+> +
+>   	ddip->d = d;
+>   	/* Count on the bcache device */
+>   	ddip->orig_bdev = orig_bdev;
 
-I'm pretty sure there are assumptions in the driver core that coherency 
-is not changing on the fly. In any case, if it is, using 'dma-coherent' 
-is not appropriate. You obviously have another method to determine 
-whether you are coherent or not.
+Added into my testing queue.
 
-Rob
+Thanks.
+
+
+Coly Li
+
