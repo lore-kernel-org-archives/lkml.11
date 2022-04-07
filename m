@@ -2,99 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF15EC43219
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 844F1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238348AbiDGBdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
+        id S239913AbiDGBeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240465AbiDGBUB (ORCPT
+        with ESMTP id S238230AbiDGBZD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:20:01 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA46181D89
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 18:16:30 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id u8-20020a170903124800b0015195a5826cso1967779plh.4
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 18:16:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=bNkFmzFNlQeAcnvu9GC9OTshsJeI+rH6kiFRlwb3YBU=;
-        b=K8Gs9++5sAjjhKmOk+cuBZV91Fgx1F2Mc9/ihaqPTpvvoSDaAbLdCPmuZPTlG68if4
-         P+L4S4dZumJgdSzNaEYVh+GredXixyyYlIw20G4uFBWxPVYkE4B4SKiO/claX7T8fsqZ
-         973YmBn98DfC32Jfkfmhgw6w0dQlXY+5zJIAo0HS7siO1awykxEQcHKvmgE2C7Wulzf+
-         yCe+cXmw+ol7FZCVBquExv//U+Raiq+r8EeVZnh/Gvh67wftRg0AnrEFREcqmr/YtDAx
-         MWqy6tOmw/VyRjst4kEyYRT0NdHa9vj5NDXg6tBeIW1fR0zgikI1q556ZrgXu7cgVb66
-         SJCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=bNkFmzFNlQeAcnvu9GC9OTshsJeI+rH6kiFRlwb3YBU=;
-        b=kmbAhDVGFbekpJFBU0ZfwL7J+TDMMdYDRy3k6YS1o3DrMBE9jyrhXLeHFt3KwHOm1P
-         i257D8C2oCUyLT2oF9GYR5+UJT0A5oCZnwr26eEfPV2fgmQeIJ2Fi+WCZrIPzDTA1U4n
-         cgm3OY+9UlIReH0shpuz9SuvSte7xAMurtoaq4ajZE1aYsJ3o86KGupmKi11pvg2BjOS
-         ismT6tdLGJAb08+R1dbHRSS5lgQDXsITPapMVyr/XPpT8Zj3cS+MhYH+Vm78aaBI++AN
-         0b4mgjhXf3vZ/bTCA6j4qU8cvdBb85F17kgIQgGr0y9+4bAmT9U9gyxZ3Gv3sTbYu3th
-         y/nA==
-X-Gm-Message-State: AOAM53377pn1F9o2ZXEhawkt2ZTBN2RPyr5NLl0+fYRyPUQEdjQqsyZI
-        7DjrZ82gQMPXlGdvUHxJA+oTxpNFrrWZ
-X-Google-Smtp-Source: ABdhPJw3H13JfmsLMr/v01PnuQI5IQ6Tom5pq0QlYE+3A76jaQsbAEjlYFdMr4kCXy4hfGM3I3np0WoSyb7z
-X-Received: from rananta-virt.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1bcc])
- (user=rananta job=sendgmr) by 2002:a17:902:7088:b0:156:1aa9:79eb with SMTP id
- z8-20020a170902708800b001561aa979ebmr11197910plk.71.1649294189989; Wed, 06
- Apr 2022 18:16:29 -0700 (PDT)
-Date:   Thu,  7 Apr 2022 01:16:05 +0000
-In-Reply-To: <20220407011605.1966778-1-rananta@google.com>
-Message-Id: <20220407011605.1966778-11-rananta@google.com>
-Mime-Version: 1.0
-References: <20220407011605.1966778-1-rananta@google.com>
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH v5 10/10] selftests: KVM: aarch64: Add KVM_REG_ARM_FW_REG(3)
- to get-reg-list
-From:   Raghavendra Rao Ananta <rananta@google.com>
-To:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
-        Ricardo Koller <ricarkol@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Reiji Watanabe <reijiw@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Raghavendra Rao Anata <rananta@google.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 6 Apr 2022 21:25:03 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A330E55B6;
+        Wed,  6 Apr 2022 18:21:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=RepwD/qy2hKVR+6Z6FmCrM7P72REoqeJYemZBaGKcAU=; b=ygoj5sIiv2rObGg5DwqppacJpt
+        JhCqgetiwuoVNC9T5cGvhjKoY1OHEwoZXBAXZ5nzOagRuw9+WbbI1riXcVESfGk5pTDkmZgJLy7ar
+        QUDP3/tzOFL2oT8vFKvVXk2ahTprlCURPD/q3laLD60mwUi71JZ+YLr+q54Kj06WLzi8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ncGpc-00EXpO-Kf; Thu, 07 Apr 2022 03:21:04 +0200
+Date:   Thu, 7 Apr 2022 03:21:04 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Potin Lai <potin.lai@quantatw.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, davem@davemloft.net,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Patrick Williams <patrick@stwcx.xyz>
+Subject: Re: [PATCH net-next v3 3/3] net: mdio: aspeed: Add c45 support
+Message-ID: <Yk48gMGh06NEIJmX@lunn.ch>
+References: <20220407011738.7189-1-potin.lai@quantatw.com>
+ <20220407011738.7189-4-potin.lai@quantatw.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220407011738.7189-4-potin.lai@quantatw.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the register KVM_REG_ARM_FW_REG(3)
-(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3) to the base_regs[] of
-get-reg-list.
+On Thu, Apr 07, 2022 at 09:17:38AM +0800, Potin Lai wrote:
+> Add Clause 45 support for Aspeed mdio driver.
+> 
+> Signed-off-by: Potin Lai <potin.lai@quantatw.com>
 
-Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
----
- tools/testing/selftests/kvm/aarch64/get-reg-list.c | 1 +
- 1 file changed, 1 insertion(+)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-diff --git a/tools/testing/selftests/kvm/aarch64/get-reg-list.c b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
-index 281c08b3fdd2..7049c31aa443 100644
---- a/tools/testing/selftests/kvm/aarch64/get-reg-list.c
-+++ b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
-@@ -691,6 +691,7 @@ static __u64 base_regs[] = {
- 	KVM_REG_ARM_FW_REG(0),
- 	KVM_REG_ARM_FW_REG(1),
- 	KVM_REG_ARM_FW_REG(2),
-+	KVM_REG_ARM_FW_REG(3),
- 	KVM_REG_ARM_FW_FEAT_BMAP_REG(0),	/* KVM_REG_ARM_STD_BMAP */
- 	KVM_REG_ARM_FW_FEAT_BMAP_REG(1),	/* KVM_REG_ARM_STD_HYP_BMAP */
- 	KVM_REG_ARM_FW_FEAT_BMAP_REG(2),	/* KVM_REG_ARM_VENDOR_HYP_BMAP */
--- 
-2.35.1.1094.g7c7d902a7c-goog
-
+    Andrew
