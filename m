@@ -2,87 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83001C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F511C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:54:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343678AbiDGNzH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 09:55:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43980 "EHLO
+        id S243629AbiDGN4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 09:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242816AbiDGNzD (ORCPT
+        with ESMTP id S229586AbiDGN4q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 09:55:03 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6401118665;
-        Thu,  7 Apr 2022 06:53:02 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id d10so6553859edj.0;
-        Thu, 07 Apr 2022 06:53:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RtLEHMXofVwSigiZFruK1cViTW610dtmPpogWRx2vYw=;
-        b=Q9vW21lD4OBM6tWcGgFjv4mr1Jlw8Y1HftqW6nKVE/kn8NU5nrtIRuKRZ0kvV5JTDa
-         JUIetz7mC/8jEWgICzJHIl4QnlxBdT+jVEqvtH0UAYgP4jy2vakI7MqoldoILxFAhipM
-         rBZCcxUXu0rIT6myNSOl1RMcCC9Sc6j5VPisJVSEDH54xkT8EXDyOWHL0yscGmpYhjbV
-         KfOwAyduR8/tR1m3PPOg05GbXbxQKDc7iZVqSKQmTrUGeAWAeOkQMCB/kbuuPXp3IlVh
-         UDk3ntcbwvFhkEBMRU57NgsggAtGvAOggUEGqHq8zLqJETfBvEzHsuOa0jkHeVwd4u/+
-         PkuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RtLEHMXofVwSigiZFruK1cViTW610dtmPpogWRx2vYw=;
-        b=tuvUA6ZWUePU3votAoHpJvbhglY5ne0s7/bSOEqSkhVulzSvHfVi26i9f3rjhyqsRz
-         nut1Wq1KD/RRSjwaQ5MImTn0h7yxLeEgFwjzJwGVh17LsgKhXISpCkfqGKGpQqws6gPj
-         +KedLLNkr/v3Oso7ddua2aNA8RnlobjG1G2BwENkwt14pKEOf7cZlRxARd/sducpWg0o
-         8M3zDAQBlBb5SbQsXjKxY9aQ7cpW8zsk/OpaMm6LkeAAtKKeWa4MICtFUvKChXvtZBHv
-         i8oF5sVx8uCB/u6HF7Sb76dqTRtRD+kxkx6HWCMlreTsSFkmo4u83pPdSDKIe3UL7+34
-         JwBw==
-X-Gm-Message-State: AOAM531OlRS3xTzWQ324nteU4VA9PoP4XPiViAfVE/78ey1usTja1Jwg
-        t+F2f01y9d2d9maKhg7HvK8=
-X-Google-Smtp-Source: ABdhPJzfQSBegI2RHjRgjDsZUux0MM3e853t44jeZ9G6UHrN1tVMWA0IqES/TdKb+emQmclu7SoEyQ==
-X-Received: by 2002:a05:6402:2688:b0:419:5dde:4700 with SMTP id w8-20020a056402268800b004195dde4700mr14644996edd.124.1649339581190;
-        Thu, 07 Apr 2022 06:53:01 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id c1-20020a50cf01000000b0041cb7e02a5csm7389585edk.87.2022.04.07.06.52.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 06:53:00 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <37a736d0-1f25-79be-4c3f-c8e8a5a62528@redhat.com>
-Date:   Thu, 7 Apr 2022 15:52:58 +0200
+        Thu, 7 Apr 2022 09:56:46 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9ED14B017;
+        Thu,  7 Apr 2022 06:54:46 -0700 (PDT)
+Received: from kwepemi100019.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KZ2rq2MCtzgYPC;
+        Thu,  7 Apr 2022 21:52:59 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi100019.china.huawei.com (7.221.188.189) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Apr 2022 21:54:44 +0800
+Received: from [10.67.102.67] (10.67.102.67) by kwepemm600016.china.huawei.com
+ (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 7 Apr
+ 2022 21:54:44 +0800
+Subject: Re: [PATCH] net: phy: genphy_loopback: fix loopback failed when speed
+ is unknown
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <lipeng321@huawei.com>,
+        <chenhao288@hisilicon.com>
+References: <20220331114819.14929-1-huangguangbin2@huawei.com>
+ <YkWdTpCsO8JhiSaT@lunn.ch> <130bb780-0dc1-3819-8f6d-f2daf4d9ece9@huawei.com>
+ <YkW6J9rM6O/cb/lv@lunn.ch> <20220401064006.GB4449@pengutronix.de>
+ <YkbsraBQ5ynYG9wz@lunn.ch>
+From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
+Message-ID: <d42ae21a-6136-5340-6851-e3108759937a@huawei.com>
+Date:   Thu, 7 Apr 2022 21:54:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v5 045/104] KVM: x86/tdp_mmu: make REMOVED_SPTE
- include shadow_initial value
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
-        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
-        Connor Kuehl <ckuehl@redhat.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <6614d2a2bc34441ed598830392b425fdf8e5ca52.1646422845.git.isaku.yamahata@intel.com>
- <3f93de19-0685-3045-22db-7e05492bb5a4@redhat.com>
- <Yk4j0cCR5fnQKw1F@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <Yk4j0cCR5fnQKw1F@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <YkbsraBQ5ynYG9wz@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.67]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/7/22 01:35, Sean Christopherson wrote:
->> Please rename the existing REMOVED_SPTE to REMOVED_SPTE_MASK, and call this
->> simply REMOVED_SPTE.  This also makes the patch smaller.
-> Can we name it either __REMOVE_SPTE or REMOVED_SPTE_VAL?  It's most definitely
-> not a mask, it's a full value, e.g. spte |= REMOVED_SPTE_MASK is completely wrong.
 
-REMOVED_SPTE_VAL is fine.
 
-Paolo
+On 2022/4/1 20:14, Andrew Lunn wrote:
+>>> O.K. So it should be set into 10M half duplex. But why does this cause
+>>> it not to loopback packets? Does the PHY you are using not actually
+>>> support 10 Half? Why does it need to be the same speed as when the
+>>> link was up? And why does it actually set LSTATUS indicating there is
+>>> link?
+>>>
+>>> Is this a generic problem, all PHYs are like this, or is this specific
+>>> to the PHY you are using? Maybe this PHY needs its own loopback
+>>> function because it does something odd?
+>>
+>> It looks for me like attempt to fix loopback test for setup without active
+>> link partner. Correct?
+> 
+> You should not need a link partner for loopback to work. This is local
+> loopback. The PHY is also saying it has link, if the LSTATUS bit is
+> set. So i don't see why previous speed is relevant hear. This seems to
+> me to be an issue for this particular PHY.
+> 
+> What i don't like about this patch is that it is not deterministic
+> what mode the PHY will end up in if speed is unknown. Without the
+> patch, it is 10Mbps, which is historically a sensible default.
+> 
+> If this PHY has never had link, what speed does it use? Does it still
+> work in that case?
+> 
+>     Andrew
+> .
+> 
+Hi Andrew,
+The PHY we test is RTL8211F, it supports 10 half. This problem actually is,
+our board has MAC connected with PHY, when loopback test, packet flow is
+MAC->PHY->MAC, it needs speed of MAC and PHY should be same when they work.
+
+If PHY speed is unknown when PHY goes down, we will not set MAC speed in
+adjust_link interface. In this case, we hope that PHY speed should not be
+changed, as the old code of function genphy_loopback() before patch
+"net: phy: genphy_loopback: add link speed configuration".
+
+If PHY has never link, MAC speed has never be set in adjust_link interface,
+yeah, in this case, MAC and PHY may has different speed, and they can not work.
+I think we can accept this situation.
+
+I think it is general problem if there is MAC connected with PHY.
