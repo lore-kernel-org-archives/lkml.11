@@ -2,225 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243422AbiDGIsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:48:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44694 "EHLO
+        id S243436AbiDGIwe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:52:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243293AbiDGIrd (ORCPT
+        with ESMTP id S230414AbiDGIwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:47:33 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F0020BE4;
-        Thu,  7 Apr 2022 01:45:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649321131; x=1680857131;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=5+woGgT8oRs7IxuaWX4pGFJj6qKELEL6f03kVPsFH4o=;
-  b=D68zKUrMRdeqFZDbThCVv8KuZmbUmA1WBmIwFC4JL/RDeTw69h0EFK9+
-   rRRm8RfKyrHPArA+47WID1b2vLlBRuZV4SeeAPi2fjcmN+ZIJLrgjdkNh
-   5P2n7UtBEiF275BSWrJYEq/3kOe17TguNiNZxF+r1vo78jUZAYG51tA01
-   8=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 07 Apr 2022 01:45:29 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 01:45:28 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Apr 2022 01:45:28 -0700
-Received: from c-sanm-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Apr 2022 01:45:22 -0700
-From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-To:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
-        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
+        Thu, 7 Apr 2022 04:52:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D25119314B
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:50:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF265B826B6
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:50:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2175C385A0;
+        Thu,  7 Apr 2022 08:50:26 +0000 (UTC)
+Date:   Thu, 7 Apr 2022 09:50:23 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-CC:     <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_pkondeti@quicinc.com>, <quic_ppratap@quicinc.com>,
-        <quic_kriskura@quicinc.com>, <quic_vpulyala@quicinc.com>,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Subject: [PATCH v12 1/6] usb: dwc3: core: Host wake up support from system suspend
-Date:   Thu, 7 Apr 2022 14:14:59 +0530
-Message-ID: <1649321104-31322-2-git-send-email-quic_c_sanm@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649321104-31322-1-git-send-email-quic_c_sanm@quicinc.com>
-References: <1649321104-31322-1-git-send-email-quic_c_sanm@quicinc.com>
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 08/10] mm/slab: Allow dynamic kmalloc() minimum alignment
+Message-ID: <Yk6lz0UYyKIv5ibI@arm.com>
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
+ <20220405135758.774016-9-catalin.marinas@arm.com>
+ <Yk5endPQFHc/pB1W@ip-172-31-19-208.ap-northeast-1.compute.internal>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yk5endPQFHc/pB1W@ip-172-31-19-208.ap-northeast-1.compute.internal>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During suspend read the status of all port and set hs phy mode
-based on current speed. Use this hs phy mode to configure wakeup
-interrupts in qcom glue driver.
+On Thu, Apr 07, 2022 at 03:46:37AM +0000, Hyeonggon Yoo wrote:
+> On Tue, Apr 05, 2022 at 02:57:56PM +0100, Catalin Marinas wrote:
+> > --- a/mm/slab_common.c
+> > +++ b/mm/slab_common.c
+> > @@ -838,9 +838,18 @@ void __init setup_kmalloc_cache_index_table(void)
+> >  	}
+> >  }
+> >  
+> > -static void __init
+> > +unsigned int __weak arch_kmalloc_minalign(void)
+> > +{
+> > +	return ARCH_KMALLOC_MINALIGN;
+> > +}
+> > +
+> 
+> As ARCH_KMALLOC_ALIGN and arch_kmalloc_minalign() may not be same after
+> patch 10, I think s/ARCH_KMALLOC_ALIGN/arch_kmalloc_minalign/g
+> for every user of it would be more correct?
 
-Also check during suspend if any wakeup capable devices are
-connected to the controller (directly or through hubs), if there
-are none set a flag to indicate that the PHY is powered
-down during suspend.
+Not if the code currently using ARCH_KMALLOC_MINALIGN needs a constant.
+Yes, there probably are a few places where the code can cope with a
+dynamic arch_kmalloc_minalign() but there are two other cases where a
+constant is needed:
 
-Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
----
- drivers/usb/dwc3/core.c | 29 ++++++++++++++++++++---------
- drivers/usb/dwc3/core.h |  4 ++++
- drivers/usb/dwc3/host.c | 25 +++++++++++++++++++++++++
- 3 files changed, 49 insertions(+), 9 deletions(-)
+1. As a BUILD_BUG check because the code is storing some flags in the
+   bottom bits of a pointer. A smaller ARCH_KMALLOC_MINALIGN works just
+   fine here.
 
-diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-index 1170b80..b102a22 100644
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -32,6 +32,7 @@
- #include <linux/usb/gadget.h>
- #include <linux/usb/of.h>
- #include <linux/usb/otg.h>
-+#include <linux/usb/hcd.h>
- 
- #include "core.h"
- #include "gadget.h"
-@@ -1723,6 +1724,7 @@ static int dwc3_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, dwc);
- 	dwc3_cache_hwparams(dwc);
-+	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
- 
- 	spin_lock_init(&dwc->lock);
- 	mutex_init(&dwc->mutex);
-@@ -1865,6 +1867,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
- {
- 	unsigned long	flags;
- 	u32 reg;
-+	struct usb_hcd  *hcd = platform_get_drvdata(dwc->xhci);
- 
- 	switch (dwc->current_dr_role) {
- 	case DWC3_GCTL_PRTCAP_DEVICE:
-@@ -1877,10 +1880,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
- 		dwc3_core_exit(dwc);
- 		break;
- 	case DWC3_GCTL_PRTCAP_HOST:
--		if (!PMSG_IS_AUTO(msg)) {
--			dwc3_core_exit(dwc);
--			break;
--		}
-+		dwc3_set_phy_speed_mode(dwc);
- 
- 		/* Let controller to suspend HSPHY before PHY driver suspends */
- 		if (dwc->dis_u2_susphy_quirk ||
-@@ -1896,6 +1896,16 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
- 
- 		phy_pm_runtime_put_sync(dwc->usb2_generic_phy);
- 		phy_pm_runtime_put_sync(dwc->usb3_generic_phy);
-+
-+		if (!PMSG_IS_AUTO(msg)) {
-+			if (device_may_wakeup(dwc->dev) &&
-+			    usb_wakeup_enabled_descendants(hcd->self.root_hub)) {
-+				dwc->phy_power_off = false;
-+			} else {
-+				dwc->phy_power_off = true;
-+				dwc3_core_exit(dwc);
-+			}
-+		}
- 		break;
- 	case DWC3_GCTL_PRTCAP_OTG:
- 		/* do nothing during runtime_suspend */
-@@ -1939,11 +1949,12 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
- 		break;
- 	case DWC3_GCTL_PRTCAP_HOST:
- 		if (!PMSG_IS_AUTO(msg)) {
--			ret = dwc3_core_init_for_resume(dwc);
--			if (ret)
--				return ret;
--			dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
--			break;
-+			if (dwc->phy_power_off) {
-+				ret = dwc3_core_init_for_resume(dwc);
-+				if (ret)
-+					return ret;
-+				dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
-+			}
- 		}
- 		/* Restore GUSB2PHYCFG bits that were modified in suspend */
- 		reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
-diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
-index 5c9d467..de58995 100644
---- a/drivers/usb/dwc3/core.h
-+++ b/drivers/usb/dwc3/core.h
-@@ -1154,6 +1154,9 @@ struct dwc3 {
- 
- 	bool			phys_ready;
- 
-+	unsigned int            hs_phy_mode;
-+	bool			phy_power_off;
-+
- 	struct ulpi		*ulpi;
- 	bool			ulpi_ready;
- 
-@@ -1537,6 +1540,7 @@ int dwc3_core_soft_reset(struct dwc3 *dwc);
- #if IS_ENABLED(CONFIG_USB_DWC3_HOST) || IS_ENABLED(CONFIG_USB_DWC3_DUAL_ROLE)
- int dwc3_host_init(struct dwc3 *dwc);
- void dwc3_host_exit(struct dwc3 *dwc);
-+void dwc3_set_phy_speed_mode(struct dwc3 *dwc);
- #else
- static inline int dwc3_host_init(struct dwc3 *dwc)
- { return 0; }
-diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
-index eda8719..74e7d92 100644
---- a/drivers/usb/dwc3/host.c
-+++ b/drivers/usb/dwc3/host.c
-@@ -13,6 +13,7 @@
- #include <linux/platform_device.h>
- 
- #include "core.h"
-+#include "../host/xhci.h"
- 
- static void dwc3_host_fill_xhci_irq_res(struct dwc3 *dwc,
- 					int irq, char *name)
-@@ -138,3 +139,27 @@ void dwc3_host_exit(struct dwc3 *dwc)
- {
- 	platform_device_unregister(dwc->xhci);
- }
-+
-+void dwc3_set_phy_speed_mode(struct dwc3 *dwc)
-+{
-+
-+	int i, num_ports;
-+	u32 reg;
-+	struct usb_hcd	*hcd = platform_get_drvdata(dwc->xhci);
-+	struct xhci_hcd	*xhci_hcd = hcd_to_xhci(hcd);
-+
-+	dwc->hs_phy_mode = 0;
-+
-+	reg = readl(&xhci_hcd->cap_regs->hcs_params1);
-+
-+	num_ports = HCS_MAX_PORTS(reg);
-+	for (i = 0; i < num_ports; i++) {
-+		reg = readl(&xhci_hcd->op_regs->port_status_base + i * NUM_PORT_REGS);
-+		if (reg & PORT_PE) {
-+			if (DEV_HIGHSPEED(reg) || DEV_FULLSPEED(reg))
-+				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_HS;
-+			else if (DEV_LOWSPEED(reg))
-+				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_LS;
-+		}
-+	}
-+}
+2. As a static alignment for DMA requirements. That's where the newly
+   exposed ARCH_DMA_MINALIGN should be used.
+
+Note that this series doesn't make the situation any worse than before
+since ARCH_DMA_MINALIGN stays at 128 bytes for arm64. Current users can
+evolve to use a dynamic alignment in future patches. My main aim with
+this series is to be able to create kmalloc-64 caches on arm64.
+
+> > @@ -851,10 +860,17 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
+> >  		flags |= SLAB_ACCOUNT;
+> >  	}
+> >  
+> > -	kmalloc_caches[type][idx] = create_kmalloc_cache(
+> > -					kmalloc_info[idx].name[type],
+> > -					kmalloc_info[idx].size, flags, 0,
+> > -					kmalloc_info[idx].size);
+> > +	if (minalign > ARCH_KMALLOC_MINALIGN) {
+> > +		aligned_size = ALIGN(aligned_size, minalign);
+> > +		aligned_idx = __kmalloc_index(aligned_size, false);
+> > +	}
+> > +
+> > +	if (!kmalloc_caches[type][aligned_idx])
+> > +		kmalloc_caches[type][aligned_idx] = create_kmalloc_cache(
+> > +					kmalloc_info[aligned_idx].name[type],
+> > +					aligned_size, flags, 0, aligned_size);
+> > +	if (idx != aligned_idx)
+> > +		kmalloc_caches[type][idx] = kmalloc_caches[type][aligned_idx];
+> 
+> I would prefer detecting minimum kmalloc size in create_kmalloc_caches()
+> in runtime instead of changing behavior of new_kmalloc_cache().
+
+That was my initial attempt but we have a couple of
+create_kmalloc_cache() (not *_caches) calls directly, one of them in
+mm/slab.c kmem_cache_init(). So I wanted all the minalign logic in a
+single place, hence I replaced the explicit create_kmalloc_cache() call
+with new_kmalloc_cache(). See this patch and patch 9 for some clean-up.
+
 -- 
-2.7.4
-
+Catalin
