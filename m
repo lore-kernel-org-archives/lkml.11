@@ -2,73 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EFBFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8F0C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242281AbiDGHyw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:54:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38768 "EHLO
+        id S242341AbiDGHy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239320AbiDGHyu (ORCPT
+        with ESMTP id S242275AbiDGHyw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:54:50 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0301C2D81;
-        Thu,  7 Apr 2022 00:52:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=FZp9Ive/VquPf6ObnGVyJces3vL4RIyldFbr1Zsjkoo=; b=y+E42+SZua5mio9/NU+Cbghatk
-        H9Ss1en/Hvkc7LLJ2oSa7kA0GIkzq+D0c6JP1/VnkfB+psAfw71vpUnIqSL9bTzLuhHzA41YH7rO9
-        2jEcaksVcYlFuAqJvlzei2o+aTox94gmwzrTX++dRWAQanYRr/4TP6Dl8u2/XtNZBqWDsHMoTPpP+
-        /eNvBjX7LPZ7zcbYgMX4evGihYIlt3OG0+BHGKmOYv+QuSqlmaEussnUYrOTNrrKBzm5OvrSiAruu
-        cHzDr077suP8/Fzui/3ARNWb/0hoEOhTAIPPH93ys2y7WypI2AQCIFY9NfVq7zxdXjhqdqy5eN/qY
-        iAYOAqGQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ncMwY-00A8KX-C6; Thu, 07 Apr 2022 07:52:38 +0000
-Date:   Thu, 7 Apr 2022 00:52:38 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Rob Landley <rob@landley.net>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "moderated list:H8/300 ARCHITECTURE" 
-        <uclinux-h8-devel@lists.sourceforge.jp>,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>, Max Filippov <jcmvbkbc@gmail.com>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Rich Felker <dalias@libc.org>
-Subject: Re: [RFC PULL] remove arch/h8300
-Message-ID: <Yk6YRuFYw7ncoIHI@infradead.org>
-References: <Yib9F5SqKda/nH9c@infradead.org>
- <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
- <YkmWh2tss8nXKqc5@infradead.org>
- <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
- <CAMuHMdWcg+171ggdVC4gwbQ=RUf+cYrX3o9uSpDxo-XXEJ5Qgw@mail.gmail.com>
- <c3e7ee64-68fc-ed53-4a90-9f9296583d7c@landley.net>
- <CAK8P3a14b6djqPw8Dea5uW2PPEABbe0pNXV5EX0529oDrW1ZAg@mail.gmail.com>
- <04c0374f-0044-c84d-1820-d743a4061906@physik.fu-berlin.de>
+        Thu, 7 Apr 2022 03:54:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 115331C315C
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:52:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649317972;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qQwtpv4LSJs4oYZkfG+yHqo4mCAyzu9Mqm5FcRavI60=;
+        b=UKGWP5Mm6xl+5GKUrNvM5SrSh62263TmHxReuqC8YN67uCeSQc5uX3DRUgwKl9nf3dZXnU
+        YnnhmT0ch9bLYtVeyAXO0gz5qN8Y0RXiaPOAuizFlyM2Izj0cwpDWV8RCJGx/Tm46Nunsn
+        Ost5f0HVVIoLynfGJ0ddOaJPWiyVoHw=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-180-rDqrMzroPZCOxoo4cQkGGw-1; Thu, 07 Apr 2022 03:52:49 -0400
+X-MC-Unique: rDqrMzroPZCOxoo4cQkGGw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 08864802819;
+        Thu,  7 Apr 2022 07:52:48 +0000 (UTC)
+Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 25F4940D2962;
+        Thu,  7 Apr 2022 07:52:45 +0000 (UTC)
+Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
+        id E84AC1C00CD; Thu,  7 Apr 2022 09:52:43 +0200 (CEST)
+From:   Artem Savkov <asavkov@redhat.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Anna-Maria Behnsen <anna-maria@linutronix.de>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
+Subject: [PATCH v4 2/2] net: make tcp keepalive timer upper bound
+Date:   Thu,  7 Apr 2022 09:52:42 +0200
+Message-Id: <20220407075242.118253-3-asavkov@redhat.com>
+In-Reply-To: <20220407075242.118253-1-asavkov@redhat.com>
+References: <871qyb35q4.ffs@tglx>
+ <20220407075242.118253-1-asavkov@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <04c0374f-0044-c84d-1820-d743a4061906@physik.fu-berlin.de>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 09:47:04AM +0200, John Paul Adrian Glaubitz wrote:
-> But if it's not a lot of code, would it really accumulate a lot of cruft?
-> 
-> If the code just works as is and doesn't need much attention to keep it working
+Make sure TCP keepalive timer does not expire late. Switching to upper
+bound timers means it can fire off early but in case of keepalive
+tcp_keepalive_timer() handler checks elapsed time and resets the timer
+if it was triggered early. This results in timer "cascading" to a
+higher precision and being just a couple of milliseconds off it's
+original mark.
 
-Because no one gives it even that little bit of attention.
+Signed-off-by: Artem Savkov <asavkov@redhat.com>
+---
+ net/ipv4/inet_connection_sock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index 1e5b53c2bb267..bb2dbfb6f5b50 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -589,7 +589,7 @@ EXPORT_SYMBOL(inet_csk_delete_keepalive_timer);
+ 
+ void inet_csk_reset_keepalive_timer(struct sock *sk, unsigned long len)
+ {
+-	sk_reset_timer(sk, &sk->sk_timer, jiffies + len);
++	sk_reset_timer(sk, &sk->sk_timer, jiffies + upper_bound_timeout(len));
+ }
+ EXPORT_SYMBOL(inet_csk_reset_keepalive_timer);
+ 
+-- 
+2.34.1
+
