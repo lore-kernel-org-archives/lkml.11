@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC03DC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 768F1C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241104AbiDGBam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60912 "EHLO
+        id S240815AbiDGBaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240517AbiDGBUD (ORCPT
+        with ESMTP id S240524AbiDGBUD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 21:20:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB5E3EBAF;
-        Wed,  6 Apr 2022 18:17:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A17215B85B;
+        Wed,  6 Apr 2022 18:18:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC85B61DA4;
-        Thu,  7 Apr 2022 01:17:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40069C385A1;
-        Thu,  7 Apr 2022 01:17:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B04A61DA8;
+        Thu,  7 Apr 2022 01:18:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1CA1C385A7;
+        Thu,  7 Apr 2022 01:18:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294271;
-        bh=/9/EoeSHUACmbJ7HvXHZB554Rh0bzWIVC1Sfe8QGiZQ=;
+        s=k20201202; t=1649294282;
+        bh=6jNmCwqW0fu4CPFR3J5FzbGjeFGMlP2sKf6skwD6jqA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Id9F8qHtctjTYhTw8PRQKs0NKolNDaMfeydFLAyBtH5UgD1L2Ir6Gec0RoJdrcceM
-         cYu3HvbISXd6Y0cAvJQP/Ak8XfEeduCELwaD7eurEun1D2Ux5Me2TCvbkqelPxcajB
-         dtEPgkhX+WakeRsjoizkscPwVQ/Sml5JLJRnKx1YfI02Upotjqp+wXdeputdADdoEc
-         xOU5skwLdh5z9Uob6xNqOkuApP/Ke3e7rqcac7TuU7eWbTiZ2A7S0TuxwqHUegMV5g
-         F7JlKdrx32cEBG11GHnz0XkFpbLqGw7uFN/0MOjKb8eg1DPaahUP1wqOQFHdO5xGXh
-         uJibc62EZuRZg==
+        b=Asu9K+l3LEMeieAYMciFHQsAM9+JPSmRYaxUDeQlu8FsQGi0gM2/7xxvsK8ZUaQXP
+         EN1SPPT6kewY4zmjmlAPV9PBQF27mf2izegOPGU2l5rbzGOxfQyRj7JKZq7GY4tMW/
+         m6rdAhBWeqLA1B/1gz9ZuMCqimK2NtqixsgWcxhmjTBGo3JjvijXKaNMlQGXxhckJc
+         7PJIfz1ajHHFxROrUAHlYK6R6vNLe8BN8/hbjLFsmcBBzjQ5rbzj5qm6FaNr1pygJ7
+         Vz8pwVf7gLsYi2hs+cTJHClf8rSz0QG5TXUL8VMvLSVHk2wXMu87Thz340MkP4nyP8
+         FALCU8RKzWsFg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Glenn Washburn <development@efficientek.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        linux-um@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.9 3/7] um: port_user: Improve error handling when port-helper is not found
-Date:   Wed,  6 Apr 2022 21:17:36 -0400
-Message-Id: <20220407011740.115717-3-sashal@kernel.org>
+Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
+        philipp.reisner@linbit.com, lars.ellenberg@linbit.com,
+        christoph.boehmwalder@linbit.com, drbd-dev@lists.linbit.com,
+        linux-block@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 6/7] drbd: remove usage of list iterator variable after loop
+Date:   Wed,  6 Apr 2022 21:17:39 -0400
+Message-Id: <20220407011740.115717-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011740.115717-1-sashal@kernel.org>
 References: <20220407011740.115717-1-sashal@kernel.org>
@@ -53,53 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Glenn Washburn <development@efficientek.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-[ Upstream commit 3cb5a7f167c620a8b0e38b0446df2e024d2243dc ]
+[ Upstream commit 901aeda62efa21f2eae937bccb71b49ae531be06 ]
 
-Check if port-helper exists and is executable. If not, write an error
-message to the kernel log with information to help the user diagnose the
-issue and exit with an error. If UML_PORT_HELPER was not set, write a
-message suggesting that the user set it. This makes it easier to understand
-why telneting to the UML instance is failing and what can be done to fix it.
+In preparation to limit the scope of a list iterator to the list
+traversal loop, use a dedicated pointer to iterate through the list [1].
 
-Signed-off-by: Glenn Washburn <development@efficientek.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Since that variable should not be used past the loop iteration, a
+separate variable is used to 'remember the current location within the
+loop'.
+
+To either continue iterating from that position or skip the iteration
+(if the previous iteration was complete) list_prepare_entry() is used.
+
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/r/20220331220349.885126-1-jakobkoschel@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/drivers/port_user.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/block/drbd/drbd_main.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/um/drivers/port_user.c b/arch/um/drivers/port_user.c
-index 9a8e1b64c22e..d3cf5db1350a 100644
---- a/arch/um/drivers/port_user.c
-+++ b/arch/um/drivers/port_user.c
-@@ -5,6 +5,7 @@
+diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
+index daa9cef96ec6..f4537a5eef02 100644
+--- a/drivers/block/drbd/drbd_main.c
++++ b/drivers/block/drbd/drbd_main.c
+@@ -193,7 +193,7 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
+ 		unsigned int set_size)
+ {
+ 	struct drbd_request *r;
+-	struct drbd_request *req = NULL;
++	struct drbd_request *req = NULL, *tmp = NULL;
+ 	int expect_epoch = 0;
+ 	int expect_size = 0;
  
- #include <stdio.h>
- #include <stdlib.h>
-+#include <string.h>
- #include <errno.h>
- #include <termios.h>
- #include <unistd.h>
-@@ -175,6 +176,17 @@ int port_connection(int fd, int *socket, int *pid_out)
- 	if (new < 0)
- 		return -errno;
- 
-+	err = os_access(argv[2], X_OK);
-+	if (err < 0) {
-+		printk(UM_KERN_ERR "port_connection : error accessing port-helper "
-+		       "executable at %s: %s\n", argv[2], strerror(-err));
-+		if (env == NULL)
-+			printk(UM_KERN_ERR "Set UML_PORT_HELPER environment "
-+				"variable to path to uml-utilities port-helper "
-+				"binary\n");
-+		goto out_close;
-+	}
-+
- 	err = os_pipe(socket, 0, 0);
- 	if (err < 0)
- 		goto out_close;
+@@ -247,8 +247,11 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
+ 	 * to catch requests being barrier-acked "unexpectedly".
+ 	 * It usually should find the same req again, or some READ preceding it. */
+ 	list_for_each_entry(req, &connection->transfer_log, tl_requests)
+-		if (req->epoch == expect_epoch)
++		if (req->epoch == expect_epoch) {
++			tmp = req;
+ 			break;
++		}
++	req = list_prepare_entry(tmp, &connection->transfer_log, tl_requests);
+ 	list_for_each_entry_safe_from(req, r, &connection->transfer_log, tl_requests) {
+ 		if (req->epoch != expect_epoch)
+ 			break;
 -- 
 2.35.1
 
