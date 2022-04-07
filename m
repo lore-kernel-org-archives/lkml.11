@@ -2,94 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 02:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 263A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 02:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232799AbiDGCmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 22:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
+        id S239323AbiDGCmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 22:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231734AbiDGCmJ (ORCPT
+        with ESMTP id S239303AbiDGCmP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 22:42:09 -0400
-X-Greylist: delayed 924 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 19:40:09 PDT
-Received: from spam2.hygon.cn (unknown [110.188.70.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1332A220EC
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 19:40:08 -0700 (PDT)
-Received: from spam2.hygon.cn (localhost [127.0.0.2] (may be forged))
-        by spam2.hygon.cn with ESMTP id 2372Oc4M016374
-        for <linux-kernel@vger.kernel.org>; Thu, 7 Apr 2022 10:24:38 +0800 (GMT-8)
-        (envelope-from puwen@hygon.cn)
-Received: from MK-DB.hygon.cn ([172.23.18.60])
-        by spam2.hygon.cn with ESMTP id 2372JkUG015975;
-        Thu, 7 Apr 2022 10:19:46 +0800 (GMT-8)
-        (envelope-from puwen@hygon.cn)
-Received: from cncheex02.Hygon.cn ([172.23.18.12])
-        by MK-DB.hygon.cn with ESMTP id 2372Jo1R063189;
-        Thu, 7 Apr 2022 10:19:50 +0800 (GMT-8)
-        (envelope-from puwen@hygon.cn)
-Received: from cncheex01.Hygon.cn (172.23.18.10) by cncheex02.Hygon.cn
- (172.23.18.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Apr
- 2022 10:19:28 +0800
-Received: from cncheex01.Hygon.cn ([172.23.18.10]) by cncheex01.Hygon.cn
- ([172.23.18.10]) with mapi id 15.01.2375.024; Thu, 7 Apr 2022 10:19:28 +0800
-From:   Wen Pu <puwen@hygon.cn>
-To:     Peter Zijlstra <peterz@infradead.org>
-CC:     Wyes Karny <wyes.karny@amd.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Lewis.Carroll@amd.com" <Lewis.Carroll@amd.com>,
-        "Mario.Limonciello@amd.com" <Mario.Limonciello@amd.com>,
-        "gautham.shenoy@amd.com" <gautham.shenoy@amd.com>,
-        "Ananth.Narayan@amd.com" <Ananth.Narayan@amd.com>,
-        "bharata@amd.com" <bharata@amd.com>,
-        "len.brown@intel.com" <len.brown@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "chang.seok.bae@intel.com" <chang.seok.bae@intel.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "metze@samba.org" <metze@samba.org>,
-        "zhengqi.arch@bytedance.com" <zhengqi.arch@bytedance.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>
-Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
-Thread-Topic: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
-Thread-Index: AQHYSPZ2i5fvSUiei0GnFDYbI7mXuKzjM8cA
-Date:   Thu, 7 Apr 2022 02:19:28 +0000
-Message-ID: <5c57dae3-966a-b579-c971-e346b14a8695@hygon.cn>
-References: <20220405130021.557880-1-wyes.karny@amd.com>
- <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
-In-Reply-To: <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.23.18.44]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <4053828FB938304D86CAE8649A34B29D@Hygon.cn>
-Content-Transfer-Encoding: base64
+        Wed, 6 Apr 2022 22:42:15 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A1B138346;
+        Wed,  6 Apr 2022 19:40:17 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id z128so3815800pgz.2;
+        Wed, 06 Apr 2022 19:40:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q0BS+DlYIFXWqo3Zzeim6fvtNJHwGEjQKRmny/DdPeI=;
+        b=lj6OeQgsdULcEtsSutYDsI9wAYtipXM4Vo+YHFr4+Xt1+cgsZTF4/6bem3AhwhMJHs
+         bCGdWyDnPcy2lOtnzGBk26IvVhPSuCVcRpy2r8jjtLq1mBqLyGS+8DXeqsCpxkHxjuvn
+         UfNFVoIqOnm4n1smOkLhGKhUkkern6DLZh/ug0AZMNZfGc6oULdMGDATfwndNEHU2cP8
+         XJ5LhRvZiRq2KMy1OlLp8ZGKsMh6ryGYDgFqw/CurM3tmHkP2T+j1EjZprEjC0vq9lA8
+         RB/ORZZIziTJZYylcg+qNJKwSvIgo0i0/CczwjIf8U8ZzLmevfcRGg1sO0fXU7nOI4k3
+         5PDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q0BS+DlYIFXWqo3Zzeim6fvtNJHwGEjQKRmny/DdPeI=;
+        b=OBUSg4W8BDWDgS4E/BB1DNKsaQ7vwUZJG17WUbDg5ThEBufGOdTGvcpbkwxC1m74Pk
+         8hG1nz3/YW0f5hFeLotwwPncb2mXg1/SzxD1erF1i9g8cZS188ge9HZAcG58aNBfGmB/
+         J71cbshm0qlEcryqPRUrEH/sl4PNz1IP35O6Gehdh5RFpYXO6ynolQP/lROhYaTP4A5H
+         RXCOGUBnFBzl3NZl0IAYp2Ooc/eitjKBDl4+if5p6F+Geh70T1uYCnnTohvwvZNSDGgy
+         OQneSB0+VnTG8sAcrDnA5etZCFx7P32WQr+gAnT2Wc2bukTTYh7paEvATLRNQbPTFVXG
+         N3HQ==
+X-Gm-Message-State: AOAM530Enbxzfbr/7w9PPZ9a+L9rpBWpT5pwa1EBlAZAu8i4P+Q2NcWl
+        yK6ifHV1QNZ0HTQ7P8+9pib2mZciqHtdvg==
+X-Google-Smtp-Source: ABdhPJzif8Jcyr1Q316a7UtqQl2OAfR8jsfKZq+llBOYYuCIe+5pdhNZTMccBy0FnO9J14oA9b7n9Q==
+X-Received: by 2002:a05:6a00:2887:b0:4fa:e10c:7ca with SMTP id ch7-20020a056a00288700b004fae10c07camr12046138pfb.9.1649299216608;
+        Wed, 06 Apr 2022 19:40:16 -0700 (PDT)
+Received: from slim.das-security.cn ([103.84.139.52])
+        by smtp.gmail.com with ESMTPSA id q10-20020a056a00088a00b004f7ceff389esm21577827pfj.152.2022.04.06.19.40.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 19:40:16 -0700 (PDT)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     gregkh@linuxfoundation.org, mudongliangabcd@gmail.com,
+        oneukum@suse.com
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH v2] usb: misc: fix improper handling of refcount in uss720_probe()
+Date:   Thu,  7 Apr 2022 10:40:01 +0800
+Message-Id: <20220407024001.11761-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MAIL: spam2.hygon.cn 2372Oc4M016374
-X-DNSRBL: 
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQpPbiAyMDIyLzQvNSAyMjowNywgUGV0ZXIgWmlqbHN0cmEgd3JvdGU6DQo+IE9uIFR1ZSwgQXBy
-IDA1LCAyMDIyIGF0IDA2OjMwOjIxUE0gKzA1MzAsIFd5ZXMgS2Fybnkgd3JvdGU6DQo+PiArc3Rh
-dGljIGlubGluZSBib29sIGVhcmx5X213YWl0X3N1cHBvcnRlZChjb25zdCBzdHJ1Y3QgY3B1aW5m
-b194ODYgKmMpDQo+PiArew0KPj4gKwlpZiAoYy0+eDg2X3ZlbmRvciA9PSBYODZfVkVORE9SX0lO
-VEVMKQ0KPj4gKwkJcmV0dXJuIHRydWU7DQo+PiArDQo+PiArCWlmIChjLT54ODZfdmVuZG9yID09
-IFg4Nl9WRU5ET1JfQU1EICYmIGNwdV9oYXMoYywgWDg2X0ZFQVRVUkVfWkVOKSkNCj4gDQo+IFdo
-YXQgYWJvdXQgSHlnb24/IEZvciBzb21lIHJlYXNvbiB5b3UgZ3V5cyBkb24ndCBjby1vcmRpbmF0
-ZSBhbmQgd2UgZW5kDQo+IHVwIGdldHRpbmcgZW5kbGVzcyAnbWFrZS1zYW1lJyBwYXRjaGVzLCBz
-b21ldGltZXMgc2VwYXJhdGVkIGJ5IHllYXJzIDovDQoNCg0KSHlnb24gQ1BVIHN1cHBvcnRzIE1X
-QUlULCBzbyB0aGlzIHBhdGNoIGFsc28gbWFrZSBzZW5zZSBmb3IgSHlnb24gOikNCkFzIERhdmUg
-SGFuc2VuIGFuZCBMZXdpcyBDYXJvbGwgbWVudGlvbmVkIGluIHRoZSBmb2xsb3dpbmcgdGhyZWFk
-cywNCkh5Z29uIGhhcyBhbHJlYWR5IHNldCB0aGUgWDg2X0ZFQVRVUkVfWkVOIGZsYWcsIHNvIGl0
-J3MgYmV0dGVyIHRvDQp1c2UgWDg2X0ZFQVRVUkVfWkVOIGZvciBhbGwgWmVuIHVhcmNoIENQVXMu
-DQoNCj4+ICsJCXJldHVybiB0cnVlOw0KPj4gKw0KPj4gKwlyZXR1cm4gZmFsc2U7DQo+PiArfQ0K
-DQotLSANClJlZ2FyZHMsDQpQdSBXZW4=
+usb_put_dev shouldn't be called when uss720_probe succeeds because of
+priv->usbdev. At the same time, priv->usbdev shouldn't be set to NULL
+before destroy_priv in uss720_disconnect because usb_put_dev is in
+destroy_priv.
+
+Fix this by moving priv->usbdev = NULL after usb_put_dev.
+
+Fixes: dcb4b8ad6a44 ("misc/uss720: fix memory leak in uss720_probe")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+---
+
+v2: fix a stupid UAF in the previous version.
+
+ drivers/usb/misc/uss720.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/usb/misc/uss720.c b/drivers/usb/misc/uss720.c
+index 748139d26263..0be8efcda15d 100644
+--- a/drivers/usb/misc/uss720.c
++++ b/drivers/usb/misc/uss720.c
+@@ -71,6 +71,7 @@ static void destroy_priv(struct kref *kref)
+ 
+ 	dev_dbg(&priv->usbdev->dev, "destroying priv datastructure\n");
+ 	usb_put_dev(priv->usbdev);
++	priv->usbdev = NULL;
+ 	kfree(priv);
+ }
+ 
+@@ -736,7 +737,6 @@ static int uss720_probe(struct usb_interface *intf,
+ 	parport_announce_port(pp);
+ 
+ 	usb_set_intfdata(intf, pp);
+-	usb_put_dev(usbdev);
+ 	return 0;
+ 
+ probe_abort:
+@@ -754,7 +754,6 @@ static void uss720_disconnect(struct usb_interface *intf)
+ 	usb_set_intfdata(intf, NULL);
+ 	if (pp) {
+ 		priv = pp->private_data;
+-		priv->usbdev = NULL;
+ 		priv->pp = NULL;
+ 		dev_dbg(&intf->dev, "parport_remove_port\n");
+ 		parport_remove_port(pp);
+-- 
+2.25.1
+
