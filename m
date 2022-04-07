@@ -2,117 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F03C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245243AbiDGMf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:35:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52924 "EHLO
+        id S245256AbiDGMhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:37:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245232AbiDGMfu (ORCPT
+        with ESMTP id S235147AbiDGMhH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:35:50 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BE615EDE5;
-        Thu,  7 Apr 2022 05:33:49 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id q19so4821160pgm.6;
-        Thu, 07 Apr 2022 05:33:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oHuMdd+Tso54IS24zoaKEo7ZF3a1oq8FNtueInQMuKg=;
-        b=TP5m84milVRvG/vEdfXwdoGsaBa4DtHBo313pRzo5ALpNwKykawRcbsU4JHBwG928X
-         n5jRakad5YjG9eFkh+7QyNsQRSSkBceUG9GxSLvPM9ydqymcYFGa8t+cT16wAFVYtn5E
-         Tm0FxsfLb3ONv418/WLIsSgHsnwWPtYG1P7XhsyJBo1/YupRo+2Y1caU5ReQn2FTD9KR
-         oEfNV/qbGhraydqt6xDfrmotxOVI99RtQARty2IARenhNTZHIJ1pa2l7r4GamI/2KkDq
-         BmlszCrdY1v32v0rEq223xFv4QRc6SK6IN5w3cwfPHdg+hY2B1LoYIdhmzMBJnKAfFdl
-         yM+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oHuMdd+Tso54IS24zoaKEo7ZF3a1oq8FNtueInQMuKg=;
-        b=bIccdu6pTAJ5HDDEqQ7+/rgLHh3QnrqdfxiO3Y/N/NK1QJ5b2gkqozESyw2MmV9tiA
-         g9THaHKl5unMj4+v4WW81AZNcJwTVIl7rHbnvaZpJuz7sahTGKXkLIPRD69En4dQaTjf
-         KeSKFOtU8mwEj29VszgrV14iVsuuFVoMFJBHj22AcSSNygzAgCZuZ7bephPsquCmO60s
-         0wZ+7D6FAVF+/odjKrYo44/K9u8hbvpJIr1dA1QIVHZ37/vCdmEC7i8P+XPPprgPAt2g
-         bvnTDVpSBaTrYijDqLtKsplifmKGFKBGuED8xukbEME/UQ5L2Y584AQGAs+kyUtuhGtm
-         DQhg==
-X-Gm-Message-State: AOAM533NZjxdT+lpEvz7+Ad5PcFqEXLzjZgQTBwKy3Su03twOtJHJfa/
-        y+qRsIOe/4QRi3I/ynQuj6WyIkeqzGzY7vIj
-X-Google-Smtp-Source: ABdhPJxaB7S5JM7L1Nse63e3q13TrwKZX/zgN6E55DEv72DlYwSESD8Cwg7AsnUwV84IfHCk/CWwgQ==
-X-Received: by 2002:a63:7f50:0:b0:386:2b5c:9d16 with SMTP id p16-20020a637f50000000b003862b5c9d16mr11244153pgn.153.1649334829156;
-        Thu, 07 Apr 2022 05:33:49 -0700 (PDT)
-Received: from ubuntu.mate (subs03-180-214-233-65.three.co.id. [180.214.233.65])
-        by smtp.gmail.com with ESMTPSA id nv11-20020a17090b1b4b00b001c71b0bf18bsm9484966pjb.11.2022.04.07.05.33.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 05:33:48 -0700 (PDT)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>, KVM <kvm@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Anup Patel <anup.patel@wdc.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: [PATCH v2] Documentation: kvm: Add missing line break in api.rst
-Date:   Thu,  7 Apr 2022 19:33:27 +0700
-Message-Id: <20220407123327.159079-1-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 7 Apr 2022 08:37:07 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD81193225;
+        Thu,  7 Apr 2022 05:35:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649334906; x=1680870906;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=WRMFH2QsUAPJeUEDXnzJd2uSJbpbZ86SEGUkely7mPQ=;
+  b=mBR2yYYaMb/JqmpTOjRMDhgBeiCZ9wHY+qKvO3uy/uAPjqEdIrpDWnyu
+   VMKnFWSy/DBzlqE1n9LPsZxEq4w9JDG5n/S/HV18GzqqvvU6VAxoyQibz
+   P1Yv/oFKV40MWxiO1AQva+GfbX08cScmAtxtT7VZ8skAS5zy0p8iss8zu
+   PBYYjjDrz5OHJPrZjWw1t5SWqJX2fH5rvxPObCDk9eHv7Vdef22c06H2G
+   xtxCCNt4udXSZ3X4kphxRa04WLou+MB6B8sQexnxsdjfn5q9Mvsf4qj4w
+   eGq172zW+oknGQy0/2DEH/LFd0ql+Fj/Inen3zioDrffY4qRWoKahc3tG
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10309"; a="243443856"
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="243443856"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 05:35:06 -0700
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="571033517"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.40.48])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 05:35:02 -0700
+Message-ID: <676075ca-4d5d-7388-61ac-42a0b9f1ed50@intel.com>
+Date:   Thu, 7 Apr 2022 15:34:32 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH v2] perf test tsc: Fix error message report when not
+ supported.
+Content-Language: en-US
+To:     Bryton Lee <brytonlee01@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        peterz@infradead.org, mingo@redhat.com,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>, ak@linux.intel.com,
+        likexu@tencent.com, chengdongli@tencent.com
+References: <20220406100609.65239-1-chengdongli@tencent.com>
+ <ce2c3c4f-3751-312a-5fa6-0f98330067fe@intel.com>
+ <CAC2pzGe0Kn9Vzyx7S5_5A338shYG-DXgY=CS38zpJYk3m3_N7A@mail.gmail.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <CAC2pzGe0Kn9Vzyx7S5_5A338shYG-DXgY=CS38zpJYk3m3_N7A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing line break separator between literal block and description
-of KVM_EXIT_RISCV_SBI.
+On 07/04/2022 14.34, Bryton Lee wrote:
+> On Thu, Apr 7, 2022 at 2:59 PM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>>
+>> On 06/04/2022 13.06, Chengdong Li wrote:
+>>> By default `perf test tsc` does not return the error message
+>>> when child process detected kernel does not support. Instead, child
+>>> process print error message to stderr, unfortunately the stderr is
+>>> redirected to /dev/null when verbose <= 0.
+>>>
+>>> This patch did three things:
+>>> - returns TEST_SKIP to parent process instead of TEST_OK when
+>>>   perf_read_tsc_conversion() is not supported.
+>>> - add a new subtest of testing if TSC is supported on current
+>>>   architecture by moving exist code to a separate function.
+>>> - extended test suite definition to contain above two subtests.
+>>>
+>>> Changes since v1 (thanks for the feedback from Adrian Hunter):
+>>> - rebase commit to current source.
+>>>
+>>> Signed-off-by: Chengdong Li <chengdongli@tencent.com>
+>>> ---
+>>>  tools/perf/tests/perf-time-to-tsc.c | 36 +++++++++++++++++++++--------
+>>>  1 file changed, 27 insertions(+), 9 deletions(-)
+>>>
+>>> diff --git a/tools/perf/tests/perf-time-to-tsc.c b/tools/perf/tests/perf-time-to-tsc.c
+>>> index d12d0ad81801..fc7c380af5a0 100644
+>>> --- a/tools/perf/tests/perf-time-to-tsc.c
+>>> +++ b/tools/perf/tests/perf-time-to-tsc.c
+>>> @@ -47,6 +47,17 @@
+>>>       }                                       \
+>>>  }
+>>>
+>>> +static int test__tsc_is_supported(struct test_suite *test __maybe_unused,
+>>> +                               int subtest __maybe_unused)
+>>> +{
+>>> +     if (!TSC_IS_SUPPORTED) {
+>>> +             pr_debug("Test not supported on this architecture");
+>>
+>> Message better ending with "\n" I think
+> OK, I will fix it.
+>>
+>>> +             return TEST_SKIP;
+>>> +     }
+>>> +
+>>> +     return TEST_OK;
+>>> +}
+>>> +
+>>>  /**
+>>>   * test__perf_time_to_tsc - test converting perf time to TSC.
+>>>   *
+>>> @@ -70,7 +81,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+>>>       struct perf_cpu_map *cpus = NULL;
+>>>       struct evlist *evlist = NULL;
+>>>       struct evsel *evsel = NULL;
+>>> -     int err = -1, ret, i;
+>>> +     int err = TEST_FAIL, ret, i;
+>>>       const char *comm1, *comm2;
+>>>       struct perf_tsc_conversion tc;
+>>>       struct perf_event_mmap_page *pc;
+>>> @@ -79,10 +90,6 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+>>>       u64 test_time, comm1_time = 0, comm2_time = 0;
+>>>       struct mmap *md;
+>>>
+>>> -     if (!TSC_IS_SUPPORTED) {
+>>> -             pr_debug("Test not supported on this architecture");
+>>> -             return TEST_SKIP;
+>>> -     }
+>>>
+>>>       threads = thread_map__new(-1, getpid(), UINT_MAX);
+>>>       CHECK_NOT_NULL__(threads);
+>>> @@ -124,8 +131,8 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+>>>       ret = perf_read_tsc_conversion(pc, &tc);
+>>>       if (ret) {
+>>>               if (ret == -EOPNOTSUPP) {
+>>> -                     fprintf(stderr, " (not supported)");
+>>> -                     return 0;
+>>> +                     pr_debug("perf_read_tsc_conversion is not supported in current kernel");
+>>> +                     err = TEST_SKIP;
+>>>               }
+>>>               goto out_err;
+>>>       }
+>>> @@ -191,7 +198,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+>>>           test_tsc >= comm2_tsc)
+>>>               goto out_err;
+>>>
+>>> -     err = 0;
+>>> +     err = TEST_OK;
+>>>
+>>>  out_err:
+>>>       evlist__delete(evlist);
+>>> @@ -200,4 +207,15 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+>>>       return err;
+>>>  }
+>>>
+>>> -DEFINE_SUITE("Convert perf time to TSC", perf_time_to_tsc);
+>>> +static struct test_case time_to_tsc_tests[] = {
+>>> +     TEST_CASE_REASON("TSC support", tsc_is_supported,
+>>> +                      "This architecture does not support"),
+>>
+>> The 2nd test case runs anyway, so I am not sure another
+>> test case is needed?
+> 
+> Yes. But, I think there are two reasons to add two subtests: 1).
+> Original TSC support test is embedded in test__perf_time_to_tsc(), and
+> returns TEST_SKIP
+> if current architecture doesn't support it.  Thus there are two places
+> that return TEST_SKIP in test__perf_time_to_tsc() if we don't move TSC
+> support
+> to another subtest. 2). Current test_suite and test_case structs don't
+> support printing skip_reason if there is no subtest. To print skip
+> reason we need more than 1 subtests.
 
-This fixes:
-</path/to/linux>/Documentation/virt/kvm/api.rst:6118: WARNING: Literal block ends without a blank line; unexpected unindent.
+Ok, can that explanation be added to the commit message
 
-Fixes: da40d85805937d ("RISC-V: KVM: Document RISC-V specific parts of KVM API")
-Cc: Anup Patel <anup.patel@wdc.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: Albert Ou <aou@eecs.berkeley.edu>
-Cc: kvm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-riscv@lists.infradead.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- Changes since v1 [1]:
-   - Rebased on v5.18-rc1
-   - Address Fixes tag problems reported by Stephen Rothwell [2] by
-     removing date and quote the original commit
-
- [1]: https://lore.kernel.org/linux-doc/20220403065735.23859-1-bagasdotme@gmail.com/
- [2]: https://lore.kernel.org/linux-next/20220407074844.110f9285@canb.auug.org.au/
-
- Documentation/virt/kvm/api.rst | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index d13fa66004672c..85c7abc51af521 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -6190,6 +6190,7 @@ Valid values for 'type' are:
- 			unsigned long args[6];
- 			unsigned long ret[2];
- 		} riscv_sbi;
-+
- If exit reason is KVM_EXIT_RISCV_SBI then it indicates that the VCPU has
- done a SBI call which is not handled by KVM RISC-V kernel module. The details
- of the SBI call are available in 'riscv_sbi' member of kvm_run structure. The
-
-base-commit: 3123109284176b1532874591f7c81f3837bbdc17
--- 
-An old man doll... just what I always wanted! - Clara
+> 
+>>
+>>> +     TEST_CASE_REASON("Perf time to TSC", perf_time_to_tsc,
+>>> +                      "perf_read_tsc_conversion is not supported"),
+>>> +     { .name = NULL, }
+>>> +};
+>>> +
+>>> +struct test_suite suite__perf_time_to_tsc = {
+>>> +     .desc = "Convert perf time to TSC",
+>>> +     .test_cases = time_to_tsc_tests,
+>>> +};
+>>
 
