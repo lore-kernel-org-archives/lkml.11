@@ -2,113 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 917DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:31:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C55C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:31:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbiDGUdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36262 "EHLO
+        id S229842AbiDGUdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbiDGUdU (ORCPT
+        with ESMTP id S229923AbiDGUdW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:33:20 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BDA4ECFA
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:18:37 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id x17so2454949lfa.10
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:18:37 -0700 (PDT)
+        Thu, 7 Apr 2022 16:33:22 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DC3320DA1
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:18:41 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id oo16-20020a17090b1c9000b001c6d21e8c04so6413392pjb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:18:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=539tKapVnhTf+rr/UYXZW8Cq7Ffl8HHTv+MpMPMBGwU=;
-        b=ffo6LfUuDcD6KO3JYi4Bph7AGnw9CfbScz/u0s/+boAFG7UTH2D4eV4A9G5S1n6Llp
-         MyhQArAjnTTLRhZahWihXQWI+3bLYesLkmBOK1ffEgvcrrBsmi2zY/eNLm9eYG8HGfr0
-         fVHMnwDXny2Kr09j7dKRgeIHQc9UWgqJlsrkbbpMdLGujwyCnH8JQaKTIpcZGRgMHPQX
-         uhl55nyqi7NvGXWRAReZ879L1RbS25Y+QYZMBiQHFeKreSIOkqmg17F9gay/cwSOdVRB
-         ptExR9O7EmEyFV5VenF12VqrgrprAmwEnA95kjwS4LQGqzgn/gcr2evW0L5OpWkgvg35
-         Lm4g==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Ku8/xhQuY+DnaUKfaV/zzEU2U1z2wt3bXsnqQqFqkqc=;
+        b=M3ZS8Aiq4mZdEltM4TPvQxBlNDtZ5ARAyG4HJSf7KbrTU9eEooYFvgfOobSIGlllyi
+         CE02YilAIANO7ovsSumaS3UAoN/fZBTfzlEOZIaX/CXkYe74UAH5vZzcrGwRIFwwALCq
+         DZC4F6uzVaWWgV8M6b2y1Noxmjm1vFrdoNbqzkXUwV29S0QFkbL2NL4Klv0EZvKVXpAd
+         UwgqmZwO5sKsSv8HpkhpLuUG0Qi2YVssaT0issL/qLqJuYMvUb3HPtOTLXh0UxS9HdOi
+         B9OyKC3dQ9xz7PUO9RmbRRvA9WqciG8SdgAksytDfEgdDCmFhyBSrWT1uGXykoWyhlIw
+         Dp/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=539tKapVnhTf+rr/UYXZW8Cq7Ffl8HHTv+MpMPMBGwU=;
-        b=CUJDXuC3cNF/i/Fhl2yq1aGUrkaUISixGOkQbSuNOuiErlzLBoT9/oggjWfyOQK52C
-         3pzHemXpGqIORUeZugAUEUDtATBhcO3C85Mqbu7ox4oql5wUUlClnt2sjucYkDPzFnVX
-         +2hDaJ7KEiyGYcH278sDt8kJd2ubHRVVVc7byonOpNn+QCNVOFk8YJt/NMMFo7npTI/u
-         XAjC3iMJWjq6fnWckqhqgpWUMYEDck17Ouia2xSEnwEZo5+9/u+kvLsaVWv3X2nqU/Qs
-         B7RPdTDbfmjG4lca5XzxvK4ejSpM+us9v1ZKtYiqPs3OOup6y2v9O8HTmoGU5zB2Dxtn
-         mSJw==
-X-Gm-Message-State: AOAM530cTjfo19rY5pc9z0lXNZunG7s/NsBqCDQSuHhglznVwqqndjVi
-        4dyIA2j3/CA95dwm6jIlqr4fv06Clo+Mcm60
-X-Google-Smtp-Source: ABdhPJwjCz/scWlPU6Kt2+e4Q1dq3Q08NUjCeAlPsLiSPT5fACZSj0YnzfNW6uP0kVDbmCFlTABcmw==
-X-Received: by 2002:a2e:9092:0:b0:24b:4cd4:ca5a with SMTP id l18-20020a2e9092000000b0024b4cd4ca5amr667427ljg.260.1649360438002;
-        Thu, 07 Apr 2022 12:40:38 -0700 (PDT)
-Received: from [192.168.1.102] (88-113-46-102.elisa-laajakaista.fi. [88.113.46.102])
-        by smtp.gmail.com with ESMTPSA id f17-20020a2e1f11000000b00247f8eb86a7sm1968503ljf.108.2022.04.07.12.40.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 12:40:37 -0700 (PDT)
-Message-ID: <e41c26c2-8aa4-cfd2-27b0-eb011f45eda0@linaro.org>
-Date:   Thu, 7 Apr 2022 22:40:27 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] arm64: dts: qcom: sm8450: delete incorrect ufs
- interconnect fields
-Content-Language: en-US
-To:     Jonathan Marek <jonathan@marek.ca>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-arm-msm@vger.kernel.org
-References: <20220407172145.31903-1-jonathan@marek.ca>
-From:   Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-In-Reply-To: <20220407172145.31903-1-jonathan@marek.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Ku8/xhQuY+DnaUKfaV/zzEU2U1z2wt3bXsnqQqFqkqc=;
+        b=UYvoVXIj2JJeO9I8L/FhOn8AhZ8S11d8k6tjf0GYqmFKzvwl5kniQHoSi9/JRJL8BH
+         z5E+CeceiUVoCGUFwDjCILtsPHkgkBpG3PWvWTAHfM3v+cdI7x2FUiIX4RM/LWjm69+W
+         p6RLWONP3bpf32HrHAMHb9IZjDhK2EQZb8tKu5LQu004SPK4m27JTP/a4Aw/FaCTbnIe
+         FZXubStU1BJSkHDmjCKuzgqH57xxPpekoyP0mulMfDE6lz8f7NzePp1CPYiLOZrHCxrs
+         9g5h4oCAXQkJb3sjXsp17ERx+z9q1cMjLAOKf5ej5Y7Wx9XUmm/Z7nbiIeVuqrFBCsUa
+         jS9w==
+X-Gm-Message-State: AOAM530qvueaI55MGVxJ4hCSHheqnvX0/Vzgrqp1Ko2RPeQbIlLT2YoT
+        a9KeRZa4rz4YhIZ6GodD6MfMhOvMRYU=
+X-Google-Smtp-Source: ABdhPJzMbjER7HNgCRI9nhUzY8Uo13WQPhIvuQ+NCrB4gGoHKtJ31PXyU9pKTuZK5BX9ao19iY2kTP87Lrg=
+X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:469d:83b1:de7b:c47f])
+ (user=pgonda job=sendgmr) by 2002:a17:903:1251:b0:156:9d8e:1077 with SMTP id
+ u17-20020a170903125100b001569d8e1077mr15375452plh.116.1649362721388; Thu, 07
+ Apr 2022 13:18:41 -0700 (PDT)
+Date:   Thu,  7 Apr 2022 13:18:38 -0700
+Message-Id: <20220407201838.715024-1-pgonda@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
+Subject: [PATCH v4] KVM, SEV: Add KVM_EXIT_SHUTDOWN metadata for SEV-ES
+From:   Peter Gonda <pgonda@google.com>
+To:     kvm@vger.kernel.org
+Cc:     Peter Gonda <pgonda@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/7/22 20:21, Jonathan Marek wrote:
-> Upstream sm8450.dtsi has #interconnect-cells = <2>; so these are wrong.
-> Ignored and undocumented with upstream UFS driver so delete for now.
+SEV-ES guests can request termination using the GHCB's MSR protocol. See
+AMD's GHCB spec section '4.1.13 Termination Request'. Currently when a
+guest does this the userspace VMM sees an KVM_EXIT_UNKNOWN (-EVINAL)
+return code from KVM_RUN. By adding a KVM_EXIT_SHUTDOWN_ENTRY to kvm_run
+struct the userspace VMM can clearly see the guest has requested a SEV-ES
+termination including the termination reason code set and reason code.
 
-Basically the description was added by a commit 462c5c0aa798 ("dt-bindings: ufs:
-qcom,ufs: convert to dtschema").
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
+Cc: kvm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Peter Gonda <pgonda@google.com>
 
-It's questionable, if an example in the new yaml file is totally correct
-in connection to the discussed issue.
+---
+V4
+ * Updated to Sean and Paolo's suggestion of reworking the
+   kvm_run.system_event struct to ndata and data fields to fix the
+   padding.
 
-> Fixes: aa2d0bf04a3c ("arm64: dts: qcom: sm8450: add interconnect nodes")
-> Signed-off-by: Jonathan Marek <jonathan@marek.ca>
-> ---
->   arch/arm64/boot/dts/qcom/sm8450.dtsi | 3 ---
->   1 file changed, 3 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-> index 2c18e1ef9e82d..90cdbec3cac99 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-> @@ -1663,9 +1663,6 @@ ufs_mem_hc: ufshc@1d84000 {
->   
->   			iommus = <&apps_smmu 0xe0 0x0>;
->   
-> -			interconnects = <&aggre1_noc MASTER_UFS_MEM &mc_virt SLAVE_EBI1>,
-> -					<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_UFS_MEM_CFG>;
-> -			interconnect-names = "ufs-ddr", "cpu-ufs";
->   			clock-names =
->   				"core_clk",
->   				"bus_aggr_clk",
+V3
+ * Add Documentation/ update.
+ * Updated other KVM_EXIT_SHUTDOWN exits to clear ndata and set reason
+   to KVM_SHUTDOWN_REQ.
 
-You may look at https://lore.kernel.org/linux-arm-msm/20220310221934.1560729-1-vladimir.zapolskiy@linaro.org/
+V2
+ * Add KVM_CAP_EXIT_SHUTDOWN_REASON check for KVM_CHECK_EXTENSION.
 
---
-Best wishes,
-Vladimir
+Tested by making an SEV-ES guest call sev_es_terminate() with hardcoded
+reason code set and reason code and then observing the codes from the
+userspace VMM in the kvm_run.shutdown.data fields.
+
+---
+ arch/x86/kvm/svm/sev.c   | 9 +++++++--
+ include/uapi/linux/kvm.h | 5 ++++-
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 75fa6dd268f0..1a080f3f09d8 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -2735,8 +2735,13 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
+ 		pr_info("SEV-ES guest requested termination: %#llx:%#llx\n",
+ 			reason_set, reason_code);
+ 
+-		ret = -EINVAL;
+-		break;
++		vcpu->run->exit_reason = KVM_EXIT_SYSTEM_EVENT;
++		vcpu->run->system_event.type = KVM_SYSTEM_EVENT_SEV_TERM |
++					       KVM_SYSTEM_EVENT_NDATA_VALID;
++		vcpu->run->system_event.ndata = 1;
++		vcpu->run->system_event.data[1] = control->ghcb_gpa;
++
++		return 0;
+ 	}
+ 	default:
+ 		/* Error, keep GHCB MSR value as-is */
+diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+index 8616af85dc5d..dd1d8167e71f 100644
+--- a/include/uapi/linux/kvm.h
++++ b/include/uapi/linux/kvm.h
+@@ -444,8 +444,11 @@ struct kvm_run {
+ #define KVM_SYSTEM_EVENT_SHUTDOWN       1
+ #define KVM_SYSTEM_EVENT_RESET          2
+ #define KVM_SYSTEM_EVENT_CRASH          3
++#define KVM_SYSTEM_EVENT_SEV_TERM       4
++#define KVM_SYSTEM_EVENT_NDATA_VALID    (1u << 31)
+ 			__u32 type;
+-			__u64 flags;
++			__u32 ndata;
++			__u64 data[16];
+ 		} system_event;
+ 		/* KVM_EXIT_S390_STSI */
+ 		struct {
+-- 
+2.35.1.1178.g4f1659d476-goog
+
