@@ -2,108 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A32C5C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B91C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245476AbiDGMym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52414 "EHLO
+        id S245488AbiDGMy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233916AbiDGMyk (ORCPT
+        with ESMTP id S245481AbiDGMys (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:54:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8E4259B41;
-        Thu,  7 Apr 2022 05:52:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Thu, 7 Apr 2022 08:54:48 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C826259B58;
+        Thu,  7 Apr 2022 05:52:47 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:35::e2d])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15C6060F8A;
-        Thu,  7 Apr 2022 12:52:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B977C385A4;
-        Thu,  7 Apr 2022 12:52:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649335959;
-        bh=Efh9KZBTUFq/nJ++UsePBAQq4hIBUOTLc1DIbRgJ1Bg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OQ92ngDFwY+aYn6FxBtIm3WlGnTxQJAc8YV4jSbGv6OdA3IALRgCBdntcUUEIjY2s
-         bt1XeMemV/OdaAyhGIBncslMeP32mOk2qWL3fD2ULF4Ar0kqbgzfZjuL+2h8s37Lsr
-         hzk8Z9y4g9MYBZI0IRh4E2RHCrsJ7gGW5tVWq9Hb1JxFhuPNvfAWIWv/PlZ2MHABNH
-         X6p3P78PlYtq6q0cLtWpKmmbFK5n7COGi6x6Wod4ykpnXUcfjKfLKRdUlnCMq4/Z6L
-         7s8s15WHa61b6FpAy1WFyFuXLDz5NR7ub3xulKG01RYZG1qc9iJMxDOhpggYpoDiwS
-         QwHuuNMudRMyA==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [RFC bpf-next 0/4] bpf: Speed up symbol resolving in kprobe multi link
-Date:   Thu,  7 Apr 2022 14:52:20 +0200
-Message-Id: <20220407125224.310255-1-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        by ms.lwn.net (Postfix) with ESMTPSA id 5390B30D;
+        Thu,  7 Apr 2022 12:52:46 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 5390B30D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1649335966; bh=J6fsWhcIYdB09wzvgZi6AxYIXSAJzCGBEqivzfR46Ss=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=jFKLQQekMDOtJN8dSbnDT5H9DpIjIII0a4/YX7BVTC3rl1zbWzFfWP5DoYkuu+aah
+         89Aw6rqW2QCQ/lMvN07sgjpylKtwLogEsnD9MmwftsfJCN3zwbE7tGfrAmuqRjDAxx
+         bsby11D9TfvO/ca6L7q/ixVgU8WODgk/5FSv97GwkQSRspBu3GQEz/4JfgSDn0qoOn
+         R6qeOk4Wn3MMOtAZO0pbE2EDX3lnXZ4fpMNByp66gx4nHmFf5h0wC4C/5Ntczpb5hJ
+         ZwaLdmte38V7t+sv+XIPJAX+eRpQj+cbdaStVYOyeDdlCRhmuISUmgPFGAe1+6hbu6
+         MAYN2RjDBgysw==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>, Yu Zhao <yuzhao@google.com>,
+        Stephen Rothwell <sfr@rothwell.id.au>, linux-mm@kvack.org
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, page-reclaim@google.com,
+        x86@kernel.org, Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        Holger =?utf-8?Q?Hoffst=C3=A4tte?= 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Subject: Re: [PATCH v10 14/14] mm: multi-gen LRU: design doc
+In-Reply-To: <5ea69d84-be0c-2e9b-02b5-92d9442c8aff@gmail.com>
+References: <20220407031525.2368067-1-yuzhao@google.com>
+ <20220407031525.2368067-15-yuzhao@google.com>
+ <5ea69d84-be0c-2e9b-02b5-92d9442c8aff@gmail.com>
+Date:   Thu, 07 Apr 2022 06:52:45 -0600
+Message-ID: <87wng1838i.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hi,
-sending additional fix for symbol resolving in kprobe multi link
-requested by Alexei and Andrii [1].
+Bagas Sanjaya <bagasdotme@gmail.com> writes:
 
-This speeds up bpftrace kprobe attachment, when using pure symbols
-(3344 symbols) to attach:
+> On 07/04/22 10.15, Yu Zhao wrote:
+>> Add a design doc.
+>> 
+>
+> Why is this design documentation added?
 
-Before:
+...because perhaps other developers might want to understand the design
+of this complex mechanism?
 
-  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-  ...
-  6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+Bagas, it is hard enough to get people to write useful documentation as
+it is.  Could I ask you to please stop adding useless friction to the
+process?
 
-After:
+Thanks,
 
-  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-  ...
-  0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
-
-
-There are 2 reasons I'm sending this as RFC though..
-
-  - I added test that meassures attachment speed on all possible functions
-    from available_filter_functions, which is 48712 functions on my setup.
-    The attach/detach speed for that is under 2 seconds and the test will
-    fail if it's bigger than that.. which might fail on different setups
-    or loaded machine.. I'm not sure what's the best solution yet, separate
-    bench application perhaps?
-
-  - copy_user_syms function potentially allocates lot of memory (~6MB in my
-    tests with attaching ~48k functions). I haven't seen this to fail yet,
-    but it might need to be changed to allocate memory gradually if needed,
-    do we care? ;-)
-
-thanks,
-jirka
-
-
-[1] https://lore.kernel.org/bpf/CAEf4BzZtQaiUxQ-sm_hH2qKPRaqGHyOfEsW96DxtBHRaKLoL3Q@mail.gmail.com/
----
-Jiri Olsa (4):
-      kallsyms: Add kallsyms_lookup_names function
-      fprobe: Resolve symbols with kallsyms_lookup_names
-      bpf: Resolve symbols with kallsyms_lookup_names for kprobe multi link
-      selftests/bpf: Add attach bench test
-
- include/linux/kallsyms.h                                   |   6 ++++
- kernel/kallsyms.c                                          |  50 ++++++++++++++++++++++++++++++++-
- kernel/trace/bpf_trace.c                                   | 123 +++++++++++++++++++++++++++++++++++++++++++++++---------------------------------
- kernel/trace/fprobe.c                                      |  23 ++-------------
- tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c | 141 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- tools/testing/selftests/bpf/progs/kprobe_multi_empty.c     |  12 ++++++++
- 6 files changed, 283 insertions(+), 72 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+jon
