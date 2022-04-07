@@ -2,119 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 993F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 19:36:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75641C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 19:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230461AbiDGTik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 15:38:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
+        id S229521AbiDGTtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 15:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229854AbiDGTi0 (ORCPT
+        with ESMTP id S229441AbiDGTtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 15:38:26 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB152E9134
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:35:46 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id r13so12983023ejd.5
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 12:35:46 -0700 (PDT)
+        Thu, 7 Apr 2022 15:49:01 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF0036B032
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:43:54 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2eb689106e3so56325887b3.16
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 12:43:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wB+5pL8Q6kh3phLfe/wl9bW/HyBhBBXGQDI+exqcUH4=;
-        b=miUZU1+cai59rQSB0SoyRhIMCeXiMlIU/t3EofOJnChIBd78OGzRYQdlKTCLNATIPV
-         BxNu8+ofPHsaqE48mXvnk+6jPCT6LIYSfMexoS8BcckKt2esUOLxGsSJa0lOkWumSBuU
-         Y7WLWhGPIt2kyu6X7cqy/0jur7e7zZd6subdoM/RqNf/mnwbVjayRl/HvrzM2tbsKJzD
-         FRxKJkAegctXz36lhFsXOMUaAtGvnDyim+6MkHsxp4vokyRKBLIbA5keQBk6Dnr1MDBb
-         ti9px+SNuyPjzKmOkNa03CY+DlIx68rfwoBeRwe3j+7IF9gDBT6FIU+nKWJFxrXlM/Bb
-         lq2A==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=U0Hnhz6FkWikLEjV/D9C4mwc2iqVMG/fIPbXB9OU5q4=;
+        b=o07BrSOg1I3ZAbol7DUdxPNo0X7ueGUKzVERCNpj3MJ9kk3m9o0e4o+g3VVNbQBltr
+         mSnjB2+5TOFiAxJtHx3fk8yKuoRBvS4xMM2u4mkBbY+gLfjKWb7lc/weMn+oEf/+DkfF
+         vBOwhSSJqqOc3Go9LsSl3HtXat6Uhdu4duXjqDqOT1TZj7FDG8h33YsrOen0PGhYwq2l
+         KPlemUBfaSrXkR9gpPeMKQ8avWSdsxoN9XQ2q+Y1alRclcmMOI6W+wrSiwoL4qrj0A0A
+         9fIWcnGYCzRK/CVGFHxBd5Mw7AVqrmXBQl+typj3/l2CIoLQnp/OjaE/QxYX/zMPFhDx
+         OsYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wB+5pL8Q6kh3phLfe/wl9bW/HyBhBBXGQDI+exqcUH4=;
-        b=SUSW+uU1bMEHHlN7mPsn11AtHWQDgZ++Y4jbto/zWKO9lui0Q1GDsMlrvWExBBIbqV
-         gX0v31KQmihViWz9uImSv35sg88pZKfgowUR+3qttOS6TYI9amrgJ4MJh5iVclWlOI43
-         Ck1nzTsBvJ6gWEm2rONuWylQodNHY1EZTqCmVjeg4kthFp2MzKpn85Hr2FFkYgRz9ivq
-         dWfMKEmiXeq/WLuwcvr9hKU6WBo3+ZmgSGBx1aaTuu6YI/qYIbw35v+lFUHthzE0zyGx
-         SjQxRVM6Hem1Qrzl1Kg1LazSGD/eEyvC8xKW1rHuySIQU7zUJSJa2FFoSfZxJtaurnq5
-         USmw==
-X-Gm-Message-State: AOAM533JW/iG3AW98nQFlNZW6P1eAfzX8pDQ4X9WgW5NiZVK3ni8UNXe
-        sB0/0uhEeY9M0IybQsT0i9ei9st/XLCKkf+5
-X-Google-Smtp-Source: ABdhPJxRfXfrSIWn4/qr0nRuf4o2TE2+XC893QWxjZy3p6w3KQnOv0eLC+hpBVra32fzFfvUvTYUtQ==
-X-Received: by 2002:a17:907:9711:b0:6e8:4a3e:692c with SMTP id jg17-20020a170907971100b006e84a3e692cmr261934ejc.296.1649359853838;
-        Thu, 07 Apr 2022 12:30:53 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id ds5-20020a170907724500b006df8f39dadesm7964617ejc.218.2022.04.07.12.30.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 12:30:53 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        John Crispin <john@phrozen.org>,
-        Tero Kristo <kristo@kernel.org>,
-        Daniel Palmer <daniel@thingy.jp>,
-        linux-riscv@lists.infradead.org, Marc Zyngier <maz@kernel.org>,
-        =?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
-        linux-actions@lists.infradead.org,
-        Jason Cooper <jason@lakedaemon.net>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Paul Burton <paulburton@kernel.org>,
-        Imre Kaloz <kaloz@openwrt.org>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Bert Vermeulen <bert@biot.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Nishanth Menon <nm@ti.com>, linux-oxnas@groups.io,
-        Linus Walleij <linusw@kernel.org>,
-        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Michael Walle <michael@walle.cc>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Suman Anna <s-anna@ti.com>, devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        openbmc@lists.ozlabs.org, Palmer Dabbelt <palmer@dabbelt.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Birger Koblitz <mail@birger-koblitz.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Cristian Ciocaltea <cristian.ciocaltea@gmail.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: (subset) [PATCH 03/18] ARM: dts: socfpga: align interrupt controller node name with dtschema
-Date:   Thu,  7 Apr 2022 21:30:41 +0200
-Message-Id: <164935983571.16396.7116611701613809087.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220317115705.450427-2-krzysztof.kozlowski@canonical.com>
-References: <20220317115542.450032-1-krzysztof.kozlowski@canonical.com> <20220317115705.450427-2-krzysztof.kozlowski@canonical.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=U0Hnhz6FkWikLEjV/D9C4mwc2iqVMG/fIPbXB9OU5q4=;
+        b=8KKE8H8I8ss/xpu7sPsAgFuswKR/v5NAngzPSXoOMb61tqtvfb8r31xpmFvzmiwR07
+         V8IpJ1d7lEkAfwIr6EOKwkKS5/pLu62ppJLziFGxPa5q6omHdtatCHDsDXI2yBbup27t
+         Qj3+3EvGWwNVqRB/GmhsXOw9A1D/f5dlguykIiiw4lMeFiNmP7+F4lxIvT2KiQmudWF8
+         imGRxVAoWFTh0mLga1vQXvEbj7GvQ+dsU5g2IStO5lMj9l0XPdonPXeWxgsIiCHye8gT
+         NB4IAeIzfy0w5pB9gzWmsrJTtTaDz5q8F350B1tYu4QOvGGz7DXG7Ppg+kFBfriB11dC
+         aoWA==
+X-Gm-Message-State: AOAM532tsp7cJIBL+qZkFtRxGfeeAOYIhV/g1vA9GYNatNbb6PbuALbH
+        mdq61KdXSSeU0PXEKLqEHE94kgVfaCdaGg==
+X-Google-Smtp-Source: ABdhPJx6leyDfWk1JfaRZZrzTr1Cw4oe0SYHphG+OfJC1fFuk6FyR6wXnM7iI+LbxfBFFuABBeWe5FlM/b9x4A==
+X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:aed6:d51d:dc38:e705])
+ (user=dlatypov job=sendgmr) by 2002:a25:ba0c:0:b0:61a:79a6:fd0 with SMTP id
+ t12-20020a25ba0c000000b0061a79a60fd0mr11581459ybg.45.1649360345816; Thu, 07
+ Apr 2022 12:39:05 -0700 (PDT)
+Date:   Thu,  7 Apr 2022 12:39:02 -0700
+Message-Id: <20220407193902.1981605-1-dlatypov@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
+Subject: [PATCH] kunit: tool: cosmetic: don't specify duplicate kunit_shutdown's
+From:   Daniel Latypov <dlatypov@google.com>
+To:     brendanhiggins@google.com, davidgow@google.com
+Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
+        Daniel Latypov <dlatypov@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Mar 2022 12:56:50 +0100, Krzysztof Kozlowski wrote:
-> Fixes dtbs_check warnings like:
-> 
->   $nodename:0: 'intc@fffed000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
-> 
-> 
+Context:
+When using a non-UML arch, kunit.py will boot the test kernel with these
+options by default:
+> mem=1G console=tty kunit_shutdown=halt console=ttyS0 kunit_shutdown=reboot
 
-Applied, thanks!
+For QEMU, we need to use 'reboot', and for UML we need to use 'halt'.
+If you switch them, kunit.py will hang until the --timeout expires.
 
-[03/18] ARM: dts: socfpga: align interrupt controller node name with dtschema
-        commit: c9bdd50d2019f78bf4c1f6a79254c27771901023
+So the code currently unconditionally adds 'kunit_shutdown=halt' but
+then appends 'reboot' when using QEMU (which overwrites it).
 
-Best regards,
+This patch:
+Having these duplicate options is a bit noisy.
+Switch so we only add 'halt' for UML.
+
+I.e. we now get
+UML: 'mem=1G console=tty console=ttyS0 kunit_shutdown=halt'
+QEMU: 'mem=1G console=tty console=ttyS0 kunit_shutdown=reboot'
+
+Side effect: you can't overwrite kunit_shutdown on UML w/ --kernel_arg.
+But you already couldn't for QEMU, and why would you want to?
+
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
+---
+ tools/testing/kunit/kunit_kernel.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kunit_kernel.py
+index 483f78e15ce9..9731ceb7ad92 100644
+--- a/tools/testing/kunit/kunit_kernel.py
++++ b/tools/testing/kunit/kunit_kernel.py
+@@ -158,7 +158,7 @@ class LinuxSourceTreeOperationsUml(LinuxSourceTreeOperations):
+ 	def start(self, params: List[str], build_dir: str) -> subprocess.Popen:
+ 		"""Runs the Linux UML binary. Must be named 'linux'."""
+ 		linux_bin = os.path.join(build_dir, 'linux')
+-		return subprocess.Popen([linux_bin] + params,
++		return subprocess.Popen([linux_bin] + params + ['kunit_shutdown=halt'],
+ 					   stdin=subprocess.PIPE,
+ 					   stdout=subprocess.PIPE,
+ 					   stderr=subprocess.STDOUT,
+@@ -332,7 +332,7 @@ class LinuxSourceTree(object):
+ 	def run_kernel(self, args=None, build_dir='', filter_glob='', timeout=None) -> Iterator[str]:
+ 		if not args:
+ 			args = []
+-		args.extend(['mem=1G', 'console=tty', 'kunit_shutdown=halt'])
++		args.extend(['mem=1G', 'console=tty'])
+ 		if filter_glob:
+ 			args.append('kunit.filter_glob='+filter_glob)
+ 
+
+base-commit: b04d1a8dc7e7ff7ca91a20bef053bcc04265d83a
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+2.35.1.1178.g4f1659d476-goog
+
