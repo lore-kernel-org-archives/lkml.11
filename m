@@ -2,140 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89498C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF09C43219
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243582AbiDGJCf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:02:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50668 "EHLO
+        id S229898AbiDGJDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243533AbiDGJCS (ORCPT
+        with ESMTP id S243602AbiDGJCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:02:18 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70A11F519B;
-        Thu,  7 Apr 2022 02:00:18 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id s11so7597589qtc.3;
-        Thu, 07 Apr 2022 02:00:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OH445ysdzmR/6X4//W4FphZ3nFgmJO7HaScUHltGfzw=;
-        b=A2BZMU75Gg9tMr3xOhA9ZXdTsJVp+kREzAIB13tKhOdgL+04uX1xdkg9fVTnFs674p
-         /fHfbxKgZ61ztlad8Ira/55MLMfPEcdrjUEE5foKxKd8fmuMGv8bdE3QVx7o8ia3fDlR
-         s8/yOt1GIWAXGX2d3zLoV2l1EuKXIJXClGdFtfd+EGgaGkka6eXuqe7LtBX4QpAnE/tf
-         LkjpH4Cno05i1FFICzv8oLxTiK6aYn7Xu4ZccRb4eN645Hfl6W/0Jg+zAuq5zYt9fyvz
-         qQE0t/lDgkJ0J8wk4cyswe0HONJxKNy0t3ElEdvrf6f08wIiu/rOVMVZ5ylHcH6kGFER
-         3bfQ==
+        Thu, 7 Apr 2022 05:02:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D886215DAB2
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:00:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649322037;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0inCEjJJWw//2DoC93l0BxRCxkrP6GV4SWwsKG2zpLQ=;
+        b=aJxOc89Id1Wis/A/CoCs0zLw7VELjzmN2teAJK6WWAhLr6n7bnho+Y0w9T2rKrUXufBbP9
+        GNU81ZsqKgErQZHC+xC+DN5PJcussH5ZmHjY1rd8JHXIPUjUBAAgU1p76xGc015DhRfX45
+        0LrTsmj5F8cxn7sGsqm4lv/aU1MsYCY=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-593-oaIHuCeKPAaVUJYwE42asQ-1; Thu, 07 Apr 2022 05:00:36 -0400
+X-MC-Unique: oaIHuCeKPAaVUJYwE42asQ-1
+Received: by mail-wm1-f69.google.com with SMTP id c62-20020a1c3541000000b003815245c642so4286221wma.6
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 02:00:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OH445ysdzmR/6X4//W4FphZ3nFgmJO7HaScUHltGfzw=;
-        b=xbxaqUVcuWbshDXo8i3fdmNzx7Qccsu92bcYCjNBIsbR/ARqzrbQkkpuoMgKSia6gm
-         zsXTBal7V5qSdBKhWNX6Hs8/ND1dXjPcW7L3STj+XI6EAaJYWRlxL5c1tfjYBDgpjO1j
-         FD2g6tSkmWlRbKJ4qwrHTdM8wp0/WwycsbkZYIBsG1xH/GADrWNtcJNOja0RTxMi65eJ
-         /A7B4d8LZ9hTxeWmBnSlR0uzb25JvFWfxFQPwnAZNryjO/XAEywU7du9MsT95k4xUj7S
-         S6zuXi9fsSchqhAdAEt0GZis4lolJUkdoh6aNhAoqjIFEuG6f8sgp4vqiS4vAIwIVF88
-         bgdQ==
-X-Gm-Message-State: AOAM532hUIISSdbC6p0Hjv2NgB43XKa/vvVpt23afs6UWEDw7Hrw9QQ0
-        XTrVskHMB5AcbU+1HWtFTvIG4TFkBiLO9yEKzzo=
-X-Google-Smtp-Source: ABdhPJxkJcaz/OQCc+qvAyLt1HwRQ64uhkf6n9dqvP50oc4eIHNr8Q3rR3052T537/f3WHSshWmFYgHuaFNt7O3iipA=
-X-Received: by 2002:a05:622a:1013:b0:2e1:c9c0:9831 with SMTP id
- d19-20020a05622a101300b002e1c9c09831mr10806922qte.245.1649322017903; Thu, 07
- Apr 2022 02:00:17 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=0inCEjJJWw//2DoC93l0BxRCxkrP6GV4SWwsKG2zpLQ=;
+        b=kzn6ssAo5JRF63I4o2dZmGmu5gqbe8hjWJ40j8dUtePo5ERQWu4yASHjbeCKoniDZg
+         F8gOpvW+2p1kRlWksb4yKzB65sr1I00TS+0/5/HZUidpAGpj4vT9XBgNUaSPkXimW3//
+         teiOlRmRO03kZFa4hr53qeWwEiMyRwIpLby9U6/KN5JO56DRlo7Q7BaleBWx60MuEsrc
+         0OlaIZwHOOQEaooODDXiaavOtEF2+410V1Zjr9Vap5pYGbsuvXxvGTVcBdjhff0MeSL2
+         2JIi/+dkuxcqxGIx39YHLcUW4aFNTDOk4JQ5P7gv08H2czc+dh8NSRyxRUOQS2zbOWVt
+         a/iA==
+X-Gm-Message-State: AOAM531ZsJu0egyYQmFnD/kcmh40pOELDC+DwayNZ6tCZiYnv2zBu1Px
+        jt4MXrR5Go9zPTvvQLZpALuuFztRONgpg97gT2r+6xeTZ32B/3+bHKTjnHz8yeVWgLq1gwIWFEm
+        KvzsCv0ikZoZQ4WhHwFGAM2UE
+X-Received: by 2002:a05:600c:17c5:b0:38e:7853:e915 with SMTP id y5-20020a05600c17c500b0038e7853e915mr11065439wmo.123.1649322035314;
+        Thu, 07 Apr 2022 02:00:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwDXbmi0MYBbhyvRv3XQym+Vvb0hr0yJXFvC8twCFVw7fXFScumPU3//4ro5ZrKBn7rVoiing==
+X-Received: by 2002:a05:600c:17c5:b0:38e:7853:e915 with SMTP id y5-20020a05600c17c500b0038e7853e915mr11065408wmo.123.1649322035047;
+        Thu, 07 Apr 2022 02:00:35 -0700 (PDT)
+Received: from ?IPV6:2a09:80c0:192:0:20af:34be:985b:b6c8? ([2a09:80c0:192:0:20af:34be:985b:b6c8])
+        by smtp.gmail.com with ESMTPSA id u7-20020a05600c19c700b0038cc9aac1a3sm7933452wmq.23.2022.04.07.02.00.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 02:00:34 -0700 (PDT)
+Message-ID: <f423e210-3e28-73f8-1082-869ef680b9b0@redhat.com>
+Date:   Thu, 7 Apr 2022 11:00:33 +0200
 MIME-Version: 1.0
-References: <CAGWkznFTQCm0cusVxA_55fu2WfT-w2coVHrT=JA1D_9_2728mQ@mail.gmail.com>
- <YkqxpEW4m6iU3zMq@dhcp22.suse.cz> <CAGWkznG4L3w=9bpZp8TjyWHmqFyZQk-3m4xCZ96zhHCLPawBgQ@mail.gmail.com>
- <CAGWkznGMRohE2_at4Qh8KbwSqNmNqOAG2N1EM+7uE9wKqzRm0A@mail.gmail.com>
- <Ykq7KUleuAg5QnNU@dhcp22.suse.cz> <CAGWkznGbd5TOTHZE8uUhak3SnHqEWx_9QCJVtUFUSg9rk3xYEQ@mail.gmail.com>
- <Ykrkx4JML4c81gBV@dhcp22.suse.cz> <CAGWkznEaEavCz9GeiYuTqsox2qZK43iQKevt8njkzaHv6KiW-A@mail.gmail.com>
- <YkwxNaJIg6ptJOYT@dhcp22.suse.cz> <CAGWkznG=QH3HRSzgum0sQBkyQAahqgiWf8nXCv1qXstxrn7e8w@mail.gmail.com>
- <Yk6VZlGnB48RqnYW@dhcp22.suse.cz>
-In-Reply-To: <Yk6VZlGnB48RqnYW@dhcp22.suse.cz>
-From:   Zhaoyang Huang <huangzhaoyang@gmail.com>
-Date:   Thu, 7 Apr 2022 16:59:50 +0800
-Message-ID: <CAGWkznG+V88f_DjtJAe4_Nr=32Q7Z4b1CaBCB0FVqhAAsuNsWA@mail.gmail.com>
-Subject: Re: [RFC PATCH] cgroup: introduce dynamic protection for memcg
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Suren Baghdasaryan <surenb@google.com>,
-        "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        cgroups mailinglist <cgroups@vger.kernel.org>,
-        Ke Wang <ke.wang@unisoc.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] xen/balloon: fix page onlining when populating new zone
+Content-Language: en-US
+To:     Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
+        linux-kernel@vger.kernel.org
+Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?Q?Marek_Marczykowski-G=c3=b3recki?= 
+        <marmarek@invisiblethingslab.com>,
+        Wei Yang <richard.weiyang@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>
+References: <20220406133229.15979-1-jgross@suse.com>
+ <89ad978d-e95e-d3ea-5c8f-acf4b28f992c@redhat.com>
+ <4f1908b5-5674-a772-3cd9-78e4dc40f776@suse.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <4f1908b5-5674-a772-3cd9-78e4dc40f776@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 3:40 PM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Wed 06-04-22 10:11:19, Zhaoyang Huang wrote:
-> > On Tue, Apr 5, 2022 at 8:08 PM Michal Hocko <mhocko@suse.com> wrote:
-> > >
-> > > On Mon 04-04-22 21:14:40, Zhaoyang Huang wrote:
-> > > [...]
-> > > > Please be noticed that this patch DOES protect the memcg when external
-> > > > pressure is 1GB as fixed low does.
-> > >
-> > > This is getting more and more confusing (at least to me). Could you
-> > > describe the behavior of the reclaim for the following setups/situations?
-> > >
-> > > a) mostly reclaiming a clean page cache - via kswapd
-> > > b) same as above but the direct reclaim is necessary but very
-> > >    lightweight
-> > > c) direct reclaim makes fwd progress but not enough to satisfy the
-> > >    allocation request (so the reclaim has to be retried)
-> > > d) direct reclaim not making progress and low limit protection is
-> > >    ignored.
-> > >
-> > > Say we have several memcgs and only some have low memory protection
-> > > configured. What is the user observable state of the protected group and
-> > > when and how much the protection can be updated?
-> > I am not sure if I understand you right. Do you have suspicions on the
-> > test result as you think protected memcg has no chance to update the
-> > protection or the global reclaim should have been satisfied with the
-> > reclaiming(step d is hard to reach?). Let me try to answer it under my
-> > understanding, please give me feedback if you need more info. The
-> > protection is updated while mem_cgroup_calculate_protection is called
-> > during either kswapd or direct reclaim for each round of the priority
-> > reclaiming and then the memcg's lruvec will be reached in step d.
->
-> This means that limits are altered even if there is memory to be
-> reclaimed from other memcgs. Why? How does this line up with the
-> basic property of the low limit to act as a protection from the reclaim?
-ok, partially understand. I would like to say that low's original
-definition under this patch has changed, says the calculated low just
-provide protection when the psi value is lower than the setting and
-will introduce reclaiming if it exceed. It also can be seen from the
-bellowing latest test result(same as previous test but without mlock),
-which says that the memcg with fixed low will push back the reclaim to
-global LRU while keeping psi to be high. Please be noticed that the
-low will be updated when usage raise up over it which means resume the
-protection again when the memcg become active.
+On 07.04.22 10:50, Juergen Gross wrote:
+> On 07.04.22 10:23, David Hildenbrand wrote:
+>> On 06.04.22 15:32, Juergen Gross wrote:
+>>> When onlining a new memory page in a guest the Xen balloon driver is
+>>> adding it to the ballooned pages instead making it available to be
+>>> used immediately. This is meant to enable to add a new upper memory
+>>> limit to a guest via hotplugging memory, without having to assign the
+>>> new memory in one go.
+>>>
+>>> In case the upper memory limit will be raised above 4G, the new memory
+>>> will populate the ZONE_NORMAL memory zone, which wasn't populated
+>>> before. The newly populated zone won't be added to the list of zones
+>>> looked at by the page allocator though, as only zones with available
+>>> memory are being added, and the memory isn't yet available as it is
+>>> ballooned out.
+>>
+>> I think we just recently discussed these corner cases on the -mm list.
+> 
+> Indeed.
+> 
+>> The issue is having effectively populated zones without manages pages
+>> because everything is inflated in a balloon.
+> 
+> Correct.
+> 
+>> That can theoretically also happen when managing to fully inflate the
+>> balloon in one zone and then, somehow, the zones get rebuilt.
+> 
+> I think you are right. I didn't think of that scenario.
+> 
+>> build_zonerefs_node() documents "Add all populated zones of a node to
+>> the zonelist" but checks for managed zones, which is wrong.
+>>
+>> See https://lkml.kernel.org/r/20220201070044.zbm3obsoimhz3xd3@master
+> 
+> I found commit 6aa303defb7454 which introduced this test. I thought
+> it was needed due to the problem this commit tried to solve. Maybe I
+> was wrong and that commit shouldn't have changed the condition when
+> building the zonelist, but just the ones in the allocation paths.
 
-                          psi(global=1GB)        max      stable
-  psi(global=2GB)     max      stable
-Low=400MB      some=18 full=11       700MB 600MB       some=20 full=16
-    400MB 400MB
-Low=500MB      some=18 full=13       680MB 540MB       some=27 full=17
-    500MB 500MB
-patch setting1    some=19 full=13       863MB 740MB       some=15
-full=10     500MB 500MB
-patch setting1    some=14 full=11       640MB 470MB       some=20
-full=12     360MB 320MB
+In regard to kswapd, that is currently being worked on via
 
->
-> > > I think it would be also helpful to describe the high level semantic of
-> > > this feature.
->
-> Please focus on this part. Without a high level semantic explained we
-> will not move forward.
-> --
-> Michal Hocko
-> SUSE Labs
+https://lkml.kernel.org/r/20220329010901.1654-2-richard.weiyang@gmail.com
+
+-- 
+Thanks,
+
+David / dhildenb
+
