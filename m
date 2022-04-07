@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE90FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B801FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:25:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238687AbiDGB1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32866 "EHLO
+        id S238929AbiDGB1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240243AbiDGBTw (ORCPT
+        with ESMTP id S240350AbiDGBT4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:19:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C221B7558;
-        Wed,  6 Apr 2022 18:15:34 -0700 (PDT)
+        Wed, 6 Apr 2022 21:19:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B828182AD9;
+        Wed,  6 Apr 2022 18:15:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3566761DA8;
-        Thu,  7 Apr 2022 01:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1879C385A7;
-        Thu,  7 Apr 2022 01:15:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B8F9B8261D;
+        Thu,  7 Apr 2022 01:15:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62B17C385A1;
+        Thu,  7 Apr 2022 01:15:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294133;
-        bh=oFWK77TFIfOUUQE8Z7z3Ndo6+9XkdRFZNj44FOc0Un0=;
+        s=k20201202; t=1649294146;
+        bh=cgsJW/lQPZmV/rD41uAn4aKxYHvrVPnYbrDnAmwpIEY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ogy2fAvUXS3vVw7TqP4LFLvxaJv3TRl5A/v7MrHPyLqOahyoXW8NZCklM5wkbRwZj
-         vKP2P9MuYp608aKKGJWbw+nSfQsdQNLYlE9KVuRLhg/+SijEk2koUog5JGI59zvC2m
-         2JiyHDgjNBGqtviKhGC/STelrh5D9VDkHopgZeDRaf9msMwB92iRt/jBBMAza4UjJq
-         n45N5s+xoY6AzlAVQqSK+uuXFj+T38qbU6fckooglsfteigo57FcLOrXsYhjaxYFtx
-         8/m5g2s5WArlJYMyaUwLMjaFAv8zQBct1h0htD2muBHkG7dYiXsph4V8OaxACWYiqz
-         YLt73u0v2BA7w==
+        b=m64ieoaHyxpBVVZq0O1VOrFS9maaPDnKn9mjNv4XDxKDZy3y0W8L+XHmoY5pe4O1E
+         DXMtl6kpeDoXFbU0TkGdIwpi+9Q3hppzO8aTSKteiYwsc3R926Gkbaj8k1tLlN4NOG
+         bz8t9sYN979YC3MdWRF5ytZCys+5zcA11bb8YBCd1hzVCT1tJS+BnvhbnLomfNBw0R
+         5Z+i0isf6Re/CG4HafpmraBQeUONf1zYHTAQRlyk+Yu31OjkmrC4pA0rIXvdnYAdfr
+         matVd/ZclebBVMFehrHKKxgDt/OLgLatOn4qQBxFIgSrkJaAssuGWV3MUtLREHtLbA
+         3oKni8AyaFl7A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jeff LaBundy <jeff@labundy.com>,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, linux-input@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 05/17] Input: add bounds checking to input_set_capability()
-Date:   Wed,  6 Apr 2022 21:15:09 -0400
-Message-Id: <20220407011521.115014-5-sashal@kernel.org>
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, jeremy.szu@canonical.com,
+        wse@tuxedocomputers.com, hui.wang@canonical.com,
+        tanureal@opensource.cirrus.com, cam@neo-zeon.de,
+        kailang@realtek.com, sami@loone.fi, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.4 09/17] ALSA: hda/realtek: Enable headset mic on Lenovo P360
+Date:   Wed,  6 Apr 2022 21:15:13 -0400
+Message-Id: <20220407011521.115014-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011521.115014-1-sashal@kernel.org>
 References: <20220407011521.115014-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,60 +54,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff LaBundy <jeff@labundy.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
+[ Upstream commit 5a8738571747c1e275a40b69a608657603867b7e ]
 
-Update input_set_capability() to prevent kernel panic in case the
-event code exceeds the bitmap for the given event type.
+Lenovo P360 is another platform equipped with ALC897, and it needs
+ALC897_FIXUP_HEADSET_MIC_PIN quirk to make its headset mic work.
 
-Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20220325160501.705221-1-kai.heng.feng@canonical.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/input.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ sound/pci/hda/patch_realtek.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/input/input.c b/drivers/input/input.c
-index f7398b996bac..5304262dbfa5 100644
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -47,6 +47,17 @@ static DEFINE_MUTEX(input_mutex);
- 
- static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
- 
-+static const unsigned int input_max_code[EV_CNT] = {
-+	[EV_KEY] = KEY_MAX,
-+	[EV_REL] = REL_MAX,
-+	[EV_ABS] = ABS_MAX,
-+	[EV_MSC] = MSC_MAX,
-+	[EV_SW] = SW_MAX,
-+	[EV_LED] = LED_MAX,
-+	[EV_SND] = SND_MAX,
-+	[EV_FF] = FF_MAX,
-+};
-+
- static inline int is_event_supported(unsigned int code,
- 				     unsigned long *bm, unsigned int max)
- {
-@@ -1978,6 +1989,14 @@ EXPORT_SYMBOL(input_get_timestamp);
-  */
- void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
- {
-+	if (type < EV_CNT && input_max_code[type] &&
-+	    code > input_max_code[type]) {
-+		pr_err("%s: invalid code %u for type %u\n", __func__, code,
-+		       type);
-+		dump_stack();
-+		return;
-+	}
-+
- 	switch (type) {
- 	case EV_KEY:
- 		__set_bit(code, dev->keybit);
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index d201043d661c..4bcf833781bd 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -10221,6 +10221,7 @@ static const struct snd_pci_quirk alc662_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x144d, 0xc051, "Samsung R720", ALC662_FIXUP_IDEAPAD),
+ 	SND_PCI_QUIRK(0x14cd, 0x5003, "USI", ALC662_FIXUP_USI_HEADSET_MODE),
+ 	SND_PCI_QUIRK(0x17aa, 0x1036, "Lenovo P520", ALC662_FIXUP_LENOVO_MULTI_CODECS),
++	SND_PCI_QUIRK(0x17aa, 0x1057, "Lenovo P360", ALC897_FIXUP_HEADSET_MIC_PIN),
+ 	SND_PCI_QUIRK(0x17aa, 0x32ca, "Lenovo ThinkCentre M80", ALC897_FIXUP_HEADSET_MIC_PIN),
+ 	SND_PCI_QUIRK(0x17aa, 0x32cb, "Lenovo ThinkCentre M70", ALC897_FIXUP_HEADSET_MIC_PIN),
+ 	SND_PCI_QUIRK(0x17aa, 0x32cf, "Lenovo ThinkCentre M950", ALC897_FIXUP_HEADSET_MIC_PIN),
 -- 
 2.35.1
 
