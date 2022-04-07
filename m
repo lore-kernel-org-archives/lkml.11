@@ -2,122 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED8F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 00:14:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 00:14:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230436AbiDGAQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 20:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35550 "EHLO
+        id S231244AbiDGAQ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 20:16:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbiDGAQE (ORCPT
+        with ESMTP id S229720AbiDGAQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 20:16:04 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153B4210281
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 17:12:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=t3P75TGW9/yThqhs3twFQ90Wiv5EEwLlCzqpMNBd7RQ=; b=BYX6PLPvE2jgihZsAWnAfWn/k6
-        SW2XYQApmB9vm29OeKHV67YVAsYzCaZPg3ja9mrFkyG2itxIMOWcgMhCu6nOaa48hOrBwJI+b1Vol
-        CA4/mbK7lTIbnDJxIBgTTRQaJXpWwTJBqc3TE/JNGCH/EL+0VpjKRpArPkfKrelwVuuQh7I3Ua+W2
-        Wp37WtxAQRiuJOR3SpgzRYm8ILsNjm+IXX2lsRssDH7fpJNEeciWvpJQRhZ6KMsM1ctMbING1z0Pw
-        BB7e/IJ5h7ijFM28QCtB0xFzRI5K+3iig7Cuhn6Joyt6lsDjsnJB/YuOiQCaNCnn+P41kD+OGdT4i
-        ApvwqQeg==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ncFkn-008IfS-Dl; Thu, 07 Apr 2022 00:12:01 +0000
-Message-ID: <caf97bb9-78b2-1656-fb7d-96cb783e5662@infradead.org>
-Date:   Wed, 6 Apr 2022 17:11:56 -0700
+        Wed, 6 Apr 2022 20:16:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFABD13E401
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 17:13:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3762561D68
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:13:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B9A2C385A1;
+        Thu,  7 Apr 2022 00:13:40 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="pis/TkKM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1649290419;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=QRt2RfkSFMgjmCRXHrKL01LfdfRyGFDE5GXEHiiimtM=;
+        b=pis/TkKMyLO/wQ0vQ+Nh6ueg1paSbiy3c18R/xPYxIfE2MgWTiq8p5E19rnHKDPeAm1nQf
+        +XQJ6lstzQ/XXH0gTqyM9T2OVWGx+ElL3aNzzjldLPW3JKNpyevUsa3Y1OSrtZGd3pRVSN
+        3r0UJGYwt1N5UwqL8s9MBDUejpaodzg=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d225cd6d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 7 Apr 2022 00:13:39 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Subject: [PATCH] /dev/[k]mem: make reads and writes interruptible
+Date:   Thu,  7 Apr 2022 02:13:27 +0200
+Message-Id: <20220407001327.109095-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [kbuild-all] Re: drivers/cxl/pci.c:439:7: warning: Local variable
- 'rc' shadows outer variable [shadowVariable]
-Content-Language: en-US
-To:     "Chen, Rong A" <rong.a.chen@intel.com>,
-        kernel test robot <lkp@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-References: <202204021950.bTbpM2Gy-lkp@intel.com>
- <e4d381f0-bafc-771b-7298-cfc6685776f0@infradead.org>
- <810c4865-45c1-ec93-4f72-2086461756c3@intel.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <810c4865-45c1-ec93-4f72-2086461756c3@intel.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+In 8619e5bdeee8 ("/dev/mem: Bail out upon SIGKILL."), /dev/[k]mem became
+killable, and that commit noted:
 
+  Theoretically, reading/writing /dev/mem and /dev/kmem can become
+  "interruptible". But this patch chose "killable". Future patch will
+  make them "interruptible" so that we can revert to "killable" if
+  some program regressed.
 
-On 4/6/22 04:17, Chen, Rong A wrote:
-> 
-> 
-> On 4/4/2022 3:29 AM, Randy Dunlap wrote:
->> Hi lkp/ktr,
->>
->> On 4/2/22 04:26, kernel test robot wrote:
->>> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
->>> head:   88e6c0207623874922712e162e25d9dafd39661e
->>> commit: 523e594d9cc03db962c741ce02c8a58aab58a123 cxl/pci: Implement wait for media active
->>> date:   7 weeks ago
->>> compiler: alpha-linux-gcc (GCC) 11.2.0
->>>
->>> If you fix the issue, kindly add following tag as appropriate
->>> Reported-by: kernel test robot <lkp@intel.com>
->>>
->>>
->>> cppcheck warnings: (new ones prefixed by >>)
->>>>> drivers/cxl/pci.c:439:7: warning: Local variable 'rc' shadows outer variable [shadowVariable]
->>>       int rc;
->>>           ^
->>>     drivers/cxl/pci.c:431:6: note: Shadowed declaration
->>>      int rc, i;
->>>          ^
->>>     drivers/cxl/pci.c:439:7: note: Shadow variable
->>>       int rc;
->>>           ^
->>>
->>> cppcheck possible warnings: (new ones prefixed by >>, may not real problems)
->>>
->>>>> drivers/cxl/port.c:63:1: warning: There is an unknown macro here somewhere. Configuration is required. If __stringify is a macro then please configure it. [unknownMacro]
->>>     MODULE_ALIAS_CXL(CXL_DEVICE_PORT);
->>>     ^
->>> -- 
->>
->> Can you provide a cppcheck config file and command line
->> for this, please?
-> 
-> Hi Randy,
-> 
-> The below command can show the warning:
-> $ cppcheck --quiet --enable=style,performance,portability --template=gcc drivers/cxl/port.c
-> drivers/cxl/port.c:63:1: warning: There is an unknown macro here somewhere. Configuration is required. If __stringify is a macro then please configure it. [unknownMacro]
-> MODULE_ALIAS_CXL(CXL_DEVICE_PORT);
-> ^
+So now we take the next step in making it "interruptible", by changing
+fatal_signal_pending() into signal_pending().
 
-Hm, that still shows me nothing. There must be something else.
-Maybe it's version-related?  I have:
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/char/mem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-$ cppcheck --version
-Cppcheck 1.82
-
-> 
-> Best Regards,
-> Rong Chen
-> 
->>
->> My naive testing does not see any of these warnings --
->> although I can easily spot the problems in the source file.
->>
->> thanks.
-
-thanks.
-
+diff --git a/drivers/char/mem.c b/drivers/char/mem.c
+index cc296f0823bd..84ca98ed1dad 100644
+--- a/drivers/char/mem.c
++++ b/drivers/char/mem.c
+@@ -101,7 +101,7 @@ static inline bool should_stop_iteration(void)
+ {
+ 	if (need_resched())
+ 		cond_resched();
+-	return fatal_signal_pending(current);
++	return signal_pending(current);
+ }
+ 
+ /*
 -- 
-~Randy
+2.35.1
+
