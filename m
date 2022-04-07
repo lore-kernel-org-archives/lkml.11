@@ -2,78 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 698A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:16:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241654AbiDGHSW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
+        id S241632AbiDGHS1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241686AbiDGHR2 (ORCPT
+        with ESMTP id S241639AbiDGHR3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:17:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941C51107ED;
-        Thu,  7 Apr 2022 00:15:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30D1E61DCE;
-        Thu,  7 Apr 2022 07:15:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7FB9C385A0;
-        Thu,  7 Apr 2022 07:15:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649315725;
-        bh=9/pSQxZKSCCWBCzwEN5pmuogYawG56/M6P8na1rHLYw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mIw6a9MKBB0tYMm6O1XK0svoSqZWLx5wNXDG/G4yLfdr4qVuaALQXCj1++qvmEcez
-         KGzd9NPQo7eynh+CNiyOIthPUfrI0MLRvcfxE1v4sUQNFU3FUHKIED1ERVPo+LlvQr
-         XsMI+ad/xrevLWPXNwMfgFbHo1yf6kr0x03u3sfY=
-Date:   Thu, 7 Apr 2022 09:15:22 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>, usama.anjum@collabora.com,
-        Collabora Kernel ML <kernel@collabora.com>,
-        groeck@chromium.org, bleung@chromium.org, dtor@chromium.org,
-        gwendal@chromium.org, vbendeb@chromium.org, andy@infradead.org,
-        Ayman Bagabas <ayman.bagabas@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        =?utf-8?B?Qmxhxb4=?= Hrastnik <blaz@mxxn.io>,
-        Darren Hart <dvhart@infradead.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jeremy Soller <jeremy@system76.com>,
-        Mattias Jacobsson <2pi@mok.nu>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Rajat Jain <rajatja@google.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Enric Balletbo i Serra <eballetbo@gmail.com>
-Subject: Re: [PATCH v5] platform: x86: Add ChromeOS ACPI device driver
-Message-ID: <Yk6Pip7f3iUsIHTr@kroah.com>
-References: <Yk6ODSxQTiGOrTj/@debian-BULLSEYE-live-builder-AMD64>
+        Thu, 7 Apr 2022 03:17:29 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0F815609D;
+        Thu,  7 Apr 2022 00:15:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649315731; x=1680851731;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=1Bi4lSLV0zLBBZOD2CzxtM5qbY8InuCSGS8Woi7tp1Q=;
+  b=QlWFiuWa4eXJ7i/HoZynivrLvU/7wI4vOMzFftCBUcM/ch+Vx1+dqi+r
+   J6nOMuXjVckJjZeGR28R2xmOhRYK3SOGPFp/h7s7Q8yc6WylVW+QFZvNL
+   s/JiRcMKxYVbBJxFpE04iqQujlOTm0F0xhZCyGX1Qz2fR8f9yrOazEp0n
+   KbCLTPYYVZTaw2hcPIfvtbv2c0aCRGlC8D3aO25nqRptuNk678sdkQE2P
+   6Fk8sMPMA4WlLaA+fnkzaE6tmAy3rXu3UekuealT4COpEt+Uwfd0/e/zG
+   pF19GROqePJxJolZd/1EsaZcM9mtG+cIi+HmhQ7jda16lT9s3sFmMni6H
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,241,1643698800"; 
+   d="scan'208";a="151841505"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Apr 2022 00:15:30 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 7 Apr 2022 00:15:28 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 7 Apr 2022 00:15:26 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
+        <linux@armlinux.org.uk>, <sre@kernel.org>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v2 09/10] ARM: dts: at91: sama7g5: add reset-controller node
+Date:   Thu, 7 Apr 2022 10:17:07 +0300
+Message-ID: <20220407071708.3848812-10-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220407071708.3848812-1-claudiu.beznea@microchip.com>
+References: <20220407071708.3848812-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yk6ODSxQTiGOrTj/@debian-BULLSEYE-live-builder-AMD64>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 12:09:01PM +0500, Enric Balletbo i Serra wrote:
-> --- /dev/null
-> +++ b/drivers/platform/x86/chromeos_acpi.c
-> @@ -0,0 +1,515 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * ChromeOS specific ACPI extensions
-> + *
-> + * Copyright 2011 Google, Inc.
-> + * Copyright 2020 Google LLC
+Add reset controller node.
 
-You haven't touched this file in 2 years?
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ arch/arm/boot/dts/sama7g5.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
+index eddcfbf4d223..aa0e72d4d2d5 100644
+--- a/arch/arm/boot/dts/sama7g5.dtsi
++++ b/arch/arm/boot/dts/sama7g5.dtsi
+@@ -122,6 +122,13 @@ pmc: pmc@e0018000 {
+ 			clock-names = "td_slck", "md_slck", "main_xtal";
+ 		};
+ 
++		reset_controller: reset-controller@e001d000 {
++			compatible = "microchip,sama7g5-rstc";
++			reg = <0xe001d000 0xc>, <0xe001d0e4 0x4>;
++			#reset-cells = <1>;
++			clocks = <&clk32k 0>;
++		};
++
+ 		shdwc: shdwc@e001d010 {
+ 			compatible = "microchip,sama7g5-shdwc", "syscon";
+ 			reg = <0xe001d010 0x10>;
+-- 
+2.32.0
 
