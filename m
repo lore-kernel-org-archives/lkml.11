@@ -2,330 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CB4BC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 22:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE780C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 22:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231905AbiDGWLT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 18:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48614 "EHLO
+        id S231922AbiDGWLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 18:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232043AbiDGWKt (ORCPT
+        with ESMTP id S232037AbiDGWKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 18:10:49 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E92D62993C4;
-        Thu,  7 Apr 2022 15:03:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649369012; x=1680905012;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=CtdHjGdwi53B95XEwjnchoG2NHlfPeYAN9cH0Dtn04c=;
-  b=KjbZj6nehMlvNEVN6g8diq3ve/mU+Pd+whtA16d8XyCNetw5dSSGjiAH
-   Sv12+9njGNe/TvxbOzEjTbTaRldA5EATdWB989xlUT1ByfMVOGLM5cKwa
-   isaTmOWSffFT36NHxVM3hwmbqya0XS2yLKXXE093L86fNIBJT1EBZmNZd
-   U=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 07 Apr 2022 15:03:31 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 15:03:30 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Apr 2022 15:03:09 -0700
-Received: from [10.111.161.146] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 7 Apr 2022
- 15:03:06 -0700
-Message-ID: <225d2c0a-42ec-28ad-688c-e7e9e2035ee1@quicinc.com>
-Date:   Thu, 7 Apr 2022 15:03:03 -0700
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADE646672
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 15:08:26 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id f18-20020a926a12000000b002be48b02bc6so4617305ilc.17
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 15:08:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=FcnDF7Pwv/fxekIgcMUqQ2gFtdJTzyL5GThXsIFoAJY=;
+        b=cFetvxqyvz7ZEYjws9+793rkG9A3aSQY75LbRN9vTg1CEAQ8R0MP/Ql+1ZGMaKaHY8
+         l54aQCRCDaSwlK35QQFxdmlDbi1feTmZ/tN5EGApTG2U6oi7ZBzshWAe0ZH0d836zdjG
+         l8/RcqHd57hHTq/xcu5efwqPAUdlP3IcTu/38NLJlvR8B36IYnZGfgJTjSFsasc6nxv3
+         TUAj6oXt8X6YOQWOg3S5CeG2Rev6afsPtAoRhMiCE5Ch9bXfqImbh6KzQDzQ422R7R2r
+         p+aqXV8t7YsoRRZN5r3FXV/JZwhmyGc3Y+01IWYkNiZNCLJI9j3AFu2pui21Xb1DwKQW
+         H50g==
+X-Gm-Message-State: AOAM5326J42fOORSdYfrVwt1fCEdU/f12TuSXjQT+xIVMjfCjUYkBHiv
+        aU9C1yIKffeOwNI46243vZPtkiODJifiMqJpHocPDD9xn6zJ
+X-Google-Smtp-Source: ABdhPJwAO4bCNZbC4W05yLKUBMWrrXBkaSfvdAGp0T4arlEyORp2fDsYByKQD5NC/O/3quotb4zGZh8FVtf1smxEPxQg+W66ftO8
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v6 1/8] drm/msm/dp: Add eDP support via aux_bus
-Content-Language: en-US
-To:     Doug Anderson <dianders@chromium.org>
-CC:     "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Sean Paul <sean@poorly.run>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
- <1648656179-10347-2-git-send-email-quic_sbillaka@quicinc.com>
- <CAD=FV=X+QvjwoT2zGP82KW4kD0oMUY6ZgCizSikNX_Uj8dNDqA@mail.gmail.com>
- <392b933f-760c-3c81-1040-c514045df3da@linaro.org>
- <CAD=FV=W4PYK-t607yjRbfjDjjEZX0KdgHDRukw_vSH8E8EDH6w@mail.gmail.com>
- <CAA8EJppt9XONbgtKfmHmN+==QNqiVJeb8GKJFdZm=yyY-tgmHQ@mail.gmail.com>
- <CAD=FV=U5-sTDLYdkeJWLAOG-0wgxR49VxtwUyUO7z2PuibLGsg@mail.gmail.com>
- <CAA8EJppgfYgQjG8A4LsR-1wmBj3Ku3eO8cKfAYhxjWXL7e3eHg@mail.gmail.com>
- <CAD=FV=V=a1CnT8fqTJR40WoS3BaDQ3xZ=HnHVHqZh=MEmVUZBA@mail.gmail.com>
- <3e5fa57f-d636-879a-b98f-77323d07c156@linaro.org>
- <CAD=FV=Uibu-kZyix7K4_WVc-+C8xpzTqU4WFy7O=6sukMZrX5g@mail.gmail.com>
- <MW4PR02MB7186245772DAC3E04FA8D1C0E1E69@MW4PR02MB7186.namprd02.prod.outlook.com>
- <CAD=FV=Wk3U7_bVdiCPp8iQ4bcCA_Botemu4pwHeRtgBa3Xk6KQ@mail.gmail.com>
- <c4f086ce-c56f-f7c9-4092-7f2432330d50@quicinc.com>
- <CAD=FV=UmU_BVUaL_X75yOEvQPtGUBTR5-jiVWBHq7uSRt6HM4Q@mail.gmail.com>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <CAD=FV=UmU_BVUaL_X75yOEvQPtGUBTR5-jiVWBHq7uSRt6HM4Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Received: by 2002:a05:6e02:1809:b0:2ca:869a:6518 with SMTP id
+ a9-20020a056e02180900b002ca869a6518mr267183ilv.178.1649369306112; Thu, 07 Apr
+ 2022 15:08:26 -0700 (PDT)
+Date:   Thu, 07 Apr 2022 15:08:26 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000098289005dc17b71b@google.com>
+Subject: [syzbot] possible deadlock in sco_conn_del
+From:   syzbot <syzbot+b825d87fe2d043e3e652@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Doug
+Hello,
 
-Thanks for the response, some comments below.
+syzbot found the following issue on:
 
-Abhinav
-On 4/7/2022 1:47 PM, Doug Anderson wrote:
-> Hi,
-> 
-> On Thu, Apr 7, 2022 at 1:11 PM Abhinav Kumar <quic_abhinavk@quicinc.com> wrote:
->>
->> Hi Doug and Dmitry
->>
->> Sorry, but I caught up on this email just now.
->>
->> Some comments below.
->>
->> Thanks
->>
->> Abhinav
->> On 4/7/2022 10:07 AM, Doug Anderson wrote:
->>> Hi,
->>>
->>> On Thu, Apr 7, 2022 at 7:19 AM Sankeerth Billakanti (QUIC)
->>> <quic_sbillaka@quicinc.com> wrote:
->>>>
->>>> Hi Dmitry and Doug,
->>>>
->>>>> Hi,
->>>>>
->>>>> On Tue, Apr 5, 2022 at 10:36 AM Dmitry Baryshkov
->>>>> <dmitry.baryshkov@linaro.org> wrote:
->>>>>>
->>>>>> On 05/04/2022 20:02, Doug Anderson wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> On Tue, Apr 5, 2022 at 5:54 AM Dmitry Baryshkov
->>>>>>> <dmitry.baryshkov@linaro.org> wrote:
->>>>>>>>> 3. For DP and eDP HPD means something a little different.
->>>>>>>>> Essentially there are two concepts: a) is a display physically
->>>>>>>>> connected and b) is the display powered up and ready. For DP, the
->>>>>>>>> two are really tied together. From the kernel's point of view you
->>>>>>>>> never "power down" a DP display and you can't detect that it's
->>>>>>>>> physically connected until it's ready. Said another way, on you
->>>>>>>>> tie "is a display there" to the HPD line and the moment a display
->>>>>>>>> is there it's ready for you to do AUX transfers. For eDP, in the
->>>>>>>>> lowest power state of a display it _won't_ assert its "HPD"
->>>>>>>>> signal. However, it's still physically present. For eDP you simply
->>>>>>>>> have to _assume_ it's present without any actual proof since you
->>>>>>>>> can't get proof until you power it up. Thus for eDP, you report
->>>>>>>>> that the display is there as soon as we're asked. We can't _talk_
->>>>>>>>> to the display yet, though. So in get_modes() we need to be able
->>>>>>>>> to power the display on enough to talk over the AUX channel to it.
->>>>>>>>> As part of this, we wait for the signal named "HPD" which really means
->>>>> "panel finished powering on" in this context.
->>>>>>>>>
->>>>>>>>> NOTE: for aux transfer, we don't have the _display_ pipe and
->>>>>>>>> clocks running. We only have enough stuff running to do the AUX
->>>>> transfer.
->>>>>>>>> We're not clocking out pixels. We haven't fully powered on the
->>>>>>>>> display. The AUX transfer is designed to be something that can be
->>>>>>>>> done early _before_ you turn on the display.
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> OK, so basically that was a longwinded way of saying: yes, we
->>>>>>>>> could avoid the AUX transfer in probe, but we can't wait all the
->>>>>>>>> way to enable. We have to be able to transfer in get_modes(). If
->>>>>>>>> you think that's helpful I think it'd be a pretty easy patch to
->>>>>>>>> write even if it would look a tad bit awkward IMO. Let me know if
->>>>>>>>> you want me to post it up.
->>>>>>>>
->>>>>>>> I think it would be a good idea. At least it will allow us to
->>>>>>>> judge, which is the more correct way.
->>>>>>>
->>>>>>> I'm still happy to prototype this, but the more I think about it the
->>>>>>> more it feels like a workaround for the Qualcomm driver. The eDP
->>>>>>> panel driver is actually given a pointer to the AUX bus at probe
->>>>>>> time. It's really weird to say that we can't do a transfer on it
->>>>>>> yet... As you said, this is a little sideband bus. It should be able
->>>>>>> to be used without all the full blown infra of the rest of the driver.
->>>>>>
->>>>>> Yes, I have that feeling too. However I also have a feeling that just
->>>>>> powering up the PHY before the bus probe is ... a hack. There are no
->>>>>> obvious stopgaps for the driver not to power it down later.
->>>>>
->>
->> Lets go back to why we need to power up the PHY before the bus probe.
->>
->> We need to power up PHY before bus probe because panel-eDP tries to read
->> the EDID in probe() for the panel_id. Not get_modes().
->>
->> So doug, I didnt follow your comment that panel-eDP only does EDID read
->> in get_modes()
->>
->>          panel_id = drm_edid_get_panel_id(panel->ddc);
->>          if (!panel_id) {
->>                  dev_err(dev, "Couldn't identify panel via EDID\n");
->>                  ret = -EIO;
->>                  goto exit;
->>          }
->>
->> If we do not need this part, we really dont need to power up the PHY
->> before the probe(). The hack which dmitry was referring to.
-> 
-> Right. ...so we _could_ remove the above from the panel-edp probe and
-> defer it to get_modes() and it wouldn't be that hard. ...but:
-> 
-> 1. It feels like a hack to work around the Qualcomm driver. The way
-> the AUX bus is designed is that a pointer to the AUX bus is passed to
-> the panel-edp probe. It seems kinda strange to say that the panel
-> isn't allowed to do transfers with the pointer that's passed in.
-> 
+HEAD commit:    696206280c5e Add linux-next specific files for 20220404
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=12c57ff5700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5eb81244dbc8d9b7
+dashboard link: https://syzkaller.appspot.com/bug?extid=b825d87fe2d043e3e652
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-And thats why to satisfy the requirements of passing an initialized AUX, 
-sankeerth is delaying devm_of_dp_aux_populate_ep_devices() till PHY is 
-initialized which seems reasonable to satisfy the probe() time requirements.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-Even if we move to pm_runtime(), yes I agree it will club all the 
-resources needed to control AUX in one place but you will still have to 
-initialize PHY before probe() under the hood of pm_runtime().
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b825d87fe2d043e3e652@syzkaller.appspotmail.com
 
-So how will it help this cause?
+======================================================
+WARNING: possible circular locking dependency detected
+5.18.0-rc1-next-20220404-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor.4/21629 is trying to acquire lock:
+ffff88801acb3130 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1682 [inline]
+ffff88801acb3130 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}, at: sco_conn_del+0x131/0x2c0 net/bluetooth/sco.c:197
 
-We just have to accept that initializing PHY is a requirement to use AUX 
-and before calling panel-eDP's probe(), we have to have an initialized AUX.
+but task is already holding lock:
+ffffffff8d76e388 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_disconn_cfm include/net/bluetooth/hci_core.h:1576 [inline]
+ffffffff8d76e388 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_conn_hash_flush+0xda/0x260 net/bluetooth/hci_conn.c:1458
 
-So we are not working around the driver but just satisfying the hardware 
-requirements to be able to satisfy panel-edp's and 
-drm_panel_dp_aux_backlight()'s aux bus requirements.
-
-> 2. There's a second place where we might do an AUX transfer at probe
-> time which is when we're using the DP AUX backlight. There we call
-> drm_panel_dp_aux_backlight(). Conceivably this too could be deferred
-> until the get_modes(), but now it feels even more like a hack. We're
-> going to be registering the backlight in the first call to
-> get_modes()? That's, ummm, unexpected. We could look at perhaps
-> breaking the "DP AUX backlight" in two parts also, but that gets
-> involved. I think we're supposed to know the number of backlight
-> levels at device init time for backlight devices and we need an AUX
-> transfer to that.
-> 
+which lock already depends on the new lock.
 
 
-> 
-> So the answer is that we could probably make it work, but it seems
-> like an uglier solution than just making the Qualcomm driver able to
-> do AUX transfers when it should be able to.
+the existing dependency chain (in reverse order) is:
 
-Correct and by delaying the panel-edp's probe(), we are doing exactly that?
+-> #2 (hci_cb_list_lock){+.+.}-{3:3}:
+       __mutex_lock_common kernel/locking/mutex.c:600 [inline]
+       __mutex_lock+0x12f/0x12f0 kernel/locking/mutex.c:733
+       hci_connect_cfm include/net/bluetooth/hci_core.h:1561 [inline]
+       hci_remote_features_evt+0x62b/0xa20 net/bluetooth/hci_event.c:3736
+       hci_event_func net/bluetooth/hci_event.c:6890 [inline]
+       hci_event_packet+0x7c1/0xf60 net/bluetooth/hci_event.c:6939
+       hci_rx_work+0x522/0xd60 net/bluetooth/hci_core.c:3819
+       process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+       worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+       kthread+0x2e9/0x3a0 kernel/kthread.c:376
+       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
 
-> 
->> So this is boiling down to why or how panel-eDP was originally designed.
->>
->>>>> This is why I think we need to move to Runtime PM to manage this. Basically:
->>>>>
->>>>> 1. When an AUX transfer happens, you grab a PM runtime reference that
->>>>> _that_ powers up the PHY.
->>
->> This will not be trivial and needs to be scoped out as sankeerth said
->> but if the above is the only concern, why do we need to do this? There
->> seems to be an explanation why we are doing this and its not a hack.
->>
->> How would Dmitry's rework address this? We need some RFC to conclude on
->> that first.
->>
->>>>>
->>>>> 2. At the end of the AUX transfer function, you do a "put_autosuspend".
->>>>>
->>>>> Then it becomes not a hack, right?
->>>>>
->>>>>
->>>>
->>>> pm runtime ops needs to be implemented for both eDP and DP. This change
->>>> take good amount of planning and code changes as it affects DP also.
->>>>
->>>> Because this patch series consist of basic eDP changes for SC7280 bootup,
->>>> shall we take this pm_runtime implementation in subsequent patch series?
->>>
->>> Dmitry is the real decision maker here, but in my opinion it would be
->>> OK to get something landed first that worked OK and wasn't taking us
->>> too far in the wrong direction and then we could get a follow up patch
->>> to move to pm_runtime.
->>
->> I would say the discussion changed into a direction of implementing
->> pm-runtime because the current patch series does what it takes to adhere
->> to panel-eDP's design along with aux bus requirements of PHY needing to
->> be on.
->>
->> So doug, to answer your questions here:
->>
->> "So I guess the net result is maybe we should just keep it where it is.
->> Long term I'd be interested in knowing if there's a reason why we
->> can't structure the driver so that AUX transfers can happen with less
->> intertwining with the rest of the code, but that can happen later. I
->> would expect that you'd basically just need clocks and regulators on
->> and maybe your PHY on."
->>
->> Yes PHY needs to be absolutely on and configured before aux transfers.
->>
->> If we want to change that up to stop reading the panel_id in the panel
->> probe() and do it later, perhaps some of the changes done here are not
->> needed.
->>
->> It only seems reasonable that we first prototype that in a separate
->> patch even a RFC perhaps and take this further as these set of changes
->> are needed for basic display functionality on sc7280 chromebooks.
->>
->> Let us know what are the concerns with doing it in a follow up change.
-> 
-> As per above, I'm not objecting to it being a follow-up change, but I
-> do believe it's the right design and will lead to an overall cleaner
-> solution. I think I even mentioned in my reviews that the current
-> patch series seems to "scattershot" enable resources and that's how we
-> end up with patches like patch #5 in this series ("drm/msm/dp: prevent
-> multiple votes for dp resources"). IMO there should be be a 1-to-1
-> mapping between "turn on resources" and "turn off resources" and it
-> should be reference counted. So if your codepath turned on resources
-> then it's up to your codepath to turn resources off when done. If a
-> seconde code path might be running at the same time then it should
-> also turn on/off resources itself. ...and it should all be managed by
-> pm_runtime which is _exactly designed_ for this specific use case.
-> 
-Agreed on this topic, moving to pm_runtime() will club all resources in 
-one place and make things cleaner that way.
+-> #1 (&hdev->lock){+.+.}-{3:3}:
+       __mutex_lock_common kernel/locking/mutex.c:600 [inline]
+       __mutex_lock+0x12f/0x12f0 kernel/locking/mutex.c:733
+       sco_sock_connect+0x1eb/0xa80 net/bluetooth/sco.c:593
+       __sys_connect_file+0x14f/0x190 net/socket.c:1900
+       __sys_connect+0x161/0x190 net/socket.c:1917
+       __do_sys_connect net/socket.c:1927 [inline]
+       __se_sys_connect net/socket.c:1924 [inline]
+       __x64_sys_connect+0x6f/0xb0 net/socket.c:1924
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Complexity of it obviously needs to be evaluated to check the effort Vs 
-rewards.
+-> #0 (sk_lock-AF_BLUETOOTH-BTPROTO_SCO){+.+.}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:3096 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3219 [inline]
+       validate_chain kernel/locking/lockdep.c:3834 [inline]
+       __lock_acquire+0x2abe/0x5660 kernel/locking/lockdep.c:5060
+       lock_acquire kernel/locking/lockdep.c:5672 [inline]
+       lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5637
+       lock_sock_nested+0x36/0xf0 net/core/sock.c:3312
+       lock_sock include/net/sock.h:1682 [inline]
+       sco_conn_del+0x131/0x2c0 net/bluetooth/sco.c:197
+       sco_disconn_cfm+0x71/0xb0 net/bluetooth/sco.c:1379
+       hci_disconn_cfm include/net/bluetooth/hci_core.h:1579 [inline]
+       hci_conn_hash_flush+0x127/0x260 net/bluetooth/hci_conn.c:1458
+       hci_dev_close_sync+0x567/0x1140 net/bluetooth/hci_sync.c:4121
+       hci_dev_do_close+0x32/0x70 net/bluetooth/hci_core.c:553
+       hci_unregister_dev+0x1d0/0x550 net/bluetooth/hci_core.c:2687
+       vhci_release+0x7c/0xf0 drivers/bluetooth/hci_vhci.c:568
+       __fput+0x277/0x9d0 fs/file_table.c:317
+       task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+       exit_task_work include/linux/task_work.h:37 [inline]
+       do_exit+0xaff/0x2a00 kernel/exit.c:795
+       do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+       __do_sys_exit_group kernel/exit.c:936 [inline]
+       __se_sys_exit_group kernel/exit.c:934 [inline]
+       __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-But it will still not address the original concern of this thread that
-powering up the PHY before the probe() is a hack.
+other info that might help us debug this:
 
-"Yes, I have that feeling too. However I also have a feeling that just
- > powering up the PHY before the bus probe is ... a hack. There are no
- > obvious stopgaps for the driver not to power it down later."
+Chain exists of:
+  sk_lock-AF_BLUETOOTH-BTPROTO_SCO --> &hdev->lock --> hci_cb_list_lock
 
-We would still end up doing that under the hood of pm_runtime.
+ Possible unsafe locking scenario:
 
-And thats why its an improvement and not a necessity qualifying it for a 
-separate change.
+       CPU0                    CPU1
+       ----                    ----
+  lock(hci_cb_list_lock);
+                               lock(&hdev->lock);
+                               lock(hci_cb_list_lock);
+  lock(sk_lock-AF_BLUETOOTH-BTPROTO_SCO);
 
-> -Doug
+ *** DEADLOCK ***
+
+3 locks held by syz-executor.4/21629:
+ #0: ffff88801e84d048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_close+0x2a/0x70 net/bluetooth/hci_core.c:551
+ #1: ffff88801e84c078 (&hdev->lock){+.+.}-{3:3}, at: hci_dev_close_sync+0x26d/0x1140 net/bluetooth/hci_sync.c:4108
+ #2: ffffffff8d76e388 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_disconn_cfm include/net/bluetooth/hci_core.h:1576 [inline]
+ #2: ffffffff8d76e388 (hci_cb_list_lock){+.+.}-{3:3}, at: hci_conn_hash_flush+0xda/0x260 net/bluetooth/hci_conn.c:1458
+
+stack backtrace:
+CPU: 1 PID: 21629 Comm: syz-executor.4 Not tainted 5.18.0-rc1-next-20220404-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2176
+ check_prev_add kernel/locking/lockdep.c:3096 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3219 [inline]
+ validate_chain kernel/locking/lockdep.c:3834 [inline]
+ __lock_acquire+0x2abe/0x5660 kernel/locking/lockdep.c:5060
+ lock_acquire kernel/locking/lockdep.c:5672 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5637
+ lock_sock_nested+0x36/0xf0 net/core/sock.c:3312
+ lock_sock include/net/sock.h:1682 [inline]
+ sco_conn_del+0x131/0x2c0 net/bluetooth/sco.c:197
+ sco_disconn_cfm+0x71/0xb0 net/bluetooth/sco.c:1379
+ hci_disconn_cfm include/net/bluetooth/hci_core.h:1579 [inline]
+ hci_conn_hash_flush+0x127/0x260 net/bluetooth/hci_conn.c:1458
+ hci_dev_close_sync+0x567/0x1140 net/bluetooth/hci_sync.c:4121
+ hci_dev_do_close+0x32/0x70 net/bluetooth/hci_core.c:553
+ hci_unregister_dev+0x1d0/0x550 net/bluetooth/hci_core.c:2687
+ vhci_release+0x7c/0xf0 drivers/bluetooth/hci_vhci.c:568
+ __fput+0x277/0x9d0 fs/file_table.c:317
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ exit_task_work include/linux/task_work.h:37 [inline]
+ do_exit+0xaff/0x2a00 kernel/exit.c:795
+ do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+ __do_sys_exit_group kernel/exit.c:936 [inline]
+ __se_sys_exit_group kernel/exit.c:934 [inline]
+ __x64_sys_exit_group+0x3a/0x50 kernel/exit.c:934
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f677aa89049
+Code: Unable to access opcode bytes at RIP 0x7f677aa8901f.
+RSP: 002b:00007ffc2aa139c8 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 0000000000000064 RCX: 00007f677aa89049
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: 00007f677aae225c R08: 000000000000000c R09: 00005555561573b8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000016
+R13: 00007ffc2aa14ca0 R14: 00005555561573b8 R15: 00007ffc2aa15da0
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
