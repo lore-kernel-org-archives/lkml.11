@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B75BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244702AbiDGLTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 07:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53540 "EHLO
+        id S244678AbiDGLTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 07:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244810AbiDGLSZ (ORCPT
+        with ESMTP id S244774AbiDGLSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 07:18:25 -0400
-Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [81.169.146.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C8193982;
-        Thu,  7 Apr 2022 04:16:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649330173;
+        Thu, 7 Apr 2022 07:18:08 -0400
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AD46005D;
+        Thu,  7 Apr 2022 04:16:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649330153;
     s=strato-dkim-0002; d=goldelico.com;
-    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
     From:Subject:Sender;
-    bh=mli3SbgeH19fgUBo5oZuvEr6dwkaZKlBs97YGkIQ7hs=;
-    b=m+N+EovPDYaXEeM9dWP3zoGWYJWca46FkN9WJtA3Fp9OD6gDw8lhy8F6UIhKYymgtf
-    CebZrV9paQ7V2hCHLxk+eDvmDD6Zv7KEt1mIyl4NcnfoXykSWOh0CTNOHllo1D3SnYAx
-    xLMLaJFTTJEKmSNRdzrAa6LhHEQVAmitRACoYQIqjNYk4/0rW76atCXzxf0jy62TwrN3
-    QIf3OxXquiWooLHgN/8C9aVxJQDrRs+w5YqaTNVQgQR2co30vFGJJkwoJ0iCCgz441/y
-    8g20Y+pa2FHriVyAq1YDSn7pkt/2aQbb4YWyxmXjxVxyz5svJ1gpgxhhBEsZx7popfjQ
-    kx4w==
+    bh=c1j57OzkC5NhGusvepHfUpBDwheH8518tflcTdvtQXI=;
+    b=Ne/byUbqDQ8NO3Y+LUdT7kFrvAV8rZPg4xQAgkYqHhgSNssycLc7GSsRbtOpIv34mm
+    kos8DK6qvFMbxPVyqlso1fzT+29puPH4Tx8EzUQs+ueHy5IC+iDkooe/cJPCq/LKLVKR
+    DG7N8xchPvGSRHvJnw31g3ki/4fVjbVRRUOTAdRawaI+twGwj96RoVl19VX5kFclCIHZ
+    NWEDt8UoZYIABZfmR7LznpxsC9gulnyqv3wonnpZ7eFdNoDGKGJYhMEDFvmse2aIyHyO
+    rbFq8Pk/cJ55o3089CDVhqYuasPYCf3Js/YPw4l+v1aAI+Bq1tUwxRxO4Wl+GQ2tUven
+    uHzQ==
 Authentication-Results: strato.com;
     dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1KHeBQyh+ITDDFsCr4="
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3i8MRqg=="
 X-RZG-CLASS-ID: mo00
-Received: from iMac.fritz.box
+Received: from imac.fritz.box
     by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy37BGDjxE
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+    with ESMTPSA id k708cfy37BFrjx4
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
         (Client did not present a certificate);
-    Thu, 7 Apr 2022 13:16:13 +0200 (CEST)
+    Thu, 7 Apr 2022 13:15:53 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
+Subject: Re: [PATCH v17 5/6] drm/bridge: dw-hdmi: add YCBCR formats only if
+ CSC is available
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-To:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+In-Reply-To: <9d3f8bfb-74f7-cbd9-a6f5-1e8acae4c13b@baylibre.com>
+Date:   Thu, 7 Apr 2022 13:15:52 +0200
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Robert Foss <robert.foss@linaro.org>,
         Paul Boddie <paul@boddie.org.uk>,
         Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
@@ -47,83 +53,58 @@ To:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         Paul Cercueil <paul@crapouillou.net>,
         Maxime Ripard <maxime@cerno.tech>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Cc:     Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
-        letux-kernel@openphoenux.org
-Subject: [PATCH v18 2/3] drm/ingenic: Implement proper .atomic_get_input_bus_fmts
-Date:   Thu,  7 Apr 2022 13:16:10 +0200
-Message-Id: <ab25925723cff2f3e773e7137567ef86fff5fdba.1649330171.git.hns@goldelico.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <cover.1649330170.git.hns@goldelico.com>
-References: <cover.1649330170.git.hns@goldelico.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        letux-kernel@openphoenux.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Jonas Karlman <jonas@kwiboo.se>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <B8A7AD7C-8FE0-4183-9B84-2F569EC9DA40@goldelico.com>
+References: <cover.1649262368.git.hns@goldelico.com>
+ <d5801eb7733a616df30fef1d192e88ad147afc1c.1649262368.git.hns@goldelico.com>
+ <9d3f8bfb-74f7-cbd9-a6f5-1e8acae4c13b@baylibre.com>
+To:     Neil Armstrong <narmstrong@baylibre.com>
+X-Mailer: Apple Mail (2.3445.104.21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Cercueil <paul@crapouillou.net>
 
-The .atomic_get_input_bus_fmts() callback of our top bridge should
-return the possible input formats for a given output format. If the
-requested output format is not supported, then NULL should be returned,
-otherwise the bus format negociation will end with a bus format that the
-encoder does not support.
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
----
- drivers/gpu/drm/ingenic/ingenic-drm-drv.c | 28 ++++++++++++++++++++++-
- 1 file changed, 27 insertions(+), 1 deletion(-)
+> Am 07.04.2022 um 10:29 schrieb Neil Armstrong =
+<narmstrong@baylibre.com>:
+>=20
+> On 06/04/2022 18:26, H. Nikolaus Schaller wrote:
+>> otherwise they will produce a black HDMI screen.
+>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+>> ---
+>>  drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 6 ++++--
+>>  1 file changed, 4 insertions(+), 2 deletions(-)
+>> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c =
+b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> index b5a665c5e406e..ec40dd8865065 100644
+>> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> @@ -2628,10 +2628,12 @@ static u32 =
+*dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
+>>  		output_fmts[i++] =3D MEDIA_BUS_FMT_RGB101010_1X30;
+>>  	}
+>>  -	if (hdmi->sink_is_hdmi && info->color_formats & =
+DRM_COLOR_FORMAT_YCBCR422)
+>> +	if (hdmi->csc_available && hdmi->sink_is_hdmi &&
+>> +	    (info->color_formats & DRM_COLOR_FORMAT_YCBCR422))
+>>  		output_fmts[i++] =3D MEDIA_BUS_FMT_UYVY8_1X16;
+>>  -	if (hdmi->sink_is_hdmi && info->color_formats & =
+DRM_COLOR_FORMAT_YCBCR444)
+>> +	if (hdmi->csc_available && hdmi->sink_is_hdmi &&
+>> +	    (info->color_formats & DRM_COLOR_FORMAT_YCBCR444))
+>>  		output_fmts[i++] =3D MEDIA_BUS_FMT_YUV8_1X24;
+>>    	/* Default 8bit RGB fallback */
+>=20
+> This patch shouldn't be needed anymore with proper filtering in patch =
+1.
 
-diff --git a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-index a4f5a323f4906..8eb0ad501a7b9 100644
---- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-+++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-@@ -833,6 +833,32 @@ static int ingenic_drm_bridge_atomic_check(struct drm_bridge *bridge,
- 	}
- }
- 
-+static u32 *
-+ingenic_drm_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
-+					     struct drm_bridge_state *bridge_state,
-+					     struct drm_crtc_state *crtc_state,
-+					     struct drm_connector_state *conn_state,
-+					     u32 output_fmt,
-+					     unsigned int *num_input_fmts)
-+{
-+	switch (output_fmt) {
-+	case MEDIA_BUS_FMT_RGB888_1X24:
-+	case MEDIA_BUS_FMT_RGB666_1X18:
-+	case MEDIA_BUS_FMT_RGB565_1X16:
-+	case MEDIA_BUS_FMT_RGB888_3X8:
-+	case MEDIA_BUS_FMT_RGB888_3X8_DELTA:
-+		break;
-+	default:
-+		*num_input_fmts = 0;
-+		return NULL;
-+	}
-+
-+	return drm_atomic_helper_bridge_propagate_bus_fmt(bridge, bridge_state,
-+							  crtc_state, conn_state,
-+							  output_fmt,
-+							  num_input_fmts);
-+}
-+
- static irqreturn_t ingenic_drm_irq_handler(int irq, void *arg)
- {
- 	struct ingenic_drm *priv = drm_device_get_priv(arg);
-@@ -984,7 +1010,7 @@ static const struct drm_bridge_funcs ingenic_drm_bridge_funcs = {
- 	.atomic_reset		= drm_atomic_helper_bridge_reset,
- 	.atomic_duplicate_state	= drm_atomic_helper_bridge_duplicate_state,
- 	.atomic_destroy_state	= drm_atomic_helper_bridge_destroy_state,
--	.atomic_get_input_bus_fmts = drm_atomic_helper_bridge_propagate_bus_fmt,
-+	.atomic_get_input_bus_fmts = ingenic_drm_bridge_atomic_get_input_bus_fmts,
- };
- 
- static const struct drm_mode_config_funcs ingenic_drm_mode_config_funcs = {
--- 
-2.33.0
+It can indeed be removed as well.
+
+BR and thanks,
+Nikolaus
 
