@@ -2,174 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCFEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 906D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:33:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230105AbiDGUe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:34:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
+        id S229845AbiDGUfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:35:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230026AbiDGUeH (ORCPT
+        with ESMTP id S230026AbiDGUfA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:34:07 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12EA032282A
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:20:07 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id a6so13303816ejk.0
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:20:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=z3JBr/Ttk7vxXbtA7Vt1dI5zaBzrSMklwGnLl7DuQF8=;
-        b=k1zUJORmR8UXVnkZNcWeOp/6IT8g5UMti0Cye0c+lX5Th5oxgyZHD/umuo5csEVQIC
-         lqgW3KYvapSL+87pXafFH8W0ncqlD8tpuknBCTHhvDCMNSvUu15mTe3YURilc8LHkWBv
-         l2iONbTQPeGZEOE1GozbutDGrLnkWzBMkwyKzNxYDKIGloy1Th9or6aKgnNqcu6Qd59B
-         EgwC/BG+2hfGLKsRXCnG1HQN6KKoX+wPRrv2GfdFtnWql4zqpmdlj1MZJiZdFdDjfxZN
-         XlhdZnQyJflevAui3tvhtFOZzNHvcO7R5yOc7a3vkd9NnfTsWqXaUcssTxsbQ2MrSDJC
-         ESDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=z3JBr/Ttk7vxXbtA7Vt1dI5zaBzrSMklwGnLl7DuQF8=;
-        b=PF40+aFX07lvNPoQe6Mlf8urIOxohVXqtwKStxyD4Nnghv6rC0k8Ws0LEOJ4O/LCgS
-         4E9uGcxY5LkmznaWazAsAuJCC1+1YZhs/z+m9MkIC3CfYCnf2dQph3rWMxSw0HqfQvou
-         49LLW69NRmhJczJRrmaD+TTeVtJpsf6rBrD+j83GCMMEgiTbKoJW6miKB1lTkOzWThoe
-         3NWTVrusOk5Zge5Jz1jI0wRSeTXMbLQZdE4JWC9C/OYzfaL1KyR+hNTrKRdOTNVUwWlb
-         W2Zt6GkIN1VdGtRTDhroA9c/i5VKYnB+ttuhb1wZqQJG10zwd3gafjKp3CMUKOkOi7HQ
-         deYw==
-X-Gm-Message-State: AOAM531AaFm+V1MFhqU+K0WWbHgHMVLRSZ2u4MVDN8glc/tkkaFgWak6
-        cH+8L7Gk2YkWxHFjiCJPu0mOaifHqz2wvcpA
-X-Google-Smtp-Source: ABdhPJxVW1FZgomHKEdT3i2TbB5n2ep9jmVmh3X4KT0JDr9MKjb6LQUXqQHR1E83MJwDd8YNhwdvYw==
-X-Received: by 2002:a17:907:6e04:b0:6e0:95c0:47b8 with SMTP id sd4-20020a1709076e0400b006e095c047b8mr14960993ejc.483.1649360493289;
-        Thu, 07 Apr 2022 12:41:33 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id j17-20020a05640211d100b00419357a2647sm10015528edw.25.2022.04.07.12.41.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 12:41:32 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [RESEND PATCH v2] dt-bindings: timer: exynos4210-mct: describe known hardware and its interrupts
-Date:   Thu,  7 Apr 2022 21:41:27 +0200
-Message-Id: <20220407194127.19004-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Thu, 7 Apr 2022 16:35:00 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D65B2A3DBD
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:20:28 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2F47112FC;
+        Thu,  7 Apr 2022 12:42:55 -0700 (PDT)
+Received: from [192.168.178.6] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1DB223F718;
+        Thu,  7 Apr 2022 12:42:53 -0700 (PDT)
+Message-ID: <84bd8d25-979b-42d7-a809-379454537806@arm.com>
+Date:   Thu, 7 Apr 2022 21:42:33 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] arch_topology: support parsing cache topology from DT
+Content-Language: en-US
+To:     Qing Wang <wangqing@vivo.com>, Sudeep Holla <sudeep.holla@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org
+Cc:     wangqing <11112896@bbktel.com>
+References: <1649236680-4340-1-git-send-email-wangqing@vivo.com>
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+In-Reply-To: <1649236680-4340-1-git-send-email-wangqing@vivo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Most of the Samsung Exynos SoCs use almost the same Multi-Core Timer
-block, so only two compatibles were used so far (for Exynos4210 and
-Exynos4412 flavors) with Exynos4210-one being used in most of the SoCs.
-However the Exynos4210 flavor actually differs by number of interrupts.
+On 06/04/2022 11:18, Qing Wang wrote:
+> From: wangqing <11112896@bbktel.com>
 
-Add new compatibles, maintaining backward compatibility with Exynos4210,
-and constraints for number of interrupts.  This allows to exactly match
-the Exynos MCT hardware.
+[...]
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../timer/samsung,exynos4210-mct.yaml         | 67 ++++++++++++++++++-
- 1 file changed, 64 insertions(+), 3 deletions(-)
+> +void init_cpu_cache_topology(void)
+> +{
+> +	struct device_node *node_cpu, *node_cache;
+> +	int cpu;
+> +	int level = 0;
+> +
+> +	for_each_possible_cpu(cpu) {
+> +		node_cpu = of_get_cpu_node(cpu, NULL);
+> +		if (!node_cpu)
+> +			continue;
+> +
+> +		level = 0;
+> +		node_cache = node_cpu;
+> +		while (level < MAX_CACHE_LEVEL) {
+> +			node_cache = of_parse_phandle(node_cache, "next-level-cache", 0);
+> +			if (!node_cache)
+> +				break;
+> +
+> +			cache_topology[cpu][level++] = node_cache;
+> +		}
+> +		of_node_put(node_cpu);
+> +	}
+> +}
 
-diff --git a/Documentation/devicetree/bindings/timer/samsung,exynos4210-mct.yaml b/Documentation/devicetree/bindings/timer/samsung,exynos4210-mct.yaml
-index f11cbc7ccc14..1584944c7ac4 100644
---- a/Documentation/devicetree/bindings/timer/samsung,exynos4210-mct.yaml
-+++ b/Documentation/devicetree/bindings/timer/samsung,exynos4210-mct.yaml
-@@ -19,9 +19,20 @@ description: |+
- 
- properties:
-   compatible:
--    enum:
--      - samsung,exynos4210-mct
--      - samsung,exynos4412-mct
-+    oneOf:
-+      - enum:
-+          - samsung,exynos4210-mct
-+          - samsung,exynos4412-mct
-+      - items:
-+          - enum:
-+              - samsung,exynos3250-mct
-+              - samsung,exynos5250-mct
-+              - samsung,exynos5260-mct
-+              - samsung,exynos5420-mct
-+              - samsung,exynos5433-mct
-+              - samsung,exynos850-mct
-+              - tesla,fsd-mct
-+          - const: samsung,exynos4210-mct
- 
-   clocks:
-     minItems: 2
-@@ -63,6 +74,56 @@ required:
-   - interrupts
-   - reg
- 
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: samsung,exynos3250-mct
-+    then:
-+      properties:
-+        interrupts:
-+          minItems: 8
-+          maxItems: 8
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: samsung,exynos5250-mct
-+    then:
-+      properties:
-+        interrupts:
-+          minItems: 6
-+          maxItems: 6
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - samsung,exynos5260-mct
-+              - samsung,exynos5420-mct
-+              - samsung,exynos5433-mct
-+              - samsung,exynos850-mct
-+    then:
-+      properties:
-+        interrupts:
-+          minItems: 12
-+          maxItems: 12
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - tesla,fsd-mct
-+    then:
-+      properties:
-+        interrupts:
-+          minItems: 16
-+          maxItems: 16
-+
- additionalProperties: false
- 
- examples:
--- 
-2.32.0
+From where is init_cpu_cache_topology() called?
 
+> +bool cpu_share_llc(int cpu1, int cpu2)
+> +{
+> +	int cache_level;
+> +
+> +	for (cache_level = MAX_CACHE_LEVEL - 1; cache_level > 0; cache_level--) {
+> +		if (!cache_topology[cpu1][cache_level])
+> +			continue;
+> +
+> +		if (cache_topology[cpu1][cache_level] == cache_topology[cpu2][cache_level])
+> +			return true;
+> +
+> +		return false;
+> +	}
+> +
+> +	return false;
+> +}
+
+Like I mentioned in:
+
+https://lkml.kernel.org/r/73b491fe-b5e8-ebca-081e-fa339cc903e1@arm.com
+
+the correct setting in DT's cpu-map node (only core nodes in your case
+(One DynamIQ cluster) will give you the correct LLC (highest
+SD_SHARE_PKG_RESOURCES) setting.
+
+https://www.kernel.org/doc/Documentation/devicetree/bindings/arm/topology.txt
+
+> +
+> +bool cpu_share_l2c(int cpu1, int cpu2)
+> +{
+> +	if (!cache_topology[cpu1][0])
+> +		return false;
+> +
+> +	if (cache_topology[cpu1][0] == cache_topology[cpu2][0])
+> +		return true;
+> +
+> +	return false;
+> +}
+> +
+>  /*
+>   * cpu topology table
+>   */
+> @@ -662,7 +720,7 @@ const struct cpumask *cpu_coregroup_mask(int cpu)
+>  		/* not numa in package, lets use the package siblings */
+>  		core_mask = &cpu_topology[cpu].core_sibling;
+>  	}
+> -	if (cpu_topology[cpu].llc_id != -1) {
+> +	if (cpu_topology[cpu].llc_id != -1 || cache_topology[cpu][0]) {
+>  		if (cpumask_subset(&cpu_topology[cpu].llc_sibling, core_mask))
+>  			core_mask = &cpu_topology[cpu].llc_sibling;
+>  	}
+> @@ -684,7 +742,8 @@ void update_siblings_masks(unsigned int cpuid)
+>  	for_each_online_cpu(cpu) {
+>  		cpu_topo = &cpu_topology[cpu];
+>  
+> -		if (cpuid_topo->llc_id == cpu_topo->llc_id) {
+> +		if ((cpuid_topo->llc_id != -1 && cpuid_topo->llc_id == cpu_topo->llc_id)
+> +			|| (cpuid_topo->llc_id == -1 && cpu_share_llc(cpu, cpuid))) {
+
+Assuming a:
+
+      .---------------.
+CPU   |0 1 2 3 4 5 6 7|
+      +---------------+
+uarch |l l l l m m m b| (so called tri-gear: little, medium, big)
+      +---------------+
+  L2  |   |   | | | | |
+      +---------------+
+  L3  |<--         -->|
+      +---------------+
+      |<-- cluster -->|
+      +---------------+
+      |<--   DSU   -->|
+      '---------------'
+
+system, I guess you would get (w/ Phantom SD and L2/L3 cache info in DT):
+
+CPU0 .. 3:
+
+MC	   SD_SHARE_PKG_RESOURCES
+DIE     no SD_SHARE_PKG_RESOURCES
+
+CPU 4...7:
+
+DIE     no SD_SHARE_PKG_RESOURCES
+
+I can't see how this would make any sense ...
+
+Reason is cpu_share_llc(). You don't check cache_level=0 and w/
+
+CPU0 .. 3:
+cache_topology[CPUX][0] == L2
+cache_topology[CPUX][1] == L3
+
+CPU4...7:
+cache_topology[CPUX][0] == L3
+
+there is, except for CPU0-1 and CPU2-3, no LLC match.
+
+[...]
