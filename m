@@ -2,243 +2,677 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A59DC352A7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D7ADC352A8
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240945AbiDGBaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
+        id S241785AbiDGBb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240533AbiDGBUE (ORCPT
+        with ESMTP id S239232AbiDGBTF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:20:04 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2120.outbound.protection.outlook.com [40.107.215.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30480186D8;
-        Wed,  6 Apr 2022 18:18:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ehZteNDXk23z9bdsVUGzvsGfFR9jLLHUuXNFL/KFI9WV1vuzVT3TREzxpAaKALaOKsnaCJ/BMBo7T31qdK+o3HB/IS5g7h8GXwrGMUvgzlw4XLcNpTcDudoFF3vBg+spUp3MzhxsUDmvRspmbgFL479RZpvCUoSOiHnsELjK6x0/fJGP0+dWywBoGu4asQoUyToncnqi0Hy2X3mZ/pc3DJSkBWM/JPG5sOSayLuKkppdCmaX/JUOR8Tqh9Jm5DT6sOIDJ+BifjJqIEFs5OOs5Sfhjrb2BDDt4nQBfVPS+49sKRVEE1GQIxbccMb4AQjavwYhu4KnJL4fLLL72HLnSQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Anl4BOgxOJcNkkwR9UNxcA7AJ3mvnQvkslP7Ixl0VUk=;
- b=gxHprgkA36CaRyHzG1ew7C16ktN91/f0mwuQZGUE9ayMIO8uKK8l1gbvTBCunGAed6j1RLNLR6sVowTshqqr7QnekxujZZGAaogquKknvJXLZlkZBbKa+2NgDXujogunPfOCpXJMD7HBAFmGDwP80O/6uDWyOhbOsNwpTwWq/VRrbduRlK9kq/P4XPdUkXTIpch0/wIg89j1d8SHtj0OR+z4KSz+xxJLa6w/Yv21eS4TZwqsA3eILoDpXVGsCsf13Wd15Pq/rzOEdpqo4WfDCt3DauYVyVkdC+ySj1pOQpOrhr42MhtxAxrcdUog1MNXkEu9RGJMB9TKyq7wRQgxQQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=quantatw.com; dmarc=pass action=none header.from=quantatw.com;
- dkim=pass header.d=quantatw.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=quantacorp.onmicrosoft.com; s=selector2-quantacorp-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Anl4BOgxOJcNkkwR9UNxcA7AJ3mvnQvkslP7Ixl0VUk=;
- b=GgKsuL2hccf4u8o8URCp0x9hRyqywFtOKiIPhW4tgDaFLQ4jtRJ0/4ykMw9C0oe0rY7AVAU5z85DiS+N9Y6qpDgrhcj2ika8SynOJwTBWgO8dFOLEqLOVgDZoB0ChtlLPU90/+FF0hc9Pozp1+ZRgJbzsFCWQ8qoN18f7Rz4nIY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=quantatw.com;
-Received: from SG2PR04MB3285.apcprd04.prod.outlook.com (2603:1096:4:6d::18) by
- TY2PR04MB3167.apcprd04.prod.outlook.com (2603:1096:404:a0::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5144.22; Thu, 7 Apr 2022 01:18:01 +0000
-Received: from SG2PR04MB3285.apcprd04.prod.outlook.com
- ([fe80::e94c:1300:a35a:4a1c]) by SG2PR04MB3285.apcprd04.prod.outlook.com
- ([fe80::e94c:1300:a35a:4a1c%2]) with mapi id 15.20.5102.035; Thu, 7 Apr 2022
- 01:18:01 +0000
-From:   Potin Lai <potin.lai@quantatw.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, davem@davemloft.net,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Patrick Williams <patrick@stwcx.xyz>,
-        Potin Lai <potin.lai@quantatw.com>
-Subject: [PATCH net-next v3 1/3] net: mdio: aspeed: move reg accessing part into separate functions
-Date:   Thu,  7 Apr 2022 09:17:36 +0800
-Message-Id: <20220407011738.7189-2-potin.lai@quantatw.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220407011738.7189-1-potin.lai@quantatw.com>
-References: <20220407011738.7189-1-potin.lai@quantatw.com>
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR02CA0143.apcprd02.prod.outlook.com
- (2603:1096:202:16::27) To SG2PR04MB3285.apcprd04.prod.outlook.com
- (2603:1096:4:6d::18)
+        Wed, 6 Apr 2022 21:19:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE67418597B;
+        Wed,  6 Apr 2022 18:14:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DEC061DA8;
+        Thu,  7 Apr 2022 01:14:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D377C385A6;
+        Thu,  7 Apr 2022 01:14:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649294050;
+        bh=5ZZFZ6VYANF5QqgYcEMwzmEb+HxhCqbdOGCib0cn/MM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=W7uXW3SdMZmI6Lty43QHViRp2qUmxH5omhzdYoSQsFI0cRMHR4+FdnIPzAUdABc+j
+         F3buyfGbs/MgH8IZHhBHNWOvFpjFP3Su3KCKjdHAepKPA1AmT92texHI0ADPruzUlS
+         dMXRTRq69+4nMywQ+08NRbFf5Jcn0lYnlOORqzFyUTI5e/nY2iObXzEPrwiakissPf
+         SFar50y0LQtSgTKkX4tK06xXM7aDQulfq80tyz3X3yRydiV43uSUtr2jDWobX67tN4
+         TWiSzIaP9KwZ+rzoJEXM6zMxhq1TqyYCP2H2kgkcYrm/TRpQyHPjwJkXxTc6SzszlI
+         q3jF0Rl7NxDtQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Ryusuke Konishi <konishi.ryusuke@gmail.com>,
+        syzbot+0d5b462a6f07447991b3@syzkaller.appspotmail.com,
+        syzbot+34ef28bb2aeb28724aa0@syzkaller.appspotmail.com,
+        Hao Sun <sunhao.th@gmail.com>,
+        David Hildenbrand <david@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux-nilfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 26/27] nilfs2: fix lockdep warnings in page operations for btree nodes
+Date:   Wed,  6 Apr 2022 21:12:56 -0400
+Message-Id: <20220407011257.114287-26-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407011257.114287-1-sashal@kernel.org>
+References: <20220407011257.114287-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9828f007-1f02-4232-e26c-08da1834754b
-X-MS-TrafficTypeDiagnostic: TY2PR04MB3167:EE_
-X-Microsoft-Antispam-PRVS: <TY2PR04MB3167FB99A2807D38E962ED318EE69@TY2PR04MB3167.apcprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: V13B3FpWga5bz3OE3CMgoHD/4NURKc+R1Qv7ieliJfVO6vtcTHfgY6GGnkHGgaFTKTTID8F9i6Uhkk63h1M3xQQDc+yW4SS6QTyyBqmojZclXmcL6/HWGcuzN+Nvuc9Ftl4wneb9x6Y6keZszb3S0SB7XQDNAuwv5EuSkTX5M4Kke0wbtSCBHliHDDM/UstbH/Cq0DadiLcLC7T39gVY/DN0EGPyQfxhMxuZXxLAV4MUuy7X26gJzrkV9FeRelpXINYIevSZw9UvK4dbcefJ7y/T3RipP54To7DgT/B48G49N0830+6i2BbJYzx3SF+q2NKNWb5XhQ7sxZM1335wO6Y4dR1vXhnLCOUAFmlzTa8FPbmikIpMmCc/sUbxEnXmFsj4IKcOp5t619qYvyNORb1pcvid5ZtkTnDgcqqV/Fk8c3qO/Hxhcb22BZp3oSisLvigJpx+wRJQThlIiIqxIpg5josgeEbMn4By0h4zyQ5XoE6cG0SuDrxT3QgUBNg+JKDDZH6DZcLimmuFPAPY9j0Ef6pwMUA+z602IVocvPrWniw7911qVZQrLdB6Wc1tqtUpAPiLUCcJI9CJnvE0arrG6ywaDJ3JmccmLP350Ej7od+WhoR/99OHhHrhXHWcJR661+tEkJ5gLh75cTqrHD9xCjaVYto80zZi0sasc8LxW3mQNmF+32pffB//iZsexHKC97hwk67DIIiruxGyfQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR04MB3285.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(7416002)(36756003)(316002)(110136005)(52116002)(2906002)(54906003)(6666004)(107886003)(8936002)(44832011)(2616005)(5660300002)(6512007)(38350700002)(38100700002)(4326008)(66556008)(86362001)(186003)(26005)(6486002)(66946007)(508600001)(83380400001)(1076003)(8676002)(66476007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wqfAqd/O8NLPaTy0Un6F9+BqgLpH6F8K/lAIe1thum4ihFQduS2RPo45oB11?=
- =?us-ascii?Q?j7BM8gWbHEz4lS7/g7UuOe/nDpxB3pqAFo2gWS2Jaqa1rbde+/KqLHrsQAXE?=
- =?us-ascii?Q?1Eas/NfYI8gw88TPSv2kCR4j5at+jHtYCGQGYUghYxH/hX2TcKAbYVEoc9y5?=
- =?us-ascii?Q?IT6EDktG+EK8x9ncc8wCKf5dqGnFlOCFyLY428KdTTKPh+z7iDF3vgEQxtXr?=
- =?us-ascii?Q?SBsFDMWFC3mZcAz5ZONYUu2iJdKVyQvvSDJIO+4eOmeRTh/9l0DClDuf11g5?=
- =?us-ascii?Q?1kRoJb4gS6KBojaAn7y2n2UFAaEspKMOjzXPNxI7j5Oc5XMINu8vAhPLxo+a?=
- =?us-ascii?Q?UFDjxn3GQMuaIwGzIbJTa7S036H/45pyRSs7AnWt3yZU607QIKxFyW8XAlZT?=
- =?us-ascii?Q?cba7CUIuR4p7rXbWwSnvAnr2VU4l1fCRUIg22/WBBMINtb5aUJrn5HZst1yk?=
- =?us-ascii?Q?aZzahfLwPZ926kNib+koGnubdxoDUGX0oIfMuHGBJGiadIWE5lU3d9avQ6HI?=
- =?us-ascii?Q?sLA97qEZ2wOwY98/uuVSm0rLVnCgvQJfrKdS2rSA9CmSKr1HF4hxwbfMy4F3?=
- =?us-ascii?Q?X+rQtb7QlO1Q4jd7Jb6hJng5ok3Elu+Uo8tXP5/uU0w+hrNVZ/WyitF13LIa?=
- =?us-ascii?Q?798vzI6GnrjbZYUSyNNXQBOfr+5O/RQAwcekLDaxx0fq7Y4RP9YUVZorD3p7?=
- =?us-ascii?Q?GhI/Lq56xmTxuPl2LR8uvS0DXR6IL0lHVVd7nfE0130G7pRW5r2xm7PQVI/9?=
- =?us-ascii?Q?+9/S1R3RchsTq8VXg9UWZQ24upWo1YereVvn44VQ420NQtzDyNkt0Msmohxr?=
- =?us-ascii?Q?GJCh6BytPqvHO5eMj31AinFwMb1VHCUeAyytxmUW4THx+t93p+Z+xNFSGSDn?=
- =?us-ascii?Q?qeO0HaOkupcnplg7WT33LR+d3jltFOvNhf7b7J67khD3awsOi/2iPBox/y42?=
- =?us-ascii?Q?8t1O7t7dRg1b0b/j88rtglFvPT2/yPc9OskIoYdM2A7y20OGwWbBV+ppUoLq?=
- =?us-ascii?Q?mxLz6lpm+sC1Ca4bp6Vap7UPGpI/cufvnx20l0zWa1vBYizRUdQaLguTmGjM?=
- =?us-ascii?Q?74WM0z9t4wb4fPM9a/p6H6aWIqJnzEklsQKx8aYI2wxdvSmq7jcFBAbLYsyc?=
- =?us-ascii?Q?m4l9t51rLEqjwCXFReGvROA/a4tqM1eK1sD3433OVTMBhxAzXTuGynnCVndz?=
- =?us-ascii?Q?r3ChY8U6ne7sIPlULj8ANMTylU5JhV3iD/wpUpyNhn/QZCOHSwWFlrr2EyaL?=
- =?us-ascii?Q?BC5gyg+KVxg30q+iEqUsvyGrAmDi16WtKKt0Qf+WqbO2HtQoId0g/wVDBfCX?=
- =?us-ascii?Q?la6GSwggdTd+pg02UyVxMXhiQvEBruPDxucfD2Jn94OKhFEosxdnoRzgAlNZ?=
- =?us-ascii?Q?6fvKCmT+3O8JYs6ewP6L9mFwmE34te69HnlFpaGx6PUfIk+bwDtQQ/0ca+qC?=
- =?us-ascii?Q?DaFLsDXlu11TaIUWHvM4rYYd3O0sGx7xrvUjyzIIIEOBt7I2NgmtwhGjRGlq?=
- =?us-ascii?Q?QE3w1OvZIJPk1voxJf0sSSFhjqFfdd1NkUQwZ0PUhtPGip5dZenCkR3reqKY?=
- =?us-ascii?Q?zOGbrlkJbtfuQCch/sH1cH4BI/SUhcN3f31+trK4A7nJ4355SqN7xlJ/v+kG?=
- =?us-ascii?Q?Ofi61LWUSNED9zIKyqO2TPMLxctCjCi/9vaVXsge09KBjhfLIllRDn6qe78s?=
- =?us-ascii?Q?4XiJkCUHHe+EFAmknwgYgMNvJcazPFfoRo1/rDgaxahVEKY85NSoS3+KGUDm?=
- =?us-ascii?Q?0aHiLkkRYiHJxkZH2GwqLz0xCMEps3M=3D?=
-X-OriginatorOrg: quantatw.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9828f007-1f02-4232-e26c-08da1834754b
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR04MB3285.apcprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2022 01:18:01.3963
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 179b0327-07fc-4973-ac73-8de7313561b2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /ijN2kYSJlh4kd0jz2iN625nwOqjIcGSFH4jH5dhav04fZVA89nyTYlSUSQU4xu6/No8mRKcSv++gilNC8k/Rg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR04MB3167
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add aspeed_mdio_op() and aseed_mdio_get_data() for register accessing.
+From: Ryusuke Konishi <konishi.ryusuke@gmail.com>
 
-aspeed_mdio_op() handles operations, write command to control register,
-then check and wait operations is finished (bit 31 is cleared).
+[ Upstream commit e897be17a441fa637cd166fc3de1445131e57692 ]
 
-aseed_mdio_get_data() fetchs the result value of operation from data
-register.
+Patch series "nilfs2 lockdep warning fixes".
 
-Signed-off-by: Potin Lai <potin.lai@quantatw.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+The first two are to resolve the lockdep warning issue, and the last one
+is the accompanying cleanup and low priority.
+
+Based on your comment, this series solves the issue by separating inode
+object as needed.  Since I was worried about the impact of the object
+composition changes, I tested the series carefully not to cause
+regressions especially for delicate functions such like disk space
+reclamation and snapshots.
+
+This patch (of 3):
+
+If CONFIG_LOCKDEP is enabled, nilfs2 hits lockdep warnings at
+inode_to_wb() during page/folio operations for btree nodes:
+
+  WARNING: CPU: 0 PID: 6575 at include/linux/backing-dev.h:269 inode_to_wb include/linux/backing-dev.h:269 [inline]
+  WARNING: CPU: 0 PID: 6575 at include/linux/backing-dev.h:269 folio_account_dirtied mm/page-writeback.c:2460 [inline]
+  WARNING: CPU: 0 PID: 6575 at include/linux/backing-dev.h:269 __folio_mark_dirty+0xa7c/0xe30 mm/page-writeback.c:2509
+  Modules linked in:
+  ...
+  RIP: 0010:inode_to_wb include/linux/backing-dev.h:269 [inline]
+  RIP: 0010:folio_account_dirtied mm/page-writeback.c:2460 [inline]
+  RIP: 0010:__folio_mark_dirty+0xa7c/0xe30 mm/page-writeback.c:2509
+  ...
+  Call Trace:
+    __set_page_dirty include/linux/pagemap.h:834 [inline]
+    mark_buffer_dirty+0x4e6/0x650 fs/buffer.c:1145
+    nilfs_btree_propagate_p fs/nilfs2/btree.c:1889 [inline]
+    nilfs_btree_propagate+0x4ae/0xea0 fs/nilfs2/btree.c:2085
+    nilfs_bmap_propagate+0x73/0x170 fs/nilfs2/bmap.c:337
+    nilfs_collect_dat_data+0x45/0xd0 fs/nilfs2/segment.c:625
+    nilfs_segctor_apply_buffers+0x14a/0x470 fs/nilfs2/segment.c:1009
+    nilfs_segctor_scan_file+0x47a/0x700 fs/nilfs2/segment.c:1048
+    nilfs_segctor_collect_blocks fs/nilfs2/segment.c:1224 [inline]
+    nilfs_segctor_collect fs/nilfs2/segment.c:1494 [inline]
+    nilfs_segctor_do_construct+0x14f3/0x6c60 fs/nilfs2/segment.c:2036
+    nilfs_segctor_construct+0x7a7/0xb30 fs/nilfs2/segment.c:2372
+    nilfs_segctor_thread_construct fs/nilfs2/segment.c:2480 [inline]
+    nilfs_segctor_thread+0x3c3/0xf90 fs/nilfs2/segment.c:2563
+    kthread+0x405/0x4f0 kernel/kthread.c:327
+    ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+This is because nilfs2 uses two page caches for each inode and
+inode->i_mapping never points to one of them, the btree node cache.
+
+This causes inode_to_wb(inode) to refer to a different page cache than
+the caller page/folio operations such like __folio_start_writeback(),
+__folio_end_writeback(), or __folio_mark_dirty() acquired the lock.
+
+This patch resolves the issue by allocating and using an additional
+inode to hold the page cache of btree nodes.  The inode is attached
+one-to-one to the traditional nilfs2 inode if it requires a block
+mapping with b-tree.  This setup change is in memory only and does not
+affect the disk format.
+
+Link: https://lkml.kernel.org/r/1647867427-30498-1-git-send-email-konishi.ryusuke@gmail.com
+Link: https://lkml.kernel.org/r/1647867427-30498-2-git-send-email-konishi.ryusuke@gmail.com
+Link: https://lore.kernel.org/r/YXrYvIo8YRnAOJCj@casper.infradead.org
+Link: https://lore.kernel.org/r/9a20b33d-b38f-b4a2-4742-c1eb5b8e4d6c@redhat.com
+Signed-off-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Reported-by: syzbot+0d5b462a6f07447991b3@syzkaller.appspotmail.com
+Reported-by: syzbot+34ef28bb2aeb28724aa0@syzkaller.appspotmail.com
+Reported-by: Hao Sun <sunhao.th@gmail.com>
+Reported-by: David Hildenbrand <david@redhat.com>
+Tested-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/mdio/mdio-aspeed.c | 70 ++++++++++++++++++----------------
- 1 file changed, 38 insertions(+), 32 deletions(-)
+ fs/nilfs2/btnode.c  |  23 ++++++++--
+ fs/nilfs2/btnode.h  |   1 +
+ fs/nilfs2/btree.c   |  27 ++++++++----
+ fs/nilfs2/gcinode.c |   7 +--
+ fs/nilfs2/inode.c   | 104 ++++++++++++++++++++++++++++++++++++++------
+ fs/nilfs2/mdt.c     |   7 +--
+ fs/nilfs2/nilfs.h   |  14 +++---
+ fs/nilfs2/page.c    |   7 ++-
+ fs/nilfs2/segment.c |   9 ++--
+ fs/nilfs2/super.c   |   5 +--
+ 10 files changed, 154 insertions(+), 50 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
-index e2273588c75b..f22be2f069e9 100644
---- a/drivers/net/mdio/mdio-aspeed.c
-+++ b/drivers/net/mdio/mdio-aspeed.c
-@@ -39,34 +39,35 @@ struct aspeed_mdio {
- 	void __iomem *base;
+diff --git a/fs/nilfs2/btnode.c b/fs/nilfs2/btnode.c
+index 4391fd3abd8f..e00e184b1261 100644
+--- a/fs/nilfs2/btnode.c
++++ b/fs/nilfs2/btnode.c
+@@ -20,6 +20,23 @@
+ #include "page.h"
+ #include "btnode.h"
+ 
++
++/**
++ * nilfs_init_btnc_inode - initialize B-tree node cache inode
++ * @btnc_inode: inode to be initialized
++ *
++ * nilfs_init_btnc_inode() sets up an inode for B-tree node cache.
++ */
++void nilfs_init_btnc_inode(struct inode *btnc_inode)
++{
++	struct nilfs_inode_info *ii = NILFS_I(btnc_inode);
++
++	btnc_inode->i_mode = S_IFREG;
++	ii->i_flags = 0;
++	memset(&ii->i_bmap_data, 0, sizeof(struct nilfs_bmap));
++	mapping_set_gfp_mask(btnc_inode->i_mapping, GFP_NOFS);
++}
++
+ void nilfs_btnode_cache_clear(struct address_space *btnc)
+ {
+ 	invalidate_mapping_pages(btnc, 0, -1);
+@@ -29,7 +46,7 @@ void nilfs_btnode_cache_clear(struct address_space *btnc)
+ struct buffer_head *
+ nilfs_btnode_create_block(struct address_space *btnc, __u64 blocknr)
+ {
+-	struct inode *inode = NILFS_BTNC_I(btnc);
++	struct inode *inode = btnc->host;
+ 	struct buffer_head *bh;
+ 
+ 	bh = nilfs_grab_buffer(inode, btnc, blocknr, BIT(BH_NILFS_Node));
+@@ -57,7 +74,7 @@ int nilfs_btnode_submit_block(struct address_space *btnc, __u64 blocknr,
+ 			      struct buffer_head **pbh, sector_t *submit_ptr)
+ {
+ 	struct buffer_head *bh;
+-	struct inode *inode = NILFS_BTNC_I(btnc);
++	struct inode *inode = btnc->host;
+ 	struct page *page;
+ 	int err;
+ 
+@@ -157,7 +174,7 @@ int nilfs_btnode_prepare_change_key(struct address_space *btnc,
+ 				    struct nilfs_btnode_chkey_ctxt *ctxt)
+ {
+ 	struct buffer_head *obh, *nbh;
+-	struct inode *inode = NILFS_BTNC_I(btnc);
++	struct inode *inode = btnc->host;
+ 	__u64 oldkey = ctxt->oldkey, newkey = ctxt->newkey;
+ 	int err;
+ 
+diff --git a/fs/nilfs2/btnode.h b/fs/nilfs2/btnode.h
+index 0f88dbc9bcb3..05ab64d354dc 100644
+--- a/fs/nilfs2/btnode.h
++++ b/fs/nilfs2/btnode.h
+@@ -30,6 +30,7 @@ struct nilfs_btnode_chkey_ctxt {
+ 	struct buffer_head *newbh;
  };
  
--static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
-+static int aspeed_mdio_op(struct mii_bus *bus, u8 st, u8 op, u8 phyad, u8 regad,
-+			  u16 data)
++void nilfs_init_btnc_inode(struct inode *btnc_inode);
+ void nilfs_btnode_cache_clear(struct address_space *);
+ struct buffer_head *nilfs_btnode_create_block(struct address_space *btnc,
+ 					      __u64 blocknr);
+diff --git a/fs/nilfs2/btree.c b/fs/nilfs2/btree.c
+index ab9ec073330f..2301b57ca17f 100644
+--- a/fs/nilfs2/btree.c
++++ b/fs/nilfs2/btree.c
+@@ -58,7 +58,8 @@ static void nilfs_btree_free_path(struct nilfs_btree_path *path)
+ static int nilfs_btree_get_new_block(const struct nilfs_bmap *btree,
+ 				     __u64 ptr, struct buffer_head **bhp)
  {
- 	struct aspeed_mdio *ctx = bus->priv;
- 	u32 ctrl;
--	u32 data;
--	int rc;
+-	struct address_space *btnc = &NILFS_BMAP_I(btree)->i_btnode_cache;
++	struct inode *btnc_inode = NILFS_BMAP_I(btree)->i_assoc_inode;
++	struct address_space *btnc = btnc_inode->i_mapping;
+ 	struct buffer_head *bh;
  
--	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d\n", __func__, addr,
--		regnum);
+ 	bh = nilfs_btnode_create_block(btnc, ptr);
+@@ -470,7 +471,8 @@ static int __nilfs_btree_get_block(const struct nilfs_bmap *btree, __u64 ptr,
+ 				   struct buffer_head **bhp,
+ 				   const struct nilfs_btree_readahead_info *ra)
+ {
+-	struct address_space *btnc = &NILFS_BMAP_I(btree)->i_btnode_cache;
++	struct inode *btnc_inode = NILFS_BMAP_I(btree)->i_assoc_inode;
++	struct address_space *btnc = btnc_inode->i_mapping;
+ 	struct buffer_head *bh, *ra_bh;
+ 	sector_t submit_ptr = 0;
+ 	int ret;
+@@ -1741,6 +1743,10 @@ nilfs_btree_prepare_convert_and_insert(struct nilfs_bmap *btree, __u64 key,
+ 		dat = nilfs_bmap_get_dat(btree);
+ 	}
+ 
++	ret = nilfs_attach_btree_node_cache(&NILFS_BMAP_I(btree)->vfs_inode);
++	if (ret < 0)
++		return ret;
++
+ 	ret = nilfs_bmap_prepare_alloc_ptr(btree, dreq, dat);
+ 	if (ret < 0)
+ 		return ret;
+@@ -1913,7 +1919,7 @@ static int nilfs_btree_prepare_update_v(struct nilfs_bmap *btree,
+ 		path[level].bp_ctxt.newkey = path[level].bp_newreq.bpr_ptr;
+ 		path[level].bp_ctxt.bh = path[level].bp_bh;
+ 		ret = nilfs_btnode_prepare_change_key(
+-			&NILFS_BMAP_I(btree)->i_btnode_cache,
++			NILFS_BMAP_I(btree)->i_assoc_inode->i_mapping,
+ 			&path[level].bp_ctxt);
+ 		if (ret < 0) {
+ 			nilfs_dat_abort_update(dat,
+@@ -1939,7 +1945,7 @@ static void nilfs_btree_commit_update_v(struct nilfs_bmap *btree,
+ 
+ 	if (buffer_nilfs_node(path[level].bp_bh)) {
+ 		nilfs_btnode_commit_change_key(
+-			&NILFS_BMAP_I(btree)->i_btnode_cache,
++			NILFS_BMAP_I(btree)->i_assoc_inode->i_mapping,
+ 			&path[level].bp_ctxt);
+ 		path[level].bp_bh = path[level].bp_ctxt.bh;
+ 	}
+@@ -1958,7 +1964,7 @@ static void nilfs_btree_abort_update_v(struct nilfs_bmap *btree,
+ 			       &path[level].bp_newreq.bpr_req);
+ 	if (buffer_nilfs_node(path[level].bp_bh))
+ 		nilfs_btnode_abort_change_key(
+-			&NILFS_BMAP_I(btree)->i_btnode_cache,
++			NILFS_BMAP_I(btree)->i_assoc_inode->i_mapping,
+ 			&path[level].bp_ctxt);
+ }
+ 
+@@ -2134,7 +2140,8 @@ static void nilfs_btree_add_dirty_buffer(struct nilfs_bmap *btree,
+ static void nilfs_btree_lookup_dirty_buffers(struct nilfs_bmap *btree,
+ 					     struct list_head *listp)
+ {
+-	struct address_space *btcache = &NILFS_BMAP_I(btree)->i_btnode_cache;
++	struct inode *btnc_inode = NILFS_BMAP_I(btree)->i_assoc_inode;
++	struct address_space *btcache = btnc_inode->i_mapping;
+ 	struct list_head lists[NILFS_BTREE_LEVEL_MAX];
+ 	struct pagevec pvec;
+ 	struct buffer_head *bh, *head;
+@@ -2188,12 +2195,12 @@ static int nilfs_btree_assign_p(struct nilfs_bmap *btree,
+ 		path[level].bp_ctxt.newkey = blocknr;
+ 		path[level].bp_ctxt.bh = *bh;
+ 		ret = nilfs_btnode_prepare_change_key(
+-			&NILFS_BMAP_I(btree)->i_btnode_cache,
++			NILFS_BMAP_I(btree)->i_assoc_inode->i_mapping,
+ 			&path[level].bp_ctxt);
+ 		if (ret < 0)
+ 			return ret;
+ 		nilfs_btnode_commit_change_key(
+-			&NILFS_BMAP_I(btree)->i_btnode_cache,
++			NILFS_BMAP_I(btree)->i_assoc_inode->i_mapping,
+ 			&path[level].bp_ctxt);
+ 		*bh = path[level].bp_ctxt.bh;
+ 	}
+@@ -2398,6 +2405,10 @@ int nilfs_btree_init(struct nilfs_bmap *bmap)
+ 
+ 	if (nilfs_btree_root_broken(nilfs_btree_get_root(bmap), bmap->b_inode))
+ 		ret = -EIO;
++	else
++		ret = nilfs_attach_btree_node_cache(
++			&NILFS_BMAP_I(bmap)->vfs_inode);
++
+ 	return ret;
+ }
+ 
+diff --git a/fs/nilfs2/gcinode.c b/fs/nilfs2/gcinode.c
+index 448320496856..aadea660c66c 100644
+--- a/fs/nilfs2/gcinode.c
++++ b/fs/nilfs2/gcinode.c
+@@ -126,9 +126,10 @@ int nilfs_gccache_submit_read_data(struct inode *inode, sector_t blkoff,
+ int nilfs_gccache_submit_read_node(struct inode *inode, sector_t pbn,
+ 				   __u64 vbn, struct buffer_head **out_bh)
+ {
++	struct inode *btnc_inode = NILFS_I(inode)->i_assoc_inode;
+ 	int ret;
+ 
+-	ret = nilfs_btnode_submit_block(&NILFS_I(inode)->i_btnode_cache,
++	ret = nilfs_btnode_submit_block(btnc_inode->i_mapping,
+ 					vbn ? : pbn, pbn, REQ_OP_READ, 0,
+ 					out_bh, &pbn);
+ 	if (ret == -EEXIST) /* internal code (cache hit) */
+@@ -170,7 +171,7 @@ int nilfs_init_gcinode(struct inode *inode)
+ 	ii->i_flags = 0;
+ 	nilfs_bmap_init_gc(ii->i_bmap);
+ 
+-	return 0;
++	return nilfs_attach_btree_node_cache(inode);
+ }
+ 
+ /**
+@@ -185,7 +186,7 @@ void nilfs_remove_all_gcinodes(struct the_nilfs *nilfs)
+ 		ii = list_first_entry(head, struct nilfs_inode_info, i_dirty);
+ 		list_del_init(&ii->i_dirty);
+ 		truncate_inode_pages(&ii->vfs_inode.i_data, 0);
+-		nilfs_btnode_cache_clear(&ii->i_btnode_cache);
++		nilfs_btnode_cache_clear(ii->i_assoc_inode->i_mapping);
+ 		iput(&ii->vfs_inode);
+ 	}
+ }
+diff --git a/fs/nilfs2/inode.c b/fs/nilfs2/inode.c
+index 2e8eb263cf0f..7b2bc4173313 100644
+--- a/fs/nilfs2/inode.c
++++ b/fs/nilfs2/inode.c
+@@ -29,12 +29,14 @@
+  * @cno: checkpoint number
+  * @root: pointer on NILFS root object (mounted checkpoint)
+  * @for_gc: inode for GC flag
++ * @for_btnc: inode for B-tree node cache flag
+  */
+ struct nilfs_iget_args {
+ 	u64 ino;
+ 	__u64 cno;
+ 	struct nilfs_root *root;
+-	int for_gc;
++	bool for_gc;
++	bool for_btnc;
+ };
+ 
+ static int nilfs_iget_test(struct inode *inode, void *opaque);
+@@ -314,7 +316,8 @@ static int nilfs_insert_inode_locked(struct inode *inode,
+ 				     unsigned long ino)
+ {
+ 	struct nilfs_iget_args args = {
+-		.ino = ino, .root = root, .cno = 0, .for_gc = 0
++		.ino = ino, .root = root, .cno = 0, .for_gc = false,
++		.for_btnc = false
+ 	};
+ 
+ 	return insert_inode_locked4(inode, ino, nilfs_iget_test, &args);
+@@ -527,6 +530,13 @@ static int nilfs_iget_test(struct inode *inode, void *opaque)
+ 		return 0;
+ 
+ 	ii = NILFS_I(inode);
++	if (test_bit(NILFS_I_BTNC, &ii->i_state)) {
++		if (!args->for_btnc)
++			return 0;
++	} else if (args->for_btnc) {
++		return 0;
++	}
++
+ 	if (!test_bit(NILFS_I_GCINODE, &ii->i_state))
+ 		return !args->for_gc;
+ 
+@@ -538,15 +548,15 @@ static int nilfs_iget_set(struct inode *inode, void *opaque)
+ 	struct nilfs_iget_args *args = opaque;
+ 
+ 	inode->i_ino = args->ino;
+-	if (args->for_gc) {
++	NILFS_I(inode)->i_cno = args->cno;
++	NILFS_I(inode)->i_root = args->root;
++	if (args->root && args->ino == NILFS_ROOT_INO)
++		nilfs_get_root(args->root);
++
++	if (args->for_gc)
+ 		NILFS_I(inode)->i_state = BIT(NILFS_I_GCINODE);
+-		NILFS_I(inode)->i_cno = args->cno;
+-		NILFS_I(inode)->i_root = NULL;
+-	} else {
+-		if (args->root && args->ino == NILFS_ROOT_INO)
+-			nilfs_get_root(args->root);
+-		NILFS_I(inode)->i_root = args->root;
+-	}
++	if (args->for_btnc)
++		NILFS_I(inode)->i_state |= BIT(NILFS_I_BTNC);
+ 	return 0;
+ }
+ 
+@@ -554,7 +564,8 @@ struct inode *nilfs_ilookup(struct super_block *sb, struct nilfs_root *root,
+ 			    unsigned long ino)
+ {
+ 	struct nilfs_iget_args args = {
+-		.ino = ino, .root = root, .cno = 0, .for_gc = 0
++		.ino = ino, .root = root, .cno = 0, .for_gc = false,
++		.for_btnc = false
+ 	};
+ 
+ 	return ilookup5(sb, ino, nilfs_iget_test, &args);
+@@ -564,7 +575,8 @@ struct inode *nilfs_iget_locked(struct super_block *sb, struct nilfs_root *root,
+ 				unsigned long ino)
+ {
+ 	struct nilfs_iget_args args = {
+-		.ino = ino, .root = root, .cno = 0, .for_gc = 0
++		.ino = ino, .root = root, .cno = 0, .for_gc = false,
++		.for_btnc = false
+ 	};
+ 
+ 	return iget5_locked(sb, ino, nilfs_iget_test, nilfs_iget_set, &args);
+@@ -595,7 +607,8 @@ struct inode *nilfs_iget_for_gc(struct super_block *sb, unsigned long ino,
+ 				__u64 cno)
+ {
+ 	struct nilfs_iget_args args = {
+-		.ino = ino, .root = NULL, .cno = cno, .for_gc = 1
++		.ino = ino, .root = NULL, .cno = cno, .for_gc = true,
++		.for_btnc = false
+ 	};
+ 	struct inode *inode;
+ 	int err;
+@@ -615,6 +628,68 @@ struct inode *nilfs_iget_for_gc(struct super_block *sb, unsigned long ino,
+ 	return inode;
+ }
+ 
++/**
++ * nilfs_attach_btree_node_cache - attach a B-tree node cache to the inode
++ * @inode: inode object
++ *
++ * nilfs_attach_btree_node_cache() attaches a B-tree node cache to @inode,
++ * or does nothing if the inode already has it.  This function allocates
++ * an additional inode to maintain page cache of B-tree nodes one-on-one.
++ *
++ * Return Value: On success, 0 is returned. On errors, one of the following
++ * negative error code is returned.
++ *
++ * %-ENOMEM - Insufficient memory available.
++ */
++int nilfs_attach_btree_node_cache(struct inode *inode)
++{
++	struct nilfs_inode_info *ii = NILFS_I(inode);
++	struct inode *btnc_inode;
++	struct nilfs_iget_args args;
++
++	if (ii->i_assoc_inode)
++		return 0;
++
++	args.ino = inode->i_ino;
++	args.root = ii->i_root;
++	args.cno = ii->i_cno;
++	args.for_gc = test_bit(NILFS_I_GCINODE, &ii->i_state) != 0;
++	args.for_btnc = true;
++
++	btnc_inode = iget5_locked(inode->i_sb, inode->i_ino, nilfs_iget_test,
++				  nilfs_iget_set, &args);
++	if (unlikely(!btnc_inode))
++		return -ENOMEM;
++	if (btnc_inode->i_state & I_NEW) {
++		nilfs_init_btnc_inode(btnc_inode);
++		unlock_new_inode(btnc_inode);
++	}
++	NILFS_I(btnc_inode)->i_assoc_inode = inode;
++	NILFS_I(btnc_inode)->i_bmap = ii->i_bmap;
++	ii->i_assoc_inode = btnc_inode;
++
++	return 0;
++}
++
++/**
++ * nilfs_detach_btree_node_cache - detach the B-tree node cache from the inode
++ * @inode: inode object
++ *
++ * nilfs_detach_btree_node_cache() detaches the B-tree node cache and its
++ * holder inode bound to @inode, or does nothing if @inode doesn't have it.
++ */
++void nilfs_detach_btree_node_cache(struct inode *inode)
++{
++	struct nilfs_inode_info *ii = NILFS_I(inode);
++	struct inode *btnc_inode = ii->i_assoc_inode;
++
++	if (btnc_inode) {
++		NILFS_I(btnc_inode)->i_assoc_inode = NULL;
++		ii->i_assoc_inode = NULL;
++		iput(btnc_inode);
++	}
++}
++
+ void nilfs_write_inode_common(struct inode *inode,
+ 			      struct nilfs_inode *raw_inode, int has_bmap)
+ {
+@@ -762,7 +837,8 @@ static void nilfs_clear_inode(struct inode *inode)
+ 	if (test_bit(NILFS_I_BMAP, &ii->i_state))
+ 		nilfs_bmap_clear(ii->i_bmap);
+ 
+-	nilfs_btnode_cache_clear(&ii->i_btnode_cache);
++	if (!test_bit(NILFS_I_BTNC, &ii->i_state))
++		nilfs_detach_btree_node_cache(inode);
+ 
+ 	if (ii->i_root && inode->i_ino == NILFS_ROOT_INO)
+ 		nilfs_put_root(ii->i_root);
+diff --git a/fs/nilfs2/mdt.c b/fs/nilfs2/mdt.c
+index 97769fe4d588..21acd2d4b4d4 100644
+--- a/fs/nilfs2/mdt.c
++++ b/fs/nilfs2/mdt.c
+@@ -532,7 +532,7 @@ int nilfs_mdt_save_to_shadow_map(struct inode *inode)
+ 		goto out;
+ 
+ 	ret = nilfs_copy_dirty_pages(&shadow->frozen_btnodes,
+-				     &ii->i_btnode_cache);
++				     ii->i_assoc_inode->i_mapping);
+ 	if (ret)
+ 		goto out;
+ 
+@@ -623,8 +623,9 @@ void nilfs_mdt_restore_from_shadow_map(struct inode *inode)
+ 	nilfs_clear_dirty_pages(inode->i_mapping, true);
+ 	nilfs_copy_back_pages(inode->i_mapping, &shadow->frozen_data);
+ 
+-	nilfs_clear_dirty_pages(&ii->i_btnode_cache, true);
+-	nilfs_copy_back_pages(&ii->i_btnode_cache, &shadow->frozen_btnodes);
++	nilfs_clear_dirty_pages(ii->i_assoc_inode->i_mapping, true);
++	nilfs_copy_back_pages(ii->i_assoc_inode->i_mapping,
++			      &shadow->frozen_btnodes);
+ 
+ 	nilfs_bmap_restore(ii->i_bmap, &shadow->bmap_store);
+ 
+diff --git a/fs/nilfs2/nilfs.h b/fs/nilfs2/nilfs.h
+index 60b21b6eeac0..6c5148de84ff 100644
+--- a/fs/nilfs2/nilfs.h
++++ b/fs/nilfs2/nilfs.h
+@@ -28,7 +28,7 @@
+  * @i_xattr: <TODO>
+  * @i_dir_start_lookup: page index of last successful search
+  * @i_cno: checkpoint number for GC inode
+- * @i_btnode_cache: cached pages of b-tree nodes
++ * @i_assoc_inode: associated inode (B-tree node cache holder or back pointer)
+  * @i_dirty: list for connecting dirty files
+  * @xattr_sem: semaphore for extended attributes processing
+  * @i_bh: buffer contains disk inode
+@@ -43,7 +43,7 @@ struct nilfs_inode_info {
+ 	__u64 i_xattr;	/* sector_t ??? */
+ 	__u32 i_dir_start_lookup;
+ 	__u64 i_cno;		/* check point number for GC inode */
+-	struct address_space i_btnode_cache;
++	struct inode *i_assoc_inode;
+ 	struct list_head i_dirty;	/* List for connecting dirty files */
+ 
+ #ifdef CONFIG_NILFS_XATTR
+@@ -75,13 +75,6 @@ NILFS_BMAP_I(const struct nilfs_bmap *bmap)
+ 	return container_of(bmap, struct nilfs_inode_info, i_bmap_data);
+ }
+ 
+-static inline struct inode *NILFS_BTNC_I(struct address_space *btnc)
+-{
+-	struct nilfs_inode_info *ii =
+-		container_of(btnc, struct nilfs_inode_info, i_btnode_cache);
+-	return &ii->vfs_inode;
+-}
 -
--	/* Just clause 22 for the moment */
--	if (regnum & MII_ADDR_C45)
--		return -EOPNOTSUPP;
-+	dev_dbg(&bus->dev, "%s: st: %u op: %u, phyad: %u, regad: %u, data: %u\n",
-+		__func__, st, op, phyad, regad, data);
+ /*
+  * Dynamic state flags of NILFS on-memory inode (i_state)
+  */
+@@ -98,6 +91,7 @@ enum {
+ 	NILFS_I_INODE_SYNC,		/* dsync is not allowed for inode */
+ 	NILFS_I_BMAP,			/* has bmap and btnode_cache */
+ 	NILFS_I_GCINODE,		/* inode for GC, on memory only */
++	NILFS_I_BTNC,			/* inode for btree node cache */
+ };
  
- 	ctrl = ASPEED_MDIO_CTRL_FIRE
--		| FIELD_PREP(ASPEED_MDIO_CTRL_ST, ASPEED_MDIO_CTRL_ST_C22)
--		| FIELD_PREP(ASPEED_MDIO_CTRL_OP, MDIO_C22_OP_READ)
--		| FIELD_PREP(ASPEED_MDIO_CTRL_PHYAD, addr)
--		| FIELD_PREP(ASPEED_MDIO_CTRL_REGAD, regnum);
-+		| FIELD_PREP(ASPEED_MDIO_CTRL_ST, st)
-+		| FIELD_PREP(ASPEED_MDIO_CTRL_OP, op)
-+		| FIELD_PREP(ASPEED_MDIO_CTRL_PHYAD, phyad)
-+		| FIELD_PREP(ASPEED_MDIO_CTRL_REGAD, regad)
-+		| FIELD_PREP(ASPEED_MDIO_DATA_MIIRDATA, data);
- 
- 	iowrite32(ctrl, ctx->base + ASPEED_MDIO_CTRL);
- 
--	rc = readl_poll_timeout(ctx->base + ASPEED_MDIO_CTRL, ctrl,
-+	return readl_poll_timeout(ctx->base + ASPEED_MDIO_CTRL, ctrl,
- 				!(ctrl & ASPEED_MDIO_CTRL_FIRE),
- 				ASPEED_MDIO_INTERVAL_US,
- 				ASPEED_MDIO_TIMEOUT_US);
--	if (rc < 0)
--		return rc;
-+}
-+
-+static int aspeed_mdio_get_data(struct mii_bus *bus)
-+{
-+	struct aspeed_mdio *ctx = bus->priv;
-+	int rc;
-+	u32 data;
- 
- 	rc = readl_poll_timeout(ctx->base + ASPEED_MDIO_DATA, data,
- 				data & ASPEED_MDIO_DATA_IDLE,
-@@ -78,31 +79,36 @@ static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
- 	return FIELD_GET(ASPEED_MDIO_DATA_MIIRDATA, data);
- }
- 
--static int aspeed_mdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
-+static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
+ /*
+@@ -267,6 +261,8 @@ struct inode *nilfs_iget(struct super_block *sb, struct nilfs_root *root,
+ 			 unsigned long ino);
+ extern struct inode *nilfs_iget_for_gc(struct super_block *sb,
+ 				       unsigned long ino, __u64 cno);
++int nilfs_attach_btree_node_cache(struct inode *inode);
++void nilfs_detach_btree_node_cache(struct inode *inode);
+ extern void nilfs_update_inode(struct inode *, struct buffer_head *, int);
+ extern void nilfs_truncate(struct inode *);
+ extern void nilfs_evict_inode(struct inode *);
+diff --git a/fs/nilfs2/page.c b/fs/nilfs2/page.c
+index 171fb5cd427f..d1a148f0cae3 100644
+--- a/fs/nilfs2/page.c
++++ b/fs/nilfs2/page.c
+@@ -448,10 +448,9 @@ void nilfs_mapping_init(struct address_space *mapping, struct inode *inode)
+ /*
+  * NILFS2 needs clear_page_dirty() in the following two cases:
+  *
+- * 1) For B-tree node pages and data pages of the dat/gcdat, NILFS2 clears
+- *    page dirty flags when it copies back pages from the shadow cache
+- *    (gcdat->{i_mapping,i_btnode_cache}) to its original cache
+- *    (dat->{i_mapping,i_btnode_cache}).
++ * 1) For B-tree node pages and data pages of DAT file, NILFS2 clears dirty
++ *    flag of pages when it copies back pages from shadow cache to the
++ *    original cache.
+  *
+  * 2) Some B-tree operations like insertion or deletion may dispose buffers
+  *    in dirty state, and this needs to cancel the dirty state of their pages.
+diff --git a/fs/nilfs2/segment.c b/fs/nilfs2/segment.c
+index 686c8ee7b29c..314a23a16689 100644
+--- a/fs/nilfs2/segment.c
++++ b/fs/nilfs2/segment.c
+@@ -733,15 +733,18 @@ static void nilfs_lookup_dirty_node_buffers(struct inode *inode,
+ 					    struct list_head *listp)
  {
--	struct aspeed_mdio *ctx = bus->priv;
--	u32 ctrl;
-+	int rc;
+ 	struct nilfs_inode_info *ii = NILFS_I(inode);
+-	struct address_space *mapping = &ii->i_btnode_cache;
++	struct inode *btnc_inode = ii->i_assoc_inode;
+ 	struct pagevec pvec;
+ 	struct buffer_head *bh, *head;
+ 	unsigned int i;
+ 	pgoff_t index = 0;
  
--	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d, val: 0x%x\n",
--		__func__, addr, regnum, val);
-+	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d\n", __func__, addr,
-+		regnum);
- 
- 	/* Just clause 22 for the moment */
- 	if (regnum & MII_ADDR_C45)
- 		return -EOPNOTSUPP;
- 
--	ctrl = ASPEED_MDIO_CTRL_FIRE
--		| FIELD_PREP(ASPEED_MDIO_CTRL_ST, ASPEED_MDIO_CTRL_ST_C22)
--		| FIELD_PREP(ASPEED_MDIO_CTRL_OP, MDIO_C22_OP_WRITE)
--		| FIELD_PREP(ASPEED_MDIO_CTRL_PHYAD, addr)
--		| FIELD_PREP(ASPEED_MDIO_CTRL_REGAD, regnum)
--		| FIELD_PREP(ASPEED_MDIO_CTRL_MIIWDATA, val);
-+	rc = aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C22, MDIO_C22_OP_READ,
-+			    addr, regnum, 0);
-+	if (rc < 0)
-+		return rc;
- 
--	iowrite32(ctrl, ctx->base + ASPEED_MDIO_CTRL);
-+	return aspeed_mdio_get_data(bus);
-+}
- 
--	return readl_poll_timeout(ctx->base + ASPEED_MDIO_CTRL, ctrl,
--				  !(ctrl & ASPEED_MDIO_CTRL_FIRE),
--				  ASPEED_MDIO_INTERVAL_US,
--				  ASPEED_MDIO_TIMEOUT_US);
-+static int aspeed_mdio_write(struct mii_bus *bus, int addr, int regnum, u16 val)
-+{
-+	dev_dbg(&bus->dev, "%s: addr: %d, regnum: %d, val: 0x%x\n",
-+		__func__, addr, regnum, val);
++	if (!btnc_inode)
++		return;
 +
-+	/* Just clause 22 for the moment */
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
-+	return aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C22, MDIO_C22_OP_WRITE,
-+			      addr, regnum, val);
+ 	pagevec_init(&pvec);
+ 
+-	while (pagevec_lookup_tag(&pvec, mapping, &index,
++	while (pagevec_lookup_tag(&pvec, btnc_inode->i_mapping, &index,
+ 					PAGECACHE_TAG_DIRTY)) {
+ 		for (i = 0; i < pagevec_count(&pvec); i++) {
+ 			bh = head = page_buffers(pvec.pages[i]);
+@@ -2410,7 +2413,7 @@ nilfs_remove_written_gcinodes(struct the_nilfs *nilfs, struct list_head *head)
+ 			continue;
+ 		list_del_init(&ii->i_dirty);
+ 		truncate_inode_pages(&ii->vfs_inode.i_data, 0);
+-		nilfs_btnode_cache_clear(&ii->i_btnode_cache);
++		nilfs_btnode_cache_clear(ii->i_assoc_inode->i_mapping);
+ 		iput(&ii->vfs_inode);
+ 	}
+ }
+diff --git a/fs/nilfs2/super.c b/fs/nilfs2/super.c
+index f6b2d280aab5..2883ab625f61 100644
+--- a/fs/nilfs2/super.c
++++ b/fs/nilfs2/super.c
+@@ -157,7 +157,8 @@ struct inode *nilfs_alloc_inode(struct super_block *sb)
+ 	ii->i_bh = NULL;
+ 	ii->i_state = 0;
+ 	ii->i_cno = 0;
+-	nilfs_mapping_init(&ii->i_btnode_cache, &ii->vfs_inode);
++	ii->i_assoc_inode = NULL;
++	ii->i_bmap = &ii->i_bmap_data;
+ 	return &ii->vfs_inode;
  }
  
- static int aspeed_mdio_probe(struct platform_device *pdev)
+@@ -1377,8 +1378,6 @@ static void nilfs_inode_init_once(void *obj)
+ #ifdef CONFIG_NILFS_XATTR
+ 	init_rwsem(&ii->xattr_sem);
+ #endif
+-	address_space_init_once(&ii->i_btnode_cache);
+-	ii->i_bmap = &ii->i_bmap_data;
+ 	inode_init_once(&ii->vfs_inode);
+ }
+ 
 -- 
-2.17.1
+2.35.1
 
