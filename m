@@ -2,149 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57FE0C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4804EC35296
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240460AbiDGBaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60688 "EHLO
+        id S240346AbiDGB37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:29:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240486AbiDGBUC (ORCPT
+        with ESMTP id S240494AbiDGBUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 21:20:02 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B09B3685
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 18:16:40 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id s137so942682pgs.5
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 18:16:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XEH2/iJSIuFDfccdM1u0P17EAr+Um5R1hy9qLgtDR4M=;
-        b=OA772vpHfAHBIugPh/XQtfpHmDsxqkQi1/UBaoCG494fupS3OiR5177KLxWxK+Anul
-         kVBwCein30GC1DSn9oNgOdwt/4xuUnFmA83pb9Oy1XlrpC7mrRwculkEPmkgorr7Nvw3
-         FxUpTqtK+QFzZ7EwGcFWcBL+vJ9AZiCQyYyPRqYOXlqVLzp2Xz0w8OJWK2Tnd84fpF4b
-         eVYFEZGYjNCZ/TWfirUGtKstsDJ1e8mtg1Y1LInzT9rNq5LxsXEsLlTBXEIykz6I1BMS
-         hH8z9FSKXAEWAIwM5IamgQQ3kd3OZhSm6JhdSg6ppXJDixVNwrOInkzAexuVe6NuE0QY
-         P4Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XEH2/iJSIuFDfccdM1u0P17EAr+Um5R1hy9qLgtDR4M=;
-        b=2o/yOul19rh1p4NKP5cTHrTYcvY1SqWSsGoSDE/i0VqdEDrcLTEYueeNGpSBk9ndRp
-         aDsa0QxBZ3cf4tqS+8k8JWmMVTRax1rcmTqXf4sxZ3ToYkiMatV8LRazpSX+xgEQTPtd
-         ZkaCw5RzPZ+dbyM/PPJ3DG2oDLPnLqNtJpt/hzuCnIj+zUetJbYCVc0MOE1SlxGoWpOX
-         rro7MbWaKITdmnPRYuMSJfOh1/xYgS1fpbmy76vCN+Y2a/M6M5ut2as2Zfc1sLKgVAY2
-         BPDwtxN6zjJaYrNEZ7dLDBosuoBWuejHOjFbYhnBwdjmA7lwKezq6+pW1fkDtgj1rwyc
-         GDlg==
-X-Gm-Message-State: AOAM532o/CL9FVqLOE04TowF38BDafnQCSSkhImBVZxkPQ0QbDuiML8z
-        Pl0TJIjny3eELc+HyNXV0xQ=
-X-Google-Smtp-Source: ABdhPJxeut6cNaSvd6pF6Lvv5nTN8xCifWxFyWzc6LiaKMmh7lwfZfm9eAReqpDY1PNuJQjaIqoOHw==
-X-Received: by 2002:a05:6a00:1488:b0:4fa:ac61:8b11 with SMTP id v8-20020a056a00148800b004faac618b11mr12031950pfu.58.1649294199390;
-        Wed, 06 Apr 2022 18:16:39 -0700 (PDT)
-Received: from [192.168.66.3] (p912131-ipoe.ipoe.ocn.ne.jp. [153.243.13.130])
-        by smtp.gmail.com with ESMTPSA id i187-20020a62c1c4000000b004faafada2ffsm21107363pfg.204.2022.04.06.18.16.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 18:16:38 -0700 (PDT)
-Message-ID: <033c1ec4-4bee-a689-140c-9694dfee435b@gmail.com>
-Date:   Thu, 7 Apr 2022 10:16:34 +0900
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1DA2C100;
+        Wed,  6 Apr 2022 18:17:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2377FB8268C;
+        Thu,  7 Apr 2022 01:17:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30482C385A7;
+        Thu,  7 Apr 2022 01:17:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649294241;
+        bh=Mq/3OgmFFHQ9097uEJJMm5uFnftnSvVnf74GJXIhxRc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Cf320gEBD2knIKhIFO4vjaVmczLPBadMDYZJUQOx9Af3cmBJTm3SzUF/vDh7d0egW
+         HTV//DYbDAQPDwT+wigiG/ClQ1seAL85P0M+H/mNkxEASw6q1OZs3brtyNcpELOMJh
+         qRey6GpTN+tmtF/tY0fyIt3C7Uz53ftA+Fo2QfPGoEMgcqHuLUKLCWzADet/rfgXxi
+         yA5O4OZbp0UZjFunPIGA9wtjl/ozMnq9cCL5B00C6EP5c7OeFxPbr27Nrxhxtnu8oK
+         hyAbOWjSo1h/QvwSb3QQ/+JvU6j2FmGMf9IXxiy7LymAmySdCYK240yr5+MNMDFF5x
+         znOV9dDtsfdfg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jeff LaBundy <jeff@labundy.com>,
+        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 4/8] Input: add bounds checking to input_set_capability()
+Date:   Wed,  6 Apr 2022 21:16:41 -0400
+Message-Id: <20220407011645.115412-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407011645.115412-1-sashal@kernel.org>
+References: <20220407011645.115412-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] platform/chrome: cros_ec_typec: Check for EC driver
-Content-Language: en-US
-To:     Guenter Roeck <groeck@google.com>,
-        Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        chrome-platform@lists.linux.dev,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>
-References: <20220404041101.6276-1-akihiko.odaki@gmail.com>
- <Yk4DGZfpYbK8dofL@chromium.org>
- <CABXOdTcY3w56hc7kWsDLxKU-c6fCLYt_jigK13tKjjm9OHi2+w@mail.gmail.com>
-From:   Akihiko Odaki <akihiko.odaki@gmail.com>
-In-Reply-To: <CABXOdTcY3w56hc7kWsDLxKU-c6fCLYt_jigK13tKjjm9OHi2+w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/04/07 6:32, Guenter Roeck wrote:
-> On Wed, Apr 6, 2022 at 2:16 PM Prashant Malani <pmalani@chromium.org> wrote:
->>
->> Hi Akihiko,
->>
->> Thanks for the patch.
->>
->> On Apr 04 13:11, Akihiko Odaki wrote:
->>> The EC driver may not be initialized when cros_typec_probe is called,
->>> particulary when CONFIG_CROS_EC_CHARDEV=m.
->>>
->>> Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
->>> ---
->>>   drivers/platform/chrome/cros_ec_typec.c | 3 +++
->>>   1 file changed, 3 insertions(+)
->>>
->>> diff --git a/drivers/platform/chrome/cros_ec_typec.c b/drivers/platform/chrome/cros_ec_typec.c
->>> index 4bd2752c0823..7cb2e35c4ded 100644
->>> --- a/drivers/platform/chrome/cros_ec_typec.c
->>> +++ b/drivers/platform/chrome/cros_ec_typec.c
->>> @@ -1084,6 +1084,9 @@ static int cros_typec_probe(struct platform_device *pdev)
->>>        }
->>>
->>>        ec_dev = dev_get_drvdata(&typec->ec->ec->dev);
->>> +     if (!ec_dev)
->>> +             return -EPROBE_DEFER;
->>> +
->>
->> Just a quick check: are you still seeing this issue with 5.18-rc1, which
->> contains a null check for the parent EC device [1] ?
+From: Jeff LaBundy <jeff@labundy.com>
 
-Yes, I'm seeing this problem with the check.
+[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
 
->>
-> 
-> I may be missing something, but from the context I suspect this may
-> make the problem worse. My understanding was that the problem was seen
-> specifically if CONFIG_CROS_EC_CHARDEV=m. In that situation, it
-> appears that the parent EC device does _not yet_ exist. If the driver
-> returns -ENODEV in that situation, it will never be instantiated. The
-> big question for me is why the type C device is instantiated in the
-> first place if the parent EC device does not [yet] exist. I have not
-> been able to identify the code path where this happens. >
-> There is a similar problem with other EC child devices which are also
-> sometimes instantiated even though the parent EC device does not exist
-> (ie dev_get_drvdata(pdev->dev.parent) returns NULL). That can happen
-> if the parent EC device instantiation fails because of EC
-> communication errors (see https://b.corp.google.com/issues/228118385
-> for examples [sorry, internal only, I can't make it public]). I think
-> we need to track down why that happens and prevent child devices from
-> being instantiated in the first place instead of trying to work around
-> the problem in the child drivers.
+Update input_set_capability() to prevent kernel panic in case the
+event code exceeds the bitmap for the given event type.
 
-Well, I think you have two misunderstanding.
+Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/input/input.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-1. The parent exists and dev_get_drvdata(pdev->dev.parent) returns 
-non-NULL value. However, dev_get_drvdata(&typec->ec->ec->dev) returns 
-NULL. (Yes, that is confusing.) I'm wondering 
-dev_get_drvdata(pdev->dev.parent) returned NULL in the following crash 
-log but it would be a problem distinct from what is handled with my patch:
-https://lore.kernel.org/lkml/CABXOdTe9u_DW=NZM1-J120Gu1gibDy8SsgHP3bJwwLsE_iuLAQ@mail.gmail.com/
-
-2. My patch returns -EPROBE_DEFER instead of -ENODEV and I confirmed it 
-will eventually be instantiated.
-
-Regards,
-Akihiko Odaki
-
-> 
-> Guenter
-> 
->> Thanks,
->>
->> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/platform/chrome?id=ffebd90532728086007038986900426544e3df4e
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index cb8ff919ba82..a7c8c61a2612 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -50,6 +50,17 @@ static DEFINE_MUTEX(input_mutex);
+ 
+ static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
+ 
++static const unsigned int input_max_code[EV_CNT] = {
++	[EV_KEY] = KEY_MAX,
++	[EV_REL] = REL_MAX,
++	[EV_ABS] = ABS_MAX,
++	[EV_MSC] = MSC_MAX,
++	[EV_SW] = SW_MAX,
++	[EV_LED] = LED_MAX,
++	[EV_SND] = SND_MAX,
++	[EV_FF] = FF_MAX,
++};
++
+ static inline int is_event_supported(unsigned int code,
+ 				     unsigned long *bm, unsigned int max)
+ {
+@@ -1915,6 +1926,14 @@ EXPORT_SYMBOL(input_free_device);
+  */
+ void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
+ {
++	if (type < EV_CNT && input_max_code[type] &&
++	    code > input_max_code[type]) {
++		pr_err("%s: invalid code %u for type %u\n", __func__, code,
++		       type);
++		dump_stack();
++		return;
++	}
++
+ 	switch (type) {
+ 	case EV_KEY:
+ 		__set_bit(code, dev->keybit);
+-- 
+2.35.1
 
