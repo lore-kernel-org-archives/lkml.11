@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0136C3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B041EC35274
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241722AbiDGBb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:31:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60982 "EHLO
+        id S241590AbiDGBbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239292AbiDGBTH (ORCPT
+        with ESMTP id S240433AbiDGBUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:19:07 -0400
+        Wed, 6 Apr 2022 21:20:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E7B9190580;
-        Wed,  6 Apr 2022 18:14:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64D418649A;
+        Wed,  6 Apr 2022 18:16:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B24861DCF;
-        Thu,  7 Apr 2022 01:14:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89E57C385A1;
-        Thu,  7 Apr 2022 01:14:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72DD561DEA;
+        Thu,  7 Apr 2022 01:16:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE5EDC385A7;
+        Thu,  7 Apr 2022 01:16:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294056;
-        bh=FgJDurC/hqKf7GTd11SfbYd38C6puz/EX4/TEJ3VBbQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pXwatt/xc7u7ljJPYMMtheWL/g6/8enY1BHnU4I4Fqn07u4rghYqJESWt++Ho2+HM
-         QNjwG5dI3gSRaI8K3NNwzI943jQtaGHwJG6oO1knSJVJtlPuCO3Uc9og7jyWU8JMop
-         k7gVOCDFmJU+EKJWD398RpGEAEqNOJt568w+qOuPTm+mkQEB+OQ4hsAmCTbD/DW+sA
-         mW4VoGfSr+s8pp9JOhZiPekPLkbsFMTW7gYMA5dwxZP98X1pRrUo/FeKOyu0rhtv4e
-         ILtNFWuZIZXFJ7j9kYO5yL1zzo5IxCz/8C65vdwUM+5YZ9bT6PNoustv9OpuJcbKu7
-         seH1gHRQ6AmTw==
+        s=k20201202; t=1649294178;
+        bh=o3GpRpC76NWR3J6t4H4CjoQ2OFisugaAToagBe6t9Vg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VrwMyAXt1AQLolDjKbAn+dywqofvu08PaEHX0PTbCRDGspFAYsblL9f7pUvqcB/uJ
+         hCh9MJs/GZ3/pWxkVKpAao00XSGimaZBAeFsvKwO0hDKkFM++EtL6jOCGZjLASHlGe
+         7nPpT9+DyrU5X797AbM+Qp1cvqn4scOSO3BzJyCEmMrYYPGtLMVfaYfYGM24ZaFQtu
+         Vo+ZN0UqThsI++YEvPFebdY4HIQGxXEYXtXLzwJvCYXXX9htlln1dl9oIRaFJ6cMIN
+         aroVnVogzt4hlHAY+VPG3yC2I2LMjHtJVBv8tph1PZcXnwSUdqVw8/oyUqcdujc7iD
+         87gZsKb5mEbVQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bob Peterson <rpeterso@redhat.com>,
-        syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, cluster-devel@redhat.com
-Subject: [PATCH AUTOSEL 5.10 01/25] gfs2: assign rgrp glock before compute_bitstructs
-Date:   Wed,  6 Apr 2022 21:13:49 -0400
-Message-Id: <20220407011413.114662-1-sashal@kernel.org>
+Cc:     Glenn Washburn <development@efficientek.com>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>,
+        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
+        linux-um@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 03/11] um: port_user: Improve error handling when port-helper is not found
+Date:   Wed,  6 Apr 2022 21:16:00 -0400
+Message-Id: <20220407011609.115258-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407011609.115258-1-sashal@kernel.org>
+References: <20220407011609.115258-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,65 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Peterson <rpeterso@redhat.com>
+From: Glenn Washburn <development@efficientek.com>
 
-[ Upstream commit 428f651cb80b227af47fc302e4931791f2fb4741 ]
+[ Upstream commit 3cb5a7f167c620a8b0e38b0446df2e024d2243dc ]
 
-Before this patch, function read_rindex_entry called compute_bitstructs
-before it allocated a glock for the rgrp. But if compute_bitstructs found
-a problem with the rgrp, it called gfs2_consist_rgrpd, and that called
-gfs2_dump_glock for rgd->rd_gl which had not yet been assigned.
+Check if port-helper exists and is executable. If not, write an error
+message to the kernel log with information to help the user diagnose the
+issue and exit with an error. If UML_PORT_HELPER was not set, write a
+message suggesting that the user set it. This makes it easier to understand
+why telneting to the UML instance is failing and what can be done to fix it.
 
-read_rindex_entry
-   compute_bitstructs
-      gfs2_consist_rgrpd
-         gfs2_dump_glock <---------rgd->rd_gl was not set.
-
-This patch changes read_rindex_entry so it assigns an rgrp glock before
-calling compute_bitstructs so gfs2_dump_glock does not reference an
-unassigned pointer. If an error is discovered, the glock must also be
-put, so a new goto and label were added.
-
-Reported-by: syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com
-Signed-off-by: Bob Peterson <rpeterso@redhat.com>
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Signed-off-by: Glenn Washburn <development@efficientek.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/rgrp.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/um/drivers/port_user.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/fs/gfs2/rgrp.c b/fs/gfs2/rgrp.c
-index 5e8eef9990e3..6b61952772b3 100644
---- a/fs/gfs2/rgrp.c
-+++ b/fs/gfs2/rgrp.c
-@@ -905,15 +905,15 @@ static int read_rindex_entry(struct gfs2_inode *ip)
- 	rgd->rd_bitbytes = be32_to_cpu(buf.ri_bitbytes);
- 	spin_lock_init(&rgd->rd_rsspin);
+diff --git a/arch/um/drivers/port_user.c b/arch/um/drivers/port_user.c
+index 5f56d11b886f..f66dc4efc64e 100644
+--- a/arch/um/drivers/port_user.c
++++ b/arch/um/drivers/port_user.c
+@@ -5,6 +5,7 @@
  
--	error = compute_bitstructs(rgd);
--	if (error)
--		goto fail;
--
- 	error = gfs2_glock_get(sdp, rgd->rd_addr,
- 			       &gfs2_rgrp_glops, CREATE, &rgd->rd_gl);
- 	if (error)
- 		goto fail;
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <string.h>
+ #include <errno.h>
+ #include <termios.h>
+ #include <unistd.h>
+@@ -175,6 +176,17 @@ int port_connection(int fd, int *socket, int *pid_out)
+ 	if (new < 0)
+ 		return -errno;
  
-+	error = compute_bitstructs(rgd);
-+	if (error)
-+		goto fail_glock;
++	err = os_access(argv[2], X_OK);
++	if (err < 0) {
++		printk(UM_KERN_ERR "port_connection : error accessing port-helper "
++		       "executable at %s: %s\n", argv[2], strerror(-err));
++		if (env == NULL)
++			printk(UM_KERN_ERR "Set UML_PORT_HELPER environment "
++				"variable to path to uml-utilities port-helper "
++				"binary\n");
++		goto out_close;
++	}
 +
- 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
- 	rgd->rd_flags &= ~(GFS2_RDF_UPTODATE | GFS2_RDF_PREFERRED);
- 	if (rgd->rd_data > sdp->sd_max_rg_data)
-@@ -927,6 +927,7 @@ static int read_rindex_entry(struct gfs2_inode *ip)
- 	}
- 
- 	error = 0; /* someone else read in the rgrp; free it and ignore it */
-+fail_glock:
- 	gfs2_glock_put(rgd->rd_gl);
- 
- fail:
+ 	err = os_pipe(socket, 0, 0);
+ 	if (err < 0)
+ 		goto out_close;
 -- 
 2.35.1
 
