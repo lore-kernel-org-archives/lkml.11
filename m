@@ -2,106 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69BFAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D02AEC43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344572AbiDGPXa (ORCPT
+        id S1344571AbiDGPYj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:23:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
+        Thu, 7 Apr 2022 11:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230260AbiDGPXY (ORCPT
+        with ESMTP id S1344591AbiDGPYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:23:24 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EC91FB539
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:21:23 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id c42so6816781edf.3
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 08:21:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WrflAjleUvotKO6ONszyHWgkRAJT1uadUqHg4VfzFzw=;
-        b=ToNWt1yjm4njDg28WkBmwydHhMb541dvaQNQm/KL/cpKnfBRg6JWbY/rX8tn9HeDVZ
-         JQi/QRYWOH7cb7EF8CrtWZS7j2bg6kYik82SJqZa4gRnATt4ag7QdG0o+5AwrRmvwDaQ
-         e9Kowb7F+hf8ve+dE2EQHxPvEoCLy40ZEnun26C4ZXBXAEQUK95H8DB/xWu7cHbFNNH0
-         D03DbnfwyQ/vDQ31m1ijbaJaqYZrIAvJrJse+ITTxqO2P4aTk9Yl0GfSJUgebiCHV0fq
-         NHuWYj6CiLEyQOc7ST62qk5HmqdceF9ExmnZDK9OASV30dfkoRaoK7R0yFS5X4E8mhZT
-         lVYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=WrflAjleUvotKO6ONszyHWgkRAJT1uadUqHg4VfzFzw=;
-        b=6ZAkNVlDIGH7K37gU4Ghw4+3VRPuAXQpc4yZpkHY091eyGIAUgAQDV+Z3vc3dHjbW3
-         75nCItMO4q5z2nhgUdx/oNfpyJ/uVAX5dvlr/BOL/pm9OjbciNMJy7qEAWOgThQ2ck1o
-         t1PSIE2RXomR5wxOm4c8+2vmMqLjW5Z7C/GlwnzwRgw4dUWxN7z71zZv6AA86QsPgmsF
-         Shzc4fOLZ5PzKrLyGJ1jX25ySvxE6iczrz2k7oqyrucfK1H/KwG7zmWgDsBVxwycEj6H
-         sUGaXjmlyIFinrjLyE3MZYjimxB4aEVwhZp/zr/XstTjnH2hp2Qr+lCngmsSH2uUZwGR
-         Un+Q==
-X-Gm-Message-State: AOAM531/eKHqH8T+sFIvpf3QfJi5uyKJGDYywfCFpHhQBPCoLIVBtx7D
-        Bl7xA18+yZlVjP/BQZmpBl9Tk5kxhCEwp/5q
-X-Google-Smtp-Source: ABdhPJzJ72Zd0fdqGMuGZTMhO7l74vyKe6JXeXWfSy5lBxiAwbOFxqPN9om6goQRd5yHHkKcX8M22g==
-X-Received: by 2002:aa7:d682:0:b0:419:3b78:e489 with SMTP id d2-20020aa7d682000000b004193b78e489mr14947186edr.372.1649344882144;
-        Thu, 07 Apr 2022 08:21:22 -0700 (PDT)
-Received: from [192.168.0.187] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id ka6-20020a170907990600b006ce54c95e3csm7740203ejc.161.2022.04.07.08.21.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 08:21:21 -0700 (PDT)
-Message-ID: <c6d85486-16af-d798-5e55-a6801e5402c0@linaro.org>
-Date:   Thu, 7 Apr 2022 17:21:20 +0200
+        Thu, 7 Apr 2022 11:24:36 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB61320D80D;
+        Thu,  7 Apr 2022 08:22:35 -0700 (PDT)
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ncTxj-0003Hy-VO; Thu, 07 Apr 2022 17:22:20 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ncTxj-000Hlq-Ix; Thu, 07 Apr 2022 17:22:19 +0200
+Subject: Re: [PATCH v5 1/3] selftests: bpf: add test for bpf_skb_change_proto
+To:     Lina Wang <lina.wang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org, Maciej enczykowski <maze@google.com>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20220407084727.10241-1-lina.wang@mediatek.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <9dc51533-92d2-1c82-2a6e-96e1ac747bb7@iogearbox.net>
+Date:   Thu, 7 Apr 2022 17:22:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 4/5] dt-bindings: spi: add binding doc for spi-mtk-snfi
+In-Reply-To: <20220407084727.10241-1-lina.wang@mediatek.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Chuanhong Guo <gch981213@gmail.com>, linux-spi@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Pratyush Yadav <p.yadav@ti.com>, Yu Kuai <yukuai3@huawei.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:NAND FLASH SUBSYSTEM" <linux-mtd@lists.infradead.org>
-References: <20220407150652.21885-1-gch981213@gmail.com>
- <20220407150652.21885-5-gch981213@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220407150652.21885-5-gch981213@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26505/Thu Apr  7 10:25:37 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/04/2022 17:06, Chuanhong Guo wrote:
-> Add device-tree binding documentation for Mediatek SPI-NAND Flash
-> Interface.
+Hi Lina,
+
+On 4/7/22 10:47 AM, Lina Wang wrote:
+> The code is copied from the Android Open Source Project and the author(
+> Maciej Żenczykowski) has gave permission to relicense it under GPLv2.
 > 
-> Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+> The test is to change input IPv6 packets to IPv4 ones and output IPv4 to
+> IPv6 with bpf_skb_change_proto.
+> 
+> Signed-off-by: Maciej Żenczykowski <maze@google.com>
+> Signed-off-by: Lina Wang <lina.wang@mediatek.com>
 > ---
-> 
+>   tools/testing/selftests/bpf/progs/nat6to4.c | 293 ++++++++++++++++++++
+>   1 file changed, 293 insertions(+)
+>   create mode 100644 tools/testing/selftests/bpf/progs/nat6to4.c
 
-Looks good. The subject should be rather "spi: dt-bindings:" (as
-requirement for SPI subsystem).
+Thanks for adding a selftest into your series!
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Your patch 2/3 is utilizing this program out of selftests/net/udpgro_frglist.sh,
+however, this is a bit problematic given BPF CI which runs on every BPF submitted
+patch. Meaning, udpgro_frglist.sh won't be covered by CI and only needs to be run
+manually. Could you properly include this into test_progs from BPF suite (that way,
+BPF CI will also pick it up)? See also [2] for more complex netns setups.
 
-Best regards,
-Krzysztof
+Thanks again!
+Daniel
+
+Some small comments below.
+
+   [0] https://patchwork.kernel.org/project/netdevbpf/patch/20220407084727.10241-2-lina.wang@mediatek.com/
+   [1] https://github.com/kernel-patches/bpf/actions
+   [2] https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git/tree/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
+
+> diff --git a/tools/testing/selftests/bpf/progs/nat6to4.c b/tools/testing/selftests/bpf/progs/nat6to4.c
+> new file mode 100644
+> index 000000000000..099950f7a6cc
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/nat6to4.c
+> @@ -0,0 +1,293 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * This code is taken from the Android Open Source Project and the author
+> + * (Maciej Żenczykowski) has gave permission to relicense it under the
+> + * GPLv2. Therefore this program is free software;
+> + * You can redistribute it and/or modify it under the terms of the GNU
+> + * General Public License version 2 as published by the Free Software
+> + * Foundation
+> +
+> + * The original headers, including the original license headers, are
+> + * included below for completeness.
+> + *
+> + * Copyright (C) 2019 The Android Open Source Project
+> + *
+> + * Licensed under the Apache License, Version 2.0 (the "License");
+> + * you may not use this file except in compliance with the License.
+> + * You may obtain a copy of the License at
+> + *
+> + *      http://www.apache.org/licenses/LICENSE-2.0
+> + *
+> + * Unless required by applicable law or agreed to in writing, software
+> + * distributed under the License is distributed on an "AS IS" BASIS,
+> + * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+> + * See the License for the specific language governing permissions and
+> + * limitations under the License.
+> + */
+> +#include <linux/bpf.h>
+> +#include <linux/if.h>
+> +#include <linux/if_ether.h>
+> +#include <linux/if_packet.h>
+> +#include <linux/in.h>
+> +#include <linux/in6.h>
+> +#include <linux/ip.h>
+> +#include <linux/ipv6.h>
+> +#include <linux/pkt_cls.h>
+> +#include <linux/swab.h>
+> +#include <stdbool.h>
+> +#include <stdint.h>
+> +
+> +// bionic kernel uapi linux/udp.h header is munged...
+
+nit: Throughout the file, please use C style comments as per kernel coding convention.
+
+> +#define __kernel_udphdr udphdr
+> +#include <linux/udp.h>
+> +
+> +#include <bpf/bpf_helpers.h>
+> +
+> +#define htons(x) (__builtin_constant_p(x) ? ___constant_swab16(x) : __builtin_bswap16(x))
+> +#define htonl(x) (__builtin_constant_p(x) ? ___constant_swab32(x) : __builtin_bswap32(x))
+> +#define ntohs(x) htons(x)
+> +#define ntohl(x) htonl(x)
+
+nit: Please use libbpf's bpf_htons() and friends helpers [3].
+
+   [3] https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git/tree/tools/lib/bpf/bpf_endian.h
+
+OT: In Cilium we run similar NAT46/64 translation for XDP and tc/BPF for our LB services [4] (that is,
+v4 VIP with v6 backends, and v6 VIP with v4 backends).
+
+   [4] https://github.com/cilium/cilium/blob/master/bpf/lib/nat_46x64.h
+       https://github.com/cilium/cilium/blob/master/test/nat46x64/test.sh
