@@ -2,84 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF047C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243351AbiDGIxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:53:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42298 "EHLO
+        id S243291AbiDGIzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243563AbiDGIxQ (ORCPT
+        with ESMTP id S230032AbiDGIzH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:53:16 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAEB2ACD;
-        Thu,  7 Apr 2022 01:51:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649321476; x=1680857476;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rvvRdha+qpxn4dQmcryB8CJAVWXcpexk0ryCTlfgnEM=;
-  b=M7RcDyUJ8/zzkWPSzZUJ0vXtK90kP2GO9rH+/AGbzKUkk56Vi+KZz7GP
-   EvZtKbhTCoJyz11aM/aK0h87S2XPr+ywhmka/zOJWGSiWOKTdgpLZbCh/
-   20nShUHl+Mmf29NZdJFdx5Wa9tv/KAExK1o5ZEhS4s4Wa3vyrgIk6H8+s
-   WDnyLZ/MOEqjuPUAtFsTBpd84WjsN7j7yYEidPsmEIv1Cm9B0ps+RFc4c
-   lgmw5aPt4BUZ/u65q+HyjT2NqjjOfeZqyq7aeydFPfjmhNYugvRKx7kgj
-   8t/my32LeBI1Ibx5nwdf0m7l57tD37Re+qSDZe+F4FOCwnlGPECtRTyJZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="241860122"
-X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="241860122"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 01:51:13 -0700
-X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="570963311"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 01:51:10 -0700
-Received: by lahna (sSMTP sendmail emulation); Thu, 07 Apr 2022 11:50:46 +0300
-Date:   Thu, 7 Apr 2022 11:50:46 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux PCI <linux-pci@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Subject: Re: [PATCH v1] PCI: PM: Power up all devices during runtime resume
-Message-ID: <Yk6l5riEX3WJLZfT@lahna>
-References: <4412361.LvFx2qVVIh@kreacher>
+        Thu, 7 Apr 2022 04:55:07 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8DC7B60D98;
+        Thu,  7 Apr 2022 01:53:05 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 9DD6C8125;
+        Thu,  7 Apr 2022 08:50:42 +0000 (UTC)
+Date:   Thu, 7 Apr 2022 11:53:03 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Keerthy <j-keerthy@ti.com>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH 2/4] clocksource/drivers/timer-ti-dm: Update defines for
+ am6 for inline functions
+Message-ID: <Yk6mb1HjEH4H/b7p@atomide.com>
+References: <20220407071006.37031-1-tony@atomide.com>
+ <20220407071006.37031-2-tony@atomide.com>
+ <9671f0a5-6860-8a75-d65e-345ce890cd88@linaro.org>
+ <Yk6drKxwOSVdrKp+@atomide.com>
+ <7f3cbdf3-401c-6c30-20fa-b5121bd3f63d@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4412361.LvFx2qVVIh@kreacher>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <7f3cbdf3-401c-6c30-20fa-b5121bd3f63d@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 09:00:52PM +0200, Rafael J. Wysocki wrote:
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+* Daniel Lezcano <daniel.lezcano@linaro.org> [220407 08:23]:
+> On 07/04/2022 10:15, Tony Lindgren wrote:
+> > * Daniel Lezcano <daniel.lezcano@linaro.org> [220407 08:01]:
+> > > On 07/04/2022 09:10, Tony Lindgren wrote:
+> > > > @@ -251,7 +251,8 @@ int omap_dm_timers_active(void);
+> > > >     * The below are inlined to optimize code size for system timers. Other code
+> > > >     * should not need these at all.
+> > > >     */
+> > > > -#if defined(CONFIG_ARCH_OMAP1) || defined(CONFIG_ARCH_OMAP2PLUS)
+> > > > +#if defined(CONFIG_ARCH_OMAP1) || defined(CONFIG_ARCH_OMAP2PLUS) || \
+> > > > +	defined(CONFIG_ARCH_K3)
+> > > 
+> > > Why not replace the above by CONFIG_OMAP_DM_TIMER ?
+> > 
+> > Hmm that's a good question for why it was not that way earlier.
+> > 
+> > This series changes things for tristate "OMAP dual-mode timer driver" if
+> > ARCH_K3 || COMPILE_TEST though. So the inline stubs are still needed for
+> > COMPILE_TEST it seems.
 > 
-> Currently, endpoint devices may not be powered up entirely during
-> runtime resume that follows a D3hot -> D0 transition of the parent
-> bridge.
-> 
-> Namely, even if the power state of an endpoint device, as indicated
-> by its PCI_PM_CTRL register, is D0 after powering up its parent
-> bridge, it may be still necessary to bring its ACPI companion into
-> D0 and that should be done before accessing it.  However, the current
-> code assumes that reading the PCI_PM_CTRL register is sufficient to
-> establish the endpoint device's power state, which may lead to
-> problems.
-> 
-> Address that by forcing a power-up of all PCI devices, including the
-> platform firmware part of it, during runtime resume.
-> 
-> Link: https://lore.kernel.org/linux-pm/11967527.O9o76ZdvQC@kreacher
-> Fixes: 5775b843a619 ("PCI: Restore config space on runtime resume despite being unbound")
-> Reported-by: Abhishek Sahu <abhsahu@nvidia.com>
-> Tested-by: Abhishek Sahu <abhsahu@nvidia.com>
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> But if ARCH_K3 or COMPILE_TEST is set, CONFIG_DM_TIMER is also set, no?
 
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Right but I suspect that COMPILE_TEST will produce a build error on other
+architectures. I need to check that though, maybe that is no longer the
+case.
+
+Regards,
+
+Tony
