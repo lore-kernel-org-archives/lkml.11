@@ -2,642 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8130DC43217
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243371AbiDGI40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55480 "EHLO
+        id S243346AbiDGI4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243353AbiDGI4U (ORCPT
+        with ESMTP id S243352AbiDGI4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 04:56:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7409823E3D3;
-        Thu,  7 Apr 2022 01:54:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA25060FE0;
-        Thu,  7 Apr 2022 08:54:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D496C385A0;
-        Thu,  7 Apr 2022 08:54:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649321654;
-        bh=8hx+xiAGVBIrSni7kIkL0+zsO4NMvTre/62TGhKh5kk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=r2lFrG11rZLTJqQQXGyYAU4MMbx9fCIIugPTFYozGlXU6LryU+6y2nVXqgBXNKmi/
-         I9CMkaESx3wLmUz8fAdNV4JBAexOBsPCvKVwi/UKabS5ZzEDbe+hQt+5TWi//2VPsP
-         rwHq+z18F3JzFIB+2mUM6wLYV7COZVL6BxAsGcOIY5wDILOw4xY4rGnhPnnpjWPlg/
-         xiTPRJmMw+S9PIfS8geoH5YMcmCVgPpxVl72A+6bYeGuS10ovf8JOKBtIrag76KQdE
-         7H3pD7SbdOfHXpnu2lvLfuX8qxuHwwGcE0EWoTE9TwNbP9Grrrev43Q2MW+KIELHjh
-         5QdXmwaREO7Zg==
-Message-ID: <e690ccba-50ef-da1f-14a1-e4a6b284ba3c@kernel.org>
-Date:   Thu, 7 Apr 2022 11:54:09 +0300
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CD4256677;
+        Thu,  7 Apr 2022 01:54:15 -0700 (PDT)
+X-UUID: 5f971f37c6b34234ac9c872879471170-20220407
+X-UUID: 5f971f37c6b34234ac9c872879471170-20220407
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1309223339; Thu, 07 Apr 2022 16:54:11 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 7 Apr 2022 16:54:10 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 7 Apr
+ 2022 16:54:04 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 7 Apr 2022 16:54:03 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Jesper Dangaard Brouer" <hawk@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        <linux-kernel@vger.kernel.org>,
+        Maciej enczykowski <maze@google.com>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
+        Lina Wang <lina.wang@mediatek.com>
+Subject: [PATCH v5 3/3] net: fix wrong network header length
+Date:   Thu, 7 Apr 2022 16:47:27 +0800
+Message-ID: <20220407084727.10241-3-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220407084727.10241-1-lina.wang@mediatek.com>
+References: <20220407084727.10241-1-lina.wang@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 2/2] drivers: usb: dwc3: Add AM62 USB wrapper driver
-Content-Language: en-US
-To:     Aswath Govindraju <a-govindraju@ti.com>
-Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220406135214.6989-1-a-govindraju@ti.com>
- <20220406135214.6989-3-a-govindraju@ti.com>
- <d41d51ff-1c61-6694-4598-d55034e8210d@kernel.org>
- <8bdf5f21-0783-a474-1630-46d87d66fb6f@ti.com>
- <7de4a3cd-5b2b-3dae-2050-bb91fa7d48c8@ti.com>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <7de4a3cd-5b2b-3dae-2050-bb91fa7d48c8@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
+several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
+ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
+network_header\transport_header\mac_header have been updated as ipv4 acts,
+but other skbs in frag_list didnot update anything, just ipv6 packets.
 
+udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
+frag_list and make sure right udp payload is delivered to user space.
+Unfortunately, other skbs in frag_list who are still ipv6 packets are
+updated like the first skb and will have wrong transport header length.
 
-On 07/04/2022 11:27, Aswath Govindraju wrote:
-> Hi Roger,
-> 
-> On 07/04/22 13:54, Aswath Govindraju wrote:
->> Hi Roger,
->>
->> On 07/04/22 13:50, Roger Quadros wrote:
->>> Hi Aswath,
->>>
->>> On 06/04/2022 16:52, Aswath Govindraju wrote:
->>>> In AM62 SoC, the Designware Core USB3 IP is progammed to operate in USB2.0
->>>> only mode. Add driver for AM62 USB DWC3 Wrapper.
->>>>
->>>> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
->>>> ---
->>>>
->>>> changes since v2:
->>>> - Removed the implementation of detecting the role from the wrapper
->>>>   driver and moved the implementation to using linux,extcon-usb-gpio
->>>>   driver for role detection.
->>>
->>> I'm a bit puzzled. So ID is managed by extcon-usb-gpio driver and
->>> VBUS is managed by this driver.
->>>
->>> So who decides the USB ports state based on the below truth table?
->>>
->>> +	/*
->>> +	 * ID | VBUS | STATE
->>> +	 * -----------------
->>> +	 * 0  | 0    | HOST
->>> +	 * 0  | 1    | HOST
->>> +	 * 1  | 0    | Disconnected (set mode valid to 0)
->>> +	 * 1  | 1    | Device
->>> +	 *
->>> +	 */
->>>
->>> If only ID signal is available to extcon-usb-gpio driver it cannot detect
->>> the Disconnected state. We need to set mode valid to 0 for disconnected state.
->>>
->>
->> Yes that is correct, the mode valid signal needs to be set when there is
->> no cable connected. I am slightly confused on why 0-0 state is not
->> considered disconnected? So, whenever VBUS is not high it should be
->> disconnected right?
+e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
+has the same network_header(24)& transport_header(64), after
+bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
+skb's network_header is 44,transport_header is 64, other skbs in frag_list
+didnot change.After skb_segment_list, the other skbs in frag_list has
+different network_header(24) and transport_header(44), so there will be 20
+bytes different from original,that is difference between ipv6 header and
+ipv4 header. Just change transport_header to be the same with original.
 
-Not necessarily. We might be in host mode (ID=0) and just not turned on the VBUS regulator (VBUS=0).
-Is this to be treated as disconnected?
+Actually, there are two solutions to fix it, one is traversing all skbs
+and changing every skb header in bpf_skb_proto_6_to_4, the other is
+modifying frag_list skb's header in skb_segment_list. Considering
+efficiency, adopt the second one--- when the first skb and other skbs in
+frag_list has different network_header length, restore them to make sure
+right udp payload is delivered to user space.
 
-I'm just pointing out that things won't function anymore like the below code you had earlier
-as you have decoupled id_state from vbus_state.
+Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+---
+ net/core/skbuff.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-+	/* detemine the role or find out if disconnect event */
-+	if (id_state) {
-+		detect_role = DEVICE;
-+		if (vbus_state)
-+			connect = 1;
-+	} else {
-+		detect_role = HOST;
-+		connect = 1;
-+	}
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 10bde7c6db44..e8006e0a1b25 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3897,7 +3897,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 	unsigned int delta_len = 0;
+ 	struct sk_buff *tail = NULL;
+ 	struct sk_buff *nskb, *tmp;
+-	int err;
++	int len_diff, err;
+ 
+ 	skb_push(skb, -skb_network_offset(skb) + offset);
+ 
+@@ -3937,9 +3937,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 		skb_push(nskb, -skb_network_offset(nskb) + offset);
+ 
+ 		skb_release_head_state(nskb);
++		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
+ 		__copy_skb_header(nskb, skb);
+ 
+ 		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
++		nskb->transport_header += len_diff;
+ 		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
+ 						 nskb->data - tnl_hlen,
+ 						 offset + tnl_hlen);
+-- 
+2.18.0
 
-Now you are setting connect independently of ID. i.e. connect = vbus_state.
-
-Is that what you want?
-
-cheers,
--roger
-
->>
-> 
-> Sorry, pressed the send button without reading everything properly.
-> 
-> The implementation is such that the extcon-usb-gpio only updates the
-> role to the core driver based on ID pin state and the Mode valid bit is
-> set by the wrapper based on the VBUS state.
-> 
-> Thanks,
-> Aswath
-> 
->> Thanks,
->> Aswath
->>
->>> cheers,
->>> -roger
->>>
->>>
->>>> - Updated the binding documentation and example to reflect the same.
->>>>
->>>>
->>>>  drivers/usb/dwc3/Kconfig     |   9 +
->>>>  drivers/usb/dwc3/Makefile    |   1 +
->>>>  drivers/usb/dwc3/dwc3-am62.c | 446 +++++++++++++++++++++++++++++++++++
->>>>  3 files changed, 456 insertions(+)
->>>>  create mode 100644 drivers/usb/dwc3/dwc3-am62.c
->>>>
->>>> diff --git a/drivers/usb/dwc3/Kconfig b/drivers/usb/dwc3/Kconfig
->>>> index c483f28b695d..cd9a734522a7 100644
->>>> --- a/drivers/usb/dwc3/Kconfig
->>>> +++ b/drivers/usb/dwc3/Kconfig
->>>> @@ -159,4 +159,13 @@ config USB_DWC3_XILINX
->>>>  	  This driver handles both ZynqMP and Versal SoC operations.
->>>>  	  Say 'Y' or 'M' if you have one such device.
->>>>  
->>>> +config USB_DWC3_AM62
->>>> +	tristate "Texas Instruments AM62 Platforms"
->>>> +	depends on ARCH_K3 || COMPILE_TEST
->>>> +	default USB_DWC3
->>>> +	help
->>>> +	  Support TI's AM62 platforms with DesignWare Core USB3 IP.
->>>> +	  The Designware Core USB3 IP is progammed to operate in
->>>> +	  in USB 2.0 mode only.
->>>> +	  Say 'Y' or 'M' here if you have one such device
->>>>  endif
->>>> diff --git a/drivers/usb/dwc3/Makefile b/drivers/usb/dwc3/Makefile
->>>> index 2d499de6f66a..9f66bd82b639 100644
->>>> --- a/drivers/usb/dwc3/Makefile
->>>> +++ b/drivers/usb/dwc3/Makefile
->>>> @@ -42,6 +42,7 @@ endif
->>>>  # and allyesconfig builds.
->>>>  ##
->>>>  
->>>> +obj-$(CONFIG_USB_DWC3_AM62)		+= dwc3-am62.o
->>>>  obj-$(CONFIG_USB_DWC3_OMAP)		+= dwc3-omap.o
->>>>  obj-$(CONFIG_USB_DWC3_EXYNOS)		+= dwc3-exynos.o
->>>>  obj-$(CONFIG_USB_DWC3_PCI)		+= dwc3-pci.o
->>>> diff --git a/drivers/usb/dwc3/dwc3-am62.c b/drivers/usb/dwc3/dwc3-am62.c
->>>> new file mode 100644
->>>> index 000000000000..5700258c8deb
->>>> --- /dev/null
->>>> +++ b/drivers/usb/dwc3/dwc3-am62.c
->>>> @@ -0,0 +1,446 @@
->>>> +// SPDX-License-Identifier: GPL-2.0
->>>> +/*
->>>> + * dwc3-am62.c - TI specific Glue layer for AM62 DWC3 USB Controller
->>>> + *
->>>> + * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com
->>>> + */
->>>> +
->>>> +#include <linux/init.h>
->>>> +#include <linux/interrupt.h>
->>>> +#include <linux/irq.h>
->>>> +#include <linux/kernel.h>
->>>> +#include <linux/module.h>
->>>> +#include <linux/platform_device.h>
->>>> +#include <linux/workqueue.h>
->>>> +#include <linux/mfd/syscon.h>
->>>> +#include <linux/of.h>
->>>> +#include <linux/of_device.h>
->>>> +#include <linux/pm_runtime.h>
->>>> +#include <linux/clk.h>
->>>> +#include <linux/regmap.h>
->>>> +#include <linux/devm-helpers.h>
->>>> +#include <linux/pinctrl/consumer.h>
->>>> +
->>>> +/* USB WRAPPER register offsets */
->>>> +#define USBSS_PID			0x0
->>>> +#define USBSS_OVERCURRENT_CTRL		0x4
->>>> +#define USBSS_PHY_CONFIG		0x8
->>>> +#define USBSS_PHY_TEST			0xc
->>>> +#define USBSS_CORE_STAT			0x14
->>>> +#define USBSS_HOST_VBUS_CTRL		0x18
->>>> +#define USBSS_MODE_CONTROL		0x1c
->>>> +#define USBSS_WAKEUP_CONFIG		0x30
->>>> +#define USBSS_WAKEUP_STAT		0x34
->>>> +#define USBSS_OVERRIDE_CONFIG		0x38
->>>> +#define USBSS_IRQ_MISC_STATUS_RAW	0x430
->>>> +#define USBSS_IRQ_MISC_STATUS		0x434
->>>> +#define USBSS_IRQ_MISC_ENABLE_SET	0x438
->>>> +#define USBSS_IRQ_MISC_ENABLE_CLR	0x43c
->>>> +#define USBSS_IRQ_MISC_EOI		0x440
->>>> +#define USBSS_INTR_TEST			0x490
->>>> +#define USBSS_VBUS_FILTER		0x614
->>>> +#define USBSS_VBUS_STAT			0x618
->>>> +#define USBSS_DEBUG_CFG			0x708
->>>> +#define USBSS_DEBUG_DATA		0x70c
->>>> +#define USBSS_HOST_HUB_CTRL		0x714
->>>> +
->>>> +/* PHY CONFIG register bits */
->>>> +#define USBSS_PHY_VBUS_SEL_MASK		GENMASK(2, 1)
->>>> +#define USBSS_PHY_VBUS_SEL_SHIFT	1
->>>> +#define USBSS_PHY_LANE_REVERSE		BIT(0)
->>>> +
->>>> +/* MODE CONTROL register bits */
->>>> +#define USBSS_MODE_VALID	BIT(0)
->>>> +
->>>> +/* WAKEUP CONFIG register bits */
->>>> +#define USBSS_WAKEUP_CFG_OVERCURRENT_EN	BIT(3)
->>>> +#define USBSS_WAKEUP_CFG_LINESTATE_EN	BIT(2)
->>>> +#define USBSS_WAKEUP_CFG_SESSVALID_EN	BIT(1)
->>>> +#define USBSS_WAKEUP_CFG_VBUSVALID_EN	BIT(0)
->>>> +
->>>> +/* WAKEUP STAT register bits */
->>>> +#define USBSS_WAKEUP_STAT_OVERCURRENT	BIT(4)
->>>> +#define USBSS_WAKEUP_STAT_LINESTATE	BIT(3)
->>>> +#define USBSS_WAKEUP_STAT_SESSVALID	BIT(2)
->>>> +#define USBSS_WAKEUP_STAT_VBUSVALID	BIT(1)
->>>> +#define USBSS_WAKEUP_STAT_CLR		BIT(0)
->>>> +
->>>> +/* IRQ_MISC_STATUS_RAW register bits */
->>>> +#define USBSS_IRQ_MISC_RAW_VBUSVALID	BIT(22)
->>>> +#define USBSS_IRQ_MISC_RAW_SESSVALID	BIT(20)
->>>> +
->>>> +/* IRQ_MISC_STATUS register bits */
->>>> +#define USBSS_IRQ_MISC_VBUSVALID	BIT(22)
->>>> +#define USBSS_IRQ_MISC_SESSVALID	BIT(20)
->>>> +
->>>> +/* IRQ_MISC_ENABLE_SET register bits */
->>>> +#define USBSS_IRQ_MISC_ENABLE_SET_VBUSVALID	BIT(22)
->>>> +#define USBSS_IRQ_MISC_ENABLE_SET_SESSVALID	BIT(20)
->>>> +
->>>> +/* IRQ_MISC_ENABLE_CLR register bits */
->>>> +#define USBSS_IRQ_MISC_ENABLE_CLR_VBUSVALID	BIT(22)
->>>> +#define USBSS_IRQ_MISC_ENABLE_CLR_SESSVALID	BIT(20)
->>>> +
->>>> +/* IRQ_MISC_EOI register bits */
->>>> +#define USBSS_IRQ_MISC_EOI_VECTOR	BIT(0)
->>>> +
->>>> +/* VBUS_STAT register bits */
->>>> +#define USBSS_VBUS_STAT_SESSVALID	BIT(2)
->>>> +#define USBSS_VBUS_STAT_VBUSVALID	BIT(0)
->>>> +
->>>> +/* Mask for PHY PLL REFCLK */
->>>> +#define PHY_PLL_REFCLK_MASK	GENMASK(3, 0)
->>>> +
->>>> +#define DWC3_AM62_AUTOSUSPEND_DELAY	100
->>>> +
->>>> +struct dwc3_data {
->>>> +	struct device *dev;
->>>> +	void __iomem *usbss;
->>>> +	struct clk *usb2_refclk;
->>>> +	struct work_struct work;
->>>> +	int vbus_irq;
->>>> +	int rate_code;
->>>> +	int connect;
->>>> +	struct regmap *syscon;
->>>> +	unsigned int offset;
->>>> +	unsigned int vbus_divider;
->>>> +};
->>>> +
->>>> +static const int dwc3_ti_rate_table[] = {	/* in KHZ */
->>>> +	9600,
->>>> +	10000,
->>>> +	12000,
->>>> +	19200,
->>>> +	20000,
->>>> +	24000,
->>>> +	25000,
->>>> +	26000,
->>>> +	38400,
->>>> +	40000,
->>>> +	58000,
->>>> +	50000,
->>>> +	52000,
->>>> +};
->>>> +
->>>> +static inline u32 dwc3_ti_readl(struct dwc3_data *data, u32 offset)
->>>> +{
->>>> +	return readl((data->usbss) + offset);
->>>> +}
->>>> +
->>>> +static inline void dwc3_ti_writel(struct dwc3_data *data, u32 offset, u32 value)
->>>> +{
->>>> +	writel(value, (data->usbss) + offset);
->>>> +}
->>>> +
->>>> +static void connect_detect_work(struct work_struct *work)
->>>> +{
->>>> +	struct dwc3_data *data =
->>>> +		container_of(work, struct dwc3_data, work);
->>>> +	u32 vbus_state, reg;
->>>> +	int connect = 0;
->>>> +
->>>> +	/* Read the status for VBUS valid register */
->>>> +	vbus_state = dwc3_ti_readl(data, USBSS_VBUS_STAT);
->>>> +	vbus_state &= USBSS_VBUS_STAT_VBUSVALID;
->>>> +
->>>> +	if (vbus_state)
->>>> +		connect = 1;
->>>> +
->>>> +	/* Set or clear mode valid bit based on connect or disconnect event */
->>>> +	if (data->connect != connect) {
->>>> +		reg = dwc3_ti_readl(data, USBSS_MODE_CONTROL);
->>>> +		if (connect)
->>>> +			reg |= USBSS_MODE_VALID;
->>>> +		else
->>>> +			reg &= ~USBSS_MODE_VALID;
->>>> +
->>>> +		dwc3_ti_writel(data, USBSS_MODE_CONTROL, reg);
->>>> +		data->connect = connect;
->>>> +	}
->>>> +}
->>>> +
->>>> +static irqreturn_t connect_detect_irq_handler(int irq, void *dev_id)
->>>> +{
->>>> +	struct dwc3_data *data = dev_id;
->>>> +	u32 reg;
->>>> +
->>>> +	/* Clear VBUS interrupt always to aviod queuing up redundant work items */
->>>> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_STATUS);
->>>> +	reg |= USBSS_IRQ_MISC_VBUSVALID;
->>>> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_STATUS, reg);
->>>> +
->>>> +	queue_work(system_power_efficient_wq, &data->work);
->>>> +
->>>> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_EOI);
->>>> +	reg &= ~USBSS_IRQ_MISC_EOI_VECTOR;
->>>> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_EOI, reg);
->>>> +	return IRQ_HANDLED;
->>>> +}
->>>> +
->>>> +static int dwc3_ti_vbus_irq_setup(struct platform_device *pdev)
->>>> +{
->>>> +	struct device *dev = &pdev->dev;
->>>> +	struct dwc3_data *data = platform_get_drvdata(pdev);
->>>> +	int irq, ret;
->>>> +
->>>> +	/* Get the misc interrupt */
->>>> +	irq = platform_get_irq(pdev, 0);
->>>> +	if (irq < 0)
->>>> +		return irq;
->>>> +
->>>> +	ret = devm_request_irq(dev, irq, connect_detect_irq_handler, IRQF_SHARED,
->>>> +			       dev_name(dev), data);
->>>> +	if (ret) {
->>>> +		dev_err(dev, "failed to required IRQ #%d-->%d\n",
->>>> +			irq, ret);
->>>> +		return ret;
->>>> +	}
->>>> +
->>>> +	data->vbus_irq = irq;
->>>> +
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +static int phy_syscon_pll_refclk(struct dwc3_data *data)
->>>> +{
->>>> +	struct device *dev = data->dev;
->>>> +	struct device_node *node = dev->of_node;
->>>> +	struct of_phandle_args args;
->>>> +	struct regmap *syscon;
->>>> +	int ret;
->>>> +
->>>> +	syscon = syscon_regmap_lookup_by_phandle(node, "ti,syscon-phy-pll-refclk");
->>>> +	if (IS_ERR(syscon)) {
->>>> +		dev_err(dev, "unable to get ti,syscon-phy-pll-refclk regmap\n");
->>>> +		return PTR_ERR(syscon);
->>>> +	}
->>>> +
->>>> +	data->syscon = syscon;
->>>> +
->>>> +	ret = of_parse_phandle_with_fixed_args(node, "ti,syscon-phy-pll-refclk", 1,
->>>> +					       0, &args);
->>>> +	if (ret)
->>>> +		return ret;
->>>> +
->>>> +	data->offset = args.args[0];
->>>> +
->>>> +	ret = regmap_update_bits(data->syscon, data->offset, PHY_PLL_REFCLK_MASK, data->rate_code);
->>>> +	if (ret) {
->>>> +		dev_err(dev, "failed to set phy pll reference clock rate\n");
->>>> +		return ret;
->>>> +	}
->>>> +
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +static void dwc3_ti_enable_irqs(struct dwc3_data *data)
->>>> +{
->>>> +	u32 reg;
->>>> +
->>>> +	/* enable VBUSVALID interrupt */
->>>> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_ENABLE_SET);
->>>> +	reg |= USBSS_IRQ_MISC_ENABLE_SET_VBUSVALID;
->>>> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_ENABLE_SET, reg);
->>>> +}
->>>> +
->>>> +static void dwc3_ti_disable_irqs(struct dwc3_data *data)
->>>> +{
->>>> +	u32 reg;
->>>> +
->>>> +	/* disable VBUSVALID interrupt */
->>>> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_ENABLE_CLR);
->>>> +	reg |= USBSS_IRQ_MISC_ENABLE_CLR_VBUSVALID;
->>>> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_ENABLE_CLR, reg);
->>>> +}
->>>> +
->>>> +static int dwc3_ti_probe(struct platform_device *pdev)
->>>> +{
->>>> +	struct device *dev = &pdev->dev;
->>>> +	struct device_node *node = pdev->dev.of_node;
->>>> +	struct dwc3_data *data;
->>>> +	int i, ret;
->>>> +	unsigned long rate;
->>>> +	u32 reg;
->>>> +
->>>> +	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
->>>> +	if (!data)
->>>> +		return -ENOMEM;
->>>> +
->>>> +	data->dev = dev;
->>>> +	platform_set_drvdata(pdev, data);
->>>> +
->>>> +	data->usbss = devm_platform_ioremap_resource(pdev, 0);
->>>> +	if (IS_ERR(data->usbss)) {
->>>> +		dev_err(dev, "can't map IOMEM resource\n");
->>>> +		return PTR_ERR(data->usbss);
->>>> +	}
->>>> +
->>>> +	data->usb2_refclk = devm_clk_get(dev, "ref");
->>>> +	if (IS_ERR(data->usb2_refclk)) {
->>>> +		dev_err(dev, "can't get usb2_refclk\n");
->>>> +		return PTR_ERR(data->usb2_refclk);
->>>> +	}
->>>> +
->>>> +	/* Calculate the rate code */
->>>> +	rate = clk_get_rate(data->usb2_refclk);
->>>> +	rate /= 1000;	// To KHz
->>>> +	for (i = 0; i < ARRAY_SIZE(dwc3_ti_rate_table); i++) {
->>>> +		if (dwc3_ti_rate_table[i] == rate)
->>>> +			break;
->>>> +	}
->>>> +
->>>> +	if (i == ARRAY_SIZE(dwc3_ti_rate_table)) {
->>>> +		dev_err(dev, "unsupported usb2_refclk rate: %lu KHz\n", rate);
->>>> +		ret = -EINVAL;
->>>> +		goto err_clk_disable;
->>>> +	}
->>>> +
->>>> +	data->rate_code = i;
->>>> +
->>>> +	/* Read the syscon property and set the rate code */
->>>> +	ret = phy_syscon_pll_refclk(data);
->>>> +	if (ret)
->>>> +		goto err_clk_disable;
->>>> +
->>>> +	/* VBUS divider select */
->>>> +	data->vbus_divider = device_property_read_bool(dev, "ti,vbus-divider");
->>>> +	reg = dwc3_ti_readl(data, USBSS_PHY_CONFIG);
->>>> +	if (data->vbus_divider)
->>>> +		reg |= 1 << USBSS_PHY_VBUS_SEL_SHIFT;
->>>> +
->>>> +	dwc3_ti_writel(data, USBSS_PHY_CONFIG, reg);
->>>> +
->>>> +	/* Initialize a work queue */
->>>> +	ret = devm_work_autocancel(dev, &data->work, connect_detect_work);
->>>> +	if (ret)
->>>> +		goto err_clk_disable;
->>>> +
->>>> +	/* Read and set VBUS IRQ */
->>>> +	ret = dwc3_ti_vbus_irq_setup(pdev);
->>>> +	if (ret)
->>>> +		goto err_clk_disable;
->>>> +
->>>> +	pm_runtime_set_active(dev);
->>>> +	pm_runtime_enable(dev);
->>>> +	/*
->>>> +	 * Don't ignore its dependencies with its children
->>>> +	 */
->>>> +	pm_suspend_ignore_children(dev, false);
->>>> +	clk_prepare_enable(data->usb2_refclk);
->>>> +	pm_runtime_get_noresume(dev);
->>>> +
->>>> +	ret = of_platform_populate(node, NULL, NULL, dev);
->>>> +	if (ret) {
->>>> +		dev_err(dev, "failed to create dwc3 core: %d\n", ret);
->>>> +		goto err_pm_disable;
->>>> +	}
->>>> +
->>>> +	/* Enable vbus irq */
->>>> +	dwc3_ti_enable_irqs(data);
->>>> +
->>>> +	connect_detect_work(&data->work);
->>>> +
->>>> +	/* Setting up autosuspend */
->>>> +	pm_runtime_set_autosuspend_delay(dev, DWC3_AM62_AUTOSUSPEND_DELAY);
->>>> +	pm_runtime_use_autosuspend(dev);
->>>> +	pm_runtime_mark_last_busy(dev);
->>>> +	pm_runtime_put_autosuspend(dev);
->>>> +	return 0;
->>>> +
->>>> +err_pm_disable:
->>>> +	clk_disable_unprepare(data->usb2_refclk);
->>>> +	pm_runtime_disable(dev);
->>>> +	pm_runtime_set_suspended(dev);
->>>> +err_clk_disable:
->>>> +	clk_put(data->usb2_refclk);
->>>> +	return ret;
->>>> +}
->>>> +
->>>> +static int dwc3_ti_remove_core(struct device *dev, void *c)
->>>> +{
->>>> +	struct platform_device *pdev = to_platform_device(dev);
->>>> +
->>>> +	platform_device_unregister(pdev);
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +static int dwc3_ti_remove(struct platform_device *pdev)
->>>> +{
->>>> +	struct device *dev = &pdev->dev;
->>>> +	struct dwc3_data *data = platform_get_drvdata(pdev);
->>>> +	u32 reg;
->>>> +
->>>> +	dwc3_ti_disable_irqs(data);
->>>> +
->>>> +	device_for_each_child(dev, NULL, dwc3_ti_remove_core);
->>>> +
->>>> +	/* Clear mode valid bit */
->>>> +	reg = dwc3_ti_readl(data, USBSS_MODE_CONTROL);
->>>> +	reg &= ~USBSS_MODE_VALID;
->>>> +	dwc3_ti_writel(data, USBSS_MODE_CONTROL, reg);
->>>> +
->>>> +	pm_runtime_put_sync(dev);
->>>> +	clk_disable_unprepare(data->usb2_refclk);
->>>> +	pm_runtime_disable(dev);
->>>> +	pm_runtime_set_suspended(dev);
->>>> +
->>>> +	clk_put(data->usb2_refclk);
->>>> +	platform_set_drvdata(pdev, NULL);
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +#ifdef CONFIG_PM
->>>> +static int dwc3_ti_suspend_common(struct device *dev)
->>>> +{
->>>> +	struct dwc3_data *data = dev_get_drvdata(dev);
->>>> +
->>>> +	/* disable irqs */
->>>> +	dwc3_ti_disable_irqs(data);
->>>> +
->>>> +	clk_disable_unprepare(data->usb2_refclk);
->>>> +
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +static int dwc3_ti_resume_common(struct device *dev)
->>>> +{
->>>> +	struct dwc3_data *data = dev_get_drvdata(dev);
->>>> +
->>>> +	clk_prepare_enable(data->usb2_refclk);
->>>> +
->>>> +	/* Enable irqs */
->>>> +	dwc3_ti_enable_irqs(data);
->>>> +
->>>> +	return 0;
->>>> +}
->>>> +
->>>> +static UNIVERSAL_DEV_PM_OPS(dwc3_ti_pm_ops, dwc3_ti_suspend_common,
->>>> +			    dwc3_ti_resume_common, NULL);
->>>> +
->>>> +#define DEV_PM_OPS	(&dwc3_ti_pm_ops)
->>>> +#else
->>>> +#define DEV_PM_OPS	NULL
->>>> +#endif /* CONFIG_PM */
->>>> +
->>>> +static const struct of_device_id dwc3_ti_of_match[] = {
->>>> +	{ .compatible = "ti,am62-usb"},
->>>> +	{},
->>>> +};
->>>> +MODULE_DEVICE_TABLE(of, dwc3_ti_of_match);
->>>> +
->>>> +static struct platform_driver dwc3_ti_driver = {
->>>> +	.probe		= dwc3_ti_probe,
->>>> +	.remove		= dwc3_ti_remove,
->>>> +	.driver		= {
->>>> +		.name	= "dwc3-am62",
->>>> +		.pm	= DEV_PM_OPS,
->>>> +		.of_match_table = dwc3_ti_of_match,
->>>> +	},
->>>> +};
->>>> +
->>>> +module_platform_driver(dwc3_ti_driver);
->>>> +
->>>> +MODULE_ALIAS("platform:dwc3-am62");
->>>> +MODULE_AUTHOR("Aswath Govindraju <a-govindraju@ti.com>");
->>>> +MODULE_LICENSE("GPL");
->>>> +MODULE_DESCRIPTION("DesignWare USB3 TI Glue Layer")
-> 
-> 
