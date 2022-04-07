@@ -2,93 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F474C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F381CC352A1
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239306AbiDGBWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60910 "EHLO
+        id S239426AbiDGBWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238486AbiDGBSU (ORCPT
+        with ESMTP id S238467AbiDGBSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 21:18:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D02182D89;
-        Wed,  6 Apr 2022 18:13:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20A2AB81E7F;
-        Thu,  7 Apr 2022 01:13:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1753BC385A3;
-        Thu,  7 Apr 2022 01:13:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649293982;
-        bh=yC99/wYz6UhC2zfmoGGY9wbZug421pD2Jlmf8Cdzo/U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QwBMbCN8fuG08UVq/yhmxyRVMtb26djGS8NPn6PRd2ZLAdpgPFaktcZYGCRKKhKW7
-         obYoIvJ9zbPXh8l5Njt7mdkKQX2XDPK3ROMF7AdPci8Mr6poRFVSuA3MD+ARlbtRWF
-         m8e4QzSZV7Q9dwwYDd5qHZeUljc9k2MOJtz9OMHSFTGtbNQ0Y97Vzu/Ns7kGZ1Ub7J
-         VkFZzLMxfvgNutAbWUc0/K3mwXlndEGrtjQ32tMiY8iydGQEvJOWZACCmroXMCP0kU
-         9TaBsgviEjRRkx467SwwxPG3S4lBirSQgiVXsAa4WXmwRrb3c7Mu3/9ZNTx81NTvJj
-         TuoLKoOoqzqGw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>, a.zummo@towertech.it,
-        linux-rtc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 03/27] rtc: pcf2127: fix bug when reading alarm registers
-Date:   Wed,  6 Apr 2022 21:12:33 -0400
-Message-Id: <20220407011257.114287-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011257.114287-1-sashal@kernel.org>
-References: <20220407011257.114287-1-sashal@kernel.org>
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B12419852C;
+        Wed,  6 Apr 2022 18:13:03 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id d10so4713542edj.0;
+        Wed, 06 Apr 2022 18:13:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=g8v4shd25GPDKxW8/72Sn4jdIkSgn2LhNRd6B8RvtA0=;
+        b=LjO0NIze8f21wcPliVRZEASPSuBMJxi7795FiThHlhYnCWFvy1BLzyLlMrjxjEAN5Q
+         svtqL8oicLBWHKO6XfAxPWS2uhEzCDNuLw3eKKqdQQ6ivxmq7++PicRFr4a/eB1oQrGl
+         09hAY+2i7kUDpweNjMFDGW5dVTomZTqS8UCYcFqy/4KHZ5a1KIMPNJD2+qkG6ddoohoe
+         LUOOfikm8ZsoZ9v5CWS7TkNjkKlDQO+SL3uPRaZqcKWbKXbgeihLPVFbVtGXidWLBg2g
+         Ir4N7J0o/QVusDOlmLATF/KUsVprh0R4VxT4DxwNyoowHVGdE5EYOivRMsH5ndYYTSrg
+         zg7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=g8v4shd25GPDKxW8/72Sn4jdIkSgn2LhNRd6B8RvtA0=;
+        b=cELaUdi/o6WhzbVasG1pHnhjRLG8p1OGNqOLPeeiRwTVr6Mzgl1f6EIfDoUQl8Fo1J
+         3RQyh2dDACDWzs0QnmbhQMA6ArYmfgjPZRPuRmPXEzBtlnjCQwcIuAAX2yePh7xV03cZ
+         LCIuBcNMz5yeZCrL/J4bBSstYGmHuRHaux8SnR1zNQ2+yVGAnHU84ySimd4bMm1Ew6eo
+         vuYiY4nXlx/3Bk8V2d9Dew1GBmuACD8iQs5zlOBGxLQm9VqC8fG8jEZKT8e4/J1VjSR6
+         vZKupxHGpCrurHbwpG+x7z4V5o3qeHxrUxQ0Jlc/upwy3ohYxXZPuAx8tjOe1mgZKhyw
+         5yWw==
+X-Gm-Message-State: AOAM533b8aHU3ezyZzt11mFfa99Q0oF/2WN/Tj5oVvSMVZu8Errw89Pt
+        NsYSGHTtGK4udyoXQJFFOnUJOjsIHdP48/tEWaA=
+X-Google-Smtp-Source: ABdhPJx/echMntfDFyiyVPC/gqKLWAbfPZwzsjwI+pWr4XJoT64OjDw/V+f5Mt+WFWOjjMUFwrwleMIKabyvLtVswQY=
+X-Received: by 2002:a05:6402:430d:b0:419:45cd:7ab1 with SMTP id
+ m13-20020a056402430d00b0041945cd7ab1mr11485971edc.367.1649293981787; Wed, 06
+ Apr 2022 18:13:01 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220228140838.622021-1-benjamin.gaignard@collabora.com>
+ <eefa63b3-2a4d-4470-9a4e-517087ebcfaf@collabora.com> <CAHCN7xL2uZTMy30FGfDkDK4Lym6wvfr_MTv7QwtchrkTXMQiuw@mail.gmail.com>
+ <79a9c925-d930-ad23-dc53-9ebc16d1328a@collabora.com> <3f778844-f655-74a7-0a00-05caa84eca35@collabora.com>
+ <CAHCN7xLy2381AFLWhLxk5YuRV7C=OwLX=XPXONX8sbkg-SqMjA@mail.gmail.com>
+ <CAHCN7xJWQa-uXb0-+CSvAr1JhFmQYt80Q=uGvaY8uyptNcfbgw@mail.gmail.com>
+ <163202bd-ea51-e80a-1481-568fae25b045@collabora.com> <CAHCN7x+AwNauiyaVL=NGARkmxWOL9uLS5-AO4TjkvLGNQ=3r+Q@mail.gmail.com>
+ <bb462ee8-7bf9-5574-7cc2-098cc66e5ef0@collabora.com> <CAHCN7x+DTjeP7zQJYPyqzdz=hXWjz6Br0v1sWh4n1J3TJPb+9g@mail.gmail.com>
+ <8d23c99a-4ad0-e65a-0134-12f5d119e8bb@collabora.com> <CAHCN7x+YuXFrMe6dYo_VhkG7ey1jcPTpOMCM1=qoTivZO9U2Rw@mail.gmail.com>
+ <f495aa2b-81f7-a3cd-a6dd-cc5ae5f0a81f@collabora.com> <439e5c67e66dfff8f44f63787e2cdb8379f87446.camel@ndufresne.ca>
+ <a1069c94-4c3c-ee4d-738a-752bb1d12dac@collabora.com> <CAHCN7x+hvYjoZFA6uaTXq-XfLMck-ht7Z-VzzvGpkh7H7BBbEQ@mail.gmail.com>
+In-Reply-To: <CAHCN7x+hvYjoZFA6uaTXq-XfLMck-ht7Z-VzzvGpkh7H7BBbEQ@mail.gmail.com>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Wed, 6 Apr 2022 20:12:50 -0500
+Message-ID: <CAHCN7xJwu1VnCNLHc9RNcbZ2yT4RooacA-hpwcXE3XvLrEJPGA@mail.gmail.com>
+Subject: Re: [PATCH v4 00/15] Move HEVC stateless controls out of staging
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com,
+        Chen-Yu Tsai <wens@csie.org>,
+        "jernej.skrabec" <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        linux-media <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:STAGING SUBSYSTEM" <linux-staging@lists.linux.dev>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev, kernel <kernel@collabora.com>,
+        knaerzche@gmail.com, jc@kynesim.co.uk
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Wed, Apr 6, 2022 at 8:34 AM Adam Ford <aford173@gmail.com> wrote:
+>
+> On Wed, Apr 6, 2022 at 8:05 AM Benjamin Gaignard
+> <benjamin.gaignard@collabora.com> wrote:
+> >
+> >
+> > Le 06/04/2022 =C3=A0 15:02, Nicolas Dufresne a =C3=A9crit :
+> > > Le mercredi 06 avril 2022 =C3=A0 14:50 +0200, Benjamin Gaignard a =C3=
+=A9crit :
+> > >>> default=3D1 value=3D1
+> > >>> 1: Frame-Based
+> > >>>                    hevc_start_code 0x00a40a96 (menu)   : min=3D1 ma=
+x=3D1
+> > >>> default=3D1 value=3D1
+> > >>> 1: Annex B Start Code
+> > >> It is the same so that suggest the issue is coming from GStreamer pl=
+ugin.
+> > > Can you report the GStreamer commit hash you have building on ? Also =
+please
+> > > validate the creation date of the plugin (libgstv4l2codecs.so) agains=
+t your
+> > > source update date. Reminder that GStreamer is now mono-repo (just in=
+ case).
+> > >
+> > > https://gitlab.freedesktop.org/benjamin.gaignard1/gstreamer/-/tree/HE=
+VC_aligned_with_kernel_5.15
+> > > Hash: 54b7c1f98084c85d103446cc3f2edce42ad53b0f
+> > >
+> > > Benjamin, can you confirm you have no local changes and this is the h=
+ash you are
+> > > building from ?
+> >
+> > Yes that is the hash I'm using without local changes
+>
+> I was on (gstreamer-HEVC_aligned_with_kernel_5.15) with a hash of
+> 4b78eaa48c0c924afd57f85c47396b77497e69f8
+>
+> Benjamin's hash wasn't listed before, but I did a git pull, and now it is=
+.
+>
+> I've checked out that hash, and I am rebuilding it now. I'll report my
+> findings when it's done.  It's building on the imx8mq, so it may take
+> some time.
 
-[ Upstream commit 73ce05302007eece23a6acb7dc124c92a2209087 ]
+We're getting closer:
 
-The first bug is that reading the 5 alarm registers results in a read
-operation of 20 bytes. The reason is because the destination buffer is
-defined as an array of "unsigned int", and we use the sizeof()
-operator on this array to define the bulk read count.
+# gst-launch-1.0 appsrc num-buffers=3D0 ! h265parse ! v4l2slh265dec ! fakes=
+ink
+Setting pipeline to PAUSED ...
+Pipeline is PREROLLING ...
+Pipeline is PREROLLED ...
+Setting pipeline to PLAYING ...
+Redistribute latency...
+New clock: GstSystemClock
+Got EOS from element "pipeline0".
+Execution ended after 0:00:00.000563180
+Setting pipeline to NULL ...
+Freeing pipeline ...
 
-The second bug is that the read value is invalid, because we are
-indexing the destination buffer as integers (4 bytes), instead of
-indexing it as u8.
+GStreamer-H.265-V4L2SL-Gst1.0: GStreamer H.265 V4L2SL decoder for
+GStreamer 1.0... =E2=9C=94=EF=B8=8F
 
-Changing the destination buffer type to u8 fixes both problems.
+The statemless decoder appears to show it can do h.265, but it fails
+all the fluster tests.
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220208162908.3182581-1-hugo@hugovil.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/rtc/rtc-pcf2127.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Ran 0/147 tests successfully               in 9.376 secs
 
-diff --git a/drivers/rtc/rtc-pcf2127.c b/drivers/rtc/rtc-pcf2127.c
-index 56c58b055dff..43f801107095 100644
---- a/drivers/rtc/rtc-pcf2127.c
-+++ b/drivers/rtc/rtc-pcf2127.c
-@@ -374,7 +374,8 @@ static int pcf2127_watchdog_init(struct device *dev, struct pcf2127 *pcf2127)
- static int pcf2127_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
- {
- 	struct pcf2127 *pcf2127 = dev_get_drvdata(dev);
--	unsigned int buf[5], ctrl2;
-+	u8 buf[5];
-+	unsigned int ctrl2;
- 	int ret;
- 
- 	ret = regmap_read(pcf2127->regmap, PCF2127_REG_CTRL2, &ctrl2);
--- 
-2.35.1
+I checked other V4L2SL decoders and items that previously passed are
+failing now, so I think something is wrong or corrupted with my
+system.
 
+For some reason, my system seems unstable, so I might reinstall
+everything, but it will be a slow process.  I don't know if my sd card
+is wearing out, or something is wrong, but simple things like mounting
+a thumb drive are taking a very long time.
+
+I am not sure when I'll get back to this again, but I'll try to do a
+re-install this weekend to see if I can get my system more stable.
+
+adam
+
+>
+> adam
+>
+> >
+> > Benjamin
+> >
+> > >
+> > > regards,
+> > > Nicolas
+> > >
