@@ -2,189 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95B9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7020FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242360AbiDGHzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:55:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39384 "EHLO
+        id S242349AbiDGHzK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242332AbiDGHy4 (ORCPT
+        with ESMTP id S242339AbiDGHy5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:54:56 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B737E1C4B23
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:52:56 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KYtrp6zp8z13VdT;
-        Thu,  7 Apr 2022 15:52:26 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 15:52:47 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 15:52:54 +0800
-Subject: Re: [PATCH RESEND v5 2/5] iova: Allow rcache range upper limit to be
- flexible
-To:     John Garry <john.garry@huawei.com>, <joro@8bytes.org>,
-        <will@kernel.org>, <robin.murphy@arm.com>
-CC:     <mst@redhat.com>, <jasowang@redhat.com>,
-        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <chenxiang66@hisilicon.com>, <jean-philippe@linaro.org>,
-        <linuxarm@huawei.com>
-References: <1649071634-188535-1-git-send-email-john.garry@huawei.com>
- <1649071634-188535-3-git-send-email-john.garry@huawei.com>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <834447a0-675a-5978-8ffe-285ce09f4213@huawei.com>
-Date:   Thu, 7 Apr 2022 15:52:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        Thu, 7 Apr 2022 03:54:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE54B1C592B
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:52:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649317977;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NeKgo4zQVrdq6IcW5Wmd0hkOphqBpf2zABHpDxlt6y4=;
+        b=d8nd3KnX26DzzEZOyJsrrEiJWluSyG7641q4FNKsRcRREIGboNIMpAs8U+JYNg+TVnYVFy
+        dJs/tstjFud16J9twvd3m3Y5aLS/NyoqIcUBrOo8p24QMYH5s1FdA30GSo6+fLM6DDebpV
+        mEvHsrestjHRYDZ307JNtHe7VSTrIqk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-532-8I66qEciNCybx5-R8dhIhA-1; Thu, 07 Apr 2022 03:52:54 -0400
+X-MC-Unique: 8I66qEciNCybx5-R8dhIhA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 35A863804091;
+        Thu,  7 Apr 2022 07:52:48 +0000 (UTC)
+Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 25E60C28119;
+        Thu,  7 Apr 2022 07:52:45 +0000 (UTC)
+Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
+        id EDE841C01A8; Thu,  7 Apr 2022 09:52:43 +0200 (CEST)
+From:   Artem Savkov <asavkov@redhat.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Anna-Maria Behnsen <anna-maria@linutronix.de>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
+Subject: [PATCH v4 1/2] timer: add a function to adjust timeouts to be upper bound
+Date:   Thu,  7 Apr 2022 09:52:41 +0200
+Message-Id: <20220407075242.118253-2-asavkov@redhat.com>
+In-Reply-To: <20220407075242.118253-1-asavkov@redhat.com>
+References: <871qyb35q4.ffs@tglx>
+ <20220407075242.118253-1-asavkov@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <1649071634-188535-3-git-send-email-john.garry@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Current timer wheel implementation is optimized for performance and
+energy usage but lacks in precision. This, normally, is not a problem as
+most timers that use timer wheel are used for timeouts and thus rarely
+expire, instead they often get canceled or modified before expiration.
+Even when they don't, expiring a bit late is not an issue for timeout
+timers.
 
+TCP keepalive timer is a special case, it's aim is to prevent timeouts,
+so triggering earlier rather than later is desired behavior. In a
+reported case the user had a 3600s keepalive timer for preventing firewall
+disconnects (on a 3650s interval). They observed keepalive timers coming
+in up to four minutes late, causing unexpected disconnects.
 
-On 2022/4/4 19:27, John Garry wrote:
-> Some low-level drivers may request DMA mappings whose IOVA length exceeds
-> that of the current rcache upper limit.
-> 
-> This means that allocations for those IOVAs will never be cached, and
-> always must be allocated and freed from the RB tree per DMA mapping cycle.
-> This has a significant effect on performance, more so since commit
-> 4e89dce72521 ("iommu/iova: Retry from last rb tree node if iova search
-> fails"), as discussed at [0].
-> 
-> As a first step towards allowing the rcache range upper limit be
-> configured, hold this value in the IOVA rcache structure, and allocate
-> the rcaches separately.
-> 
-> Delete macro IOVA_RANGE_CACHE_MAX_SIZE in case it's reused by mistake.
-> 
-> [0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
-> 
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> ---
->  drivers/iommu/iova.c | 20 ++++++++++----------
->  include/linux/iova.h |  3 +++
->  2 files changed, 13 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index db77aa675145..5c22b9187b79 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -15,8 +15,6 @@
->  /* The anchor node sits above the top of the usable address space */
->  #define IOVA_ANCHOR	~0UL
->  
-> -#define IOVA_RANGE_CACHE_MAX_SIZE 6	/* log of max cached IOVA range size (in pages) */
-> -
->  static bool iova_rcache_insert(struct iova_domain *iovad,
->  			       unsigned long pfn,
->  			       unsigned long size);
-> @@ -443,7 +441,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
->  	 * rounding up anything cacheable to make sure that can't happen. The
->  	 * order of the unadjusted size will still match upon freeing.
->  	 */
-> -	if (size < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
-> +	if (size < (1 << (iovad->rcache_max_size - 1)))
->  		size = roundup_pow_of_two(size);
->  
->  	iova_pfn = iova_rcache_get(iovad, size, limit_pfn + 1);
-> @@ -713,13 +711,15 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
->  	unsigned int cpu;
->  	int i, ret;
->  
-> -	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
-> +	iovad->rcache_max_size = 6; /* Arbitrarily high default */
+This commit adds upper_bound_timeout() function that takes a relative
+timeout and adjusts it based on timer wheel granularity so that supplied
+value effectively becomes an upper bound for the timer.
 
-It would be better to assign this constant value to iovad->rcache_max_size in init_iova_domain().
+This was previously discussed here:
+https://lore.kernel.org/all/20210302001054.4qgrvnkltvkgikzr@treble/T/#u
 
-> +
-> +	iovad->rcaches = kcalloc(iovad->rcache_max_size,
->  				 sizeof(struct iova_rcache),
->  				 GFP_KERNEL);
->  	if (!iovad->rcaches)
->  		return -ENOMEM;
->  
-> -	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-> +	for (i = 0; i < iovad->rcache_max_size; ++i) {
->  		struct iova_cpu_rcache *cpu_rcache;
->  		struct iova_rcache *rcache;
->  
-> @@ -816,7 +816,7 @@ static bool iova_rcache_insert(struct iova_domain *iovad, unsigned long pfn,
->  {
->  	unsigned int log_size = order_base_2(size);
->  
-> -	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
-> +	if (log_size >= iovad->rcache_max_size)
->  		return false;
->  
->  	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn);
-> @@ -872,7 +872,7 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
->  {
->  	unsigned int log_size = order_base_2(size);
->  
-> -	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE || !iovad->rcaches)
-> +	if (log_size >= iovad->rcache_max_size || !iovad->rcaches)
->  		return 0;
->  
->  	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
-> @@ -888,7 +888,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
->  	unsigned int cpu;
->  	int i, j;
->  
-> -	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-> +	for (i = 0; i < iovad->rcache_max_size; ++i) {
->  		rcache = &iovad->rcaches[i];
->  		if (!rcache->cpu_rcaches)
->  			break;
-> @@ -916,7 +916,7 @@ static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
->  	unsigned long flags;
->  	int i;
->  
-> -	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-> +	for (i = 0; i < iovad->rcache_max_size; ++i) {
->  		rcache = &iovad->rcaches[i];
->  		cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
->  		spin_lock_irqsave(&cpu_rcache->lock, flags);
-> @@ -935,7 +935,7 @@ static void free_global_cached_iovas(struct iova_domain *iovad)
->  	unsigned long flags;
->  	int i, j;
->  
-> -	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-> +	for (i = 0; i < iovad->rcache_max_size; ++i) {
->  		rcache = &iovad->rcaches[i];
->  		spin_lock_irqsave(&rcache->lock, flags);
->  		for (j = 0; j < rcache->depot_size; ++j) {
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index 320a70e40233..02f7222fa85a 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -38,6 +38,9 @@ struct iova_domain {
->  
->  	struct iova_rcache	*rcaches;
->  	struct hlist_node	cpuhp_dead;
-> +
-> +	/* log of max cached IOVA range size (in pages) */
-> +	unsigned long	rcache_max_size;
->  };
->  
->  static inline unsigned long iova_size(struct iova *iova)
-> 
+Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Artem Savkov <asavkov@redhat.com>
+---
+ include/linux/timer.h |  1 +
+ kernel/time/timer.c   | 68 ++++++++++++++++++++++++++++++++++---------
+ 2 files changed, 56 insertions(+), 13 deletions(-)
 
+diff --git a/include/linux/timer.h b/include/linux/timer.h
+index fda13c9d1256c..b209d31d543f0 100644
+--- a/include/linux/timer.h
++++ b/include/linux/timer.h
+@@ -168,6 +168,7 @@ static inline int timer_pending(const struct timer_list * timer)
+ 	return !hlist_unhashed_lockless(&timer->entry);
+ }
+ 
++extern unsigned long upper_bound_timeout(unsigned long timeout);
+ extern void add_timer_on(struct timer_list *timer, int cpu);
+ extern int del_timer(struct timer_list * timer);
+ extern int mod_timer(struct timer_list *timer, unsigned long expires);
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 85f1021ad4595..a645b62e257e2 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -507,28 +507,38 @@ static inline unsigned calc_index(unsigned long expires, unsigned lvl,
+ 	return LVL_OFFS(lvl) + (expires & LVL_MASK);
+ }
+ 
+-static int calc_wheel_index(unsigned long expires, unsigned long clk,
+-			    unsigned long *bucket_expiry)
++static inline int get_wheel_lvl(unsigned long delta)
+ {
+-	unsigned long delta = expires - clk;
+-	unsigned int idx;
+-
+ 	if (delta < LVL_START(1)) {
+-		idx = calc_index(expires, 0, bucket_expiry);
++		return 0;
+ 	} else if (delta < LVL_START(2)) {
+-		idx = calc_index(expires, 1, bucket_expiry);
++		return 1;
+ 	} else if (delta < LVL_START(3)) {
+-		idx = calc_index(expires, 2, bucket_expiry);
++		return 2;
+ 	} else if (delta < LVL_START(4)) {
+-		idx = calc_index(expires, 3, bucket_expiry);
++		return 3;
+ 	} else if (delta < LVL_START(5)) {
+-		idx = calc_index(expires, 4, bucket_expiry);
++		return 4;
+ 	} else if (delta < LVL_START(6)) {
+-		idx = calc_index(expires, 5, bucket_expiry);
++		return 5;
+ 	} else if (delta < LVL_START(7)) {
+-		idx = calc_index(expires, 6, bucket_expiry);
++		return 6;
+ 	} else if (LVL_DEPTH > 8 && delta < LVL_START(8)) {
+-		idx = calc_index(expires, 7, bucket_expiry);
++		return 7;
++	}
++
++	return -1;
++}
++
++static int calc_wheel_index(unsigned long expires, unsigned long clk,
++			    unsigned long *bucket_expiry)
++{
++	unsigned long delta = expires - clk;
++	unsigned int idx;
++	int lvl = get_wheel_lvl(delta);
++
++	if (lvl >= 0) {
++		idx = calc_index(expires, lvl, bucket_expiry);
+ 	} else if ((long) delta < 0) {
+ 		idx = clk & LVL_MASK;
+ 		*bucket_expiry = clk;
+@@ -545,6 +555,38 @@ static int calc_wheel_index(unsigned long expires, unsigned long clk,
+ 	return idx;
+ }
+ 
++/**
++ * upper_bound_timeout - return granularity-adjusted timeout
++ * @timeout: timeout value in jiffies
++ *
++ * This function return supplied timeout adjusted based on timer wheel
++ * granularity effectively making supplied value an upper bound at which the
++ * timer will expire. Due to the way timer wheel works timeouts smaller than
++ * LVL_GRAN on their respecrive levels will be _at least_
++ * LVL_GRAN(lvl) - LVL_GRAN(lvl -1)) jiffies early.
++ */
++unsigned long upper_bound_timeout(unsigned long timeout)
++{
++	int lvl = get_wheel_lvl(timeout);
++
++	if (lvl < 0) {
++		if ((long) timeout < 0) {
++			/*
++			 * This will expire immediately so no adjustment
++			 * needed.
++			 */
++			return timeout;
++		} else {
++			if (timeout > WHEEL_TIMEOUT_CUTOFF)
++				timeout = WHEEL_TIMEOUT_CUTOFF;
++			lvl = LVL_DEPTH - 1;
++		}
++	}
++
++	return LVL_GRAN(lvl) > timeout ? 0 : timeout - LVL_GRAN(lvl);
++}
++EXPORT_SYMBOL(upper_bound_timeout);
++
+ static void
+ trigger_dyntick_cpu(struct timer_base *base, struct timer_list *timer)
+ {
 -- 
-Regards,
-  Zhen Lei
+2.34.1
+
