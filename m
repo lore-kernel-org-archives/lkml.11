@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE90FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:25:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238670AbiDGB1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
+        id S238687AbiDGB1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240196AbiDGBTv (ORCPT
+        with ESMTP id S240243AbiDGBTw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:19:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F241193206;
-        Wed,  6 Apr 2022 18:15:29 -0700 (PDT)
+        Wed, 6 Apr 2022 21:19:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C221B7558;
+        Wed,  6 Apr 2022 18:15:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5ECCDCE25B2;
-        Thu,  7 Apr 2022 01:15:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F26DC385AF;
-        Thu,  7 Apr 2022 01:15:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3566761DA8;
+        Thu,  7 Apr 2022 01:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1879C385A7;
+        Thu,  7 Apr 2022 01:15:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294125;
-        bh=ASIjV+pChRoTXWfJg0esXtdUYY+xsNmlwSH37KNsLMM=;
+        s=k20201202; t=1649294133;
+        bh=oFWK77TFIfOUUQE8Z7z3Ndo6+9XkdRFZNj44FOc0Un0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B8AYelZ7XjnbT/PIdqLH0kyAEkl5ktuoXP6yRrRXsdwkghBLtHWxtcL2R5d2beyRD
-         di8LTkynaNIV8EPEmh4VEc5f4AQsBt3hhmLU+WoCvjGoggqHIgSO/IroX4NsSDsJk9
-         TZmZBkc0H6g0A+gz+0u89EBzTi4r79KVAtuWOX/81an6IcY4R7VMCr23RvbuFjOKg7
-         0Bdotsiq4Z0Hx+R/I7rJnKYP4So7MJG5LsEP89cusVLRCStMEXCTdTUBArnuajZqtp
-         1k7Ciik2Qb85H0lppNM3Pgmm77A15gDNAknzXkO539fm3Zhk9owDYrXmCtcPi2q6uP
-         56kStJnrcVfXw==
+        b=ogy2fAvUXS3vVw7TqP4LFLvxaJv3TRl5A/v7MrHPyLqOahyoXW8NZCklM5wkbRwZj
+         vKP2P9MuYp608aKKGJWbw+nSfQsdQNLYlE9KVuRLhg/+SijEk2koUog5JGI59zvC2m
+         2JiyHDgjNBGqtviKhGC/STelrh5D9VDkHopgZeDRaf9msMwB92iRt/jBBMAza4UjJq
+         n45N5s+xoY6AzlAVQqSK+uuXFj+T38qbU6fckooglsfteigo57FcLOrXsYhjaxYFtx
+         8/m5g2s5WArlJYMyaUwLMjaFAv8zQBct1h0htD2muBHkG7dYiXsph4V8OaxACWYiqz
+         YLt73u0v2BA7w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>, a.zummo@towertech.it,
-        linux-rtc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 02/17] rtc: fix use-after-free on device removal
-Date:   Wed,  6 Apr 2022 21:15:06 -0400
-Message-Id: <20220407011521.115014-2-sashal@kernel.org>
+Cc:     Jeff LaBundy <jeff@labundy.com>,
+        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 05/17] Input: add bounds checking to input_set_capability()
+Date:   Wed,  6 Apr 2022 21:15:09 -0400
+Message-Id: <20220407011521.115014-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011521.115014-1-sashal@kernel.org>
 References: <20220407011521.115014-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,78 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+From: Jeff LaBundy <jeff@labundy.com>
 
-[ Upstream commit c8fa17d9f08a448184f03d352145099b5beb618e ]
+[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
 
-If the irqwork is still scheduled or running while the RTC device is
-removed, a use-after-free occurs in rtc_timer_do_work().  Cleanup the
-timerqueue and ensure the work is stopped to fix this.
+Update input_set_capability() to prevent kernel panic in case the
+event code exceeds the bitmap for the given event type.
 
- BUG: KASAN: use-after-free in mutex_lock+0x94/0x110
- Write of size 8 at addr ffffff801d846338 by task kworker/3:1/41
-
- Workqueue: events rtc_timer_do_work
- Call trace:
-  mutex_lock+0x94/0x110
-  rtc_timer_do_work+0xec/0x630
-  process_one_work+0x5fc/0x1344
-  ...
-
- Allocated by task 551:
-  kmem_cache_alloc_trace+0x384/0x6e0
-  devm_rtc_allocate_device+0xf0/0x574
-  devm_rtc_device_register+0x2c/0x12c
-  ...
-
- Freed by task 572:
-  kfree+0x114/0x4d0
-  rtc_device_release+0x64/0x80
-  device_release+0x8c/0x1f4
-  kobject_put+0x1c4/0x4b0
-  put_device+0x20/0x30
-  devm_rtc_release_device+0x1c/0x30
-  devm_action_release+0x54/0x90
-  release_nodes+0x124/0x310
-  devres_release_group+0x170/0x240
-  i2c_device_remove+0xd8/0x314
-  ...
-
- Last potentially related work creation:
-  insert_work+0x5c/0x330
-  queue_work_on+0xcc/0x154
-  rtc_set_time+0x188/0x5bc
-  rtc_dev_ioctl+0x2ac/0xbd0
-  ...
-
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210160951.7718-1-vincent.whitchurch@axis.com
+Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/class.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/input/input.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/rtc/class.c b/drivers/rtc/class.c
-index 9458e6d6686a..8b434213bc7a 100644
---- a/drivers/rtc/class.c
-+++ b/drivers/rtc/class.c
-@@ -26,6 +26,15 @@ struct class *rtc_class;
- static void rtc_device_release(struct device *dev)
- {
- 	struct rtc_device *rtc = to_rtc_device(dev);
-+	struct timerqueue_head *head = &rtc->timerqueue;
-+	struct timerqueue_node *node;
-+
-+	mutex_lock(&rtc->ops_lock);
-+	while ((node = timerqueue_getnext(head)))
-+		timerqueue_del(head, node);
-+	mutex_unlock(&rtc->ops_lock);
-+
-+	cancel_work_sync(&rtc->irqwork);
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index f7398b996bac..5304262dbfa5 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -47,6 +47,17 @@ static DEFINE_MUTEX(input_mutex);
  
- 	ida_simple_remove(&rtc_ida, rtc->id);
- 	kfree(rtc);
+ static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
+ 
++static const unsigned int input_max_code[EV_CNT] = {
++	[EV_KEY] = KEY_MAX,
++	[EV_REL] = REL_MAX,
++	[EV_ABS] = ABS_MAX,
++	[EV_MSC] = MSC_MAX,
++	[EV_SW] = SW_MAX,
++	[EV_LED] = LED_MAX,
++	[EV_SND] = SND_MAX,
++	[EV_FF] = FF_MAX,
++};
++
+ static inline int is_event_supported(unsigned int code,
+ 				     unsigned long *bm, unsigned int max)
+ {
+@@ -1978,6 +1989,14 @@ EXPORT_SYMBOL(input_get_timestamp);
+  */
+ void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
+ {
++	if (type < EV_CNT && input_max_code[type] &&
++	    code > input_max_code[type]) {
++		pr_err("%s: invalid code %u for type %u\n", __func__, code,
++		       type);
++		dump_stack();
++		return;
++	}
++
+ 	switch (type) {
+ 	case EV_KEY:
+ 		__set_bit(code, dev->keybit);
 -- 
 2.35.1
 
