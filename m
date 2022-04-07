@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B20C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF093C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:03:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245052AbiDGMFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:05:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54166 "EHLO
+        id S245081AbiDGMFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:05:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236880AbiDGMEk (ORCPT
+        with ESMTP id S241637AbiDGMEi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:04:40 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B0FBBF52D
+        Thu, 7 Apr 2022 08:04:38 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8300BC1CB9
         for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:02:36 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KZ0MN33yzzgYC6;
-        Thu,  7 Apr 2022 20:00:48 +0800 (CST)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KZ0JZ2FbbzBs6c;
+        Thu,  7 Apr 2022 19:58:22 +0800 (CST)
 Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 20:02:33 +0800
+ 15.1.2308.21; Thu, 7 Apr 2022 20:02:34 +0800
 Received: from ubuntu1804.huawei.com (10.67.175.36) by
  dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -33,9 +33,9 @@ CC:     <jthierry@redhat.com>, <catalin.marinas@arm.com>,
         <will@kernel.org>, <mark.rutland@arm.com>, <ardb@kernel.org>,
         <masahiroy@kernel.org>, <jpoimboe@redhat.com>,
         <peterz@infradead.org>, <ycote@redhat.com>
-Subject: [RFC PATCH v3 07/13] objtool: arm64: Decode other system instructions
-Date:   Thu, 7 Apr 2022 20:01:35 +0800
-Message-ID: <20220407120141.43801-8-chenzhongjin@huawei.com>
+Subject: [RFC PATCH v3 10/13] objtool: arm64: Accept non-instruction data in code sections
+Date:   Thu, 7 Apr 2022 20:01:38 +0800
+Message-ID: <20220407120141.43801-11-chenzhongjin@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220407120141.43801-1-chenzhongjin@huawei.com>
 References: <20220407120141.43801-1-chenzhongjin@huawei.com>
@@ -51,31 +51,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Julien Thierry <jthierry@redhat.com>
 
-Decode ERET, BRK and NOPs
+The compiler can generate some '0x0' words in code sections to pad the
+end of functions. Also some pesudo-instructions can generate data in
+code sections.
+Record these instructions which can't be decoded as ignored for
+objtool check.
 
 Signed-off-by: Julien Thierry <jthierry@redhat.com>
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
 ---
- tools/objtool/arch/arm64/decode.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ tools/objtool/arch/arm64/decode.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
 diff --git a/tools/objtool/arch/arm64/decode.c b/tools/objtool/arch/arm64/decode.c
-index 351f8b1bbd6d..b07e0f51637e 100644
+index b62addece734..d2522ef43101 100644
 --- a/tools/objtool/arch/arm64/decode.c
 +++ b/tools/objtool/arch/arm64/decode.c
-@@ -238,6 +238,13 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 			/* Remaining branch opcodes are conditional */
- 			*type = INSN_JUMP_CONDITIONAL;
- 			*immediate = aarch64_get_branch_offset(insn);
-+		} else if (aarch64_insn_is_eret(insn)) {
-+			*type = INSN_CONTEXT_SWITCH;
-+		} else if (aarch64_insn_is_steppable_hint(insn)) {
+@@ -389,8 +389,23 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
+ 
+ 	switch (aarch64_get_insn_class(insn)) {
+ 	case AARCH64_INSN_CLS_UNKNOWN:
+-		WARN("can't decode instruction at %s:0x%lx", sec->name, offset);
+-		return -1;
++		/*
++		 * There are a few reasons that non-valid opcodes in code sections:
++		 * - For LDR ops, assembler can generate the data to be
++		 *   loaded in the code section
++		 * - Compiler/assembler can generate zeroes to pad function that
++		 *   do not end on 8-byte alignment
++		 * - Some pseudo-instructions can also generate data in code
++		 *   section
++		 *
++		 * Record these data as ignored so that they won't cause fault
++		 */
++		if (insn == 0x0)
 +			*type = INSN_NOP;
-+		} else if (aarch64_insn_is_brk(insn)) {
-+			*type = INSN_BUG;
-+			*immediate = aarch64_insn_decode_immediate(AARCH64_INSN_IMM_16, insn);
- 		}
- 		break;
- 	default:
++		else if (record_invalid_insn(sec, offset, false))
++			return -1;
++
++		break;
+ 	case AARCH64_INSN_CLS_DP_IMM:
+ 		/* Mov register to and from SP are aliases of add_imm */
+ 		if (aarch64_insn_is_add_imm(insn) ||
 -- 
 2.17.1
 
