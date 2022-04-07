@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4008DC43217
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:12:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBFA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234076AbiDGBOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
+        id S235907AbiDGBOP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:14:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235386AbiDGBNS (ORCPT
+        with ESMTP id S235434AbiDGBNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:13:18 -0400
+        Wed, 6 Apr 2022 21:13:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7DF185958;
-        Wed,  6 Apr 2022 18:11:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF5618648A;
+        Wed,  6 Apr 2022 18:11:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8933261DB3;
-        Thu,  7 Apr 2022 01:11:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9E44C385B4;
-        Thu,  7 Apr 2022 01:11:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24D6861DB4;
+        Thu,  7 Apr 2022 01:11:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB0FCC385A3;
+        Thu,  7 Apr 2022 01:11:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649293869;
-        bh=DOYeRWrBBQWdVD9Rx+PC9W95VT/yBtDywvBCWAM4ZbA=;
+        s=k20201202; t=1649293871;
+        bh=ssJYHvkpscxFMbUpBVyB4ceTVTGzImrTC1CGpjG5HWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oiSqR8UT6nQKh+0dz4LqQf4DYe8iPeap02bLom76e0rxeIx9s38lGxp0SnWr8x7uT
-         sr1xi76vntG8xgopq8LsKJM9CZwyEV7U//+92H5nfqeSMBCsODmBBSV3dhAWvfUQWw
-         8v5g9qGP1l9Rk3AlmeH1an/mWLutpS6lLc+t3R9Cm5Fe6SW5A/+pLaX1Gfw8MAac0Q
-         1dkCiH1PCFOjN6Za3GbZEpyKYTrRTiZWHOXEcHM4hkus0yZT6mjjJoyVetcPcowKwF
-         PhDq45TGEJXrSzadckKxX9K0aZ5rQgfALIkGU4ilJmjAN3C62mXp4oHd6LZeD+1Wqe
-         gtqp1r/Whacdg==
+        b=Hiwf8n/NmCwocvta7/UDMDQSC/tXXFWHRW60PHxDoHW7LUPo2fOaSPEkGnlChy23K
+         fR9Vgtz5QsN7GY7dIpGwgyGu+r4Z/VwvlTwt0oB+hBX0CQSahteEaC8OqxueyOS+2V
+         wzvou9MtEUDdcWv/GK/Sd4TtbmzCD3aN4mlsJaHG+bbp30+rpOL7tjGW2e37/KuknR
+         k+QiB3dZB6I+DnvNcK+t48TClIczEI67nb1FKQryKI73Pb5EPdOwLg36NgJTodb4Xl
+         nPJg0AiwJtVji417BvfG/TIb8UBI5GY5OtKQ/uM5U/Bi2t85ZqP205DCHFFH+4mKRW
+         s2D+aOwZOCcmQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, gerald.schaefer@linux.ibm.com,
-        hca@linux.ibm.com, agordeev@linux.ibm.com,
-        linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 18/31] s390/pci: improve zpci_dev reference counting
-Date:   Wed,  6 Apr 2022 21:10:16 -0400
-Message-Id: <20220407011029.113321-18-sashal@kernel.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 5.17 20/31] tools/virtio: compile with -pthread
+Date:   Wed,  6 Apr 2022 21:10:18 -0400
+Message-Id: <20220407011029.113321-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011029.113321-1-sashal@kernel.org>
 References: <20220407011029.113321-1-sashal@kernel.org>
@@ -54,137 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Schnelle <schnelle@linux.ibm.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
 
-[ Upstream commit c122383d221dfa2f41cfe5e672540595de986fde ]
+[ Upstream commit f03560a57c1f60db6ac23ffd9714e1c69e2f95c7 ]
 
-Currently zpci_dev uses kref based reference counting but only accounts
-for one original reference plus one reference from an added pci_dev to
-its underlying zpci_dev. Counting just the original reference worked
-until the pci_dev reference was added in commit 2a671f77ee49 ("s390/pci:
-fix use after free of zpci_dev") because once a zpci_dev goes away, i.e.
-enters the reserved state, it would immediately get released. However
-with the pci_dev reference this is no longer the case and the zpci_dev
-may still appear in multiple availability events indicating that it was
-reserved. This was solved by detecting when the zpci_dev is already on
-its way out but still hanging around. This has however shown some light
-on how unusual our zpci_dev reference counting is.
+When using pthreads, one has to compile and link with -lpthread,
+otherwise e.g. glibc is not guaranteed to be reentrant.
 
-Improve upon this by modelling zpci_dev reference counting on pci_dev.
-Analogous to pci_get_slot() increment the reference count in
-get_zdev_by_fid(). Thus all users of get_zdev_by_fid() must drop the
-reference once they are done with the zpci_dev.
+This replaces -lpthread.
 
-Similar to pci_scan_single_device(), zpci_create_device() returns the
-device with an initial count of 1 and the device added to the zpci_list
-(analogous to the PCI bus' device_list). In turn users of
-zpci_create_device() must only drop the reference once the device is
-gone from the point of view of the zPCI subsystem, it might still be
-referenced by the common PCI subsystem though.
-
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/pci/pci.c       | 1 +
- arch/s390/pci/pci_bus.h   | 3 ++-
- arch/s390/pci/pci_clp.c   | 9 +++++++--
- arch/s390/pci/pci_event.c | 7 ++++++-
- 4 files changed, 16 insertions(+), 4 deletions(-)
+ tools/virtio/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index 792f8e0f2178..5bcd9228db5f 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -69,6 +69,7 @@ struct zpci_dev *get_zdev_by_fid(u32 fid)
- 	list_for_each_entry(tmp, &zpci_list, entry) {
- 		if (tmp->fid == fid) {
- 			zdev = tmp;
-+			zpci_zdev_get(zdev);
- 			break;
- 		}
- 	}
-diff --git a/arch/s390/pci/pci_bus.h b/arch/s390/pci/pci_bus.h
-index e359d2686178..ecef3a9e16c0 100644
---- a/arch/s390/pci/pci_bus.h
-+++ b/arch/s390/pci/pci_bus.h
-@@ -19,7 +19,8 @@ void zpci_bus_remove_device(struct zpci_dev *zdev, bool set_error);
- void zpci_release_device(struct kref *kref);
- static inline void zpci_zdev_put(struct zpci_dev *zdev)
- {
--	kref_put(&zdev->kref, zpci_release_device);
-+	if (zdev)
-+		kref_put(&zdev->kref, zpci_release_device);
- }
+diff --git a/tools/virtio/Makefile b/tools/virtio/Makefile
+index 0d7bbe49359d..1b25cc7c64bb 100644
+--- a/tools/virtio/Makefile
++++ b/tools/virtio/Makefile
+@@ -5,7 +5,8 @@ virtio_test: virtio_ring.o virtio_test.o
+ vringh_test: vringh_test.o vringh.o virtio_ring.o
  
- static inline void zpci_zdev_get(struct zpci_dev *zdev)
-diff --git a/arch/s390/pci/pci_clp.c b/arch/s390/pci/pci_clp.c
-index be077b39da33..5011d27461fd 100644
---- a/arch/s390/pci/pci_clp.c
-+++ b/arch/s390/pci/pci_clp.c
-@@ -22,6 +22,8 @@
- #include <asm/clp.h>
- #include <uapi/asm/clp.h>
- 
-+#include "pci_bus.h"
-+
- bool zpci_unique_uid;
- 
- void update_uid_checking(bool new)
-@@ -403,8 +405,11 @@ static void __clp_add(struct clp_fh_list_entry *entry, void *data)
- 		return;
- 
- 	zdev = get_zdev_by_fid(entry->fid);
--	if (!zdev)
--		zpci_create_device(entry->fid, entry->fh, entry->config_state);
-+	if (zdev) {
-+		zpci_zdev_put(zdev);
-+		return;
-+	}
-+	zpci_create_device(entry->fid, entry->fh, entry->config_state);
- }
- 
- int clp_scan_pci_devices(void)
-diff --git a/arch/s390/pci/pci_event.c b/arch/s390/pci/pci_event.c
-index 2e3e5b278925..ea9db5cea64e 100644
---- a/arch/s390/pci/pci_event.c
-+++ b/arch/s390/pci/pci_event.c
-@@ -269,7 +269,7 @@ static void __zpci_event_error(struct zpci_ccdf_err *ccdf)
- 	       pdev ? pci_name(pdev) : "n/a", ccdf->pec, ccdf->fid);
- 
- 	if (!pdev)
--		return;
-+		goto no_pdev;
- 
- 	switch (ccdf->pec) {
- 	case 0x003a: /* Service Action or Error Recovery Successful */
-@@ -286,6 +286,8 @@ static void __zpci_event_error(struct zpci_ccdf_err *ccdf)
- 		break;
- 	}
- 	pci_dev_put(pdev);
-+no_pdev:
-+	zpci_zdev_put(zdev);
- }
- 
- void zpci_event_error(void *data)
-@@ -314,6 +316,7 @@ static void zpci_event_hard_deconfigured(struct zpci_dev *zdev, u32 fh)
- static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
- {
- 	struct zpci_dev *zdev = get_zdev_by_fid(ccdf->fid);
-+	bool existing_zdev = !!zdev;
- 	enum zpci_state state;
- 
- 	zpci_dbg(3, "avl fid:%x, fh:%x, pec:%x\n",
-@@ -378,6 +381,8 @@ static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
- 	default:
- 		break;
- 	}
-+	if (existing_zdev)
-+		zpci_zdev_put(zdev);
- }
- 
- void zpci_event_availability(void *data)
+ CFLAGS += -g -O2 -Werror -Wno-maybe-uninitialized -Wall -I. -I../include/ -I ../../usr/include/ -Wno-pointer-sign -fno-strict-overflow -fno-strict-aliasing -fno-common -MMD -U_FORTIFY_SOURCE -include ../../include/linux/kconfig.h
+-LDFLAGS += -lpthread
++CFLAGS += -pthread
++LDFLAGS += -pthread
+ vpath %.c ../../drivers/virtio ../../drivers/vhost
+ mod:
+ 	${MAKE} -C `pwd`/../.. M=`pwd`/vhost_test V=${V}
 -- 
 2.35.1
 
