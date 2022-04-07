@@ -2,235 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2C53C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:25:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D780DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:26:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343920AbiDGO1L (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36518 "EHLO
+        id S235433AbiDGO13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 10:27:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343900AbiDGO1F (ORCPT
+        with ESMTP id S1343922AbiDGO10 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:27:05 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF64189A38
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:24:19 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id 2so5768393pjw.2
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 07:24:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+nK9SRbUB5i4er0Nc2x3M4CSJ4RiMR6/wcutg0xiHzE=;
-        b=BG9bTY9/90nnq5XMYGSYghQLUjR1HPYPk0BdlmCStQ6lZrcNzo5f+9DX5UTIzB7zi8
-         APQCLYf+sAbyni171SWwk5wHsnAJh3TBFYYWEW0AJKEIjSC8hPAMSSi0Ryd6e+ASdeze
-         AQfdcRAGMOo1XFE1iO6sXphVXM5mN3F4Huo/EzXiJz0pHxWBmjW3LXF1krbLhe9rgtgc
-         xT8JBUdz4dR6CqVvVUFPci+xTirov06jCjeT+Cs6GXPH8RJH6dXllou0SDB0hJxZtgbB
-         8cU3t7A4Rcj9iuRMAo5qAygcSb6L2soxaLvkLsDBLcRlUI9SETudzAkqC8xDF7vfqhWk
-         2EoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+nK9SRbUB5i4er0Nc2x3M4CSJ4RiMR6/wcutg0xiHzE=;
-        b=m99PX9lvHb/vTV0pJQjsjc69ic9ffRbeMTvZm9EupAWX7tbJCUSDOog3zRqM+y06Mn
-         0K7TvDqCHzHMwfApOLo60J//5pcREN12gYfpaJgJqSfWNg6zSq17o7TNNmLPcRpNcNQG
-         XE8EiWb4MXMQzgwNPr3l/XLEO7v2ZujQdbzHl6kfDWTeWq1N9AsCR5W4yGFbIoW91q7z
-         ECgc+fuDYxZxox/44GVNgR1S16lPhNS5jew/AZxv1RmaAd/qY9mB4sdmk6aOQsWy0Lqh
-         4YksbrGuRteyVaKHZqeyEhU/uXgH48GtA6M1uSAgXPgBEXNAM365xipI6MJO9zhXYyH2
-         jL0g==
-X-Gm-Message-State: AOAM532umnJQsVY370g2qYMB1a1rKuhyzk6hLA3g6eWpq2RgQscwyBVU
-        cEW0h6+K7AxHU2NjPeweLc12RQ==
-X-Google-Smtp-Source: ABdhPJyWjpOUQOpPX3P6u/QFz5ac/xm/7Q+g/Trta+CDcME4Mv0B0mlxTYchvtAIU5o9eTnl6nrBTg==
-X-Received: by 2002:a17:902:d486:b0:157:1cc0:48bd with SMTP id c6-20020a170902d48600b001571cc048bdmr11887plg.108.1649341410446;
-        Thu, 07 Apr 2022 07:23:30 -0700 (PDT)
-Received: from x1.hsd1.or.comcast.net ([2601:1c2:1001:7090:172d:8708:69ef:da3a])
-        by smtp.gmail.com with ESMTPSA id v3-20020a056a00148300b004fb04acde5dsm22499353pfu.166.2022.04.07.07.23.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 07:23:30 -0700 (PDT)
-From:   Drew Fustini <dfustini@baylibre.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Dave Gerlach <d-gerlach@ti.com>, Suman Anna <s-anna@ti.com>,
-        Tony Lindgren <tony@atomide.com>, Nishanth Menon <nm@ti.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Drew Fustini <dfustini@baylibre.com>
-Subject: [PATCH v2] dt-bindings: soc: ti: wkup_m3_ipc: convert bindings to json-schema
-Date:   Thu,  7 Apr 2022 07:17:51 -0700
-Message-Id: <20220407141750.2289293-1-dfustini@baylibre.com>
-X-Mailer: git-send-email 2.32.0
+        Thu, 7 Apr 2022 10:27:26 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596121890F5;
+        Thu,  7 Apr 2022 07:25:19 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D9F2A22175;
+        Thu,  7 Apr 2022 16:25:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649341517;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=abVSGUtVqh7YhBzozb2Ledi0KRyuVzhaDaQwQ2/xe4Q=;
+        b=EUE9hI39dJT14mTtuO4CnjNi7TIu3w38uphBJJcD6Z5vko9UdKCQ0fT5QUqll9IAryTuxf
+        M5Y3Jpq7YGIJb/XIiK4aeOS9iihzryK3QU3GhRF+ax0mzVfIK53R5JsU6Px4ysrXrEs64u
+        VaxFGDkCBipV60YHTZhEpnuaqSPI6iI=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 07 Apr 2022 16:25:16 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: felix: suppress -EPROBE_DEFER errors
+In-Reply-To: <20220407141254.3kpg75l4byytwfye@skbuf>
+References: <20220407130625.190078-1-michael@walle.cc>
+ <20220407135613.rlblrckb2h633bps@skbuf>
+ <cd433399998c2f58884f08b4fc0fd66a@walle.cc>
+ <20220407141254.3kpg75l4byytwfye@skbuf>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <30ea2ed5bcc7e9c97d132ea30a8dd774@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the wkup_m3_ipc bindings documentation to json-schema.
+Am 2022-04-07 16:12, schrieb Vladimir Oltean:
+> On Thu, Apr 07, 2022 at 04:04:20PM +0200, Michael Walle wrote:
+>> Am 2022-04-07 15:56, schrieb Vladimir Oltean:
+>> > On Thu, Apr 07, 2022 at 03:06:25PM +0200, Michael Walle wrote:
+>> > > Due to missing prerequisites the probe of the felix switch might be
+>> > > deferred:
+>> > > [    4.435305] mscc_felix 0000:00:00.5: Failed to register DSA
+>> > > switch: -517
+>> > >
+>> > > It's not an error. Use dev_err_probe() to demote the error to a debug
+>> > > message. While at it, replace all the dev_err()'s in the probe with
+>> > > dev_err_probe().
+>> > >
+>> > > Signed-off-by: Michael Walle <michael@walle.cc>
+>> > > ---
+>> >
+>> > Please limit the dev_err_probe() to dsa_register_switch(). The resource
+>> > that is missing is the DSA master, see of_find_net_device_by_node().
+>> > The others cannot possibly return -EPROBE_DEFER.
+>> 
+>> This was my rationale (from the function doc):
+>> 
+>>  * Note that it is deemed acceptable to use this function for error
+>>  * prints during probe even if the @err is known to never be 
+>> -EPROBE_DEFER.
+>>  * The benefit compared to a normal dev_err() is the standardized 
+>> format
+>>  * of the error code and the fact that the error code is returned.
+>> 
+>> In any case I don't have a strong opinion.
+> 
+> Take this case:
+> 
+>  		err = -ENOMEM;
+> -		dev_err(&pdev->dev, "Failed to allocate driver memory\n");
+> +		dev_err_probe(&pdev->dev, err, "Failed to allocate driver 
+> memory\n");
+> 
+> (1) there is no need to print ENOMEM if we say "failed to allocate 
+> memory"
 
-Link: https://lore.kernel.org/linux-arm-kernel/20220221125522.l3tntb6i7yjxp6vb@flattered/
-Suggested-by: Nishanth Menon <nm@ti.com>
-Signed-off-by: Drew Fustini <dfustini@baylibre.com>
----
- .../bindings/soc/ti/wkup_m3_ipc.txt           | 57 -------------
- .../bindings/soc/ti/wkup_m3_ipc.yaml          | 81 +++++++++++++++++++
- 2 files changed, 81 insertions(+), 57 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt
- create mode 100644 Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.yaml
+That was actually a brain fart of mine ;) But AFAIK there is no need in
+reporting ENOMEM errors anyway.
 
-Changes in v2:
-- removed unnecessary line breaks and shorten property descriptions
+-michael
 
-diff --git a/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt b/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt
-deleted file mode 100644
-index 401550487ed6..000000000000
---- a/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt
-+++ /dev/null
-@@ -1,57 +0,0 @@
--Wakeup M3 IPC Driver
--=====================
--
--The TI AM33xx and AM43xx family of devices use a small Cortex M3 co-processor
--(commonly referred to as Wakeup M3 or CM3) to help with various low power tasks
--that cannot be controlled from the MPU, like suspend/resume and certain deep
--C-states for CPU Idle. Once the wkup_m3_ipc driver uses the wkup_m3_rproc driver
--to boot the wkup_m3, it handles communication with the CM3 using IPC registers
--present in the SoC's control module and a mailbox. The wkup_m3_ipc exposes an
--API to allow the SoC PM code to execute specific PM tasks.
--
--Wkup M3 Device Node:
--====================
--A wkup_m3_ipc device node is used to represent the IPC registers within an
--SoC.
--
--Required properties:
----------------------
--- compatible:		Should be,
--				"ti,am3352-wkup-m3-ipc" for AM33xx SoCs
--				"ti,am4372-wkup-m3-ipc" for AM43xx SoCs
--- reg:			Contains the IPC register address space to communicate
--			with the Wakeup M3 processor
--- interrupts:		Contains the interrupt information for the wkup_m3
--			interrupt that signals the MPU.
--- ti,rproc:		phandle to the wkup_m3 rproc node so the IPC driver
--			can boot it.
--- mboxes:		phandles used by IPC framework to get correct mbox
--			channel for communication. Must point to appropriate
--			mbox_wkupm3 child node.
--
--Example:
----------
--/* AM33xx */
--	l4_wkup: l4_wkup@44c00000 {
--		...
--
--		scm: scm@210000 {
--			compatible = "ti,am3-scm", "simple-bus";
--			reg = <0x210000 0x2000>;
--			#address-cells = <1>;
--			#size-cells = <1>;
--			ranges = <0 0x210000 0x2000>;
--
--			...
--
--			wkup_m3_ipc: wkup_m3_ipc@1324 {
--				compatible = "ti,am3352-wkup-m3-ipc";
--				reg = <0x1324 0x24>;
--				interrupts = <78>;
--				ti,rproc = <&wkup_m3>;
--				mboxes = <&mailbox &mbox_wkupm3>;
--			};
--
--			...
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.yaml b/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.yaml
-new file mode 100644
-index 000000000000..50cc89c2d1c3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.yaml
-@@ -0,0 +1,81 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/soc/ti/wkup_m3_ipc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Wakeup M3 IPC device
-+
-+maintainers:
-+  - Dave Gerlach <d-gerlach@ti.com>
-+  - Drew Fustini <dfustini@baylibre.com>
-+
-+description: |+
-+  The TI AM33xx and AM43xx family of devices use a small Cortex M3 co-processor
-+  (commonly referred to as Wakeup M3 or CM3) to help with various low power tasks
-+  that cannot be controlled from the MPU, like suspend/resume and certain deep
-+  C-states for CPU Idle. Once the wkup_m3_ipc driver uses the wkup_m3_rproc driver
-+  to boot the wkup_m3, it handles communication with the CM3 using IPC registers
-+  present in the SoC's control module and a mailbox. The wkup_m3_ipc exposes an
-+  API to allow the SoC PM code to execute specific PM tasks.
-+
-+  Wkup M3 Device Node
-+  ====================
-+  A wkup_m3_ipc device node is used to represent the IPC registers within an
-+  SoC.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,am3352-wkup-m3-ipc # for AM33xx SoCs
-+      - ti,am4372-wkup-m3-ipc # for AM43xx SoCs
-+
-+  reg:
-+    description:
-+      The IPC register address space to communicate with the Wakeup M3 processor
-+    maxItems: 1
-+
-+  interrupts:
-+    description: wkup_m3 interrupt that signals the MPU
-+    maxItems: 1
-+
-+  ti,rproc:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description:
-+      phandle to the wkup_m3 rproc node so the IPC driver can boot it
-+
-+  mboxes:
-+    description:
-+      phandles used by IPC framework to get correct mbox
-+      channel for communication. Must point to appropriate
-+      mbox_wkupm3 child node.
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - ti,rproc
-+  - mboxes
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    soc {
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+
-+        mailbox: mailbox {
-+            #mbox-cells = <1>;
-+        };
-+
-+        wkup_m3_ipc: wkup_m3_ipc@1324 {
-+           compatible = "ti,am3352-wkup-m3-ipc";
-+           reg = <0x1324 0x24>;
-+           interrupts = <78>;
-+           ti,rproc = <&wkup_m3>;
-+           mboxes = <&mailbox &mbox_wkupm3>;
-+        };
-+    };
-+...
--- 
-2.32.0
-
+> (2) we don't use the return value of dev_err_probe() anyway, we have
+>     actual teardown to do (pci_disable_device).
+> (3) we _surely_ know that -ENOMEM != -EPROBE_DEFER
+>> 
+>> > >
+>> > > Should this be a patch with a Fixes tag?
+>> >
+>> > Whichever way you wish, no preference.
+>> 
+>> I'll limit it to just the one dev_err() and add a Fixes,
+>> there might be scripts out there who greps dmesg for errors.
+> 
+> Ok.
