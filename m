@@ -2,145 +2,338 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D2EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:16:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F7FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242850AbiDGISk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
+        id S240763AbiDGIUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242795AbiDGISg (ORCPT
+        with ESMTP id S231513AbiDGIUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:18:36 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2097D208C03;
-        Thu,  7 Apr 2022 01:16:37 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id C45241F85B;
-        Thu,  7 Apr 2022 08:16:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649319395; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lDpImFu5Uivn4DfGJlYiz9vYuz2Nv72UWNvkXkuJYGg=;
-        b=oLP9PRfRRD7mxq5x7xCJN137uit6q+YNNoudexrZzYyD6+eW+cdU3RXM5iX/XE0sf4Egxi
-        fMTd+UAD0c6NXGlbpqt0l8d8ZlhW/0nICmkqzbw3SdkLBy09hjEqOXcvdPjbEm5J9EwiVs
-        fZ5hgwB5240MWjviQqGlg33RLCDgVnE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649319395;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lDpImFu5Uivn4DfGJlYiz9vYuz2Nv72UWNvkXkuJYGg=;
-        b=piEcFzuoq1oygxpi1MEykg2vUI/TY9iYqgx83RkZZRzcJNEIcqCe2t0JkJ25EeU//hq+l+
-        qEoICyqK/U13eXDw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 08D6613485;
-        Thu,  7 Apr 2022 08:16:32 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id wRyrM+CdTmLMCAAAMHmgww
-        (envelope-from <colyli@suse.de>); Thu, 07 Apr 2022 08:16:32 +0000
-Message-ID: <24bb310e-6ce2-88c9-ebdc-59d49c609d77@suse.de>
-Date:   Thu, 7 Apr 2022 16:16:31 +0800
+        Thu, 7 Apr 2022 04:20:21 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D40938A6E0;
+        Thu,  7 Apr 2022 01:18:21 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6659412FC;
+        Thu,  7 Apr 2022 01:18:21 -0700 (PDT)
+Received: from e126645.nice.arm.com (e126645.nice.arm.com [10.34.129.54])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B2B143F5A1;
+        Thu,  7 Apr 2022 01:18:17 -0700 (PDT)
+From:   Pierre Gondois <pierre.gondois@arm.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ionela.Voinescu@arm.com, Lukasz.Luba@arm.com,
+        Morten.Rasmussen@arm.com, Dietmar.Eggemann@arm.com, maz@kernel.org,
+        Pierre Gondois <Pierre.Gondois@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Fuad Tabba <tabba@google.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org
+Subject: [PATCH v2 0/3] Enable EAS for CPPC/ACPI based systems
+Date:   Thu,  7 Apr 2022 10:16:15 +0200
+Message-Id: <20220407081620.1662192-1-pierre.gondois@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH 4/5] block: turn bio_kmalloc into a simple kmalloc wrapper
-Content-Language: en-US
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Mike Snitzer <snitzer@redhat.com>, Song Liu <song@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, David Sterba <dsterba@suse.com>,
-        Phillip Lougher <phillip@squashfs.org.uk>,
-        linux-block@vger.kernel.org, dm-devel@redhat.com,
-        linux-kernel@vger.kernel.org, linux-bcache@vger.kernel.org,
-        linux-raid@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org
-References: <20220406061228.410163-1-hch@lst.de>
- <20220406061228.410163-5-hch@lst.de>
-From:   Coly Li <colyli@suse.de>
-In-Reply-To: <20220406061228.410163-5-hch@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/6/22 2:12 PM, Christoph Hellwig wrote:
-> Remove the magic autofree semantics and require the callers to explicitly
-> call bio_init to initialize the bio.
->
-> This allows bio_free to catch accidental bio_put calls on bio_init()ed
-> bios as well.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   block/bio.c                        | 47 ++++++++++++------------------
->   block/blk-crypto-fallback.c        | 14 +++++----
->   block/blk-map.c                    | 42 ++++++++++++++++----------
->   drivers/block/pktcdvd.c            | 25 ++++++++--------
->   drivers/md/bcache/debug.c          | 10 ++++---
->   drivers/md/dm-bufio.c              |  9 +++---
->   drivers/md/raid1.c                 | 12 +++++---
->   drivers/md/raid10.c                | 21 ++++++++-----
->   drivers/target/target_core_pscsi.c | 10 +++----
->   fs/squashfs/block.c                | 15 +++++-----
->   include/linux/bio.h                |  2 +-
->   11 files changed, 112 insertions(+), 95 deletions(-)
-[snipped]
-> diff --git a/drivers/md/bcache/debug.c b/drivers/md/bcache/debug.c
-> index 6230dfdd9286e..7510d1c983a5e 100644
-> --- a/drivers/md/bcache/debug.c
-> +++ b/drivers/md/bcache/debug.c
-> @@ -107,15 +107,16 @@ void bch_btree_verify(struct btree *b)
->   
->   void bch_data_verify(struct cached_dev *dc, struct bio *bio)
->   {
-> +	unsigned int nr_segs = bio_segments(bio);
->   	struct bio *check;
->   	struct bio_vec bv, cbv;
->   	struct bvec_iter iter, citer = { 0 };
->   
-> -	check = bio_kmalloc(GFP_NOIO, bio_segments(bio));
-> +	check = bio_kmalloc(nr_segs, GFP_NOIO);
->   	if (!check)
->   		return;
-> -	bio_set_dev(check, bio->bi_bdev);
-> -	check->bi_opf = REQ_OP_READ;
-> +	bio_init(check, bio->bi_bdev, check->bi_inline_vecs, nr_segs,
-> +		 REQ_OP_READ);
->   	check->bi_iter.bi_sector = bio->bi_iter.bi_sector;
->   	check->bi_iter.bi_size = bio->bi_iter.bi_size;
->   
-> @@ -146,7 +147,8 @@ void bch_data_verify(struct cached_dev *dc, struct bio *bio)
->   
->   	bio_free_pages(check);
->   out_put:
-> -	bio_put(check);
-> +	bio_uninit(check);
-> +	kfree(check);
->   }
->   
->   #endif
+From: Pierre Gondois <Pierre.Gondois@arm.com>
 
-[snipped]
+v2:
+- Remove inline hint of cppc_cpufreq_search_cpu_data(). [Mark]
+- Use EXPORT_SYMBOL_GPL() instead of EXPORT_SYMBOL(). [Mark]
+- Use a bitmap to squeeze CPU efficiency class values. [Mark]
 
-For bcache part,
+0. Overview
 
-Acked-by: Coly Li <colyli@suse.de>
+The current Energy Model (EM) for CPUs requires knowledge about CPU
+performance states and their power consumption. Both of these
+information is not available for ACPI based systems.
+
+In ACPI, describing power efficiency of CPUs can be done through the
+following arm specific field:
+
+ACPI 6.4, s5.2.12.14 "GIC CPU Interface (GICC) Structure",
+"Processor Power Efficiency Class field":
+Describes the relative power efficiency of the associated pro-
+cessor. Lower efficiency class numbers are more efficient than
+higher ones (e.g. efficiency class 0 should be treated as more
+efficient than efficiency class 1). However, absolute values
+of this number have no meaning: 2 isn't necessarily half as
+efficient as 1.
+
+Add an 'efficiency_class' field to describe the relative power
+efficiency of CPUs. CPUs relying on this field will have performance
+states (power and frequency values) artificially created. Such EM will
+be referred to as an artificial EM.
+
+The artificial EM is used for the CPPC driver.
+
+1. Dependencies
+
+This patch-set has a dependency on:
+ - [0/8] Introduce support for artificial Energy Model
+https://lkml.org/lkml/2022/3/16/850
+introduces a new callback in the Energy Model (EM) and prevents the
+registration of devices using power values from an EM when the EM
+is artificial. Not having this patch-set would break builds.
+ - This patch-set based on linux-next.
+
+2. Testing
+
+This patch-set has been tested on a Juno-r2 and a Pixel4. Two types
+of tests were done: energy testing, and performance testing.
+
+The energy testing was done with 2 sets of tasks:
+- homogeneous tasks (#Tasks at 5% utilization and 16ms period)
+- heterogeneous tasks (#Tasks at 5|10|15% utilization and 16ms period).
+  If a test has 3 tasks, then there is one with each utilization
+  (1 at 5%, 1 at 10%, 1 at 15%).
+Tasks spawn on the biggest CPU(s) of the platform. If there are
+multiple big CPUs, tasks spawn alternatively on big CPUs.
+
+2.1. Juno-r2 testing
+
+The Juno-r2 has 6 CPUs:
+- 4 little [0, 3-5], max_capa=383
+- 2 big [1-2], max_capa=1024
+Base kernel is v5.17-rc5.
+
+2.1.1. Energy testing
+
+The tests were done on:
+- a system using a DT and the scmi cpufreq driver. Comparison
+  is done between no-EAS and EAS.
+- a system using ACPI and the cppc cpufreq driver. Comparison
+  is done between CPPC-no-EAS and CPPC-EAS. CPPC-EAS uses
+  the artificial EM.
+
+Energy numbers come from the Juno energy counter, by summing
+little and big clusters energy spending. There has been 5 iterations
+of each test. Lower energy spending is better.
+
+2.1.1.1. Homogeneous tasks
+
+Energy results (Joules):
++--------+-------------------+-----------------------------+
+|        |            no-EAS |                         EAS |
++--------+---------+---------+-------------------+---------+
+| #Tasks |    Mean | ci(+/-) |              Mean | ci(+/-) |
++--------+---------+---------+-------------------+---------+
+|    10  |   7.89  |    0.26 |     6.99 (-11.36) |    0.49 |
+|    20  |  13.42  |    0.32 |    13.42 ( -0.02) |    0.08 |
+|    30  |  21.43  |    0.98 |    21.62 ( +0.87) |    0.63 |
+|    40  |  30.03  |    0.82 |    30.31 ( +0.94) |    0.37 |
+|    50  |  43.19  |    0.56 |    43.50 ( +0.72) |    0.52 |
++--------+---------+---------+-------------------+---------+
++--------+-------------------+-----------------------------+
+|        |       CPPC-no-EAS |                    CPPC-EAS |
++--------+---------+---------+-------------------+---------+
+| #Tasks |    Mean | ci(+/-) |              Mean | ci(+/-) |
++--------+---------+---------+-------------------+---------+
+|    10  |    7.86 |    0.37 |     5.64 (-28.23) |    0.05 |
+|    20  |   13.36 |    0.20 |    10.92 (-18.31) |    0.31 |
+|    30  |   19.28 |    0.34 |    18.30 ( -5.07) |    0.64 |
+|    40  |   28.33 |    0.59 |    27.13 ( -4.23) |    0.42 |
+|    50  |   40.78 |    0.58 |    40.77 ( -0.04) |    0.45 |
++--------+---------+---------+-------------------+---------+
+
+Missed activations were measured while comparing CPPC-no-EAS/CPPC-EAS
+energy values. They were of 0.00% for all tests and both
+configurations. Missed activations start to appear in a significant
+number starting from ~70 tasks.
+
+2.1.1.2. Heterogeneous tasks
+
+Energy results (Joules):
++--------+-------------------+-----------------------------+
+|        |            no-EAS |                         EAS |
++--------+---------+---------+-------------------+---------+
+| #Tasks |    Mean | ci(+/-) |              Mean | ci(+/-) |
++--------+---------+---------+-------------------+---------+
+|     3  |    5.25 |    0.50 |    4.58 (-12.82%) |    0.07 |
+|     9  |   12.30 |    0.28 |   11.45 ( -6.97%) |    0.34 |
+|    15  |   20.06 |    1.32 |   20.60 (  2.66%) |    1.00 |
+|    21  |   30.03 |    0.63 |   30.07 (  0.12%) |    0.41 |
++--------+---------+---------+-------------------+---------+
++--------+-------------------+-----------------------------+
+|        |       CPPC-no-EAS |                    CPPC-EAS |
++--------+---------+---------+-------------------+---------+
+| #Tasks |    Mean | ci(+/-) |              Mean | ci(+/-) |
++--------+---------+---------+-------------------+---------+
+|     3  |    4.58 |    0.31 |    3.65 (-20.31%) |    0.05 |
+|     9  |   11.53 |    0.20 |    9.23 (-19.97%) |    0.22 |
+|    15  |   19.19 |    0.16 |   18.33 ( -4.49%) |    0.71 |
+|    21  |   29.07 |    0.29 |   29.06 ( -0.01%) |    0.08 |
++--------+---------+---------+-------------------+---------+
+
+Missed activations were measured while comparing CPPC-no-EAS/CPPC-EAS
+energy values. They were of 0.00% for all tests and both
+configurations. Missed activations start to appear in a significant
+number starting from ~36 tasks.
+
+2.1.1.3. Analysis:
+
+The artificial EM often shows better energy gains than the EM,
+especially for small loads. Indeed, the artificial power values
+show a huge energy gain by placing tasks on little CPUs. The 6%
+margin is always reached, so tasks are easily placed on little
+CPUs. The margin is not always reached with real power values,
+leading to tasks staying on big CPUs.
+
+2.1.2. Performance testing
+
+10 iterations of HackBench with the "--pipe --thread" options and
+1000 loops. Compared value is the testing time in seconds. A lower
+timing is better.
++----------------+-------------------+---------------------------+
+|                |       CPPC-no-EAS |                  CPPC-EAS |
++--------+-------+---------+---------+-----------------+---------+
+| Groups | Tasks |    Mean | ci(+/-) |           Mean  | ci(+/-) |
++--------+-------+---------+---------+-----------------+---------+
+|      1 |    40 |    2.39 |    0.19 |   2.39 (-0.24%) |    0.07 |
+|      2 |    80 |    5.56 |    0.48 |   5.28 (-5.02%) |    0.42 |
+|      4 |   160 |   12.15 |    0.84 |  12.06 (-0.80%) |    0.48 |
+|      8 |   320 |   23.03 |    0.94 |  23.12 (+0.36%) |    0.70 |
++--------+-------+---------+---------+-----------------+---------+
+
+The performance is overall sligthly better, but stays in the margin
+or error.
 
 
-Coly Li
+2.2. Pixel4 testing
+
+Pixel4 has 7 CPUs:
+- 4 little [0-3], max_capa=261
+- 3 medium [4-6], max_capa=861
+- 1 big [7], max_capa=1024
+
+Base kernel is android-10.0.0_r0.81. The performance states advertised
+in the DT were modified with performance states that would be generated
+by this patch-set.
+The artificial EM was set such as little CPUs > medium CPUs > big CPU,
+meaning little CPUs are the most energy efficient.
+Comparing the power/capacity ratio, little CPUs' performance states are
+all more energy efficient than the medium CPUs' performance states.
+This is wrong when comparing medium and big CPUs.
+
+2.2.1. Energy testing
+
+The 2 sets of tests (heterogeneous/homogeneous) were tested while
+registering battery voltage and current (power is obtained by
+multiplying them).
+Voltage is averaged over a rolling period of ~11s and current over a
+period of ~6s. Usb-C cable is plugged in but alimentation is cut.
+Pixel4 is on airplane mode. The tests lasts 120s, the first 50s and
+last 10s are trimmed as the power is slowly raising to reach a
+plateau.
+Are compared:
+- android with EAS (but NO_FIND_BEST_TARGET is set):
+  echo ENERGY_AWARE > /sys/kernel/debug/sched_features
+  echo NO_FIND_BEST_TARGET > /sys/kernel/debug/sched_features
+- android without EAS:
+  echo NO_ENERGY_AWARE > /sys/kernel/debug/sched_features
+- android with the artificial energy model
+Lower energy spending is better.
+
+2.2.1.2. Homogeneous tasks
+
+Energy results (in uW):
++--------+-------------------+-----------------------------+
+|        |       Without EAS |                    With EAS |
++--------+---------+---------+-------------------+---------+
+| #Tasks |    Mean | ci(+/-) |              Mean | ci(+/-) |
++--------+---------+---------+-------------------+---------+
+|    10  | 6.21+05 | 3.12+02 | 5.09+05 (-18.01%) | 2.18+03 |
+|    20  | 9.12+05 | 9.71+02 | 7.91+05 (-13.26%) | 9.92+02 |
+|    30  | 1.25+06 | 2.02+03 | 1.09+06 (-12.12%) | 2.00+03 |
+|    40  | 2.05+06 | 5.15+03 | 1.38+06 (-32.36%) | 1.21+03 |
+|    50  | 3.03+06 | 6.94+03 | 1.89+06 (-37.44%) | 3.21+03 |
++--------+---------+---------+-------------------+---------+
++--------+-------------------+-----------------------------+
+|        |       Without EAS |                  With patch |
++--------+---------+---------+-------------------+---------+
+| #Tasks |    Mean | ci(+/-) |              Mean | ci(+/-) |
++--------+---------+---------+-------------------+---------+
+|    10  | 6.21+05 | 3.12+02 | 4.39+05 (-29.29%) | 5.63+02 |
+|    20  | 9.12+05 | 9.71+02 | 7.30+05 (-19.90%) | 1.98+03 |
+|    30  | 1.25+06 | 2.02+03 | 1.01+06 (-18.60%) | 1.72+03 |
+|    40  | 2.05+06 | 5.15+03 | 1.38+06 (-32.60%) | 3.93+03 |
+|    50  | 3.03+06 | 6.94+03 | 2.05+06 (-32.08%) | 1.25+04 |
++--------+---------+---------+-------------------+---------+
+
+2.2.1.2. Heterogeneous tasks
+
+Energy results (in uW):
++--------+-------------------+-----------------------------+
+|        |       Without EAS |                    With EAS |
++--------+---------+---------+-------------------+---------+
+| #Tasks |    Mean | ci(+/-) |              Mean | ci(+/-) |
++--------+---------+---------+-------------------+---------+
+|     3  | 5.14+05 | 1.06+03 | 3.76+05 (-26.82%) | 4.58+02 |
+|     9  | 8.52+05 | 1.18+03 | 7.25+05 (-14.96%) | 1.39+03 |
+|    15  | 1.42+06 | 3.14+03 | 1.20+06 (-15.41%) | 1.06+04 |
+|    21  | 2.73+06 | 3.49+03 | 1.49+06 (-45.47%) | 3.43+03 |
+|    27  | 3.17+06 | 6.92+03 | 2.42+06 (-23.77%) | 8.43+03 |
++--------+---------+---------+-------------------+---------+
++--------+-------------------+-----------------------------+
+|        |       Without EAS |                  With patch |
++--------+---------+---------+-------------------+---------+
+| #Tasks |    Mean | ci(+/-) |              Mean | ci(+/-) |
++--------+---------+---------+-------------------+---------+
+|     3  | 5.14+05 | 1.06+03 | 3.82+05 (-25.70%) | 7.67+02 |
+|     9  | 8.52+05 | 1.18+03 | 7.05+05 (-17.30%) | 9.79+02 |
+|    15  | 1.42+06 | 3.14+03 | 1.05+06 (-26.00%) | 1.15+03 |
+|    21  | 2.73+06 | 3.49+03 | 1.53+06 (-43.68%) | 2.23+03 |
+|    27  | 3.17+06 | 6.92+03 | 2.86+06 ( -9.77%) | 4.26+03 |
++--------+---------+---------+-------------------+---------+
+
+2.2.1.2. Analysis
+
+Similarly to Juno, the artificial performance states show a huge
+gain to place tasks on small CPUs, leading to better energy results.
+
+2.2.2. Performance testing
+
+10 iterations of PcMark. Compared value is the final score
+(PcmaWorkv3Score). A bigger score is better.
++----------------+-------------------------+-------------------------+
+|    Without EAS |                With EAS |              With patch |
++------+---------+---------------+---------+---------------+---------+
+| Mean | ci(+/-) |          Mean | ci(+/-) |          Mean | ci(+/-) |
++------+---------+---------------+---------+---------------+---------+
+| 8026 |      86 |          8003 |      74 | 7840 (-2.00%) |     104 |
++------+---------+---------------+---------+---------------+---------+
+
+Performance is lower, but still in the margin of error.
 
 
+3. Summary
+
+The artificial performance states show overall better energy results
+and a small performance decrease. They lead to a more aggressive task
+placement on the most energy efficient CPUs, and this explains the
+results.
+
+Pierre Gondois (3):
+  cpufreq: CPPC: Add cppc_cpufreq_search_cpu_data
+  cpufreq: CPPC: Add per_cpu efficiency_class
+  cpufreq: CPPC: Register EM based on efficiency class information
+
+ arch/arm64/kernel/smp.c        |   1 +
+ drivers/cpufreq/cppc_cpufreq.c | 201 +++++++++++++++++++++++++++++++++
+ 2 files changed, 202 insertions(+)
+
+-- 
+2.25.1
 
