@@ -2,107 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46AFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:55:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F07C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240234AbiDGG5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 02:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59640 "EHLO
+        id S240285AbiDGHBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231528AbiDGG5b (ORCPT
+        with ESMTP id S231528AbiDGHBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 02:57:31 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098626553;
-        Wed,  6 Apr 2022 23:55:32 -0700 (PDT)
+        Thu, 7 Apr 2022 03:01:17 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A29A11C35;
+        Wed,  6 Apr 2022 23:59:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649314532; x=1680850532;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8cY/HD592AL6q7NPOD/NPQfxvapMBjLaxqhPPMiIjWY=;
-  b=FJ+rFRaoxc+6chNKcjTcFCthS4PQnwcUv+WymW9Wg60QM594b/bczNMp
-   3SZBEOtWKZG9+sVKbToXTLsmkouitjH0VmMGcWawyVzbuOwKAtBUQ++xM
-   COYZO7FDPmcxNsOeU3hH/Vr+du1gp8oggkGkOPjFZb2ojd2yv+Em/HlbF
-   U5V0gg7LE79XuXhMpXujSsYaN29FN73+HsR9bjYHuHWcaoNRv3YAu+1OA
-   zNSxI7iAVogwD2lXbuRVCD6UpEv7bWApa7anoPg1hU/LHLp3lRjPPjyam
-   FRrRnq3Ziv+Blzh6PlkSNSPI7U2gGAXCW+KmkvFvMbW5QdW9xtwVkUDlh
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="260081841"
+  t=1649314758; x=1680850758;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=DCawgySWnFdoXUs5uE6g8ZajUMb+k+3xwGiC2XSj38s=;
+  b=m9+VPjzvryMR7JvJIlYfzxhykYMPzp5gdsJhucnsk/e0i3QrdWoO8R4i
+   8GlAyZNJ9b8a85D16CzNqbTVR27nKo6HoLd0mY2tWWbtb6g5mCnRR6Uhb
+   Ee1EwSf3qOwsdikzTmNt19rgdVZ1xyicIVH+ox4MSNrYecH0x2BUkaPSd
+   HXFZaQorrKs6eVDY4lyH15fEW03K3L7LfrySdcOUDJ95dXL4wbl8o1R8j
+   06aOmDa6T3P9IMWrylV7OtsEbi/sLyl9xG1y6YIP40QMsiLNqky43cJCw
+   lnkL2oq3LgLYcrlFadfyMchoJCyrJPdpYCVgJzRqaBMr4Pn9yFObKlm2X
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="243380386"
 X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="260081841"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 23:55:31 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="243380386"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 23:59:18 -0700
 X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="570921063"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga008.jf.intel.com with ESMTP; 06 Apr 2022 23:55:28 -0700
-Date:   Thu, 7 Apr 2022 14:48:07 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Nava kishore Manne <navam@xilinx.com>
-Cc:     "mdf@kernel.org" <mdf@kernel.org>,
-        "hao.wu@intel.com" <hao.wu@intel.com>,
-        "trix@redhat.com" <trix@redhat.com>,
-        Michal Simek <michals@xilinx.com>,
-        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>, git <git@xilinx.com>
-Subject: Re: [PATCH v3 5/5] fpga: fpga-region: Add missing kernel-doc
-  description
-Message-ID: <20220407064807.GA256966@yilunxu-OptiPlex-7050>
-References: <20220403051641.3867610-1-nava.manne@xilinx.com>
- <20220403051641.3867610-6-nava.manne@xilinx.com>
- <20220405053547.GA249845@yilunxu-OptiPlex-7050>
- <SN6PR02MB45766BEFCA6532873271099FC2E69@SN6PR02MB4576.namprd02.prod.outlook.com>
+   d="scan'208";a="549893029"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.40.48])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 23:59:13 -0700
+Message-ID: <ce2c3c4f-3751-312a-5fa6-0f98330067fe@intel.com>
+Date:   Thu, 7 Apr 2022 09:59:09 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SN6PR02MB45766BEFCA6532873271099FC2E69@SN6PR02MB4576.namprd02.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [PATCH v2] perf test tsc: Fix error message report when not
+ supported.
+Content-Language: en-US
+To:     Chengdong Li <brytonlee01@gmail.com>, adrian.hunter@intel.com,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@redhat.com, namhyung@kernel.org
+Cc:     ak@linux.intel.com, likexu@tencent.com, chengdongli@tencent.com
+References: <20220406100609.65239-1-chengdongli@tencent.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <20220406100609.65239-1-chengdongli@tencent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 05:31:39AM +0000, Nava kishore Manne wrote:
-> Hi Yilun,
+On 06/04/2022 13.06, Chengdong Li wrote:
+> By default `perf test tsc` does not return the error message
+> when child process detected kernel does not support. Instead, child
+> process print error message to stderr, unfortunately the stderr is
+> redirected to /dev/null when verbose <= 0.
 > 
-> 	Thanks for providing the review comments.
-> Please find my response inline.
+> This patch did three things:
+> - returns TEST_SKIP to parent process instead of TEST_OK when
+>   perf_read_tsc_conversion() is not supported.
+> - add a new subtest of testing if TSC is supported on current
+>   architecture by moving exist code to a separate function.
+> - extended test suite definition to contain above two subtests.
 > 
-> > -----Original Message-----
-> > From: Xu Yilun <yilun.xu@intel.com>
-> > Sent: Tuesday, April 5, 2022 11:06 AM
-> > To: Nava kishore Manne <navam@xilinx.com>
-> > Cc: mdf@kernel.org; hao.wu@intel.com; trix@redhat.com; Michal Simek
-> > <michals@xilinx.com>; linux-fpga@vger.kernel.org; linux-
-> > kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org; git
-> > <git@xilinx.com>
-> > Subject: Re: [PATCH v3 5/5] fpga: fpga-region: Add missing kernel-doc
-> > description
-> > 
-> > On Sun, Apr 03, 2022 at 10:46:41AM +0530, Nava kishore Manne wrote:
-> > > Fixed the warnings: No description found for return value of 'xxx'
-> > 
-> > The commit message is not clear. There are descriptions for some functions,
-> > but not in right format.
-> > 
-> I agree for some functions has description but not in the right format.
-> The "Description Not exits" and  "Description not in the right format" in both cases the tool will report the same warning ie; " warnings: No description found for return value of 'xxx'"
-
-Thanks for the info. It would be better we describe the root cause in commit
-message along with the robot reports.
-
-And also change the subject please.
-
-> This patch address the above warning. So to make it relevant I have added the same in the commit msg.
-
-Adding the same commit message may not be a good way, for this case you could
-just combine them into one commit.
-
-Thanks,
-Yilun
-
+> Changes since v1 (thanks for the feedback from Adrian Hunter):
+> - rebase commit to current source.
 > 
-> Regards,
-> Navakishore.
+> Signed-off-by: Chengdong Li <chengdongli@tencent.com>
+> ---
+>  tools/perf/tests/perf-time-to-tsc.c | 36 +++++++++++++++++++++--------
+>  1 file changed, 27 insertions(+), 9 deletions(-)
+> 
+> diff --git a/tools/perf/tests/perf-time-to-tsc.c b/tools/perf/tests/perf-time-to-tsc.c
+> index d12d0ad81801..fc7c380af5a0 100644
+> --- a/tools/perf/tests/perf-time-to-tsc.c
+> +++ b/tools/perf/tests/perf-time-to-tsc.c
+> @@ -47,6 +47,17 @@
+>  	}					\
+>  }
+>  
+> +static int test__tsc_is_supported(struct test_suite *test __maybe_unused,
+> +				  int subtest __maybe_unused)
+> +{
+> +	if (!TSC_IS_SUPPORTED) {
+> +		pr_debug("Test not supported on this architecture");
+
+Message better ending with "\n" I think
+
+> +		return TEST_SKIP;
+> +	}
+> +
+> +	return TEST_OK;
+> +}
+> +
+>  /**
+>   * test__perf_time_to_tsc - test converting perf time to TSC.
+>   *
+> @@ -70,7 +81,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+>  	struct perf_cpu_map *cpus = NULL;
+>  	struct evlist *evlist = NULL;
+>  	struct evsel *evsel = NULL;
+> -	int err = -1, ret, i;
+> +	int err = TEST_FAIL, ret, i;
+>  	const char *comm1, *comm2;
+>  	struct perf_tsc_conversion tc;
+>  	struct perf_event_mmap_page *pc;
+> @@ -79,10 +90,6 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+>  	u64 test_time, comm1_time = 0, comm2_time = 0;
+>  	struct mmap *md;
+>  
+> -	if (!TSC_IS_SUPPORTED) {
+> -		pr_debug("Test not supported on this architecture");
+> -		return TEST_SKIP;
+> -	}
+>  
+>  	threads = thread_map__new(-1, getpid(), UINT_MAX);
+>  	CHECK_NOT_NULL__(threads);
+> @@ -124,8 +131,8 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+>  	ret = perf_read_tsc_conversion(pc, &tc);
+>  	if (ret) {
+>  		if (ret == -EOPNOTSUPP) {
+> -			fprintf(stderr, " (not supported)");
+> -			return 0;
+> +			pr_debug("perf_read_tsc_conversion is not supported in current kernel");
+> +			err = TEST_SKIP;
+>  		}
+>  		goto out_err;
+>  	}
+> @@ -191,7 +198,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+>  	    test_tsc >= comm2_tsc)
+>  		goto out_err;
+>  
+> -	err = 0;
+> +	err = TEST_OK;
+>  
+>  out_err:
+>  	evlist__delete(evlist);
+> @@ -200,4 +207,15 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+>  	return err;
+>  }
+>  
+> -DEFINE_SUITE("Convert perf time to TSC", perf_time_to_tsc);
+> +static struct test_case time_to_tsc_tests[] = {
+> +	TEST_CASE_REASON("TSC support", tsc_is_supported,
+> +			 "This architecture does not support"),
+
+The 2nd test case runs anyway, so I am not sure another
+test case is needed?
+
+> +	TEST_CASE_REASON("Perf time to TSC", perf_time_to_tsc,
+> +			 "perf_read_tsc_conversion is not supported"),
+> +	{ .name = NULL, }
+> +};
+> +
+> +struct test_suite suite__perf_time_to_tsc = {
+> +	.desc = "Convert perf time to TSC",
+> +	.test_cases = time_to_tsc_tests,
+> +};
+
