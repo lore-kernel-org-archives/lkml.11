@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC69C3527E
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BBDC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239750AbiDGB3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60866 "EHLO
+        id S240769AbiDGBaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240461AbiDGBUB (ORCPT
+        with ESMTP id S240489AbiDGBUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:20:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9B019059E;
-        Wed,  6 Apr 2022 18:16:29 -0700 (PDT)
+        Wed, 6 Apr 2022 21:20:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34DDD1834DD;
+        Wed,  6 Apr 2022 18:16:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99F8F61DCF;
-        Thu,  7 Apr 2022 01:16:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE83DC385A8;
-        Thu,  7 Apr 2022 01:16:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C32FB61DE6;
+        Thu,  7 Apr 2022 01:16:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1D4DC385A1;
+        Thu,  7 Apr 2022 01:16:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294188;
-        bh=rtSw1l7QdPTLRBp089iUJcQX1L9N+GkfaDN1OeqXWJ0=;
+        s=k20201202; t=1649294200;
+        bh=AjZN1hbCRlIQ4369zfT7LATiq7a+ExcbqAmhJd5yNU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rKJd6gA5a1JKgxjHsjUk/tTNgbOV+cREJGlqIV9PSBceCH31QBHU4YA3dlEuxWnD/
-         OIAGQqyRj8XrrpyJNOlx8zFUYh7pDjl5rX9PcjxoJidgT5iPoBorLa5SCUM97KwmZF
-         O4pTlqq1UGnUi3Kx1pnOz8/lQeFi37umEURymbZlVwjlOsciEuj84Nm5yEkImvP873
-         abepI95O6bd+nb+jA2qEXSKGWJFpDsKwbmRNyE8Hv+uG0Y6OU+3mCxYDjmcq/5V/Bh
-         CuOI0ToVLaqLr/QbugxleHQREFjzI3dx0621dp7RxufR6jBqNzySSVp9uEoqwZ3ttW
-         ESTMDgI3KvEtA==
+        b=U75zNAKaZjMsHJAUjVUA4jPNmL8dvYAX8bTipeFxK600W+Ni07lDm4ZbJB8vcfPik
+         gieMgqE0xMnEnfQ0ypf9PcGcuJK/sCf/HbwuBGeMBp3nAxQYNndz+EsoGnCrMiqYbu
+         +2IAHIJ3nO87W87/xCQv0sEZR8YskZiTVeUhz2MbSeFNwXw8XR3vKkhH1HMB4h/ryM
+         BmJ59y7HA2K/iKSNAhK4eSVvM5H46z/V7UNuckYS+4L6dWkYSMq2i2fwv41oTzjmqX
+         s6tT4zUzrkfeZ82h1YhW26M8SrHQFuS+d3G0u2qWCNP/+2jHA1Ug+sQ2vNHEN4euF9
+         0tORRYdaH1zsA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        linux-crypto@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
+Cc:     linyujun <linyujun809@huawei.com>, He Ying <heying24@huawei.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        mhiramat@kernel.org, rostedt@goodmis.org, ast@kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 06/11] crypto: stm32 - fix reference leak in stm32_crc_remove
-Date:   Wed,  6 Apr 2022 21:16:03 -0400
-Message-Id: <20220407011609.115258-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 09/11] ARM: 9191/1: arm/stacktrace, kasan: Silence KASAN warnings in unwind_frame()
+Date:   Wed,  6 Apr 2022 21:16:06 -0400
+Message-Id: <20220407011609.115258-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011609.115258-1-sashal@kernel.org>
 References: <20220407011609.115258-1-sashal@kernel.org>
@@ -55,37 +53,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: linyujun <linyujun809@huawei.com>
 
-[ Upstream commit e9a36feecee0ee5845f2e0656f50f9942dd0bed3 ]
+[ Upstream commit 9be4c88bb7924f68f88cfd47d925c2d046f51a73 ]
 
-pm_runtime_get_sync() will increment pm usage counter even it
-failed. Forgetting to call pm_runtime_put_noidle will result
-in reference leak in stm32_crc_remove, so we should fix it.
+The following KASAN warning is detected by QEMU.
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+==================================================================
+BUG: KASAN: stack-out-of-bounds in unwind_frame+0x508/0x870
+Read of size 4 at addr c36bba90 by task cat/163
+
+CPU: 1 PID: 163 Comm: cat Not tainted 5.10.0-rc1 #40
+Hardware name: ARM-Versatile Express
+[<c0113fac>] (unwind_backtrace) from [<c010e71c>] (show_stack+0x10/0x14)
+[<c010e71c>] (show_stack) from [<c0b805b4>] (dump_stack+0x98/0xb0)
+[<c0b805b4>] (dump_stack) from [<c0b7d658>] (print_address_description.constprop.0+0x58/0x4bc)
+[<c0b7d658>] (print_address_description.constprop.0) from [<c031435c>] (kasan_report+0x154/0x170)
+[<c031435c>] (kasan_report) from [<c0113c44>] (unwind_frame+0x508/0x870)
+[<c0113c44>] (unwind_frame) from [<c010e298>] (__save_stack_trace+0x110/0x134)
+[<c010e298>] (__save_stack_trace) from [<c01ce0d8>] (stack_trace_save+0x8c/0xb4)
+[<c01ce0d8>] (stack_trace_save) from [<c0313520>] (kasan_set_track+0x38/0x60)
+[<c0313520>] (kasan_set_track) from [<c0314cb8>] (kasan_set_free_info+0x20/0x2c)
+[<c0314cb8>] (kasan_set_free_info) from [<c0313474>] (__kasan_slab_free+0xec/0x120)
+[<c0313474>] (__kasan_slab_free) from [<c0311e20>] (kmem_cache_free+0x7c/0x334)
+[<c0311e20>] (kmem_cache_free) from [<c01c35dc>] (rcu_core+0x390/0xccc)
+[<c01c35dc>] (rcu_core) from [<c01013a8>] (__do_softirq+0x180/0x518)
+[<c01013a8>] (__do_softirq) from [<c0135214>] (irq_exit+0x9c/0xe0)
+[<c0135214>] (irq_exit) from [<c01a40e4>] (__handle_domain_irq+0xb0/0x110)
+[<c01a40e4>] (__handle_domain_irq) from [<c0691248>] (gic_handle_irq+0xa0/0xb8)
+[<c0691248>] (gic_handle_irq) from [<c0100b0c>] (__irq_svc+0x6c/0x94)
+Exception stack(0xc36bb928 to 0xc36bb970)
+b920:                   c36bb9c0 00000000 c0126919 c0101228 c36bb9c0 b76d7730
+b940: c36b8000 c36bb9a0 c3335b00 c01ce0d8 00000003 c36bba3c c36bb940 c36bb978
+b960: c010e298 c011373c 60000013 ffffffff
+[<c0100b0c>] (__irq_svc) from [<c011373c>] (unwind_frame+0x0/0x870)
+[<c011373c>] (unwind_frame) from [<00000000>] (0x0)
+
+The buggy address belongs to the page:
+page:(ptrval) refcount:0 mapcount:0 mapping:00000000 index:0x0 pfn:0x636bb
+flags: 0x0()
+raw: 00000000 00000000 ef867764 00000000 00000000 00000000 ffffffff 00000000
+page dumped because: kasan: bad access detected
+
+addr c36bba90 is located in stack of task cat/163 at offset 48 in frame:
+ stack_trace_save+0x0/0xb4
+
+this frame has 1 object:
+ [32, 48) 'trace'
+
+Memory state around the buggy address:
+ c36bb980: f1 f1 f1 f1 00 04 f2 f2 00 00 f3 f3 00 00 00 00
+ c36bba00: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1
+>c36bba80: 00 00 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00
+                 ^
+ c36bbb00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ c36bbb80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+There is a same issue on x86 and has been resolved by the commit f7d27c35ddff
+("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
+The solution could be applied to arm architecture too.
+
+Signed-off-by: Lin Yujun <linyujun809@huawei.com>
+Reported-by: He Ying <heying24@huawei.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/stm32/stm32_crc32.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm/kernel/stacktrace.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/crypto/stm32/stm32_crc32.c b/drivers/crypto/stm32/stm32_crc32.c
-index 6848f34a9e66..de645bf84980 100644
---- a/drivers/crypto/stm32/stm32_crc32.c
-+++ b/drivers/crypto/stm32/stm32_crc32.c
-@@ -334,8 +334,10 @@ static int stm32_crc_remove(struct platform_device *pdev)
- 	struct stm32_crc *crc = platform_get_drvdata(pdev);
- 	int ret = pm_runtime_get_sync(crc->dev);
+diff --git a/arch/arm/kernel/stacktrace.c b/arch/arm/kernel/stacktrace.c
+index a452b859f485..d99b45307566 100644
+--- a/arch/arm/kernel/stacktrace.c
++++ b/arch/arm/kernel/stacktrace.c
+@@ -52,17 +52,17 @@ int notrace unwind_frame(struct stackframe *frame)
+ 		return -EINVAL;
  
--	if (ret < 0)
-+	if (ret < 0) {
-+		pm_runtime_put_noidle(crc->dev);
- 		return ret;
-+	}
+ 	frame->sp = frame->fp;
+-	frame->fp = *(unsigned long *)(fp);
+-	frame->pc = *(unsigned long *)(fp + 4);
++	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
++	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 4));
+ #else
+ 	/* check current frame pointer is within bounds */
+ 	if (fp < low + 12 || fp > high - 4)
+ 		return -EINVAL;
  
- 	spin_lock(&crc_list.lock);
- 	list_del(&crc->list);
+ 	/* restore the registers from the stack frame */
+-	frame->fp = *(unsigned long *)(fp - 12);
+-	frame->sp = *(unsigned long *)(fp - 8);
+-	frame->pc = *(unsigned long *)(fp - 4);
++	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 12));
++	frame->sp = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 8));
++	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 4));
+ #endif
+ 
+ 	return 0;
 -- 
 2.35.1
 
