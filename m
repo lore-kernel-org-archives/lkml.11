@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D35CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:28:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD7BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346381AbiDGRab (ORCPT
+        id S1346389AbiDGRah (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
+        Thu, 7 Apr 2022 13:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346516AbiDGR1j (ORCPT
+        with ESMTP id S1346527AbiDGR1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:27:39 -0400
+        Thu, 7 Apr 2022 13:27:40 -0400
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24A2100A5C;
-        Thu,  7 Apr 2022 10:23:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 574D2104A7D;
+        Thu,  7 Apr 2022 10:23:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Cc:To:From:content-disposition;
-        bh=qwHhhptcjs675dAW5wV9iUf/ZWGXFcOtu4sOGzEzFjs=; b=EOT6Ow6UdVvIY4DKNDl28DKbdr
-        XL5XBU0ol/6KJ5yyMeQNVEigE3hI5Hq4vvc9uqb7OcthVIfXm8w4RQpIMDrwoU1JA19vDtZcFnUxv
-        l7jAKiqD9ealgWX/ab89zuM+BD85MGrlTeWGSadgaMFatmmm0Y/RkNARI8eHFX1+dzqYiaQLyxl20
-        9DAAC0pIu2lI1X5Vo1nT8DW41LqG5BDQMmtDKYwT0g3x/8xszhQy7g+abnKiSf+qEbhvQuOU1qe3o
-        SeUkhbs0C0A1KQMoBspjKBQVeW2vsuXxkiX5n3YFsn8s+JEHD0SNW9Y5gMID8PeWk3yZlXoJd2PpH
-        ZryrM0ug==;
+        bh=NVweqEcjCecZ0bg5dlWjMJWWbRBpQR845+naXv01S1E=; b=h2VvbNMMeOyfd9uAusM38USxqP
+        BFBKHX85h+K9Iouhc5J025ZGSoGwKIXCO7ojH7XY7YyHtqY+FxOrMiXktfFPC7gZLVbBq6QA4Qrqv
+        PwwUyHVKqeCbkzTZVPu2r1p/mePJAyTIMmfWusxrJqTms3K+wv/Mo3p/YBnQtsZcnxrkfsf90KZUZ
+        Xg1LT6yc0J5GbUL+iqWxGKdJq7/8uvyiNuLx7fcBLUIz5E8rLwHtHv/EBxJImTmU6jMWSTAQAZ2Sk
+        jcbEXGAMH4iMByypCuG9AOAn5Wdl8PTU5kKxepYadTEARhyeUEkfv3RDRU6GmNTMuzQ8V4aGuRy3/
+        YqtIYkZQ==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
         by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1ncUMM-002BBg-He; Thu, 07 Apr 2022 09:47:47 -0600
+        id 1ncUMK-002BBg-28; Thu, 07 Apr 2022 09:47:44 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1ncUMC-00021T-0m; Thu, 07 Apr 2022 09:47:36 -0600
+        id 1ncUME-000226-6k; Thu, 07 Apr 2022 09:47:38 -0600
 From:   Logan Gunthorpe <logang@deltatee.com>
 To:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
         linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
@@ -57,57 +57,134 @@ Cc:     Stephen Bates <sbates@raithlin.com>,
         Martin Oliveira <martin.oliveira@eideticom.com>,
         Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
         Ralph Campbell <rcampbell@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Date:   Thu,  7 Apr 2022 09:47:01 -0600
-Message-Id: <20220407154717.7695-6-logang@deltatee.com>
+        Logan Gunthorpe <logang@deltatee.com>
+Date:   Thu,  7 Apr 2022 09:47:11 -0600
+Message-Id: <20220407154717.7695-16-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220407154717.7695-1-logang@deltatee.com>
 References: <20220407154717.7695-1-logang@deltatee.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com, jhubbard@nvidia.com, rcampbell@nvidia.com, jgg@nvidia.com
+X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com, logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v6 05/21] dma-mapping: allow EREMOTEIO return code for P2PDMA transfers
+Subject: [PATCH v6 15/21] iov_iter: introduce iov_iter_get_pages_[alloc_]flags()
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add EREMOTEIO error return to dma_map_sgtable() which will be used
-by .map_sg() implementations that detect P2PDMA pages that the
-underlying DMA device cannot access.
+Add iov_iter_get_pages_flags() and iov_iter_get_pages_alloc_flags()
+which take a flags argument that is passed to get_user_pages_fast().
+
+This is so that FOLL_PCI_P2PDMA can be passed when appropriate.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- kernel/dma/mapping.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/linux/uio.h |  6 ++++++
+ lib/iov_iter.c      | 25 +++++++++++++++++++------
+ 2 files changed, 25 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index db7244291b74..9f65d1041638 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -197,7 +197,7 @@ static int __dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
- 	if (ents > 0)
- 		debug_dma_map_sg(dev, sg, nents, ents, dir, attrs);
- 	else if (WARN_ON_ONCE(ents != -EINVAL && ents != -ENOMEM &&
--			      ents != -EIO))
-+			      ents != -EIO && ents != -EREMOTEIO))
- 		return -EIO;
+diff --git a/include/linux/uio.h b/include/linux/uio.h
+index 739285fe5a2f..ddf9e4cf4a59 100644
+--- a/include/linux/uio.h
++++ b/include/linux/uio.h
+@@ -232,8 +232,14 @@ void iov_iter_pipe(struct iov_iter *i, unsigned int direction, struct pipe_inode
+ void iov_iter_discard(struct iov_iter *i, unsigned int direction, size_t count);
+ void iov_iter_xarray(struct iov_iter *i, unsigned int direction, struct xarray *xarray,
+ 		     loff_t start, size_t count);
++ssize_t iov_iter_get_pages_flags(struct iov_iter *i, struct page **pages,
++		size_t maxsize, unsigned maxpages, size_t *start,
++		unsigned int gup_flags);
+ ssize_t iov_iter_get_pages(struct iov_iter *i, struct page **pages,
+ 			size_t maxsize, unsigned maxpages, size_t *start);
++ssize_t iov_iter_get_pages_alloc_flags(struct iov_iter *i,
++		struct page ***pages, size_t maxsize, size_t *start,
++		unsigned int gup_flags);
+ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i, struct page ***pages,
+ 			size_t maxsize, size_t *start);
+ int iov_iter_npages(const struct iov_iter *i, int maxpages);
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index 6dd5330f7a99..9bf6e3af5120 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -1515,9 +1515,9 @@ static struct page *first_bvec_segment(const struct iov_iter *i,
+ 	return page;
+ }
  
- 	return ents;
-@@ -255,6 +255,8 @@ EXPORT_SYMBOL(dma_map_sg_attrs);
-  *		complete the mapping. Should succeed if retried later.
-  *   -EIO	Legacy error code with an unknown meaning. eg. this is
-  *		returned if a lower level call returned DMA_MAPPING_ERROR.
-+ *   -EREMOTEIO	The DMA device cannot access P2PDMA memory specified in
-+ *		the sg_table. This will not succeed if retried.
-  */
- int dma_map_sgtable(struct device *dev, struct sg_table *sgt,
- 		    enum dma_data_direction dir, unsigned long attrs)
+-ssize_t iov_iter_get_pages(struct iov_iter *i,
++ssize_t iov_iter_get_pages_flags(struct iov_iter *i,
+ 		   struct page **pages, size_t maxsize, unsigned maxpages,
+-		   size_t *start)
++		   size_t *start, unsigned int gup_flags)
+ {
+ 	size_t len;
+ 	int n, res;
+@@ -1528,7 +1528,6 @@ ssize_t iov_iter_get_pages(struct iov_iter *i,
+ 		return 0;
+ 
+ 	if (likely(iter_is_iovec(i))) {
+-		unsigned int gup_flags = 0;
+ 		unsigned long addr;
+ 
+ 		if (iov_iter_rw(i) != WRITE)
+@@ -1558,6 +1557,13 @@ ssize_t iov_iter_get_pages(struct iov_iter *i,
+ 		return iter_xarray_get_pages(i, pages, maxsize, maxpages, start);
+ 	return -EFAULT;
+ }
++EXPORT_SYMBOL_GPL(iov_iter_get_pages_flags);
++
++ssize_t iov_iter_get_pages(struct iov_iter *i, struct page **pages,
++			   size_t maxsize, unsigned maxpages, size_t *start)
++{
++	return iov_iter_get_pages_flags(i, pages, maxsize, maxpages, start, 0);
++}
+ EXPORT_SYMBOL(iov_iter_get_pages);
+ 
+ static struct page **get_pages_array(size_t n)
+@@ -1640,9 +1646,9 @@ static ssize_t iter_xarray_get_pages_alloc(struct iov_iter *i,
+ 	return actual;
+ }
+ 
+-ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
++ssize_t iov_iter_get_pages_alloc_flags(struct iov_iter *i,
+ 		   struct page ***pages, size_t maxsize,
+-		   size_t *start)
++		   size_t *start, unsigned int gup_flags)
+ {
+ 	struct page **p;
+ 	size_t len;
+@@ -1654,7 +1660,6 @@ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
+ 		return 0;
+ 
+ 	if (likely(iter_is_iovec(i))) {
+-		unsigned int gup_flags = 0;
+ 		unsigned long addr;
+ 
+ 		if (iov_iter_rw(i) != WRITE)
+@@ -1667,6 +1672,7 @@ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
+ 		p = get_pages_array(n);
+ 		if (!p)
+ 			return -ENOMEM;
++
+ 		res = get_user_pages_fast(addr, n, gup_flags, p);
+ 		if (unlikely(res <= 0)) {
+ 			kvfree(p);
+@@ -1694,6 +1700,13 @@ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
+ 		return iter_xarray_get_pages_alloc(i, pages, maxsize, start);
+ 	return -EFAULT;
+ }
++EXPORT_SYMBOL_GPL(iov_iter_get_pages_alloc_flags);
++
++ssize_t iov_iter_get_pages_alloc(struct iov_iter *i, struct page ***pages,
++				 size_t maxsize, size_t *start)
++{
++	return iov_iter_get_pages_alloc_flags(i, pages, maxsize, start, 0);
++}
+ EXPORT_SYMBOL(iov_iter_get_pages_alloc);
+ 
+ size_t csum_and_copy_from_iter(void *addr, size_t bytes, __wsum *csum,
 -- 
 2.30.2
 
