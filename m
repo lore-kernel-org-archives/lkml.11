@@ -2,168 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3012C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B20C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245408AbiDGMta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
+        id S245419AbiDGMt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242785AbiDGMtX (ORCPT
+        with ESMTP id S245412AbiDGMtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:49:23 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141C392D33;
-        Thu,  7 Apr 2022 05:47:22 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649335640;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=l0I9I6WV1S1O6FTGGqs5ZdqvRo5lJvmEwFUVwH/oV+U=;
-        b=MFHvGLPyrEoJXZikbzZN3w0JkZL6HSMRqGDnxPZ0KuA+DjMOYwrtIciTJ/okXOHwd+xXGT
-        BS4/9j1Jtv6EydYqmn+NA7XwdxGwk0VHxeU97XC3/uTzDvD/iJ0ZHETNmEJ9XPwpDRRMPh
-        tl0RgLxWSlEdRnagx0ReNDZLDgauxJJUaJZHPxBRProolKPF0nK+t2pMdNSrHwbmH0PoCd
-        6YfqCiBPXZJwT3E9WfQYp0/gWZFHXUEhr5Nqr4Yt/QfldP7BuruBkZaeQneBe5kZz7uWMW
-        jvdLcIgbClBBzW2jYbxYilmgWGQuD6nZEyi0UIbl6BLqTX0zioLrbb4aNirpRw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649335640;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=l0I9I6WV1S1O6FTGGqs5ZdqvRo5lJvmEwFUVwH/oV+U=;
-        b=/2Ta+A6nKdnPawgIIqaCCFMIwPuuCPkTSrEj1P9rXDj3vBarf6uOD00BPIt438DyBa5QmM
-        x8XkxiU/QG1YePDg==
-To:     Matthew Wilcox <willy@infradead.org>,
-        Liao Chang <liaochang1@huawei.com>
-Cc:     mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
-        clg@kaod.org, nitesh@redhat.com, edumazet@google.com,
-        peterz@infradead.org, joshdon@google.com, masahiroy@kernel.org,
-        nathan@kernel.org, akpm@linux-foundation.org, vbabka@suse.cz,
-        gustavoars@kernel.org, arnd@arndb.de, chris@chrisdown.name,
-        dmitry.torokhov@gmail.com, linux@rasmusvillemoes.dk,
-        daniel@iogearbox.net, john.ogness@linutronix.de, will@kernel.org,
-        dave@stgolabs.net, frederic@kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        heying24@huawei.com, guohanjun@huawei.com, weiyongjun1@huawei.com
-Subject: Re: [RFC 0/3] softirq: Introduce softirq throttling
-In-Reply-To: <Yk2ppI60P98E2Qj5@casper.infradead.org>
-References: <20220406025241.191300-1-liaochang1@huawei.com>
- <Yk2ppI60P98E2Qj5@casper.infradead.org>
-Date:   Thu, 07 Apr 2022 14:47:20 +0200
-Message-ID: <877d81jc13.ffs@tglx>
+        Thu, 7 Apr 2022 08:49:55 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A3BD1104
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:47:51 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KZ1Jn69t5zBs6p;
+        Thu,  7 Apr 2022 20:43:37 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ kwepemi500015.china.huawei.com (7.221.188.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Apr 2022 20:47:49 +0800
+Received: from localhost.localdomain (10.67.164.66) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 7 Apr 2022 20:47:49 +0800
+From:   Qi Liu <liuqi115@huawei.com>
+To:     <will@kernel.org>, <mark.rutland@arm.com>, <john.garry@huawei.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <zhangshaokun@hisilicon.com>
+Subject: [PATCH v4 0/2] Add Support for HiSilicon CPA PMU
+Date:   Thu, 7 Apr 2022 20:46:15 +0800
+Message-ID: <20220407124617.54521-1-liuqi115@huawei.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06 2022 at 15:54, Matthew Wilcox wrote:
-> On Wed, Apr 06, 2022 at 10:52:38AM +0800, Liao Chang wrote:
->> Kernel check for pending softirqs periodically, they are performed in a
->> few points of kernel code, such as irq_exit() and __local_bh_enable_ip(),
->> softirqs that have been activated by a given CPU must be executed on the
->> same CPU, this characteristic of softirq is always a potentially
->> "dangerous" operation, because one CPU might be end up very busy while
->> the other are most idle.
->> 
->> Above concern is proven in a networking user case: recenlty, we
->> engineer find out the time used for connection re-establishment on
->> kernel v5.10 is 300 times larger than v4.19, meanwhile, softirq
->> monopolize almost 99% of CPU. This problem stem from that the connection
->> between Sender and Receiver node get lost, the NIC driver on Sender node
->> will keep raising NET_TX softirq before connection recovery. The system
->> log show that most of softirq is performed from __local_bh_enable_ip(),
->> since __local_bh_enable_ip is used widley in kernel code, it is very
->> easy to run out most of CPU, and the user-mode application can't obtain
->> enough CPU cycles to establish connection as soon as possible.
->
-> Shouldn't you fix that bug instead?  This seems like papering over the
-> bad effects of a bug and would make it harder to find bugs like this in
-> the future.  Essentially, it's the same as a screaming hardware interrupt,
-> except that it's a software interrupt, so we can fix the bug instead of
-> working around broken hardware.
+Add Support for HiSilicon CPA PMU driver. Json file in perf tool
+is applied in 
+https://lore.kernel.org/linux-arm-kernel/YhkhSZp+a715Ldzr@kernel.org/.
 
-It's not necessarily broken hardware. It's a fundamental issue of our
-softirq processing magic which can happen in those contexts:
+Change since v3:
+- Add more explanation for changing CPA PMUs CPU affinity.
+- Address the comments from John.
+- Link: https://lore.kernel.org/linux-arm-kernel/20220321070124.41338-1-liuqi115@huawei.com/
 
-   1) On return from interrupt
+Change since v2:
+- Associate CPA PMUs with CPUs online, rather than CPUs in the nearest SCCL.
+- Move CPA power management to probe and remove function.
+- Address the comments from John.
+- Link: https://lore.kernel.org/linux-arm-kernel/20220224111129.41416-1-liuqi115@huawei.com/
 
-   2) In local_bh_enable()
+Change since v1:
+- Address the comments from John.
+- Link: https://lore.kernel.org/linux-arm-kernel/20220214114228.40859-1-liuqi115@huawei.com/
 
-   3) In ksoftirqd
+Qi Liu (2):
+  drivers/perf: hisi: Associate PMUs in SICL with CPUs online
+  drivers/perf: hisi: Add Support for CPA PMU
 
-We have heuristics in place which delegate processing to ksoftirqd,
-which brings softirq processing under scheduler control to some extent,
-but those heuristics are rather easy to evade.
+ drivers/perf/hisilicon/Makefile              |   2 +-
+ drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c | 401 +++++++++++++++++++
+ drivers/perf/hisilicon/hisi_uncore_pa_pmu.c  |  18 +-
+ drivers/perf/hisilicon/hisi_uncore_pmu.c     |   4 +
+ drivers/perf/hisilicon/hisi_uncore_pmu.h     |   1 +
+ include/linux/cpuhotplug.h                   |   1 +
+ 6 files changed, 415 insertions(+), 12 deletions(-)
+ create mode 100644 drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c
 
-Delegation to ksoftirqd happens when the runtime of the __do_softirq()
-loop exceeds a threshold. But if that is not exceeded then you still can
-get into a situation where softirq processing eats up a large quantity
-of CPU time in #1 and #2 which is the real problem because it prevents
-the scheduler from applying fairness.
+-- 
+2.24.0
 
-That's a known issue and attempts to fix that are popping up on a
-regular base. There are several issues here:
-
-  1) The runtime check in __do_softirq() is jiffies based and depending
-     on CONFIG_HZ it's easy to stay under the threshold for one
-     invocation, but still eat a large amount of CPU time.
-
-     Also the runtime check happens at the end of the loop, which means
-     that if a single softirq callback runs too long we still process
-     all other pending ones.
-
-  2) The decision to process softirqs directly on return from interrupt
-     or in local_bh_enable() is error prone.
-
-     The logic is:
-
-         if (!ksoftirq_running() ||
-             local_softirq_pending() & (SOFTIRQ_HI | SOFTIRQ_TASKLET))
-         	process_direct();
-
-     The reason for the HI/TASKLET exception is documented here:
-
-         3c53776e29f8 ("Mark HI and TASKLET softirq synchronous")
-
-     But this is nasty because tasklets are widely used in networking,
-     crypto and quite some of them are self rearming when they take too
-     long. See mlx5_cq_tasklet_cb() as one example, which also uses
-     jiffies for time limiting...
-
-     With the HI/TASKLET exception this means that there is no
-     delegation to ksoftirqd simply because on the next return from
-     interrupt or the next local_bh_enable() in task context softirqs
-     are processed. And this processes _all_ pending bits not only the
-     HI/TASKLET ones...
-
-The approach of just not running softirqs at all via a throttle
-mechanism as proposed with these patches here, is definitely wrong and
-going nowhere.
-
-The proper solution for load accounting is a moving average with
-exponential decay based on sched_clock() and not on jiffies. That gives
-a reasonable decision to enforce ksoftirqd processing, but of course
-that does neither solve the tasklet issues nor any of the other problems
-vs. softirqs at all.
-
-We've tried splitting ksoftirqd into different threads a couple of years
-ago in RT, but that turned out to be problematic in some cases. Frederic
-did some experiments to make local_bh_disable() take a mask argument to
-disable only particular softirqs, but that ran into a dead end and is
-problematic because quite some code, esp. networking relies on multiple
-softirqs being disabled.
-
-Softirqs are semantically ill defined and that's known for a very long
-time, but of course they are conveniant and with a few hacks piled on
-top to address the most urgent horrors they work by some definition of
-work. IOW, we are accumulating technical depth with a fast pace.
-
-TBH, I have no real good plan how to address this proper, but it's about
-time to tackle this in a concerted effort.
-
-Thanks,
-
-        tglx
