@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DB1C352A1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1048FC47082
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240012AbiDGB3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60700 "EHLO
+        id S239562AbiDGB2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240495AbiDGBUC (ORCPT
+        with ESMTP id S240447AbiDGBUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:20:02 -0400
+        Wed, 6 Apr 2022 21:20:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274C72F39A;
-        Wed,  6 Apr 2022 18:17:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461DA1817B7;
+        Wed,  6 Apr 2022 18:16:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B703B61DAE;
-        Thu,  7 Apr 2022 01:17:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 168E9C385A1;
-        Thu,  7 Apr 2022 01:17:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF85761DAE;
+        Thu,  7 Apr 2022 01:16:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8404C385A1;
+        Thu,  7 Apr 2022 01:16:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294246;
-        bh=0naOMxH3Ws/cN6Gr0znKiOXtUMhUhuBDe3no0f3cIO8=;
+        s=k20201202; t=1649294184;
+        bh=KuFUgf9ktp4busrSOKUHZR6BbW7z2IoxN0dCsE+i6NY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eXmLMNfBHBbq2i1uzAR6AjGJz4MqREYVRUhSXY4P7iAmYUe2u3Fda1q9tbcS7ugtI
-         qLy2lgoijUdwh8jncUMlp9620iFs6DgBubFCjjSyTh1//tjWDv9NsS7wh4v2gRLkjc
-         xCb5uIj8Gw4+1K+vTw6ro3N6DddtjpeW0uZCQtOtb1Tl7qdYj+LeIb233+P1rBYekw
-         +5dKA0rE1PMSZZvzhogGdDUQ+E0ckO+eY6t1VzoqYQKBRCnxk8KDl6KFWQK6MqVSbg
-         avi/tkrcK60/PAJtx42f3P/3NprZwMF4SvXT3TC7Uyk/UiPk9A3DnyR2cnW9/e/jHg
-         SaNXLEWlW/Qqg==
+        b=GT+X6ggM3ugPDDantv4kdwnJQWjjvVsAVwuWhtIHtYcUe/JbIbUfCFxbWLMqWArpZ
+         ZBHcU7UH4ctTF3zRKyoQl+PZQtCIGCdFYWsoi5QFYxcg3NvtyYE4gExrXcUAyFsMfN
+         3HzVBLFdpzm8VIKjcRj0P3GbcvBsxlnIOB0y0IqFw7UvuKITegTM99T71XSDw1mDZf
+         Sxb/YuN1ommGLeHlG3SceRq6LedDXXwvBbI22Lm85QfcS/GNk7hQQ3qtxgAdOL1asb
+         J/3neZCvj4h6mhZkUSng9sqC7pxGgVz6593gzUQvOczgDzBTcBlT8OmSXAtzhR8heB
+         Pk4Zu00yJ37AA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
@@ -40,12 +40,12 @@ Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
         alexandre.torgue@foss.st.com, linux-input@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 5/8] Input: stmfts - fix reference leak in stmfts_input_open
-Date:   Wed,  6 Apr 2022 21:16:42 -0400
-Message-Id: <20220407011645.115412-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 05/11] Input: stmfts - fix reference leak in stmfts_input_open
+Date:   Wed,  6 Apr 2022 21:16:02 -0400
+Message-Id: <20220407011609.115258-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011645.115412-1-sashal@kernel.org>
-References: <20220407011645.115412-1-sashal@kernel.org>
+In-Reply-To: <20220407011609.115258-1-sashal@kernel.org>
+References: <20220407011609.115258-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -71,10 +71,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
-index d9e93dabbca2..9007027a7ad9 100644
+index cd8805d71d97..be1dd504d5b1 100644
 --- a/drivers/input/touchscreen/stmfts.c
 +++ b/drivers/input/touchscreen/stmfts.c
-@@ -344,11 +344,11 @@ static int stmfts_input_open(struct input_dev *dev)
+@@ -339,11 +339,11 @@ static int stmfts_input_open(struct input_dev *dev)
  
  	err = pm_runtime_get_sync(&sdata->client->dev);
  	if (err < 0)
@@ -88,7 +88,7 @@ index d9e93dabbca2..9007027a7ad9 100644
  
  	mutex_lock(&sdata->mutex);
  	sdata->running = true;
-@@ -371,7 +371,9 @@ static int stmfts_input_open(struct input_dev *dev)
+@@ -366,7 +366,9 @@ static int stmfts_input_open(struct input_dev *dev)
  				 "failed to enable touchkey\n");
  	}
  
