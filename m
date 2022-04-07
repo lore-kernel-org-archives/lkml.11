@@ -2,165 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04637C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 03:09:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 826DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 03:10:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239712AbiDGDLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 23:11:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
+        id S232251AbiDGDMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 23:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239823AbiDGDLR (ORCPT
+        with ESMTP id S233995AbiDGDMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 23:11:17 -0400
-Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D173D21A0DB;
-        Wed,  6 Apr 2022 20:08:46 -0700 (PDT)
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 23738PKt004818;
-        Thu, 7 Apr 2022 12:08:25 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 23738PKt004818
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649300905;
-        bh=lz12cTiaDiO+TL8jlSZOZjXEzJZWXC8B9X7PhEBLIlA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=GNfTfySCJG4XngQ3SggY+S2KlsuVAu7ItuQwAE5SoPrOWgwAG2wO7O4A7tN6Wv0BU
-         h7hlBues3HGCt6N/vmCJJrVgFbCas5ZzxHK43tah4c7hZOWsoGRTd4buwp2W+JguEn
-         /UKWsIuGt/NJbN1Ov2Sbnbx8MbjKDRgUAbTrmxdHgahksxS30f0sYdYhmNRBjYS+/C
-         jLV7ILFMxriRXZvNNSwLC7n7qo++rnsmNIa4w6pjhdPJqGjsNkixkyMi4O4/IQqpBb
-         r06m0cKuqoHfdh+OMCFEP7my3FlqCcUIA6EeUf2LeDZIoqnJBfTMcAsshxObPmaC/8
-         PpjVSlpV2s/uw==
-X-Nifty-SrcIP: [209.85.216.41]
-Received: by mail-pj1-f41.google.com with SMTP id n6-20020a17090a670600b001caa71a9c4aso4888666pjj.1;
-        Wed, 06 Apr 2022 20:08:25 -0700 (PDT)
-X-Gm-Message-State: AOAM530wXYeg46U0lxZ5GuoQU+3TMwydDurQAGqGaGiK5KLWD8km2eue
-        ECgeSaoBBJLVu+fzKy7XUGaFFayH5Oo8edJEZcY=
-X-Google-Smtp-Source: ABdhPJzlZRKhkwV5MU4RvXfPq8Vhv48IcrBcAga8kUFYVd3Fi1XSyXb3I+RYsY89ZiFO5wu2RkhRHOSSXCpJKw0IcXM=
-X-Received: by 2002:a17:902:b183:b0:14f:c266:20d5 with SMTP id
- s3-20020a170902b18300b0014fc26620d5mr11858079plr.136.1649300904628; Wed, 06
- Apr 2022 20:08:24 -0700 (PDT)
+        Wed, 6 Apr 2022 23:12:07 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A4B227C58;
+        Wed,  6 Apr 2022 20:10:08 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id l7so2665674ejn.2;
+        Wed, 06 Apr 2022 20:10:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6G3zddOtH8eyIxvQmfflWw1/4QptoCpMZ2g0zuWQJE4=;
+        b=nsb1zr3FcdGj2BTMPaxGW4jXWziAfDjqWTGNOM/ere5rA+I7OedBX9FN9atCOecIGt
+         pcRc2c5DFkGY8a6Ik0Uh5YRSD4muI4yDahqMHXN5KbWzCAWmeGpNXHAapwijgrzbh/up
+         +0DkhUUKfgYpP2iDFI/+qEhD+4SYlRQ9Iff104cFNNsllrvGRgvhnYlQ9OJPxOkLf9zR
+         lYKVizquQRl/Ex5NNdnNtZPZBiSOdRXGpOpTFGT+1vYsPK1wDGbaha2BYIqt7p6Odlsj
+         onYQ4aCvJg47l+RjUblnRAhl0N9pEIqc2hcZYeb9ah2tbLPodebxcFdTGLUaTi9mqnfa
+         KsEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6G3zddOtH8eyIxvQmfflWw1/4QptoCpMZ2g0zuWQJE4=;
+        b=8O+Rsf1118BbJCg+TdNedraZdvCMfz9ORYGvuaRsPJk7Mt0SaPjAtvLqjYwF3BJz4y
+         pnweLzvxNpfagM2cIVn+H4zA2Jhqye6VOl+jPnGwfydqykXm1Lhb5TbJDTMGVz7f3gMU
+         asIDCOWg47tB13aQnQMKXpYSHOh42D5TuMAiDMLG5eaufpjiiUH7ag2Q0CT73048K1bM
+         yZnMZIC1LaLj38yp8Qlb6bwz/CL1FzghxXhhzd/BUWV7HmsW7sE0gN2IclpyldWQdhkr
+         1UhRojzYAyAKgk/sggmYnx+nggFDdKraT2TQ1D/tT0e6qEicg5bCUv28eGh6Pf4boYfa
+         dPHQ==
+X-Gm-Message-State: AOAM532vYDlsQd/q3pQrZEdeHGXU0V9PS595Ql7ye1PQEq68KglBC1BJ
+        HI0czn8wciAVA0chFizaA1MFAVcqg0HLPmdzMEk=
+X-Google-Smtp-Source: ABdhPJxI9ltkUnnn2XwyGKwQSgLHlnE+U25/ZiqM/ZnUB51X94ZZgD8fddLhu8IXGk5t/J2oDvKOAQMOqIcgdVtZyC0=
+X-Received: by 2002:a17:906:3a15:b0:6cf:ea4e:a1cc with SMTP id
+ z21-20020a1709063a1500b006cfea4ea1ccmr11755209eje.753.1649301007335; Wed, 06
+ Apr 2022 20:10:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220406153023.500847-1-masahiroy@kernel.org> <20220406153023.500847-8-masahiroy@kernel.org>
- <960102bb-2944-4be0-ab09-7cd2eb0c2cf9@quicinc.com>
-In-Reply-To: <960102bb-2944-4be0-ab09-7cd2eb0c2cf9@quicinc.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 7 Apr 2022 12:07:34 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAStLCBCur3QnfMnBrOUkixYbJK+C6TZVKYcGX9R3M=ANQ@mail.gmail.com>
-Message-ID: <CAK7LNAStLCBCur3QnfMnBrOUkixYbJK+C6TZVKYcGX9R3M=ANQ@mail.gmail.com>
-Subject: Re: [PATCH 7/7] kbuild: read *.mod to get objects passed to $(LD) or $(AR)
-To:     Jeff Johnson <quic_jjohnson@quicinc.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
+References: <20220407024001.11761-1-hbh25y@gmail.com>
+In-Reply-To: <20220407024001.11761-1-hbh25y@gmail.com>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Thu, 7 Apr 2022 11:09:41 +0800
+Message-ID: <CAD-N9QV27nJW=_goZKB0666Nq1pNphbgoHeYn_FmSkkJh9vyKg@mail.gmail.com>
+Subject: Re: [PATCH v2] usb: misc: fix improper handling of refcount in uss720_probe()
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 3:13 AM Jeff Johnson <quic_jjohnson@quicinc.com> wrote:
+On Thu, Apr 7, 2022 at 10:40 AM Hangyu Hua <hbh25y@gmail.com> wrote:
 >
-> On 4/6/2022 8:30 AM, Masahiro Yamada wrote:
-> > ld and ar support @file, which command-line options are read from.
-> >
-> > Now that *.mod lists the member objects in the correct order, without
-> > duplication, it is ready to be passed to ld and ar.
-> >
-> > By using the @file syntax, people will not be worried about the pitfall
-> > described in the NOTE.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > ---
-> >
-> >   scripts/Makefile.build | 10 +++-------
-> >   1 file changed, 3 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> > index 3da731cf6978..f6a506318795 100644
-> > --- a/scripts/Makefile.build
-> > +++ b/scripts/Makefile.build
-> > @@ -450,22 +450,18 @@ quiet_cmd_ar_lib = AR      $@
-> >   $(obj)/lib.a: $(lib-y) FORCE
-> >       $(call if_changed,ar_lib)
-> >
-> > -# NOTE:
-> > -# Do not replace $(filter %.o,^) with $(real-prereqs). When a single object
-> > -# module is turned into a multi object module, $^ will contain header file
-> > -# dependencies recorded in the .*.cmd file.
-> >   ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
-> >   quiet_cmd_link_multi-m = AR [M]  $@
-> >   cmd_link_multi-m =                                          \
-> >       $(cmd_update_lto_symversions);                          \
-> >       rm -f $@;                                               \
-> > -     $(AR) cDPrsT $@ $(filter %.o,$^)
-> > +     $(AR) cDPrsT $@ @$(patsubst %.o,%.mod,$@)
-> >   else
-> >   quiet_cmd_link_multi-m = LD [M]  $@
-> > -      cmd_link_multi-m = $(LD) $(ld_flags) -r -o $@ $(filter %.o,$^)
-> > +      cmd_link_multi-m = $(LD) $(ld_flags) -r -o $@ @$(patsubst %.o,%.mod,$@)
-> >   endif
-> >
-> > -$(multi-obj-m): FORCE
-> > +$(multi-obj-m): %.o: %.mod FORCE
-> >       $(call if_changed,link_multi-m)
-> >   $(call multi_depend, $(multi-obj-m), .o, -objs -y -m)
-> >
+> usb_put_dev shouldn't be called when uss720_probe succeeds because of
+> priv->usbdev. At the same time, priv->usbdev shouldn't be set to NULL
+> before destroy_priv in uss720_disconnect because usb_put_dev is in
+> destroy_priv.
 >
-> Looks like this also addresses the out-of-tree issue described in
-> <https://lore.kernel.org/linux-kbuild/1610500731-30960-2-git-send-email-jjohnson@codeaurora.org/>
+> Fix this by moving priv->usbdev = NULL after usb_put_dev.
+
+Hi Hangyu,
+
+good catch as priv->usbdev is still used after the probe function.
+
+I agree with this patch.
+
+Reviewed-by: Dongliang Mu <mudongliangabcd@gmail.com>
+
 >
-> :)
+> Fixes: dcb4b8ad6a44 ("misc/uss720: fix memory leak in uss720_probe")
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> ---
 >
-> /jeff
-
-But, not perfectly.
-
-This patch fixed the linker part, but the same issue is remaining in cmd_mod.
-
-The following patch is an easy fix-up.
-
-
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index f6a506318795..468f9e646370 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -303,8 +303,8 @@ $(obj)/%.prelink.o: $(obj)/%.o FORCE
-        $(call if_changed,cc_prelink_modules)
- endif
-
--cmd_mod = echo $(addprefix $(obj)/, $(call real-search, $*.o, .o,
--objs -y -m)) | \
--       $(AWK) -v RS='( |\n)' '!x[$$0]++' > $@
-+cmd_mod = echo $(call real-search, $*.o, .o, -objs -y -m) | \
-+       $(AWK) -v RS='( |\n)' '!x[$$0]++ { print("$(obj)/"$$0) }' > $@
-
- $(obj)/%.mod: FORCE
-        $(call if_changed,mod)
-
-
-
-
-
-But, please do not submit a patch yet.
-
-
-This patch series is just preparation for yet another
-bigger clean-up.
-
-One of my big goals is to clean up Clang LTO builds.
-
-Clang LTO made Kbuild really ugly.
-
-I am re-implementing various parts, but I have not
-completed the work yet.
-
-Meanwhile, I incrementally submit prerequisite
-refactoring patches.
-
-The issues of external module builds _might_ be fixed
-as a side-effect of other refactoring, but I am more
-interested in what the final code will look like.
-
---
-Best Regards
-Masahiro Yamada
+> v2: fix a stupid UAF in the previous version.
+>
+>  drivers/usb/misc/uss720.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/usb/misc/uss720.c b/drivers/usb/misc/uss720.c
+> index 748139d26263..0be8efcda15d 100644
+> --- a/drivers/usb/misc/uss720.c
+> +++ b/drivers/usb/misc/uss720.c
+> @@ -71,6 +71,7 @@ static void destroy_priv(struct kref *kref)
+>
+>         dev_dbg(&priv->usbdev->dev, "destroying priv datastructure\n");
+>         usb_put_dev(priv->usbdev);
+> +       priv->usbdev = NULL;
+>         kfree(priv);
+>  }
+>
+> @@ -736,7 +737,6 @@ static int uss720_probe(struct usb_interface *intf,
+>         parport_announce_port(pp);
+>
+>         usb_set_intfdata(intf, pp);
+> -       usb_put_dev(usbdev);
+>         return 0;
+>
+>  probe_abort:
+> @@ -754,7 +754,6 @@ static void uss720_disconnect(struct usb_interface *intf)
+>         usb_set_intfdata(intf, NULL);
+>         if (pp) {
+>                 priv = pp->private_data;
+> -               priv->usbdev = NULL;
+>                 priv->pp = NULL;
+>                 dev_dbg(&intf->dev, "parport_remove_port\n");
+>                 parport_remove_port(pp);
+> --
+> 2.25.1
+>
