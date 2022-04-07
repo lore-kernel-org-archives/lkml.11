@@ -2,114 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43ACEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:14:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B952BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244912AbiDGMQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:16:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
+        id S245176AbiDGMRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242226AbiDGMQs (ORCPT
+        with ESMTP id S235119AbiDGMRR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:16:48 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629C9257181;
-        Thu,  7 Apr 2022 05:14:48 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id D5A2F210EA;
-        Thu,  7 Apr 2022 12:14:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649333686; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PtNVmE1emwW/zSfcFurzs/NtccDx0eiUPTowKoz+RNk=;
-        b=QvJvZjV3tnz+F/+YT8CTV+iCfToW0qpQ1YrYkaoPuNKKBfsYg3NyFAmcfqk67894y2NESO
-        gIq26lohcEJChJElvQSTvMjfREMEIQhWvtmPFJVWAP1l0iEiHuh7wEkgEKqkZrSkRUiI8G
-        0hVaK9HWxIE7RMwIqk4KMKL+YLHFRtE=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 9F5F8A3B82;
-        Thu,  7 Apr 2022 12:14:46 +0000 (UTC)
-Date:   Thu, 7 Apr 2022 14:14:46 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Juergen Gross <jgross@suse.com>
-Cc:     xen-devel@lists.xenproject.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        stable@vger.kernel.org,
-        Marek =?iso-8859-1?Q?Marczykowski-G=F3recki?= 
-        <marmarek@invisiblethingslab.com>, Mel Gorman <mgorman@suse.de>
-Subject: Re: [PATCH v2] mm, page_alloc: fix build_zonerefs_node()
-Message-ID: <Yk7VtrgrQ5WabLcb@dhcp22.suse.cz>
-References: <20220407120637.9035-1-jgross@suse.com>
+        Thu, 7 Apr 2022 08:17:17 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786EC643B;
+        Thu,  7 Apr 2022 05:15:12 -0700 (PDT)
+Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KZ0dm4rTPz686w8;
+        Thu,  7 Apr 2022 20:13:16 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Apr 2022 14:15:06 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Apr 2022 13:15:04 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <damien.lemoal@opensource.wdc.com>, <hch@lst.de>
+CC:     <linux-doc@vger.kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, John Garry <john.garry@huawei.com>
+Subject: [PATCH v3] libata: Improve ATA queued command allocation
+Date:   Thu, 7 Apr 2022 20:09:25 +0800
+Message-ID: <1649333365-100672-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220407120637.9035-1-jgross@suse.com>
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[CC Mel]
+Improve ATA queued command allocation as follows:
 
-On Thu 07-04-22 14:06:37, Juergen Gross wrote:
-> Since commit 6aa303defb74 ("mm, vmscan: only allocate and reclaim from
-> zones with pages managed by the buddy allocator") only zones with free
-> memory are included in a built zonelist. This is problematic when e.g.
-> all memory of a zone has been ballooned out when zonelists are being
-> rebuilt.
-> 
-> The decision whether to rebuild the zonelists when onlining new memory
-> is done based on populated_zone() returning 0 for the zone the memory
-> will be added to. The new zone is added to the zonelists only, if it
-> has free memory pages (managed_zone() returns a non-zero value) after
-> the memory has been onlined. This implies, that onlining memory will
-> always free the added pages to the allocator immediately, but this is
-> not true in all cases: when e.g. running as a Xen guest the onlined
-> new memory will be added only to the ballooned memory list, it will be
-> freed only when the guest is being ballooned up afterwards.
+- For attaining a qc tag for a SAS host we need to allocate a bit in
+  ata_port.sas_tag_allocated bitmap.
 
-Thanks this is much more clearer!
+  However we already have a unique tag per device in range
+  [0, ATA_MAX_QUEUE - 1] in the scsi cmnd budget token, so just use that
+  instead.
+
+- It is a bit pointless to have ata_qc_new_init() in libata-core.c since it
+  pokes scsi internals, so inline it in ata_scsi_qc_new() (in
+  libata-scsi.c). Also update Doc accordingly.
+
+- Use standard SCSI helpers set_host_byte() and set_status_byte() in
+  ata_scsi_qc_new().
+
+Christoph Hellwig originally contributed the change to inline
+ata_qc_new_init().
+
+Signed-off-by: John Garry <john.garry@huawei.com>
+---
+Do not apply on a kernel without "scsi: core: Fix sbitmap depth in
+scsi_realloc_sdev_budget_map()" - hopefully v5.18-rc2 will include it.
+
+Changes since v2 series:
+- combine into a single patch
+- use scsi helpers (Damien)
+- use inclusive brackets for commit message descripton
+
+diff --git a/Documentation/driver-api/libata.rst b/Documentation/driver-api/libata.rst
+index d477e296bda5..311af516a3fd 100644
+--- a/Documentation/driver-api/libata.rst
++++ b/Documentation/driver-api/libata.rst
+@@ -424,12 +424,6 @@ How commands are issued
+ -----------------------
  
-> Another problem with using managed_zone() for the decision whether a
-> zone is being added to the zonelists is, that a zone with all memory
-> used will in fact be removed from all zonelists in case the zonelists
-> happen to be rebuilt.
-> 
-> Use populated_zone() when building a zonelist as it has been done
-> before that commit.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 6aa303defb74 ("mm, vmscan: only allocate and reclaim from zones with pages managed by the buddy allocator")
-> Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-> Signed-off-by: Juergen Gross <jgross@suse.com>
-> Acked-by: Michal Hocko <mhocko@suse.com>
-> ---
-> V2:
-> - updated commit message (Michal Hocko)
-> ---
->  mm/page_alloc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index bdc8f60ae462..3d0662af3289 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -6128,7 +6128,7 @@ static int build_zonerefs_node(pg_data_t *pgdat, struct zoneref *zonerefs)
->  	do {
->  		zone_type--;
->  		zone = pgdat->node_zones + zone_type;
-> -		if (managed_zone(zone)) {
-> +		if (populated_zone(zone)) {
->  			zoneref_set_zone(zone, &zonerefs[nr_zones++]);
->  			check_highest_zone(zone_type);
->  		}
-> -- 
-> 2.34.1
-
+ Internal commands
+-    First, qc is allocated and initialized using :c:func:`ata_qc_new_init`.
+-    Although :c:func:`ata_qc_new_init` doesn't implement any wait or retry
+-    mechanism when qc is not available, internal commands are currently
+-    issued only during initialization and error recovery, so no other
+-    command is active and allocation is guaranteed to succeed.
+-
+     Once allocated qc's taskfile is initialized for the command to be
+     executed. qc currently has two mechanisms to notify completion. One
+     is via ``qc->complete_fn()`` callback and the other is completion
+@@ -447,11 +441,6 @@ SCSI commands
+     translated. No qc is involved in processing a simulated scmd. The
+     result is computed right away and the scmd is completed.
+ 
+-    For a translated scmd, :c:func:`ata_qc_new_init` is invoked to allocate a
+-    qc and the scmd is translated into the qc. SCSI midlayer's
+-    completion notification function pointer is stored into
+-    ``qc->scsidone``.
+-
+     ``qc->complete_fn()`` callback is used for completion notification. ATA
+     commands use :c:func:`ata_scsi_qc_complete` while ATAPI commands use
+     :c:func:`atapi_qc_complete`. Both functions end up calling ``qc->scsidone``
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index cceedde51126..5e7d6ccad5da 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -4563,42 +4563,6 @@ void swap_buf_le16(u16 *buf, unsigned int buf_words)
+ #endif /* __BIG_ENDIAN */
+ }
+ 
+-/**
+- *	ata_qc_new_init - Request an available ATA command, and initialize it
+- *	@dev: Device from whom we request an available command structure
+- *	@tag: tag
+- *
+- *	LOCKING:
+- *	None.
+- */
+-
+-struct ata_queued_cmd *ata_qc_new_init(struct ata_device *dev, int tag)
+-{
+-	struct ata_port *ap = dev->link->ap;
+-	struct ata_queued_cmd *qc;
+-
+-	/* no command while frozen */
+-	if (unlikely(ap->pflags & ATA_PFLAG_FROZEN))
+-		return NULL;
+-
+-	/* libsas case */
+-	if (ap->flags & ATA_FLAG_SAS_HOST) {
+-		tag = ata_sas_allocate_tag(ap);
+-		if (tag < 0)
+-			return NULL;
+-	}
+-
+-	qc = __ata_qc_from_tag(ap, tag);
+-	qc->tag = qc->hw_tag = tag;
+-	qc->scsicmd = NULL;
+-	qc->ap = ap;
+-	qc->dev = dev;
+-
+-	ata_qc_reinit(qc);
+-
+-	return qc;
+-}
+-
+ /**
+  *	ata_qc_free - free unused ata_queued_cmd
+  *	@qc: Command to complete
+@@ -4611,19 +4575,9 @@ struct ata_queued_cmd *ata_qc_new_init(struct ata_device *dev, int tag)
+  */
+ void ata_qc_free(struct ata_queued_cmd *qc)
+ {
+-	struct ata_port *ap;
+-	unsigned int tag;
+-
+-	WARN_ON_ONCE(qc == NULL); /* ata_qc_from_tag _might_ return NULL */
+-	ap = qc->ap;
+-
+ 	qc->flags = 0;
+-	tag = qc->tag;
+-	if (ata_tag_valid(tag)) {
++	if (ata_tag_valid(qc->tag))
+ 		qc->tag = ATA_TAG_POISON;
+-		if (ap->flags & ATA_FLAG_SAS_HOST)
+-			ata_sas_free_tag(tag, ap);
+-	}
+ }
+ 
+ void __ata_qc_complete(struct ata_queued_cmd *qc)
+diff --git a/drivers/ata/libata-sata.c b/drivers/ata/libata-sata.c
+index 044a16daa2d4..7a5fe41aa5ae 100644
+--- a/drivers/ata/libata-sata.c
++++ b/drivers/ata/libata-sata.c
+@@ -1268,31 +1268,6 @@ int ata_sas_queuecmd(struct scsi_cmnd *cmd, struct ata_port *ap)
+ }
+ EXPORT_SYMBOL_GPL(ata_sas_queuecmd);
+ 
+-int ata_sas_allocate_tag(struct ata_port *ap)
+-{
+-	unsigned int max_queue = ap->host->n_tags;
+-	unsigned int i, tag;
+-
+-	for (i = 0, tag = ap->sas_last_tag + 1; i < max_queue; i++, tag++) {
+-		tag = tag < max_queue ? tag : 0;
+-
+-		/* the last tag is reserved for internal command. */
+-		if (ata_tag_internal(tag))
+-			continue;
+-
+-		if (!test_and_set_bit(tag, &ap->sas_tag_allocated)) {
+-			ap->sas_last_tag = tag;
+-			return tag;
+-		}
+-	}
+-	return -1;
+-}
+-
+-void ata_sas_free_tag(unsigned int tag, struct ata_port *ap)
+-{
+-	clear_bit(tag, &ap->sas_tag_allocated);
+-}
+-
+ /**
+  *	sata_async_notification - SATA async notification handler
+  *	@ap: ATA port where async notification is received
+diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
+index 06c9d90238d9..805bca2db16d 100644
+--- a/drivers/ata/libata-scsi.c
++++ b/drivers/ata/libata-scsi.c
+@@ -638,24 +638,49 @@ EXPORT_SYMBOL_GPL(ata_scsi_ioctl);
+ static struct ata_queued_cmd *ata_scsi_qc_new(struct ata_device *dev,
+ 					      struct scsi_cmnd *cmd)
+ {
++	struct ata_port *ap = dev->link->ap;
+ 	struct ata_queued_cmd *qc;
++	int tag;
+ 
+-	qc = ata_qc_new_init(dev, scsi_cmd_to_rq(cmd)->tag);
+-	if (qc) {
+-		qc->scsicmd = cmd;
+-		qc->scsidone = scsi_done;
+-
+-		qc->sg = scsi_sglist(cmd);
+-		qc->n_elem = scsi_sg_count(cmd);
++	if (unlikely(ap->pflags & ATA_PFLAG_FROZEN))
++		goto fail;
+ 
+-		if (scsi_cmd_to_rq(cmd)->rq_flags & RQF_QUIET)
+-			qc->flags |= ATA_QCFLAG_QUIET;
++	if (ap->flags & ATA_FLAG_SAS_HOST) {
++		/*
++		 * SAS hosts may queue > ATA_MAX_QUEUE commands so use
++		 * unique per-device budget token as a tag.
++		 */
++		if (WARN_ON_ONCE(cmd->budget_token >= ATA_MAX_QUEUE))
++			goto fail;
++		tag = cmd->budget_token;
+ 	} else {
+-		cmd->result = (DID_OK << 16) | SAM_STAT_TASK_SET_FULL;
+-		scsi_done(cmd);
++		tag = scsi_cmd_to_rq(cmd)->tag;
+ 	}
+ 
++	qc = __ata_qc_from_tag(ap, tag);
++	qc->tag = qc->hw_tag = tag;
++	qc->scsicmd = NULL;
++	qc->ap = ap;
++	qc->dev = dev;
++
++	ata_qc_reinit(qc);
++
++	qc->scsicmd = cmd;
++	qc->scsidone = scsi_done;
++
++	qc->sg = scsi_sglist(cmd);
++	qc->n_elem = scsi_sg_count(cmd);
++
++	if (scsi_cmd_to_rq(cmd)->rq_flags & RQF_QUIET)
++		qc->flags |= ATA_QCFLAG_QUIET;
++
+ 	return qc;
++
++fail:
++	set_host_byte(cmd, DID_OK);
++	set_status_byte(cmd, SAM_STAT_TASK_SET_FULL);
++	scsi_done(cmd);
++	return NULL;
+ }
+ 
+ static void ata_qc_set_pc_nbytes(struct ata_queued_cmd *qc)
+diff --git a/drivers/ata/libata.h b/drivers/ata/libata.h
+index c9c2496d91ea..926a7f41303d 100644
+--- a/drivers/ata/libata.h
++++ b/drivers/ata/libata.h
+@@ -44,7 +44,6 @@ static inline void ata_force_cbl(struct ata_port *ap) { }
+ #endif
+ extern u64 ata_tf_to_lba(const struct ata_taskfile *tf);
+ extern u64 ata_tf_to_lba48(const struct ata_taskfile *tf);
+-extern struct ata_queued_cmd *ata_qc_new_init(struct ata_device *dev, int tag);
+ extern int ata_build_rw_tf(struct ata_taskfile *tf, struct ata_device *dev,
+ 			   u64 block, u32 n_block, unsigned int tf_flags,
+ 			   unsigned int tag, int class);
+@@ -91,18 +90,6 @@ extern unsigned int ata_read_log_page(struct ata_device *dev, u8 log,
+ 
+ #define to_ata_port(d) container_of(d, struct ata_port, tdev)
+ 
+-/* libata-sata.c */
+-#ifdef CONFIG_SATA_HOST
+-int ata_sas_allocate_tag(struct ata_port *ap);
+-void ata_sas_free_tag(unsigned int tag, struct ata_port *ap);
+-#else
+-static inline int ata_sas_allocate_tag(struct ata_port *ap)
+-{
+-	return -EOPNOTSUPP;
+-}
+-static inline void ata_sas_free_tag(unsigned int tag, struct ata_port *ap) { }
+-#endif
+-
+ /* libata-acpi.c */
+ #ifdef CONFIG_ATA_ACPI
+ extern unsigned int ata_acpi_gtf_filter;
+diff --git a/include/linux/libata.h b/include/linux/libata.h
+index 9b1d3d8b1252..16107122e587 100644
+--- a/include/linux/libata.h
++++ b/include/linux/libata.h
+@@ -820,7 +820,6 @@ struct ata_port {
+ 	unsigned int		cbl;	/* cable type; ATA_CBL_xxx */
+ 
+ 	struct ata_queued_cmd	qcmd[ATA_MAX_QUEUE + 1];
+-	unsigned long		sas_tag_allocated; /* for sas tag allocation only */
+ 	u64			qc_active;
+ 	int			nr_active_links; /* #links with active qcs */
+ 	unsigned int		sas_last_tag;	/* track next tag hw expects */
 -- 
-Michal Hocko
-SUSE Labs
+2.26.2
+
