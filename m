@@ -2,69 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0393C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244872AbiDGLnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 07:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43912 "EHLO
+        id S244876AbiDGLo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 07:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238099AbiDGLnW (ORCPT
+        with ESMTP id S238392AbiDGLoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 07:43:22 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DEFDEBB7
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 04:41:22 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1ncQVX-0006Sw-Mv; Thu, 07 Apr 2022 21:41:01 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 07 Apr 2022 19:41:00 +0800
-Date:   Thu, 7 Apr 2022 19:40:59 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
- ARCH_KMALLOC_MINALIGN
-Message-ID: <Yk7Ny/iFi0NrMXTg@gondor.apana.org.au>
-References: <20220405135758.774016-1-catalin.marinas@arm.com>
- <20220405135758.774016-8-catalin.marinas@arm.com>
- <YkzJP6zmkAhc6CI9@gondor.apana.org.au>
- <CAMj1kXEXhFmGc4VTTcJU1YFsHJhZN44OdJ5Suf2ONG5=LR29HQ@mail.gmail.com>
- <Yk1UJs6eZMoIp3Eh@arm.com>
- <Yk5o/lNTyiJWD4Ae@gondor.apana.org.au>
- <Yk7EbvYhwnQy+pAf@arm.com>
+        Thu, 7 Apr 2022 07:44:22 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F740F3A5D
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 04:42:22 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id v75so5353789oie.1
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 04:42:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4SlNyJLkNkQjFibbjG7LibUXxMJ0vZJMxjm1ghUeLSo=;
+        b=RyFz37RFrTq9tfEhm7CeR0XjT0XDM8te7eZ7yZTVn04gO23o3fYXZcM43nomGQETne
+         k7I9SVLcJZsWi3Hfk8otl/I4P4YAlBF6HAuW+IhPYqZvKLVPsNuLUFvm76frX+RVZmn1
+         EJLaHovsDsDTZqlT52trbcbd7nTvNGMLBZSNLyaXtpuq4KNeE/iKlH9MRyPxWNrglS2v
+         8Hh6gIDU7InmRt+pgufza4JN2xpcLZLF1ef0u06op9zmgSjZXMHNmOh+MS+oXQmIX2pQ
+         5HIWmA8Bu6/Qz5CvJGKvBtlb34aWLqpEGknEKNYwVumxYck8dYVDggcxvT5hL6UqNVYC
+         G9PQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4SlNyJLkNkQjFibbjG7LibUXxMJ0vZJMxjm1ghUeLSo=;
+        b=H9zWp3pt1XGOAqNsfW6CRG8EA08ZveASgua+fJHb7nXYybkHMgkNBqRUiqJZUsHyrp
+         IP3FlAqUpd66Fx7iDk7g0hVJIPJraWdLmEcrIeHZsx1WJVZiL/ZsubzBcFPbDVv0a4tw
+         tpHjo+DJnjUzZumTZc3GLilyrmjdTxUE4sTsMFFcjLkVggKigVXyK5fQkNY1B7ml4mSu
+         eg+ufnb3McHVdTPoKBuGktH9a2bvW0cY9ivtNCuUl9gRNhx16b9Y2+BAYbdL3JGlKQGs
+         jIlEw4lVd8CsfmV8bt1zJXhm7mj0ZQvgbccvbF6eAgRm6jYUmlO4tbvEsQrk8eECPV2i
+         TSQw==
+X-Gm-Message-State: AOAM530BBzrCHdaTae1Y//DbLSrlAsEJ4zJ1XJDaWzNXB5n0MaWPLqwu
+        zaupAvyqxgTyd5NB8bA3lKkk7up/nhwYfe9pmTjXJw==
+X-Google-Smtp-Source: ABdhPJwmb8NPaOfFwbH1UoLl7ZnI0TLh1pppFo6Oeu8yFnd1iYpTTiurcyIBl4X6Tu7dcJs42w/30+ElAs6L8dIdvzc=
+X-Received: by 2002:a05:6808:1991:b0:2da:350d:f9fc with SMTP id
+ bj17-20020a056808199100b002da350df9fcmr5606947oib.251.1649331741621; Thu, 07
+ Apr 2022 04:42:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yk7EbvYhwnQy+pAf@arm.com>
+References: <CA+G9fYuqU45hHmK4WMUNEXQbmBucE+9fB=S9wcHEfEHaZ2jgcQ@mail.gmail.com>
+ <20220401151058.fipdax3kvmxknctv@houat> <CA+G9fYu+WddXTb0NcbviUfGQHhsmThssVCafLPw7+nj3JsoFAA@mail.gmail.com>
+ <20220407075435.ahlylmbqmqnpxz64@houat>
+In-Reply-To: <20220407075435.ahlylmbqmqnpxz64@houat>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 7 Apr 2022 17:12:09 +0530
+Message-ID: <CA+G9fYvT_W9+0AguQu97mqTm5zNnSvF0asnatZX8BTf=_1oANg@mail.gmail.com>
+Subject: Re: [next] db845c: WARNING: CPU: 5 PID: 8 at drivers/clk/clk-divider.c:139
+ divider_recalc_rate
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     linux-clk <linux-clk@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+        gabriel.fernandez@foss.st.com,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Nicolas Dechesne <nicolas.dechesne@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 12:01:02PM +0100, Catalin Marinas wrote:
+On Thu, 7 Apr 2022 at 13:24, Maxime Ripard <maxime@cerno.tech> wrote:
 >
-> The only issue is whether the compiler gets confused by a pointer to a
-> structure with a smaller alignment than alignof(struct ...). I don't see
-> a performance or correctness issue on arm64 here. It would be a problem
-> if instead of 16 we went down to 8 or 4 due to unaligned accesses but
-> from 128 to 64 (or even 16), I don't think it matters.
+> Hi,
+>
+> > > I'm not sure if it's feasible, but if it is, it looks like something
+> > > that could be fixed by the patch pasted here:
+> > >
+> > > https://lore.kernel.org/linux-clk/20220401122736.5yvanksa4pla7uql@houat/
+> > > Could you test it?
+> >
+> > I have tested the single line patch and reported problems not fixed.
+>
+> Could you test this branch?
+> https://github.com/mripard/linux/tree/rpi/clk-improvements-more-fixes
 
-The issue is that there's code in the Crypto API which assumes
-that all pointers returned by kmalloc are aligned to CRYPTO_MINALIGN,
-if you break that then all that code would need to be modified.
+I have tested your tree and branch.
+I saw more clk prints in the boot log and did not notice the reported warning.
 
-However, I think it's better to change the code that assumes
-CRYPTO_MINALIGN guarantees DMA alignment.
+[    0.734195] clk_set_rate_range_nolock: qdss: orphan ? n
+[    0.734222] clk_set_rate_range_nolock: qdss: core req rate 0
+[    0.734235] clk_set_rate_range_nolock: qdss: clamped rate 0
+[    0.734249] clk_core_set_rate_nolock: qdss: rate 0
+[    0.734262] clk_core_set_rate_nolock: qdss: rounded rate 0
+...
+[    3.574169] clk_set_rate_range_nolock: gcc_ufs_phy_ice_core_clk: orphan ? n
+[    3.581271] clk_set_rate_range_nolock: gcc_ufs_phy_ice_core_clk:
+core req rate 300000000
+[    3.589446] clk_set_rate_range_nolock: gcc_ufs_phy_ice_core_clk:
+clamped rate 300000000
+[    3.597521] clk_core_set_rate_nolock: gcc_ufs_phy_ice_core_clk:
+rate 300000000
+...
 
-Cheers,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Please refer this link for detail boot log,
+https://lkft.validation.linaro.org/scheduler/job/4861930#L2712
+
+Build link
+https://builds.tuxbuild.com/27SxYLYlZcKEUQGVbmnmLP3GxEp/
+
+- Naresh
+
+>
+> Thanks!
+> Maxime
+
+
+--
+Linaro LKFT
+https://lkft.linaro.org
