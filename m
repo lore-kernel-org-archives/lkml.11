@@ -2,112 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 379BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:02:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243587AbiDGJEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54394 "EHLO
+        id S243597AbiDGJEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:04:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243762AbiDGJDZ (ORCPT
+        with ESMTP id S243765AbiDGJD3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:03:25 -0400
-Received: from out203-205-221-233.mail.qq.com (out203-205-221-233.mail.qq.com [203.205.221.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141F252E78;
-        Thu,  7 Apr 2022 02:01:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649322080;
-        bh=Z9pMcqz9PcDTm7oWvk9GqY4NaqgI4eR0toGt5vtlbW4=;
-        h=From:To:Cc:Subject:Date;
-        b=haIP9U+GA29bAgfGUyTWqmPbnOF9FxzvVPxJnuRs1gbBwCzrcF4inxO3IZOFeP29I
-         p2S/iXORSgM/woOB+3QA4B5wHQ6lSN+S0sBJhJjAXAESEoLOXd85bNPgfp+QkQlL4u
-         pOFGGFsEGtCL/ZjsVuDfhuAY8prm0WZY6z4xRjq0=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrsza5.qq.com (NewEsmtp) with SMTP
-        id 50B1A45; Thu, 07 Apr 2022 17:01:16 +0800
-X-QQ-mid: xmsmtpt1649322076tfjkopifx
-Message-ID: <tencent_BD8B1CF914FDE1104AFDFFEA200DCC0EB908@qq.com>
-X-QQ-XMAILINFO: MOwr6TNsEdeBxNTJKWZPE4J5SMyu2l167fUiO/OWz+5vIbAc87uSegMPpk0cbb
-         7iIF/BI5MZ5Dj9Uu01oqG/6M0XIq8HPTYij1IcuIdlArPBN41hUzcj5V6D1pVjl0LhmZvjVQMev1
-         1tOSe8qT0ruG7t+WScxEXrfGDujvpbCqhcTrK3mGg1UQw9gq6Zpn6bcMzDJyc90t5Sr+jKau0yq7
-         Q2T/p6sr7jw8A86xlaQxjwV1Vrhmv6ZUd9Te0i9h5BM3pWZxX1r0EEEPC8D+yiTkCXwMA4O4lHOG
-         Pq5J0hm/r3fKGDbZV0U9tlMBcisEmeEhs0yr/K7asDwphayN0mIawe/5WUfLqIr8gyqfeI+67SQK
-         vBbA7/YwkWkjzJRJqgUUIQOypSu3nMibAv1pq0vGQjMVrr37RvlJPGRQ3Z61h5BjSBDjQ+/ygsUG
-         98lgqHsjLFEpoHRos6Z8oAJGU5Vj4eXmM7Vdcv/OQyIerVlo6VAYFx42tPQR3JKzE0ZM0gHAnNoH
-         HPOOt30/qCFSwOE5hAF3r3F57IAhDVxJSOyfa+Cap2cYo0IZ6p6dgATlCLCx0mgPfVWX4tfbwpCN
-         SX8fRlsNzOzecg8vSpgpBLPXb3/t9Jcr4/HrG10W51k7Fp6sXyhA6MYM6Mqg2x6ap19JljxMy0SI
-         wDkb9xiI3JMOxB0tK6FxODYEUjhgbQ3wPc7CaG/BJWp69RhDCFbdCBY1SR9TaKP2ttj1TBIc2tZC
-         r1ESZ5bB7c4A4yGXQBFFgFThJUecqQPHEgrfDVvapvCgCJlpa6Oc0b8+LFdYN6qc/xzeXTFY67dp
-         aiF1FZuEb5XCtNt2PF9Nhv+Ito1RJT/4PEoFR9xRazUqqLNZyrFUma7tKndCjRna4XX0ok1amIZX
-         DvpoLRiOdUYXGpLBZbv8h4ugRwmm/qmVKTFmO98jhnyAmd6wWKF5z+LWWQY8JbtgxEns1dch35
-From:   xkernel.wang@foxmail.com
-To:     mturquette@baylibre.com, sboyd@kernel.org
-Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] clk: mmp: pxa168: fix potential memory leaks in pxa168_clk_init()
-Date:   Thu,  7 Apr 2022 17:01:05 +0800
-X-OQ-MSGID: <20220407090105.14361-1-xkernel.wang@foxmail.com>
+        Thu, 7 Apr 2022 05:03:29 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17AA68164F;
+        Thu,  7 Apr 2022 02:01:30 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id t19so7580710qtc.4;
+        Thu, 07 Apr 2022 02:01:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7k9wHjGCmirLGQtDNZunWvATfCdcYy0H3Z1yCUnVVgo=;
+        b=eoSQ6dFjX7ebCs11Jl1ZGRgtLmSxbNl8ge+CP32X1ALfHiAP2IqJsNz2PI1FytMYUG
+         wUlrBhsUyB8iWdbxQvx7SEou0vURFav0N5dpZmkhWn1epeWwsbtahWixJ+DvtrgxM7O1
+         cAyCa3JpyK47O59pZ7QhhwWLIWuO1h3ttFuePmUQSOpK4UesJik8t17h7x/b1PySd85y
+         W1hb6lPqoW6xpJx88rax1kgFmWI8v/12R9K4AU+Y8W6Vs3STD1QjVe0nB0w5ZedFy8Ql
+         94sSm72kvl24tKaaqoNkeiKR56ArK91gf6jWl5bv1YLhOjabEm6zcLamLIAsZFavr8sQ
+         VyMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7k9wHjGCmirLGQtDNZunWvATfCdcYy0H3Z1yCUnVVgo=;
+        b=JaBvADIcdcoid7PhhANHYlwxuU77kIVTbGnYp+Qvky8E43hwY2s25PLc9xXdLFPJDN
+         vWL7N/1wO1urQLv7tasFJP6ChgWKfaGpTJDXVQ9TdqgXk2dpOS7nzllmC3aJsuBhStg/
+         8nV80SSzGHxnLVhm65IT28qK/hCrNLKDycxnxMFWBNF8vsM9GK41wKMC5wGnDmvpgU2U
+         sDjjkKsMdasciL88jOJoLv8zjcRA1bEImbj60QSVOST6K6AYKYA5yvkeasP+/LEhvFFK
+         pRn29dnaJjqH+gRJdy8WCnL4gVIUGZ+r8EXjkfMFy860JMu0hp7G9AKqds5y5aoMzXm6
+         Yudw==
+X-Gm-Message-State: AOAM532Jb60/tJ5HrCdCHJRdR13FdNNYW6ouB13tT0Rt1MY+JrjVQWGM
+        QHSxUcgisi3aMiWAXV8DV9U=
+X-Google-Smtp-Source: ABdhPJyt6Mnnqh0FTkOo1W8dKin7q9bCtIm4dDnlr76kyfZvugnPP3KPcRcXj0jwBM7EhC3Ss1VxKQ==
+X-Received: by 2002:a05:622a:653:b0:2e1:c046:4825 with SMTP id a19-20020a05622a065300b002e1c0464825mr11178669qtb.430.1649322089296;
+        Thu, 07 Apr 2022 02:01:29 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id o21-20020ac85a55000000b002e16389b501sm15031194qta.96.2022.04.07.02.01.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 02:01:29 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     s.hauer@pengutronix.de, kernel@pengutronix.de
+Cc:     deller@gmx.de, shawnguo@kernel.org, festevam@gmail.com,
+        linux-imx@nxp.com, linux-fbdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] video: fbdev:  Fix missing of_node_put in imxfb_probe
+Date:   Thu,  7 Apr 2022 09:01:22 +0000
+Message-Id: <20220407090122.2491922-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-In pxa168_clk_init(), except for the first error path, the other error
-paths directly return without releasing the allocated resources, which
-can lead to memory leaks.
+of_parse_phandle returns node pointer with refcount incremented,
+use of_node_put() on it when done.
 
-This patch unifies the error handling code and each error will jump to
-the corresponding tag to release the resources.
-
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 ---
- drivers/clk/mmp/clk-of-pxa168.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/video/fbdev/imxfb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/clk/mmp/clk-of-pxa168.c b/drivers/clk/mmp/clk-of-pxa168.c
-index f110c02..05b96cf 100644
---- a/drivers/clk/mmp/clk-of-pxa168.c
-+++ b/drivers/clk/mmp/clk-of-pxa168.c
-@@ -258,19 +258,19 @@ static void __init pxa168_clk_init(struct device_node *np)
- 	pxa_unit->mpmu_base = of_iomap(np, 0);
- 	if (!pxa_unit->mpmu_base) {
- 		pr_err("failed to map mpmu registers\n");
--		return;
-+		goto free_memory;
+diff --git a/drivers/video/fbdev/imxfb.c b/drivers/video/fbdev/imxfb.c
+index 68288756ffff..a2f644c97f28 100644
+--- a/drivers/video/fbdev/imxfb.c
++++ b/drivers/video/fbdev/imxfb.c
+@@ -925,10 +925,12 @@ static int imxfb_probe(struct platform_device *pdev)
+ 				sizeof(struct imx_fb_videomode), GFP_KERNEL);
+ 		if (!fbi->mode) {
+ 			ret = -ENOMEM;
++			of_node_put(display_np);
+ 			goto failed_of_parse;
+ 		}
+ 
+ 		ret = imxfb_of_read_mode(&pdev->dev, display_np, fbi->mode);
++		of_node_put(display_np);
+ 		if (ret)
+ 			goto failed_of_parse;
  	}
- 
- 	pxa_unit->apmu_base = of_iomap(np, 1);
- 	if (!pxa_unit->apmu_base) {
- 		pr_err("failed to map apmu registers\n");
--		return;
-+		goto unmap_mpmu_region;
- 	}
- 
- 	pxa_unit->apbc_base = of_iomap(np, 2);
- 	if (!pxa_unit->apbc_base) {
- 		pr_err("failed to map apbc registers\n");
--		return;
-+		goto unmap_apmu_region;
- 	}
- 
- 	mmp_clk_init(np, &pxa_unit->unit, PXA168_NR_CLKS);
-@@ -282,6 +282,15 @@ static void __init pxa168_clk_init(struct device_node *np)
- 	pxa168_axi_periph_clk_init(pxa_unit);
- 
- 	pxa168_clk_reset_init(np, pxa_unit);
-+
-+	return;
-+
-+unmap_apmu_region:
-+	iounmap(pxa_unit->apmu_base);
-+unmap_mpmu_region:
-+	iounmap(pxa_unit->mpmu_base);
-+free_memory:
-+	kfree(pxa_unit);
- }
- 
- CLK_OF_DECLARE(pxa168_clk, "marvell,pxa168-clock", pxa168_clk_init);
 -- 
+2.25.1
+
