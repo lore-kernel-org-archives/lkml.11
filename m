@@ -2,110 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5476AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240987AbiDGGXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 02:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
+        id S240997AbiDGGXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 02:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234876AbiDGGXc (ORCPT
+        with ESMTP id S234876AbiDGGXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 02:23:32 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C543634C
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 23:21:33 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id l26so8723126ejx.1
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 23:21:33 -0700 (PDT)
+        Thu, 7 Apr 2022 02:23:45 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B5813F8A;
+        Wed,  6 Apr 2022 23:21:46 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id r66so4156428pgr.3;
+        Wed, 06 Apr 2022 23:21:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=lFeu13B4GooKw5hC3dcio6xNxGQNDFEh6M5pue+v5h8=;
-        b=K3W43Xpr4w6Uel8V1O2QRTwL4Z9UmJkdK9muSQytlVH4Gzn6W03AvpfAouMfVteW8c
-         6E0I3EDINF5FrFoKrNCVgs89YXkKFEZZSFRmCNa2OM7OWjk+O1WZhNHA9hl0HkrVqQAR
-         /5HnpHGp7lTpeHeujdPqx3qi+fzJaZdunPLC1NdS2vHrQtqV4B6GS8Fi2ji4gNqfK9Dv
-         hHaAXSR+bLm7RZyUO8JzRdZqmGyuaMQEriuWcjbmQoJokfBUzEwzvppNgdjJZuGLlhTO
-         0TQ2/yoh0k7Uh5SvI7NrHeKEZTiRTBaRq+No3p8rygDtXFkqayE5vYAnw3u9ia2KHnyQ
-         D6Bg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r/Yd4ctKBRTkId243QxullLAJ499JsmHM27TX/9zNkY=;
+        b=q015AvSPv9U5X4ukv5WL/BvkkY3lkwkjA3TX9tR+VTUGNZWn2o1bx7lYvwOQUwQ/eR
+         c4TNCTNHPXsps4kuvWhQH2yJ4iiVdo9CissTex6LhXluLKRlScCMvHOghwIUjTogywFL
+         qDG7vHYH9hpKHPzeJmcnwzcd8gOIY7ocg8v/1e8UohhEM3UzvAvwoG8pM7hagrtpcB1j
+         85nc6F/gS/N7M0HkpFdiZzAi2bFco5H3A0z150jZnDKegvZGK3qXUV1ojjqQGVaTHzih
+         n0YVyy9lSqffDt+7R1jSeOGOeSAyPRI7wHElLNdJopUAPPQgE8j45L4VP9fR3aLoSxvz
+         3QYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=lFeu13B4GooKw5hC3dcio6xNxGQNDFEh6M5pue+v5h8=;
-        b=1IEX5ydYutJ7CtNCIFgWT+Z9vtXOIlWOpEaGxPCMB0G27xm8W7gEnBVbDCXrcDgLt9
-         U/cYmKrgCxOqfYvcjdI4t+g8Kt20KfViDT0vnl8Zecd/KTLCRtorGNzWrZZW0KIfvC0/
-         u9oC4006zZwK/lfqZ1MXCD6ThmyrQcgIO6MgGojwWmPfpWwVypGMvWsJNhcqNwXW40LO
-         ntsmnikpwn4aqwKmt26x5Ma9zkQLMKPEu5rOzMqv16GVuDSu3dktAQJnXQ9ZBOaYUGFy
-         bcSaamuKK1Dj08uDAOlAT8avCU1NC672XIbRM3zUrsNLmRy9rZ8odTJxjyIQwlWHJExH
-         2X7A==
-X-Gm-Message-State: AOAM530Me2Y8yYgosL2kvR9kawEWjM3Ukq6kA/cgK7WGJU5BKjB0KBh1
-        KksKBCtdXPxeq7vPooE+l80=
-X-Google-Smtp-Source: ABdhPJzJvVu/Mpc49n67UlRPTuoOw32LgOaTHZZqxWaAICiarYth54KIQ/X745zarR/GrOyHAryZZg==
-X-Received: by 2002:a17:906:7751:b0:6ce:e3c:81a6 with SMTP id o17-20020a170906775100b006ce0e3c81a6mr11286345ejn.278.1649312491633;
-        Wed, 06 Apr 2022 23:21:31 -0700 (PDT)
-Received: from [192.168.178.21] (p57b0b9e1.dip0.t-ipconnect.de. [87.176.185.225])
-        by smtp.gmail.com with ESMTPSA id gv9-20020a170906f10900b006d7128b2e6fsm7340540ejb.162.2022.04.06.23.21.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 23:21:30 -0700 (PDT)
-Message-ID: <26951c45-f742-2f0e-f4a6-281a031c3471@gmail.com>
-Date:   Thu, 7 Apr 2022 08:21:29 +0200
+        bh=r/Yd4ctKBRTkId243QxullLAJ499JsmHM27TX/9zNkY=;
+        b=Z0RjlKs/Nfr7Akhs6hY8teIJkymsofYRmySolw5uz/FapLV9KFjPn71skRSRvruAUZ
+         QfcjcY97AwuXvLpcsGK7lNVz+rj3SqNHmdg/l/2hdY4unRkobiQ2Dz57Cykyghqq4SN7
+         +g5x6mKHEQgmjNisVgKxnUaVfmCRV1hMWyccYCyh3Ep7GUCpGyCs1UxJYMqKC/T1L7wZ
+         sDYtoLSlyzB/ANaLtnpHe07UivGuqWNq9izqbQ+d0Bi805dKQY0G0U8D9xmz52mX1pA6
+         f7ve1pCfAtbGqTZldBzpP3CSMQnSNI1h46alWASu0w3J19M2TcT0h1s+0WbYmkbxbw1t
+         e5LQ==
+X-Gm-Message-State: AOAM533qLHDSehNZGT1OKYexGBOPCcjReS9KAu0E7uCf1C8rhC/O5l3W
+        A/NLxJqOP9Ce71ycCsRb4xz5iWLtRYs=
+X-Google-Smtp-Source: ABdhPJzhshicBBhD4kyaCt7hQ6rZ9dAFNcF3D6v12IEEjAzJa88rbRJ9zgA8rV9GAA2+pQX1eSRlQQ==
+X-Received: by 2002:a05:6a00:1d92:b0:4fa:dfbd:d7f0 with SMTP id z18-20020a056a001d9200b004fadfbdd7f0mr12724663pfw.31.1649312506252;
+        Wed, 06 Apr 2022 23:21:46 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.118])
+        by smtp.gmail.com with ESMTPSA id k92-20020a17090a4ce500b001ca69b5c034sm7522829pjh.46.2022.04.06.23.21.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 23:21:45 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com
+Cc:     rostedt@goodmis.org, mingo@redhat.com, xeb@mail.ru,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org, alobakin@pm.me,
+        flyingpeng@tencent.com, mengensun@tencent.com,
+        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, benbjiang@tencent.com
+Subject: [PATCH RESEND net-next v5 0/4] net: icmp: add skb drop reasons to icmp
+Date:   Thu,  7 Apr 2022 14:20:48 +0800
+Message-Id: <20220407062052.15907-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] drm/amdgpu: Fix code with incorrect enum type
-Content-Language: en-US
-To:     Grigory Vasilyev <h0tc0d3@gmail.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Melissa Wen <mwen@igalia.com>
-Cc:     Joseph Greathouse <Joseph.Greathouse@amd.com>,
-        Guchun Chen <guchun.chen@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>, linux-kernel@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Evan Quan <evan.quan@amd.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-References: <20220406165057.97492-1-h0tc0d3@gmail.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
-In-Reply-To: <20220406165057.97492-1-h0tc0d3@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 06.04.22 um 18:50 schrieb Grigory Vasilyev:
-> Instead of the 'amdgpu_ring_priority_level' type,
-> the 'amdgpu_gfx_pipe_priority' type was used,
-> which is an error when setting ring priority.
-> This is a minor error, but may cause problems in the future.
->
-> Instead of AMDGPU_RING_PRIO_2 = 2, we can use AMDGPU_RING_PRIO_MAX = 3,
-> but AMDGPU_RING_PRIO_2 = 2 is used for compatibility with
-> AMDGPU_GFX_PIPE_PRIO_HIGH = 2, and not change the behavior of the
-> code.
->
-> Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
+From: Menglong Dong <imagedong@tencent.com>
 
-Good catch, Acked-by: Christian König <christian.koenig@amd.com>
+In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()"),
+we added the support of reporting the reasons of skb drops to kfree_skb
+tracepoint. And in this series patches, reasons for skb drops are added
+to ICMP protocol.
 
-> ---
->   drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
-> index 5554084ec1f1..9bc26395f833 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
-> @@ -1929,7 +1929,7 @@ static int gfx_v8_0_compute_ring_init(struct amdgpu_device *adev, int ring_id,
->   		+ ring->pipe;
->   
->   	hw_prio = amdgpu_gfx_is_high_priority_compute_queue(adev, ring) ?
-> -			AMDGPU_GFX_PIPE_PRIO_HIGH : AMDGPU_RING_PRIO_DEFAULT;
-> +			AMDGPU_RING_PRIO_2 : AMDGPU_RING_PRIO_DEFAULT;
->   	/* type-2 packets are deprecated on MEC, use type-3 instead */
->   	r = amdgpu_ring_init(adev, ring, 1024, &adev->gfx.eop_irq, irq_type,
->   			     hw_prio, NULL);
+In order to report the reasons of skb drops in 'sock_queue_rcv_skb()',
+the function 'sock_queue_rcv_skb_reason()' is introduced in the 1th
+patch, which is used in the 3th patch.
+
+As David Ahern suggested, the reasons for skb drops should be more
+general and not be code based. Therefore, in the 2th patch,
+SKB_DROP_REASON_PTYPE_ABSENT is renamed to
+SKB_DROP_REASON_UNHANDLED_PROTO, which is used for the cases of no
+L3 protocol handler, no L4 protocol handler, version extensions, etc.
+
+In the 3th patch, we introduce the new function __ping_queue_rcv_skb()
+to report drop reasons by its return value and keep the return value of
+ping_queue_rcv_skb() still.
+
+In the 4th patch, we make ICMP message handler functions return drop
+reasons, which means we change the return type of 'handler()' in
+'struct icmp_control' from 'bool' to 'enum skb_drop_reason'. This
+changed its original intention, as 'false' means failure, but
+'SKB_NOT_DROPPED_YET', which is 0, means success now. Therefore, we
+have to change all usages of these handler. Following "handler"
+functions are involved:
+
+icmp_unreach()
+icmp_redirect()
+icmp_echo()
+icmp_timestamp()
+icmp_discard()
+
+And following drop reasons are added(what they mean can be see
+in the document for them):
+
+SKB_DROP_REASON_ICMP_CSUM
+SKB_DROP_REASON_INVALID_PROTO
+
+The reason 'INVALID_PROTO' is introduced for the case that the packet
+doesn't follow rfc 1122 and is dropped. I think this reason is different
+from the 'UNHANDLED_PROTO', as the 'UNHANDLED_PROTO' means the packet is
+fine, and it is just not supported. This is not a common case, and I
+believe we can locate the problem from the data in the packet. For now,
+this 'INVALID_PROTO' is used for the icmp broadcasts with wrong types.
+
+Maybe there should be a document file for these reasons. For example,
+list all the case that causes the 'INVALID_PROTO' drop reason. Therefore,
+users can locate their problems according to the document.
+
+Changes since v4:
+- rename SKB_DROP_REASON_RFC_1122 to SKB_DROP_REASON_INVALID_PROTO
+
+Changes since v3:
+- rename SKB_DROP_REASON_PTYPE_ABSENT to SKB_DROP_REASON_UNHANDLED_PROTO
+  in the 2th patch
+- fix the return value problem of ping_queue_rcv_skb() in the 3th patch
+- remove SKB_DROP_REASON_ICMP_TYPE and SKB_DROP_REASON_ICMP_BROADCAST
+  and introduce the SKB_DROP_REASON_RFC_1122 in the 4th patch
+
+Changes since v2:
+- fix aliegnment problem in the 2th patch
+
+Changes since v1:
+- introduce __ping_queue_rcv_skb() instead of change the return value
+  of ping_queue_rcv_skb() in the 2th patch, as Paolo suggested
+
+Menglong Dong (4):
+  net: sock: introduce sock_queue_rcv_skb_reason()
+  net: skb: rename SKB_DROP_REASON_PTYPE_ABSENT
+  net: icmp: introduce __ping_queue_rcv_skb() to report drop reasons
+  net: icmp: add skb drop reasons to icmp protocol
+
+ include/linux/skbuff.h     | 13 ++++---
+ include/net/ping.h         |  2 +-
+ include/net/sock.h         |  9 ++++-
+ include/trace/events/skb.h |  4 +-
+ net/core/dev.c             |  8 ++--
+ net/core/sock.c            | 30 ++++++++++++---
+ net/ipv4/icmp.c            | 75 ++++++++++++++++++++++----------------
+ net/ipv4/ping.c            | 32 ++++++++++------
+ net/ipv6/icmp.c            | 24 +++++++-----
+ 9 files changed, 127 insertions(+), 70 deletions(-)
+
+-- 
+2.35.1
 
