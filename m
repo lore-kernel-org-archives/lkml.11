@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A741EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:59:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F48C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345605AbiDGQBX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 12:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
+        id S236991AbiDGQB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 12:01:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345496AbiDGQAV (ORCPT
+        with ESMTP id S1345517AbiDGQAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 12:00:21 -0400
+        Thu, 7 Apr 2022 12:00:25 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 269A2103DB4
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:58:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18F1A10A7D4
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:58:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649347097;
+        s=mimecast20190719; t=1649347071;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zlNKffXUsYA/dr1sDc5Q+AFd+03QHFEyPT6fGMhOla0=;
-        b=aoNA1iOfYOHzr1rg889hpfuBK+3ngKzLkJZP57ASvtjkS6EJ4stmRMq45ZW1oZG2hK3chB
-        RNYhhUJThrJ6c400U6Av3ysktRw0xeche3ZtnU/1MdPcx+dIfxZjWk9ww87AFkNfYK6Syu
-        GJPwvSZlY9a47PTpYWh8sekN0cEaMcg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Zm7vWWpJoFp3QcOqQVtM2lUKGQCpQSZQDFy6GatKo98=;
+        b=DCwuX1PwKT1IruoVjptKq5CpOaJTPIat+O81LnKmz/PyiBXVR+n6qJrMIZt6yay1p5QxOD
+        15HQKcQyG2Sepz+GnCREh5Lr0PVB20xbDCKgnx6xVuG45/E+V+U6/U+RWTKGryEgPXwPue
+        PIF2WZe6xZHPReerRMtuAObear+gVj4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-644-V6T1kZ4HPYyjfqOMO15Yow-1; Thu, 07 Apr 2022 11:58:14 -0400
-X-MC-Unique: V6T1kZ4HPYyjfqOMO15Yow-1
+ us-mta-558-wbaG3pSjPdWXwcdCIZTTzA-1; Thu, 07 Apr 2022 11:57:46 -0400
+X-MC-Unique: wbaG3pSjPdWXwcdCIZTTzA-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 41CC62A59555;
-        Thu,  7 Apr 2022 15:58:14 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6366A811E76;
+        Thu,  7 Apr 2022 15:57:45 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.192.50])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B4F954AC84;
-        Thu,  7 Apr 2022 15:58:12 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A05F5428EE1;
+        Thu,  7 Apr 2022 15:57:37 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -47,9 +46,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Michael Kelley <mikelley@microsoft.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 31/31] KVM: selftests: hyperv_svm_test: Add Direct TLB flush test
-Date:   Thu,  7 Apr 2022 17:56:45 +0200
-Message-Id: <20220407155645.940890-32-vkuznets@redhat.com>
+Subject: [PATCH v2 23/31] KVM: selftests: Make it possible to replace PTEs with __virt_pg_map()
+Date:   Thu,  7 Apr 2022 17:56:37 +0200
+Message-Id: <20220407155645.940890-24-vkuznets@redhat.com>
 In-Reply-To: <20220407155645.940890-1-vkuznets@redhat.com>
 References: <20220407155645.940890-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -59,136 +58,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable Hyper-V Direct TLB flush and check that Hyper-V TLB flush
-hypercalls from L2 don't exit to L1 unless 'TlbLockCount' is set in the
-Partition assist page.
+__virt_pg_map() makes an assumption that leaf PTE is not present. This
+is not suitable if the test wants to replace an already present
+PTE. Hyper-V PV TLB flush test is going to need that.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- .../selftests/kvm/x86_64/hyperv_svm_test.c    | 60 +++++++++++++++++--
- 1 file changed, 56 insertions(+), 4 deletions(-)
+ tools/testing/selftests/kvm/include/x86_64/processor.h | 2 +-
+ tools/testing/selftests/kvm/lib/x86_64/processor.c     | 6 +++---
+ tools/testing/selftests/kvm/max_guest_memory_test.c    | 2 +-
+ tools/testing/selftests/kvm/x86_64/mmu_role_test.c     | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-index 21f5ca9197da..e2849e58582f 100644
---- a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-@@ -42,11 +42,24 @@ struct hv_enlightenments {
-  */
- #define VMCB_HV_NESTED_ENLIGHTENMENTS (1U << 31)
+diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
+index 9ad7602a257b..c20b18d05119 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/processor.h
++++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
+@@ -473,7 +473,7 @@ enum x86_page_size {
+ 	X86_PAGE_SIZE_1G,
+ };
+ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
+-		   enum x86_page_size page_size);
++		   enum x86_page_size page_size, bool replace);
  
-+#define HV_SVM_EXITCODE_ENL 0xF0000000
-+#define HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH   (1)
-+
- static inline void vmmcall(void)
- {
- 	__asm__ __volatile__("vmmcall");
+ /*
+  * Basic CPU control in CR0
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index 9f000dfb5594..20df3e84d777 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -229,7 +229,7 @@ static struct pageUpperEntry *virt_create_upper_pte(struct kvm_vm *vm,
  }
  
-+static inline void hypercall(u64 control, vm_vaddr_t arg1, vm_vaddr_t arg2)
-+{
-+	asm volatile("mov %3, %%r8\n"
-+		     "vmmcall"
-+		     : "+c" (control), "+d" (arg1)
-+		     :  "r" (arg2)
-+		     : "cc", "memory", "rax", "rbx", "r8", "r9", "r10",
-+		       "r11", "r12", "r13", "r14", "r15");
-+}
-+
- void l2_guest_code(void)
+ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
+-		   enum x86_page_size page_size)
++		   enum x86_page_size page_size, bool replace)
  {
- 	GUEST_SYNC(3);
-@@ -62,11 +75,21 @@ void l2_guest_code(void)
+ 	const uint64_t pg_size = 1ull << ((page_size * 9) + 12);
+ 	struct pageUpperEntry *pml4e, *pdpe, *pde;
+@@ -270,7 +270,7 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
  
- 	GUEST_SYNC(5);
+ 	/* Fill in page table entry. */
+ 	pte = virt_get_pte(vm, pde->pfn, vaddr, 0);
+-	TEST_ASSERT(!pte->present,
++	TEST_ASSERT(replace || !pte->present,
+ 		    "PTE already present for 4k page at vaddr: 0x%lx\n", vaddr);
+ 	pte->pfn = paddr >> vm->page_shift;
+ 	pte->writable = true;
+@@ -279,7 +279,7 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
  
-+	/* Direct TLB flush tests */
-+	hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT, 0x0,
-+		  HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS);
-+	rdmsr(MSR_FS_BASE);
-+	hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE | HV_HYPERCALL_FAST_BIT, 0x0,
-+		  HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES | HV_FLUSH_ALL_PROCESSORS);
-+	/* Make sure we're not issuing Hyper-V TLB flush call again */
-+	__asm__ __volatile__ ("mov $0xdeadbeef, %rcx");
-+
- 	/* Done, exit to L1 and never come back.  */
- 	vmmcall();
+ void virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr)
+ {
+-	__virt_pg_map(vm, vaddr, paddr, X86_PAGE_SIZE_4K);
++	__virt_pg_map(vm, vaddr, paddr, X86_PAGE_SIZE_4K, false);
  }
  
--static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
-+static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm,
-+						    vm_vaddr_t pgs_gpa)
- {
- 	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
- 	struct vmcb *vmcb = svm->vmcb;
-@@ -75,13 +98,23 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
- 
- 	GUEST_SYNC(1);
- 
--	wrmsr(HV_X64_MSR_GUEST_OS_ID, (u64)0x8100 << 48);
-+	wrmsr(HV_X64_MSR_GUEST_OS_ID, HYPERV_LINUX_OS_ID);
-+	wrmsr(HV_X64_MSR_HYPERCALL, pgs_gpa);
-+	enable_vp_assist(svm->vp_assist_gpa, svm->vp_assist);
- 
- 	GUEST_ASSERT(svm->vmcb_gpa);
- 	/* Prepare for L2 execution. */
- 	generic_svm_setup(svm, l2_guest_code,
- 			  &l2_guest_stack[L2_GUEST_STACK_SIZE]);
- 
-+	/* Direct TLB flush setup */
-+	hve->partition_assist_page = svm->partition_assist_gpa;
-+	hve->hv_enlightenments_control.nested_flush_hypercall = 1;
-+	hve->hv_vm_id = 1;
-+	hve->hv_vp_id = 1;
-+	current_vp_assist->nested_control.features.directhypercall = 1;
-+	*(u32 *)(svm->partition_assist) = 0;
-+
- 	GUEST_SYNC(2);
- 	run_guest(vmcb, svm->vmcb_gpa);
- 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_VMMCALL);
-@@ -116,6 +149,20 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
- 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
- 	vmcb->save.rip += 2; /* rdmsr */
- 
-+
-+	/*
-+	 * Direct TLB flush test. First VMCALL should be handled directly by L0,
-+	 * no VMCALL exit expested.
-+	 */
-+	run_guest(vmcb, svm->vmcb_gpa);
-+	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
-+	vmcb->save.rip += 2; /* rdmsr */
-+	/* Enable synthetic vmexit */
-+	*(u32 *)(svm->partition_assist) = 1;
-+	run_guest(vmcb, svm->vmcb_gpa);
-+	GUEST_ASSERT(vmcb->control.exit_code == HV_SVM_EXITCODE_ENL);
-+	GUEST_ASSERT(vmcb->control.exit_info_1 == HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH);
-+
- 	run_guest(vmcb, svm->vmcb_gpa);
- 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_VMMCALL);
- 	GUEST_SYNC(6);
-@@ -126,7 +173,7 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm)
- int main(int argc, char *argv[])
- {
- 	vm_vaddr_t nested_gva = 0;
--
-+	vm_vaddr_t hcall_page;
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
- 	struct ucall uc;
-@@ -141,7 +188,12 @@ int main(int argc, char *argv[])
- 	vcpu_set_hv_cpuid(vm, VCPU_ID);
+ static struct pageTableEntry *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid,
+diff --git a/tools/testing/selftests/kvm/max_guest_memory_test.c b/tools/testing/selftests/kvm/max_guest_memory_test.c
+index 3875c4b23a04..437f77633b0e 100644
+--- a/tools/testing/selftests/kvm/max_guest_memory_test.c
++++ b/tools/testing/selftests/kvm/max_guest_memory_test.c
+@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
+ #ifdef __x86_64__
+ 		/* Identity map memory in the guest using 1gb pages. */
+ 		for (i = 0; i < slot_size; i += size_1gb)
+-			__virt_pg_map(vm, gpa + i, gpa + i, X86_PAGE_SIZE_1G);
++			__virt_pg_map(vm, gpa + i, gpa + i, X86_PAGE_SIZE_1G, false);
+ #else
+ 		for (i = 0; i < slot_size; i += vm_get_page_size(vm))
+ 			virt_pg_map(vm, gpa + i, gpa + i);
+diff --git a/tools/testing/selftests/kvm/x86_64/mmu_role_test.c b/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
+index da2325fcad87..e3fdf320b9f4 100644
+--- a/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
++++ b/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
+@@ -35,7 +35,7 @@ static void mmu_role_test(u32 *cpuid_reg, u32 evil_cpuid_val)
  	run = vcpu_state(vm, VCPU_ID);
- 	vcpu_alloc_svm(vm, &nested_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, nested_gva);
-+
-+	hcall_page = vm_vaddr_alloc_pages(vm, 1);
-+	memset(addr_gva2hva(vm, hcall_page), 0x0,  getpagesize());
-+
-+	vcpu_args_set(vm, VCPU_ID, 2, nested_gva, addr_gva2gpa(vm, hcall_page));
-+	vcpu_set_msr(vm, VCPU_ID, HV_X64_MSR_VP_INDEX, VCPU_ID);
  
- 	for (stage = 1;; stage++) {
- 		_vcpu_run(vm, VCPU_ID);
+ 	/* Map 1gb page without a backing memlot. */
+-	__virt_pg_map(vm, MMIO_GPA, MMIO_GPA, X86_PAGE_SIZE_1G);
++	__virt_pg_map(vm, MMIO_GPA, MMIO_GPA, X86_PAGE_SIZE_1G, false);
+ 
+ 	r = _vcpu_run(vm, VCPU_ID);
+ 
 -- 
 2.35.1
 
