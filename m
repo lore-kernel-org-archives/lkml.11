@@ -2,150 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2FC7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:52:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC129C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241925AbiDGPyb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:54:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35906 "EHLO
+        id S1345214AbiDGPyi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 11:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230513AbiDGPy0 (ORCPT
+        with ESMTP id S1345206AbiDGPyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:54:26 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA29713F0A;
-        Thu,  7 Apr 2022 08:52:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1649346737;
-        bh=8F0t/FONcQor1dELWSbQulID3wh2RD6EgpmnVPvR4Cg=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=LH6lTAjpY2/vfJbAhwMhsLPCl5/7kNEUeo8cnzY0NdBzcCVU1yB45AhU/Ua3dIahB
-         nN8WcqpDqyG/if4ubmgTdOjM4ZoX8Wfc5bgQmL4GLHgMwvLVR6W0E0WtaymfRI3djO
-         jMastlx6rGqUHvMXFBVhcyCjBGyYFBe88pRMeJvg=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.161.122]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MysW2-1nyAD52mPK-00vz3W; Thu, 07
- Apr 2022 17:52:17 +0200
-Message-ID: <9f694b7e-4cd1-9682-76bd-d534b8b2a485@gmx.de>
-Date:   Thu, 7 Apr 2022 17:50:35 +0200
+        Thu, 7 Apr 2022 11:54:36 -0400
+Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9315C90D4
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:52:34 -0700 (PDT)
+Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-e1dcc0a327so6821645fac.1
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 08:52:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zvj/6TWHlPE3u4x5qOj/MKYPFT6/Bmdp2X/t9e2Hd8Y=;
+        b=CQDxXIvAORTaLH1lFp/KE84Zi+yDyH4SXv+XQEBC2Oyx8UdXxqtoLkVRDzoxXjT1Kl
+         dvqd7S7bks2Rdp2q2GbnKtG5VbJ2SX8nPyMzRINh219Y9bvYBctWKRz1b5BB31xtcwMB
+         QON9WWLgNfulPIpzzC2zVFMqo1k0IQQdzWDYQPJf/EiJkXgRImm0ORmd8ss6D6VbNFuj
+         CM5IjjUdfZyCTfnlUOzQtoirtV6/kO7mWKoILCl4hu+IQtXxkzK0ioMpEKo/iZc6aXVt
+         t5kCQOZE7FgPfPwYoeEKQJ0QuOB5wRr+48mzpcCXM1MxbDNBSjPKcJspb87V4VIPkWuL
+         PhXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zvj/6TWHlPE3u4x5qOj/MKYPFT6/Bmdp2X/t9e2Hd8Y=;
+        b=RF/lNbimrfoBvb3sgvn8ejuUj9PLMII09qgeCor5JE2JKwRU6dQSjEepePyuy1JmWJ
+         cuKJcZUboSyk1RVtEDfZ9QSVCRwC4/l8hZnXCiWqJSeNsCY+iucqHJAw7uU1IbWuIvsR
+         1OkAcVcNptJflp9p8I1VrXUHBkHzjROJ+kNlfUvy8EKgF4HDwviaoa+CMWBYAWng3irN
+         jBI8KhciendRd6KHEMOgFXvMoWWpxnswHuuZxTcOSLgnZJkeuJ8KKLHU1FgaR8XXPdGM
+         2bb9vrlwYP1HSld9Ty7vVFI69rL6Rs3amWLiuUg0nEBll5qwDQXIhJQMa8ey5ShJ7e8v
+         Vd+A==
+X-Gm-Message-State: AOAM532RFB71cHGfB3D9x2LGcc96Hf4DVDabsuF6smLaVlgvXTx/g6SL
+        NkIwkY8Rvrxu2YWPzhh2lI5xQDHoG/uo/wmL2J2Cv0XH
+X-Google-Smtp-Source: ABdhPJwbVKatWleKRKuoYIdjXNJJqi8U/WypflC2hMRpEw7pq07icfUzlhwiLHyArNuGU+u+cXNZZrxQTtUk2cOd5tY=
+X-Received: by 2002:a05:6870:311d:b0:de:9b6c:362b with SMTP id
+ v29-20020a056870311d00b000de9b6c362bmr6162010oaa.200.1649346753856; Thu, 07
+ Apr 2022 08:52:33 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: =?UTF-8?Q?Re=3a_=5bBUG=5d_fbdev=3a_i740fb=3a_Divide_error_when_?=
- =?UTF-8?B?4oCYdmFyLT5waXhjbG9ja+KAmSBpcyB6ZXJv?=
-Content-Language: en-US
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     Ondrej Zary <linux@zary.sk>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <CAMhUBjmFhqTLBscHHVZ1VTSqrJBT1VEevA+KkjY+y9_ZtdRkMg@mail.gmail.com>
- <CAMuHMdUiEo8q9x0C0x5zOM=ax1=S06=s0JjcJvZYD4aMGLmEaQ@mail.gmail.com>
- <a564f6af-31fa-79a2-72c3-578f2c095b23@gmx.de>
- <202204051946.43277.linux@zary.sk>
- <527a8c23-609f-5f8a-e076-a8a59da59865@gmx.de>
- <CAMhUBjmBm3=CY=cCZuH0+ZeemNVT=9XywSoYiR7WLcYOUGu9VQ@mail.gmail.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <CAMhUBjmBm3=CY=cCZuH0+ZeemNVT=9XywSoYiR7WLcYOUGu9VQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:j7cwFdDjfVpmsMjtwyB3OUO3MWVOnbnSkDpNGxr2ahnxJ0HapcD
- seqSeH1J65LYC2zINMl3QQ3kUlVW2w6Uy48vibjsCLuRB52GKJK8RSoJq1MbSo7epPtt1S4
- sSmiyqwW1P25PnRxxd7gdDNSny94/LFpndPKFc+zmcZwatijIwkiknxWGlQLWJbUtWeiccX
- kf1GHJVmQ01X1HeAZxxnA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:SJimqgsyAOI=:yRiGBCv6dGeOAaSZuVtb4t
- mU7w2KeSgRPfrLmWIYGVPVhFoUdFXe94WqSEHnCZezoZAd2WeLXUUfj4QCEV6yQYga7jtzqnO
- AanGJRCNxtza0lHWJHC6VUd+Fi+2wN4QKMT4vpHQemGery8sWHEfrmnRE8YAatEFJrW08/BIr
- j5mUUFoLSEgp0HCOjOuKmf0CP/E9zYUpseBKUiZd/7dsRmsibT5Cbs21fklzJd6hikmPYFIjx
- Wi42YAdxiPFm9FK6XMFg/WkTljqPRLXFrHgzZ2qthY3CshUdr9o5Ev2D2rzwYeKj/PrGXLDV/
- A908ImudFpb7OdyH0PCywCudum30manYCDxEaxCL06eeWlPOW80BqZkOcIldFj3Q2IQVh+e5/
- wUznNDbCNhcDKRIoKgBS+cw//4CPAq8V/NfvrMDbR/1T/1MQDIL+2EMbQUh2Oakk0Dwz8ENII
- Y6fPmT8UMq+9f+7LDDzFBoJtOtpPMylM/xIkiN55HLYMztNmjQFvAza8wfS+xv+mubZvnWwPw
- 7upJhKUlrj4XQmgk2mtp2SEjWWNKOJimbUMe9ruQpl0XDk6VnvHFaN51eATWHGHGJ2JQosHzv
- +WvO64XmS3MkyeGTkCxMQ3TRSysAeR7j8G/p155s0v07nkpKtvBzLMlCtGA6/3AFFrgfHU7i+
- ZczJXv4Yl4ZCHag7KTbxIe/oG56kdH0A9FsJq1Ded+NZeWQLsZEdAP/neiKokhDKEqmU98Ogn
- xDgyeSfiKAdTZSiFATJyGXQ9K3cuswmKmTOXUs4D+Sx0ZRD5dtCsvin/jfiXiSOwhAG28irx0
- S3Z/+OJzYiFahYA2PVNkYUDavkhi+g83FZ79WTiUriggR8+R8nzhN0M/KT69ruvpIj26ul8/b
- u3LvavI89dl6hzJ/EV3F9brJVJch50NXOvLwFJdldJXTiFnzaHdh+Axi7p9FiGqJfJpSXlZ+K
- XsqPDqbwJQri8LrTrh2ugGKzL+OIe+4fm8tqPb6b2GxPW95PMHxEa5csy4rQVJ6c1aYe2dUTE
- 1/lSyaGB0/M9G1lkgHI2l4gvq88B0e0jm997O5oURNMoHYXHAKkXTrvltPDv+uDRAwuTv/2/s
- 8unlWpwiWn3YJA=
+References: <1649311250-17077-1-git-send-email-baihaowen@meizu.com> <bb7635cf-461e-7abd-6092-4be67099c846@amd.com>
+In-Reply-To: <bb7635cf-461e-7abd-6092-4be67099c846@amd.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Thu, 7 Apr 2022 11:52:22 -0400
+Message-ID: <CADnq5_Ogke7XuVsQaB8pskreXam1ASTE2jna=U6iuKuuyR4r-Q@mail.gmail.com>
+Subject: Re: [PATCH] drm/amd/display: Fix indenting mistakes in dcn10_hw_sequencer.c
+To:     Harry Wentland <harry.wentland@amd.com>
+Cc:     Haowen Bai <baihaowen@meizu.com>, Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/6/22 03:24, Zheyu Ma wrote:
-> On Wed, Apr 6, 2022 at 2:23 AM Helge Deller <deller@gmx.de> wrote:
->>
->> On 4/5/22 19:46, Ondrej Zary wrote:
->>> On Tuesday 05 April 2022 08:33:57 Helge Deller wrote:
->>>> Hello Geert,
->>>>
->>>> On 4/4/22 13:46, Geert Uytterhoeven wrote:
->>>>> Hi Helge,
->>>>>
->>>>> On Sun, Apr 3, 2022 at 5:41 PM Helge Deller <deller@gmx.de> wrote:
->>>>>> On 4/3/22 13:26, Zheyu Ma wrote:
->>>>>>> I found a bug in the function i740fb_set_par().
->>>>>>
->>>>>> Nice catch!
->>>>>>
->>>>>>> When the user calls the ioctl system call without setting the valu=
-e to
->>>>>>> 'var->pixclock', the driver will throw a divide error.
->>>>>>>
->>>>>>> This bug occurs because the driver uses the value of 'var->pixcloc=
-k'
->>>>>>> without checking it, as the following code snippet show:
->>>>>>>
->>>>>>> if ((1000000 / var->pixclock) > DACSPEED8) {
->>>>>>>      dev_err(info->device, "requested pixclock %i MHz out of range
->>>>>>> (max. %i MHz at 8bpp)\n",
->>>>>>>          1000000 / var->pixclock, DACSPEED8);
->>>>>>>     return -EINVAL;x
->>>>>>> }
->>>>>>>
->>>>>>> We can fix this by checking the value of 'var->pixclock' in the
->>>>>>> function i740fb_check_var() similar to commit
->>>>>>> b36b242d4b8ea178f7fd038965e3cac7f30c3f09, or we should set the low=
-est
->>>>>>> supported value when this field is zero.
->>>>>>> I have no idea about which solution is better.
->>>>>>
->>>>>> Me neither.
->>>>>> I think a solution like commit b36b242d4b8ea178f7fd038965e3cac7f30c=
-3f09
->>>>>> is sufficient.
->>>>>>
->>>>>> Note that i740fb_set_par() is called in i740fb_resume() as well.
->>>>>> Since this doesn't comes form userspace I think adding a check for
->>>>>> the return value there isn't necessary.
->>>>>>
->>>>>> Would you mind sending a patch like b36b242d4b8ea178f7fd038965e3cac=
-7f30c3f09 ?
->>>>>
->>>>> When passed an invalid value, .check_var() is supposed to
->>>>> round up the invalid to a valid value, if possible.
->>>>
->>>> I don't disagree.
->>>> The main problem probably is: what is the next valid value?
->>>> This needs to be analyzed on a per-driver base and ideally tested.
->>>> Right now a division-by-zero is tiggered which is probably more worse=
-.
->>>
->>> I still have an i740 card so I can test it.
->>
->> Good. Someone wants to come up with a proposed patch?
+Applied.  Thanks!
+
+Alex
+
+On Thu, Apr 7, 2022 at 10:18 AM Harry Wentland <harry.wentland@amd.com> wrote:
 >
-> I have submitted patches for the i740fb driver and other drivers which
-> have similar bugs as follows:
-> https://lore.kernel.org/all/20220404084723.79089-1-zheyuma97@gmail.com/
-
-Yes, I know.
-But Ondrej offered to test a patch which would round an invalid pixclock u=
-p
-instead of just returning EINVAL (which is what your patch does).
-So, if someone comes up with such a patch it'd be the preferred solution.
-
-Helge
+>
+>
+> On 2022-04-07 02:00, Haowen Bai wrote:
+> > Smatch reports the following:
+> > drivers/gpu/drm/amd/amdgpu/../display/dc/dcn10/dcn10_hw_sequencer.c:2174
+> > dcn10_enable_vblanks_synchronization() warn: if statement not indented
+> >
+> > Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+>
+> Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+>
+> Harry
+>
+> > ---
+> >  drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c | 14 +++++++-------
+> >  1 file changed, 7 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+> > index ee22f4422d26..3c338b85040c 100644
+> > --- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+> > +++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+> > @@ -2172,13 +2172,13 @@ void dcn10_enable_vblanks_synchronization(
+> >       if (master >= 0) {
+> >               for (i = 0; i < group_size; i++) {
+> >                       if (i != master && !grouped_pipes[i]->stream->has_non_synchronizable_pclk)
+> > -                     grouped_pipes[i]->stream_res.tg->funcs->align_vblanks(
+> > -                             grouped_pipes[master]->stream_res.tg,
+> > -                             grouped_pipes[i]->stream_res.tg,
+> > -                             grouped_pipes[master]->stream->timing.pix_clk_100hz,
+> > -                             grouped_pipes[i]->stream->timing.pix_clk_100hz,
+> > -                             get_clock_divider(grouped_pipes[master], false),
+> > -                             get_clock_divider(grouped_pipes[i], false));
+> > +                             grouped_pipes[i]->stream_res.tg->funcs->align_vblanks(
+> > +                                     grouped_pipes[master]->stream_res.tg,
+> > +                                     grouped_pipes[i]->stream_res.tg,
+> > +                                     grouped_pipes[master]->stream->timing.pix_clk_100hz,
+> > +                                     grouped_pipes[i]->stream->timing.pix_clk_100hz,
+> > +                                     get_clock_divider(grouped_pipes[master], false),
+> > +                                     get_clock_divider(grouped_pipes[i], false));
+> >                               grouped_pipes[i]->stream->vblank_synchronized = true;
+> >               }
+> >               grouped_pipes[master]->stream->vblank_synchronized = true;
+>
