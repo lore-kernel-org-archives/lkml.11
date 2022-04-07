@@ -2,119 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C0BC47085
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E229C47084
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241058AbiDGBah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60796 "EHLO
+        id S241492AbiDGBbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240503AbiDGBUC (ORCPT
+        with ESMTP id S240476AbiDGBUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:20:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B331BDE7;
-        Wed,  6 Apr 2022 18:17:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E9AB61DA4;
-        Thu,  7 Apr 2022 01:17:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C568C385A3;
-        Thu,  7 Apr 2022 01:17:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294267;
-        bh=xhmdDEoKotcUO/7eHbPi3dL9BFugG1l1EDjl/avpqzE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=odhGwP4SmwJfsZK3ciyyjVPytoUNTvbjCYua8F3Lri+s+s+sKIZifpZYtprRaTcQn
-         Kvvf/5Zbi6ZfUgnNWc/n+HoLsvqsSgHCrMGhU20goRMVXYru166Jh2sGVl8bJ5Czx8
-         hYJUhwbqWobV0LFXaIgs+JJCH0xDoUMDD20wZii9wk3oO475YDxVA/RXLgM4ruBPIf
-         VPC5O6dxzwCWB+Iolh2kvohDB0sNizoug1gljruNjcNv2D2a6cp9PERhPhz+QK3Twj
-         3cC9aBgLdWragZlTDD+wDc/DDv9X3SLNf6T4jstEaiOo0WEsWqDTzw8/cwz6nnQt2j
-         IszOf7Xs0s7iw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Gow <davidgow@google.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        viro@zeniv.linux.org.uk, linux-um@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.9 2/7] um: Cleanup syscall_handler_t definition/cast, fix warning
-Date:   Wed,  6 Apr 2022 21:17:35 -0400
-Message-Id: <20220407011740.115717-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011740.115717-1-sashal@kernel.org>
-References: <20220407011740.115717-1-sashal@kernel.org>
+        Wed, 6 Apr 2022 21:20:01 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FFC11877DF
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 18:16:27 -0700 (PDT)
+X-UUID: 4faf0ad1f71f4071a821c860f7d89bd2-20220407
+X-UUID: 4faf0ad1f71f4071a821c860f7d89bd2-20220407
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 921465962; Thu, 07 Apr 2022 09:16:16 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 7 Apr 2022 09:16:15 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 7 Apr 2022 09:16:15 +0800
+Message-ID: <8fbabb83e838169697a06a1b525252c99018a93f.camel@mediatek.com>
+Subject: Re: [RESEND v4 PATCH] drm/mediatek: Fix mtk_cec_mask()
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Miles Chen <miles.chen@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Jie Qiu <jie.qiu@mediatek.com>,
+        "Junzhi Zhao" <junzhi.zhao@mediatek.com>
+CC:     Zhiqiang Lin <zhiqiang.lin@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Date:   Thu, 7 Apr 2022 09:16:15 +0800
+In-Reply-To: <20220315232301.2434-1-miles.chen@mediatek.com>
+References: <20220315232301.2434-1-miles.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+Hi, Miles:
 
-[ Upstream commit f4f03f299a56ce4d73c5431e0327b3b6cb55ebb9 ]
+On Wed, 2022-03-16 at 07:23 +0800, Miles Chen wrote:
+> In current implementation, mtk_cec_mask() writes val into target
+> register
+> and ignores the mask. After talking to our hdmi experts,
+> mtk_cec_mask()
+> should read a register, clean only mask bits, and update (val | mask)
+> bits
+> to the register.
 
-The syscall_handler_t type for x86_64 was defined as 'long (*)(void)',
-but always cast to 'long (*)(long, long, long, long, long, long)' before
-use. This now triggers a warning (see below).
+Applied to mediatek-drm-next [1], thanks.
 
-Define syscall_handler_t as the latter instead, and remove the cast.
-This simplifies the code, and fixes the warning.
+[1] 
+https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/log/?h=mediatek-drm-next
 
-Warning:
-In file included from ../arch/um/include/asm/processor-generic.h:13
-                 from ../arch/x86/um/asm/processor.h:41
-                 from ../include/linux/rcupdate.h:30
-                 from ../include/linux/rculist.h:11
-                 from ../include/linux/pid.h:5
-                 from ../include/linux/sched.h:14
-                 from ../include/linux/ptrace.h:6
-                 from ../arch/um/kernel/skas/syscall.c:7:
-../arch/um/kernel/skas/syscall.c: In function ‘handle_syscall’:
-../arch/x86/um/shared/sysdep/syscalls_64.h:18:11: warning: cast between incompatible function types from ‘long int (*)(void)’ to ‘long int (*)(long int,  long int,  long int,  long int,  long int,  long int)’ [
--Wcast-function-type]
-   18 |         (((long (*)(long, long, long, long, long, long)) \
-      |           ^
-../arch/x86/um/asm/ptrace.h:36:62: note: in definition of macro ‘PT_REGS_SET_SYSCALL_RETURN’
-   36 | #define PT_REGS_SET_SYSCALL_RETURN(r, res) (PT_REGS_AX(r) = (res))
-      |                                                              ^~~
-../arch/um/kernel/skas/syscall.c:46:33: note: in expansion of macro ‘EXECUTE_SYSCALL’
-   46 |                                 EXECUTE_SYSCALL(syscall, regs));
-      |                                 ^~~~~~~~~~~~~~~
+Regards,
+CK
 
-Signed-off-by: David Gow <davidgow@google.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/x86/um/shared/sysdep/syscalls_64.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/um/shared/sysdep/syscalls_64.h b/arch/x86/um/shared/sysdep/syscalls_64.h
-index 8a7d5e1da98e..1e6875b4ffd8 100644
---- a/arch/x86/um/shared/sysdep/syscalls_64.h
-+++ b/arch/x86/um/shared/sysdep/syscalls_64.h
-@@ -10,13 +10,12 @@
- #include <linux/msg.h>
- #include <linux/shm.h>
- 
--typedef long syscall_handler_t(void);
-+typedef long syscall_handler_t(long, long, long, long, long, long);
- 
- extern syscall_handler_t *sys_call_table[];
- 
- #define EXECUTE_SYSCALL(syscall, regs) \
--	(((long (*)(long, long, long, long, long, long)) \
--	  (*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
-+	(((*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
- 		 		      UPT_SYSCALL_ARG2(&regs->regs), \
- 				      UPT_SYSCALL_ARG3(&regs->regs), \
- 				      UPT_SYSCALL_ARG4(&regs->regs), \
--- 
-2.35.1
+> 
+> Fixes: 8f83f26891e1 ("drm/mediatek: Add HDMI support")
+> Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+> Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+> Cc: Zhiqiang Lin <zhiqiang.lin@mediatek.com>
+> Cc: CK Hu <ck.hu@mediatek.com>
+> Cc: Matthias Brugger <matthias.bgg@gmail.com>
+> Cc: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> 
+> ---
+> 
+> Change since v1:
+> add Fixes tag
+> 
+> Change since v2:
+> add explanation of mtk_cec_mask()
+> 
+> Change since v3:
+> change misleading subject and modify the commit message since this is
+> a bug fix patch
+> 
+> ---
+>  drivers/gpu/drm/mediatek/mtk_cec.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_cec.c
+> b/drivers/gpu/drm/mediatek/mtk_cec.c
+> index e9cef5c0c8f7..cdfa648910b2 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_cec.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_cec.c
+> @@ -85,7 +85,7 @@ static void mtk_cec_mask(struct mtk_cec *cec,
+> unsigned int offset,
+>  	u32 tmp = readl(cec->regs + offset) & ~mask;
+>  
+>  	tmp |= val & mask;
+> -	writel(val, cec->regs + offset);
+> +	writel(tmp, cec->regs + offset);
+>  }
+>  
+>  void mtk_cec_set_hpd_event(struct device *dev,
 
