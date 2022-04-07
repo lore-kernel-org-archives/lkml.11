@@ -2,78 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A49C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47CC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244005AbiDGJtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:49:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
+        id S244002AbiDGJtN convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243982AbiDGJsx (ORCPT
+        with ESMTP id S237429AbiDGJtJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:48:53 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75030103DAC
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:46:53 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id EB02621122;
-        Thu,  7 Apr 2022 09:46:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649324811; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XgM3qKvpr5jvC+0GuUS9jBSYpQriyZSGnkTlKi+9d5A=;
-        b=n+GJVpotSnkfzJKFBATwz1SVbXx+v1orM09qbFzoR5FTgc7+r8UivASl39Mwbu5kLllfzu
-        DEA6/WcdTHJ9VS6Zf7ztAm0W7PHJKZKWcG4iySXIEfvph4dGIBY8XAmods2URk+qkAeUGz
-        XGTczTCJhBy+hsZNm/OBeedOdbYg39g=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649324811;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XgM3qKvpr5jvC+0GuUS9jBSYpQriyZSGnkTlKi+9d5A=;
-        b=L7/H3pg3FuMOAln5tiNZ+WcfJSO7ws5jre6dCk8A+GYADIHwJqQT0ySdj2sU4EGs4cooRJ
-        BvpGxNzJlZ7++mBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CAFC013A66;
-        Thu,  7 Apr 2022 09:46:51 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id itvsMAuzTmINNgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 07 Apr 2022 09:46:51 +0000
-Message-ID: <b2bd760f-b4aa-d357-e3a9-4236228225f9@suse.cz>
-Date:   Thu, 7 Apr 2022 11:46:51 +0200
+        Thu, 7 Apr 2022 05:49:09 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC59110FDDE
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:47:08 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1ncOix-0007d3-0T; Thu, 07 Apr 2022 11:46:43 +0200
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1ncOix-001aNC-5z; Thu, 07 Apr 2022 11:46:41 +0200
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1ncOiv-0004Dh-5U; Thu, 07 Apr 2022 11:46:41 +0200
+Message-ID: <b9cc064d124bc767c6ea3f3fa39eeb82d291ca0e.camel@pengutronix.de>
+Subject: Re: [PATCH v2 07/10] power: reset: at91-reset: add
+ reset_controller_dev support
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>, robh+dt@kernel.org,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        linux@armlinux.org.uk, sre@kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org
+Date:   Thu, 07 Apr 2022 11:46:41 +0200
+In-Reply-To: <20220407071708.3848812-8-claudiu.beznea@microchip.com>
+References: <20220407071708.3848812-1-claudiu.beznea@microchip.com>
+         <20220407071708.3848812-8-claudiu.beznea@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] mm/slab.c: fix comments
-Content-Language: en-US
-To:     Yixuan Cao <caoyixuan2019@email.szu.edu.cn>,
-        akpm@linux-foundation.org
-Cc:     cl@linux.com, penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo.kim@lge.com, roman.gushchin@linux.dev,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220407080958.3667-1-caoyixuan2019@email.szu.edu.cn>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220407080958.3667-1-caoyixuan2019@email.szu.edu.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/7/22 10:09, Yixuan Cao wrote:
-> While reading the source code,
-> I noticed some language errors in the comments, so I fixed them.
+On Do, 2022-04-07 at 10:17 +0300, Claudiu Beznea wrote:
+> SAMA7G5 reset controller has 5 extra lines that goes to different devices
+> (3 lines to USB PHYs, 1 line to DDR controller, 1 line to DDR PHY
+> controller). These reset lines could be requested by different controller
+> drivers (e.g. USB PHY driver) and these controllers' drivers could
+> assert/deassert these lines when necessary. Thus add support for
+> reset_controller_dev which brings this functionality.
 > 
-> Signed-off-by: Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> ---
+>  drivers/power/reset/at91-reset.c | 107 +++++++++++++++++++++++++++++--
+>  1 file changed, 103 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/power/reset/at91-reset.c b/drivers/power/reset/at91-reset.c
+> index 1b2aca3f490d..a6f65ac430cd 100644
+> --- a/drivers/power/reset/at91-reset.c
+> +++ b/drivers/power/reset/at91-reset.c
+[...]
+> +static int at91_reset_update(struct reset_controller_dev *rcdev,
+> +			     unsigned long id, bool assert)
+> +{
+> +	struct at91_reset *reset = to_at91_reset(rcdev);
+> +	u32 val;
+> +
+> +	spin_lock(&reset->lock);
 
-Added to slab tree, thanks.
+Use spin_lock_irqsave. We don't know where we are called from and this
+isn't a time critical path.
+
+> +	val = readl_relaxed(reset->dev_base);
+> +	if (assert)
+> +		val |= BIT(id);
+> +	else
+> +		val &= ~BIT(id);
+> +	writel_relaxed(val, reset->dev_base);
+> +	spin_unlock(&reset->lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static int at91_reset_assert(struct reset_controller_dev *rcdev,
+> +			     unsigned long id)
+> +{
+> +	return at91_reset_update(rcdev, id, true);
+> +}
+> +
+> +static int at91_reset_deassert(struct reset_controller_dev *rcdev,
+> +			       unsigned long id)
+> +{
+> +	return at91_reset_update(rcdev, id, false);
+> +}
+> +
+> +static int at91_reset_dev_status(struct reset_controller_dev *rcdev,
+> +				 unsigned long id)
+> +{
+> +	struct at91_reset *reset = to_at91_reset(rcdev);
+> +	u32 val;
+> +
+> +	spin_lock(&reset->lock);
+
+Locking is not necessary here. If the read is racing against an update,
+it either returns the register value before or after the update, same
+as without a lock.
+
+With those changes,
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+
+regards
+Philipp
