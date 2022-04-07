@@ -2,234 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3ABFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDFE5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:45:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345807AbiDGQqW (ORCPT
+        id S1345814AbiDGQr1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 12:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34034 "EHLO
+        Thu, 7 Apr 2022 12:47:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345813AbiDGQqJ (ORCPT
+        with ESMTP id S233048AbiDGQrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 12:46:09 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7711C1E6A
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:44:04 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 237B51F85A;
-        Thu,  7 Apr 2022 16:44:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649349843; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qqPzhZ3IRiMem1hQol0HyQl1hPa6KU1MVkQbSghKsiE=;
-        b=WVI8rxzxZuEB661yjwfgXJUG+Eu+cVBE61uzdRiSiqy5kLVusdoGE38iZZECHfxSB8aBGS
-        qESMVlpQyN1J1slGy4cm7pYNrerRrFzfzWzuy7eo5SrktFAVHDqA+KmYn7w4JcqGhXf4Uu
-        1fTtGzLdqeCLyY/K5q9JJpZ1wAFUryE=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id C4064A3BA6;
-        Thu,  7 Apr 2022 16:44:02 +0000 (UTC)
-Date:   Thu, 7 Apr 2022 18:43:59 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: start/stop: was: Re: [PATCH printk v2 10/12] printk: add kthread
- console printers
-Message-ID: <Yk8UzzWTbfsPQNx5@alley>
-References: <20220405132535.649171-1-john.ogness@linutronix.de>
- <20220405132535.649171-11-john.ogness@linutronix.de>
+        Thu, 7 Apr 2022 12:47:24 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1CFC1C7C06
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:45:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=GXFnpjQYBIWFRco3UvVRDWrcEOzkin/loJqwgahQP5M=; b=LjtLKi2PHqcacczp6eBGkdioNd
+        rp+Gvt6m3C3jIYLAiFWAJ/7WRyjTWzW9D2sNHlIxbBYZEQiYq4uhteaSkjDbG8M29xWEv51G1Vw0S
+        QeRx6CL9r5v4Ffah2e2cT40PYq/ENgPupl6tKckUvy3jSoMp3eVifiQOxna3e7v1ttKGiHrsxfFTc
+        gZkgVoGcLblw+eoFH5xuQpUBqyw65aqHUv9OzPg1UtYavfrvIl+OZOPjk2vpL5vDGNbUPR/ms/Z7l
+        7l0L3IkGDN2qF12c4ofg617HLXD+lA3Ml5o6ed32V1Pzs2Ou8Ff1i4gu4IGsGeYWkgjeeh6uykWPZ
+        /cpYJyzg==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1ncVG3-002CHk-8h; Thu, 07 Apr 2022 10:45:20 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1ncVG0-0002Dt-TO; Thu, 07 Apr 2022 10:45:16 -0600
+From:   Logan Gunthorpe <logang@deltatee.com>
+To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Cc:     Shaohua Li <shli@kernel.org>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>,
+        Logan Gunthorpe <logang@deltatee.com>
+Date:   Thu,  7 Apr 2022 10:45:10 -0600
+Message-Id: <20220407164511.8472-8-logang@deltatee.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220407164511.8472-1-logang@deltatee.com>
+References: <20220407164511.8472-1-logang@deltatee.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405132535.649171-11-john.ogness@linutronix.de>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, shli@kernel.org, guoqing.jiang@linux.dev, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+Subject: [PATCH v1 7/8] md/raid5: Check all disks in a stripe_head for reshape progress
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-04-05 15:31:33, John Ogness wrote:
-> Create a kthread for each console to perform console printing. During
-> normal operation (@system_state == SYSTEM_RUNNING), the kthread
-> printers are responsible for all printing on their respective
-> consoles.
-> 
-> During non-normal operation, console printing is done as it has been:
-> within the context of the printk caller or within irq work triggered
-> by the printk caller.
-> 
-> Console printers synchronize against each other and against console
-> lockers by taking the console lock for each message that is printed.
-> 
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index 258d02cff140..a3b8b984c9aa 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -2988,6 +3028,10 @@ void console_start(struct console *console)
->  	console_lock();
->  	console->flags |= CON_ENABLED;
->  	console_unlock();
-> +
-> +	/* Wake the newly enabled kthread printer. */
-> +	wake_up_klogd();
+When testing if a previous stripe has had reshape expand past it, use
+the earliest or latest logical sector in all the disks for that stripe
+head. This will allow adding multiple disks at a time in a subesquent
+patch.
 
-wake_up_klogd() will wake the kthread only when PRINTK_PENDING_OUTPUT
-is set. But this particular console might be far behind the other
-kthreads.
+To do this cleaner, refactor the check into a helper function called
+stripe_ahead_of_reshape().
 
-I think that we always want to wake up the kthread. In the worst case,
-it will just realize that there is nothing to do and will go back to sleep.
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+---
+ drivers/md/raid5.c | 47 +++++++++++++++++++++++++++++++---------------
+ 1 file changed, 32 insertions(+), 15 deletions(-)
 
-> +
->  	__pr_flush(console, 1000, true);
->  }
->  EXPORT_SYMBOL(console_start);
- @@ -3196,6 +3240,8 @@ void register_console(struct console *newcon)
->  		/* Begin with next message. */
->  		newcon->seq = prb_next_seq(prb);
->  	}
-> +	if (printk_kthreads_available)
-> +		printk_start_kthread(newcon);
->  	console_unlock();
->  	console_sysfs_notify();
->  
-> @@ -3222,6 +3268,7 @@ EXPORT_SYMBOL(register_console);
->  
->  int unregister_console(struct console *console)
->  {
-> +	struct task_struct *thd = console->thread;
->  	struct console *con;
->  	int res;
->  
-> @@ -3233,6 +3280,11 @@ int unregister_console(struct console *console)
->  	if (res > 0)
->  		return 0;
->  
-> +	if (thd) {
-> +		console->thread = NULL;
-> +		kthread_stop(thd);
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+index 52227dd91e89..1ddce09970fa 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -5764,6 +5764,33 @@ static void make_discard_request(struct mddev *mddev, struct bio *bi)
+ 	bio_endio(bi);
+ }
+ 
++static bool stripe_ahead_of_reshape(struct mddev *mddev, struct r5conf *conf,
++				    struct stripe_head *sh)
++{
++	sector_t max_sector = 0, min_sector = MaxSector;
++	int dd_idx, ret = 0;
++
++	for (dd_idx = 0; dd_idx < sh->disks; dd_idx++) {
++		if (dd_idx == sh->pd_idx)
++			continue;
++
++		min_sector = min(min_sector, sh->dev[dd_idx].sector);
++		max_sector = min(max_sector, sh->dev[dd_idx].sector);
++	}
++
++	spin_lock_irq(&conf->device_lock);
++
++	if (mddev->reshape_backwards
++	    ? max_sector >= conf->reshape_progress
++	    : min_sector < conf->reshape_progress)
++		/* mismatch, need to try again */
++		ret = 1;
++
++	spin_unlock_irq(&conf->device_lock);
++
++	return ret;
++}
++
+ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
+ {
+ 	struct stripe_head *batch_last = NULL;
+@@ -5877,28 +5904,18 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
+ 			break;
+ 		}
+ 
+-		if (unlikely(previous)) {
++		if (unlikely(previous) &&
++		    stripe_ahead_of_reshape(mddev, conf, sh)) {
+ 			/*
+-			 * Expansion might have moved on while waiting for a
+-			 * stripe, so we must do the range check again.
++			 * Expansion moved on while waiting for a stripe.
+ 			 * Expansion could still move past after this
+ 			 * test, but as we are holding a reference to
+ 			 * 'sh', we know that if that happens,
+ 			 *  STRIPE_EXPANDING will get set and the expansion
+ 			 * won't proceed until we finish with the stripe.
+ 			 */
+-			int must_retry = 0;
+-			spin_lock_irq(&conf->device_lock);
+-			if (mddev->reshape_backwards
+-			    ? logical_sector >= conf->reshape_progress
+-			    : logical_sector < conf->reshape_progress)
+-				/* mismatch, need to try again */
+-				must_retry = 1;
+-			spin_unlock_irq(&conf->device_lock);
+-			if (must_retry) {
+-				raid5_release_stripe(sh);
+-				goto schedule_and_retry;
+-			}
++			raid5_release_stripe(sh);
++			goto schedule_and_retry;
+ 		}
+ 		if (read_seqcount_retry(&conf->gen_lock, seq)) {
+ 			/* Might have got the wrong stripe_head by accident */
+-- 
+2.30.2
 
-This feels racy against parallel register_console() and
-unregister_console() calls. I guess that it is not much
-realistic in the real life but ...
-
-Anyway, printk_start_kthread(newcon) is called under console_lock().
-It would be great to stop it under the lock as well so that we
-do not need to worry about races.
-
-Hmm, it might cause deadlock at this stage because the kthread
-take console_lock() in the main loop.
-
-It should work after introducing the per-console mutexes. They might
-be taken when console_lock() is taken. But the kthread will
-not do the printing when the console_lock() is taken by anyone else.
-
-A solution might be to add a comment that there is a non-realistic
-race that will be removed by introducing per-console mutexes.
-And fix it later.
-
-Nit: Also I would prefer to create printk_stop_kthread()
-     so that it is easy to find the counterparts.
-
-
-> +	}
-> +
->  	res = -ENODEV;
->  	console_lock();
->  	if (console_drivers == console) {
-
-[...]
-
-> +static int printk_kthread_func(void *data)
-> +{
-> +	struct console *con = data;
-> +	char *dropped_text = NULL;
-> +	char *ext_text = NULL;
-> +	bool handover;
-> +	u64 seq = 0;
-> +	char *text;
-> +	int error;
-> +
-> +	text = kmalloc(CONSOLE_LOG_MAX, GFP_KERNEL);
-> +	if (!text) {
-> +		printk_console_msg(con, KERN_ERR, "failed to allocate text buffer");
-> +		printk_fallback_preferred_direct();
-> +		goto out;
-> +	}
-> +
-> +	if (con->flags & CON_EXTENDED) {
-> +		ext_text = kmalloc(CONSOLE_EXT_LOG_MAX, GFP_KERNEL);
-> +		if (!ext_text) {
-> +			printk_console_msg(con, KERN_ERR, "failed to allocate ext_text buffer");
-> +			printk_fallback_preferred_direct();
-> +			goto out;
-> +		}
-> +	} else {
-> +		dropped_text = kmalloc(DROPPED_TEXT_MAX, GFP_KERNEL);
-> +		if (!dropped_text) {
-> +			printk_console_msg(con, KERN_ERR,
-> +					   "failed to allocate dropped_text buffer");
-> +			printk_fallback_preferred_direct();
-> +			goto out;
-> +		}
-> +	}
-> +
-> +	printk_console_msg(con, KERN_INFO, "printing thread started");
-> +
-> +	for (;;) {
-> +		/*
-> +		 * Guarantee this task is visible on the waitqueue before
-> +		 * checking the wake condition.
-> +		 *
-> +		 * The full memory barrier within set_current_state() of
-> +		 * prepare_to_wait_event() pairs with the full memory barrier
-> +		 * within wq_has_sleeper().
-> +		 *
-> +		 * See __wake_up_klogd:A for the pairing memory barrier.
-> +		 */
-> +		error = wait_event_interruptible(log_wait,
-> +				printer_should_wake(con, seq)); /* LMM(printk_kthread_func:A) */
-> +
-> +		if (kthread_should_stop() || !printk_kthreads_available)
-> +			break;
-
-printk_fallback_preferred_direct() is an interesting trick. But I am
-not sure if it is a good idea. This approach leaves con->kthread
-pointing to exited kthreads.
-
-The following looks cleaner and should work:
-
-void printk_stop_kthread(struct console *con)
-{
-	struct task_struct *thread = con->thread;
-
-	if (!thread)
-		return;
-
-	console->thread = NULL;
-	kthread_stop(thread);
-}
-
-void printk_deactivate_kthreas()
-{
-	struct console *con;
-
-	console_lock();
-	printk_kthreads_available = false;
-	console_unlock();
-
-	for_each_console(con)
-		printk_stop_kthread(con);
-}
-
-And we could move printk_stop_kthread() under console lock
-after introducing the per-console mutex.
-
-
-Best Regards,
-Petr
