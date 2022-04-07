@@ -2,84 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD263C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D2CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:37:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230263AbiDGUjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
+        id S230029AbiDGUjI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:39:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230036AbiDGUif (ORCPT
+        with ESMTP id S230052AbiDGUim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:38:35 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92944986CC
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:25:13 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id l7so7803592ejn.2
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:25:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=P5DcEA8Z0O2xixy7S+Gv+babh7z8J+LX9GCrQBr6h0U=;
-        b=DlB0ROMvXM2dZGF+yoBoSFO3s5uuSbLV8zc/1NhqvKuYlX7z/jDU33Yfgo7NAeXH08
-         FXnefyJz5mTFNl4md96p4U6kF/X5RRuC1ZXWgDWvQKSd70nJPBhMMLu5Nl+tVoR42X/n
-         FX9d/t+Y7/HGLaXjyChiZKyXsxnkqiP3BuOa7xYEnscdlDVEWxKD9C8Ef/m1Mqp8m6Ty
-         ExMvWZs19U7KQLK5ji/N8WRQskcKHZ/IlXwCjObekv5l11XTT7yic8elw3qZbhXJwDCU
-         AHiBRZYwqj+3oaYTogkihsdJ2QVdc6fua10qnsfSP4+Ynj4BMBncH47OK7MVLjetRwGS
-         Ka7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=P5DcEA8Z0O2xixy7S+Gv+babh7z8J+LX9GCrQBr6h0U=;
-        b=GstZdXJHPMprPSlYjFa2AJQ1FaVly0wAxVeAKw51ICZ9ilG3uSoVg08fRg0MhYjlVw
-         BDViQxXtFbykU64nSY0OEvq60pi5jdjUGqCRAKr5luvMfCbHYk2Ebgd8nflzkZinFOpL
-         CkLtVMAEpN8/Fm5FykeAsqHRGiYoSTcVmFcxmD01gzUHToa33zrc+gRk5N3zystV98sg
-         r1F85M3L0IRWd/MZVk/0HGrXlGPKJ/MK/id0Bzw9YDlmdh8IqOA/d+CcGnwKGc9fbyAE
-         PUXVY0Wp5DC4JTJoZVta+shlk6EkYa0rVFjfrZXupWihg9HPZIMOWViFwJHHbAK5X/gl
-         kHcw==
-X-Gm-Message-State: AOAM531bcA2Tm9Aa5CGQ6mPwV4YqoXbJwrqZbYNfkNx6bwpxXbdfu0aQ
-        ypsDL9u1ZYqnI0+gJGoBntkc7w==
-X-Google-Smtp-Source: ABdhPJySFWuAOomrFtAf8GkaK6FTLwIionDZt0PoDHUQaKsrZabjm7SqIvbJZZE9f5tcb08qDmyEow==
-X-Received: by 2002:a17:907:2a53:b0:6ce:e4fe:3f92 with SMTP id fe19-20020a1709072a5300b006cee4fe3f92mr15034361ejc.389.1649363112192;
-        Thu, 07 Apr 2022 13:25:12 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id ka6-20020a170907990600b006ce54c95e3csm7971189ejc.161.2022.04.07.13.25.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 13:25:11 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RESEND PATCH] pinctrl: max77620: drop unneeded MODULE_ALIAS
-Date:   Thu,  7 Apr 2022 22:25:09 +0200
-Message-Id: <20220407202509.23228-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Thu, 7 Apr 2022 16:38:42 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5E5345D62;
+        Thu,  7 Apr 2022 13:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1649363116;
+        bh=DlbOpXdlheJlXvoOey1WuM162xwLkn8EcO/3A3LfIes=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=ISVjbvZ4W/FVDTaW8PzYEnrlar8SoPAFSzU6vkATj8nnOBo243llbtTDlWtea8NF6
+         KivKy/3R22fq8DH5pQFimKbuTW4DIS3U3Wyo83UPbPk8ryUCAQuOiqmlXur0wEa/LL
+         GWDLf4a9mQDSABFUS2zmbTcGy9S9E8XXBTYogVTE=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.161.122]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MLzFr-1nKkAE36sj-00Hzfk; Thu, 07
+ Apr 2022 21:42:59 +0200
+Message-ID: <67698385-b2fe-2de9-9775-9f6320a0e9e3@gmx.de>
+Date:   Thu, 7 Apr 2022 21:41:16 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] video: fbdev: Fix missing of_node_put in imxfb_probe
+Content-Language: en-US
+To:     cgel.zte@gmail.com, s.hauer@pengutronix.de, kernel@pengutronix.de
+Cc:     shawnguo@kernel.org, festevam@gmail.com, linux-imx@nxp.com,
+        linux-fbdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
+References: <20220407090122.2491922-1-lv.ruyi@zte.com.cn>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <20220407090122.2491922-1-lv.ruyi@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:p8vzFrrvIKVFtaDT5l91hwUiLPe13/ZAgxzuyd2hmZIvj7Byh+E
+ bTNrO2hlWJyT3u/MXuenFvALE+UwOdfIacAKaHtRH/4at5tF8O2x33miZCZSrd5HVyRuVSl
+ uKygwSj3diqZz43fAJYPAVr/6FSb/UZxRBISPq2bS1hQj8AuZMdCTjutD0IhOWzFdU2+i53
+ B4UU9mCfo86WAK2ZpyZpw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:MT51GlYzjyc=:ek4qURxclpD/olO6J+acDd
+ wQTkL9Zpo5+pfflMX+aQKvkNLtI1eKVO5kLJy1fDF3s9KqTrfKwcL/WymWo7tIEfsv4K9R6rC
+ xYJ1Rpq2JPu6Kt6H+qRp54y3q0hSOWTUGKUzKuRvH4nRgcAIMtICylmx51DeoBVA59vrDUTsL
+ ujsdtDiyjgoOvYueDoleErWOmzKF7B+eGqc9GRqiz0F2ekD5LSRYU1ePMPTDPwv/JkPis73/6
+ tX0Ni1NnACcPNWcAVUJZZ5qCwrwlFYNkWfmjPNANuHtbKoNR+KYvo72IhKaPSJSmpP0oDTBLL
+ M06usSYH5ka/o0hqSn1lO8o35dyLFXd7fh8RfhLKZBIi43kgwuRMhYd/+WBYvUN0OJOOLgcYy
+ roUeakhuvhKOPAqm3AtT+QS3SHn0KZ8rdiMOr8pIICmGn4At9s7TA4HJjFzv+HdQ3MSf0KvtQ
+ 4NlkYYDsEhhoQJxLd95ACeEoAI72Jtol6jJpgw+H77WFDTvhHYTR9IC0ga7dsufi2faX9u8kZ
+ FAZ5QZum0gt1lq46JDWE9QZ/+yNZnh4yE+bKSBHgvJbXxOE005pQdpXQJ9w6yoCsBQcoqDxer
+ HBaL74XqQ7nZ+gDWtO04t8Fz/4SxZ2mIHioQF6i7QHUdOA8kLqLMiCH7xNj5FHwbO4tm40hUf
+ 3eFb6jJSsDK99cmuIbEKnV34VkYCkurdAobiRfNwxDDvIvC3uMhb9mmY7bM8NDaSuvfglEMrV
+ qszoaF31iVjVkvYmPZrsV+JAwoNICgYzwbmSpLrlt0X/bQxqJLm1DSYHS0RfFk9vba2hOCFMz
+ 6Jza3Pxq17/j6x9v4ATEVRzGkkTsNeVkV7NKXQtqZgePf0AlQLu1Xj79uuwxK3Q1o/qarPSKL
+ f0jSYV15DBkBOmmREXJcoUH+MgqR2sYiyK1TB0fWH7rZZrLTH3Hoaez3Bv9Sj4NspjnRKnezC
+ rq1zk1JxV5AQ++gCQvQ+iZ3ULLzrmw/Y0uYcxfe6NuVkTdQBFC8iaRNUwqT/LwVewd1HS82U7
+ 8ekTcfZothpqJeUEhX2FOcuiWFEJKZ8gMKF6P5nNgQLmFqX0nrQwNsPc+p9uShouTcd9MlRhI
+ JBlDpmHqXsjkRw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The MODULE_DEVICE_TABLE already creates proper alias for platform
-driver.  Having another MODULE_ALIAS causes the alias to be duplicated.
+On 4/7/22 11:01, cgel.zte@gmail.com wrote:
+> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+>
+> of_parse_phandle returns node pointer with refcount incremented,
+> use of_node_put() on it when done.
+>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- drivers/pinctrl/pinctrl-max77620.c | 1 -
- 1 file changed, 1 deletion(-)
+applied.
+Thanks!
+Helge
 
-diff --git a/drivers/pinctrl/pinctrl-max77620.c b/drivers/pinctrl/pinctrl-max77620.c
-index 1ee94574f0af..ab723ab4ec1d 100644
---- a/drivers/pinctrl/pinctrl-max77620.c
-+++ b/drivers/pinctrl/pinctrl-max77620.c
-@@ -668,5 +668,4 @@ module_platform_driver(max77620_pinctrl_driver);
- MODULE_DESCRIPTION("MAX77620/MAX20024 pin control driver");
- MODULE_AUTHOR("Chaitanya Bandi<bandik@nvidia.com>");
- MODULE_AUTHOR("Laxman Dewangan<ldewangan@nvidia.com>");
--MODULE_ALIAS("platform:max77620-pinctrl");
- MODULE_LICENSE("GPL v2");
--- 
-2.32.0
+> ---
+>  drivers/video/fbdev/imxfb.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/video/fbdev/imxfb.c b/drivers/video/fbdev/imxfb.c
+> index 68288756ffff..a2f644c97f28 100644
+> --- a/drivers/video/fbdev/imxfb.c
+> +++ b/drivers/video/fbdev/imxfb.c
+> @@ -925,10 +925,12 @@ static int imxfb_probe(struct platform_device *pde=
+v)
+>  				sizeof(struct imx_fb_videomode), GFP_KERNEL);
+>  		if (!fbi->mode) {
+>  			ret =3D -ENOMEM;
+> +			of_node_put(display_np);
+>  			goto failed_of_parse;
+>  		}
+>
+>  		ret =3D imxfb_of_read_mode(&pdev->dev, display_np, fbi->mode);
+> +		of_node_put(display_np);
+>  		if (ret)
+>  			goto failed_of_parse;
+>  	}
 
