@@ -2,84 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A90C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F10B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240882AbiDGGDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 02:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56264 "EHLO
+        id S234958AbiDGGEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 02:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238795AbiDGGCx (ORCPT
+        with ESMTP id S230055AbiDGGEL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 02:02:53 -0400
-Received: from mail.meizu.com (unknown [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09672FFDB
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 23:00:53 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 7 Apr 2022
- 14:00:52 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 7 Apr
- 2022 14:00:51 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-CC:     Haowen Bai <baihaowen@meizu.com>, <amd-gfx@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] drm/amd/display: Fix indenting mistakes in dcn10_hw_sequencer.c
-Date:   Thu, 7 Apr 2022 14:00:50 +0800
-Message-ID: <1649311250-17077-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+        Thu, 7 Apr 2022 02:04:11 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7D717586E
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 23:02:12 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 29BA221117;
+        Thu,  7 Apr 2022 06:02:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649311331; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zcVA2leKEHZCBy0L6O+DAKg05GvJhbtAx6yj2EYofvk=;
+        b=vZ2m/aITGXDAq6n8nhnsUrvPRMPIkKnWD/KRTTGFB0nr+ykHFGw/AEtWdF/ElB9rJTby5g
+        zNbcBPB8Y50/7gHSfWJ/iEOpR6naCLf3Oe41SYm5L+Xa4ekwfdom+aUoi51z0/gBcsjLOt
+        y8X0HtBS9VZ9cc/hc78ohGsHPsQxwd8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649311331;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zcVA2leKEHZCBy0L6O+DAKg05GvJhbtAx6yj2EYofvk=;
+        b=6z+z7H4qA0BPXVQG32Ue9gbbgIcmW0u3QrAwQSja86P/ki0wj6NwbYCk//jpel7RvfXrjt
+        INS2E3TFJ5EGqoBg==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 1F97FA3B82;
+        Thu,  7 Apr 2022 06:02:10 +0000 (UTC)
+Date:   Thu, 07 Apr 2022 08:02:10 +0200
+Message-ID: <s5htub52zz1.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Takashi Sakamoto <o-takashi@sakamocchi.jp>
+Cc:     clemens@ladisch.de, alsa-devel@alsa-project.org,
+        linux1394-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] firewire: assist unit driver to compute packet time stamp
+In-Reply-To: <Yk4r7VcotHz0iMOU@workstation>
+References: <20220405072221.226217-1-o-takashi@sakamocchi.jp>
+        <s5hczhv5wjc.wl-tiwai@suse.de>
+        <Yk4r7VcotHz0iMOU@workstation>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Smatch reports the following:
-drivers/gpu/drm/amd/amdgpu/../display/dc/dcn10/dcn10_hw_sequencer.c:2174
-dcn10_enable_vblanks_synchronization() warn: if statement not indented
+On Thu, 07 Apr 2022 02:10:21 +0200,
+Takashi Sakamoto wrote:
+> 
+> On Tue, Apr 05, 2022 at 06:23:35PM +0200, Takashi Iwai wrote:
+> > On Tue, 05 Apr 2022 09:22:18 +0200,
+> > Takashi Sakamoto wrote:
+> > > 
+> > > Hi,
+> > > 
+> > > Current implementation of Linux FireWire subsystem doesn't allow unit
+> > > driver to operate content of packet in IR context according to
+> > > time stamp. Additionally it doesn't allow unit driver to read current value
+> > > of CYCLE_TIME register in OHCI 1394 controller. It brings disadvantages to
+> > > drivers in Linux sound subsystem in regards of handling time for sampled
+> > > data such as PCM frames and MIDI messages.
+> > > 
+> > > This rerolled patchset is first step to improve the situation.
+> > > 
+> > > Changes in v3:
+> > >  * Rebase v2 patchset to v5.18-rc1
+> > > Changes in v2:
+> > >  * Rebase v1 patchset to v5.16 release
+> > >  * https://lore.kernel.org/lkml/20220212022131.199855-1-o-takashi@sakamocchi.jp/
+> > > V1:
+> > >  * https://lore.kernel.org/lkml/20211202113457.24011-1-o-takashi@sakamocchi.jp/
+> > > 
+> > > Hector Martin (1):
+> > >   firewire: Add dummy read_csr/write_csr functions
+> > > 
+> > > Takashi Sakamoto (2):
+> > >   firewire: add kernel API to access CYCLE_TIME register
+> > >   firewire: add kernel API to access packet structure in request
+> > >     structure for AR context
+> > 
+> > Thanks, applied all three patches now to for-next branch.
+> 
+> Although thanks for your applying them into your tree, I apologize to
+> trouble you if you overlook that the included changes is just for Linux
+> FireWire subsystem. It's my fault to send them only to Linux sound
+> subsystem, but the changes are required to my work in sound drivers... 
+> 
+> If you are willing to include patches to Linux FireWire subsystem for
+> your pull-request to Linus, I can prepare respined patches for it since
+> I have the list of patches posted to LKML as bug fixes for Linux FireWire
+> subsystem.
+> 
+> I need any help to solve current situation of Linux FireWire subsystem
+> that bug fixes and new changes are hardly merged. Of course, IEEE 1394 bus
+> is already outdated and legacy, but I know that some users still work
+> with it. If your path is available for it, it's the easiest and the most
+> convenient way for upstreaming, I think.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+Ah OK, it's fine for me in either way.  I can keep up those changes in
+my tree, or go through others.  I leave the decision Firewire
+subsystem people.  Just let me know.
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-index ee22f4422d26..3c338b85040c 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-@@ -2172,13 +2172,13 @@ void dcn10_enable_vblanks_synchronization(
- 	if (master >= 0) {
- 		for (i = 0; i < group_size; i++) {
- 			if (i != master && !grouped_pipes[i]->stream->has_non_synchronizable_pclk)
--			grouped_pipes[i]->stream_res.tg->funcs->align_vblanks(
--				grouped_pipes[master]->stream_res.tg,
--				grouped_pipes[i]->stream_res.tg,
--				grouped_pipes[master]->stream->timing.pix_clk_100hz,
--				grouped_pipes[i]->stream->timing.pix_clk_100hz,
--				get_clock_divider(grouped_pipes[master], false),
--				get_clock_divider(grouped_pipes[i], false));
-+				grouped_pipes[i]->stream_res.tg->funcs->align_vblanks(
-+					grouped_pipes[master]->stream_res.tg,
-+					grouped_pipes[i]->stream_res.tg,
-+					grouped_pipes[master]->stream->timing.pix_clk_100hz,
-+					grouped_pipes[i]->stream->timing.pix_clk_100hz,
-+					get_clock_divider(grouped_pipes[master], false),
-+					get_clock_divider(grouped_pipes[i], false));
- 				grouped_pipes[i]->stream->vblank_synchronized = true;
- 		}
- 		grouped_pipes[master]->stream->vblank_synchronized = true;
--- 
-2.7.4
 
+thanks,
+
+Takashi
