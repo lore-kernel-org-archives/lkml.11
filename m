@@ -2,228 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A06C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B09C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244098AbiDGKJK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 06:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41944 "EHLO
+        id S244104AbiDGKK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 06:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244113AbiDGKIu (ORCPT
+        with ESMTP id S238176AbiDGKKX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 06:08:50 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C082BC
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 03:06:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649326008; x=1680862008;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=unfnYCPSgpycrdJhJBi5EhSSRpRKJ7qA2UrLAxLqJfo=;
-  b=eNwrR3P36ol97Itqi8u1of6wn6biXoAiYbmlGdg0yjcmP71ueXshyQWI
-   A5DnfFf52e5zACNAyc0pmsdBnlpzgnFy31ZtKsvx7XnqwkxgE+MZPAjuI
-   hPINn1lGYy3kyrV0GQtUEt/x+MWireFf8zVxV0sua3pUoaFL/Bq0Lo60P
-   oOyfmn3R7D5SMa2CXXb7ymtWc3tzFQ/yVgUaodBwCgBbSengs0pyM7LGt
-   WC0Z1jK6bYB6Zut38QUOS363BA580OjWN+14zY/h0eocVpTOe9aePhtju
-   nubtDDVwWrvAts9uRlbXf3fvKz96A/aq2P4l/cv07eCZw89ftqfhX0sDu
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="321974173"
-X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="321974173"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 03:06:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="549980531"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 07 Apr 2022 03:06:39 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ncP2E-0005Ja-RR;
-        Thu, 07 Apr 2022 10:06:38 +0000
-Date:   Thu, 7 Apr 2022 18:06:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Saravana Kannan <skannan@codeaurora.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Sibi Sankar <sibis@codeaurora.org>
-Subject: [chanwoo:devfreq-testing 2/4] include/linux/devfreq.h:332:1:
- warning: no semicolon at end of struct or union
-Message-ID: <202204071831.uDO7FR9U-lkp@intel.com>
+        Thu, 7 Apr 2022 06:10:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D0D1023584C
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 03:08:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649326100;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DrACxl9C2gOChjAyxZVhTY+qfXPOAdTm/ErunvhnUCc=;
+        b=NHfRbhNd+pAosOEL6jQ6zwq2B+ZKC6QI9RiAd79BmR5FT2ioLx03kzSNNkrArXfwj38kxi
+        9jck/yiV+DmSKwLubok5zB8gIeV46HesumFMqOCBxGJxUZaKs3+84jme/T2Zn+Ew3AVLwP
+        mgbIilakFVakwS3y7LSmPRpgd77SaSg=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-447-jfoh0PyGOMybbj5UXdMrrw-1; Thu, 07 Apr 2022 06:08:19 -0400
+X-MC-Unique: jfoh0PyGOMybbj5UXdMrrw-1
+Received: by mail-wr1-f72.google.com with SMTP id s13-20020adfa28d000000b00205e049cff2so1118903wra.17
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 03:08:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=DrACxl9C2gOChjAyxZVhTY+qfXPOAdTm/ErunvhnUCc=;
+        b=0mns3nl07/5t5MAsM/meXPhePq7I+YWdLUL28wAH4sOfjLMplcV6xuofIMWh2zTPll
+         i41o+q8mBGxUjw7AOpp4XMDJNu7MGb4S8nyF7y1xkqrZi29dea/I15vIQuL174EppMfw
+         UMElkU0lBv3mLaBF+RsSNdH7StB92A7V7rEsc7WpVgzBgH0sCpb1B4ocGPqHb9+tQW1A
+         BHWRgWSdtY6VswXB0n+nZd91igyLAclj6sPt9qj7Y5Q7OGMkkRCa9eYu58cQbrPQXP7V
+         hLzfoFf8tYgsgs9Rsf4gvXk++u2iF9xwVQAxDNaK3LeuP3XiKQmlkCq2Tm4MfbJ/MZcv
+         aFjw==
+X-Gm-Message-State: AOAM532peqqCQEoJ9OSPIblJlXMli07rn006g2vVjZ62e4h8IETTRRoS
+        0aCf+6ozAG8qDBgNv6kJzK4xWpzZN8Duj5mvPxxOWk72FYK9W68lVoDOADWBkYGFo/rbWV15DuN
+        bbdbj6/3NCHWvbDDTI5xV7m/j
+X-Received: by 2002:a5d:64eb:0:b0:205:d418:4798 with SMTP id g11-20020a5d64eb000000b00205d4184798mr10296694wri.11.1649326098319;
+        Thu, 07 Apr 2022 03:08:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy/CDCZaWyg95GLwbhj/qt39N+IZvaplfCwXnnSE4E74yjYE+B9+NkOc6BjdiTjCVvf14UJEg==
+X-Received: by 2002:a5d:64eb:0:b0:205:d418:4798 with SMTP id g11-20020a5d64eb000000b00205d4184798mr10296667wri.11.1649326097983;
+        Thu, 07 Apr 2022 03:08:17 -0700 (PDT)
+Received: from ?IPV6:2a09:80c0:192:0:20af:34be:985b:b6c8? ([2a09:80c0:192:0:20af:34be:985b:b6c8])
+        by smtp.gmail.com with ESMTPSA id l15-20020a05600c4f0f00b0038cbdf5221dsm7798149wmq.41.2022.04.07.03.08.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 03:08:17 -0700 (PDT)
+Message-ID: <045a59a1-0929-a969-b184-1311f81504b8@redhat.com>
+Date:   Thu, 7 Apr 2022 12:08:16 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Mike Kravetz <mike.kravetz@oracle.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.vnet.ibm.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Prakash Sangappa <prakash.sangappa@oracle.com>,
+        James Houghton <jthoughton@google.com>,
+        Mina Almasry <almasrymina@google.com>,
+        Ray Fucillo <Ray.Fucillo@intersystems.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220406204823.46548-1-mike.kravetz@oracle.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [RFC PATCH 0/5] hugetlb: Change huge pmd sharing
+In-Reply-To: <20220406204823.46548-1-mike.kravetz@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git devfreq-testing
-head:   e8222a8ce34258ab3033cae96c0153a55414da4d
-commit: 95f7ed4a4161892825bb0ba124579c93280ad462 [2/4] PM / devfreq: Add cpu based scaling support to passive governor
-config: um-allmodconfig (https://download.01.org/0day-ci/archive/20220407/202204071831.uDO7FR9U-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git/commit/?id=95f7ed4a4161892825bb0ba124579c93280ad462
-        git remote add chanwoo https://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git
-        git fetch --no-tags chanwoo devfreq-testing
-        git checkout 95f7ed4a4161892825bb0ba124579c93280ad462
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=um SHELL=/bin/bash
+On 06.04.22 22:48, Mike Kravetz wrote:
+> hugetlb fault scalability regressions have recently been reported [1].
+> This is not the first such report, as regressions were also noted when
+> commit c0d0381ade79 ("hugetlbfs: use i_mmap_rwsem for more pmd sharing
+> synchronization") was added [2] in v5.7.  At that time, a proposal to
+> address the regression was suggested [3] but went nowhere.
+> 
+> To illustrate the regression, I created a simple program that does the
+> following in an infinite loop:
+> - mmap a 4GB hugetlb file (size insures pmd sharing)
+> - fault in all pages
+> - unmap the hugetlb file
+> 
+> The hugetlb fault code was then instrumented to collect number of times
+> the mutex was locked and wait time.  Samples are from 10 second
+> intervals on a 4 CPU VM with 8GB memory.  Eight instances of the
+> map/fault/unmap program are running.
+> 
+> v5.17
+> -----
+> [  708.763114] Wait_debug: faults sec  3622
+> [  708.764010]             num faults  36220
+> [  708.765016]             num waits   36220
+> [  708.766054]             intvl wait time 54074 msecs
+> [  708.767287]             max_wait_time   31000 usecs
+> 
+> 
+> v5.17 + this series (similar to v5.6)
+> -------------------------------------
+> [  282.191391] Wait_debug: faults sec  1777939
+> [  282.192571]             num faults  17779393
+> [  282.193746]             num locks   5517
+> [  282.194858]             intvl wait time 19907 msecs
+> [  282.196226]             max_wait_time   43000 usecs
+> 
+> As can be seen, fault time suffers when there are other operations
+> taking i_mmap_rwsem in write mode such as unmap.
+> 
+> This series proposes reverting c0d0381ade79 and 87bf91d39bb5 which
+> depends on c0d0381ade79.  This moves acquisition of i_mmap_rwsem in the
+> fault path back to huge_pmd_share where it is only taken when necessary.
+> After, reverting these patches we still need to handle:
+> fault and truncate races
+> - Catch and properly backout faults beyond i_size
+>   Backing out reservations is much easier after 846be08578ed to expand
+>   restore_reserve_on_error functionality.
+> unshare and fault/lookup races
+> - Since the pointer returned from huge_pte_offset or huge_pte_alloc may
+>   become invalid until we lock the page table, we must revalidate after
+>   taking the lock.  Code paths must backout and possibly retry if
+>   page table pointer changes.
+> 
+> The commit message in patch 5 suggests that it is not safe to use
+> SPLIT_PMD_PTLOCKS for hugetlb mappings if sharing is possible.  If
+> others confirm/agree then there will need to be additional work.
+> 
+> Please help with comments or suggestions.  I would like to come up with
+> something that is performant and safe.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All error/warnings (new ones prefixed by >>):
-
-   In file included from arch/x86/um/asm/processor.h:41,
-                    from include/linux/spinlock_up.h:8,
-                    from include/linux/spinlock.h:95,
-                    from include/linux/mmzone.h:8,
-                    from include/linux/gfp.h:6,
-                    from include/linux/umh.h:4,
-                    from include/linux/kmod.h:9,
-                    from drivers/devfreq/devfreq.c:11:
->> arch/um/include/asm/processor-generic.h:103:19: error: expected identifier or '(' before '&' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                   ^
-   include/linux/devfreq.h:331:34: note: in expansion of macro 'cpu_data'
-     331 |         struct devfreq_cpu_data *cpu_data[NR_CPUS];
-         |                                  ^~~~~~~~
-   In file included from include/linux/devfreq_cooling.h:13,
-                    from drivers/devfreq/devfreq.c:14:
->> include/linux/devfreq.h:332:1: warning: no semicolon at end of struct or union
-     332 | };
-         | ^
---
-   In file included from arch/x86/um/asm/processor.h:41,
-                    from include/linux/spinlock_up.h:8,
-                    from include/linux/spinlock.h:95,
-                    from include/linux/kref.h:16,
-                    from include/linux/mm_types.h:8,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from drivers/devfreq/governor_passive.c:10:
->> arch/um/include/asm/processor-generic.h:103:19: error: expected identifier or '(' before '&' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                   ^
-   include/linux/devfreq.h:331:34: note: in expansion of macro 'cpu_data'
-     331 |         struct devfreq_cpu_data *cpu_data[NR_CPUS];
-         |                                  ^~~~~~~~
-   In file included from drivers/devfreq/governor_passive.c:16:
->> include/linux/devfreq.h:332:1: warning: no semicolon at end of struct or union
-     332 | };
-         | ^
-   In file included from arch/x86/um/asm/processor.h:41,
-                    from include/linux/spinlock_up.h:8,
-                    from include/linux/spinlock.h:95,
-                    from include/linux/kref.h:16,
-                    from include/linux/mm_types.h:8,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from drivers/devfreq/governor_passive.c:10:
-   drivers/devfreq/governor_passive.c: In function 'get_target_freq_with_cpufreq':
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:58:43: note: in expansion of macro 'cpu_data'
-      58 |                 parent_cpu_data = p_data->cpu_data[cpu];
-         |                                           ^~~~~~~~
->> drivers/devfreq/governor_passive.c:50:38: warning: variable 'p_data' set but not used [-Wunused-but-set-variable]
-      50 |         struct devfreq_passive_data *p_data =
-         |                                      ^~~~~~
-   In file included from arch/x86/um/asm/processor.h:41,
-                    from include/linux/spinlock_up.h:8,
-                    from include/linux/spinlock.h:95,
-                    from include/linux/kref.h:16,
-                    from include/linux/mm_types.h:8,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from drivers/devfreq/governor_passive.c:10:
-   drivers/devfreq/governor_passive.c: In function 'cpufreq_passive_notifier_call':
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:221:24: note: in expansion of macro 'cpu_data'
-     221 |                 !data->cpu_data[freqs->policy->cpu])
-         |                        ^~~~~~~~
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:224:33: note: in expansion of macro 'cpu_data'
-     224 |         parent_cpu_data = data->cpu_data[freqs->policy->cpu];
-         |                                 ^~~~~~~~
-   drivers/devfreq/governor_passive.c: In function 'cpufreq_passive_unregister_notifier':
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:258:43: note: in expansion of macro 'cpu_data'
-     258 |                 parent_cpu_data = p_data->cpu_data[cpu];
-         |                                           ^~~~~~~~
-   drivers/devfreq/governor_passive.c: In function 'cpufreq_passive_register_notifier':
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:291:29: note: in expansion of macro 'cpu_data'
-     291 |                 if (p_data->cpu_data[cpu])
-         |                             ^~~~~~~~
->> arch/um/include/asm/processor-generic.h:103:18: error: expected identifier before '(' token
-     103 | #define cpu_data (&boot_cpu_data)
-         |                  ^
-   drivers/devfreq/governor_passive.c:331:25: note: in expansion of macro 'cpu_data'
-     331 |                 p_data->cpu_data[cpu] = parent_cpu_data;
-         |                         ^~~~~~~~
+May I challenge the existence of huge PMD sharing? TBH I am not
+convinced that the code complexity is worth the benefit.
 
 
-vim +332 include/linux/devfreq.h
+Let me know if I get something wrong:
 
-95f7ed4a416189 Saravana Kannan       2021-03-02  296  
-996133119f5733 Chanwoo Choi          2016-03-22  297  /**
-7a51320ecd3942 Mauro Carvalho Chehab 2020-03-17  298   * struct devfreq_passive_data - ``void *data`` fed to struct devfreq
-996133119f5733 Chanwoo Choi          2016-03-22  299   *	and devfreq_add_device
-996133119f5733 Chanwoo Choi          2016-03-22  300   * @parent:	the devfreq instance of parent device.
-996133119f5733 Chanwoo Choi          2016-03-22  301   * @get_target_freq:	Optional callback, Returns desired operating frequency
-996133119f5733 Chanwoo Choi          2016-03-22  302   *			for the device using passive governor. That is called
-996133119f5733 Chanwoo Choi          2016-03-22  303   *			when passive governor should decide the next frequency
-996133119f5733 Chanwoo Choi          2016-03-22  304   *			by using the new frequency of parent devfreq device
-996133119f5733 Chanwoo Choi          2016-03-22  305   *			using governors except for passive governor.
-996133119f5733 Chanwoo Choi          2016-03-22  306   *			If the devfreq device has the specific method to decide
-996133119f5733 Chanwoo Choi          2016-03-22  307   *			the next frequency, should use this callback.
-95f7ed4a416189 Saravana Kannan       2021-03-02  308   + * @parent_type	parent type of the device
-95f7ed4a416189 Saravana Kannan       2021-03-02  309   + * @this:		the devfreq instance of own device.
-95f7ed4a416189 Saravana Kannan       2021-03-02  310   + * @nb:		the notifier block for DEVFREQ_TRANSITION_NOTIFIER list
-95f7ed4a416189 Saravana Kannan       2021-03-02  311   + * @cpu_data:		the state min/max/current frequency of all online cpu's
-996133119f5733 Chanwoo Choi          2016-03-22  312   *
-996133119f5733 Chanwoo Choi          2016-03-22  313   * The devfreq_passive_data have to set the devfreq instance of parent
-996133119f5733 Chanwoo Choi          2016-03-22  314   * device with governors except for the passive governor. But, don't need to
-996133119f5733 Chanwoo Choi          2016-03-22  315   * initialize the 'this' and 'nb' field because the devfreq core will handle
-996133119f5733 Chanwoo Choi          2016-03-22  316   * them.
-996133119f5733 Chanwoo Choi          2016-03-22  317   */
-996133119f5733 Chanwoo Choi          2016-03-22  318  struct devfreq_passive_data {
-996133119f5733 Chanwoo Choi          2016-03-22  319  	/* Should set the devfreq instance of parent device */
-996133119f5733 Chanwoo Choi          2016-03-22  320  	struct devfreq *parent;
-996133119f5733 Chanwoo Choi          2016-03-22  321  
-996133119f5733 Chanwoo Choi          2016-03-22  322  	/* Optional callback to decide the next frequency of passvice device */
-996133119f5733 Chanwoo Choi          2016-03-22  323  	int (*get_target_freq)(struct devfreq *this, unsigned long *freq);
-996133119f5733 Chanwoo Choi          2016-03-22  324  
-95f7ed4a416189 Saravana Kannan       2021-03-02  325  	/* Should set the type of parent device */
-95f7ed4a416189 Saravana Kannan       2021-03-02  326  	enum devfreq_parent_dev_type parent_type;
-95f7ed4a416189 Saravana Kannan       2021-03-02  327  
-996133119f5733 Chanwoo Choi          2016-03-22  328  	/* For passive governor's internal use. Don't need to set them */
-996133119f5733 Chanwoo Choi          2016-03-22  329  	struct devfreq *this;
-996133119f5733 Chanwoo Choi          2016-03-22  330  	struct notifier_block nb;
-95f7ed4a416189 Saravana Kannan       2021-03-02  331  	struct devfreq_cpu_data *cpu_data[NR_CPUS];
-996133119f5733 Chanwoo Choi          2016-03-22 @332  };
-996133119f5733 Chanwoo Choi          2016-03-22  333  #endif
-996133119f5733 Chanwoo Choi          2016-03-22  334  
+Let's assume a 4 TiB device and 2 MiB hugepage size. That's 2097152 huge
+pages. Each such PMD entry consumes 8 bytes. That's 16 MiB.
 
-:::::: The code at line 332 was first introduced by commit
-:::::: 996133119f57334c38b020dbfaaac5b5eb127e29 PM / devfreq: Add new passive governor
+Sure, with thousands of processes sharing that memory, the size of page
+tables required would increase with each and every process. But TBH,
+that's in no way different to other file systems where we're even
+dealing with PTE tables.
 
-:::::: TO: Chanwoo Choi <cw00.choi@samsung.com>
-:::::: CC: MyungJoo Ham <myungjoo.ham@samsung.com>
+
+Which results in me wondering if
+
+a) We should simply use gigantic pages for such extreme use case. Allows
+   for freeing up more memory via vmemmap either way.
+b) We should instead look into reclaiming reconstruct-able page table.
+   It's hard to imagine that each and every process accesses each and
+   every part of the gigantic file all of the time.
+c) We should instead establish a more generic page table sharing
+   mechanism.
+
+
+Consequently, I'd be much more in favor of ripping it out :/ but that's
+just my personal opinion.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+
+David / dhildenb
+
