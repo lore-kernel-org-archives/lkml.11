@@ -2,92 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFAD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:04:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7725DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236366AbiDGIGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47614 "EHLO
+        id S242701AbiDGIHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242730AbiDGIFu (ORCPT
+        with ESMTP id S242840AbiDGIGf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:05:50 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29B61B3F6B;
-        Thu,  7 Apr 2022 01:02:22 -0700 (PDT)
-X-UUID: 7ed996b0661e4a2eb3f2670fa6d65a6c-20220407
-X-UUID: 7ed996b0661e4a2eb3f2670fa6d65a6c-20220407
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1775206421; Thu, 07 Apr 2022 16:02:13 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 7 Apr 2022 16:02:11 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Apr 2022 16:02:10 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v6 34/34] iommu/mediatek: mt8195: Enable multi banks for infra iommu
-Date:   Thu, 7 Apr 2022 15:57:26 +0800
-Message-ID: <20220407075726.17771-35-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220407075726.17771-1-yong.wu@mediatek.com>
-References: <20220407075726.17771-1-yong.wu@mediatek.com>
+        Thu, 7 Apr 2022 04:06:35 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CCC1B2168
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:04:14 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id q20so2985677wmq.1
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 01:04:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2gzyO9EetMlpUJSbIyUgrB6/YPn3f65mHl1Id25ZaiI=;
+        b=JNSnl/MccPRq/JyLKjZcEpZv1BRBIjUmnJDdvDzyqambjlq4a8Iuu4KeogT26kdMbR
+         wvZcmxkx/tnJ0s5oGMLwpE4x5Eqf+wWcEUOch8i35ggyu4KvYUpeiLtx7SwpIrrx2tfj
+         l/DGCyoWO0FBhsUsODWiwAnkvOJ15UCtv9/zm1bFkZci8gaYOoOS23eyV6Dl+LavN5jB
+         dPHuvekkf8/Nqg2P68D0dvuZMo0uvavSbUzCx/8QJlGaCpgc9xsAfXJKvhvtkgz2isOF
+         FPI5bQVwYK/JNJewbqw93CPGcvaryFR2Ra5qKssD/DKSx/IyXQLiqmpdUl2yaRisqxPo
+         1p5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2gzyO9EetMlpUJSbIyUgrB6/YPn3f65mHl1Id25ZaiI=;
+        b=Dgy7wNH1PFHUlRkumHUj2rx3RQ+UFIZJV0gvSCS7IdkGJRlvuSagnixyNmgKAskNhd
+         BqP4M/tlF7edBiSbXuVCm5By08m8FvUqZ4oqWFyF9ySF/5/9Td/BXsDI9pyn9FxEIwTj
+         WY4bePkKnTbLO+6m/qKodB8djmYGguNFl/St8StKbSZKQSdkeASfDSe8l2k5IB4ThsrA
+         Jln8OBhhTMjP5Yup2+fqq4UFAztVeRsgANwqaU9IOozEbEIq2gFNftq/lJj5S1PEeExU
+         iGoWBowaJ8cft2j72jYeCx0gpuPfJYnS5iyTHPcPa6ho4EB3/CJo12BqPI3xNDa/9ST+
+         HVRQ==
+X-Gm-Message-State: AOAM531LlsY7IAPqnya4AnLINN+3p9FgyB/rKjCuYXYDdTBAz3dOrBQ9
+        MbzQSr7v8lXuPldqJau46AbHKA==
+X-Google-Smtp-Source: ABdhPJzHmqLQw2H320n2KX877DssJyMXU/EABEAxDa7z1KC1mxvA8zjbsmXf9/PHHtXVnKzSavRDUg==
+X-Received: by 2002:a05:600c:1e23:b0:38e:7138:de0e with SMTP id ay35-20020a05600c1e2300b0038e7138de0emr11238118wmb.188.1649318653322;
+        Thu, 07 Apr 2022 01:04:13 -0700 (PDT)
+Received: from ?IPV6:2a01:e34:ed2f:f020:f2a2:7d81:4e67:6c1c? ([2a01:e34:ed2f:f020:f2a2:7d81:4e67:6c1c])
+        by smtp.googlemail.com with ESMTPSA id a12-20020a5d53cc000000b00205a0ee9c74sm15660932wrw.89.2022.04.07.01.04.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 01:04:12 -0700 (PDT)
+Message-ID: <9671f0a5-6860-8a75-d65e-345ce890cd88@linaro.org>
+Date:   Thu, 7 Apr 2022 10:04:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/4] clocksource/drivers/timer-ti-dm: Update defines for
+ am6 for inline functions
+Content-Language: en-US
+To:     Tony Lindgren <tony@atomide.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Keerthy <j-keerthy@ti.com>,
+        Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+References: <20220407071006.37031-1-tony@atomide.com>
+ <20220407071006.37031-2-tony@atomide.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <20220407071006.37031-2-tony@atomide.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the multi-bank functions for infra-iommu. We put PCIE in bank0
-and USB in the last bank(bank4). and we don't use the other banks
-currently, disable them.
+On 07/04/2022 09:10, Tony Lindgren wrote:
+> We have pwm-omap-dmtimer tagged with COMPILE_TEST, so we need to use the
+> ifdefs around the inline functions. Let's add ARCH_K3 to the list of SoCs
+> to allow using timer-ti-dm on these SoCs.
+> 
+> Cc: Keerthy <j-keerthy@ti.com>
+> Cc: Nishanth Menon <nm@ti.com>
+> Cc: Vignesh Raghavendra <vigneshr@ti.com>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
+> ---
+>   include/clocksource/timer-ti-dm.h | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/clocksource/timer-ti-dm.h b/include/clocksource/timer-ti-dm.h
+> --- a/include/clocksource/timer-ti-dm.h
+> +++ b/include/clocksource/timer-ti-dm.h
+> @@ -251,7 +251,8 @@ int omap_dm_timers_active(void);
+>    * The below are inlined to optimize code size for system timers. Other code
+>    * should not need these at all.
+>    */
+> -#if defined(CONFIG_ARCH_OMAP1) || defined(CONFIG_ARCH_OMAP2PLUS)
+> +#if defined(CONFIG_ARCH_OMAP1) || defined(CONFIG_ARCH_OMAP2PLUS) || \
+> +	defined(CONFIG_ARCH_K3)
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/mtk_iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Why not replace the above by CONFIG_OMAP_DM_TIMER ?
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 027bbbced80d..22c95ed78b3c 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1449,8 +1449,11 @@ static const struct mtk_iommu_plat_data mt8195_data_infra = {
- 			    MTK_IOMMU_TYPE_INFRA | IFA_IOMMU_PCIE_SUPPORT,
- 	.pericfg_comp_str = "mediatek,mt8195-pericfg_ao",
- 	.inv_sel_reg      = REG_MMU_INV_SEL_GEN2,
--	.banks_num        = 1,
--	.banks_enable     = {true},
-+	.banks_num	  = 5,
-+	.banks_enable     = {true, false, false, false, true},
-+	.banks_portmsk    = {[0] = GENMASK(19, 16),     /* PCIe */
-+			     [4] = GENMASK(31, 20),     /* USB */
-+			    },
- 	.iova_region      = single_domain,
- 	.iova_region_nr   = ARRAY_SIZE(single_domain),
- };
+>   static inline u32 __omap_dm_timer_read(struct omap_dm_timer *timer, u32 reg,
+>   						int posted)
+>   {
+> @@ -390,5 +391,5 @@ static inline void __omap_dm_timer_write_status(struct omap_dm_timer *timer,
+>   {
+>   	writel_relaxed(value, timer->irq_stat);
+>   }
+> -#endif /* CONFIG_ARCH_OMAP1 || CONFIG_ARCH_OMAP2PLUS */
+> +#endif /* CONFIG_ARCH_OMAP1 || CONFIG_ARCH_OMAP2PLUS || CONFIG_ARCH_K3 */
+>   #endif /* __CLOCKSOURCE_DMTIMER_H */
+
+
 -- 
-2.18.0
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
