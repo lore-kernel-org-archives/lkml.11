@@ -2,80 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74789C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:32:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C206C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239080AbiDGBeH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:34:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
+        id S238862AbiDGBeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240353AbiDGB37 (ORCPT
+        with ESMTP id S240691AbiDGBaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:29:59 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48FC81A590A;
-        Wed,  6 Apr 2022 18:22:26 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id kw18so4156872pjb.5;
-        Wed, 06 Apr 2022 18:22:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=NgQfrEiHvY0rj5bc8G96bBHD3fUTUsFrxi+7ks+aDZs=;
-        b=NV5tFDPkfdZQe29Eg0I3Kzg8Xl7j/aLXgeBNe/8tJHlG1t2vU5gltbuZXdTqhKNFVq
-         hu29WB/Oc8wZt6aBV7ShihlNxasT5emfz0esy4jcTSDYFT+tnLebthmgV9xpOLlJ9Ctn
-         VySi/Iww4lvjOEnXRICOK8UAJDXpJ8Phi39Dl8hy4jUDXbPPiFPczLjNU2Zyd6xwnQux
-         lj5TtCTGj/h7GtGHy5BKxGnXYNwNpKDTJF9nxzYC9ZPfFEtR3MTyoMchMRc2FVsyuwbf
-         hVssd4O/kAws0q/WoQciKRUKA++Tls2Z+x6scGpY1LWk2wFsqhpBtzkw5ZOWYzvH8maW
-         AXhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=NgQfrEiHvY0rj5bc8G96bBHD3fUTUsFrxi+7ks+aDZs=;
-        b=Qvq0fBISrGXGMKk0IhND/y/PbDops2sjUyMtdrJjL9/12HdkzwDv9udRgZXcFDL4s/
-         1Dw2E61uxOaGQf67P72M3vGyXEKs4MJKqKFNFPgYG+V3V0GpvQhrd1JPHk9AttKQa9LI
-         bNzTyTQ2MgOSZvi1OObsOYcfQmHuiS+2htCEf3f9hjl9U1ej6Rh6wqBXJmZ0DuFXGqmo
-         EvK9PTzYMtsjlslAy5uEysQAhTI/wTOx+2NQ+Hf2SpQsLZ49hOKsynU2sap9ZS561BP/
-         paQNG6C8p9rk0N0gP70P3ukC5miW/vZBWwUCEq2T/b5UytJyZOxWkQ6eXA+FILXMLB/n
-         6R4A==
-X-Gm-Message-State: AOAM532hXcfntd+dYET2nz4iPC3wU1jOO4DVOvy97zIdgTY+SLnR8hdt
-        puAWqD1axRPaPzaJzeONTTg/mZ97U/NV4A==
-X-Google-Smtp-Source: ABdhPJxEDnQ+Tly+aqkALKcBREuDaPyhDPJaGLOSEmmM4+wJSwoG5LeQ6N7eSwmj/RiW+kiS+IxEDg==
-X-Received: by 2002:a17:902:e74d:b0:156:9d3c:4271 with SMTP id p13-20020a170902e74d00b001569d3c4271mr11427623plf.79.1649294545595;
-        Wed, 06 Apr 2022 18:22:25 -0700 (PDT)
-Received: from localhost.localdomain ([119.3.119.18])
-        by smtp.gmail.com with ESMTPSA id s20-20020a17090aad9400b001ca8fcfd1e9sm6848166pjq.26.2022.04.06.18.22.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 18:22:25 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     kuba@kernel.org
-Cc:     aelior@marvell.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, manishc@marvell.com,
-        netdev@vger.kernel.org, pabeni@redhat.com, xiam0nd.tong@gmail.com
-Subject: Re: [PATCH] qed: remove an unneed NULL check on list iterator
-Date:   Thu,  7 Apr 2022 09:22:07 +0800
-Message-Id: <20220407012207.14442-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220405182641.08cd18ff@kernel.org>
-References: <20220405182641.08cd18ff@kernel.org>
+        Wed, 6 Apr 2022 21:30:14 -0400
+Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E34401AD1D8;
+        Wed,  6 Apr 2022 18:22:48 -0700 (PDT)
+Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
+  by mx.socionext.com with ESMTP; 07 Apr 2022 10:22:47 +0900
+Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
+        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id D05912058B50;
+        Thu,  7 Apr 2022 10:22:47 +0900 (JST)
+Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Thu, 7 Apr 2022 10:22:47 +0900
+Received: from plum.e01.socionext.com (unknown [10.212.243.119])
+        by kinkan2.css.socionext.com (Postfix) with ESMTP id 55CAAB62B7;
+        Thu,  7 Apr 2022 10:22:47 +0900 (JST)
+From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+To:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Subject: [PATCH v2 1/3] dt-bindings: PCI: designware-ep: Increase maxItems of reg and reg-names
+Date:   Thu,  7 Apr 2022 10:22:31 +0900
+Message-Id: <1649294553-17310-2-git-send-email-hayashi.kunihiko@socionext.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649294553-17310-1-git-send-email-hayashi.kunihiko@socionext.com>
+References: <1649294553-17310-1-git-send-email-hayashi.kunihiko@socionext.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 5 Apr 2022 18:26:41 -0700, Jakub Kicinski wrote:
-> On Tue,  5 Apr 2022 08:22:56 +0800 Xiaomeng Tong wrote:
-> >  struct pci_dev *qed_validate_ndev(struct net_device *ndev)
-> >  {
-> > -	struct pci_dev *pdev = NULL;
-> > +	struct pci_dev *pdev;
-> >  	struct net_device *upper;
-> 
-> Please keep the longest-to-shortest ordering of variable declaration
-> lines.
+UniPhier PCIe EP controller has up to 5 register mappings (dbi, dbi2, link,
+addr_space and atu), so maxItems of "reg" and "reg-names" should allow 5.
 
-I have fix it in v2 patch [1], as you suggested. Please check it.
-Thank you very much.
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+---
+ Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-[1] https://lore.kernel.org/lkml/20220406015921.29267-1-xiam0nd.tong@gmail.com/
---
-Xiaomeng Tong
+diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
+index e59059ab5be0..03f97e7c4089 100644
+--- a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
++++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
+@@ -28,11 +28,11 @@ properties:
+       versions.
+       For designware core version >= 4.80, it may contain ATU address space.
+     minItems: 2
+-    maxItems: 4
++    maxItems: 5
+ 
+   reg-names:
+     minItems: 2
+-    maxItems: 4
++    maxItems: 5
+     items:
+       enum: [dbi, dbi2, config, atu, addr_space, link, atu_dma, appl]
+ 
+-- 
+2.25.1
+
