@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAE7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 23:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD15CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 23:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232523AbiDGXHb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 19:07:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36232 "EHLO
+        id S232468AbiDGXHf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 19:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232463AbiDGXHT (ORCPT
+        with ESMTP id S232494AbiDGXHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 19:07:19 -0400
+        Thu, 7 Apr 2022 19:07:23 -0400
 Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91546DA6F8
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 16:05:17 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2e61c5a0eb7so60233027b3.22
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 16:05:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEF1EBBB3
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 16:05:22 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2eb8b94ad35so61137497b3.9
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 16:05:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=Xuahj0daJES831OYl0Fkgb0vM1zVKd68GzYFqhf9BfQ=;
-        b=PCx5eSsv7v0+PzFFN0c8bH9dab4pORvVPuQqmn3xB8c+/kojL5tIPi1xKduPAAJx/X
-         J1Rapz27A01ixG1Ww4arEC4Gm6FbmtQ5j+++F76q4pnZu371efhghIE5ojZQmbJKwyzD
-         XH7KVhKbIF8HaSHQKcAULmtF8JzxdQmFr12xyZQDKcAT6v2sf+xJdasSZBOGrpPVSNbl
-         BtllOmbDFVN0OlfpjiCILvK8m+vSh5N52b4fOYX/54tRkQlhXYnlggd+dEef1Y7uKple
-         OGyNWHK1PY2AQAUVo5YCDFM4JckuDGnzgWM7DylByHMRwUEtopheDSlH7/VXo3qzLw7k
-         SGlg==
+        bh=WfvJj1m2gyFhMYgsgYi4914wWZZ5tzxnbwOex5ZNN7c=;
+        b=G2lGhIKmig3u+8Ub/UZePe7b5WEYGKMuUAK5QddQmOTd95nRvbGk6CftAlO2mjIBqj
+         fPSTJsBbSAHeP0HU+7B2e4hekgOS6WUOmus9G4U8A5BKCccxPMQavp6ueLLXnIqrpp9W
+         k48zTkXZ7RDlkF66BC95dDcZ2Wi7Ya8X7ZEoLGq9dis2TED2GK/4KTYERmB/4bka3Vpt
+         A+GyNY9K5bb9rV/hMtmX6Li0uXHQiX6LBymKd2xC9/6FiRxau7bU9mnhkwPdullG+1P0
+         dnWNY0jWwl30VGEcSl3GzMVqsXYFzxW8rMiHlaWLZA3zi9RAXZ6VLuyDmmBR/YH9wwkp
+         OSgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Xuahj0daJES831OYl0Fkgb0vM1zVKd68GzYFqhf9BfQ=;
-        b=5OxGKACaze0x8toYC0dHKpR9S7lAO38aLPjegCsu8L2f6yE1+pB++aBwv4db8SzftM
-         QTLCkIgjgqa2KAbZb1JGcSVVyVykbwgAL+KZVSE8WWxss92bDaaJMbd1rCW39GxYedQe
-         yVbcAM2mArimXcsKO2ZdcNWD6QuSkN17xNe7dic46WDNraEkzWHTe1j80E1Vm18eYvJP
-         hxLf1MGE7e6QHjtHB3ujk3Bk8v8tpq66TAoy8gFfWDuKBUS0Yp0ITEOHm7pYW2mQloHL
-         vWaj/89anT51gu+w/1wobpinXfcU5qBUqdGQwqnFUzEO2gV0hSAaEPBN9KVLcmIv+aQj
-         +7Fg==
-X-Gm-Message-State: AOAM530DG8O4n/Lsf8x9RjjiHY8FnIdYc88H2F4kdNChjWel5f5RLc7e
-        t4Wq3tDUO2FO4AoFJ0nOm+cI4Z6636IP
-X-Google-Smtp-Source: ABdhPJw3MtR/8U6P+0OZrpAACVCj/fTCBkATcW2PyD/L2Y0Pf7n4jyr+fEe1BhjcG1AtDHHo12kIwXZlYS27
+        bh=WfvJj1m2gyFhMYgsgYi4914wWZZ5tzxnbwOex5ZNN7c=;
+        b=6zcMuxefD3kDz+4WcY2A3dCdWlmrpPPPWTH5eYZ6G7k8zq4oPJf28l57RDetZ+FmtG
+         7tLZvCF+84u4QwpR4WjckYG3juhvGL1+5ttf2WSeDNst9A4E1w4b284EaMZBeHydAzuh
+         C35IsSSxovhqyl6uA6A5/cFOX6HgJI/wIC92m3GBzn0hTmzJnLOSgQrwvsYatqSOPjeb
+         20f90LmdItfwDdEWYrT15+m329QlJa6H1vxqfxQ57yPffzpAwONam3JGrk8TCU2lA4CC
+         erCr3eOW1s8OI2wUmINSmPnp2LYHCN0qrrpcI996opneq/iblY2hTC7IUFQUWJYifEl3
+         7nUg==
+X-Gm-Message-State: AOAM532qisZN/MlBcWQ/fNcTfWuFPEqSxw3iR2dsfEfg1rNKVfXX1U3e
+        Sfukj2bvO4D0t+0nsjD0NKwpBh1JnaxS
+X-Google-Smtp-Source: ABdhPJzHPc5JHRaajp14gJSR1JqmyinEoG5M4+QbCs6ofW0PQZulXHx6/8KCUTfl6DQ+O36TSTdCFPTtU9uk
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:560:aa27:649e:a07d])
- (user=irogers job=sendgmr) by 2002:a25:f305:0:b0:63e:76f4:4643 with SMTP id
- c5-20020a25f305000000b0063e76f44643mr2596405ybs.580.1649372716693; Thu, 07
- Apr 2022 16:05:16 -0700 (PDT)
-Date:   Thu,  7 Apr 2022 16:05:00 -0700
+ (user=irogers job=sendgmr) by 2002:a25:8483:0:b0:63d:9504:8a14 with SMTP id
+ v3-20020a258483000000b0063d95048a14mr11903156ybk.183.1649372721877; Thu, 07
+ Apr 2022 16:05:21 -0700 (PDT)
+Date:   Thu,  7 Apr 2022 16:05:02 -0700
 In-Reply-To: <20220407230503.1265036-1-irogers@google.com>
-Message-Id: <20220407230503.1265036-3-irogers@google.com>
+Message-Id: <20220407230503.1265036-5-irogers@google.com>
 Mime-Version: 1.0
 References: <20220407230503.1265036-1-irogers@google.com>
 X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH 2/5] perf symbols: Always do architecture specific fixups
+Subject: [PATCH 4/5] perf symbol: By default only fix zero length symbols
 From:   Ian Rogers <irogers@google.com>
 To:     John Garry <john.garry@huawei.com>, Will Deacon <will@kernel.org>,
         Mathieu Poirier <mathieu.poirier@linaro.org>,
@@ -89,117 +89,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The change:
+For architectures without a specific end fixup (ie not arm64, powerpc,
+s390) only fix up the end of zero length symbols. This reverts the
+behavior introduced by:
 https://lore.kernel.org/lkml/20220317135536.805-1-mpetlan@redhat.com/
-modified the condition for architecture specific fixups motivated by a
-PowerPC case. So that architectures can independently modify their
-condition, move the if into the called architecture symbols__fixup_end
-function and always call it.
+where non-zero length symbols were expanded to the start of the current
+symbol.
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- tools/perf/arch/arm64/util/machine.c   | 14 ++++++++------
- tools/perf/arch/powerpc/util/machine.c | 14 ++++++++------
- tools/perf/arch/s390/util/machine.c    | 14 ++++++++------
- tools/perf/util/symbol.c               |  6 +++---
- 4 files changed, 27 insertions(+), 21 deletions(-)
+ tools/perf/util/symbol.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/perf/arch/arm64/util/machine.c b/tools/perf/arch/arm64/util/machine.c
-index d2ce31e28cd7..1cc33b323c3f 100644
---- a/tools/perf/arch/arm64/util/machine.c
-+++ b/tools/perf/arch/arm64/util/machine.c
-@@ -20,13 +20,15 @@
- 
- void arch__symbols__fixup_end(struct symbol *p, struct symbol *c)
- {
--	if ((strchr(p->name, '[') && strchr(c->name, '[') == NULL) ||
-+	if (p->end == p->start || p->end != c->start) {
-+		if ((strchr(p->name, '[') && strchr(c->name, '[') == NULL) ||
- 			(strchr(p->name, '[') == NULL && strchr(c->name, '[')))
--		/* Limit range of last symbol in module and kernel */
--		p->end += SYMBOL_LIMIT;
--	else
--		p->end = c->start;
--	pr_debug4("%s sym:%s end:%#" PRIx64 "\n", __func__, p->name, p->end);
-+			/* Limit range of last symbol in module and kernel */
-+			p->end += SYMBOL_LIMIT;
-+		else
-+			p->end = c->start;
-+		pr_debug4("%s sym:%s end:%#" PRIx64 "\n", __func__, p->name, p->end);
-+	}
- }
- 
- void arch__add_leaf_frame_record_opts(struct record_opts *opts)
-diff --git a/tools/perf/arch/powerpc/util/machine.c b/tools/perf/arch/powerpc/util/machine.c
-index e652a1aa8132..88a8abf98a57 100644
---- a/tools/perf/arch/powerpc/util/machine.c
-+++ b/tools/perf/arch/powerpc/util/machine.c
-@@ -16,10 +16,12 @@
- 
- void arch__symbols__fixup_end(struct symbol *p, struct symbol *c)
- {
--	if (strchr(p->name, '[') == NULL && strchr(c->name, '['))
--		/* Limit the range of last kernel symbol */
--		p->end += page_size;
--	else
--		p->end = c->start;
--	pr_debug4("%s sym:%s end:%#" PRIx64 "\n", __func__, p->name, p->end);
-+	if (p->end == p->start || p->end != c->start) {
-+		if (strchr(p->name, '[') == NULL && strchr(c->name, '['))
-+			/* Limit the range of last kernel symbol */
-+			p->end += page_size;
-+		else
-+			p->end = c->start;
-+		pr_debug4("%s sym:%s end:%#" PRIx64 "\n", __func__, p->name, p->end);
-+	}
- }
-diff --git a/tools/perf/arch/s390/util/machine.c b/tools/perf/arch/s390/util/machine.c
-index 7644a4f6d4a4..0b750738ec68 100644
---- a/tools/perf/arch/s390/util/machine.c
-+++ b/tools/perf/arch/s390/util/machine.c
-@@ -44,10 +44,12 @@ int arch__fix_module_text_start(u64 *start, u64 *size, const char *name)
-  */
- void arch__symbols__fixup_end(struct symbol *p, struct symbol *c)
- {
--	if (strchr(p->name, '[') == NULL && strchr(c->name, '['))
--		/* Last kernel symbol mapped to end of page */
--		p->end = roundup(p->end, page_size);
--	else
--		p->end = c->start;
--	pr_debug4("%s sym:%s end:%#" PRIx64 "\n", __func__, p->name, p->end);
-+	if (p->end == p->start || p->end != c->start) {
-+		if (strchr(p->name, '[') == NULL && strchr(c->name, '['))
-+			/* Last kernel symbol mapped to end of page */
-+			p->end = roundup(p->end, page_size);
-+		else
-+			p->end = c->start;
-+		pr_debug4("%s sym:%s end:%#" PRIx64 "\n", __func__, p->name, p->end);
-+	}
- }
 diff --git a/tools/perf/util/symbol.c b/tools/perf/util/symbol.c
-index dea0fc495185..394ad493c343 100644
+index 087cdf2a58c9..59c562316d75 100644
 --- a/tools/perf/util/symbol.c
 +++ b/tools/perf/util/symbol.c
-@@ -103,7 +103,8 @@ static int prefix_underscores_count(const char *str)
- 
- void __weak arch__symbols__fixup_end(struct symbol *p, struct symbol *c)
+@@ -104,7 +104,8 @@ static int prefix_underscores_count(const char *str)
+ void __weak arch__symbols__fixup_end(struct symbol *p, struct symbol *c,
+ 				     bool is_kernel __maybe_unused)
  {
--	p->end = c->start;
-+	if (p->end == p->start || p->end != c->start)
-+		p->end = c->start;
+-	if (p->end == p->start || p->end != c->start)
++	/* If the previous symbol is zero length, make its end the start of the current symbol. */
++	if (p->end == p->start)
+ 		p->end = c->start;
  }
  
- const char * __weak arch__normalize_symbol_name(const char *name)
-@@ -231,8 +232,7 @@ void symbols__fixup_end(struct rb_root_cached *symbols)
- 		prev = curr;
- 		curr = rb_entry(nd, struct symbol, rb_node);
- 
--		if (prev->end == prev->start || prev->end != curr->start)
--			arch__symbols__fixup_end(prev, curr);
-+		arch__symbols__fixup_end(prev, curr);
- 	}
- 
- 	/* Last entry */
 -- 
 2.35.1.1178.g4f1659d476-goog
 
