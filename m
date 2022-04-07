@@ -2,93 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D288EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:42:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230356AbiDGUnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
+        id S230265AbiDGUo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231883AbiDGUnL (ORCPT
+        with ESMTP id S230227AbiDGUoL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:43:11 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C047F322812
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:33:00 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id d29so9509593wra.10
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:33:00 -0700 (PDT)
+        Thu, 7 Apr 2022 16:44:11 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF25394A32
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:34:08 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id bh17so13231505ejb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:34:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v3aZfabxzekEMOjAePaQMaMpU19mVrYZFeElRmeKm3o=;
-        b=s3DhjuuVvsNc7ISVmTZ3pr4gsFhIbPpcbSBHQJPF5bfVBpwTAAedlSSd3th1nqQmhZ
-         wQck8ROyKEGzCx25khY9rQGLBICgA4uJov/nftmeRFt6t3C1xbzPkqladUp6+kN8y3YS
-         2tjCeKNizXoGc2IPpYR44KFvQrKclhdHkDTvC5rdZ+FgqKYfjGOan6e6yzppkSX8CRjl
-         6DDGyZbLuSGbFotl6BMeyMVCVXfDj6SOF++1KjsOwMYjeNROajoaYSbv0FKKUr8mhvQT
-         jVWrBy83tIVq5W0xqDpdqO7lYE0xTuiLVnFCRukrMic3Cb2ZqRn7xACdg2cho2GrOzWL
-         lhWQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w4demkHQ8Fg0Aca60O/7JU7pagAyPbUQlML8jEugCG4=;
+        b=faF6ayajtjqODf8i8x4Ee4sgq1q3Fe8w5GIBNd6EUxYhTh8lRr3ScB1O2+f/eFZVB7
+         WBZuT4ZezncXpe3w3YfCgXtmZ9ME1HUKZCh7SMj18BdBBLX61EI2U6s/TlRJ2XnOnROK
+         CBSmDDp2XF77fg+vfg4nylz11gURLu/w9p9t9U7ins3Z5+XVdzzfmyQi/UDZohlf/hSl
+         6zfP7PMuZ7D/yis5OyxXt6AirCAXefP5nyXCPBWGl367EWAh1GzSdImNZbK4X1i7HBSa
+         voE2I93cGhnsbCRAHteqmmHiYjHWMuzbqRTyegl56f5fMmWddGdye9mBnm7QBXCU5N8b
+         IShw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v3aZfabxzekEMOjAePaQMaMpU19mVrYZFeElRmeKm3o=;
-        b=sGs6MrpURdKzGTjFx/S8s1dVItXbNP/Qa6VcPXCzWbIzkZTyZicP3A5gyV4dfQMNft
-         TWLp+thbQMYxm4b5AvG2d33NjMPe0gGGiwABpGK1YhM0hWG3ivRwloHt+NQcCCoh+rtv
-         QpQv1HyutHjoVD7ZsYlnP/PGEsfHiYvhGJsqcLrSz2AF+60S1KcpCyzt7H0SJnNljJEK
-         T3aYatWaPAzQASmeSGIkLfbcmjjXrwJpD+FC9lu5hdHUYiHIMtsRzpZkKkMvNUvD2RX4
-         ofcQPsjYIhV6gQU3zzTZVqL+4CLvhdoQekK0unUBgF5x+Xk+hj6Q9X6Um1/IO8114+cU
-         O2xA==
-X-Gm-Message-State: AOAM532I3UDSXLw1osxSxgp8C80wdk55o/8/v7m8/MwMjLLKL+qQ7iT7
-        61RIkpS2kyPml2hSpGioi3U7YVPpKMRkUuosifP3gqKCDBA=
-X-Google-Smtp-Source: ABdhPJzMKUVGvuvDCXXirl9amkEhAVZVq6GjbXmwQ6sEGeeeImLSFrFcc4bPuDEMbNimHSV2NgRruSdLbwMh14CgUjk=
-X-Received: by 2002:a05:6512:c01:b0:448:6aec:65c5 with SMTP id
- z1-20020a0565120c0100b004486aec65c5mr10692711lfu.193.1649361553879; Thu, 07
- Apr 2022 12:59:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w4demkHQ8Fg0Aca60O/7JU7pagAyPbUQlML8jEugCG4=;
+        b=xa2ahuVedCqbgWUxiYwYC2QuhIFPlR4rtBDiVkEzrVx5ocoUEVyet3K1Gde4qFRzbP
+         xx3RDz6PfTM5rvbdXr3JoGVj7yXPiLbjLp8uLK7dlR6XNeo+5tEMlDPuQsh3C4o51uxJ
+         LY61AL6IIkSjTwhhrYVtdrXxmMpVREdbzU1kL+5bz+tqZvV0bHySgkbaqmYqSxAySa//
+         EwnW5r6X5m7Dv4HP0Q/vdzr0yoveN9GROQjOrF+PN5HoDgXb43RAwQs4pQyZrsGjO+oV
+         8eFTlsUhMfYe/48Acob5At/ayuSBLB/qJMuwJdgWkpPjbTwxbHaf/MsQrn42oHaLBB/8
+         RRyg==
+X-Gm-Message-State: AOAM531GeSqKXz6nm7w5YzptW6dWwpGWY36F5dJ948F7i50pNJ7QKylc
+        L4JRWPZpvtwLMdsG92I/tfZpzw==
+X-Google-Smtp-Source: ABdhPJxEDGr4Jf8tpwen4hc/gkUEJCBUHaMs6G9kK5gOiZYqgWgJpng5I7H46vgQYhy+G8VXg0Ns5g==
+X-Received: by 2002:a17:906:1ec3:b0:6cf:d118:59e2 with SMTP id m3-20020a1709061ec300b006cfd11859e2mr15195488ejj.767.1649363647213;
+        Thu, 07 Apr 2022 13:34:07 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id p13-20020a50d88d000000b0041cd1a083f7sm6134799edj.1.2022.04.07.13.34.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 13:34:06 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 1/2] arm64: dts: mediatek: align operating-points table name with dtschema
+Date:   Thu,  7 Apr 2022 22:34:01 +0200
+Message-Id: <20220407203402.33356-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220405174637.2074319-1-pgonda@google.com> <Yk3Wg3eZsGZKb3Wm@google.com>
-In-Reply-To: <Yk3Wg3eZsGZKb3Wm@google.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Thu, 7 Apr 2022 13:59:02 -0600
-Message-ID: <CAMkAt6ompYSJK0xgmuyMTacLP2+iBjXapVWvj53sYjfzfDJjKQ@mail.gmail.com>
-Subject: Re: [PATCH v2] KVM: SEV: Mark nested locking of vcpu->mutex
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm list <kvm@vger.kernel.org>,
-        John Sperbeck <jsperbeck@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 12:06 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Tue, Apr 05, 2022, Peter Gonda wrote:
-> > diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-> > index 75fa6dd268f0..673e1ee2cfc9 100644
-> > --- a/arch/x86/kvm/svm/sev.c
-> > +++ b/arch/x86/kvm/svm/sev.c
-> > @@ -1591,14 +1591,21 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
-> >       atomic_set_release(&src_sev->migration_in_progress, 0);
-> >  }
-> >
-> > +#define SEV_MIGRATION_SOURCE 0
-> > +#define SEV_MIGRATION_TARGET 1
-> >
-> > -static int sev_lock_vcpus_for_migration(struct kvm *kvm)
-> > +/*
-> > + * To avoid lockdep warnings callers should pass @vm argument with either
->
-> I think it's important to call that these are false positives, saying "avoid
-> lockdep warnings" suggests we're intentionally not fixing bugs :-)
->
-> > + * SEV_MIGRATION_SOURCE or SEV_MIGRATE_TARGET. This allows subclassing of all
-> > + * vCPU mutex locks.
-> > + */
->
-> If we use an enum, that'll make the param self-documenting.  And we can also use
-> that to eliminate the remaining magic number '2'.  E.g. this as fixup.
+Align the name of operating-points node to dtschema to fix warnings like:
 
-Sounds good. I took this fixup into the V3. Thanks.
+  arch/arm64/boot/dts/mediatek/mt8173-elm.dt.yaml:
+    opp_table0: $nodename:0: 'opp_table0' does not match '^opp-table(-[a-z0-9]+)?$'
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ arch/arm64/boot/dts/mediatek/mt2712e.dtsi | 4 ++--
+ arch/arm64/boot/dts/mediatek/mt8173.dtsi  | 4 ++--
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi  | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+index a27b7628c5f7..16905596316d 100644
+--- a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+@@ -19,7 +19,7 @@ / {
+ 	#address-cells = <2>;
+ 	#size-cells = <2>;
+ 
+-	cluster0_opp: opp_table0 {
++	cluster0_opp: opp-table-0 {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
+ 		opp00 {
+@@ -36,7 +36,7 @@ opp02 {
+ 		};
+ 	};
+ 
+-	cluster1_opp: opp_table1 {
++	cluster1_opp: opp-table-1 {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
+ 		opp00 {
+diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+index 2b7d331a4588..acb775ca682e 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+@@ -57,7 +57,7 @@ aliases {
+ 		serial3 = &uart3;
+ 	};
+ 
+-	cluster0_opp: opp_table0 {
++	cluster0_opp: opp-table-0 {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
+ 		opp-507000000 {
+@@ -94,7 +94,7 @@ opp-1703000000 {
+ 		};
+ 	};
+ 
+-	cluster1_opp: opp_table1 {
++	cluster1_opp: opp-table-1 {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
+ 		opp-507000000 {
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+index 4b08691ed39e..3129e7783902 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+@@ -197,7 +197,7 @@ CLUSTER_SLEEP1: cluster-sleep-1 {
+ 		};
+ 	};
+ 
+-	gpu_opp_table: opp_table0 {
++	gpu_opp_table: opp-table-0 {
+ 		compatible = "operating-points-v2";
+ 		opp-shared;
+ 
+-- 
+2.32.0
+
