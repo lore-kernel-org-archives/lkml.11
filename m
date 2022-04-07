@@ -2,85 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA9BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:28:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7379C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:30:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344767AbiDGPaq (ORCPT
+        id S1344808AbiDGPb6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42024 "EHLO
+        Thu, 7 Apr 2022 11:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344753AbiDGPam (ORCPT
+        with ESMTP id S241617AbiDGPby (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:30:42 -0400
-Received: from 9.mo583.mail-out.ovh.net (9.mo583.mail-out.ovh.net [178.32.96.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716D1C19
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:28:29 -0700 (PDT)
-Received: from player796.ha.ovh.net (unknown [10.109.146.106])
-        by mo583.mail-out.ovh.net (Postfix) with ESMTP id 2E87E243DF
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 15:20:07 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player796.ha.ovh.net (Postfix) with ESMTPSA id AB6C7293300E7;
-        Thu,  7 Apr 2022 15:20:00 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-99G0034c962ea5-ae9c-4d67-a931-d80837463e79,
-                    5995496A90EC26C6A3824F4C00BBD29EFE55D398) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wolfram Sang <wsa@kernel.org>, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH v2 05/10] clk: si514: use simple i2c probe function
-Date:   Thu,  7 Apr 2022 17:18:26 +0200
-Message-Id: <20220407151831.2371706-6-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220407151831.2371706-1-steve@sk2.org>
-References: <20220407151831.2371706-1-steve@sk2.org>
+        Thu, 7 Apr 2022 11:31:54 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DAC6B43;
+        Thu,  7 Apr 2022 08:29:50 -0700 (PDT)
+Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:4da4:8da5:b6b4:93c])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: benjamin.gaignard)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 562451F467AD;
+        Thu,  7 Apr 2022 16:29:48 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649345388;
+        bh=WlP4lC2XeBVvE2CcANhd4shlUB98Hq/ZFeea2+kFn7Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=md/REH82ID6+R5TbFUHrn4yTCbmkjErVwMGkOdqJviR8mXVIIGlippVl7yAsZbBY8
+         Ed3s3cDrA0ItLbS98XtaDSSpBIERQ1tShBRlAHk4LWq8ew1XJWloajikmM2zkGWRPX
+         3Y8pg82z/2WVWgsKyEUEm23KY3Agyr11KASu8S3BEftqh3rcPdeNozN9u9LPtnUHmg
+         MxBR8RaRKzOk4ERjJyj+IXicNpWTKKcIXejh81In7GxHkIFO+F2Btbujna7Ajv2WhV
+         RVmzP5+CGk7aiurwCrtsGgVVBXYFh71LQPlZq6NJZgvvLv9dELNbYM8UmgdSJ5SMc0
+         +RD4ItK8kBrRw==
+From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
+To:     mchehab@kernel.org, hverkuil@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, mripard@kernel.org,
+        paul.kocialkowski@bootlin.com, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
+        nicolas.dufresne@collabora.com
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        sebastian.fricke@collabora.com,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Subject: [PATCH v5 00/17] Move HEVC stateless controls out of staging
+Date:   Thu,  7 Apr 2022 17:29:23 +0200
+Message-Id: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 83035121023354502
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejkedgkeejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeejleelvdefieeiuddtfeevkeegueehkeekvdffgedvhedugeekgfejjeekgfeugeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c probe function here doesn't use the id information provided in
-its second argument, so the single-parameter i2c probe function
-("probe_new") can be used instead.
+This series aims to make HEVC uapi stable and usable for hardware
+decoder. HEVC uapi is used by 2 mainlined drivers (Cedrus and Hantro)
+and 2 out of the tree drivers (rkvdec and RPI).
 
-This avoids scanning the identifier tables during probes.
+version 5:
+- Change __u16 pic_order_cnt[2] into __s32 pic_order_cnt_val in
+  hevc_dpb_entry structure
+- Add defines for SEI pic_struct values (patch 4)
+- Fix numbers of bits computation in cedrus_h265_skip_bits() parameters
+- Fix num_short_term_ref_pic_sets and num_long_term_ref_pics_sps
+  documentation (patch 8)
+- Rebased on v5-18-rc1
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
----
- drivers/clk/clk-si514.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+GStreamer H265 decoder plugin aligned with HEVC uAPI v5:
+https://gitlab.freedesktop.org/benjamin.gaignard1/gstreamer/-/tree/HEVC_aligned_with_kernel_5.15
 
-diff --git a/drivers/clk/clk-si514.c b/drivers/clk/clk-si514.c
-index 364b62b9928d..4481c4303534 100644
---- a/drivers/clk/clk-si514.c
-+++ b/drivers/clk/clk-si514.c
-@@ -327,8 +327,7 @@ static const struct regmap_config si514_regmap_config = {
- 	.volatile_reg = si514_regmap_is_volatile,
- };
- 
--static int si514_probe(struct i2c_client *client,
--		const struct i2c_device_id *id)
-+static int si514_probe(struct i2c_client *client)
- {
- 	struct clk_si514 *data;
- 	struct clk_init_data init;
-@@ -394,7 +393,7 @@ static struct i2c_driver si514_driver = {
- 		.name = "si514",
- 		.of_match_table = clk_si514_of_match,
- 	},
--	.probe		= si514_probe,
-+	.probe_new	= si514_probe,
- 	.remove		= si514_remove,
- 	.id_table	= si514_id,
- };
+Version 4:
+- Add num_entry_point_offsets field in  struct v4l2_ctrl_hevc_slice_params
+- Fix V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS name
+- Initialize control V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS
+- Fix space/tab issue in kernel-doc
+- Add patch to change data_bit_offset definition
+- Fix hantro-media SPDX license
+- put controls under stateless section in v4l2-ctrls-defs.c
+
+At the end fluster tests results on IMX8MQ is 77/147 for HEVC codec.
+
+Benjamin Gaignard (14):
+  media: uapi: HEVC: Add missing fields in HEVC controls
+  media: uapi: HEVC: Rename HEVC stateless controls with STATELESS
+    prefix
+  media: uapi: HEVC: Change pic_order_cnt definition in
+    v4l2_hevc_dpb_entry
+  media: uapi: HEVC: Add SEI pic struct flags
+  media: uapi: HEVC: Add document uAPI structure
+  media: uapi: HEVC: Define V4L2_CID_STATELESS_HEVC_SLICE_PARAMS as a
+    dynamic array
+  media: uapi: Move parsed HEVC pixel format out of staging
+  media: uapi: Add V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS control
+  media: uapi: Move the HEVC stateless control type out of staging
+  media: controls: Log HEVC stateless control in .std_log
+  media: uapi: Create a dedicated header for Hantro control
+  media: uapi: HEVC: fix padding in v4l2 control structures
+  media: uapi: Change data_bit_offset definition
+  media: uapi: move HEVC stateless controls out of staging
+
+Hans Verkuil (3):
+  videodev2.h: add V4L2_CTRL_FLAG_DYNAMIC_ARRAY
+  v4l2-ctrls: add support for dynamically allocated arrays.
+  vivid: add dynamic array test control
+
+ .../userspace-api/media/drivers/hantro.rst    |   5 -
+ .../media/v4l/ext-ctrls-codec-stateless.rst   | 882 ++++++++++++++++++
+ .../media/v4l/ext-ctrls-codec.rst             | 780 ----------------
+ .../media/v4l/pixfmt-compressed.rst           |   7 +-
+ .../media/v4l/vidioc-g-ext-ctrls.rst          |  20 +
+ .../media/v4l/vidioc-queryctrl.rst            |   8 +
+ .../media/videodev2.h.rst.exceptions          |   5 +
+ .../media/test-drivers/vivid/vivid-ctrls.c    |  15 +
+ drivers/media/v4l2-core/v4l2-ctrls-api.c      | 103 +-
+ drivers/media/v4l2-core/v4l2-ctrls-core.c     | 198 +++-
+ drivers/media/v4l2-core/v4l2-ctrls-defs.c     |  37 +-
+ drivers/media/v4l2-core/v4l2-ctrls-priv.h     |   3 +-
+ drivers/media/v4l2-core/v4l2-ctrls-request.c  |  13 +-
+ drivers/staging/media/hantro/hantro_drv.c     |  27 +-
+ .../staging/media/hantro/hantro_g2_hevc_dec.c |   4 +-
+ drivers/staging/media/hantro/hantro_hevc.c    |  10 +-
+ drivers/staging/media/hantro/hantro_hw.h      |   4 +-
+ drivers/staging/media/sunxi/cedrus/cedrus.c   |  24 +-
+ .../staging/media/sunxi/cedrus/cedrus_dec.c   |  10 +-
+ .../staging/media/sunxi/cedrus/cedrus_h265.c  |   6 +-
+ include/media/hevc-ctrls.h                    | 250 -----
+ include/media/v4l2-ctrls.h                    |  48 +-
+ include/uapi/linux/hantro-media.h             |  19 +
+ include/uapi/linux/v4l2-controls.h            | 453 +++++++++
+ include/uapi/linux/videodev2.h                |  13 +
+ 25 files changed, 1767 insertions(+), 1177 deletions(-)
+ delete mode 100644 include/media/hevc-ctrls.h
+ create mode 100644 include/uapi/linux/hantro-media.h
+
 -- 
-2.27.0
+2.32.0
 
