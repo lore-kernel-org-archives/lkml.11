@@ -2,232 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7393FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:28:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229620AbiDGUaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54098 "EHLO
+        id S229599AbiDGUa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiDGUaG (ORCPT
+        with ESMTP id S229559AbiDGUaI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:30:06 -0400
+        Thu, 7 Apr 2022 16:30:08 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 38321488BD3
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB0A42DBFF9
         for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:14:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649362410;
+        s=mimecast20190719; t=1649362442;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=4+0QkoqkebIwgoyAPdYNiKa42b/3LMH5b4hHHgzbLDc=;
-        b=Zuq08yt1QU+ynYNEOPkQrvhuyTGMiBKNhj/wawOg/K6ISAWTEHVEfNHY/SR3/shRyZ5Q8r
-        XwNKWCnS1p7YWkf/cPXNk7jIitBQhB60QIIAKXbLYvEcV1ocGq9G8logvKIchy3TKncUQZ
-        PS4JwMoXdXokaX7ffzpv9aeVa/2odi8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TE4gPpLf7WhkN5ezB0vCrjVorkv1sMpiSBwQ7irjd6Q=;
+        b=iA9x1zYfJ0IKsX2BDpF0ws1BZJw/5CXcp54ozh+Bu5gnJKvAJUbBL2gpPDbcB2KVFYIVcf
+        MH1OyMVQunuapHS5FDqhRvUXJvUG1r25Rchq2/rWwsthzaygcLZ9pOD6ljWhHrBVtftjsc
+        fEEZQdqypTer8eDld3Rw140EHsVIwKc=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-517-xl-OpijIPkSy5RTutGvFyA-1; Thu, 07 Apr 2022 16:10:17 -0400
-X-MC-Unique: xl-OpijIPkSy5RTutGvFyA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 83D37101A52C;
-        Thu,  7 Apr 2022 20:10:16 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.192.50])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4ED2FC27E83;
-        Thu,  7 Apr 2022 20:10:14 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] KVM: x86: hyper-v: Avoid writing to TSC page without an active vCPU
-Date:   Thu,  7 Apr 2022 22:10:13 +0200
-Message-Id: <20220407201013.963226-1-vkuznets@redhat.com>
+ us-mta-634-pLKSWdTbOsW-nzt0TzEk4g-1; Thu, 07 Apr 2022 16:03:04 -0400
+X-MC-Unique: pLKSWdTbOsW-nzt0TzEk4g-1
+Received: by mail-wr1-f70.google.com with SMTP id j67-20020adf9149000000b00203e6b7d151so1556125wrj.13
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:03:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TE4gPpLf7WhkN5ezB0vCrjVorkv1sMpiSBwQ7irjd6Q=;
+        b=a7e06fU6NX2ySM7OwNqdIjgQk843Xn5qbFWckF5eFpAHcz/78OiGaMAOCNoZh8Hu8v
+         LXTEPEij8WTJaBBP18S0eeJEE0sEGfiXYWp/u9/2nMOOM64lel1/GaBtGhtL3rGqmHq6
+         3e3W1a0ElAYf+VwFBBlXFPoNfL70F4e81nWgwpV5KixbrvuCTo5vh2djZADPaOJi9eom
+         aBBCtZ4NaUbWSIJf6PGppSA3zQXSL3rg1OuTQ3H2fLyjTN8TrhUBCiZL6jks28YFMv7+
+         7BnW8vBGbbY094luLjXs9mGzk+ruQPMMlafmvu89GP6rDQAgOxN2xgfeRlIPd2TmAtC2
+         2fXw==
+X-Gm-Message-State: AOAM530YStotYEUSRejf56iCSfxFGH8xMBwhXWAAJr4d/XooCyWcbCmd
+        QfAsz3nQ4k7nbQv2JVJ2/0xa3pW28gG7Ft3i+zpNZ6tlJ2r4JcSgtekgjkhIoXsieIJPRxAY/gk
+        E4SOnF7fJjWqeYObqg9uVb4IgXhxajADDxI9yUzQrf8XeNc9F+spS0318hIb8Gpvc0unDTdqMvK
+        0=
+X-Received: by 2002:adf:9dd2:0:b0:206:14f9:6432 with SMTP id q18-20020adf9dd2000000b0020614f96432mr11931366wre.129.1649361783499;
+        Thu, 07 Apr 2022 13:03:03 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzqOZMuv7vlTxaNOa9uzsUAtJoY+v170aoJd1/4gM8Ev8wfF6xaGJEgCSZ0qspOkfmmAC/8pw==
+X-Received: by 2002:adf:9dd2:0:b0:206:14f9:6432 with SMTP id q18-20020adf9dd2000000b0020614f96432mr11931343wre.129.1649361783111;
+        Thu, 07 Apr 2022 13:03:03 -0700 (PDT)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id f15-20020a0560001a8f00b002078f74ccd2sm1048712wry.36.2022.04.07.13.03.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 13:03:02 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     dri-devel@lists.freedesktop.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Chen-Yu Tsai <wens@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Mark Brown <broonie@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>
+Subject: [PATCH 4/5] drm/solomon: Move device info from ssd130x-i2c to the core driver
+Date:   Thu,  7 Apr 2022 22:02:03 +0200
+Message-Id: <20220407200205.28838-5-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407200205.28838-1-javierm@redhat.com>
+References: <20220407200205.28838-1-javierm@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following WARN is triggered from kvm_vm_ioctl_set_clock():
- WARNING: CPU: 10 PID: 579353 at arch/x86/kvm/../../../virt/kvm/kvm_main.c:3161 mark_page_dirty_in_slot+0x6c/0x80 [kvm]
- ...
- CPU: 10 PID: 579353 Comm: qemu-system-x86 Tainted: G        W  O      5.16.0.stable #20
- Hardware name: LENOVO 20UF001CUS/20UF001CUS, BIOS R1CET65W(1.34 ) 06/17/2021
- RIP: 0010:mark_page_dirty_in_slot+0x6c/0x80 [kvm]
- ...
- Call Trace:
-  <TASK>
-  ? kvm_write_guest+0x114/0x120 [kvm]
-  kvm_hv_invalidate_tsc_page+0x9e/0xf0 [kvm]
-  kvm_arch_vm_ioctl+0xa26/0xc50 [kvm]
-  ? schedule+0x4e/0xc0
-  ? __cond_resched+0x1a/0x50
-  ? futex_wait+0x166/0x250
-  ? __send_signal+0x1f1/0x3d0
-  kvm_vm_ioctl+0x747/0xda0 [kvm]
-  ...
+These are declared in the ssd130x-i2c transport driver but the information
+is not I2C specific and could be used by other SSD130x transport drivers.
 
-The WARN was introduced by commit 03c0304a86bc ("KVM: Warn if
-mark_page_dirty() is called without an active vCPU") but the change seems
-to be correct (unlike Hyper-V TSC page update mechanism). In fact, there's
-no real need to actually write to guest memory to invalidate TSC page, this
-can be done by the first vCPU which goes through kvm_guest_time_update().
+Move them to the ssd130x core driver and just set the OF device entries to
+an ID that could be used to lookup the correct device into from an array.
 
-Reported-by: Maxim Levitsky <mlevitsk@redhat.com>
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+While being there, also move the SSD130X_DATA and SSD130X_COMMAND control
+bytes. Since even though are used by the I2C interface, it could also be
+useful for other transport protocols such as SPI.
+
+Suggested-by: Chen-Yu Tsai <wens@kernel.org>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 ---
-- Changes since v1:
- Drop HV_TSC_PAGE_KVM_CHANGED and use the existing HV_TSC_PAGE_HOST_CHANGED
- instead [Sean]
----
- arch/x86/include/asm/kvm_host.h |  4 +---
- arch/x86/kvm/hyperv.c           | 40 +++++++--------------------------
- arch/x86/kvm/hyperv.h           |  2 +-
- arch/x86/kvm/x86.c              |  7 +++---
- 4 files changed, 13 insertions(+), 40 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 676705ad1e23..19bc362a1cd9 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -977,12 +977,10 @@ enum hv_tsc_page_status {
- 	HV_TSC_PAGE_UNSET = 0,
- 	/* TSC page MSR was written by the guest, update pending */
- 	HV_TSC_PAGE_GUEST_CHANGED,
--	/* TSC page MSR was written by KVM userspace, update pending */
-+	/* TSC page update was triggered from the host side */
- 	HV_TSC_PAGE_HOST_CHANGED,
- 	/* TSC page was properly set up and is currently active  */
- 	HV_TSC_PAGE_SET,
--	/* TSC page is currently being updated and therefore is inactive */
--	HV_TSC_PAGE_UPDATING,
- 	/* TSC page was set up with an inaccessible GPA */
- 	HV_TSC_PAGE_BROKEN,
+ drivers/gpu/drm/solomon/ssd130x-i2c.c | 51 ++++-------------------
+ drivers/gpu/drm/solomon/ssd130x.c     | 60 +++++++++++++++++++++++++--
+ drivers/gpu/drm/solomon/ssd130x.h     | 13 ++++++
+ 3 files changed, 78 insertions(+), 46 deletions(-)
+
+diff --git a/drivers/gpu/drm/solomon/ssd130x-i2c.c b/drivers/gpu/drm/solomon/ssd130x-i2c.c
+index a469679548f8..aa6cc2cb54f9 100644
+--- a/drivers/gpu/drm/solomon/ssd130x-i2c.c
++++ b/drivers/gpu/drm/solomon/ssd130x-i2c.c
+@@ -53,76 +53,43 @@ static void ssd130x_i2c_shutdown(struct i2c_client *client)
+ 	ssd130x_shutdown(ssd130x);
+ }
+ 
+-static struct ssd130x_deviceinfo ssd130x_sh1106_deviceinfo = {
+-	.default_vcomh = 0x40,
+-	.default_dclk_div = 1,
+-	.default_dclk_frq = 5,
+-	.page_mode_only = 1,
+-};
+-
+-static struct ssd130x_deviceinfo ssd130x_ssd1305_deviceinfo = {
+-	.default_vcomh = 0x34,
+-	.default_dclk_div = 1,
+-	.default_dclk_frq = 7,
+-};
+-
+-static struct ssd130x_deviceinfo ssd130x_ssd1306_deviceinfo = {
+-	.default_vcomh = 0x20,
+-	.default_dclk_div = 1,
+-	.default_dclk_frq = 8,
+-	.need_chargepump = 1,
+-};
+-
+-static struct ssd130x_deviceinfo ssd130x_ssd1307_deviceinfo = {
+-	.default_vcomh = 0x20,
+-	.default_dclk_div = 2,
+-	.default_dclk_frq = 12,
+-	.need_pwm = 1,
+-};
+-
+-static struct ssd130x_deviceinfo ssd130x_ssd1309_deviceinfo = {
+-	.default_vcomh = 0x34,
+-	.default_dclk_div = 1,
+-	.default_dclk_frq = 10,
+-};
+-
+ static const struct of_device_id ssd130x_of_match[] = {
+ 	{
+ 		.compatible = "sinowealth,sh1106-i2c",
+-		.data = &ssd130x_sh1106_deviceinfo,
++		.data = SH1106_ID,
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1305-i2c",
+-		.data = &ssd130x_ssd1305_deviceinfo,
++		.data = (void *)SSD1305_ID,
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1306-i2c",
+-		.data = &ssd130x_ssd1306_deviceinfo,
++		.data = (void *)SSD1306_ID,
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1307-i2c",
+-		.data = &ssd130x_ssd1307_deviceinfo,
++		.data = (void *)SSD1307_ID,
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1309-i2c",
+-		.data = &ssd130x_ssd1309_deviceinfo,
++		.data = (void *)SSD1309_ID,
+ 	},
+ 	/* Deprecated but remain for backward compatibility */
+ 	{
+ 		.compatible = "solomon,ssd1305fb-i2c",
+-		.data = &ssd130x_ssd1305_deviceinfo,
++		.data = (void *)SSD1305_ID,
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1306fb-i2c",
+-		.data = &ssd130x_ssd1306_deviceinfo,
++		.data = (void *)SSD1306_ID,
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1307fb-i2c",
+-		.data = &ssd130x_ssd1307_deviceinfo,
++		.data = (void *)SSD1307_ID,
+ 	},
+ 	{
+ 		.compatible = "solomon,ssd1309fb-i2c",
+-		.data = &ssd130x_ssd1309_deviceinfo,
++		.data = (void *)SSD1309_ID,
+ 	},
+ 	{ /* sentinel */ }
  };
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index 123b677111c5..46f9dfb60469 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -1135,11 +1135,13 @@ void kvm_hv_setup_tsc_page(struct kvm *kvm,
- 	BUILD_BUG_ON(sizeof(tsc_seq) != sizeof(hv->tsc_ref.tsc_sequence));
- 	BUILD_BUG_ON(offsetof(struct ms_hyperv_tsc_page, tsc_sequence) != 0);
+diff --git a/drivers/gpu/drm/solomon/ssd130x.c b/drivers/gpu/drm/solomon/ssd130x.c
+index a7e784518c69..1f00fd3c0023 100644
+--- a/drivers/gpu/drm/solomon/ssd130x.c
++++ b/drivers/gpu/drm/solomon/ssd130x.c
+@@ -39,11 +39,9 @@
+ #define DRIVER_MAJOR	1
+ #define DRIVER_MINOR	0
  
-+	mutex_lock(&hv->hv_lock);
+-#define SSD130X_DATA				0x40
+-#define SSD130X_COMMAND				0x80
+-
+ #define SSD130X_PAGE_COL_START_LOW		0x00
+ #define SSD130X_PAGE_COL_START_HIGH		0x10
 +
- 	if (hv->hv_tsc_page_status == HV_TSC_PAGE_BROKEN ||
-+	    hv->hv_tsc_page_status == HV_TSC_PAGE_SET ||
- 	    hv->hv_tsc_page_status == HV_TSC_PAGE_UNSET)
--		return;
-+		goto out_unlock;
+ #define SSD130X_SET_ADDRESS_MODE		0x20
+ #define SSD130X_SET_COL_RANGE			0x21
+ #define SSD130X_SET_PAGE_RANGE			0x22
+@@ -94,6 +92,55 @@
  
--	mutex_lock(&hv->hv_lock);
- 	if (!(hv->hv_tsc_page & HV_X64_MSR_TSC_REFERENCE_ENABLE))
- 		goto out_unlock;
+ #define MAX_CONTRAST 255
  
-@@ -1201,45 +1203,19 @@ void kvm_hv_setup_tsc_page(struct kvm *kvm,
- 	mutex_unlock(&hv->hv_lock);
- }
- 
--void kvm_hv_invalidate_tsc_page(struct kvm *kvm)
-+void kvm_hv_request_tsc_page_update(struct kvm *kvm)
++static struct ssd130x_deviceinfo ssd130x_variants[] =  {
++	{
++		.default_vcomh = 0x40,
++		.default_dclk_div = 1,
++		.default_dclk_frq = 5,
++		.page_mode_only = 1,
++	},
++	{
++		.variant = SSD1305_ID,
++		.default_vcomh = 0x34,
++		.default_dclk_div = 1,
++		.default_dclk_frq = 7,
++	},
++	{
++		.variant = SSD1306_ID,
++		.default_vcomh = 0x20,
++		.default_dclk_div = 1,
++		.default_dclk_frq = 8,
++		.need_chargepump = 1,
++	},
++	{
++		.variant = SSD1307_ID,
++		.default_vcomh = 0x20,
++		.default_dclk_div = 2,
++		.default_dclk_frq = 12,
++		.need_pwm = 1,
++	},
++	{
++		.variant = SSD1309_ID,
++		.default_vcomh = 0x34,
++		.default_dclk_div = 1,
++		.default_dclk_frq = 10,
++	}
++};
++
++static const struct ssd130x_deviceinfo *ssd13x_variant_to_info(enum ssd130x_variants variant)
++{
++	int i;
++	const struct ssd130x_deviceinfo *info;
++
++	for (i = 0; i < ARRAY_SIZE(ssd130x_variants); i++) {
++		info = &ssd130x_variants[i];
++		if (info->variant == variant)
++			return info;
++	}
++
++	return NULL;
++}
++
+ static inline struct ssd130x_device *drm_to_ssd130x(struct drm_device *drm)
  {
- 	struct kvm_hv *hv = to_kvm_hv(kvm);
--	u64 gfn;
--	int idx;
--
--	if (hv->hv_tsc_page_status == HV_TSC_PAGE_BROKEN ||
--	    hv->hv_tsc_page_status == HV_TSC_PAGE_UNSET ||
--	    tsc_page_update_unsafe(hv))
--		return;
- 
- 	mutex_lock(&hv->hv_lock);
- 
--	if (!(hv->hv_tsc_page & HV_X64_MSR_TSC_REFERENCE_ENABLE))
--		goto out_unlock;
--
--	/* Preserve HV_TSC_PAGE_GUEST_CHANGED/HV_TSC_PAGE_HOST_CHANGED states */
--	if (hv->hv_tsc_page_status == HV_TSC_PAGE_SET)
--		hv->hv_tsc_page_status = HV_TSC_PAGE_UPDATING;
-+	if (hv->hv_tsc_page_status == HV_TSC_PAGE_SET &&
-+	    !tsc_page_update_unsafe(hv))
-+		hv->hv_tsc_page_status = HV_TSC_PAGE_HOST_CHANGED;
- 
--	gfn = hv->hv_tsc_page >> HV_X64_MSR_TSC_REFERENCE_ADDRESS_SHIFT;
--
--	hv->tsc_ref.tsc_sequence = 0;
--
--	/*
--	 * Take the srcu lock as memslots will be accessed to check the gfn
--	 * cache generation against the memslots generation.
--	 */
--	idx = srcu_read_lock(&kvm->srcu);
--	if (kvm_write_guest(kvm, gfn_to_gpa(gfn),
--			    &hv->tsc_ref, sizeof(hv->tsc_ref.tsc_sequence)))
--		hv->hv_tsc_page_status = HV_TSC_PAGE_BROKEN;
--	srcu_read_unlock(&kvm->srcu, idx);
--
--out_unlock:
- 	mutex_unlock(&hv->hv_lock);
- }
- 
--
- static bool hv_check_msr_access(struct kvm_vcpu_hv *hv_vcpu, u32 msr)
+ 	return container_of(drm, struct ssd130x_device, drm);
+@@ -846,6 +893,7 @@ static int ssd130x_get_resources(struct ssd130x_device *ssd130x)
+ struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap)
  {
- 	if (!hv_vcpu->enforce_cpuid)
-diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
-index e19c00ee9ab3..da2737f2a956 100644
---- a/arch/x86/kvm/hyperv.h
-+++ b/arch/x86/kvm/hyperv.h
-@@ -137,7 +137,7 @@ void kvm_hv_process_stimers(struct kvm_vcpu *vcpu);
+ 	struct ssd130x_device *ssd130x;
++	enum ssd130x_variants variant;
+ 	struct backlight_device *bl;
+ 	struct drm_device *drm;
+ 	int ret;
+@@ -860,7 +908,11 @@ struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap)
  
- void kvm_hv_setup_tsc_page(struct kvm *kvm,
- 			   struct pvclock_vcpu_time_info *hv_clock);
--void kvm_hv_invalidate_tsc_page(struct kvm *kvm);
-+void kvm_hv_request_tsc_page_update(struct kvm *kvm);
+ 	ssd130x->dev = dev;
+ 	ssd130x->regmap = regmap;
+-	ssd130x->device_info = device_get_match_data(dev);
++
++	variant = (enum ssd130x_variants)device_get_match_data(dev);
++	ssd130x->device_info = ssd13x_variant_to_info(variant);
++	if (!ssd130x->device_info)
++		return ERR_PTR(-EINVAL);
  
- void kvm_hv_init_vm(struct kvm *kvm);
- void kvm_hv_destroy_vm(struct kvm *kvm);
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 7a066cf92692..e9647614dc8c 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -2904,7 +2904,7 @@ static void kvm_end_pvclock_update(struct kvm *kvm)
+ 	if (ssd130x->device_info->page_mode_only)
+ 		ssd130x->page_address_mode = 1;
+diff --git a/drivers/gpu/drm/solomon/ssd130x.h b/drivers/gpu/drm/solomon/ssd130x.h
+index f5b062576fdf..4e0b62a41aa3 100644
+--- a/drivers/gpu/drm/solomon/ssd130x.h
++++ b/drivers/gpu/drm/solomon/ssd130x.h
+@@ -18,7 +18,20 @@
  
- static void kvm_update_masterclock(struct kvm *kvm)
- {
--	kvm_hv_invalidate_tsc_page(kvm);
-+	kvm_hv_request_tsc_page_update(kvm);
- 	kvm_start_pvclock_update(kvm);
- 	pvclock_update_vm_gtod_copy(kvm);
- 	kvm_end_pvclock_update(kvm);
-@@ -3108,8 +3108,7 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
- 					offsetof(struct compat_vcpu_info, time));
- 	if (vcpu->xen.vcpu_time_info_cache.active)
- 		kvm_setup_guest_pvclock(v, &vcpu->xen.vcpu_time_info_cache, 0);
--	if (!v->vcpu_idx)
--		kvm_hv_setup_tsc_page(v->kvm, &vcpu->hv_clock);
-+	kvm_hv_setup_tsc_page(v->kvm, &vcpu->hv_clock);
- 	return 0;
- }
+ #include <linux/regmap.h>
  
-@@ -6238,7 +6237,7 @@ static int kvm_vm_ioctl_set_clock(struct kvm *kvm, void __user *argp)
- 	if (data.flags & ~KVM_CLOCK_VALID_FLAGS)
- 		return -EINVAL;
- 
--	kvm_hv_invalidate_tsc_page(kvm);
-+	kvm_hv_request_tsc_page_update(kvm);
- 	kvm_start_pvclock_update(kvm);
- 	pvclock_update_vm_gtod_copy(kvm);
- 
++#define SSD130X_DATA				0x40
++#define SSD130X_COMMAND				0x80
++
++enum ssd130x_variants {
++	SH1106_ID,
++	SSD1305_ID,
++	SSD1306_ID,
++	SSD1307_ID,
++	SSD1309_ID,
++	NR_SSD130X_VARIANTS
++};
++
+ struct ssd130x_deviceinfo {
++	enum ssd130x_variants variant;
+ 	u32 default_vcomh;
+ 	u32 default_dclk_div;
+ 	u32 default_dclk_frq;
 -- 
 2.35.1
 
