@@ -2,81 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C4F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D3CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233605AbiDGMFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
+        id S244150AbiDGMGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240664AbiDGMEi (ORCPT
+        with ESMTP id S245130AbiDGMGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:04:38 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8E5C1CAC
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:02:36 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZ0MP3VlvzgYVw;
-        Thu,  7 Apr 2022 20:00:49 +0800 (CST)
-Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 20:02:34 +0800
-Received: from ubuntu1804.huawei.com (10.67.175.36) by
- dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 20:02:34 +0800
-From:   Chen Zhongjin <chenzhongjin@huawei.com>
-To:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <jthierry@redhat.com>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>, <ardb@kernel.org>,
-        <masahiroy@kernel.org>, <jpoimboe@redhat.com>,
-        <peterz@infradead.org>, <ycote@redhat.com>
-Subject: [RFC PATCH v3 11/13] objtool: arm64: Handle supported relocations in alternatives
-Date:   Thu, 7 Apr 2022 20:01:39 +0800
-Message-ID: <20220407120141.43801-12-chenzhongjin@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220407120141.43801-1-chenzhongjin@huawei.com>
-References: <20220407120141.43801-1-chenzhongjin@huawei.com>
+        Thu, 7 Apr 2022 08:06:08 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968E0C31DE;
+        Thu,  7 Apr 2022 05:04:02 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 50D771F85A;
+        Thu,  7 Apr 2022 12:04:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649333041; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yD6Hv0Qev4TUL19bY/g1Sx375Qm9AbFeZHHdH3oY4hs=;
+        b=nyUXqwYZBdRJ+l/n+nNGbkZWDe7Bqq+oy/9xD+GmBS6dBr+gvMlU+jcSshfTcrFJFz1eKf
+        WOdzx1NwqOpGiWVEPbEodpWKamYAO+1G6nea8neoVBEI9wnICynBWROc1V3VeqRcWfHsxN
+        oH6daT+1azkNl7uvjrk1FB4sy6VhfOs=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 0887EA3B96;
+        Thu,  7 Apr 2022 12:04:00 +0000 (UTC)
+Date:   Thu, 7 Apr 2022 14:04:00 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org,
+        Marek =?iso-8859-1?Q?Marczykowski-G=F3recki?= 
+        <marmarek@invisiblethingslab.com>, Mel Gorman <mgorman@suse.de>
+Subject: Re: [PATCH] mm, page_alloc: fix build_zonerefs_node()
+Message-ID: <Yk7TMKBAkuSVZRLT@dhcp22.suse.cz>
+References: <20220407093221.1090-1-jgross@suse.com>
+ <Yk6+QBacbb6oI8lW@dhcp22.suse.cz>
+ <f08c1493-9238-0009-56b4-dc0ab3571b33@suse.com>
+ <Yk7F2KzRrhLjYw4Z@dhcp22.suse.cz>
+ <5e97a7f5-1fc9-d0b4-006e-6894d5653c06@suse.com>
+ <Yk7NqTlw7lmFzpKb@dhcp22.suse.cz>
+ <770d8283-4315-3d83-4f8b-723308fffe5c@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.175.36]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500013.china.huawei.com (7.185.36.172)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <770d8283-4315-3d83-4f8b-723308fffe5c@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julien Thierry <jthierry@redhat.com>
+On Thu 07-04-22 13:58:44, David Hildenbrand wrote:
+[...]
+> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> > index 3589febc6d31..130a2feceddc 100644
+> > --- a/mm/page_alloc.c
+> > +++ b/mm/page_alloc.c
+> > @@ -6112,10 +6112,8 @@ static int build_zonerefs_node(pg_data_t *pgdat, struct zoneref *zonerefs)
+> >  	do {
+> >  		zone_type--;
+> >  		zone = pgdat->node_zones + zone_type;
+> > -		if (managed_zone(zone)) {
+> > -			zoneref_set_zone(zone, &zonerefs[nr_zones++]);
+> > -			check_highest_zone(zone_type);
+> > -		}
+> > +		zoneref_set_zone(zone, &zonerefs[nr_zones++]);
+> > +		check_highest_zone(zone_type);
+> >  	} while (zone_type);
+> >  
+> >  	return nr_zones;
+> 
+> I don't think having !populated zones in the zonelist is a particularly
+> good idea. Populated vs !populated changes only during page
+> onlininge/offlining.
+> 
+> If I'm not wrong, with your patch we'd even include ZONE_DEVICE here ...
 
-Based on get_alt_insn() in arch/arm64/kernel/alternative.c, arm64
-alternative code adapts offsets for static branches and adrp
-instructions.
+What kind of problem that would cause? The allocator wouldn't see any
+pages at all so it would fallback to the next one. Maybe kswapd would
+need some tweak to have a bail out condition but as mentioned in the
+thread already. !populated or !managed for that matter are not all that
+much different from completely depleted zones. The fact that we are
+making that distinction has led to some bugs and I suspect it makes the
+code more complex without a very good reason.
 
-Signed-off-by: Julien Thierry <jthierry@redhat.com>
----
- tools/objtool/arch/arm64/special.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+> I'd vote for going with the simple fix first, which should be good
+> enough AFAIKT.
 
-diff --git a/tools/objtool/arch/arm64/special.c b/tools/objtool/arch/arm64/special.c
-index 45f283283091..a70b91e8bd7d 100644
---- a/tools/objtool/arch/arm64/special.c
-+++ b/tools/objtool/arch/arm64/special.c
-@@ -10,7 +10,11 @@ bool arch_support_alt_relocation(struct special_alt *special_alt,
- 				 struct instruction *insn,
- 				 struct reloc *reloc)
- {
--	return false;
-+	u32 opcode = *(u32 *)(insn->sec->data->d_buf + insn->offset);
-+
-+	return aarch64_insn_is_branch_imm(opcode) ||
-+	       aarch64_insn_is_adrp(opcode) ||
-+	       !aarch64_insn_uses_literal(opcode);
- }
- 
- 
+yes, see the other reply
+
 -- 
-2.17.1
-
+Michal Hocko
+SUSE Labs
