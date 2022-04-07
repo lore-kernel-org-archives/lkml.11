@@ -2,240 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BF8C4321E
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14559C3525B
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:30:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239269AbiDGB2O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32914 "EHLO
+        id S239373AbiDGB2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:28:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240440AbiDGBUA (ORCPT
+        with ESMTP id S240407AbiDGBT7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:20:00 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5521868B3
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 18:16:23 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id b6-20020a62a106000000b0050564d6fd75so513363pff.22
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 18:16:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=sZzi0rGdgJkCGIDpvKSzqmkP39vnJT5GVLY2t/+Hx7I=;
-        b=kFcy+MlhCPSUvC2/eIFEfrKqXEgAhzG8SuEz4cKkq4UpAsicZH5piGJdx5E1FM9twW
-         lgz00oLwnKSwwGr0uzWb2YBXjDWsV7enA6uNA4DRgjWCbAHp7PBUr6giTkKgF3adNhMI
-         YIEP7FiT1UbsyudcEzsATHgPrBONiknIRCXTPbMlmsB1vHSiT9azAP0fO5a4zHRGNRTt
-         lOKy5c5OOm73fj8+BoZAp+z8aXTV9WcGnFKORc6Qsm9iAh8GMgOT8eE/xdKk62xPp1qr
-         mZvkGWccHs1HiD4ZpjlijhP30BJZljX0nXKUt6igg2GhE1Q76QkbP2qPn/NbjVE4nHyU
-         vULw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=sZzi0rGdgJkCGIDpvKSzqmkP39vnJT5GVLY2t/+Hx7I=;
-        b=3cj9xkjR5H6ZUSZafh968Fjq8mwcbzZQn7ulB7YVVorS+qwWdNkG09K/4dfmAihHA7
-         eHxTwaUvfO98J8ngbvmLTfCW3NlXXn82SCZPtsqaBf+p25Oj+Vw+zu+uW07mKQnar21w
-         rgVRHCYe2t+62Fq1sp+l8j0lzmqkQYnZ1rtCpR4Cjetcs7QOsBPmrSqlEV1pJw7RO4po
-         emCxdGwgaV+XFLBl16jdYQAOfjJa1/qqBV+UtcYi5Pg6JDqF9aaO+Yh/WcEtdK8/yLue
-         gcIEyo427GoUsU7kvQHfiRqziim1pL6VSEMAZKN2hzmAeKu2ADHB0B5WZdNvrzTKdUFF
-         umZg==
-X-Gm-Message-State: AOAM533+TBBGu+J0CTO520DVIIuJZ2D/WKLVggSWD8MVC4h1SzjrIogi
-        OFJ7d8wCiP5MWc1gYO5Vd1Q9yC9zY1rI
-X-Google-Smtp-Source: ABdhPJxS1S3WOfB/+bY8DNzv+0Agfvjz0GNWWPblYzPcAP14PTDhmmsKSMEJsrBrH6h3+S9EHGCyF5NClbX9
-X-Received: from rananta-virt.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1bcc])
- (user=rananta job=sendgmr) by 2002:a17:902:d5cd:b0:156:6263:bbc7 with SMTP id
- g13-20020a170902d5cd00b001566263bbc7mr11652741plh.160.1649294182899; Wed, 06
- Apr 2022 18:16:22 -0700 (PDT)
-Date:   Thu,  7 Apr 2022 01:16:01 +0000
-In-Reply-To: <20220407011605.1966778-1-rananta@google.com>
-Message-Id: <20220407011605.1966778-7-rananta@google.com>
-Mime-Version: 1.0
-References: <20220407011605.1966778-1-rananta@google.com>
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
-Subject: [PATCH v5 06/10] Docs: KVM: Add doc for the bitmap firmware registers
-From:   Raghavendra Rao Ananta <rananta@google.com>
-To:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
-        Ricardo Koller <ricarkol@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Reiji Watanabe <reijiw@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Raghavendra Rao Anata <rananta@google.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 6 Apr 2022 21:19:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE2D186490;
+        Wed,  6 Apr 2022 18:16:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E13C661DDF;
+        Thu,  7 Apr 2022 01:16:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15B8DC385A1;
+        Thu,  7 Apr 2022 01:16:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649294164;
+        bh=z+Jn+M7wh7vmsuLFk1mgAF1yMw1bwX154BNorZBOq6A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GF7LY9fdZ7SHvTcVSwErdjQXtTbXB+rDdEWa2f03KiV12zl79EpJC3Iks/GlJNtyr
+         W/566OrEhCLuO16OKZ8sfd5hZNpQwepCnNDuJeo/LhNjfeGBVS4ZRUR267KURl9uBl
+         J9cYlGJMd4UUewlJfafGLhZS4IeA1J4wSGJBpCFW8M5RDlsREuZ2jVRaUDKDUgYcqR
+         YYvZu3K8/YAONOszAp5vLGeshRDc1j1JvP7aA12lsjppc8mcM1FdW0S1/6q+qAK9t8
+         fKvQ7OHGulNXvYMxH92nBpgnsHEURVKTg4uSLKBxpzwJG2DVfnILgBgXY/sbXqvTFF
+         MVLzwFarzcedA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     linyujun <linyujun809@huawei.com>, He Ying <heying24@huawei.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        rostedt@goodmis.org, mhiramat@kernel.org, ast@kernel.org,
+        ardb@kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 15/17] ARM: 9191/1: arm/stacktrace, kasan: Silence KASAN warnings in unwind_frame()
+Date:   Wed,  6 Apr 2022 21:15:19 -0400
+Message-Id: <20220407011521.115014-15-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407011521.115014-1-sashal@kernel.org>
+References: <20220407011521.115014-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the documentation for the bitmap firmware registers in
-hypercalls.rst and api.rst. This includes the details for
-KVM_REG_ARM_STD_BMAP, KVM_REG_ARM_STD_HYP_BMAP, and
-KVM_REG_ARM_VENDOR_HYP_BMAP registers.
+From: linyujun <linyujun809@huawei.com>
 
-Since the document is growing to carry other hypercall related
-information, make necessary adjustments to present the document
-in a generic sense, rather than being PSCI focused.
+[ Upstream commit 9be4c88bb7924f68f88cfd47d925c2d046f51a73 ]
 
-Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+The following KASAN warning is detected by QEMU.
+
+==================================================================
+BUG: KASAN: stack-out-of-bounds in unwind_frame+0x508/0x870
+Read of size 4 at addr c36bba90 by task cat/163
+
+CPU: 1 PID: 163 Comm: cat Not tainted 5.10.0-rc1 #40
+Hardware name: ARM-Versatile Express
+[<c0113fac>] (unwind_backtrace) from [<c010e71c>] (show_stack+0x10/0x14)
+[<c010e71c>] (show_stack) from [<c0b805b4>] (dump_stack+0x98/0xb0)
+[<c0b805b4>] (dump_stack) from [<c0b7d658>] (print_address_description.constprop.0+0x58/0x4bc)
+[<c0b7d658>] (print_address_description.constprop.0) from [<c031435c>] (kasan_report+0x154/0x170)
+[<c031435c>] (kasan_report) from [<c0113c44>] (unwind_frame+0x508/0x870)
+[<c0113c44>] (unwind_frame) from [<c010e298>] (__save_stack_trace+0x110/0x134)
+[<c010e298>] (__save_stack_trace) from [<c01ce0d8>] (stack_trace_save+0x8c/0xb4)
+[<c01ce0d8>] (stack_trace_save) from [<c0313520>] (kasan_set_track+0x38/0x60)
+[<c0313520>] (kasan_set_track) from [<c0314cb8>] (kasan_set_free_info+0x20/0x2c)
+[<c0314cb8>] (kasan_set_free_info) from [<c0313474>] (__kasan_slab_free+0xec/0x120)
+[<c0313474>] (__kasan_slab_free) from [<c0311e20>] (kmem_cache_free+0x7c/0x334)
+[<c0311e20>] (kmem_cache_free) from [<c01c35dc>] (rcu_core+0x390/0xccc)
+[<c01c35dc>] (rcu_core) from [<c01013a8>] (__do_softirq+0x180/0x518)
+[<c01013a8>] (__do_softirq) from [<c0135214>] (irq_exit+0x9c/0xe0)
+[<c0135214>] (irq_exit) from [<c01a40e4>] (__handle_domain_irq+0xb0/0x110)
+[<c01a40e4>] (__handle_domain_irq) from [<c0691248>] (gic_handle_irq+0xa0/0xb8)
+[<c0691248>] (gic_handle_irq) from [<c0100b0c>] (__irq_svc+0x6c/0x94)
+Exception stack(0xc36bb928 to 0xc36bb970)
+b920:                   c36bb9c0 00000000 c0126919 c0101228 c36bb9c0 b76d7730
+b940: c36b8000 c36bb9a0 c3335b00 c01ce0d8 00000003 c36bba3c c36bb940 c36bb978
+b960: c010e298 c011373c 60000013 ffffffff
+[<c0100b0c>] (__irq_svc) from [<c011373c>] (unwind_frame+0x0/0x870)
+[<c011373c>] (unwind_frame) from [<00000000>] (0x0)
+
+The buggy address belongs to the page:
+page:(ptrval) refcount:0 mapcount:0 mapping:00000000 index:0x0 pfn:0x636bb
+flags: 0x0()
+raw: 00000000 00000000 ef867764 00000000 00000000 00000000 ffffffff 00000000
+page dumped because: kasan: bad access detected
+
+addr c36bba90 is located in stack of task cat/163 at offset 48 in frame:
+ stack_trace_save+0x0/0xb4
+
+this frame has 1 object:
+ [32, 48) 'trace'
+
+Memory state around the buggy address:
+ c36bb980: f1 f1 f1 f1 00 04 f2 f2 00 00 f3 f3 00 00 00 00
+ c36bba00: 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1
+>c36bba80: 00 00 f3 f3 00 00 00 00 00 00 00 00 00 00 00 00
+                 ^
+ c36bbb00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ c36bbb80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+There is a same issue on x86 and has been resolved by the commit f7d27c35ddff
+("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
+The solution could be applied to arm architecture too.
+
+Signed-off-by: Lin Yujun <linyujun809@huawei.com>
+Reported-by: He Ying <heying24@huawei.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/virt/kvm/api.rst            | 17 ++++
- Documentation/virt/kvm/arm/hypercalls.rst | 95 ++++++++++++++++++-----
- 2 files changed, 94 insertions(+), 18 deletions(-)
+ arch/arm/kernel/stacktrace.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index d13fa6600467..e0107b157965 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -2542,6 +2542,23 @@ arm64 firmware pseudo-registers have the following bit pattern::
+diff --git a/arch/arm/kernel/stacktrace.c b/arch/arm/kernel/stacktrace.c
+index db798eac7431..824774999825 100644
+--- a/arch/arm/kernel/stacktrace.c
++++ b/arch/arm/kernel/stacktrace.c
+@@ -53,17 +53,17 @@ int notrace unwind_frame(struct stackframe *frame)
+ 		return -EINVAL;
  
-   0x6030 0000 0014 <regno:16>
+ 	frame->sp = frame->fp;
+-	frame->fp = *(unsigned long *)(fp);
+-	frame->pc = *(unsigned long *)(fp + 4);
++	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
++	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 4));
+ #else
+ 	/* check current frame pointer is within bounds */
+ 	if (fp < low + 12 || fp > high - 4)
+ 		return -EINVAL;
  
-+arm64 bitmap feature firmware pseudo-registers have the following bit pattern::
-+
-+  0x6030 0000 0016 <regno:16>
-+
-+The bitmap feature firmware registers exposes the hypercall services that are
-+available for userspace to configure. The set bits corresponds to the services
-+that are available for the guests to access. By default, KVM sets all the
-+supported bits during VM initialization. The userspace can discover the
-+available services via KVM_GET_ONE_REG, and write-back the bitmap corresponding
-+to the features that it wishes guests to see via KVM_SET_ONE_REG.
-+
-+Note: These registers are immutable once any of the vCPUs of the VM has run at
-+least once. A KVM_SET_ONE_REG in such a scenario will return a -EBUSY to userspace.
-+If there's no change in the value that's being written, 0 (success) is returned.
-+
-+(See Documentation/virt/kvm/arm/hypercalls.rst for more details.)
-+
- arm64 SVE registers have the following bit patterns::
+ 	/* restore the registers from the stack frame */
+-	frame->fp = *(unsigned long *)(fp - 12);
+-	frame->sp = *(unsigned long *)(fp - 8);
+-	frame->pc = *(unsigned long *)(fp - 4);
++	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 12));
++	frame->sp = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 8));
++	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 4));
+ #endif
  
-   0x6080 0000 0015 00 <n:5> <slice:5>   Zn bits[2048*slice + 2047 : 2048*slice]
-diff --git a/Documentation/virt/kvm/arm/hypercalls.rst b/Documentation/virt/kvm/arm/hypercalls.rst
-index d52c2e83b5b8..ccda9fc2d253 100644
---- a/Documentation/virt/kvm/arm/hypercalls.rst
-+++ b/Documentation/virt/kvm/arm/hypercalls.rst
-@@ -1,32 +1,32 @@
- .. SPDX-License-Identifier: GPL-2.0
- 
--=========================================
--Power State Coordination Interface (PSCI)
--=========================================
-+=======================
-+ARM Hypercall Interface
-+=======================
- 
--KVM implements the PSCI (Power State Coordination Interface)
--specification in order to provide services such as CPU on/off, reset
--and power-off to the guest.
-+KVM handles the hypercall services as requested by the guests. New hypercall
-+services are regularly made available by the ARM specification or by KVM (as
-+vendor services) if they make sense from a virtualization point of view.
- 
--The PSCI specification is regularly updated to provide new features,
--and KVM implements these updates if they make sense from a virtualization
--point of view.
--
--This means that a guest booted on two different versions of KVM can
--observe two different "firmware" revisions. This could cause issues if
--a given guest is tied to a particular PSCI revision (unlikely), or if
--a migration causes a different PSCI version to be exposed out of the
--blue to an unsuspecting guest.
-+This means that a guest booted on two different versions of KVM can observe
-+two different "firmware" revisions. This could cause issues if a given guest
-+is tied to a particular version of a hypercall service, or if a migration
-+causes a different version to be exposed out of the blue to an unsuspecting
-+guest.
- 
- In order to remedy this situation, KVM exposes a set of "firmware
- pseudo-registers" that can be manipulated using the GET/SET_ONE_REG
- interface. These registers can be saved/restored by userspace, and set
--to a convenient value if required.
-+to a convenient value as required.
- 
--The following register is defined:
-+The following registers are defined:
- 
- * KVM_REG_ARM_PSCI_VERSION:
- 
-+  KVM implements the PSCI (Power State Coordination Interface)
-+  specification in order to provide services such as CPU on/off, reset
-+  and power-off to the guest.
-+
-   - Only valid if the vcpu has the KVM_ARM_VCPU_PSCI_0_2 feature set
-     (and thus has already been initialized)
-   - Returns the current PSCI version on GET_ONE_REG (defaulting to the
-@@ -74,4 +74,63 @@ The following register is defined:
-     KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED:
-       The workaround is always active on this vCPU or it is not needed.
- 
--.. [1] https://developer.arm.com/-/media/developer/pdf/ARM_DEN_0070A_Firmware_interfaces_for_mitigating_CVE-2017-5715.pdf
-+
-+Bitmap Feature Firmware Registers
-+---------------------------------
-+
-+Contrary to the above registers, the following registers exposes the hypercall
-+services in the form of a feature-bitmap to the userspace. This bitmap is
-+translated to the services that are available to the guest. There is a register
-+defined per service call owner and can be accessed via GET/SET_ONE_REG interface.
-+
-+By default, these registers are set with the upper limit of the features that
-+are supported. This way userspace can discover all the electable hypercall services
-+via GET_ONE_REG. The user-space can write-back the desired bitmap back via
-+SET_ONE_REG. The features for the registers that are untouched, probably because
-+userspace isn't aware of them, will be exposed as is to the guest.
-+
-+Note that KVM would't allow the userspace to configure the registers anymore once
-+any of the vCPUs has run at least once. Instead, it will return a -EBUSY. However,
-+if there's no change in the incoming value, it simply returns a success.
-+
-+The psuedo-firmware bitmap register are as follows:
-+
-+* KVM_REG_ARM_STD_BMAP:
-+    Controls the bitmap of the ARM Standard Secure Service Calls.
-+
-+  The following bits are accepted:
-+
-+    Bit-0: KVM_REG_ARM_STD_BIT_TRNG_V1_0:
-+      The bit represents the services offered under v1.0 of ARM True Random
-+      Number Generator (TRNG) specification, ARM DEN0098.
-+
-+* KVM_REG_ARM_STD_HYP_BMAP:
-+    Controls the bitmap of the ARM Standard Hypervisor Service Calls.
-+
-+  The following bits are accepted:
-+
-+    Bit-0: KVM_REG_ARM_STD_HYP_BIT_PV_TIME:
-+      The bit represents the Paravirtualized Time service as represented by
-+      ARM DEN0057A.
-+
-+* KVM_REG_ARM_VENDOR_HYP_BMAP:
-+    Controls the bitmap of the Vendor specific Hypervisor Service Calls.
-+
-+  The following bits are accepted:
-+
-+    Bit-0: KVM_REG_ARM_VENDOR_HYP_BIT_FUNC_FEAT
-+      The bit represents the ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID
-+      function-id
-+
-+    Bit-1: KVM_REG_ARM_VENDOR_HYP_BIT_PTP:
-+      The bit represents the Precision Time Protocol KVM service.
-+
-+Errors:
-+
-+    =======  =============================================================
-+    -ENOENT   Unknown register accessed.
-+    -EBUSY    Attempt a 'write' to the register after the VM has started.
-+    -EINVAL   Invalid bitmap written to the register.
-+    =======  =============================================================
-+
-+.. [1] https://developer.arm.com/-/media/developer/pdf/ARM_DEN_0070A_Firmware_interfaces_for_mitigating_CVE-2017-5715.pdf
-\ No newline at end of file
+ 	return 0;
 -- 
-2.35.1.1094.g7c7d902a7c-goog
+2.35.1
 
