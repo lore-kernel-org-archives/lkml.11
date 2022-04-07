@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A4E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8090C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234658AbiDGBNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32962 "EHLO
+        id S234846AbiDGBNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:13:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234003AbiDGBMt (ORCPT
+        with ESMTP id S234241AbiDGBMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:12:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49EB518022B;
-        Wed,  6 Apr 2022 18:10:47 -0700 (PDT)
+        Wed, 6 Apr 2022 21:12:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF25180077;
+        Wed,  6 Apr 2022 18:10:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DA0761DBB;
-        Thu,  7 Apr 2022 01:10:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39993C385B9;
-        Thu,  7 Apr 2022 01:10:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AA5E61DAE;
+        Thu,  7 Apr 2022 01:10:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12FBAC385A6;
+        Thu,  7 Apr 2022 01:10:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649293847;
-        bh=ZxERjJN2xL45S6oKLKU5GRaDVAklc6MvrPJF7AQQpm4=;
+        s=k20201202; t=1649293851;
+        bh=m6CnjI7lRuS3hxI4uCG5AZi8oJALHqfLbWsem59FOGM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BQEae+Q9tPEdvcF83J96y3yS0XJ/Hk8KLipt+ccS5j5sR0ZfNTxvsA6/X0IXXozUZ
-         6ezu3sh6cVWsBUQAtGpjxkGC7iUaASAaM5OIesrYJ2+0QEVrUQjaG6Vc4QGUxBaRlT
-         AXAHGfFGy4cpgX/Weth55KIWJbeflWNIwR2XRLX5Eu0CG84VQ64yDiB2p30d5WcMX8
-         UBlvER8HBqRiOFIz1F4HgE05UTHK5wntsNGM842m7NuTrWkUKK5KavesgK+gEstzNo
-         chXKZtYAw6P561zfc+OUwP7KVSE9MDJHb0zyZCemh1cQyLQn93MasbvdeW3Gq4dGHv
-         5CwzPEwrGp+aQ==
+        b=R4PlBPy29bP2pH0VlVSEDxxoeVnXiuPm+4QwWiOfo8p43tIkyTKnYRYyS4Wr0BCOB
+         iaJg3GzfqxNtWoX5M5I7dk/0hGM3cCAlGkUdI0nQ17WXS/MrFwxamj+YDsthcBNGkR
+         HAaxyIyDVroqxcICkPtseclDGVUK1yTO+UcEF+V7wqysHD06HmKzEt06AQDXq2432z
+         ixbHjJpL1VIVPW4nhumKgy6lU1ykTbZAqch/L2Lx3ifGKJcf6yeA67J9lWy3rYKLdE
+         dm3V0n/jhtG+H6t5MHuAoq8fxty8J5DTiPozvl/NRO8cMpBGTtIFRtOjqk/Qg3rZYY
+         dAm1CoyRbrJ7Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jeff LaBundy <jeff@labundy.com>,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, linux-input@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 09/31] Input: add bounds checking to input_set_capability()
-Date:   Wed,  6 Apr 2022 21:10:07 -0400
-Message-Id: <20220407011029.113321-9-sashal@kernel.org>
+Cc:     Monish Kumar R <monish.kumar.r@intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 11/31] nvme-pci: add quirks for Samsung X5 SSDs
+Date:   Wed,  6 Apr 2022 21:10:09 -0400
+Message-Id: <20220407011029.113321-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011029.113321-1-sashal@kernel.org>
 References: <20220407011029.113321-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,60 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff LaBundy <jeff@labundy.com>
+From: Monish Kumar R <monish.kumar.r@intel.com>
 
-[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
+[ Upstream commit bc360b0b1611566e1bd47384daf49af6a1c51837 ]
 
-Update input_set_capability() to prevent kernel panic in case the
-event code exceeds the bitmap for the given event type.
+Add quirks to not fail the initialization and to have quick resume
+latency after cold/warm reboot.
 
-Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/input.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/nvme/host/pci.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/input/input.c b/drivers/input/input.c
-index c3139bc2aa0d..42099c8c417c 100644
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -47,6 +47,17 @@ static DEFINE_MUTEX(input_mutex);
- 
- static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
- 
-+static const unsigned int input_max_code[EV_CNT] = {
-+	[EV_KEY] = KEY_MAX,
-+	[EV_REL] = REL_MAX,
-+	[EV_ABS] = ABS_MAX,
-+	[EV_MSC] = MSC_MAX,
-+	[EV_SW] = SW_MAX,
-+	[EV_LED] = LED_MAX,
-+	[EV_SND] = SND_MAX,
-+	[EV_FF] = FF_MAX,
-+};
-+
- static inline int is_event_supported(unsigned int code,
- 				     unsigned long *bm, unsigned int max)
- {
-@@ -2074,6 +2085,14 @@ EXPORT_SYMBOL(input_get_timestamp);
-  */
- void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
- {
-+	if (type < EV_CNT && input_max_code[type] &&
-+	    code > input_max_code[type]) {
-+		pr_err("%s: invalid code %u for type %u\n", __func__, code,
-+		       type);
-+		dump_stack();
-+		return;
-+	}
-+
- 	switch (type) {
- 	case EV_KEY:
- 		__set_bit(code, dev->keybit);
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 6a99ed680915..c1150e01394c 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3463,7 +3463,10 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_128_BYTES_SQES |
+ 				NVME_QUIRK_SHARED_TAGS |
+ 				NVME_QUIRK_SKIP_CID_GEN },
+-
++	{ PCI_DEVICE(0x144d, 0xa808),   /* Samsung X5 */
++		.driver_data =  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
++				NVME_QUIRK_NO_DEEPEST_PS |
++				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
+ 	{ 0, }
+ };
 -- 
 2.35.1
 
