@@ -2,134 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF09C43219
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89080C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:01:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229898AbiDGJDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51962 "EHLO
+        id S243584AbiDGJDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243602AbiDGJCk (ORCPT
+        with ESMTP id S243639AbiDGJCu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:02:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D886215DAB2
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:00:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649322037;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0inCEjJJWw//2DoC93l0BxRCxkrP6GV4SWwsKG2zpLQ=;
-        b=aJxOc89Id1Wis/A/CoCs0zLw7VELjzmN2teAJK6WWAhLr6n7bnho+Y0w9T2rKrUXufBbP9
-        GNU81ZsqKgErQZHC+xC+DN5PJcussH5ZmHjY1rd8JHXIPUjUBAAgU1p76xGc015DhRfX45
-        0LrTsmj5F8cxn7sGsqm4lv/aU1MsYCY=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-oaIHuCeKPAaVUJYwE42asQ-1; Thu, 07 Apr 2022 05:00:36 -0400
-X-MC-Unique: oaIHuCeKPAaVUJYwE42asQ-1
-Received: by mail-wm1-f69.google.com with SMTP id c62-20020a1c3541000000b003815245c642so4286221wma.6
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 02:00:36 -0700 (PDT)
+        Thu, 7 Apr 2022 05:02:50 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4278164F
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:00:50 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id v13so1642991qkv.3
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 02:00:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cpsn8zlGuEr895I52lJu8BAnUlOryrWv2Qhy+2V7ZP4=;
+        b=YVbH4kfpa5m3GX7HPTL5Ve157W4wO+bLgK44lsQR5hIevYJyysuD0Jb1IFCgUHiVPk
+         IudRTosA7GPp5f8GqswhyKClc2h1xLDD1KjlcX9VMbcWKh3qEhLdxfqBxhlBbJNaFcuq
+         Jj7RQemXnX/40hRbYJStCKLEp0PJ0KARkvo7D4UxpGkkAgoY7dexvMHyDfYdQvAvswAH
+         HuLRJyiVFiMO4xok2FpoMLN5uzUcGPQ8j/ShNlS74tY/RHtuajFZ9dZ4zRPmWs+lyiss
+         3OmM4Dqlz0O2OrgRjIdbEIFNxaWhslLab64MkAavbsEa6NvmFDNEFco/kexE+tfn6eDK
+         cGYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=0inCEjJJWw//2DoC93l0BxRCxkrP6GV4SWwsKG2zpLQ=;
-        b=kzn6ssAo5JRF63I4o2dZmGmu5gqbe8hjWJ40j8dUtePo5ERQWu4yASHjbeCKoniDZg
-         F8gOpvW+2p1kRlWksb4yKzB65sr1I00TS+0/5/HZUidpAGpj4vT9XBgNUaSPkXimW3//
-         teiOlRmRO03kZFa4hr53qeWwEiMyRwIpLby9U6/KN5JO56DRlo7Q7BaleBWx60MuEsrc
-         0OlaIZwHOOQEaooODDXiaavOtEF2+410V1Zjr9Vap5pYGbsuvXxvGTVcBdjhff0MeSL2
-         2JIi/+dkuxcqxGIx39YHLcUW4aFNTDOk4JQ5P7gv08H2czc+dh8NSRyxRUOQS2zbOWVt
-         a/iA==
-X-Gm-Message-State: AOAM531ZsJu0egyYQmFnD/kcmh40pOELDC+DwayNZ6tCZiYnv2zBu1Px
-        jt4MXrR5Go9zPTvvQLZpALuuFztRONgpg97gT2r+6xeTZ32B/3+bHKTjnHz8yeVWgLq1gwIWFEm
-        KvzsCv0ikZoZQ4WhHwFGAM2UE
-X-Received: by 2002:a05:600c:17c5:b0:38e:7853:e915 with SMTP id y5-20020a05600c17c500b0038e7853e915mr11065439wmo.123.1649322035314;
-        Thu, 07 Apr 2022 02:00:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwDXbmi0MYBbhyvRv3XQym+Vvb0hr0yJXFvC8twCFVw7fXFScumPU3//4ro5ZrKBn7rVoiing==
-X-Received: by 2002:a05:600c:17c5:b0:38e:7853:e915 with SMTP id y5-20020a05600c17c500b0038e7853e915mr11065408wmo.123.1649322035047;
-        Thu, 07 Apr 2022 02:00:35 -0700 (PDT)
-Received: from ?IPV6:2a09:80c0:192:0:20af:34be:985b:b6c8? ([2a09:80c0:192:0:20af:34be:985b:b6c8])
-        by smtp.gmail.com with ESMTPSA id u7-20020a05600c19c700b0038cc9aac1a3sm7933452wmq.23.2022.04.07.02.00.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 02:00:34 -0700 (PDT)
-Message-ID: <f423e210-3e28-73f8-1082-869ef680b9b0@redhat.com>
-Date:   Thu, 7 Apr 2022 11:00:33 +0200
+        bh=cpsn8zlGuEr895I52lJu8BAnUlOryrWv2Qhy+2V7ZP4=;
+        b=DYm8c95V/dZw807PA7e8sNe8IqyfYhtyvBLv3L/z2+76nxGw9DgKqPXlEypoqALtpF
+         Mqlo5F2FFeNPBQ/YtuwpOnsqwvJhoniulKyLgGhm3AUwz6/b024aUGV66v0HIbHZikjV
+         YG9Yw/qHOKSsUWndeinGwPBZdMoUofDcooKn1N9eMIdo0FhFKFLBbrL2uc53vouL2XHc
+         0kIbsbKxA1rI59pyzvrJ3aJBMwgag705awFqmqloU+pNXhh4sIC6kYniRic5M6j93Vtr
+         1LPa5YApoLwbnw+ZVEL93mNvnK6UySDUPI5gUnj9fyzuejzOnkdKd/ZJpTpoLa2h8kIN
+         LXTA==
+X-Gm-Message-State: AOAM532DkeZqt9Fmv5p9x0kDlp7V2D97Y3js0E8df0Dmw2Eg8lGv65m1
+        10h3lb1RJoqaz1OYpRY6z6E=
+X-Google-Smtp-Source: ABdhPJy28M3cmBeS6IRvUM0efW6fbXHiokSkosHV1GY7AEKqurscM5QyDMVXdwfQ1dZETBvWnSWOJg==
+X-Received: by 2002:a37:b502:0:b0:69a:ca1:298 with SMTP id e2-20020a37b502000000b0069a0ca10298mr469093qkf.133.1649322049430;
+        Thu, 07 Apr 2022 02:00:49 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id s16-20020ac85cd0000000b002e1ed82f1e5sm16813270qta.75.2022.04.07.02.00.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 02:00:49 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     mpe@ellerman.id.au, benh@kernel.crashing.org
+Cc:     paulus@samba.org, lv.ruyi@zte.com.cn,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] powerpc/powernv: fix missing of_node_put in uv_init()
+Date:   Thu,  7 Apr 2022 09:00:43 +0000
+Message-Id: <20220407090043.2491854-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] xen/balloon: fix page onlining when populating new zone
-Content-Language: en-US
-To:     Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
-        linux-kernel@vger.kernel.org
-Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?Q?Marek_Marczykowski-G=c3=b3recki?= 
-        <marmarek@invisiblethingslab.com>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>
-References: <20220406133229.15979-1-jgross@suse.com>
- <89ad978d-e95e-d3ea-5c8f-acf4b28f992c@redhat.com>
- <4f1908b5-5674-a772-3cd9-78e4dc40f776@suse.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <4f1908b5-5674-a772-3cd9-78e4dc40f776@suse.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07.04.22 10:50, Juergen Gross wrote:
-> On 07.04.22 10:23, David Hildenbrand wrote:
->> On 06.04.22 15:32, Juergen Gross wrote:
->>> When onlining a new memory page in a guest the Xen balloon driver is
->>> adding it to the ballooned pages instead making it available to be
->>> used immediately. This is meant to enable to add a new upper memory
->>> limit to a guest via hotplugging memory, without having to assign the
->>> new memory in one go.
->>>
->>> In case the upper memory limit will be raised above 4G, the new memory
->>> will populate the ZONE_NORMAL memory zone, which wasn't populated
->>> before. The newly populated zone won't be added to the list of zones
->>> looked at by the page allocator though, as only zones with available
->>> memory are being added, and the memory isn't yet available as it is
->>> ballooned out.
->>
->> I think we just recently discussed these corner cases on the -mm list.
-> 
-> Indeed.
-> 
->> The issue is having effectively populated zones without manages pages
->> because everything is inflated in a balloon.
-> 
-> Correct.
-> 
->> That can theoretically also happen when managing to fully inflate the
->> balloon in one zone and then, somehow, the zones get rebuilt.
-> 
-> I think you are right. I didn't think of that scenario.
-> 
->> build_zonerefs_node() documents "Add all populated zones of a node to
->> the zonelist" but checks for managed zones, which is wrong.
->>
->> See https://lkml.kernel.org/r/20220201070044.zbm3obsoimhz3xd3@master
-> 
-> I found commit 6aa303defb7454 which introduced this test. I thought
-> it was needed due to the problem this commit tried to solve. Maybe I
-> was wrong and that commit shouldn't have changed the condition when
-> building the zonelist, but just the ones in the allocation paths.
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-In regard to kswapd, that is currently being worked on via
+of_find_compatible_node() returns node pointer with refcount incremented,
+use of_node_put() on it when done.
 
-https://lkml.kernel.org/r/20220329010901.1654-2-richard.weiyang@gmail.com
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+---
+ arch/powerpc/platforms/powernv/ultravisor.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/arch/powerpc/platforms/powernv/ultravisor.c b/arch/powerpc/platforms/powernv/ultravisor.c
+index e4a00ad06f9d..67c8c4b2d8b1 100644
+--- a/arch/powerpc/platforms/powernv/ultravisor.c
++++ b/arch/powerpc/platforms/powernv/ultravisor.c
+@@ -55,6 +55,7 @@ static int __init uv_init(void)
+ 		return -ENODEV;
+ 
+ 	uv_memcons = memcons_init(node, "memcons");
++	of_node_put(node);
+ 	if (!uv_memcons)
+ 		return -ENOENT;
+ 
 -- 
-Thanks,
-
-David / dhildenb
+2.25.1
 
