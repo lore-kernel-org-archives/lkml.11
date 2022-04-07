@@ -2,109 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7752C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:29:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF417C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbiDGUba (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
+        id S229580AbiDGUb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:31:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiDGUbF (ORCPT
+        with ESMTP id S229720AbiDGUbP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:31:05 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D75B48B475
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:16:20 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id b21so8857712ljf.11
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:16:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7OCnmWs2rmr8cYFHTJ+wh670qQpBRmZ1fGvJd72ctMc=;
-        b=R4Gw59DtZuzxqZMIA9QzvVsPxn2Zb3jgT7ik71eBFeCa7eAT9wof86yzK5sh0jam6d
-         nQDAobAftHyP1XJCCDlQ7qjHVDwWxdYiE94YnsPc+W1Geo8Fey6ISugqpJzZC7HTd1IB
-         2CCowFM/iwG3ljgSrbd1yzYCZGVwoVadpVAc6cd9IMQiHMO3En5uyf/u/9qCegwmf49q
-         hNJS2L8V9eUzVbYZPQhmX2auVbUtGC/9J4ePpbkyue/BUZjLK6D/DXMUT36XfuivEBpF
-         QFtPyrhNAmxgl4RDV+ghLnlTfUPqLPmWzDihOKAjIaswAZv4R0BtLhhL5xfwVDWe/dCp
-         ZirA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7OCnmWs2rmr8cYFHTJ+wh670qQpBRmZ1fGvJd72ctMc=;
-        b=oYnyGnFlExohsRqJJ/flQgbRHMwrwwbIBZ/kzwf+9JyU4uZAZE1VschzxQ2KJ0Hli2
-         DH7q0KoL47FGiAgWvKyTXwJyE/ZJV4+P9BVDvMz5t3RirpFf0V4Mv+TX1GiZpwgGkDPu
-         pqQaVtgxeoNxq9ZoIE3/90uTOqkFm3Gqpl47UZtWAWS15io+0KzkVKHM57ujUxJw9/Wk
-         VXOffcUrHc+zEAEFo7krt8XvJDyUZpLY1Xpt5pPp5gf1qsh/8BpozXMKMuKjVj8CiaQF
-         aybThsRJtLBfUlX2/14LuA8ClG5Lj4q6Rwb30Qwq1OXgHQbfFAaghLbgspkPEuWXTpxY
-         YK8Q==
-X-Gm-Message-State: AOAM531LxDgmyPCOliVE52SC3elu1Bn19W04OY1I+1jGDT9mz+NR24Oo
-        nwkknNQVJIp2Zfo9Olg2f0tHjIHsmMHfDQ2o
-X-Google-Smtp-Source: ABdhPJzFjt8Y2FC0EcXNREN9rYFph6MLDJ+pNAArwPdf9YMf6CEER9rq/PpILF8at3Oxu2KoX39Y/w==
-X-Received: by 2002:a5d:59a2:0:b0:204:20d9:a5b9 with SMTP id p2-20020a5d59a2000000b0020420d9a5b9mr11433031wrr.560.1649360147078;
-        Thu, 07 Apr 2022 12:35:47 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id bg8-20020a05600c3c8800b0038e4c5967besm8566885wmb.3.2022.04.07.12.35.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 12:35:46 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RESEND PATCH] dt-bindings: power: renesas,rcar-sysc: drop useless consumer example
-Date:   Thu,  7 Apr 2022 21:35:42 +0200
-Message-Id: <20220407193542.17230-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Thu, 7 Apr 2022 16:31:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815582E933C;
+        Thu,  7 Apr 2022 13:15:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DE1E61EDF;
+        Thu,  7 Apr 2022 20:15:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E67A2C385A4;
+        Thu,  7 Apr 2022 20:15:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649362527;
+        bh=YcLjImFP4RaQwQQLM+DUBkeXsMZ0ABelfYLt5rl8ZJo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=LxDS4vSJbwyGtlTWwUEa9MZHPxat/S9yBdUFdRmlQdzVNh229fNGLLRkMpbI+WyAn
+         KdUSvA2B7If3Eah5orDFv7LgjXho5M8PIK8CZfjo6GkF6JPXrXkKOp6RWBVa1eZsTf
+         ssVTuZg9kumoezcEKhEX8RjAAZeZAoi+YGasnurvvrJg8wP6nzzFDrsT5e8jlzX0he
+         Tg5+o1LmDdQrCUvVHmgtccvCT52X8hasgqI270M3290WPiViofNTMkmDU8diau3vOg
+         gHLoNV4YhURTK5ApJ8O4ox2/UxviiRh6b2Z0cvP5ElYsDECnKF8M6pbjHJbh8Lj4vM
+         zEnQVSuItl/ag==
+Date:   Thu, 7 Apr 2022 22:15:24 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Stephen Kitt <steve@sk2.org>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 01/10] clk: cdce706: use simple i2c probe function
+Message-ID: <Yk9GXDF5MOF574CG@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Stephen Kitt <steve@sk2.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="T6soNZcCxtM6oc+D"
+Content-Disposition: inline
+In-Reply-To: <20220407151831.2371706-11-steve@sk2.org>
+ <20220407151831.2371706-10-steve@sk2.org>
+ <20220407151831.2371706-9-steve@sk2.org>
+ <20220407151831.2371706-8-steve@sk2.org>
+ <20220407151831.2371706-7-steve@sk2.org>
+ <20220407151831.2371706-6-steve@sk2.org>
+ <20220407151831.2371706-5-steve@sk2.org>
+ <20220407151831.2371706-4-steve@sk2.org>
+ <20220407151831.2371706-3-steve@sk2.org>
+ <20220407151831.2371706-2-steve@sk2.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Consumer examples in the bindings of resource providers are trivial,
-useless and duplication of code.  Remove the example code for consumer.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../bindings/power/renesas,rcar-sysc.yaml         | 15 +++------------
- 1 file changed, 3 insertions(+), 12 deletions(-)
+--T6soNZcCxtM6oc+D
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml b/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
-index 62a49ca319ec..bd9608c83c3f 100644
---- a/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
-+++ b/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
-@@ -10,9 +10,11 @@ maintainers:
-   - Geert Uytterhoeven <geert+renesas@glider.be>
-   - Magnus Damm <magnus.damm@gmail.com>
- 
--description:
-+description: |
-   The R-Car (RZ/G) System Controller provides power management for the CPU
-   cores and various coprocessors.
-+  The power domain IDs for consumers are defined in header files::
-+  include.dt-bindings/power/r8*-sysc.h
- 
- properties:
-   compatible:
-@@ -64,14 +66,3 @@ examples:
-             reg = <0xe6180000 0x0200>;
-             #power-domain-cells = <1>;
-     };
--
--  - |
--    // Power Domain consumers
--    #include <dt-bindings/power/r8a7791-sysc.h>
--
--    cache-controller-0 {
--            compatible = "cache";
--            power-domains = <&sysc R8A7791_PD_CA15_SCU>;
--            cache-unified;
--            cache-level = <2>;
--    };
--- 
-2.32.0
+On Thu, Apr 07, 2022 at 05:18:22PM +0200, Stephen Kitt wrote:
+> The i2c probe function here doesn't use the id information provided in
+> its second argument, so the single-parameter i2c probe function
+> ("probe_new") can be used instead.
+>=20
+> This avoids scanning the identifier tables during probes.
+>=20
+> Signed-off-by: Stephen Kitt <steve@sk2.org>
 
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+
+
+--T6soNZcCxtM6oc+D
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJPRlwACgkQFA3kzBSg
+KbYrUQ/+JSPUvf5QADstvq1hDha/ZuwVQmf9RTz5K1BNOgS2w8qnDr6zqe+ve6GK
+WGIv0iC3l9PJPs6bXgf2mnjVPd/JaXPTAtsU7q72J4k+Qiqv/vVoUJEQtxZDBjps
+fhFAXEy0a6YiSKIwsg7LnJ7IqqnBRkju6pp0LWpZ2z73tOhrFXtNwz6IlwSK4lN3
+oEDOgrNRYZh1/KmotDVuWcBrhCI5KvkaamRaEH5u3ZoDR6tannXSVDmowkQ6uYYv
+NDqo1Qj5EzpuggzJYZ34/iwMSaSsO7RMh/7IzE5o62+IeBp0x59L88Ncs9rRuntd
+d5/IEiEkKEKZU3GgBMN0P3k9Xa360WEuvKcRdKJhDBcL/56ACG+uarKzEcrBN3wH
+4OvVBYk3hXdhTiQa8TtyVMNtpvnSQCVGQUpe9Lw4BaYtyM4IAYbKnR4fc39WVtCA
+qLgHYnGkibKn26jYEKLX6AqHTIcd3G/2gfxCo9Hps8ff3uN6sqgwqg66biNcXrZE
+ZHRnTZ7gWKpuyK29AJ4bhLIZiMllcfr7sIr6YrMRIh8Cf6+kjHMM813RlNYLUxOp
+mOhrOqe8L5QSeAJAwuyVxcw5WFWYc5AXi3yBUYACMHPF2BDGk239Ygj56dFldJvP
+DjFrviBmAZu3qWnQyKt/aFMW3YM5D1YiIKMTBApUZhBv5Lk/ZhQ=
+=1TtR
+-----END PGP SIGNATURE-----
+
+--T6soNZcCxtM6oc+D--
