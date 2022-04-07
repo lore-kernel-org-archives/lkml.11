@@ -2,116 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22C4EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3014DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:49:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241352AbiDGGtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 02:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56044 "EHLO
+        id S241395AbiDGGvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 02:51:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235677AbiDGGtE (ORCPT
+        with ESMTP id S241384AbiDGGvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 02:49:04 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2039521A88E;
-        Wed,  6 Apr 2022 23:47:05 -0700 (PDT)
+        Thu, 7 Apr 2022 02:51:02 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 974D9E6C5F
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 23:49:03 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id n6so8713703ejc.13
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 23:49:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649314023; x=1680850023;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=1MUxVLaAVyEjkudarS9QFZG9jUh9u3JUPo9r3Rg6SNY=;
-  b=FeqFEbxhfgkuuzzxnYxhDDXH79bvT7J+1AjU/QrDxMoeuGTxCRPoAVre
-   d+3MLgj3gNA+5x82CbDYhHtlgUFsA96ORE+nJHXCroHn2PYCmB4WgdG1w
-   +Bm/D/LC7J6GTGCwv84tfWQ/k9EswHQMOT3LsSKNr8v0vYjFgA3URCgA5
-   I=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 06 Apr 2022 23:47:03 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 23:47:04 -0700
-Received: from hu-mojha-hyd.qualcomm.com (10.80.80.8) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 6 Apr 2022 23:47:02 -0700
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-To:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
-        Mukesh Ojha <quic_mojha@quicinc.com>
-Subject: [PATCH v2] remoteproc: Use unbounded workqueue for recovery work
-Date:   Thu, 7 Apr 2022 12:16:38 +0530
-Message-ID: <1649313998-1086-1-git-send-email-quic_mojha@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ig1etyDF68tf5y4+B0bKhTRY5wsKZ9GD0NtPhkq4h5I=;
+        b=xrLUcHHwKuNTh4APSk1UhhZeFKYx5/K1fJIzae4MIT/Bg1RYnwCOSqstuf/ZYismFz
+         3CE2yBy2HCiEUJAT/uhluRStnRmtIzabcvauHCUnncDJ8Tef7BPXRE24Slg8eoVuPEed
+         Gjt/OGqI/n7/B0coJmgJrd9Sxx2WmltbunSffJZ7Avw2PXYdaqFgGx6F1GEcu7Rd9r+i
+         Fw3vnDg6Ki+RhIKBcblCZ0hVP5wkbBQBAwZTDUoZVPnkzJZad9y/K6Q/zJlo6TuTbnoe
+         lrCllXvX3vtSI0HhWwYw6WHEmtKRUglMA43DnsjdHGD2e2igUDPwa5MqXOMJ5ezBnman
+         /JbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ig1etyDF68tf5y4+B0bKhTRY5wsKZ9GD0NtPhkq4h5I=;
+        b=dFKTULZgA6ABzSHfNs2rYtoKPE7qQq27HZgaVivWou2oThB05vHUxekJZCgC9PmtY2
+         5UdoVFSYbaoBJVV6CwtBVl7aMqKfFDdY8D9Jz7JEd4eot6Dot4SpQPKg4BKmD6gt9cRr
+         tiTBBrXXegUZ3MjyX6i+SIWUufY5OEQzmhwtkZJ+ZzuL30fOcCo2yJaLHiW6VHa+lXLd
+         K7wPdm6gkzAloR0f0M3zCAjXALRElH15QYPbjcub/M22tsl05xsazjjX2/RzufASTync
+         EQKfEByY3aLL8Q8YDQ+zB4aKEXyyx8xy1R9BOCm7F+D/JtOXZzV+ypcCjNap16Mm/MVd
+         Vr+w==
+X-Gm-Message-State: AOAM532Zq/AC5B127jw1NmY2wSxgHRluM9Wtfh09QPwinZnIAuvLiFE9
+        QkzdFqhHmEuyPgiNm+HzXCuE3Tz2C4ixHO5u
+X-Google-Smtp-Source: ABdhPJyI+a19I669vtBg9dpBsKeqt/6i1D7etaTUE8OFw7G4q33l4BRlM1qJgUjqaoH0PJSjKLZYdA==
+X-Received: by 2002:a17:907:608d:b0:6e7:f1d1:ff42 with SMTP id ht13-20020a170907608d00b006e7f1d1ff42mr12405023ejc.620.1649314142185;
+        Wed, 06 Apr 2022 23:49:02 -0700 (PDT)
+Received: from [192.168.0.185] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id s10-20020a50daca000000b0041cc361b1c9sm5877690edj.68.2022.04.06.23.49.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 23:49:01 -0700 (PDT)
+Message-ID: <594c124d-403f-56f1-b9fb-f48042d7056b@linaro.org>
+Date:   Thu, 7 Apr 2022 08:49:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.47.97.222)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 1/3] dt-bindings: display: mediatek: Correct disp_aal
+ binding for MT8183
+Content-Language: en-US
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     matthias.bgg@gmail.com, p.zabel@pengutronix.de, airlied@linux.ie,
+        yongqiang.niu@mediatek.com, jason-jh.lin@mediatek.com,
+        nancy.lin@mediatek.com, allen-kh.cheng@mediatek.com,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220406094654.29722-1-rex-bc.chen@mediatek.com>
+ <20220406094654.29722-2-rex-bc.chen@mediatek.com>
+ <397e30c2-18c3-93d6-16f5-b113be77f51a@linaro.org>
+ <c9a54f1c9350d63489a0f85443f5623fe5d7fe1d.camel@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <c9a54f1c9350d63489a0f85443f5623fe5d7fe1d.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There could be a scenario where there is too much load on a core
-(n number of tasks which is affined) or in a case when multiple
-rproc subsystem is going for a recovery and they queued recovery
-work to one core so even though subsystem are independent there
-recovery will be delayed if one of the subsystem recovery work
-is taking more time in completing.
+On 07/04/2022 08:22, Rex-BC Chen wrote:
+> On Wed, 2022-04-06 at 16:44 +0200, Krzysztof Kozlowski wrote:
+>> On 06/04/2022 11:46, Rex-BC Chen wrote:
+>>> The driver data of MT8183 and MT8173 are different.
+>>> The value of has_gamma for MT8173 is true while the value of MT8183
+>>> is
+>>> false. Therefore, the compatible of disp_aal for MT8183 is not
+>>> suitable
+>>> for the compatible for MT8173.
+>>
+>> Just because one feature is not supported, it does not mean they are
+>> incompatible, which you claim in the patch below. Are you sure they
+>> are
+>> really incompatible and MT8173 fallback cannot be used?
+>>
+>>
+>> Best regards,
+>> Krzysztof
+> 
+> Hello Krzysztof,
+> 
+> Thanks for your review.
+> 
+> The difference of disp_aal for each MediaTek SoCs is "has_gamma".
+> And we only control this variable for different MediaTek SoCs.
+> 
+> The value of has_gamma for MT8173 is true.
+> The value of has_gamma for MT8183 is false. (Moreover, the driver data
+> is null for MT8183)
+> 
+> From this situation, I think it's not compatible between MT8173 and
+> MT8183.
 
-If we make this queue unbounded, the recovery work could be picked
-on any cpu. This patch try to address this.
+You repeated the commit msg without bringing any new information... but
+let it be, I assume setting gamma on MTT8183 is incorrect or produces
+wrong results.
 
-Signed-off-by: Mukesh Ojha <quic_mojha@quicinc.com>
----
-Changes in v2:
-  - Removed WQ_HIGHPRI.
-  - Updated commit text.
 
- drivers/remoteproc/remoteproc_core.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-index c510125..18bab67 100644
---- a/drivers/remoteproc/remoteproc_core.c
-+++ b/drivers/remoteproc/remoteproc_core.c
-@@ -59,6 +59,7 @@ static int rproc_release_carveout(struct rproc *rproc,
- 
- /* Unique indices for remoteproc devices */
- static DEFINE_IDA(rproc_dev_index);
-+static struct workqueue_struct *rproc_recovery_wq;
- 
- static const char * const rproc_crash_names[] = {
- 	[RPROC_MMUFAULT]	= "mmufault",
-@@ -2755,8 +2756,7 @@ void rproc_report_crash(struct rproc *rproc, enum rproc_crash_type type)
- 	dev_err(&rproc->dev, "crash detected in %s: type %s\n",
- 		rproc->name, rproc_crash_to_string(type));
- 
--	/* Have a worker handle the error; ensure system is not suspended */
--	queue_work(system_freezable_wq, &rproc->crash_handler);
-+	queue_work(rproc_recovery_wq, &rproc->crash_handler);
- }
- EXPORT_SYMBOL(rproc_report_crash);
- 
-@@ -2805,6 +2805,11 @@ static void __exit rproc_exit_panic(void)
- 
- static int __init remoteproc_init(void)
- {
-+	rproc_recovery_wq = alloc_workqueue("rproc_recovery_wq",
-+						WQ_UNBOUND | WQ_FREEZABLE, 0);
-+	if (!rproc_recovery_wq)
-+		pr_err("remoteproc: creation of rproc_recovery_wq failed\n");
-+
- 	rproc_init_sysfs();
- 	rproc_init_debugfs();
- 	rproc_init_cdev();
-@@ -2821,6 +2826,8 @@ static void __exit remoteproc_exit(void)
- 	rproc_exit_panic();
- 	rproc_exit_debugfs();
- 	rproc_exit_sysfs();
-+	if (rproc_recovery_wq)
-+		destroy_workqueue(rproc_recovery_wq);
- }
- module_exit(remoteproc_exit);
- 
--- 
-2.7.4
-
+Best regards,
+Krzysztof
