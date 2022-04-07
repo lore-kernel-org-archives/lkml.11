@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07166C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28046C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244358AbiDGKdm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 06:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
+        id S244345AbiDGKds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 06:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244287AbiDGKdO (ORCPT
+        with ESMTP id S244293AbiDGKdO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 06:33:14 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8E339161;
-        Thu,  7 Apr 2022 03:31:08 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id dr20so9835822ejc.6;
-        Thu, 07 Apr 2022 03:31:08 -0700 (PDT)
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F138A6CA;
+        Thu,  7 Apr 2022 03:31:11 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id k2so5842990edj.9;
+        Thu, 07 Apr 2022 03:31:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7YEqjlB8bsXZ45gzNCMwH2JxmTxm4dwtRKumhhyyThw=;
-        b=U64EZxGRbbD6pcGGxysdvb6UC8spWf9j4i/wUJz5ddDFhoazBBRgniBsbGKwfcoyB6
-         Y3R4h1Jtnl+dMLUOBbQ3Mbtm240Zz7D8ggLMYTHXI8X/jbDk1z9cYJGh/sLyB33Q2ux0
-         KIgo/Wp5dSFk/3NP6hRm8dkwZGAsHMDsOZULMSXvK/IP8Y9KLG1lBXjHYOTqUGyNCicZ
-         wDNvabeOOARFjYAssvgtqouuoCfNlxKTBH/1005bkg7MdUe5xwWfEjQv76oDHtA04/ZY
-         /HuBH2goLAhsQSwB7tRtkJ3V7VOarq6n22XJJGBdtp/b0lvGwyiWMwrDLCGrNCYZf+tp
-         8R0Q==
+        bh=LXuHnml0JyQ7WUWtSyqxCdcrvdOAihH7ECEcB+ac3FQ=;
+        b=UO2thwdFQIwezldvMHYU+ye9tZTtvNLlmY23CqaOO92X4B+g3Vio1ebPrFn37X1c0p
+         zDbJw8xG5ELmkRDNCHYKPMI6PByu/T+4XKDeTFYfPla4cyhVWpnCRRUdzWrD8r22LLiq
+         LYWvm+jsWpIjYe1mJBw+pCIxqKLhlg9b6+hrW5jm8hdd0QcgIywz1NLJf9epRNitoMI3
+         rRDr5g2GEjDr5MbV2LR/fi/Y6grbdZtQbvDOP/qP6A1cGNrZczf+/zEAs/8wKBpia+Tc
+         5acHVDvHJ+ZyqqccAaCclfK/iv8Ms/hvIG93ImicRaO4ty/nHntQ4MaVGTVRAcKTuwWE
+         ZXpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7YEqjlB8bsXZ45gzNCMwH2JxmTxm4dwtRKumhhyyThw=;
-        b=8NRRyfbTZZ1dPxy/6s49kZKoVfMueFRZMJvAVhUCRShVTxWA6jAnjXCiBCgkfcFSi8
-         bOpZe2Xx1CI8226KLu5C0vux9stTJhYJNZlGBgeX+6S4+siwkbmr/fJHKMwLXOYlmaG3
-         SRNGVZBZe/z6+jUrk70ArnxOkEr7drTEFkwOywN7E0RjBkKP99m9Lbq2xyUtg6umcSve
-         dEfzPCEvPHd8KhGDDplwFO5W9ehJ9ZnsfzN71FguA3vNVA10OANCwlLtjS8P8YnUdEIr
-         8A6RLQWPO+UQfeiVV6u0Qaphz7F78YVlUg5VAMme9nQUYKyR0Rx5UfuATAEuPi8NnTFN
-         ycSw==
-X-Gm-Message-State: AOAM530f8uiloqzN1DY3U0KKxJxkKPLUA0Ww+7VxU6GOiLQp2actP7L3
-        riD7/YNocVP96NxkWkRzK70=
-X-Google-Smtp-Source: ABdhPJzfK7J/oVVIzBQuOre8YptTYXi0JAQavlyqub2o6edmGoAwWmVzAvj4GmM2kfON5LuClIxWJQ==
-X-Received: by 2002:a17:907:3f92:b0:6e7:2ad3:a92b with SMTP id hr18-20020a1709073f9200b006e72ad3a92bmr13146230ejc.239.1649327467049;
-        Thu, 07 Apr 2022 03:31:07 -0700 (PDT)
+        bh=LXuHnml0JyQ7WUWtSyqxCdcrvdOAihH7ECEcB+ac3FQ=;
+        b=BvZm+NOtnQXiCHa8ZHfUn8pq/OxCBU5OfgBi3bWI2fpSi/d73r9Ox95hC2Lzl8mKj5
+         QybHInEBKuehQfDmDYjFhpDi9Gom1J7yxu8y9k6g8MP2LF+N2HDwBuzGR0wzatJshKtA
+         SIX3At4+b/IMyLNfAq3VghNYG4gVR2ktz6Cb39BsdfuJOGt7xF1ZsQZMQ/Q5NPvMBAal
+         xLoQUhI57PyWiQOnwvZwMH0YVRyPVJtRrHRnAmjfFRDgFdxVFJgQuoAUjNm0RetqXpLi
+         QNL0+euc8jUW11fstLFjM0jt6QKIxOKqRYs8+XwKE4hUBka5s1GiOf5DL+zJggbiWPlt
+         +Okg==
+X-Gm-Message-State: AOAM530uuz7pyUdUsrS7ou3qlPIWaPsmceegNHsfOY4AcZARZpU7h24i
+        vwaJ6+PFUSwUPAK2EqHesg8=
+X-Google-Smtp-Source: ABdhPJz2+NZqSeirvVVj4bPDnx4stHslOcY9HYpOhyAxlH22T2QC0Dx7b5z5Dgu00nmuL53HkE4z+Q==
+X-Received: by 2002:a05:6402:2706:b0:418:fcb2:3a02 with SMTP id y6-20020a056402270600b00418fcb23a02mr13435824edd.111.1649327469766;
+        Thu, 07 Apr 2022 03:31:09 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm7413573ejz.57.2022.04.07.03.31.05
+        by smtp.googlemail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm7413573ejz.57.2022.04.07.03.31.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 03:31:06 -0700 (PDT)
+        Thu, 07 Apr 2022 03:31:09 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -80,9 +80,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next 05/15] net: sparx5: Replace usage of found with dedicated list iterator variable
-Date:   Thu,  7 Apr 2022 12:28:50 +0200
-Message-Id: <20220407102900.3086255-6-jakobkoschel@gmail.com>
+Subject: [PATCH net-next 07/15] qed: Replace usage of found with dedicated list iterator variable
+Date:   Thu,  7 Apr 2022 12:28:52 +0200
+Message-Id: <20220407102900.3086255-8-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220407102900.3086255-1-jakobkoschel@gmail.com>
 References: <20220407102900.3086255-1-jakobkoschel@gmail.com>
@@ -106,63 +106,64 @@ the variable was set, can determine if the break/goto was hit.
 Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- .../microchip/sparx5/sparx5_mactable.c        | 25 +++++++++----------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c | 26 ++++++++++-----------
+ 1 file changed, 12 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
-index a5837dbe0c7e..bb8d9ce79ac2 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
-@@ -362,8 +362,7 @@ static void sparx5_mact_handle_entry(struct sparx5 *sparx5,
- 				     unsigned char mac[ETH_ALEN],
- 				     u16 vid, u32 cfg2)
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+index 1d1d4caad680..198c9321bf51 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_iwarp.c
+@@ -1630,38 +1630,36 @@ static struct qed_iwarp_listener *
+ qed_iwarp_get_listener(struct qed_hwfn *p_hwfn,
+ 		       struct qed_iwarp_cm_info *cm_info)
  {
--	struct sparx5_mact_entry *mact_entry;
+-	struct qed_iwarp_listener *listener = NULL;
++	struct qed_iwarp_listener *listener = NULL, *iter;
+ 	static const u32 ip_zero[4] = { 0, 0, 0, 0 };
 -	bool found = false;
-+	struct sparx5_mact_entry *mact_entry = NULL, *iter;
- 	u16 port;
  
- 	if (LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_ADDR_TYPE_GET(cfg2) !=
-@@ -378,28 +377,28 @@ static void sparx5_mact_handle_entry(struct sparx5 *sparx5,
- 		return;
- 
- 	mutex_lock(&sparx5->mact_lock);
--	list_for_each_entry(mact_entry, &sparx5->mact_entries, list) {
--		if (mact_entry->vid == vid &&
--		    ether_addr_equal(mac, mact_entry->mac)) {
--			found = true;
--			mact_entry->flags |= MAC_ENT_ALIVE;
--			if (mact_entry->port != port) {
-+	list_for_each_entry(iter, &sparx5->mact_entries, list) {
-+		if (iter->vid == vid &&
-+		    ether_addr_equal(mac, iter->mac)) {
-+			iter->flags |= MAC_ENT_ALIVE;
-+			if (iter->port != port) {
- 				dev_warn(sparx5->dev, "Entry move: %d -> %d\n",
--					 mact_entry->port, port);
--				mact_entry->port = port;
--				mact_entry->flags |= MAC_ENT_MOVED;
-+					 iter->port, port);
-+				iter->port = port;
-+				iter->flags |= MAC_ENT_MOVED;
+-	list_for_each_entry(listener,
++	list_for_each_entry(iter,
+ 			    &p_hwfn->p_rdma_info->iwarp.listen_list,
+ 			    list_entry) {
+-		if (listener->port == cm_info->local_port) {
+-			if (!memcmp(listener->ip_addr,
++		if (iter->port == cm_info->local_port) {
++			if (!memcmp(iter->ip_addr,
+ 				    ip_zero, sizeof(ip_zero))) {
+-				found = true;
++				listener = iter;
+ 				break;
  			}
- 			/* Entry handled */
-+			mact_entry = iter;
- 			break;
+ 
+-			if (!memcmp(listener->ip_addr,
++			if (!memcmp(iter->ip_addr,
+ 				    cm_info->local_ip,
+ 				    sizeof(cm_info->local_ip)) &&
+-			    (listener->vlan == cm_info->vlan)) {
+-				found = true;
++			    iter->vlan == cm_info->vlan) {
++				listener = iter;
+ 				break;
+ 			}
  		}
  	}
- 	mutex_unlock(&sparx5->mact_lock);
  
--	if (found && !(mact_entry->flags & MAC_ENT_MOVED))
-+	if (mact_entry && !(mact_entry->flags & MAC_ENT_MOVED))
- 		/* Present, not moved */
- 		return;
+-	if (found) {
++	if (listener)
+ 		DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "listener found = %p\n",
+ 			   listener);
+-		return listener;
+-	}
++	else
++		DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "listener not found\n");
  
--	if (!found) {
-+	if (!mact_entry) {
- 		/* Entry not found - now add */
- 		mact_entry = alloc_mact_entry(sparx5, mac, vid, port);
- 		if (!mact_entry)
+-	DP_VERBOSE(p_hwfn, QED_MSG_RDMA, "listener not found\n");
+-	return NULL;
++	return listener;
+ }
+ 
+ static int
 -- 
 2.25.1
 
