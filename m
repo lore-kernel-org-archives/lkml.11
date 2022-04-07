@@ -2,87 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEA0C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C940C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 02:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232733AbiDGCTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 22:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53536 "EHLO
+        id S231408AbiDGCSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 22:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232103AbiDGCS5 (ORCPT
+        with ESMTP id S229919AbiDGCSv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 22:18:57 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5377F94C6;
-        Wed,  6 Apr 2022 19:16:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649297818; x=1680833818;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=llF4ThJA8WXHbpmx9IR7QlE6waiGypoC/axSTEFWsaU=;
-  b=U1NkePxPQ8xO6B2xi3K/Mb6zofXd2B0gxKhi3GMCS/mx0Zaca7FyWL81
-   v2O0IvNeVz2K9HRTkmEmbGbeDGPypV2J+7ei/zesjMo1oyncdLZsYg7fN
-   l8aOk8WLinlKb1lIVQkzArN53/cRqPqbQkRlr3TWzUqn7QIj/qv6VqvSU
-   tQ7hWNEwAmI4LD4w2yty2uzBE/I1MyoIj0B0D3y1xSjP39ujysMCRLila
-   D4N+XFD7qjMP59DNx8UUjLQaRTRFkOUHWCuPQ45wJclZvbx046AhMfy7g
-   xifkikx9k6gMUvyKNKvE3UhXqW/bar6L77I47sgH4hyTAWJZquRscfjSs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="321901648"
-X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="321901648"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 19:16:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="524183462"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga002.jf.intel.com with ESMTP; 06 Apr 2022 19:16:56 -0700
-Date:   Thu, 7 Apr 2022 10:09:35 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Tom Rix <trix@redhat.com>
-Cc:     Marco Pagani <marpagan@redhat.com>,
-        Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fpga: altera-pr-ip: fix unsigned comparison with less
-  than zero
-Message-ID: <20220407020935.GA256292@yilunxu-OptiPlex-7050>
-References: <20220405185349.220607-1-marpagan@redhat.com>
- <d39cdc4c-0dc5-f929-17fa-ffbaf9e767c7@redhat.com>
+        Wed, 6 Apr 2022 22:18:51 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C8CE5E14;
+        Wed,  6 Apr 2022 19:16:51 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 7 Apr 2022
+ 10:16:50 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 7 Apr
+ 2022 10:16:49 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>
+CC:     Haowen Bai <baihaowen@meizu.com>, <linux-s390@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH V3] s390: Simplify the calculation of variables
+Date:   Thu, 7 Apr 2022 10:16:47 +0800
+Message-ID: <1649297808-5048-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <6208840a-bb97-6b45-7b8e-80ad79849129@linux.ibm.com>
+References: <6208840a-bb97-6b45-7b8e-80ad79849129@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d39cdc4c-0dc5-f929-17fa-ffbaf9e767c7@redhat.com>
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 07:18:21AM -0700, Tom Rix wrote:
-> 
-> On 4/5/22 11:53 AM, Marco Pagani wrote:
-> > Fix the "comparison with less than zero" warning reported by
-> > cppcheck for the unsigned (size_t) parameter "count" of the
-> > "alt_pr_fpga_write()" function.
-> > 
-> > Signed-off-by: Marco Pagani <marpagan@redhat.com>
-> > ---
-> >   drivers/fpga/altera-pr-ip-core.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/fpga/altera-pr-ip-core.c b/drivers/fpga/altera-pr-ip-core.c
-> > index be0667968d33..2ff3d8e46a0c 100644
-> > --- a/drivers/fpga/altera-pr-ip-core.c
-> > +++ b/drivers/fpga/altera-pr-ip-core.c
-> > @@ -108,7 +108,7 @@ static int alt_pr_fpga_write(struct fpga_manager *mgr, const char *buf,
-> >   	u32 *buffer_32 = (u32 *)buf;
-> >   	size_t i = 0;
-> > -	if (count <= 0)
-> > +	if (count == 0)
-> >   		return -EINVAL;
-> 
-> Reviewed-by: Tom Rix <trix@redhat.com>
+Fix the following coccicheck warnings:
+./arch/s390/include/asm/scsw.h:695:47-49: WARNING
+ !A || A && B is equivalent to !A || B
 
-Acked-by: Xu Yilun <yilun.xu@intel.com>
+I apply a readable version just to get rid of a warning.
 
-> 
-> >   	/* Write out the complete 32-bit chunks */
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+V1->V2: apply a readable and simple version as suggestion.
+V2->V3: scsw->tm instead of scsw->cmd; fix logic flow as suggestion.
+
+ arch/s390/include/asm/scsw.h | 79 +++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 64 insertions(+), 15 deletions(-)
+
+diff --git a/arch/s390/include/asm/scsw.h b/arch/s390/include/asm/scsw.h
+index a7c3ccf681da..5cb893706d66 100644
+--- a/arch/s390/include/asm/scsw.h
++++ b/arch/s390/include/asm/scsw.h
+@@ -508,9 +508,21 @@ static inline int scsw_cmd_is_valid_zcc(union scsw *scsw)
+  */
+ static inline int scsw_cmd_is_valid_ectl(union scsw *scsw)
+ {
+-	return (scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND) &&
+-	       !(scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS) &&
+-	       (scsw->cmd.stctl & SCSW_STCTL_ALERT_STATUS);
++	/* Must be status pending. */
++	if (!(scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND))
++		return 0;
++
++	/* Must have alert status. */
++	if (!(scsw->cmd.stctl & SCSW_STCTL_ALERT_STATUS))
++		return 0;
++
++	/* Must be alone or together with primary, secondary or both,
++	 * => no intermediate status.
++	 */
++	if (scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS)
++		return 0;
++
++	return 1;
+ }
+ 
+ /**
+@@ -522,10 +533,25 @@ static inline int scsw_cmd_is_valid_ectl(union scsw *scsw)
+  */
+ static inline int scsw_cmd_is_valid_pno(union scsw *scsw)
+ {
+-	return (scsw->cmd.fctl != 0) &&
+-	       (scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND) &&
+-	       (!(scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS) ||
+-		  (scsw->cmd.actl & SCSW_ACTL_SUSPENDED));
++	/* Must indicate at least one I/O function. */
++	if (!scsw->cmd.fctl)
++		return 0;
++
++	/* Must be status pending. */
++	if (!(scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND))
++		return 0;
++
++	/* Can be status pending alone, or with any combination of primary,
++	 * secondary and alert => no intermediate status.
++	 */
++	if (!(scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS))
++		return 1;
++
++	/* If intermediate, must be suspended. */
++	if (scsw->cmd.actl & SCSW_ACTL_SUSPENDED)
++		return 1;
++
++	return 0;
+ }
+ 
+ /**
+@@ -675,9 +700,21 @@ static inline int scsw_tm_is_valid_q(union scsw *scsw)
+  */
+ static inline int scsw_tm_is_valid_ectl(union scsw *scsw)
+ {
+-	return (scsw->tm.stctl & SCSW_STCTL_STATUS_PEND) &&
+-	       !(scsw->tm.stctl & SCSW_STCTL_INTER_STATUS) &&
+-	       (scsw->tm.stctl & SCSW_STCTL_ALERT_STATUS);
++	/* Must be status pending. */
++	if (!(scsw->tm.stctl & SCSW_STCTL_STATUS_PEND))
++		return 0;
++
++	/* Must have alert status. */
++	if (!(scsw->tm.stctl & SCSW_STCTL_ALERT_STATUS))
++		return 0;
++
++	/* Must be alone or together with primary, secondary or both,
++	 * => no intermediate status.
++	 */
++	if (scsw->tm.stctl & SCSW_STCTL_INTER_STATUS)
++		return 0;
++
++	return 1;
+ }
+ 
+ /**
+@@ -689,11 +725,25 @@ static inline int scsw_tm_is_valid_ectl(union scsw *scsw)
+  */
+ static inline int scsw_tm_is_valid_pno(union scsw *scsw)
+ {
+-	return (scsw->tm.fctl != 0) &&
+-	       (scsw->tm.stctl & SCSW_STCTL_STATUS_PEND) &&
+-	       (!(scsw->tm.stctl & SCSW_STCTL_INTER_STATUS) ||
+-		 ((scsw->tm.stctl & SCSW_STCTL_INTER_STATUS) &&
+-		  (scsw->tm.actl & SCSW_ACTL_SUSPENDED)));
++	/* Must indicate at least one I/O function. */
++	if (!scsw->tm.fctl)
++		return 0;
++
++	/* Must be status pending. */
++	if (!(scsw->tm.stctl & SCSW_STCTL_STATUS_PEND))
++		return 0;
++
++	/* Can be status pending alone, or with any combination of primary,
++	 * secondary and alert => no intermediate status.
++	 */
++	if (!(scsw->tm.stctl & SCSW_STCTL_INTER_STATUS))
++		return 1;
++
++	/* If intermediate, must be suspended. */
++	if (scsw->tm.actl & SCSW_ACTL_SUSPENDED)
++		return 1;
++
++	return 0;
+ }
+ 
+ /**
+-- 
+2.7.4
+
