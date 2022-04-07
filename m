@@ -2,151 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34F9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37EC6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346130AbiDGRZL (ORCPT
+        id S1346181AbiDGRZR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:25:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
+        Thu, 7 Apr 2022 13:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346139AbiDGRYJ (ORCPT
+        with ESMTP id S1346141AbiDGRYN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:24:09 -0400
+        Thu, 7 Apr 2022 13:24:13 -0400
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A38213F42;
-        Thu,  7 Apr 2022 10:22:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13692DA9F;
+        Thu,  7 Apr 2022 10:22:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Cc:To:From:content-disposition;
-        bh=8A2LLz32tCEzRewNnQLykD+6PqGRxl8cxRVvTKPtTeQ=; b=MbTP8kOnFBzPY2nh4TMKjRI/O2
-        fxolg8y0bbcKWFS/oE8KzsRTLvDVNWeuZyAsSzuu4l/yEPxMQFY5AAHDOiasLJUJlP8D6evspaHDu
-        fIlLlEyJb1Dbq4rwCiPsSG69WF5Gzk5alMcQAvI1r2zFqMXQx6Prvl+qCeYPWDoWKz7mgifxgRhof
-        R6Rs5Y2YV8M7y0krVNAnEk2PdE6T+WDxmtPiRFlywuiltEbKTm2+94Q1kJRf7/q5NR/UqMEJgRPRE
-        RBfTsviOzYOkzhUGwKaDvegje8pgSi1bQl4A+fiW10sRs+hJu4neqMMcDqfctGCQ4qXNHATEtRjKW
-        MxNEW7hg==;
+        bh=Nx50PJtvGhphGZXf/1XGmZRg6RGOlaGtqP7f50ukagw=; b=jzm7m5DYH4sfzjYBB8mLijU5Mu
+        8yjfUysXi6ZAqs3yL1ob6tiPOBWuLjowWMQM5MNBbA8fiUTS0HKoMiy3G636mVtT3/1mUfXdEXNv1
+        KparX8YnOZmwmCSiKji0FXpI0tFNCrypJrr9n86GpGFizaVlBHqWocqQrQPaV8Fz0a2TQKS2odOKt
+        Xlu683AaYUFZ+Cn+nsa8JQCXH7eMVRlcGrJ0/7yTrfVIeVSIxByPcpnPuEDZLoFmQk+JJv+Wkhyoq
+        UpAgsJlvYd73eZsD0WtwYOGwrB8dHpNMf8EAMJPmF0hQRhOt1pB+YssSv3tylIT8VYXPVrE5oO0/W
+        Pu5YgCfQ==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
         by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1ncVG1-002CHo-9v; Thu, 07 Apr 2022 10:45:19 -0600
+        id 1ncUMJ-002BBh-Mu; Thu, 07 Apr 2022 09:47:44 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1ncVG0-0002Dk-Dr; Thu, 07 Apr 2022 10:45:16 -0600
+        id 1ncUME-00022I-Vr; Thu, 07 Apr 2022 09:47:39 -0600
 From:   Logan Gunthorpe <logang@deltatee.com>
-To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>
-Cc:     Shaohua Li <shli@kernel.org>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Stephen Bates <sbates@raithlin.com>,
-        Martin Oliveira <Martin.Oliveira@eideticom.com>,
-        David Sloan <David.Sloan@eideticom.com>,
+To:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-mm@kvack.org, iommu@lists.linux-foundation.org
+Cc:     Stephen Bates <sbates@raithlin.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Don Dutile <ddutile@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Jakowski Andrzej <andrzej.jakowski@intel.com>,
+        Minturn Dave B <dave.b.minturn@intel.com>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Xiong Jianxin <jianxin.xiong@intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Martin Oliveira <martin.oliveira@eideticom.com>,
+        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
         Logan Gunthorpe <logang@deltatee.com>
-Date:   Thu,  7 Apr 2022 10:45:07 -0600
-Message-Id: <20220407164511.8472-5-logang@deltatee.com>
+Date:   Thu,  7 Apr 2022 09:47:14 -0600
+Message-Id: <20220407154717.7695-19-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220407164511.8472-1-logang@deltatee.com>
-References: <20220407164511.8472-1-logang@deltatee.com>
+In-Reply-To: <20220407154717.7695-1-logang@deltatee.com>
+References: <20220407154717.7695-1-logang@deltatee.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, shli@kernel.org, guoqing.jiang@linux.dev, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com
+X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com, logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v1 4/8] md/raid5: Make common label for schedule/retry in raid5_make_request()
+Subject: [PATCH v6 18/21] block: set FOLL_PCI_P2PDMA in __bio_iov_iter_get_pages()
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Cleanup the code to make a common label for the schedule,
-prepare_to_wait() and retry path. This drops the do_prepare boolean.
-
-This requires moveing the prepare_to_wait() above the
-read_seqcount_begin() call on the retry path. However there's no
-appearant requirement for ordering between these two calls.
-
-This should hopefully be easier to read rather than following the
-extra do_prepare boolean, but it will also be used in a subsequent
-patch to add more code common to all schedule() calls.
+When a bio's queue supports PCI P2PDMA, set FOLL_PCI_P2PDMA for
+iov_iter_get_pages_flags(). This allows PCI P2PDMA pages to be passed
+from userspace and enables the O_DIRECT path in iomap based filesystems
+and direct to block devices.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 ---
- drivers/md/raid5.c | 24 ++++++++++--------------
- 1 file changed, 10 insertions(+), 14 deletions(-)
+ block/bio.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-index be01c4515f0e..f963ffb35484 100644
---- a/drivers/md/raid5.c
-+++ b/drivers/md/raid5.c
-@@ -5742,7 +5742,6 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
- 	struct stripe_head *sh;
- 	const int rw = bio_data_dir(bi);
- 	DEFINE_WAIT(w);
--	bool do_prepare;
- 	bool do_flush = false;
+diff --git a/block/bio.c b/block/bio.c
+index 3406c0450db3..271a720a6dc1 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -1149,6 +1149,7 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ 	struct bio_vec *bv = bio->bi_io_vec + bio->bi_vcnt;
+ 	struct page **pages = (struct page **)bv;
+ 	bool same_page = false;
++	unsigned int flags = 0;
+ 	ssize_t size, left;
+ 	unsigned len, i;
+ 	size_t offset;
+@@ -1161,7 +1162,12 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
+ 	BUILD_BUG_ON(PAGE_PTRS_PER_BVEC < 2);
+ 	pages += entries_left * (PAGE_PTRS_PER_BVEC - 1);
  
- 	if (unlikely(bi->bi_opf & REQ_PREFLUSH)) {
-@@ -5803,13 +5802,9 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
- 		int previous;
- 		int seq;
- 
--		do_prepare = false;
- 	retry:
- 		seq = read_seqcount_begin(&conf->gen_lock);
- 		previous = 0;
--		if (do_prepare)
--			prepare_to_wait(&conf->wait_for_overlap, &w,
--				TASK_UNINTERRUPTIBLE);
- 		if (unlikely(conf->reshape_progress != MaxSector)) {
- 			/* spinlock is needed as reshape_progress may be
- 			 * 64bit on a 32bit platform, and so it might be
-@@ -5829,9 +5824,7 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
- 				    ? logical_sector < conf->reshape_safe
- 				    : logical_sector >= conf->reshape_safe) {
- 					spin_unlock_irq(&conf->device_lock);
--					schedule();
--					do_prepare = true;
--					goto retry;
-+					goto schedule_and_retry;
- 				}
- 			}
- 			spin_unlock_irq(&conf->device_lock);
-@@ -5872,9 +5865,7 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
- 			spin_unlock_irq(&conf->device_lock);
- 			if (must_retry) {
- 				raid5_release_stripe(sh);
--				schedule();
--				do_prepare = true;
--				goto retry;
-+				goto schedule_and_retry;
- 			}
- 		}
- 		if (read_seqcount_retry(&conf->gen_lock, seq)) {
-@@ -5891,9 +5882,7 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
- 			 */
- 			md_wakeup_thread(mddev->thread);
- 			raid5_release_stripe(sh);
--			schedule();
--			do_prepare = true;
--			goto retry;
-+			goto schedule_and_retry;
- 		}
- 
- 		if (stripe_can_batch(sh))
-@@ -5913,6 +5902,13 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
- 			atomic_inc(&conf->preread_active_stripes);
- 
- 		release_stripe_plug(mddev, sh);
-+		continue;
+-	size = iov_iter_get_pages(iter, pages, LONG_MAX, nr_pages, &offset);
++	if (bio->bi_bdev && bio->bi_bdev->bd_disk &&
++	    blk_queue_pci_p2pdma(bio->bi_bdev->bd_disk->queue))
++		flags |= FOLL_PCI_P2PDMA;
 +
-+schedule_and_retry:
-+		schedule();
-+		prepare_to_wait(&conf->wait_for_overlap, &w,
-+				TASK_UNINTERRUPTIBLE);
-+		goto retry;
- 	}
- 	finish_wait(&conf->wait_for_overlap, &w);
++	size = iov_iter_get_pages_flags(iter, pages, LONG_MAX, nr_pages,
++					&offset, flags);
+ 	if (unlikely(size <= 0))
+ 		return size ? size : -EFAULT;
  
 -- 
 2.30.2
