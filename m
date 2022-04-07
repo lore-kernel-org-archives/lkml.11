@@ -2,99 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF393C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0EE8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242524AbiDGIAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33876 "EHLO
+        id S242507AbiDGIAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242499AbiDGIAT (ORCPT
+        with ESMTP id S242518AbiDGIA0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:00:19 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7686A062
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:58:19 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id dr20so9067095ejc.6
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 00:58:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fC6I6LDKsU1dL3jt1bsaP5phqIETRSXO+VpMuWduiYY=;
-        b=NAZwd9Y1aI51SSrlItLOHf6v0nHWXaJbmoEqV+YhgRAyLkkoxOa5cltHyIpiWq+udo
-         Q7pm4lK8hOLsOzBI6fZ0h3sFvUw9+YHii8xE/FsSNofSfHQ0dhfETHfTTpNZrIBuHNm0
-         yb4bXva/J1xsiIbj0hXVpqs3MtfaN7MMDHTWFU+eXCSvteTggFOx9vHS5qOr5XWeaBVe
-         Xjvlp205sGeqb7kZvudhePFw89bLO1AguIPSd1gmuTNIx3oo1TWn7WQK+f7fe536o33s
-         HdCOo1Nz8dyW9L/ITGsOQANC/UxkLUA78xsEx/0lgLvFej2PU3pKfrd32YCqcTuLuWTw
-         rxCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fC6I6LDKsU1dL3jt1bsaP5phqIETRSXO+VpMuWduiYY=;
-        b=wsiJ81fJABHHdqBhRsxsleysUBeSjzIk3i+13samKq62KcBwbuVmUYIcIRDwR0xGkr
-         0OskSHEteBdq/oxX6xVlplhkyzEVsKeqfTsRg8MI/QcjipVdyeUp33QFr3PTaN6IXbWe
-         it9k8pYQGh6HUsDyD+onwVj+dWNNBBYvUsxeOmAyOxB3YU96y442rd/q/hgzvoZKJolx
-         lxeDry9EpffjkDTCS0T/OFZYW9hAzHUu4keEXAXGtXPOSuWNdZiAaQu59sn/3oI/kSwG
-         r2FMs2hNDOtSB+Z3Rtu43WvP3tKYEdPxanYutBzxvQFStFd6aiWP3Y55eA0+V8fb9Ph+
-         vubw==
-X-Gm-Message-State: AOAM531kg+KcxCWOSMkMiuVKDchq4W3ZTfw1lS2lYCAOvUUj/2CeVrhl
-        KOr7eGsWgwcYOP1HSSnUWnJ4XT3EQo68oHCy
-X-Google-Smtp-Source: ABdhPJwwBAjsNMwOIy95cYsA0aUV86ZNq+qMhjorORQ1aYLZQYgUC+I4uFf/XjF04nHEADZmXCtm2g==
-X-Received: by 2002:a17:907:7f04:b0:6e1:39b8:d1a5 with SMTP id qf4-20020a1709077f0400b006e139b8d1a5mr12393193ejc.83.1649318298136;
-        Thu, 07 Apr 2022 00:58:18 -0700 (PDT)
-Received: from [192.168.0.185] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id p10-20020a170906604a00b006e07c76f3d7sm7390612ejj.210.2022.04.07.00.58.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 00:58:17 -0700 (PDT)
-Message-ID: <6dcddc8a-7ca2-b424-fc8f-7000be3f9116@linaro.org>
-Date:   Thu, 7 Apr 2022 09:58:16 +0200
+        Thu, 7 Apr 2022 04:00:26 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45A901107E5;
+        Thu,  7 Apr 2022 00:58:27 -0700 (PDT)
+X-UUID: 3696bdfd2e464be38f9b0bbb58745d93-20220407
+X-UUID: 3696bdfd2e464be38f9b0bbb58745d93-20220407
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1625576564; Thu, 07 Apr 2022 15:58:21 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 7 Apr 2022 15:58:20 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 7 Apr 2022 15:58:18 +0800
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
+        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
+        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
+        "AngeloGioacchino Del Regno" 
+        <angelogioacchino.delregno@collabora.com>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
+Subject: [PATCH v6 03/34] iommu/mediatek: Fix 2 HW sharing pgtable issue
+Date:   Thu, 7 Apr 2022 15:56:55 +0800
+Message-ID: <20220407075726.17771-4-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220407075726.17771-1-yong.wu@mediatek.com>
+References: <20220407075726.17771-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 1/1] tty: serial: samsung: add spin_lock for interrupt
- and console_write
-Content-Language: en-US
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Jaewon Kim <jaewon02.kim@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-samsung-soc@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Chanho Park <chanho61.park@samsung.com>
-References: <20220407071619.102249-1-jaewon02.kim@samsung.com>
- <CGME20220407071223epcas2p16bb11821a0894a3375e84d17c4ff0844@epcas2p1.samsung.com>
- <20220407071619.102249-2-jaewon02.kim@samsung.com>
- <b53be23f-7935-dae3-9dc8-f850493a5fa9@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <b53be23f-7935-dae3-9dc8-f850493a5fa9@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/04/2022 09:46, Jiri Slaby wrote:
-> On 07. 04. 22, 9:16, Jaewon Kim wrote:
->> The console_write and IRQ handler can run concurrently.
->> Problems may occurs console_write is continuously executed while
->> the IRQ handler is running.
-> 
->  From the patch POV:
-> 
-> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-> 
-> But given this is a v3 with no version changelog below "---", you've 
-> just kicked the Greg's bot to wake up :P.
-> 
+In the commit 4f956c97d26b ("iommu/mediatek: Move domain_finalise into
+attach_device"), I overlooked the sharing pgtable case.
+After that commit, the "data" in the mtk_iommu_domain_finalise always is
+the data of the current IOMMU HW. Fix this for the sharing pgtable case.
 
-There was a cover letter with such changelog:
-https://lore.kernel.org/all/20220407071619.102249-1-jaewon02.kim@samsung.com/
+Only affect mt2712 which is the only SoC that share pgtable currently.
 
-It's indeed easy to miss...
+Fixes: 4f956c97d26b ("iommu/mediatek: Move domain_finalise into attach_device")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/iommu/mtk_iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 6fd75a60abd6..95c82b8bcc35 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -446,7 +446,7 @@ static void mtk_iommu_domain_free(struct iommu_domain *domain)
+ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 				   struct device *dev)
+ {
+-	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
++	struct mtk_iommu_data *data = dev_iommu_priv_get(dev), *frstdata;
+ 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	struct device *m4udev = data->dev;
+ 	int ret, domid;
+@@ -456,7 +456,10 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 		return domid;
+ 
+ 	if (!dom->data) {
+-		if (mtk_iommu_domain_finalise(dom, data, domid))
++		/* Data is in the frstdata in sharing pgtable case. */
++		frstdata = mtk_iommu_get_m4u_data();
++
++		if (mtk_iommu_domain_finalise(dom, frstdata, domid))
+ 			return -ENODEV;
+ 		dom->data = data;
+ 	}
+-- 
+2.18.0
+
