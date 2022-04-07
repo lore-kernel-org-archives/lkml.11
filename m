@@ -2,131 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:06:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75CD4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:09:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343813AbiDGOII (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
+        id S238951AbiDGOLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 10:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343828AbiDGOHj (ORCPT
+        with ESMTP id S229945AbiDGOK7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:07:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DEBCE0AEF;
-        Thu,  7 Apr 2022 07:05:38 -0700 (PDT)
+        Thu, 7 Apr 2022 10:10:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB7E125595;
+        Thu,  7 Apr 2022 07:08:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96B7FB82777;
-        Thu,  7 Apr 2022 14:05:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EAE5C385A7;
-        Thu,  7 Apr 2022 14:05:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 087D161BC5;
+        Thu,  7 Apr 2022 14:08:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEC2AC385A4;
+        Thu,  7 Apr 2022 14:08:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649340336;
-        bh=h/ekb5QtQwdaE1nuKp1Ak9uQSLC0j8BMRSRfXRUcEK0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Y6HvBPLWrJ06i4vlOTF8BnZ3iqItHqw/nsH/nNnEwo+N32fsRbK0SKgF5EwQsMH+9
-         nvPFZqZ7FMctoEz4BWfpfOwdcQGV/g66hr+wb+2qpXqSeo5pU2cJGRZYxCHMNEfndq
-         UEG9V0T3FTni5dw/r0Jd55uxSPQIfnPqxSx60c+bSgkaxtA8yILAntPnPoAS5tvbSM
-         uOSoGF+r+t/Lzp7Y/LuPML8bXRgjF+voyEegUOCTM4Ku8YeS0zqz18A7fwukVcOZ69
-         Z4TNP76n/xxzt9umz8R5oYeVg/FxuVoELTWeU1AKtq222UQfTpr+II4qi1xvboJoHF
-         lCyCEDNDgga8g==
-Date:   Thu, 7 Apr 2022 22:05:26 +0800
-From:   Gao Xiang <xiang@kernel.org>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com
-Subject: Re: [PATCH v8 13/20] erofs: add erofs_fscache_read_folios() helper
-Message-ID: <Yk7vfDqd4gVoVlqz@debian>
-Mail-Followup-To: Jeffle Xu <jefflexu@linux.alibaba.com>,
-        dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com
-References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
- <20220406075612.60298-14-jefflexu@linux.alibaba.com>
+        s=k20201202; t=1649340523;
+        bh=ydP1aVikhmIIcEnQD6MgKsKQRpvuR4lwhWVulh03A8E=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=jCzTejPJMfBHgKkfDyk1keI3z09aoSF3nLyXyo34h5NPI/8O0YWu2YbHN9TI+V6r0
+         ByZwJxqnAWRDIN4vJledxnIbSssq/9wqvp7XiPFZy3b5hSfaQ3Yf5Xyx7n83/OQu85
+         wa/GCU7NDItOyjRArlV/+mLTnl6ekf4oirBS+d8wh3EH+gdbS0YAS8/T9atJJLwYcU
+         pD7EQka9IyHP0WPXvBIXJIy+p4oljawq6K2lFNLsTZI00FL9WlHH6zg5dw63zxlhFE
+         PGRaOt9aMVgmccMOz2+SB9hUanTqyqNyl4ybIyJ1DsE6D6XS4y6qnS6HBpQ+fvVlY7
+         rzUvHjsjT2FDA==
+Message-ID: <5dc7945ab39aea9aae9834d3f5623ecbf251c262.camel@kernel.org>
+Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
+ inodes
+From:   Jeff Layton <jlayton@kernel.org>
+To:     =?ISO-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>,
+        Xiubo Li <xiubli@redhat.com>
+Cc:     Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 07 Apr 2022 10:08:41 -0400
+In-Reply-To: <aaa78c1f1bfa7b8da8d8be0f3dcf2a42c9b838fd.camel@kernel.org>
+References: <20220401133243.1075-1-lhenriques@suse.de>
+         <d6407dd1-b6df-4de4-fe37-71b765b2088a@redhat.com>
+         <878rsia391.fsf@brahms.olymp>
+         <6ba91390-83e8-8702-2729-dc432abd3cc5@redhat.com>
+         <87zgky8n0o.fsf@brahms.olymp>
+         <6306fba71325483a1ea22fa73250c8777ea647d7.camel@kernel.org>
+         <321104e6-36db-c143-a7ba-58f9199e6fb7@redhat.com>
+         <f0ed169ed02fe810076e959e9ec5455d9de4b4ff.camel@kernel.org>
+         <7023b537-e7b6-0dd9-42bf-9d601ef69b58@redhat.com>
+         <87pmlt85w5.fsf@brahms.olymp>
+         <aaa78c1f1bfa7b8da8d8be0f3dcf2a42c9b838fd.camel@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220406075612.60298-14-jefflexu@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 03:56:05PM +0800, Jeffle Xu wrote:
-> Add erofs_fscache_read_folios() helper reading from fscache. It supports
-> on-demand read semantics. That is, it will make the backend prepare for
-> the data when cache miss. Once data ready, it will reinitiate a read
-> from the cache.
+On Thu, 2022-04-07 at 09:23 -0400, Jeff Layton wrote:
+> On Thu, 2022-04-07 at 12:55 +0100, Luís Henriques wrote:
+> > Xiubo Li <xiubli@redhat.com> writes:
+> > 
+> > > On 4/6/22 9:41 PM, Jeff Layton wrote:
+> > > > On Wed, 2022-04-06 at 21:10 +0800, Xiubo Li wrote:
+> > > > > On 4/6/22 7:48 PM, Jeff Layton wrote:
+> > > > > > On Wed, 2022-04-06 at 12:33 +0100, Luís Henriques wrote:
+> > > > > > > Xiubo Li <xiubli@redhat.com> writes:
+> > > > > > > 
+> > > > > > > > On 4/6/22 6:57 PM, Luís Henriques wrote:
+> > > > > > > > > Xiubo Li <xiubli@redhat.com> writes:
+> > > > > > > > > 
+> > > > > > > > > > On 4/1/22 9:32 PM, Luís Henriques wrote:
+> > > > > > > > > > > When doing DIO on an encrypted node, we need to invalidate the page cache in
+> > > > > > > > > > > the range being written to, otherwise the cache will include invalid data.
+> > > > > > > > > > > 
+> > > > > > > > > > > Signed-off-by: Luís Henriques <lhenriques@suse.de>
+> > > > > > > > > > > ---
+> > > > > > > > > > >      fs/ceph/file.c | 11 ++++++++++-
+> > > > > > > > > > >      1 file changed, 10 insertions(+), 1 deletion(-)
+> > > > > > > > > > > 
+> > > > > > > > > > > Changes since v1:
+> > > > > > > > > > > - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
+> > > > > > > > > > > - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
+> > > > > > > > > > > 
+> > > > > > > > > > > Note: I'm not really sure this last change is required, it doesn't really
+> > > > > > > > > > > affect generic/647 result, but seems to be the most correct.
+> > > > > > > > > > > 
+> > > > > > > > > > > diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+> > > > > > > > > > > index 5072570c2203..b2743c342305 100644
+> > > > > > > > > > > --- a/fs/ceph/file.c
+> > > > > > > > > > > +++ b/fs/ceph/file.c
+> > > > > > > > > > > @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
+> > > > > > > > > > >      	if (ret < 0)
+> > > > > > > > > > >      		return ret;
+> > > > > > > > > > >      -	ceph_fscache_invalidate(inode, false);
+> > > > > > > > > > > +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
+> > > > > > > > > > >      	ret = invalidate_inode_pages2_range(inode->i_mapping,
+> > > > > > > > > > >      					    pos >> PAGE_SHIFT,
+> > > > > > > > > > >      					    (pos + count - 1) >> PAGE_SHIFT);
+> > > > > > > > > > The above has already invalidated the pages, why doesn't it work ?
+> > > > > > > > > I suspect the reason is because later on we loop through the number of
+> > > > > > > > > pages, call copy_page_from_iter() and then ceph_fscrypt_encrypt_pages().
+> > > > > > > > Checked the 'copy_page_from_iter()', it will do the kmap for the pages but will
+> > > > > > > > kunmap them again later. And they shouldn't update the i_mapping if I didn't
+> > > > > > > > miss something important.
+> > > > > > > > 
+> > > > > > > > For 'ceph_fscrypt_encrypt_pages()' it will encrypt/dencrypt the context inplace,
+> > > > > > > > IMO if it needs to map the page and it should also unmap it just like in
+> > > > > > > > 'copy_page_from_iter()'.
+> > > > > > > > 
+> > > > > > > > I thought it possibly be when we need to do RMW, it may will update the
+> > > > > > > > i_mapping when reading contents, but I checked the code didn't find any
+> > > > > > > > place is doing this. So I am wondering where tha page caches come from ? If that
+> > > > > > > > page caches really from reading the contents, then we should discard it instead
+> > > > > > > > of flushing it back ?
+> > > > > > > > 
+> > > > > > > > BTW, what's the problem without this fixing ? xfstest fails ?
+> > > > > > > Yes, generic/647 fails if you run it with test_dummy_encryption.  And I've
+> > > > > > > also checked that the RMW code was never executed in this test.
+> > > > > > > 
+> > > > > > > But yeah I have assumed (perhaps wrongly) that the kmap/kunmap could
+> > > > > > > change the inode->i_mapping.
+> > > > > > > 
+> > > > > > No, kmap/unmap are all about high memory and 32-bit architectures. Those
+> > > > > > functions are usually no-ops on 64-bit arches.
+> > > > > Yeah, right.
+> > > > > 
+> > > > > So they do nothing here.
+> > > > > 
+> > > > > > > In my debugging this seemed to be the case
+> > > > > > > for the O_DIRECT path.  That's why I added this extra call here.
+> > > > > > > 
+> > > > > > I agree with Xiubo that we really shouldn't need to invalidate multiple
+> > > > > > times.
+> > > > > > 
+> > > > > > I guess in this test, we have a DIO write racing with an mmap read
+> > > > > > Probably what's happening is either that we can't invalidate the page
+> > > > > > because it needs to be cleaned, or the mmap read is racing in just after
+> > > > > > the invalidate occurs but before writeback.
+> > > > > This sounds a possible case.
+> > > > > 
+> > > > > 
+> > > > > > In any case, it might be interesting to see whether you're getting
+> > > > > > -EBUSY back from the new invalidate_inode_pages2 calls with your patch.
+> > > > > > 
+> > > > > If it's really this case maybe this should be retried some where ?
+> > > > > 
+> > > > Possibly, or we may need to implement ->launder_folio.
+> > > > 
+> > > > Either way, we need to understand what's happening first and then we can
+> > > > figure out a solution for it.
+> > > 
+> > > Yeah, make sense.
+> > > 
+> > 
+> > OK, so here's what I got so far:
+> > 
+> > When we run this test *without* test_dummy_encryption, ceph_direct_read_write()
+> > will be called and invalidate_inode_pages2_range() will do pretty much
+> > nothing because the mapping will be empty (mapping_empty(inode->i_mapping)
+> > will return 1).  If we use encryption, ceph_sync_write() will be called
+> > instead and the mapping, obviously, be will be empty as well.
+> > 
+> > The difference between in encrypted vs non-encrypted (and the reason the
+> > test passes without encryption) is that ceph_direct_read_write()
+> > (non-encrypted) will call truncate_inode_pages_range() at a stage where
+> > the mapping is not empty anymore (iter_get_bvecs_alloc will take care of
+> > that).
+> > 
 > 
-> This helper can then be used to implement .readpage()/.readahead() of
-> on-demand read semantics.
+> Wait...why does iter_get_bvecs_alloc populate the mapping? The iter in
+> this case is almost certainly an iov_iter from userland so none of this
+> should have anything to do with the pagecache.
 > 
-> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+> I suspect the faulting in occurs via the mmap reader task, and that the
+> truncate_inode_pages_range calls just happen enough to invalidate it.
+> 
+> >  In the encryption path (ceph_sync_write) the mapping will be
+> > filled with copy_page_from_iter(), which will fault and do the read.
+> > Because we don't have the truncate_inode_pages_range(), the cache will
+> > contain invalid data after the write.  And that's why the extra
+> > invalidate_inode_pages2_range (or truncate_...) fixes this.
+> > 
+> 
+> I think what we may want to do is consider adding these calls into
+> ceph_page_mkwrite:
+> 
+>         if (direct_lock)
+>                 ceph_start_io_direct(inode);
+>         else
+>                 ceph_start_io_write(inode);
+> 
+> ...and similar ones (for read) in ceph_filemap_fault, along with "end"
+> calls to end the I/Os.
+> 
+> This is how we handle races between buffered read/write and direct I/O,
+> and I suspect the mmap codepaths may just need similar treatment.
+> 
+> Thoughts?
 
-Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+No, Luis tried this and said that it deadlocked on IRC. It seems obvious
+in retrospect...
 
-Thanks,
-Gao Xiang
+What we probably need to do is call filemap_write_and_wait_range before
+issuing a direct or sync read or write. Then for direct/sync writes, we
+also want to call invalidate_inode_pages2_range after the write returns.
 
-> ---
->  fs/erofs/fscache.c | 29 +++++++++++++++++++++++++++++
->  1 file changed, 29 insertions(+)
-> 
-> diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-> index 1c88614203d2..d38a6efc8e50 100644
-> --- a/fs/erofs/fscache.c
-> +++ b/fs/erofs/fscache.c
-> @@ -5,6 +5,35 @@
->  #include <linux/fscache.h>
->  #include "internal.h"
->  
-> +/*
-> + * Read data from fscache and fill the read data into page cache described by
-> + * @start/len, which shall be both aligned with PAGE_SIZE. @pstart describes
-> + * the start physical address in the cache file.
-> + */
-> +static int erofs_fscache_read_folios(struct fscache_cookie *cookie,
-> +				     struct address_space *mapping,
-> +				     loff_t start, size_t len,
-> +				     loff_t pstart)
-> +{
-> +	struct netfs_cache_resources cres;
-> +	struct iov_iter iter;
-> +	int ret;
-> +
-> +	memset(&cres, 0, sizeof(cres));
-> +
-> +	ret = fscache_begin_read_operation(&cres, cookie);
-> +	if (ret)
-> +		return ret;
-> +
-> +	iov_iter_xarray(&iter, READ, &mapping->i_pages, start, len);
-> +
-> +	ret = fscache_read(&cres, pstart, &iter,
-> +			   NETFS_READ_HOLE_ONDEMAND, NULL, NULL);
-> +
-> +	fscache_end_operation(&cres);
-> +	return ret;
-> +}
-> +
->  static const struct address_space_operations erofs_fscache_meta_aops = {
->  };
->  
-> -- 
-> 2.27.0
-> 
+We might consider doing an invalidation before issuing the call, but I
+think it wouldn't help this testcase. generic/647 is doing O_DIRECT
+writes to the file from a buffer that is mmapped from the same file. If
+you invalidate before the write occurs you'll just end up faulting the
+pages right back in.
+-- 
+Jeff Layton <jlayton@kernel.org>
