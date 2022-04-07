@@ -2,52 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B83AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:38:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:38:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243919AbiDGJkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38916 "EHLO
+        id S243872AbiDGJkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243853AbiDGJk0 (ORCPT
+        with ESMTP id S243866AbiDGJk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:40:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7091A5904
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:38:19 -0700 (PDT)
+        Thu, 7 Apr 2022 05:40:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8771B254B
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:38:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38B3161ACE
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:38:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF752C385A6;
-        Thu,  7 Apr 2022 09:38:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 129E361B6F
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:38:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F6E2C385A4;
+        Thu,  7 Apr 2022 09:38:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649324298;
-        bh=DBVPDeXzBmVGG7sCJooAh/+/TXjuIyVnZzS709sXv0k=;
+        s=k20201202; t=1649324304;
+        bh=6NDuvD6dPDfYjOIGxLFIfAC4asHc6YIvrkxa0F3AB24=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=FC8EznJV7DIJKY83ZM9tbkumPwbYbTlynB0GwArqrleGuh+m/lerRYg1N8NhKVClG
-         Pb0JWJFdQ+R2ak82F2gAvUqUoKGSui66C98vofau+fhHyA33s/A0YmvyvuaO4liTKj
-         u/w7L080zELv3f/4A0/7FCRpSf64HXByC3X49PbrpNy2h0ktMcXXl41hR7Y5kSG9lW
-         6uf6kjyfvEcoJpoJJ0mphVQ/R/UKjydf0aK7yd3yeGzLCu4ggO4ssc06IPUqLbJNKP
-         Vl8YErfjIvl/bcrYua0iYPpP7Sy0kDxRcO61+z6gse5BuF4mmyAsrA2klIyyzVIXo/
-         CyDVx8C8ZmeQA==
+        b=T6K/Z7/63n8z1zZ7tG46DGyv0IWdHOIrwHY8ujy8K+SBHeTQ+aJxcwizdRmu65QtL
+         3ypLlDretmm24XpdArE8IOgJdOYVkJgcWgFhxE9a1l4r+BgvZQ3ZMF2nhvhbs7qRc+
+         E4YHwbMnfkUm+uyoDabV6Hz2WEkVbs3MvWzpxCcE6Ysv1KIGccfrSmoDK2MFaDqoId
+         gWKUMUkCJ93eMbZ0U3OCdx3H/KsNZUbYBZa93VdYRAz8KHrcmRqw13UCyovCNrrooF
+         lu5VpX3ROl/Ith/A2NvLOum8QRXUNA4KcU/Geh/PGWqLLaKCpnPdf9Yjm6pYNmqg3y
+         aeD8cDgnFsS6g==
 From:   Mark Brown <broonie@kernel.org>
-To:     ajye.huang@gmail.com, linux-kernel@vger.kernel.org
-Cc:     mac.chiang@intel.com, vamshi.krishna.gopal@intel.com,
-        daniel.baluta@nxp.com, Jaroslav Kysela <perex@perex.cz>,
-        ranjani.sridharan@linux.intel.com, yung-chuan.liao@linux.intel.com,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
-        Takashi Iwai <tiwai@suse.com>, yang.jie@linux.intel.com,
-        yong.zhi@intel.com, liam.r.girdwood@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, kai.vehmanen@linux.intel.com,
-        brent.lu@intel.com, ajye_huang@compal.corp-partner.google.com,
-        cezary.rojewski@intel.com
-In-Reply-To: <20220324084708.2009375-1-ajye_huang@compal.corp-partner.google.com>
-References: <20220324084708.2009375-1-ajye_huang@compal.corp-partner.google.com>
-Subject: Re: [PATCH v1] ASoC: Intel: sof_rt5682: Add support for max98360a speaker amp on SSP2
-Message-Id: <164932429462.3844153.4809967512345990079.b4-ty@kernel.org>
-Date:   Thu, 07 Apr 2022 10:38:14 +0100
+To:     steve@sk2.org, lgirdwood@gmail.com, festevam@gmail.com
+Cc:     wsa@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220405164031.2160888-1-steve@sk2.org>
+References: <20220405164031.2160888-1-steve@sk2.org>
+Subject: Re: [PATCH] ASoC: sgtl5000: use simple i2c probe function
+Message-Id: <164932430303.3844153.10602976471070924458.b4-ty@kernel.org>
+Date:   Thu, 07 Apr 2022 10:38:23 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -55,12 +47,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Mar 2022 16:47:08 +0800, Ajye Huang wrote:
-> Follow Intel's design to replace max98360a amp SSP2 reather than SSP1
-> by judging DMI_OEM_STRING in sof_rt5682_quirk_table struct.
-> And reusing max98357's topology since DAI setting could be leveraged.
+On Tue, 5 Apr 2022 18:40:31 +0200, Stephen Kitt wrote:
+> The i2c probe functions here don't use the id information provided in
+> their second argument, so the single-parameter i2c probe function
+> ("probe_new") can be used instead.
+> 
+> This avoids scanning the identifier tables during probes.
 > 
 > 
+> [...]
 
 Applied to
 
@@ -68,8 +63,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: Intel: sof_rt5682: Add support for max98360a speaker amp on SSP2
-      commit: fcd1e39cca6e3a262f2badfcd5edd76c910ad3bc
+[1/1] ASoC: sgtl5000: use simple i2c probe function
+      commit: 67f51bfecf9e72511419ded0e4148e2b7a7a30b1
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
