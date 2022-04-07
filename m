@@ -2,104 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 747D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC3CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:00:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345910AbiDGRBn (ORCPT
+        id S1345922AbiDGRCV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32880 "EHLO
+        Thu, 7 Apr 2022 13:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345907AbiDGRBk (ORCPT
+        with ESMTP id S243250AbiDGRCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:01:40 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319161C8858;
-        Thu,  7 Apr 2022 09:59:39 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id D40631F85E;
-        Thu,  7 Apr 2022 16:59:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649350777; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z2Bed+Unj8/31PP3+tIX1i22uICkwYo9ioyedTJiWT8=;
-        b=WlaomzRyVsIgdnjDN42Ge69qIdv4Xcv0hottLq9lRt1BUJTW7hVTkNCsx3MEEbL/5GspRM
-        oh1bjnM3PoLt055R9wRWQV3SNwGzlvjaUk4f6lrgCsYDxPEDUTgd9WAyvhV1LsSEenx8bn
-        9VW1A38KAIBSsYlYMlZEHvdkZAqtjCo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649350777;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z2Bed+Unj8/31PP3+tIX1i22uICkwYo9ioyedTJiWT8=;
-        b=lx3mehWOWKnYn7pyR2cHSOOAhhjiuQQnozm1Ucy/jL1WgWceOJhu377M2mi/dlCho7cLTy
-        hIdrWBTFJnEjI/AA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CB8FC13485;
-        Thu,  7 Apr 2022 16:59:36 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id IgnoJXgYT2L8GwAAMHmgww
-        (envelope-from <colyli@suse.de>); Thu, 07 Apr 2022 16:59:36 +0000
-Message-ID: <c934c457-fe8f-7937-f348-eccf46375878@suse.de>
-Date:   Fri, 8 Apr 2022 00:59:34 +0800
+        Thu, 7 Apr 2022 13:02:18 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A7751C8A85;
+        Thu,  7 Apr 2022 09:59:54 -0700 (PDT)
+X-UUID: 2fe14ab422b84b86bb4cc0d3a602ce48-20220408
+X-UUID: 2fe14ab422b84b86bb4cc0d3a602ce48-20220408
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <lecopzer.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1444954338; Fri, 08 Apr 2022 00:59:51 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 8 Apr 2022 00:59:50 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 8 Apr
+ 2022 00:59:49 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 8 Apr 2022 00:59:49 +0800
+From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
+To:     <pmladek@suse.com>
+CC:     <acme@kernel.org>, <akpm@linux-foundation.org>,
+        <alexander.shishkin@linux.intel.com>, <catalin.marinas@arm.com>,
+        <davem@davemloft.net>, <jolsa@redhat.com>, <jthierry@redhat.com>,
+        <keescook@chromium.org>, <kernelfans@gmail.com>,
+        <lecopzer.chen@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-perf-users@vger.kernel.org>, <mark.rutland@arm.com>,
+        <masahiroy@kernel.org>, <matthias.bgg@gmail.com>, <maz@kernel.org>,
+        <mcgrof@kernel.org>, <mingo@redhat.com>, <namhyung@kernel.org>,
+        <nixiaoming@huawei.com>, <peterz@infradead.org>,
+        <sparclinux@vger.kernel.org>, <sumit.garg@linaro.org>,
+        <wangqing@vivo.com>, <will@kernel.org>, <yj.chiang@mediatek.com>
+Subject: Re: [PATCH v3 5/5] arm64: Enable perf events based hard lockup detector
+Date:   Fri, 8 Apr 2022 00:59:49 +0800
+Message-ID: <20220407165949.1903-1-lecopzer.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <YkxT9plntP0VeMl4@alley>
+References: <YkxT9plntP0VeMl4@alley>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH v1] bcache: Check for NULL return of kzalloc()
-Content-Language: en-US
-To:     QintaoShen <unSimple1993@163.com>
-Cc:     linux-bcache@vger.kernel.org, kent.overstreet@gmail.com,
-        linux-kernel@vger.kernel.org
-References: <1648114074-10045-1-git-send-email-unSimple1993@163.com>
-From:   Coly Li <colyli@suse.de>
-In-Reply-To: <1648114074-10045-1-git-send-email-unSimple1993@163.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/24/22 5:27 PM, QintaoShen wrote:
-> kzalloc() is a memory allocation function which may return a NULL pointer.
-> Therefore, it is better to check the return value of kzalloc() to avoid potential
-> NULL-pointer dereference.
->
-> Signed-off-by: QintaoShen <unSimple1993@163.com>
-> ---
->   drivers/md/bcache/request.c | 3 +++
->   1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/md/bcache/request.c b/drivers/md/bcache/request.c
-> index fdd0194..232ffe3 100644
-> --- a/drivers/md/bcache/request.c
-> +++ b/drivers/md/bcache/request.c
-> @@ -1105,6 +1105,9 @@ static void detached_dev_do_request(struct bcache_device *d, struct bio *bio,
->   	 * which would call closure_get(&dc->disk.cl)
->   	 */
->   	ddip = kzalloc(sizeof(struct detached_dev_io_private), GFP_NOIO);
-> +	if (!ddpp)
-> +		return ;
 
-This is wrong. If you test your patch, you may experience a system hang 
-I guess.
+> On Tue 2022-04-05 20:53:04, Lecopzer Chen wrote:
+> >  
+> > > On Thu 2022-03-24 22:14:05, Lecopzer Chen wrote:
+> > > > With the recent feature added to enable perf events to use pseudo NMIs
+> > > > as interrupts on platforms which support GICv3 or later, its now been
+> > > > possible to enable hard lockup detector (or NMI watchdog) on arm64
+> > > > platforms. So enable corresponding support.
+> > > > 
+> > > > One thing to note here is that normally lockup detector is initialized
+> > > > just after the early initcalls but PMU on arm64 comes up much later as
+> > > > device_initcall(). To cope with that, overriding watchdog_nmi_probe() to
+> > > > let the watchdog framework know PMU not ready, and inform the framework
+> > > > to re-initialize lockup detection once PMU has been initialized.
+> > > > 
+> > > > [1]: http://lore.kernel.org/linux-arm-kernel/1610712101-14929-1-git-send-email-sumit.garg@linaro.org
+> > > > 
+> > > > --- /dev/null
+> > > > +++ b/arch/arm64/kernel/watchdog_hld.c
+> > > > @@ -0,0 +1,37 @@
+> > > > +// SPDX-License-Identifier: GPL-2.0
+> > > > +#include <linux/nmi.h>
+> > > > +#include <linux/cpufreq.h>
+> > > > +#include <linux/perf/arm_pmu.h>
+> > > > +
+> > > > +/*
+> > > > + * Safe maximum CPU frequency in case a particular platform doesn't implement
+> > > > + * cpufreq driver. Although, architecture doesn't put any restrictions on
+> > > > + * maximum frequency but 5 GHz seems to be safe maximum given the available
+> > > > + * Arm CPUs in the market which are clocked much less than 5 GHz. On the other
+> > > > + * hand, we can't make it much higher as it would lead to a large hard-lockup
+> > > > + * detection timeout on parts which are running slower (eg. 1GHz on
+> > > > + * Developerbox) and doesn't possess a cpufreq driver.
+> > > > + */
+> > > > +#define SAFE_MAX_CPU_FREQ	5000000000UL // 5 GHz
+> > > > +u64 hw_nmi_get_sample_period(int watchdog_thresh)
+> > > > +{
+> > > > +	unsigned int cpu = smp_processor_id();
+> > > > +	unsigned long max_cpu_freq;
+> > > > +
+> > > > +	max_cpu_freq = cpufreq_get_hw_max_freq(cpu) * 1000UL;
+> > > > +	if (!max_cpu_freq)
+> > > > +		max_cpu_freq = SAFE_MAX_CPU_FREQ;
+> > > > +
+> > > > +	return (u64)max_cpu_freq * watchdog_thresh;
+> > > > +}
+> > > 
+> > > This change is not mentioned in the commit message.
+> > > Please, put it into a separate patch.
+> > 
+> > 
+> > Actully, This cames from
+> > [1]: http://lore.kernel.org/linux-arm-kernel/1610712101-14929-1-git-send-email-sumit.garg@linaro.org
+> > And I didn't touch the commit message from the origin patch.
+> > But of course, I could imporve it with proper description if
+> > anyone thinks it's not good enough.
+> 
+> I see.
+> 
+> > Would you mean put this function hw_nmi_get_sample_period() in patch
+> > 6th?
+> > In the view of "arm64 uses delayed init with all the functionality it need to set up",
+> > IMO, this make sense for me to put into a single patch.
+> 
+> Or you could split it in two patches and add
+> hw_nmi_get_sample_period() in the earlier patch.
+> 
+> 
+> > But if you still think this should put into a separate patch, I'll do it:)
+> 
+> It is always better to split the changes whenever possible. It makes
+> the review easier. And it also helps to find the real culprit of
+> a regression using bisection.
+
+Okay, I'll split this part into another change, thanks.
 
 
-Coly Li
+> > > > +int __init watchdog_nmi_probe(void)
+> > > > +{
+> > > > +	if (!allow_lockup_detector_init_retry)
+> > > > +		return -EBUSY;
+> > > 
+> > > How do you know that you should return -EBUSY
+> > > when retry in not enabled?
+> > > 
+> > > I guess that it is an optimization to make it fast
+> > > during the first call. But the logic is far from
+> > > obvious.
+> > > 
+> > 
+> > Yes, you can see this as an optimization, because arm64 PMU is not ready
+> > during lockup_detector_init(), so the watchdog_nmi_probe() must fail.
+> >
+> > Thus we only want to do watchdog_nmi_probe() in delayed init,
+> > so if not in the state (allow_lockup_detector_init_retry=true), just tell
+> > 
+> > if it's unclear
+> 
+> Yes, it is far from obvious.
+> 
+> > maybe a brief comment can be add like this:
+> > 
+> > +	/* arm64 is only able to initialize lockup detecor during delayed init */
+> > +	if (!allow_lockup_detector_init_retry)
+> > +		return -EBUSY;
+> 
+> No, please, remove this optimization. It just makes problems:
+> 
+>    + it requires a comment here because the logic is far from obvious.
+> 
+>    + it is the reason why we need another variable to avoid the race in
+>      lockup_detector_check(), see the discussion about the 4th patch.
+
+After some days studying, if I remove this if-condition which means the
+following hardlockup_detector_perf_init() needs to return -EBUSY.
+However, the default return value that if pmu is not ready is -ENOENT.
+
+The call path for hardlockup_detector_perf_init() is really complicated,
+
+I have some approach about this:
+  1. abstract second variable with Kconfig.
+    a. Add a ARCH_SUPPORTS_HARDLOCKUP_DETECTOR_DLAYED_INIT
+       (the naming is a little bit long, may have better naming)
+       in "lib/Kconfig.debug" if ARCH knew they do need delayed init for
+       lockup detector.
+
+       + select ARCH_SUPPORTS_HARDLOCKUP_DETECTOR_DLAYED_INIT if HAVE_HARDLOCKUP_DETECTOR_PERF
+
+    b. and the watchdog_nmi_probe would look like.
+
+    +int __init watchdog_nmi_probe(void)
+    +{
+    +	int ret;
+    +
+    + /* comment here... */
+    +	if (!arm_pmu_irq_is_nmi())
+    +		return -ENODEV;
+    +
+    +	ret = hardlockup_detector_perf_init();
+    +	if (ret &&
+    +		  IS_ENABLED(ARCH_SUPPORTS_HARDLOCKUP_DETECTOR_DLAYED_INIT))
+    +		return -EBUSY;
+    +
+    + return ret;
+    +}
+
+    and than we can have only one variable (allow_lockup_detector_init_retry)
+    in 4th patch.
+
+ 
+  2. base on ARCH_SUPPORTS_HARDLOCKUP_DETECTOR_DLAYED_INIT, change
+     inside hardlockup_detector_perf_init().
+
+int __init hardlockup_detector_perf_init(void)
+{
+	int ret = hardlockup_detector_event_create();
+
+	if (ret) {
+		pr_info("Perf NMI watchdog permanently disabled\n");
++
++		/* comment here... */
++		if (IS_ENABLED(ARCH_SUPPORTS_HARDLOCKUP_DETECTOR_DLAYED_INIT))
++			ret = -EBUSY;
+	} else {
+		perf_event_release_kernel(this_cpu_read(watchdog_ev));
+		this_cpu_write(watchdog_ev, NULL);
+	}
+	return ret;
+}
+
+  3. Don't add any other config, try to find a proper location
+     to return -EBUSY in hardlockup_detector_event_create().
+     IMHO, this may involve the PMU subsys and should be
+     the hardest approach.
 
 
-> +
->   	ddip->d = d;
->   	/* Count on the bcache device */
->   	ddip->orig_bdev = orig_bdev;
+
+> > > > +
+> > > > +	if (!arm_pmu_irq_is_nmi())
+> > > > +		return -ENODEV;
+> > > > +
+> > > > +	return hardlockup_detector_perf_init();
+> > > > +}
+> > > 
+> > For arm_pmu_irq_is_nmi() checking, we do need it, becasue arm64 needs
+> > explictly turns on Pseudo-NMI to support base function for NMI.
+> >
+> > hardlockup_detector_perf_init() will success even if we haven't had
+> > Pseudo-NMI turns on, however, the pmu interrupts will act like a
+> > normal interrupt instead of NMI and the hardlockup detector would be broken.
+> 
+> I see. Please, explain this in a comment. It is another thing
+> that is far from obvious.
+> 
+
+thank you, I'll just add the comment above like this.
+/*
+ * hardlockup_detector_perf_init() will success even if we haven't had
+ * Pseudo-NMI turns on, however, the pmu interrupts will act like a
+ * normal interrupt instead of NMI and the hardlockup detector would be broken.
+ */
+	if (!arm_pmu_irq_is_nmi())
+		return -ENODEV;
 
 
+thanks
+BRs,
+Lecopzer
