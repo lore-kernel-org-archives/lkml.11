@@ -2,310 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D4FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:28:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D65C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:28:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229599AbiDGUa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54210 "EHLO
+        id S229459AbiDGUad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiDGUaI (ORCPT
+        with ESMTP id S229580AbiDGUaI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 16:30:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB0A42DBFF9
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:14:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649362442;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TE4gPpLf7WhkN5ezB0vCrjVorkv1sMpiSBwQ7irjd6Q=;
-        b=iA9x1zYfJ0IKsX2BDpF0ws1BZJw/5CXcp54ozh+Bu5gnJKvAJUbBL2gpPDbcB2KVFYIVcf
-        MH1OyMVQunuapHS5FDqhRvUXJvUG1r25Rchq2/rWwsthzaygcLZ9pOD6ljWhHrBVtftjsc
-        fEEZQdqypTer8eDld3Rw140EHsVIwKc=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-634-pLKSWdTbOsW-nzt0TzEk4g-1; Thu, 07 Apr 2022 16:03:04 -0400
-X-MC-Unique: pLKSWdTbOsW-nzt0TzEk4g-1
-Received: by mail-wr1-f70.google.com with SMTP id j67-20020adf9149000000b00203e6b7d151so1556125wrj.13
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:03:04 -0700 (PDT)
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBAC488599
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:14:18 -0700 (PDT)
+Received: by mail-qk1-f176.google.com with SMTP id bk12so3154347qkb.7
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:14:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=i3fjMxeOPzHLoYAHKb6PCBhzmcPMnM/TNC6V6L/f24Q=;
+        b=L9BQgrut1xgORokDDOEvWbzPG40wzWB5zAc2yAy0bfZ57OqWIQpvwPhDv5vFzkJ+XZ
+         nXuvZEZOl1r9c1aYtIiNNAZUI5EDU+My2YHPu3W1Ym3hc7leujWnDF49vAVi4FyAoigt
+         DMshxcOJ+pJ+7DPgn0bI1hYDchvscZuqdpcSU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TE4gPpLf7WhkN5ezB0vCrjVorkv1sMpiSBwQ7irjd6Q=;
-        b=a7e06fU6NX2ySM7OwNqdIjgQk843Xn5qbFWckF5eFpAHcz/78OiGaMAOCNoZh8Hu8v
-         LXTEPEij8WTJaBBP18S0eeJEE0sEGfiXYWp/u9/2nMOOM64lel1/GaBtGhtL3rGqmHq6
-         3e3W1a0ElAYf+VwFBBlXFPoNfL70F4e81nWgwpV5KixbrvuCTo5vh2djZADPaOJi9eom
-         aBBCtZ4NaUbWSIJf6PGppSA3zQXSL3rg1OuTQ3H2fLyjTN8TrhUBCiZL6jks28YFMv7+
-         7BnW8vBGbbY094luLjXs9mGzk+ruQPMMlafmvu89GP6rDQAgOxN2xgfeRlIPd2TmAtC2
-         2fXw==
-X-Gm-Message-State: AOAM530YStotYEUSRejf56iCSfxFGH8xMBwhXWAAJr4d/XooCyWcbCmd
-        QfAsz3nQ4k7nbQv2JVJ2/0xa3pW28gG7Ft3i+zpNZ6tlJ2r4JcSgtekgjkhIoXsieIJPRxAY/gk
-        E4SOnF7fJjWqeYObqg9uVb4IgXhxajADDxI9yUzQrf8XeNc9F+spS0318hIb8Gpvc0unDTdqMvK
-        0=
-X-Received: by 2002:adf:9dd2:0:b0:206:14f9:6432 with SMTP id q18-20020adf9dd2000000b0020614f96432mr11931366wre.129.1649361783499;
-        Thu, 07 Apr 2022 13:03:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzqOZMuv7vlTxaNOa9uzsUAtJoY+v170aoJd1/4gM8Ev8wfF6xaGJEgCSZ0qspOkfmmAC/8pw==
-X-Received: by 2002:adf:9dd2:0:b0:206:14f9:6432 with SMTP id q18-20020adf9dd2000000b0020614f96432mr11931343wre.129.1649361783111;
-        Thu, 07 Apr 2022 13:03:03 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id f15-20020a0560001a8f00b002078f74ccd2sm1048712wry.36.2022.04.07.13.03.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 13:03:02 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     dri-devel@lists.freedesktop.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Chen-Yu Tsai <wens@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Mark Brown <broonie@kernel.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>
-Subject: [PATCH 4/5] drm/solomon: Move device info from ssd130x-i2c to the core driver
-Date:   Thu,  7 Apr 2022 22:02:03 +0200
-Message-Id: <20220407200205.28838-5-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407200205.28838-1-javierm@redhat.com>
-References: <20220407200205.28838-1-javierm@redhat.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=i3fjMxeOPzHLoYAHKb6PCBhzmcPMnM/TNC6V6L/f24Q=;
+        b=ITD7ov1cdnHFpvpKPpBDZYKpgEMPin6eXRTfNlmRnW7wxo1eUE/N7THG3+cDlnAU8C
+         27zt+VZE+WHVPE9+aeLRJJlxC6biKcHoaoISv6s4EUaAKH0UbJDmDdls89uHwVM1gnQn
+         Zk20Spq+sNLEzTaO4bvRvs+IdbHfwtj1ohbbC1Z4KPuNCX8Gd5qfV+Dps8Zb/uMsMLbH
+         OgsEVpykQKV0fxckhJXxtGdGT/uc8k8lQoKNIdIMY40fMlmvLpOkWwProLSWXHx4i8pB
+         +4zQrFPlIfWUViWViL6LzwvlMX0YHr2rTmEpT7HscfhLAGthzykGbuKuWBETxJeLzJeT
+         pKUw==
+X-Gm-Message-State: AOAM531lxdTezrsjLlQzr0rnIHcgoCtu41tSTGeokp5Er4++F2B+rDy4
+        n1J9UGRgDZNSAnPgT+HonolAX4mXKJf0gA==
+X-Google-Smtp-Source: ABdhPJz5DaqOGFttJNDDRdIHIC2g5QjLHBA0/lVe6+h70wF2TjnZ2c0JyqQ+8l7gPYd9sMtMCz+cew==
+X-Received: by 2002:a02:6a6b:0:b0:323:fcf9:2227 with SMTP id m43-20020a026a6b000000b00323fcf92227mr7585831jaf.137.1649361799653;
+        Thu, 07 Apr 2022 13:03:19 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id m9-20020a0566022ac900b0064cf3d9f35fsm8870151iov.35.2022.04.07.13.03.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 13:03:19 -0700 (PDT)
+Subject: Re: [PATCH 4/4] selftests/memfd: add tests for MFD_NOEXEC
+To:     Daniel Verkamp <dverkamp@chromium.org>, linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Mattias Nissler <mnissler@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220401220834.307660-1-dverkamp@chromium.org>
+ <20220401220834.307660-5-dverkamp@chromium.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <c8114977-a757-60d0-d6b7-9d3f91568019@linuxfoundation.org>
+Date:   Thu, 7 Apr 2022 14:03:18 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220401220834.307660-5-dverkamp@chromium.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These are declared in the ssd130x-i2c transport driver but the information
-is not I2C specific and could be used by other SSD130x transport drivers.
+On 4/1/22 4:08 PM, Daniel Verkamp wrote:
+> Tests that ensure MFD_NOEXEC memfds have the appropriate mode bits and
+> cannot be chmod-ed into being executable.
+> 
+> Signed-off-by: Daniel Verkamp <dverkamp@chromium.org>
+> ---
+>   tools/testing/selftests/memfd/memfd_test.c | 34 ++++++++++++++++++++++
+>   1 file changed, 34 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/memfd/memfd_test.c b/tools/testing/selftests/memfd/memfd_test.c
+> index fdb0e46e9df9..a79567161cdf 100644
+> --- a/tools/testing/selftests/memfd/memfd_test.c
+> +++ b/tools/testing/selftests/memfd/memfd_test.c
+> @@ -32,6 +32,10 @@
+>   #define F_SEAL_EXEC	0x0020
+>   #endif
+>   
+> +#ifndef MFD_NOEXEC
+> +#define MFD_NOEXEC	0x0008U
+> +#endif
+> +
+>   /*
+>    * Default is not to test hugetlbfs
+>    */
+> @@ -959,6 +963,35 @@ static void test_seal_exec(void)
+>   	close(fd);
+>   }
+>   
+> +/*
+> + * Test memfd_create with MFD_NOEXEC flag
+> + * Test that MFD_NOEXEC applies F_SEAL_EXEC and prevents change of exec bits
+> + */
+> +static void test_noexec(void)
+> +{
+> +	int fd;
+> +
+> +	printf("%s NOEXEC\n", memfd_str);
+> +
+> +	/* Create with NOEXEC and ALLOW_SEALING */
+> +	fd = mfd_assert_new("kern_memfd_noexec",
+> +			    mfd_def_size,
+> +			    MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_NOEXEC);
 
-Move them to the ssd130x core driver and just set the OF device entries to
-an ID that could be used to lookup the correct device into from an array.
+Don't we need to check fd here?
 
-While being there, also move the SSD130X_DATA and SSD130X_COMMAND control
-bytes. Since even though are used by the I2C interface, it could also be
-useful for other transport protocols such as SPI.
+> +	mfd_assert_mode(fd, 0666);
+> +	mfd_assert_has_seals(fd, F_SEAL_EXEC);
+> +	mfd_fail_chmod(fd, 0777);
+> +	close(fd);
+> +
+> +	/* Create with NOEXEC but without ALLOW_SEALING */
+> +	fd = mfd_assert_new("kern_memfd_noexec",
+> +			    mfd_def_size,
+> +			    MFD_CLOEXEC | MFD_NOEXEC);
 
-Suggested-by: Chen-Yu Tsai <wens@kernel.org>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
----
+What happens when mfd_assert_new() fails - don't we need to check fd?
 
- drivers/gpu/drm/solomon/ssd130x-i2c.c | 51 ++++-------------------
- drivers/gpu/drm/solomon/ssd130x.c     | 60 +++++++++++++++++++++++++--
- drivers/gpu/drm/solomon/ssd130x.h     | 13 ++++++
- 3 files changed, 78 insertions(+), 46 deletions(-)
+> +	mfd_assert_mode(fd, 0666);
+> +	mfd_assert_has_seals(fd, F_SEAL_EXEC | F_SEAL_SEAL);
+> +	mfd_fail_chmod(fd, 0777);
+> +	close(fd);
+> +}
+> +
+>   /*
+>    * Test sharing via dup()
+>    * Test that seals are shared between dupped FDs and they're all equal.
+> @@ -1132,6 +1165,7 @@ int main(int argc, char **argv)
+>   
+>   	test_create();
+>   	test_basic();
+> +	test_noexec();
+>   
+>   	test_seal_write();
+>   	test_seal_future_write();
+> 
 
-diff --git a/drivers/gpu/drm/solomon/ssd130x-i2c.c b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-index a469679548f8..aa6cc2cb54f9 100644
---- a/drivers/gpu/drm/solomon/ssd130x-i2c.c
-+++ b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-@@ -53,76 +53,43 @@ static void ssd130x_i2c_shutdown(struct i2c_client *client)
- 	ssd130x_shutdown(ssd130x);
- }
- 
--static struct ssd130x_deviceinfo ssd130x_sh1106_deviceinfo = {
--	.default_vcomh = 0x40,
--	.default_dclk_div = 1,
--	.default_dclk_frq = 5,
--	.page_mode_only = 1,
--};
--
--static struct ssd130x_deviceinfo ssd130x_ssd1305_deviceinfo = {
--	.default_vcomh = 0x34,
--	.default_dclk_div = 1,
--	.default_dclk_frq = 7,
--};
--
--static struct ssd130x_deviceinfo ssd130x_ssd1306_deviceinfo = {
--	.default_vcomh = 0x20,
--	.default_dclk_div = 1,
--	.default_dclk_frq = 8,
--	.need_chargepump = 1,
--};
--
--static struct ssd130x_deviceinfo ssd130x_ssd1307_deviceinfo = {
--	.default_vcomh = 0x20,
--	.default_dclk_div = 2,
--	.default_dclk_frq = 12,
--	.need_pwm = 1,
--};
--
--static struct ssd130x_deviceinfo ssd130x_ssd1309_deviceinfo = {
--	.default_vcomh = 0x34,
--	.default_dclk_div = 1,
--	.default_dclk_frq = 10,
--};
--
- static const struct of_device_id ssd130x_of_match[] = {
- 	{
- 		.compatible = "sinowealth,sh1106-i2c",
--		.data = &ssd130x_sh1106_deviceinfo,
-+		.data = SH1106_ID,
- 	},
- 	{
- 		.compatible = "solomon,ssd1305-i2c",
--		.data = &ssd130x_ssd1305_deviceinfo,
-+		.data = (void *)SSD1305_ID,
- 	},
- 	{
- 		.compatible = "solomon,ssd1306-i2c",
--		.data = &ssd130x_ssd1306_deviceinfo,
-+		.data = (void *)SSD1306_ID,
- 	},
- 	{
- 		.compatible = "solomon,ssd1307-i2c",
--		.data = &ssd130x_ssd1307_deviceinfo,
-+		.data = (void *)SSD1307_ID,
- 	},
- 	{
- 		.compatible = "solomon,ssd1309-i2c",
--		.data = &ssd130x_ssd1309_deviceinfo,
-+		.data = (void *)SSD1309_ID,
- 	},
- 	/* Deprecated but remain for backward compatibility */
- 	{
- 		.compatible = "solomon,ssd1305fb-i2c",
--		.data = &ssd130x_ssd1305_deviceinfo,
-+		.data = (void *)SSD1305_ID,
- 	},
- 	{
- 		.compatible = "solomon,ssd1306fb-i2c",
--		.data = &ssd130x_ssd1306_deviceinfo,
-+		.data = (void *)SSD1306_ID,
- 	},
- 	{
- 		.compatible = "solomon,ssd1307fb-i2c",
--		.data = &ssd130x_ssd1307_deviceinfo,
-+		.data = (void *)SSD1307_ID,
- 	},
- 	{
- 		.compatible = "solomon,ssd1309fb-i2c",
--		.data = &ssd130x_ssd1309_deviceinfo,
-+		.data = (void *)SSD1309_ID,
- 	},
- 	{ /* sentinel */ }
- };
-diff --git a/drivers/gpu/drm/solomon/ssd130x.c b/drivers/gpu/drm/solomon/ssd130x.c
-index a7e784518c69..1f00fd3c0023 100644
---- a/drivers/gpu/drm/solomon/ssd130x.c
-+++ b/drivers/gpu/drm/solomon/ssd130x.c
-@@ -39,11 +39,9 @@
- #define DRIVER_MAJOR	1
- #define DRIVER_MINOR	0
- 
--#define SSD130X_DATA				0x40
--#define SSD130X_COMMAND				0x80
--
- #define SSD130X_PAGE_COL_START_LOW		0x00
- #define SSD130X_PAGE_COL_START_HIGH		0x10
-+
- #define SSD130X_SET_ADDRESS_MODE		0x20
- #define SSD130X_SET_COL_RANGE			0x21
- #define SSD130X_SET_PAGE_RANGE			0x22
-@@ -94,6 +92,55 @@
- 
- #define MAX_CONTRAST 255
- 
-+static struct ssd130x_deviceinfo ssd130x_variants[] =  {
-+	{
-+		.default_vcomh = 0x40,
-+		.default_dclk_div = 1,
-+		.default_dclk_frq = 5,
-+		.page_mode_only = 1,
-+	},
-+	{
-+		.variant = SSD1305_ID,
-+		.default_vcomh = 0x34,
-+		.default_dclk_div = 1,
-+		.default_dclk_frq = 7,
-+	},
-+	{
-+		.variant = SSD1306_ID,
-+		.default_vcomh = 0x20,
-+		.default_dclk_div = 1,
-+		.default_dclk_frq = 8,
-+		.need_chargepump = 1,
-+	},
-+	{
-+		.variant = SSD1307_ID,
-+		.default_vcomh = 0x20,
-+		.default_dclk_div = 2,
-+		.default_dclk_frq = 12,
-+		.need_pwm = 1,
-+	},
-+	{
-+		.variant = SSD1309_ID,
-+		.default_vcomh = 0x34,
-+		.default_dclk_div = 1,
-+		.default_dclk_frq = 10,
-+	}
-+};
-+
-+static const struct ssd130x_deviceinfo *ssd13x_variant_to_info(enum ssd130x_variants variant)
-+{
-+	int i;
-+	const struct ssd130x_deviceinfo *info;
-+
-+	for (i = 0; i < ARRAY_SIZE(ssd130x_variants); i++) {
-+		info = &ssd130x_variants[i];
-+		if (info->variant == variant)
-+			return info;
-+	}
-+
-+	return NULL;
-+}
-+
- static inline struct ssd130x_device *drm_to_ssd130x(struct drm_device *drm)
- {
- 	return container_of(drm, struct ssd130x_device, drm);
-@@ -846,6 +893,7 @@ static int ssd130x_get_resources(struct ssd130x_device *ssd130x)
- struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap)
- {
- 	struct ssd130x_device *ssd130x;
-+	enum ssd130x_variants variant;
- 	struct backlight_device *bl;
- 	struct drm_device *drm;
- 	int ret;
-@@ -860,7 +908,11 @@ struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap)
- 
- 	ssd130x->dev = dev;
- 	ssd130x->regmap = regmap;
--	ssd130x->device_info = device_get_match_data(dev);
-+
-+	variant = (enum ssd130x_variants)device_get_match_data(dev);
-+	ssd130x->device_info = ssd13x_variant_to_info(variant);
-+	if (!ssd130x->device_info)
-+		return ERR_PTR(-EINVAL);
- 
- 	if (ssd130x->device_info->page_mode_only)
- 		ssd130x->page_address_mode = 1;
-diff --git a/drivers/gpu/drm/solomon/ssd130x.h b/drivers/gpu/drm/solomon/ssd130x.h
-index f5b062576fdf..4e0b62a41aa3 100644
---- a/drivers/gpu/drm/solomon/ssd130x.h
-+++ b/drivers/gpu/drm/solomon/ssd130x.h
-@@ -18,7 +18,20 @@
- 
- #include <linux/regmap.h>
- 
-+#define SSD130X_DATA				0x40
-+#define SSD130X_COMMAND				0x80
-+
-+enum ssd130x_variants {
-+	SH1106_ID,
-+	SSD1305_ID,
-+	SSD1306_ID,
-+	SSD1307_ID,
-+	SSD1309_ID,
-+	NR_SSD130X_VARIANTS
-+};
-+
- struct ssd130x_deviceinfo {
-+	enum ssd130x_variants variant;
- 	u32 default_vcomh;
- 	u32 default_dclk_div;
- 	u32 default_dclk_frq;
--- 
-2.35.1
+fd isn't checked in the other test F_SEAL_EXEC in the 3/4 patch.
 
+thanks,
+-- Shuah
