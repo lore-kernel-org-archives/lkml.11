@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E00C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A90D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239500AbiDGMEq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
+        id S245058AbiDGMEt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239497AbiDGMEg (ORCPT
+        with ESMTP id S239550AbiDGMEh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:04:36 -0400
+        Thu, 7 Apr 2022 08:04:37 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46D36E2AE
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:02:34 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZ0MN27mVzgYGh;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D19CC1C83
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:02:35 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZ0MN711tzgYKj;
         Thu,  7 Apr 2022 20:00:48 +0800 (CST)
 Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 20:02:33 +0800
+ 15.1.2308.21; Thu, 7 Apr 2022 20:02:26 +0800
 Received: from ubuntu1804.huawei.com (10.67.175.36) by
  dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 20:02:32 +0800
+ 15.1.2308.21; Thu, 7 Apr 2022 20:02:33 +0800
 From:   Chen Zhongjin <chenzhongjin@huawei.com>
 To:     <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
@@ -33,9 +33,9 @@ CC:     <jthierry@redhat.com>, <catalin.marinas@arm.com>,
         <will@kernel.org>, <mark.rutland@arm.com>, <ardb@kernel.org>,
         <masahiroy@kernel.org>, <jpoimboe@redhat.com>,
         <peterz@infradead.org>, <ycote@redhat.com>
-Subject: [RFC PATCH v3 04/13] objtool: arm64: Add base definition for arm64 backend
-Date:   Thu, 7 Apr 2022 20:01:32 +0800
-Message-ID: <20220407120141.43801-5-chenzhongjin@huawei.com>
+Subject: [RFC PATCH v3 08/13] objtool: arm64: Decode load/store instructions
+Date:   Thu, 7 Apr 2022 20:01:36 +0800
+Message-ID: <20220407120141.43801-9-chenzhongjin@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220407120141.43801-1-chenzhongjin@huawei.com>
 References: <20220407120141.43801-1-chenzhongjin@huawei.com>
@@ -51,322 +51,195 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Julien Thierry <jthierry@redhat.com>
 
-Provide needed definitions for a new architecture instruction decoder.
-No proper decoding is done yet.
+Decode load/store operations and create corresponding stack_ops for
+operations targeting SP or FP.
+
+Operations storing/loading multiple registers are split into separate
+stack_ops storing single registers.
+
+Operations modifying the base register get an additional stack_op
+for the register update. Since the atomic register(s) load/store + base
+register update gets split into multiple operations, to make sure
+objtool always sees a valid stack, consider store instruction to perform
+stack allocations (i.e. modifying the base pointer before the storing)
+and loads de-allocations (i.e. modifying the base pointer after the
+load).
 
 Signed-off-by: Julien Thierry <jthierry@redhat.com>
 Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
 ---
- tools/objtool/Makefile                        |   5 +
- tools/objtool/arch/arm64/Build                |   8 ++
- tools/objtool/arch/arm64/decode.c             | 136 ++++++++++++++++++
- .../arch/arm64/include/arch/cfi_regs.h        |  14 ++
- tools/objtool/arch/arm64/include/arch/elf.h   |   8 ++
- .../arch/arm64/include/arch/endianness.h      |   9 ++
- .../objtool/arch/arm64/include/arch/special.h |  22 +++
- tools/objtool/arch/arm64/special.c            |  21 +++
- tools/objtool/sync-check.sh                   |   5 +
- 9 files changed, 228 insertions(+)
- create mode 100644 tools/objtool/arch/arm64/Build
- create mode 100644 tools/objtool/arch/arm64/decode.c
- create mode 100644 tools/objtool/arch/arm64/include/arch/cfi_regs.h
- create mode 100644 tools/objtool/arch/arm64/include/arch/elf.h
- create mode 100644 tools/objtool/arch/arm64/include/arch/endianness.h
- create mode 100644 tools/objtool/arch/arm64/include/arch/special.h
- create mode 100644 tools/objtool/arch/arm64/special.c
+ tools/objtool/arch/arm64/decode.c | 144 ++++++++++++++++++++++++++++++
+ 1 file changed, 144 insertions(+)
 
-diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
-index 92ce4fce7bc7..d5cfbec87c02 100644
---- a/tools/objtool/Makefile
-+++ b/tools/objtool/Makefile
-@@ -47,6 +47,11 @@ ifeq ($(SRCARCH),x86)
- 	SUBCMD_ORC := y
- endif
- 
-+ifeq ($(SRCARCH),arm64)
-+	SUBCMD_CHECK := y
-+	CFLAGS  += -Wno-nested-externs
-+endif
-+
- export SUBCMD_CHECK SUBCMD_ORC
- export srctree OUTPUT CFLAGS SRCARCH AWK
- include $(srctree)/tools/build/Makefile.include
-diff --git a/tools/objtool/arch/arm64/Build b/tools/objtool/arch/arm64/Build
-new file mode 100644
-index 000000000000..f3de3a50d541
---- /dev/null
-+++ b/tools/objtool/arch/arm64/Build
-@@ -0,0 +1,8 @@
-+objtool-y += special.o
-+objtool-y += decode.o
-+
-+objtool-y += libhweight.o
-+
-+$(OUTPUT)arch/arm64/libhweight.o: ../lib/hweight.c FORCE
-+	$(call rule_mkdir)
-+	$(call if_changed_dep,cc_o_c)
 diff --git a/tools/objtool/arch/arm64/decode.c b/tools/objtool/arch/arm64/decode.c
-new file mode 100644
-index 000000000000..42a9ce4aab87
---- /dev/null
+index b07e0f51637e..4a868945dcfb 100644
+--- a/tools/objtool/arch/arm64/decode.c
 +++ b/tools/objtool/arch/arm64/decode.c
-@@ -0,0 +1,136 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <stdint.h>
-+
-+#include <asm/insn.h>
-+
-+#include <objtool/check.h>
-+#include <objtool/arch.h>
-+#include <objtool/elf.h>
-+#include <objtool/warn.h>
-+#include <objtool/builtin.h>
-+#include <arch/cfi_regs.h>
-+
-+bool arch_callee_saved_reg(unsigned char reg)
+@@ -112,6 +112,48 @@ int arch_decode_hint_reg(u8 sp_reg, int *base)
+ 	return -1;
+ }
+ 
++static struct stack_op *arm_make_store_op(enum aarch64_insn_register base,
++					  enum aarch64_insn_register reg,
++					  int offset)
 +{
-+	switch (reg) {
-+	case AARCH64_INSN_REG_19:
-+	case AARCH64_INSN_REG_20:
-+	case AARCH64_INSN_REG_21:
-+	case AARCH64_INSN_REG_22:
-+	case AARCH64_INSN_REG_23:
-+	case AARCH64_INSN_REG_24:
-+	case AARCH64_INSN_REG_25:
-+	case AARCH64_INSN_REG_26:
-+	case AARCH64_INSN_REG_27:
-+	case AARCH64_INSN_REG_28:
-+	case AARCH64_INSN_REG_FP:
-+	case AARCH64_INSN_REG_LR:
-+		return true;
-+	default:
-+		return false;
++	struct stack_op *op;
++
++	op = calloc(1, sizeof(*op));
++	if (!op) {
++		WARN("calloc failed");
++		return NULL;
 +	}
++	op->dest.type = OP_DEST_REG_INDIRECT;
++	op->dest.reg = base;
++	op->dest.offset = offset;
++	op->src.type = OP_SRC_REG;
++	op->src.reg = reg;
++	op->src.offset = 0;
++
++	return op;
 +}
 +
-+void arch_initial_func_cfi_state(struct cfi_init_state *state)
++static struct stack_op *arm_make_load_op(enum aarch64_insn_register base,
++					 enum aarch64_insn_register reg,
++					 int offset)
 +{
-+	int i;
++	struct stack_op *op;
 +
-+	for (i = 0; i < CFI_NUM_REGS; i++) {
-+		state->regs[i].base = CFI_UNDEFINED;
-+		state->regs[i].offset = 0;
++	op = calloc(1, sizeof(*op));
++	if (!op) {
++		WARN("calloc failed");
++		return NULL;
 +	}
++	op->dest.type = OP_DEST_REG;
++	op->dest.reg = reg;
++	op->dest.offset = 0;
++	op->src.type = OP_SRC_REG_INDIRECT;
++	op->src.reg = base;
++	op->src.offset = offset;
 +
-+	/* initial CFA (call frame address) */
-+	state->cfa.base = CFI_SP;
-+	state->cfa.offset = 0;
++	return op;
 +}
 +
-+unsigned long arch_dest_reloc_offset(int addend)
+ static struct stack_op *arm_make_add_op(enum aarch64_insn_register dest,
+ 					enum aarch64_insn_register src,
+ 					int val)
+@@ -132,6 +174,98 @@ static struct stack_op *arm_make_add_op(enum aarch64_insn_register dest,
+ 	return op;
+ }
+ 
++static int arm_decode_load_store(u32 insn, unsigned long *immediate,
++				 struct list_head *ops_list)
 +{
-+	return addend;
-+}
++	enum aarch64_insn_register base;
++	enum aarch64_insn_register rt;
++	struct stack_op *op;
++	int size;
++	int offset;
 +
-+unsigned long arch_jump_destination(struct instruction *insn)
-+{
-+	return insn->offset + insn->immediate;
-+}
++	if (aarch64_insn_is_store_single(insn) ||
++	    aarch64_insn_is_load_single(insn))
++		size = 1 << ((insn & GENMASK(31, 30)) >> 30);
++	else
++		size = 4 << ((insn >> 31) & 1);
 +
-+const char *arch_nop_insn(int len)
-+{
-+	static u32 nop;
-+
-+	if (len != AARCH64_INSN_SIZE)
-+		WARN("invalid NOP size: %d\n", len);
-+
-+	if (!nop)
-+		nop = aarch64_insn_gen_nop();
-+
-+	return (const char *)&nop;
-+}
-+
-+const char *arch_ret_insn(int len)
-+{
-+	static u32 ret;
-+
-+	if (len != AARCH64_INSN_SIZE)
-+		WARN("invalid RET size: %d\n", len);
-+
-+	if (!ret) {
-+		ret = aarch64_insn_gen_branch_reg(AARCH64_INSN_REG_LR,
-+				AARCH64_INSN_BRANCH_RETURN);
-+	}
-+
-+	return (const char *)&ret;
-+}
-+
-+static int is_arm64(const struct elf *elf)
-+{
-+	switch (elf->ehdr.e_machine) {
-+	case EM_AARCH64: //0xB7
++	if (aarch64_insn_is_store_imm(insn) || aarch64_insn_is_load_imm(insn))
++		*immediate = size * aarch64_insn_decode_immediate(AARCH64_INSN_IMM_12,
++								  insn);
++	else if (aarch64_insn_is_store_pre(insn) ||
++		 aarch64_insn_is_load_pre(insn) ||
++		 aarch64_insn_is_store_post(insn) ||
++		 aarch64_insn_is_load_post(insn))
++		*immediate = sign_extend(aarch64_insn_decode_immediate(AARCH64_INSN_IMM_9,
++								       insn),
++					 9);
++	else if (aarch64_insn_is_stp(insn) || aarch64_insn_is_ldp(insn) ||
++		 aarch64_insn_is_stp_pre(insn) ||
++		 aarch64_insn_is_ldp_pre(insn) ||
++		 aarch64_insn_is_stp_post(insn) ||
++		 aarch64_insn_is_ldp_post(insn))
++		*immediate = size * sign_extend(aarch64_insn_decode_immediate(AARCH64_INSN_IMM_7,
++									      insn),
++						7);
++	else
 +		return 1;
-+	default:
-+		WARN("unexpected ELF machine type %x",
-+		     elf->ehdr.e_machine);
++
++	base = aarch64_insn_decode_register(AARCH64_INSN_REGTYPE_RN, insn);
++	if (base != AARCH64_INSN_REG_FP && base != AARCH64_INSN_REG_SP)
 +		return 0;
++
++	offset = *immediate;
++
++	if (aarch64_insn_is_store_pre(insn) || aarch64_insn_is_stp_pre(insn) ||
++	    aarch64_insn_is_store_post(insn) || aarch64_insn_is_stp_post(insn)) {
++		op = arm_make_add_op(base, base, *immediate);
++		list_add_tail(&op->list, ops_list);
++
++		if (aarch64_insn_is_store_post(insn) || aarch64_insn_is_stp_post(insn))
++			offset = -*immediate;
++		else
++			offset = 0;
++	} else if (aarch64_insn_is_load_post(insn) || aarch64_insn_is_ldp_post(insn)) {
++		offset = 0;
 +	}
-+}
 +
-+int arch_decode_hint_reg(u8 sp_reg, int *base)
-+{
-+	return -1;
-+}
++	/* First register */
++	rt = aarch64_insn_decode_register(AARCH64_INSN_REGTYPE_RT, insn);
++	if (aarch64_insn_is_store_single(insn) ||
++	    aarch64_insn_is_store_pair(insn))
++		op = arm_make_store_op(base, rt, offset);
++	else
++		op = arm_make_load_op(base, rt, offset);
 +
-+int arch_decode_instruction(struct objtool_file *file, const struct section *sec,
-+			    unsigned long offset, unsigned int maxlen,
-+			    unsigned int *len, enum insn_type *type,
-+			    unsigned long *immediate,
-+			    struct list_head *ops_list)
-+{
-+	const struct elf *elf = file->elf;
-+	u32 insn;
-+
-+	if (!is_arm64(elf))
++	if (!op)
 +		return -1;
++	list_add_tail(&op->list, ops_list);
 +
-+	if (maxlen < AARCH64_INSN_SIZE)
-+		return 0;
++	/* Second register (if present) */
++	if (aarch64_insn_is_store_pair(insn) ||
++	    aarch64_insn_is_load_pair(insn)) {
++		rt = aarch64_insn_decode_register(AARCH64_INSN_REGTYPE_RT2,
++						  insn);
++		if (aarch64_insn_is_store_pair(insn))
++			op = arm_make_store_op(base, rt, offset + size);
++		else
++			op = arm_make_load_op(base, rt, offset + size);
++		if (!op)
++			return -1;
++		list_add_tail(&op->list, ops_list);
++	}
 +
-+	*len = AARCH64_INSN_SIZE;
-+	*immediate = 0;
-+	*type = INSN_OTHER;
-+
-+	insn = *(u32 *)(sec->data->d_buf + offset);
-+
-+	switch (aarch64_get_insn_class(insn)) {
-+	case AARCH64_INSN_CLS_UNKNOWN:
-+		WARN("can't decode instruction at %s:0x%lx", sec->name, offset);
-+		return -1;
-+	default:
-+		break;
++	if (aarch64_insn_is_load_pre(insn) || aarch64_insn_is_ldp_pre(insn) ||
++	    aarch64_insn_is_load_post(insn) || aarch64_insn_is_ldp_post(insn)) {
++		op = arm_make_add_op(base, base, *immediate);
++		if (!op)
++			return -1;
++		list_add_tail(&op->list, ops_list);
 +	}
 +
 +	return 0;
 +}
-diff --git a/tools/objtool/arch/arm64/include/arch/cfi_regs.h b/tools/objtool/arch/arm64/include/arch/cfi_regs.h
-new file mode 100644
-index 000000000000..a5185649686b
---- /dev/null
-+++ b/tools/objtool/arch/arm64/include/arch/cfi_regs.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
 +
-+#ifndef _OBJTOOL_CFI_REGS_H
-+#define _OBJTOOL_CFI_REGS_H
+ static int arm_decode_add_sub_imm(u32 instr, bool set_flags,
+ 				  unsigned long *immediate,
+ 				  struct list_head *ops_list)
+@@ -247,6 +381,16 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
+ 			*immediate = aarch64_insn_decode_immediate(AARCH64_INSN_IMM_16, insn);
+ 		}
+ 		break;
++	case AARCH64_INSN_CLS_LDST:
++	{
++		int ret;
 +
-+#include <asm/insn.h>
++		ret = arm_decode_load_store(insn, immediate, ops_list);
++		if (ret <= 0)
++			return ret;
 +
-+#define CFI_BP			AARCH64_INSN_REG_FP
-+#define CFI_RA			AARCH64_INSN_REG_LR
-+#define CFI_SP			AARCH64_INSN_REG_SP
-+
-+#define CFI_NUM_REGS		32
-+
-+#endif /* _OBJTOOL_CFI_REGS_H */
-diff --git a/tools/objtool/arch/arm64/include/arch/elf.h b/tools/objtool/arch/arm64/include/arch/elf.h
-new file mode 100644
-index 000000000000..e8c78cfc5fe1
---- /dev/null
-+++ b/tools/objtool/arch/arm64/include/arch/elf.h
-@@ -0,0 +1,8 @@
-+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-+
-+#ifndef _OBJTOOL_ARCH_ELF
-+#define _OBJTOOL_ARCH_ELF
-+
-+#define R_NONE R_AARCH64_NONE
-+
-+#endif /* _OBJTOOL_ARCH_ELF */
-diff --git a/tools/objtool/arch/arm64/include/arch/endianness.h b/tools/objtool/arch/arm64/include/arch/endianness.h
-new file mode 100644
-index 000000000000..7c362527da20
---- /dev/null
-+++ b/tools/objtool/arch/arm64/include/arch/endianness.h
-@@ -0,0 +1,9 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+#ifndef _ARCH_ENDIANNESS_H
-+#define _ARCH_ENDIANNESS_H
-+
-+#include <endian.h>
-+
-+#define __TARGET_BYTE_ORDER __LITTLE_ENDIAN
-+
-+#endif /* _ARCH_ENDIANNESS_H */
-diff --git a/tools/objtool/arch/arm64/include/arch/special.h b/tools/objtool/arch/arm64/include/arch/special.h
-new file mode 100644
-index 000000000000..0983e759460d
---- /dev/null
-+++ b/tools/objtool/arch/arm64/include/arch/special.h
-@@ -0,0 +1,22 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+
-+#ifndef _ARM64_ARCH_SPECIAL_H
-+#define _ARM64_ARCH_SPECIAL_H
-+
-+#define EX_ENTRY_SIZE		8
-+#define EX_ORIG_OFFSET		0
-+#define EX_NEW_OFFSET		4
-+
-+#define JUMP_ENTRY_SIZE		16
-+#define JUMP_ORIG_OFFSET	0
-+#define JUMP_NEW_OFFSET		4
-+#define JUMP_KEY_OFFSET		8
-+
-+#define ALT_ENTRY_SIZE		12
-+#define ALT_ORIG_OFFSET		0
-+#define ALT_NEW_OFFSET		4
-+#define ALT_FEATURE_OFFSET	8
-+#define ALT_ORIG_LEN_OFFSET	10
-+#define ALT_NEW_LEN_OFFSET	11
-+
-+#endif /* _ARM64_ARCH_SPECIAL_H */
-diff --git a/tools/objtool/arch/arm64/special.c b/tools/objtool/arch/arm64/special.c
-new file mode 100644
-index 000000000000..45f283283091
---- /dev/null
-+++ b/tools/objtool/arch/arm64/special.c
-@@ -0,0 +1,21 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+
-+#include <objtool/special.h>
-+
-+void arch_handle_alternative(unsigned short feature, struct special_alt *alt)
-+{
-+}
-+
-+bool arch_support_alt_relocation(struct special_alt *special_alt,
-+				 struct instruction *insn,
-+				 struct reloc *reloc)
-+{
-+	return false;
-+}
-+
-+
-+struct reloc *arch_find_switch_table(struct objtool_file *file,
-+				     struct instruction *insn)
-+{
-+	return NULL;
-+}
-diff --git a/tools/objtool/sync-check.sh b/tools/objtool/sync-check.sh
-index 105a291ff8e7..14bb89100d70 100755
---- a/tools/objtool/sync-check.sh
-+++ b/tools/objtool/sync-check.sh
-@@ -25,6 +25,11 @@ arch/x86/include/asm/insn.h
- arch/x86/lib/inat.c
- arch/x86/lib/insn.c
- '
-+elif [ "$SRCARCH" = "arm64" ]; then
-+FILES="$FILES
-+arch/arm64/include/asm/insn.h
-+arch/arm64/lib/insn.c -I '^#include [\"<]\(asm/\)*kprobes.h[\">]' -I '^#include [\"<]\(asm/\)*debug-monitors.h[\">]'
-+"
- fi
- 
- check_2 () {
++		break;
++	}
+ 	default:
+ 		break;
+ 	}
 -- 
 2.17.1
 
