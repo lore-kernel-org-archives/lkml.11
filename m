@@ -2,147 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B02C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:32:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343999AbiDGOeJ (ORCPT
+        id S1343993AbiDGOeR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
+        Thu, 7 Apr 2022 10:34:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343992AbiDGOdu (ORCPT
+        with ESMTP id S1343977AbiDGOeG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:33:50 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E01991959D6
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:31:44 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id l26so11295884ejx.1
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 07:31:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3c4ULYqb2r78UM7M6kBpgVt9ArEFqjKiJDG/EUfI7EM=;
-        b=VkRRhO5Htk9J8iPE4fwyidyVP9kGsvQt1jd+50DCDtNh740qsQjPk+0esm7Ho2m2yQ
-         llHL49kjOgc23CDPyKBIAKRuPwQzMpvz7HFy3djOsdYGNx2tB9toRQujtFCQlgQkzaMU
-         gYmByiZAdLFs/RTE7QDym0AZCPvRqzfPCJKHEjELLzWgffkQJTcYsBJtFemM7qe07FJ4
-         GBC0Xjdv6BDTprAdsucm/VtTzWb3UusRHgA5gFaZsRVzBz4i6dlP2qv5XKpU8W9W3Qg0
-         a01ZzfZsz18AlZWjOujDAHlELzV04rNpF75FvF5ADvTispATTNk8oguhxomE+WqRpKXN
-         p6EA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3c4ULYqb2r78UM7M6kBpgVt9ArEFqjKiJDG/EUfI7EM=;
-        b=tGg+kpfiEmrzcdFBI/CgIXkCyx4NysN3ZU24JqV0EpHZnXwBOMMucxxhnReY/Iz/oD
-         Mqy4Po1z/hugLzHxWa3KGY3+uekJpbPxwBfKJ8dBLG6JyCPA2WFHfYmSDiQOlycxh/yv
-         x+2K+a5XlGrGZ+/jbjXTwdgw3VKhcJIpGDnT6CnSGLWmW3SODiVfiKgMxOAAZ6s7tApo
-         T1jAUOwx/c8HGMU+p7HYNEpiWbCsS4ehP24txcDqVVRX32B0LJwWZxqz2/gCP1vaeDWS
-         T58gqC7Jl0TdDRuvHIVHE9/+5FLWCVkHD6JNdBKmtwMyS71eyLVtvZL9nBq3lsmpR7Uk
-         0Y/A==
-X-Gm-Message-State: AOAM533jZEBMxH2OJDoa150MB9gwTN4rkwjhFZMmvYd8wnJqfixJWNVB
-        nHHjASuOtRzC7oThO3waLOxAZQ==
-X-Google-Smtp-Source: ABdhPJzByXzTdSf0FG7Hc6VhTH3jvhfUKEXHdN7edMmNurXCL6LekWQxJu3O24JVa2wP65vZv3oWeA==
-X-Received: by 2002:a17:906:69d1:b0:6ce:7201:ec26 with SMTP id g17-20020a17090669d100b006ce7201ec26mr13584648ejs.105.1649341903463;
-        Thu, 07 Apr 2022 07:31:43 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id jg15-20020a170907970f00b006e0466dcc42sm7679473ejc.134.2022.04.07.07.31.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 07:31:43 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Nishanth Menon <nm@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 1/2] ARM: dts: keystone: align SPI NOR node name with dtschema
-Date:   Thu,  7 Apr 2022 16:31:39 +0200
-Message-Id: <20220407143140.295092-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Thu, 7 Apr 2022 10:34:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68D31A4D55;
+        Thu,  7 Apr 2022 07:32:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4985161CC0;
+        Thu,  7 Apr 2022 14:32:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20DF6C385A0;
+        Thu,  7 Apr 2022 14:31:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649341922;
+        bh=1mo8AG4FIR1/02YpFR4zJU4OcpMYkIGir1YVgUBVtjM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=inxngaAvGk4ci4lL9D9ebkrGzcMpUuh0DxcHhPClkg9ctSXRjUR+WDfkTT1nVwwAt
+         hTrjaa7ywrI4/z+Mzm+XFo7OKykHYTfaUGj9wY6tvuuVo5glndB2vBfM/6JZonyuAx
+         us5csSm0foMRHB+fOnpT5tBy1jPaDO5maUHCK/jHcRUVWv2veIyZCSIvWSH3/Vly0Z
+         WCZLy6y3URLTMcrRfaTGyhEWrYjAAMEMMcWdXEuMlADTwGpCHCb/gx9Ir3dgYHZiLg
+         ouQpoqYiFYo4txOAeu9SJj2Jhc++HixksTam/lMcrGo9TaGLIFS002BA17+j2kcood
+         8fQvGjtOcWTCg==
+Date:   Thu, 7 Apr 2022 22:31:54 +0800
+From:   Gao Xiang <xiang@kernel.org>
+To:     Jeffle Xu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com
+Subject: Re: [PATCH v8 18/20] erofs: implement fscache-based data read for
+ inline layout
+Message-ID: <Yk712oM2xrEUmbhZ@debian>
+Mail-Followup-To: Jeffle Xu <jefflexu@linux.alibaba.com>,
+        dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com
+References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
+ <20220406075612.60298-19-jefflexu@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220406075612.60298-19-jefflexu@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The node names should be generic and SPI NOR dtschema expects "flash".
+On Wed, Apr 06, 2022 at 03:56:10PM +0800, Jeffle Xu wrote:
+> Implement the data plane of reading data from data blobs over fscache
+> for inline layout.
+> 
+> For the heading non-inline part, the data plane for non-inline layout is
+> reused, while only the tail packing part needs special handling.
+> 
+> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+> ---
+>  fs/erofs/fscache.c | 40 ++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 40 insertions(+)
+> 
+> diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+> index 65de1c754e80..d32cb5840c6d 100644
+> --- a/fs/erofs/fscache.c
+> +++ b/fs/erofs/fscache.c
+> @@ -60,6 +60,40 @@ static int erofs_fscache_meta_readpage(struct file *data, struct page *page)
+>  	return ret;
+>  }
+>  
+> +static int erofs_fscache_readpage_inline(struct folio *folio,
+> +					 struct erofs_map_blocks *map)
+> +{
+> +	struct inode *inode = folio_file_mapping(folio)->host;
+> +	struct super_block *sb = inode->i_sb;
+> +	struct erofs_buf buf = __EROFS_BUF_INITIALIZER;
+> +	erofs_blk_t blknr;
+> +	size_t offset, len;
+> +	void *src, *dst;
+> +
+> +	/*
+> +	 * For inline (tail packing) layout, the offset may be non-zero, which
+> +	 * can be calculated from corresponding physical address directly.
+> +	 */
+> +	offset = erofs_blkoff(map->m_pa);
+> +	blknr = erofs_blknr(map->m_pa);
+> +	len = map->m_llen;
+> +
+> +	src = erofs_read_metabuf(&buf, sb, blknr, EROFS_KMAP);
+> +	if (IS_ERR(src))
+> +		return PTR_ERR(src);
+> +
+> +	DBG_BUGON(folio_size(folio) != PAGE_SIZE);
+> +
+> +	dst = kmap(folio_page(folio, 0));
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm/boot/dts/keystone-k2e-evm.dts  | 2 +-
- arch/arm/boot/dts/keystone-k2g-evm.dts  | 2 +-
- arch/arm/boot/dts/keystone-k2g-ice.dts  | 2 +-
- arch/arm/boot/dts/keystone-k2hk-evm.dts | 2 +-
- arch/arm/boot/dts/keystone-k2l-evm.dts  | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+kmap_local_folio?
 
-diff --git a/arch/arm/boot/dts/keystone-k2e-evm.dts b/arch/arm/boot/dts/keystone-k2e-evm.dts
-index 66fec5f5d081..8f49883a675e 100644
---- a/arch/arm/boot/dts/keystone-k2e-evm.dts
-+++ b/arch/arm/boot/dts/keystone-k2e-evm.dts
-@@ -137,7 +137,7 @@ partition@180000 {
- };
- 
- &spi0 {
--	nor_flash: n25q128a11@0 {
-+	nor_flash: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "Micron,n25q128a11";
-diff --git a/arch/arm/boot/dts/keystone-k2g-evm.dts b/arch/arm/boot/dts/keystone-k2g-evm.dts
-index d800f26b6275..88be868cf71e 100644
---- a/arch/arm/boot/dts/keystone-k2g-evm.dts
-+++ b/arch/arm/boot/dts/keystone-k2g-evm.dts
-@@ -392,7 +392,7 @@ &qspi {
- 	pinctrl-0 = <&qspi_pins>;
- 	cdns,rclk-en;
- 
--	flash0: m25p80@0 {
-+	flash0: flash@0 {
- 		compatible = "s25fl512s", "jedec,spi-nor";
- 		reg = <0>;
- 		spi-tx-bus-width = <1>;
-diff --git a/arch/arm/boot/dts/keystone-k2g-ice.dts b/arch/arm/boot/dts/keystone-k2g-ice.dts
-index 2a2d38cf0fff..bd84d7f0f2fe 100644
---- a/arch/arm/boot/dts/keystone-k2g-ice.dts
-+++ b/arch/arm/boot/dts/keystone-k2g-ice.dts
-@@ -325,7 +325,7 @@ &qspi {
- 	cdns,rclk-en;
- 	status = "okay";
- 
--	flash0: m25p80@0 {
-+	flash0: flash@0 {
- 		compatible = "s25fl256s1", "jedec,spi-nor";
- 		reg = <0>;
- 		spi-tx-bus-width = <1>;
-diff --git a/arch/arm/boot/dts/keystone-k2hk-evm.dts b/arch/arm/boot/dts/keystone-k2hk-evm.dts
-index ad4e22afe133..f968af0bfad3 100644
---- a/arch/arm/boot/dts/keystone-k2hk-evm.dts
-+++ b/arch/arm/boot/dts/keystone-k2hk-evm.dts
-@@ -161,7 +161,7 @@ dtt@50 {
- };
- 
- &spi0 {
--	nor_flash: n25q128a11@0 {
-+	nor_flash: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "Micron,n25q128a11";
-diff --git a/arch/arm/boot/dts/keystone-k2l-evm.dts b/arch/arm/boot/dts/keystone-k2l-evm.dts
-index e200533d26a4..32619b3c5804 100644
---- a/arch/arm/boot/dts/keystone-k2l-evm.dts
-+++ b/arch/arm/boot/dts/keystone-k2l-evm.dts
-@@ -110,7 +110,7 @@ partition@180000 {
- };
- 
- &spi0 {
--	nor_flash: n25q128a11@0 {
-+	nor_flash: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "Micron,n25q128a11";
--- 
-2.32.0
+> +	memcpy(dst, src + offset, len);
+> +	memset(dst + len, 0, PAGE_SIZE - len);
+> +	kunmap(folio_page(folio, 0));
+> +
+> +	erofs_put_metabuf(&buf);
+> +
+> +	return 0;
+> +}
+> +
+>  static int erofs_fscache_readpage(struct file *file, struct page *page)
+>  {
+>  	struct folio *folio = page_folio(page);
+> @@ -85,6 +119,12 @@ static int erofs_fscache_readpage(struct file *file, struct page *page)
+>  		goto out_uptodate;
+>  	}
+>  
+> +	/* inline readpage */
 
+I think the code below is self-explained.
+
+> +	if (map.m_flags & EROFS_MAP_META) {
+> +		ret = erofs_fscache_readpage_inline(folio, &map);
+> +		goto out_uptodate;
+> +	}
+> +
+>  	/* no-inline readpage */
+
+Same here.
+
+Thanks,
+Gao Xiang
+
+>  	mdev = (struct erofs_map_dev) {
+>  		.m_deviceid = map.m_deviceid,
+> -- 
+> 2.27.0
+> 
