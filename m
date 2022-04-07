@@ -2,110 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B07C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 595BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344269AbiDGOvk (ORCPT
+        id S1344276AbiDGOvp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46256 "EHLO
+        Thu, 7 Apr 2022 10:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241089AbiDGOvj (ORCPT
+        with ESMTP id S1344270AbiDGOvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:51:39 -0400
-X-Greylist: delayed 1295 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Apr 2022 07:49:39 PDT
-Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079C51BFDE2;
-        Thu,  7 Apr 2022 07:49:38 -0700 (PDT)
-Received: from local
-        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-         (Exim 4.94.2)
-        (envelope-from <daniel@makrotopia.org>)
-        id 1ncT6r-0000NC-PG; Thu, 07 Apr 2022 16:27:41 +0200
-Date:   Thu, 7 Apr 2022 15:27:35 +0100
-From:   Daniel Golle <daniel@makrotopia.org>
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Linux-ALSA <alsa-devel@alsa-project.org>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        cujomalainey@google.com, Kevin Hilman <khilman@baylibre.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        tzungbi@google.com, linux-mediatek@lists.infradead.org,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        linux-kernel@vger.kernel.org, sound-open-firmware@alsa-project.org
-Subject: Re: [PATCH v7 0/1] firmware: mtk: add adsp ipc protocol for SOF
-Message-ID: <Yk701wLNKQs1DEVx@makrotopia.org>
-References: <20220407130338.28939-1-allen-kh.cheng@mediatek.com>
+        Thu, 7 Apr 2022 10:51:44 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0CF51C7E97
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:49:42 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KZ43V1YqLzFpZj;
+        Thu,  7 Apr 2022 22:47:18 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 7 Apr 2022 22:49:38 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 7 Apr 2022 22:49:37 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Russell King <linux@armlinux.org.uk>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     Rob Herring <robh@kernel.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH 1/2] amba: Add amba_read_periphid() helper
+Date:   Thu, 7 Apr 2022 23:02:39 +0800
+Message-ID: <20220407150240.151166-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407130338.28939-1-allen-kh.cheng@mediatek.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 09:03:37PM +0800, Allen-KH Cheng wrote:
-> This patch provides mediatek adsp ipc support for SOF.
-> ADSP IPC protocol offers (send/recv) interfaces using
-> mediatek-mailbox APIs.
-> 
-> This patch was tested and confirmed to with SOF fw on MT8195
-> cherry board.
+Add new amba_read_periphid() helper to simplify error handling.
 
-... confirmed to **work** with ...
-is probably what you meant to write here.
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+ drivers/amba/bus.c | 133 +++++++++++++++++++++------------------------
+ 1 file changed, 62 insertions(+), 71 deletions(-)
 
+diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+index d3bd14aaabf6..0073d8ba0353 100644
+--- a/drivers/amba/bus.c
++++ b/drivers/amba/bus.c
+@@ -395,107 +395,98 @@ static void amba_device_release(struct device *dev)
+ 	kfree(d);
+ }
+ 
+-static int amba_device_try_add(struct amba_device *dev, struct resource *parent)
++static int amba_read_periphid(struct amba_device *dev)
+ {
+-	u32 size;
++	struct reset_control *rstc;
++	u32 size, pid, cid;
+ 	void __iomem *tmp;
+ 	int i, ret;
+ 
+-	ret = request_resource(parent, &dev->res);
++	ret = dev_pm_domain_attach(&dev->dev, true);
+ 	if (ret)
+ 		goto err_out;
+ 
+-	/* Hard-coded primecell ID instead of plug-n-play */
+-	if (dev->periphid != 0)
+-		goto skip_probe;
++	ret = amba_get_enable_pclk(dev);
++	if (ret)
++		goto err_pm;
+ 
+ 	/*
+-	 * Dynamically calculate the size of the resource
+-	 * and use this for iomap
++	 * Find reset control(s) of the amba bus and de-assert them.
+ 	 */
++	rstc = of_reset_control_array_get_optional_shared(dev->dev.of_node);
++	if (IS_ERR(rstc)) {
++		ret = PTR_ERR(rstc);
++		if (ret != -EPROBE_DEFER)
++			dev_err(&dev->dev, "can't get reset: %d\n", ret);
++		goto err_clk;
++	}
++	reset_control_deassert(rstc);
++	reset_control_put(rstc);
++
+ 	size = resource_size(&dev->res);
+ 	tmp = ioremap(dev->res.start, size);
+ 	if (!tmp) {
+ 		ret = -ENOMEM;
+-		goto err_release;
++		goto err_clk;
+ 	}
+ 
+-	ret = dev_pm_domain_attach(&dev->dev, true);
+-	if (ret) {
+-		iounmap(tmp);
+-		goto err_release;
+-	}
+-
+-	ret = amba_get_enable_pclk(dev);
+-	if (ret == 0) {
+-		u32 pid, cid;
+-		struct reset_control *rstc;
+-
+-		/*
+-		 * Find reset control(s) of the amba bus and de-assert them.
+-		 */
+-		rstc = of_reset_control_array_get_optional_shared(dev->dev.of_node);
+-		if (IS_ERR(rstc)) {
+-			ret = PTR_ERR(rstc);
+-			if (ret != -EPROBE_DEFER)
+-				dev_err(&dev->dev, "can't get reset: %d\n",
+-					ret);
+-			goto err_reset;
+-		}
+-		reset_control_deassert(rstc);
+-		reset_control_put(rstc);
+-
+-		/*
+-		 * Read pid and cid based on size of resource
+-		 * they are located at end of region
+-		 */
+-		for (pid = 0, i = 0; i < 4; i++)
+-			pid |= (readl(tmp + size - 0x20 + 4 * i) & 255) <<
+-				(i * 8);
+-		for (cid = 0, i = 0; i < 4; i++)
+-			cid |= (readl(tmp + size - 0x10 + 4 * i) & 255) <<
+-				(i * 8);
+-
+-		if (cid == CORESIGHT_CID) {
+-			/* set the base to the start of the last 4k block */
+-			void __iomem *csbase = tmp + size - 4096;
+-
+-			dev->uci.devarch =
+-				readl(csbase + UCI_REG_DEVARCH_OFFSET);
+-			dev->uci.devtype =
+-				readl(csbase + UCI_REG_DEVTYPE_OFFSET) & 0xff;
+-		}
++	/*
++	 * Read pid and cid based on size of resource
++	 * they are located at end of region
++	 */
++	for (pid = 0, i = 0; i < 4; i++)
++		pid |= (readl(tmp + size - 0x20 + 4 * i) & 255) << (i * 8);
++	for (cid = 0, i = 0; i < 4; i++)
++		cid |= (readl(tmp + size - 0x10 + 4 * i) & 255) << (i * 8);
+ 
+-		amba_put_disable_pclk(dev);
++	if (cid == CORESIGHT_CID) {
++		/* set the base to the start of the last 4k block */
++		void __iomem *csbase = tmp + size - 4096;
+ 
+-		if (cid == AMBA_CID || cid == CORESIGHT_CID) {
+-			dev->periphid = pid;
+-			dev->cid = cid;
+-		}
++		dev->uci.devarch = readl(csbase + UCI_REG_DEVARCH_OFFSET);
++		dev->uci.devtype = readl(csbase + UCI_REG_DEVTYPE_OFFSET) & 0xff;
++	}
+ 
+-		if (!dev->periphid)
+-			ret = -ENODEV;
++	if (cid == AMBA_CID || cid == CORESIGHT_CID) {
++		dev->periphid = pid;
++		dev->cid = cid;
+ 	}
+ 
++	if (!dev->periphid)
++		ret = -ENODEV;
++
+ 	iounmap(tmp);
++
++err_clk:
++	amba_put_disable_pclk(dev);
++err_pm:
+ 	dev_pm_domain_detach(&dev->dev, true);
++err_out:
++	return ret;
++}
+ 
++static int amba_device_try_add(struct amba_device *dev, struct resource *parent)
++{
++	int ret;
++
++	ret = request_resource(parent, &dev->res);
+ 	if (ret)
+-		goto err_release;
++		goto err_out;
++
++	/* Hard-coded primecell ID instead of plug-n-play */
++	if (dev->periphid != 0)
++		goto skip_probe;
+ 
+- skip_probe:
++	ret = amba_read_periphid(dev);
++	if (ret)
++		goto err_release;
++skip_probe:
+ 	ret = device_add(&dev->dev);
+- err_release:
++err_release:
+ 	if (ret)
+ 		release_resource(&dev->res);
+- err_out:
++err_out:
+ 	return ret;
+-
+- err_reset:
+-	amba_put_disable_pclk(dev);
+-	iounmap(tmp);
+-	dev_pm_domain_detach(&dev->dev, true);
+-	goto err_release;
+ }
+ 
+ /*
+-- 
+2.26.2
 
-> 
-> Based on matthias.bgg/linux.git, v5.18-next/soc
-> changes since v6:
-> - rebase to matthias.bgg/linux.git, v5.18-next/soc
-> - Prefer "GPL" over "GPL v2" for MODULE_LICENSE
-> 
-> changes since v5:
-> - fix WARNING: modpost: missing MODULE_LICENSE() in drivers/mailbox
->   /mtk-adsp-mailbox.o. Add MODULE_LICENSE in the last line.
-> - Due to WARNING: Missing or malformed SPDX-License-Identifier tag
->   in line 1 in checkpatch, we don't remove SPDX-License in line 1.
-> 
-> changes since v4:
-> - add error message for wrong mbox chan
-> 
-> changes since v3:
-> - rebase on v5.16-rc8
-> - update reviewers
-> 
-> changes since v2:
-> - add out tag for two memory free phases
-> 
-> changes since v1:
-> - add comments for mtk_adsp_ipc_send and mtk_adsp_ipc_recv
-> - remove useless MODULE_LICENSE
-> - change label name to out_free
-> 
-> 
-> Allen-KH Cheng (1):
->   firmware: mediatek: add adsp ipc protocol interface
-> 
->  drivers/firmware/Kconfig                      |   1 +
->  drivers/firmware/Makefile                     |   1 +
->  drivers/firmware/mediatek/Kconfig             |   9 +
->  drivers/firmware/mediatek/Makefile            |   2 +
->  drivers/firmware/mediatek/mtk-adsp-ipc.c      | 161 ++++++++++++++++++
->  .../linux/firmware/mediatek/mtk-adsp-ipc.h    |  65 +++++++
->  6 files changed, 239 insertions(+)
->  create mode 100644 drivers/firmware/mediatek/Kconfig
->  create mode 100644 drivers/firmware/mediatek/Makefile
->  create mode 100644 drivers/firmware/mediatek/mtk-adsp-ipc.c
->  create mode 100644 include/linux/firmware/mediatek/mtk-adsp-ipc.h
-> 
-> -- 
-> 2.18.0
-> 
