@@ -2,168 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DADF0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 990B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343838AbiDGOMJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:12:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45162 "EHLO
+        id S245527AbiDGOPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 10:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbiDGOMF (ORCPT
+        with ESMTP id S229500AbiDGOPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:12:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992BD6268;
-        Thu,  7 Apr 2022 07:10:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45B55B8277A;
-        Thu,  7 Apr 2022 14:10:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 735B0C385A5;
-        Thu,  7 Apr 2022 14:09:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649340599;
-        bh=5IvxfxxDjdk54PPCzdkREMRze6Mrx0MFKG/E78j6HHU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fV03GPeBUFq2WwJ8Xnd7LTMHkbG5F8ZbQ44ia7yf8Sct+KL+YhVpLdwaulgiZVGd2
-         CfLZ3gm+AjlBLX+dMhVkJcNxShVlP1lmN6TcX464S09O82LOoUMzoWwUKYrGl+tzCg
-         06VeuM8SPGXdhxCiKYQxLjJOguTd9naHGg6u/KuWS6sfvCSI49OOS9CsmhV9jnMFII
-         XMCLfN2ruJsheH6IGE9jdmzfygXJNrURiGs2URRDgD/kc7ymUfV6+caQ+fQte9Syb/
-         HUFaMruuM8a4eINL391MeizikqbIQjodZle6KRiIFPECMQejglGI02YgnLYqHrNpms
-         bI6ydkXuAQAjQ==
-Date:   Thu, 7 Apr 2022 22:09:50 +0800
-From:   Gao Xiang <xiang@kernel.org>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com
-Subject: Re: [PATCH v8 14/20] erofs: register fscache context for primary
- data blob
-Message-ID: <Yk7wrmKYHbhJM8CY@debian>
-Mail-Followup-To: Jeffle Xu <jefflexu@linux.alibaba.com>,
-        dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com
-References: <20220406075612.60298-1-jefflexu@linux.alibaba.com>
- <20220406075612.60298-15-jefflexu@linux.alibaba.com>
+        Thu, 7 Apr 2022 10:15:37 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603AC17F3DC
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:13:37 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so6347491pjk.4
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 07:13:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mR1YeWMU9tOSnx680BK1SzX5cCKeKB4fg1ibUdrnHdE=;
+        b=qxQqqf9dbh1s4SOObcF+A7r6654kIcBnfemh5JwgpwDw9OjGdqjXErU8mqdijeekSC
+         loz5BCCusyTbjFg3wiHAgRiJBdc948kp8LH+LZio0/SZIWfoj0voECmUcLpqjb06iL7L
+         I+PBrKBpMj/URRb4cFfYAd+qKWdaOIwVdeVyH00i2ANa3rV84pBy48BUVqvLg9sDYhYu
+         0t+6DhJYApEMDvKs5C4xHem9+56dSvMihbXiRfgIlTFUB3DRvMa7W5tOuZU4pVpHAQif
+         gx9V4lJDwmSTgZBAnGlpnNvIUqnMKReCqkTDr2u1eniwFjTPrS8cYnIhW0haXndr/ACZ
+         bpIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mR1YeWMU9tOSnx680BK1SzX5cCKeKB4fg1ibUdrnHdE=;
+        b=rUW98IqNmBUEH1lMJWdSF+eUJ6rzG4ADc/Ct8lRa9vPkIghEefdsPxPNNTXpOEzjjk
+         eecLyBcAzrcvbQeN8egQpEKZN86Qf933UQPg+ECWhzEfaPA2/+r/+C45v4oNuYEOXE2R
+         YQODTF83K6qRHXdb73fTDjAv5n8dhTwDA7U42EXLT2Z7r4U6yiHs0KU4qQ98iGQECorH
+         b+AM4hkcxKfYnJh1SJD7VfoXWTVUuVqZK17x6iM1P3p+naAxadapnpSWAk1BaJHUBlf8
+         QK6+JJU8+Y17c/E9oa7E1hAedyKBAVvRTSzIlsEZWSYOIcUzvlR8TgtP8QWyjHpnvrqk
+         rNUQ==
+X-Gm-Message-State: AOAM530sWmHm828NXv6T2l9TdWonMf9++fxAfrdI9J2HACyJ36Zg+Oos
+        fjBLoZiA1lifedx7i78bu8s=
+X-Google-Smtp-Source: ABdhPJzE8uGA9C15x77lzGAz2d8S8eq63Rm8lnGX6kNwkdDAlDbhC9zDlQ0/mAFkm+ODMIrfRM8ySQ==
+X-Received: by 2002:a17:90b:4a0b:b0:1c7:221a:a600 with SMTP id kk11-20020a17090b4a0b00b001c7221aa600mr16063589pjb.112.1649340809591;
+        Thu, 07 Apr 2022 07:13:29 -0700 (PDT)
+Received: from fedora.flets-east.jp ([2400:4050:c360:8200:8ae8:3c4:c0da:7419])
+        by smtp.gmail.com with ESMTPSA id ne4-20020a17090b374400b001cb142237a8sm2311614pjb.4.2022.04.07.07.13.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 07:13:28 -0700 (PDT)
+From:   Akihiko Odaki <akihiko.odaki@gmail.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Jaroslav Kysela <perex@perex.cz>,
+        Oder Chiou <oder_chiou@realtek.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Akihiko Odaki <akihiko.odaki@gmail.com>
+Subject: [PATCH] ASoC: rt5682: Add jack kcontrol
+Date:   Thu,  7 Apr 2022 23:13:16 +0900
+Message-Id: <20220407141316.5099-1-akihiko.odaki@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220406075612.60298-15-jefflexu@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 03:56:06PM +0800, Jeffle Xu wrote:
-> Registers fscache context for primary data blob. Also move the
-> initialization of s_op and related fields forward, since anonymous
-> inode will be allocated under the super block when registering the
-> fscache context.
-> 
-> Something worth mentioning about the cleanup routine.
-> 
-> 1. The fscache context will instantiate anonymous inodes under the super
-> block. Release these anonymous inodes when .put_super() is called, or
-> we'll get "VFS: Busy inodes after unmount." warning.
-> 
-> 2. The fscache context is initialized prior to the root inode. If
-> .kill_sb() is called when mount failed, .put_super() won't be called
-> when root inode has not been initialized yet. Thus .kill_sb() shall
-> also contain the cleanup routine.
-> 
-> Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Create a jack kcontrol manually as rt5682 does not use DAPM pins
+for jack and will not have kcontrols for them.
 
-Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
+---
+ include/sound/jack.h      | 2 +-
+ sound/core/jack.c         | 3 +--
+ sound/soc/codecs/rt5682.c | 5 +++++
+ 3 files changed, 7 insertions(+), 3 deletions(-)
 
-Thanks,
-Gao Xiang
+diff --git a/include/sound/jack.h b/include/sound/jack.h
+index 1181f536557e..bb5fcbd70d7c 100644
+--- a/include/sound/jack.h
++++ b/include/sound/jack.h
+@@ -60,10 +60,10 @@ struct snd_jack {
+ 	struct list_head kctl_list;
+ 	struct snd_card *card;
+ 	const char *id;
++	int type;
+ #ifdef CONFIG_SND_JACK_INPUT_DEV
+ 	struct input_dev *input_dev;
+ 	int registered;
+-	int type;
+ 	char name[100];
+ 	unsigned int key[6];   /* Keep in sync with definitions above */
+ #endif /* CONFIG_SND_JACK_INPUT_DEV */
+diff --git a/sound/core/jack.c b/sound/core/jack.c
+index d1e3055f2b6a..967a9769ea24 100644
+--- a/sound/core/jack.c
++++ b/sound/core/jack.c
+@@ -530,8 +530,6 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
+ 
+ 		jack->input_dev->phys = "ALSA";
+ 
+-		jack->type = type;
+-
+ 		for (i = 0; i < SND_JACK_SWITCH_TYPES; i++)
+ 			if (type & (1 << i))
+ 				input_set_capability(jack->input_dev, EV_SW,
+@@ -545,6 +543,7 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
+ 		goto fail_input;
+ 
+ 	jack->card = card;
++	jack->type = type;
+ 	INIT_LIST_HEAD(&jack->kctl_list);
+ 
+ 	if (initial_kctl)
+diff --git a/sound/soc/codecs/rt5682.c b/sound/soc/codecs/rt5682.c
+index be68d573a490..583dc80f08d0 100644
+--- a/sound/soc/codecs/rt5682.c
++++ b/sound/soc/codecs/rt5682.c
+@@ -1012,6 +1012,7 @@ static int rt5682_set_jack_detect(struct snd_soc_component *component,
+ 		struct snd_soc_jack *hs_jack, void *data)
+ {
+ 	struct rt5682_priv *rt5682 = snd_soc_component_get_drvdata(component);
++	int ret;
+ 
+ 	rt5682->hs_jack = hs_jack;
+ 
+@@ -1025,6 +1026,10 @@ static int rt5682_set_jack_detect(struct snd_soc_component *component,
+ 		return 0;
+ 	}
+ 
++	ret = snd_jack_add_new_kctl(hs_jack->jack, hs_jack->jack->id, hs_jack->jack->type);
++	if (ret)
++		dev_warn(component->dev, "Failed to create jack kcontrol - %d\n", ret);
++
+ 	if (!rt5682->is_sdw) {
+ 		switch (rt5682->pdata.jd_src) {
+ 		case RT5682_JD1:
+-- 
+2.35.1
 
-> ---
->  fs/erofs/internal.h |  1 +
->  fs/erofs/super.c    | 15 +++++++++++----
->  2 files changed, 12 insertions(+), 4 deletions(-)
-> 
-> diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-> index 3a4a344cfed3..eb37b33bce37 100644
-> --- a/fs/erofs/internal.h
-> +++ b/fs/erofs/internal.h
-> @@ -155,6 +155,7 @@ struct erofs_sb_info {
->  
->  	/* fscache support */
->  	struct fscache_volume *volume;
-> +	struct erofs_fscache *s_fscache;
->  };
->  
->  #define EROFS_SB(sb) ((struct erofs_sb_info *)(sb)->s_fs_info)
-> diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-> index 6590ed1b7d3b..9498b899b73b 100644
-> --- a/fs/erofs/super.c
-> +++ b/fs/erofs/super.c
-> @@ -585,6 +585,9 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
->  	int err;
->  
->  	sb->s_magic = EROFS_SUPER_MAGIC;
-> +	sb->s_flags |= SB_RDONLY | SB_NOATIME;
-> +	sb->s_maxbytes = MAX_LFS_FILESIZE;
-> +	sb->s_op = &erofs_sops;
->  
->  	if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
->  		erofs_err(sb, "failed to set erofs blksize");
-> @@ -605,6 +608,11 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
->  		err = erofs_fscache_register_fs(sb);
->  		if (err)
->  			return err;
-> +
-> +		err = erofs_fscache_register_cookie(sb, &sbi->s_fscache,
-> +						    sbi->opt.fsid, true);
-> +		if (err)
-> +			return err;
->  	}
->  
->  	err = erofs_read_superblock(sb);
-> @@ -619,11 +627,8 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
->  			clear_opt(&sbi->opt, DAX_ALWAYS);
->  		}
->  	}
-> -	sb->s_flags |= SB_RDONLY | SB_NOATIME;
-> -	sb->s_maxbytes = MAX_LFS_FILESIZE;
-> -	sb->s_time_gran = 1;
->  
-> -	sb->s_op = &erofs_sops;
-> +	sb->s_time_gran = 1;
->  	sb->s_xattr = erofs_xattr_handlers;
->  
->  	if (test_opt(&sbi->opt, POSIX_ACL))
-> @@ -763,6 +768,7 @@ static void erofs_kill_sb(struct super_block *sb)
->  
->  	erofs_free_dev_context(sbi->devs);
->  	fs_put_dax(sbi->dax_dev);
-> +	erofs_fscache_unregister_cookie(&sbi->s_fscache);
->  	erofs_fscache_unregister_fs(sb);
->  	kfree(sbi);
->  	sb->s_fs_info = NULL;
-> @@ -781,6 +787,7 @@ static void erofs_put_super(struct super_block *sb)
->  	iput(sbi->managed_cache);
->  	sbi->managed_cache = NULL;
->  #endif
-> +	erofs_fscache_unregister_cookie(&sbi->s_fscache);
->  }
->  
->  static struct file_system_type erofs_fs_type = {
-> -- 
-> 2.27.0
-> 
