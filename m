@@ -2,212 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 315ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE1BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343643AbiDGRQk (ORCPT
+        id S1345219AbiDGRSN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:16:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56306 "EHLO
+        Thu, 7 Apr 2022 13:18:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiDGRQi (ORCPT
+        with ESMTP id S230306AbiDGRSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:16:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EAD8131961
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:14:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8FA4B8254E
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 17:14:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F31C385A4;
-        Thu,  7 Apr 2022 17:14:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649351673;
-        bh=VtyFx1mE/jimFv03f6Qz18sNrWKaGRHtMcWgdHvNHrU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ilcES6Mxll3vhWBEQtYAqnQ7CFAGgtXF8Nj1+KT+hKWXB77102gFcxaJ0pYZuxg6H
-         9XjwNNxT97n12yN+bybdlbZJMlXbqxnWk2d0jrMaEY/OoLd7cR0yaebdx8zNywPlzp
-         i3qHkM3+bdmMGFMtOPWmpceBambyZsrqdA+D7FNYWb+MxupbNUJjZejIZj+wEES7FC
-         yxQPVofhcyBb1+C4oOksJrSYrmO5kFZvnDt5mresNurC+y+GSz69/e4AnV4vJ5/EOd
-         uzpCuW/u4zW/kiDwJkaO8m2pXzM8YKL3nBshACr5cdHojMN7hQpy4cbQ80DZomKCB0
-         mCcPMbV0CQTyA==
-Date:   Thu, 7 Apr 2022 10:14:31 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Sedat Dilek <sedat.dilek@gmail.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: Build perf with clang, failure with libperf
-Message-ID: <Yk8b9xF9OrKj4pH7@dev-arch.thelio-3990X>
-References: <YktYX2OnLtyobRYD@kernel.org>
- <Ykto1FgmPMMCysbI@dev-arch.thelio-3990X>
- <CA+icZUVKgLLJvNF6ZU1e7Hjr_FsJO7x0gsGL6Jje1nv2ukhueA@mail.gmail.com>
- <Yk79WQQjvMyCddiO@dev-arch.thelio-3990X>
- <CA+icZUXwF+qs0KxSeD8AF7ufrT6PodQa0iVi1w=qvdT0WWhkrA@mail.gmail.com>
+        Thu, 7 Apr 2022 13:18:08 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2041.outbound.protection.outlook.com [40.107.212.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD02131961;
+        Thu,  7 Apr 2022 10:16:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UAOqbvCXwI55akKR/7tTzCykm0iFtKUNZ9GvWtG/9sWAPw42rij44tJsd5F0FKnrDoRLeGFrNysNMUgJZfcRQd0XLo13zwd8bhwnXIJ23652nwzZ7j9HkrONPJs44CMmGEkT/APTuKTJTFfgojLYW1W8KK4WY9V82dcE8Q06bCNu8wfIC99hPVvtvMViUzWxvWDOMRsXsC7aEoobo0l7/qFSyOMxPTiq3ust0lxkXY+P4jFN75JnPFbkaPDE4dFGVHecHXk/dyE7XX4J/VjVug/gPdAjzszjHlfS2DV++rwa06YDS8rb674K8CumqS8hjNVuB/J064wD3+B2fPZ6Gg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yzCCCVAny7OuLqMgtV9HiXWJsp6Jrlh8RoCXSMlVklQ=;
+ b=BH2AwwrB/dM1IGggHvrGBFDHaLwEVlwR2TcA5+BxmtIvrKYGjjYqSrckvq7OKWZNOjWNZEt5cCopbTJud0ZQmGyexdgk78YKdT+al1CkugirPAuFk9f069M0ZdUgxRPGrb0Djw73umCrbWQLHj++dOjed0gRSjoC1Knaq8vJVl1psUBb5rBbJ3cpSEPZaPNKnxGX61p/h0XIzZ2piylLNYfWHLNY/bepMXD930TzYPB/SYEs7SLa6BZ6/AFebqcVQaK3WgLKPj8hgxqCZEntUuOLTu17NqbiMXg28v5pGeqRCUsFNpCS1HC351ret1sxg7XIQR8p1SxgPfrMEi1Ddg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yzCCCVAny7OuLqMgtV9HiXWJsp6Jrlh8RoCXSMlVklQ=;
+ b=LA8LUzVFsx/5QELmGPuC/3ae+SO+al/r3TVAa2roFNht6C07F6W7bK7iFya3yR6zRfCf8qdchkQ0KBCtPFIdu/qyvfjbaY14IPsQrgH5RHc3uAXYQtEra2cq+4Gdxji/U5URvUYvds+eAO0/ViC41XvDxHtgrWkLSGhy5SivR3U=
+Received: from BN0PR04CA0021.namprd04.prod.outlook.com (2603:10b6:408:ee::26)
+ by DM4PR12MB5746.namprd12.prod.outlook.com (2603:10b6:8:5d::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.22; Thu, 7 Apr
+ 2022 17:16:05 +0000
+Received: from BN8NAM11FT012.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ee:cafe::14) by BN0PR04CA0021.outlook.office365.com
+ (2603:10b6:408:ee::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21 via Frontend
+ Transport; Thu, 7 Apr 2022 17:16:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT012.mail.protection.outlook.com (10.13.177.55) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5144.20 via Frontend Transport; Thu, 7 Apr 2022 17:16:04 +0000
+Received: from ethanolx5673host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Apr
+ 2022 12:16:04 -0500
+From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
+CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
+        <jon.grimm@amd.com>, <brijesh.singh@amd.com>,
+        <thomas.lendacky@amd.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH] KVM: SVM: Do not activate AVIC for SEV-enabled guest
+Date:   Thu, 7 Apr 2022 12:55:10 -0500
+Message-ID: <20220407175510.54264-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+icZUXwF+qs0KxSeD8AF7ufrT6PodQa0iVi1w=qvdT0WWhkrA@mail.gmail.com>
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0f900c0b-cfed-4c52-a545-08da18ba4c49
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5746:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR12MB574605F647F39DAB79C4AE4BF3E69@DM4PR12MB5746.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pDIkreaI51Os9ZW56VI5qOiaA6KpTImQ0TeoIAG1zW21WKgO0bzp3/bim3W/lR0YNkCQpJSOKbNnAmq+/yDMSE7cmevTV95PGIWzrciwyhEtBIDtw8vjPKLG47jMzerDy/1ZP4ChXEO4eFGXOttshjbncEIdemgJbcAwR8/5gi9J4z5Nbz5M5cYfNP27GBegURJn37NURDuarLIv2H6uZeA7IpmDRXKVmpO5gXELTOlow9s58hbvvCPhgtE+UaH6onutRyovFoJs6MzL5TwxS/EDzu0paPMxB5Z3GtLO3lTspj4NMk/0gPPnFAlagBani52l0IdTkFbUuukYwtn56qJtZBd3I1Fp7TzXaFBkRG7jO7Ja6pnpspV8KjXanJH+bXGGKEnU2mAnTJJhqcf2XqM0/6tqjtvpxfwMi6VEqC7vAWXQDiWgj/GpZicDvAUAPc6f/XFrf719M03WyLrlOZh3o3mtCb+n45EoiiOkweDJriXOoQMU0d1GoCsFjTV1m/zVefKYy9dHUUQXSsI5C2R3f2L9TCsb/QaE/X8Mqv/TlGttJVrvBzreKRVK5xbuv/NP1loiqPM/slXeguYKorCdvePOPbc5BKLmv2vmlm6qe0nhJ1WdkJmWWmjT0r1hDc5Ff5xgbjVfGslrSjt0XwxLgzo17Dnk3A/Wb9iFHYF0ImIU1AsSQxK5+/wyREr+LNzZhCkUJL0qWvN6wd3NKQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(336012)(426003)(47076005)(36860700001)(2616005)(508600001)(81166007)(356005)(8676002)(70586007)(70206006)(4326008)(16526019)(6666004)(7696005)(83380400001)(2906002)(40460700003)(5660300002)(86362001)(8936002)(1076003)(82310400005)(316002)(44832011)(186003)(26005)(54906003)(110136005)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2022 17:16:04.8443
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0f900c0b-cfed-4c52-a545-08da18ba4c49
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT012.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5746
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 06:25:29PM +0200, Sedat Dilek wrote:
-> On Thu, Apr 7, 2022 at 5:03 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > On Thu, Apr 07, 2022 at 12:27:14PM +0200, Sedat Dilek wrote:
-> > > On Mon, Apr 4, 2022 at 11:53 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> > > >
-> > > > Hi Arnaldo,
-> > > >
-> > > > On Mon, Apr 04, 2022 at 05:43:11PM -0300, Arnaldo Carvalho de Melo wrote:
-> > > > > Hi,
-> > > > >
-> > > > >       Trying to apply Sedat's patch something changed in my system,
-> > > > > and that patch wasn't enough, so I had to first apply this one:
-> > > > >
-> > > > > commit 173b552663419f40bcd3cf9df4f68285cac72727
-> > > > > Author: Arnaldo Carvalho de Melo <acme@redhat.com>
-> > > > > Date:   Mon Apr 4 17:28:48 2022 -0300
-> > > > >
-> > > > >     tools build: Use $(shell ) instead of `` to get embedded libperl's ccopts
-> > > > >
-> > > > >     Just like its done for ldopts and for both in tools/perf/Makefile.config.
-> > > > >
-> > > > >     Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
-> > > > >
-> > > > >       $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
-> > > > >
-> > > > >     And we need to do it to allow for building with versions of clang where
-> > > > >     some gcc options selected by distros are not available.
-> > > > >
-> > > > >     Cc: Adrian Hunter <adrian.hunter@intel.com>
-> > > > >     Cc: Fangrui Song <maskray@google.com>
-> > > > >     Cc: Florian Fainelli <f.fainelli@gmail.com>
-> > > > >     Cc: Ian Rogers <irogers@google.com>
-> > > > >     Cc: Jiri Olsa <jolsa@kernel.org>
-> > > > >     Cc: John Keeping <john@metanate.com>
-> > > > >     Cc: Leo Yan <leo.yan@linaro.org>
-> > > > >     Cc: Michael Petlan <mpetlan@redhat.com>
-> > > > >     Cc: Namhyung Kim <namhyung@kernel.org>
-> > > > >     Cc: Nathan Chancellor <nathan@kernel.org>
-> > > > >     Cc: Nick Desaulniers <ndesaulniers@google.com>
-> > > > >     Cc: Sedat Dilek <sedat.dilek@gmail.com>
-> > > > >     Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-> > > > >
-> > > > > diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
-> > > > > index 1480910c792e2cb3..90774b60d31b2b8e 100644
-> > > > > --- a/tools/build/feature/Makefile
-> > > > > +++ b/tools/build/feature/Makefile
-> > > > > @@ -217,7 +217,7 @@ strip-libs = $(filter-out -l%,$(1))
-> > > > >  PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
-> > > > >  PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
-> > > > >  PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
-> > > > > -PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
-> > > > > +PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
-> > > > >  FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
-> > > > >
-> > > > >  $(OUTPUT)test-libperl.bin:
-> > > > >
-> > > > > ----------------------------------------------------- 8< -------------------
-> > > > >
-> > > > > After this I go on filtering out some of the gcc options that clang
-> > > > > doesn't grok:
-> > > > >
-> > > > > diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
-> > > > > index 90774b60d31b2b8e..bbc5e263e02385ed 100644
-> > > > > --- a/tools/build/feature/Makefile
-> > > > > +++ b/tools/build/feature/Makefile
-> > > > > @@ -215,9 +215,12 @@ grep-libs  = $(filter -l%,$(1))
-> > > > >  strip-libs = $(filter-out -l%,$(1))
-> > > > >
-> > > > >  PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
-> > > > > +PERL_EMBED_LDOPTS := $(filter-out -specs=%,$(PERL_EMBED_LDOPTS))
-> > > > >  PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
-> > > > >  PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
-> > > > >  PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
-> > > > > +PERL_EMBED_CCOPTS := $(filter-out -ffat-lto-objects, $(PERL_EMBED_CCOPTS))
-> > > > > +PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
-> > > > >  FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
-> > > > >
-> > > > >  $(OUTPUT)test-libperl.bin:
-> > > > >
-> > > > > ----------------------------------------------------- 8< -------------------
-> > > > >
-> > > > > And then get to the problems at the end of this message, which seem
-> > > > > similar to the problem described here:
-> > > > >
-> > > > > From  Nathan Chancellor <>
-> > > > > Subject       [PATCH] mwifiex: Remove unnecessary braces from HostCmd_SET_SEQ_NO_BSS_INFO
-> > > > >
-> > > > > https://lkml.org/lkml/2020/9/1/135
-> > > > >
-> > > > > So perhaps in this case its better to disable that
-> > > > > -Werror,-Wcompound-token-split-by-macro when building with clang?
-> > > >
-> > > > Yes, I think that is probably the best solution. As far as I can tell,
-> > > > at least in this file and context, the warning appears harmless, as the
-> > > > "create a GNU C statement expression from two different macros" is very
-> > > > much intentional, based on the presence of PERL_USE_GCC_BRACE_GROUPS.
-> > > > The warning is fixed in upstream Perl by just avoiding creating GNU C
-> > > > statement expressions using STMT_START and STMT_END:
-> > > >
-> > > > https://github.com/Perl/perl5/issues/18780
-> > > > https://github.com/Perl/perl5/pull/18984
-> > > >
-> > > > If I am reading the source code correctly, an alternative to disabling
-> > > > the warning would be specifying -DPERL_GCC_BRACE_GROUPS_FORBIDDEN but it
-> > > > seems like that might end up impacting more than just this site,
-> > > > according to the issue discussion above.
-> > > >
-> > >
-> > > Thanks for the pointer Nathan.
-> > >
-> > > As said I hit the problem with Debian's perl v5.34.
-> > >
-> > > Checking perl5 Git reveals:
-> > >
-> > > "skip using gcc brace groups for STMT_START/END"
-> > > https://github.com/Perl/perl5/commit/7169efc77525df70484a824bff4ceebd1fafc760
-> >
-> > GitHub says this is in 5.35.2, so it would make sense that 5.34 still
-> > shows the issue.
-> >
-> > > "Partially Revert "skip using gcc brace groups for STMT_START/END""
-> > > https://github.com/Perl/perl5/commit/e08ee3cb66f362c4901846a46014cfdfcd60326c
-> > >
-> > > Perl v5.34.x seems not to have these changes:
-> > > https://github.com/Perl/perl5/compare/v5.34.0...v5.34.1
-> > >
-> > > Unsure if there exists a real fix for perl5.
-> >
-> > Perhaps those two changes could be cherry-picked into Debian's 5.34. I
-> > have no idea if that is possible though.
-> >
-> 
-> What perl5 version has Arch Linux?
+Since current AVIC implementation cannot support encrypted memory,
+inhibit AVIC for SEV-enabled guest.
 
-$ pacman -Q perl
-perl 5.34.1-1
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ arch/x86/include/asm/kvm_host.h | 1 +
+ arch/x86/kvm/svm/avic.c         | 3 ++-
+ arch/x86/kvm/svm/sev.c          | 2 ++
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
-It appears that 5.35 is the development version, which I suppose means
-we won't see this fix widely available for some time:
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 59fc339ba528..6801a0c3890f 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1037,6 +1037,7 @@ struct kvm_x86_msr_filter {
+ #define APICV_INHIBIT_REASON_X2APIC	5
+ #define APICV_INHIBIT_REASON_BLOCKIRQ	6
+ #define APICV_INHIBIT_REASON_ABSENT	7
++#define APICV_INHIBIT_REASON_SEV	8
+ 
+ struct kvm_arch {
+ 	unsigned long n_used_mmu_pages;
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index 4dae5e79f53b..6ffac1b88487 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -1086,7 +1086,8 @@ bool svm_check_apicv_inhibit_reasons(ulong bit)
+ 			  BIT(APICV_INHIBIT_REASON_IRQWIN) |
+ 			  BIT(APICV_INHIBIT_REASON_PIT_REINJ) |
+ 			  BIT(APICV_INHIBIT_REASON_X2APIC) |
+-			  BIT(APICV_INHIBIT_REASON_BLOCKIRQ);
++			  BIT(APICV_INHIBIT_REASON_BLOCKIRQ) |
++			  BIT(APICV_INHIBIT_REASON_SEV);
+ 
+ 	return supported & BIT(bit);
+ }
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index be2883141220..c3af579fcb91 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -259,6 +259,8 @@ static int sev_guest_init(struct kvm *kvm, struct kvm_sev_cmd *argp)
+ 
+ 	INIT_LIST_HEAD(&sev->regions_list);
+ 
++	kvm_request_apicv_update(kvm, false, APICV_INHIBIT_REASON_SEV);
++
+ 	return 0;
+ 
+ e_free:
+-- 
+2.25.1
 
-https://www.nntp.perl.org/group/perl.perl5.porters/2022/03/msg263388.html
-
-> Do you see the issue and need -Wno-compound-token-split-by-macro?
-
-I don't build perf but given the above information, I suspect I would
-need that flag as well.
-
-Cheers,
-Nathan
