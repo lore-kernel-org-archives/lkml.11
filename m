@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4804EC35296
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D54C352A1
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240346AbiDGB37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60704 "EHLO
+        id S240663AbiDGBaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240494AbiDGBUC (ORCPT
+        with ESMTP id S240490AbiDGBUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 21:20:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1DA2C100;
-        Wed,  6 Apr 2022 18:17:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3ADDF4B;
+        Wed,  6 Apr 2022 18:17:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2377FB8268C;
-        Thu,  7 Apr 2022 01:17:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30482C385A7;
-        Thu,  7 Apr 2022 01:17:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C859B8268C;
+        Thu,  7 Apr 2022 01:17:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15FA8C385A3;
+        Thu,  7 Apr 2022 01:17:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294241;
-        bh=Mq/3OgmFFHQ9097uEJJMm5uFnftnSvVnf74GJXIhxRc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cf320gEBD2knIKhIFO4vjaVmczLPBadMDYZJUQOx9Af3cmBJTm3SzUF/vDh7d0egW
-         HTV//DYbDAQPDwT+wigiG/ClQ1seAL85P0M+H/mNkxEASw6q1OZs3brtyNcpELOMJh
-         qRey6GpTN+tmtF/tY0fyIt3C7Uz53ftA+Fo2QfPGoEMgcqHuLUKLCWzADet/rfgXxi
-         yA5O4OZbp0UZjFunPIGA9wtjl/ozMnq9cCL5B00C6EP5c7OeFxPbr27Nrxhxtnu8oK
-         hyAbOWjSo1h/QvwSb3QQ/+JvU6j2FmGMf9IXxiy7LymAmySdCYK240yr5+MNMDFF5x
-         znOV9dDtsfdfg==
+        s=k20201202; t=1649294232;
+        bh=la7OIYEUZAoTuKS3yEKA6YdEJUFbwEQFU3ZRbD0HH4I=;
+        h=From:To:Cc:Subject:Date:From;
+        b=g+ivO+qhSy/VgZrhLUuqNj+oxfn7kLNk28Fj8beUPxWXEC4KsIt5EcwjfciQviXLV
+         CW1fYYxk6ZiQwn1QaXG4bv/DzXA8QxXnDgYuG6X16PUNRAUhzHf5IBHTuEUwyaBsvI
+         a4+kyC75OjmlczxGsJF+vwbN/lb3UZMtZq1dzkWIrSEr6O98zK/27Y3pGWN2m8vOyl
+         GVPOTqUoaWRJ/66vfeXSXC5RUsYcb3GDAqL09WhDiJQZNE5MUeLV3NNAA6XtFBxI9T
+         yonKJX66Hib+jNzqRVsX0FFqAQgFbiHV6vnDYWlRaDBycAEMqburftdttJt3XhISlG
+         yt7/OttAwez5A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jeff LaBundy <jeff@labundy.com>,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, linux-input@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 4/8] Input: add bounds checking to input_set_capability()
-Date:   Wed,  6 Apr 2022 21:16:41 -0400
-Message-Id: <20220407011645.115412-4-sashal@kernel.org>
+Cc:     Bob Peterson <rpeterso@redhat.com>,
+        syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, cluster-devel@redhat.com
+Subject: [PATCH AUTOSEL 4.14 1/8] gfs2: assign rgrp glock before compute_bitstructs
+Date:   Wed,  6 Apr 2022 21:16:38 -0400
+Message-Id: <20220407011645.115412-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011645.115412-1-sashal@kernel.org>
-References: <20220407011645.115412-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,60 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff LaBundy <jeff@labundy.com>
+From: Bob Peterson <rpeterso@redhat.com>
 
-[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
+[ Upstream commit 428f651cb80b227af47fc302e4931791f2fb4741 ]
 
-Update input_set_capability() to prevent kernel panic in case the
-event code exceeds the bitmap for the given event type.
+Before this patch, function read_rindex_entry called compute_bitstructs
+before it allocated a glock for the rgrp. But if compute_bitstructs found
+a problem with the rgrp, it called gfs2_consist_rgrpd, and that called
+gfs2_dump_glock for rgd->rd_gl which had not yet been assigned.
 
-Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+read_rindex_entry
+   compute_bitstructs
+      gfs2_consist_rgrpd
+         gfs2_dump_glock <---------rgd->rd_gl was not set.
+
+This patch changes read_rindex_entry so it assigns an rgrp glock before
+calling compute_bitstructs so gfs2_dump_glock does not reference an
+unassigned pointer. If an error is discovered, the glock must also be
+put, so a new goto and label were added.
+
+Reported-by: syzbot+c6fd14145e2f62ca0784@syzkaller.appspotmail.com
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/input.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ fs/gfs2/rgrp.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/input/input.c b/drivers/input/input.c
-index cb8ff919ba82..a7c8c61a2612 100644
---- a/drivers/input/input.c
-+++ b/drivers/input/input.c
-@@ -50,6 +50,17 @@ static DEFINE_MUTEX(input_mutex);
+diff --git a/fs/gfs2/rgrp.c b/fs/gfs2/rgrp.c
+index 87656030ec7d..1e49f1e0cddf 100644
+--- a/fs/gfs2/rgrp.c
++++ b/fs/gfs2/rgrp.c
+@@ -907,15 +907,15 @@ static int read_rindex_entry(struct gfs2_inode *ip)
+ 	rgd->rd_bitbytes = be32_to_cpu(buf.ri_bitbytes);
+ 	spin_lock_init(&rgd->rd_rsspin);
  
- static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
+-	error = compute_bitstructs(rgd);
+-	if (error)
+-		goto fail;
+-
+ 	error = gfs2_glock_get(sdp, rgd->rd_addr,
+ 			       &gfs2_rgrp_glops, CREATE, &rgd->rd_gl);
+ 	if (error)
+ 		goto fail;
  
-+static const unsigned int input_max_code[EV_CNT] = {
-+	[EV_KEY] = KEY_MAX,
-+	[EV_REL] = REL_MAX,
-+	[EV_ABS] = ABS_MAX,
-+	[EV_MSC] = MSC_MAX,
-+	[EV_SW] = SW_MAX,
-+	[EV_LED] = LED_MAX,
-+	[EV_SND] = SND_MAX,
-+	[EV_FF] = FF_MAX,
-+};
++	error = compute_bitstructs(rgd);
++	if (error)
++		goto fail_glock;
 +
- static inline int is_event_supported(unsigned int code,
- 				     unsigned long *bm, unsigned int max)
- {
-@@ -1915,6 +1926,14 @@ EXPORT_SYMBOL(input_free_device);
-  */
- void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
- {
-+	if (type < EV_CNT && input_max_code[type] &&
-+	    code > input_max_code[type]) {
-+		pr_err("%s: invalid code %u for type %u\n", __func__, code,
-+		       type);
-+		dump_stack();
-+		return;
-+	}
-+
- 	switch (type) {
- 	case EV_KEY:
- 		__set_bit(code, dev->keybit);
+ 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
+ 	rgd->rd_flags &= ~(GFS2_RDF_UPTODATE | GFS2_RDF_PREFERRED);
+ 	if (rgd->rd_data > sdp->sd_max_rg_data)
+@@ -932,6 +932,7 @@ static int read_rindex_entry(struct gfs2_inode *ip)
+ 	}
+ 
+ 	error = 0; /* someone else read in the rgrp; free it and ignore it */
++fail_glock:
+ 	gfs2_glock_put(rgd->rd_gl);
+ 
+ fail:
 -- 
 2.35.1
 
