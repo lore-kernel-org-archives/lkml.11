@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E66C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237515AbiDGBZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32860 "EHLO
+        id S237877AbiDGBZU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239312AbiDGBTI (ORCPT
+        with ESMTP id S239365AbiDGBTL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:19:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D02F190B4A;
-        Wed,  6 Apr 2022 18:14:20 -0700 (PDT)
+        Wed, 6 Apr 2022 21:19:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5942C1A54F3;
+        Wed,  6 Apr 2022 18:14:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDE8161DCE;
-        Thu,  7 Apr 2022 01:14:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B3B7C385A1;
-        Thu,  7 Apr 2022 01:14:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BAEE61DA8;
+        Thu,  7 Apr 2022 01:14:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FFEBC385A6;
+        Thu,  7 Apr 2022 01:14:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294059;
-        bh=J0gKT3Ofnrpn5xAm/AA3kEx/902/31ohvQqjk4KtKTY=;
+        s=k20201202; t=1649294066;
+        bh=JGTxfCZOOghgkyjf3BWnR1x9TbNLIoiVYqZlPvou4Fk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ym4YEKPUVV3Ly/bzs8llzGWtOnQnlSYHpjkFygX5NctxWstEYT/gAJ+CbtiHj5rAO
-         zD14WF6AJnuNOJ8MCVCNU1a0ODhn15+TwE58CIMm0zd3e1bSddYGqv6wxt6PHj9tdh
-         q5eA5tvQaUmlhobI8kKmfZBgS9/pvQmt8WsRwRnbUXFY5C2dODMkSB5n4kwxi4Rv7P
-         mjIvOH581apPwiLEDQOKVtrkXGsb7DOW9bgKwySywUTsv67wLorGiUTr6VzPUitJN6
-         CJG3E0a0CCvkjYaH2lSdWAI57NaSFc1ouAuHpUjKTt2GGGduHB96TDRbeai4/XzMqp
-         RLYKH6pGP8vzw==
+        b=dNOi0qoVsOaiixmoof7BNWK9fCFcRTOslpr5iuv3ocAaeawyoL1hDlco9mDnWCuRL
+         5wf5vZMUuznyCMogj96pmQSWnlipoCiYsP6JRbKG6W35c2igCaJes2A6URcRI2OBHL
+         V+KidBSs7aREWGMZtiB/5M9PBttT4LxgTx30e2wiFhttPVJ9mzYLmwtCu/hJe2xUna
+         L614sIjsdnDleg2NZdhWsuFG42t5SnXIgYCykawTLCEE1brvsFs+9k226x+yt1k83R
+         DURqKoYV/hdLAcSMnvkPW2oohCuSXPtlc6a7RfMxZBqovVfMp9J25Wtdr9Si79k9wX
+         PytTpMfBWsC3w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>, a.zummo@towertech.it,
-        linux-rtc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 03/25] rtc: pcf2127: fix bug when reading alarm registers
-Date:   Wed,  6 Apr 2022 21:13:51 -0400
-Message-Id: <20220407011413.114662-3-sashal@kernel.org>
+Cc:     Glenn Washburn <development@efficientek.com>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>,
+        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
+        linux-um@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 05/25] um: port_user: Improve error handling when port-helper is not found
+Date:   Wed,  6 Apr 2022 21:13:53 -0400
+Message-Id: <20220407011413.114662-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011413.114662-1-sashal@kernel.org>
 References: <20220407011413.114662-1-sashal@kernel.org>
@@ -52,43 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+From: Glenn Washburn <development@efficientek.com>
 
-[ Upstream commit 73ce05302007eece23a6acb7dc124c92a2209087 ]
+[ Upstream commit 3cb5a7f167c620a8b0e38b0446df2e024d2243dc ]
 
-The first bug is that reading the 5 alarm registers results in a read
-operation of 20 bytes. The reason is because the destination buffer is
-defined as an array of "unsigned int", and we use the sizeof()
-operator on this array to define the bulk read count.
+Check if port-helper exists and is executable. If not, write an error
+message to the kernel log with information to help the user diagnose the
+issue and exit with an error. If UML_PORT_HELPER was not set, write a
+message suggesting that the user set it. This makes it easier to understand
+why telneting to the UML instance is failing and what can be done to fix it.
 
-The second bug is that the read value is invalid, because we are
-indexing the destination buffer as integers (4 bytes), instead of
-indexing it as u8.
-
-Changing the destination buffer type to u8 fixes both problems.
-
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220208162908.3182581-1-hugo@hugovil.com
+Signed-off-by: Glenn Washburn <development@efficientek.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-pcf2127.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/um/drivers/port_user.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/rtc/rtc-pcf2127.c b/drivers/rtc/rtc-pcf2127.c
-index f0a6861ff3ae..715513311ece 100644
---- a/drivers/rtc/rtc-pcf2127.c
-+++ b/drivers/rtc/rtc-pcf2127.c
-@@ -366,7 +366,8 @@ static int pcf2127_watchdog_init(struct device *dev, struct pcf2127 *pcf2127)
- static int pcf2127_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
- {
- 	struct pcf2127 *pcf2127 = dev_get_drvdata(dev);
--	unsigned int buf[5], ctrl2;
-+	u8 buf[5];
-+	unsigned int ctrl2;
- 	int ret;
+diff --git a/arch/um/drivers/port_user.c b/arch/um/drivers/port_user.c
+index 5b5b64cb1071..133ca7bf2d91 100644
+--- a/arch/um/drivers/port_user.c
++++ b/arch/um/drivers/port_user.c
+@@ -5,6 +5,7 @@
  
- 	ret = regmap_read(pcf2127->regmap, PCF2127_REG_CTRL2, &ctrl2);
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <string.h>
+ #include <errno.h>
+ #include <termios.h>
+ #include <unistd.h>
+@@ -175,6 +176,17 @@ int port_connection(int fd, int *socket, int *pid_out)
+ 	if (new < 0)
+ 		return -errno;
+ 
++	err = os_access(argv[2], X_OK);
++	if (err < 0) {
++		printk(UM_KERN_ERR "port_connection : error accessing port-helper "
++		       "executable at %s: %s\n", argv[2], strerror(-err));
++		if (env == NULL)
++			printk(UM_KERN_ERR "Set UML_PORT_HELPER environment "
++				"variable to path to uml-utilities port-helper "
++				"binary\n");
++		goto out_close;
++	}
++
+ 	err = os_pipe(socket, 0, 0);
+ 	if (err < 0)
+ 		goto out_close;
 -- 
 2.35.1
 
