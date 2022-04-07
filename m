@@ -2,92 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 00:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9338EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 00:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231896AbiDGAaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 20:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36176 "EHLO
+        id S232856AbiDGAhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 20:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbiDGAaS (ORCPT
+        with ESMTP id S232528AbiDGAhh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 20:30:18 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B854EDFC;
-        Wed,  6 Apr 2022 17:28:19 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id n8so3464211plh.1;
-        Wed, 06 Apr 2022 17:28:19 -0700 (PDT)
+        Wed, 6 Apr 2022 20:37:37 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E4160CF1
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 17:35:39 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id d3so5549828wrb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 17:35:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=2V6mXdnYE9lX/aHxpMJNO/c/FemqRn9e/z+6mFFwjF8=;
-        b=gs3lbfWnhcH99JQ/b/9qhTMh8wuxhto0QJLjEMJhiLW/hlEKlM5VfRrYWC+yfgRnV1
-         o7zxOyxA0waxpWOLSA72SJsCf1NKin/dtCuN0634wkv0eLTPRIvS2IsKwK6KalXyh1Le
-         AB+jcQYPl9EoPSJhbYNKDCIwCg4A5vP7/Pf7RY7Yi2J5gT3oywE86mHAeprkG6tvL06S
-         XTQ3Ya+cGWaTEAhBnuSMFxVh3kvEsfGxyQh3fN1G6oIOH6prtq/CrYYNQos1EvLd5xPj
-         +h/pVsY4s57/yA4hCOaGYpFLlvaWmi7D3n9l6YFuiJCfDVUoPsiKyBKjkWnTkHTfZ5Ve
-         0DYg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b5w7pUYCbRdBoHa23cUuLdtaiZ1u8JBOmoeVCOxsIYc=;
+        b=lSGGwciFyhcHxHrK4MGsKqf6mYWIK7XeAV9X6Ge2D0VhNLhHx/gwJMXF5BH0DpP+GB
+         h73rtZ1tJpdS9PcVsl0FK+qGEKypM3oVDcY3ixChg8X9yh4eXf1lj9CRUJQK/Q7k931W
+         XbeoeUtd5dTImccrVaZWtNTL6d2CrdVolvKnTIkElTjmUweaJYw6yk4Wl+hv8gzYnmCF
+         P655omeQrQL24Ge/kIrFpnU1vYiYFb3YyZwkI1Y/jQxvEeRAcQaQpI0ziuKqLYRQYWW3
+         elSZl3U9nXUTl5715B+AfHf7fYqqQmGzgcinnHH2DekdU7jqdp9DfE5At+p1s5zM6sEl
+         5mKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=2V6mXdnYE9lX/aHxpMJNO/c/FemqRn9e/z+6mFFwjF8=;
-        b=JAxpzIBwY5FFGsj4O6gTyCuwkpK9EbS1/kkRsXQ0WdMP12LKfcB+YF+/p976eXkbzS
-         YJQH80y+RpthAk3mrr7+WUmHbilYe1m9JCyPCWvZmtTbPMxan8c4NVIC7qmdRSgAI/h7
-         UhEBOtV5n/ZA3NFs/4jjtH+fHaxp1a4pH/fTc5gw/+zQ0AmajwzmvAjqYV0HiQDDyZgf
-         5HBQufk6g1uqB4EdTs95Ztk6HLzSL3+ODZ0r87Fnt3GSA6AiWdy7h/ej3t0NIi+L6o17
-         OIXVPnHMRDDiaNthJ7gTf1hC6tvxKN8k1xe3/Q40wbnab/DtMvup8goAwtjR7V3lyGdv
-         cL/w==
-X-Gm-Message-State: AOAM530IkIoboussL3ULMowRDWO5T5TGXcfqEMWWnd6n+AGhZT2WJO2I
-        I3oiSlCdK5iUmzOs3JY9b+PNdFwTscARLQg2rP8=
-X-Google-Smtp-Source: ABdhPJzhpyVyKOoISHKGDfPGYEFuOsjGjw9HWoMRk97F9wHZYWPk0CNpR9cajWQyP13CyUgtAPsaEA==
-X-Received: by 2002:a17:902:ab01:b0:156:f1cc:6d2d with SMTP id ik1-20020a170902ab0100b00156f1cc6d2dmr3937096plb.127.1649291298257;
-        Wed, 06 Apr 2022 17:28:18 -0700 (PDT)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [71.19.144.195])
-        by smtp.gmail.com with ESMTPSA id y5-20020a056a00180500b004faac109225sm21885786pfa.179.2022.04.06.17.28.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 17:28:17 -0700 (PDT)
-Message-ID: <624e3021.1c69fb81.79ff9.9d48@mx.google.com>
-Date:   Wed, 06 Apr 2022 17:28:17 -0700 (PDT)
-X-Google-Original-Date: Thu, 07 Apr 2022 00:28:11 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220406133109.570377390@linuxfoundation.org>
-Subject: RE: [PATCH 5.16 0000/1014] 5.16.19-rc2 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b5w7pUYCbRdBoHa23cUuLdtaiZ1u8JBOmoeVCOxsIYc=;
+        b=6evRPC+hyK2WEOeHrEGVAFn/KwPvQ/9Yv68HBpqG2tKmO16U41P0JIMb/6yuwjB9Qz
+         eIbj07AidZC3+FbCaciBcR6hRkXZ1sHXSdGBw/L+fkEM+4R12zUkwRumlVNmYrCLBxOG
+         A8r3gx7HKDNW5njI2QfvDoIza8kDmZT+I9aOjtUgx6Cu8sU4r+tpvlD6Bj87t4cqp6OM
+         gES5oYmYlW8BoDKo0xKR+Srr2A7ufz8zHk946yzZebECEeLO5d4wPJQ9R5Uglty308Xx
+         xUq+LNbjG+q0olBLIc60v5huFXt4wps8Z6UwLDKCwucJW7SpuBCkX85hvE7spHA3d1so
+         CeGg==
+X-Gm-Message-State: AOAM530D7RUrK8BDM3VFxm6R2HlyIQCo9VYb5dcOcn1LiS5IuXagJQD/
+        i7rUrMLcrV5yhWyoRuQXihlspZXAmJ1QxjjVQbnPsA==
+X-Google-Smtp-Source: ABdhPJxwQ7LbJWlplVesSThlFIU2SvtGMkR+Qg5qKG4mzVo/T1gr9HGXrn3Kr1VLtJhXRSOIM2LowYeaqh2FwAaDhCE=
+X-Received: by 2002:adf:8123:0:b0:206:1759:f164 with SMTP id
+ 32-20020adf8123000000b002061759f164mr8827189wrm.654.1649291738024; Wed, 06
+ Apr 2022 17:35:38 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220406175113.87881-1-atrajeev@linux.vnet.ibm.com>
+In-Reply-To: <20220406175113.87881-1-atrajeev@linux.vnet.ibm.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 6 Apr 2022 17:35:24 -0700
+Message-ID: <CAP-5=fXRphB0gU6CxAuj9Fy40sbwub23RbLLo=5LEY=-_D=3+g@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] Fix perf bench numa, futex and epoll to work with
+ machines having #CPUs > 1K
+To:     Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Cc:     acme@kernel.org, jolsa@kernel.org, disgoel@linux.vnet.ibm.com,
+        mpe@ellerman.id.au, linux-perf-users@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, maddy@linux.vnet.ibm.com,
+        rnsastry@linux.ibm.com, kjain@linux.ibm.com,
+        linux-kernel@vger.kernel.org, srikar@linux.vnet.ibm.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  6 Apr 2022 15:44:28 +0200, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.16.19 release.
-> There are 1014 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Fri, 08 Apr 2022 13:27:53 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.19-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+On Wed, Apr 6, 2022 at 10:51 AM Athira Rajeev
+<atrajeev@linux.vnet.ibm.com> wrote:
+>
+> The perf benchmark for collections: numa, futex and epoll
+> hits failure in system configuration with CPU's more than 1024.
+> These benchmarks uses "sched_getaffinity" and "sched_setaffinity"
+> in the code to work with affinity.
+>
+> Example snippet from numa benchmark:
+> <<>>
+> perf: bench/numa.c:302: bind_to_node: Assertion `!(ret)' failed.
+> Aborted (core dumped)
+> <<>>
+>
+> bind_to_node function uses "sched_getaffinity" to save the cpumask.
+> This fails with EINVAL because the default mask size in glibc is 1024.
+>
+> Similarly in futex and epoll benchmark, uses sched_setaffinity during
+> pthread_create with affinity. And since it returns EINVAL in such system
+> configuration, benchmark doesn't run.
+>
+> To overcome this 1024 CPUs mask size limitation of cpu_set_t,
+> change the mask size using the CPU_*_S macros ie, use CPU_ALLOC to
+> allocate cpumask, CPU_ALLOC_SIZE for size, CPU_SET_S to set mask bit.
+>
+> Fix all the relevant places in the code to use mask size which is large
+> enough to represent number of possible CPU's in the system.
+>
+> Fix parse_setup_cpu_list function in numa bench to check if input CPU
+> is online before binding task to that CPU. This is to fix failures where,
+> though CPU number is within max CPU, it could happen that CPU is offline.
+> Here, sched_setaffinity will result in failure when using cpumask having
+> that cpu bit set in the mask.
+>
+> Patch 1 and Patch 2 address fix for perf bench futex and perf bench
+> epoll benchmark. Patch 3 and Patch 4 address fix in perf bench numa
+> benchmark
+>
+> Athira Rajeev (4):
+>   tools/perf: Fix perf bench futex to correct usage of affinity for
+>     machines with #CPUs > 1K
+>   tools/perf: Fix perf bench epoll to correct usage of affinity for
+>     machines with #CPUs > 1K
+>   tools/perf: Fix perf numa bench to fix usage of affinity for machines
+>     with #CPUs > 1K
+>   tools/perf: Fix perf bench numa testcase to check if CPU used to bind
+>     task is online
+>
+> Changelog:
+> From v1 -> v2:
+>  Addressed review comment from Ian Rogers to do
+>  CPU_FREE in a cleaner way.
+>  Added Tested-by from Disha Goel
 
-5.16.19-rc2 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
 
+The whole set:
+Acked-by: Ian Rogers <irogers@google.com>
+
+Thanks,
+Ian
+
+>  tools/perf/bench/epoll-ctl.c           |  25 ++++--
+>  tools/perf/bench/epoll-wait.c          |  25 ++++--
+>  tools/perf/bench/futex-hash.c          |  26 ++++--
+>  tools/perf/bench/futex-lock-pi.c       |  21 +++--
+>  tools/perf/bench/futex-requeue.c       |  21 +++--
+>  tools/perf/bench/futex-wake-parallel.c |  21 +++--
+>  tools/perf/bench/futex-wake.c          |  22 ++++--
+>  tools/perf/bench/numa.c                | 105 ++++++++++++++++++-------
+>  tools/perf/util/header.c               |  43 ++++++++++
+>  tools/perf/util/header.h               |   1 +
+>  10 files changed, 242 insertions(+), 68 deletions(-)
+>
+> --
+> 2.35.1
+>
