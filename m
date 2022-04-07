@@ -2,89 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A47AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:27:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39704C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245100AbiDGM3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
+        id S245157AbiDGMd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:33:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241933AbiDGM3D (ORCPT
+        with ESMTP id S242882AbiDGMdw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:29:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586C15370F
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:26:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A9D060C09
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:26:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3CF2C385A7;
-        Thu,  7 Apr 2022 12:26:52 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ON+pM72H"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649334411;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8Gd4Dn8KEn0cJxQJEqAUk4T/B1mmtsdXfaxlOLVx/RQ=;
-        b=ON+pM72HcdmO/1rJzG5kf/6SBE3CmHvX0YjIJGrCuto94WZ32WfCzMcEe97myqjl3JtHKT
-        lkBOaL1VT00DOMR+hEJNUpsDiFxD1B4nH4VUteuKInYTtNj/kyPxyVHC3jZ5aaaKIRQ70s
-        YDeQypLQASe+/2iKmIYxLCM9bMHLbZ0=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 0f54a4e2 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 7 Apr 2022 12:26:50 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org
-Cc:     david@redhat.com, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Subject: [PATCH v2] /dev/mem: make reads and writes interruptible
-Date:   Thu,  7 Apr 2022 14:26:38 +0200
-Message-Id: <20220407122638.490660-1-Jason@zx2c4.com>
-In-Reply-To: <d7b928b9-7be1-f129-ff03-6ec9fe083f34@redhat.com>
-References: <d7b928b9-7be1-f129-ff03-6ec9fe083f34@redhat.com>
+        Thu, 7 Apr 2022 08:33:52 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A27111DD9;
+        Thu,  7 Apr 2022 05:31:52 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 237Apxw5009451;
+        Thu, 7 Apr 2022 14:31:24 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=RkFXAMUowl44G0ueDYkkdPxY3P5C7zGyMGGVecJva2Y=;
+ b=qJPsPhDZNG7ILBg3j48jtq6ErUELDESuHXm8DHNK8PBe/l67FlCniqBVRqsdv4SN28RJ
+ D3rJheR7BVVq0p76whC2zhZ1hK8lvaFDrrp1q0epEIeRAXDNLWqdyh/Ua/Pw7kKQOLDO
+ /Bbw2aMHu1Fm1C4wbvfBqp3R969k50EN9BKcijzI/9NwW+FwbvSK3zV9Gizu//WHmIZ+
+ Pr/OnX4NEaCCX105iMnOydeqq3iqLl7Iumb/XeY75IxYmu0XAViHW1BiIWZeMr1xJUVx
+ KyMoHVxk+wRmdcpM9YgHR6N6Ew1D69ViTlh9xFHjo1h5q5GhIBxrBoAKgHTNiDPZhX8s 7A== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f8x4rkxq4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Apr 2022 14:31:24 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AA063100034;
+        Thu,  7 Apr 2022 14:31:23 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A1A8A21A23E;
+        Thu,  7 Apr 2022 14:31:23 +0200 (CEST)
+Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 7 Apr 2022 14:31:23
+ +0200
+From:   Valentin Caron <valentin.caron@foss.st.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
+Subject: [PATCH 2/3] serial: stm32: add KGDB support
+Date:   Thu, 7 Apr 2022 14:31:08 +0200
+Message-ID: <20220407123109.132035-3-valentin.caron@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220407123109.132035-1-valentin.caron@foss.st.com>
+References: <20220407123109.132035-1-valentin.caron@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-07_01,2022-04-07_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In 8619e5bdeee8 ("/dev/mem: Bail out upon SIGKILL."), /dev/mem became
-killable, and that commit noted:
+Add support for KGDB in stm32 serial driver by implementing characters
+polling callbacks (poll_init, poll_get_char and poll_put_char).
 
-  Theoretically, reading/writing /dev/mem and /dev/kmem can become
-  "interruptible". But this patch chose "killable". Future patch will
-  make them "interruptible" so that we can revert to "killable" if
-  some program regressed.
-
-So now we take the next step in making it "interruptible", by changing
-fatal_signal_pending() into signal_pending().
-
-Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Erwan Le Ray <erwan.leray@foss.st.com>
+Signed-off-by: Jean Philippe Romain <jean-philippe.romain@foss.st.com>
+Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
 ---
-Changes v1->v2:
-- The commit message mentions only /dev/mem now, not /dev/kmem which was
-  removed.
+ drivers/tty/serial/stm32-usart.c | 38 ++++++++++++++++++++++++++++++--
+ 1 file changed, 36 insertions(+), 2 deletions(-)
 
- drivers/char/mem.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/char/mem.c b/drivers/char/mem.c
-index cc296f0823bd..84ca98ed1dad 100644
---- a/drivers/char/mem.c
-+++ b/drivers/char/mem.c
-@@ -101,7 +101,7 @@ static inline bool should_stop_iteration(void)
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 83895da84891..d2cf789c7997 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -37,6 +37,7 @@
+ 
+ static void stm32_usart_stop_tx(struct uart_port *port);
+ static void stm32_usart_transmit_chars(struct uart_port *port);
++static void __maybe_unused stm32_usart_console_putchar(struct uart_port *port, unsigned char ch);
+ 
+ static inline struct stm32_port *to_stm32_port(struct uart_port *port)
  {
- 	if (need_resched())
- 		cond_resched();
--	return fatal_signal_pending(current);
-+	return signal_pending(current);
+@@ -1222,6 +1223,34 @@ static void stm32_usart_pm(struct uart_port *port, unsigned int state,
+ 	}
  }
  
++#if defined(CONFIG_CONSOLE_POLL)
++
++ /* Callbacks for characters polling in debug context (i.e. KGDB). */
++static int stm32_usart_poll_init(struct uart_port *port)
++{
++	struct stm32_port *stm32_port = to_stm32_port(port);
++
++	return clk_prepare_enable(stm32_port->clk);
++}
++
++static int stm32_usart_poll_get_char(struct uart_port *port)
++{
++	struct stm32_port *stm32_port = to_stm32_port(port);
++	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
++	unsigned int ret;
++
++	if (!(readl_relaxed(port->membase + ofs->isr) & USART_SR_RXNE))
++		return NO_POLL_CHAR;
++
++	return readl_relaxed(port->membase + ofs->rdr) & stm32_port->rdr_mask;
++}
++
++static void stm32_usart_poll_put_char(struct uart_port *port, unsigned char ch)
++{
++	stm32_usart_console_putchar(port, ch);
++}
++#endif /* CONFIG_CONSOLE_POLL */
++
+ static const struct uart_ops stm32_uart_ops = {
+ 	.tx_empty	= stm32_usart_tx_empty,
+ 	.set_mctrl	= stm32_usart_set_mctrl,
+@@ -1243,6 +1272,11 @@ static const struct uart_ops stm32_uart_ops = {
+ 	.request_port	= stm32_usart_request_port,
+ 	.config_port	= stm32_usart_config_port,
+ 	.verify_port	= stm32_usart_verify_port,
++#if defined(CONFIG_CONSOLE_POLL)
++	.poll_init      = stm32_usart_poll_init,
++	.poll_get_char	= stm32_usart_poll_get_char,
++	.poll_put_char	= stm32_usart_poll_put_char,
++#endif /* CONFIG_CONSOLE_POLL */
+ };
+ 
  /*
+@@ -1640,8 +1674,7 @@ static int stm32_usart_serial_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_SERIAL_STM32_CONSOLE
+-static void stm32_usart_console_putchar(struct uart_port *port, unsigned char ch)
++static void __maybe_unused stm32_usart_console_putchar(struct uart_port *port, unsigned char ch)
+ {
+ 	struct stm32_port *stm32_port = to_stm32_port(port);
+ 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+@@ -1658,6 +1691,7 @@ static void stm32_usart_console_putchar(struct uart_port *port, unsigned char ch
+ 	writel_relaxed(ch, port->membase + ofs->tdr);
+ }
+ 
++#ifdef CONFIG_SERIAL_STM32_CONSOLE
+ static void stm32_usart_console_write(struct console *co, const char *s,
+ 				      unsigned int cnt)
+ {
 -- 
-2.35.1
+2.25.1
 
