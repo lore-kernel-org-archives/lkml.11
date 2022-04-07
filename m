@@ -2,105 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F86C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 356DDC4321E
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344882AbiDGPkn (ORCPT
+        id S1344947AbiDGPmH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
+        Thu, 7 Apr 2022 11:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344858AbiDGPkj (ORCPT
+        with ESMTP id S1344927AbiDGPmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:40:39 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04BBB1B7B4
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:38:35 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 237FGtj7010987;
-        Thu, 7 Apr 2022 10:38:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=UjykvzUh2yttPVC3FFI1GJ+d5P2prlyxQC8ykG4n7sQ=;
- b=fRJvXqN8Wu6nZ+GIXmhS2fn10nWnylZl+cv9hyK0piv+ipqkZrkMii2sGEsr4uvzOscn
- 9GxXTJjLSg+5++q0vdWEkpBWdDUD2jYdhVTdSAm8rlGGCh5Fnwd3W9SFAPGv0O6wQQBf
- CEd4BAsssW0L6I5JuF3FykaZgXyilMn4suGFYrBYFqwIhCM5BhLRMjzzDSozrXvxUEBn
- oDcSHnFZtsdCOajRfZdy7BBqwqxw5UgL2rNxkrCr8g/eRAPyTgV50ZmO6Br/3WIvgzfZ
- iPCbf8ARAraeU3uoG9w0K2avvZP1AIU5wzxdcIGTl84i/JOqRhMblepvZQGWe20gvn6+ 4Q== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3f6jwnxnvm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 07 Apr 2022 10:38:18 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Apr
- 2022 16:38:17 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Thu, 7 Apr 2022 16:38:17 +0100
-Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.65.88])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 1230946A;
-        Thu,  7 Apr 2022 15:38:16 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <pierre-louis.bossart@linux.intel.com>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <peter.ujfalusi@linux.intel.com>,
-        <kai.vehmanen@linux.intel.com>, <ranjani.sridharan@linux.intel.com>
-CC:     <sound-open-firmware@alsa-project.org>,
-        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH] ASoC: SOF: Kconfig: Make SND_SOC_SOF_HDA_PROBES tristate
-Date:   Thu, 7 Apr 2022 16:38:13 +0100
-Message-ID: <20220407153813.1231866-1-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 7 Apr 2022 11:42:05 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7C41EAF6
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:39:46 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id j2so10337867ybu.0
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 08:39:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7AvsbPAce0Zm6SYyVd62fnUo12PcDxQJ27rYPHvZXRk=;
+        b=fjf7AWP69YJT4yeCWiQ0Q8ftWxK8OFZ+N67gnbo3o6nyyculc49nYEaiY3+3mNt88a
+         QQLOSGwOBjL0m5FpnH243EgzIiVW0onVdIFl8P3bUjyPICLjifpkeqCDmnK2l6Bjfnjo
+         62kWjJW67FKBB54YHj3YItis4vE3R7Zu6RNDivVeE4mIJ8+ZOj1yVhziXuH4OTC/rKbi
+         8nTk5qSSAlET0R/46a6sOmLkwZkD60zFjAI3KXQNEdkOTalUeJXvmUChKo4CP9WApCbB
+         sb2adlunIsp+BM3iFfxxM09PR+36SWgToNnqj35aTpqOYIb2k5w8OurF71n4cYTnxQWO
+         YluA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7AvsbPAce0Zm6SYyVd62fnUo12PcDxQJ27rYPHvZXRk=;
+        b=w9tSRWTEXGdwr1RA/Q5fY+ukgO6Yo+ICPDWceA8Vfut81fe4uN5XKsbFsWjXW1Fugt
+         1IllBnEAHkRwJvZBJBQT4IjIG9iDsMMkiP1yyteV9jRu5s/c0/4eTku4qTeid+nlfPmi
+         ZiWQ3J9bjoVqNgbN7786DkXHq9L53cO5kAmxrtP2KUa2VFZV4wOD22uDXfIdMyLW8HXq
+         QIP1O6w114VxhKjcFDA+rOeMnQSkuDQ03WZqeh2rvf415JIycImr8j/BrZvkrEymFvwT
+         Lszay9/Z0hWFm4o+iV56iLmzrqP/c4rpEGSf1EPPlwAi1R7PRk1W0iXWHMwNvSMEntiH
+         Yl8w==
+X-Gm-Message-State: AOAM532JT8pTPmigEPibPJzuzi7WaqKO0dlyverlzF3OYbLoHlaV6Mx4
+        /XGwZhDamU7XHqgK/KuB9MPKRmbbW0baX2cjtgFzrg==
+X-Google-Smtp-Source: ABdhPJyhsGdF3cMRU0ODbyZoaVZ+2NHLKO70Ar7Zh7PvM+7yCGYcTkNyyLmxFo2geEJGDUM/lTdHjxS55wTDpYGiWIg=
+X-Received: by 2002:a25:f441:0:b0:611:4f60:aab1 with SMTP id
+ p1-20020a25f441000000b006114f60aab1mr10641308ybe.598.1649345985425; Thu, 07
+ Apr 2022 08:39:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: B4yOzWpazVgc6L5sHf2qOyFj5y7r6tbT
-X-Proofpoint-GUID: B4yOzWpazVgc6L5sHf2qOyFj5y7r6tbT
-X-Proofpoint-Spam-Reason: safe
+References: <20220406172600.1141083-1-jeffreyjilinux@gmail.com>
+ <20220406223141.51881854@kernel.org> <CAMzD94T_wo=5x5mzm6NgjgSyTrj6koCqg_ia50HeKZnGp73C6w@mail.gmail.com>
+In-Reply-To: <CAMzD94T_wo=5x5mzm6NgjgSyTrj6koCqg_ia50HeKZnGp73C6w@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 7 Apr 2022 08:39:34 -0700
+Message-ID: <CANn89iL=Yw1RmzH4qL1_jyM1D-aLrn-E2UiXh3YsFOZjc9y_cQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net-core: rx_otherhost_dropped to core_stats
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Jeffrey Ji <jeffreyjilinux@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jeffrey Ji <jeffreyji@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SND_SOC_SOF_HDA_PROBES must be tristate because the code it builds
-depends on code that is tristate.
+On Thu, Apr 7, 2022 at 8:36 AM Brian Vazquez <brianvv@google.com> wrote:
+>
+> Looks good to me, thanks Jeffrey.
+>
+> Reviewed-by: Brian Vazquez <brianvv@google.com>
 
-If SND_SOC_SOF_HDA_PROBES is bool it leads to the following build
-inconsistency:
 
-SND_SOC_SOF_HDA_COMMON=m
-  which selects SND_SOC_SOF_HDA_PROBES
-    but since this is a bool SND_SOC_SOF_HDA_PROBES=y
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-SND_SOC_SOF_HDA_PROBES=y
-  selects SND_SOC_SOF_DEBUG_PROBES=y
-    so sof-client-probes.c is built into the kernel.
-
-sof-client-probes.c calls functions in sof-client.c, but
-
-SND_SOC_SOF=m
-  sof-client.c is built into a loadable module.
-
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
----
- sound/soc/sof/intel/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/sound/soc/sof/intel/Kconfig b/sound/soc/sof/intel/Kconfig
-index 172419392b33..0def2aa5581d 100644
---- a/sound/soc/sof/intel/Kconfig
-+++ b/sound/soc/sof/intel/Kconfig
-@@ -260,7 +260,7 @@ config SND_SOC_SOF_HDA
- 	  'select' statements at a higher level.
- 
- config SND_SOC_SOF_HDA_PROBES
--	bool
-+	tristate
- 	select SND_SOC_SOF_DEBUG_PROBES
- 	help
- 	  The option enables the data probing for Intel(R) Skylake and newer
--- 
-2.30.2
-
+Thank you.
