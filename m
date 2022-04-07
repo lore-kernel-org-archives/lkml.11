@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39251C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 19:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A565C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 19:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231460AbiDGTbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 15:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
+        id S231387AbiDGTbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 15:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbiDGTav (ORCPT
+        with ESMTP id S231180AbiDGTar (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 15:30:51 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9A129AE37
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:28:35 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id bg10so12976892ejb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 12:28:35 -0700 (PDT)
+        Thu, 7 Apr 2022 15:30:47 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE144299F0A
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:28:39 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id b24so7569757edu.10
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 12:28:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vGCnlEHv9nw64WsEYjnHYKjP/dibbUbwl/jK2KIozQA=;
-        b=AQq+1KHDxXa1zjrf8HoZKiXspUf+//Y+QDa+9qBI+z3L5VqeQtNEkcjwZhgdxo2SVp
-         TKYNFLag/PTEpMecTsXAbVH8JteoQWPcjoZB9MokFO7oE15kZ4YrpfCsRqFmLtu8Dud6
-         pWUTrPiyomAq18QmqaEGL0PKDZk5p/KqXsBdQD5Wl8vyskDgjYhTRcxp9hyHX15cd9Bh
-         7m/1RPy8+Sw0Z0ruT18ogjT3HPw5o2gXA54LolBn4rnP+6cNw0mLswm/qshqqIZ0GgbY
-         XoTuMbsUBPmjeMg0WqIzyPB2fVnr07rsTiMVq1JoE5GmdyqNxYS0jV/oGf0yp0vTBTLl
-         UThg==
+        bh=+0bJLwilh7WH2dJze8SpTafU8NcKHXjFenPKKfg6dz0=;
+        b=dnl4yaFuJmzRJC1dsaooha0LilBinNwtGkCoaNEJhxbia6EkFOwbDMQLmz053BoCZM
+         8mk/PkRWyc25WSQYa/2LGIPgHq+ANdc3PNw9ywtwNp3puDiAle5l9Ti19+NSHNS6h+9s
+         I2OXARH9wZrMHvzQFCSKKd2YnJByv9LE7wafacsQQXZMHfgCCj6LNEJ4sOkfuVXE73q/
+         DsLE5Ose7jz0ClePmdd1EJyycSgby8ALw6GCRRwfqGTMlIc7P1XCqSssNBrn4W6s9u5W
+         BomzNtPs/LKVp0NUCNExJRe10BAf4Mfu7QUAX2X5/oy/VE282vfMLF+NGRBD3mhEYZkd
+         Kg+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vGCnlEHv9nw64WsEYjnHYKjP/dibbUbwl/jK2KIozQA=;
-        b=tcAEfB522eifi9DchGlBX3vfp/T7yigTf57uleKVgk4kVnqxJHbD6YqlStsRDcXHhP
-         onMv5xIq8eX8IqL+KgnODQIzcXbFnHtARFrkFo8E4RbooHVCGbj3kYYvACV8FGi6tW4I
-         DCqrQk/yMccqPXSu3v+LCMBy0WeMVz5dgt3dTTRdCBaiBV9nWn4EGod7Mcbag8zQNGQE
-         xBHkJud0PYTlrDh0XvNIFWXpV0BJh0tKpY3kgNoraOKbHz2AtHOuPEwT7Jyngsy8e02A
-         RFKItVojZRJ5nFxOeUQbbsE+UkcBwx5TiCQImpQOfF7N46erk8RXLDFPopI/3itXleIh
-         imnw==
-X-Gm-Message-State: AOAM532QxlMBSgVD5t9NVCR70W3Osw5gagOCbr8GATVmopTzhO0lhbmn
-        KWyN53fAoD/JntUFYHQLAw4=
-X-Google-Smtp-Source: ABdhPJzEFoHfdPqrpWj911wljIo/Sbv2TKeaYUCXMGhMI3KFyQrAccJqWJ7oaqqjx240JzkRsNUm6w==
-X-Received: by 2002:a17:907:d8d:b0:6df:b214:392a with SMTP id go13-20020a1709070d8d00b006dfb214392amr15222921ejc.669.1649359705463;
-        Thu, 07 Apr 2022 12:28:25 -0700 (PDT)
+        bh=+0bJLwilh7WH2dJze8SpTafU8NcKHXjFenPKKfg6dz0=;
+        b=KA2M6JsIwA7RKiA2q/gQ34lcKqARn+WkOcSBt11YPszUjEYmXVdcsBwEog96iK0l7d
+         feAQXp9T8vdj+A8+XEzWCSJLfLUPEZ5mpFnip6b4S/dhs6ZHLDDyJX6zHyjLppcJHDGi
+         xepjxb6YAivfs7B3prkiYLUl14a7QfPJ4d/9oVhl77c9acg1pMfCmb4sAu1QpOGH0X9u
+         ULdzBkzlK9U3OPl8y7Mjt88NF/D1uqonAwKpzagZ2+PEbKQFJIjViH2lozrTJak6dbqr
+         959wOPszPN2mDMTULy7flOJQhgfa8iIKvQ9SkG87LMM7zvNETLcmTaAIX3jQi93hms9A
+         OsLg==
+X-Gm-Message-State: AOAM530y4rklHn4XK7wgo+ifqMEwQDjnBmt+Flun+vrM6BXiX55i1Pw0
+        5BXGipEaDYOqGoyjYjBtfoM=
+X-Google-Smtp-Source: ABdhPJyyQYuQXxG644w9SUnoQFO/aKp53IZJZzJXHr158yoRDweK+HSZIsQB7ggegFWEDrPbpl1BBw==
+X-Received: by 2002:a05:6402:d0a:b0:418:ec3b:2242 with SMTP id eb10-20020a0564020d0a00b00418ec3b2242mr16149692edb.229.1649359706885;
+        Thu, 07 Apr 2022 12:28:26 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id k14-20020a50e18e000000b0041b6f23f7f6sm9652798edl.22.2022.04.07.12.28.24
+        by smtp.gmail.com with ESMTPSA id k14-20020a50e18e000000b0041b6f23f7f6sm9652798edl.22.2022.04.07.12.28.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 12:28:25 -0700 (PDT)
+        Thu, 07 Apr 2022 12:28:26 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 3/8] staging: r8188eu: ROMVer is always zero
-Date:   Thu,  7 Apr 2022 21:28:14 +0200
-Message-Id: <20220407192819.10661-4-straube.linux@gmail.com>
+Subject: [PATCH 5/8] staging: r8188eu: remove unused enums from odm.h
+Date:   Thu,  7 Apr 2022 21:28:16 +0200
+Message-Id: <20220407192819.10661-6-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407192819.10661-1-straube.linux@gmail.com>
 References: <20220407192819.10661-1-straube.linux@gmail.com>
@@ -65,53 +65,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The variable ROMVer in struct HAL_VERSION is set to zero and never
-changed. Remove it and replace its use with zero.
+Remove unused enums from odm.h.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/hal/hal_com.c           | 2 +-
- drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 1 -
- drivers/staging/r8188eu/include/HalVerDef.h     | 1 -
- 3 files changed, 1 insertion(+), 3 deletions(-)
+ drivers/staging/r8188eu/include/odm.h | 29 ---------------------------
+ 1 file changed, 29 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/hal/hal_com.c b/drivers/staging/r8188eu/hal/hal_com.c
-index 7649f9919f67..910cc07f656c 100644
---- a/drivers/staging/r8188eu/hal/hal_com.c
-+++ b/drivers/staging/r8188eu/hal/hal_com.c
-@@ -44,7 +44,7 @@ void dump_chip_info(struct HAL_VERSION	chip_vers)
- 
- 	cnt += sprintf((buf + cnt), "1T1R_");
- 
--	cnt += sprintf((buf + cnt), "RomVer(%d)\n", chip_vers.ROMVer);
-+	cnt += sprintf((buf + cnt), "RomVer(%d)\n", 0);
- 
- 	pr_info("%s", buf);
- }
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-index 6811be95da9a..609138887b25 100644
---- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-@@ -505,7 +505,6 @@ void rtl8188e_read_chip_version(struct adapter *padapter)
- 
- 	ChipVersion.VendorType = ((value32 & VENDOR_ID) ? CHIP_VENDOR_UMC : CHIP_VENDOR_TSMC);
- 	ChipVersion.CUTVersion = (value32 & CHIP_VER_RTL_MASK) >> CHIP_VER_RTL_SHIFT; /*  IC version (CUT) */
--	ChipVersion.ROMVer = 0;	/*  ROM code version. */
- 
- 	dump_chip_info(ChipVersion);
- 
-diff --git a/drivers/staging/r8188eu/include/HalVerDef.h b/drivers/staging/r8188eu/include/HalVerDef.h
-index 56dadadb1a0f..7a530c7d57eb 100644
---- a/drivers/staging/r8188eu/include/HalVerDef.h
-+++ b/drivers/staging/r8188eu/include/HalVerDef.h
-@@ -25,7 +25,6 @@ struct HAL_VERSION {
- 	enum HAL_CHIP_TYPE	ChipType;
- 	enum HAL_CUT_VERSION	CUTVersion;
- 	enum HAL_VENDOR		VendorType;
--	u8			ROMVer;
+diff --git a/drivers/staging/r8188eu/include/odm.h b/drivers/staging/r8188eu/include/odm.h
+index 1902aa48a255..f131e17167bf 100644
+--- a/drivers/staging/r8188eu/include/odm.h
++++ b/drivers/staging/r8188eu/include/odm.h
+@@ -98,22 +98,6 @@ struct odm_per_pkt_info {
+ 	bool	bPacketBeacon;
  };
  
- /*  Get element */
+-enum odm_ability {
+-	/*  BB Team */
+-	ODM_DIG			= 0x00000001,
+-	ODM_HIGH_POWER		= 0x00000002,
+-	ODM_CCK_CCA_TH		= 0x00000004,
+-	ODM_FA_STATISTICS	= 0x00000008,
+-	ODM_RAMASK		= 0x00000010,
+-	ODM_RSSI_MONITOR	= 0x00000020,
+-	ODM_SW_ANTDIV		= 0x00000040,
+-	ODM_HW_ANTDIV		= 0x00000080,
+-	ODM_BB_PWRSV		= 0x00000100,
+-	ODM_2TPATHDIV		= 0x00000200,
+-	ODM_1TPATHDIV		= 0x00000400,
+-	ODM_PSD2AFH		= 0x00000800
+-};
+-
+ /*  2011/10/20 MH Define Common info enum for all team. */
+ 
+ enum odm_common_info_def {
+@@ -137,19 +121,6 @@ enum odm_ability_def {
+ 
+ # define ODM_ITRF_USB 0x2
+ 
+-/*  ODM_CMNINFO_OP_MODE */
+-enum odm_operation_mode {
+-	ODM_NO_LINK		= BIT(0),
+-	ODM_LINK		= BIT(1),
+-	ODM_SCAN		= BIT(2),
+-	ODM_POWERSAVE		= BIT(3),
+-	ODM_AP_MODE		= BIT(4),
+-	ODM_CLIENT_MODE		= BIT(5),
+-	ODM_AD_HOC		= BIT(6),
+-	ODM_WIFI_DIRECT		= BIT(7),
+-	ODM_WIFI_DISPLAY	= BIT(8),
+-};
+-
+ /*  ODM_CMNINFO_WM_MODE */
+ enum odm_wireless_mode {
+ 	ODM_WM_UNKNOW	= 0x0,
 -- 
 2.35.1
 
