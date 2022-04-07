@@ -2,80 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A1A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9463C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343761AbiDGN4y (ORCPT
+        id S1343731AbiDGN6K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 09:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51422 "EHLO
+        Thu, 7 Apr 2022 09:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbiDGN4q (ORCPT
+        with ESMTP id S229627AbiDGN6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 09:56:46 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A2A14B039
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 06:54:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=DXxNPzETJNuKIBTHSCLD6jKCdsUNJU2Z62bqM3GMnPE=; b=AgcmlkO5TLsyW5xOuatXKvxlIh
-        jgZhx7Bl1iJKrafqkTBWYDqb52EOVniCao4Iw8Q9+UHC/WiLmTbnEsKTi08fXNcJU6H8vOn5H6QEB
-        QAnV39A9ZV+h6tTHLu+91KRNFGcj0CEZZ64WpnW6L/RVo+Ur0sWynRNZ96IQ/DUFPMT5WnCsP54yi
-        5ZxNvpDqGadrw2mUmBS4rTkSeqNT2JD/Nu6YiwERsvXkU1p1tpExcVDIt2psRm0REQLRqmBwmUlAz
-        2CLFeFwNVZhWHRbap0+xvXmVkEk9XCgA3mMaAf4EDu6u2gs8QuLpiZeqLAH4UB9G20fFsd7Gtl7GO
-        VbM9pk9w==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ncSax-008seI-0m; Thu, 07 Apr 2022 13:54:43 +0000
-Date:   Thu, 7 Apr 2022 14:54:42 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     zhenwei pi <pizhenwei@bytedance.com>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: fix kernel NULL pointer dereference in
- page_vma_mapped_walk
-Message-ID: <Yk7tIi4UKjiqQyoF@casper.infradead.org>
-References: <20220407064008.71869-1-pizhenwei@bytedance.com>
+        Thu, 7 Apr 2022 09:58:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF3BC10612C
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 06:56:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649339768;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OFruv6SyU3k5Tp2Auo/lsfT5rYjkA30i4CwmN00PmTI=;
+        b=PjJ8oh31OWkdxiknHu4J4uxf0wR5Jnnj9ze37Gmvf6zyOBlDs8HLsl42wyCvuhvBppY0iL
+        aecLnai2zw7TECsapRZiX9821Fy9ouldjng1qi+V1d8J5g5ria5A8mNp2/f5k5RfUIT7ET
+        unQe4Aq36DRC4Z4hJ5kjLi2Q1mO1MmE=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-167-cGoIXPUEPDCyL8AtVePMCA-1; Thu, 07 Apr 2022 09:56:04 -0400
+X-MC-Unique: cGoIXPUEPDCyL8AtVePMCA-1
+Received: by mail-ej1-f69.google.com with SMTP id qk32-20020a1709077fa000b006e7b83dc82fso3136023ejc.8
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 06:56:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OFruv6SyU3k5Tp2Auo/lsfT5rYjkA30i4CwmN00PmTI=;
+        b=I4QcF/0PTbSvVro1NIRyrF1Iil19ii2p58mQZjjY/SPbALqME+WSMCAycKO+Pylt/Z
+         p/zLEqcJa8HYr1QSU1YraTdB2/pmypCKZLe81YiSqYTZzWjup2N2bsn/oBtsPjK7pSPo
+         7kJ8hm/yS3XPkQWco+0DtN+YBKGTVV4ttkIzY2M7YKOyQpFKUsIO2Hi5weueNUJKrRy3
+         Y9Oj3qymIe+qygkQT6uw7VKEumHgae8PTszD3iMQYqjUyYqvGkmVy6ZGsLxgDsuS9iYE
+         nNnGfnFBR/XXSONHsXx/HkRt8QGhW1yCvwwWGHggPDfqnBKhJaO7lC9Z85DYTSwD6ENh
+         TX+A==
+X-Gm-Message-State: AOAM531nx08HkqsR8KpvfpemD950/nGZFykp3+N8aTZYUC/UGcBNkn/q
+        6ESKZZhWX9C7rAZ+Cf2uOYlI1oaNiH1BafKGPjJfUseXTTsq1KN7O85387XsXyitfiNtnjRdPHC
+        xtlXW6T3UPQHBUHVC0luXRVB/
+X-Received: by 2002:a17:907:a088:b0:6e4:dad7:1b1f with SMTP id hu8-20020a170907a08800b006e4dad71b1fmr13211420ejc.84.1649339763222;
+        Thu, 07 Apr 2022 06:56:03 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxvEebQwCcSzhV0JO4ajmv0FCub5YVkIXuEm7bLi5rM8dJZlY9eZrBUjnM5yQHK497ox/1eKA==
+X-Received: by 2002:a17:907:a088:b0:6e4:dad7:1b1f with SMTP id hu8-20020a170907a08800b006e4dad71b1fmr13211393ejc.84.1649339762999;
+        Thu, 07 Apr 2022 06:56:02 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id j24-20020a170906255800b006e7f44d46fesm4255745ejb.222.2022.04.07.06.56.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 06:56:02 -0700 (PDT)
+Message-ID: <282d4cd1-d1f7-663c-a965-af587f77ee5a@redhat.com>
+Date:   Thu, 7 Apr 2022 15:56:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407064008.71869-1-pizhenwei@bytedance.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 092/104] KVM: TDX: Handle TDX PV HLT hypercall
+Content-Language: en-US
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <6da55adb2ddb6f287ebd46aad02cfaaac2088415.1646422845.git.isaku.yamahata@intel.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <6da55adb2ddb6f287ebd46aad02cfaaac2088415.1646422845.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 02:40:08PM +0800, zhenwei pi wrote:
-> size_to_hstate(4K) returns NULL pointer, this leads kernel BUG in
-> function page_vma_mapped_walk.
+On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
+> +	bool interrupt_disabled = tdvmcall_p1_read(vcpu);
 
-Yes, I think this is the right fix.  It's not immediately obvious from
-the bug and the patch, but what's going on is:
+Where is R12 documented for TDG.VP.VMCALL<Instruction.HLT>?
 
-page_mapped_in_vma() sets nr_pages to 1.  This is correct because we
-usually only want to know about the precise page, and not about the
-folio containing it.  But hugetlbfs is special (... in so many ways ...)
-and actually wants to work on the entire folio.  We could set nr_pages
-specially for hugetlb pages, but it's better to ignore it in
-page_vma_mapped_walk() for the hugetlb case.
+> +		 * Virtual interrupt can arrive after TDG.VM.VMCALL<HLT> during
+> +		 * the TDX module executing.  On the other hand, KVM doesn't
+> +		 * know if vcpu was executing in the guest TD or the TDX module.
 
-I'll fix up the changelog and add it to my pile of fixes that I'm
-sending tomorrow.
-https://git.infradead.org/users/willy/pagecache.git/shortlog/refs/heads/for-next
+I don't understand this; why isn't it enough to check PI.ON or something 
+like that as part of HLT emulation?
 
-> diff --git a/mm/page_vma_mapped.c b/mm/page_vma_mapped.c
-> index 1187f9c1ec5b..a39ec23581c9 100644
-> --- a/mm/page_vma_mapped.c
-> +++ b/mm/page_vma_mapped.c
-> @@ -163,7 +163,7 @@ bool page_vma_mapped_walk(struct page_vma_mapped_walk *pvmw)
->  		return not_found(pvmw);
->  
->  	if (unlikely(is_vm_hugetlb_page(vma))) {
-> -		unsigned long size = pvmw->nr_pages * PAGE_SIZE;
-> +		unsigned long size = huge_page_size(hstate_vma(vma));
->  		/* The only possible mapping was handled on last iteration */
->  		if (pvmw->pte)
->  			return not_found(pvmw);
-> -- 
-> 2.25.1
-> 
+> +		details.full = td_state_non_arch_read64(
+> +			to_tdx(vcpu), TD_VCPU_STATE_DETAILS_NON_ARCH);
+
+TDX documentation says "the meaning of the field may change with Intel 
+TDX module version", where is this field documented?  I cannot find any 
+"other guest state" fields in the TDX documentation.
+
+Paolo
+
+> +		if (details.vmxip)
+> +			return 1;
+> +	}
+> +
+> +	return kvm_emulate_halt_noskip(vcpu);
+
