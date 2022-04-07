@@ -2,121 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D37B5C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:20:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9DBDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343634AbiDGNWM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 09:22:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
+        id S237415AbiDGNZU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 09:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233062AbiDGNWI (ORCPT
+        with ESMTP id S232781AbiDGNZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 09:22:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A27F3BBDD
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 06:20:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649337607;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=qwnyzBHU2ps0lg/u42dFlsQayDte7IETW+1w7Wx0wc0=;
-        b=T45evgTkbJh4KqKuHEUTVjVD1QQtL8X9lZlcXMPhkUxOI9ueih9WAyHEP1zHaoLn6hnoZr
-        YQUEJDsPD49FVL/iv9mw1sZn8u9KvwNRiv85PoIAtHjTrqj2/djD6dRiZmL8JO0Gbsf9m8
-        5XWonHfEnqbXWjZ00StBEvy1GaJAJIg=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-664-9spzz7JJO2K5DJzm08emXA-1; Thu, 07 Apr 2022 09:20:06 -0400
-X-MC-Unique: 9spzz7JJO2K5DJzm08emXA-1
-Received: by mail-wr1-f70.google.com with SMTP id g4-20020adfa484000000b002061151874eso1265119wrb.21
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 06:20:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qwnyzBHU2ps0lg/u42dFlsQayDte7IETW+1w7Wx0wc0=;
-        b=NvcQnVA6n+ksi0vSMS+SB4q41+KlESUt8wcbwtVz4MWKPdjW/JjrSuYPgMDIV8w0NW
-         6ifKZ5146eNZ9HrKZ1qV3sOd6sMq04P56Yf6il//2AVlzMF8/XVDtYQ9QSxieKDFic3s
-         kPNyUnrm21COzhQyyD21qQtJkO4p5GlzEZnye4RK482FWaDugy48XYK00ckjmDFTkr3h
-         l3vGOqMWViBdTpKwVSsJQjN7w2M8aKUsbG3QK0FTYM7ZfNRixFz9ucbtzuZJTdjYT7Y1
-         FtxjnNr19Kf+4vPb9yVqgsPDPoi55j4MiyLMJN/lu1UCNiysRNtRL9qbFn3/2XJm7VQN
-         AqXw==
-X-Gm-Message-State: AOAM53203a0XUoQaor0oym395ti/q+xnNvZL4BsPj9evrSu+CDyR07oS
-        8G6cU2yRwmMRL72zjXzDK4vtm+2LebjbmSBKo/VnlzE1ua4/NLBVchRNmo8zx2mAhIY803gkF56
-        wabkrGQSbvBRzj3ysMJ0mqmE4zkpkAiCHq2nFCzRoeCk9//wCxOXotaL5m1P8K9eRWprfGG10RG
-        U=
-X-Received: by 2002:a05:600c:3c9b:b0:38e:4c59:68b9 with SMTP id bg27-20020a05600c3c9b00b0038e4c5968b9mr12255522wmb.105.1649337605428;
-        Thu, 07 Apr 2022 06:20:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyQBSQ6JsGQGmUQrZuo6fJZqwQPCpOMvTNMJmEk0YVL6Z/cfLYxjjpt866oxCfauhP9AWslsA==
-X-Received: by 2002:a05:600c:3c9b:b0:38e:4c59:68b9 with SMTP id bg27-20020a05600c3c9b00b0038e4c5968b9mr12255486wmb.105.1649337605105;
-        Thu, 07 Apr 2022 06:20:05 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id f184-20020a1c38c1000000b0038e7d6825f4sm7678670wma.43.2022.04.07.06.20.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 06:20:04 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>, Emma Anholt <emma@anholt.net>,
-        Maxime Ripard <mripard@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-media@vger.kernel.org
-Subject: [PATCH] drm/vc4: Use newer fence API properly to fix build errors
-Date:   Thu,  7 Apr 2022 15:19:50 +0200
-Message-Id: <20220407131950.915091-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 7 Apr 2022 09:25:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6407C6C951;
+        Thu,  7 Apr 2022 06:23:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3316618A3;
+        Thu,  7 Apr 2022 13:23:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D90BC385A4;
+        Thu,  7 Apr 2022 13:23:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649337793;
+        bh=oZEldw/hpTF/Ftwr6fmefxDIheKyXM3a2fItpkOC8jY=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=iJ9v82RaC/voBPyims8Nb7r6DuDpW2p9PGKOCn6UeMhTZrMlfkGl3paDEzX43oaza
+         IWgXyEE4bAqVWtZc4OrJamarGBtv0WJSPPB4QjWiFopSWAcLpieeHwGZB4WmH+YwAh
+         Ib6sLF7PMUUyhWA84K9Ju7Gj8yTo9V3/400ndl8vrGSbaSBVpsKe2kJSTJt/D2o5zz
+         dMEWlN5XG3ipYf/w5DNQGi6tqBRf0wG0wHht4931N7ZKq/ouaSDariFymgUE0inVV7
+         rSCvz4OaeVuG3+mFpD3vrNAMFK+lfSwUIByA9X8tWShrhaCPai72FCSTUtsgKvH/aT
+         tkyhf8xywimsA==
+Message-ID: <aaa78c1f1bfa7b8da8d8be0f3dcf2a42c9b838fd.camel@kernel.org>
+Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
+ inodes
+From:   Jeff Layton <jlayton@kernel.org>
+To:     =?ISO-8859-1?Q?Lu=EDs?= Henriques <lhenriques@suse.de>,
+        Xiubo Li <xiubli@redhat.com>
+Cc:     Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 07 Apr 2022 09:23:11 -0400
+In-Reply-To: <87pmlt85w5.fsf@brahms.olymp>
+References: <20220401133243.1075-1-lhenriques@suse.de>
+         <d6407dd1-b6df-4de4-fe37-71b765b2088a@redhat.com>
+         <878rsia391.fsf@brahms.olymp>
+         <6ba91390-83e8-8702-2729-dc432abd3cc5@redhat.com>
+         <87zgky8n0o.fsf@brahms.olymp>
+         <6306fba71325483a1ea22fa73250c8777ea647d7.camel@kernel.org>
+         <321104e6-36db-c143-a7ba-58f9199e6fb7@redhat.com>
+         <f0ed169ed02fe810076e959e9ec5455d9de4b4ff.camel@kernel.org>
+         <7023b537-e7b6-0dd9-42bf-9d601ef69b58@redhat.com>
+         <87pmlt85w5.fsf@brahms.olymp>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The commit 73511edf8b19 ("dma-buf: specify usage while adding fences to
-dma_resv obj v7") ported all the DRM drivers to use the newer fence API
-that specifies the usage with the enum dma_resv_usage rather than doing
-an explicit shared / exclusive distinction.
+On Thu, 2022-04-07 at 12:55 +0100, Luís Henriques wrote:
+> Xiubo Li <xiubli@redhat.com> writes:
+> 
+> > On 4/6/22 9:41 PM, Jeff Layton wrote:
+> > > On Wed, 2022-04-06 at 21:10 +0800, Xiubo Li wrote:
+> > > > On 4/6/22 7:48 PM, Jeff Layton wrote:
+> > > > > On Wed, 2022-04-06 at 12:33 +0100, Luís Henriques wrote:
+> > > > > > Xiubo Li <xiubli@redhat.com> writes:
+> > > > > > 
+> > > > > > > On 4/6/22 6:57 PM, Luís Henriques wrote:
+> > > > > > > > Xiubo Li <xiubli@redhat.com> writes:
+> > > > > > > > 
+> > > > > > > > > On 4/1/22 9:32 PM, Luís Henriques wrote:
+> > > > > > > > > > When doing DIO on an encrypted node, we need to invalidate the page cache in
+> > > > > > > > > > the range being written to, otherwise the cache will include invalid data.
+> > > > > > > > > > 
+> > > > > > > > > > Signed-off-by: Luís Henriques <lhenriques@suse.de>
+> > > > > > > > > > ---
+> > > > > > > > > >      fs/ceph/file.c | 11 ++++++++++-
+> > > > > > > > > >      1 file changed, 10 insertions(+), 1 deletion(-)
+> > > > > > > > > > 
+> > > > > > > > > > Changes since v1:
+> > > > > > > > > > - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
+> > > > > > > > > > - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
+> > > > > > > > > > 
+> > > > > > > > > > Note: I'm not really sure this last change is required, it doesn't really
+> > > > > > > > > > affect generic/647 result, but seems to be the most correct.
+> > > > > > > > > > 
+> > > > > > > > > > diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+> > > > > > > > > > index 5072570c2203..b2743c342305 100644
+> > > > > > > > > > --- a/fs/ceph/file.c
+> > > > > > > > > > +++ b/fs/ceph/file.c
+> > > > > > > > > > @@ -1605,7 +1605,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
+> > > > > > > > > >      	if (ret < 0)
+> > > > > > > > > >      		return ret;
+> > > > > > > > > >      -	ceph_fscache_invalidate(inode, false);
+> > > > > > > > > > +	ceph_fscache_invalidate(inode, (iocb->ki_flags & IOCB_DIRECT));
+> > > > > > > > > >      	ret = invalidate_inode_pages2_range(inode->i_mapping,
+> > > > > > > > > >      					    pos >> PAGE_SHIFT,
+> > > > > > > > > >      					    (pos + count - 1) >> PAGE_SHIFT);
+> > > > > > > > > The above has already invalidated the pages, why doesn't it work ?
+> > > > > > > > I suspect the reason is because later on we loop through the number of
+> > > > > > > > pages, call copy_page_from_iter() and then ceph_fscrypt_encrypt_pages().
+> > > > > > > Checked the 'copy_page_from_iter()', it will do the kmap for the pages but will
+> > > > > > > kunmap them again later. And they shouldn't update the i_mapping if I didn't
+> > > > > > > miss something important.
+> > > > > > > 
+> > > > > > > For 'ceph_fscrypt_encrypt_pages()' it will encrypt/dencrypt the context inplace,
+> > > > > > > IMO if it needs to map the page and it should also unmap it just like in
+> > > > > > > 'copy_page_from_iter()'.
+> > > > > > > 
+> > > > > > > I thought it possibly be when we need to do RMW, it may will update the
+> > > > > > > i_mapping when reading contents, but I checked the code didn't find any
+> > > > > > > place is doing this. So I am wondering where tha page caches come from ? If that
+> > > > > > > page caches really from reading the contents, then we should discard it instead
+> > > > > > > of flushing it back ?
+> > > > > > > 
+> > > > > > > BTW, what's the problem without this fixing ? xfstest fails ?
+> > > > > > Yes, generic/647 fails if you run it with test_dummy_encryption.  And I've
+> > > > > > also checked that the RMW code was never executed in this test.
+> > > > > > 
+> > > > > > But yeah I have assumed (perhaps wrongly) that the kmap/kunmap could
+> > > > > > change the inode->i_mapping.
+> > > > > > 
+> > > > > No, kmap/unmap are all about high memory and 32-bit architectures. Those
+> > > > > functions are usually no-ops on 64-bit arches.
+> > > > Yeah, right.
+> > > > 
+> > > > So they do nothing here.
+> > > > 
+> > > > > > In my debugging this seemed to be the case
+> > > > > > for the O_DIRECT path.  That's why I added this extra call here.
+> > > > > > 
+> > > > > I agree with Xiubo that we really shouldn't need to invalidate multiple
+> > > > > times.
+> > > > > 
+> > > > > I guess in this test, we have a DIO write racing with an mmap read
+> > > > > Probably what's happening is either that we can't invalidate the page
+> > > > > because it needs to be cleaned, or the mmap read is racing in just after
+> > > > > the invalidate occurs but before writeback.
+> > > > This sounds a possible case.
+> > > > 
+> > > > 
+> > > > > In any case, it might be interesting to see whether you're getting
+> > > > > -EBUSY back from the new invalidate_inode_pages2 calls with your patch.
+> > > > > 
+> > > > If it's really this case maybe this should be retried some where ?
+> > > > 
+> > > Possibly, or we may need to implement ->launder_folio.
+> > > 
+> > > Either way, we need to understand what's happening first and then we can
+> > > figure out a solution for it.
+> > 
+> > Yeah, make sense.
+> > 
+> 
+> OK, so here's what I got so far:
+> 
+> When we run this test *without* test_dummy_encryption, ceph_direct_read_write()
+> will be called and invalidate_inode_pages2_range() will do pretty much
+> nothing because the mapping will be empty (mapping_empty(inode->i_mapping)
+> will return 1).  If we use encryption, ceph_sync_write() will be called
+> instead and the mapping, obviously, be will be empty as well.
+> 
+> The difference between in encrypted vs non-encrypted (and the reason the
+> test passes without encryption) is that ceph_direct_read_write()
+> (non-encrypted) will call truncate_inode_pages_range() at a stage where
+> the mapping is not empty anymore (iter_get_bvecs_alloc will take care of
+> that).
+> 
 
-But the commit didn't do it properly in two callers of the vc4 driver,
-leading to build errors.
+Wait...why does iter_get_bvecs_alloc populate the mapping? The iter in
+this case is almost certainly an iov_iter from userland so none of this
+should have anything to do with the pagecache.
 
-Fixes: 73511edf8b19 ("dma-buf: specify usage while adding fences to dma_resv obj v7")
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Christian KÃ¶nig <christian.koenig@amd.com>
----
+I suspect the faulting in occurs via the mmap reader task, and that the
+truncate_inode_pages_range calls just happen enough to invalidate it.
 
- drivers/gpu/drm/vc4/vc4_gem.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+>  In the encryption path (ceph_sync_write) the mapping will be
+> filled with copy_page_from_iter(), which will fault and do the read.
+> Because we don't have the truncate_inode_pages_range(), the cache will
+> contain invalid data after the write.  And that's why the extra
+> invalidate_inode_pages2_range (or truncate_...) fixes this.
+> 
 
-diff --git a/drivers/gpu/drm/vc4/vc4_gem.c b/drivers/gpu/drm/vc4/vc4_gem.c
-index 38550317e025..9eaf304fc20d 100644
---- a/drivers/gpu/drm/vc4/vc4_gem.c
-+++ b/drivers/gpu/drm/vc4/vc4_gem.c
-@@ -546,7 +546,8 @@ vc4_update_bo_seqnos(struct vc4_exec_info *exec, uint64_t seqno)
- 		bo = to_vc4_bo(&exec->bo[i]->base);
- 		bo->seqno = seqno;
- 
--		dma_resv_add_fence(bo->base.base.resv, exec->fence);
-+		dma_resv_add_fence(bo->base.base.resv, exec->fence,
-+				   DMA_RESV_USAGE_READ);
- 	}
- 
- 	list_for_each_entry(bo, &exec->unref_list, unref_head) {
-@@ -557,7 +558,8 @@ vc4_update_bo_seqnos(struct vc4_exec_info *exec, uint64_t seqno)
- 		bo = to_vc4_bo(&exec->rcl_write_bo[i]->base);
- 		bo->write_seqno = seqno;
- 
--		dma_resv_add_excl_fence(bo->base.base.resv, exec->fence);
-+		dma_resv_add_fence(bo->base.base.resv, exec->fence,
-+				   DMA_RESV_USAGE_WRITE);
- 	}
- }
- 
+I think what we may want to do is consider adding these calls into
+ceph_page_mkwrite:
+
+        if (direct_lock)
+                ceph_start_io_direct(inode);
+        else
+                ceph_start_io_write(inode);
+
+...and similar ones (for read) in ceph_filemap_fault, along with "end"
+calls to end the I/Os.
+
+This is how we handle races between buffered read/write and direct I/O,
+and I suspect the mmap codepaths may just need similar treatment.
+
+Thoughts?
 -- 
-2.35.1
-
+Jeff Layton <jlayton@kernel.org>
