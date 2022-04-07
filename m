@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A703C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:18:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A425C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237954AbiDGBUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34108 "EHLO
+        id S238402AbiDGBVD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236885AbiDGBRS (ORCPT
+        with ESMTP id S237218AbiDGBRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 21:17:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07989194823;
-        Wed,  6 Apr 2022 18:12:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D971945CC;
+        Wed,  6 Apr 2022 18:12:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78B90B82697;
-        Thu,  7 Apr 2022 01:12:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A7C6C385A7;
-        Thu,  7 Apr 2022 01:12:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C806B82696;
+        Thu,  7 Apr 2022 01:12:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F31DAC385A8;
+        Thu,  7 Apr 2022 01:12:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649293949;
-        bh=GRaoGYQlAOFV3QjsWXmOE4xL+TXE4XaUeGaLsrL9mHI=;
+        s=k20201202; t=1649293942;
+        bh=Iyfl/0kBm5PrUgtbDdiOuPBJzmCZ+wogLc8nAP7JdiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XJnbIHNJ3DQ3hgc94oXYsVHLIU1cgVD4ayGxUwNwYS7QVI6Yj0qB6rSlzGMX/IpWW
-         baTMMklMpArLSs334J1YGuXtK+SSVW/22Kk57kSPRWdQKN8+ZuT3ZEgnViJmjAFt+N
-         eUFGROVPMJgU8yl+ULzA/OwRzJtnmIcOE1R2GsAbk53NtbZijcSO1FG44vak91aLvM
-         VwAbHA05pCpjDIPMCqdYRUirinOgzYUFepfpHcEb/mdeFc2pDGFXPFPujbmDLA6r8Z
-         H5LeUASD/+fjStnk8RP9R0rKIa7oetGh9kIRs9J5Ho2AtXcv5Oh1J6ylGPJSPWQRH1
-         +fEn1VsHe+HlQ==
+        b=Finpl4y4cKhbO5XxrmS4dSGQfOu7+VI2MhnbqwPAlaWfK7FTvun6wFoB/9M19NmYH
+         zUUckXOU+/d5J8YUx1d+5DspbVZHIkFVerwYDh3X+wUZsmh8keAwwdPcHdgAludLCS
+         eczgBB8T5bY/1rf//xdGsUVRFr514E/zY24ZWL5UGo/bkhW3dSXk3xNp3JJMxh4F1m
+         m7mmExpdGXyxkSJtjtKOFKuBYGCdB8QrPKk+VHcJyevgO4eAT2aZ0edtURyP+1dzTl
+         KqWiqsiO9AqL4lEzJ/rq9PpqZ2Vm96Ve2n1s7eZHDYbCPtR9Dq9yDK107cmpOJhW5I
+         qQCnbFW1nR9hw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anton Eidelman <anton.eidelman@gmail.com>,
-        Anton Eidelman <anton@lightbitslabs.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
-        axboe@fb.com, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 22/30] nvme-multipath: fix hang when disk goes live over reconnect
-Date:   Wed,  6 Apr 2022 21:11:32 -0400
-Message-Id: <20220407011140.113856-22-sashal@kernel.org>
+Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>, gerald.schaefer@linux.ibm.com,
+        hca@linux.ibm.com, agordeev@linux.ibm.com,
+        linux-s390@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 18/30] s390/pci: improve zpci_dev reference counting
+Date:   Wed,  6 Apr 2022 21:11:28 -0400
+Message-Id: <20220407011140.113856-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011140.113856-1-sashal@kernel.org>
 References: <20220407011140.113856-1-sashal@kernel.org>
@@ -54,163 +54,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anton Eidelman <anton.eidelman@gmail.com>
+From: Niklas Schnelle <schnelle@linux.ibm.com>
 
-[ Upstream commit a4a6f3c8f61c3cfbda4998ad94596059ad7e4332 ]
+[ Upstream commit c122383d221dfa2f41cfe5e672540595de986fde ]
 
-nvme_mpath_init_identify() invoked from nvme_init_identify() fetches a
-fresh ANA log from the ctrl.  This is essential to have an up to date
-path states for both existing namespaces and for those scan_work may
-discover once the ctrl is up.
+Currently zpci_dev uses kref based reference counting but only accounts
+for one original reference plus one reference from an added pci_dev to
+its underlying zpci_dev. Counting just the original reference worked
+until the pci_dev reference was added in commit 2a671f77ee49 ("s390/pci:
+fix use after free of zpci_dev") because once a zpci_dev goes away, i.e.
+enters the reserved state, it would immediately get released. However
+with the pci_dev reference this is no longer the case and the zpci_dev
+may still appear in multiple availability events indicating that it was
+reserved. This was solved by detecting when the zpci_dev is already on
+its way out but still hanging around. This has however shown some light
+on how unusual our zpci_dev reference counting is.
 
-This happens in the following cases:
-  1) A new ctrl is being connected.
-  2) An existing ctrl is successfully reconnected.
-  3) An existing ctrl is being reset.
+Improve upon this by modelling zpci_dev reference counting on pci_dev.
+Analogous to pci_get_slot() increment the reference count in
+get_zdev_by_fid(). Thus all users of get_zdev_by_fid() must drop the
+reference once they are done with the zpci_dev.
 
-While in (1) ctrl->namespaces is empty, (2 & 3) may have namespaces, and
-nvme_read_ana_log() may call nvme_update_ns_ana_state().
+Similar to pci_scan_single_device(), zpci_create_device() returns the
+device with an initial count of 1 and the device added to the zpci_list
+(analogous to the PCI bus' device_list). In turn users of
+zpci_create_device() must only drop the reference once the device is
+gone from the point of view of the zPCI subsystem, it might still be
+referenced by the common PCI subsystem though.
 
-This result in a hang when the ANA state of an existing namespace changes
-and makes the disk live: nvme_mpath_set_live() issues IO to the namespace
-through the ctrl, which does NOT have IO queues yet.
-
-See sample hang below.
-
-Solution:
-- nvme_update_ns_ana_state() to call set_live only if ctrl is live
-- nvme_read_ana_log() call from nvme_mpath_init_identify()
-  therefore only fetches and parses the ANA log;
-  any erros in this process will fail the ctrl setup as appropriate;
-- a separate function nvme_mpath_update()
-  is called in nvme_start_ctrl();
-  this parses the ANA log without fetching it.
-  At this point the ctrl is live,
-  therefore, disks can be set live normally.
-
-Sample failure:
-    nvme nvme0: starting error recovery
-    nvme nvme0: Reconnecting in 10 seconds...
-    block nvme0n6: no usable path - requeuing I/O
-    INFO: task kworker/u8:3:312 blocked for more than 122 seconds.
-          Tainted: G            E     5.14.5-1.el7.elrepo.x86_64 #1
-    Workqueue: nvme-wq nvme_tcp_reconnect_ctrl_work [nvme_tcp]
-    Call Trace:
-     __schedule+0x2a2/0x7e0
-     schedule+0x4e/0xb0
-     io_schedule+0x16/0x40
-     wait_on_page_bit_common+0x15c/0x3e0
-     do_read_cache_page+0x1e0/0x410
-     read_cache_page+0x12/0x20
-     read_part_sector+0x46/0x100
-     read_lba+0x121/0x240
-     efi_partition+0x1d2/0x6a0
-     bdev_disk_changed.part.0+0x1df/0x430
-     bdev_disk_changed+0x18/0x20
-     blkdev_get_whole+0x77/0xe0
-     blkdev_get_by_dev+0xd2/0x3a0
-     __device_add_disk+0x1ed/0x310
-     device_add_disk+0x13/0x20
-     nvme_mpath_set_live+0x138/0x1b0 [nvme_core]
-     nvme_update_ns_ana_state+0x2b/0x30 [nvme_core]
-     nvme_update_ana_state+0xca/0xe0 [nvme_core]
-     nvme_parse_ana_log+0xac/0x170 [nvme_core]
-     nvme_read_ana_log+0x7d/0xe0 [nvme_core]
-     nvme_mpath_init_identify+0x105/0x150 [nvme_core]
-     nvme_init_identify+0x2df/0x4d0 [nvme_core]
-     nvme_init_ctrl_finish+0x8d/0x3b0 [nvme_core]
-     nvme_tcp_setup_ctrl+0x337/0x390 [nvme_tcp]
-     nvme_tcp_reconnect_ctrl_work+0x24/0x40 [nvme_tcp]
-     process_one_work+0x1bd/0x360
-     worker_thread+0x50/0x3d0
-
-Signed-off-by: Anton Eidelman <anton@lightbitslabs.com>
-Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c      |  1 +
- drivers/nvme/host/multipath.c | 25 +++++++++++++++++++++++--
- drivers/nvme/host/nvme.h      |  4 ++++
- 3 files changed, 28 insertions(+), 2 deletions(-)
+ arch/s390/pci/pci.c       | 1 +
+ arch/s390/pci/pci_bus.h   | 3 ++-
+ arch/s390/pci/pci_clp.c   | 9 +++++++--
+ arch/s390/pci/pci_event.c | 7 ++++++-
+ 4 files changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 5785f6abf194..0390897828d9 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -4409,6 +4409,7 @@ void nvme_start_ctrl(struct nvme_ctrl *ctrl)
- 	if (ctrl->queue_count > 1) {
- 		nvme_queue_scan(ctrl);
- 		nvme_start_queues(ctrl);
-+		nvme_mpath_update(ctrl);
+diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+index 2f9b78fa82a5..a2b2d5a9752d 100644
+--- a/arch/s390/pci/pci.c
++++ b/arch/s390/pci/pci.c
+@@ -69,6 +69,7 @@ struct zpci_dev *get_zdev_by_fid(u32 fid)
+ 	list_for_each_entry(tmp, &zpci_list, entry) {
+ 		if (tmp->fid == fid) {
+ 			zdev = tmp;
++			zpci_zdev_get(zdev);
+ 			break;
+ 		}
  	}
- }
- EXPORT_SYMBOL_GPL(nvme_start_ctrl);
-diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 99c2307b04e2..e3e419b2e223 100644
---- a/drivers/nvme/host/multipath.c
-+++ b/drivers/nvme/host/multipath.c
-@@ -598,8 +598,17 @@ static void nvme_update_ns_ana_state(struct nvme_ana_group_desc *desc,
- 	ns->ana_grpid = le32_to_cpu(desc->grpid);
- 	ns->ana_state = desc->state;
- 	clear_bit(NVME_NS_ANA_PENDING, &ns->flags);
--
--	if (nvme_state_is_live(ns->ana_state))
-+	/*
-+	 * nvme_mpath_set_live() will trigger I/O to the multipath path device
-+	 * and in turn to this path device.  However we cannot accept this I/O
-+	 * if the controller is not live.  This may deadlock if called from
-+	 * nvme_mpath_init_identify() and the ctrl will never complete
-+	 * initialization, preventing I/O from completing.  For this case we
-+	 * will reprocess the ANA log page in nvme_mpath_update() once the
-+	 * controller is ready.
-+	 */
-+	if (nvme_state_is_live(ns->ana_state) &&
-+	    ns->ctrl->state == NVME_CTRL_LIVE)
- 		nvme_mpath_set_live(ns);
+diff --git a/arch/s390/pci/pci_bus.h b/arch/s390/pci/pci_bus.h
+index e359d2686178..ecef3a9e16c0 100644
+--- a/arch/s390/pci/pci_bus.h
++++ b/arch/s390/pci/pci_bus.h
+@@ -19,7 +19,8 @@ void zpci_bus_remove_device(struct zpci_dev *zdev, bool set_error);
+ void zpci_release_device(struct kref *kref);
+ static inline void zpci_zdev_put(struct zpci_dev *zdev)
+ {
+-	kref_put(&zdev->kref, zpci_release_device);
++	if (zdev)
++		kref_put(&zdev->kref, zpci_release_device);
  }
  
-@@ -686,6 +695,18 @@ static void nvme_ana_work(struct work_struct *work)
- 	nvme_read_ana_log(ctrl);
- }
+ static inline void zpci_zdev_get(struct zpci_dev *zdev)
+diff --git a/arch/s390/pci/pci_clp.c b/arch/s390/pci/pci_clp.c
+index be077b39da33..5011d27461fd 100644
+--- a/arch/s390/pci/pci_clp.c
++++ b/arch/s390/pci/pci_clp.c
+@@ -22,6 +22,8 @@
+ #include <asm/clp.h>
+ #include <uapi/asm/clp.h>
  
-+void nvme_mpath_update(struct nvme_ctrl *ctrl)
-+{
-+	u32 nr_change_groups = 0;
++#include "pci_bus.h"
 +
-+	if (!ctrl->ana_log_buf)
+ bool zpci_unique_uid;
+ 
+ void update_uid_checking(bool new)
+@@ -403,8 +405,11 @@ static void __clp_add(struct clp_fh_list_entry *entry, void *data)
+ 		return;
+ 
+ 	zdev = get_zdev_by_fid(entry->fid);
+-	if (!zdev)
+-		zpci_create_device(entry->fid, entry->fh, entry->config_state);
++	if (zdev) {
++		zpci_zdev_put(zdev);
 +		return;
-+
-+	mutex_lock(&ctrl->ana_lock);
-+	nvme_parse_ana_log(ctrl, &nr_change_groups, nvme_update_ana_state);
-+	mutex_unlock(&ctrl->ana_lock);
-+}
-+
- static void nvme_anatt_timeout(struct timer_list *t)
- {
- 	struct nvme_ctrl *ctrl = from_timer(ctrl, t, anatt_timer);
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 9b095ee01364..a629b18ee79a 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -771,6 +771,7 @@ void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
- void nvme_mpath_remove_disk(struct nvme_ns_head *head);
- int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id);
- void nvme_mpath_init_ctrl(struct nvme_ctrl *ctrl);
-+void nvme_mpath_update(struct nvme_ctrl *ctrl);
- void nvme_mpath_uninit(struct nvme_ctrl *ctrl);
- void nvme_mpath_stop(struct nvme_ctrl *ctrl);
- bool nvme_mpath_clear_current_path(struct nvme_ns *ns);
-@@ -845,6 +846,9 @@ static inline int nvme_mpath_init_identify(struct nvme_ctrl *ctrl,
- "Please enable CONFIG_NVME_MULTIPATH for full support of multi-port devices.\n");
- 	return 0;
++	}
++	zpci_create_device(entry->fid, entry->fh, entry->config_state);
  }
-+static inline void nvme_mpath_update(struct nvme_ctrl *ctrl)
-+{
-+}
- static inline void nvme_mpath_uninit(struct nvme_ctrl *ctrl)
- {
+ 
+ int clp_scan_pci_devices(void)
+diff --git a/arch/s390/pci/pci_event.c b/arch/s390/pci/pci_event.c
+index 2e3e5b278925..ea9db5cea64e 100644
+--- a/arch/s390/pci/pci_event.c
++++ b/arch/s390/pci/pci_event.c
+@@ -269,7 +269,7 @@ static void __zpci_event_error(struct zpci_ccdf_err *ccdf)
+ 	       pdev ? pci_name(pdev) : "n/a", ccdf->pec, ccdf->fid);
+ 
+ 	if (!pdev)
+-		return;
++		goto no_pdev;
+ 
+ 	switch (ccdf->pec) {
+ 	case 0x003a: /* Service Action or Error Recovery Successful */
+@@ -286,6 +286,8 @@ static void __zpci_event_error(struct zpci_ccdf_err *ccdf)
+ 		break;
+ 	}
+ 	pci_dev_put(pdev);
++no_pdev:
++	zpci_zdev_put(zdev);
  }
+ 
+ void zpci_event_error(void *data)
+@@ -314,6 +316,7 @@ static void zpci_event_hard_deconfigured(struct zpci_dev *zdev, u32 fh)
+ static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
+ {
+ 	struct zpci_dev *zdev = get_zdev_by_fid(ccdf->fid);
++	bool existing_zdev = !!zdev;
+ 	enum zpci_state state;
+ 
+ 	zpci_dbg(3, "avl fid:%x, fh:%x, pec:%x\n",
+@@ -378,6 +381,8 @@ static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
+ 	default:
+ 		break;
+ 	}
++	if (existing_zdev)
++		zpci_zdev_put(zdev);
+ }
+ 
+ void zpci_event_availability(void *data)
 -- 
 2.35.1
 
