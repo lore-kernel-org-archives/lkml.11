@@ -2,128 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3254DC3527E
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E5CC352AA
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242010AbiDGBb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60908 "EHLO
+        id S241210AbiDGBau (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238489AbiDGBSU (ORCPT
+        with ESMTP id S240535AbiDGBUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:18:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572A3198949;
-        Wed,  6 Apr 2022 18:13:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7D2FB81E79;
-        Thu,  7 Apr 2022 01:13:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C07FEC385A7;
-        Thu,  7 Apr 2022 01:13:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649293981;
-        bh=vtfdmjHYyYmA5vp7V1TIWM3kVm7ahhApIciXEJruAOs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=egyMp2+oKB9v2+PoiL3OP/nkbVI3VlqR/dqY/vxaDLglDoxWUe2DdbKP5+/txVoKK
-         QuCUfSPQ3rFDYMUmvgHf+rycqlo/YfbSKSHI2IA+GdipmVDHcEFGXH6AkiHPyOKMWg
-         QArvqsNXR1itmj7TS8TTJBe0ZHN12tp8wskm+9HUQUPLPjm8wPsm9Ri9vbeY8UgFf0
-         mm0GxviIntv7LOZ9ykBjWv7ZPNJ0nXJDaxNv5xBa/6ORik6NL4SRU+7Lax9Pww+4MZ
-         xyYBi323OgBsA2X0B5uB4ANobZ+j3CwWW92snSnHqGn3GXuXdODWl2kJbKIB2OGHgB
-         WswAcTG3vROXA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>, a.zummo@towertech.it,
-        linux-rtc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 02/27] rtc: fix use-after-free on device removal
-Date:   Wed,  6 Apr 2022 21:12:32 -0400
-Message-Id: <20220407011257.114287-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011257.114287-1-sashal@kernel.org>
-References: <20220407011257.114287-1-sashal@kernel.org>
+        Wed, 6 Apr 2022 21:20:04 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2090.outbound.protection.outlook.com [40.107.215.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF7117FD2D;
+        Wed,  6 Apr 2022 18:18:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TY64cCU3gG+BO3KL7s2oiHFoT9o+0UI7MpBZ/zUWPAqr5S6QCBZXN6rTjE0pA2znRzoU2uwjc887LRmvln015d4SLj3QkYegATENcPr8zuKdRhla4ngQwM3Lm2h2u+3fHnyIbuHvfSjW87ueQz8KA/xcFUoz53zulth9pSMa3X3EHhOc1ED3cQ2wYPbAQviaCQYS1FqEJJcdPdHIsortHqieueg7Xij/HfFXT4npOi2+mCqRCSp/HRPVzhR568jtCNhboboFLweUoshJqsXVyDoWbTQQn+fc3hFuUwYI7y77FM9zpnHW1A3S6q2teo/Cevpy/+ID6V/WP4O8dTQ6qQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6NUM/fNtLxUyxz3cofw86ZeeamCeINycOnOx/+8olOg=;
+ b=FoIq8T1pAaQCa1Jh9NL96D/dOL4ktkwTa9n8n0f41BnYKXQPH7QDO5HLB18hOiucJdoDASmZesQ8KKLY650dK5T+KMRbCp0c6yUof+7mTgsowV2zaIyBde0Rfo+TtjROGHKEasMKEjjsI3f+3bJVOPbuwHFmsUmggOg+FrRLZ+/xV3gJ6vEjvV4oBpoxBAXNyPgb+wiorkfq/1C9xwlfg0RNNtiT6xTMYkOdZumlsAPp6xXKdgXdMC3OIfvS4i+4ogGEpPSIurNT43QFhx4iyCGtV/1XTTSyFJhSt5wEybO2nU+PENhCBF6FCqC1Z5u/aUc40/XyyVLlS+3qtN1MqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=quantatw.com; dmarc=pass action=none header.from=quantatw.com;
+ dkim=pass header.d=quantatw.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=quantacorp.onmicrosoft.com; s=selector2-quantacorp-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6NUM/fNtLxUyxz3cofw86ZeeamCeINycOnOx/+8olOg=;
+ b=L1JNKHjT7/AYLmtAO9eyAGFP6npUHordWTbmUmw1zmIcmuy+jdLANd71RwpPmpyYXzb62ku6Klz4JzVPSjyZBQKulhNY26eEbHRz1kF2ImPDSBa14EcjAF886u3cCHrH+vm3AmZHb7t4tKoXfiy+15p2FsZsBemY+k9LCrq2JkY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=quantatw.com;
+Received: from SG2PR04MB3285.apcprd04.prod.outlook.com (2603:1096:4:6d::18) by
+ SI2PR04MB5412.apcprd04.prod.outlook.com (2603:1096:4:141::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5144.22; Thu, 7 Apr 2022 01:18:00 +0000
+Received: from SG2PR04MB3285.apcprd04.prod.outlook.com
+ ([fe80::e94c:1300:a35a:4a1c]) by SG2PR04MB3285.apcprd04.prod.outlook.com
+ ([fe80::e94c:1300:a35a:4a1c%2]) with mapi id 15.20.5102.035; Thu, 7 Apr 2022
+ 01:18:00 +0000
+From:   Potin Lai <potin.lai@quantatw.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, davem@davemloft.net,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai@quantatw.com>
+Subject: [PATCH net-next v3 0/3] Add Clause 45 support for Aspeed MDIO
+Date:   Thu,  7 Apr 2022 09:17:35 +0800
+Message-Id: <20220407011738.7189-1-potin.lai@quantatw.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR02CA0143.apcprd02.prod.outlook.com
+ (2603:1096:202:16::27) To SG2PR04MB3285.apcprd04.prod.outlook.com
+ (2603:1096:4:6d::18)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d7e6371e-8d75-44e7-c798-08da1834748a
+X-MS-TrafficTypeDiagnostic: SI2PR04MB5412:EE_
+X-Microsoft-Antispam-PRVS: <SI2PR04MB5412B1ECFC9E0A1C7A14AF2F8EE69@SI2PR04MB5412.apcprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UgLYPQFdbPRw4e3Jqcfs24YaxFyznQcVvcDasn9H+pkd4xvU8EX6xlehOvqOJlK+Jbdr5JHXDzLE6pLtDtoFS6f14CtzW5VJXKp0RxiAfNIY4pKQ3R4KWx9NkhCRlDUSi7L/5Exdd2URHUOiOgZlk+kPCcgk9Nq6hA+hR3Kgkj1EfdqxmxkG93lQhCVhFk9qRImkkEroBp9F72VDwXF8wqFH6W+3a2n/iEy6QPcNP4/i+Iqe9+bb775uY0V+oFRpYDVgNdINmUweJdMSk8bh/2CelTz/VTt/Zsyp5FOn1VDy6vi+gpZygfOBralSiOl2Uu6q5gdsTqq9i/+43VadeYmo2QYgPEtT+evOW/bJvPDxFSeHvz5dxsp9LmcUvAfhIREIOCw3HVUpAxCQeg7L9H2+z3XazO+yQMhslaka/lFWHSwpsdNHTXrbxnXpmo5IpGuq4OnDUlfEgx4HRqCcBds0VM+UYMJ26WEv3LhvgN6s/AWny0a1Ra3fUid+F9JaIdDxdGvJ/KmxgtXzcc57wR5rQ1UXlnPo8717su51qdVm2AoSSZTxcrQ5MrrX24OkMNEuM+DIflen4BVM8+7RiFleeac1TNxAtx64BcXioV0ZwjmUy5sD3aRP8KkfWlFS5Fb157lJ4V1zPliVlsyCgMcSGe1hj2/83MqkPskPqCE/FQtOqIsF9rKmU/2vP5Yf8I4fOpR00Mek7RVBwnvfVJ/a/6ulW/Y8ivV3mTSqwuW4I09oJuejUt2r1Myg+ebNsu1J1dFhKNqB1TkvuWHlHS/urtxCbO5F3RqPitwOqbZhYb/eLNoIzWLMo6VjwgX7
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR04MB3285.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(186003)(107886003)(2616005)(26005)(52116002)(4744005)(7416002)(8936002)(2906002)(4326008)(5660300002)(44832011)(1076003)(36756003)(316002)(66946007)(66476007)(66556008)(54906003)(110136005)(38100700002)(38350700002)(6512007)(6506007)(6666004)(83380400001)(966005)(86362001)(508600001)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HTKCQWSgHCM2Md/DWKdevWSf11c8Z5yojT/+rV4eoWs0CuQ28cZxTwUdOmWQ?=
+ =?us-ascii?Q?hiyHIzjDdqrnIHUCzsSzo1GNH7GjW6nqq+DCxtHmkc9a4pV8iySrAkYsfWCn?=
+ =?us-ascii?Q?fSfVJ7oUrKgZiXw1wX6297sT5m6pHJRPQ9s4J4pGP3aBK0Fg3kqrjmXbCaLL?=
+ =?us-ascii?Q?K4g1A4+1WQJJfE1w7vs1KApBvA1KQoc414rybdryCMZMgOKf7gS5NQuTiIrJ?=
+ =?us-ascii?Q?TBo70SXK7eadroGUpblPB8HxFrkEsiC7DoKvhlqaPzzgL05ti9t4gFix2aiO?=
+ =?us-ascii?Q?LrYTqR9J9chTbcqAx0XXEy7Pt2E+3H5Q4A2ok8eQECuBFKmttMDOY9nZ1VYT?=
+ =?us-ascii?Q?079JcT4hzG1A1wEZCUtwBSvdRYOQZh0PwIZyph2BL/zuNxQcQgVAA+QRNqgT?=
+ =?us-ascii?Q?LnXo8W8k+GC+kyr8z9/O33KiJEEnOxAXukiFxPzegsk7jEoUxvKuEJaHgcn7?=
+ =?us-ascii?Q?YIq6D+77H+aaVwZMyS811krDtkFKldgbzLH8FHw+4FqzGBH8YYXK7o0qpMGM?=
+ =?us-ascii?Q?9TF8452YyyIk4WDDVmZ8e8Nkrah8LkXPRg//PJh0kn20R1ZFcbmCU3ASI4LA?=
+ =?us-ascii?Q?S4jRO/H54T3EfTt7vYphqSTmBean+9WDSM5Rl5nKjpz8fizl5VKesfPxakR2?=
+ =?us-ascii?Q?fBZY3RXPNne4qnRM+KJuYcP2uti087Qi1YNMnXgWK7Cs8Uz8ccHNun0Uj80I?=
+ =?us-ascii?Q?K6xsItdeg18uu8J0OaZiNBIzCQa1M8giXA+JTbDp7vQdC9+os05tWwYHBbU5?=
+ =?us-ascii?Q?ByU8PJe04ubSTTmggPHm4GdxD/D74IrQWRCFvFLS+8bjAadk0YjJwlidVHRj?=
+ =?us-ascii?Q?twRx4TPLhoudEGPp8G6joCWrcZ3TF6iA/pWgwPuMxsY0X3UcfnJX9VNGVNtr?=
+ =?us-ascii?Q?VgmPv1WdOdQo3xO9f7bN/MrahTDjuYKCeBiRQJmwlbMQce9oDkNbNH3j1BkR?=
+ =?us-ascii?Q?8H3NVMsxTMqxJZZ3aJ/Jh9Acp3IpwSpeA2QvWUbBETRlG8VyI/1OGPjjJpDN?=
+ =?us-ascii?Q?fpE4yA7Dz9SZYYLGaqeX5/gHJoHMLZvy1e1nZTIEWqoS38rhQu21skUaX+t5?=
+ =?us-ascii?Q?9laoxH4j4/K9X+KSxaxyBhwBoEsge4uVVz5X1kr1reg9swOXbp3rlAC1duJD?=
+ =?us-ascii?Q?SefDt3XZWKVX+IeIrP1FVe0CXG5457joeUfDpDcJcXr0zrDq0aMmijHSMsE2?=
+ =?us-ascii?Q?Fd29HdXj20MpyJTkTYdSb7tPqo2QvnW5bqFU7EbhFpxWwUZI4gWuvsSyr3Gf?=
+ =?us-ascii?Q?ieN4CDKnzzc4oy8WRf0Pcfwf+UMFE6ACIPEmqBmsMfv2MB1z3XFgNfabYiV6?=
+ =?us-ascii?Q?YBaq34f61ckaIINF6mhpGUpeWA9z1YFZ2oe35zkwrco7jWKBZKiQlyBIPYT8?=
+ =?us-ascii?Q?MCHI3+Wu37veYQQL5dpuc5aXhSvPlT49vaM2fQFc9uezNOlM/GOlV3zH4x0h?=
+ =?us-ascii?Q?DSZ0MiqknvKfYYgllM54bFLrXkGS2TreuoRJbtppl9BFV/uddwF7eLZJNexm?=
+ =?us-ascii?Q?GCUFkBAkirhKusM0QtLioid/ykE3+yk1JhC3Cct4St7rT6Eoyh6xaoZL71ro?=
+ =?us-ascii?Q?PhlNaMGQSv8SWjkxp8dJbwy4ovjHiwBqMa0iPqfdZrDIa3e/JuDSoa2JSee4?=
+ =?us-ascii?Q?voSpDigb7S4E64lWqaGFRazZjCMZaQcquuca4qW03AlCGLanwXer0IyeQ6RZ?=
+ =?us-ascii?Q?YQiDnOWfF+KBg2LhtkQ07SHuxZ6owgK10vJAZ7RqSnv1dRTevA5EEYqFu8v/?=
+ =?us-ascii?Q?CeV0xJCmfEhkwbYV0e1AzNU9+KOgJTc=3D?=
+X-OriginatorOrg: quantatw.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7e6371e-8d75-44e7-c798-08da1834748a
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR04MB3285.apcprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2022 01:18:00.1933
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 179b0327-07fc-4973-ac73-8de7313561b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uy2YRF9oQZmingLsDrl93MMZeyqJDsXldzVUJLilkKHNZAzG6XWIyHzYLp/Bek2yTzWBKfZyONVszdoYH7z0dA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR04MB5412
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+This patch series add Clause 45 support for Aspeed MDIO driver, and
+separate c22 and c45 implementation into different functions.
 
-[ Upstream commit c8fa17d9f08a448184f03d352145099b5beb618e ]
 
-If the irqwork is still scheduled or running while the RTC device is
-removed, a use-after-free occurs in rtc_timer_do_work().  Cleanup the
-timerqueue and ensure the work is stopped to fix this.
+LINK: [v1] https://lore.kernel.org/all/20220329161949.19762-1-potin.lai@quantatw.com/
+LINK: [v2] https://lore.kernel.org/all/20220406170055.28516-1-potin.lai@quantatw.com/
 
- BUG: KASAN: use-after-free in mutex_lock+0x94/0x110
- Write of size 8 at addr ffffff801d846338 by task kworker/3:1/41
+Changes v2 --> v3:
+ - sort local variable sequence in reverse Christmas tree format.
 
- Workqueue: events rtc_timer_do_work
- Call trace:
-  mutex_lock+0x94/0x110
-  rtc_timer_do_work+0xec/0x630
-  process_one_work+0x5fc/0x1344
-  ...
+Changes v1 --> v2:
+ - add C45 to probe_capabilities
+ - break one patch into 3 small patches
 
- Allocated by task 551:
-  kmem_cache_alloc_trace+0x384/0x6e0
-  devm_rtc_allocate_device+0xf0/0x574
-  devm_rtc_device_register+0x2c/0x12c
-  ...
+Potin Lai (3):
+  net: mdio: aspeed: move reg accessing part into separate functions
+  net: mdio: aspeed: Introduce read write function for c22 and c45
+  net: mdio: aspeed: Add c45 support
 
- Freed by task 572:
-  kfree+0x114/0x4d0
-  rtc_device_release+0x64/0x80
-  device_release+0x8c/0x1f4
-  kobject_put+0x1c4/0x4b0
-  put_device+0x20/0x30
-  devm_rtc_release_device+0x1c/0x30
-  devm_action_release+0x54/0x90
-  release_nodes+0x124/0x310
-  devres_release_group+0x170/0x240
-  i2c_device_remove+0xd8/0x314
-  ...
+ drivers/net/mdio/mdio-aspeed.c | 123 ++++++++++++++++++++++++---------
+ 1 file changed, 89 insertions(+), 34 deletions(-)
 
- Last potentially related work creation:
-  insert_work+0x5c/0x330
-  queue_work_on+0xcc/0x154
-  rtc_set_time+0x188/0x5bc
-  rtc_dev_ioctl+0x2ac/0xbd0
-  ...
-
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210160951.7718-1-vincent.whitchurch@axis.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/rtc/class.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/drivers/rtc/class.c b/drivers/rtc/class.c
-index f77bc089eb6b..0aef7df2ea70 100644
---- a/drivers/rtc/class.c
-+++ b/drivers/rtc/class.c
-@@ -26,6 +26,15 @@ struct class *rtc_class;
- static void rtc_device_release(struct device *dev)
- {
- 	struct rtc_device *rtc = to_rtc_device(dev);
-+	struct timerqueue_head *head = &rtc->timerqueue;
-+	struct timerqueue_node *node;
-+
-+	mutex_lock(&rtc->ops_lock);
-+	while ((node = timerqueue_getnext(head)))
-+		timerqueue_del(head, node);
-+	mutex_unlock(&rtc->ops_lock);
-+
-+	cancel_work_sync(&rtc->irqwork);
- 
- 	ida_simple_remove(&rtc_ida, rtc->id);
- 	mutex_destroy(&rtc->ops_lock);
 -- 
-2.35.1
+2.17.1
 
