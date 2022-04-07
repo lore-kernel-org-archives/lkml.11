@@ -2,70 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91954C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:33:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344072AbiDGOfN (ORCPT
+        id S1344116AbiDGOfS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:35:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50772 "EHLO
+        Thu, 7 Apr 2022 10:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344023AbiDGOfE (ORCPT
+        with ESMTP id S1344048AbiDGOfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:35:04 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F011A5D48
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:32:59 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id bg10so11286258ejb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 07:32:59 -0700 (PDT)
+        Thu, 7 Apr 2022 10:35:05 -0400
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC331AA041
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:33:04 -0700 (PDT)
+Received: by mail-ej1-f46.google.com with SMTP id qh7so11183030ejb.11
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 07:33:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kdY+F6xvAyzWtskSAzF5baAt59NngnjVCycs5ox2N3Y=;
-        b=m20jN7X6r8d95tEVgAmGLxoVymS82aD+MaG05kXP9gfeDFxQ2WZa7mPdqOzFFR1lF0
-         lYSQu8dSMl+EECfpDd8KMsBXYcWVQIoFAgQ8DhGH6B5VkMVdNjKlH8k5/ertkQRUdCBR
-         h8Vfd9LsPXnU9++3oPNeacGuikCXzfltoI5LvNwUudspNGPzwU1Y9N1vS/8ZyntwUovR
-         ztOtcjDjaHEdOtVXg5z7j/xcRNWj2d0ls8F+jL61zxAUyvthWOxTbvqKXSt3TYamv3GQ
-         wbC6zAdVFsS/RbCD7/HUFsjCR9z3PSZ48T+9keQvL3TAuPbPOXUHtOwQrjcYD4FutNAl
-         olgA==
+        bh=0TAzQQyPNU1EgPS8VUfo26k9TNfuGUl3earvG+VF99I=;
+        b=i38AwXcU2ZfWid4WOd8yC6nFL/X1PwlRH5WJNl1Ubox53GScaSDBSn6UqI9G3inbD8
+         7Lu9OpTVfqf/vgA9UjRw/333sDKlaf6VKbPM42T924BghK3JQuQxHaDbISGOiLPGV9Fq
+         AktN2SqJymOGfavyOXDqCu2Nd1j06/HZjw9ju+Y40yacPWXajJ1XEl6zC1MfuSdUozqg
+         KkXfEWsbf5uU/W43wwEmJJKy+yF45gHriGq2GUowK0YRTXjvyLLp7oxT/9c1GZ0pBgi0
+         EAYk58AgNI2jCXG5qvz7V6UaVfu6p2XNKmGKOLKmVQGIpzglubdp1R1NNAyIEN92PbrY
+         b2dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kdY+F6xvAyzWtskSAzF5baAt59NngnjVCycs5ox2N3Y=;
-        b=bh1UeWBgMNnWI1N4xs8T65VbP9C6qHyVRpCJ2pCHewtkOYNqKL/t6kIjzqoAEyRZGT
-         Ozc/PoPN6C49NnEdjE1QCu7lkMwBfSxp9xx85SITL2PcfAziQXsf6EztYMl1/EUbS28B
-         Gz3+ARRU5QRCtrCxEQFZSzqT1ZLBIIpOpVgmEvJkykyWPEGq7FpeN5rGI0B4Y2FcNgaG
-         vqMAlxxy6/3av/zNQAyP5lzKUxh5J2ssG2trxLiITEFPzaqZcOEUVrgUQ43EFAIY/Ju3
-         8rV0CSV1mC26wZCvqNdozGEQrVehtzSgr3vyfH9BopeFJl1aOU/uywrTVnSb8KKI2EHb
-         J2xg==
-X-Gm-Message-State: AOAM531Fyqec/HyaOf9oeDxSGUnwwUPAMvAhu13zvL95n0oORsvmBhc+
-        WY310RW267lEW7w5fFcGKYcqOw==
-X-Google-Smtp-Source: ABdhPJwNKTJFyu6fqY/56zly1XOEXADAV0/mmhO8OnAfHPVNTNfhYFmwDVRNcXiyqk9nJe8CV8nBJw==
-X-Received: by 2002:a17:906:dc8f:b0:6e0:5ce7:d80e with SMTP id cs15-20020a170906dc8f00b006e05ce7d80emr14084251ejc.435.1649341946507;
-        Thu, 07 Apr 2022 07:32:26 -0700 (PDT)
+        bh=0TAzQQyPNU1EgPS8VUfo26k9TNfuGUl3earvG+VF99I=;
+        b=qMBfeZYdvnyJMwNyAGxXVKRmV1QAxKgAmwaHiLTopw/jmxtPrt1TRKWqGXLYmOGqCS
+         IfMEGYF9Ho5eKtqeKIeH2U91xY+izNyBEs+9jD63OdbUDZsEExWiCmRZq2qNyl+qPnws
+         4EvapG9SI2Lmcego57AK0QVm2JpdasUWESoqVD0iUabaKIG+cJxjEYHNNThQjfMd66h+
+         96RQ1Epg+B2MBiGJLvKxViSzGrqWySQIq3NT4/QOJcOizMxhPBi/Bh+nE4z9eg1v5AZN
+         dGR48lHIBn5LM8GUy11FmWkr7aj6+fW6A0j5VCXSX4/zSn5wrtifOGuaQVbO7ISCF4Mg
+         5sEg==
+X-Gm-Message-State: AOAM532yllyTF0P4WXyBcQYqwlarOaPlo2R1z0BMcgIyh7RxfflffQdB
+        wSRtPJBdnQZcWuBGrOv4gK8szQ==
+X-Google-Smtp-Source: ABdhPJy8PYhwc89e2VGBuc6MZsvxcFC02HNAPZvqr4IO8NBMMzByoyS5099bZvJ5EKHPk2yrUP9kPw==
+X-Received: by 2002:a17:906:60d4:b0:6db:f0a8:f39e with SMTP id f20-20020a17090660d400b006dbf0a8f39emr13611261ejk.54.1649341922301;
+        Thu, 07 Apr 2022 07:32:02 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id d12-20020a50cf4c000000b0041cc12dc1f3sm6618038edk.71.2022.04.07.07.32.25
+        by smtp.gmail.com with ESMTPSA id fy5-20020a1709069f0500b006e841c87243sm236526ejc.64.2022.04.07.07.32.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 07:32:26 -0700 (PDT)
+        Thu, 07 Apr 2022 07:32:01 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, devicetree@vger.kernel.org,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Li Yang <leoyang.li@nxp.com>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/2] arm64: dts: microchip: align SPI NOR node name with dtschema
-Date:   Thu,  7 Apr 2022 16:32:23 +0200
-Message-Id: <20220407143223.295344-2-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 2/2] arm64: dts: freescale: align SPI NOR node name with dtschema
+Date:   Thu,  7 Apr 2022 16:31:55 +0200
+Message-Id: <20220407143155.295187-2-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220407143223.295344-1-krzysztof.kozlowski@linaro.org>
-References: <20220407143223.295344-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220407143155.295187-1-krzysztof.kozlowski@linaro.org>
+References: <20220407143155.295187-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -76,91 +76,98 @@ The node names should be generic and SPI NOR dtschema expects "flash".
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/microchip/sparx5_nand.dtsi         | 2 +-
- arch/arm64/boot/dts/microchip/sparx5_pcb125.dts        | 4 ++--
- arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi | 4 ++--
- arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi | 4 ++--
- 4 files changed, 7 insertions(+), 7 deletions(-)
+ arch/arm64/boot/dts/freescale/fsl-ls208xa-qds.dtsi     | 10 +++++-----
+ arch/arm64/boot/dts/freescale/fsl-ls208xa-rdb.dtsi     |  2 +-
+ arch/arm64/boot/dts/freescale/imx8mm-emcon.dtsi        |  2 +-
+ .../boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi   |  2 +-
+ 4 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/microchip/sparx5_nand.dtsi b/arch/arm64/boot/dts/microchip/sparx5_nand.dtsi
-index 03f107e427d7..ce0747fd6444 100644
---- a/arch/arm64/boot/dts/microchip/sparx5_nand.dtsi
-+++ b/arch/arm64/boot/dts/microchip/sparx5_nand.dtsi
-@@ -19,7 +19,7 @@ spi@e {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 		reg = <14>; /* CS14 */
--		spi-flash@6 {
-+		flash@6 {
- 			compatible = "spi-nand";
- 			pinctrl-0 = <&cs14_pins>;
- 			pinctrl-names = "default";
-diff --git a/arch/arm64/boot/dts/microchip/sparx5_pcb125.dts b/arch/arm64/boot/dts/microchip/sparx5_pcb125.dts
-index 9baa085d7861..dbf8c1d48a02 100644
---- a/arch/arm64/boot/dts/microchip/sparx5_pcb125.dts
-+++ b/arch/arm64/boot/dts/microchip/sparx5_pcb125.dts
-@@ -47,7 +47,7 @@ spi@0 {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 		reg = <0>;	/* CS0 */
--		spi-flash@9 {
-+		flash@9 {
- 			compatible = "jedec,spi-nor";
- 			spi-max-frequency = <8000000>;
- 			reg = <0x9>;	/* SPI */
-@@ -59,7 +59,7 @@ spi@1 {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 		reg = <1>; /* CS1 */
--		spi-flash@9 {
-+		flash@9 {
- 			compatible = "spi-nand";
- 			pinctrl-0 = <&cs1_pins>;
- 			pinctrl-names = "default";
-diff --git a/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi b/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
-index 33faf1f3264f..699256f1b9d8 100644
---- a/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
-+++ b/arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi
-@@ -274,7 +274,7 @@ gpio@1 {
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls208xa-qds.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls208xa-qds.dtsi
+index 10d2fe091965..6fab73d484b6 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls208xa-qds.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa-qds.dtsi
+@@ -104,21 +104,21 @@ &i2c3 {
  
- &spi0 {
+ &dspi {
  	status = "okay";
+-	dflash0: n25q128a@0 {
++	dflash0: flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "st,m25p80";
+ 		spi-max-frequency = <3000000>;
+ 		reg = <0>;
+ 	};
+-	dflash1: sst25wf040b@1 {
++	dflash1: flash@1 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "st,m25p80";
+ 		spi-max-frequency = <3000000>;
+ 		reg = <1>;
+ 	};
+-	dflash2: en25s64@2 {
++	dflash2: flash@2 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "st,m25p80";
+@@ -129,7 +129,7 @@ dflash2: en25s64@2 {
+ 
+ &qspi {
+ 	status = "okay";
+-	flash0: s25fl256s1@0 {
++	flash0: flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "st,m25p80";
+@@ -138,7 +138,7 @@ flash0: s25fl256s1@0 {
+ 		spi-tx-bus-width = <4>;
+ 		reg = <0>;
+ 	};
+-	flash2: s25fl256s1@2 {
++	flash2: flash@2 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "st,m25p80";
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls208xa-rdb.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls208xa-rdb.dtsi
+index 4b71c4fcb35f..f8135c5c252d 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls208xa-rdb.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa-rdb.dtsi
+@@ -100,7 +100,7 @@ &i2c3 {
+ 
+ &dspi {
+ 	status = "okay";
+-	dflash0: n25q512a@0 {
++	dflash0: flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "st,m25p80";
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-emcon.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-emcon.dtsi
+index 7c4af71baab9..0dbdc9ec3fe5 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-emcon.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-emcon.dtsi
+@@ -98,7 +98,7 @@ &flexspi {
+ 	pinctrl-1 = <&pinctrl_flexspi1>;
+ 	status = "okay";
+ 
+-	flash0: spi-flash@0 {
++	flash0: flash@0 {
+ 		reg = <0>;
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
+index 22a5ef771d4e..8f90eb02550d 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
+@@ -66,7 +66,7 @@ &ecspi1 {
+ 	cs-gpios = <&gpio5 9 GPIO_ACTIVE_LOW>;
+ 	status = "okay";
+ 
 -	spi-flash@0 {
 +	flash@0 {
- 		compatible = "jedec,spi-nor";
- 		spi-max-frequency = <8000000>;
+ 		compatible = "mxicy,mx25r1635f", "jedec,spi-nor";
+ 		spi-max-frequency = <80000000>;
  		reg = <0>;
-@@ -289,7 +289,7 @@ spi@0 {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 		reg = <0>;	/* CS0 */
--		spi-flash@9 {
-+		flash@9 {
- 			compatible = "jedec,spi-nor";
- 			spi-max-frequency = <8000000>;
- 			reg = <0x9>;	/* SPI */
-diff --git a/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi b/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
-index ef96e6d8c6b3..d10a9172b529 100644
---- a/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
-+++ b/arch/arm64/boot/dts/microchip/sparx5_pcb135_board.dtsi
-@@ -89,7 +89,7 @@ i2cmux_s32: i2cmux-3 {
- 
- &spi0 {
- 	status = "okay";
--	spi-flash@0 {
-+	flash@0 {
- 		compatible = "jedec,spi-nor";
- 		spi-max-frequency = <8000000>;
- 		reg = <0>;
-@@ -104,7 +104,7 @@ spi@0 {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
- 		reg = <0>; /* CS0 */
--		spi-flash@9 {
-+		flash@9 {
- 			compatible = "jedec,spi-nor";
- 			spi-max-frequency = <8000000>;
- 			reg = <0x9>; /* SPI */
 -- 
 2.32.0
 
