@@ -2,133 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94FF7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94ABCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 02:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237273AbiDGCAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 22:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42560 "EHLO
+        id S231906AbiDGCGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 22:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231974AbiDGCAL (ORCPT
+        with ESMTP id S229942AbiDGCGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 22:00:11 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A5F5F8F5
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 18:58:13 -0700 (PDT)
-Received: from epcas1p1.samsung.com (unknown [182.195.41.45])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220407015811epoutp039c02dee4a8d4915060388fe6820cb094~jepo3yKlI0418304183epoutp03a
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:58:11 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220407015811epoutp039c02dee4a8d4915060388fe6820cb094~jepo3yKlI0418304183epoutp03a
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1649296691;
-        bh=HATTJavYX0NaR1Ru6uSU0WfORlW5BDFsbjrG7uyQkOo=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=NI0SUe/wBCeW/Wfb8QMwfIl94kGmNU4v87bLBkts9fw3DZh8gsW3nbTJxGmZIjPTz
-         3iWGdn38EmHH0YC68xqiHc3GIhe86GaS5a5Xh5GuyBjxNw5ogN2VSAOTCC2M7E+3Js
-         SHv8hp6YSjvVaAfd6ZEuLEgjeeo4E1NOjCR2Bw+A=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas1p4.samsung.com (KnoxPortal) with ESMTP id
-        20220407015811epcas1p4a8108b8c9a7cb8d03fadc9276e785f49~jepor_pj53027330273epcas1p4k;
-        Thu,  7 Apr 2022 01:58:11 +0000 (GMT)
-Received: from epsmges1p4.samsung.com (unknown [182.195.36.222]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4KYl012vqkz4x9Q2; Thu,  7 Apr
-        2022 01:58:09 +0000 (GMT)
-Received: from epcas1p1.samsung.com ( [182.195.41.45]) by
-        epsmges1p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        B5.86.21932.1354E426; Thu,  7 Apr 2022 10:58:09 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220407015809epcas1p24ec163ab4cb0533c2145a4e546e96dea~jepmuPQr02195521955epcas1p2q;
-        Thu,  7 Apr 2022 01:58:09 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220407015809epsmtrp1b83b12d3585db4f50abbdd52ecb6d75f~jepmtPkqE3173431734epsmtrp1W;
-        Thu,  7 Apr 2022 01:58:08 +0000 (GMT)
-X-AuditID: b6c32a38-929ff700000255ac-5d-624e4531ac97
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        61.36.03370.0354E426; Thu,  7 Apr 2022 10:58:08 +0900 (KST)
-Received: from W10PB11329 (unknown [10.253.152.129]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220407015808epsmtip1b9a53c7dfe9f0aef7302dac6270cb392~jepmkrL371345013450epsmtip1-;
-        Thu,  7 Apr 2022 01:58:08 +0000 (GMT)
-From:   "Sungjong Seo" <sj1557.seo@samsung.com>
-To:     "'Namjae Jeon'" <linkinjeon@kernel.org>
-Cc:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <axboe@kernel.dk>, "'Christoph  Hellwig'" <hch@infradead.org>
-In-Reply-To: <HK2PR04MB38916A5D693D52FF1C2FD24781E39@HK2PR04MB3891.apcprd04.prod.outlook.com>
-Subject: RE: [PATCH v2 0/2] exfat: reduce block requests when zeroing a
- cluster
-Date:   Thu, 7 Apr 2022 10:58:08 +0900
-Message-ID: <190101d84a22$ede7e210$c9b7a630$@samsung.com>
+        Wed, 6 Apr 2022 22:06:01 -0400
+Received: from out162-62-57-64.mail.qq.com (out162-62-57-64.mail.qq.com [162.62.57.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD00DB7C51
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 19:03:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1649297031;
+        bh=PCUUj9sh+ZXg8xzwNDbyH1JMDapK+OEbw32C9DX7m4c=;
+        h=From:To:Cc:References:In-Reply-To:Subject:Date;
+        b=ewgdipJCBn/zIN1Mx5ZPSt1EkQZXnk/Orl0xU1U79+mrfgHdXoXfzSQEs8KU2UM6J
+         UvJY1f3JTU9FFQaX3jyp4UgyJ1nWP3BgLfKqT+AaMvCfxLLGqSSQbYCtOdpUAnMpJv
+         uHDzq3yoVX0GUT6fvupevGk7AMf4tNA5WCmKj72c=
+Received: from helloworld ([59.172.176.225])
+        by newxmesmtplogicsvrszc11.qq.com (NewEsmtp) with SMTP
+        id F12E2A3; Thu, 07 Apr 2022 10:03:49 +0800
+X-QQ-mid: xmsmtpt1649297029tfj245p8a
+Message-ID: <tencent_0D5C6E0E160AA0702025FDFF35906EE69E07@qq.com>
+X-QQ-XMAILINFO: MyirvGjpKb1jSx3AS0EqrsEW80j37bKcqodxlAv3QiavnCt/RjzS00hoUWAvhA
+         IOCClT2yzvoKT9d3mbSdpJmk6HWk+5Lfwza9gmmbUCSMCIXRKSD5HnQ6jebInyoanQi56MVnI2oM
+         iHMjKA6r96nPsstWxs247KCatE26nfiiom23UoGCKD877Kv89VN/04cCqCfyS993Csy9UUQpoHVW
+         vLCaWSYWomWvO8UX2aCsmwK5OrkBdD7DCC8WHYWQsIuYYZa3wVQK2VlEoR+a3KWGLhIos6iKosjG
+         qmE4EV/RA0Hg5Ryu19etchAtyeqFF/gxIkL+Tfc1rT0G6WNeCwfZ+EU4EEfQjFWRFBJfTtKFz638
+         Yu9itb9lzIq/9Lr4fReGaGeMbgrns5cXTkWUiszs+tYArDX4dOI2w/PLvkpvwsuRXi2XTDMImxAD
+         vjW4DEodhrHr96zvoEGGrjhc/E0hc8CaSaHruQBx/bRQxwX1LbdJHaQTOmssOGYSOt/ZQ4NXA/eO
+         BiihNq+qEXrnMCGVdNpVQ5F+91f+7J2kVL4qyZ4sIc+grcH5vcljS6GCQmhITGD0kiOkV0UUw30S
+         XmZNtJp2xxAKisfM294nzuksHMFoVD9p9zgaHAPkQD77Oc5Nvw7+C5Sjr7uNKzpWbOclmmYOSN6a
+         fFHKTxdpsqe/ZuhFccpOZojYW/UY/RTORHGXbsHBkZQqU3Uz/kjDLWVnkmF27KhrY1d286JJrSXn
+         qh6NcmGMANnE+dnG0BW1ZVRGImU0uplZmUa1P1JljoPloz0qGJA5y2xUfc+U4U/pcSXTf7Mtf4O7
+         wnKOyeM2cPJvH1chxOq6ICcMMG0PjVnADOdDW+87SRcJr5K2MoRMffiTnghXLRolMeEpIq6GjHgA
+         vcj5Kb5VCnmCdrGMmNwUICuwTMe+H26OHsKUB5bIPU3ynlG5ppH/QgwztS4j3KMg==
+From:   <xkernel.wang@foxmail.com>
+To:     <paskripkin@gmail.com>
+Cc:     <gregkh@linuxfoundation.org>, <Larry.Finger@lwfinger.net>,
+        <phil@philpotter.co.uk>, <linux-staging@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>
+References: <tencent_5AB92A7786438342357C5669E7BF0C249505@qq.com> <tencent_15C23F2EC8197361EE200714C54E78B45206@qq.com> <9c307f1e-aa95-08e6-3a01-825caba19a30@gmail.com>
+In-Reply-To: <9c307f1e-aa95-08e6-3a01-825caba19a30@gmail.com>
+Subject: Re: [PATCH v2 2/2] staging: r8188eu: check the return of kzalloc()
+Date:   Thu, 7 Apr 2022 10:03:49 +0800
+X-OQ-MSGID: <006d01d84a23$ba562c30$2f028490$@foxmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain;
+        charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 15.0
-Thread-Index: AQHKvq7lmZVFrYJbCLZOIHnfj8b5SAFc+dS+rPPgFGA=
-Content-Language: ko
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmplk+LIzCtJLcpLzFFi42LZdlhTV9fQ1S/J4NIDUYvVd/vZLE5PWMRk
-        MXHaUmaLPXtPslhc3jWHzYHVY/MKLY/LZ0s9Nq3qZPP4vEkugCUq2yYjNTEltUghNS85PyUz
-        L91WyTs43jne1MzAUNfQ0sJcSSEvMTfVVsnFJ0DXLTMHaKuSQlliTilQKCCxuFhJ386mKL+0
-        JFUhI7+4xFYptSAlp8CsQK84Mbe4NC9dLy+1xMrQwMDIFKgwITuj+/ws1oLLLBVTZ61hbmA8
-        y9zFyMEhIWAicf+xVxcjF4eQwA5GifNXnrBBOJ8YJX5t/scC4XxmlPj7ZwFrFyMnWMeKbR1M
-        EIldjBKv9u+EqnrJKNHUfJQNpIpNQFfiyY2fYDtEBLQl7r9IB6lhFmhmlFj5fSYTSA2nQKzE
-        7yPTwKYKCwRKzHuziwXEZhFQkTjzG+Q+Tg5eAUuJo9uPs0HYghInZz4Bq2EWkJfY/nYOM8RF
-        ChK7Px0FmyMiYCXx/yPEfGYBEYnZnW3MIIslBP6yS/Q8mQL1govExP4/UM3CEq+Ob2GHsKUk
-        Xva3QdlAlzY3GkHYHYwSTzfKQgLMXuL9JQsQk1lAU2L9Ln2ICkWJnb/nMkKs5ZN497WHFaKa
-        V6KjTQiiREXi+4edLDCLrvy4yjSBUWkWksdmIXlsFpIHZiEsW8DIsopRLLWgODc9tdiwwAQe
-        18n5uZsYwelRy2IH49y3H/QOMTJxMB5ilOBgVhLhrcr1SRLiTUmsrEotyo8vKs1JLT7EaAoM
-        6onMUqLJ+cAEnVcSb2hiaWBiZmRiYWxpbKYkzts79XSikEB6YklqdmpqQWoRTB8TB6dUA1PJ
-        +b0uZswc54+X/rs9+c1VFRM5Y7sF6Uo9fwUnzdH2XGm/b2Ekk7DviyvO21c3debn3Jr7UKZv
-        asBsta0x6+fPfy2fvGvSPwa2yba97ptzNL7p7YsSfcq/ocn/GOO2U0mHlnQldP31PbzKcGvA
-        ym5dSw5/rgvWWRwLzM2cGHV2qXo/P9LQ/Pj3X4Pb61oi+iYvrIkwElxWFOC2nCHHNabK+szj
-        8Pjw0j73U+ejzur2ryi3O2j55T+3jrLejN43W65/tJicU6cusTPYvZXX6FqQy9ynqYFcwW4M
-        K/kYzmzZ5LGS7ybHToVbIlqxn74yyjXd7Xi3OGfR6z4536xlbO++pz9I8fXMYd0j/orbSoml
-        OCPRUIu5qDgRANrjV44YBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrILMWRmVeSWpSXmKPExsWy7bCSnK6Bq1+SQftqS4vVd/vZLE5PWMRk
-        MXHaUmaLPXtPslhc3jWHzYHVY/MKLY/LZ0s9Nq3qZPP4vEkugCWKyyYlNSezLLVI3y6BK6P7
-        /CzWgsssFVNnrWFuYDzL3MXIySEhYCKxYlsHUxcjF4eQwA5Gid2nH7B1MXIAJaQkDu7ThDCF
-        JQ4fLoYoec4o8eJvAztIL5uArsSTGz+ZQWpEBLQl7r9IB6lhFmhnlNgy6TcrRMM6RolP056D
-        NXAKxEr8PjKNFcQWFvCXuHvsDCOIzSKgInHmN8RBvAKWEke3H2eDsAUlTs58wgJiMwMt6H3Y
-        yghhy0tsfzsH6gEFid2fjoLNFBGwkvj/cSYTRI2IxOzONuYJjMKzkIyahWTULCSjZiFpWcDI
-        sopRMrWgODc9t9iwwCgvtVyvODG3uDQvXS85P3cTIzhWtLR2MO5Z9UHvECMTB+MhRgkOZiUR
-        3qpcnyQh3pTEyqrUovz4otKc1OJDjNIcLErivBe6TsYLCaQnlqRmp6YWpBbBZJk4OKUamC7U
-        tlnt+HHvBP+OjPwNKopcTdMddns8T7rYZXqrfd+BU+9sVJXSPXL1fXZtVT5RojJBZ2KzjE1K
-        yokqPsOnh+bmmii4LxLdxXooJONg15KXx+clxHQ5LK30//zPS1K/+FfJ9NlPdc5vCvHam9V5
-        SHLy7tzLrWXnrHhPZRTYXapazDTF36Prdg7r3ZiJHMFLGaXv8C9nZ70SkyRskN/HsKD9g2qp
-        d+ZOd11NsYOyXt+ab874v5K3sWTGX+V9USK3ZdqZFqzrXrH9dFHb0VuXptas/3xd4L3lF/7H
-        ujqKuTd/ljXwf2z0fDrj/k9nlXn184Ov65ZFJdyTmKyZFu10mXtNe+rU6LaSa93xTbe5lViK
-        MxINtZiLihMBEMsoEQQDAAA=
-X-CMS-MailID: 20220407015809epcas1p24ec163ab4cb0533c2145a4e546e96dea
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: SVC_REQ_APPROVE
-CMS-TYPE: 101P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220402032958epcas1p30a336a9b4f54e6972bdc196217ac1133
-References: <CGME20220402032958epcas1p30a336a9b4f54e6972bdc196217ac1133@epcas1p3.samsung.com>
-        <HK2PR04MB38916A5D693D52FF1C2FD24781E39@HK2PR04MB3891.apcprd04.prod.outlook.com>
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHFCzdkIZn1ahtT3bex/Ulo9ihwXQEIO4NAAgMPs9ys8c3LUA==
+Content-Language: zh-cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Changes since v1:
-> - Added helper to block level instead of manual accessing bd_inode
->   from the filesystem as suggested by Christoph Hellwig
+On Thursday, April 7, 2022 3:22 AM +0800, paskripkin@gmail.com wrote:
+> > -void rtw_alloc_hwxmits(struct adapter *padapter)
+> > +s32 rtw_alloc_hwxmits(struct adapter *padapter)
+> >   {
 > 
-> Yuezhang Mo (2):
->   block: add sync_blockdev_range()
->   exfat: reduce block requests when zeroing a cluster
-> 
->  block/bdev.c           | 10 ++++++++++
->  fs/exfat/fatent.c      | 41 +++++++++++++++++------------------------
->  include/linux/blkdev.h |  6 ++++++
->  3 files changed, 33 insertions(+), 24 deletions(-)
+> What about plain 'int'? I know that s32 is typedef for 'int', but 'int'
+> looks more natural
 > 
 
-Looks good, thanks for your patch!
-Acked-by: Sungjong Seo <sj1557.seo@samsung.com>
+I agree with you.
+Since the type of `_rtw_init_xmit_priv` is `s32`, I directly changed the
+type of `rtw_alloc_hwxmits` to `s32` (they are neighbors in rtw_xmit.h).
+In fact, there are many places where `s32` appears together with `int` 
+in related files, so maybe we can leave it as a future work to make all 
+of them a unified form.
 
-> --
-> 2.25.1
+Regards,
+Xiaoke Wang
 
