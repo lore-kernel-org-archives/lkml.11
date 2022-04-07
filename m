@@ -2,103 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C80EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D69C43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243348AbiDGI5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
+        id S243453AbiDGJA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234575AbiDGI5o (ORCPT
+        with ESMTP id S235118AbiDGJAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:57:44 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C82167F86
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:55:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649321744; x=1680857744;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=8oNth3LWFsKCpX8HwZT36uUknbe79ilbHXkiY4G2yCQ=;
-  b=lwF04ZFoXyjKU/sUS97CkAp5RpVvJhqd1JXD3pmeuQpK9CLdHW82T+ye
-   YLr7WO4eiULE9Uuuivx6sagVL+Fg3SzXU45/1eocnrLDQ7T+ieQV3VkLk
-   ebWeNCxBRuPjPp1O2IfHkc7QqbgrHKe54/ZPgVa6SPu2G05i+VQ5p3DmU
-   w7hSklHLwWvfF2tpw+WVJkNAsSQtxoZtmNo5SkKO3OchRT0UrtUIr5Bf+
-   fNJxL+P+4bjRjNAP+S5Etryr6tctQJAa3DL6Fv4eNh0WXMF07DQVzBGDl
-   lcq/NGuW+hqZiM5rgdH78JHmDKd6Zp3rpe3kgaaOwvGMGoKL5iMYWQ39U
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="261446219"
-X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="261446219"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 01:55:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="549928167"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 07 Apr 2022 01:55:37 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ncNvU-0005GN-N8;
-        Thu, 07 Apr 2022 08:55:36 +0000
-Date:   Thu, 7 Apr 2022 16:54:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [kas:lam 10/10] arch/x86/kernel/proc.c:35:24: error:
- 'X86_THREAD_LAM_U48' undeclared; did you mean 'X86_CR3_LAM_U48'?
-Message-ID: <202204071610.T6fPhCnP-lkp@intel.com>
+        Thu, 7 Apr 2022 05:00:25 -0400
+Received: from euporie.uberspace.de (euporie.uberspace.de [185.26.156.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487492229E
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:58:21 -0700 (PDT)
+Received: (qmail 17897 invoked by uid 989); 7 Apr 2022 08:58:19 -0000
+Authentication-Results: euporie.uberspace.de;
+        auth=pass (plain)
+From:   Florian Fischer <florian.fischer@muhq.space>
+To:     Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Florian Schmaus <flow@cs.fau.de>,
+        Florian Fischer <florian.fischer@muhq.space>
+Subject: [PATCH v3 1/3] perf stat: introduce stats for the user and system rusage times
+Date:   Thu,  7 Apr 2022 10:57:19 +0200
+Message-Id: <20220407085721.3289414-2-florian.fischer@muhq.space>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407085721.3289414-1-florian.fischer@muhq.space>
+References: <69656438-8b9a-000b-0702-02dc480639f9@linux.intel.com>
+ <20220407085721.3289414-1-florian.fischer@muhq.space>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Bar: -----
+X-Rspamd-Report: R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) REPLY(-4) MID_CONTAINS_FROM(1) BAYES_HAM(-2.999999)
+X-Rspamd-Score: -5.599999
+Received: from unknown (HELO unkown) (::1)
+        by euporie.uberspace.de (Haraka/2.8.28) with ESMTPSA; Thu, 07 Apr 2022 10:58:19 +0200
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kas/linux.git lam
-head:   73447e771c55e18598a6fbf6adee1002aee18ea0
-commit: 73447e771c55e18598a6fbf6adee1002aee18ea0 [10/10] x86: Expose thread features status in /proc/$PID/arch_status
-config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220407/202204071610.T6fPhCnP-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/kas/linux.git/commit/?id=73447e771c55e18598a6fbf6adee1002aee18ea0
-        git remote add kas https://git.kernel.org/pub/scm/linux/kernel/git/kas/linux.git
-        git fetch --no-tags kas lam
-        git checkout 73447e771c55e18598a6fbf6adee1002aee18ea0
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+This is preparation for exporting rusage values as tool events.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Add new global stats tracking the values obtained via rusage.
+For now only ru_utime and ru_stime are part of the tracked stats.
+Both are stored as nanoseconds to be consistent with 'duration_time',
+although the finest resolution the struct timeval data in rusage
+provides are microseconds.
 
-All errors (new ones prefixed by >>):
+Signed-off-by: Florian Fischer <florian.fischer@muhq.space>
+---
+ tools/perf/builtin-stat.c     |  5 ++++-
+ tools/perf/util/stat-shadow.c |  2 ++
+ tools/perf/util/stat.h        | 21 +++++++++++++++++++++
+ 3 files changed, 27 insertions(+), 1 deletion(-)
 
-   arch/x86/kernel/proc.c: In function 'dump_features':
->> arch/x86/kernel/proc.c:35:24: error: 'X86_THREAD_LAM_U48' undeclared (first use in this function); did you mean 'X86_CR3_LAM_U48'?
-      35 |         if (features & X86_THREAD_LAM_U48)
-         |                        ^~~~~~~~~~~~~~~~~~
-         |                        X86_CR3_LAM_U48
-   arch/x86/kernel/proc.c:35:24: note: each undeclared identifier is reported only once for each function it appears in
->> arch/x86/kernel/proc.c:37:24: error: 'X86_THREAD_LAM_U57' undeclared (first use in this function); did you mean 'X86_CR3_LAM_U57'?
-      37 |         if (features & X86_THREAD_LAM_U57)
-         |                        ^~~~~~~~~~~~~~~~~~
-         |                        X86_CR3_LAM_U57
-
-
-vim +35 arch/x86/kernel/proc.c
-
-    32	
-    33	static void dump_features(struct seq_file *m, unsigned long features)
-    34	{
-  > 35		if (features & X86_THREAD_LAM_U48)
-    36			seq_puts(m, "lam_u48 ");
-  > 37		if (features & X86_THREAD_LAM_U57)
-    38			seq_puts(m, "lam_u57 ");
-    39	}
-    40	
-
+diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+index a96f106dc93a..61faffb535f5 100644
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -216,6 +216,7 @@ static struct perf_stat_config stat_config = {
+ 	.run_count		= 1,
+ 	.metric_only_len	= METRIC_ONLY_LEN,
+ 	.walltime_nsecs_stats	= &walltime_nsecs_stats,
++	.ru_stats		= &ru_stats,
+ 	.big_num		= true,
+ 	.ctl_fd			= -1,
+ 	.ctl_fd_ack		= -1,
+@@ -1010,8 +1011,10 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
+ 		evlist__reset_prev_raw_counts(evsel_list);
+ 		runtime_stat_reset(&stat_config);
+ 		perf_stat__reset_shadow_per_stat(&rt_stat);
+-	} else
++	} else {
+ 		update_stats(&walltime_nsecs_stats, t1 - t0);
++		update_rusage_stats(&ru_stats, &stat_config.ru_data);
++	}
+ 
+ 	/*
+ 	 * Closing a group leader splits the group, and as we only disable
+diff --git a/tools/perf/util/stat-shadow.c b/tools/perf/util/stat-shadow.c
+index 10af7804e482..ea4c35e4f1da 100644
+--- a/tools/perf/util/stat-shadow.c
++++ b/tools/perf/util/stat-shadow.c
+@@ -26,6 +26,7 @@
+ 
+ struct runtime_stat rt_stat;
+ struct stats walltime_nsecs_stats;
++struct rusage_stats ru_stats;
+ 
+ struct saved_value {
+ 	struct rb_node rb_node;
+@@ -199,6 +200,7 @@ void perf_stat__reset_shadow_stats(void)
+ {
+ 	reset_stat(&rt_stat);
+ 	memset(&walltime_nsecs_stats, 0, sizeof(walltime_nsecs_stats));
++	memset(&ru_stats, 0, sizeof(ru_stats));
+ }
+ 
+ void perf_stat__reset_shadow_per_stat(struct runtime_stat *st)
+diff --git a/tools/perf/util/stat.h b/tools/perf/util/stat.h
+index 335d19cc3063..e31c94d952e9 100644
+--- a/tools/perf/util/stat.h
++++ b/tools/perf/util/stat.h
+@@ -108,6 +108,11 @@ struct runtime_stat {
+ 	struct rblist value_list;
+ };
+ 
++struct rusage_stats {
++	struct stats ru_utime_usec_stat;
++	struct stats ru_stime_usec_stat;
++};
++
+ typedef struct aggr_cpu_id (*aggr_get_id_t)(struct perf_stat_config *config, struct perf_cpu cpu);
+ 
+ struct perf_stat_config {
+@@ -148,6 +153,7 @@ struct perf_stat_config {
+ 	const char		*csv_sep;
+ 	struct stats		*walltime_nsecs_stats;
+ 	struct rusage		 ru_data;
++	struct rusage_stats		 *ru_stats;
+ 	struct cpu_aggr_map	*aggr_map;
+ 	aggr_get_id_t		 aggr_get_id;
+ 	struct cpu_aggr_map	*cpus_aggr_map;
+@@ -177,6 +183,20 @@ static inline void init_stats(struct stats *stats)
+ 	stats->max  = 0;
+ }
+ 
++static inline void init_rusage_stats(struct rusage_stats *ru_stats) {
++	init_stats(&ru_stats->ru_utime_usec_stat);
++	init_stats(&ru_stats->ru_stime_usec_stat);
++}
++
++static inline void update_rusage_stats(struct rusage_stats *ru_stats, struct rusage* rusage) {
++	const u64 us_to_ns = 1000;
++	const u64 s_to_ns = 1000000000;
++	update_stats(&ru_stats->ru_utime_usec_stat,
++	             (rusage->ru_utime.tv_usec * us_to_ns + rusage->ru_utime.tv_sec * s_to_ns));
++	update_stats(&ru_stats->ru_stime_usec_stat,
++	             (rusage->ru_stime.tv_usec * us_to_ns + rusage->ru_stime.tv_sec * s_to_ns));
++}
++
+ struct evsel;
+ struct evlist;
+ 
+@@ -196,6 +216,7 @@ bool __perf_stat_evsel__is(struct evsel *evsel, enum perf_stat_evsel_id id);
+ 
+ extern struct runtime_stat rt_stat;
+ extern struct stats walltime_nsecs_stats;
++extern struct rusage_stats ru_stats;
+ 
+ typedef void (*print_metric_t)(struct perf_stat_config *config,
+ 			       void *ctx, const char *color, const char *unit,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
