@@ -2,204 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74347C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B49C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244797AbiDGLbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 07:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49656 "EHLO
+        id S244801AbiDGLdf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 07:33:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231394AbiDGLbF (ORCPT
+        with ESMTP id S235988AbiDGLdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 07:31:05 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E86C326D6
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 04:29:05 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2eb43ad7909so58202637b3.2
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 04:29:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=YP4N8kQIQN8/YyHOBtiyCSukn6COHCxPe5RjI8eyTIU=;
-        b=p307Ut0z+SmAm1cX12VxU9NJGKVhp5iaOJEZsH+IsD0U4PNAvGsY8sTSLkz/1zoUeF
-         6B0KGS/OTKHbXkMJiZsaBwt4Mo6gFapZw+oOhN+59/GS2+yHJosYEvAV12SVcFVHvzHT
-         ac6E2AKZGSTbzYnaBn69TtdOEt5GDp3/ilpvanpVz1gSyzotyc7zLp1v0NT+BlJZ9Mvs
-         pE+aK2LSS8knSw2jsthihWlKXnCUbttvnxiETssWEtA4FfnHoRGiW0FZhJZVcBmzDWsk
-         5ligtluKjQ2aVI2bmJvvYTepWJs8RFjrVWkY9n/kqg+B4Fe3YArpY4gn4nCxeaWDH9Pa
-         wTIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YP4N8kQIQN8/YyHOBtiyCSukn6COHCxPe5RjI8eyTIU=;
-        b=J3wD/FiPqdkjmLeBSgLxslqwsQk8HDms61FkqMqJitYbKfN+EsspfLM2gRP3ZYE2EF
-         0nTrRQGsIZiIEcukBiOA9EVYeTvQEy4saWJWEqgqb8aPIHvPXsHfabiZLJnCm1AA1RlC
-         9lmSyVI2eHME3CWxyqx6YTpdVhKb1XWoiwM3t91Tnbrns819AyeAhaHrDcftSTW7p7Sm
-         710vIhg9zFhzdMY1qtt4c8Pemiv9bkP5Cjn6qbNoTB/wokLGjGYm9gVjzx1YbGLQryAk
-         Hu70D64fZzEnOxT99JtgX+DWYXQv7WU2Z+PRjGCF82tQXZfIaDtSW+oFWooNFPLj0N76
-         3lHw==
-X-Gm-Message-State: AOAM531ooR4JXmcEySB3miaVoCBETXsvxqCawoKc880dRdpFTn+TKcTb
-        aqQDY8JdYjiR2vI2Gp93/vc/wi7kmHTPdT9biXoITA==
-X-Google-Smtp-Source: ABdhPJz6rb9FahBmnB1jlZ9O0IoEkkKDXbBiKJbq8wv+QbmKS6pT+wJa4BJDrAkMEdQENqVdMJRwglRjhPZa6iOCpGM=
-X-Received: by 2002:a81:6f85:0:b0:2e5:bad1:cf35 with SMTP id
- k127-20020a816f85000000b002e5bad1cf35mr11121731ywc.199.1649330944107; Thu, 07
- Apr 2022 04:29:04 -0700 (PDT)
+        Thu, 7 Apr 2022 07:33:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DFA2E9F3;
+        Thu,  7 Apr 2022 04:31:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1819661E80;
+        Thu,  7 Apr 2022 11:31:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C7CAC385A0;
+        Thu,  7 Apr 2022 11:31:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649331093;
+        bh=pAQlo9VKRGjLf7hnntocI7qznMtnPAZRWg9jZ+ojOHg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ELW66sYnXkyaAVA6351QFt8aTuVYZDHX90TAc0q6uqjOSULQtghTxPjdV/qy+SAo/
+         HoyD6rDG4velCLBWezYrwYqeHgbbTR9uCVGIhRTZkeT8CWooM7d8aEupyk334z6Cr7
+         p54bLIzW0sofu1S9R5dtzmq47Oh32ESQ8FTJz9HudovtfZv0hXKCm7s0DU7zcEROSF
+         iCHfd1Ilb4jEIh0DPDxmKRjt+YH0N4rEOshJGQhu8lsLFx+MDlrI5fKsnNsfRmlluz
+         D4Dm1GOn6azBLG8sa+VKFIPKiNNYdSOpR/4130NxD/qIGlQ5+0WaPc+Wd1R11TW8jB
+         dch9f06RJOn/Q==
+Date:   Thu, 7 Apr 2022 12:31:26 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Manohar.Puri@microchip.com, UNGLinuxDriver@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        devicetree@vger.kernel.org, kavyasree.kotagiri@microchip.com,
+        krzk+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        nicolas.ferre@microchip.com, robh+dt@kernel.org,
+        tudor.ambarus@microchip.com
+Subject: Re: [PATCH] spi: atmel,quadspi: Define lan966x QSPI
+Message-ID: <Yk7LjrvqSLbzPYkw@sirena.org.uk>
+References: <Yk7Ex5ltaxC7Z+N6@sirena.org.uk>
+ <20220407112345.148316-1-michael@walle.cc>
 MIME-Version: 1.0
-References: <20220406182436.675069715@linuxfoundation.org>
-In-Reply-To: <20220406182436.675069715@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 7 Apr 2022 16:58:52 +0530
-Message-ID: <CA+G9fYvdA3DjgvmL3pnOHc7XdDcoD600sFQFZ34Y_AVdYNtQmQ@mail.gmail.com>
-Subject: Re: [PATCH 4.9 00/43] 4.9.310-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Robert Richter <rrichter@cavium.com>,
-        Will Deacon <will.deacon@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Nathan Chancellor <natechancellor@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="70S9eEVN4l3t2VB6"
+Content-Disposition: inline
+In-Reply-To: <20220407112345.148316-1-michael@walle.cc>
+X-Cookie: Look ere ye leap.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 6 Apr 2022 at 23:57, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 4.9.310 release.
-> There are 43 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Fri, 08 Apr 2022 18:24:27 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
-4.9.310-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-4.9.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
 
-Results from Linaro=E2=80=99s test farm.
+--70S9eEVN4l3t2VB6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-As Guenter reported,
-On stable-rc 4.9 arm64 build configs allnoconfig and tinyconfig failed [1].
+On Thu, Apr 07, 2022 at 01:23:45PM +0200, Michael Walle wrote:
 
-## Build
-* kernel: 4.9.310-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-4.9.y
-* git commit: b5f0e9d665c30ceb3bee566518a1020e54d7bc1f
-* git describe: v4.9.309-44-gb5f0e9d665c3
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.9.y-sanity/build=
-/v4.9.309-44-gb5f0e9d665c3
+> > > +      - microchip,lan966x-qspi
 
-## Test Regressions (compared to v4.9.309-163-geeae539a0d5c)
-* arm64, build
-  - arm64-clang-11-allnoconfig
-  - arm64-clang-11-tinyconfig
-  - arm64-clang-12-allnoconfig
-  - arm64-clang-12-tinyconfig
-  - arm64-clang-13-allnoconfig
-  - arm64-clang-13-tinyconfig
-  - arm64-clang-nightly-allnoconfig
-  - arm64-clang-nightly-tinyconfig
-  - arm64-gcc-10-allnoconfig
-  - arm64-gcc-10-tinyconfig
-  - arm64-gcc-11-allnoconfig
-  - arm64-gcc-11-tinyconfig
-  - arm64-gcc-8-allnoconfig
-  - arm64-gcc-8-tinyconfig
-  - arm64-gcc-9-allnoconfig
-  - arm64-gcc-9-tinyconfig
+> > Generally DT compatibles should be for specific SoCs rather than having
+> > wildcards in them, even if that means you have to list a lot of SoCs.
+> > Having used wildcards in the past doesn't mean it's a good idea to
+> > continue adding them!
 
+> The subject should also be prefixed with "dt-bindings: ".
 
-Build error:
-------------
+I tend to complain about people doing that.
 
-arch/arm64/kernel/cpu_errata.c: In function 'is_spectrev2_safe':
-arch/arm64/kernel/cpu_errata.c:829:39: error:
-'arm64_bp_harden_smccc_cpus' undeclared (first use in this function);
-did you mean 'arm64_bp_harden_el1_vectors'?
-  829 |                                       arm64_bp_harden_smccc_cpus);
-      |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~
-      |                                       arm64_bp_harden_el1_vectors
-arch/arm64/kernel/cpu_errata.c:829:39: note: each undeclared
-identifier is reported only once for each function it appears in
-arch/arm64/kernel/cpu_errata.c: In function 'spectre_bhb_enable_mitigation'=
-:
-arch/arm64/kernel/cpu_errata.c:839:39: error: '__hardenbp_enab'
-undeclared (first use in this function)
-  839 |         if (!is_spectrev2_safe() &&  !__hardenbp_enab) {
-      |                                       ^~~~~~~~~~~~~~~
-In file included from include/asm-generic/percpu.h:6,
-                 from arch/arm64/include/asm/percpu.h:279,
-                 from include/linux/percpu.h:12,
-                 from arch/arm64/include/asm/mmu.h:23,
-                 from include/linux/mm_types.h:17,
-                 from include/linux/sched.h:27,
-                 from include/linux/ratelimit.h:5,
-                 from include/linux/device.h:27,
-                 from include/linux/node.h:17,
-                 from include/linux/cpu.h:16,
-                 from arch/arm64/include/asm/cpu.h:19,
-                 from arch/arm64/kernel/cpu_errata.c:23:
-arch/arm64/kernel/cpu_errata.c:879:42: error: 'bp_hardening_data'
-undeclared (first use in this function)
-  879 |                         __this_cpu_write(bp_hardening_data.fn, NULL=
-);
-      |                                          ^~~~~~~~~~~~~~~~~
-include/linux/percpu-defs.h:236:54: note: in definition of macro
-'__verify_pcpu_ptr'
-  236 |         const void __percpu *__vpp_verify =3D (typeof((ptr) +
-0))NULL;    \
-      |                                                      ^~~
-include/linux/percpu-defs.h:438:41: note: in expansion of macro
-'__pcpu_size_call'
-  438 | #define raw_cpu_write(pcp, val)
-__pcpu_size_call(raw_cpu_write_, pcp, val)
-      |                                         ^~~~~~~~~~~~~~~~
-include/linux/percpu-defs.h:469:9: note: in expansion of macro 'raw_cpu_wri=
-te'
-  469 |         raw_cpu_write(pcp, val);
-         \
-      |         ^~~~~~~~~~~~~
-arch/arm64/kernel/cpu_errata.c:879:25: note: in expansion of macro
-'__this_cpu_write'
-  879 |                         __this_cpu_write(bp_hardening_data.fn, NULL=
-);
-      |                         ^~~~~~~~~~~~~~~~
-make[2]: *** [scripts/Makefile.build:307:
-arch/arm64/kernel/cpu_errata.o] Error 1
+> Mark, I did a git log on
+> Documentation/devicetree/bindings/spi/atmel,quadspi.yaml and all the
+> subjects are without "dt-bindings:" although the original patch was with
+> that prefix [1]. Is that intended?
 
+Yes.
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+--70S9eEVN4l3t2VB6
+Content-Type: application/pgp-signature; name="signature.asc"
 
-steps to reproduce:
+-----BEGIN PGP SIGNATURE-----
 
-# To install tuxmake on your system globally:
-# sudo pip3 install -U tuxmake
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJOy44ACgkQJNaLcl1U
+h9CK0Qf/eynzvwn+qunlhuPIQLhYf6kD/1JDE42i7LImEZFGGG9ob3onn3C3rbg5
+m0sbxoHJNz9VbUGKJmUy4A66/QyJP8bJApwnQwatPocPaNmgsroJ/Llh1lsvUajG
+AefNPi+c1lsM9iyn3Gth6Ayu0+UJitpDlLOGOVqzPv0dfS7TumeguofMOnaa8VEI
+OnUbmD37HW2UabIeGbExxv1kywu5ZESKlOK482er+mhomgH2L2KvLDYX5a4c28kE
+H/bL0V5TKaJC7y+FF9nVJ6sk17xDL+cma0hx2m2ADj5lShT/ZuYJPsQGfIR/8h6e
+b8Wfd6g+R0bCFExvIAyGNZdSYPkh/Q==
+=/+W7
+-----END PGP SIGNATURE-----
 
- tuxmake --runtime podman --target-arch arm64 --toolchain gcc-11
---kconfig tinyconfig
-
-
---
-Linaro LKFT
-https://lkft.linaro.org
-
-[1] https://builds.tuxbuild.com/27R7yjNqw1ahQiOJ16BgcTn7BcZ/
+--70S9eEVN4l3t2VB6--
