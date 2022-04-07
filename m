@@ -2,132 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44CBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:57:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C6DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:57:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240750AbiDGH64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54278 "EHLO
+        id S242442AbiDGH7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242637AbiDGH6V (ORCPT
+        with ESMTP id S242408AbiDGH7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:58:21 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94A93389F;
-        Thu,  7 Apr 2022 00:56:22 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id w17-20020a056830111100b005b22c584b93so3358590otq.11;
-        Thu, 07 Apr 2022 00:56:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=0JpF6FdvVE++0ash3DDMnAOgfignQSbY1YMYFOOmNUo=;
-        b=e7ihkt/7ndm1cu+/cMyQTalxNGDQwt7vevMop/YfCIkq6d9iOKnSa+s7YCIs4xnLUB
-         MXFAcQitNQz/kfRdrB0Q8cQIV3KlCHW9XJ510/R28qxCOJkRy2JnKxki1/e0hJKlq/5x
-         PL9BfeYw5w8LHPWpY7jg6rQ23rBOLNrWoYQLJ5m/qKyWsXBw7Q1fuMB2g6fhXdjbzYzX
-         XLU9iL+SC+7Sg9El0WBRovNaXtAW6C0mwtuoSOHfPKO61XUQNN4g7wriLlotFteP0oH3
-         Px56MQgnFQ8MMHrnW/xs30vnJZ8N02koH4FnOauQj2FQUfMs2e3YE+gVHaRqFamUo+4i
-         Fadg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=0JpF6FdvVE++0ash3DDMnAOgfignQSbY1YMYFOOmNUo=;
-        b=iRBg3VMOXQx6hGMuLa1bDF6nSpFCOI6FIxk0ZzWtxoLLVHhamAUFIkr+SZFsbpkCAp
-         bl4PTJtIKbe0pyo6hsMRuhUQoX01uFh3RNgG+s3kiI9vokJkqsBpMzT/8ZvWcmCYYv0d
-         7+YaFLXo1tV4HN6Ggvh50d+zqv1ukBAldvDK2hVDLsIM/bxglyAEZIMcYiCCC8ZmAHJK
-         oIZ9qQBLujDH5aFvawOXiwUBPK0tzBYqjKnSSJhhL6flq7w5UJuwTJrZiGFJtcdyjszC
-         YLcBSziPGxU3qWYAoTQqGQUgrQigNG/1//hBU8YLc+ZlW36HVVHkLBv4V09P2Je2jyCH
-         klxg==
-X-Gm-Message-State: AOAM533HMLfBsRd6c7S4aQTkSvfEq0e7DG7jns6eJnTmiOglS6jrGvNN
-        ar0AdLTEwV/EkVRjh6L8U0CQS/LqIZ6ZIttbI3I=
-X-Google-Smtp-Source: ABdhPJxKNt+PuLxnkz/9BXAT/3ofeUF5/0LyMXPorq3HJMHbwfG91YfyviEqB+KWKDmrmX76DT9JHWMENXWg35QRuTw=
-X-Received: by 2002:a05:6830:2708:b0:5cd:a8c2:7665 with SMTP id
- j8-20020a056830270800b005cda8c27665mr4404110otu.144.1649318181831; Thu, 07
- Apr 2022 00:56:21 -0700 (PDT)
+        Thu, 7 Apr 2022 03:59:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B7510DA50;
+        Thu,  7 Apr 2022 00:57:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7323D61E59;
+        Thu,  7 Apr 2022 07:57:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAA8EC385A5;
+        Thu,  7 Apr 2022 07:57:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649318267;
+        bh=Ww1dxa+3bAwj5Iok8ViSt3VRfDANMYAW8WjVDv/Vg50=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=R3wXsf7IdmT3qfxmc9PfyS342yh65B4d9KWZXK0OgfCmRmwJPdbVRlJGzKR3lajqW
+         YpPiAyabUo62zVXM5bX7v1ZIOs2p9CGmGlitEdtB2d2Dv5Z/yjViG3843CAra/1IBv
+         iBL8mjSv+nUIENJRpS5tOxstcriye5A61a2ZFE9+dvFDIoHYnb2Bv01PKi8Oum1COF
+         D9pNNoWkTJBchHc1MD6OhMO17OeBTPk01Z7J8YM6dMf8DG+8uh5L7fRSy6me+pKVy7
+         iuCTTAbQhun4i8EVPTHE38lLmdhR4jajZN7P+VNMDPSld+4ue3ZkaqCeA+YE5a7Fz/
+         arG+St2Lk/weQ==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1ncN1U-002Ou6-VB; Thu, 07 Apr 2022 08:57:45 +0100
 MIME-Version: 1.0
-References: <Yk6ODSxQTiGOrTj/@debian-BULLSEYE-live-builder-AMD64>
- <Yk6Pip7f3iUsIHTr@kroah.com> <abe69993-0180-a04c-56d5-10b80d339596@collabora.com>
-In-Reply-To: <abe69993-0180-a04c-56d5-10b80d339596@collabora.com>
-From:   Enric Balletbo Serra <eballetbo@gmail.com>
-Date:   Thu, 7 Apr 2022 09:56:10 +0200
-Message-ID: <CAFqH_53pPmk+JFws-nHWRd1553qo50hV2Yt=L_uUwL57dVjc1w@mail.gmail.com>
-Subject: Re: [PATCH v5] platform: x86: Add ChromeOS ACPI device driver
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Collabora Kernel ML <kernel@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Benson Leung <bleung@chromium.org>,
-        Dmitry Torokhov <dtor@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>, vbendeb@chromium.org,
-        Andy Shevchenko <andy@infradead.org>,
-        Ayman Bagabas <ayman.bagabas@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        =?UTF-8?Q?Bla=C5=BE_Hrastnik?= <blaz@mxxn.io>,
-        Darren Hart <dvhart@infradead.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jeremy Soller <jeremy@system76.com>,
-        Mattias Jacobsson <2pi@mok.nu>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Rajat Jain <rajatja@google.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Date:   Thu, 07 Apr 2022 08:57:44 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     Brad Larson <brad@pensando.io>
+Cc:     linux-arm-kernel@lists.infradead.org, arnd@arndb.de,
+        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
+        broonie@kernel.org, fancer.lancer@gmail.com,
+        adrian.hunter@intel.com, ulf.hansson@linaro.org, olof@lixom.net,
+        dac2@pensando.io, linux-gpio@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-mmc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 11/11] arm64: dts: Add Pensando Elba SoC support
+In-Reply-To: <20220406233648.21644-12-brad@pensando.io>
+References: <20220406233648.21644-1-brad@pensando.io>
+ <20220406233648.21644-12-brad@pensando.io>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <9c08f621be28dba65e811bc9cdedc882@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: brad@pensando.io, linux-arm-kernel@lists.infradead.org, arnd@arndb.de, linus.walleij@linaro.org, bgolaszewski@baylibre.com, broonie@kernel.org, fancer.lancer@gmail.com, adrian.hunter@intel.com, ulf.hansson@linaro.org, olof@lixom.net, dac2@pensando.io, linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org, linux-mmc@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Missatge de Muhammad Usama Anjum <usama.anjum@collabora.com> del dia
-dj., 7 d=E2=80=99abr. 2022 a les 9:36:
->
-> On 4/7/22 12:15 PM, Greg Kroah-Hartman wrote:
-> > On Thu, Apr 07, 2022 at 12:09:01PM +0500, Enric Balletbo i Serra wrote:
-> >> --- /dev/null
-> >> +++ b/drivers/platform/x86/chromeos_acpi.c
-> >> @@ -0,0 +1,515 @@
-> >> +// SPDX-License-Identifier: GPL-2.0-only
-> >> +/*
-> >> + * ChromeOS specific ACPI extensions
-> >> + *
-> >> + * Copyright 2011 Google, Inc.
-> >> + * Copyright 2020 Google LLC
-> >
-> > You haven't touched this file in 2 years?
-> This file has been changed. I'll discuss and update this. I'll also
-> correct this patch's From and authorship. It got messed up.
->
+On 2022-04-07 00:36, Brad Larson wrote:
+> Add Pensando common and Elba SoC specific device nodes
+> 
+> Signed-off-by: Brad Larson <brad@pensando.io>
+> ---
+> Change from V3:
+> - Changed to dual copyright (GPL-2.0+ OR MIT)
+> - Minor changes from review input
+> 
+>  arch/arm64/boot/dts/Makefile                  |   1 +
+>  arch/arm64/boot/dts/pensando/Makefile         |   3 +
+>  arch/arm64/boot/dts/pensando/elba-16core.dtsi | 189 ++++++++++++++++++
+>  .../boot/dts/pensando/elba-asic-common.dtsi   |  98 +++++++++
+>  arch/arm64/boot/dts/pensando/elba-asic.dts    |  28 +++
+>  .../boot/dts/pensando/elba-flash-parts.dtsi   | 106 ++++++++++
+>  arch/arm64/boot/dts/pensando/elba.dtsi        | 189 ++++++++++++++++++
+>  7 files changed, 614 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/pensando/Makefile
+>  create mode 100644 arch/arm64/boot/dts/pensando/elba-16core.dtsi
+>  create mode 100644 arch/arm64/boot/dts/pensando/elba-asic-common.dtsi
+>  create mode 100644 arch/arm64/boot/dts/pensando/elba-asic.dts
+>  create mode 100644 arch/arm64/boot/dts/pensando/elba-flash-parts.dtsi
+>  create mode 100644 arch/arm64/boot/dts/pensando/elba.dtsi
+> 
 
-Hi Muhammad,
+[...]
 
-I was about to reply about the patch's From ;-) when I noticed there
-was an email from me that I didn't send. Also, the email address
-should bounce as it does not exist anymore which is a bit annoying.
+> diff --git a/arch/arm64/boot/dts/pensando/elba.dtsi
+> b/arch/arm64/boot/dts/pensando/elba.dtsi
+> new file mode 100644
+> index 000000000000..10e06eb8cda6
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/pensando/elba.dtsi
 
-Thanks to work on this, before sending another version, apart from not
-messing up the patch's From you should also need to look at the commit
-notes, is basically a copy of my latest patch and is outdated, you
-should explain what you did new and not copy what I did in the past,
-so that also needs a rewrite. I suppose you already looked at the
-the latest version which is at, it is a good practice to point to the
-latest version so people can look at what was discussed before.
+[...]
 
-  * https://lore.kernel.org/lkml/20200610224305.GC248110@dtor-ws/t/
+> +		gic: interrupt-controller@800000 {
+> +			compatible = "arm,gic-v3";
+> +			#interrupt-cells = <3>;
+> +			#address-cells = <2>;
+> +			#size-cells = <2>;
+> +			ranges;
+> +			interrupt-controller;
+> +			reg = <0x0 0x800000 0x0 0x200000>,	/* GICD */
+> +			      <0x0 0xa00000 0x0 0x200000>;	/* GICR */
 
-In the discussion there are some comments to address, please make sure
-to address all of them, or explain why not, and give as much context
-as possible because follow discussions that happened 2 years ago.
-Sometimes it is difficult to follow.
+You are still missing the GICV and GICH regions that are
+provided by the CPU. I already pointed that out in [1].
 
-Best regards,
-  Enric
+The Cortex-A72 TRM will tell you where to find them (at
+an offset from PERIPHBASE).
 
-> --
-> Muhammad Usama Anjum
+Please fix this.
+
+         M.
+
+[1] 
+https://lore.kernel.org/all/a20805de16e1196c2ed46dd949473c9a@kernel.org
+-- 
+Jazz is not dead. It just smells funny...
