@@ -2,65 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BACB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83DFEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:49:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244035AbiDGJuQ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52680 "EHLO
+        id S244042AbiDGJu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:50:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244027AbiDGJuM (ORCPT
+        with ESMTP id S235031AbiDGJuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:50:12 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190D1205BC6
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:48:10 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1ncOk7-0007qa-3m; Thu, 07 Apr 2022 11:47:55 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1ncOk7-001aNQ-Ph; Thu, 07 Apr 2022 11:47:54 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1ncOk5-0004HR-NQ; Thu, 07 Apr 2022 11:47:53 +0200
-Message-ID: <e60722e4faf2b1a949431fad107eed08fdc695d9.camel@pengutronix.de>
-Subject: Re: [PATCH v2 04/10] dt-bindings: reset: add sama7g5 definitions
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>, robh+dt@kernel.org,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        linux@armlinux.org.uk, sre@kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org
-Date:   Thu, 07 Apr 2022 11:47:53 +0200
-In-Reply-To: <20220407071708.3848812-5-claudiu.beznea@microchip.com>
-References: <20220407071708.3848812-1-claudiu.beznea@microchip.com>
-         <20220407071708.3848812-5-claudiu.beznea@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        Thu, 7 Apr 2022 05:50:54 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 061DA42EFD
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:48:54 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2eafabbc80aso55043057b3.11
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 02:48:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RZbNz+SpGjPMORTCOnUHEEDjbgkpN3TzZ8t3nm7Vc+A=;
+        b=fJfbpG72F15dzw6yJPdCMqtaaVUiPKONl/VQIBClr4m5Z7qF+ov7M6ksi8z80qWLIp
+         aJFiZ9G7SpNwwB8tTNpeNZ9BnGK1uOpeJALMiNdQyn1NWSygi8d4SHj0ufg+WM0Z/eFI
+         lzIMu4YP+OKwBUAQ5GMiWreq61vF6Ti81I9H2UgblPQnSqCp8JgepZ0jV4BLuKS+74kS
+         sXWwX8cepfr0aPgqGvclG1m1o93On+ITCtZsMiZ6vO+toWKOrPqMcS3HONbihefKFvnS
+         +L/4wOvQZG6SyjQVsUBTlJNa1NfhwFpV55wN+Y5a6eYKRggLsmKH+nEWasaQt17tAVjy
+         666w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RZbNz+SpGjPMORTCOnUHEEDjbgkpN3TzZ8t3nm7Vc+A=;
+        b=woj8Wm/srfpBbuKSWSLCM4Sk8+bTUYqQsDTnBLqZ7Q9jXpuEF4leB4YAqc/QV0K3P1
+         XeT54bUZg6Tz+BukZqqVDs6ZIj0sZPKjKErQpWxfzYXpP4lzJoCFRPPAW2+xyuIEFeHZ
+         L5Vz3s2Qiomn0uop8FbuykThcgakPGnZfIaqVrRDvBER9hnSDpn5NyganpyrS5R9QI4Q
+         eeaT0pbJb7+XXBHr8YP90OBlZYBqJOvOo8quLgpPjP/I3kPG4Y28/YZ1LjDWJQ2VcH85
+         A7UMnV0Th4OPOXZhFQH7SWq93hQlMJBHqbbB56wtG8RpUTIHPZ78S0ZYVJ0lnIXulpMz
+         wC5w==
+X-Gm-Message-State: AOAM530knFNFNFri5Tn7JyfC0XQjq/mUVXTaTdwDcN0g4NaoqmOHd+wp
+        QaIgpkt9WRAUT9hk/aYvFoaesc4z08KII9PGdaderg==
+X-Google-Smtp-Source: ABdhPJwRwYaeYGw4ImLQSlQVlGj4Lgux/eZhTZEthnfJccgUmtDEEr4gywZL4rNhwbkSNiGlHyomepDkDH8pGxwLaj8=
+X-Received: by 2002:a0d:c306:0:b0:2e5:96ab:592e with SMTP id
+ f6-20020a0dc306000000b002e596ab592emr10782019ywd.316.1649324933050; Thu, 07
+ Apr 2022 02:48:53 -0700 (PDT)
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+References: <20220406131558.3558585-1-elver@google.com> <4b592848-ef06-ea8a-180a-3efc22b1bb0e@suse.cz>
+In-Reply-To: <4b592848-ef06-ea8a-180a-3efc22b1bb0e@suse.cz>
+From:   Marco Elver <elver@google.com>
+Date:   Thu, 7 Apr 2022 11:48:16 +0200
+Message-ID: <CANpmjNP-XtRB3zTOymH_PCKbDMHoJVYx6UQd_xoM-s33bXJk2w@mail.gmail.com>
+Subject: Re: [PATCH] mm, kfence: support kmem_dump_obj() for KFENCE objects
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, kernel test robot <oliver.sang@intel.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Do, 2022-04-07 at 10:17 +0300, Claudiu Beznea wrote:
-> Add reset bindings for SAMA7G5. At the moment only USB PHYs are
-> included.
-> 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+On Thu, 7 Apr 2022 at 11:43, Vlastimil Babka <vbabka@suse.cz> wrote:
+>
+> On 4/6/22 15:15, Marco Elver wrote:
+> > Calling kmem_obj_info() via kmem_dump_obj() on KFENCE objects has been
+> > producing garbage data due to the object not actually being maintained
+> > by SLAB or SLUB.
+> >
+> > Fix this by implementing __kfence_obj_info() that copies relevant
+> > information to struct kmem_obj_info when the object was allocated by
+> > KFENCE; this is called by a common kmem_obj_info(), which also calls the
+> > slab/slub/slob specific variant now called __kmem_obj_info().
+> >
+> > For completeness, kmem_dump_obj() now displays if the object was
+> > allocated by KFENCE.
+> >
+> > Link: https://lore.kernel.org/all/20220323090520.GG16885@xsang-OptiPlex-9020/
+> > Fixes: b89fb5ef0ce6 ("mm, kfence: insert KFENCE hooks for SLUB")
+> > Fixes: d3fb45f370d9 ("mm, kfence: insert KFENCE hooks for SLAB")
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > Signed-off-by: Marco Elver <elver@google.com>
+> > Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+>
+> Thanks.
+> Given the impact on slab, and my series exposing the bug, I will add this to
+> slab tree.
 
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
+It's already in Andrew's tree:
+https://lore.kernel.org/all/20220406192351.2E115C385A5@smtp.kernel.org/T/#u
 
-to be merged with this series.
+Does your series and this patch merge cleanly? If so, maybe leaving in
+-mm is fine. Of course I don't mind either way and it's up to you and
+Andrew.
 
-regards
-Philipp
+Thanks,
+-- Marco
