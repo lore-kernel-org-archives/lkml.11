@@ -2,127 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56065C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:56:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244052AbiDGJ6r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:58:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59156 "EHLO
+        id S244059AbiDGJ7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244051AbiDGJ6o (ORCPT
+        with ESMTP id S229751AbiDGJ7n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:58:44 -0400
+        Thu, 7 Apr 2022 05:59:43 -0400
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6E6FEF;
-        Thu,  7 Apr 2022 02:56:23 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 8F167212B7;
-        Thu,  7 Apr 2022 09:56:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649325381; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IlRD7m/alIJncAcf5ZsFIg2sRj4ry7LBP76Q3+m8Fv0=;
-        b=UKcH9KkS3V5pJFKjQTrgHntE36GmrRlMKttleodgavjTOO4sIry5rjlFnvmWUk+RlhxYpD
-        UULtSZJpg0Ou1egwUxOTGJfzoz2l0kn9b21jZF6g7Ixb97QLzQkRiSBe3koCPaQLd63jYl
-        kZKL4+gZ1GU9ZkRrER5szKvrJZF+QoM=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C5164E1
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:57:44 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id BAFEFA3B83;
-        Thu,  7 Apr 2022 09:56:19 +0000 (UTC)
-Date:   Thu, 7 Apr 2022 11:56:19 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Wei Liu <wei.liu@kernel.org>,
-        Xiaoming Ni <nixiaoming@huawei.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Helge Deller <deller@gmx.de>, Marco Elver <elver@google.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Shawn Guo <shawn.guo@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Phil Auld <pauld@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Wang Qing <wangqing@vivo.com>, rcu@vger.kernel.org
-Subject: Re: [PATCH printk v2 09/12] printk: add functions to prefer direct
- printing
-Message-ID: <Yk61Q+w7tWTjh8xl@alley>
-References: <20220405132535.649171-1-john.ogness@linutronix.de>
- <20220405132535.649171-10-john.ogness@linutronix.de>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id C32D121118;
+        Thu,  7 Apr 2022 09:57:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649325462; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5nI9oyUvHFM5eGetZ+O4IuNGMmysnPBQecOrPZDio/k=;
+        b=CNJ7geQJSlcG/RhHpa1tjottVeZqYpQT0Mw42RTwmO1M5FPxDSdiO8SnH+xXhB1p8Q0BdK
+        aovdAVkYlUvQ/Uze/MDUfWR2fJAGM+2oBLs/Mm9axNiNGztzwLkho45nhuFRcuiWvbvDRb
+        bdnMPSjLgagVrzhmy9e8Za9gxf4pgA4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649325462;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5nI9oyUvHFM5eGetZ+O4IuNGMmysnPBQecOrPZDio/k=;
+        b=/V2x1NPw0ZVL6unKqEvrg10FqFRoxtfHvMrNkYMYnJc9ovOs4ozktsQub9dj0WecH/QxMI
+        eElJvePzfLtUNGBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8EB3513485;
+        Thu,  7 Apr 2022 09:57:42 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 0741Ipa1TmLtOwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 07 Apr 2022 09:57:42 +0000
+Message-ID: <d179e539-1da6-c489-b2b4-ad97367bd73a@suse.cz>
+Date:   Thu, 7 Apr 2022 11:57:42 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405132535.649171-10-john.ogness@linutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] mm, kfence: support kmem_dump_obj() for KFENCE objects
+Content-Language: en-US
+To:     Marco Elver <elver@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, kernel test robot <oliver.sang@intel.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>
+References: <20220406131558.3558585-1-elver@google.com>
+ <4b592848-ef06-ea8a-180a-3efc22b1bb0e@suse.cz>
+ <CANpmjNP-XtRB3zTOymH_PCKbDMHoJVYx6UQd_xoM-s33bXJk2w@mail.gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <CANpmjNP-XtRB3zTOymH_PCKbDMHoJVYx6UQd_xoM-s33bXJk2w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-04-05 15:31:32, John Ogness wrote:
-> Once kthread printing is available, console printing will no longer
-> occur in the context of the printk caller. However, there are some
-> special contexts where it is desirable for the printk caller to
-> directly print out kernel messages. Using pr_flush() to wait for
-> threaded printers is only possible if the caller is in a sleepable
-> context and the kthreads are active. That is not always the case.
+On 4/7/22 11:48, Marco Elver wrote:
+> On Thu, 7 Apr 2022 at 11:43, Vlastimil Babka <vbabka@suse.cz> wrote:
+>>
+>> On 4/6/22 15:15, Marco Elver wrote:
+>> > Calling kmem_obj_info() via kmem_dump_obj() on KFENCE objects has been
+>> > producing garbage data due to the object not actually being maintained
+>> > by SLAB or SLUB.
+>> >
+>> > Fix this by implementing __kfence_obj_info() that copies relevant
+>> > information to struct kmem_obj_info when the object was allocated by
+>> > KFENCE; this is called by a common kmem_obj_info(), which also calls the
+>> > slab/slub/slob specific variant now called __kmem_obj_info().
+>> >
+>> > For completeness, kmem_dump_obj() now displays if the object was
+>> > allocated by KFENCE.
+>> >
+>> > Link: https://lore.kernel.org/all/20220323090520.GG16885@xsang-OptiPlex-9020/
+>> > Fixes: b89fb5ef0ce6 ("mm, kfence: insert KFENCE hooks for SLUB")
+>> > Fixes: d3fb45f370d9 ("mm, kfence: insert KFENCE hooks for SLAB")
+>> > Reported-by: kernel test robot <oliver.sang@intel.com>
+>> > Signed-off-by: Marco Elver <elver@google.com>
+>> > Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+>>
+>> Thanks.
+>> Given the impact on slab, and my series exposing the bug, I will add this to
+>> slab tree.
 > 
-> Introduce printk_prefer_direct_enter() and printk_prefer_direct_exit()
-> functions to explicitly (and globally) activate/deactivate preferred
-> direct console printing. The term "direct console printing" refers to
-> printing to all enabled consoles from the context of the printk
-> caller. The term "prefer" is used because this type of printing is
-> only best effort. If the console is currently locked or other
-> printers are already actively printing, the printk caller will need
-> to rely on the other contexts to handle the printing.
-> 
-> This preferred direct printing is how all printing is currently
-> handled (unless explicitly deferred).
-> 
-> When kthread printing is introduced, there may be some unanticipated
-> problems due to kthreads being unable to flush important messages.
-> In order to minimize such risks, preferred direct printing is
-> activated for the primary important messages when the system
-> experiences general types of major errors. These are:
-> 
->  - emergency reboot/shutdown
->  - cpu and rcu stalls
->  - hard and soft lockups
->  - hung tasks
->  - warn
->  - sysrq
-> 
-> Note that since kthread printing does not yet exist, no behavior
-> changes result from this commit. This is only implementing the
-> counter and marking the various places where preferred direct
-> printing is active.
-> 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> It's already in Andrew's tree:
+> https://lore.kernel.org/all/20220406192351.2E115C385A5@smtp.kernel.org/T/#u
 
-Looks good to me. Let's see how it works in practice.
-It is possible that we will need to add it on more
-locations. But it is also possible that we will be
-able to remove it somewhere.
+Ah, missed that.
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+> Does your series and this patch merge cleanly?
 
-Best Regards,
-Petr
+Yeah the dependency is not on the code level.
+
+> If so, maybe leaving in
+> -mm is fine. Of course I don't mind either way and it's up to you and
+> Andrew.
+
+Yeah should be fine as linux-next will be safe with both trees merged. Thanks.
+
+> Thanks,
+> -- Marco
+
