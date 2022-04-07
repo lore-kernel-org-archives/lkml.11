@@ -2,152 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74742C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10562C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345953AbiDGRKW (ORCPT
+        id S1345960AbiDGRLW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46614 "EHLO
+        Thu, 7 Apr 2022 13:11:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239064AbiDGRKT (ORCPT
+        with ESMTP id S229974AbiDGRLU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:10:19 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE1A82CE03
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:08:18 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id z8so6294247oix.3
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 10:08:18 -0700 (PDT)
+        Thu, 7 Apr 2022 13:11:20 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2241CABED
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:09:19 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id kw18so6150011pjb.5
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 10:09:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JqDkTinK10x3zeolGbydLx/yEZJP4ImSGKmYcvP6lVQ=;
-        b=Cy0VXhmnAEqP0lRJ0KQuwUy715TtVttVKnb19XsHu+WELC6cFz4o3We4LkuxtsJYIR
-         Di3N1+8prGyIRhYxREa/bbeMsylUltqSC4+WRA7TqQv1qm8UCzeUwGYDYmw8YKHJEf9Z
-         04x1BYmO7f/FAI3j/O9jTgK0tyiQxdbUurLzX3Ymyxm03m1bvBllSiZgGdEfD0Ryrsyp
-         MJHwx0eF5rHTH+brtzbUTyGdYEzq6lvEIZFtsiFGfXDAxewiOFiWrlfPMkot2B56Cw90
-         VaHAdRR1AQW3Qw4Ny+MBKI+761GiyxeWIsLhSVsmJLnE+7ZA6n4Q1XYWaV6p6NxlA8jp
-         e2kw==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+Cg1pUySQC4X4kBYk+LJTlgqyGdH2p2daDW19hb2yNA=;
+        b=WOsUq3SlF033ixeQW0PYz1silnSsmCb4wzQqxZHnZOCDj2RxPdRr+wEWvW2TRnvdYc
+         +Tdf0RWYgStx77KCZOTyjia4y2D4SrbYXy0H5/rS1hfnTudlxD9WP+yMWGRnMAHhQz5H
+         k+COor9aKkFhtNrr2zuCpGP/vejeRd0y4NuHJoz/ApsEwjmr5vY7gN62t/UtRBemCI/d
+         RvVvuydMRJc6XoRkrBCTizHXSLDqv4Cg1lo5iJy+Z8vjRVZo/pPl/Wlx9kMiDGww9QL5
+         +vbbank+1QmSmmTm2E6+j9UvoCJ0DN7/EYC0L3xEDS/BceQwTcUlN6PH9vKhYxvZgwA7
+         gJfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JqDkTinK10x3zeolGbydLx/yEZJP4ImSGKmYcvP6lVQ=;
-        b=bXfcXmAHz9oGEhBa1keApm9gofymwqsTg+QLEfq7lzdrPhHmdqcUkMvObRU5IfAX+x
-         e+H7ZI+cnzSnmXVqZsuOpJaKKhF1XnsDO7kUHHAa0CeWUMCS2YFWZnHzr7oQKknmORma
-         LRGcmm34HUWDbPKZwxWcbC8zkyOl1jn/cBDKoltu1Bh1+o1bL64uIxJwwzuE+bVU1cHQ
-         6rHWdvrIoWyppZCIorjfY3SyMPgEXzdDYI0Rq+4J7C25vZ3VTgMsJ4mVs2tSdtkOioop
-         +iKACDqFWtqUTKF0y7tZuinasqX1ESvAPAgRYun2ppNqOh+DTH8vNaL7uqnV4EYzWEKd
-         1qlQ==
-X-Gm-Message-State: AOAM533C47rnP/HZNiVbT2e5dyPGk24YQU9zu/h5cwA4F6CkaDHV4hOL
-        67HZKHYRYyO4kxauOYSlqDDUoGH9abmN8USIYEZIsDM/FNw=
-X-Google-Smtp-Source: ABdhPJxylZ9P0pQvwI6USl2YGwdfB/0/fgO3ea3ZdU5f2ipIyl5F1+aUvZ2K86YyCnVCnX962vuWjCpdcgbpRakh+Vw=
-X-Received: by 2002:aca:6006:0:b0:2f9:c685:f4e2 with SMTP id
- u6-20020aca6006000000b002f9c685f4e2mr446739oib.200.1649351298327; Thu, 07 Apr
- 2022 10:08:18 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+Cg1pUySQC4X4kBYk+LJTlgqyGdH2p2daDW19hb2yNA=;
+        b=y3kGDZgdFmE2zd4gLgrVzIfGYfI/3cub72oY+D+PhDzHy/+xmEhNb/wJRiQqj9p52b
+         1T42dsqVb445rrR+wKw24Bd/PPhgx3UVwXj1LRIvrnwnivUBoefKFdAELZvJLe9ygdDC
+         xao2tXQCpOvjf4gg1uNZy1D5Kb7A5oYVVmBqPJE9dlwUlMEM9mcBYAs5Jl00lkx6S4d1
+         kDBCo3ld6ll6/mR0xDX7Olkd0LyURMQJ06fNrO4wZGCNS+jN8EUsN8F33jmOzjFoYM17
+         sk5ngcfV2e+nQxPGuxjr1rOL0Z198GaAU+yY0VzcGa3klZzFX5uDA9XqQILL+3TUSeqD
+         kqeQ==
+X-Gm-Message-State: AOAM533lfZewp/wp7vbxnQ0f51Mg1zq6VYZd33sMVRoF7JLkck5mRohM
+        UkFgSWuGqBNpN5uP43h2KgAAKg==
+X-Google-Smtp-Source: ABdhPJzFbbZRjQ4KAGqhfkp0QX1gl/REeFotcLI2QoTCFdL4TuVkM/xDjQzjLLGesBR91Cxx39cPVg==
+X-Received: by 2002:a17:90b:124c:b0:1bc:369b:7db5 with SMTP id gx12-20020a17090b124c00b001bc369b7db5mr16823881pjb.179.1649351358878;
+        Thu, 07 Apr 2022 10:09:18 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:3a11:864:6d11:d714])
+        by smtp.gmail.com with ESMTPSA id z5-20020a056a00240500b004e15d39f15fsm23672403pfh.83.2022.04.07.10.09.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 10:09:17 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 10:09:10 -0700
+From:   Benson Leung <bleung@google.com>
+To:     Akihiko Odaki <akihiko.odaki@gmail.com>
+Cc:     Guenter Roeck <groeck@google.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        chrome-platform@lists.linux.dev,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
+Subject: Re: [PATCH] platform/chrome: cros_ec_typec: Check for EC driver
+Message-ID: <Yk8atphiUdlU0gPO@google.com>
+References: <20220404041101.6276-1-akihiko.odaki@gmail.com>
+ <Yk4DGZfpYbK8dofL@chromium.org>
+ <CABXOdTcY3w56hc7kWsDLxKU-c6fCLYt_jigK13tKjjm9OHi2+w@mail.gmail.com>
+ <033c1ec4-4bee-a689-140c-9694dfee435b@gmail.com>
+ <CABXOdTet5ynSXf94qMimobJF4LLzHc89cVbwJ5NuAz8G6jmVdQ@mail.gmail.com>
+ <0fdba110-8743-3b2d-cb30-3a89b7cfa592@gmail.com>
 MIME-Version: 1.0
-References: <20220407121230.132627-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20220407121230.132627-1-kai.heng.feng@canonical.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Thu, 7 Apr 2022 13:08:07 -0400
-Message-ID: <CADnq5_Oq4nS1A8MxosTn=0EztBCDeURmGq9WBW9886E9y-sO7Q@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdgpu: Ensure HDA function is suspended before ASIC reset
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     "Deucher, Alexander" <alexander.deucher@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Solomon Chiu <solomon.chiu@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Evan Quan <evan.quan@amd.com>,
-        Luben Tuikov <luben.tuikov@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="viQeAp1xsC0BfER1"
+Content-Disposition: inline
+In-Reply-To: <0fdba110-8743-3b2d-cb30-3a89b7cfa592@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 8:21 AM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
->
-> DP/HDMI audio on AMD PRO VII stops working after S3:
-> [  149.450391] amdgpu 0000:63:00.0: amdgpu: MODE1 reset
-> [  149.450395] amdgpu 0000:63:00.0: amdgpu: GPU mode1 reset
-> [  149.450494] amdgpu 0000:63:00.0: amdgpu: GPU psp mode1 reset
-> [  149.983693] snd_hda_intel 0000:63:00.1: refused to change power state from D0 to D3hot
-> [  150.003439] amdgpu 0000:63:00.0: refused to change power state from D0 to D3hot
-> ...
-> [  155.432975] snd_hda_intel 0000:63:00.1: CORB reset timeout#2, CORBRP = 65535
 
-As an aside, shouldn't device links order this properly already?  I
-thought that was the whole point of them.  We have quirks in PCI
-quirks.c to create device links for all GPU integrated peripherals
-(audio, usb, ucsi).
+--viQeAp1xsC0BfER1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Alex
+Hi Akihiko,
 
->
-> The offending commit is daf8de0874ab5b ("drm/amdgpu: always reset the asic in
-> suspend (v2)"). Commit 34452ac3038a7 ("drm/amdgpu: don't use BACO for
-> reset in S3 ") doesn't help, so the issue is something different.
->
-> Assuming that to make HDA resume to D0 fully realized, it needs to be
-> successfully put to D3 first. And this guesswork proves working, by
-> moving amdgpu_asic_reset() to noirq callback, so it's called after HDA
-> function is in D3.
->
-> Fixes: daf8de0874ab5b ("drm/amdgpu: always reset the asic in suspend (v2)")
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->  drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 18 ++++++++++++------
->  1 file changed, 12 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> index bb1c025d90019..31f7229e7ea89 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> @@ -2323,18 +2323,23 @@ static int amdgpu_pmops_suspend(struct device *dev)
->  {
->         struct drm_device *drm_dev = dev_get_drvdata(dev);
->         struct amdgpu_device *adev = drm_to_adev(drm_dev);
-> -       int r;
->
->         if (amdgpu_acpi_is_s0ix_active(adev))
->                 adev->in_s0ix = true;
->         else
->                 adev->in_s3 = true;
-> -       r = amdgpu_device_suspend(drm_dev, true);
-> -       if (r)
-> -               return r;
-> +       return amdgpu_device_suspend(drm_dev, true);
-> +}
-> +
-> +static int amdgpu_pmops_suspend_noirq(struct device *dev)
-> +{
-> +       struct drm_device *drm_dev = dev_get_drvdata(dev);
-> +       struct amdgpu_device *adev = drm_to_adev(drm_dev);
-> +
->         if (!adev->in_s0ix)
-> -               r = amdgpu_asic_reset(adev);
-> -       return r;
-> +               return amdgpu_asic_reset(adev);
-> +
-> +       return 0;
->  }
->
->  static int amdgpu_pmops_resume(struct device *dev)
-> @@ -2575,6 +2580,7 @@ static const struct dev_pm_ops amdgpu_pm_ops = {
->         .prepare = amdgpu_pmops_prepare,
->         .complete = amdgpu_pmops_complete,
->         .suspend = amdgpu_pmops_suspend,
-> +       .suspend_noirq = amdgpu_pmops_suspend_noirq,
->         .resume = amdgpu_pmops_resume,
->         .freeze = amdgpu_pmops_freeze,
->         .thaw = amdgpu_pmops_thaw,
-> --
-> 2.34.1
->
+On Fri, Apr 08, 2022 at 02:03:52AM +0900, Akihiko Odaki wrote:
+> If I read the code correctly, the registration itself happens synchronous=
+ly
+> and platform_device_register_data() always returns a non-NULL value unless
+> it returns -ENOMEM. The driver, however, can be asynchronously bound and
+> dev_get_drvdata(&typec->ec->ec->dev) can return NULL as the consequence. =
+It
+> would have a call trace like the following when scheduling asynchronous
+> driver binding:
+> platform_device_register_data()
+> platform_device_register_resndata()
+> platform_device_register_full()
+> -  This always creates and returns platform_device.
+> platform_device_add()
+> - This adds the created platform_device.
+> device_add()
+> bus_probe_device()
+> device_initial_probe()
+> __device_attach()
+> - This schedules asynchronous probing.
+>=20
+> typec->ec->ec should be pointing to the correct platform_device as the
+> patched driver works without Oops on my computer. It is not NULL at least.
+
+Can you provide more information about your test computer in this case?
+
+Is it a Chromebook running stock firmware (if so, please let us know which
+model, and which firmware version it is running).
+In the past, we've also gotten some reports from people running MrChromebox
+custom firmware on older Chromebooks which have exposed other bugs in
+this driver.
+
+Let us know if that's the case here, and where we can get that firmware.
+
+Thanks,
+Benson
+
+--=20
+Benson Leung
+Staff Software Engineer
+Chrome OS Kernel
+Google Inc.
+bleung@google.com
+Chromium OS Project
+bleung@chromium.org
+
+--viQeAp1xsC0BfER1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQQCtZK6p/AktxXfkOlzbaomhzOwwgUCYk8atgAKCRBzbaomhzOw
+wmvhAQC0z35R8BEqy4d5pAQ7va0d1etqr1514DiP+ue65mnFZQEAvqbl4NnrC8Hb
+OmwQDepne2orty0TN9Oc7qQwZyc2vQY=
+=Rr0T
+-----END PGP SIGNATURE-----
+
+--viQeAp1xsC0BfER1--
