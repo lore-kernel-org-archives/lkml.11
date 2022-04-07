@@ -2,97 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45168C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:09:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241257AbiDGLL0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 07:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
+        id S244657AbiDGLMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 07:12:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233754AbiDGLLV (ORCPT
+        with ESMTP id S244680AbiDGLMB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 07:11:21 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56F1183BD;
-        Thu,  7 Apr 2022 04:09:21 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 5DCE721117;
-        Thu,  7 Apr 2022 11:09:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649329760;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=98548563aIgFxuTbEGhuFrrjF0oRxSf7O8rE+4waoDU=;
-        b=g4l9K/uvaXiqTrh3Weo9re3njIkaiqWsHhVzlu2BUyNo8+Kh97Oe45WKq1IDepkLQ+TCXq
-        DWZCwJ6llV/96zFlTJlkAQsQx4ls9hq9WD2RvRBSCuqRBeaTM2glq5AusAaLjUIyrHa8sw
-        Gci42F79V2a/ZAc58R5BDeZFhJPA1GM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649329760;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=98548563aIgFxuTbEGhuFrrjF0oRxSf7O8rE+4waoDU=;
-        b=LI5tM34lmFPs2XvK0D3ZAkCwGn99zxxeFnUMWJtRtT3TH/8rccyWZ9R4XYqXWwEnLrQoGV
-        +Yxxp19aOb7tPGDQ==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 47FA2A3B88;
-        Thu,  7 Apr 2022 11:09:20 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 314E5DA80E; Thu,  7 Apr 2022 13:05:18 +0200 (CEST)
-Date:   Thu, 7 Apr 2022 13:05:18 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Chris Mason <clm@fb.com>, David Sterba <dsterba@suse.com>,
-        Will Deacon <will@kernel.org>, linux-fsdevel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/3] btrfs: Avoid live-lock in search_ioctl() on
- hardware with sub-page faults
-Message-ID: <20220407110518.GE15609@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>, Chris Mason <clm@fb.com>,
-        David Sterba <dsterba@suse.com>, Will Deacon <will@kernel.org>,
-        linux-fsdevel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220406180922.1522433-1-catalin.marinas@arm.com>
- <20220406180922.1522433-4-catalin.marinas@arm.com>
+        Thu, 7 Apr 2022 07:12:01 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C390D64E8;
+        Thu,  7 Apr 2022 04:09:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649329793; x=1680865793;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=EQGzKLPkMKM4S+AjnO1qx/YQtzyW0JHeQb2G2zJJxgA=;
+  b=DAUufCwV31fU6M1MrDQHZzhX3+UYl+kKkdv+2OPhTRycEJydlRA9wN7o
+   ziarUu7ao2t06Pyf5+HEzNZKnPzygeqlw7wBKmQxnGTL7LCramO1wVHu5
+   uWUlffYwTkH8LZn5krzQJCehKL0oKsR5agDWwdpWDQ3e+pKBUk2U8K8ji
+   cedfnFS/4EvbWWln4fcqsvAf9oKNJySgjN3lBKA2JI4gqzEJD1DJRYM3P
+   k7pRae0XHnqjCPxKpUMqwoOrcjr5cZOyAeGTUpVnQffMIpS2WtxIZYOF6
+   3bk8SKa4qfk1gWnC5w8PEs0hCdUfNHs7LoXsWrQMiVq81bGdx1MULnzQz
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="324455542"
+X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
+   d="scan'208";a="324455542"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 04:09:40 -0700
+X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
+   d="scan'208";a="722919033"
+Received: from xiaoyaol-hp-g830.ccr.corp.intel.com (HELO [10.255.28.125]) ([10.255.28.125])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 04:09:38 -0700
+Message-ID: <48ab3a81-a353-e6ee-7718-69c260c9ea17@intel.com>
+Date:   Thu, 7 Apr 2022 19:09:36 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406180922.1522433-4-catalin.marinas@arm.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 101/104] KVM: TDX: Silently ignore INIT/SIPI
+Content-Language: en-US
+To:     Paolo Bonzini <pbonzini@redhat.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <d0eb8fa53e782a244397168df856f9f904e4d1cd.1646422845.git.isaku.yamahata@intel.com>
+ <efbe06a7-3624-2a5a-c1c4-be86f63951e3@redhat.com>
+From:   Xiaoyao Li <xiaoyao.li@intel.com>
+In-Reply-To: <efbe06a7-3624-2a5a-c1c4-be86f63951e3@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 07:09:22PM +0100, Catalin Marinas wrote:
-> Commit a48b73eca4ce ("btrfs: fix potential deadlock in the search
-> ioctl") addressed a lockdep warning by pre-faulting the user pages and
-> attempting the copy_to_user_nofault() in an infinite loop. On
-> architectures like arm64 with MTE, an access may fault within a page at
-> a location different from what fault_in_writeable() probed. Since the
-> sk_offset is rewound to the previous struct btrfs_ioctl_search_header
-> boundary, there is no guaranteed forward progress and search_ioctl() may
-> live-lock.
+On 4/5/2022 11:48 PM, Paolo Bonzini wrote:
+> On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
+>> +        if (kvm_init_sipi_unsupported(vcpu->kvm))
+>> +            /*
+>> +             * TDX doesn't support INIT.  Ignore INIT event.  In the
+>> +             * case of SIPI, the callback of
+>> +             * vcpu_deliver_sipi_vector ignores it.
+>> +             */
+>>               vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
+>> -        else
+>> -            vcpu->arch.mp_state = KVM_MP_STATE_INIT_RECEIVED;
+>> +        else {
+>> +            kvm_vcpu_reset(vcpu, true);
+>> +            if (kvm_vcpu_is_bsp(apic->vcpu))
+>> +                vcpu->arch.mp_state = KVM_MP_STATE_RUNNABLE;
+>> +            else
+>> +                vcpu->arch.mp_state = KVM_MP_STATE_INIT_RECEIVED;
+>> +        }
 > 
-> Use fault_in_subpage_writeable() instead of fault_in_writeable() to
-> ensure the permission is checked at the right granularity (smaller than
-> PAGE_SIZE).
-> 
-> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> Fixes: a48b73eca4ce ("btrfs: fix potential deadlock in the search ioctl")
-> Reported-by: Al Viro <viro@zeniv.linux.org.uk>
+> Should you check vcpu->arch.guest_state_protected instead of 
+> special-casing TDX? 
 
-Acked-by: David Sterba <dsterba@suse.com>
+We cannot use vcpu->arch.guest_state_protected because TDX supports 
+debug TD, of which the states are not protected.
+
+At least we need another flag, I think.
+
+> KVM_APIC_INIT is not valid for SEV-ES either, if I 
+> remember correctly.
+> 
+> Paolo
+
