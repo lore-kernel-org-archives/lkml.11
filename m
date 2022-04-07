@@ -2,110 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFB4C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:33:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC86C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345016AbiDGPfQ (ORCPT
+        id S1344876AbiDGPgh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51234 "EHLO
+        Thu, 7 Apr 2022 11:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345280AbiDGPe7 (ORCPT
+        with ESMTP id S234048AbiDGPgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:34:59 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BC31275F
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:32:47 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id a6so11759767ejk.0
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 08:32:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DFgO9JddDHmoRuVn2ZPzU+MXFPn5DQlDECjTYk/+IjM=;
-        b=etnNwUNrZy+kn1KBn4YIpJwNbeshptJH4Fm6WZ+D4OqvvMVOUq0rLC0veEqzlPjQmB
-         6jcYLMPVZ5rrNmVHisvWszE0xv0oteiK+4lHaPAuOktcV35kdr08ILA52HkCCCAFyEm3
-         BGRrvucNz7UduF8B3mSY97tls+29nup8xDi3h+0XvvxUdncbBpUm65jRbM/KrU6En3q6
-         qvkiGNHmtiNYbsH4Nkr8aI8UsKvI8DX46Xr0odQBjHxtz3893zyk9V6V+rWUzvBonVav
-         AobD41RDLEWiY5+K0G49Q5CvjzqK7MV6ZFR75Rp+WMN2gQhiNBHIQag/sqzZsenvJ/p8
-         Mcqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DFgO9JddDHmoRuVn2ZPzU+MXFPn5DQlDECjTYk/+IjM=;
-        b=Gy2pkUIDIrfRqIvK93f1bWtpn0K5I0Oa1Ah9fucDXfHjog0VqNO+LyUDfycS2rPyiA
-         VydSfhCBAWFBR3I/jJu/DiOwGIyZZYj73Tqb73JLD/F+73eAC+ndmFHeJ0p+esFhaGRZ
-         n6n6fnboR2eLYJbe+AkPPL/sFUIp0tDcyAqYqKFtXM6UbjVo0hQkKc0jHY2tl6N+SHbT
-         RIlPp/7x+xXgJy2y9HOVCVTNXuZv+2dRatL13T4dGr+QXAw9eRLBqMQCcX+84x4VlfT3
-         xtn9tAZPRk4O8TUj1lkPHbZ+Mw+64Z4it1XOXgHp/wrq8TkqM9Dnfvo3t1XQQysyZ5Wb
-         Eybg==
-X-Gm-Message-State: AOAM533qWK8NiDOsXJqpbh3HeDHzf0pOrhAz4L/VXMwT4/TA+e9ASxk6
-        HNfsZcDqp20Ow598/2OuGD3sDQ==
-X-Google-Smtp-Source: ABdhPJyCd/4Er+epPFAKRZT1fWjWQhW/F7nuejDSiXLEHH7ibZ0yXXXeFBsJf3FdnumCHcknC+egKw==
-X-Received: by 2002:a17:906:bb01:b0:6a7:df9:d67c with SMTP id jz1-20020a170906bb0100b006a70df9d67cmr13784767ejb.733.1649345565891;
-        Thu, 07 Apr 2022 08:32:45 -0700 (PDT)
-Received: from [192.168.0.187] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id f3-20020a056402004300b004162aa024c0sm9283672edu.76.2022.04.07.08.32.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 08:32:45 -0700 (PDT)
-Message-ID: <4c9161b2-0146-56c0-5c86-7df31f43b0ac@linaro.org>
-Date:   Thu, 7 Apr 2022 17:32:44 +0200
+        Thu, 7 Apr 2022 11:36:31 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F781011;
+        Thu,  7 Apr 2022 08:34:20 -0700 (PDT)
+Date:   Thu, 07 Apr 2022 15:34:14 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649345656;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=d4NuBDNGqUwoS57MQGXuWKDq8DHCGD33bEpIIZe/pWM=;
+        b=dUUYxi3+LvHqHZtheNlklbBm7HfPX9GQLhn3IxzNdA0n0mkzUtVJHO86xzGzCX+bwXXYyq
+        ivU5RWtB1qP1PS1C/cEUryIbyrQatX2mQ1xQBogZjbxH92LUZdNi0yiByKi3Oim1mdK0NX
+        mOHioAk2KD4uIk5uToR4QbJMDaggHpYD8tjq9ljrz1t61yc9Pa5epXQO+rJGzOmbz1eB3f
+        7z1abh3A3iuIE6Xt5DweJfC0el/Ggi0AJ4ecMrjf7O1L5+uSD4IeYFkyGyPQRAp5ri+Ycw
+        gW5MTmMIwB1l0KiqPAHYe4U9j2QmNS+J8v0Av/HIXRWpwHZ12Sa5+u3Aq8om9Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649345656;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=d4NuBDNGqUwoS57MQGXuWKDq8DHCGD33bEpIIZe/pWM=;
+        b=EUjxVEqduqlfaMoOXW+3VWo90j3W4+Q1+pXDXKFsn78CwSbnZdnt9H5GRyu+Z3fJbhLS/Y
+        tnrTKJfylHQdGRCA==
+From:   "tip-bot2 for Nick Desaulniers" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/build] x86/build: Don't build CONFIG_X86_32 as -ffreestanding
+Cc:     Arvind Sankar <nivedita@alum.mit.edu>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Borislav Petkov <bp@suse.de>,
+        Fangrui Song <maskray@google.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20200817220212.338670-5-ndesaulniers@google.com>
+References: <20200817220212.338670-5-ndesaulniers@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [GIT PULL] ARM: samsung: Fixes for v5.18 (current cycle)
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@kernel.org>, arm@kernel.org,
-        Olof Johansson <olof@lixom.net>, soc@kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Alim Akhtar <alim.akhtar@samsung.com>
-References: <20220407080545.112290-1-krzysztof.kozlowski@linaro.org>
- <164933532417.2189563.2554142563906098629.b4-ty@arndb.de>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <164933532417.2189563.2554142563906098629.b4-ty@arndb.de>
-Content-Type: text/plain; charset=UTF-8
+Message-ID: <164934565464.389.2546833245037255032.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/04/2022 14:42, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> On Thu, 7 Apr 2022 10:05:45 +0200, Krzysztof Kozlowski wrote:
->> For the v5.18, please.
->>
->> Best regards,
->> Krzysztof
->>
->>
->> The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
->>
->> [...]
-> 
-> Merged into arm/fixes, thanks!
+The following commit has been merged into the x86/build branch of tip:
 
-Thanks!
+Commit-ID:     9b2687f29bc1a050ffd63b425129aa9db987e4f3
+Gitweb:        https://git.kernel.org/tip/9b2687f29bc1a050ffd63b425129aa9db987e4f3
+Author:        Nick Desaulniers <ndesaulniers@google.com>
+AuthorDate:    Thu, 03 Feb 2022 12:40:25 -08:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Thu, 07 Apr 2022 11:55:42 +02:00
 
-Let me just remind about possible conflict (but you were on CC):
+x86/build: Don't build CONFIG_X86_32 as -ffreestanding
 
--------
+-ffreestanding typically inhibits "libcall optimizations" where calls to
+certain library functions can be replaced by the compiler in certain
+cases to calls to other library functions that may be more efficient.
+This can be problematic for embedded targets that don't provide full
+libc implementations.
 
-Documentation/devicetree/bindings/memory-controllers/renesas,h8300-bsc.yaml
+-ffreestanding inhibits all such optimizations, which is the safe
+choice, but generally we want the optimizations that are performed. The
+Linux kernel does implement a fair amount of libc routines. Instead of
+-ffreestanding (which makes more sense in smaller images like kexec's
+purgatory image), prefer -fno-builtin-* flags to disable the compiler
+from emitting calls to functions which may not be defined.
 
-between commit:
+If you see a linkage failure due to a missing symbol that's typically
+defined in a libc, and not explicitly called from the source code, then
+the compiler may have done such a transform. You can either implement
+such a function (i.e. in lib/string.c) or disable the transform outright
+via -fno-builtin-* flag (where * is the name of the library routine,
+i.e. -fno-builtin-bcmp).
 
-  8a1e6bb3f78f ("dt-bindings: update Krzysztof Kozlowski's email")
+i386_defconfig build+boot tested with GCC and Clang. Removes a pretty
+old TODO from the code base.
 
-from the samsung-krzk-fixes tree and commit:
+[kees: These libcall optimizations are specifically needed to allow Clang
+to correctly optimize the string functions under CONFIG_FORTIFY_SOURCE.]
 
-  1c4b5ecb7ea1 ("remove the h8300 architecture")
--------
+Fixes: 6edfba1b33c7 ("[PATCH] x86_64: Don't define string functions to builtin")
+Suggested-by: Arvind Sankar <nivedita@alum.mit.edu>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Fangrui Song <maskray@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20200817220212.338670-5-ndesaulniers@google.com
+Link: https://lore.kernel.org/r/20220203204025.1153397-1-keescook@chromium.org
+---
+ arch/x86/Makefile | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/arch/x86/Makefile b/arch/x86/Makefile
+index 1abd7cc..670fe40 100644
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -100,9 +100,6 @@ ifeq ($(CONFIG_X86_32),y)
+         include $(srctree)/arch/x86/Makefile_32.cpu
+         KBUILD_CFLAGS += $(cflags-y)
+ 
+-        # temporary until string.h is fixed
+-        KBUILD_CFLAGS += -ffreestanding
+-
+ 	ifeq ($(CONFIG_STACKPROTECTOR),y)
+ 		ifeq ($(CONFIG_SMP),y)
+ 			KBUILD_CFLAGS += -mstack-protector-guard-reg=fs -mstack-protector-guard-symbol=__stack_chk_guard
