@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71451C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2352C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238240AbiDGBZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60562 "EHLO
+        id S238477AbiDGBZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239349AbiDGBTK (ORCPT
+        with ESMTP id S239488AbiDGBTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:19:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B864418595E;
-        Wed,  6 Apr 2022 18:14:25 -0700 (PDT)
+        Wed, 6 Apr 2022 21:19:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E35721A61D3;
+        Wed,  6 Apr 2022 18:14:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C18FB82695;
-        Thu,  7 Apr 2022 01:14:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F917C385A7;
-        Thu,  7 Apr 2022 01:14:21 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BD75FCE2519;
+        Thu,  7 Apr 2022 01:14:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54743C385A7;
+        Thu,  7 Apr 2022 01:14:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294063;
-        bh=xhmdDEoKotcUO/7eHbPi3dL9BFugG1l1EDjl/avpqzE=;
+        s=k20201202; t=1649294068;
+        bh=LcGhHA9jlqbOw9pbB3A7JnPHlNVbTjiFxhD9i8uv3B8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j/fh+sNw0/s2SViKELB2rYjEcO4EKgnNg0CwcUbf2G4jhSDtM0N0sSzClVCktAjp5
-         ZrB5aWMOKzBXspBGRG37ARueoaWv9auExoOyGKIOu9XvWEIzKkVMOGCvQ2j3htkRQu
-         r+r1Byfykfms+z8haKE7X2zGp/RqpZSjd668kCUTpoivQ0t9p0uCt4wJY/VCV2hiG2
-         dJjX8OexorZp8uDqAuytXwOWDZvUOBhHo/412SJY0s7+cRQdMmmP798uTXoYe4ckGo
-         PwyfuWrU/zG1rCo7y45oLUiW3DJoyeAiyHSQ8GUxBHiAhpPhkaPblHTUfFUUI9S1Md
-         GEoWhoma9DhbQ==
+        b=lEK6Dpis8Kwr/pICCYf+7/WY3Yoo+j87yfObtIeMfwQNU+kAdUOQvzkB5dHScPT6C
+         dqasIJ7IUU5DS0N6vTl58Imiq2IL+e38bdI9BYLOz5PD3My9zA69XtnVe7rODTbHvl
+         X2cJW0QzENpLW/r3h+tujWs3r2NCCGYSVIZxC5iAIYTflpaYsUhbMGSl9d2wHtDxH6
+         UJOWEOixr9dlPndjnzIi0P5V+ndKmAeurgTTvSZ3ObtAmKw0hk6KkJ8fI7lXWSYpZh
+         8nGiUCVAjl1uGjxDPxKYgvmJ1K+B4n35Z7WFif6lvDLrrYzK/Km8+u6+AVbjyL/hgy
+         HgIRSO35+PQBg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Gow <davidgow@google.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        viro@zeniv.linux.org.uk, linux-um@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 04/25] um: Cleanup syscall_handler_t definition/cast, fix warning
-Date:   Wed,  6 Apr 2022 21:13:52 -0400
-Message-Id: <20220407011413.114662-4-sashal@kernel.org>
+Cc:     Jeff LaBundy <jeff@labundy.com>,
+        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 06/25] Input: add bounds checking to input_set_capability()
+Date:   Wed,  6 Apr 2022 21:13:54 -0400
+Message-Id: <20220407011413.114662-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011413.114662-1-sashal@kernel.org>
 References: <20220407011413.114662-1-sashal@kernel.org>
@@ -56,65 +53,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+From: Jeff LaBundy <jeff@labundy.com>
 
-[ Upstream commit f4f03f299a56ce4d73c5431e0327b3b6cb55ebb9 ]
+[ Upstream commit 409353cbe9fe48f6bc196114c442b1cff05a39bc ]
 
-The syscall_handler_t type for x86_64 was defined as 'long (*)(void)',
-but always cast to 'long (*)(long, long, long, long, long, long)' before
-use. This now triggers a warning (see below).
+Update input_set_capability() to prevent kernel panic in case the
+event code exceeds the bitmap for the given event type.
 
-Define syscall_handler_t as the latter instead, and remove the cast.
-This simplifies the code, and fixes the warning.
-
-Warning:
-In file included from ../arch/um/include/asm/processor-generic.h:13
-                 from ../arch/x86/um/asm/processor.h:41
-                 from ../include/linux/rcupdate.h:30
-                 from ../include/linux/rculist.h:11
-                 from ../include/linux/pid.h:5
-                 from ../include/linux/sched.h:14
-                 from ../include/linux/ptrace.h:6
-                 from ../arch/um/kernel/skas/syscall.c:7:
-../arch/um/kernel/skas/syscall.c: In function ‘handle_syscall’:
-../arch/x86/um/shared/sysdep/syscalls_64.h:18:11: warning: cast between incompatible function types from ‘long int (*)(void)’ to ‘long int (*)(long int,  long int,  long int,  long int,  long int,  long int)’ [
--Wcast-function-type]
-   18 |         (((long (*)(long, long, long, long, long, long)) \
-      |           ^
-../arch/x86/um/asm/ptrace.h:36:62: note: in definition of macro ‘PT_REGS_SET_SYSCALL_RETURN’
-   36 | #define PT_REGS_SET_SYSCALL_RETURN(r, res) (PT_REGS_AX(r) = (res))
-      |                                                              ^~~
-../arch/um/kernel/skas/syscall.c:46:33: note: in expansion of macro ‘EXECUTE_SYSCALL’
-   46 |                                 EXECUTE_SYSCALL(syscall, regs));
-      |                                 ^~~~~~~~~~~~~~~
-
-Signed-off-by: David Gow <davidgow@google.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Suggested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+Reviewed-by: Tomasz Moń <tomasz.mon@camlingroup.com>
+Link: https://lore.kernel.org/r/20220320032537.545250-1-jeff@labundy.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/um/shared/sysdep/syscalls_64.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/input/input.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/arch/x86/um/shared/sysdep/syscalls_64.h b/arch/x86/um/shared/sysdep/syscalls_64.h
-index 8a7d5e1da98e..1e6875b4ffd8 100644
---- a/arch/x86/um/shared/sysdep/syscalls_64.h
-+++ b/arch/x86/um/shared/sysdep/syscalls_64.h
-@@ -10,13 +10,12 @@
- #include <linux/msg.h>
- #include <linux/shm.h>
+diff --git a/drivers/input/input.c b/drivers/input/input.c
+index ff9dc37eff34..ce628a8446ea 100644
+--- a/drivers/input/input.c
++++ b/drivers/input/input.c
+@@ -47,6 +47,17 @@ static DEFINE_MUTEX(input_mutex);
  
--typedef long syscall_handler_t(void);
-+typedef long syscall_handler_t(long, long, long, long, long, long);
+ static const struct input_value input_value_sync = { EV_SYN, SYN_REPORT, 1 };
  
- extern syscall_handler_t *sys_call_table[];
- 
- #define EXECUTE_SYSCALL(syscall, regs) \
--	(((long (*)(long, long, long, long, long, long)) \
--	  (*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
-+	(((*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
- 		 		      UPT_SYSCALL_ARG2(&regs->regs), \
- 				      UPT_SYSCALL_ARG3(&regs->regs), \
- 				      UPT_SYSCALL_ARG4(&regs->regs), \
++static const unsigned int input_max_code[EV_CNT] = {
++	[EV_KEY] = KEY_MAX,
++	[EV_REL] = REL_MAX,
++	[EV_ABS] = ABS_MAX,
++	[EV_MSC] = MSC_MAX,
++	[EV_SW] = SW_MAX,
++	[EV_LED] = LED_MAX,
++	[EV_SND] = SND_MAX,
++	[EV_FF] = FF_MAX,
++};
++
+ static inline int is_event_supported(unsigned int code,
+ 				     unsigned long *bm, unsigned int max)
+ {
+@@ -1976,6 +1987,14 @@ EXPORT_SYMBOL(input_get_timestamp);
+  */
+ void input_set_capability(struct input_dev *dev, unsigned int type, unsigned int code)
+ {
++	if (type < EV_CNT && input_max_code[type] &&
++	    code > input_max_code[type]) {
++		pr_err("%s: invalid code %u for type %u\n", __func__, code,
++		       type);
++		dump_stack();
++		return;
++	}
++
+ 	switch (type) {
+ 	case EV_KEY:
+ 		__set_bit(code, dev->keybit);
 -- 
 2.35.1
 
