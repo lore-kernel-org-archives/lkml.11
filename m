@@ -2,83 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 170B0C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E1FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345235AbiDGQXy (ORCPT
+        id S1345686AbiDGQYC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 12:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42502 "EHLO
+        Thu, 7 Apr 2022 12:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345767AbiDGQXb (ORCPT
+        with ESMTP id S230077AbiDGQX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 12:23:31 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3E6228D2C;
-        Thu,  7 Apr 2022 09:21:18 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 237Apw6h022051;
-        Thu, 7 Apr 2022 18:21:04 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=l80vPjd5qYSa6FhlBCDjA+CHxt2mqTlfw0Ep0SOG8+M=;
- b=tD73dFhKtQ/7vK3JiuNAloYLosoxJ2BYBiMGwdXXABL65QgGV6oWvFWrMMjE/Vl8WZSY
- O7/S4ewIhH7VZrASEtkwogsKw3lg7wch3fYrKgzealeRMwoGq/F+ktGtWuiRICRvUFmn
- 0rY/HafVedV6SatRRXHoPo21n6Hpx1SCYeRsKLdcWmzOlgkz3M/Y0rdR+UixGidV/gNa
- IlDZwmEvne6Dam09DXqi8L5au7wDVIDrD3CjSciB/oS4cwchhWRrTSuAha16k+1uOR9S
- 7RIZAku0N8WRLQMgV7tEp/QPyE/FU4KzHG+YJXDZKWNxI6KZFq9Svb/duKU66tRBjdkX dA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f8x9gncwf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Apr 2022 18:21:04 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 768A510002A;
-        Thu,  7 Apr 2022 18:21:02 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 6F3C4220FBF;
-        Thu,  7 Apr 2022 18:21:02 +0200 (CEST)
-Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 7 Apr 2022 18:21:02
- +0200
-From:   Valentin Caron <valentin.caron@foss.st.com>
-To:     Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
+        Thu, 7 Apr 2022 12:23:59 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAF21EF9C6;
+        Thu,  7 Apr 2022 09:21:48 -0700 (PDT)
+X-UUID: 0c4fcde325ee40d1ac7a75fc58780397-20220408
+X-UUID: 0c4fcde325ee40d1ac7a75fc58780397-20220408
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <lecopzer.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2021688543; Fri, 08 Apr 2022 00:21:44 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 8 Apr 2022 00:21:43 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 8 Apr 2022 00:21:43 +0800
+From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
+To:     <pmladek@suse.com>
+CC:     <acme@kernel.org>, <akpm@linux-foundation.org>,
+        <alexander.shishkin@linux.intel.com>, <catalin.marinas@arm.com>,
+        <davem@davemloft.net>, <jolsa@redhat.com>, <jthierry@redhat.com>,
+        <keescook@chromium.org>, <kernelfans@gmail.com>,
+        <lecopzer.chen@mediatek.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/2] ARM: dts: stm32: add RTC support on stm32mp13 boards
-Date:   Thu, 7 Apr 2022 18:20:40 +0200
-Message-ID: <20220407162042.361956-1-valentin.caron@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-perf-users@vger.kernel.org>, <mark.rutland@arm.com>,
+        <masahiroy@kernel.org>, <matthias.bgg@gmail.com>, <maz@kernel.org>,
+        <mcgrof@kernel.org>, <mingo@redhat.com>, <namhyung@kernel.org>,
+        <nixiaoming@huawei.com>, <peterz@infradead.org>,
+        <sparclinux@vger.kernel.org>, <sumit.garg@linaro.org>,
+        <wangqing@vivo.com>, <will@kernel.org>, <yj.chiang@mediatek.com>
+Subject: Re: [PATCH v3 4/5] kernel/watchdog: Adapt the watchdog_hld interface for async model
+Date:   Fri, 8 Apr 2022 00:21:43 +0800
+Message-ID: <20220407162143.1127-1-lecopzer.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <YkxeAM+SwYHAnJE1@alley>
+References: <YkxeAM+SwYHAnJE1@alley>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-07_03,2022-04-07_01,2022-02-23_01
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add RTC node on stm32mp13 soc.
-Enable RTC on stm32mp135f-dk board.
+> On Tue 2022-04-05 21:35:03, Lecopzer Chen wrote:
+> > > On Thu 2022-03-24 22:14:04, Lecopzer Chen wrote:
+> > > > When lockup_detector_init()->watchdog_nmi_probe(), PMU may be not ready
+> > > > yet. E.g. on arm64, PMU is not ready until
+> > > > device_initcall(armv8_pmu_driver_init).  And it is deeply integrated
+> > > > with the driver model and cpuhp. Hence it is hard to push this
+> > > > initialization before smp_init().
+> > > > 
+> > > > But it is easy to take an opposite approach and try to initialize
+> > > > the watchdog once again later.
+> > > > The delayed probe is called using workqueues. It need to allocate
+> > > > memory and must be proceed in a normal context.
+> > > > The delayed probe is queued only when the early one returns -EBUSY.
+> > > > It is the return code returned when PMU is not ready yet.
+> > > > 
+> > > > Provide an API - retry_lockup_detector_init() for anyone who needs
+> > > > to delayed init lockup detector.
+> > > > 
+> > > > The original assumption is: nobody should use delayed probe after
+> > > > lockup_detector_check() which has __init attribute.
+> > > > That is, anyone uses this API must call between lockup_detector_init()
+> > > > and lockup_detector_check(), and the caller must have __init attribute
+> > > > 
+> > > > --- a/kernel/watchdog.c
+> > > > +++ b/kernel/watchdog.c
+> > > > +}
+> > > > +
+> > > > +/*
+> > > > + * retry_lockup_detector_init - retry init lockup detector if possible.
+> > > > + *
+> > > > + * Only take effect when allow_lockup_detector_init_retry is true, which
+> > > > + * means it must call between lockup_detector_init() and lockup_detector_check().
+> > > > + * Be aware that caller must have __init attribute, relative functions
+> > > > + * will be freed after kernel initialization.
+> > > > + */
+> > > > +void __init retry_lockup_detector_init(void)
+> > > > +{
+> > > > +	if (!allow_lockup_detector_init_retry)
+> > > > +		return;
+> > > > +
+> > > > +	queue_work_on(__smp_processor_id(), system_wq, &detector_work);
+> > > > +}
+> > > > +
+> > > > +/* Ensure the check is called after the initialization of driver */
+> > > > +static int __init lockup_detector_check(void)
+> > > > +{
+> > > > +	/* Make sure no work is pending. */
+> > > > +	flush_work(&detector_work);
+> > > 
+> > > This is racy. We should first disable
+> > > "allow_lockup_detector_init_retry" to make sure
+> > > that retry_lockup_detector_init() will not queue
+> > > the work any longer.
+> > 
+> > But disable before flush_work will make the 
+> >     lockup_detector_delay_init() ->
+> >     watchdog_nmi_probe ->
+> >     +	if (!allow_lockup_detector_init_retry)
+> >     +		return -EBUSY;
+> 
+> I see. It is exactly the reason why I suggest to remove the
+> optimization and keep the code simple.
+> 
+> > how about:
+> > ...
+> > static bool __init delayed_init_allowed = true;
+> > ...
+> > /*
+> >  * retry_lockup_detector_init - retry init lockup detector if possible.
+> >  *
+> >  * Only take effect when allow_lockup_detector_init_retry is true, which
+> >  * means it must call between lockup_detector_init() and lockup_detector_check().
+> >  * Be aware that caller must have __init attribute, relative functions
+> >  * will be freed after kernel initialization.
+> >  */
+> > void __init retry_lockup_detector_init(void)
+> > {
+> > 	if (!allow_lockup_detector_init_retry || !delayed_init_allowed)
+> > 		return;
+> > 
+> > 	/* 
+> > 	 * we shouldn't queue any delayed init work twice to avoid
+> > 	 * any unwanted racy.
+> > 	 */
+> > 	delayed_init_allowed = false;
+> 
+> Grrr, this is so complicated and confusing. It might be because of
+> badly selected variable names or comments. But I think that it is
+> simply a bad approach.
+> 
+> OK, you suggest two variables. If I get it correctly:
+> 
+>     + The variable "delayed_init_allowed"
+>      tries to prevent the race in lockup_detector_check().
+> 
+>      It will make sure that the work could not be queued after
+>      flush_work() finishes.
+> 
+>      Is this obvious from the comment?
+>      Is this obvious from the variable name?
+> 
+>      I am sorry. But it is not obvious to me. I understand it only
+>      because I see it together in this mail. It will be pretty
+>      hard to get it from the code when I see it one year later.
+> 
+> 
+>    + The variable "allow_lockup_detector_init_retry" has an unclear
+>      meaning. It might mean:
+> 
+> 	+ watchdog_nmi_probe() ended with -EBUSY in
+> 	  lockup_detector_init() and we can try the delayed init.
+> 
+> 	+ but it also means that watchdog_nmi_probe() succeeded in
+> 	  lockup_detector_delay_init() and there is no need to
+> 	  try the delayed init any longer.
+> 
+>        Is this obvious from the variable name?
+>        Is it explained anywhere?
+>        Is it easy to understand?
+> 
+>        No, from my POV. It is really bad idea to have a single
+>        variable with so many meanings.
+> 
+> 
+> And this is my problem with this approach. There was one variable with
+> unclear meanting. And you are trying to fix it by two variables
+> with unclear meaning.
+> 
 
-Valentin Caron (2):
-  ARM: dts: stm32: add RTC node on stm32mp131
-  ARM: dts: stm32: enable RTC support on stm32mp135f-dk
+I really apreciate for your reply, many thanks for it.
 
- arch/arm/boot/dts/stm32mp131.dtsi    | 15 +++++++++++++++
- arch/arm/boot/dts/stm32mp135f-dk.dts |  4 ++++
- 2 files changed, 19 insertions(+)
+For my point of view, the naming for "delayed_init_allowed" is the
+whole system state now is able to(allowed) do delayed init.
+The "allow_lockup_detector_init_retry" is that delayed init is ready
+to retry register NMI watchdog.
 
--- 
-2.25.1
+Thus the meaning of delayed_init_"allowed" is, we are allowed to
+do delayed init including
+    1. initialization of delayed init
+    2. the retry of delayed init
+
+I'm sorry for that I didn't express the meaning clearly.
+I'll have definition in detail in the later version patch not only
+a brief comment and I hope you can review much easier.
+This only explain the thought how I made decision for the naming.
+
+So let me back to the discussion below.
+
+
+
+> > 	queue_work_on(__smp_processor_id(), system_wq, &detector_work);
+> > }
+> > 
+> > 
+> > /*
+> >  * Ensure the check is called after the initialization of driver
+> >  * and before removing init code.
+> >  */
+> > static int __init lockup_detector_check(void)
+> > {
+> > 	delayed_init_allowed = false;
+> > 	flush_work(&detector_work);
+> > 	allow_lockup_detector_init_retry = false;
+> > 
+> > 	return 0;
+> > }
+> 
+> No, please keep it simple. Just have one variable that will say
+> whether we are allowed to queue the work:
+> 
+>   + It will be allowed when watchdog_nmi_probe() ended
+>     with -EBUSY in lockup_detector_init()
+> 
+>   + It will not longer be allowed when watchdog_nmi_probe()
+>     succeeded or when lockup_detector_check() flushes
+>     the pending works.
+> 
+
+Okay, let me think about it. I'll try to find a better solution that
+only uses one variable.
+And it's strongly about how users use it in 5th patch, I'll give further
+reply in 5th patch
+
+
+thanks
+BRs,
+Lecopzer
+
+
+
 
