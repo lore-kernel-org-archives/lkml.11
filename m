@@ -2,93 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD774C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:00:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A90C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:01:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238616AbiDGGCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 02:02:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
+        id S240882AbiDGGDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 02:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238644AbiDGGCi (ORCPT
+        with ESMTP id S238795AbiDGGCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 02:02:38 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D742FFDB;
-        Wed,  6 Apr 2022 23:00:36 -0700 (PDT)
-Received: from [192.168.100.1] ([82.142.17.26]) by mrelayeu.kundenserver.de
- (mreue009 [213.165.67.103]) with ESMTPSA (Nemesis) id
- 1M6DSi-1neVz01lE0-006grO; Thu, 07 Apr 2022 08:00:10 +0200
-Message-ID: <198be9ea-a8c2-0f9e-6ae5-a7358035def4@vivier.eu>
-Date:   Thu, 7 Apr 2022 08:00:08 +0200
+        Thu, 7 Apr 2022 02:02:53 -0400
+Received: from mail.meizu.com (unknown [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09672FFDB
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 23:00:53 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 7 Apr 2022
+ 14:00:52 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 7 Apr
+ 2022 14:00:51 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+CC:     Haowen Bai <baihaowen@meizu.com>, <amd-gfx@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] drm/amd/display: Fix indenting mistakes in dcn10_hw_sequencer.c
+Date:   Thu, 7 Apr 2022 14:00:50 +0800
+Message-ID: <1649311250-17077-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v16 1/4] tty: goldfish: introduce
- gf_ioread32()/gf_iowrite32()
-Content-Language: fr
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-m68k@lists.linux-m68k.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-rtc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Alessandro Zummo <a.zummo@towertech.it>, stable@vger.kernel.org
-References: <20220406201523.243733-1-laurent@vivier.eu>
- <20220406201523.243733-2-laurent@vivier.eu> <Yk5tNOPE4b2QbHLG@kroah.com>
-From:   Laurent Vivier <laurent@vivier.eu>
-In-Reply-To: <Yk5tNOPE4b2QbHLG@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:5cWmnnYDJufcUa3X22Vbqh4rcKN+LFRmgKjDgc/0+672+P3hWzN
- ARqb/oWIb+/kWgoDr7YcEmrPb/SGD84dgrexGNAQ1Q0hI9qRXue86iqHi4Cq9GTo6rO9JUK
- 3gn41cqduSgCqcmo+xr1awqnQj+XsU9vsMZJMnAUC0CR1OBPE1JZYT8iuZfJ8/GtOQFhRq3
- 86yW4PM8v6RJXH/03xaQQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ATlYoBjlPYI=:m3bzbW28a0/UV1CUXxl/8l
- r26uwHgSlt3Scb0rDufdtShxvKamu9CxmaiURzhu8Pxxyvf4+fdr2uvVESZ+dPWGMr0VGN8hK
- 4cog7eSfoSf21BYBto+Kej4yPuJi7mSGDwQF1ncoBUOJyJzEG4j3TxNUzyDfCktKfMqAE2UCB
- pHgOCU607t9inU1U23+nS3y13b7L8j+dRmfd4iXJ3Ani/H7BCDpnFCqOP0258Om9bQVDFloKd
- /VyOe75oyseVYxxQtWURFRDLw4b3LfZJt9CyOWFl2Zuxcft6iWUS9p8ybxmjjnmcXtEDzhQlF
- V/xLoza5swZkKAqCWBXtzBfYz71+ow108Iz6GdME7ktRtUwO9TrnkMqOW9HUrCf0+NWjkJN+P
- aL6PffLIFrs0sZ2uLr8f9MS84UvKPCq54DtapWykRbdzWgo9NsFWbGg/2qRgUh+tXf058mHaw
- rPhN9I8ZcdU23dtHoo5AabTXqYmY5QLiivL6XO46GsnTP/JWB20DSeSBdqSGfM1/+HjGb+7wX
- 4i3qeQtqhRp1X1+EmC0sgm3i39Gds2Kzuk5h3WThzvAauYSfTJ4rZ+XjCn0uR6CqrFc+czdzu
- 4FvKqAT5jk7rSGvRAbIV9wCf5Ew47WGgZYwxcUiqwu60fErYGfJm7O70USGX373y1OdcuhQgc
- 5SoOliC8Nkuqaw/UWWLnQyiet/mhj/Gszs9zVaThYs93M5cpWuRXj/QCQt19vYw1VEl8=
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 07/04/2022 à 06:48, Greg KH a écrit :
-> On Wed, Apr 06, 2022 at 10:15:20PM +0200, Laurent Vivier wrote:
->> Revert
->> commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
->>
->> and define gf_ioread32()/gf_iowrite32() to be able to use accessors
->> defined by the architecture.
->>
->> Cc: stable@vger.kernel.org # v5.11+
->> Fixes: da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
->> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
->> Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
->> ---
->>   drivers/tty/goldfish.c   | 20 ++++++++++----------
->>   include/linux/goldfish.h | 15 +++++++++++----
->>   2 files changed, 21 insertions(+), 14 deletions(-)
->>
-> 
-> Why is this a commit for the stable trees?  What bug does it fix?  You
-> did not describe the problem in the changelog text at all, this looks
-> like a housekeeping change only.
+Smatch reports the following:
+drivers/gpu/drm/amd/amdgpu/../display/dc/dcn10/dcn10_hw_sequencer.c:2174
+dcn10_enable_vblanks_synchronization() warn: if statement not indented
 
-Arnd asked for that in:
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-   Re: [PATCH v11 2/5] tty: goldfish: introduce gf_ioread32()/gf_iowrite32()
-   https://lore.kernel.org/lkml/CAK8P3a1oN8NrUjkh2X8jHQbyz42Xo6GSa=5n0gD6vQcXRjmq1Q@mail.gmail.com/
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+index ee22f4422d26..3c338b85040c 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+@@ -2172,13 +2172,13 @@ void dcn10_enable_vblanks_synchronization(
+ 	if (master >= 0) {
+ 		for (i = 0; i < group_size; i++) {
+ 			if (i != master && !grouped_pipes[i]->stream->has_non_synchronizable_pclk)
+-			grouped_pipes[i]->stream_res.tg->funcs->align_vblanks(
+-				grouped_pipes[master]->stream_res.tg,
+-				grouped_pipes[i]->stream_res.tg,
+-				grouped_pipes[master]->stream->timing.pix_clk_100hz,
+-				grouped_pipes[i]->stream->timing.pix_clk_100hz,
+-				get_clock_divider(grouped_pipes[master], false),
+-				get_clock_divider(grouped_pipes[i], false));
++				grouped_pipes[i]->stream_res.tg->funcs->align_vblanks(
++					grouped_pipes[master]->stream_res.tg,
++					grouped_pipes[i]->stream_res.tg,
++					grouped_pipes[master]->stream->timing.pix_clk_100hz,
++					grouped_pipes[i]->stream->timing.pix_clk_100hz,
++					get_clock_divider(grouped_pipes[master], false),
++					get_clock_divider(grouped_pipes[i], false));
+ 				grouped_pipes[i]->stream->vblank_synchronized = true;
+ 		}
+ 		grouped_pipes[master]->stream->vblank_synchronized = true;
+-- 
+2.7.4
 
-Thanks,
-Laurent
