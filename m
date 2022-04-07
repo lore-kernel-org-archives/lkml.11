@@ -2,104 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72374C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC35C43217
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343665AbiDGNgL (ORCPT
+        id S1343703AbiDGNhp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 09:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32890 "EHLO
+        Thu, 7 Apr 2022 09:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231817AbiDGNgH (ORCPT
+        with ESMTP id S1343689AbiDGNhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 09:36:07 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9E724D9B7;
-        Thu,  7 Apr 2022 06:34:07 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 237DXjBH047530;
-        Thu, 7 Apr 2022 08:33:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649338425;
-        bh=tuDtmrZ/JCOGuQoIOjbg452duIx7WDeBGy1pAwK9JO4=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=xuwxeKZjRS70tzQmIO4sWBXDVcwegIgA9cZt96TW5xjEJgvM1xN77ZmAsi14RrftV
-         gvVpqXCbp1w75wqX0/Z6GiZO3Pq8pvPmlW5OqvOCXCesoIJ9x0l6l6onj0n1ayQ0gE
-         fIfySuCxD69CQQvmmHMQDyToDIsaz1JqgaXycu3I=
-Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 237DXjTP072645
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 7 Apr 2022 08:33:45 -0500
-Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 7
- Apr 2022 08:33:44 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 7 Apr 2022 08:33:44 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 237DXiKQ031379;
-        Thu, 7 Apr 2022 08:33:44 -0500
-Date:   Thu, 7 Apr 2022 08:33:44 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Tony Lindgren <tony@atomide.com>
-CC:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, Keerthy <j-keerthy@ti.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [PATCH 1/4] dt-bindings: timer: Add am6 compatible for ti-timer
-Message-ID: <20220407133344.v2x2b6rkmskatips@handled>
-References: <20220407071006.37031-1-tony@atomide.com>
+        Thu, 7 Apr 2022 09:37:35 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA761109;
+        Thu,  7 Apr 2022 06:35:22 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 237A6u7u024447;
+        Thu, 7 Apr 2022 13:35:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=plnEtZF86isv65a8puHtZOzw2xcyhXCk0JU+ZyMN+9I=;
+ b=z0acsNfFVSNApqvfkmPnwzZvZd5HN+GUBSDHeCYVaYbzUsYyzD0hoF0UP047fzRTHb+X
+ y6R2qouRyKpMR4Xf9NIpCZJrFA31pq7B+QhA7Rx0ExTKIJzXln77KN+f+37YQuRZu47f
+ WjZn78Aj9xA0cUmE4ev0o1MUos0blpLZzovbC+XHg1O4T5uPAqcOQzPKM3Afs8udgjDK
+ O6KlpPrK65MCZZHizur7v6JLYief4Xre+kMU9kYumd/4ZfxzipMXQ8y15eQywr+Zv6lB
+ BtoGzRzZsuIBRcXA6KzbasF1HJByLfsWOMo0DNcLHRGyQ2cpewXBTw7FmFWgBlwzw81w vQ== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3f6f1tc3qy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 07 Apr 2022 13:35:21 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 237DLVn1036817;
+        Thu, 7 Apr 2022 13:35:20 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3f97uwtvqv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 07 Apr 2022 13:35:20 +0000
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 237DZJLg032479;
+        Thu, 7 Apr 2022 13:35:19 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3f97uwtvpy-1;
+        Thu, 07 Apr 2022 13:35:19 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     linux-scsi@vger.kernel.org
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] scsi: bnx2fc: Fix spelling mistake "mis-match" -> "mismatch"
+Date:   Thu,  7 Apr 2022 09:35:00 -0400
+Message-Id: <164929679002.15424.1799871728349449815.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220319231122.21476-1-colin.i.king@gmail.com>
+References: <20220319231122.21476-1-colin.i.king@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220407071006.37031-1-tony@atomide.com>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: 5g9tPed7M2ZeAktsEZzpftQeYyNZ2ZyM
+X-Proofpoint-GUID: 5g9tPed7M2ZeAktsEZzpftQeYyNZ2ZyM
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10:10-20220407, Tony Lindgren wrote:
-> Document the dual-mode timers available on am6.
+On Sat, 19 Mar 2022 23:11:22 +0000, Colin Ian King wrote:
+
+> There are a few spelling mistakes in some error messages. Fix them.
 > 
-> Cc: devicetree@vger.kernel.org
-> Cc: Keerthy <j-keerthy@ti.com>
-> Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
-> Cc: Nishanth Menon <nm@ti.com>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Vignesh Raghavendra <vigneshr@ti.com>
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-> ---
->  Documentation/devicetree/bindings/timer/ti,timer.txt | 1 +
->  1 file changed, 1 insertion(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/timer/ti,timer.txt b/Documentation/devicetree/bindings/timer/ti,timer.txt
-> --- a/Documentation/devicetree/bindings/timer/ti,timer.txt
-> +++ b/Documentation/devicetree/bindings/timer/ti,timer.txt
-> @@ -14,6 +14,7 @@ Required properties:
->  			ti,omap5430-timer (applicable to OMAP543x devices)
->  			ti,am335x-timer	(applicable to AM335x devices)
->  			ti,am335x-timer-1ms (applicable to AM335x devices)
-> +			ti,am6-timer (applicable to AM6 devices)
 
-Suggestion:
+Applied to 5.18/scsi-fixes, thanks!
 
-Could we call this ti,am65-timer instead? AM6 is a bit nuanced and spans
-a couple of sub SoC architectures.
-
->  
->  - reg:			Contains timer register address range (base address and
->  			length).
-> -- 
-> 2.35.1
+[1/1] scsi: bnx2fc: Fix spelling mistake "mis-match" -> "mismatch"
+      https://git.kernel.org/mkp/scsi/c/7ff897b2a595
 
 -- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+Martin K. Petersen	Oracle Linux Engineering
