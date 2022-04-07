@@ -2,64 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B447C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84A10C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242551AbiDGIBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37130 "EHLO
+        id S242565AbiDGIBL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242554AbiDGIBC (ORCPT
+        with ESMTP id S242559AbiDGIBG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:01:02 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABDF011CF68
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:59:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=fBAouhGMrAo4DR21FYAu/hvO6g8bk7dvXwun6YXeuSE=; b=Smgn4MBYQqPfCENKlpEWrjQHKW
-        gfvj1P3sx4Vmhf2Fzh+x3284suy6km700wOok3jPpwxks7KLHgPB0G98v/T9P2OGObvDNL7yhJSDg
-        K9v7vfqJnGH5VwuprEkGR4tdW7aNbWqOJhrIcnez3erz7etFn31uBEgPl3J3QTcFmSssf68wkzmkE
-        rHLUB17PgGec6f1gzgHv5FMuBkCh+rAT4raH/a97uGj7gWG1YZPPNi0euyxFWOSs2ldCoRebdnqZ2
-        pvr+DLyThl5MHFgE7YW3DwZxb1NqO2dlWQwCnmtng1Tv1eLWc+qz6XK235F7NhVPvdfdAyH47AjTE
-        YjbDYTiQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ncN2d-00AB66-8g; Thu, 07 Apr 2022 07:58:55 +0000
-Date:   Thu, 7 Apr 2022 00:58:55 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>,
-        "Hegde, Vasant" <Vasant.Hegde@amd.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2] iommu/amd: Enable swiotlb in all cases
-Message-ID: <Yk6Zv8ubRmQMPPcX@infradead.org>
-References: <20220404204723.9767-1-mario.limonciello@amd.com>
- <20220404204723.9767-2-mario.limonciello@amd.com>
- <YkvGwMlrv8JKjHJQ@infradead.org>
- <BL1PR12MB5157E55F2F469E66B46157CDE2E79@BL1PR12MB5157.namprd12.prod.outlook.com>
+        Thu, 7 Apr 2022 04:01:06 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F609114082;
+        Thu,  7 Apr 2022 00:59:07 -0700 (PDT)
+X-UUID: 7e09ff232fe240e6931907c8f6990c41-20220407
+X-UUID: 7e09ff232fe240e6931907c8f6990c41-20220407
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1490983442; Thu, 07 Apr 2022 15:59:00 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 7 Apr 2022 15:58:59 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 7 Apr 2022 15:58:57 +0800
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
+        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
+        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
+        "AngeloGioacchino Del Regno" 
+        <angelogioacchino.delregno@collabora.com>,
+        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
+        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
+Subject: [PATCH v6 07/34] iommu/mediatek: Add mutex for data in the mtk_iommu_domain
+Date:   Thu, 7 Apr 2022 15:56:59 +0800
+Message-ID: <20220407075726.17771-8-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220407075726.17771-1-yong.wu@mediatek.com>
+References: <20220407075726.17771-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BL1PR12MB5157E55F2F469E66B46157CDE2E79@BL1PR12MB5157.namprd12.prod.outlook.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 05:04:52PM +0000, Limonciello, Mario wrote:
-> Considering before this fix effectively swiotlb was turned off on most AMD
-> systems, when this is picked up I think y'all should consider to add a:
-> 
-> Cc: stable@vger.kernel.org # 5.11+
+Same with the previous patch, add a mutex for the "data" in the
+mtk_iommu_domain. Just improve the safety for multi devices
+enter attach_device at the same time. We don't get the real issue
+for this.
 
-Agreed.  I think this is for Joerg to pick up, and I'd love to see it
-picked up soon as I'll have to rebase my
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/iommu/mtk_iommu.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-"cleanup swiotlb initialization" series on top of it.
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 3413cc98e57e..ecdce5d3e8cf 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -128,6 +128,8 @@ struct mtk_iommu_domain {
+ 
+ 	struct mtk_iommu_data		*data;
+ 	struct iommu_domain		domain;
++
++	struct mutex			mutex; /* Protect "data" in this structure */
+ };
+ 
+ static const struct iommu_ops mtk_iommu_ops;
+@@ -434,6 +436,7 @@ static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
+ 	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
+ 	if (!dom)
+ 		return NULL;
++	mutex_init(&dom->mutex);
+ 
+ 	return &dom->domain;
+ }
+@@ -455,14 +458,19 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 	if (domid < 0)
+ 		return domid;
+ 
++	mutex_lock(&dom->mutex);
+ 	if (!dom->data) {
+ 		/* Data is in the frstdata in sharing pgtable case. */
+ 		frstdata = mtk_iommu_get_m4u_data();
+ 
+-		if (mtk_iommu_domain_finalise(dom, frstdata, domid))
++		ret = mtk_iommu_domain_finalise(dom, frstdata, domid);
++		if (ret) {
++			mutex_unlock(&dom->mutex);
+ 			return -ENODEV;
++		}
+ 		dom->data = data;
+ 	}
++	mutex_unlock(&dom->mutex);
+ 
+ 	mutex_lock(&data->mutex);
+ 	if (!data->m4u_dom) { /* Initialize the M4U HW */
+-- 
+2.18.0
+
