@@ -2,92 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB5DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 04:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76715C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 04:43:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240760AbiDGEox (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 00:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53222 "EHLO
+        id S237759AbiDGEpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 00:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240737AbiDGEoo (ORCPT
+        with ESMTP id S240741AbiDGEov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 00:44:44 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318BBA27E6;
-        Wed,  6 Apr 2022 21:42:45 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id ot30so8264146ejb.12;
-        Wed, 06 Apr 2022 21:42:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=acLDo8DvtRc0LQ4dU1pQe3jeqr8dn2AMIrJhaE36LaE=;
-        b=biNJItkBtuQUq6sxZIIxp09bvf7hkNQiHphB1nIIZ4XtB8D4ZGXySxYoNxEgkyw+w1
-         VcKHiE3ojnprf43+FQmNutvBiY4rkEYqYNb99n6q9k11DykIJ9xholkyS5X136ShJJIh
-         fTx0at4QB+dIxFHcqjN0NjcyzM3s2KfylT3vMd02aLAkXuIcoz7e6rVC0RuxUF56YHey
-         o4yB9XNladBaLfx8WCINT3UI5X32sEUkw7rec9IakYK89wsGVl7Zlhjzt7munQ/TCYYa
-         mf1rrGEvVOvfKe3jeTGi7olvXRQwMdJqIonZh3lokeTZCrjUOuzlpfL1SDGQrJsZrtBY
-         ZwBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=acLDo8DvtRc0LQ4dU1pQe3jeqr8dn2AMIrJhaE36LaE=;
-        b=c4S9bA5SPUKRHYxAU3NcP3lHYoh+MgveVT3zmEi8cyI8ZkS9ENefjX0FXqrSOyjxs1
-         M8I9LzGuX8xnS6UdBnhg5GOyyeCUqyB2h1RnMhXEWUr/IXuBktaKiWcd13UwVoUOFers
-         XqtJFw5tL+8HhoKiqJzICICdQ/897WSZypdw6rGsRwsGyDw4URWHG1ySo0tLEF3nFAf6
-         rpOL2yRBiStZzJmxTlrJ8H13r397qMSGC6ELTwXj1NlVu7qUcdoEnO33zGA6cCeC5Zta
-         4fj3WQ+veTTAGmDGZ6Yat9a4LO4b4zGGUlDrWf/3Kd1Wtiokq/aHdkLS3ZHN/ki6Omwi
-         0d0Q==
-X-Gm-Message-State: AOAM532iUiJVX2IdHpxyZ/whSfD0D9VcrSsRO5KWjl6JkAgEBHFT7Sfp
-        UFWrmLuVa3pmUDonFSKFvwE=
-X-Google-Smtp-Source: ABdhPJzdPACgzyhMOYJVL/u/+HkvrlNZrm1s76+STb8mPZmG4bVbVeDYJmfD/ZDL+vp5iXueEEhCGQ==
-X-Received: by 2002:a17:906:6a1a:b0:6e1:87a:151f with SMTP id qw26-20020a1709066a1a00b006e1087a151fmr11291245ejc.715.1649306563752;
-        Wed, 06 Apr 2022 21:42:43 -0700 (PDT)
-Received: from anparri.mshome.net (host-87-11-75-174.retail.telecomitalia.it. [87.11.75.174])
-        by smtp.gmail.com with ESMTPSA id e3-20020a170906374300b006e7f060bf6asm4199455ejc.207.2022.04.06.21.42.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 21:42:43 -0700 (PDT)
-From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-To:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        James Bottomley <jejb@linux.ibm.com>,
-        Martin Petersen <martin.petersen@oracle.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Subject: [PATCH 0/2] storvsc, netvsc: Improve logging
-Date:   Thu,  7 Apr 2022 06:40:32 +0200
-Message-Id: <20220407044034.379971-1-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 7 Apr 2022 00:44:51 -0400
+X-Greylist: delayed 929 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 21:42:47 PDT
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5717CAA028;
+        Wed,  6 Apr 2022 21:42:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=EfIKsaYvyjyauPGrMP
+        2ATwQhkAeB9k1V30Eckhc73WU=; b=QVvV7HlffafRhLjS6UzAS5PDgFj0i7qGpL
+        UPFo1p7UhSkojB7VTinJ82SltZDmmEbYziEbvYA7f0kRunqUELLOuUW3ebEIpkFg
+        JXL8afOpdqU5TE97QVJ4HVHDjVGoM4mC81uwyUWvw/uUrsaNmFdYIyCxaxHYmVpH
+        kWpYqL7Zw=
+Received: from localhost.localdomain (unknown [202.112.113.212])
+        by smtp2 (Coremail) with SMTP id GtxpCgCHNL0ZaE5iFqljAA--.8487S4;
+        Thu, 07 Apr 2022 12:27:15 +0800 (CST)
+From:   Yuanjun Gong <ruc_gongyuanjun@163.com>
+To:     Yuanjun Gong <ruc_gongyuanjun@163.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] mips: cpc: Fix refcount leak in mips_cpc_default_phys_base
+Date:   Thu,  7 Apr 2022 12:26:57 +0800
+Message-Id: <20220407042657.28614-1-ruc_gongyuanjun@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: GtxpCgCHNL0ZaE5iFqljAA--.8487S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWruw45tw15Zr4xtw1xKw45KFg_yoW3ArcEgF
+        1Iv34xArW5CF1vvFZ7Zw4Sgrn8Cw1rWrWSyw1v9FWUt3yYyr45Jan3Cr93Zws5uryakrs8
+        Gr4Yvasrta1xtjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sR_yxR3UUUUU==
+X-Originating-IP: [202.112.113.212]
+X-CM-SenderInfo: 5uxfsw5rqj53pdqm30i6rwjhhfrp/xtbB0APb5WEsp2TMPAAAsT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Two small (and independent) patches to augment and "standardize" the error
-messages.
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-Thanks,
-  Andrea
+Add the missing of_node_put() to release the refcount incremented
+by of_find_compatible_node().
 
-Andrea Parri (Microsoft) (2):
-  scsi: storvsc: Print value of invalid ID in
-    storvsc_on_channel_callback()
-  hv_netvsc: Print value of invalid ID in
-    netvsc_send_{completion,tx_complete}()
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+---
+ arch/mips/kernel/mips-cpc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- drivers/net/hyperv/netvsc.c | 8 ++++----
- drivers/scsi/storvsc_drv.c  | 3 ++-
- 2 files changed, 6 insertions(+), 5 deletions(-)
-
+diff --git a/arch/mips/kernel/mips-cpc.c b/arch/mips/kernel/mips-cpc.c
+index 17aff13cd7ce..3e386f7e1545 100644
+--- a/arch/mips/kernel/mips-cpc.c
++++ b/arch/mips/kernel/mips-cpc.c
+@@ -28,6 +28,7 @@ phys_addr_t __weak mips_cpc_default_phys_base(void)
+ 	cpc_node = of_find_compatible_node(of_root, NULL, "mti,mips-cpc");
+ 	if (cpc_node) {
+ 		err = of_address_to_resource(cpc_node, 0, &res);
++		of_node_put(cpc_node);
+ 		if (!err)
+ 			return res.start;
+ 	}
 -- 
-2.25.1
+2.17.1
 
