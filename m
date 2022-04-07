@@ -2,95 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:25:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0E4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:25:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346270AbiDGR1O (ORCPT
+        id S1346162AbiDGR1U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
+        Thu, 7 Apr 2022 13:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346214AbiDGR05 (ORCPT
+        with ESMTP id S1346326AbiDGR06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:26:57 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E04BF50F
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:22:56 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id kd21so5500117qvb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 10:22:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=marek-ca.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fJ7ygznwMb8eMV9TQWtxLT1BB8Rhj4Ph1t5ZxtOvIow=;
-        b=xn4+0Nos2g51p+lcpGJlZFvm2hai2DIrfj/tZa5rBsoMbGHHcl0jqvEukq1yEFPAbx
-         w1PDodJoC0hLLRox2rQHwPcAayQykC8xbV8FwZm14KN2JU8qBdXv52Xg6WO+0BrQziyn
-         LK/AOd+Hkih2906m5voLSl0tTLE4O5siC6Tp1MRI1bE9l5tpOQ+sCfq/1urT2wyqFAK7
-         6qfH5BqO6RPzo+7eXpG8uWy4pif15V70nRaqlXxHO+0O1zcqj6/XSOODiE3BWASOHCsM
-         qqMWWhAdJdpuZ/c0iA5DlAqDuHlV59iW32Jkm0Vlp9PESMOdrR7LIg7J1sXhRBVHiBdw
-         kS8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fJ7ygznwMb8eMV9TQWtxLT1BB8Rhj4Ph1t5ZxtOvIow=;
-        b=TpfSNBAXHYPRboMGGYkF0f8lf62iK7bavEA0WUg45MGIEnESLVY2oRAzrgU+zEaKmV
-         zqNL8wB+ArG82uyXC/d6vg5ldtsHeVF6EvuJDaQTqg0zopoxpffsPTHo41JTNQQK1tIG
-         RS0Jzade1RocRA0NxUFVbJtb7EL/ewWVr/mZZp8R/DlASGUVoPMRPEXkvc7fZMnd/y1s
-         oTmPJ/Mk9pDsatGRhSBiPd/gN8vmCcoAQre/X+DS0bT5wLBXtgDyB6FvBhQ6WMRC4bQb
-         R/iJJjcuLRlUQEl5vFv67a/XKa/77x3aAJLA/orcQgvl5enE4/TAfPWMS63dY3lstNs7
-         fGqg==
-X-Gm-Message-State: AOAM531JKh4N4UQaQ21T6E6TaBo3mw6CDJ79lfLFXtrwR8XacrP1S6H9
-        RhaXu28VrfknrVQrFoHLwhr8+A==
-X-Google-Smtp-Source: ABdhPJxkctuq4Ghg/MMeyC6Ih/RKwTBtPHnXbwIvhrDACYUcVwAyr7lC4zNd8ddTKIr2HeEFhghXcg==
-X-Received: by 2002:a05:6214:2388:b0:441:37e5:baec with SMTP id fw8-20020a056214238800b0044137e5baecmr12970171qvb.66.1649352175146;
-        Thu, 07 Apr 2022 10:22:55 -0700 (PDT)
-Received: from localhost.localdomain (modemcable134.222-177-173.mc.videotron.ca. [173.177.222.134])
-        by smtp.gmail.com with ESMTPSA id g71-20020a379d4a000000b0069a029c7659sm1235212qke.35.2022.04.07.10.22.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 10:22:54 -0700 (PDT)
-From:   Jonathan Marek <jonathan@marek.ca>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] arm64: dts: qcom: sm8450: delete incorrect ufs interconnect fields
-Date:   Thu,  7 Apr 2022 13:21:45 -0400
-Message-Id: <20220407172145.31903-1-jonathan@marek.ca>
-X-Mailer: git-send-email 2.26.1
+        Thu, 7 Apr 2022 13:26:58 -0400
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1B8CBF325;
+        Thu,  7 Apr 2022 10:22:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Cc:To:From:content-disposition;
+        bh=NhYwwPYUOPNVkjQIdyegnu/TVIl/nr3VeJZ7F4Q1rQY=; b=kW115vO/lD5rTsxYR5wDs4inqe
+        b62XLPVR1SKPBKhjIMGvH8/MnKPRwidsE+zcAlS8tHsYa6gYUO/lWQKAiq0fskHTB4DfCzP9KwEt2
+        awuANPVzBGDxwiLlGKvFZcVBO0iijF1vKPmrj95MhayJpJlrS46NDTFfC+t7KI8DNk4ry1m5/8d1J
+        +7oK34SQ8cIiJnBx3+JJHIyr3dMLRP4mSXQh6eF23EX5U4e3yvWW2GUbw6AGAk7S7lbdREAiI4Faf
+        /F4ASkipN0tLk9wxIMmSs5rh/01GZKqdFrmMo+fMt2J66f3X0zQZYZqeS8UlYt9kYOkl7xUEiidL6
+        7kOVCESQ==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1ncUMJ-002BBi-Mr; Thu, 07 Apr 2022 09:47:44 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
+        (envelope-from <gunthorp@deltatee.com>)
+        id 1ncUME-00022A-Fc; Thu, 07 Apr 2022 09:47:38 -0600
+From:   Logan Gunthorpe <logang@deltatee.com>
+To:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-mm@kvack.org, iommu@lists.linux-foundation.org
+Cc:     Stephen Bates <sbates@raithlin.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Don Dutile <ddutile@redhat.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Jakowski Andrzej <andrzej.jakowski@intel.com>,
+        Minturn Dave B <dave.b.minturn@intel.com>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Xiong Jianxin <jianxin.xiong@intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Martin Oliveira <martin.oliveira@eideticom.com>,
+        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Logan Gunthorpe <logang@deltatee.com>
+Date:   Thu,  7 Apr 2022 09:47:12 -0600
+Message-Id: <20220407154717.7695-17-logang@deltatee.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220407154717.7695-1-logang@deltatee.com>
+References: <20220407154717.7695-1-logang@deltatee.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com, logang@deltatee.com
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+Subject: [PATCH v6 16/21] block: add check when merging zone device pages
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Upstream sm8450.dtsi has #interconnect-cells = <2>; so these are wrong.
-Ignored and undocumented with upstream UFS driver so delete for now.
+Consecutive zone device pages should not be merged into the same sgl
+or bvec segment with other types of pages or if they belong to different
+pgmaps. Otherwise getting the pgmap of a given segment is not possible
+without scanning the entire segment. This helper returns true either if
+both pages are not zone device pages or both pages are zone device
+pages with the same pgmap.
 
-Fixes: aa2d0bf04a3c ("arm64: dts: qcom: sm8450: add interconnect nodes")
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+Add a helper to determine if zone device pages are mergeable and use
+this helper in page_is_mergeable().
+
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 ---
- arch/arm64/boot/dts/qcom/sm8450.dtsi | 3 ---
- 1 file changed, 3 deletions(-)
+ block/bio.c        |  2 ++
+ include/linux/mm.h | 23 +++++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-index 2c18e1ef9e82d..90cdbec3cac99 100644
---- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-@@ -1663,9 +1663,6 @@ ufs_mem_hc: ufshc@1d84000 {
+diff --git a/block/bio.c b/block/bio.c
+index cdd7b2915c53..3406c0450db3 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -834,6 +834,8 @@ static inline bool page_is_mergeable(const struct bio_vec *bv,
+ 		return false;
+ 	if (xen_domain() && !xen_biovec_phys_mergeable(bv, page))
+ 		return false;
++	if (!zone_device_pages_have_same_pgmap(bv->bv_page, page))
++		return false;
  
- 			iommus = <&apps_smmu 0xe0 0x0>;
+ 	*same_page = ((vec_end_addr & PAGE_MASK) == page_addr);
+ 	if (*same_page)
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 14ef41af8b77..fb2264a17e4a 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1108,6 +1108,24 @@ static inline bool is_zone_device_page(const struct page *page)
+ {
+ 	return page_zonenum(page) == ZONE_DEVICE;
+ }
++
++/*
++ * Consecutive zone device pages should not be merged into the same sgl
++ * or bvec segment with other types of pages or if they belong to different
++ * pgmaps. Otherwise getting the pgmap of a given segment is not possible
++ * without scanning the entire segment. This helper returns true either if
++ * both pages are not zone device pages or both pages are zone device pages
++ * with the same pgmap.
++ */
++static inline bool zone_device_pages_have_same_pgmap(const struct page *a,
++						     const struct page *b)
++{
++	if (is_zone_device_page(a) != is_zone_device_page(b))
++		return false;
++	if (!is_zone_device_page(a))
++		return true;
++	return a->pgmap == b->pgmap;
++}
+ extern void memmap_init_zone_device(struct zone *, unsigned long,
+ 				    unsigned long, struct dev_pagemap *);
+ #else
+@@ -1115,6 +1133,11 @@ static inline bool is_zone_device_page(const struct page *page)
+ {
+ 	return false;
+ }
++static inline bool zone_device_pages_have_same_pgmap(const struct page *a,
++						     const struct page *b)
++{
++	return true;
++}
+ #endif
  
--			interconnects = <&aggre1_noc MASTER_UFS_MEM &mc_virt SLAVE_EBI1>,
--					<&gem_noc MASTER_APPSS_PROC &config_noc SLAVE_UFS_MEM_CFG>;
--			interconnect-names = "ufs-ddr", "cpu-ufs";
- 			clock-names =
- 				"core_clk",
- 				"bus_aggr_clk",
+ static inline bool folio_is_zone_device(const struct folio *folio)
 -- 
-2.26.1
+2.30.2
 
