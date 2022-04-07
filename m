@@ -2,106 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8715DC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 969B1C43217
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345441AbiDGQA6 (ORCPT
+        id S1345488AbiDGQA7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 12:00:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
+        Thu, 7 Apr 2022 12:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345458AbiDGQAO (ORCPT
+        with ESMTP id S1345462AbiDGQAP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 12:00:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBE92DCA89
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:58:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649347092;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bBLhChg87FRrs5MpYt/tg2Gm57CzbrV4UINPPthvRVg=;
-        b=STRHMMdyI70wcxhbOmp/mVfKDxSO0JbgeIWqnzg8g/gjpqLdQA9h3z37YDng1r7DcJkVa2
-        y0xnVrxZdglGP5Zz9r0AyXE5JV3sA8b9PD6bO02mQ2MY8GTyAaZ/af1RXQM+uVBkS0zESz
-        g4MmJpDopSJ2ZJ7JccHfedmSRhG8lo0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-338-Lp2EH2pmPW-4agw7rPLROw-1; Thu, 07 Apr 2022 11:58:09 -0400
-X-MC-Unique: Lp2EH2pmPW-4agw7rPLROw-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E1734100DE70;
-        Thu,  7 Apr 2022 15:58:07 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.192.50])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 209CA427852;
-        Thu,  7 Apr 2022 15:57:53 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 26/31] KVM: selftests: nVMX: Allocate Hyper-V partition assist page
-Date:   Thu,  7 Apr 2022 17:56:40 +0200
-Message-Id: <20220407155645.940890-27-vkuznets@redhat.com>
-In-Reply-To: <20220407155645.940890-1-vkuznets@redhat.com>
-References: <20220407155645.940890-1-vkuznets@redhat.com>
+        Thu, 7 Apr 2022 12:00:15 -0400
+Received: from 13.mo582.mail-out.ovh.net (13.mo582.mail-out.ovh.net [188.165.56.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25F1D39B1
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:58:12 -0700 (PDT)
+Received: from player796.ha.ovh.net (unknown [10.111.172.176])
+        by mo582.mail-out.ovh.net (Postfix) with ESMTP id 345C923A8D
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 15:19:30 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player796.ha.ovh.net (Postfix) with ESMTPSA id 9BEC22932FE43;
+        Thu,  7 Apr 2022 15:19:24 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-99G003fbe37ff8-48bc-4f04-b220-b5b9d6c02b3b,
+                    5995496A90EC26C6A3824F4C00BBD29EFE55D398) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wolfram Sang <wsa@kernel.org>, Stephen Kitt <steve@sk2.org>
+Subject: [PATCH v2 00/10] clk: switch to simple i2c probe function
+Date:   Thu,  7 Apr 2022 17:18:21 +0200
+Message-Id: <20220407151831.2371706-1-steve@sk2.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+X-Ovh-Tracer-Id: 72620546474870406
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejkedgkeejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeetgedugfelkeeikeetgeegteevfeeufeetuefgudeiiedthfehtdeffeekvdeffeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to testing Hyper-V Direct TLB flush hypercalls,
-allocate so-called Partition assist page and link it to 'struct
-vmx_pages'.
+This series of patches updates i2c probes in clk to use the simple
+probe variant (simple as in "single argument"), probe_new, following
+one of two scenarios.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- tools/testing/selftests/kvm/include/x86_64/vmx.h | 4 ++++
- tools/testing/selftests/kvm/lib/x86_64/vmx.c     | 7 +++++++
- 2 files changed, 11 insertions(+)
+In the first scenario, the existing probe function
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/vmx.h b/tools/testing/selftests/kvm/include/x86_64/vmx.h
-index 583ceb0d1457..f99922ca8259 100644
---- a/tools/testing/selftests/kvm/include/x86_64/vmx.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/vmx.h
-@@ -567,6 +567,10 @@ struct vmx_pages {
- 	uint64_t enlightened_vmcs_gpa;
- 	void *enlightened_vmcs;
- 
-+	void *partition_assist_hva;
-+	uint64_t partition_assist_gpa;
-+	void *partition_assist;
-+
- 	void *eptp_hva;
- 	uint64_t eptp_gpa;
- 	void *eptp;
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/vmx.c b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
-index d089d8b850b5..3db21e0e1a8f 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/vmx.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
-@@ -124,6 +124,13 @@ vcpu_alloc_vmx(struct kvm_vm *vm, vm_vaddr_t *p_vmx_gva)
- 	vmx->enlightened_vmcs_gpa =
- 		addr_gva2gpa(vm, (uintptr_t)vmx->enlightened_vmcs);
- 
-+	/* Setup of a region of guest memory for the partition assist page. */
-+	vmx->partition_assist = (void *)vm_vaddr_alloc_page(vm);
-+	vmx->partition_assist_hva =
-+		addr_gva2hva(vm, (uintptr_t)vmx->partition_assist);
-+	vmx->partition_assist_gpa =
-+		addr_gva2gpa(vm, (uintptr_t)vmx->partition_assist);
-+
- 	*p_vmx_gva = vmx_gva;
- 	return vmx;
- }
+int (*probe)(struct i2c_client *client, const struct i2c_device_id *id);
+
+(see struct i2c_driver in include/linux/i2c.h) doesn't use the id
+argument, so it can be trivially converted to
+
+int (*probe_new)(struct i2c_client *client);
+
+and the i2c_driver declaration updated to use .probe_new instead of
+.probe.
+
+In the second scenario, the probe function does use the id argument.
+In this case, the relevant part of the calling code,
+
+        /*
+         * When there are no more users of probe(),
+         * rename probe_new to probe.
+         */
+        if (driver->probe_new)
+                status = driver->probe_new(client);
+        else if (driver->probe)
+                status = driver->probe(client,
+                                       i2c_match_id(driver->id_table, client));
+        else
+                status = -EINVAL;
+
+(from drivers/i2c/i2c-core-base.c) is moved down into the probe
+function, typically along the lines of
+
+const struct i2c_device_id *id = i2c_match_id(ids, id);
+
+where ids is the i2c_device_id table. The latter needs to be declared
+before the probe function; as suggested by Wolfram Sang, the full
+definition is moved above the probe function.
+
+Changes since v1:
+  - the pair of patches have been split up into a single patch series
+    with one patch per modified file, and the commit titles adjusted
+    accordingly
+  - renesas-pcie has been added
+
+
+Stephen Kitt (10):
+  clk: cdce706: use simple i2c probe function
+  clk: cdce925: use i2c_match_id and simple i2c probe
+  clk: cs2000-cp: use simple i2c probe function
+  clk: max9485: use simple i2c probe function
+  clk: si514: use simple i2c probe function
+  clk: si5341: use simple i2c probe function
+  clk: si5351: use i2c_match_id and simple i2c probe
+  clk: si544: use i2c_match_id and simple i2c probe
+  clk: si570: use i2c_match_id and simple i2c probe
+  clk: renesas-pcie: use simple i2c probe function
+
+ drivers/clk/clk-cdce706.c      |  5 ++---
+ drivers/clk/clk-cdce925.c      | 24 ++++++++++++------------
+ drivers/clk/clk-cs2000-cp.c    |  5 ++---
+ drivers/clk/clk-max9485.c      |  5 ++---
+ drivers/clk/clk-renesas-pcie.c |  4 ++--
+ drivers/clk/clk-si514.c        |  5 ++---
+ drivers/clk/clk-si5341.c       |  5 ++---
+ drivers/clk/clk-si5351.c       | 24 ++++++++++++------------
+ drivers/clk/clk-si544.c        | 22 +++++++++++-----------
+ drivers/clk/clk-si570.c        | 24 ++++++++++++------------
+ 10 files changed, 59 insertions(+), 64 deletions(-)
+
 -- 
-2.35.1
+2.27.0
 
