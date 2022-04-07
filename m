@@ -2,198 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7020FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:53:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B72C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:53:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242349AbiDGHzK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:55:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39518 "EHLO
+        id S242350AbiDGHzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242339AbiDGHy5 (ORCPT
+        with ESMTP id S242301AbiDGHzd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:54:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AE54B1C592B
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:52:58 -0700 (PDT)
+        Thu, 7 Apr 2022 03:55:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F04691D7617
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:53:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649317977;
+        s=mimecast20190719; t=1649318013;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NeKgo4zQVrdq6IcW5Wmd0hkOphqBpf2zABHpDxlt6y4=;
-        b=d8nd3KnX26DzzEZOyJsrrEiJWluSyG7641q4FNKsRcRREIGboNIMpAs8U+JYNg+TVnYVFy
-        dJs/tstjFud16J9twvd3m3Y5aLS/NyoqIcUBrOo8p24QMYH5s1FdA30GSo6+fLM6DDebpV
-        mEvHsrestjHRYDZ307JNtHe7VSTrIqk=
+        bh=V4oTU89iic44RnYmDXqYjpUYABah6cp5s63eYF96vUY=;
+        b=eTiK/5Ci4TcFyEoto6OkdVzrXitJH0yOwi+xewpJ5ACXqoVpFCukvo3wIY0p+gqq9vkXbX
+        U+WweFstJx7qSxinsmEyhRkW487yvBxDd93mL1GFw0z1u73+VYKJw3kKSFcVshazFyRjmm
+        FrCAqjcRgt8oLHrZpiHnM1x8brIGwok=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-532-8I66qEciNCybx5-R8dhIhA-1; Thu, 07 Apr 2022 03:52:54 -0400
-X-MC-Unique: 8I66qEciNCybx5-R8dhIhA-1
+ us-mta-497-S4TBySX0NsuWn9mNFbRhJA-1; Thu, 07 Apr 2022 03:53:22 -0400
+X-MC-Unique: S4TBySX0NsuWn9mNFbRhJA-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 35A863804091;
-        Thu,  7 Apr 2022 07:52:48 +0000 (UTC)
-Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 25E60C28119;
-        Thu,  7 Apr 2022 07:52:45 +0000 (UTC)
-Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id EDE841C01A8; Thu,  7 Apr 2022 09:52:43 +0200 (CEST)
-From:   Artem Savkov <asavkov@redhat.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Anna-Maria Behnsen <anna-maria@linutronix.de>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
-Subject: [PATCH v4 1/2] timer: add a function to adjust timeouts to be upper bound
-Date:   Thu,  7 Apr 2022 09:52:41 +0200
-Message-Id: <20220407075242.118253-2-asavkov@redhat.com>
-In-Reply-To: <20220407075242.118253-1-asavkov@redhat.com>
-References: <871qyb35q4.ffs@tglx>
- <20220407075242.118253-1-asavkov@redhat.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 55D733C13948;
+        Thu,  7 Apr 2022 07:53:16 +0000 (UTC)
+Received: from localhost (unknown [10.39.193.222])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7D977C28111;
+        Thu,  7 Apr 2022 07:53:02 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>, peterz@infradead.org,
+        maz@kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, tglx@linutronix.de,
+        Halil Pasic <pasic@linux.ibm.com>
+Subject: Re: [PATCH V2 4/5] virtio-pci: implement synchronize_vqs()
+In-Reply-To: <7e99abbf-f68d-4aa5-71b6-9d1d71b2d25b@redhat.com>
+Organization: Red Hat GmbH
+References: <20220406083538.16274-1-jasowang@redhat.com>
+ <20220406083538.16274-5-jasowang@redhat.com>
+ <20220406075952-mutt-send-email-mst@kernel.org>
+ <87wng2e527.fsf@redhat.com>
+ <20220406112858-mutt-send-email-mst@kernel.org>
+ <7e99abbf-f68d-4aa5-71b6-9d1d71b2d25b@redhat.com>
+User-Agent: Notmuch/0.34 (https://notmuchmail.org)
+Date:   Thu, 07 Apr 2022 09:52:59 +0200
+Message-ID: <87r169ba90.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current timer wheel implementation is optimized for performance and
-energy usage but lacks in precision. This, normally, is not a problem as
-most timers that use timer wheel are used for timeouts and thus rarely
-expire, instead they often get canceled or modified before expiration.
-Even when they don't, expiring a bit late is not an issue for timeout
-timers.
+On Thu, Apr 07 2022, Jason Wang <jasowang@redhat.com> wrote:
 
-TCP keepalive timer is a special case, it's aim is to prevent timeouts,
-so triggering earlier rather than later is desired behavior. In a
-reported case the user had a 3600s keepalive timer for preventing firewall
-disconnects (on a 3650s interval). They observed keepalive timers coming
-in up to four minutes late, causing unexpected disconnects.
+> =E5=9C=A8 2022/4/6 =E4=B8=8B=E5=8D=8811:31, Michael S. Tsirkin =E5=86=99=
+=E9=81=93:
+>> On Wed, Apr 06, 2022 at 03:04:32PM +0200, Cornelia Huck wrote:
+>>> On Wed, Apr 06 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+>>>
+>>>> On Wed, Apr 06, 2022 at 04:35:37PM +0800, Jason Wang wrote:
+>>>>> This patch implements PCI version of synchronize_vqs().
+>>>>>
+>>>>> Cc: Thomas Gleixner <tglx@linutronix.de>
+>>>>> Cc: Peter Zijlstra <peterz@infradead.org>
+>>>>> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+>>>>> Cc: Marc Zyngier <maz@kernel.org>
+>>>>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>>>> Please add implementations at least for ccw and mmio.
+>>> I'm not sure what (if anything) can/should be done for ccw...
+>>>
+>>>>> ---
+>>>>>   drivers/virtio/virtio_pci_common.c | 14 ++++++++++++++
+>>>>>   drivers/virtio/virtio_pci_common.h |  2 ++
+>>>>>   drivers/virtio/virtio_pci_legacy.c |  1 +
+>>>>>   drivers/virtio/virtio_pci_modern.c |  2 ++
+>>>>>   4 files changed, 19 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virt=
+io_pci_common.c
+>>>>> index d724f676608b..b78c8bc93a97 100644
+>>>>> --- a/drivers/virtio/virtio_pci_common.c
+>>>>> +++ b/drivers/virtio/virtio_pci_common.c
+>>>>> @@ -37,6 +37,20 @@ void vp_synchronize_vectors(struct virtio_device *=
+vdev)
+>>>>>   		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
+>>>>>   }
+>>>>>=20=20=20
+>>>>> +void vp_synchronize_vqs(struct virtio_device *vdev)
+>>>>> +{
+>>>>> +	struct virtio_pci_device *vp_dev =3D to_vp_device(vdev);
+>>>>> +	int i;
+>>>>> +
+>>>>> +	if (vp_dev->intx_enabled) {
+>>>>> +		synchronize_irq(vp_dev->pci_dev->irq);
+>>>>> +		return;
+>>>>> +	}
+>>>>> +
+>>>>> +	for (i =3D 0; i < vp_dev->msix_vectors; ++i)
+>>>>> +		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
+>>>>> +}
+>>>>> +
+>>> ...given that this seems to synchronize threaded interrupt handlers?
+>> No, any handlers at all. The point is to make sure any memory changes
+>> made prior to this op are visible to callbacks.
+>>
+>> Jason, maybe add that to the documentation?
+>
+>
+> Sure.
+>
+>
+>>
+>>> Halil, do you think ccw needs to do anything? (AFAICS, we only have one
+>>> 'irq' for channel devices anyway, and the handler just calls the
+>>> relevant callbacks directly.)
+>> Then you need to synchronize with that.
+>
+>
+> Have a quick glance at the codes, it looks to me we can synchronize with=
+=20
+> the IO_INTERRUPT. (Assuming all callbacks are triggered via=20
+> ccw_device_irq()).
 
-This commit adds upper_bound_timeout() function that takes a relative
-timeout and adjusts it based on timer wheel granularity so that supplied
-value effectively becomes an upper bound for the timer.
+Not quite, adapter interrupts are device-independent, but they are
+relevant for vring interrupts.
 
-This was previously discussed here:
-https://lore.kernel.org/all/20210302001054.4qgrvnkltvkgikzr@treble/T/#u
+That would mean that we would need to synchronize _all_ channel I/O
+interrupts, which looks like a huge hammer. But do we really need that
+at all?
 
-Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Artem Savkov <asavkov@redhat.com>
----
- include/linux/timer.h |  1 +
- kernel/time/timer.c   | 68 ++++++++++++++++++++++++++++++++++---------
- 2 files changed, 56 insertions(+), 13 deletions(-)
+The last patch in this series seems to be concerned with the "no vring
+interrupts if the device is not ready" case, so it needs to synchronize
+vring interrupts with device reset and setting the device status to
+ready. For virtio-ccw, both reset and setting the status are channel I/O
+operations, i.e. starting a program and waiting for the final device
+interrupt for it, so synchronization (on a device level) is already
+happening in a way. So I'm not sure if any extra synchronization is
+actually needed in this case, but maybe I'm misunderstanding.
 
-diff --git a/include/linux/timer.h b/include/linux/timer.h
-index fda13c9d1256c..b209d31d543f0 100644
---- a/include/linux/timer.h
-+++ b/include/linux/timer.h
-@@ -168,6 +168,7 @@ static inline int timer_pending(const struct timer_list * timer)
- 	return !hlist_unhashed_lockless(&timer->entry);
- }
- 
-+extern unsigned long upper_bound_timeout(unsigned long timeout);
- extern void add_timer_on(struct timer_list *timer, int cpu);
- extern int del_timer(struct timer_list * timer);
- extern int mod_timer(struct timer_list *timer, unsigned long expires);
-diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 85f1021ad4595..a645b62e257e2 100644
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -507,28 +507,38 @@ static inline unsigned calc_index(unsigned long expires, unsigned lvl,
- 	return LVL_OFFS(lvl) + (expires & LVL_MASK);
- }
- 
--static int calc_wheel_index(unsigned long expires, unsigned long clk,
--			    unsigned long *bucket_expiry)
-+static inline int get_wheel_lvl(unsigned long delta)
- {
--	unsigned long delta = expires - clk;
--	unsigned int idx;
--
- 	if (delta < LVL_START(1)) {
--		idx = calc_index(expires, 0, bucket_expiry);
-+		return 0;
- 	} else if (delta < LVL_START(2)) {
--		idx = calc_index(expires, 1, bucket_expiry);
-+		return 1;
- 	} else if (delta < LVL_START(3)) {
--		idx = calc_index(expires, 2, bucket_expiry);
-+		return 2;
- 	} else if (delta < LVL_START(4)) {
--		idx = calc_index(expires, 3, bucket_expiry);
-+		return 3;
- 	} else if (delta < LVL_START(5)) {
--		idx = calc_index(expires, 4, bucket_expiry);
-+		return 4;
- 	} else if (delta < LVL_START(6)) {
--		idx = calc_index(expires, 5, bucket_expiry);
-+		return 5;
- 	} else if (delta < LVL_START(7)) {
--		idx = calc_index(expires, 6, bucket_expiry);
-+		return 6;
- 	} else if (LVL_DEPTH > 8 && delta < LVL_START(8)) {
--		idx = calc_index(expires, 7, bucket_expiry);
-+		return 7;
-+	}
-+
-+	return -1;
-+}
-+
-+static int calc_wheel_index(unsigned long expires, unsigned long clk,
-+			    unsigned long *bucket_expiry)
-+{
-+	unsigned long delta = expires - clk;
-+	unsigned int idx;
-+	int lvl = get_wheel_lvl(delta);
-+
-+	if (lvl >= 0) {
-+		idx = calc_index(expires, lvl, bucket_expiry);
- 	} else if ((long) delta < 0) {
- 		idx = clk & LVL_MASK;
- 		*bucket_expiry = clk;
-@@ -545,6 +555,38 @@ static int calc_wheel_index(unsigned long expires, unsigned long clk,
- 	return idx;
- }
- 
-+/**
-+ * upper_bound_timeout - return granularity-adjusted timeout
-+ * @timeout: timeout value in jiffies
-+ *
-+ * This function return supplied timeout adjusted based on timer wheel
-+ * granularity effectively making supplied value an upper bound at which the
-+ * timer will expire. Due to the way timer wheel works timeouts smaller than
-+ * LVL_GRAN on their respecrive levels will be _at least_
-+ * LVL_GRAN(lvl) - LVL_GRAN(lvl -1)) jiffies early.
-+ */
-+unsigned long upper_bound_timeout(unsigned long timeout)
-+{
-+	int lvl = get_wheel_lvl(timeout);
-+
-+	if (lvl < 0) {
-+		if ((long) timeout < 0) {
-+			/*
-+			 * This will expire immediately so no adjustment
-+			 * needed.
-+			 */
-+			return timeout;
-+		} else {
-+			if (timeout > WHEEL_TIMEOUT_CUTOFF)
-+				timeout = WHEEL_TIMEOUT_CUTOFF;
-+			lvl = LVL_DEPTH - 1;
-+		}
-+	}
-+
-+	return LVL_GRAN(lvl) > timeout ? 0 : timeout - LVL_GRAN(lvl);
-+}
-+EXPORT_SYMBOL(upper_bound_timeout);
-+
- static void
- trigger_dyntick_cpu(struct timer_base *base, struct timer_list *timer)
- {
--- 
-2.34.1
+Do you have further use cases in mind?
 
