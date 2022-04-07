@@ -2,242 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D1A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 21:34:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 21:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231740AbiDGVgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 17:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
+        id S231706AbiDGVhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 17:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231700AbiDGVgQ (ORCPT
+        with ESMTP id S229634AbiDGVhA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 17:36:16 -0400
-Received: from sonic313-15.consmr.mail.ne1.yahoo.com (sonic313-15.consmr.mail.ne1.yahoo.com [66.163.185.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ABEA1689D8
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 14:34:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1649367254; bh=SEZ5yGN4WuR3EQqQcVrWwReXijssZ/504JFMBxTlkAE=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=OxjFgO5FNu7HGPmWDjVdGLo1IbQZWDiRhYY9gAIZobIr//qTbDkYf3mXHqF13b3henCB4KmGyrxCnWnLOE5oKH/WUtj8GaFRJrnlqM/A9eLgpytWmp4XWjrvdDhXU3P0Eip5g553xXRzB7b8MhsTzE7OW0YG1jUM1tC2/X27IUkGiwsyMRvI8wMn4X/aKai+BK9yKdjT1SFMVBJAY4jEIpsOcTiXW7lFzoZ4vuSjRq7qctaTV6ZhV5egOg2dU9ud64naIhbiApaSjCkCI/+lHsNyHYVHSdmGrNQfB0VqAPl0uI2F1Wr1Wn3GSNYwm3er4/PEnxaNskX8aEOEG+NNdA==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1649367254; bh=gyoGcpqhfUaUn3DouNq/+OpFsIwiNpCGGOR8up2BNDC=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=SSLHvZ50Zl+SLJVStEUGJqcuTqgKUA1UC9O45VVKcOBJFiSk8b8lmnEUDF9PlSRbRqmvPCQkvyIdgmjgZsCObxWlJ6toZXrhUTJFKTxftqdUbqvuJKQM9lGsv+k+VnU1mHaZOd1aSr6Xdm4m8F8rNVxtDf4XoY8LRtkZhetY+E/TC3yvcjBYMb8uALQpVEgPwiPv7+F0wE2VvbJVOujA4TumASJ8A23uupnvUpdQaouwbPsME7s8euQr+CEi2WZIPqSMC3ouwwyBivBPj6v9z/Ofy5+OH5kUmGiGdu1ZyQGfUFTuOO2CZ0Usfwp02fmLBRIxwwWqb34XpHRiVuOfNA==
-X-YMail-OSG: h3YV5JMVM1mIqYMGOWRra7lEwwnl9olEfqfZq2cfT8Wg4b2TQWqkdfUB_Z6ajmn
- ALHxcx.d3Km1.6hVTJCV0Bhd6WunYEw8k78VMgq7pW.QyxvqWFln.hJcyxjaUm00bLnKx9Zwhysv
- wTB_kN2C3pCpyYudwTN8nnwnSManTHqcKjSd0hw.HyDQtyU_q3Ln5dz_wMUlRm.gQjvYlPf9y6PN
- 3yp3Lvlb9tka9FiKlls16YaJZ3pAuLTxd7R7cXv7eJyeu_okX0kn27f7dUjJX8TfhF.EmKHgZE4Q
- bCOhVqQhFqw7wcQHKYSgEm9ev7YwbqcMSoPkwLkfEqieeMk6EhYE0HWlNgEUotaQBkonDX0jrMBP
- ujH4ZFBBJe5NBXdtx47WzpJgoQiOxf3mE2VnvI5FlwPcwLcvyziBpOzaISRoCYKdsbGpNHgERwEh
- 5RhlwtS5h96ZtEIKpynfhwcQk67IAgXjUp7xhvqgaSUnfuteF4Rzjum4PvzhilmsWeDABt7Qd4fd
- YqeaWYJQimk86KFb20qLu6U_yf7LJU8Xl.SIIdpm_zD8B6GZFqCAhghUW8H_uLh94.R1Uk6nkCp8
- 0cbeHWz88_IeGxvsiaQx1XlvhyZg95dlYi3.QkKzHaC.SNrZW8RprozIDt6JEyHrjTx0Ky7kiXRp
- CYAE7Us7BvnsIkrO34QyC3XH8eX3BOx6ljE270LD0ZBH9E301srWuZX0gCxt3sUG4LK0f9madz5R
- cjC5MkZofkzdt4kG_7U3L.S7gDLq3ihvMq4FHUamx_x0B9c6KcZl4At13dV7u_5PpigpWflC9phq
- nvUZra.fKksgsUtsPVFTFobmceyejTywR_41hOV6ou_3_bsrggijOEr3b1pSi16J4mHVA8BYFUyJ
- SZK5mpxt2CRrGrDTuRQdr2PnVfd_vzqJNOA3VdrejUmbxSpWtmMSUHy29zmsMVpJmRjfcKNCNRxL
- tuvFQAuK_x2r.LgUPHi4MJoyTXWebipBntf9nAjKXkJGOUYELjWYvwdOEQzdHid04D5NWPR4PKS3
- bS1Lw1iopeml8olmxhRwVSE2U9geAXfNgtqSorXh5B9kDGAXKwBQ7jdzJ59LV8C_XIoMCTq.Ik8Y
- eRCj2TVfDJzAu9VSnnDNWNYneNjTk5xjY_XTeNqSEOf6MUvjOZ0tWM27.spnqF0dkr5pLRxBUxuk
- cJVg3FEpGdgrC4qNTRl4zQmI29GYd2W3vhcDrkCNmvP4CG6Vc.vc20EWPOwTsDIitsL.MyI9kdSp
- OQ5_PVSexnrCXEVYxaPJM6QOJG5f93wlJ8ctn.CAp9oL_WdlJ4B3BmnLy62a9zFHh9vYBZ.U1WIO
- w7.z9.5EW9hLv3Rc2MP94CtraCIQp7d5hLkYgjoKv0iuYQNybWxYrM_OwQnGpEyCMloeEbt7xmBP
- YnP62sP8IPi.zr8LE54cauVxtAbCf0nMZV3Su2nMaBQfB.ucwStSWXxdjf.lQKFV1aJWVCcTtCQX
- o9KK.pPibQjBCODG2oq8FrWwgHOvrXL8Q2.wrF0YYM_ao.i4wQp9InZFmv8iclttcPhLLZ5s6d63
- yKNrPBrq6PCuRVBKJt2.b7JXzpEPgl_ApKotXz2.Zej_vpLLGNNoSyIwSDEe7d6ZNr1DGt2yHNKf
- PCGGTuWZdtWsTeGdP3ftBKVyosyLTb95iImnxyfT26RMOeo5PAG5NmGF2srQnSz2I6KwhjLWk.Oo
- c1nyvFyTWpBxKCGTxEKzxNriIyhpohjikUMTpWnxskylgNC7Ejlzq5JD3l5RFxh9t2R4mqHJi.I3
- QLJe0TEnq3yqxZyvtmt7YuhxlSdvxV1K_JBo.T1mkulmZWmWfJYG8JGf6E.g7bUFe7XplEH5S3mw
- 9Nww65KwFus8i9BEN8HtndCjEur8dwrK5kJLsR4owA3M7ig5Z7ojHhluIDhKlAvFYtSyTOF3wZcB
- 3jkSAsTdvqlGUHQQmd8zg0jYong4eUf1Kik.tiPNTajsijnT7NYXwJ_nd73ViOrO8olmmtszOK.9
- wsUrXjRgnZAefPXp9X8k8b5iruByJxh.Y4.skNcIj.GdO2XRy9S0WO_mNU6JPfqEawquX7OM8M5I
- DYcCk1kdVaSVpE.NU1A8BKr9uflxAqnsTaG6t8htYwtjoNms9S78W2lu2A.JQMrf52K.iOsjDGA2
- Jq2Zt6WbXW9kw34MfxjGFTOe1_wIZNa1El6SdiqaTlmbiCfzoBf_UBBOh9f7aRwfXuxIs4Ydb_Ev
- pYgUhuSQezN6W44ibUIJH9UPv5R13q7GqrDtH7TpYK6VEGuGa680-
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.ne1.yahoo.com with HTTP; Thu, 7 Apr 2022 21:34:14 +0000
-Received: by kubenode510.mail-prod1.omega.ne1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 6ea890d0479c56b8723f536561e1f9ea;
-          Thu, 07 Apr 2022 21:34:09 +0000 (UTC)
-From:   Casey Schaufler <casey@schaufler-ca.com>
-To:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
-        keescook@chromium.org, john.johansen@canonical.com,
-        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v34 23/29] Audit: Create audit_stamp structure
-Date:   Thu,  7 Apr 2022 14:22:24 -0700
-Message-Id: <20220407212230.12893-24-casey@schaufler-ca.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407212230.12893-1-casey@schaufler-ca.com>
-References: <20220407212230.12893-1-casey@schaufler-ca.com>
+        Thu, 7 Apr 2022 17:37:00 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5AB19FF7E
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 14:34:59 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id x131so11834692ybe.11
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 14:34:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=eclypsium.com; s=google;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=yaGos3SERrC2jdiQiJ/85vABo3kZeiwvqRtqI7sWR/o=;
+        b=UnoHu1EK+12NpKKA6uHxlvH9RUZbPSgYKriZSpsoZk125w5ipGaiJ7sTtSTGJbeMdp
+         Di350AKk06PeKhYE+MJWSKTJDYk4A7TfEFWKJ92lqYXLXG0/bkkDCtMSY4ru7ns8Cs30
+         0NIEgnHab0r5/k/hTOZPAKpTGMTGQGQyTK33Uukp8gs2IzZlnPz6LrjMGmCnCqLwUZ25
+         18itwsp3ELXHwK29xjTTLEMg8uzfg7NH4o8JLk0FisLvmB12XKsQ7g2lpr3Ncu5s+INw
+         N+bbiivMFNquAbOtNEkdbNn0yw4WP/NnDLWLnUCQIm4OAwysRaQ56esx+QbJW1tI3C1l
+         7+hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=yaGos3SERrC2jdiQiJ/85vABo3kZeiwvqRtqI7sWR/o=;
+        b=ntjt7vzjFNjVxX7xMxLl5Lj5F0hAdHLHO+JQdNKcaP1G3AxhZboEcrzQyn4Dw+WIbr
+         CLmmUeyVjGDdsk7z/3UFwmZyKnduKmAcZobZk45Xs0MC9zYqSN4uyaOEAu6NPwOeKtEv
+         oY4391Sqx8bgoU9tjQIjUaYPQ3Bg7iQhgdz6xvxXlFneV3hE1hMLE/NmM2CZ+1v0g1xb
+         pg529Rorpc2uSRuIInbdM6AyCObM/xhkUjlxHIFpv64hMtp5q6DWgIzU/MyQZbd8xNW/
+         +t7SgxUUBJF2OBo3p4HtJztj/Utsb5g9XK7AELEvU5f4OHZ2RYMiVNb29czQt7lXf2d5
+         YZXw==
+X-Gm-Message-State: AOAM532B1VKh1gg2rJT05euS7Aq74X0gUYxnmIl5WTjV+ssp6fKk7ibG
+        xin0bcWpUmO86nyKd3jLCx80iBBHEzPXyDNfE6/w2Q==
+X-Google-Smtp-Source: ABdhPJwJEywGIqQdg8hh0sUZXnA5G8Sb7DVlb0w1/35HRGGNTC17jceSOFtlb3SQWN4PMoqW6FMkZ+50oK/6iZFFy60=
+X-Received: by 2002:a25:e689:0:b0:63e:4f58:d27 with SMTP id
+ d131-20020a25e689000000b0063e4f580d27mr4753250ybh.341.1649367298317; Thu, 07
+ Apr 2022 14:34:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a81:10a:0:0:0:0:0 with HTTP; Thu, 7 Apr 2022 14:34:57 -0700 (PDT)
+In-Reply-To: <CAFd5g46JiiddNxHW_jK6fjdfjGMjWsXsFuvL6H9xcZc98HWQyQ@mail.gmail.com>
+References: <20220311072859.2174624-1-brendanhiggins@google.com>
+ <1e1472e8-1813-3903-f934-cb0ae7f09864@linuxfoundation.org> <CAFd5g46JiiddNxHW_jK6fjdfjGMjWsXsFuvL6H9xcZc98HWQyQ@mail.gmail.com>
+From:   Martin Fernandez <martin.fernandez@eclypsium.com>
+Date:   Thu, 7 Apr 2022 18:34:57 -0300
+Message-ID: <CAKgze5bCf+v4PoS92XCDV2cD7d0iUvCvxHbPqAnLoW8pwoKbtQ@mail.gmail.com>
+Subject: Re: [PATCH v1] kunit: add support for kunit_suites that reference
+ init code
+To:     Brendan Higgins <brendanhiggins@google.com>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>, shuah@kernel.org,
+        davidgow@google.com, dlatypov@google.com,
+        daniel.gutson@eclypsium.com, linux-kselftest@vger.kernel.org,
+        kunit-dev@googlegroups.com, linux-kernel@vger.kernel.org,
+        keescook@chromium.org, jk@codeconstruct.com.au
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace the timestamp and serial number pair used in audit records
-with a structure containing the two elements.
+On 4/4/22, Brendan Higgins <brendanhiggins@google.com> wrote:
+> On Mon, Apr 4, 2022 at 6:37 PM Shuah Khan <skhan@linuxfoundation.org>
+> wrote:
+>>
+>> Hi Brendan,
+>>
+>> On 3/11/22 12:28 AM, Brendan Higgins wrote:
+>> > Add support for a new kind of kunit_suite registration macro called
+>> > kunit_test_init_suite(); this new registration macro allows the
+>> > registration of kunit_suites that reference functions marked __init and
+>> > data marked __initdata.
+>> >
+>> > Signed-off-by: Brendan Higgins <brendanhiggins@google.com>
+>> > Tested-by: Martin Fernandez <martin.fernandez@eclypsium.com>
+>> > Reviewed-by: Kees Cook <keescook@chromium.org>
+>> > Reviewed-by: David Gow <davidgow@google.com>
+>> > ---
+>> >
+>>
+>> I almost applied it ...
+>>
+>> > This is a follow-up to the RFC here[1].
+>> >
+>> > This patch is in response to a KUnit user issue[2] in which the user
+>> > was
+>> > attempting to test some init functions; although this is a functional
+>> > solution as long as KUnit tests only run during the init phase, we will
+>> > need to do more work if we ever allow tests to run after the init phase
+>> > is over; it is for this reason that this patch adds a new registration
+>> > macro rather than simply modifying the existing macros.
+>> >
+>> > Changes since last version:
+>> >   - I added more to the kunit_test_init_suites() kernel-doc comment
+>> >     detailing "how" the modpost warnings are suppressed in addition to
+>> >     the existing information regarding "why" it is OK for the modpost
+>> >     warnings to be suppressed.
+>> >
+>> > [1]
+>> > https://lore.kernel.org/linux-kselftest/20220310210210.2124637-1-brendanhiggins@google.com/
+>> > [2] https://groups.google.com/g/kunit-dev/c/XDjieRHEneg/m/D0rFCwVABgAJ
+>> >
+>> > ---
+>> >   include/kunit/test.h | 26 ++++++++++++++++++++++++++
+>> >   1 file changed, 26 insertions(+)
+>> >
+>> > diff --git a/include/kunit/test.h b/include/kunit/test.h
+>> > index b26400731c02..7f303a06bc97 100644
+>> > --- a/include/kunit/test.h
+>> > +++ b/include/kunit/test.h
+>> > @@ -379,6 +379,32 @@ static inline int kunit_run_all_tests(void)
+>> >
+>> >   #define kunit_test_suite(suite)     kunit_test_suites(&suite)
+>> >
+>> > +/**
+>> > + * kunit_test_init_suites() - used to register one or more &struct
+>> > kunit_suite
+>> > + *                         containing init functions or init data.
+>> > + *
+>> > + * @__suites: a statically allocated list of &struct kunit_suite.
+>> > + *
+>> > + * This functions identically as &kunit_test_suites() except that it
+>> > suppresses
+>> > + * modpost warnings for referencing functions marked __init or data
+>> > marked
+>> > + * __initdata; this is OK because currently KUnit only runs tests upon
+>> > boot
+>> > + * during the init phase or upon loading a module during the init
+>> > phase.
+>> > + *
+>> > + * NOTE TO KUNIT DEVS: If we ever allow KUnit tests to be run after
+>> > boot, these
+>> > + * tests must be excluded.
+>> > + *
+>> > + * The only thing this macro does that's different from
+>> > kunit_test_suites is
+>> > + * that it suffixes the array and suite declarations it makes with
+>> > _probe;
+>> > + * modpost suppresses warnings about referencing init data for symbols
+>> > named in
+>> > + * this manner.
+>> > + */
+>> > +#define kunit_test_init_suites(__suites...)                          \
+>> > +     __kunit_test_suites(CONCATENATE(__UNIQUE_ID(array), _probe),    \
+>> > +                         CONCATENATE(__UNIQUE_ID(suites), _probe),   \
+>> > +                         ##__suites)
+>> > +
+>> > +#define kunit_test_init_suite(suite) kunit_test_init_suites(&suite)
+>> > +
+>> >   #define kunit_suite_for_each_test_case(suite, test_case)            \
+>> >       for (test_case = suite->test_cases; test_case->run_case;
+>> > test_case++)
+>> >
+>> >
+>>
+>> The naming of the function and macro are rather confusing and can become
+>> error prone. Let's find better naming scheme.
+>
+> Yeah, I wasn't sure about the name. I didn't have any better ideas
+> initially though. Any suggestions?
+>
 
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-Acked-by: Paul Moore <paul@paul-moore.com>
----
- kernel/audit.c   | 17 +++++++++--------
- kernel/audit.h   | 12 +++++++++---
- kernel/auditsc.c | 22 +++++++++-------------
- 3 files changed, 27 insertions(+), 24 deletions(-)
+What about kunit_test_init_section_suite?
 
-diff --git a/kernel/audit.c b/kernel/audit.c
-index 28ff7a5f90bd..6b6c089512f7 100644
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -1822,11 +1822,11 @@ unsigned int audit_serial(void)
- }
- 
- static inline void audit_get_stamp(struct audit_context *ctx,
--				   struct timespec64 *t, unsigned int *serial)
-+				   struct audit_stamp *stamp)
- {
--	if (!ctx || !auditsc_get_stamp(ctx, t, serial)) {
--		ktime_get_coarse_real_ts64(t);
--		*serial = audit_serial();
-+	if (!ctx || !auditsc_get_stamp(ctx, stamp)) {
-+		ktime_get_coarse_real_ts64(&stamp->ctime);
-+		stamp->serial = audit_serial();
- 	}
- }
- 
-@@ -1849,8 +1849,7 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
- 				     int type)
- {
- 	struct audit_buffer *ab;
--	struct timespec64 t;
--	unsigned int serial;
-+	struct audit_stamp stamp;
- 
- 	if (audit_initialized != AUDIT_INITIALIZED)
- 		return NULL;
-@@ -1905,12 +1904,14 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
- 		return NULL;
- 	}
- 
--	audit_get_stamp(ab->ctx, &t, &serial);
-+	audit_get_stamp(ab->ctx, &stamp);
- 	/* cancel dummy context to enable supporting records */
- 	if (ctx)
- 		ctx->dummy = 0;
- 	audit_log_format(ab, "audit(%llu.%03lu:%u): ",
--			 (unsigned long long)t.tv_sec, t.tv_nsec/1000000, serial);
-+			 (unsigned long long)stamp.ctime.tv_sec,
-+			 stamp.ctime.tv_nsec/1000000,
-+			 stamp.serial);
- 
- 	return ab;
- }
-diff --git a/kernel/audit.h b/kernel/audit.h
-index 4af63e7dde17..260dab6e0e15 100644
---- a/kernel/audit.h
-+++ b/kernel/audit.h
-@@ -99,6 +99,12 @@ struct audit_proctitle {
- 	char	*value;	/* the cmdline field */
- };
- 
-+/* A timestamp/serial pair to identify an event */
-+struct audit_stamp {
-+	struct timespec64	ctime;	/* time of syscall entry */
-+	unsigned int		serial;	/* serial number for record */
-+};
-+
- /* The per-task audit context. */
- struct audit_context {
- 	int		    dummy;	/* must be the first element */
-@@ -108,10 +114,10 @@ struct audit_context {
- 		AUDIT_CTX_URING,	/* in use by io_uring */
- 	} context;
- 	enum audit_state    state, current_state;
-+	struct audit_stamp  stamp;	/* event identifier */
- 	unsigned int	    serial;     /* serial number for record */
- 	int		    major;      /* syscall number */
- 	int		    uring_op;   /* uring operation */
--	struct timespec64   ctime;      /* time of syscall entry */
- 	unsigned long	    argv[4];    /* syscall arguments */
- 	long		    return_code;/* syscall return code */
- 	u64		    prio;
-@@ -265,7 +271,7 @@ extern void audit_put_tty(struct tty_struct *tty);
- #ifdef CONFIG_AUDITSYSCALL
- extern unsigned int audit_serial(void);
- extern int auditsc_get_stamp(struct audit_context *ctx,
--			      struct timespec64 *t, unsigned int *serial);
-+			     struct audit_stamp *stamp);
- 
- extern void audit_put_watch(struct audit_watch *watch);
- extern void audit_get_watch(struct audit_watch *watch);
-@@ -306,7 +312,7 @@ extern void audit_filter_inodes(struct task_struct *tsk,
- 				struct audit_context *ctx);
- extern struct list_head *audit_killed_trees(void);
- #else /* CONFIG_AUDITSYSCALL */
--#define auditsc_get_stamp(c, t, s) 0
-+#define auditsc_get_stamp(c, s) 0
- #define audit_put_watch(w) do { } while (0)
- #define audit_get_watch(w) do { } while (0)
- #define audit_to_watch(k, p, l, o) (-EINVAL)
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index 6fe9f2525fc1..557713954a69 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -992,10 +992,10 @@ static void audit_reset_context(struct audit_context *ctx)
- 	 */
- 
- 	ctx->current_state = ctx->state;
--	ctx->serial = 0;
-+	ctx->stamp.serial = 0;
- 	ctx->major = 0;
- 	ctx->uring_op = 0;
--	ctx->ctime = (struct timespec64){ .tv_sec = 0, .tv_nsec = 0 };
-+	ctx->stamp.ctime = (struct timespec64){ .tv_sec = 0, .tv_nsec = 0 };
- 	memset(ctx->argv, 0, sizeof(ctx->argv));
- 	ctx->return_code = 0;
- 	ctx->prio = (ctx->state == AUDIT_STATE_RECORD ? ~0ULL : 0);
-@@ -1950,7 +1950,7 @@ void __audit_uring_entry(u8 op)
- 
- 	ctx->context = AUDIT_CTX_URING;
- 	ctx->current_state = ctx->state;
--	ktime_get_coarse_real_ts64(&ctx->ctime);
-+	ktime_get_coarse_real_ts64(&ctx->stamp.ctime);
- }
- 
- /**
-@@ -2066,7 +2066,7 @@ void __audit_syscall_entry(int major, unsigned long a1, unsigned long a2,
- 	context->argv[3]    = a4;
- 	context->context = AUDIT_CTX_SYSCALL;
- 	context->current_state  = state;
--	ktime_get_coarse_real_ts64(&context->ctime);
-+	ktime_get_coarse_real_ts64(&context->stamp.ctime);
- }
- 
- /**
-@@ -2535,21 +2535,17 @@ EXPORT_SYMBOL_GPL(__audit_inode_child);
- /**
-  * auditsc_get_stamp - get local copies of audit_context values
-  * @ctx: audit_context for the task
-- * @t: timespec64 to store time recorded in the audit_context
-- * @serial: serial value that is recorded in the audit_context
-+ * @stamp: timestamp to record
-  *
-  * Also sets the context as auditable.
-  */
--int auditsc_get_stamp(struct audit_context *ctx,
--		       struct timespec64 *t, unsigned int *serial)
-+int auditsc_get_stamp(struct audit_context *ctx, struct audit_stamp *stamp)
- {
- 	if (ctx->context == AUDIT_CTX_UNUSED)
- 		return 0;
--	if (!ctx->serial)
--		ctx->serial = audit_serial();
--	t->tv_sec  = ctx->ctime.tv_sec;
--	t->tv_nsec = ctx->ctime.tv_nsec;
--	*serial    = ctx->serial;
-+	if (!ctx->stamp.serial)
-+		ctx->stamp.serial = audit_serial();
-+	*stamp = ctx->stamp;
- 	if (!ctx->prio) {
- 		ctx->prio = 1;
- 		ctx->current_state = AUDIT_STATE_RECORD;
--- 
-2.35.1
-
+>> > base-commit: 330f4c53d3c2d8b11d86ec03a964b86dc81452f5
+>> >
+>>
+>> thanks,
+>> -- Shuah
+>
