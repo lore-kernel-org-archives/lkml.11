@@ -2,102 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C73D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D48FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233713AbiDGJeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39432 "EHLO
+        id S233704AbiDGJe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:34:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243816AbiDGJeL (ORCPT
+        with ESMTP id S233500AbiDGJeY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:34:11 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE1EB369E;
-        Thu,  7 Apr 2022 02:32:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649323931; x=1680859931;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=2UXXZYyV85lALXlrplrR+1ziqbNgpOEQ934veSRPz0M=;
-  b=likf5xQDPCuc/x5hlNJk0N969jZ5OVSxvdQxHNCn0gWjBaLE+m2LWlQF
-   QN1X1WuiU/VGxB7kFni3X4TKx6itUcVkvDlZhEn8OtmHswGtcji59pluD
-   Cl4dEXnJq72m/aaRiGsoa4PmWlwA3S5j95LUDUyQp4uKbhT05+HRYpYO6
-   Y=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 07 Apr 2022 02:32:10 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 02:31:54 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Apr 2022 02:31:54 -0700
-Received: from c-sanm-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Apr 2022 02:31:49 -0700
-From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>
-CC:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
-        <quic_ppratap@quicinc.com>, <quic_kriskura@quicinc.com>,
-        <quic_vpulyala@quicinc.com>,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Subject: [PATCH v3 2/2] usb: dwc3: host: Set the property usb-skip-phy-init
-Date:   Thu, 7 Apr 2022 15:01:28 +0530
-Message-ID: <1649323888-12420-3-git-send-email-quic_c_sanm@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649323888-12420-1-git-send-email-quic_c_sanm@quicinc.com>
-References: <1649323888-12420-1-git-send-email-quic_c_sanm@quicinc.com>
+        Thu, 7 Apr 2022 05:34:24 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E147D888C0;
+        Thu,  7 Apr 2022 02:32:24 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 94A37212C2;
+        Thu,  7 Apr 2022 09:32:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649323943; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=iMz/fVk+XpC4IDojCtgZdhSbgaH5sJ66FU6YyYC0dAU=;
+        b=srp3svmAJ66vDcJogBKiIGdVGuq5CEJs6NzN+Dq5b4+v+huIvNyS5C2rdiaVbhfch0DbrT
+        75BoiGD0hZpc6CLImwmff34i2BgedTfCkHnIdUGSlX2blYRSglJ9ApB8mrYmE1yFAMAhOC
+        HK7B66ciQOpkaSSp/7AQBiyKBcgA1u8=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5B6E913A66;
+        Thu,  7 Apr 2022 09:32:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 5vzuFKevTmJVLgAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 07 Apr 2022 09:32:23 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>
+Subject: [PATCH] mm, page_alloc: fix build_zonerefs_node()
+Date:   Thu,  7 Apr 2022 11:32:21 +0200
+Message-Id: <20220407093221.1090-1-jgross@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Runtime suspend of phy drivers was failing from DWC3 driver as
-runtime usage value is 2 because the phy is initialized from
-DWC3 core and HCD core.
-Some controllers like DWC3 and CDNS3 manage phy in their core drivers.
-This property can be set to avoid phy initialization in HCD core.
+Since commit 9d3be21bf9c0 ("mm, page_alloc: simplify zonelist
+initialization") only zones with free memory are included in a built
+zonelist. This is problematic when e.g. all memory of a zone has been
+ballooned out.
 
-Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Use populated_zone() when building a zonelist as it has been done
+before that commit.
+
+Cc: stable@vger.kernel.org
+Fixes: 9d3be21bf9c0 ("mm, page_alloc: simplify zonelist initialization")
+Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
- drivers/usb/dwc3/host.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ mm/page_alloc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
-index eda8719..fe810ff 100644
---- a/drivers/usb/dwc3/host.c
-+++ b/drivers/usb/dwc3/host.c
-@@ -67,7 +67,7 @@ static int dwc3_host_get_irq(struct dwc3 *dwc)
- 
- int dwc3_host_init(struct dwc3 *dwc)
- {
--	struct property_entry	props[4];
-+	struct property_entry	props[5];
- 	struct platform_device	*xhci;
- 	int			ret, irq;
- 	int			prop_idx = 0;
-@@ -114,6 +114,8 @@ int dwc3_host_init(struct dwc3 *dwc)
- 	if (DWC3_VER_IS_WITHIN(DWC3, ANY, 300A))
- 		props[prop_idx++] = PROPERTY_ENTRY_BOOL("quirk-broken-port-ped");
- 
-+	props[prop_idx++] = PROPERTY_ENTRY_BOOL("usb-skip-phy-init");
-+
- 	if (prop_idx) {
- 		ret = device_create_managed_software_node(&xhci->dev, props, NULL);
- 		if (ret) {
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index bdc8f60ae462..3d0662af3289 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -6128,7 +6128,7 @@ static int build_zonerefs_node(pg_data_t *pgdat, struct zoneref *zonerefs)
+ 	do {
+ 		zone_type--;
+ 		zone = pgdat->node_zones + zone_type;
+-		if (managed_zone(zone)) {
++		if (populated_zone(zone)) {
+ 			zoneref_set_zone(zone, &zonerefs[nr_zones++]);
+ 			check_highest_zone(zone_type);
+ 		}
 -- 
-2.7.4
+2.34.1
 
