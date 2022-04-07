@@ -2,160 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD246C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF393C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242512AbiDGIAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32850 "EHLO
+        id S242524AbiDGIAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242518AbiDGIAR (ORCPT
+        with ESMTP id S242499AbiDGIAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:00:17 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0944E1107E5;
-        Thu,  7 Apr 2022 00:58:17 -0700 (PDT)
-X-UUID: 60ccdfd55e934aa4adae7d3157f64aa0-20220407
-X-UUID: 60ccdfd55e934aa4adae7d3157f64aa0-20220407
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 447750194; Thu, 07 Apr 2022 15:58:11 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 7 Apr 2022 15:58:09 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Apr 2022 15:58:07 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v6 02/34] dt-bindings: mediatek: mt8195: Add binding for infra IOMMU
-Date:   Thu, 7 Apr 2022 15:56:54 +0800
-Message-ID: <20220407075726.17771-3-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220407075726.17771-1-yong.wu@mediatek.com>
-References: <20220407075726.17771-1-yong.wu@mediatek.com>
+        Thu, 7 Apr 2022 04:00:19 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7686A062
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:58:19 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id dr20so9067095ejc.6
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 00:58:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fC6I6LDKsU1dL3jt1bsaP5phqIETRSXO+VpMuWduiYY=;
+        b=NAZwd9Y1aI51SSrlItLOHf6v0nHWXaJbmoEqV+YhgRAyLkkoxOa5cltHyIpiWq+udo
+         Q7pm4lK8hOLsOzBI6fZ0h3sFvUw9+YHii8xE/FsSNofSfHQ0dhfETHfTTpNZrIBuHNm0
+         yb4bXva/J1xsiIbj0hXVpqs3MtfaN7MMDHTWFU+eXCSvteTggFOx9vHS5qOr5XWeaBVe
+         Xjvlp205sGeqb7kZvudhePFw89bLO1AguIPSd1gmuTNIx3oo1TWn7WQK+f7fe536o33s
+         HdCOo1Nz8dyW9L/ITGsOQANC/UxkLUA78xsEx/0lgLvFej2PU3pKfrd32YCqcTuLuWTw
+         rxCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fC6I6LDKsU1dL3jt1bsaP5phqIETRSXO+VpMuWduiYY=;
+        b=wsiJ81fJABHHdqBhRsxsleysUBeSjzIk3i+13samKq62KcBwbuVmUYIcIRDwR0xGkr
+         0OskSHEteBdq/oxX6xVlplhkyzEVsKeqfTsRg8MI/QcjipVdyeUp33QFr3PTaN6IXbWe
+         it9k8pYQGh6HUsDyD+onwVj+dWNNBBYvUsxeOmAyOxB3YU96y442rd/q/hgzvoZKJolx
+         lxeDry9EpffjkDTCS0T/OFZYW9hAzHUu4keEXAXGtXPOSuWNdZiAaQu59sn/3oI/kSwG
+         r2FMs2hNDOtSB+Z3Rtu43WvP3tKYEdPxanYutBzxvQFStFd6aiWP3Y55eA0+V8fb9Ph+
+         vubw==
+X-Gm-Message-State: AOAM531kg+KcxCWOSMkMiuVKDchq4W3ZTfw1lS2lYCAOvUUj/2CeVrhl
+        KOr7eGsWgwcYOP1HSSnUWnJ4XT3EQo68oHCy
+X-Google-Smtp-Source: ABdhPJwwBAjsNMwOIy95cYsA0aUV86ZNq+qMhjorORQ1aYLZQYgUC+I4uFf/XjF04nHEADZmXCtm2g==
+X-Received: by 2002:a17:907:7f04:b0:6e1:39b8:d1a5 with SMTP id qf4-20020a1709077f0400b006e139b8d1a5mr12393193ejc.83.1649318298136;
+        Thu, 07 Apr 2022 00:58:18 -0700 (PDT)
+Received: from [192.168.0.185] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id p10-20020a170906604a00b006e07c76f3d7sm7390612ejj.210.2022.04.07.00.58.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 00:58:17 -0700 (PDT)
+Message-ID: <6dcddc8a-7ca2-b424-fc8f-7000be3f9116@linaro.org>
+Date:   Thu, 7 Apr 2022 09:58:16 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 1/1] tty: serial: samsung: add spin_lock for interrupt
+ and console_write
+Content-Language: en-US
+To:     Jiri Slaby <jirislaby@kernel.org>,
+        Jaewon Kim <jaewon02.kim@samsung.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-samsung-soc@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chanho Park <chanho61.park@samsung.com>
+References: <20220407071619.102249-1-jaewon02.kim@samsung.com>
+ <CGME20220407071223epcas2p16bb11821a0894a3375e84d17c4ff0844@epcas2p1.samsung.com>
+ <20220407071619.102249-2-jaewon02.kim@samsung.com>
+ <b53be23f-7935-dae3-9dc8-f850493a5fa9@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <b53be23f-7935-dae3-9dc8-f850493a5fa9@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In mt8195, we have a new IOMMU that is for INFRA IOMMU. its masters
-mainly are PCIe and USB. Different with MM IOMMU, all these masters
-connect with IOMMU directly, there is no mediatek,larbs property for
-infra IOMMU.
+On 07/04/2022 09:46, Jiri Slaby wrote:
+> On 07. 04. 22, 9:16, Jaewon Kim wrote:
+>> The console_write and IRQ handler can run concurrently.
+>> Problems may occurs console_write is continuously executed while
+>> the IRQ handler is running.
+> 
+>  From the patch POV:
+> 
+> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+> 
+> But given this is a v3 with no version changelog below "---", you've 
+> just kicked the Greg's bot to wake up :P.
+> 
 
-Another thing is about PCIe ports. currently the function
-"of_iommu_configure_dev_id" only support the id number is 1, But our
-PCIe have two ports, one is for reading and the other is for writing.
-see more about the PCIe patch in this patchset. Thus, I only list
-the reading id here and add the other id in our driver.
+There was a cover letter with such changelog:
+https://lore.kernel.org/all/20220407071619.102249-1-jaewon02.kim@samsung.com/
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../bindings/iommu/mediatek,iommu.yaml         | 13 ++++++++++++-
- .../dt-bindings/memory/mt8195-memory-port.h    | 18 ++++++++++++++++++
- include/dt-bindings/memory/mtk-memory-port.h   |  2 ++
- 3 files changed, 32 insertions(+), 1 deletion(-)
+It's indeed easy to miss...
 
-diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-index 2223408e91a9..eed59ec00e78 100644
---- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-@@ -79,6 +79,7 @@ properties:
-           - mediatek,mt8192-m4u  # generation two
-           - mediatek,mt8195-iommu-vdo        # generation two
-           - mediatek,mt8195-iommu-vpp        # generation two
-+          - mediatek,mt8195-iommu-infra      # generation two
- 
-       - description: mt7623 generation one
-         items:
-@@ -131,7 +132,6 @@ required:
-   - compatible
-   - reg
-   - interrupts
--  - mediatek,larbs
-   - '#iommu-cells'
- 
- allOf:
-@@ -163,6 +163,17 @@ allOf:
-       required:
-         - power-domains
- 
-+  - if: # The IOMMUs don't have larbs.
-+      not:
-+        properties:
-+          compatible:
-+            contains:
-+              const: mediatek,mt8195-iommu-infra
-+
-+    then:
-+      required:
-+        - mediatek,larbs
-+
- additionalProperties: false
- 
- examples:
-diff --git a/include/dt-bindings/memory/mt8195-memory-port.h b/include/dt-bindings/memory/mt8195-memory-port.h
-index c10e8b61f1e8..70ba9f498eeb 100644
---- a/include/dt-bindings/memory/mt8195-memory-port.h
-+++ b/include/dt-bindings/memory/mt8195-memory-port.h
-@@ -387,4 +387,22 @@
- #define M4U_PORT_L28_CAM_DRZS4NO_R1		MTK_M4U_ID(28, 5)
- #define M4U_PORT_L28_CAM_TNCSO_R1		MTK_M4U_ID(28, 6)
- 
-+/* Infra iommu ports */
-+/* PCIe1: read: BIT16; write BIT17. */
-+#define IOMMU_PORT_INFRA_PCIE1			MTK_IFAIOMMU_PERI_ID(16)
-+/* PCIe0: read: BIT18; write BIT19. */
-+#define IOMMU_PORT_INFRA_PCIE0			MTK_IFAIOMMU_PERI_ID(18)
-+#define IOMMU_PORT_INFRA_SSUSB_P3_R		MTK_IFAIOMMU_PERI_ID(20)
-+#define IOMMU_PORT_INFRA_SSUSB_P3_W		MTK_IFAIOMMU_PERI_ID(21)
-+#define IOMMU_PORT_INFRA_SSUSB_P2_R		MTK_IFAIOMMU_PERI_ID(22)
-+#define IOMMU_PORT_INFRA_SSUSB_P2_W		MTK_IFAIOMMU_PERI_ID(23)
-+#define IOMMU_PORT_INFRA_SSUSB_P1_1_R		MTK_IFAIOMMU_PERI_ID(24)
-+#define IOMMU_PORT_INFRA_SSUSB_P1_1_W		MTK_IFAIOMMU_PERI_ID(25)
-+#define IOMMU_PORT_INFRA_SSUSB_P1_0_R		MTK_IFAIOMMU_PERI_ID(26)
-+#define IOMMU_PORT_INFRA_SSUSB_P1_0_W		MTK_IFAIOMMU_PERI_ID(27)
-+#define IOMMU_PORT_INFRA_SSUSB2_R		MTK_IFAIOMMU_PERI_ID(28)
-+#define IOMMU_PORT_INFRA_SSUSB2_W		MTK_IFAIOMMU_PERI_ID(29)
-+#define IOMMU_PORT_INFRA_SSUSB_R		MTK_IFAIOMMU_PERI_ID(30)
-+#define IOMMU_PORT_INFRA_SSUSB_W		MTK_IFAIOMMU_PERI_ID(31)
-+
- #endif
-diff --git a/include/dt-bindings/memory/mtk-memory-port.h b/include/dt-bindings/memory/mtk-memory-port.h
-index 7d64103209af..2f68a0511a25 100644
---- a/include/dt-bindings/memory/mtk-memory-port.h
-+++ b/include/dt-bindings/memory/mtk-memory-port.h
-@@ -12,4 +12,6 @@
- #define MTK_M4U_TO_LARB(id)		(((id) >> 5) & 0x1f)
- #define MTK_M4U_TO_PORT(id)		((id) & 0x1f)
- 
-+#define MTK_IFAIOMMU_PERI_ID(port)	MTK_M4U_ID(0, port)
-+
- #endif
--- 
-2.18.0
-
+Best regards,
+Krzysztof
