@@ -2,148 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9DD9C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:19:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:21:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240983AbiDGGVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 02:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36940 "EHLO
+        id S240987AbiDGGXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 02:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236654AbiDGGVJ (ORCPT
+        with ESMTP id S234876AbiDGGXc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 02:21:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC86E4C42F
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 23:19:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649312348;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TSoQ5rtvOHp3Q8UdZ46y3auvh3IsXFHtX0lRwfM7Hh0=;
-        b=AdW5jKWSyHVueE8MHBdBL5cEFKdgbYIKUmWZL7UFWIjoYUXarmgeBz0TghHUEoLpiihoC2
-        /JorNQgq9fD7N8DxnAcBaay/5Y4Mw3PDdcXC/4jbNw08qaiUPy5IsMeE32nJWdZLUFqA05
-        lTyCM7gautL5BmrEpx2rFfbdSb7RY9g=
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
- [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-554-AsLJcbsaMc-JfaW1qLfvVw-1; Thu, 07 Apr 2022 02:19:07 -0400
-X-MC-Unique: AsLJcbsaMc-JfaW1qLfvVw-1
-Received: by mail-pl1-f198.google.com with SMTP id f10-20020a170902ce8a00b00156a6b150e4so2308505plg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 23:19:07 -0700 (PDT)
+        Thu, 7 Apr 2022 02:23:32 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C543634C
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 23:21:33 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id l26so8723126ejx.1
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 23:21:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=lFeu13B4GooKw5hC3dcio6xNxGQNDFEh6M5pue+v5h8=;
+        b=K3W43Xpr4w6Uel8V1O2QRTwL4Z9UmJkdK9muSQytlVH4Gzn6W03AvpfAouMfVteW8c
+         6E0I3EDINF5FrFoKrNCVgs89YXkKFEZZSFRmCNa2OM7OWjk+O1WZhNHA9hl0HkrVqQAR
+         /5HnpHGp7lTpeHeujdPqx3qi+fzJaZdunPLC1NdS2vHrQtqV4B6GS8Fi2ji4gNqfK9Dv
+         hHaAXSR+bLm7RZyUO8JzRdZqmGyuaMQEriuWcjbmQoJokfBUzEwzvppNgdjJZuGLlhTO
+         0TQ2/yoh0k7Uh5SvI7NrHeKEZTiRTBaRq+No3p8rygDtXFkqayE5vYAnw3u9ia2KHnyQ
+         D6Bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=TSoQ5rtvOHp3Q8UdZ46y3auvh3IsXFHtX0lRwfM7Hh0=;
-        b=B76/Swox4ZP09HafNqfvhoCuMkqMo0juaC9MnxJ0HBcy3Uj0HSDuQ0uCXlGzhvZAZT
-         zY73E3IiYt1//u+aiPEUWAYWMagwTrLsGcPm2G9NUKn1INkNCi2rTywvRm1O360YowD7
-         ulhEEQZbqtG5QavgRdp+YOuYA3fDVC3WbkeFNWe99/hpZoGah0uvQmhbHO6U+SaDDzKb
-         ZlBxsU8mLrki+WkOPxMoGQcbVC3Ad5igRUUr3On9NqIix2EXgnfAH9vdjQ+0SQfbnd9H
-         yq7nsMqWCaU/B4OVuc1FIc0lMUeipCmTP5PocPgLZJ25V6M73VFHQGKXKn5pE1/xCQRA
-         m1IA==
-X-Gm-Message-State: AOAM532dnfGTEepAe3sMcy70iU56dUQBDrfv+Vhrz/VJkUD+8R8aAObY
-        zwwMO5UOrzDshaZKH/sFD7Z/dcGAKzhhX5M4R3zQgCwzs/w6pfaAyOCOo2ucWFXuhqXjOIiU18A
-        SbA0OXG3KE7oHxSS4Mg4fRnQk
-X-Received: by 2002:a17:90b:4b10:b0:1c7:5b66:28df with SMTP id lx16-20020a17090b4b1000b001c75b6628dfmr14030857pjb.33.1649312346596;
-        Wed, 06 Apr 2022 23:19:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJweJp2zPRrmAPlPETh78WGTKxsWNZZmlfTbsV43Rw8FTB6b1dnjjPEVt0sxXbGTw9H+3SE4Fw==
-X-Received: by 2002:a17:90b:4b10:b0:1c7:5b66:28df with SMTP id lx16-20020a17090b4b1000b001c75b6628dfmr14030831pjb.33.1649312346324;
-        Wed, 06 Apr 2022 23:19:06 -0700 (PDT)
-Received: from [10.72.13.105] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id b10-20020a056a00114a00b004f784ba5e6asm21959166pfm.17.2022.04.06.23.19.02
+        bh=lFeu13B4GooKw5hC3dcio6xNxGQNDFEh6M5pue+v5h8=;
+        b=1IEX5ydYutJ7CtNCIFgWT+Z9vtXOIlWOpEaGxPCMB0G27xm8W7gEnBVbDCXrcDgLt9
+         U/cYmKrgCxOqfYvcjdI4t+g8Kt20KfViDT0vnl8Zecd/KTLCRtorGNzWrZZW0KIfvC0/
+         u9oC4006zZwK/lfqZ1MXCD6ThmyrQcgIO6MgGojwWmPfpWwVypGMvWsJNhcqNwXW40LO
+         ntsmnikpwn4aqwKmt26x5Ma9zkQLMKPEu5rOzMqv16GVuDSu3dktAQJnXQ9ZBOaYUGFy
+         bcSaamuKK1Dj08uDAOlAT8avCU1NC672XIbRM3zUrsNLmRy9rZ8odTJxjyIQwlWHJExH
+         2X7A==
+X-Gm-Message-State: AOAM530Me2Y8yYgosL2kvR9kawEWjM3Ukq6kA/cgK7WGJU5BKjB0KBh1
+        KksKBCtdXPxeq7vPooE+l80=
+X-Google-Smtp-Source: ABdhPJzJvVu/Mpc49n67UlRPTuoOw32LgOaTHZZqxWaAICiarYth54KIQ/X745zarR/GrOyHAryZZg==
+X-Received: by 2002:a17:906:7751:b0:6ce:e3c:81a6 with SMTP id o17-20020a170906775100b006ce0e3c81a6mr11286345ejn.278.1649312491633;
+        Wed, 06 Apr 2022 23:21:31 -0700 (PDT)
+Received: from [192.168.178.21] (p57b0b9e1.dip0.t-ipconnect.de. [87.176.185.225])
+        by smtp.gmail.com with ESMTPSA id gv9-20020a170906f10900b006d7128b2e6fsm7340540ejb.162.2022.04.06.23.21.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 23:19:05 -0700 (PDT)
-Message-ID: <be2dd73d-7394-20d0-fa2b-652fdaa5700f@redhat.com>
-Date:   Thu, 7 Apr 2022 14:19:00 +0800
+        Wed, 06 Apr 2022 23:21:30 -0700 (PDT)
+Message-ID: <26951c45-f742-2f0e-f4a6-281a031c3471@gmail.com>
+Date:   Thu, 7 Apr 2022 08:21:29 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH V2 1/5] virtio: use virtio_device_ready() in
- virtio_device_restore()
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] drm/amdgpu: Fix code with incorrect enum type
 Content-Language: en-US
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
-        peterz@infradead.org, sgarzare@redhat.com,
-        "Paul E. McKenney" <paulmck@kernel.org>
-References: <20220406083538.16274-1-jasowang@redhat.com>
- <20220406083538.16274-2-jasowang@redhat.com>
- <20220406073803-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220406073803-mutt-send-email-mst@kernel.org>
+To:     Grigory Vasilyev <h0tc0d3@gmail.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Melissa Wen <mwen@igalia.com>
+Cc:     Joseph Greathouse <Joseph.Greathouse@amd.com>,
+        Guchun Chen <guchun.chen@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>, linux-kernel@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Evan Quan <evan.quan@amd.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+References: <20220406165057.97492-1-h0tc0d3@gmail.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+In-Reply-To: <20220406165057.97492-1-h0tc0d3@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Am 06.04.22 um 18:50 schrieb Grigory Vasilyev:
+> Instead of the 'amdgpu_ring_priority_level' type,
+> the 'amdgpu_gfx_pipe_priority' type was used,
+> which is an error when setting ring priority.
+> This is a minor error, but may cause problems in the future.
+>
+> Instead of AMDGPU_RING_PRIO_2 = 2, we can use AMDGPU_RING_PRIO_MAX = 3,
+> but AMDGPU_RING_PRIO_2 = 2 is used for compatibility with
+> AMDGPU_GFX_PIPE_PRIO_HIGH = 2, and not change the behavior of the
+> code.
+>
+> Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
 
-在 2022/4/6 下午7:44, Michael S. Tsirkin 写道:
-> patch had wrong mime type. I managed to extra it but pls fix.
->
->>
->> From: Stefano Garzarella <sgarzare@redhat.com>
->>
->> It will allows us
-> will allow us
->
->> to do extension on virtio_device_ready() without
->> duplicating codes.
-> code
->
->> Cc: Thomas Gleixner <tglx@linutronix.de>
->> Cc: Peter Zijlstra <peterz@infradead.org>
->> Cc: "Paul E. McKenney" <paulmck@kernel.org>
->> Cc: Marc Zyngier <maz@kernel.org>
->> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
->> ---
->>   drivers/virtio/virtio.c | 5 +++--
->>   1 file changed, 3 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
->> index 22f15f444f75..75c8d560bbd3 100644
->> --- a/drivers/virtio/virtio.c
->> +++ b/drivers/virtio/virtio.c
->> @@ -526,8 +526,9 @@ int virtio_device_restore(struct virtio_device *dev)
->>   			goto err;
->>   	}
->>   
->> -	/* Finally, tell the device we're all set */
->> -	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER_OK);
->> +	/* If restore didn't do it, mark device DRIVER_OK ourselves. */
->> +	if (!(dev->config->get_status(dev) & VIRTIO_CONFIG_S_DRIVER_OK))
->> +		virtio_device_ready(dev);
->>   
->>   	virtio_config_enable(dev);
-> it's unfortunate that this adds an extra vmexit since virtio_device_ready
-> calls get_status too.
->
-> We now have:
->
-> static inline
-> void virtio_device_ready(struct virtio_device *dev)
-> {
->          unsigned status = dev->config->get_status(dev);
->                  
->          BUG_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
->          dev->config->set_status(dev, status | VIRTIO_CONFIG_S_DRIVER_OK);
-> }
->
->
-> I propose adding a helper and putting common code there.
+Good catch, Acked-by: Christian König <christian.koenig@amd.com>
 
-
-Ok, let me fix it.
-
-Thanks
-
-
+> ---
+>   drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
->>   
->> -- 
->> 2.25.1
+> diff --git a/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
+> index 5554084ec1f1..9bc26395f833 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
+> @@ -1929,7 +1929,7 @@ static int gfx_v8_0_compute_ring_init(struct amdgpu_device *adev, int ring_id,
+>   		+ ring->pipe;
+>   
+>   	hw_prio = amdgpu_gfx_is_high_priority_compute_queue(adev, ring) ?
+> -			AMDGPU_GFX_PIPE_PRIO_HIGH : AMDGPU_RING_PRIO_DEFAULT;
+> +			AMDGPU_RING_PRIO_2 : AMDGPU_RING_PRIO_DEFAULT;
+>   	/* type-2 packets are deprecated on MEC, use type-3 instead */
+>   	r = amdgpu_ring_init(adev, ring, 1024, &adev->gfx.eop_irq, irq_type,
+>   			     hw_prio, NULL);
 
