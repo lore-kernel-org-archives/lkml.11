@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1048FC47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A84C47087
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239562AbiDGB2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32852 "EHLO
+        id S242246AbiDGBc1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:32:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240447AbiDGBUA (ORCPT
+        with ESMTP id S239726AbiDGBT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:20:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461DA1817B7;
-        Wed,  6 Apr 2022 18:16:25 -0700 (PDT)
+        Wed, 6 Apr 2022 21:19:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8129E1AE21F;
+        Wed,  6 Apr 2022 18:14:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF85761DAE;
-        Thu,  7 Apr 2022 01:16:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8404C385A1;
-        Thu,  7 Apr 2022 01:16:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C433BB8268D;
+        Thu,  7 Apr 2022 01:14:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60D7CC385A6;
+        Thu,  7 Apr 2022 01:14:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294184;
-        bh=KuFUgf9ktp4busrSOKUHZR6BbW7z2IoxN0dCsE+i6NY=;
+        s=k20201202; t=1649294093;
+        bh=V54235r8/iwJZHzZJh9Bx2Fl/u1D+DRFrFgDgmbY7eY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GT+X6ggM3ugPDDantv4kdwnJQWjjvVsAVwuWhtIHtYcUe/JbIbUfCFxbWLMqWArpZ
-         ZBHcU7UH4ctTF3zRKyoQl+PZQtCIGCdFYWsoi5QFYxcg3NvtyYE4gExrXcUAyFsMfN
-         3HzVBLFdpzm8VIKjcRj0P3GbcvBsxlnIOB0y0IqFw7UvuKITegTM99T71XSDw1mDZf
-         Sxb/YuN1ommGLeHlG3SceRq6LedDXXwvBbI22Lm85QfcS/GNk7hQQ3qtxgAdOL1asb
-         J/3neZCvj4h6mhZkUSng9sqC7pxGgVz6593gzUQvOczgDzBTcBlT8OmSXAtzhR8heB
-         Pk4Zu00yJ37AA==
+        b=jmcqz7OcV9j9YXYSu8Jr9avVVfy5MoKJZGNzNu1QUZbpZp1AjN+6gCMyx5EyDXkXI
+         U5Igp84plp/4sX8cu6N262cvAcVdlekqwEfy2/aniWf6rkJbZCWfG4/S6tIqpkqcvH
+         q7qxIyFVvjWg+USjkx0jAf6u5IFMg1K+QpOnKDyFL9vJJPlleiLdqCptO+K9JXZ01A
+         diXO4O1hIeNmgx8snivgNnvtJGyXhlCsz08fdWEerisNV6UdvjWjYVp5gZw8U8xoOd
+         xN1SQqhZrBBk0MGCKhMpxDeUsSkI3Thdno0nVxKFnlJoz15yDTivDoVsoC1dtUbHnV
+         J9vBDTnc7J78A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-input@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 05/11] Input: stmfts - fix reference leak in stmfts_input_open
-Date:   Wed,  6 Apr 2022 21:16:02 -0400
-Message-Id: <20220407011609.115258-5-sashal@kernel.org>
+Cc:     Anton Eidelman <anton.eidelman@gmail.com>,
+        Anton Eidelman <anton@lightbitslabs.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 17/25] nvme-multipath: fix hang when disk goes live over reconnect
+Date:   Wed,  6 Apr 2022 21:14:05 -0400
+Message-Id: <20220407011413.114662-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011609.115258-1-sashal@kernel.org>
-References: <20220407011609.115258-1-sashal@kernel.org>
+In-Reply-To: <20220407011413.114662-1-sashal@kernel.org>
+References: <20220407011413.114662-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,51 +54,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: Anton Eidelman <anton.eidelman@gmail.com>
 
-[ Upstream commit 26623eea0da3476446909af96c980768df07bbd9 ]
+[ Upstream commit a4a6f3c8f61c3cfbda4998ad94596059ad7e4332 ]
 
-pm_runtime_get_sync() will increment pm usage counter even it
-failed. Forgetting to call pm_runtime_put_noidle will result
-in reference leak in stmfts_input_open, so we should fix it.
+nvme_mpath_init_identify() invoked from nvme_init_identify() fetches a
+fresh ANA log from the ctrl.  This is essential to have an up to date
+path states for both existing namespaces and for those scan_work may
+discover once the ctrl is up.
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Link: https://lore.kernel.org/r/20220317131604.53538-1-zhengyongjun3@huawei.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+This happens in the following cases:
+  1) A new ctrl is being connected.
+  2) An existing ctrl is successfully reconnected.
+  3) An existing ctrl is being reset.
+
+While in (1) ctrl->namespaces is empty, (2 & 3) may have namespaces, and
+nvme_read_ana_log() may call nvme_update_ns_ana_state().
+
+This result in a hang when the ANA state of an existing namespace changes
+and makes the disk live: nvme_mpath_set_live() issues IO to the namespace
+through the ctrl, which does NOT have IO queues yet.
+
+See sample hang below.
+
+Solution:
+- nvme_update_ns_ana_state() to call set_live only if ctrl is live
+- nvme_read_ana_log() call from nvme_mpath_init_identify()
+  therefore only fetches and parses the ANA log;
+  any erros in this process will fail the ctrl setup as appropriate;
+- a separate function nvme_mpath_update()
+  is called in nvme_start_ctrl();
+  this parses the ANA log without fetching it.
+  At this point the ctrl is live,
+  therefore, disks can be set live normally.
+
+Sample failure:
+    nvme nvme0: starting error recovery
+    nvme nvme0: Reconnecting in 10 seconds...
+    block nvme0n6: no usable path - requeuing I/O
+    INFO: task kworker/u8:3:312 blocked for more than 122 seconds.
+          Tainted: G            E     5.14.5-1.el7.elrepo.x86_64 #1
+    Workqueue: nvme-wq nvme_tcp_reconnect_ctrl_work [nvme_tcp]
+    Call Trace:
+     __schedule+0x2a2/0x7e0
+     schedule+0x4e/0xb0
+     io_schedule+0x16/0x40
+     wait_on_page_bit_common+0x15c/0x3e0
+     do_read_cache_page+0x1e0/0x410
+     read_cache_page+0x12/0x20
+     read_part_sector+0x46/0x100
+     read_lba+0x121/0x240
+     efi_partition+0x1d2/0x6a0
+     bdev_disk_changed.part.0+0x1df/0x430
+     bdev_disk_changed+0x18/0x20
+     blkdev_get_whole+0x77/0xe0
+     blkdev_get_by_dev+0xd2/0x3a0
+     __device_add_disk+0x1ed/0x310
+     device_add_disk+0x13/0x20
+     nvme_mpath_set_live+0x138/0x1b0 [nvme_core]
+     nvme_update_ns_ana_state+0x2b/0x30 [nvme_core]
+     nvme_update_ana_state+0xca/0xe0 [nvme_core]
+     nvme_parse_ana_log+0xac/0x170 [nvme_core]
+     nvme_read_ana_log+0x7d/0xe0 [nvme_core]
+     nvme_mpath_init_identify+0x105/0x150 [nvme_core]
+     nvme_init_identify+0x2df/0x4d0 [nvme_core]
+     nvme_init_ctrl_finish+0x8d/0x3b0 [nvme_core]
+     nvme_tcp_setup_ctrl+0x337/0x390 [nvme_tcp]
+     nvme_tcp_reconnect_ctrl_work+0x24/0x40 [nvme_tcp]
+     process_one_work+0x1bd/0x360
+     worker_thread+0x50/0x3d0
+
+Signed-off-by: Anton Eidelman <anton@lightbitslabs.com>
+Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/touchscreen/stmfts.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/nvme/host/core.c      |  1 +
+ drivers/nvme/host/multipath.c | 25 +++++++++++++++++++++++--
+ drivers/nvme/host/nvme.h      |  4 ++++
+ 3 files changed, 28 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
-index cd8805d71d97..be1dd504d5b1 100644
---- a/drivers/input/touchscreen/stmfts.c
-+++ b/drivers/input/touchscreen/stmfts.c
-@@ -339,11 +339,11 @@ static int stmfts_input_open(struct input_dev *dev)
- 
- 	err = pm_runtime_get_sync(&sdata->client->dev);
- 	if (err < 0)
--		return err;
-+		goto out;
- 
- 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
- 	if (err)
--		return err;
-+		goto out;
- 
- 	mutex_lock(&sdata->mutex);
- 	sdata->running = true;
-@@ -366,7 +366,9 @@ static int stmfts_input_open(struct input_dev *dev)
- 				 "failed to enable touchkey\n");
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 71c85c99e86c..3a3c28c639df 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -4409,6 +4409,7 @@ void nvme_start_ctrl(struct nvme_ctrl *ctrl)
+ 	if (ctrl->queue_count > 1) {
+ 		nvme_queue_scan(ctrl);
+ 		nvme_start_queues(ctrl);
++		nvme_mpath_update(ctrl);
  	}
- 
--	return 0;
-+out:
-+	pm_runtime_put_noidle(&sdata->client->dev);
-+	return err;
+ }
+ EXPORT_SYMBOL_GPL(nvme_start_ctrl);
+diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
+index 18a756444d5a..a9e15c8f907b 100644
+--- a/drivers/nvme/host/multipath.c
++++ b/drivers/nvme/host/multipath.c
+@@ -484,8 +484,17 @@ static void nvme_update_ns_ana_state(struct nvme_ana_group_desc *desc,
+ 	ns->ana_grpid = le32_to_cpu(desc->grpid);
+ 	ns->ana_state = desc->state;
+ 	clear_bit(NVME_NS_ANA_PENDING, &ns->flags);
+-
+-	if (nvme_state_is_live(ns->ana_state))
++	/*
++	 * nvme_mpath_set_live() will trigger I/O to the multipath path device
++	 * and in turn to this path device.  However we cannot accept this I/O
++	 * if the controller is not live.  This may deadlock if called from
++	 * nvme_mpath_init_identify() and the ctrl will never complete
++	 * initialization, preventing I/O from completing.  For this case we
++	 * will reprocess the ANA log page in nvme_mpath_update() once the
++	 * controller is ready.
++	 */
++	if (nvme_state_is_live(ns->ana_state) &&
++	    ns->ctrl->state == NVME_CTRL_LIVE)
+ 		nvme_mpath_set_live(ns);
  }
  
- static void stmfts_input_close(struct input_dev *dev)
+@@ -572,6 +581,18 @@ static void nvme_ana_work(struct work_struct *work)
+ 	nvme_read_ana_log(ctrl);
+ }
+ 
++void nvme_mpath_update(struct nvme_ctrl *ctrl)
++{
++	u32 nr_change_groups = 0;
++
++	if (!ctrl->ana_log_buf)
++		return;
++
++	mutex_lock(&ctrl->ana_lock);
++	nvme_parse_ana_log(ctrl, &nr_change_groups, nvme_update_ana_state);
++	mutex_unlock(&ctrl->ana_lock);
++}
++
+ static void nvme_anatt_timeout(struct timer_list *t)
+ {
+ 	struct nvme_ctrl *ctrl = from_timer(ctrl, t, anatt_timer);
+diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+index 5dd1dd8021ba..58e3bb672ce3 100644
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -707,6 +707,7 @@ void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
+ void nvme_mpath_remove_disk(struct nvme_ns_head *head);
+ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id);
+ void nvme_mpath_init_ctrl(struct nvme_ctrl *ctrl);
++void nvme_mpath_update(struct nvme_ctrl *ctrl);
+ void nvme_mpath_uninit(struct nvme_ctrl *ctrl);
+ void nvme_mpath_stop(struct nvme_ctrl *ctrl);
+ bool nvme_mpath_clear_current_path(struct nvme_ns *ns);
+@@ -793,6 +794,9 @@ static inline int nvme_mpath_init_identify(struct nvme_ctrl *ctrl,
+ "Please enable CONFIG_NVME_MULTIPATH for full support of multi-port devices.\n");
+ 	return 0;
+ }
++static inline void nvme_mpath_update(struct nvme_ctrl *ctrl)
++{
++}
+ static inline void nvme_mpath_uninit(struct nvme_ctrl *ctrl)
+ {
+ }
 -- 
 2.35.1
 
