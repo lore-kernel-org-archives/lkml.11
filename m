@@ -2,219 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA5DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B18C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242112AbiDGHrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:47:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33434 "EHLO
+        id S242122AbiDGHsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236336AbiDGHrI (ORCPT
+        with ESMTP id S242360AbiDGHsW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:47:08 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505DE8AE5C
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:45:08 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id s137so1571760pgs.5
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 00:45:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KzsrWt8j76/wUQw6959z+QyLT3qqPlObCP7Fz9z/YWg=;
-        b=aWZ0k12VGSGltoZCBcUscb9hH8BE31RogvBmbswhcokyKn82bGhYXOTgPtgUB3aosY
-         jEZsgKKTsgs2Dzmy8i8H7IJ1Ts0hl6P1fEAVBZTMKbSEGDYBZYecNdvGdQ5KHZ7D60nb
-         ZU04569AaAJh3qISde5BdYOInbfWVJmqeq2iZnfgaEw/rXplILhFHS9vC6gKW6cPbn0g
-         75uG2jLifZ/rDfHX9XUEAxSYBIb9KS35fVqujTmzb3LEgiW655jJ6UdnwXRJLQAK4lmN
-         Kx63PyBIcaGxoZvVChWvTBG8vyBV0YPCHFfItmu1TscpvgPfLEV4ZYS9xah4kU1OCCKL
-         vrkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KzsrWt8j76/wUQw6959z+QyLT3qqPlObCP7Fz9z/YWg=;
-        b=ij+8k/43vovQUnrkBBVL4k2hv8Ve8YP1cAStkQvuxrYqX2A1S0hGX9Mypx6Rn+QaZZ
-         OCk01jG+AcrZ0u4oNzwzzY93f2sETlzphno5/bd0YH0l11BR4GSQMlJn51FMTRJAE/Pa
-         sCqAdkAQq1D8uWlvP9aNXt1xYcXxMpNMOm2lv5oOte46IEry/NQlJUYb2zvQMdHwrIGL
-         45jpmDD+dDVv+mVeEhKqjoGwB6P8ymRvXEShaS0VGA7KXpcLVJ5jIFVHS+W2OI8LuC38
-         /j4/tWDDv5lvTxxW32gvdYtfMlvE//1brClWJEeyx3xt7G2A0f2P/8pnLyOtY4oyM2yC
-         YIfA==
-X-Gm-Message-State: AOAM531p9iuNSO0/Pi5dqweuDmxiadmVVfY0JRzNDwZZ+sp1yGpdWh7w
-        ZQLc0p4opj3y62xmg8n+0t28+A==
-X-Google-Smtp-Source: ABdhPJxPZxqzh3ftTit3YDkR8+rA6lXGJptX47km4U9G6HKIfJ1WftNq5lzv57CFUh7WgIMQHx50XQ==
-X-Received: by 2002:a63:6443:0:b0:399:54fe:5184 with SMTP id y64-20020a636443000000b0039954fe5184mr10282377pgb.511.1649317507376;
-        Thu, 07 Apr 2022 00:45:07 -0700 (PDT)
-Received: from localhost.localdomain ([49.37.166.144])
-        by smtp.gmail.com with ESMTPSA id j18-20020a633c12000000b0038204629cc9sm17860802pga.10.2022.04.07.00.45.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 00:45:05 -0700 (PDT)
-From:   Arun Ajith S <aajith@arista.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
-        corbet@lwn.net, prestwoj@gmail.com, gilligan@arista.com,
-        noureddine@arista.com, gk@arista.com, aajith@arista.com
-Subject: [PATCH net-next v2] net/ipv6: Introduce accept_unsolicited_na knob to implement router-side changes for RFC9131
-Date:   Thu,  7 Apr 2022 07:44:28 +0000
-Message-Id: <20220407074428.1623-1-aajith@arista.com>
-X-Mailer: git-send-email 2.27.0
+        Thu, 7 Apr 2022 03:48:22 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FE9C31F7
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:46:22 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KYtjD4l6dzdZjC;
+        Thu,  7 Apr 2022 15:45:52 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Apr
+ 2022 15:46:20 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <rostedt@goodmis.org>, <mingo@redhat.com>, <mcgrof@kernel.org>,
+        <xiaowei66@huawei.com>
+CC:     <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] ftrace: Fix build warning
+Date:   Thu, 7 Apr 2022 15:46:12 +0800
+Message-ID: <20220407074612.16608-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new neighbour cache entry in STALE state for routers on receiving
-an unsolicited (gratuitous) neighbour advertisement with
-target link-layer-address option specified.
-This is similar to the arp_accept configuration for IPv4.
-A new sysctl endpoint is created to turn on this behaviour:
-/proc/sys/net/ipv6/conf/interface/accept_unsolicited_na.
+If CONFIG_SYSCTL and CONFIG_DYNAMIC_FTRACE is n, build warns:
 
-Signed-off-by: Arun Ajith S <aajith@arista.com>
-Tested-by: Arun Ajith S <aajith@arista.com>
+kernel/trace/ftrace.c:7912:13: error: ‘is_permanent_ops_registered’ defined but not used [-Werror=unused-function]
+ static bool is_permanent_ops_registered(void)
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+kernel/trace/ftrace.c:89:12: error: ‘last_ftrace_enabled’ defined but not used [-Werror=unused-variable]
+ static int last_ftrace_enabled;
+            ^~~~~~~~~~~~~~~~~~~
+
+Move is_permanent_ops_registered() to ifdef block and mark last_ftrace_enabled as
+__maybe_unused to fix this.
+
+Fixes: 7cde53da38a3 ("ftrace: move sysctl_ftrace_enabled to ftrace.c")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- Documentation/networking/ip-sysctl.rst | 23 +++++++++++++++++++++++
- include/linux/ipv6.h                   |  1 +
- include/uapi/linux/ipv6.h              |  1 +
- net/ipv6/addrconf.c                    |  8 ++++++++
- net/ipv6/ndisc.c                       | 20 +++++++++++++++++++-
- 5 files changed, 52 insertions(+), 1 deletion(-)
+ kernel/trace/ftrace.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index b0024aa7b051..9e17efe343ac 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2467,6 +2467,29 @@ drop_unsolicited_na - BOOLEAN
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index a5efbbc289b4..db8d553728b6 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -86,7 +86,7 @@ struct ftrace_ops ftrace_list_end __read_mostly = {
  
- 	By default this is turned off.
+ /* ftrace_enabled is a method to turn ftrace on or off */
+ int ftrace_enabled __read_mostly;
+-static int last_ftrace_enabled;
++static int __maybe_unused last_ftrace_enabled;
  
-+accept_unsolicited_na - BOOLEAN
-+	Add a new neighbour cache entry in STALE state for routers on receiving an
-+	unsolicited neighbour advertisement with target link-layer address option
-+	specified. This is as per router-side behavior documented in RFC9131.
-+	This has lower precedence than drop_unsolicited_na.
-+	 drop   accept  fwding                   behaviour
-+	 ----   ------  ------  ----------------------------------------------
-+	    1        X       X  Drop NA packet and don't pass up the stack
-+	    0        0       X  Pass NA packet up the stack, don't update NC
-+	    0        1       0  Pass NA packet up the stack, don't update NC
-+	    0        1       1  Pass NA packet up the stack, and add a STALE
-+	                          NC entry
-+	This will optimize the return path for the initial off-link communication
-+	that is initiated by a directly connected host, by ensuring that
-+	the first-hop router which turns on this setting doesn't have to
-+	buffer the initial return packets to do neighbour-solicitation.
-+	The prerequisite is that the host is configured to send
-+	unsolicited neighbour advertisements on interface bringup.
-+	This setting should be used in conjunction with the ndisc_notify setting
-+	on the host to satisfy this prerequisite.
-+
-+	By default this is turned off.
-+
- enhanced_dad - BOOLEAN
- 	Include a nonce option in the IPv6 neighbor solicitation messages used for
- 	duplicate address detection per RFC7527. A received DAD NS will only signal
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index 16870f86c74d..918bfea4ef5f 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -61,6 +61,7 @@ struct ipv6_devconf {
- 	__s32		suppress_frag_ndisc;
- 	__s32		accept_ra_mtu;
- 	__s32		drop_unsolicited_na;
-+	__s32		accept_unsolicited_na;
- 	struct ipv6_stable_secret {
- 		bool initialized;
- 		struct in6_addr secret;
-diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
-index d4178dace0bf..549ddeaf788b 100644
---- a/include/uapi/linux/ipv6.h
-+++ b/include/uapi/linux/ipv6.h
-@@ -194,6 +194,7 @@ enum {
- 	DEVCONF_IOAM6_ID,
- 	DEVCONF_IOAM6_ID_WIDE,
- 	DEVCONF_NDISC_EVICT_NOCARRIER,
-+	DEVCONF_ACCEPT_UNSOLICITED_NA,
- 	DEVCONF_MAX
- };
+ /* Current function tracing op */
+ struct ftrace_ops *function_trace_op __read_mostly = &ftrace_list_end;
+@@ -7909,6 +7909,7 @@ int unregister_ftrace_function(struct ftrace_ops *ops)
+ }
+ EXPORT_SYMBOL_GPL(unregister_ftrace_function);
  
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 1afc4c024981..1b4d278d0454 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -5587,6 +5587,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
- 	array[DEVCONF_IOAM6_ID] = cnf->ioam6_id;
- 	array[DEVCONF_IOAM6_ID_WIDE] = cnf->ioam6_id_wide;
- 	array[DEVCONF_NDISC_EVICT_NOCARRIER] = cnf->ndisc_evict_nocarrier;
-+	array[DEVCONF_ACCEPT_UNSOLICITED_NA] = cnf->accept_unsolicited_na;
++#ifdef CONFIG_SYSCTL
+ static bool is_permanent_ops_registered(void)
+ {
+ 	struct ftrace_ops *op;
+@@ -7921,7 +7922,6 @@ static bool is_permanent_ops_registered(void)
+ 	return false;
  }
  
- static inline size_t inet6_ifla6_size(void)
-@@ -7037,6 +7038,13 @@ static const struct ctl_table addrconf_sysctl[] = {
- 		.extra1		= (void *)SYSCTL_ZERO,
- 		.extra2		= (void *)SYSCTL_ONE,
- 	},
-+	{
-+		.procname	= "accept_unsolicited_na",
-+		.data		= &ipv6_devconf.accept_unsolicited_na,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec,
-+	},
- 	{
- 		/* sentinel */
- 	}
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index fcb288b0ae13..254addad0dd3 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -979,6 +979,7 @@ static void ndisc_recv_na(struct sk_buff *skb)
- 	struct inet6_dev *idev = __in6_dev_get(dev);
- 	struct inet6_ifaddr *ifp;
- 	struct neighbour *neigh;
-+	bool create_neigh;
- 
- 	if (skb->len < sizeof(struct nd_msg)) {
- 		ND_PRINTK(2, warn, "NA: packet too short\n");
-@@ -999,6 +1000,7 @@ static void ndisc_recv_na(struct sk_buff *skb)
- 	/* For some 802.11 wireless deployments (and possibly other networks),
- 	 * there will be a NA proxy and unsolicitd packets are attacks
- 	 * and thus should not be accepted.
-+	 * drop_unsolicited_na takes precedence over accept_unsolicited_na
- 	 */
- 	if (!msg->icmph.icmp6_solicited && idev &&
- 	    idev->cnf.drop_unsolicited_na)
-@@ -1039,7 +1041,23 @@ static void ndisc_recv_na(struct sk_buff *skb)
- 		in6_ifa_put(ifp);
- 		return;
- 	}
--	neigh = neigh_lookup(&nd_tbl, &msg->target, dev);
-+	/* RFC 9131 updates original Neighbour Discovery RFC 4861.
-+	 * An unsolicited NA can now create a neighbour cache entry
-+	 * on routers if it has Target LL Address option.
-+	 *
-+	 * drop   accept  fwding                   behaviour
-+	 * ----   ------  ------  ----------------------------------------------
-+	 *    1        X       X  Drop NA packet and don't pass up the stack
-+	 *    0        0       X  Pass NA packet up the stack, don't update NC
-+	 *    0        1       0  Pass NA packet up the stack, don't update NC
-+	 *    0        1       1  Pass NA packet up the stack, and add a STALE
-+	 *                          NC entry
-+	 * Note that we don't do a (daddr == all-routers-mcast) check.
-+	 */
-+	create_neigh = !msg->icmph.icmp6_solicited && lladdr &&
-+		       idev && idev->cnf.forwarding &&
-+		       idev->cnf.accept_unsolicited_na;
-+	neigh = __neigh_lookup(&nd_tbl, &msg->target, dev, create_neigh);
- 
- 	if (neigh) {
- 		u8 old_flags = neigh->flags;
+-#ifdef CONFIG_SYSCTL
+ static int
+ ftrace_enable_sysctl(struct ctl_table *table, int write,
+ 		     void *buffer, size_t *lenp, loff_t *ppos)
 -- 
-2.27.0
----
-Changes from v1:
-- Change bad documentation and commit description. (source link-layer-address option -> target link-layer-address option)
-- CCed all maintainers from .scripts/get_maintainer.pl
-- Rebased to latest origin/master
+2.17.1
+
