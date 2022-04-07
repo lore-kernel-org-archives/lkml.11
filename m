@@ -2,102 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE62CC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:02:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 756F1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344400AbiDGPEh (ORCPT
+        id S1344403AbiDGPFQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40234 "EHLO
+        Thu, 7 Apr 2022 11:05:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344385AbiDGPEc (ORCPT
+        with ESMTP id S242225AbiDGPFO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:04:32 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13BEB07
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:02:31 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id g15-20020a17090adb0f00b001caa9a230c7so9098695pjv.5
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 08:02:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xEawbGCu7y1vIILENYYhWZ3wFJRgV8eFUGqPfSyynR8=;
-        b=kT7UcNQE86YbVV1ncLaMb3kTbBan1KlOCH/D3jXUD7/D0gtfwONcVekSrOn56tAvwY
-         NzoNtHDIcwJnSaSR8hcCkG5et9Ikuwekgq65+M8l4hNJMUFb2v3lQn8N9GvVvg3GOnXO
-         EqBKpyWvDn10RTyGuD5hl/4pmjBSIq3jsij3qiing91l9We7zb4r+3ig2ekGsiU9yee9
-         A80NB+vH+JkfN4VObloBwtVrPR47ap2pWplyKBdaDrs8r9vmjqXjJtNc7hco+YBo7X4H
-         oKFqFqF7WudSWyFQr/7gIFKufOD6vG479hHGkt1RsKpm18fQQ24ahiQ3t36iSf9Kh4VR
-         itiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xEawbGCu7y1vIILENYYhWZ3wFJRgV8eFUGqPfSyynR8=;
-        b=jOiYpIOKC8gfu1FQLN9ODBZwqK5z31YNc1VOnxygsr2zUMcBTZlXBJjAL1VVnhzyss
-         4Pr/TZdz5MvdK7xU7pmokF0xOnUxuLMAgtsCE+zLlEOx93evNcG0sz7v1ICJCiQ+5fnn
-         n85w7GRYsJ7993qtt9BsRl58K06PlMhnFMvzc8ZAGESDleyLplaKxi7RIFMfMyoNtL+y
-         1eTEUThCfBdI8Zbm64tMcTIQqpsiegblb4oxgJduJH23k8+zhi0UKd/S9UATCXnGeZjO
-         FkfJX3TH5XUH/5rhbUiTkYUvQ9Vii6UbR7FcKIZ4S8jFocUdHkoQaKopl9MXHhc9BPXd
-         A39w==
-X-Gm-Message-State: AOAM533aGQ/RTn1I0ownaCUBUkNqGGnoQZlJk/ssCR1y4BFCKal0dDKJ
-        q2Y/3I28NFlqFVFUv+BSOKlOovJwYOHOuA==
-X-Google-Smtp-Source: ABdhPJzJZHFRpw8bMz2zn7BwPC+I8W1kHd9t1Rfoz7b07w+qNdKYe2LnPWVa/5+7vDGC/sUg3lSRnA==
-X-Received: by 2002:a17:90b:250f:b0:1ca:b9fa:efcd with SMTP id ns15-20020a17090b250f00b001cab9faefcdmr16486299pjb.123.1649343750979;
-        Thu, 07 Apr 2022 08:02:30 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id y16-20020a17090a6c9000b001c993d935e7sm9487387pjj.56.2022.04.07.08.02.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 08:02:30 -0700 (PDT)
-Date:   Thu, 7 Apr 2022 15:02:27 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
-        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
-        Connor Kuehl <ckuehl@redhat.com>
-Subject: Re: [RFC PATCH v5 092/104] KVM: TDX: Handle TDX PV HLT hypercall
-Message-ID: <Yk79A4EdiZoVQMsV@google.com>
-References: <cover.1646422845.git.isaku.yamahata@intel.com>
- <6da55adb2ddb6f287ebd46aad02cfaaac2088415.1646422845.git.isaku.yamahata@intel.com>
- <282d4cd1-d1f7-663c-a965-af587f77ee5a@redhat.com>
+        Thu, 7 Apr 2022 11:05:14 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9AC424591;
+        Thu,  7 Apr 2022 08:03:14 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 979EF1F85E;
+        Thu,  7 Apr 2022 15:03:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649343793; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=P2Y60UUpdzO4c/QznoyK437PUhA6xIvNYdqt68NitxY=;
+        b=kYgeAbzpzunMhckxZibDJdHxuJ601n8vSHGYrrxwCDMG8e1Bmg/7jm+dO7Yrt0mP0nyPD+
+        1gl2sOGYqMba6AQtRLIZWan0+yDxIEwOXeJiq1S/i5PkZU6kmJBA5Vt3wi4W5q07GXKhsP
+        cVs3g2qvXAHPQf20Zkc9mIGfXu7uuFM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649343793;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=P2Y60UUpdzO4c/QznoyK437PUhA6xIvNYdqt68NitxY=;
+        b=heBsnwuHmVko6H1Zte3P++6tL4z/CdhC6qQnFfXHE9UlbUvWyJrBm7wz9xQLyjv5OK8v5Y
+        +Mx0ZOYcycuverDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 47DEC13485;
+        Thu,  7 Apr 2022 15:03:13 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id p6oNDzH9TmKVZAAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Thu, 07 Apr 2022 15:03:13 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id e89d1ce4;
+        Thu, 7 Apr 2022 15:03:36 +0000 (UTC)
+From:   =?utf-8?Q?Lu=C3=ADs_Henriques?= <lhenriques@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>
+Cc:     Xiubo Li <xiubli@redhat.com>, Ilya Dryomov <idryomov@gmail.com>,
+        ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] ceph: invalidate pages when doing direct/sync writes
+References: <20220407143834.7516-1-lhenriques@suse.de>
+        <96a44a4224b67b9ec36198bc0586064df5c4ad2a.camel@kernel.org>
+Date:   Thu, 07 Apr 2022 16:03:36 +0100
+In-Reply-To: <96a44a4224b67b9ec36198bc0586064df5c4ad2a.camel@kernel.org> (Jeff
+        Layton's message of "Thu, 07 Apr 2022 10:42:57 -0400")
+Message-ID: <87k0c17x6f.fsf@brahms.olymp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <282d4cd1-d1f7-663c-a965-af587f77ee5a@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022, Paolo Bonzini wrote:
-> On 3/4/22 20:49, isaku.yamahata@intel.com wrote:
-> > +	bool interrupt_disabled = tdvmcall_p1_read(vcpu);
-> 
-> Where is R12 documented for TDG.VP.VMCALL<Instruction.HLT>?
-> 
-> > +		 * Virtual interrupt can arrive after TDG.VM.VMCALL<HLT> during
-> > +		 * the TDX module executing.  On the other hand, KVM doesn't
-> > +		 * know if vcpu was executing in the guest TD or the TDX module.
-> 
-> I don't understand this; why isn't it enough to check PI.ON or something
-> like that as part of HLT emulation?
+Jeff Layton <jlayton@kernel.org> writes:
 
-Ooh, I think I remember what this is.  This is for the case where the virtual
-interrupt is recognized, i.e. set in vmcs.RVI, between the STI and "HLT".  KVM
-doesn't have access to RVI and the interrupt is no longer in the PID (because it
-was "recognized".  It doesn't get delivered in the guest because the TDCALL
-completes before interrupts are enabled.
+> On Thu, 2022-04-07 at 15:38 +0100, Lu=C3=ADs Henriques wrote:
+>> When doing a direct/sync write, we need to invalidate the page cache in
+>> the range being written to.  If we don't do this, the cache will include
+>> invalid data as we just did a write that avoided the page cache.
+>>=20
+>> Signed-off-by: Lu=C3=ADs Henriques <lhenriques@suse.de>
+>> ---
+>>  fs/ceph/file.c | 9 +++++++++
+>>  1 file changed, 9 insertions(+)
+>>=20
+>> Ok, here's a new attempt.  After discussion in this thread and on IRC, I
+>> think this is the right fix.  generic/647 now passes with and without
+>> encryption.  Thanks!
+>>=20
+>> Changes since v2:
+>> - Invalidation needs to be done after a write
+>>=20
+>> Changes since v1:
+>> - Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
+>> - Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
+>>=20
+>> diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+>> index 5072570c2203..63e67eb60310 100644
+>> --- a/fs/ceph/file.c
+>> +++ b/fs/ceph/file.c
+>> @@ -1938,6 +1938,15 @@ ceph_sync_write(struct kiocb *iocb, struct iov_it=
+er *from, loff_t pos,
+>>  			break;
+>>  		}
+>>  		ceph_clear_error_write(ci);
+>> +		ret =3D invalidate_inode_pages2_range(
+>> +				inode->i_mapping,
+>> +				pos >> PAGE_SHIFT,
+>> +				(pos + len - 1) >> PAGE_SHIFT);
+>> +		if (ret < 0) {
+>> +			dout("invalidate_inode_pages2_range returned %d\n",
+>> +			     ret);
+>> +			ret =3D 0;
+>> +		}
+>>  		pos +=3D len;
+>>  		written +=3D len;
+>>  		dout("sync_write written %d\n", written);
+>
+> Looks good. I suspect we can also remove the
+> invalidate_indode_pages2_range call earlier in this function too. I may
+> roll that into this patch.
 
-I lobbied to get this fixed in the TDX module by immediately resuming the guest
-in this case, but obviously that was unsuccessful.
- 
-> > +		details.full = td_state_non_arch_read64(
-> > +			to_tdx(vcpu), TD_VCPU_STATE_DETAILS_NON_ARCH);
-> 
-> TDX documentation says "the meaning of the field may change with Intel TDX
-> module version", where is this field documented?  I cannot find any "other
-> guest state" fields in the TDX documentation.
+Right, that occurred to me as well but I wasn't really sure that would be
+safe.
 
-IMO we should put a stake in the ground and refuse to accept code that consumes
-"non-architectural" state.  It's all software, having non-architectural APIs is
-completely ridiculous.
+> I'll give this an xfstests run with fscrypt enabled and see how it does.
+
+I'll do the same here, I just run a few tests on a vstart cluster.  But
+I'll definitely give it some more testing.
+
+Cheers,
+--=20
+Lu=C3=ADs
