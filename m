@@ -2,147 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 819C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:29:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30288C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346449AbiDGRbN (ORCPT
+        id S1346419AbiDGRb1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
+        Thu, 7 Apr 2022 13:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347138AbiDGR3b (ORCPT
+        with ESMTP id S1346362AbiDGRao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:29:31 -0400
+        Thu, 7 Apr 2022 13:30:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61EA81CC;
-        Thu,  7 Apr 2022 10:26:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50EA928E25
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:28:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D988B82866;
-        Thu,  7 Apr 2022 17:25:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 309CEC385A0;
-        Thu,  7 Apr 2022 17:25:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00BC9B82865
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 17:27:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D4FAC385A0;
+        Thu,  7 Apr 2022 17:27:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649352357;
-        bh=Rp3AAoZEhUXKlTVXiDR+mPUkgeKRvkK4oqYwes7kndQ=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=gWQ64C7AQq2qeuiSBgl1jzN4NKdMOKiOM1lCktHxNnt+ofZPc0ubfuIDzVi3nMged
-         ICHE8PuoiY3tinYIvbjvCtWMVZZrt9bs7MxK3esTxrJY9BGu1zSLKNdTwy3kG4wFfT
-         L6ttYBQ5VG7l1Z/J+id9AUzk8C6z3CsmThwb4eC7eIA8Myyny3lSGyXUN1c99tiLzl
-         Coao53kPZU/PK2gLw5JMhSAJHGiYcfBJiZAVsrobY/5swxwb5bBJRPX8LoDkMOxZ4+
-         8R1DF2o0IJpc5yfuCS5CcjvEWWfB0+fxeeHO8Dt81WJvw/uahMx9jB1MdimM3gFTXW
-         llvTQ26Q6yEsg==
-Message-ID: <1e94ae620fcd96f149dc025ceffc66119b70f473.camel@kernel.org>
-Subject: Re: [PATCH v4] VFS: filename_create(): fix incorrect intent.
-From:   Jeff Layton <jlayton@kernel.org>
-To:     NeilBrown <neilb@suse.de>, Al Viro <viro@zeniv.linux.org.uk>
-Cc:     linux-nfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Disseldorp <ddiss@suse.de>
-Date:   Thu, 07 Apr 2022 13:25:55 -0400
-In-Reply-To: <164878611050.25542.6758961460499392000@noble.neil.brown.name>
-References: <164877264126.25542.1271530843099472952@noble.neil.brown.name>
-         <164878611050.25542.6758961460499392000@noble.neil.brown.name>
-Content-Type: text/plain; charset="ISO-8859-15"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        s=k20201202; t=1649352464;
+        bh=7jEWQBatP4qMkllGYiCARw7scemPqLCpGQ4Sm2/XdwY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=F+24MmDd6m6A0atgn6EHNkZdE441HSmZ47SaWHIhZMUqgayvMTrP+gQiGpbmZDs1R
+         3haw9SNoQpbIwrDR6qwQq2DKKq9rx0ETiVWYeqsWvbqm5K2YusiLGxBLrmwo1++PP8
+         DXwWE4sX/715P+oddIJ9nBZ7Bea9naeA+L6nfuDxCcSL95gnbGNpIrXaROS1utiCJe
+         30qSaK6f5PJsZo9sGMW2SchSySvv0mH8oW91FXQGwSvgibvSqWTeX7H8SkJDtHSNrd
+         LWTsigjXBtArDgAJQJEYA3wMJGxAySFNDA9QgCZ/mhtjDDklMfG9+c1kATn12lFYB3
+         639ottZGUgz2g==
+Date:   Thu, 7 Apr 2022 18:27:38 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Akihiko Odaki <akihiko.odaki@gmail.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Jaroslav Kysela <perex@perex.cz>,
+        Oder Chiou <oder_chiou@realtek.com>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Subject: Re: [PATCH] ASoC: rt5682: Add jack kcontrol
+Message-ID: <Yk8fCoA7W2nX261U@sirena.org.uk>
+References: <20220407141316.5099-1-akihiko.odaki@gmail.com>
+ <Yk7+jbQ0KBM0zVh9@sirena.org.uk>
+ <96dae189-c0ff-4054-3d00-41c3b44c2cd6@gmail.com>
+ <Yk8Ktyyt0veW4g+j@sirena.org.uk>
+ <f86a10e1-b5a7-5c59-8e53-cec65d97234b@gmail.com>
+ <Yk8TLUnEHRKstyxq@sirena.org.uk>
+ <57747e9a-10e0-e4f6-0644-5225396802f9@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="PNzrJ3fuz+E/xXQQ"
+Content-Disposition: inline
+In-Reply-To: <57747e9a-10e0-e4f6-0644-5225396802f9@gmail.com>
+X-Cookie: Look ere ye leap.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-01 at 15:08 +1100, NeilBrown wrote:
-> When asked to create a path ending '/', but which is not to be a
-> directory (LOOKUP_DIRECTORY not set), filename_create() will never try
-> to create the file.  If it doesn't exist, -ENOENT is reported.
-> 
-> However, it still passes LOOKUP_CREATE|LOOKUP_EXCL to the filesystems
-> ->lookup() function, even though there is no intent to create.  This is
-> misleading and can cause incorrect behaviour.
-> 
-> If you try
->    ln -s foo /path/dir/
-> 
-> where 'dir' is a directory on an NFS filesystem which is not currently
-> known in the dcache, this will fail with ENOENT.
-> As the name is not in the dcache, nfs_lookup gets called with
-> LOOKUP_CREATE|LOOKUP_EXCL and so it returns NULL without performing any
-> lookup, with the expectation that a subsequent call to create the
-> target will be made, and the lookup can be combined with the creation.
-> In the case with a trailing '/' and no LOOKUP_DIRECTORY, that call is never
-> made.  Instead filename_create() sees that the dentry is not (yet)
-> positive and returns -ENOENT - even though the directory actually
-> exists.
-> 
-> So only set LOOKUP_CREATE|LOOKUP_EXCL if there really is an intent
-> to create, and use the absence of these flags to decide if -ENOENT
-> should be returned.
-> 
-> Note that filename_parentat() is only interested in LOOKUP_REVAL, so we
-> split that out and store it in 'reval_flag'.
-> __looku_hash() then gets reval_flag combined with whatever create flags
-> were determined to be needed.
-> 
-> Signed-off-by: NeilBrown <neilb@suse.de>
-> ---
->  fs/namei.c | 22 ++++++++++------------
->  1 file changed, 10 insertions(+), 12 deletions(-)
-> 
-> ARG - v3 had a missing semi-colon.  Sorry.
-> 
-> diff --git a/fs/namei.c b/fs/namei.c
-> index 3f1829b3ab5b..509657fdf4f5 100644
-> --- a/fs/namei.c
-> +++ b/fs/namei.c
-> @@ -3673,18 +3673,14 @@ static struct dentry *filename_create(int dfd, struct filename *name,
->  {
->  	struct dentry *dentry = ERR_PTR(-EEXIST);
->  	struct qstr last;
-> +	bool want_dir = lookup_flags & LOOKUP_DIRECTORY;
-> +	unsigned int reval_flag = lookup_flags & LOOKUP_REVAL;
-> +	unsigned int create_flags = LOOKUP_CREATE | LOOKUP_EXCL;
->  	int type;
->  	int err2;
->  	int error;
-> -	bool is_dir = (lookup_flags & LOOKUP_DIRECTORY);
->  
-> -	/*
-> -	 * Note that only LOOKUP_REVAL and LOOKUP_DIRECTORY matter here. Any
-> -	 * other flags passed in are ignored!
-> -	 */
-> -	lookup_flags &= LOOKUP_REVAL;
-> -
-> -	error = filename_parentat(dfd, name, lookup_flags, path, &last, &type);
-> +	error = filename_parentat(dfd, name, reval_flag, path, &last, &type);
->  	if (error)
->  		return ERR_PTR(error);
->  
-> @@ -3698,11 +3694,13 @@ static struct dentry *filename_create(int dfd, struct filename *name,
->  	/* don't fail immediately if it's r/o, at least try to report other errors */
->  	err2 = mnt_want_write(path->mnt);
->  	/*
-> -	 * Do the final lookup.
-> +	 * Do the final lookup.  Suppress 'create' if there is a trailing
-> +	 * '/', and a directory wasn't requested.
->  	 */
-> -	lookup_flags |= LOOKUP_CREATE | LOOKUP_EXCL;
-> +	if (last.name[last.len] && !want_dir)
-> +		create_flags = 0;
->  	inode_lock_nested(path->dentry->d_inode, I_MUTEX_PARENT);
-> -	dentry = __lookup_hash(&last, path->dentry, lookup_flags);
-> +	dentry = __lookup_hash(&last, path->dentry, reval_flag | create_flags);
->  	if (IS_ERR(dentry))
->  		goto unlock;
->  
-> @@ -3716,7 +3714,7 @@ static struct dentry *filename_create(int dfd, struct filename *name,
->  	 * all is fine. Let's be bastards - you had / on the end, you've
->  	 * been asking for (non-existent) directory. -ENOENT for you.
->  	 */
-> -	if (unlikely(!is_dir && last.name[last.len])) {
-> +	if (unlikely(!create_flags)) {
->  		error = -ENOENT;
->  		goto fail;
->  	}
 
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
+--PNzrJ3fuz+E/xXQQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Fri, Apr 08, 2022 at 02:16:41AM +0900, Akihiko Odaki wrote:
+> On 2022/04/08 1:37, Mark Brown wrote:
+
+> > Look at how other devices with jack detection hardware handle this and
+> > follow a similar pattern.
+
+> The situation actually seems quite a mess. You can find many drivers not
+> using DAPM pins by searching for snd_soc_card_jack_new() calls with num_pins
+> argument is 0. ams-delta-audio is exceptional as it adds DAPM pins later
+> with snd_soc_jack_add_pins().
+
+Sure, I'm not surprised there's some buggy drivers.
+
+> They do not have kcontrols for the jacks. The only exception is
+> skl_hda_dsp_generic which calls snd_jack_add_new_kctl() as my patch does.
+> Looking at other devices is probably not helpful to find an alternative in
+> this case.
+
+The first driver I randomly picked when searching was
+sound/soc/intel/boards/skl_rt286.c which seems to DTRT here, you can
+also see sound/soc/samsung/speyside.c for another example.
+
+--PNzrJ3fuz+E/xXQQ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJPHwkACgkQJNaLcl1U
+h9AKpgf+PmAjxKxErqduPaAaLQiWMGfcHxz4FSuc77R0RvDkTX0DUQHA7Y24wFL1
+GjjVgyNSSEV7k6Eko0b1g/CK5KSZMiC0ZnaKsB/kBgHsN2xfuvqXNI7hBHWi27SB
+KmcrURD8hWHhp2wz/lMAoAK7V61gFpkhUfBzWLpfdEdqUY9/Xz3ilI9fAy0qFQoO
+yOky8dyASa69oTiMgNQJOW9PZ9N6B0RiaM8ZrbHbP/WQXYRlUP6qssJXJ0IgMYBf
+MgEURslJFPyeuxjoWxnAPMaNtqDQCsAEfEHlcCYfEUwHfqxc76g9WThiM46NqzVn
+IBV7CSMjfEKJD0vV2yD+sV2Ko3RfQg==
+=p8iA
+-----END PGP SIGNATURE-----
+
+--PNzrJ3fuz+E/xXQQ--
