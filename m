@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42571C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E25C35280
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242057AbiDGBcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
+        id S242172AbiDGBcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238756AbiDGBSf (ORCPT
+        with ESMTP id S239475AbiDGBTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:18:35 -0400
+        Wed, 6 Apr 2022 21:19:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229E319BE42;
-        Wed,  6 Apr 2022 18:13:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD0F1A8444;
+        Wed,  6 Apr 2022 18:14:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 873F8B81E79;
-        Thu,  7 Apr 2022 01:13:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1ABCC385A1;
-        Thu,  7 Apr 2022 01:13:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1813B81E79;
+        Thu,  7 Apr 2022 01:14:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65ABDC385A3;
+        Thu,  7 Apr 2022 01:14:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294006;
-        bh=kyCpt+kxit9oAreUT89imPW8qUa5FVx/lcfqw+8Zcqo=;
+        s=k20201202; t=1649294073;
+        bh=AgQK3J32JdPM0WF5hb3hT7jpj9cVjRmVVJoMbuUb9lk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BIvEnjqDbZIhoF3UiaDYKDnqt/+223xLqf60mrsyj11RW/8b7ZWVLilE4mleJVK6d
-         ri4pj07B3mPFBKxulr6ZF8pWwsSZf0e/AhONsMv5o0mXvG87ghP05XTDqE+giE8ELW
-         bW/UX7HYBXTVnEvImRUxCVQ9bL4xYm2zMyn2h7u6RHWU3+qQJQ8uaPRR4dOiPSaGtz
-         mBckfuO3ykB4G7FIMBKGGeKkzdWyEjcVnhs3Smyt8CvuiPDay+8PMLRGpjpP+Rwu7W
-         m9wpqqwbB/pB45oCyyGZkrxU0LaMuSP7lpQOy6hz0Pg0oBL/vfNtNhaFegt1ib3fH/
-         Zc5odHUIiohiw==
+        b=nIyT+1BVRZVGTQUTpir5nNFwGgq9xiLqsnPsUQwEh1h0ZZOwotwwGVFPB3JDaxCq/
+         ZlcnPKVnmMNjU5YS2pbewqBMHa7v3qR/Wzy7sZGxhdL3I3iYYPp0pYyph1lKedZav8
+         YQaSA5HLTbVadbrdRBLPnpkenwIugB9664VCVj5LLMrM2XbQLk0/aErY6xqhrT5wC7
+         7uFCfoAoyCrWx/cjMryDF+nuAFJyixlt+NVM8Y2/AhjH6HqZqsgMUMeqIAdzWlpNG1
+         32EwdoAEwIOb/jvjVV3KMVcmMoD4iJgy04k7yO2IEqTYvTjMfDq1QwAX7lA03JT2Ts
+         2FahKJokdM/XQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        nicolas.toromanoff@foss.st.com, marex@denx.de,
-        linux-crypto@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 11/27] crypto: stm32 - fix reference leak in stm32_crc_remove
-Date:   Wed,  6 Apr 2022 21:12:41 -0400
-Message-Id: <20220407011257.114287-11-sashal@kernel.org>
+Cc:     Monish Kumar R <monish.kumar.r@intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 08/25] nvme-pci: add quirks for Samsung X5 SSDs
+Date:   Wed,  6 Apr 2022 21:13:56 -0400
+Message-Id: <20220407011413.114662-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011257.114287-1-sashal@kernel.org>
-References: <20220407011257.114287-1-sashal@kernel.org>
+In-Reply-To: <20220407011413.114662-1-sashal@kernel.org>
+References: <20220407011413.114662-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,37 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: Monish Kumar R <monish.kumar.r@intel.com>
 
-[ Upstream commit e9a36feecee0ee5845f2e0656f50f9942dd0bed3 ]
+[ Upstream commit bc360b0b1611566e1bd47384daf49af6a1c51837 ]
 
-pm_runtime_get_sync() will increment pm usage counter even it
-failed. Forgetting to call pm_runtime_put_noidle will result
-in reference leak in stm32_crc_remove, so we should fix it.
+Add quirks to not fail the initialization and to have quick resume
+latency after cold/warm reboot.
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/stm32/stm32-crc32.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/nvme/host/pci.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/stm32/stm32-crc32.c b/drivers/crypto/stm32/stm32-crc32.c
-index be1bf39a317d..90a920e7f664 100644
---- a/drivers/crypto/stm32/stm32-crc32.c
-+++ b/drivers/crypto/stm32/stm32-crc32.c
-@@ -384,8 +384,10 @@ static int stm32_crc_remove(struct platform_device *pdev)
- 	struct stm32_crc *crc = platform_get_drvdata(pdev);
- 	int ret = pm_runtime_get_sync(crc->dev);
- 
--	if (ret < 0)
-+	if (ret < 0) {
-+		pm_runtime_put_noidle(crc->dev);
- 		return ret;
-+	}
- 
- 	spin_lock(&crc_list.lock);
- 	list_del(&crc->list);
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 97afeb898b25..ba067c1a6cf6 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3262,7 +3262,10 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_128_BYTES_SQES |
+ 				NVME_QUIRK_SHARED_TAGS |
+ 				NVME_QUIRK_SKIP_CID_GEN },
+-
++	{ PCI_DEVICE(0x144d, 0xa808),   /* Samsung X5 */
++		.driver_data =  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
++				NVME_QUIRK_NO_DEEPEST_PS |
++				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
+ 	{ 0, }
+ };
 -- 
 2.35.1
 
