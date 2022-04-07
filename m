@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8F0C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:53:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3175C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:53:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242341AbiDGHy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38944 "EHLO
+        id S242352AbiDGHzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:55:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242275AbiDGHyw (ORCPT
+        with ESMTP id S242331AbiDGHy4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:54:52 -0400
+        Thu, 7 Apr 2022 03:54:56 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 115331C315C
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:52:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 097BB1C42DC
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:52:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649317972;
+        s=mimecast20190719; t=1649317975;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qQwtpv4LSJs4oYZkfG+yHqo4mCAyzu9Mqm5FcRavI60=;
-        b=UKGWP5Mm6xl+5GKUrNvM5SrSh62263TmHxReuqC8YN67uCeSQc5uX3DRUgwKl9nf3dZXnU
-        YnnhmT0ch9bLYtVeyAXO0gz5qN8Y0RXiaPOAuizFlyM2Izj0cwpDWV8RCJGx/Tm46Nunsn
-        Ost5f0HVVIoLynfGJ0ddOaJPWiyVoHw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=ioK6OvofKyIpy+vHQcfZR1zFpndRrQMZLUPba8CRcNw=;
+        b=El9GrOm5iKQFBCior3ofya21rKyTrUfVQUdYOu8SU/blKittPt5vGwjrK2+b9+2Ki7F103
+        hLYTva3SwQzmnEUlqMGnH0V9Hz+fJHftoroHR+W3KQzJncZyutwB+Q+NkL1eVOIBSvRA0G
+        wV4Kj8kM1H+2OBDU+XaPYV0gscPB3cM=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-180-rDqrMzroPZCOxoo4cQkGGw-1; Thu, 07 Apr 2022 03:52:49 -0400
-X-MC-Unique: rDqrMzroPZCOxoo4cQkGGw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+ us-mta-52-yDek7xRGOhKsMC1QW0IqbQ-1; Thu, 07 Apr 2022 03:52:51 -0400
+X-MC-Unique: yDek7xRGOhKsMC1QW0IqbQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 08864802819;
-        Thu,  7 Apr 2022 07:52:48 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6DC06380409B;
+        Thu,  7 Apr 2022 07:52:51 +0000 (UTC)
 Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 25F4940D2962;
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 25E271121330;
         Thu,  7 Apr 2022 07:52:45 +0000 (UTC)
 Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id E84AC1C00CD; Thu,  7 Apr 2022 09:52:43 +0200 (CEST)
+        id DC12B1C00FD; Thu,  7 Apr 2022 09:52:43 +0200 (CEST)
 From:   Artem Savkov <asavkov@redhat.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
@@ -47,44 +47,55 @@ To:     Thomas Gleixner <tglx@linutronix.de>,
         netdev@vger.kernel.org
 Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
         linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
-Subject: [PATCH v4 2/2] net: make tcp keepalive timer upper bound
-Date:   Thu,  7 Apr 2022 09:52:42 +0200
-Message-Id: <20220407075242.118253-3-asavkov@redhat.com>
-In-Reply-To: <20220407075242.118253-1-asavkov@redhat.com>
+Subject: [PATCH v4 0/2] Upper bound kernel timers
+Date:   Thu,  7 Apr 2022 09:52:40 +0200
+Message-Id: <20220407075242.118253-1-asavkov@redhat.com>
+In-Reply-To: <871qyb35q4.ffs@tglx>
 References: <871qyb35q4.ffs@tglx>
- <20220407075242.118253-1-asavkov@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make sure TCP keepalive timer does not expire late. Switching to upper
-bound timers means it can fire off early but in case of keepalive
-tcp_keepalive_timer() handler checks elapsed time and resets the timer
-if it was triggered early. This results in timer "cascading" to a
-higher precision and being just a couple of milliseconds off it's
-original mark.
+As previously discussed [1] we had a report of a regression in TCP keepalive
+timer where timers were up to 4 minutes late resulting in disconnects.
 
-Signed-off-by: Artem Savkov <asavkov@redhat.com>
+This patchset tries to fix the problem by introducing upper bound kernel timers
+and making tcp keepalive timer use those.
+
+[1] https://lore.kernel.org/all/20210302001054.4qgrvnkltvkgikzr@treble/T/#u
+
 ---
- net/ipv4/inet_connection_sock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v4:
+  - Drop any attempts to be smart when calculating timer adjustment and always
+    substract LVL_GRAN so that base clock lag won't be such a problem. This
+    means that in some cases we will always be early, but all we want is not to
+    be late.
 
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 1e5b53c2bb267..bb2dbfb6f5b50 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -589,7 +589,7 @@ EXPORT_SYMBOL(inet_csk_delete_keepalive_timer);
- 
- void inet_csk_reset_keepalive_timer(struct sock *sk, unsigned long len)
- {
--	sk_reset_timer(sk, &sk->sk_timer, jiffies + len);
-+	sk_reset_timer(sk, &sk->sk_timer, jiffies + upper_bound_timeout(len));
- }
- EXPORT_SYMBOL(inet_csk_reset_keepalive_timer);
- 
+Changes in v3:
+  - A different approach: instead of introducing upper bound timers try to
+    account for timer wheen granularity on timer (re)arming step.
+  - Not sure whether moving lvl calculation into a separate function is worth
+    it.
+  - Had a hard time naming the upper_bount_timeout() function - any suggestions
+    welcome.
+
+Changes in v2:
+  - TIMER_UPPER_BOUND flag description added as a comment in timer.h
+  - Code style fixes
+  - More elaborate commit message in timer commit
+
+Artem Savkov (2):
+  timer: add a function to adjust timeouts to be upper bound
+  net: make tcp keepalive timer upper bound
+
+ include/linux/timer.h           |  1 +
+ kernel/time/timer.c             | 68 ++++++++++++++++++++++++++-------
+ net/ipv4/inet_connection_sock.c |  2 +-
+ 3 files changed, 57 insertions(+), 14 deletions(-)
+
 -- 
 2.34.1
 
