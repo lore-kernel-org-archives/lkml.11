@@ -2,244 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5668C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 063E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241700AbiDGHSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52286 "EHLO
+        id S241676AbiDGHTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241678AbiDGHR1 (ORCPT
+        with ESMTP id S241678AbiDGHTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:17:27 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4439E14F127;
-        Thu,  7 Apr 2022 00:15:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649315723; x=1680851723;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=oQ6NbgVbEuV5G6IspjdoFPFdN0GCADuL/PrOyaUBYtw=;
-  b=zrN7pWpQwQ+eHGDIXUD90OS9LvUoieAvGOo5Y+yzaOrDAqAfNxNk2l+r
-   7L9o2eF8ZZeIJRXBTmKas3KNZIQ4T6EFkjXbSgVVaXWGmCfukD7g923EQ
-   q+EQ7kLXRVy40g6/uAdT18SklzoRqXiW8Rp+bxdMbZygZ8sMr/a+TWTwV
-   snHS8Vs9PdrbarovdD80kJTnS8yex51vRUYabV++GhsD25yMHAbUgmgbK
-   W1kOLBsRI70o9fyrjzqrou6W0Lqftss84R4xvkvnwy76iYyBs4Lbk0rf2
-   Ihqu0BDWXrxvW4NMHK4F386URvC6EUoaze5kwy9NVaOFNil19Ff8E6d/m
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,241,1643698800"; 
-   d="scan'208";a="159679179"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Apr 2022 00:15:22 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 7 Apr 2022 00:15:22 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 7 Apr 2022 00:15:19 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
-        <linux@armlinux.org.uk>, <sre@kernel.org>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 07/10] power: reset: at91-reset: add reset_controller_dev support
-Date:   Thu, 7 Apr 2022 10:17:05 +0300
-Message-ID: <20220407071708.3848812-8-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220407071708.3848812-1-claudiu.beznea@microchip.com>
-References: <20220407071708.3848812-1-claudiu.beznea@microchip.com>
+        Thu, 7 Apr 2022 03:19:34 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2708519609E;
+        Thu,  7 Apr 2022 00:17:34 -0700 (PDT)
+Received: from mail-wr1-f42.google.com ([209.85.221.42]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1Mq1GE-1oO5ct1Jxa-00nDWp; Thu, 07 Apr 2022 09:17:33 +0200
+Received: by mail-wr1-f42.google.com with SMTP id b19so6412450wrh.11;
+        Thu, 07 Apr 2022 00:17:33 -0700 (PDT)
+X-Gm-Message-State: AOAM5302p6FooesM2MlclI+GR3UKP8YLM4PiD8K9/EY4x0cnFds+tfdi
+        p7uJEKY9J+7LBF9tAX1pf1acn89KFq3c2ivWQ2w=
+X-Google-Smtp-Source: ABdhPJwmNfPDNFMCTxQF72bGloQ9R7ixTS1WuENFc4sxAk/2DHt8y1oYiTEoK7GHAg/mvQl2A58Tcb9T0D1qJhBrXSI=
+X-Received: by 2002:a5d:6505:0:b0:205:9a98:e184 with SMTP id
+ x5-20020a5d6505000000b002059a98e184mr8948149wru.317.1649315852910; Thu, 07
+ Apr 2022 00:17:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <Yib9F5SqKda/nH9c@infradead.org> <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
+ <YkmWh2tss8nXKqc5@infradead.org> <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
+ <CAMuHMdWcg+171ggdVC4gwbQ=RUf+cYrX3o9uSpDxo-XXEJ5Qgw@mail.gmail.com> <c3e7ee64-68fc-ed53-4a90-9f9296583d7c@landley.net>
+In-Reply-To: <c3e7ee64-68fc-ed53-4a90-9f9296583d7c@landley.net>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 7 Apr 2022 09:17:17 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a14b6djqPw8Dea5uW2PPEABbe0pNXV5EX0529oDrW1ZAg@mail.gmail.com>
+Message-ID: <CAK8P3a14b6djqPw8Dea5uW2PPEABbe0pNXV5EX0529oDrW1ZAg@mail.gmail.com>
+Subject: Re: [RFC PULL] remove arch/h8300
+To:     Rob Landley <rob@landley.net>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Christoph Hellwig <hch@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "moderated list:H8/300 ARCHITECTURE" 
+        <uclinux-h8-devel@lists.sourceforge.jp>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, Max Filippov <jcmvbkbc@gmail.com>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Rich Felker <dalias@libc.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:Yo2hm0QgwdDiZWgQYLhkXYPauJG70GP755RV1AWo8wIVvD/MUvj
+ YEfgbQBnSdVWploJP6kdu8d4cBq4C8p1jGw1W7Fdul3S6ddMi9QvPqQh3QTEARECDATDf6s
+ Uk+JVdrBs80xnRnP+6SSZv3MWP3fIPf/ygCsX8Zmk3idXRktBukUmTBWtDlaSbjkvlNcElz
+ wO6jjxfljNlmw/yZRGF5w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:7npattaJtsU=:Ap0U6VUR0inRdjgkys9djw
+ 3Z7Z0OGP8FdcSfCguG8yi26yaxTmUHHLyF5W6Kz/EJjpBfX2McXJOBk2h0ocBU0Swqi/XY/zr
+ C/Q9fx86UTr9BYeA5YkyB9TBIAmoX0Bd1WL5izun3YcshAj3JupG3afv8SgxPlAJiIpmp5MZP
+ q1CJ5TyArE3GB124uu455f8hwXOmlu3EawdlXlg9AZ8qWfOP5vpnX8ge2h12pYXQuFGilXSfc
+ 4/RtNbxI1xhhYet1Dh3MP08k0xdlUoofGAgQd/I0ssTH7b6WXEnyBiWgbKlP0CoJ/XTqLUlPk
+ CeGMKQB93rE0Pm+xAd3zVLZzqystdWQ4gx9u+z0J+95KewqQ0jGV7jhFsG1QnDfrNjR8LeaJC
+ ovLeyI/HoiNw2QmUCAsB6TMWHpDd9JMQrvRA4iE51wFeY69pNRVHfzca6thW0fh290yp/tMKj
+ 7FCmej6Uj9aBQuLvnP8g9lAl822aSCrbBYCofeqGCSAfqoSWw7IChm3/ZCQresGSJ1BG0PowW
+ T6rEMF0HBJYuiLGwIb3Q4L7arnox3z/ogFKdHQ83ZDosVzxwNEgN+B18E41g60uNy6JXK3965
+ kJq3R8CnaJG5KQm+l82D7s8z3kbXs7BLM0x3X+JdRiVjiDdkJF6IajG5QOI6KwCGM9cyFjRWv
+ o5ksJ9K/7Mcoxuk5x1NER9lQU4475HkQcX/VjPyE8hj+r4JLwCrWe0RabAQtsPAeDoaWwLIRE
+ keQgOWwHRQjkVPHH+dvCto0vjagZZsYggSoAhHjhytM+o99GR/tQM9gPgtHax2tc9M/eizazU
+ OzMUBYGnZwZT5gogz8G/52L640SiTMftGg4a5m7Ie7I6d1MbGU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SAMA7G5 reset controller has 5 extra lines that goes to different devices
-(3 lines to USB PHYs, 1 line to DDR controller, 1 line to DDR PHY
-controller). These reset lines could be requested by different controller
-drivers (e.g. USB PHY driver) and these controllers' drivers could
-assert/deassert these lines when necessary. Thus add support for
-reset_controller_dev which brings this functionality.
+On Wed, Apr 6, 2022 at 11:25 PM Rob Landley <rob@landley.net> wrote:
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/power/reset/at91-reset.c | 107 +++++++++++++++++++++++++++++--
- 1 file changed, 103 insertions(+), 4 deletions(-)
+> I'm interested in H8300 because it's a tiny architecture (under 6k lines total,
+> in 93 files) and thus a good way to see what a minimal Linux port looks like. If
+> somebody would like to suggest a different one for that...
 
-diff --git a/drivers/power/reset/at91-reset.c b/drivers/power/reset/at91-reset.c
-index 1b2aca3f490d..a6f65ac430cd 100644
---- a/drivers/power/reset/at91-reset.c
-+++ b/drivers/power/reset/at91-reset.c
-@@ -17,10 +17,13 @@
- #include <linux/of_address.h>
- #include <linux/platform_device.h>
- #include <linux/reboot.h>
-+#include <linux/reset-controller.h>
- 
- #include <soc/at91/at91sam9_ddrsdr.h>
- #include <soc/at91/at91sam9_sdramc.h>
- 
-+#include <dt-bindings/reset/sama7g5-reset.h>
-+
- #define AT91_RSTC_CR	0x00		/* Reset Controller Control Register */
- #define AT91_RSTC_PROCRST	BIT(0)		/* Processor Reset */
- #define AT91_RSTC_PERRST	BIT(2)		/* Peripheral Reset */
-@@ -65,7 +68,10 @@ enum reset_type {
-  * struct at91_reset - AT91 reset specific data structure
-  * @rstc_base:		base address for system reset
-  * @ramc_base:		array with base addresses of RAM controllers
-+ * @dev_base:		base address for devices reset
-  * @sclk:		slow clock
-+ * @rcdev:		reset controller device
-+ * @lock:		lock for devices reset register access
-  * @nb:			reset notifier block
-  * @args:		SoC specific system reset arguments
-  * @ramc_lpr:		SDRAM Controller Low Power Register
-@@ -73,12 +79,17 @@ enum reset_type {
- struct at91_reset {
- 	void __iomem *rstc_base;
- 	void __iomem *ramc_base[2];
-+	void __iomem *dev_base;
- 	struct clk *sclk;
-+	struct reset_controller_dev rcdev;
-+	spinlock_t lock;
- 	struct notifier_block nb;
- 	u32 args;
- 	u32 ramc_lpr;
- };
- 
-+#define to_at91_reset(r)	container_of(r, struct at91_reset, rcdev)
-+
- /**
-  * struct at91_reset_data - AT91 reset data
-  * @reset_args:		SoC specific system reset arguments
-@@ -216,6 +227,88 @@ static const struct of_device_id at91_reset_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, at91_reset_of_match);
- 
-+static int at91_reset_update(struct reset_controller_dev *rcdev,
-+			     unsigned long id, bool assert)
-+{
-+	struct at91_reset *reset = to_at91_reset(rcdev);
-+	u32 val;
-+
-+	spin_lock(&reset->lock);
-+	val = readl_relaxed(reset->dev_base);
-+	if (assert)
-+		val |= BIT(id);
-+	else
-+		val &= ~BIT(id);
-+	writel_relaxed(val, reset->dev_base);
-+	spin_unlock(&reset->lock);
-+
-+	return 0;
-+}
-+
-+static int at91_reset_assert(struct reset_controller_dev *rcdev,
-+			     unsigned long id)
-+{
-+	return at91_reset_update(rcdev, id, true);
-+}
-+
-+static int at91_reset_deassert(struct reset_controller_dev *rcdev,
-+			       unsigned long id)
-+{
-+	return at91_reset_update(rcdev, id, false);
-+}
-+
-+static int at91_reset_dev_status(struct reset_controller_dev *rcdev,
-+				 unsigned long id)
-+{
-+	struct at91_reset *reset = to_at91_reset(rcdev);
-+	u32 val;
-+
-+	spin_lock(&reset->lock);
-+	val = readl_relaxed(reset->dev_base);
-+	spin_unlock(&reset->lock);
-+
-+	return !!(val & BIT(id));
-+}
-+
-+static const struct reset_control_ops at91_reset_ops = {
-+	.assert = at91_reset_assert,
-+	.deassert = at91_reset_deassert,
-+	.status = at91_reset_dev_status,
-+};
-+
-+static int at91_reset_of_xlate(struct reset_controller_dev *rcdev,
-+			       const struct of_phandle_args *reset_spec)
-+{
-+	if (reset_spec->args[0] < SAMA7G5_RESET_USB_PHY1 ||
-+	    reset_spec->args[0] > SAMA7G5_RESET_USB_PHY3)
-+		return -EINVAL;
-+
-+	return reset_spec->args[0];
-+}
-+
-+static int at91_rcdev_init(struct at91_reset *reset,
-+			   const struct at91_reset_data *data,
-+			   struct platform_device *pdev)
-+{
-+	if (!data->n_device_reset)
-+		return 0;
-+
-+	reset->dev_base = devm_of_iomap(&pdev->dev, pdev->dev.of_node, 1,
-+					NULL);
-+	if (IS_ERR(reset->dev_base))
-+		return -ENODEV;
-+
-+	spin_lock_init(&reset->lock);
-+	reset->rcdev.ops = &at91_reset_ops;
-+	reset->rcdev.owner = THIS_MODULE;
-+	reset->rcdev.of_node = pdev->dev.of_node;
-+	reset->rcdev.nr_resets = data->n_device_reset;
-+	reset->rcdev.of_reset_n_cells = 1;
-+	reset->rcdev.of_xlate = at91_reset_of_xlate;
-+
-+	return devm_reset_controller_register(&pdev->dev, &reset->rcdev);
-+}
-+
- static int __init at91_reset_probe(struct platform_device *pdev)
- {
- 	const struct of_device_id *match;
-@@ -269,6 +362,10 @@ static int __init at91_reset_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, reset);
- 
-+	ret = at91_rcdev_init(reset, data, pdev);
-+	if (ret)
-+		goto disable_clk;
-+
- 	if (of_device_is_compatible(pdev->dev.of_node, "microchip,sam9x60-rstc")) {
- 		u32 val = readl(reset->rstc_base + AT91_RSTC_MR);
- 
-@@ -277,14 +374,16 @@ static int __init at91_reset_probe(struct platform_device *pdev)
- 	}
- 
- 	ret = register_restart_handler(&reset->nb);
--	if (ret) {
--		clk_disable_unprepare(reset->sclk);
--		return ret;
--	}
-+	if (ret)
-+		goto disable_clk;
- 
- 	at91_reset_status(pdev, reset->rstc_base);
- 
- 	return 0;
-+
-+disable_clk:
-+	clk_disable_unprepare(reset->sclk);
-+	return ret;
- }
- 
- static int __exit at91_reset_remove(struct platform_device *pdev)
--- 
-2.32.0
+Anything that is maintained is usually a better example, and it helps when the
+code is not old enough to have accumulated a lot of historic baggage.
 
+The arch/riscv/ code is generally a good example base for others to copy.
+It's not nearly as small, but that is mostly because it implements optional
+features that could be left out. csky is a smaller example that is also
+fairly clean and new, but less featureful.
+
+         Arnd
