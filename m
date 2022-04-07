@@ -2,91 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F22C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9549AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243709AbiDGJ1Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39766 "EHLO
+        id S243748AbiDGJ1o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241322AbiDGJ1T (ORCPT
+        with ESMTP id S243787AbiDGJ1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:27:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B21F8BE14
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:25:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 323EBCE26CD
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:25:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77837C385A0;
-        Thu,  7 Apr 2022 09:25:13 +0000 (UTC)
-Date:   Thu, 7 Apr 2022 10:25:10 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
- ARCH_KMALLOC_MINALIGN
-Message-ID: <Yk6t9jhof9MJV6TG@arm.com>
-References: <20220405135758.774016-1-catalin.marinas@arm.com>
- <20220405135758.774016-8-catalin.marinas@arm.com>
- <Yk5/FpCR10sndTR1@n131-248-037.byted.org>
+        Thu, 7 Apr 2022 05:27:39 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD23DEAF
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:25:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649323540; x=1680859540;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=a0mAkM6G2uGimt8JpEAMQShE/fpLe+vQSXGLX4GQr2M=;
+  b=T7upbxwfjpAiQ2lzSLwGeG5Ikn0daYTK0aLe+gqtreZPJampbEpAfkmV
+   tXFLRBVv0aDplciZh3L6y5LYYYgPN285FfCXawewUU8WJU+TfZ2NsRx/j
+   uBvxfi5EqjIMTWq2R5lanCgqFwYVHpPMqO1JBqM813LiOFOn0PJxcHTIm
+   5KaB9jZs4RAaHKDBcxQlIitZlNtPfZCPpCa7m+eLjtWzci0QK842pJhYt
+   FIirtHMGjlnEmxpte49YgeuZzHpNx3A6QUBEzX4WzKRaoP7xdS5kW0s2b
+   58SorIe0NyDnTG/YG3OND+JWuOk6sHDFAmA8+T/8aQTFHAMWX9HCAH379
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="241205198"
+X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
+   d="scan'208";a="241205198"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 02:25:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
+   d="scan'208";a="722889091"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 07 Apr 2022 02:25:38 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ncOOX-0005HD-Dt;
+        Thu, 07 Apr 2022 09:25:37 +0000
+Date:   Thu, 7 Apr 2022 17:25:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [kas:lam 10/10] arch/x86/kernel/proc.c:35:17: error: use of
+ undeclared identifier 'X86_THREAD_LAM_U48'
+Message-ID: <202204071702.1AlCbCIC-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yk5/FpCR10sndTR1@n131-248-037.byted.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 02:14:15PM +0800, Muchun Song wrote:
-> On Tue, Apr 05, 2022 at 02:57:55PM +0100, Catalin Marinas wrote:
-> > ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
-> > operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
-> > alignment.
-> > 
-> > Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-> > Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > ---
-> >  include/linux/crypto.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/include/linux/crypto.h b/include/linux/crypto.h
-> > index 2324ab6f1846..654b9c355575 100644
-> > --- a/include/linux/crypto.h
-> > +++ b/include/linux/crypto.h
-> > @@ -167,7 +167,7 @@
-> >   * maintenance for non-coherent DMA (cache invalidation in particular) does not
-> >   * affect data that may be accessed by the CPU concurrently.
-> >   */
-> > -#define CRYPTO_MINALIGN ARCH_KMALLOC_MINALIGN
-> > +#define CRYPTO_MINALIGN ARCH_DMA_MINALIGN
-> 
-> I don't think this should be changed since ARCH_KMALLOC_MINALIGN is
-> already aligned with the size what you need.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kas/linux.git lam
+head:   73447e771c55e18598a6fbf6adee1002aee18ea0
+commit: 73447e771c55e18598a6fbf6adee1002aee18ea0 [10/10] x86: Expose thread features status in /proc/$PID/arch_status
+config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220407/202204071702.1AlCbCIC-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6b306233f78876a1d197ed6e1f05785505de7c63)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/kas/linux.git/commit/?id=73447e771c55e18598a6fbf6adee1002aee18ea0
+        git remote add kas https://git.kernel.org/pub/scm/linux/kernel/git/kas/linux.git
+        git fetch --no-tags kas lam
+        git checkout 73447e771c55e18598a6fbf6adee1002aee18ea0
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-With this series, ARCH_KMALLOC_MINALIGN is no longer safe for
-non-coherent DMA on all arm64 SoCs, that's what ARCH_DMA_MINALIGN will
-cover.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Now, looking at the comment for CRYPTO_MINALIGN, one aspect it covers is
-the minimum alignment required by C for the crypto_tfm structure access.
-So a smaller ARCH_KMALLOC_MINALIGN would do. But the other part of the
-comment mentions in-structure alignment for non-coherent DMA. Here we'd
-need the upper bound alignment, ARCH_DMA_MINALIGN.
+All errors (new ones prefixed by >>):
 
-I'll follow up on Herbert's email as I think he has a good point on
-structure vs kmalloc() alignment.
+>> arch/x86/kernel/proc.c:35:17: error: use of undeclared identifier 'X86_THREAD_LAM_U48'
+           if (features & X86_THREAD_LAM_U48)
+                          ^
+>> arch/x86/kernel/proc.c:37:17: error: use of undeclared identifier 'X86_THREAD_LAM_U57'
+           if (features & X86_THREAD_LAM_U57)
+                          ^
+   2 errors generated.
+
+
+vim +/X86_THREAD_LAM_U48 +35 arch/x86/kernel/proc.c
+
+    32	
+    33	static void dump_features(struct seq_file *m, unsigned long features)
+    34	{
+  > 35		if (features & X86_THREAD_LAM_U48)
+    36			seq_puts(m, "lam_u48 ");
+  > 37		if (features & X86_THREAD_LAM_U57)
+    38			seq_puts(m, "lam_u57 ");
+    39	}
+    40	
 
 -- 
-Catalin
+0-DAY CI Kernel Test Service
+https://01.org/lkp
