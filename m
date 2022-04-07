@@ -2,142 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 827A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 19:53:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 436AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229551AbiDGTz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 15:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
+        id S229525AbiDGURp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiDGTzx (ORCPT
+        with ESMTP id S229480AbiDGURf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 15:55:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818E83A1408
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:48:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFB66B8297E
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 19:35:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05FA2C385A4;
-        Thu,  7 Apr 2022 19:35:21 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ic0q0fM+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649360120;
+        Thu, 7 Apr 2022 16:17:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1EAC32E2A09
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:14:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649362404;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=aHqtcyWWhoEYpTWEgHu8OiMUdmD4MGfIhGTDyFsMglk=;
-        b=ic0q0fM+4dEuVACDUwWX5U6545jpmLwg7MsGK2G8PRxEw4JWQZ1kaSdXUxkw9Jir6jUX6n
-        11hbvY0sRPm7VqjSZEEf8ui7CRcS3sGu/6KcOLPHJhfPNg0Ieg5/qDzrYE63UuUyj5Bd07
-        BgADSpdz6iRN9dHjHMmnUSwBdg1m7KI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5110590a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 7 Apr 2022 19:35:20 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org
-Cc:     tytso@mit.edu, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Jann Horn <jannh@google.com>
-Subject: [PATCH] random: allow partial reads if later user copies fail
-Date:   Thu,  7 Apr 2022 21:34:33 +0200
-Message-Id: <20220407193433.523299-1-Jason@zx2c4.com>
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=x93PCRKwviqgnFctHZ564pBYePcJr5i4ENQzOlQlhIE=;
+        b=bre6y9kmkFesh5K5hR2IzZ3OOzoGncQDyOzOdPQ4VqMtyrh7AX192jN5wckMeiwLfhAmzr
+        NqG6cT3CEOuDZFWEMcTxWgvEgnAyXiH9oyk4oYalfHLDImeuSUiHIpwwnQ0YdNcMosOQvx
+        adtliUxkhUMVTZJHnzDtxIB1NcQRhJc=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-323-eplbEYb3P6GFdWgK-Cdisw-1; Thu, 07 Apr 2022 16:03:03 -0400
+X-MC-Unique: eplbEYb3P6GFdWgK-Cdisw-1
+Received: by mail-wm1-f69.google.com with SMTP id j6-20020a05600c1c0600b0038e7d07ebcaso1769728wms.0
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:03:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=x93PCRKwviqgnFctHZ564pBYePcJr5i4ENQzOlQlhIE=;
+        b=KGUcx7Cbp0sXrzqhHi17dzdfcVe43UAVDGcx2hDdkMWk8nODmUuUmaTPqb2VDVrIqY
+         c+bbz+TLXpe2LeSbpXKAOpc/b2Jgjt6OyhH5W5Sy2PfDonsaRHvDnVdIs9RO96OGw0Kt
+         FKHay5hRI1AtmfSFDM0eCymZqTxHSfRhNLkqCRVBZOq4WYAV9WE/w+t7MBFO2rJI8RFh
+         bhdhfcZoRLUfbFT92DfCY8E0zKiOUEyACKXOTWSycNh0N9U9ro/s65iZJyDXf0rAtubN
+         riKRvc43prULU3sPXETqnAT1LVlQ75eIbR1rWr0txFIZwzVPYevY/fjf2e7t87oI8s0+
+         7oWg==
+X-Gm-Message-State: AOAM531gE11rA6BX45GvGkmCJYFYk3lJd3L3pv1hlUDvkXoNThB9jHR1
+        7xN+S6oxlSnkBnEbZALaBbDJCAijfXWIHYJ/DjWZqkqXVi+JuEWpS1sXvDBYzTwgXacPn++xoN9
+        bHr4aISWDszXGikHNKuS2sGybKuQsxa7MWaihS4oC55elhiW+J/cMIEjkxDurDBonN83+NWhgD3
+        Q=
+X-Received: by 2002:a7b:cb46:0:b0:37b:dd79:e1c4 with SMTP id v6-20020a7bcb46000000b0037bdd79e1c4mr13618124wmj.39.1649361782271;
+        Thu, 07 Apr 2022 13:03:02 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzddimnsAmF0jPIGaa3uK+oB4t/RezvERAcP6vteLSMkHFZ1dvuNZDvJ3lkXyuq9wVKp07AKg==
+X-Received: by 2002:a7b:cb46:0:b0:37b:dd79:e1c4 with SMTP id v6-20020a7bcb46000000b0037bdd79e1c4mr13618110wmj.39.1649361782029;
+        Thu, 07 Apr 2022 13:03:02 -0700 (PDT)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id f15-20020a0560001a8f00b002078f74ccd2sm1048712wry.36.2022.04.07.13.03.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 13:03:01 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     dri-devel@lists.freedesktop.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Chen-Yu Tsai <wens@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Mark Brown <broonie@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>
+Subject: [PATCH 3/5] drm/solomon: Add ssd130x-i2c compatible strings without an -fb suffix
+Date:   Thu,  7 Apr 2022 22:02:02 +0200
+Message-Id: <20220407200205.28838-4-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407200205.28838-1-javierm@redhat.com>
+References: <20220407200205.28838-1-javierm@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rather than failing entirely if a copy_to_user() fails at some point,
-instead we should return a partial read for the amount that succeeded
-prior, unless none succeeded at all, in which case we return -EFAULT as
-before.
+The current compatible strings for SSD130x I2C controllers contain an -fb
+suffix, this seems to indicate that are for a fbdev driver. But the DT is
+supposed to describe the hardware and not Linux implementation details.
 
-This makes it consistent with other reader interfaces. For example, the
-following snippet for /dev/zero outputs "4" followed by "1":
+Let's deprecate those compatible strings and add new ones that don't have
+the -fb suffix. The old entries are still kept for backward compatibility.
 
-  int fd;
-  void *x = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-  assert(x != MAP_FAILED);
-  fd = open("/dev/zero", O_RDONLY);
-  assert(fd >= 0);
-  printf("%zd\n", read(fd, x, 4));
-  printf("%zd\n", read(fd, x + 4095, 4));
-  close(fd);
-
-This brings that same standard behavior to the various RNG reader
-interfaces.
-
-While we're at it, we can streamline the loop logic a little bit.
-
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jann Horn <jannh@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 ---
- drivers/char/random.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index e15063d61460..dd31fddecd17 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -523,8 +523,7 @@ EXPORT_SYMBOL(get_random_bytes);
- 
- static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
- {
--	ssize_t ret = 0;
--	size_t len;
-+	size_t len, ret = 0;
- 	u32 chacha_state[CHACHA_STATE_WORDS];
- 	u8 output[CHACHA_BLOCK_SIZE];
- 
-@@ -543,37 +542,37 @@ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
- 	 * the user directly.
- 	 */
- 	if (nbytes <= CHACHA_KEY_SIZE) {
--		ret = copy_to_user(buf, &chacha_state[4], nbytes) ? -EFAULT : nbytes;
-+		ret = copy_to_user(buf, &chacha_state[4], nbytes) ? 0 : nbytes;
- 		goto out_zero_chacha;
- 	}
- 
--	do {
-+	for (;;) {
- 		chacha20_block(chacha_state, output);
- 		if (unlikely(chacha_state[12] == 0))
- 			++chacha_state[13];
- 
- 		len = min_t(size_t, nbytes, CHACHA_BLOCK_SIZE);
--		if (copy_to_user(buf, output, len)) {
--			ret = -EFAULT;
-+		if (copy_to_user(buf, output, len))
- 			break;
--		}
- 
--		nbytes -= len;
- 		buf += len;
- 		ret += len;
-+		nbytes -= len;
-+		if (!nbytes)
-+			break;
- 
- 		BUILD_BUG_ON(PAGE_SIZE % CHACHA_BLOCK_SIZE != 0);
--		if (!(ret % PAGE_SIZE) && nbytes) {
-+		if (!(ret % PAGE_SIZE)) {
- 			if (signal_pending(current))
- 				break;
- 			cond_resched();
- 		}
--	} while (nbytes);
-+	}
- 
- 	memzero_explicit(output, sizeof(output));
- out_zero_chacha:
- 	memzero_explicit(chacha_state, sizeof(chacha_state));
--	return ret;
-+	return ret ? ret : -EFAULT;
- }
- 
- /*
+ drivers/gpu/drm/solomon/ssd130x-i2c.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/drivers/gpu/drm/solomon/ssd130x-i2c.c b/drivers/gpu/drm/solomon/ssd130x-i2c.c
+index d099b241dd3f..a469679548f8 100644
+--- a/drivers/gpu/drm/solomon/ssd130x-i2c.c
++++ b/drivers/gpu/drm/solomon/ssd130x-i2c.c
+@@ -91,6 +91,23 @@ static const struct of_device_id ssd130x_of_match[] = {
+ 		.compatible = "sinowealth,sh1106-i2c",
+ 		.data = &ssd130x_sh1106_deviceinfo,
+ 	},
++	{
++		.compatible = "solomon,ssd1305-i2c",
++		.data = &ssd130x_ssd1305_deviceinfo,
++	},
++	{
++		.compatible = "solomon,ssd1306-i2c",
++		.data = &ssd130x_ssd1306_deviceinfo,
++	},
++	{
++		.compatible = "solomon,ssd1307-i2c",
++		.data = &ssd130x_ssd1307_deviceinfo,
++	},
++	{
++		.compatible = "solomon,ssd1309-i2c",
++		.data = &ssd130x_ssd1309_deviceinfo,
++	},
++	/* Deprecated but remain for backward compatibility */
+ 	{
+ 		.compatible = "solomon,ssd1305fb-i2c",
+ 		.data = &ssd130x_ssd1305_deviceinfo,
 -- 
 2.35.1
 
