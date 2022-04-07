@@ -2,116 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB0B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58665C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241845AbiDGIQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:16:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49380 "EHLO
+        id S239746AbiDGIST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240339AbiDGIQy (ORCPT
+        with ESMTP id S242894AbiDGIRq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:16:54 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5971D253C
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:14:54 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id g20so5477518edw.6
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 01:14:53 -0700 (PDT)
+        Thu, 7 Apr 2022 04:17:46 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEBEA1F6F18;
+        Thu,  7 Apr 2022 01:15:45 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso5169957wma.0;
+        Thu, 07 Apr 2022 01:15:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uuPCrvHDkvmkaWKFBJeZIWghlVm/xXawdQ6pGCSJBsY=;
-        b=X76cHWHH+dKO15k7nRs696qFHOComkQcq5VyssHr/p36pNENkVdOithAKx3GTruA4l
-         u8wb0yE8g7u/vEm4BZ+ublqst3AvzTGVsyPmFehSAAm+aG5VLzh460t0e5CSLcI2GxNh
-         NgHj5lWAjA2kuV9/sY1lhGnzw8B0p/mFK7ddFasN9xIJuLaxhj1XPVMwb0aKLWP7AnyS
-         cZLDWhiPZ+3mW7ie8f2UeMtZjCTuj8hDcPdG9RW+aLE5/QRmjyWVx57t6M53EqQ1jJAJ
-         zcqqCy8Sqdid/tnG0Qfr/ORHTNN8/H+BBdW+K6TISwmSyPJqLrI8Bl/drRUqMZf0H0iS
-         BifA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Bcoyl5XqH4z8VxEBlzhREhx7GTTi/uuEf6fqQshLbzc=;
+        b=Hk5gGqsSqmpmPZcZnWkQOh9oO6hu2wcpXcwovEsgXZwDb82nY8qk6fFWJBSDq0GaNN
+         DGchLxemD7txMyXneLe6h1sidBi1GfxeiVTx/mqY6Xyi3uzDbTjN5cHDV8VYRPt5Ug0T
+         OGdO35WzrkDMO/NTVT0Bw5Jlb+gK4dJwaTclpBSObhAX9zx1gH+BtmWZJK9n61mehS2o
+         JTDRqopulY6j4ay17GVFwxZk5jbkHzqosPrPI8hc5P35E7ANBQkUb7q3aAEoSEkmGGwg
+         KnjPQeCNP6xLIcAbBmdrdhnuAj19j+FdHA9B78+CeDQmxLCR5OUN38R0aV0GIVBM341k
+         lYmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uuPCrvHDkvmkaWKFBJeZIWghlVm/xXawdQ6pGCSJBsY=;
-        b=tHJkvAIzXbIhTUPsIGfZ3qK/8u3phjA991ithheM3pcL6hOk1ohK4Wz5/UduGZtHdK
-         Tv/MDCN7cb7okXEEeYgGLvbqj1hvxvPWN5pjath2ZVxXtvb0/PqJWJqJsMCDjU2ny8T3
-         aLmqxC1QUU6rgUg7f2kYqYbvLhezCMtKWheqcET4+ew4bcEJXPJoahZKmLThP7xwaPtA
-         vLsTF4JmedDMPqlhVjvf9/f5oFbpr30mBvbBTIWRNqYCaxhUcdGmcfaeKDOZLv7p/5j0
-         7fBmums+4ZU6U3e7SBcXw4CTDwCOJCPvAwXMWicP7HUGqHtCsGon4d9vow8EQ82N6piK
-         lKIA==
-X-Gm-Message-State: AOAM531Nymj/W7ur9mlQ+eataHbLyXYSbsEncD3j/gmDQKwQc7CRRDLG
-        dUSOtpFd/fy2/VV6t6qCqms/BA==
-X-Google-Smtp-Source: ABdhPJwaxJSzvu7XogoiRn/oibfelC9c2fpnLOfco3bPP29ZKDL2pqIOiV7f5CgICkKrJMwAzRa8Qg==
-X-Received: by 2002:aa7:db18:0:b0:41c:e010:a07f with SMTP id t24-20020aa7db18000000b0041ce010a07fmr12822787eds.281.1649319292623;
-        Thu, 07 Apr 2022 01:14:52 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id u26-20020a17090626da00b006e7cb663277sm4956566ejc.90.2022.04.07.01.14.51
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Bcoyl5XqH4z8VxEBlzhREhx7GTTi/uuEf6fqQshLbzc=;
+        b=dEbLd7Mp0dZHL/MVSiAkjN+vYxViF6aP9aPAGYmRDs/MOKnXEvbyJTCS4+7vUaESen
+         vcCWY//THIHYenlHpJ6G3Fl+32TYkOYxyJ57B2zpkAttXp2p+ZNaxqFpZtigfAHFUYXU
+         m/gwE8Nh2Qn8jIBLw2d0wiH8v6brEB27CapwTiqlSQVvEO4ajMMXtwdXSa5D3WfhEG1e
+         qOUehoQF7B5POHbHoQa5yLZXZjqV7lTmICevGpVYwj6xQ7L0vUR5v2CHWtvsfNezdAPE
+         yJHl45r4O7evIV56WKRl3rs2i8Dwfv8PVhI4UYGUMbJqUS16D5imTz0OvYGgkTd5ISwq
+         cOxA==
+X-Gm-Message-State: AOAM531gntyBPqzE1SuzWZRxcwCIUNwb0IJMvaryOJW3ObQNE1CRefKe
+        UezdaucAR2L6VYMCzk91mEg=
+X-Google-Smtp-Source: ABdhPJylYovmzCq6x6w+MzkdxGMUvL5fin5v6H8TP/wYw3cAyAK1+NlDwsaRKtMRYWBWX93hCNAsCw==
+X-Received: by 2002:a1c:f312:0:b0:387:8bf:bd3 with SMTP id q18-20020a1cf312000000b0038708bf0bd3mr11169302wmq.112.1649319344101;
+        Thu, 07 Apr 2022 01:15:44 -0700 (PDT)
+Received: from debian (host-78-145-97-89.as13285.net. [78.145.97.89])
+        by smtp.gmail.com with ESMTPSA id g16-20020a05600c4ed000b0038ceb0b21b4sm8557631wmq.24.2022.04.07.01.15.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 01:14:52 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        arm@kernel.org, soc@kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [GIT PULL] memory: Fixes for v5.18 (current cycle)
-Date:   Thu,  7 Apr 2022 10:14:48 +0200
-Message-Id: <20220407081448.113208-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Thu, 07 Apr 2022 01:15:43 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 09:15:41 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 000/597] 5.10.110-rc2 review
+Message-ID: <Yk6drSoASaEkzopi@debian>
+References: <20220406133013.264188813@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406133013.264188813@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Greg,
 
-Fixes for v5.18, please. One is recently introduced, others were already
-existing.
+On Wed, Apr 06, 2022 at 03:43:51PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.110 release.
+> There are 597 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Fri, 08 Apr 2022 13:27:53 +0000.
+> Anything received after that time might be too late.
 
-Best regards,
-Krzysztof
+Build test:
+mips (gcc version 11.2.1 20220314): 63 configs -> no failure
+arm (gcc version 11.2.1 20220314): 105 configs -> no new failure
+arm64 (gcc version 11.2.1 20220314): 3 configs -> no failure
+x86_64 (gcc version 11.2.1 20220314): 4 configs -> no failure
+
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+arm64: Booted on rpi4b (4GB model). No regression. [2]
+
+[1]. https://openqa.qa.codethink.co.uk/tests/988
+[2]. https://openqa.qa.codethink.co.uk/tests/990
 
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+--
+Regards
+Sudip
 
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux-mem-ctrl.git tags/memory-controller-drv-fixes-5.18
-
-for you to fetch changes up to dd8adc713b1656ce469702eba8fc1adc4db91dc4:
-
-  memory: fsl_ifc: populate child nodes of buses and mfd devices (2022-04-06 09:39:16 +0200)
-
-----------------------------------------------------------------
-Memory controller drivers - fixes for v5.18
-
-Issues in v5.18:
-1. Freescale/NXP: fix populating children of Integrated Flash Controller
-   DT nodes.
-
-Issues existing before:
-1. Renesas: fix platform-device leak in probe's error path.
-2. Atmel: fix of_node reference leak in probe's error path.
-3. Synopsys: correct the bindings for snps,ddrc-3.80a (interrupts are
-   required).
-
-----------------------------------------------------------------
-Johan Hovold (1):
-      memory: renesas-rpc-if: fix platform-device leak in error path
-
-Li Yang (1):
-      memory: fsl_ifc: populate child nodes of buses and mfd devices
-
-Miaoqian Lin (1):
-      memory: atmel-ebi: Fix missing of_node_put in atmel_ebi_probe
-
-Sherry Sun (1):
-      dt-bindings: memory: snps,ddrc-3.80a compatible also need interrupts
-
- .../memory-controllers/synopsys,ddrc-ecc.yaml      |  6 ++++--
- drivers/memory/atmel-ebi.c                         | 23 ++++++++++++++++------
- drivers/memory/fsl_ifc.c                           |  3 +--
- drivers/memory/renesas-rpc-if.c                    | 10 +++++++++-
- 4 files changed, 31 insertions(+), 11 deletions(-)
