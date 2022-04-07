@@ -2,121 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E229C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C48CBC352B6
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241492AbiDGBbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60690 "EHLO
+        id S242190AbiDGBcM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:32:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240476AbiDGBUB (ORCPT
+        with ESMTP id S239461AbiDGBTQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:20:01 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FFC11877DF
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 18:16:27 -0700 (PDT)
-X-UUID: 4faf0ad1f71f4071a821c860f7d89bd2-20220407
-X-UUID: 4faf0ad1f71f4071a821c860f7d89bd2-20220407
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 921465962; Thu, 07 Apr 2022 09:16:16 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 7 Apr 2022 09:16:15 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Apr 2022 09:16:15 +0800
-Message-ID: <8fbabb83e838169697a06a1b525252c99018a93f.camel@mediatek.com>
-Subject: Re: [RESEND v4 PATCH] drm/mediatek: Fix mtk_cec_mask()
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Miles Chen <miles.chen@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Jie Qiu <jie.qiu@mediatek.com>,
-        "Junzhi Zhao" <junzhi.zhao@mediatek.com>
-CC:     Zhiqiang Lin <zhiqiang.lin@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Date:   Thu, 7 Apr 2022 09:16:15 +0800
-In-Reply-To: <20220315232301.2434-1-miles.chen@mediatek.com>
-References: <20220315232301.2434-1-miles.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 6 Apr 2022 21:19:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A7DE1A61FB;
+        Wed,  6 Apr 2022 18:14:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BD6961DCE;
+        Thu,  7 Apr 2022 01:14:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6734C385A6;
+        Thu,  7 Apr 2022 01:14:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649294071;
+        bh=bSlGXJ7/3lA0wX2uR7IlVzvv2YkAhOIcVEo/DSFBlLg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sc38JcbaMOUwjXtBKVW/EDMnlF2/Z6Tnyq5j8bhWJ0rcwvCoRqwv0TX40Mmiq0tr3
+         snSaot5rnGOLb6f5qxu+GyN9AydK5isug2v49c2G1679esoZ0xS9gLAFnqo+n/TKOi
+         5MLBP4ybLi7kGiRCH+MVj2ep/6A3BQQC1jk0l8+afiHJgHZWTsYo5UMvU4CM3fnXb1
+         FHjCo4Q6tR8+Qk6oN2tL4gRZxwU9KLBOVw4z8YYA4oTJKYtlWrcmuO25PBncGj7FM3
+         LOYT3uIQ5viej8n5EQsJc0B4u0eAwLJohi6pZ1iDwDtXdIL8QvyjMwlqCXOrxtSjeA
+         weeuzR5tc8ZKw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-input@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 07/25] Input: stmfts - fix reference leak in stmfts_input_open
+Date:   Wed,  6 Apr 2022 21:13:55 -0400
+Message-Id: <20220407011413.114662-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407011413.114662-1-sashal@kernel.org>
+References: <20220407011413.114662-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Miles:
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-On Wed, 2022-03-16 at 07:23 +0800, Miles Chen wrote:
-> In current implementation, mtk_cec_mask() writes val into target
-> register
-> and ignores the mask. After talking to our hdmi experts,
-> mtk_cec_mask()
-> should read a register, clean only mask bits, and update (val | mask)
-> bits
-> to the register.
+[ Upstream commit 26623eea0da3476446909af96c980768df07bbd9 ]
 
-Applied to mediatek-drm-next [1], thanks.
+pm_runtime_get_sync() will increment pm usage counter even it
+failed. Forgetting to call pm_runtime_put_noidle will result
+in reference leak in stmfts_input_open, so we should fix it.
 
-[1] 
-https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/log/?h=mediatek-drm-next
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220317131604.53538-1-zhengyongjun3@huawei.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/input/touchscreen/stmfts.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Regards,
-CK
-
-> 
-> Fixes: 8f83f26891e1 ("drm/mediatek: Add HDMI support")
-> Signed-off-by: Miles Chen <miles.chen@mediatek.com>
-> Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> Cc: Zhiqiang Lin <zhiqiang.lin@mediatek.com>
-> Cc: CK Hu <ck.hu@mediatek.com>
-> Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> Cc: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
-> 
-> ---
-> 
-> Change since v1:
-> add Fixes tag
-> 
-> Change since v2:
-> add explanation of mtk_cec_mask()
-> 
-> Change since v3:
-> change misleading subject and modify the commit message since this is
-> a bug fix patch
-> 
-> ---
->  drivers/gpu/drm/mediatek/mtk_cec.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_cec.c
-> b/drivers/gpu/drm/mediatek/mtk_cec.c
-> index e9cef5c0c8f7..cdfa648910b2 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_cec.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_cec.c
-> @@ -85,7 +85,7 @@ static void mtk_cec_mask(struct mtk_cec *cec,
-> unsigned int offset,
->  	u32 tmp = readl(cec->regs + offset) & ~mask;
->  
->  	tmp |= val & mask;
-> -	writel(val, cec->regs + offset);
-> +	writel(tmp, cec->regs + offset);
->  }
->  
->  void mtk_cec_set_hpd_event(struct device *dev,
+diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
+index 9a64e1dbc04a..64b690a72d10 100644
+--- a/drivers/input/touchscreen/stmfts.c
++++ b/drivers/input/touchscreen/stmfts.c
+@@ -339,11 +339,11 @@ static int stmfts_input_open(struct input_dev *dev)
+ 
+ 	err = pm_runtime_get_sync(&sdata->client->dev);
+ 	if (err < 0)
+-		return err;
++		goto out;
+ 
+ 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
+ 	if (err)
+-		return err;
++		goto out;
+ 
+ 	mutex_lock(&sdata->mutex);
+ 	sdata->running = true;
+@@ -366,7 +366,9 @@ static int stmfts_input_open(struct input_dev *dev)
+ 				 "failed to enable touchkey\n");
+ 	}
+ 
+-	return 0;
++out:
++	pm_runtime_put_noidle(&sdata->client->dev);
++	return err;
+ }
+ 
+ static void stmfts_input_close(struct input_dev *dev)
+-- 
+2.35.1
 
