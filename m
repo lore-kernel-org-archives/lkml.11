@@ -2,67 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76960C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6574BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344056AbiDGOfZ (ORCPT
+        id S1344083AbiDGOfe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
+        Thu, 7 Apr 2022 10:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242422AbiDGOfG (ORCPT
+        with ESMTP id S1344060AbiDGOfO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:35:06 -0400
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59301AA05B
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:33:04 -0700 (PDT)
-Received: by mail-ej1-f42.google.com with SMTP id qh7so11182921ejb.11
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 07:33:04 -0700 (PDT)
+        Thu, 7 Apr 2022 10:35:14 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4031AE3F1
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:33:10 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id x20so6604842edi.12
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 07:33:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=RYx6WvmvPVasuTSNV9558K37cC2r2s2ajBREoXNyRzA=;
-        b=soo+xAe3un5Z/4IpCunTRZWwdgBL1UCYPVfeIX32Yr6LS8djtW2OqI2/mPE4LXuKq+
-         VKPH0fLrgZh8YJQupPU08OHJIx1oh4VMKfaPokU/JKmbZUcSldmJ1Iw+spRApG6K7FuD
-         AmxhMjQnwZZ0VvTJMxYdly7JSL/rSISrOdggsbK6g7WqAzVN4qvBKCGRtBJSg9Le+UPs
-         f7k/6HWfdiv+cIEX7cgc334aUpK8j8PlArbfHIvTTVgK4hId/KK7TbAkLkqHE3Q2Atv8
-         8ArJ53UUVw1+BVZaHc8NKRYjkyCtPJLZEFKCxiVBN+THUSPiSRUuVQ+/01kUFo10GhRn
-         BKDg==
+        bh=LAob4hjVeo8qM+UmXzHTMHiaXqZxB5KGeATzkvlQyeQ=;
+        b=VkAWw3UdKCLqgiNHW6azXeT3giNhyg1isLQYm6ShYnNrTlPF0DjZuhOaMAH4bzAMF7
+         AYqrHT/srA+9QpA58P6t9R+LCPtiu3ZToSWI/ZkBsSOgar1gHIyPjqesGygNqBCXTFlK
+         3mfYyhifC8O9oFwN4h1SUOORLNEhITToH8Tyxeh8EuYh1sShEGZHrGsHY1yZhSRosiUf
+         avWYbnCNXXB5bjarajKrY477sswo2kogSMhP9y4hZxjo9Xq9g6Cj2tnwge5mkc3mwzmJ
+         scX3g8febBWIc0rS0pEe1xinDkkagNfRQrFbRvVG01ojVZs9rRk8bPg1b3ZP0hwiV/vF
+         A1Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=RYx6WvmvPVasuTSNV9558K37cC2r2s2ajBREoXNyRzA=;
-        b=BEcz0cg5Z3aja/yUeQsfZj/pu+AG97mvWST1uWSUzT8S5j9E7w8MDWkGUZ9F1v+qzn
-         c6pR+yBD6iXq08WaD+qT5XA3uxZ5uua2RYn8xy695ZCgngDn2ZP9de2r/VfpS2N0zhTJ
-         pbHeYPQpn8+kb6bYTtsYRAwUHECPU4HSQsHfN+kJf9E600jyEyVBJzZqGA20y8MtfnOc
-         cSOleq3esD8M+A6QtKP+CwwaeFtEj+KCh/dSaRSyNGf1PkCBGu4q1DCr1DVje2vnDbX0
-         bxQ4h73KkBMd8/InCLcvRUu6jx5UnXULij+oY3groaEuuVKwLhZt6ug9+y3eM3cEb2Y/
-         WJ8g==
-X-Gm-Message-State: AOAM5311LiiP7XyjLaDOrZMgbKa3mY2XVM6BP18HT3lsidtq6+hGlu8v
-        pzn/uFt9WA8j5Pljn9zOwx2uAw==
-X-Google-Smtp-Source: ABdhPJzBeAMapRcD10uLOPr1+qNyKD3PjedDGqVD1SRYWjp1T3wV/4J/Yz44pkk0FId/asKk+r3Ayg==
-X-Received: by 2002:a17:907:6e8c:b0:6e8:3f0f:936a with SMTP id sh12-20020a1709076e8c00b006e83f0f936amr2208702ejc.448.1649341921338;
-        Thu, 07 Apr 2022 07:32:01 -0700 (PDT)
+        bh=LAob4hjVeo8qM+UmXzHTMHiaXqZxB5KGeATzkvlQyeQ=;
+        b=4NBqUY5iwq8TvW4SjWdwKC3DhAfipdkf4LK38VY8cEomFgSC230zFJ4Ms/RwnCtsJf
+         dOHEcTsqXU9o393Ft5V0TJ4VWPXOggILy/zzm9pcivjwj5kGkQYt5m32k8BlNubX5gai
+         6N1U+mXKGPfI2X7qCe93/P6uiMBE9fIsnrzn9hbqt/LOIWBJaV9l1byDjI0J4HVYeVdo
+         X0KtKdhEdz1Nvewh30VFxd0gEwNdhSjMLFHHYNTHwsTy83uJkRpR4i6mJa9GpXEJLT2j
+         +u1USnzqHiQFqxPxfUA0xE0sb2sdcASLdga9opcgXXnkWi0NAm0c+eFjWM4UBynEH7WK
+         ngQQ==
+X-Gm-Message-State: AOAM530UOVui+75MizCI7iKsVFaSIebxs5oqKMyae89OUZ5awcLkhb2V
+        ex9y1GiK5mCb+xMyKB6bRGYuGQ==
+X-Google-Smtp-Source: ABdhPJxrfNXortbnbnCAxjUrGECnq4VtAi2PQO6is+aLbcsZUm/Tpf+CHgnVSwErA/Yq6cJje6JeEw==
+X-Received: by 2002:aa7:c789:0:b0:413:605d:8d17 with SMTP id n9-20020aa7c789000000b00413605d8d17mr14479659eds.100.1649341988967;
+        Thu, 07 Apr 2022 07:33:08 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id fy5-20020a1709069f0500b006e841c87243sm236526ejc.64.2022.04.07.07.32.00
+        by smtp.gmail.com with ESMTPSA id x9-20020a05640226c900b0041d015bb8a5sm1135390edd.26.2022.04.07.07.33.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 07:32:00 -0700 (PDT)
+        Thu, 07 Apr 2022 07:33:08 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
+To:     =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+        linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 1/2] ARM: dts: imx: align SPI NOR node name with dtschema
-Date:   Thu,  7 Apr 2022 16:31:54 +0200
-Message-Id: <20220407143155.295187-1-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] ARM: dts: omap: align SPI NOR node name with dtschema
+Date:   Thu,  7 Apr 2022 16:33:04 +0200
+Message-Id: <20220407143304.295610-1-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -74,474 +71,218 @@ The node names should be generic and SPI NOR dtschema expects "flash".
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm/boot/dts/imx28-evk.dts                        | 2 +-
- arch/arm/boot/dts/imx28-m28evk.dts                     | 2 +-
- arch/arm/boot/dts/imx28-sps1.dts                       | 2 +-
- arch/arm/boot/dts/imx6dl-rex-basic.dts                 | 2 +-
- arch/arm/boot/dts/imx6q-ba16.dtsi                      | 2 +-
- arch/arm/boot/dts/imx6q-bx50v3.dtsi                    | 2 +-
- arch/arm/boot/dts/imx6q-cm-fx6.dts                     | 2 +-
- arch/arm/boot/dts/imx6q-dmo-edmqmx6.dts                | 2 +-
- arch/arm/boot/dts/imx6q-dms-ba16.dts                   | 2 +-
- arch/arm/boot/dts/imx6q-gw5400-a.dts                   | 2 +-
- arch/arm/boot/dts/imx6q-marsboard.dts                  | 2 +-
- arch/arm/boot/dts/imx6q-rex-pro.dts                    | 2 +-
- arch/arm/boot/dts/imx6qdl-aristainetos.dtsi            | 2 +-
- arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi           | 2 +-
- arch/arm/boot/dts/imx6qdl-dfi-fs700-m60.dtsi           | 2 +-
- arch/arm/boot/dts/imx6qdl-kontron-samx6i.dtsi          | 2 +-
- arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi               | 2 +-
- arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi           | 2 +-
- arch/arm/boot/dts/imx6qdl-nitrogen6_som2.dtsi          | 2 +-
- arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi              | 2 +-
- arch/arm/boot/dts/imx6qdl-sabreauto.dtsi               | 2 +-
- arch/arm/boot/dts/imx6qdl-sabrelite.dtsi               | 2 +-
- arch/arm/boot/dts/imx6qdl-sabresd.dtsi                 | 2 +-
- arch/arm/boot/dts/imx6sl-evk.dts                       | 2 +-
- arch/arm/boot/dts/imx6sx-nitrogen6sx.dts               | 2 +-
- arch/arm/boot/dts/imx6sx-sdb-reva.dts                  | 4 ++--
- arch/arm/boot/dts/imx6sx-sdb.dts                       | 4 ++--
- arch/arm/boot/dts/imx6ul-14x14-evk.dtsi                | 2 +-
- arch/arm/boot/dts/imx6ul-kontron-n6310-som.dtsi        | 2 +-
- arch/arm/boot/dts/imx6ul-kontron-n6311-som.dtsi        | 2 +-
- arch/arm/boot/dts/imx6ul-kontron-n6x1x-som-common.dtsi | 2 +-
- arch/arm/boot/dts/imx6ull-kontron-n6411-som.dtsi       | 2 +-
- 32 files changed, 34 insertions(+), 34 deletions(-)
+ arch/arm/boot/dts/am335x-moxa-uc-2100-common.dtsi | 2 +-
+ arch/arm/boot/dts/am335x-moxa-uc-8100-common.dtsi | 2 +-
+ arch/arm/boot/dts/am335x-phycore-som.dtsi         | 2 +-
+ arch/arm/boot/dts/am335x-sl50.dts                 | 2 +-
+ arch/arm/boot/dts/am3874-iceboard.dts             | 2 +-
+ arch/arm/boot/dts/am437x-cm-t43.dts               | 2 +-
+ arch/arm/boot/dts/am437x-idk-evm.dts              | 2 +-
+ arch/arm/boot/dts/am437x-sk-evm.dts               | 2 +-
+ arch/arm/boot/dts/am43x-epos-evm.dts              | 2 +-
+ arch/arm/boot/dts/am574x-idk.dts                  | 2 +-
+ arch/arm/boot/dts/am57xx-cl-som-am57x.dts         | 2 +-
+ arch/arm/boot/dts/am57xx-idk-common.dtsi          | 2 +-
+ arch/arm/boot/dts/dra7-evm-common.dtsi            | 2 +-
+ arch/arm/boot/dts/dra72-evm-common.dtsi           | 2 +-
+ arch/arm/boot/dts/dra76-evm.dts                   | 2 +-
+ 15 files changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx28-evk.dts b/arch/arm/boot/dts/imx28-evk.dts
-index 7e2b0f198dfa..1053b7c584d8 100644
---- a/arch/arm/boot/dts/imx28-evk.dts
-+++ b/arch/arm/boot/dts/imx28-evk.dts
-@@ -129,7 +129,7 @@ ssp2: spi@80014000 {
- 				pinctrl-0 = <&spi2_pins_a>;
- 				status = "okay";
- 
--				flash: m25p80@0 {
-+				flash: flash@0 {
- 					#address-cells = <1>;
- 					#size-cells = <1>;
- 					compatible = "sst,sst25vf016b", "jedec,spi-nor";
-diff --git a/arch/arm/boot/dts/imx28-m28evk.dts b/arch/arm/boot/dts/imx28-m28evk.dts
-index f3bddc5ada4b..13acdc7916b9 100644
---- a/arch/arm/boot/dts/imx28-m28evk.dts
-+++ b/arch/arm/boot/dts/imx28-m28evk.dts
-@@ -33,7 +33,7 @@ ssp2: spi@80014000 {
- 				pinctrl-0 = <&spi2_pins_a>;
- 				status = "okay";
- 
--				flash: m25p80@0 {
-+				flash: flash@0 {
- 					#address-cells = <1>;
- 					#size-cells = <1>;
- 					compatible = "m25p80", "jedec,spi-nor";
-diff --git a/arch/arm/boot/dts/imx28-sps1.dts b/arch/arm/boot/dts/imx28-sps1.dts
-index 43be7a6a769b..90928db0df70 100644
---- a/arch/arm/boot/dts/imx28-sps1.dts
-+++ b/arch/arm/boot/dts/imx28-sps1.dts
-@@ -51,7 +51,7 @@ ssp2: spi@80014000 {
- 				pinctrl-0 = <&spi2_pins_a>;
- 				status = "okay";
- 
--				flash: m25p80@0 {
-+				flash: flash@0 {
- 					#address-cells = <1>;
- 					#size-cells = <1>;
- 					compatible = "everspin,mr25h256", "mr25h256";
-diff --git a/arch/arm/boot/dts/imx6dl-rex-basic.dts b/arch/arm/boot/dts/imx6dl-rex-basic.dts
-index 0f1616bfa9a8..b72f8ea1e6f6 100644
---- a/arch/arm/boot/dts/imx6dl-rex-basic.dts
-+++ b/arch/arm/boot/dts/imx6dl-rex-basic.dts
-@@ -19,7 +19,7 @@ memory@10000000 {
- };
- 
- &ecspi3 {
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		compatible = "sst,sst25vf016b", "jedec,spi-nor";
- 		spi-max-frequency = <20000000>;
- 		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6q-ba16.dtsi b/arch/arm/boot/dts/imx6q-ba16.dtsi
-index 6330d75f8f39..f266f1b7e0cf 100644
---- a/arch/arm/boot/dts/imx6q-ba16.dtsi
-+++ b/arch/arm/boot/dts/imx6q-ba16.dtsi
-@@ -142,7 +142,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1>;
- 	status = "okay";
- 
--	flash: n25q032@0 {
-+	flash: flash@0 {
- 		compatible = "jedec,spi-nor";
- 		#address-cells = <1>;
- 		#size-cells = <1>;
-diff --git a/arch/arm/boot/dts/imx6q-bx50v3.dtsi b/arch/arm/boot/dts/imx6q-bx50v3.dtsi
-index 10922375c51e..ead83091e193 100644
---- a/arch/arm/boot/dts/imx6q-bx50v3.dtsi
-+++ b/arch/arm/boot/dts/imx6q-bx50v3.dtsi
-@@ -160,7 +160,7 @@ &ecspi5 {
- 	pinctrl-0 = <&pinctrl_ecspi5>;
- 	status = "okay";
- 
--	m25_eeprom: m25p80@0 {
-+	m25_eeprom: flash@0 {
- 		compatible = "atmel,at25";
- 		spi-max-frequency = <10000000>;
- 		size = <0x8000>;
-diff --git a/arch/arm/boot/dts/imx6q-cm-fx6.dts b/arch/arm/boot/dts/imx6q-cm-fx6.dts
-index bfb530f29d9d..1ad41c944b4b 100644
---- a/arch/arm/boot/dts/imx6q-cm-fx6.dts
-+++ b/arch/arm/boot/dts/imx6q-cm-fx6.dts
-@@ -260,7 +260,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1>;
- 	status = "okay";
+diff --git a/arch/arm/boot/dts/am335x-moxa-uc-2100-common.dtsi b/arch/arm/boot/dts/am335x-moxa-uc-2100-common.dtsi
+index 11e8f64b6606..92a0e98ec231 100644
+--- a/arch/arm/boot/dts/am335x-moxa-uc-2100-common.dtsi
++++ b/arch/arm/boot/dts/am335x-moxa-uc-2100-common.dtsi
+@@ -182,7 +182,7 @@ &spi0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&spi0_pins>;
  
 -	m25p80@0 {
 +	flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "st,m25p", "jedec,spi-nor";
-diff --git a/arch/arm/boot/dts/imx6q-dmo-edmqmx6.dts b/arch/arm/boot/dts/imx6q-dmo-edmqmx6.dts
-index c713ac03b3b9..9591848cbd37 100644
---- a/arch/arm/boot/dts/imx6q-dmo-edmqmx6.dts
-+++ b/arch/arm/boot/dts/imx6q-dmo-edmqmx6.dts
-@@ -102,7 +102,7 @@ &ecspi5 {
- 	cs-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
- 	status = "okay";
- 
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		compatible = "m25p80", "jedec,spi-nor";
+ 		compatible = "mx25l6405d";
  		spi-max-frequency = <40000000>;
- 		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6q-dms-ba16.dts b/arch/arm/boot/dts/imx6q-dms-ba16.dts
-index 48fb47e715f6..137db38f0d27 100644
---- a/arch/arm/boot/dts/imx6q-dms-ba16.dts
-+++ b/arch/arm/boot/dts/imx6q-dms-ba16.dts
-@@ -47,7 +47,7 @@ &ecspi5 {
- 	pinctrl-0 = <&pinctrl_ecspi5>;
- 	status = "okay";
  
--	m25_eeprom: m25p80@0 {
-+	m25_eeprom: flash@0 {
- 		compatible = "atmel,at25256B", "atmel,at25";
- 		spi-max-frequency = <20000000>;
- 		size = <0x8000>;
-diff --git a/arch/arm/boot/dts/imx6q-gw5400-a.dts b/arch/arm/boot/dts/imx6q-gw5400-a.dts
-index 4cde45d5c90c..e894faba571f 100644
---- a/arch/arm/boot/dts/imx6q-gw5400-a.dts
-+++ b/arch/arm/boot/dts/imx6q-gw5400-a.dts
-@@ -137,7 +137,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1>;
- 	status = "okay";
- 
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		compatible = "sst,w25q256", "jedec,spi-nor";
- 		spi-max-frequency = <30000000>;
- 		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6q-marsboard.dts b/arch/arm/boot/dts/imx6q-marsboard.dts
-index 05ee28388229..cc1801002394 100644
---- a/arch/arm/boot/dts/imx6q-marsboard.dts
-+++ b/arch/arm/boot/dts/imx6q-marsboard.dts
-@@ -100,7 +100,7 @@ &ecspi1 {
- 	cs-gpios = <&gpio2 30 GPIO_ACTIVE_LOW>;
- 	status = "okay";
+diff --git a/arch/arm/boot/dts/am335x-moxa-uc-8100-common.dtsi b/arch/arm/boot/dts/am335x-moxa-uc-8100-common.dtsi
+index a7269b90d795..e7e439a0630a 100644
+--- a/arch/arm/boot/dts/am335x-moxa-uc-8100-common.dtsi
++++ b/arch/arm/boot/dts/am335x-moxa-uc-8100-common.dtsi
+@@ -394,7 +394,7 @@ &spi0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&spi0_pins>;
  
 -	m25p80@0 {
 +	flash@0 {
- 		compatible = "microchip,sst25vf016b";
- 		spi-max-frequency = <20000000>;
- 		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6q-rex-pro.dts b/arch/arm/boot/dts/imx6q-rex-pro.dts
-index 1767e1a3cd53..271f4b2d9b9f 100644
---- a/arch/arm/boot/dts/imx6q-rex-pro.dts
-+++ b/arch/arm/boot/dts/imx6q-rex-pro.dts
-@@ -19,7 +19,7 @@ memory@10000000 {
- };
+ 		compatible = "mx25l6405d";
+ 		spi-max-frequency = <40000000>;
  
- &ecspi3 {
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		compatible = "sst,sst25vf032b", "jedec,spi-nor";
- 		spi-max-frequency = <20000000>;
- 		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6qdl-aristainetos.dtsi b/arch/arm/boot/dts/imx6qdl-aristainetos.dtsi
-index e21f6ac864e5..baa197c90060 100644
---- a/arch/arm/boot/dts/imx6qdl-aristainetos.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-aristainetos.dtsi
-@@ -96,7 +96,7 @@ &ecspi4 {
- 	pinctrl-0 = <&pinctrl_ecspi4>;
+diff --git a/arch/arm/boot/dts/am335x-phycore-som.dtsi b/arch/arm/boot/dts/am335x-phycore-som.dtsi
+index f65cd1331315..e2cec1ffaa4c 100644
+--- a/arch/arm/boot/dts/am335x-phycore-som.dtsi
++++ b/arch/arm/boot/dts/am335x-phycore-som.dtsi
+@@ -331,7 +331,7 @@ &spi0 {
+ 	pinctrl-0 = <&spi0_pins>;
  	status = "okay";
  
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "micron,n25q128a11", "jedec,spi-nor";
-diff --git a/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi b/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi
-index 563bf9d44fe0..2ba577e602e7 100644
---- a/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi
-@@ -131,7 +131,7 @@ &ecspi4 {
- 	pinctrl-0 = <&pinctrl_ecspi4>;
- 	status = "okay";
+-	serial_flash: m25p80@0 {
++	serial_flash: flash@0 {
+ 		compatible = "jedec,spi-nor";
+ 		spi-max-frequency = <48000000>;
+ 		reg = <0x0>;
+diff --git a/arch/arm/boot/dts/am335x-sl50.dts b/arch/arm/boot/dts/am335x-sl50.dts
+index 6516907ed579..73b5d1a024bd 100644
+--- a/arch/arm/boot/dts/am335x-sl50.dts
++++ b/arch/arm/boot/dts/am335x-sl50.dts
+@@ -588,7 +588,7 @@ &spi0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&spi0_pins>;
  
--	flash: m25p80@1 {
+-	flash: n25q032@1 {
 +	flash: flash@1 {
  		#address-cells = <1>;
  		#size-cells = <1>;
- 		compatible = "micron,n25q128a11", "jedec,spi-nor";
-diff --git a/arch/arm/boot/dts/imx6qdl-dfi-fs700-m60.dtsi b/arch/arm/boot/dts/imx6qdl-dfi-fs700-m60.dtsi
-index 648f5fcb72e6..2c1d6f28e695 100644
---- a/arch/arm/boot/dts/imx6qdl-dfi-fs700-m60.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-dfi-fs700-m60.dtsi
-@@ -35,7 +35,7 @@ &ecspi3 {
- 	pinctrl-0 = <&pinctrl_ecspi3>;
- 	status = "okay";
+ 		compatible = "micron,n25q032";
+diff --git a/arch/arm/boot/dts/am3874-iceboard.dts b/arch/arm/boot/dts/am3874-iceboard.dts
+index 9423e9feaa10..c9323d1df303 100644
+--- a/arch/arm/boot/dts/am3874-iceboard.dts
++++ b/arch/arm/boot/dts/am3874-iceboard.dts
+@@ -434,7 +434,7 @@ &usb1 {
+ };
  
--	flash: m25p80@0 {
+ &mcspi1 {
+-	s25fl256@0 {
++	flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "jedec,spi-nor";
+diff --git a/arch/arm/boot/dts/am437x-cm-t43.dts b/arch/arm/boot/dts/am437x-cm-t43.dts
+index 3e3354780db8..0861e868b75a 100644
+--- a/arch/arm/boot/dts/am437x-cm-t43.dts
++++ b/arch/arm/boot/dts/am437x-cm-t43.dts
+@@ -302,7 +302,7 @@ &spi0 {
+ 		&edma 17 0>;
+ 	dma-names = "tx0", "rx0";
+ 
+-	flash: w25q64cvzpig@0 {
 +	flash: flash@0 {
  		#address-cells = <1>;
  		#size-cells = <1>;
- 		compatible = "sst,sst25vf040b", "jedec,spi-nor";
-diff --git a/arch/arm/boot/dts/imx6qdl-kontron-samx6i.dtsi b/arch/arm/boot/dts/imx6qdl-kontron-samx6i.dtsi
-index b167b33bd108..095c9143d99a 100644
---- a/arch/arm/boot/dts/imx6qdl-kontron-samx6i.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-kontron-samx6i.dtsi
-@@ -258,7 +258,7 @@ &ecspi4 {
- 	status = "okay";
+ 		compatible = "jedec,spi-nor";
+diff --git a/arch/arm/boot/dts/am437x-idk-evm.dts b/arch/arm/boot/dts/am437x-idk-evm.dts
+index 53f64e3ce735..5a74b83145cf 100644
+--- a/arch/arm/boot/dts/am437x-idk-evm.dts
++++ b/arch/arm/boot/dts/am437x-idk-evm.dts
+@@ -437,7 +437,7 @@ &qspi {
+ 	pinctrl-1 = <&qspi_pins_sleep>;
  
- 	/* default boot source: workaround #1 for errata ERR006282 */
--	smarc_flash: spi-flash@0 {
-+	smarc_flash: flash@0 {
- 		compatible = "winbond,w25q16dw", "jedec,spi-nor";
+ 	spi-max-frequency = <48000000>;
+-	m25p80@0 {
++	flash@0 {
+ 		compatible = "mx66l51235l";
+ 		spi-max-frequency = <48000000>;
  		reg = <0>;
- 		spi-max-frequency = <20000000>;
-diff --git a/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi b/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi
-index ac34709e9741..0ad4cb4f1e82 100644
---- a/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi
-@@ -179,7 +179,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1>;
- 	status = "okay";
+diff --git a/arch/arm/boot/dts/am437x-sk-evm.dts b/arch/arm/boot/dts/am437x-sk-evm.dts
+index 20a34d2d85df..0bc391243816 100644
+--- a/arch/arm/boot/dts/am437x-sk-evm.dts
++++ b/arch/arm/boot/dts/am437x-sk-evm.dts
+@@ -746,7 +746,7 @@ &qspi {
+ 	pinctrl-0 = <&qspi_pins>;
  
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		compatible = "microchip,sst25vf016b";
- 		spi-max-frequency = <20000000>;
+ 	spi-max-frequency = <48000000>;
+-	m25p80@0 {
++	flash@0 {
+ 		compatible = "mx66l51235l";
+ 		spi-max-frequency = <48000000>;
  		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi b/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi
-index c96f4d7e1e0d..beaa2dcd436c 100644
---- a/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi
-@@ -321,7 +321,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1>;
- 	status = "okay";
+diff --git a/arch/arm/boot/dts/am43x-epos-evm.dts b/arch/arm/boot/dts/am43x-epos-evm.dts
+index 4f9a7251a107..1165804658bc 100644
+--- a/arch/arm/boot/dts/am43x-epos-evm.dts
++++ b/arch/arm/boot/dts/am43x-epos-evm.dts
+@@ -902,7 +902,7 @@ &qspi {
+ 	pinctrl-1 = <&qspi1_pins_sleep>;
  
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		compatible = "microchip,sst25vf016b";
- 		spi-max-frequency = <20000000>;
+ 	spi-max-frequency = <48000000>;
+-	m25p80@0 {
++	flash@0 {
+ 		compatible = "mx66l51235l";
+ 		spi-max-frequency = <48000000>;
  		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6qdl-nitrogen6_som2.dtsi b/arch/arm/boot/dts/imx6qdl-nitrogen6_som2.dtsi
-index 92d09a3ebe0e..ee7e2371f94b 100644
---- a/arch/arm/boot/dts/imx6qdl-nitrogen6_som2.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-nitrogen6_som2.dtsi
-@@ -252,7 +252,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1>;
- 	status = "okay";
+diff --git a/arch/arm/boot/dts/am574x-idk.dts b/arch/arm/boot/dts/am574x-idk.dts
+index 6dff3660bf09..47b9174d2353 100644
+--- a/arch/arm/boot/dts/am574x-idk.dts
++++ b/arch/arm/boot/dts/am574x-idk.dts
+@@ -18,7 +18,7 @@ / {
  
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		compatible = "microchip,sst25vf016b";
- 		spi-max-frequency = <20000000>;
- 		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi b/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
-index 49da30d7510c..904d5d051d63 100644
---- a/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
-@@ -237,7 +237,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1>;
- 	status = "okay";
- 
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		compatible = "sst,sst25vf016b", "jedec,spi-nor";
- 		spi-max-frequency = <20000000>;
- 		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6qdl-sabreauto.dtsi b/arch/arm/boot/dts/imx6qdl-sabreauto.dtsi
-index 5e58740d40c5..1368a4762037 100644
---- a/arch/arm/boot/dts/imx6qdl-sabreauto.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-sabreauto.dtsi
-@@ -272,7 +272,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1 &pinctrl_ecspi1_cs>;
- 	status = "disabled"; /* pin conflict with WEIM NOR */
- 
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "st,m25p32", "jedec,spi-nor";
-diff --git a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
-index eb9a0b104f1c..901b9a761b66 100644
---- a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
-@@ -313,7 +313,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1>;
- 	status = "okay";
- 
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		compatible = "sst,sst25vf016b", "jedec,spi-nor";
- 		spi-max-frequency = <20000000>;
- 		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6qdl-sabresd.dtsi b/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
-index 0c0105468a2f..37482a9023fc 100644
---- a/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
-@@ -197,7 +197,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1>;
- 	status = "okay";
- 
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "st,m25p32", "jedec,spi-nor";
-diff --git a/arch/arm/boot/dts/imx6sl-evk.dts b/arch/arm/boot/dts/imx6sl-evk.dts
-index 25f6f2fb1555..f16c830f1e91 100644
---- a/arch/arm/boot/dts/imx6sl-evk.dts
-+++ b/arch/arm/boot/dts/imx6sl-evk.dts
-@@ -137,7 +137,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1>;
- 	status = "okay";
- 
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "st,m25p32", "jedec,spi-nor";
-diff --git a/arch/arm/boot/dts/imx6sx-nitrogen6sx.dts b/arch/arm/boot/dts/imx6sx-nitrogen6sx.dts
-index 66af78e83b70..a2c79bcf9a11 100644
---- a/arch/arm/boot/dts/imx6sx-nitrogen6sx.dts
-+++ b/arch/arm/boot/dts/imx6sx-nitrogen6sx.dts
-@@ -107,7 +107,7 @@ &ecspi1 {
- 	pinctrl-0 = <&pinctrl_ecspi1>;
- 	status = "okay";
- 
--	flash: m25p80@0 {
-+	flash: flash@0 {
- 		compatible = "microchip,sst25vf016b";
- 		spi-max-frequency = <20000000>;
- 		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6sx-sdb-reva.dts b/arch/arm/boot/dts/imx6sx-sdb-reva.dts
-index dce5dcf96c25..7dda42553f4b 100644
---- a/arch/arm/boot/dts/imx6sx-sdb-reva.dts
-+++ b/arch/arm/boot/dts/imx6sx-sdb-reva.dts
-@@ -123,7 +123,7 @@ &qspi2 {
- 	pinctrl-0 = <&pinctrl_qspi2>;
- 	status = "okay";
- 
--	flash0: s25fl128s@0 {
-+	flash0: flash@0 {
- 		reg = <0>;
- 		#address-cells = <1>;
- 		#size-cells = <1>;
-@@ -133,7 +133,7 @@ flash0: s25fl128s@0 {
- 		spi-tx-bus-width = <4>;
+ &qspi {
+ 	spi-max-frequency = <96000000>;
+-	m25p80@0 {
++	flash@0 {
+ 		spi-max-frequency = <96000000>;
  	};
+ };
+diff --git a/arch/arm/boot/dts/am57xx-cl-som-am57x.dts b/arch/arm/boot/dts/am57xx-cl-som-am57x.dts
+index 2e94f32d9dfc..2fc9a5d5e0c0 100644
+--- a/arch/arm/boot/dts/am57xx-cl-som-am57x.dts
++++ b/arch/arm/boot/dts/am57xx-cl-som-am57x.dts
+@@ -491,7 +491,7 @@ &qspi {
  
--	flash1: s25fl128s@2 {
-+	flash1: flash@2 {
- 		reg = <2>;
+ 	spi-max-frequency = <48000000>;
+ 
+-	spi_flash: spi_flash@0 {
++	spi_flash: flash@0 {
  		#address-cells = <1>;
  		#size-cells = <1>;
-diff --git a/arch/arm/boot/dts/imx6sx-sdb.dts b/arch/arm/boot/dts/imx6sx-sdb.dts
-index 99f4cf777a38..969cfe920d25 100644
---- a/arch/arm/boot/dts/imx6sx-sdb.dts
-+++ b/arch/arm/boot/dts/imx6sx-sdb.dts
-@@ -108,7 +108,7 @@ &qspi2 {
- 	pinctrl-0 = <&pinctrl_qspi2>;
+ 		compatible = "spansion,m25p80", "jedec,spi-nor";
+diff --git a/arch/arm/boot/dts/am57xx-idk-common.dtsi b/arch/arm/boot/dts/am57xx-idk-common.dtsi
+index 9fcb8944aa3e..c06eda817242 100644
+--- a/arch/arm/boot/dts/am57xx-idk-common.dtsi
++++ b/arch/arm/boot/dts/am57xx-idk-common.dtsi
+@@ -526,7 +526,7 @@ &qspi {
  	status = "okay";
  
--	flash0: n25q256a@0 {
-+	flash0: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "micron,n25q256a", "jedec,spi-nor";
-@@ -118,7 +118,7 @@ flash0: n25q256a@0 {
+ 	spi-max-frequency = <76800000>;
+-	m25p80@0 {
++	flash@0 {
+ 		compatible = "s25fl256s1", "jedec,spi-nor";
+ 		spi-max-frequency = <76800000>;
  		reg = <0>;
+diff --git a/arch/arm/boot/dts/dra7-evm-common.dtsi b/arch/arm/boot/dts/dra7-evm-common.dtsi
+index 0f71a9f37a72..68c43eb12c1a 100644
+--- a/arch/arm/boot/dts/dra7-evm-common.dtsi
++++ b/arch/arm/boot/dts/dra7-evm-common.dtsi
+@@ -135,7 +135,7 @@ &qspi {
+ 	status = "okay";
+ 
+ 	spi-max-frequency = <76800000>;
+-	m25p80@0 {
++	flash@0 {
+ 		compatible = "s25fl256s1";
+ 		spi-max-frequency = <76800000>;
+ 		reg = <0>;
+diff --git a/arch/arm/boot/dts/dra72-evm-common.dtsi b/arch/arm/boot/dts/dra72-evm-common.dtsi
+index f12825268188..8948e10dbeb8 100644
+--- a/arch/arm/boot/dts/dra72-evm-common.dtsi
++++ b/arch/arm/boot/dts/dra72-evm-common.dtsi
+@@ -474,7 +474,7 @@ &qspi {
+ 	status = "okay";
+ 
+ 	spi-max-frequency = <76800000>;
+-	m25p80@0 {
++	flash@0 {
+ 		compatible = "s25fl256s1";
+ 		spi-max-frequency = <76800000>;
+ 		reg = <0>;
+diff --git a/arch/arm/boot/dts/dra76-evm.dts b/arch/arm/boot/dts/dra76-evm.dts
+index e2b7fcb061cf..57868ac60d29 100644
+--- a/arch/arm/boot/dts/dra76-evm.dts
++++ b/arch/arm/boot/dts/dra76-evm.dts
+@@ -511,7 +511,7 @@ hdmi_out: endpoint {
+ 
+ &qspi {
+ 	spi-max-frequency = <96000000>;
+-	m25p80@0 {
++	flash@0 {
+ 		spi-max-frequency = <96000000>;
  	};
- 
--	flash1: n25q256a@2 {
-+	flash1: flash@2 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "micron,n25q256a", "jedec,spi-nor";
-diff --git a/arch/arm/boot/dts/imx6ul-14x14-evk.dtsi b/arch/arm/boot/dts/imx6ul-14x14-evk.dtsi
-index a3fde3316c73..1a18c41ce385 100644
---- a/arch/arm/boot/dts/imx6ul-14x14-evk.dtsi
-+++ b/arch/arm/boot/dts/imx6ul-14x14-evk.dtsi
-@@ -286,7 +286,7 @@ &qspi {
- 	pinctrl-0 = <&pinctrl_qspi>;
- 	status = "okay";
- 
--	flash0: n25q256a@0 {
-+	flash0: flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "micron,n25q256a", "jedec,spi-nor";
-diff --git a/arch/arm/boot/dts/imx6ul-kontron-n6310-som.dtsi b/arch/arm/boot/dts/imx6ul-kontron-n6310-som.dtsi
-index 47d3ce5d255f..acd936540d89 100644
---- a/arch/arm/boot/dts/imx6ul-kontron-n6310-som.dtsi
-+++ b/arch/arm/boot/dts/imx6ul-kontron-n6310-som.dtsi
-@@ -19,7 +19,7 @@ memory@80000000 {
  };
- 
- &qspi {
--	spi-flash@0 {
-+	flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "spi-nand";
-diff --git a/arch/arm/boot/dts/imx6ul-kontron-n6311-som.dtsi b/arch/arm/boot/dts/imx6ul-kontron-n6311-som.dtsi
-index a095a7654ac6..29ed38dce580 100644
---- a/arch/arm/boot/dts/imx6ul-kontron-n6311-som.dtsi
-+++ b/arch/arm/boot/dts/imx6ul-kontron-n6311-som.dtsi
-@@ -18,7 +18,7 @@ memory@80000000 {
- };
- 
- &qspi {
--	spi-flash@0 {
-+	flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "spi-nand";
-diff --git a/arch/arm/boot/dts/imx6ul-kontron-n6x1x-som-common.dtsi b/arch/arm/boot/dts/imx6ul-kontron-n6x1x-som-common.dtsi
-index 2a449a3c1ae2..09a83dbdf651 100644
---- a/arch/arm/boot/dts/imx6ul-kontron-n6x1x-som-common.dtsi
-+++ b/arch/arm/boot/dts/imx6ul-kontron-n6x1x-som-common.dtsi
-@@ -19,7 +19,7 @@ &ecspi2 {
- 	pinctrl-0 = <&pinctrl_ecspi2>;
- 	status = "okay";
- 
--	spi-flash@0 {
-+	flash@0 {
- 		compatible = "mxicy,mx25v8035f", "jedec,spi-nor";
- 		spi-max-frequency = <50000000>;
- 		reg = <0>;
-diff --git a/arch/arm/boot/dts/imx6ull-kontron-n6411-som.dtsi b/arch/arm/boot/dts/imx6ull-kontron-n6411-som.dtsi
-index b7e984284e1a..d000606c0704 100644
---- a/arch/arm/boot/dts/imx6ull-kontron-n6411-som.dtsi
-+++ b/arch/arm/boot/dts/imx6ull-kontron-n6411-som.dtsi
-@@ -18,7 +18,7 @@ memory@80000000 {
- };
- 
- &qspi {
--	spi-flash@0 {
-+	flash@0 {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
- 		compatible = "spi-nand";
 -- 
 2.32.0
 
