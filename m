@@ -2,111 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E24DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6516C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243578AbiDGPkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
+        id S1344805AbiDGPk3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 11:40:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232934AbiDGPkO (ORCPT
+        with ESMTP id S232934AbiDGPkY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:40:14 -0400
-X-Greylist: delayed 590 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Apr 2022 08:38:14 PDT
-Received: from 4.mo561.mail-out.ovh.net (4.mo561.mail-out.ovh.net [178.33.46.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FE3DC6
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:38:13 -0700 (PDT)
-Received: from player796.ha.ovh.net (unknown [10.111.208.131])
-        by mo561.mail-out.ovh.net (Postfix) with ESMTP id BA73123EE2
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 15:20:30 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player796.ha.ovh.net (Postfix) with ESMTPSA id DD6AA293301E3;
-        Thu,  7 Apr 2022 15:20:22 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-99G0034263be14-6f21-4a81-963b-ca0d4b4f9814,
-                    5995496A90EC26C6A3824F4C00BBD29EFE55D398) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wolfram Sang <wsa@kernel.org>, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH v2 08/10] clk: si544: use i2c_match_id and simple i2c probe
-Date:   Thu,  7 Apr 2022 17:18:29 +0200
-Message-Id: <20220407151831.2371706-9-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220407151831.2371706-1-steve@sk2.org>
-References: <20220407151831.2371706-1-steve@sk2.org>
+        Thu, 7 Apr 2022 11:40:24 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB64140DA;
+        Thu,  7 Apr 2022 08:38:23 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id b2-20020a17090a010200b001cb0c78db57so3415391pjb.2;
+        Thu, 07 Apr 2022 08:38:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zzTG5MA6feUhS90mwYwqW7MNwzm4RaqJqp0A1NIGFwE=;
+        b=Hei5w4bIjpEhUh/49pqCy9LJB/75Zbi/vj6XqL+jCjj5f2nLrSqLgdtx/m9jtWyhfL
+         irS8XRkaP7aGBNrtBFX+A5P7gSv1p7l8yKxC1CwJjVYXTXktt41WnxVPY8kr41vHYjgv
+         eRuzccgeKClRCUC1aLsAY438bqn2c7RCDuTr64hg8zA04WmLvkjmRnN65yuf+GHA2+fZ
+         js7nMe610p17kDowokKjN25FUjN10ZMQ2+AuqkK6cw4gNx0nW0yfWwbvr4e2ODhJ1RCK
+         6OwPDUIiYqNzemr9KSsHac4FUqNAOHx5gt2Yda+4gJFPYxT46b5slwhL80trQVbQOFs1
+         EaKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zzTG5MA6feUhS90mwYwqW7MNwzm4RaqJqp0A1NIGFwE=;
+        b=iIiWBBaFnEHZNXQzWgMl6uWCnSm7Ydfbxkv26yh7UWzf5mruktnR9hStTR7E9raAWQ
+         OBMpG0cPF/gY+LsVRgjx8/Q6DO9eB46jD2LYxw+PwHy9uHqopraco7EVnn2BV5jhAzaK
+         XalEp8GHLf/EEwMx0GcCtjoLnw5cy/lm7WIFJnxVPEfviJtXrPLcHjxWN+JEpLK1evFT
+         2stsh/0ciUmeC1A4KUqaOhbmxiFEup72jcOyFUvcLUcvcIy4bK/XpMH+Ld77xy758p47
+         xH8RZBW1F4BO64pR/JTdh/koNZvmP4cUIxP2fou3oxEZKe9oUbY/xEKoHVtRmAI1V2hE
+         HIRw==
+X-Gm-Message-State: AOAM532Q5TImbmwuRF+Rf7zw11SgqvQc/Azkf5h0KIDvzeF5cM0dD9h/
+        p2UJ/7+ANuarvUZT/QYGY34=
+X-Google-Smtp-Source: ABdhPJy8fWprY4sfgTns16cefNiyWAHEe0UJ/zhCWUr3vx3ZlT8++ew5nxLZqq1Sl8zH7gQmPWG9LA==
+X-Received: by 2002:a17:902:ec88:b0:156:b24a:40f with SMTP id x8-20020a170902ec8800b00156b24a040fmr14615682plg.67.1649345902594;
+        Thu, 07 Apr 2022 08:38:22 -0700 (PDT)
+Received: from localhost.localdomain ([223.212.58.71])
+        by smtp.gmail.com with ESMTPSA id p64-20020a622943000000b004fdd5c07d0bsm21094797pfp.63.2022.04.07.08.38.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 08:38:21 -0700 (PDT)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Hengqi Chen <hengqi.chen@gmail.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
+Subject: [PATCH bpf-next] selftests/bpf: Fix return value checks in perf_event_stackmap.c
+Date:   Thu,  7 Apr 2022 23:38:14 +0800
+Message-Id: <20220407153814.104914-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 89509043186730630
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejkedgkeekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeejleelvdefieeiuddtfeevkeegueehkeekvdffgedvhedugeekgfejjeekgfeugeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As part of the ongoing i2c transition to the simple probe
-("probe_new"), this patch uses i2c_match_id to retrieve the
-driver_data for the probed device. The id parameter is thus no longer
-necessary and the simple probe can be used instead.
+The bpf_get_stackid() function may also return 0 on success.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
 ---
- drivers/clk/clk-si544.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ tools/testing/selftests/bpf/progs/perf_event_stackmap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/clk-si544.c b/drivers/clk/clk-si544.c
-index d9ec9086184d..089786907641 100644
---- a/drivers/clk/clk-si544.c
-+++ b/drivers/clk/clk-si544.c
-@@ -451,11 +451,19 @@ static const struct regmap_config si544_regmap_config = {
- 	.volatile_reg = si544_regmap_is_volatile,
- };
+diff --git a/tools/testing/selftests/bpf/progs/perf_event_stackmap.c b/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
+index b3fcb5274ee0..f793280a3238 100644
+--- a/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
++++ b/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
+@@ -35,10 +35,10 @@ int oncpu(void *ctx)
+ 	long val;
  
--static int si544_probe(struct i2c_client *client,
--		const struct i2c_device_id *id)
-+static const struct i2c_device_id si544_id[] = {
-+	{ "si544a", si544a },
-+	{ "si544b", si544b },
-+	{ "si544c", si544c },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, si544_id);
-+
-+static int si544_probe(struct i2c_client *client)
- {
- 	struct clk_si544 *data;
- 	struct clk_init_data init;
-+	const struct i2c_device_id *id = i2c_match_id(si544_id, client);
- 	int err;
+ 	val = bpf_get_stackid(ctx, &stackmap, 0);
+-	if (val > 0)
++	if (val >= 0)
+ 		stackid_kernel = 2;
+ 	val = bpf_get_stackid(ctx, &stackmap, BPF_F_USER_STACK);
+-	if (val > 0)
++	if (val >= 0)
+ 		stackid_user = 2;
  
- 	data = devm_kzalloc(&client->dev, sizeof(*data), GFP_KERNEL);
-@@ -499,14 +507,6 @@ static int si544_probe(struct i2c_client *client,
- 	return 0;
- }
- 
--static const struct i2c_device_id si544_id[] = {
--	{ "si544a", si544a },
--	{ "si544b", si544b },
--	{ "si544c", si544c },
--	{ }
--};
--MODULE_DEVICE_TABLE(i2c, si544_id);
--
- static const struct of_device_id clk_si544_of_match[] = {
- 	{ .compatible = "silabs,si544a" },
- 	{ .compatible = "silabs,si544b" },
-@@ -520,7 +520,7 @@ static struct i2c_driver si544_driver = {
- 		.name = "si544",
- 		.of_match_table = clk_si544_of_match,
- 	},
--	.probe		= si544_probe,
-+	.probe_new	= si544_probe,
- 	.id_table	= si544_id,
- };
- module_i2c_driver(si544_driver);
+ 	trace = bpf_map_lookup_elem(&stackdata_map, &key);
 -- 
-2.27.0
+2.35.1
 
