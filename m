@@ -2,217 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52737C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 848A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:07:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235241AbiDGJIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
+        id S238043AbiDGJJl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233175AbiDGJIf (ORCPT
+        with ESMTP id S233009AbiDGJJf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:08:35 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CEEEA756
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:06:31 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id ot30so9378775ejb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 02:06:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qH1ao1Sv89tAmypsC25LX+raBksixuJK/BXtSJIZNVY=;
-        b=fAbafEwVVzZIPTmi+s1aa1APtfjN/g7TFqYJJOZzKrvIEQeu6qOJhnNCJqurVwYJ06
-         8EcvXB9YHcuxOvzk0cFHZ151BJTEG1CYB6t0HmQa/H+LavWbcpGkc76P2b4bYgUT0BPA
-         daFv05Ohzp/OQ5GvBvBjz9mY3r7//Lt/9Bl6s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=qH1ao1Sv89tAmypsC25LX+raBksixuJK/BXtSJIZNVY=;
-        b=3UpwCISGMJ1hz4mkPdjR69D4KGh3jpYIL0PKypPLmlhV704WN5mgB0ExS9046JdQTC
-         lT32ABx/LIu+mY4NUEyk5UMMKhHxf4kpb3l85Z+4uDqueffRtDYIZybZrWbzlKFI46w8
-         5SEuKLmCKVY8OhMYEKvKVaylfFEJY9Vltl+wLCHqRrUCGls0TUpfsUyloKMjh2236dYN
-         EWoY/Nm4X7RIGtkb/bQCTktK0jNXxoCkuNHSa0buvzi6OkAtWi7jmj7bi4BDpFos4LIs
-         uGkIfGNgSpuywzxY1jKHUjAmBIT5tR5VfZNbODGZ2JXo0UoTdWOlOqCF0i4VsPWSMcOR
-         6yjw==
-X-Gm-Message-State: AOAM533za8JEYAvydw4uK6DbjdyRPPuf6S7mBnDxxZhLEwg/ASIyiA5j
-        mFSBvncNi1zqrSBgXWN+4GbUYg==
-X-Google-Smtp-Source: ABdhPJwrbTfjUAtCuRc4DBgoGgdXi1Z5uzcM1p+RofsjaThjZCGK7xpqEG5zTyD1TduyzO2Z+Butew==
-X-Received: by 2002:a17:907:94c6:b0:6da:9561:ce0 with SMTP id dn6-20020a17090794c600b006da95610ce0mr12001579ejc.342.1649322390205;
-        Thu, 07 Apr 2022 02:06:30 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id u5-20020a170906b10500b006ce6fa4f510sm7415695ejy.165.2022.04.07.02.06.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 02:06:29 -0700 (PDT)
-Date:   Thu, 7 Apr 2022 11:06:28 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Borislav Petkov <bp@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [RESEND RFC PATCH 2/5] firmware: sysfb: Add helpers to
- unregister a pdev and disable registration
-Message-ID: <Yk6plGLa+uOb0ZyJ@phenom.ffwll.local>
-Mail-Followup-To: Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Borislav Petkov <bp@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20220406213919.600294-1-javierm@redhat.com>
- <20220406213919.600294-3-javierm@redhat.com>
+        Thu, 7 Apr 2022 05:09:35 -0400
+Received: from qproxy6-pub.mail.unifiedlayer.com (qproxy6-pub.mail.unifiedlayer.com [69.89.23.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1216411A9BF
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:07:36 -0700 (PDT)
+Received: from outbound-ss-761.bluehost.com (outbound-ss-761.bluehost.com [74.220.211.250])
+        by qproxy6.mail.unifiedlayer.com (Postfix) with ESMTP id B3DAF8029D0C
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:07:33 +0000 (UTC)
+Received: from cmgw12.mail.unifiedlayer.com (unknown [10.0.90.127])
+        by progateway8.mail.pro1.eigbox.com (Postfix) with ESMTP id 71B22100473EE
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:07:03 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id cO6Zn3o6kb2WGcO6ZnNRbo; Thu, 07 Apr 2022 09:07:03 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=JN7+D+Gb c=1 sm=1 tr=0 ts=624ea9b7
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=z0gMJWrwH1QA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=kEqdzDtgE69W+G2akadanogurBn3jzeiI28iXjwwe5U=; b=rLRi6wJYSkXGVwTVo9Pu/3df7N
+        z2lkSi1QxTgCSXX7HaCmO99fcHkWsdEZ2YSWxryp/u1Jfkx3nf1QUWiGHDtRIs4t7fP+opxkn3FPH
+        rWhABIdCbBJ0IOTNIuM69m2Hx1ZnKyYLBhs/7tA6KIsVhAgnfu+verKjVnmlCtqeXve1NKGqxMIr9
+        rEfzOoXnea648nLQLYrHYNgZ+B4famO6CSDaun/il5NYC/XCdjHKuwHA/AwGnHFh5hCoQ3vTGFL9w
+        Yr2Z8cdZBBHQf0FjUwsZpvy9/V7YfunCi+mAzUwWAhjuP4ZMko4agn4C2PuTx95/hu8ucjb+izDfW
+        Q+ekY9EQ==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:36436 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1ncO6Y-003s3s-3n; Thu, 07 Apr 2022 03:07:02 -0600
+Subject: Re: [PATCH 5.16 0000/1014] 5.16.19-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220406133109.570377390@linuxfoundation.org>
+In-Reply-To: <20220406133109.570377390@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <4cc31d28-0e53-f37e-7689-adcac1307f6d@w6rz.net>
+Date:   Thu, 7 Apr 2022 02:07:00 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406213919.600294-3-javierm@redhat.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1ncO6Y-003s3s-3n
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:36436
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 11:39:16PM +0200, Javier Martinez Canillas wrote:
-> These can be used by subsystems to unregister a platform device registered
-> by sysfb and also to disable future platform device registration in sysfb.
-> 
-> Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-> ---
-> 
->  drivers/firmware/sysfb.c | 47 +++++++++++++++++++++++++++++++++++-----
->  include/linux/sysfb.h    | 19 ++++++++++++++++
->  2 files changed, 60 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
-> index b032f40a92de..08ae78c083f1 100644
-> --- a/drivers/firmware/sysfb.c
-> +++ b/drivers/firmware/sysfb.c
-> @@ -34,21 +34,52 @@
->  #include <linux/screen_info.h>
->  #include <linux/sysfb.h>
->  
-> +static struct platform_device *pd;
-> +static DEFINE_MUTEX(load_lock);
-> +static bool disabled;
-> +
-> +void sysfb_disable(void)
-> +{
-> +	mutex_lock(&load_lock);
-> +	disabled = true;
-> +	mutex_unlock(&load_lock);
-> +}
-> +EXPORT_SYMBOL_GPL(sysfb_disable);
-> +
-> +bool sysfb_try_unregister(struct device *dev)
-> +{
-> +	bool ret = true;
-> +
-> +	mutex_lock(&load_lock);
-> +	if (!pd || pd != to_platform_device(dev))
-> +		return false;
-> +
-> +	platform_device_unregister(to_platform_device(dev));
-> +	pd = NULL;
-> +	mutex_unlock(&load_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(sysfb_try_unregister);
+On 4/6/22 6:44 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.19 release.
+> There are 1014 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Fri, 08 Apr 2022 13:27:53 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.19-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Kerneldoc for these plus adding that to
-Documentation/firmware/other_interfaces.rst would be really neat.
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-With that added Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Tested-by: Ron Economos <re@w6rz.net>
 
-
-> +
->  static __init int sysfb_init(void)
->  {
->  	struct screen_info *si = &screen_info;
->  	struct simplefb_platform_data mode;
-> -	struct platform_device *pd;
->  	const char *name;
->  	bool compatible;
-> -	int ret;
-> +	int ret = 0;
-> +
-> +	mutex_lock(&load_lock);
-> +	if (disabled)
-> +		goto unlock_mutex;
->  
->  	/* try to create a simple-framebuffer device */
->  	compatible = sysfb_parse_mode(si, &mode);
->  	if (compatible) {
->  		pd = sysfb_create_simplefb(si, &mode);
->  		if (!IS_ERR(pd))
-> -			return 0;
-> +			goto unlock_mutex;
->  	}
->  
->  	/* if the FB is incompatible, create a legacy framebuffer device */
-> @@ -60,8 +91,10 @@ static __init int sysfb_init(void)
->  		name = "platform-framebuffer";
->  
->  	pd = platform_device_alloc(name, 0);
-> -	if (!pd)
-> -		return -ENOMEM;
-> +	if (!pd) {
-> +		ret = -ENOMEM;
-> +		goto unlock_mutex;
-> +	}
->  
->  	sysfb_apply_efi_quirks(pd);
->  
-> @@ -73,9 +106,11 @@ static __init int sysfb_init(void)
->  	if (ret)
->  		goto err;
->  
-> -	return 0;
-> +	goto unlock_mutex;
->  err:
->  	platform_device_put(pd);
-> +unlock_mutex:
-> +	mutex_unlock(&load_lock);
->  	return ret;
->  }
->  
-> diff --git a/include/linux/sysfb.h b/include/linux/sysfb.h
-> index 708152e9037b..e8c0313fac8f 100644
-> --- a/include/linux/sysfb.h
-> +++ b/include/linux/sysfb.h
-> @@ -55,6 +55,25 @@ struct efifb_dmi_info {
->  	int flags;
->  };
->  
-> +#ifdef CONFIG_SYSFB
-> +
-> +void sysfb_disable(void);
-> +bool sysfb_try_unregister(struct device *dev);
-> +
-> +#else /* CONFIG_SYSFB */
-> +
-> +static inline void sysfb_disable(void)
-> +{
-> +
-> +}
-> +
-> +static inline bool sysfb_try_unregister(struct device *dev)
-> +{
-> +	return false;
-> +}
-> +
-> +#endif /* CONFIG_SYSFB */
-> +
->  #ifdef CONFIG_EFI
->  
->  extern struct efifb_dmi_info efifb_dmi_list[];
-> -- 
-> 2.35.1
-> 
-
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
