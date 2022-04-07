@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC68C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0177CC35296
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242231AbiDGBcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
+        id S234184AbiDGBck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239576AbiDGBTV (ORCPT
+        with ESMTP id S240301AbiDGBTy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:19:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24A21AAA7A;
-        Wed,  6 Apr 2022 18:14:43 -0700 (PDT)
+        Wed, 6 Apr 2022 21:19:54 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C22F194549;
+        Wed,  6 Apr 2022 18:15:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 46B8D61DD0;
-        Thu,  7 Apr 2022 01:14:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D8CFC385AA;
-        Thu,  7 Apr 2022 01:14:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CA371CE25B9;
+        Thu,  7 Apr 2022 01:15:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21AE8C385A1;
+        Thu,  7 Apr 2022 01:15:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294082;
-        bh=+bwDGyDJKCF8LB9fJwHxTM4vlvD9HScCpYl69iObhuI=;
+        s=k20201202; t=1649294137;
+        bh=KuFUgf9ktp4busrSOKUHZR6BbW7z2IoxN0dCsE+i6NY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zgzym78Ctcfsjy816xMFwGNk25QQOOHy1WXvtNPcPZZgYoGmAOxz+2lT9qZsH3RpI
-         YnxKlW0o7RDo0WF106/7ct24k/h4LTn/6SO7mlIx311kfuBUsx4SOegji489FKkjcW
-         JOezZeTgJeDwqTlbXSBosjrV6a8OJyL3LpfXQJQE8G8iSYAkb6Qh/+L8o9GCIOzxOu
-         DmMEnEW3JuMh+PGPsIAR3VmA9fWX8VekJea4A9vPqUXxBA9O4QwcxIGtrLqwsVNq+p
-         ThTLifjbZUtZJj4w/prYDspDfuQRhHd9U4+sHdsAUWEh/MeFmQSYhqvw2C5cZjFwdj
-         Q2OwMYGLilT+A==
+        b=uVqAwFKjf4HJqtiqAe4tvJvcErs6rwHpxG78ELS26V/OYiOqWuZHQlZncU+K2umIw
+         KnuTDluy8mj/Q+cO0yfVBlAgTfCQtKmspO5tQzTjEF/MYmdzAtGTGpQO+Y/LlU6jNo
+         b4FyDdvR0Gwi29DOhvDOIJrbZ5mSGWyp7bGJtZzD04bRwYjNEihnLfgp4Mfwem6mea
+         GEpWskejsmxFrYYX/vwL25MVdPq8kpxDI+aeAWD6cxc3lnMBZEsEZY91HhB5X+jA8p
+         mgJdNhpQOykUzQlFxDKE0QoK6pvOgCidZDQxwMDZ/UOys/Wfo2p99LF/N62t7624FE
+         9o7mNl64snMLQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Martin Willi <martin@strongswan.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        linux-crypto@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 12/25] crypto: x86/chacha20 - Avoid spurious jumps to other functions
-Date:   Wed,  6 Apr 2022 21:14:00 -0400
-Message-Id: <20220407011413.114662-12-sashal@kernel.org>
+Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-input@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 06/17] Input: stmfts - fix reference leak in stmfts_input_open
+Date:   Wed,  6 Apr 2022 21:15:10 -0400
+Message-Id: <20220407011521.115014-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011413.114662-1-sashal@kernel.org>
-References: <20220407011413.114662-1-sashal@kernel.org>
+In-Reply-To: <20220407011521.115014-1-sashal@kernel.org>
+References: <20220407011521.115014-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,50 +54,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit 4327d168515fd8b5b92fa1efdf1d219fb6514460 ]
+[ Upstream commit 26623eea0da3476446909af96c980768df07bbd9 ]
 
-The chacha_Nblock_xor_avx512vl() functions all have their own,
-identical, .LdoneN label, however in one particular spot {2,4} jump to
-the 8 version instead of their own. Resulting in:
+pm_runtime_get_sync() will increment pm usage counter even it
+failed. Forgetting to call pm_runtime_put_noidle will result
+in reference leak in stmfts_input_open, so we should fix it.
 
-  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_2block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
-  arch/x86/crypto/chacha-x86_64.o: warning: objtool: chacha_4block_xor_avx512vl() falls through to next function chacha_8block_xor_avx512vl()
-
-Make each function consistently use its own done label.
-
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Martin Willi <martin@strongswan.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220317131604.53538-1-zhengyongjun3@huawei.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/crypto/chacha-avx512vl-x86_64.S | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/input/touchscreen/stmfts.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/crypto/chacha-avx512vl-x86_64.S b/arch/x86/crypto/chacha-avx512vl-x86_64.S
-index bb193fde123a..8713c16c2501 100644
---- a/arch/x86/crypto/chacha-avx512vl-x86_64.S
-+++ b/arch/x86/crypto/chacha-avx512vl-x86_64.S
-@@ -172,7 +172,7 @@ SYM_FUNC_START(chacha_2block_xor_avx512vl)
- 	# xor remaining bytes from partial register into output
- 	mov		%rcx,%rax
- 	and		$0xf,%rcx
--	jz		.Ldone8
-+	jz		.Ldone2
- 	mov		%rax,%r9
- 	and		$~0xf,%r9
+diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
+index cd8805d71d97..be1dd504d5b1 100644
+--- a/drivers/input/touchscreen/stmfts.c
++++ b/drivers/input/touchscreen/stmfts.c
+@@ -339,11 +339,11 @@ static int stmfts_input_open(struct input_dev *dev)
  
-@@ -438,7 +438,7 @@ SYM_FUNC_START(chacha_4block_xor_avx512vl)
- 	# xor remaining bytes from partial register into output
- 	mov		%rcx,%rax
- 	and		$0xf,%rcx
--	jz		.Ldone8
-+	jz		.Ldone4
- 	mov		%rax,%r9
- 	and		$~0xf,%r9
+ 	err = pm_runtime_get_sync(&sdata->client->dev);
+ 	if (err < 0)
+-		return err;
++		goto out;
  
+ 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
+ 	if (err)
+-		return err;
++		goto out;
+ 
+ 	mutex_lock(&sdata->mutex);
+ 	sdata->running = true;
+@@ -366,7 +366,9 @@ static int stmfts_input_open(struct input_dev *dev)
+ 				 "failed to enable touchkey\n");
+ 	}
+ 
+-	return 0;
++out:
++	pm_runtime_put_noidle(&sdata->client->dev);
++	return err;
+ }
+ 
+ static void stmfts_input_close(struct input_dev *dev)
 -- 
 2.35.1
 
