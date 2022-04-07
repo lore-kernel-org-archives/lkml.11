@@ -2,91 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AFB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:46:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C7E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245399AbiDGMsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
+        id S245403AbiDGMtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245391AbiDGMsJ (ORCPT
+        with ESMTP id S245389AbiDGMtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:48:09 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D578164F
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:46:08 -0700 (PDT)
-Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KZ1Jz0TTnzFpcB;
-        Thu,  7 Apr 2022 20:43:47 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 7 Apr 2022 20:46:06 +0800
-Received: from [10.67.101.67] (10.67.101.67) by kwepemm600003.china.huawei.com
- (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 7 Apr
- 2022 20:46:06 +0800
-Subject: Re: [PATCH v3 0/2] Add Support for HiSilicon CPA PMU
-To:     Linuxarm <linuxarm@huawei.com>, <will@kernel.org>,
-        <mark.rutland@arm.com>, <john.garry@huawei.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <zhangshaokun@hisilicon.com>
-References: <20220407123645.43019-1-liuqi115@huawei.com>
-From:   "liuqi (BA)" <liuqi115@huawei.com>
-Message-ID: <c8fe3321-e049-31ed-0169-ea135b8d4599@huawei.com>
-Date:   Thu, 7 Apr 2022 20:46:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <20220407123645.43019-1-liuqi115@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-GB
+        Thu, 7 Apr 2022 08:49:05 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C027E5A5;
+        Thu,  7 Apr 2022 05:47:04 -0700 (PDT)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 237CflWE022118;
+        Thu, 7 Apr 2022 12:46:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=joPMwLoNAohCU3AInhV9r4dWEXIX77OEcC2bPJ3D/JA=;
+ b=Fy6NxTb8+yINWVsoR+bh25miUPx1JVy4af6mfANw7ooBFDrS+JZQzduOAgt9dPJhy3Dh
+ 2J82g1v1P8CAILGy/cvXio8Naa1cqhxZmjxBO8BPTLQQ0+mHBRXTIrJU86hSYBIzBblY
+ ygt/rXPuAk3sXkD8DNmlaDitfkNTGxAOHbQ6zYUjZrI9/Qy7PNWOpwEJjktKtY70RLVf
+ 9CrK6Z0E0khnpkAmhHHaxe+LonAuSrXv0bGvTh4UY++Nz2hvrg12NmmfA5w4PAljDUVn
+ wp4B8CT/b5h/hvvmelQZoTzXN3WJpgCPVo+6sAE/zm59CxwkfvWSKuvrst+Ig5FQsl5v HA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f9w8vbk2g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Apr 2022 12:46:56 +0000
+Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 237Cis4A027687;
+        Thu, 7 Apr 2022 12:46:55 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3f9w8vbk1u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Apr 2022 12:46:55 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 237CXeMp030670;
+        Thu, 7 Apr 2022 12:46:53 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04ams.nl.ibm.com with ESMTP id 3f6e491wc4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 07 Apr 2022 12:46:53 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 237CkpAo40501718
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 7 Apr 2022 12:46:51 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 48AF2A404D;
+        Thu,  7 Apr 2022 12:46:51 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 419C0A4040;
+        Thu,  7 Apr 2022 12:46:50 +0000 (GMT)
+Received: from sig-9-65-64-98.ibm.com (unknown [9.65.64.98])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  7 Apr 2022 12:46:50 +0000 (GMT)
+Message-ID: <d4ac7695a9a2be9750c62218bb3c262d28367208.camel@linux.ibm.com>
+Subject: Re: [PATCH v3 0/1] ima: fix boot command line issue
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     GUO Zihua <guozihua@huawei.com>, linux-integrity@vger.kernel.org
+Cc:     dmitry.kasatkin@gmail.com, roberto.sassu@huawei.com,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 07 Apr 2022 08:46:49 -0400
+In-Reply-To: <20220407021619.146410-1-guozihua@huawei.com>
+References: <20220407021619.146410-1-guozihua@huawei.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.101.67]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: CV9jpD3xNsFOsf6FNmwkpIpAOH_V783l
+X-Proofpoint-GUID: -oc9aErTMu2IKK7B6bMEvB-YP5AP_7Sk
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-07_01,2022-04-07_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 impostorscore=0 mlxscore=0 clxscore=1015 phishscore=0
+ malwarescore=0 mlxlogscore=914 adultscore=0 suspectscore=0
+ lowpriorityscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204070063
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 2022-04-07 at 10:16 +0800, GUO Zihua wrote:
+> Change log:
+>   v3:
+>     Update commit message following Mimi's advice, update comments for
+>     config.
+>   v2:
+>     update commit message and subject following Mimi's advice. Remove
+>     references for CONFIG_IMA_TEMPLATE as well.
 
-This should be version 4 of this patchset, please ignore this series and 
-I'll resend it latter.
+For future referece, the change log can be added after the break line
+(---) in the patch itself.  No need for a cover letter for a single
+patch.
 
-Thanks,
-Qi
+thanks,
 
-On 2022/4/7 20:36, Qi Liu wrote:
-> Add Support for HiSilicon CPA PMU driver. Json file in perf tool
-> is applied in
-> https://lore.kernel.org/linux-arm-kernel/YhkhSZp+a715Ldzr@kernel.org/.
-> 
-> Change since v3:
-> - Add more explanation for changing CPA PMUs CPU affinity.
-> - Address the comments from John.
-> - Link: https://lore.kernel.org/linux-arm-kernel/20220321070124.41338-1-liuqi115@huawei.com/
-> 
-> Change since v2:
-> - Associate CPA PMUs with CPUs online, rather than CPUs in the nearest SCCL.
-> - Move CPA power management to probe and remove function.
-> - Address the comments from John.
-> - Link: https://lore.kernel.org/linux-arm-kernel/20220224111129.41416-1-liuqi115@huawei.com/
-> 
-> Change since v1:
-> - Address the comments from John.
-> - Link: https://lore.kernel.org/linux-arm-kernel/20220214114228.40859-1-liuqi115@huawei.com/
-> 
-> Qi Liu (2):
->    drivers/perf: hisi: Associate PMUs in SICL with CPUs online
->    drivers/perf: hisi: Add Support for CPA PMU
-> 
->   drivers/perf/hisilicon/Makefile              |   2 +-
->   drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c | 401 +++++++++++++++++++
->   drivers/perf/hisilicon/hisi_uncore_pa_pmu.c  |  18 +-
->   drivers/perf/hisilicon/hisi_uncore_pmu.c     |   4 +
->   drivers/perf/hisilicon/hisi_uncore_pmu.h     |   1 +
->   include/linux/cpuhotplug.h                   |   1 +
->   6 files changed, 415 insertions(+), 12 deletions(-)
->   create mode 100644 drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c
-> 
+Mimi
+
+
