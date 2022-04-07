@@ -2,139 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ACD4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22842C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240937AbiDGKRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 06:17:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49142 "EHLO
+        id S242723AbiDGKSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 06:18:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230034AbiDGKRY (ORCPT
+        with ESMTP id S239397AbiDGKRb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 06:17:24 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831DC5A16E
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 03:15:23 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 58DA15C0231;
-        Thu,  7 Apr 2022 06:15:20 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 07 Apr 2022 06:15:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:date:date:from:from:in-reply-to
-        :message-id:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=ZjQ0U+
-        QYU3GVU9/vZxUDNkx5L3+KNfvJqan0Hjjw7QY=; b=UT/vr5QhXuq2tSG74A46kZ
-        8tsYpygO+byeFCoVc1WvhCR09de+foGpc17LdN+kDfHT8kZ1FjkGAQy7HGVTx1SE
-        T6BtRYIQuniSQm/e4Ow1YzVC6QAKpfUkPoOPq0sFpJl+5c5C0xRUcDypd/nhc3lA
-        xFUf1/aqKXEOOT1DQRmbM3B/63i0TSg3y5yFFjUHacB4dwjZLwtIUcV0GAEBTlJG
-        kw+aKjkDBa9kzoWcoXW5gOXL/vxDvxKUHoH7Iw+pQN+OTdhKQjkq/h2DsWfMe6JZ
-        oDaFgMtmDp8Nhm+QgmDb+0Oe49AJq5V9KXiAVAjCd64JiD3IuSR6oOh7UG8+kr9A
-        ==
-X-ME-Sender: <xms:t7lOYslaS6bacDasFfwlAQlTypkrJNlPKX5pVYT42aSRceYbw3QhQw>
-    <xme:t7lOYr1Z6MjHfX5z7UqoV8r7cOrKmSPe9FaH6d2aeyeoTkV22b7lEJMKZIkfNQCyZ
-    SXdgSnISYjOZF2ItC0>
-X-ME-Received: <xmr:t7lOYqpbKuMQUk_JcjgNk9doMN-hvS5GuF_bEjEjvTtTOxA07Q-EH7nYN1pLGaXPa8VyUtjsaWtTAqWqd3aDzwR1H-CRr4kN4Xg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejkedgvdeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepvffkhffuffestddtredttddttdenucfhrhhomhephfhinhhnucfvhhgrihhn
-    uceofhhthhgrihhnsehlihhnuhigqdhmieekkhdrohhrgheqnecuggftrfgrthhtvghrnh
-    eptdelteekleekkedvueejheekgfdvtdehhefhteeitefhteefgefhudehveevleelnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepfhhthhgrih
-    hnsehlihhnuhigqdhmieekkhdrohhrgh
-X-ME-Proxy: <xmx:t7lOYokv__jw68BwjAp_Y3vzwrJ74SiobMWbKMKvsPKI-rnVW8-eJA>
-    <xmx:t7lOYq0X7CVZYji4OPXooBdewBXQLO7I_CeK8bKSV0NgQmorxjtjoA>
-    <xmx:t7lOYvseLp1AsxRZQNWE4W1PjOeZjSdOSNPXxGWKpj5bXq_MjyK9hA>
-    <xmx:uLlOYvxIHy0N4IndHwcD-FYYgp5gBsS1IPjnAY8h8KomgWowS86dQA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 7 Apr 2022 06:15:18 -0400 (EDT)
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     "Christophe Leroy" <christophe.leroy@csgroup.eu>,
-        "Randy Dunlap" <rdunlap@infradead.org>,
-        "Geert Uytterhoeven" <geert@linux-m68k.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Message-Id: <5edbe76ce68227f71e09af4614cc4c1bd61c7ec8.1649326292.git.fthain@linux-m68k.org>
-From:   Finn Thain <fthain@linux-m68k.org>
-Subject: [PATCH v2] macintosh/via-pmu: Fix build failure when CONFIG_INPUT is
- disabled
-Date:   Thu, 07 Apr 2022 20:11:32 +1000
+        Thu, 7 Apr 2022 06:17:31 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C6B276E09
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 03:15:31 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EE66423A;
+        Thu,  7 Apr 2022 03:15:30 -0700 (PDT)
+Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 0D3903F5A1;
+        Thu,  7 Apr 2022 03:15:29 -0700 (PDT)
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     linux-arm-kernel@lists.infradead.org,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Liviu Dudau <liviu.dudau@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH 1/2] ARM: vexpress/spc: Fix doxygen comments
+Date:   Thu,  7 Apr 2022 11:15:28 +0100
+Message-Id: <164932629049.1424947.11132398032208153251.b4-ty@arm.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220404130207.1162445-1-sudeep.holla@arm.com>
+References: <20220404130207.1162445-1-sudeep.holla@arm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-drivers/macintosh/via-pmu-event.o: In function `via_pmu_event':
-via-pmu-event.c:(.text+0x44): undefined reference to `input_event'
-via-pmu-event.c:(.text+0x68): undefined reference to `input_event'
-via-pmu-event.c:(.text+0x94): undefined reference to `input_event'
-via-pmu-event.c:(.text+0xb8): undefined reference to `input_event'
-drivers/macintosh/via-pmu-event.o: In function `via_pmu_event_init':
-via-pmu-event.c:(.init.text+0x20): undefined reference to `input_allocate_device'
-via-pmu-event.c:(.init.text+0xc4): undefined reference to `input_register_device'
-via-pmu-event.c:(.init.text+0xd4): undefined reference to `input_free_device'
-make[1]: *** [Makefile:1155: vmlinux] Error 1
-make: *** [Makefile:350: __build_one_by_one] Error 2
+On Mon, 4 Apr 2022 14:02:06 +0100, Sudeep Holla wrote:
+> Kbuild bot reported the following doxygen build warning:
+> 
+>   |  arch/arm/mach-versatile/spc.c:231: warning: This comment starts with
+>   |		'/**', but isn't a kernel-doc comment.
+>   |		Refer Documentation/doc-guide/kernel-doc.rst
+>   |  		* ve_spc_cpu_in_wfi(u32 cpu, u32 cluster)
+> 
+> [...]
 
-Don't call into the input subsystem unless CONFIG_INPUT is built-in.
 
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Finn Thain <fthain@linux-m68k.org>
----
-Changed since v1:
- - Adopted IS_ENABLED to avoid an ifdef as suggested by Christophe.
- - Added the ADB_PMU_EVENT symbol as suggested by Geert, though this
-   adds a new Kconfig symbol for little gain AFAICS.
----
- drivers/macintosh/Kconfig   | 4 ++++
- drivers/macintosh/Makefile  | 3 ++-
- drivers/macintosh/via-pmu.c | 2 +-
- 3 files changed, 7 insertions(+), 2 deletions(-)
+Applied to sudeep.holla/linux (fixes/vexpress) with
+s/doxygen/kernel-doc/ as suggested by Randy
 
-diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
-index 5cdc361da37c..3942db15a2b8 100644
---- a/drivers/macintosh/Kconfig
-+++ b/drivers/macintosh/Kconfig
-@@ -67,6 +67,10 @@ config ADB_PMU
- 	  this device; you should do so if your machine is one of those
- 	  mentioned above.
- 
-+config ADB_PMU_EVENT
-+	def_bool y
-+	depends on ADB_PMU && INPUT=y
-+
- config ADB_PMU_LED
- 	bool "Support for the Power/iBook front LED"
- 	depends on PPC_PMAC && ADB_PMU
-diff --git a/drivers/macintosh/Makefile b/drivers/macintosh/Makefile
-index 49819b1b6f20..712edcb3e0b0 100644
---- a/drivers/macintosh/Makefile
-+++ b/drivers/macintosh/Makefile
-@@ -12,7 +12,8 @@ obj-$(CONFIG_MAC_EMUMOUSEBTN)	+= mac_hid.o
- obj-$(CONFIG_INPUT_ADBHID)	+= adbhid.o
- obj-$(CONFIG_ANSLCD)		+= ans-lcd.o
- 
--obj-$(CONFIG_ADB_PMU)		+= via-pmu.o via-pmu-event.o
-+obj-$(CONFIG_ADB_PMU)		+= via-pmu.o
-+obj-$(CONFIG_ADB_PMU_EVENT)	+= via-pmu-event.o
- obj-$(CONFIG_ADB_PMU_LED)	+= via-pmu-led.o
- obj-$(CONFIG_PMAC_BACKLIGHT)	+= via-pmu-backlight.o
- obj-$(CONFIG_ADB_CUDA)		+= via-cuda.o
-diff --git a/drivers/macintosh/via-pmu.c b/drivers/macintosh/via-pmu.c
-index 399074306a74..495fd35b11de 100644
---- a/drivers/macintosh/via-pmu.c
-+++ b/drivers/macintosh/via-pmu.c
-@@ -1463,7 +1463,7 @@ pmu_handle_data(unsigned char *data, int len)
- 		pmu_pass_intr(data, len);
- 		/* len == 6 is probably a bad check. But how do I
- 		 * know what PMU versions send what events here? */
--		if (len == 6) {
-+		if (IS_ENABLED(CONFIG_ADB_PMU_EVENT) && len == 6) {
- 			via_pmu_event(PMU_EVT_POWER, !!(data[1]&8));
- 			via_pmu_event(PMU_EVT_LID, data[1]&1);
- 		}
--- 
-2.32.0
+[1/2] ARM: vexpress/spc: Fix kernel-doc build warning for ve_spc_cpu_in_wfi
+      https://git.kernel.org/sudeep.holla/c/5063b7a80e
+[2/2] ARM: vexpress/spc: Fix all the kernel-doc build warnings
+      https://git.kernel.org/sudeep.holla/c/42a997f0bd
+
+--
+Regards,
+Sudeep
 
