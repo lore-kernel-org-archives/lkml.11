@@ -2,385 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28152C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244815AbiDGLfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 07:35:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38912 "EHLO
+        id S244827AbiDGLhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 07:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244810AbiDGLfP (ORCPT
+        with ESMTP id S244808AbiDGLhE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 07:35:15 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CD51226FB
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 04:33:14 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1649331192;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=3Mxsn683Q+P8Nu5Td0dAYWZemeujB8UjXyT9REwn34Y=;
-        b=E7eHa2L08AHRD6sMG4IRj4VmpSgziYHsh+2hqdaZl+nIgNmeYIOxuCMUQ3HeW+3AJlGe7v
-        m77eJ08meSjlFQV52aUvzldPePasEbKciuw6sfxFKOtTPiQnXlmWoqY5BFxMHCCjryj/g5
-        ydqHvK8eiK7DxL5EDGH10SFj89+SwXk=
-From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
-To:     linux-mm@kvack.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v7] mm/hwpoison: fix race between hugetlb free/demotion and memory_failure_hugetlb()
-Date:   Thu,  7 Apr 2022 20:29:29 +0900
-Message-Id: <20220407112929.1344748-1-naoya.horiguchi@linux.dev>
+        Thu, 7 Apr 2022 07:37:04 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA62939AD;
+        Thu,  7 Apr 2022 04:35:04 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id r7so3333698wmq.2;
+        Thu, 07 Apr 2022 04:35:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BTjjsMviqQQ88WLrJjMAv2kpQcRNOPqMaJdVZGNwFqw=;
+        b=R6uglBK6TpnMEoqoBNx8c29PkXVIkYZqL8zEmxAyDQOx4Qfhz0/VqW93CLzJ4ukVFk
+         KKYL0xJNUJd23pXJPKzve/Idy2GbwLG6yto0nsijOBIBu1ZzQDHOokt2ow43HPy5HQ+P
+         +cGlEFYVBjXA/MFM8YTIcJFnvmfHxeEgxLrDizQaEfJU+zLI5RnXOfRzBJnMxt6nySQA
+         n+znckYRlJ2Ez5W7Mr6adfZFqxH1YnKa0sfngh5WvBQJbNGHPZiIZ7Fpx6Egr9rjKZ9x
+         VaFuRaRDguJygRF/SDEbNRDS6IzEFv4ScjRwxfyWLfAU+OYqNisWeCDFl1Z6FerMdCbH
+         TBsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BTjjsMviqQQ88WLrJjMAv2kpQcRNOPqMaJdVZGNwFqw=;
+        b=1obR7RqvGDKltHJKXmV0f2mITAD7XnyiaU7DNeR49DMHR7SXqJNYJ/lYiqqvx4SYiE
+         5smupt0/5/dsG8t3WRbBlM0Xegg2w+KLUGF88edbL1LS1HwoCe2/hh8JNNJ0/L/sUfYJ
+         tYc71brVJRtPyUR5VMbL6Rb3UUKINMYF80HpGBHwotOOv1ue3LpNZ2t5S3HoWveveMFt
+         kMb7j/9+q5ArU7zi4fagerFsx+XeMb+y9fRRC71PJLqjTE6g+SCkoTDLQYSLRTVuBxKc
+         L8mYAaaRydA73J4gTO6/bH0Nw9ubD/LvsCkdju/p/qK8860RlSJo0P/kmoZ0Q8OEl2cv
+         +q/A==
+X-Gm-Message-State: AOAM533TCR8D1sVUaHTsWKXV3MeMWsWFq7RNi7XVlM10TnS8pVpDMaX0
+        8nWO829+KcsPeNqP3pFzvi5Px3csrjgr4Irdzzw=
+X-Google-Smtp-Source: ABdhPJzR0oB2jVEk4x7pHKQdNCVRye2ERWW24d237Jq4XXJE7we9+a25pneCqZG5kOqKJUIfBhzIGCSgRC7/SRTwXko=
+X-Received: by 2002:a05:600c:4fce:b0:38d:a58:6d16 with SMTP id
+ o14-20020a05600c4fce00b0038d0a586d16mr12035867wmq.11.1649331303159; Thu, 07
+ Apr 2022 04:35:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+References: <20220406100609.65239-1-chengdongli@tencent.com> <ce2c3c4f-3751-312a-5fa6-0f98330067fe@intel.com>
+In-Reply-To: <ce2c3c4f-3751-312a-5fa6-0f98330067fe@intel.com>
+From:   Bryton Lee <brytonlee01@gmail.com>
+Date:   Thu, 7 Apr 2022 19:34:51 +0800
+Message-ID: <CAC2pzGe0Kn9Vzyx7S5_5A338shYG-DXgY=CS38zpJYk3m3_N7A@mail.gmail.com>
+Subject: Re: [PATCH v2] perf test tsc: Fix error message report when not supported.
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        peterz@infradead.org, mingo@redhat.com,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>, ak@linux.intel.com,
+        likexu@tencent.com, chengdongli@tencent.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+On Thu, Apr 7, 2022 at 2:59 PM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> On 06/04/2022 13.06, Chengdong Li wrote:
+> > By default `perf test tsc` does not return the error message
+> > when child process detected kernel does not support. Instead, child
+> > process print error message to stderr, unfortunately the stderr is
+> > redirected to /dev/null when verbose <= 0.
+> >
+> > This patch did three things:
+> > - returns TEST_SKIP to parent process instead of TEST_OK when
+> >   perf_read_tsc_conversion() is not supported.
+> > - add a new subtest of testing if TSC is supported on current
+> >   architecture by moving exist code to a separate function.
+> > - extended test suite definition to contain above two subtests.
+> >
+> > Changes since v1 (thanks for the feedback from Adrian Hunter):
+> > - rebase commit to current source.
+> >
+> > Signed-off-by: Chengdong Li <chengdongli@tencent.com>
+> > ---
+> >  tools/perf/tests/perf-time-to-tsc.c | 36 +++++++++++++++++++++--------
+> >  1 file changed, 27 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/tools/perf/tests/perf-time-to-tsc.c b/tools/perf/tests/perf-time-to-tsc.c
+> > index d12d0ad81801..fc7c380af5a0 100644
+> > --- a/tools/perf/tests/perf-time-to-tsc.c
+> > +++ b/tools/perf/tests/perf-time-to-tsc.c
+> > @@ -47,6 +47,17 @@
+> >       }                                       \
+> >  }
+> >
+> > +static int test__tsc_is_supported(struct test_suite *test __maybe_unused,
+> > +                               int subtest __maybe_unused)
+> > +{
+> > +     if (!TSC_IS_SUPPORTED) {
+> > +             pr_debug("Test not supported on this architecture");
+>
+> Message better ending with "\n" I think
+OK, I will fix it.
+>
+> > +             return TEST_SKIP;
+> > +     }
+> > +
+> > +     return TEST_OK;
+> > +}
+> > +
+> >  /**
+> >   * test__perf_time_to_tsc - test converting perf time to TSC.
+> >   *
+> > @@ -70,7 +81,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+> >       struct perf_cpu_map *cpus = NULL;
+> >       struct evlist *evlist = NULL;
+> >       struct evsel *evsel = NULL;
+> > -     int err = -1, ret, i;
+> > +     int err = TEST_FAIL, ret, i;
+> >       const char *comm1, *comm2;
+> >       struct perf_tsc_conversion tc;
+> >       struct perf_event_mmap_page *pc;
+> > @@ -79,10 +90,6 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+> >       u64 test_time, comm1_time = 0, comm2_time = 0;
+> >       struct mmap *md;
+> >
+> > -     if (!TSC_IS_SUPPORTED) {
+> > -             pr_debug("Test not supported on this architecture");
+> > -             return TEST_SKIP;
+> > -     }
+> >
+> >       threads = thread_map__new(-1, getpid(), UINT_MAX);
+> >       CHECK_NOT_NULL__(threads);
+> > @@ -124,8 +131,8 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+> >       ret = perf_read_tsc_conversion(pc, &tc);
+> >       if (ret) {
+> >               if (ret == -EOPNOTSUPP) {
+> > -                     fprintf(stderr, " (not supported)");
+> > -                     return 0;
+> > +                     pr_debug("perf_read_tsc_conversion is not supported in current kernel");
+> > +                     err = TEST_SKIP;
+> >               }
+> >               goto out_err;
+> >       }
+> > @@ -191,7 +198,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+> >           test_tsc >= comm2_tsc)
+> >               goto out_err;
+> >
+> > -     err = 0;
+> > +     err = TEST_OK;
+> >
+> >  out_err:
+> >       evlist__delete(evlist);
+> > @@ -200,4 +207,15 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+> >       return err;
+> >  }
+> >
+> > -DEFINE_SUITE("Convert perf time to TSC", perf_time_to_tsc);
+> > +static struct test_case time_to_tsc_tests[] = {
+> > +     TEST_CASE_REASON("TSC support", tsc_is_supported,
+> > +                      "This architecture does not support"),
+>
+> The 2nd test case runs anyway, so I am not sure another
+> test case is needed?
 
-There is a race condition between memory_failure_hugetlb() and hugetlb
-free/demotion, which causes setting PageHWPoison flag on the wrong page.
-The one simple result is that wrong processes can be killed, but another
-(more serious) one is that the actual error is left unhandled, so no one
-prevents later access to it, and that might lead to more serious results
-like consuming corrupted data.
+Yes. But, I think there are two reasons to add two subtests: 1).
+Original TSC support test is embedded in test__perf_time_to_tsc(), and
+returns TEST_SKIP
+if current architecture doesn't support it.  Thus there are two places
+that return TEST_SKIP in test__perf_time_to_tsc() if we don't move TSC
+support
+to another subtest. 2). Current test_suite and test_case structs don't
+support printing skip_reason if there is no subtest. To print skip
+reason we need more than 1 subtests.
 
-Think about the below race window:
-
-  CPU 1                                   CPU 2
-  memory_failure_hugetlb
-  struct page *head = compound_head(p);
-                                          hugetlb page might be freed to
-                                          buddy, or even changed to another
-                                          compound page.
-
-  get_hwpoison_page -- page is not what we want now...
-
-The current code first does prechecks roughly and then reconfirms
-after taking refcount, but it's found that it makes code overly
-complicated, so move the prechecks in a single hugetlb_lock range.
-
-A newly introduced function, try_memory_failure_hugetlb(), always
-takes hugetlb_lock (even for non-hugetlb pages).  That can be
-improved, but memory_failure() is rare in principle, so should
-not be a big problem.
-
-Fixes: 761ad8d7c7b5 ("mm: hwpoison: introduce memory_failure_hugetlb()")
-Reported-by: Mike Kravetz <mike.kravetz@oracle.com>
-Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Cc: stable@vger.kernel.org
----
-ChangeLog v6 -> v7:
-- Move lock_page() to try_memory_failure_hugetlb()
-  (based on bug report from Dan Carpenter)
-- Add Fixes: tag and CC to stable.
-
-ChangeLog v5 -> v6:
-- Moved racy precheck operations into hugetlb_lock (based on
-  Mike's comment).
-- rebased onto v5.18-rc1.
-- dropped CC to stable.
-
-ChangeLog v4 -> v5:
-- call TestSetPageHWPoison() when page_handle_poison() fails.
-- call TestSetPageHWPoison() for unhandlable cases (MF_MSG_UNKNOWN and
-  MF_MSG_DIFFERENT_PAGE_SIZE).
-- Set PageHWPoison on the head page only when the error page is surely
-  a hugepage, otherwise set the flag on the raw page.
-- rebased onto v5.17-rc8-mmotm-2022-03-16-17-42
-
-ChangeLog v3 -> v4:
-- squash with "mm/memory-failure.c: fix race with changing page
-  compound again".
-- update patch subject and description based on it.
-
-ChangeLog v2 -> v3:
-- rename the patch because page lock is not the primary factor to
-  solve the reported issue.
-- updated description in the same manner.
-- call page_handle_poison() instead of __page_handle_poison() for
-  free hugepage case.
-- reorder put_page and unlock_page (thanks to Miaohe Lin)
-
-ChangeLog v1 -> v2:
-- pass subpage to get_hwpoison_huge_page() instead of head page.
-- call compound_head() in hugetlb_lock to avoid race with hugetlb
-  demotion/free.
----
- include/linux/hugetlb.h |   6 ++
- include/linux/mm.h      |   8 +++
- mm/hugetlb.c            |  10 +++
- mm/memory-failure.c     | 142 +++++++++++++++++++++++++++++-----------
- 4 files changed, 126 insertions(+), 40 deletions(-)
-
-diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-index 53c1b6082a4c..ac2a1d758a80 100644
---- a/include/linux/hugetlb.h
-+++ b/include/linux/hugetlb.h
-@@ -169,6 +169,7 @@ long hugetlb_unreserve_pages(struct inode *inode, long start, long end,
- 						long freed);
- bool isolate_huge_page(struct page *page, struct list_head *list);
- int get_hwpoison_huge_page(struct page *page, bool *hugetlb);
-+int get_huge_page_for_hwpoison(unsigned long pfn, int flags);
- void putback_active_hugepage(struct page *page);
- void move_hugetlb_state(struct page *oldpage, struct page *newpage, int reason);
- void free_huge_page(struct page *page);
-@@ -378,6 +379,11 @@ static inline int get_hwpoison_huge_page(struct page *page, bool *hugetlb)
- 	return 0;
- }
- 
-+static inline int get_huge_page_for_hwpoison(unsigned long pfn, int flags)
-+{
-+	return 0;
-+}
-+
- static inline void putback_active_hugepage(struct page *page)
- {
- }
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index e34edb775334..9f44254af8ce 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3197,6 +3197,14 @@ extern int sysctl_memory_failure_recovery;
- extern void shake_page(struct page *p);
- extern atomic_long_t num_poisoned_pages __read_mostly;
- extern int soft_offline_page(unsigned long pfn, int flags);
-+#ifdef CONFIG_MEMORY_FAILURE
-+extern int __get_huge_page_for_hwpoison(unsigned long pfn, int flags);
-+#else
-+static inline int __get_huge_page_for_hwpoison(unsigned long pfn, int flags)
-+{
-+	return 0;
-+}
-+#endif
- 
- #ifndef arch_memory_failure
- static inline int arch_memory_failure(unsigned long pfn, int flags)
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index b34f50156f7e..c4f19e1a0807 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -6782,6 +6782,16 @@ int get_hwpoison_huge_page(struct page *page, bool *hugetlb)
- 	return ret;
- }
- 
-+int get_huge_page_for_hwpoison(unsigned long pfn, int flags)
-+{
-+	int ret;
-+
-+	spin_lock_irq(&hugetlb_lock);
-+	ret = __get_huge_page_for_hwpoison(pfn, flags);
-+	spin_unlock_irq(&hugetlb_lock);
-+	return ret;
-+}
-+
- void putback_active_hugepage(struct page *page)
- {
- 	spin_lock_irq(&hugetlb_lock);
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index dcb6bb9cf731..3606800d3488 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1498,48 +1498,112 @@ static int try_to_split_thp_page(struct page *page, const char *msg)
- 	return 0;
- }
- 
--static int memory_failure_hugetlb(unsigned long pfn, int flags)
-+/*
-+ * Called from hugetlb code with hugetlb_lock held.
-+ *
-+ * Return values:
-+ *   0             - free hugepage
-+ *   1             - in-use hugepage
-+ *   2             - not a hugepage
-+ *   -EBUSY        - the hugepage is busy (try to retry)
-+ *   -EOPNOTSUPP   - error handling is cancelled due to hwpoison_filter()
-+ *   -EHWPOISON    - the hugepage is already hwpoisoned
-+ */
-+int __get_huge_page_for_hwpoison(unsigned long pfn, int flags)
-+{
-+	struct page *page = pfn_to_page(pfn);
-+	struct page *head = compound_head(page);
-+	int ret = 2;	/* fallback to normal page handling */
-+	bool count_increased = false;
-+
-+	if (!PageHeadHuge(head))
-+		goto out;
-+
-+	if (flags & MF_COUNT_INCREASED) {
-+		ret = 1;
-+		count_increased = true;
-+	} else if (HPageFreed(head) || HPageMigratable(head)) {
-+		ret = get_page_unless_zero(head);
-+		if (ret)
-+			count_increased = true;
-+	} else {
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+
-+	if (hwpoison_filter(page)) {
-+		ret = -EOPNOTSUPP;
-+		goto out;
-+	}
-+
-+	if (TestSetPageHWPoison(head)) {
-+		ret = -EHWPOISON;
-+		goto out;
-+	}
-+
-+	return ret;
-+out:
-+	if (count_increased)
-+		put_page(head);
-+	return ret;
-+}
-+
-+#ifdef CONFIG_HUGETLB_PAGE
-+/*
-+ * Taking refcount of hugetlb pages needs extra care about race conditions
-+ * with basic operations like hugepage allocation/free/demotion.
-+ * So all necessary prechecks for hwpoison (like pinning, testing/setting
-+ * PageHWPoison, and hwpoison_filter) are done in single hugetlb_lock range.
-+ */
-+static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb)
- {
--	struct page *p = pfn_to_page(pfn);
--	struct page *head = compound_head(p);
- 	int res;
-+	struct page *p = pfn_to_page(pfn);
-+	struct page *head;
- 	unsigned long page_flags;
-+	bool retry = true;
- 
--	if (TestSetPageHWPoison(head)) {
--		pr_err("Memory failure: %#lx: already hardware poisoned\n",
--		       pfn);
--		res = -EHWPOISON;
--		if (flags & MF_ACTION_REQUIRED)
-+	*hugetlb = 1;
-+retry:
-+	res = get_huge_page_for_hwpoison(pfn, flags);
-+	if (res == 2) { /* fallback to normal page handling */
-+		*hugetlb = 0;
-+		return 0;
-+	} else if (res == -EOPNOTSUPP) {
-+		return res;
-+	} else if (res == -EHWPOISON) {
-+		pr_err("Memory failure: %#lx: already hardware poisoned\n", pfn);
-+		if (flags & MF_ACTION_REQUIRED) {
-+			head = compound_head(p);
- 			res = kill_accessing_process(current, page_to_pfn(head), flags);
-+		}
-+		return res;
-+	} else if (res == -EBUSY) {
-+		if (retry) {
-+			retry = false;
-+			goto retry;
-+		}
-+		action_result(pfn, MF_MSG_UNKNOWN, MF_IGNORED);
- 		return res;
- 	}
- 
- 	num_poisoned_pages_inc();
- 
--	if (!(flags & MF_COUNT_INCREASED)) {
--		res = get_hwpoison_page(p, flags);
--		if (!res) {
--			lock_page(head);
--			if (hwpoison_filter(p)) {
--				if (TestClearPageHWPoison(head))
--					num_poisoned_pages_dec();
--				unlock_page(head);
--				return -EOPNOTSUPP;
--			}
--			unlock_page(head);
--			res = MF_FAILED;
--			if (__page_handle_poison(p)) {
--				page_ref_inc(p);
--				res = MF_RECOVERED;
--			}
--			action_result(pfn, MF_MSG_FREE_HUGE, res);
--			return res == MF_RECOVERED ? 0 : -EBUSY;
--		} else if (res < 0) {
--			action_result(pfn, MF_MSG_UNKNOWN, MF_IGNORED);
--			return -EBUSY;
-+	/*
-+	 * Handling free hugepage.  The possible race with hugepage allocation
-+	 * or demotion can be prevented by PageHWPoison flag.
-+	 */
-+	if (res == 0) {
-+		res = MF_FAILED;
-+		if (__page_handle_poison(p)) {
-+			page_ref_inc(p);
-+			res = MF_RECOVERED;
- 		}
-+		action_result(pfn, MF_MSG_FREE_HUGE, res);
-+		return res == MF_RECOVERED ? 0 : -EBUSY;
- 	}
- 
-+	head = compound_head(p);
- 	lock_page(head);
- 
- 	/*
-@@ -1554,14 +1618,6 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
- 
- 	page_flags = head->flags;
- 
--	if (hwpoison_filter(p)) {
--		if (TestClearPageHWPoison(head))
--			num_poisoned_pages_dec();
--		put_page(p);
--		res = -EOPNOTSUPP;
--		goto out;
--	}
--
- 	/*
- 	 * TODO: hwpoison for pud-sized hugetlb doesn't work right now, so
- 	 * simply disable it. In order to make it work properly, we need
-@@ -1588,6 +1644,12 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
- 	unlock_page(head);
- 	return res;
- }
-+#else
-+static inline int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb)
-+{
-+	return 0;
-+}
-+#endif
- 
- static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
- 		struct dev_pagemap *pgmap)
-@@ -1712,6 +1774,7 @@ int memory_failure(unsigned long pfn, int flags)
- 	int res = 0;
- 	unsigned long page_flags;
- 	bool retry = true;
-+	int hugetlb = 0;
- 
- 	if (!sysctl_memory_failure_recovery)
- 		panic("Memory failure on page %lx", pfn);
-@@ -1739,10 +1802,9 @@ int memory_failure(unsigned long pfn, int flags)
- 	}
- 
- try_again:
--	if (PageHuge(p)) {
--		res = memory_failure_hugetlb(pfn, flags);
-+	res = try_memory_failure_hugetlb(pfn, flags, &hugetlb);
-+	if (hugetlb)
- 		goto unlock_mutex;
--	}
- 
- 	if (TestSetPageHWPoison(p)) {
- 		pr_err("Memory failure: %#lx: already hardware poisoned\n",
--- 
-2.25.1
-
+>
+> > +     TEST_CASE_REASON("Perf time to TSC", perf_time_to_tsc,
+> > +                      "perf_read_tsc_conversion is not supported"),
+> > +     { .name = NULL, }
+> > +};
+> > +
+> > +struct test_suite suite__perf_time_to_tsc = {
+> > +     .desc = "Convert perf time to TSC",
+> > +     .test_cases = time_to_tsc_tests,
+> > +};
+>
