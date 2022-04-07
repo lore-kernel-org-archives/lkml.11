@@ -2,215 +2,676 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1517DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243632AbiDGJPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45056 "EHLO
+        id S243698AbiDGJP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243722AbiDGJPb (ORCPT
+        with ESMTP id S243720AbiDGJPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:15:31 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2078.outbound.protection.outlook.com [40.107.102.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB8B14F12B;
-        Thu,  7 Apr 2022 02:13:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K7TQkAq150ImOr5O5TUD9lAZMON8PbujaKSH/IcI/j99foPyRXpouym7dB+72misDcCFFQxepmqC92ygiej0la9fvI2I4jT/bv7/MYLeECkpRvAGDw1Ptg0I9Jkyj5Mh4p8D2rPFfvd0gdOvwZ9hV0Gx0AB/kfccoBZq+V9Yo5283AfJTSE/PP/3zOBAC3aQwQjOuB4rvtcqrdZwzn+WFIaaDeul1QymkZWYtH0cZG2cEzsxhI1VHohvT9w2s7+1CzsNeO2EXwPZu0FDAO4g+zjFU/JgOMGPp1KX8SpJQyne4hl/AjP2uNcbVyudXM/HD/DYfAPsCMPzJrEtRHdx/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7O1diCQZVxsqBsfKwQea/ZlvPclhSuHVftPGnFC3OFY=;
- b=aRFJagD04yNzRE5anq3gS16qM0+UN7oSJ45+ZagIeX6UJaDneBLuNhPkcLFBXyugK9/dM+Bfu7gyBNb544RGEogXE/b8AXVXgIvfisQjgyz/bn3I994LC9oqcsWCbwZ5FzHrGhpPdhcmE14uVyijTkQOh4nut7hRLly2VbMhhtJ0eqF4T8dB4vIHeQFnqmdWdrmAGSS7mlMmWh9tWEFqJUsag4dxpSXRoD7B74OlOS8YMdpPrx7aqRkvp3AjN+hsanUctwLbIVRwVSU4OTQL6sNYrJKaBbWz6qvCX+1HfPVUGzh8BbLAe3s5/OAX/NYv47RdXRl7lFiGGt4jBfs/bA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7O1diCQZVxsqBsfKwQea/ZlvPclhSuHVftPGnFC3OFY=;
- b=mds7kobdvxlyoDBmhMeJ11AKwzCpO8CrKC7ffQZRGrF5JDYwyPaGsJfpvXqni7pTc+oeiUUw5gGQ+kfaSPUrmmh1XLjhrnAdyzf3ZGXjTTEpmWFX5kl4na+Dwx/8khox3cNo5XQ/o/J6U4Zoc+JNUi6L9ugDrvumSsr3jfhk7gSQZpWLliotFhv55WKKBmGJJIChzER+pjQRlpFsYubCz3KdzpzTE7ERwIsMkwQdZs/gKMaJikGEaaLCnKMgtNeaYED22lsM3QRbORwkBuMH5T03/J5DwhZc0w6oW0CgR4pXWZF1D363Esr+aSlWQjqXZ79zmhAVvfa2ImvNTCyP4Q==
-Received: from DM5PR2201CA0017.namprd22.prod.outlook.com (2603:10b6:4:14::27)
- by MN2PR12MB4440.namprd12.prod.outlook.com (2603:10b6:208:26e::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.22; Thu, 7 Apr
- 2022 09:13:09 +0000
-Received: from DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:14:cafe::d5) by DM5PR2201CA0017.outlook.office365.com
- (2603:10b6:4:14::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.22 via Frontend
- Transport; Thu, 7 Apr 2022 09:13:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.236) by
- DM6NAM11FT035.mail.protection.outlook.com (10.13.172.100) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5144.20 via Frontend Transport; Thu, 7 Apr 2022 09:13:08 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 7 Apr
- 2022 09:13:06 +0000
-Received: from fedora.nvidia.com (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 7 Apr 2022
- 02:13:03 -0700
-References: <20220309222033.3018976-1-i.maximets@ovn.org>
- <f7ty21hir5v.fsf@redhat.com>
- <44eeb550-3310-d579-91cc-ec18b59966d2@nvidia.com>
- <1a185332-3693-2750-fef2-f6938bbc8500@ovn.org>
-User-agent: mu4e 1.6.6; emacs 27.2
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Ilya Maximets <i.maximets@ovn.org>
-CC:     Roi Dayan <roid@nvidia.com>, Aaron Conole <aconole@redhat.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Pravin B Shelar" <pshelar@ovn.org>,
-        Toms Atteka <cpp.code.lv@gmail.com>, <netdev@vger.kernel.org>,
-        <dev@openvswitch.org>, <linux-kernel@vger.kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Maor Dickman <maord@nvidia.com>
-Subject: Re: [PATCH net-next v2] net: openvswitch: fix uAPI incompatibility
- with existing user space
-Date:   Thu, 7 Apr 2022 11:02:03 +0300
-In-Reply-To: <1a185332-3693-2750-fef2-f6938bbc8500@ovn.org>
-Message-ID: <87k0c171ml.fsf@nvidia.com>
+        Thu, 7 Apr 2022 05:15:43 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA3C60A91;
+        Thu,  7 Apr 2022 02:13:24 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2379DLFe048866;
+        Thu, 7 Apr 2022 04:13:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649322801;
+        bh=4An/KQReE/MSUYxedsZAV6sb4ZmQcNzBCyyKeFJKze0=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=CkGrmzQWqp5Ql8c+fdKT6GhO6Fi8Blxk6+woUxJM0uFuCmby4bCu0fUznfWvZR/O6
+         O3BfmCLWB8mjXR6Apq07HEDf4tCzoOoCEd9NcicBsNNHweR+d1fw0MLaSKolS+HGhF
+         lEj/5jKGcRapt4iZuDzRU9NCq1T31ZFZP30ZHTyY=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2379DLjF116758
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 7 Apr 2022 04:13:21 -0500
+Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 7
+ Apr 2022 04:13:20 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 7 Apr 2022 04:13:20 -0500
+Received: from [10.24.69.236] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2379DGOQ038019;
+        Thu, 7 Apr 2022 04:13:17 -0500
+Message-ID: <4d593fc9-28f5-768d-babe-732af1b88f8b@ti.com>
+Date:   Thu, 7 Apr 2022 14:43:16 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 20568d00-d41e-46b0-490b-08da1876d538
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4440:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4440F3D4ED2DB1388354449EA0E69@MN2PR12MB4440.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HlgJh/MQswOJKkkLhvrXRjEqRdWCQq29HevOqfQYR6Gn+vY+2QAwRNSp4A5aNQzlUSWK7ofQtoIspi9YP1+xE1y2VrNahPFjiKk5UAE/iwiHGeUnPHQa4dzop6UMXy4LwZyKqrjqcIXRedQnNL3F4B3CeZ01zlWtaPrST4Y1zzOvb08TeZgKt8aI+ehWZHf1OjCzel1944GJhbS/EL5jGjxpyeCVt12wkaSOGjJHH3iC+rUetZMZZbCb6SSKhliczC7uskFHLcHNRKcE052oI8F8U4PXD0+7tfcStwiCLNgjNmf7tJgspcR0u3TIqlNf0jhpuwrtNS9aT2xAbZDqeIAYlx8VL5bCzv6zf9O8eZEBnPAFaCDBvt4E6fLDMXoGtqXf9a6rybZu2UN8UC9dDpKpCPoQK/fgbPI+ygXFKlfdMT+CSfoIQZXemlZHOo+m8SRiT4tus1n9lP43AZxn/kLhTugzmpZYBoDIFt8fhI5oRiKHtOrD09dT1PJcgphCXgzYvYqsvGfgsAS9ycP8l4fKe5KF+E3kmiQ6mQnXuSxH7d+zakppXIHBAkH8JlgyEmdiMPbK8k9wX9tlq4AOmwPsRm0lUtjsoSFHg38HLDSyqNkvBuLHFrMy0eRbnoNHD/WGnNpxPDvRAYCw09BuxrtPJVJ9Bt7eAtFZ1WCH5Bu0LfHydhm4hcGQEoEjjBxaUGwuE1Y5b0LeecvO2g5geb7seYM2ajPlANA6ufAWYnSojZVlaxEA6kr/YVUxVuUxf3wg5TAl31m6IDM5UIiMVypyvLA47PuQe/fnHZre94E5OSM5694Es+NpfEQZ9gRUsd9rhe10ebn365LqCDNe4Q==
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(7696005)(107886003)(86362001)(26005)(36756003)(6916009)(54906003)(82310400005)(5660300002)(316002)(426003)(16526019)(2906002)(336012)(2616005)(53546011)(186003)(83380400001)(36860700001)(966005)(508600001)(8936002)(47076005)(7416002)(40460700003)(4326008)(8676002)(70206006)(356005)(81166007)(70586007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2022 09:13:08.7383
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 20568d00-d41e-46b0-490b-08da1876d538
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4440
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 2/2] drivers: usb: dwc3: Add AM62 USB wrapper driver
+Content-Language: en-US
+To:     Roger Quadros <rogerq@kernel.org>
+CC:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>, <linux-usb@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220406135214.6989-1-a-govindraju@ti.com>
+ <20220406135214.6989-3-a-govindraju@ti.com>
+ <d41d51ff-1c61-6694-4598-d55034e8210d@kernel.org>
+ <8bdf5f21-0783-a474-1630-46d87d66fb6f@ti.com>
+ <7de4a3cd-5b2b-3dae-2050-bb91fa7d48c8@ti.com>
+ <e690ccba-50ef-da1f-14a1-e4a6b284ba3c@kernel.org>
+From:   Aswath Govindraju <a-govindraju@ti.com>
+In-Reply-To: <e690ccba-50ef-da1f-14a1-e4a6b284ba3c@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 14 Mar 2022 at 20:40, Ilya Maximets <i.maximets@ovn.org> wrote:
-> On 3/14/22 19:33, Roi Dayan wrote:
->>=20
->>=20
->> On 2022-03-10 8:44 PM, Aaron Conole wrote:
->>> Ilya Maximets <i.maximets@ovn.org> writes:
+Hi Roger,
+
+On 07/04/22 14:24, Roger Quadros wrote:
+> 
+> 
+> On 07/04/2022 11:27, Aswath Govindraju wrote:
+>> Hi Roger,
+>>
+>> On 07/04/22 13:54, Aswath Govindraju wrote:
+>>> Hi Roger,
 >>>
->>>> Few years ago OVS user space made a strange choice in the commit [1]
->>>> to define types only valid for the user space inside the copy of a
->>>> kernel uAPI header.=C2=A0 '#ifndef __KERNEL__' and another attribute w=
-as
->>>> added later.
+>>> On 07/04/22 13:50, Roger Quadros wrote:
+>>>> Hi Aswath,
 >>>>
->>>> This leads to the inevitable clash between user space and kernel types
->>>> when the kernel uAPI is extended.=C2=A0 The issue was unveiled with the
->>>> addition of a new type for IPv6 extension header in kernel uAPI.
+>>>> On 06/04/2022 16:52, Aswath Govindraju wrote:
+>>>>> In AM62 SoC, the Designware Core USB3 IP is progammed to operate in USB2.0
+>>>>> only mode. Add driver for AM62 USB DWC3 Wrapper.
+>>>>>
+>>>>> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+>>>>> ---
+>>>>>
+>>>>> changes since v2:
+>>>>> - Removed the implementation of detecting the role from the wrapper
+>>>>>   driver and moved the implementation to using linux,extcon-usb-gpio
+>>>>>   driver for role detection.
 >>>>
->>>> When kernel provides the OVS_KEY_ATTR_IPV6_EXTHDRS attribute to the
->>>> older user space application, application tries to parse it as
->>>> OVS_KEY_ATTR_PACKET_TYPE and discards the whole netlink message as
->>>> malformed.=C2=A0 Since OVS_KEY_ATTR_IPV6_EXTHDRS is supplied along with
->>>> every IPv6 packet that goes to the user space, IPv6 support is fully
->>>> broken.
+>>>> I'm a bit puzzled. So ID is managed by extcon-usb-gpio driver and
+>>>> VBUS is managed by this driver.
 >>>>
->>>> Fixing that by bringing these user space attributes to the kernel
->>>> uAPI to avoid the clash.=C2=A0 Strictly speaking this is not the probl=
-em
->>>> of the kernel uAPI, but changing it is the only way to avoid breakage
->>>> of the older user space applications at this point.
+>>>> So who decides the USB ports state based on the below truth table?
 >>>>
->>>> These 2 types are explicitly rejected now since they should not be
->>>> passed to the kernel.=C2=A0 Additionally, OVS_KEY_ATTR_TUNNEL_INFO mov=
-ed
->>>> out from the '#ifdef __KERNEL__' as there is no good reason to hide
->>>> it from the userspace.=C2=A0 And it's also explicitly rejected now, be=
-cause
->>>> it's for in-kernel use only.
+>>>> +	/*
+>>>> +	 * ID | VBUS | STATE
+>>>> +	 * -----------------
+>>>> +	 * 0  | 0    | HOST
+>>>> +	 * 0  | 1    | HOST
+>>>> +	 * 1  | 0    | Disconnected (set mode valid to 0)
+>>>> +	 * 1  | 1    | Device
+>>>> +	 *
+>>>> +	 */
 >>>>
->>>> Comments with warnings were added to avoid the problem coming back.
+>>>> If only ID signal is available to extcon-usb-gpio driver it cannot detect
+>>>> the Disconnected state. We need to set mode valid to 0 for disconnected state.
 >>>>
->>>> (1 << type) converted to (1ULL << type) to avoid integer overflow on
->>>> OVS_KEY_ATTR_IPV6_EXTHDRS, since it equals 32 now.
->>>>
->>>> =C2=A0 [1] beb75a40fdc2 ("userspace: Switching of L3 packets in L2 pip=
-eline")
->>>>
->>>> Fixes: 28a3f0601727 ("net: openvswitch: IPv6: Add IPv6 extension heade=
-r support")
->>>> Link: https://lore.kernel.org/netdev/3adf00c7-fe65-3ef4-b6d7-6d8a0cad8=
-a5f@nvidia.com
->>>> Link: https://github.com/openvswitch/ovs/commit/beb75a40fdc295bfd6521b=
-0068b4cd12f6de507c
->>>> Reported-by: Roi Dayan <roid@nvidia.com>
->>>> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
->>>> ---
 >>>
->>> Acked-by: Aaron Conole <aconole@redhat.com>
+>>> Yes that is correct, the mode valid signal needs to be set when there is
+>>> no cable connected. I am slightly confused on why 0-0 state is not
+>>> considered disconnected? So, whenever VBUS is not high it should be
+>>> disconnected right?
+> 
+> Not necessarily. We might be in host mode (ID=0) and just not turned on the VBUS regulator (VBUS=0).
+> Is this to be treated as disconnected?
+> 
+
+This should be treated as disconnected state right? Since the device is
+not essentially connected to host and only after VBUS is supplied from
+the host, the device starts to enumerate.
+
+The controller will move to host mode but the devices will not get
+enumerated. The device will get enumerated only after we supply VBUS and
+this event will be registered and mode valid bit will be set.
+
+
+> I'm just pointing out that things won't function anymore like the below code you had earlier
+> as you have decoupled id_state from vbus_state.
+> 
+> +	/* detemine the role or find out if disconnect event */
+> +	if (id_state) {
+> +		detect_role = DEVICE;
+> +		if (vbus_state)
+> +			connect = 1;
+> +	} else {
+> +		detect_role = HOST;
+> +		connect = 1;
+> +	}
+> 
+> Now you are setting connect independently of ID. i.e. connect = vbus_state.
+> 
+> Is that what you want?
+> 
+
+Yes, I changed it as I felt that the dependency can be removed.
+
+Thanks,
+Aswath
+
+> cheers,
+> -roger
+> 
 >>>
->>=20
->>=20
->>=20
->> I got to check traffic with the fix and I do get some traffic
->> but something is broken. I didn't investigate much but the quick
->> test shows me rules are not offloaded and dumping ovs rules gives
->> error like this
->>=20
->> recirc_id(0),in_port(enp8s0f0_1),ct_state(-trk),eth(),eth_type(0x86dd),i=
-pv6(frag=3Dno)(bad
->> key length 2, expected -1)(00 00/(bad mask length 2, expected -1)(00 00),
->> packets:2453, bytes:211594, used:0.004s, flags:S., actions:ct,recirc(0x2)
->
-> Such a dump is expected, because kernel parses fields that current
-> userspace doesn't understand, and at the same time OVS by design is
-> using kernel provided key/mask while installing datapath rules, IIRC.
-> It should be possible to make these dumps a bit more friendly though.
->
-> For the offloading not working, see my comment in the v2 patch email
-> I sent (top email of this thread).  In short, it's a problem in user
-> space and it can not be fixed from the kernel side, unless we revert
-> IPv6 extension header support and never add any new types, which is
-> unreasonable.  I didn't test any actual offloading, but I had a
-> successful run of 'make check-offloads' with my quick'n'dirty fix from
-> the top email.
+>>
+>> Sorry, pressed the send button without reading everything properly.
+>>
+>> The implementation is such that the extcon-usb-gpio only updates the
+>> role to the core driver based on ID pin state and the Mode valid bit is
+>> set by the wrapper based on the VBUS state.
+>>
+>> Thanks,
+>> Aswath
+>>
+>>> Thanks,
+>>> Aswath
+>>>
+>>>> cheers,
+>>>> -roger
+>>>>
+>>>>
+>>>>> - Updated the binding documentation and example to reflect the same.
+>>>>>
+>>>>>
+>>>>>  drivers/usb/dwc3/Kconfig     |   9 +
+>>>>>  drivers/usb/dwc3/Makefile    |   1 +
+>>>>>  drivers/usb/dwc3/dwc3-am62.c | 446 +++++++++++++++++++++++++++++++++++
+>>>>>  3 files changed, 456 insertions(+)
+>>>>>  create mode 100644 drivers/usb/dwc3/dwc3-am62.c
+>>>>>
+>>>>> diff --git a/drivers/usb/dwc3/Kconfig b/drivers/usb/dwc3/Kconfig
+>>>>> index c483f28b695d..cd9a734522a7 100644
+>>>>> --- a/drivers/usb/dwc3/Kconfig
+>>>>> +++ b/drivers/usb/dwc3/Kconfig
+>>>>> @@ -159,4 +159,13 @@ config USB_DWC3_XILINX
+>>>>>  	  This driver handles both ZynqMP and Versal SoC operations.
+>>>>>  	  Say 'Y' or 'M' if you have one such device.
+>>>>>  
+>>>>> +config USB_DWC3_AM62
+>>>>> +	tristate "Texas Instruments AM62 Platforms"
+>>>>> +	depends on ARCH_K3 || COMPILE_TEST
+>>>>> +	default USB_DWC3
+>>>>> +	help
+>>>>> +	  Support TI's AM62 platforms with DesignWare Core USB3 IP.
+>>>>> +	  The Designware Core USB3 IP is progammed to operate in
+>>>>> +	  in USB 2.0 mode only.
+>>>>> +	  Say 'Y' or 'M' here if you have one such device
+>>>>>  endif
+>>>>> diff --git a/drivers/usb/dwc3/Makefile b/drivers/usb/dwc3/Makefile
+>>>>> index 2d499de6f66a..9f66bd82b639 100644
+>>>>> --- a/drivers/usb/dwc3/Makefile
+>>>>> +++ b/drivers/usb/dwc3/Makefile
+>>>>> @@ -42,6 +42,7 @@ endif
+>>>>>  # and allyesconfig builds.
+>>>>>  ##
+>>>>>  
+>>>>> +obj-$(CONFIG_USB_DWC3_AM62)		+= dwc3-am62.o
+>>>>>  obj-$(CONFIG_USB_DWC3_OMAP)		+= dwc3-omap.o
+>>>>>  obj-$(CONFIG_USB_DWC3_EXYNOS)		+= dwc3-exynos.o
+>>>>>  obj-$(CONFIG_USB_DWC3_PCI)		+= dwc3-pci.o
+>>>>> diff --git a/drivers/usb/dwc3/dwc3-am62.c b/drivers/usb/dwc3/dwc3-am62.c
+>>>>> new file mode 100644
+>>>>> index 000000000000..5700258c8deb
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/usb/dwc3/dwc3-am62.c
+>>>>> @@ -0,0 +1,446 @@
+>>>>> +// SPDX-License-Identifier: GPL-2.0
+>>>>> +/*
+>>>>> + * dwc3-am62.c - TI specific Glue layer for AM62 DWC3 USB Controller
+>>>>> + *
+>>>>> + * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com
+>>>>> + */
+>>>>> +
+>>>>> +#include <linux/init.h>
+>>>>> +#include <linux/interrupt.h>
+>>>>> +#include <linux/irq.h>
+>>>>> +#include <linux/kernel.h>
+>>>>> +#include <linux/module.h>
+>>>>> +#include <linux/platform_device.h>
+>>>>> +#include <linux/workqueue.h>
+>>>>> +#include <linux/mfd/syscon.h>
+>>>>> +#include <linux/of.h>
+>>>>> +#include <linux/of_device.h>
+>>>>> +#include <linux/pm_runtime.h>
+>>>>> +#include <linux/clk.h>
+>>>>> +#include <linux/regmap.h>
+>>>>> +#include <linux/devm-helpers.h>
+>>>>> +#include <linux/pinctrl/consumer.h>
+>>>>> +
+>>>>> +/* USB WRAPPER register offsets */
+>>>>> +#define USBSS_PID			0x0
+>>>>> +#define USBSS_OVERCURRENT_CTRL		0x4
+>>>>> +#define USBSS_PHY_CONFIG		0x8
+>>>>> +#define USBSS_PHY_TEST			0xc
+>>>>> +#define USBSS_CORE_STAT			0x14
+>>>>> +#define USBSS_HOST_VBUS_CTRL		0x18
+>>>>> +#define USBSS_MODE_CONTROL		0x1c
+>>>>> +#define USBSS_WAKEUP_CONFIG		0x30
+>>>>> +#define USBSS_WAKEUP_STAT		0x34
+>>>>> +#define USBSS_OVERRIDE_CONFIG		0x38
+>>>>> +#define USBSS_IRQ_MISC_STATUS_RAW	0x430
+>>>>> +#define USBSS_IRQ_MISC_STATUS		0x434
+>>>>> +#define USBSS_IRQ_MISC_ENABLE_SET	0x438
+>>>>> +#define USBSS_IRQ_MISC_ENABLE_CLR	0x43c
+>>>>> +#define USBSS_IRQ_MISC_EOI		0x440
+>>>>> +#define USBSS_INTR_TEST			0x490
+>>>>> +#define USBSS_VBUS_FILTER		0x614
+>>>>> +#define USBSS_VBUS_STAT			0x618
+>>>>> +#define USBSS_DEBUG_CFG			0x708
+>>>>> +#define USBSS_DEBUG_DATA		0x70c
+>>>>> +#define USBSS_HOST_HUB_CTRL		0x714
+>>>>> +
+>>>>> +/* PHY CONFIG register bits */
+>>>>> +#define USBSS_PHY_VBUS_SEL_MASK		GENMASK(2, 1)
+>>>>> +#define USBSS_PHY_VBUS_SEL_SHIFT	1
+>>>>> +#define USBSS_PHY_LANE_REVERSE		BIT(0)
+>>>>> +
+>>>>> +/* MODE CONTROL register bits */
+>>>>> +#define USBSS_MODE_VALID	BIT(0)
+>>>>> +
+>>>>> +/* WAKEUP CONFIG register bits */
+>>>>> +#define USBSS_WAKEUP_CFG_OVERCURRENT_EN	BIT(3)
+>>>>> +#define USBSS_WAKEUP_CFG_LINESTATE_EN	BIT(2)
+>>>>> +#define USBSS_WAKEUP_CFG_SESSVALID_EN	BIT(1)
+>>>>> +#define USBSS_WAKEUP_CFG_VBUSVALID_EN	BIT(0)
+>>>>> +
+>>>>> +/* WAKEUP STAT register bits */
+>>>>> +#define USBSS_WAKEUP_STAT_OVERCURRENT	BIT(4)
+>>>>> +#define USBSS_WAKEUP_STAT_LINESTATE	BIT(3)
+>>>>> +#define USBSS_WAKEUP_STAT_SESSVALID	BIT(2)
+>>>>> +#define USBSS_WAKEUP_STAT_VBUSVALID	BIT(1)
+>>>>> +#define USBSS_WAKEUP_STAT_CLR		BIT(0)
+>>>>> +
+>>>>> +/* IRQ_MISC_STATUS_RAW register bits */
+>>>>> +#define USBSS_IRQ_MISC_RAW_VBUSVALID	BIT(22)
+>>>>> +#define USBSS_IRQ_MISC_RAW_SESSVALID	BIT(20)
+>>>>> +
+>>>>> +/* IRQ_MISC_STATUS register bits */
+>>>>> +#define USBSS_IRQ_MISC_VBUSVALID	BIT(22)
+>>>>> +#define USBSS_IRQ_MISC_SESSVALID	BIT(20)
+>>>>> +
+>>>>> +/* IRQ_MISC_ENABLE_SET register bits */
+>>>>> +#define USBSS_IRQ_MISC_ENABLE_SET_VBUSVALID	BIT(22)
+>>>>> +#define USBSS_IRQ_MISC_ENABLE_SET_SESSVALID	BIT(20)
+>>>>> +
+>>>>> +/* IRQ_MISC_ENABLE_CLR register bits */
+>>>>> +#define USBSS_IRQ_MISC_ENABLE_CLR_VBUSVALID	BIT(22)
+>>>>> +#define USBSS_IRQ_MISC_ENABLE_CLR_SESSVALID	BIT(20)
+>>>>> +
+>>>>> +/* IRQ_MISC_EOI register bits */
+>>>>> +#define USBSS_IRQ_MISC_EOI_VECTOR	BIT(0)
+>>>>> +
+>>>>> +/* VBUS_STAT register bits */
+>>>>> +#define USBSS_VBUS_STAT_SESSVALID	BIT(2)
+>>>>> +#define USBSS_VBUS_STAT_VBUSVALID	BIT(0)
+>>>>> +
+>>>>> +/* Mask for PHY PLL REFCLK */
+>>>>> +#define PHY_PLL_REFCLK_MASK	GENMASK(3, 0)
+>>>>> +
+>>>>> +#define DWC3_AM62_AUTOSUSPEND_DELAY	100
+>>>>> +
+>>>>> +struct dwc3_data {
+>>>>> +	struct device *dev;
+>>>>> +	void __iomem *usbss;
+>>>>> +	struct clk *usb2_refclk;
+>>>>> +	struct work_struct work;
+>>>>> +	int vbus_irq;
+>>>>> +	int rate_code;
+>>>>> +	int connect;
+>>>>> +	struct regmap *syscon;
+>>>>> +	unsigned int offset;
+>>>>> +	unsigned int vbus_divider;
+>>>>> +};
+>>>>> +
+>>>>> +static const int dwc3_ti_rate_table[] = {	/* in KHZ */
+>>>>> +	9600,
+>>>>> +	10000,
+>>>>> +	12000,
+>>>>> +	19200,
+>>>>> +	20000,
+>>>>> +	24000,
+>>>>> +	25000,
+>>>>> +	26000,
+>>>>> +	38400,
+>>>>> +	40000,
+>>>>> +	58000,
+>>>>> +	50000,
+>>>>> +	52000,
+>>>>> +};
+>>>>> +
+>>>>> +static inline u32 dwc3_ti_readl(struct dwc3_data *data, u32 offset)
+>>>>> +{
+>>>>> +	return readl((data->usbss) + offset);
+>>>>> +}
+>>>>> +
+>>>>> +static inline void dwc3_ti_writel(struct dwc3_data *data, u32 offset, u32 value)
+>>>>> +{
+>>>>> +	writel(value, (data->usbss) + offset);
+>>>>> +}
+>>>>> +
+>>>>> +static void connect_detect_work(struct work_struct *work)
+>>>>> +{
+>>>>> +	struct dwc3_data *data =
+>>>>> +		container_of(work, struct dwc3_data, work);
+>>>>> +	u32 vbus_state, reg;
+>>>>> +	int connect = 0;
+>>>>> +
+>>>>> +	/* Read the status for VBUS valid register */
+>>>>> +	vbus_state = dwc3_ti_readl(data, USBSS_VBUS_STAT);
+>>>>> +	vbus_state &= USBSS_VBUS_STAT_VBUSVALID;
+>>>>> +
+>>>>> +	if (vbus_state)
+>>>>> +		connect = 1;
+>>>>> +
+>>>>> +	/* Set or clear mode valid bit based on connect or disconnect event */
+>>>>> +	if (data->connect != connect) {
+>>>>> +		reg = dwc3_ti_readl(data, USBSS_MODE_CONTROL);
+>>>>> +		if (connect)
+>>>>> +			reg |= USBSS_MODE_VALID;
+>>>>> +		else
+>>>>> +			reg &= ~USBSS_MODE_VALID;
+>>>>> +
+>>>>> +		dwc3_ti_writel(data, USBSS_MODE_CONTROL, reg);
+>>>>> +		data->connect = connect;
+>>>>> +	}
+>>>>> +}
+>>>>> +
+>>>>> +static irqreturn_t connect_detect_irq_handler(int irq, void *dev_id)
+>>>>> +{
+>>>>> +	struct dwc3_data *data = dev_id;
+>>>>> +	u32 reg;
+>>>>> +
+>>>>> +	/* Clear VBUS interrupt always to aviod queuing up redundant work items */
+>>>>> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_STATUS);
+>>>>> +	reg |= USBSS_IRQ_MISC_VBUSVALID;
+>>>>> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_STATUS, reg);
+>>>>> +
+>>>>> +	queue_work(system_power_efficient_wq, &data->work);
+>>>>> +
+>>>>> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_EOI);
+>>>>> +	reg &= ~USBSS_IRQ_MISC_EOI_VECTOR;
+>>>>> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_EOI, reg);
+>>>>> +	return IRQ_HANDLED;
+>>>>> +}
+>>>>> +
+>>>>> +static int dwc3_ti_vbus_irq_setup(struct platform_device *pdev)
+>>>>> +{
+>>>>> +	struct device *dev = &pdev->dev;
+>>>>> +	struct dwc3_data *data = platform_get_drvdata(pdev);
+>>>>> +	int irq, ret;
+>>>>> +
+>>>>> +	/* Get the misc interrupt */
+>>>>> +	irq = platform_get_irq(pdev, 0);
+>>>>> +	if (irq < 0)
+>>>>> +		return irq;
+>>>>> +
+>>>>> +	ret = devm_request_irq(dev, irq, connect_detect_irq_handler, IRQF_SHARED,
+>>>>> +			       dev_name(dev), data);
+>>>>> +	if (ret) {
+>>>>> +		dev_err(dev, "failed to required IRQ #%d-->%d\n",
+>>>>> +			irq, ret);
+>>>>> +		return ret;
+>>>>> +	}
+>>>>> +
+>>>>> +	data->vbus_irq = irq;
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int phy_syscon_pll_refclk(struct dwc3_data *data)
+>>>>> +{
+>>>>> +	struct device *dev = data->dev;
+>>>>> +	struct device_node *node = dev->of_node;
+>>>>> +	struct of_phandle_args args;
+>>>>> +	struct regmap *syscon;
+>>>>> +	int ret;
+>>>>> +
+>>>>> +	syscon = syscon_regmap_lookup_by_phandle(node, "ti,syscon-phy-pll-refclk");
+>>>>> +	if (IS_ERR(syscon)) {
+>>>>> +		dev_err(dev, "unable to get ti,syscon-phy-pll-refclk regmap\n");
+>>>>> +		return PTR_ERR(syscon);
+>>>>> +	}
+>>>>> +
+>>>>> +	data->syscon = syscon;
+>>>>> +
+>>>>> +	ret = of_parse_phandle_with_fixed_args(node, "ti,syscon-phy-pll-refclk", 1,
+>>>>> +					       0, &args);
+>>>>> +	if (ret)
+>>>>> +		return ret;
+>>>>> +
+>>>>> +	data->offset = args.args[0];
+>>>>> +
+>>>>> +	ret = regmap_update_bits(data->syscon, data->offset, PHY_PLL_REFCLK_MASK, data->rate_code);
+>>>>> +	if (ret) {
+>>>>> +		dev_err(dev, "failed to set phy pll reference clock rate\n");
+>>>>> +		return ret;
+>>>>> +	}
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static void dwc3_ti_enable_irqs(struct dwc3_data *data)
+>>>>> +{
+>>>>> +	u32 reg;
+>>>>> +
+>>>>> +	/* enable VBUSVALID interrupt */
+>>>>> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_ENABLE_SET);
+>>>>> +	reg |= USBSS_IRQ_MISC_ENABLE_SET_VBUSVALID;
+>>>>> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_ENABLE_SET, reg);
+>>>>> +}
+>>>>> +
+>>>>> +static void dwc3_ti_disable_irqs(struct dwc3_data *data)
+>>>>> +{
+>>>>> +	u32 reg;
+>>>>> +
+>>>>> +	/* disable VBUSVALID interrupt */
+>>>>> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_ENABLE_CLR);
+>>>>> +	reg |= USBSS_IRQ_MISC_ENABLE_CLR_VBUSVALID;
+>>>>> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_ENABLE_CLR, reg);
+>>>>> +}
+>>>>> +
+>>>>> +static int dwc3_ti_probe(struct platform_device *pdev)
+>>>>> +{
+>>>>> +	struct device *dev = &pdev->dev;
+>>>>> +	struct device_node *node = pdev->dev.of_node;
+>>>>> +	struct dwc3_data *data;
+>>>>> +	int i, ret;
+>>>>> +	unsigned long rate;
+>>>>> +	u32 reg;
+>>>>> +
+>>>>> +	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+>>>>> +	if (!data)
+>>>>> +		return -ENOMEM;
+>>>>> +
+>>>>> +	data->dev = dev;
+>>>>> +	platform_set_drvdata(pdev, data);
+>>>>> +
+>>>>> +	data->usbss = devm_platform_ioremap_resource(pdev, 0);
+>>>>> +	if (IS_ERR(data->usbss)) {
+>>>>> +		dev_err(dev, "can't map IOMEM resource\n");
+>>>>> +		return PTR_ERR(data->usbss);
+>>>>> +	}
+>>>>> +
+>>>>> +	data->usb2_refclk = devm_clk_get(dev, "ref");
+>>>>> +	if (IS_ERR(data->usb2_refclk)) {
+>>>>> +		dev_err(dev, "can't get usb2_refclk\n");
+>>>>> +		return PTR_ERR(data->usb2_refclk);
+>>>>> +	}
+>>>>> +
+>>>>> +	/* Calculate the rate code */
+>>>>> +	rate = clk_get_rate(data->usb2_refclk);
+>>>>> +	rate /= 1000;	// To KHz
+>>>>> +	for (i = 0; i < ARRAY_SIZE(dwc3_ti_rate_table); i++) {
+>>>>> +		if (dwc3_ti_rate_table[i] == rate)
+>>>>> +			break;
+>>>>> +	}
+>>>>> +
+>>>>> +	if (i == ARRAY_SIZE(dwc3_ti_rate_table)) {
+>>>>> +		dev_err(dev, "unsupported usb2_refclk rate: %lu KHz\n", rate);
+>>>>> +		ret = -EINVAL;
+>>>>> +		goto err_clk_disable;
+>>>>> +	}
+>>>>> +
+>>>>> +	data->rate_code = i;
+>>>>> +
+>>>>> +	/* Read the syscon property and set the rate code */
+>>>>> +	ret = phy_syscon_pll_refclk(data);
+>>>>> +	if (ret)
+>>>>> +		goto err_clk_disable;
+>>>>> +
+>>>>> +	/* VBUS divider select */
+>>>>> +	data->vbus_divider = device_property_read_bool(dev, "ti,vbus-divider");
+>>>>> +	reg = dwc3_ti_readl(data, USBSS_PHY_CONFIG);
+>>>>> +	if (data->vbus_divider)
+>>>>> +		reg |= 1 << USBSS_PHY_VBUS_SEL_SHIFT;
+>>>>> +
+>>>>> +	dwc3_ti_writel(data, USBSS_PHY_CONFIG, reg);
+>>>>> +
+>>>>> +	/* Initialize a work queue */
+>>>>> +	ret = devm_work_autocancel(dev, &data->work, connect_detect_work);
+>>>>> +	if (ret)
+>>>>> +		goto err_clk_disable;
+>>>>> +
+>>>>> +	/* Read and set VBUS IRQ */
+>>>>> +	ret = dwc3_ti_vbus_irq_setup(pdev);
+>>>>> +	if (ret)
+>>>>> +		goto err_clk_disable;
+>>>>> +
+>>>>> +	pm_runtime_set_active(dev);
+>>>>> +	pm_runtime_enable(dev);
+>>>>> +	/*
+>>>>> +	 * Don't ignore its dependencies with its children
+>>>>> +	 */
+>>>>> +	pm_suspend_ignore_children(dev, false);
+>>>>> +	clk_prepare_enable(data->usb2_refclk);
+>>>>> +	pm_runtime_get_noresume(dev);
+>>>>> +
+>>>>> +	ret = of_platform_populate(node, NULL, NULL, dev);
+>>>>> +	if (ret) {
+>>>>> +		dev_err(dev, "failed to create dwc3 core: %d\n", ret);
+>>>>> +		goto err_pm_disable;
+>>>>> +	}
+>>>>> +
+>>>>> +	/* Enable vbus irq */
+>>>>> +	dwc3_ti_enable_irqs(data);
+>>>>> +
+>>>>> +	connect_detect_work(&data->work);
+>>>>> +
+>>>>> +	/* Setting up autosuspend */
+>>>>> +	pm_runtime_set_autosuspend_delay(dev, DWC3_AM62_AUTOSUSPEND_DELAY);
+>>>>> +	pm_runtime_use_autosuspend(dev);
+>>>>> +	pm_runtime_mark_last_busy(dev);
+>>>>> +	pm_runtime_put_autosuspend(dev);
+>>>>> +	return 0;
+>>>>> +
+>>>>> +err_pm_disable:
+>>>>> +	clk_disable_unprepare(data->usb2_refclk);
+>>>>> +	pm_runtime_disable(dev);
+>>>>> +	pm_runtime_set_suspended(dev);
+>>>>> +err_clk_disable:
+>>>>> +	clk_put(data->usb2_refclk);
+>>>>> +	return ret;
+>>>>> +}
+>>>>> +
+>>>>> +static int dwc3_ti_remove_core(struct device *dev, void *c)
+>>>>> +{
+>>>>> +	struct platform_device *pdev = to_platform_device(dev);
+>>>>> +
+>>>>> +	platform_device_unregister(pdev);
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int dwc3_ti_remove(struct platform_device *pdev)
+>>>>> +{
+>>>>> +	struct device *dev = &pdev->dev;
+>>>>> +	struct dwc3_data *data = platform_get_drvdata(pdev);
+>>>>> +	u32 reg;
+>>>>> +
+>>>>> +	dwc3_ti_disable_irqs(data);
+>>>>> +
+>>>>> +	device_for_each_child(dev, NULL, dwc3_ti_remove_core);
+>>>>> +
+>>>>> +	/* Clear mode valid bit */
+>>>>> +	reg = dwc3_ti_readl(data, USBSS_MODE_CONTROL);
+>>>>> +	reg &= ~USBSS_MODE_VALID;
+>>>>> +	dwc3_ti_writel(data, USBSS_MODE_CONTROL, reg);
+>>>>> +
+>>>>> +	pm_runtime_put_sync(dev);
+>>>>> +	clk_disable_unprepare(data->usb2_refclk);
+>>>>> +	pm_runtime_disable(dev);
+>>>>> +	pm_runtime_set_suspended(dev);
+>>>>> +
+>>>>> +	clk_put(data->usb2_refclk);
+>>>>> +	platform_set_drvdata(pdev, NULL);
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +#ifdef CONFIG_PM
+>>>>> +static int dwc3_ti_suspend_common(struct device *dev)
+>>>>> +{
+>>>>> +	struct dwc3_data *data = dev_get_drvdata(dev);
+>>>>> +
+>>>>> +	/* disable irqs */
+>>>>> +	dwc3_ti_disable_irqs(data);
+>>>>> +
+>>>>> +	clk_disable_unprepare(data->usb2_refclk);
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int dwc3_ti_resume_common(struct device *dev)
+>>>>> +{
+>>>>> +	struct dwc3_data *data = dev_get_drvdata(dev);
+>>>>> +
+>>>>> +	clk_prepare_enable(data->usb2_refclk);
+>>>>> +
+>>>>> +	/* Enable irqs */
+>>>>> +	dwc3_ti_enable_irqs(data);
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static UNIVERSAL_DEV_PM_OPS(dwc3_ti_pm_ops, dwc3_ti_suspend_common,
+>>>>> +			    dwc3_ti_resume_common, NULL);
+>>>>> +
+>>>>> +#define DEV_PM_OPS	(&dwc3_ti_pm_ops)
+>>>>> +#else
+>>>>> +#define DEV_PM_OPS	NULL
+>>>>> +#endif /* CONFIG_PM */
+>>>>> +
+>>>>> +static const struct of_device_id dwc3_ti_of_match[] = {
+>>>>> +	{ .compatible = "ti,am62-usb"},
+>>>>> +	{},
+>>>>> +};
+>>>>> +MODULE_DEVICE_TABLE(of, dwc3_ti_of_match);
+>>>>> +
+>>>>> +static struct platform_driver dwc3_ti_driver = {
+>>>>> +	.probe		= dwc3_ti_probe,
+>>>>> +	.remove		= dwc3_ti_remove,
+>>>>> +	.driver		= {
+>>>>> +		.name	= "dwc3-am62",
+>>>>> +		.pm	= DEV_PM_OPS,
+>>>>> +		.of_match_table = dwc3_ti_of_match,
+>>>>> +	},
+>>>>> +};
+>>>>> +
+>>>>> +module_platform_driver(dwc3_ti_driver);
+>>>>> +
+>>>>> +MODULE_ALIAS("platform:dwc3-am62");
+>>>>> +MODULE_AUTHOR("Aswath Govindraju <a-govindraju@ti.com>");
+>>>>> +MODULE_LICENSE("GPL");
+>>>>> +MODULE_DESCRIPTION("DesignWare USB3 TI Glue Layer")
+>>
+>>
 
-Hi Ilya,
 
-I can confirm that with latest OvS master IPv6 rules offload still fails
-without your pastebin code applied.
-
->
-> Since we're here:
->
-> Toms, do you plan to submit user space patches for this feature?
-
-I see there is a patch from you that is supposed to fix compatibility
-issues caused by this change in OvS d96d14b14733 ("openvswitch.h: Align
-uAPI definition with the kernel."), but it doesn't fix offload for me
-without pastebin patch. Do you plan to merge that code into OvS or you
-require some help from our side?
-
-Regards,
-Vlad
-
-[...]
-
-
+-- 
+Thanks,
+Aswath
