@@ -2,197 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8762C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A53C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:33:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238774AbiDGBe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
+        id S238868AbiDGBfE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:35:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242122AbiDGBcF (ORCPT
+        with ESMTP id S242169AbiDGBcI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:32:05 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2083DAFD4
-        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 18:26:05 -0700 (PDT)
+        Wed, 6 Apr 2022 21:32:08 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8A5C90C2;
+        Wed,  6 Apr 2022 18:29:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649294765; x=1680830765;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=fZ291ic3waNvY0BAT14yHav4HdGGi932SjJLUuRh/3c=;
-  b=JkZfrbCe+rIJifgK9aXAIEOYPQQY3QdzGet4fgCdW2jVvuscOBgz/EGn
-   pbnc0Q+iLsSEZK8ITTN4AqoJAtJITlEC9Zlfz/H3D4Z6DByo0zBXhJsOY
-   KXp2NjyFeHlIbjgZi0ucnCmVEOoRLJKe3/sr71XzWg1x2P5MnQNxm8dbe
-   p2WXr5eN/aRh9hg9pTVyOYHdHZ/rxcrX/d6oF7SUScv0tjYYqONtIhctZ
-   pN/NJbbciX9My90BeACyBigRnaZb1DjUz1fmKjOCKarzx5KqlLKn/BZqD
-   ofXXrlC5Wu+Y5/aJyKky0YnzK7TuNmjuD7DlvnqOS/nebnvnYqHBtsPd4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="321893628"
+  t=1649294967; x=1680830967;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=UbchNRyikrKBOoyFn1A/AwN0BKR9315IZ5srbQ9nAdg=;
+  b=naylskMncjUM1peMN/JvhiQfHi3WaK0IhLMVIQs5KUkDEiAPKKwuZWnD
+   NjjRvEo+xmRgBW9LVnsveysQWZ5/wDTu7KLeMFh6AFgQ/lh+pFuNkB6AD
+   RiW5e9ie0AcNgTHY3Yy6TjsykThNicfo2eBMDkt5gwV9RtK5JWMIi7wyc
+   szh7HCJPytk6ehkOhVPemO0uHz0KJUUkYAhCqZLVEYmgbLmE48OCTIzyE
+   8VY1DwA06rep52VZqQ9w8tFMvh/udqJTarAvj4mDYaI0unSoVjIKl2kUV
+   7lz/PSNoy6Z/MCTSYspARWxsOwRasXrFpDEJ9M1/V6kDMeqK4keWSvv3c
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="243335027"
 X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="321893628"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 18:26:05 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="243335027"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 18:29:27 -0700
 X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
-   d="scan'208";a="524720932"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 06 Apr 2022 18:26:03 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ncGuQ-0004vz-QR;
-        Thu, 07 Apr 2022 01:26:02 +0000
-Date:   Thu, 7 Apr 2022 09:25:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 26/40]
- fs/netfs/crypto.c:208:1: warning: the frame size of 1040 bytes is larger
- than 1024 bytes
-Message-ID: <202204070930.v6UQvVXJ-lkp@intel.com>
+   d="scan'208";a="722750496"
+Received: from zitianwa-mobl.ccr.corp.intel.com (HELO [10.255.28.125]) ([10.255.28.125])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 18:29:25 -0700
+Message-ID: <a1052ec0-4ea6-d5db-a729-deec08712683@intel.com>
+Date:   Thu, 7 Apr 2022 09:29:22 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 027/104] KVM: TDX: initialize VM with TDX specific
+ parameters
+Content-Language: en-US
+To:     Paolo Bonzini <pbonzini@redhat.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <c3b37cf5c83f92be0e153075d81a80729bf1031e.1646422845.git.isaku.yamahata@intel.com>
+ <e392b53a-fbaa-4724-07f4-171424144f70@redhat.com>
+From:   Xiaoyao Li <xiaoyao.li@intel.com>
+In-Reply-To: <e392b53a-fbaa-4724-07f4-171424144f70@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
-head:   674eea41fc70a740ff83ec590f9833f805852464
-commit: fc693b2e39df6567a0312f21bb9004e1d7983286 [26/40] netfs: Perform content encryption
-config: powerpc-buildonly-randconfig-r004-20220406 (https://download.01.org/0day-ci/archive/20220407/202204070930.v6UQvVXJ-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/fc693b2e39df6567a0312f21bb9004e1d7983286
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
-        git checkout fc693b2e39df6567a0312f21bb9004e1d7983286
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash fs/netfs/
+On 4/5/2022 8:58 PM, Paolo Bonzini wrote:
+> On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+>> +    td_params->attributes = init_vm->attributes;
+>> +    if (td_params->attributes & TDX_TD_ATTRIBUTE_PERFMON) {
+>> +        pr_warn("TD doesn't support perfmon. KVM needs to save/restore "
+>> +            "host perf registers properly.\n");
+>> +        return -EOPNOTSUPP;
+>> +    }
+> 
+> Why does KVM have to hardcode this (and LBR/AMX below)?  Is the level of 
+> hardware support available from tdx_caps, for example through the CPUID 
+> configs (0xA for this one, 0xD for LBR and AMX)?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+It's wrong code. PMU is allowed.
 
-All warnings (new ones prefixed by >>):
+AMX and LBR are disallowed because and the time we wrote the codes they 
+are not supported by KVM. Now AMX should be allowed, but (arch-)LBR 
+should be still blocked until KVM merges arch-LBR support.
 
-   In file included from include/linux/kernel.h:26,
-                    from arch/powerpc/include/asm/page.h:11,
-                    from arch/powerpc/include/asm/thread_info.h:13,
-                    from include/linux/thread_info.h:60,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/powerpc/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:78,
-                    from include/linux/spinlock.h:55,
-                    from include/linux/wait.h:9,
-                    from include/linux/wait_bit.h:8,
-                    from include/linux/fs.h:6,
-                    from fs/netfs/crypto.c:8:
-   fs/netfs/crypto.c: In function 'netfs_xarray_to_sglist':
-   include/linux/minmax.h:20:35: warning: comparison of distinct pointer types lacks a cast
-      20 |         (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-         |                                   ^~
-   include/linux/minmax.h:26:18: note: in expansion of macro '__typecheck'
-      26 |                 (__typecheck(x, y) && __no_side_effects(x, y))
-         |                  ^~~~~~~~~~~
-   include/linux/minmax.h:36:31: note: in expansion of macro '__safe_cmp'
-      36 |         __builtin_choose_expr(__safe_cmp(x, y), \
-         |                               ^~~~~~~~~~
-   include/linux/minmax.h:45:25: note: in expansion of macro '__careful_cmp'
-      45 | #define min(x, y)       __careful_cmp(x, y, <)
-         |                         ^~~~~~~~~~~~~
-   fs/netfs/crypto.c:76:31: note: in expansion of macro 'min'
-      76 |                         seg = min(len, PAGE_SIZE - offset);
-         |                               ^~~
-   fs/netfs/crypto.c: In function 'netfs_encrypt':
->> fs/netfs/crypto.c:208:1: warning: the frame size of 1040 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-     208 | }
-         | ^
+>> +    /* PT can be exposed to TD guest regardless of KVM's XSS support */
+>> +    guest_supported_xss &= (supported_xss | XFEATURE_MASK_PT);
+>> +    td_params->xfam = guest_supported_xcr0 | guest_supported_xss;
+>> +    if (td_params->xfam & TDX_TD_XFAM_LBR) {
+>> +        pr_warn("TD doesn't support LBR. KVM needs to save/restore "
+>> +            "IA32_LBR_DEPTH properly.\n");
+>> +        return -EOPNOTSUPP;
+>> +    }
+>> +
+>> +    if (td_params->xfam & TDX_TD_XFAM_AMX) {
+>> +        pr_warn("TD doesn't support AMX. KVM needs to save/restore "
+>> +            "IA32_XFD, IA32_XFD_ERR properly.\n");
+>> +        return -EOPNOTSUPP;
+>> +    }
+> 
+>>
+>> +    if (init_vm->tsc_khz)
+>> +        guest_tsc_khz = init_vm->tsc_khz;
+>> +    else
+>> +        guest_tsc_khz = max_tsc_khz;
+> 
+> You can just use kvm->arch.default_tsc_khz in the latest kvm/queue.
 
+yes. will change it.
 
-vim +208 fs/netfs/crypto.c
-
-   133	
-   134	/*
-   135	 * Prepare a write request for writing.  We encrypt from wreq->buffer to
-   136	 * wreq->buffer2.
-   137	 */
-   138	bool netfs_encrypt(struct netfs_io_request *wreq)
-   139	{
-   140		struct netfs_i_context *ctx = netfs_i_context(wreq->inode);
-   141		struct scatterlist source_sg[16], dest_sg[16];
-   142		unsigned int n_source, n_dest;
-   143		size_t n, chunk, bsize = 1UL << ctx->crypto_bshift;
-   144		loff_t pos;
-   145		int ret;
-   146	
-   147		_enter("");
-   148	
-   149		trace_netfs_rreq(wreq, netfs_rreq_trace_encrypt);
-   150	
-   151		pos = wreq->start;
-   152		n = wreq->len;
-   153		_debug("ENCRYPT %llx-%llx", pos, pos + n - 1);
-   154	
-   155		for (; n > 0; n -= chunk, pos += chunk) {
-   156			chunk = min(n, bsize);
-   157	
-   158			switch (wreq->buffering) {
-   159			case NETFS_ENC_BUFFER_TO_BOUNCE:
-   160				ret = netfs_xarray_to_sglist(&wreq->buffer, pos, chunk,
-   161							     source_sg, ARRAY_SIZE(source_sg));
-   162				break;
-   163			case NETFS_ENC_DIRECT_TO_BOUNCE:
-   164				ret = netfs_iter_to_sglist(&wreq->direct_iter, chunk,
-   165							   dest_sg, ARRAY_SIZE(dest_sg));
-   166				break;
-   167			case NETFS_COPY_ENC_BOUNCE:
-   168				ret = netfs_xarray_to_sglist(&wreq->bounce, pos, chunk,
-   169							     source_sg, ARRAY_SIZE(source_sg));
-   170				break;
-   171			default:
-   172				BUG();
-   173			}
-   174			if (ret < 0)
-   175				goto error;
-   176			n_source = ret;
-   177	
-   178			switch (wreq->buffering) {
-   179			case NETFS_ENC_BUFFER_TO_BOUNCE:
-   180			case NETFS_ENC_DIRECT_TO_BOUNCE:
-   181				ret = netfs_xarray_to_sglist(&wreq->bounce, pos, chunk,
-   182							     dest_sg, ARRAY_SIZE(dest_sg));
-   183				break;
-   184			case NETFS_COPY_ENC_BOUNCE:
-   185				memcpy(dest_sg, source_sg, sizeof(dest_sg));
-   186				ret = n_source;
-   187				break;
-   188			default:
-   189				BUG();
-   190			}
-   191			if (ret < 0)
-   192				goto error;
-   193			n_dest = ret;
-   194	
-   195			ret = ctx->ops->encrypt_block(wreq, pos, chunk,
-   196						      source_sg, n_source, dest_sg, n_dest);
-   197			if (ret < 0)
-   198				goto error_failed;
-   199		}
-   200	
-   201		return true;
-   202	
-   203	error_failed:
-   204		trace_netfs_failure(wreq, NULL, ret, netfs_fail_encryption);
-   205	error:
-   206		wreq->error = ret;
-   207		return false;
- > 208	}
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
