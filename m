@@ -2,114 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75641C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 19:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 827A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 19:53:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229521AbiDGTtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 15:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47570 "EHLO
+        id S229551AbiDGTz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 15:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiDGTtB (ORCPT
+        with ESMTP id S229441AbiDGTzx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 15:49:01 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF0036B032
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:43:54 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2eb689106e3so56325887b3.16
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 12:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=U0Hnhz6FkWikLEjV/D9C4mwc2iqVMG/fIPbXB9OU5q4=;
-        b=o07BrSOg1I3ZAbol7DUdxPNo0X7ueGUKzVERCNpj3MJ9kk3m9o0e4o+g3VVNbQBltr
-         mSnjB2+5TOFiAxJtHx3fk8yKuoRBvS4xMM2u4mkBbY+gLfjKWb7lc/weMn+oEf/+DkfF
-         vBOwhSSJqqOc3Go9LsSl3HtXat6Uhdu4duXjqDqOT1TZj7FDG8h33YsrOen0PGhYwq2l
-         KPlemUBfaSrXkR9gpPeMKQ8avWSdsxoN9XQ2q+Y1alRclcmMOI6W+wrSiwoL4qrj0A0A
-         9fIWcnGYCzRK/CVGFHxBd5Mw7AVqrmXBQl+typj3/l2CIoLQnp/OjaE/QxYX/zMPFhDx
-         OsYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=U0Hnhz6FkWikLEjV/D9C4mwc2iqVMG/fIPbXB9OU5q4=;
-        b=8KKE8H8I8ss/xpu7sPsAgFuswKR/v5NAngzPSXoOMb61tqtvfb8r31xpmFvzmiwR07
-         V8IpJ1d7lEkAfwIr6EOKwkKS5/pLu62ppJLziFGxPa5q6omHdtatCHDsDXI2yBbup27t
-         Qj3+3EvGWwNVqRB/GmhsXOw9A1D/f5dlguykIiiw4lMeFiNmP7+F4lxIvT2KiQmudWF8
-         imGRxVAoWFTh0mLga1vQXvEbj7GvQ+dsU5g2IStO5lMj9l0XPdonPXeWxgsIiCHye8gT
-         NB4IAeIzfy0w5pB9gzWmsrJTtTaDz5q8F350B1tYu4QOvGGz7DXG7Ppg+kFBfriB11dC
-         aoWA==
-X-Gm-Message-State: AOAM532tsp7cJIBL+qZkFtRxGfeeAOYIhV/g1vA9GYNatNbb6PbuALbH
-        mdq61KdXSSeU0PXEKLqEHE94kgVfaCdaGg==
-X-Google-Smtp-Source: ABdhPJx6leyDfWk1JfaRZZrzTr1Cw4oe0SYHphG+OfJC1fFuk6FyR6wXnM7iI+LbxfBFFuABBeWe5FlM/b9x4A==
-X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:aed6:d51d:dc38:e705])
- (user=dlatypov job=sendgmr) by 2002:a25:ba0c:0:b0:61a:79a6:fd0 with SMTP id
- t12-20020a25ba0c000000b0061a79a60fd0mr11581459ybg.45.1649360345816; Thu, 07
- Apr 2022 12:39:05 -0700 (PDT)
-Date:   Thu,  7 Apr 2022 12:39:02 -0700
-Message-Id: <20220407193902.1981605-1-dlatypov@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH] kunit: tool: cosmetic: don't specify duplicate kunit_shutdown's
-From:   Daniel Latypov <dlatypov@google.com>
-To:     brendanhiggins@google.com, davidgow@google.com
-Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
-        Daniel Latypov <dlatypov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 7 Apr 2022 15:55:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818E83A1408
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:48:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFB66B8297E
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 19:35:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05FA2C385A4;
+        Thu,  7 Apr 2022 19:35:21 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ic0q0fM+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1649360120;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=aHqtcyWWhoEYpTWEgHu8OiMUdmD4MGfIhGTDyFsMglk=;
+        b=ic0q0fM+4dEuVACDUwWX5U6545jpmLwg7MsGK2G8PRxEw4JWQZ1kaSdXUxkw9Jir6jUX6n
+        11hbvY0sRPm7VqjSZEEf8ui7CRcS3sGu/6KcOLPHJhfPNg0Ieg5/qDzrYE63UuUyj5Bd07
+        BgADSpdz6iRN9dHjHMmnUSwBdg1m7KI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5110590a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 7 Apr 2022 19:35:20 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org
+Cc:     tytso@mit.edu, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jann Horn <jannh@google.com>
+Subject: [PATCH] random: allow partial reads if later user copies fail
+Date:   Thu,  7 Apr 2022 21:34:33 +0200
+Message-Id: <20220407193433.523299-1-Jason@zx2c4.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Context:
-When using a non-UML arch, kunit.py will boot the test kernel with these
-options by default:
-> mem=1G console=tty kunit_shutdown=halt console=ttyS0 kunit_shutdown=reboot
+Rather than failing entirely if a copy_to_user() fails at some point,
+instead we should return a partial read for the amount that succeeded
+prior, unless none succeeded at all, in which case we return -EFAULT as
+before.
 
-For QEMU, we need to use 'reboot', and for UML we need to use 'halt'.
-If you switch them, kunit.py will hang until the --timeout expires.
+This makes it consistent with other reader interfaces. For example, the
+following snippet for /dev/zero outputs "4" followed by "1":
 
-So the code currently unconditionally adds 'kunit_shutdown=halt' but
-then appends 'reboot' when using QEMU (which overwrites it).
+  int fd;
+  void *x = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  assert(x != MAP_FAILED);
+  fd = open("/dev/zero", O_RDONLY);
+  assert(fd >= 0);
+  printf("%zd\n", read(fd, x, 4));
+  printf("%zd\n", read(fd, x + 4095, 4));
+  close(fd);
 
-This patch:
-Having these duplicate options is a bit noisy.
-Switch so we only add 'halt' for UML.
+This brings that same standard behavior to the various RNG reader
+interfaces.
 
-I.e. we now get
-UML: 'mem=1G console=tty console=ttyS0 kunit_shutdown=halt'
-QEMU: 'mem=1G console=tty console=ttyS0 kunit_shutdown=reboot'
+While we're at it, we can streamline the loop logic a little bit.
 
-Side effect: you can't overwrite kunit_shutdown on UML w/ --kernel_arg.
-But you already couldn't for QEMU, and why would you want to?
-
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jann Horn <jannh@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- tools/testing/kunit/kunit_kernel.py | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/char/random.c | 21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kunit_kernel.py
-index 483f78e15ce9..9731ceb7ad92 100644
---- a/tools/testing/kunit/kunit_kernel.py
-+++ b/tools/testing/kunit/kunit_kernel.py
-@@ -158,7 +158,7 @@ class LinuxSourceTreeOperationsUml(LinuxSourceTreeOperations):
- 	def start(self, params: List[str], build_dir: str) -> subprocess.Popen:
- 		"""Runs the Linux UML binary. Must be named 'linux'."""
- 		linux_bin = os.path.join(build_dir, 'linux')
--		return subprocess.Popen([linux_bin] + params,
-+		return subprocess.Popen([linux_bin] + params + ['kunit_shutdown=halt'],
- 					   stdin=subprocess.PIPE,
- 					   stdout=subprocess.PIPE,
- 					   stderr=subprocess.STDOUT,
-@@ -332,7 +332,7 @@ class LinuxSourceTree(object):
- 	def run_kernel(self, args=None, build_dir='', filter_glob='', timeout=None) -> Iterator[str]:
- 		if not args:
- 			args = []
--		args.extend(['mem=1G', 'console=tty', 'kunit_shutdown=halt'])
-+		args.extend(['mem=1G', 'console=tty'])
- 		if filter_glob:
- 			args.append('kunit.filter_glob='+filter_glob)
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index e15063d61460..dd31fddecd17 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -523,8 +523,7 @@ EXPORT_SYMBOL(get_random_bytes);
  
-
-base-commit: b04d1a8dc7e7ff7ca91a20bef053bcc04265d83a
+ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ {
+-	ssize_t ret = 0;
+-	size_t len;
++	size_t len, ret = 0;
+ 	u32 chacha_state[CHACHA_STATE_WORDS];
+ 	u8 output[CHACHA_BLOCK_SIZE];
+ 
+@@ -543,37 +542,37 @@ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ 	 * the user directly.
+ 	 */
+ 	if (nbytes <= CHACHA_KEY_SIZE) {
+-		ret = copy_to_user(buf, &chacha_state[4], nbytes) ? -EFAULT : nbytes;
++		ret = copy_to_user(buf, &chacha_state[4], nbytes) ? 0 : nbytes;
+ 		goto out_zero_chacha;
+ 	}
+ 
+-	do {
++	for (;;) {
+ 		chacha20_block(chacha_state, output);
+ 		if (unlikely(chacha_state[12] == 0))
+ 			++chacha_state[13];
+ 
+ 		len = min_t(size_t, nbytes, CHACHA_BLOCK_SIZE);
+-		if (copy_to_user(buf, output, len)) {
+-			ret = -EFAULT;
++		if (copy_to_user(buf, output, len))
+ 			break;
+-		}
+ 
+-		nbytes -= len;
+ 		buf += len;
+ 		ret += len;
++		nbytes -= len;
++		if (!nbytes)
++			break;
+ 
+ 		BUILD_BUG_ON(PAGE_SIZE % CHACHA_BLOCK_SIZE != 0);
+-		if (!(ret % PAGE_SIZE) && nbytes) {
++		if (!(ret % PAGE_SIZE)) {
+ 			if (signal_pending(current))
+ 				break;
+ 			cond_resched();
+ 		}
+-	} while (nbytes);
++	}
+ 
+ 	memzero_explicit(output, sizeof(output));
+ out_zero_chacha:
+ 	memzero_explicit(chacha_state, sizeof(chacha_state));
+-	return ret;
++	return ret ? ret : -EFAULT;
+ }
+ 
+ /*
 -- 
-2.35.1.1178.g4f1659d476-goog
+2.35.1
 
