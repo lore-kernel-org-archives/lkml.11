@@ -2,266 +2,585 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB92C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:18:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E67F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242895AbiDGIUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37686 "EHLO
+        id S232129AbiDGIWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:22:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242852AbiDGIUm (ORCPT
+        with ESMTP id S232075AbiDGIWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:20:42 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F37C21E511;
-        Thu,  7 Apr 2022 01:18:42 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 23E0911FB;
-        Thu,  7 Apr 2022 01:18:42 -0700 (PDT)
-Received: from e126645.nice.arm.com (e126645.nice.arm.com [10.34.129.54])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6D9E43F5A1;
-        Thu,  7 Apr 2022 01:18:38 -0700 (PDT)
-From:   Pierre Gondois <pierre.gondois@arm.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ionela.Voinescu@arm.com, Lukasz.Luba@arm.com,
-        Morten.Rasmussen@arm.com, Dietmar.Eggemann@arm.com, maz@kernel.org,
-        Pierre Gondois <Pierre.Gondois@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Fuad Tabba <tabba@google.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org
-Subject: [PATCH v2 3/3] cpufreq: CPPC: Register EM based on efficiency class information
-Date:   Thu,  7 Apr 2022 10:16:18 +0200
-Message-Id: <20220407081620.1662192-4-pierre.gondois@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220407081620.1662192-1-pierre.gondois@arm.com>
-References: <20220407081620.1662192-1-pierre.gondois@arm.com>
+        Thu, 7 Apr 2022 04:22:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EBF72C12F;
+        Thu,  7 Apr 2022 01:20:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F79CB826C8;
+        Thu,  7 Apr 2022 08:20:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBF33C385A4;
+        Thu,  7 Apr 2022 08:20:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649319641;
+        bh=CVCi739g5x/zPXywGSh1U5+F6QpuHM6InzCwDuQC01U=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=sqwmf8CknFYMhy/okNB2F2gT1ivXHjN5gyBeO4JuYcmu/ip3ju1vq0ewLKL1bX844
+         p2QWBbQnG15VNjb9NOHvsnE0xARgoozDyx1ChltK3SqXyoFhgR8o42WhXzIwWglBX8
+         IC69i45vgdRTOgY0U9dh5qkCrgs9UhCRKB24Cfzx21jVkEG1eyaj3FwoqpzDX6mtI0
+         u1ZT/IdBhsQS1ML134FAt/ibxqxejldk58I93gL3tDMAzvhzQbx1G0JPgUT1DYPelO
+         0rBMXpGzdGQQ94lYbQcVKTkFJU+8IUdghimAZTpS1xVtt7UkZozKpzGYsAPn5W9J0a
+         dsg67+UFhck5Q==
+Message-ID: <d41d51ff-1c61-6694-4598-d55034e8210d@kernel.org>
+Date:   Thu, 7 Apr 2022 11:20:36 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 2/2] drivers: usb: dwc3: Add AM62 USB wrapper driver
+Content-Language: en-US
+To:     Aswath Govindraju <a-govindraju@ti.com>
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220406135214.6989-1-a-govindraju@ti.com>
+ <20220406135214.6989-3-a-govindraju@ti.com>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <20220406135214.6989-3-a-govindraju@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre Gondois <Pierre.Gondois@arm.com>
+Hi Aswath,
 
-Performance states and energy consumption values are not advertised
-in ACPI. In the GicC structure of the MADT table, the "Processor
-Power Efficiency Class field" (called efficiency class from now)
-allows to describe the relative energy efficiency of CPUs.
+On 06/04/2022 16:52, Aswath Govindraju wrote:
+> In AM62 SoC, the Designware Core USB3 IP is progammed to operate in USB2.0
+> only mode. Add driver for AM62 USB DWC3 Wrapper.
+> 
+> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+> ---
+> 
+> changes since v2:
+> - Removed the implementation of detecting the role from the wrapper
+>   driver and moved the implementation to using linux,extcon-usb-gpio
+>   driver for role detection.
 
-To leverage the EM and EAS, the CPPC driver creates a set of
-artificial performance states and registers them in the Energy Model
-(EM), such as:
-- Every 20 capacity unit, a performance state is created.
-- The energy cost of each performance state gradually increases.
-No power value is generated as only the cost is used in the EM.
+I'm a bit puzzled. So ID is managed by extcon-usb-gpio driver and
+VBUS is managed by this driver.
 
-During task placement, a task can raise the frequency of its whole
-pd. This can make EAS place a task on a pd with CPUs that are
-individually less energy efficient.
-As cost values are artificial, and to place tasks on CPUs with the
-lower efficiency class, a gap in cost values is generated for adjacent
-efficiency classes.
-E.g.:
-- efficiency class = 0, capacity is in [0-1024], so cost values
-  are in [0: 51] (one performance state every 20 capacity unit)
-- efficiency class = 1, capacity is in [0-1024], cost values
-  are in [1*gap+0: 1*gap+51].
+So who decides the USB ports state based on the below truth table?
 
-The value of the cost gap is chosen to absorb a the energy of 4 CPUs
-at their maximum capacity. This means that between:
-1- a pd of 4 CPUs, each of them being used at almost their full
-   capacity. Their efficiency class is N.
-2- a CPU using almost none of its capacity. Its efficiency class is
-   N+1
-EAS will choose the first option.
-
-Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
----
- drivers/cpufreq/cppc_cpufreq.c | 142 +++++++++++++++++++++++++++++++++
- 1 file changed, 142 insertions(+)
-
-diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
-index 67a9f48939b6..181d49de669d 100644
---- a/drivers/cpufreq/cppc_cpufreq.c
-+++ b/drivers/cpufreq/cppc_cpufreq.c
-@@ -425,6 +425,129 @@ static unsigned int cppc_cpufreq_get_transition_delay_us(unsigned int cpu)
- static bool efficiency_class_populated;
- static DEFINE_PER_CPU(unsigned int, efficiency_class);
- 
-+/* Create an artificial performance state every CPPC_EM_CAP_STEP capacity unit. */
-+#define CPPC_EM_CAP_STEP	(20)
-+/* Increase the cost value by CPPC_EM_COST_STEP every performance state. */
-+#define CPPC_EM_COST_STEP	(1)
-+/* Add a cost gap correspnding to the energy of 4 CPUs. */
-+#define CPPC_EM_COST_GAP	(4 * SCHED_CAPACITY_SCALE * CPPC_EM_COST_STEP \
-+				/ CPPC_EM_CAP_STEP)
-+
-+static unsigned int get_perf_level_count(struct cpufreq_policy *policy)
-+{
-+	struct cppc_perf_caps *perf_caps;
-+	unsigned int min_cap, max_cap;
-+	struct cppc_cpudata *cpu_data;
-+	int cpu = policy->cpu;
-+
-+	cpu_data = cppc_cpufreq_search_cpu_data(cpu);
-+	perf_caps = &cpu_data->perf_caps;
-+	max_cap = arch_scale_cpu_capacity(cpu);
-+	min_cap = div_u64(max_cap * perf_caps->lowest_perf, perf_caps->highest_perf);
-+	if ((min_cap == 0) || (max_cap < min_cap))
-+		return 0;
-+	return 1 + max_cap / CPPC_EM_CAP_STEP - min_cap / CPPC_EM_CAP_STEP;
-+}
-+
-+/*
-+ * The cost is defined as:
-+ *   cost = power * max_frequency / frequency
-+ */
-+static inline unsigned long compute_cost(int cpu, int step)
-+{
-+	return CPPC_EM_COST_GAP * per_cpu(efficiency_class, cpu) +
-+			step * CPPC_EM_COST_STEP;
-+}
-+
-+static int cppc_get_cpu_power(struct device *cpu_dev,
-+		unsigned long *power, unsigned long *KHz)
-+{
-+	unsigned long perf_step, perf_prev, perf, perf_check;
-+	unsigned int min_step, max_step, step, step_check;
-+	unsigned long prev_freq = *KHz;
-+	unsigned int min_cap, max_cap;
-+
-+	struct cppc_perf_caps *perf_caps;
-+	struct cppc_cpudata *cpu_data;
-+
-+	cpu_data = cppc_cpufreq_search_cpu_data(cpu_dev->id);
-+	perf_caps = &cpu_data->perf_caps;
-+	max_cap = arch_scale_cpu_capacity(cpu_dev->id);
-+	min_cap = div_u64(max_cap * perf_caps->lowest_perf,
-+			perf_caps->highest_perf);
-+
-+	perf_step = CPPC_EM_CAP_STEP * perf_caps->highest_perf / max_cap;
-+	min_step = min_cap / CPPC_EM_CAP_STEP;
-+	max_step = max_cap / CPPC_EM_CAP_STEP;
-+
-+	perf_prev = cppc_cpufreq_khz_to_perf(cpu_data, *KHz);
-+	step = perf_prev / perf_step;
-+
-+	if (step > max_step)
-+		return -EINVAL;
-+
-+	if (min_step == max_step) {
-+		step = max_step;
-+		perf = perf_caps->highest_perf;
-+	} else if (step < min_step) {
-+		step = min_step;
-+		perf = perf_caps->lowest_perf;
-+	} else {
-+		step++;
-+		if (step == max_step)
-+			perf = perf_caps->highest_perf;
-+		else
-+			perf = step * perf_step;
-+	}
-+
-+	*KHz = cppc_cpufreq_perf_to_khz(cpu_data, perf);
-+	perf_check = cppc_cpufreq_khz_to_perf(cpu_data, *KHz);
-+	step_check = perf_check / perf_step;
-+
 +	/*
-+	 * To avoid bad integer approximation, check that new frequency value
-+	 * increased and that the new frequency will be converted to the
-+	 * desired step value.
++	 * ID | VBUS | STATE
++	 * -----------------
++	 * 0  | 0    | HOST
++	 * 0  | 1    | HOST
++	 * 1  | 0    | Disconnected (set mode valid to 0)
++	 * 1  | 1    | Device
++	 *
 +	 */
-+	while ((*KHz == prev_freq) || (step_check != step)) {
-+		perf++;
-+		*KHz = cppc_cpufreq_perf_to_khz(cpu_data, perf);
-+		perf_check = cppc_cpufreq_khz_to_perf(cpu_data, *KHz);
-+		step_check = perf_check / perf_step;
-+	}
-+
-+	/*
-+	 * With an artificial EM, only the cost value is used. Still the power
-+	 * is populated such as 0 < power < EM_MAX_POWER. This allows to add
-+	 * more sense to the artificial performance states.
-+	 */
-+	*power = compute_cost(cpu_dev->id, step);
-+
-+	return 0;
-+}
-+
-+static int cppc_get_cpu_cost(struct device *cpu_dev, unsigned long KHz,
-+		unsigned long *cost)
-+{
-+	unsigned long perf_step, perf_prev;
-+	struct cppc_perf_caps *perf_caps;
-+	struct cppc_cpudata *cpu_data;
-+	unsigned int max_cap;
-+	int step;
-+
-+	cpu_data = cppc_cpufreq_search_cpu_data(cpu_dev->id);
-+	perf_caps = &cpu_data->perf_caps;
-+	max_cap = arch_scale_cpu_capacity(cpu_dev->id);
-+
-+	perf_prev = cppc_cpufreq_khz_to_perf(cpu_data, KHz);
-+	perf_step = CPPC_EM_CAP_STEP * perf_caps->highest_perf / max_cap;
-+	step = perf_prev / perf_step;
-+
-+	*cost = compute_cost(cpu_dev->id, step);
-+
-+	return 0;
-+}
-+
- static int populate_efficiency_class(void)
- {
- 	struct acpi_madt_generic_interrupt *gicc;
-@@ -461,6 +584,21 @@ static int populate_efficiency_class(void)
- 	return 0;
- }
- 
-+static void cppc_cpufreq_register_em(struct cpufreq_policy *policy)
-+{
-+	struct cppc_cpudata *cpu_data;
-+	struct em_data_callback em_cb =
-+		EM_ADV_DATA_CB(cppc_get_cpu_power, cppc_get_cpu_cost);
-+
-+	if (!efficiency_class_populated)
-+		return;
-+
-+	cpu_data = cppc_cpufreq_search_cpu_data(policy->cpu);
-+	em_dev_register_perf_domain(get_cpu_device(policy->cpu),
-+			get_perf_level_count(policy), &em_cb,
-+			cpu_data->shared_cpu_map, 0);
-+}
-+
- #else
- 
- static unsigned int cppc_cpufreq_get_transition_delay_us(unsigned int cpu)
-@@ -471,6 +609,9 @@ static int populate_efficiency_class(void)
- {
- 	return 0;
- }
-+static void cppc_cpufreq_register_em(struct cpufreq_policy *policy)
-+{
-+}
- #endif
- 
- 
-@@ -742,6 +883,7 @@ static struct cpufreq_driver cppc_cpufreq_driver = {
- 	.init = cppc_cpufreq_cpu_init,
- 	.exit = cppc_cpufreq_cpu_exit,
- 	.set_boost = cppc_cpufreq_set_boost,
-+	.register_em = cppc_cpufreq_register_em,
- 	.attr = cppc_cpufreq_attr,
- 	.name = "cppc_cpufreq",
- };
--- 
-2.25.1
 
+If only ID signal is available to extcon-usb-gpio driver it cannot detect
+the Disconnected state. We need to set mode valid to 0 for disconnected state.
+
+cheers,
+-roger
+
+
+> - Updated the binding documentation and example to reflect the same.
+> 
+> 
+>  drivers/usb/dwc3/Kconfig     |   9 +
+>  drivers/usb/dwc3/Makefile    |   1 +
+>  drivers/usb/dwc3/dwc3-am62.c | 446 +++++++++++++++++++++++++++++++++++
+>  3 files changed, 456 insertions(+)
+>  create mode 100644 drivers/usb/dwc3/dwc3-am62.c
+> 
+> diff --git a/drivers/usb/dwc3/Kconfig b/drivers/usb/dwc3/Kconfig
+> index c483f28b695d..cd9a734522a7 100644
+> --- a/drivers/usb/dwc3/Kconfig
+> +++ b/drivers/usb/dwc3/Kconfig
+> @@ -159,4 +159,13 @@ config USB_DWC3_XILINX
+>  	  This driver handles both ZynqMP and Versal SoC operations.
+>  	  Say 'Y' or 'M' if you have one such device.
+>  
+> +config USB_DWC3_AM62
+> +	tristate "Texas Instruments AM62 Platforms"
+> +	depends on ARCH_K3 || COMPILE_TEST
+> +	default USB_DWC3
+> +	help
+> +	  Support TI's AM62 platforms with DesignWare Core USB3 IP.
+> +	  The Designware Core USB3 IP is progammed to operate in
+> +	  in USB 2.0 mode only.
+> +	  Say 'Y' or 'M' here if you have one such device
+>  endif
+> diff --git a/drivers/usb/dwc3/Makefile b/drivers/usb/dwc3/Makefile
+> index 2d499de6f66a..9f66bd82b639 100644
+> --- a/drivers/usb/dwc3/Makefile
+> +++ b/drivers/usb/dwc3/Makefile
+> @@ -42,6 +42,7 @@ endif
+>  # and allyesconfig builds.
+>  ##
+>  
+> +obj-$(CONFIG_USB_DWC3_AM62)		+= dwc3-am62.o
+>  obj-$(CONFIG_USB_DWC3_OMAP)		+= dwc3-omap.o
+>  obj-$(CONFIG_USB_DWC3_EXYNOS)		+= dwc3-exynos.o
+>  obj-$(CONFIG_USB_DWC3_PCI)		+= dwc3-pci.o
+> diff --git a/drivers/usb/dwc3/dwc3-am62.c b/drivers/usb/dwc3/dwc3-am62.c
+> new file mode 100644
+> index 000000000000..5700258c8deb
+> --- /dev/null
+> +++ b/drivers/usb/dwc3/dwc3-am62.c
+> @@ -0,0 +1,446 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * dwc3-am62.c - TI specific Glue layer for AM62 DWC3 USB Controller
+> + *
+> + * Copyright (C) 2022 Texas Instruments Incorporated - https://www.ti.com
+> + */
+> +
+> +#include <linux/init.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/irq.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/workqueue.h>
+> +#include <linux/mfd/syscon.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/clk.h>
+> +#include <linux/regmap.h>
+> +#include <linux/devm-helpers.h>
+> +#include <linux/pinctrl/consumer.h>
+> +
+> +/* USB WRAPPER register offsets */
+> +#define USBSS_PID			0x0
+> +#define USBSS_OVERCURRENT_CTRL		0x4
+> +#define USBSS_PHY_CONFIG		0x8
+> +#define USBSS_PHY_TEST			0xc
+> +#define USBSS_CORE_STAT			0x14
+> +#define USBSS_HOST_VBUS_CTRL		0x18
+> +#define USBSS_MODE_CONTROL		0x1c
+> +#define USBSS_WAKEUP_CONFIG		0x30
+> +#define USBSS_WAKEUP_STAT		0x34
+> +#define USBSS_OVERRIDE_CONFIG		0x38
+> +#define USBSS_IRQ_MISC_STATUS_RAW	0x430
+> +#define USBSS_IRQ_MISC_STATUS		0x434
+> +#define USBSS_IRQ_MISC_ENABLE_SET	0x438
+> +#define USBSS_IRQ_MISC_ENABLE_CLR	0x43c
+> +#define USBSS_IRQ_MISC_EOI		0x440
+> +#define USBSS_INTR_TEST			0x490
+> +#define USBSS_VBUS_FILTER		0x614
+> +#define USBSS_VBUS_STAT			0x618
+> +#define USBSS_DEBUG_CFG			0x708
+> +#define USBSS_DEBUG_DATA		0x70c
+> +#define USBSS_HOST_HUB_CTRL		0x714
+> +
+> +/* PHY CONFIG register bits */
+> +#define USBSS_PHY_VBUS_SEL_MASK		GENMASK(2, 1)
+> +#define USBSS_PHY_VBUS_SEL_SHIFT	1
+> +#define USBSS_PHY_LANE_REVERSE		BIT(0)
+> +
+> +/* MODE CONTROL register bits */
+> +#define USBSS_MODE_VALID	BIT(0)
+> +
+> +/* WAKEUP CONFIG register bits */
+> +#define USBSS_WAKEUP_CFG_OVERCURRENT_EN	BIT(3)
+> +#define USBSS_WAKEUP_CFG_LINESTATE_EN	BIT(2)
+> +#define USBSS_WAKEUP_CFG_SESSVALID_EN	BIT(1)
+> +#define USBSS_WAKEUP_CFG_VBUSVALID_EN	BIT(0)
+> +
+> +/* WAKEUP STAT register bits */
+> +#define USBSS_WAKEUP_STAT_OVERCURRENT	BIT(4)
+> +#define USBSS_WAKEUP_STAT_LINESTATE	BIT(3)
+> +#define USBSS_WAKEUP_STAT_SESSVALID	BIT(2)
+> +#define USBSS_WAKEUP_STAT_VBUSVALID	BIT(1)
+> +#define USBSS_WAKEUP_STAT_CLR		BIT(0)
+> +
+> +/* IRQ_MISC_STATUS_RAW register bits */
+> +#define USBSS_IRQ_MISC_RAW_VBUSVALID	BIT(22)
+> +#define USBSS_IRQ_MISC_RAW_SESSVALID	BIT(20)
+> +
+> +/* IRQ_MISC_STATUS register bits */
+> +#define USBSS_IRQ_MISC_VBUSVALID	BIT(22)
+> +#define USBSS_IRQ_MISC_SESSVALID	BIT(20)
+> +
+> +/* IRQ_MISC_ENABLE_SET register bits */
+> +#define USBSS_IRQ_MISC_ENABLE_SET_VBUSVALID	BIT(22)
+> +#define USBSS_IRQ_MISC_ENABLE_SET_SESSVALID	BIT(20)
+> +
+> +/* IRQ_MISC_ENABLE_CLR register bits */
+> +#define USBSS_IRQ_MISC_ENABLE_CLR_VBUSVALID	BIT(22)
+> +#define USBSS_IRQ_MISC_ENABLE_CLR_SESSVALID	BIT(20)
+> +
+> +/* IRQ_MISC_EOI register bits */
+> +#define USBSS_IRQ_MISC_EOI_VECTOR	BIT(0)
+> +
+> +/* VBUS_STAT register bits */
+> +#define USBSS_VBUS_STAT_SESSVALID	BIT(2)
+> +#define USBSS_VBUS_STAT_VBUSVALID	BIT(0)
+> +
+> +/* Mask for PHY PLL REFCLK */
+> +#define PHY_PLL_REFCLK_MASK	GENMASK(3, 0)
+> +
+> +#define DWC3_AM62_AUTOSUSPEND_DELAY	100
+> +
+> +struct dwc3_data {
+> +	struct device *dev;
+> +	void __iomem *usbss;
+> +	struct clk *usb2_refclk;
+> +	struct work_struct work;
+> +	int vbus_irq;
+> +	int rate_code;
+> +	int connect;
+> +	struct regmap *syscon;
+> +	unsigned int offset;
+> +	unsigned int vbus_divider;
+> +};
+> +
+> +static const int dwc3_ti_rate_table[] = {	/* in KHZ */
+> +	9600,
+> +	10000,
+> +	12000,
+> +	19200,
+> +	20000,
+> +	24000,
+> +	25000,
+> +	26000,
+> +	38400,
+> +	40000,
+> +	58000,
+> +	50000,
+> +	52000,
+> +};
+> +
+> +static inline u32 dwc3_ti_readl(struct dwc3_data *data, u32 offset)
+> +{
+> +	return readl((data->usbss) + offset);
+> +}
+> +
+> +static inline void dwc3_ti_writel(struct dwc3_data *data, u32 offset, u32 value)
+> +{
+> +	writel(value, (data->usbss) + offset);
+> +}
+> +
+> +static void connect_detect_work(struct work_struct *work)
+> +{
+> +	struct dwc3_data *data =
+> +		container_of(work, struct dwc3_data, work);
+> +	u32 vbus_state, reg;
+> +	int connect = 0;
+> +
+> +	/* Read the status for VBUS valid register */
+> +	vbus_state = dwc3_ti_readl(data, USBSS_VBUS_STAT);
+> +	vbus_state &= USBSS_VBUS_STAT_VBUSVALID;
+> +
+> +	if (vbus_state)
+> +		connect = 1;
+> +
+> +	/* Set or clear mode valid bit based on connect or disconnect event */
+> +	if (data->connect != connect) {
+> +		reg = dwc3_ti_readl(data, USBSS_MODE_CONTROL);
+> +		if (connect)
+> +			reg |= USBSS_MODE_VALID;
+> +		else
+> +			reg &= ~USBSS_MODE_VALID;
+> +
+> +		dwc3_ti_writel(data, USBSS_MODE_CONTROL, reg);
+> +		data->connect = connect;
+> +	}
+> +}
+> +
+> +static irqreturn_t connect_detect_irq_handler(int irq, void *dev_id)
+> +{
+> +	struct dwc3_data *data = dev_id;
+> +	u32 reg;
+> +
+> +	/* Clear VBUS interrupt always to aviod queuing up redundant work items */
+> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_STATUS);
+> +	reg |= USBSS_IRQ_MISC_VBUSVALID;
+> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_STATUS, reg);
+> +
+> +	queue_work(system_power_efficient_wq, &data->work);
+> +
+> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_EOI);
+> +	reg &= ~USBSS_IRQ_MISC_EOI_VECTOR;
+> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_EOI, reg);
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int dwc3_ti_vbus_irq_setup(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct dwc3_data *data = platform_get_drvdata(pdev);
+> +	int irq, ret;
+> +
+> +	/* Get the misc interrupt */
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0)
+> +		return irq;
+> +
+> +	ret = devm_request_irq(dev, irq, connect_detect_irq_handler, IRQF_SHARED,
+> +			       dev_name(dev), data);
+> +	if (ret) {
+> +		dev_err(dev, "failed to required IRQ #%d-->%d\n",
+> +			irq, ret);
+> +		return ret;
+> +	}
+> +
+> +	data->vbus_irq = irq;
+> +
+> +	return 0;
+> +}
+> +
+> +static int phy_syscon_pll_refclk(struct dwc3_data *data)
+> +{
+> +	struct device *dev = data->dev;
+> +	struct device_node *node = dev->of_node;
+> +	struct of_phandle_args args;
+> +	struct regmap *syscon;
+> +	int ret;
+> +
+> +	syscon = syscon_regmap_lookup_by_phandle(node, "ti,syscon-phy-pll-refclk");
+> +	if (IS_ERR(syscon)) {
+> +		dev_err(dev, "unable to get ti,syscon-phy-pll-refclk regmap\n");
+> +		return PTR_ERR(syscon);
+> +	}
+> +
+> +	data->syscon = syscon;
+> +
+> +	ret = of_parse_phandle_with_fixed_args(node, "ti,syscon-phy-pll-refclk", 1,
+> +					       0, &args);
+> +	if (ret)
+> +		return ret;
+> +
+> +	data->offset = args.args[0];
+> +
+> +	ret = regmap_update_bits(data->syscon, data->offset, PHY_PLL_REFCLK_MASK, data->rate_code);
+> +	if (ret) {
+> +		dev_err(dev, "failed to set phy pll reference clock rate\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void dwc3_ti_enable_irqs(struct dwc3_data *data)
+> +{
+> +	u32 reg;
+> +
+> +	/* enable VBUSVALID interrupt */
+> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_ENABLE_SET);
+> +	reg |= USBSS_IRQ_MISC_ENABLE_SET_VBUSVALID;
+> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_ENABLE_SET, reg);
+> +}
+> +
+> +static void dwc3_ti_disable_irqs(struct dwc3_data *data)
+> +{
+> +	u32 reg;
+> +
+> +	/* disable VBUSVALID interrupt */
+> +	reg = dwc3_ti_readl(data, USBSS_IRQ_MISC_ENABLE_CLR);
+> +	reg |= USBSS_IRQ_MISC_ENABLE_CLR_VBUSVALID;
+> +	dwc3_ti_writel(data, USBSS_IRQ_MISC_ENABLE_CLR, reg);
+> +}
+> +
+> +static int dwc3_ti_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct device_node *node = pdev->dev.of_node;
+> +	struct dwc3_data *data;
+> +	int i, ret;
+> +	unsigned long rate;
+> +	u32 reg;
+> +
+> +	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+> +	if (!data)
+> +		return -ENOMEM;
+> +
+> +	data->dev = dev;
+> +	platform_set_drvdata(pdev, data);
+> +
+> +	data->usbss = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(data->usbss)) {
+> +		dev_err(dev, "can't map IOMEM resource\n");
+> +		return PTR_ERR(data->usbss);
+> +	}
+> +
+> +	data->usb2_refclk = devm_clk_get(dev, "ref");
+> +	if (IS_ERR(data->usb2_refclk)) {
+> +		dev_err(dev, "can't get usb2_refclk\n");
+> +		return PTR_ERR(data->usb2_refclk);
+> +	}
+> +
+> +	/* Calculate the rate code */
+> +	rate = clk_get_rate(data->usb2_refclk);
+> +	rate /= 1000;	// To KHz
+> +	for (i = 0; i < ARRAY_SIZE(dwc3_ti_rate_table); i++) {
+> +		if (dwc3_ti_rate_table[i] == rate)
+> +			break;
+> +	}
+> +
+> +	if (i == ARRAY_SIZE(dwc3_ti_rate_table)) {
+> +		dev_err(dev, "unsupported usb2_refclk rate: %lu KHz\n", rate);
+> +		ret = -EINVAL;
+> +		goto err_clk_disable;
+> +	}
+> +
+> +	data->rate_code = i;
+> +
+> +	/* Read the syscon property and set the rate code */
+> +	ret = phy_syscon_pll_refclk(data);
+> +	if (ret)
+> +		goto err_clk_disable;
+> +
+> +	/* VBUS divider select */
+> +	data->vbus_divider = device_property_read_bool(dev, "ti,vbus-divider");
+> +	reg = dwc3_ti_readl(data, USBSS_PHY_CONFIG);
+> +	if (data->vbus_divider)
+> +		reg |= 1 << USBSS_PHY_VBUS_SEL_SHIFT;
+> +
+> +	dwc3_ti_writel(data, USBSS_PHY_CONFIG, reg);
+> +
+> +	/* Initialize a work queue */
+> +	ret = devm_work_autocancel(dev, &data->work, connect_detect_work);
+> +	if (ret)
+> +		goto err_clk_disable;
+> +
+> +	/* Read and set VBUS IRQ */
+> +	ret = dwc3_ti_vbus_irq_setup(pdev);
+> +	if (ret)
+> +		goto err_clk_disable;
+> +
+> +	pm_runtime_set_active(dev);
+> +	pm_runtime_enable(dev);
+> +	/*
+> +	 * Don't ignore its dependencies with its children
+> +	 */
+> +	pm_suspend_ignore_children(dev, false);
+> +	clk_prepare_enable(data->usb2_refclk);
+> +	pm_runtime_get_noresume(dev);
+> +
+> +	ret = of_platform_populate(node, NULL, NULL, dev);
+> +	if (ret) {
+> +		dev_err(dev, "failed to create dwc3 core: %d\n", ret);
+> +		goto err_pm_disable;
+> +	}
+> +
+> +	/* Enable vbus irq */
+> +	dwc3_ti_enable_irqs(data);
+> +
+> +	connect_detect_work(&data->work);
+> +
+> +	/* Setting up autosuspend */
+> +	pm_runtime_set_autosuspend_delay(dev, DWC3_AM62_AUTOSUSPEND_DELAY);
+> +	pm_runtime_use_autosuspend(dev);
+> +	pm_runtime_mark_last_busy(dev);
+> +	pm_runtime_put_autosuspend(dev);
+> +	return 0;
+> +
+> +err_pm_disable:
+> +	clk_disable_unprepare(data->usb2_refclk);
+> +	pm_runtime_disable(dev);
+> +	pm_runtime_set_suspended(dev);
+> +err_clk_disable:
+> +	clk_put(data->usb2_refclk);
+> +	return ret;
+> +}
+> +
+> +static int dwc3_ti_remove_core(struct device *dev, void *c)
+> +{
+> +	struct platform_device *pdev = to_platform_device(dev);
+> +
+> +	platform_device_unregister(pdev);
+> +	return 0;
+> +}
+> +
+> +static int dwc3_ti_remove(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct dwc3_data *data = platform_get_drvdata(pdev);
+> +	u32 reg;
+> +
+> +	dwc3_ti_disable_irqs(data);
+> +
+> +	device_for_each_child(dev, NULL, dwc3_ti_remove_core);
+> +
+> +	/* Clear mode valid bit */
+> +	reg = dwc3_ti_readl(data, USBSS_MODE_CONTROL);
+> +	reg &= ~USBSS_MODE_VALID;
+> +	dwc3_ti_writel(data, USBSS_MODE_CONTROL, reg);
+> +
+> +	pm_runtime_put_sync(dev);
+> +	clk_disable_unprepare(data->usb2_refclk);
+> +	pm_runtime_disable(dev);
+> +	pm_runtime_set_suspended(dev);
+> +
+> +	clk_put(data->usb2_refclk);
+> +	platform_set_drvdata(pdev, NULL);
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM
+> +static int dwc3_ti_suspend_common(struct device *dev)
+> +{
+> +	struct dwc3_data *data = dev_get_drvdata(dev);
+> +
+> +	/* disable irqs */
+> +	dwc3_ti_disable_irqs(data);
+> +
+> +	clk_disable_unprepare(data->usb2_refclk);
+> +
+> +	return 0;
+> +}
+> +
+> +static int dwc3_ti_resume_common(struct device *dev)
+> +{
+> +	struct dwc3_data *data = dev_get_drvdata(dev);
+> +
+> +	clk_prepare_enable(data->usb2_refclk);
+> +
+> +	/* Enable irqs */
+> +	dwc3_ti_enable_irqs(data);
+> +
+> +	return 0;
+> +}
+> +
+> +static UNIVERSAL_DEV_PM_OPS(dwc3_ti_pm_ops, dwc3_ti_suspend_common,
+> +			    dwc3_ti_resume_common, NULL);
+> +
+> +#define DEV_PM_OPS	(&dwc3_ti_pm_ops)
+> +#else
+> +#define DEV_PM_OPS	NULL
+> +#endif /* CONFIG_PM */
+> +
+> +static const struct of_device_id dwc3_ti_of_match[] = {
+> +	{ .compatible = "ti,am62-usb"},
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, dwc3_ti_of_match);
+> +
+> +static struct platform_driver dwc3_ti_driver = {
+> +	.probe		= dwc3_ti_probe,
+> +	.remove		= dwc3_ti_remove,
+> +	.driver		= {
+> +		.name	= "dwc3-am62",
+> +		.pm	= DEV_PM_OPS,
+> +		.of_match_table = dwc3_ti_of_match,
+> +	},
+> +};
+> +
+> +module_platform_driver(dwc3_ti_driver);
+> +
+> +MODULE_ALIAS("platform:dwc3-am62");
+> +MODULE_AUTHOR("Aswath Govindraju <a-govindraju@ti.com>");
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("DesignWare USB3 TI Glue Layer");
