@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 495D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:24:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D44C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236480AbiDGB0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
+        id S238382AbiDGB03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239633AbiDGBTY (ORCPT
+        with ESMTP id S239762AbiDGBT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:19:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29F91ACA67;
-        Wed,  6 Apr 2022 18:14:51 -0700 (PDT)
+        Wed, 6 Apr 2022 21:19:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B24E1AF7FA;
+        Wed,  6 Apr 2022 18:15:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D612B81E7F;
-        Thu,  7 Apr 2022 01:14:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D24ECC385A6;
-        Thu,  7 Apr 2022 01:14:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19DFC61DB0;
+        Thu,  7 Apr 2022 01:15:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 279CFC385A1;
+        Thu,  7 Apr 2022 01:14:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294089;
-        bh=DZk+WXcnW8g/8vZtd8VD3Srcm77n05xo5TSm9bOHfNo=;
+        s=k20201202; t=1649294099;
+        bh=9+gK3EfVe4i70R1qceW78UceKAnxu03KRWGw5bq5nDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kqeMKdYMEQYBlPv48zQtzTq01QJOSpz0KtSFk/QUbSJ0/UfXqyVpksn93RtqgFfWH
-         tEtMnrO8BzhD6hcpctNsW7xdkXnrzgp8i//OgxG/JKH0fj9ZvZNdXrpKlKOMQtPrUJ
-         OZtS4DoEbMvX9y/QyoFTo3plFOUVZp2XoJsQIjmkPKGLR9O9BSlE2qV8fZ7+zlPQ+L
-         qKGxHKpTtFp1r7FzrvU63F38TmK/G7HU0rUUHTFjgeb01bOX/Vec7RAyHjSOQnbZ7P
-         uJr/DFx/gIfbt05po7iobp47kKszEFiqwcH+dp1kkREYzeel9UIQDQ4KFllmzpAkAc
-         R63rKyvXgxytg==
+        b=mOqOvjtTRh4z0CLUrbVay4Y8Jp4NWXMWfoS1zOv8gX9gxYePsEw55iTX73/RNFA8B
+         5EgWXXItieippc+YaLgbQymemTViYumCjdv9jPEd1Qy/F3gaa13jEG9Qc0wvy/zEy+
+         BUDnKQW154Rzb5Q+BVrEVIcGUPBTx+w2yDGQYDk4yioBn1LRwfIxR6t7polqha5PyB
+         C1jIKM3ErhTwSs8oR8ZP5+6RFD1bBHXJs1KQD5+I7jXK46rVqV2xBEB+s41o16hRtI
+         syubsw3dglaoBn253b1Wcy4XzGlVYnpAWBVJZcib+bogPZv7BUkq5WoXTuEr2VV82X
+         InS+vhPws09kg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niklas Schnelle <schnelle@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, gerald.schaefer@linux.ibm.com,
-        hca@linux.ibm.com, agordeev@linux.ibm.com,
-        linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 14/25] s390/pci: improve zpci_dev reference counting
-Date:   Wed,  6 Apr 2022 21:14:02 -0400
-Message-Id: <20220407011413.114662-14-sashal@kernel.org>
+Cc:     Mario Limonciello <mario.limonciello@amd.com>,
+        Jinke Fan <fanjinke@hygon.cn>,
+        Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>,
+        Raul E Rangel <rrangel@chromium.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>, a.zummo@towertech.it,
+        mat.jonczyk@o2.pl, dan.carpenter@oracle.com,
+        linux-rtc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 18/25] rtc: mc146818-lib: Fix the AltCentury for AMD platforms
+Date:   Wed,  6 Apr 2022 21:14:06 -0400
+Message-Id: <20220407011413.114662-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011413.114662-1-sashal@kernel.org>
 References: <20220407011413.114662-1-sashal@kernel.org>
@@ -54,133 +56,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Schnelle <schnelle@linux.ibm.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit c122383d221dfa2f41cfe5e672540595de986fde ]
+[ Upstream commit 3ae8fd41573af4fb3a490c9ed947fc936ba87190 ]
 
-Currently zpci_dev uses kref based reference counting but only accounts
-for one original reference plus one reference from an added pci_dev to
-its underlying zpci_dev. Counting just the original reference worked
-until the pci_dev reference was added in commit 2a671f77ee49 ("s390/pci:
-fix use after free of zpci_dev") because once a zpci_dev goes away, i.e.
-enters the reserved state, it would immediately get released. However
-with the pci_dev reference this is no longer the case and the zpci_dev
-may still appear in multiple availability events indicating that it was
-reserved. This was solved by detecting when the zpci_dev is already on
-its way out but still hanging around. This has however shown some light
-on how unusual our zpci_dev reference counting is.
+Setting the century forward has been failing on AMD platforms.
+There was a previous attempt at fixing this for family 0x17 as part of
+commit 7ad295d5196a ("rtc: Fix the AltCentury value on AMD/Hygon
+platform") but this was later reverted due to some problems reported
+that appeared to stem from an FW bug on a family 0x17 desktop system.
 
-Improve upon this by modelling zpci_dev reference counting on pci_dev.
-Analogous to pci_get_slot() increment the reference count in
-get_zdev_by_fid(). Thus all users of get_zdev_by_fid() must drop the
-reference once they are done with the zpci_dev.
+The same comments mentioned in the previous commit continue to apply
+to the newer platforms as well.
 
-Similar to pci_scan_single_device(), zpci_create_device() returns the
-device with an initial count of 1 and the device added to the zpci_list
-(analogous to the PCI bus' device_list). In turn users of
-zpci_create_device() must only drop the reference once the device is
-gone from the point of view of the zPCI subsystem, it might still be
-referenced by the common PCI subsystem though.
+```
+MC146818 driver use function mc146818_set_time() to set register
+RTC_FREQ_SELECT(RTC_REG_A)'s bit4-bit6 field which means divider stage
+reset value on Intel platform to 0x7.
 
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+While AMD/Hygon RTC_REG_A(0Ah)'s bit4 is defined as DV0 [Reference]:
+DV0 = 0 selects Bank 0, DV0 = 1 selects Bank 1. Bit5-bit6 is defined
+as reserved.
+
+DV0 is set to 1, it will select Bank 1, which will disable AltCentury
+register(0x32) access. As UEFI pass acpi_gbl_FADT.century 0x32
+(AltCentury), the CMOS write will be failed on code:
+CMOS_WRITE(century, acpi_gbl_FADT.century).
+
+Correct RTC_REG_A bank select bit(DV0) to 0 on AMD/Hygon CPUs, it will
+enable AltCentury(0x32) register writing and finally setup century as
+expected.
+```
+
+However in closer examination the change previously submitted was also
+modifying bits 5 & 6 which are declared reserved in the AMD documentation.
+So instead modify just the DV0 bank selection bit.
+
+Being cognizant that there was a failure reported before, split the code
+change out to a static function that can also be used for exclusions if
+any regressions such as Mikhail's pop up again.
+
+Cc: Jinke Fan <fanjinke@hygon.cn>
+Cc: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Link: https://lore.kernel.org/all/CABXGCsMLob0DC25JS8wwAYydnDoHBSoMh2_YLPfqm3TTvDE-Zw@mail.gmail.com/
+Link: https://www.amd.com/system/files/TechDocs/51192_Bolton_FCH_RRG.pdf
+Signed-off-by: Raul E Rangel <rrangel@chromium.org>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220111225750.1699-1-mario.limonciello@amd.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/pci/pci.c       | 1 +
- arch/s390/pci/pci_bus.h   | 3 ++-
- arch/s390/pci/pci_clp.c   | 9 +++++++--
- arch/s390/pci/pci_event.c | 7 ++++++-
- 4 files changed, 16 insertions(+), 4 deletions(-)
+ drivers/rtc/rtc-mc146818-lib.c | 16 +++++++++++++++-
+ include/linux/mc146818rtc.h    |  2 ++
+ 2 files changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index e14e4a3a647a..74799439b259 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -69,6 +69,7 @@ struct zpci_dev *get_zdev_by_fid(u32 fid)
- 	list_for_each_entry(tmp, &zpci_list, entry) {
- 		if (tmp->fid == fid) {
- 			zdev = tmp;
-+			zpci_zdev_get(zdev);
- 			break;
- 		}
- 	}
-diff --git a/arch/s390/pci/pci_bus.h b/arch/s390/pci/pci_bus.h
-index 55c9488e504c..8d2fcd091ca7 100644
---- a/arch/s390/pci/pci_bus.h
-+++ b/arch/s390/pci/pci_bus.h
-@@ -13,7 +13,8 @@ void zpci_bus_device_unregister(struct zpci_dev *zdev);
- void zpci_release_device(struct kref *kref);
- static inline void zpci_zdev_put(struct zpci_dev *zdev)
- {
--	kref_put(&zdev->kref, zpci_release_device);
-+	if (zdev)
-+		kref_put(&zdev->kref, zpci_release_device);
+diff --git a/drivers/rtc/rtc-mc146818-lib.c b/drivers/rtc/rtc-mc146818-lib.c
+index 5add637c9ad2..b036ff33fbe6 100644
+--- a/drivers/rtc/rtc-mc146818-lib.c
++++ b/drivers/rtc/rtc-mc146818-lib.c
+@@ -99,6 +99,17 @@ unsigned int mc146818_get_time(struct rtc_time *time)
  }
+ EXPORT_SYMBOL_GPL(mc146818_get_time);
  
- static inline void zpci_zdev_get(struct zpci_dev *zdev)
-diff --git a/arch/s390/pci/pci_clp.c b/arch/s390/pci/pci_clp.c
-index 0a0e8b8293be..d1a5c80a41cb 100644
---- a/arch/s390/pci/pci_clp.c
-+++ b/arch/s390/pci/pci_clp.c
-@@ -22,6 +22,8 @@
- #include <asm/clp.h>
- #include <uapi/asm/clp.h>
- 
-+#include "pci_bus.h"
++/* AMD systems don't allow access to AltCentury with DV1 */
++static bool apply_amd_register_a_behavior(void)
++{
++#ifdef CONFIG_X86
++	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
++	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
++		return true;
++#endif
++	return false;
++}
 +
- bool zpci_unique_uid;
- 
- void update_uid_checking(bool new)
-@@ -372,8 +374,11 @@ static void __clp_add(struct clp_fh_list_entry *entry, void *data)
- 		return;
- 
- 	zdev = get_zdev_by_fid(entry->fid);
--	if (!zdev)
--		zpci_create_device(entry->fid, entry->fh, entry->config_state);
-+	if (zdev) {
-+		zpci_zdev_put(zdev);
-+		return;
-+	}
-+	zpci_create_device(entry->fid, entry->fh, entry->config_state);
- }
- 
- int clp_scan_pci_devices(void)
-diff --git a/arch/s390/pci/pci_event.c b/arch/s390/pci/pci_event.c
-index b7cfde7e80a8..6ced44b5be8a 100644
---- a/arch/s390/pci/pci_event.c
-+++ b/arch/s390/pci/pci_event.c
-@@ -61,10 +61,12 @@ static void __zpci_event_error(struct zpci_ccdf_err *ccdf)
- 	       pdev ? pci_name(pdev) : "n/a", ccdf->pec, ccdf->fid);
- 
- 	if (!pdev)
--		return;
-+		goto no_pdev;
- 
- 	pdev->error_state = pci_channel_io_perm_failure;
- 	pci_dev_put(pdev);
-+no_pdev:
-+	zpci_zdev_put(zdev);
- }
- 
- void zpci_event_error(void *data)
-@@ -76,6 +78,7 @@ void zpci_event_error(void *data)
- static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
+ /* Set the current date and time in the real time clock. */
+ int mc146818_set_time(struct rtc_time *time)
  {
- 	struct zpci_dev *zdev = get_zdev_by_fid(ccdf->fid);
-+	bool existing_zdev = !!zdev;
- 	enum zpci_state state;
- 	struct pci_dev *pdev;
- 	int ret;
-@@ -161,6 +164,8 @@ static void __zpci_event_availability(struct zpci_ccdf_avail *ccdf)
- 	default:
- 		break;
- 	}
-+	if (existing_zdev)
-+		zpci_zdev_put(zdev);
- }
+@@ -172,7 +183,10 @@ int mc146818_set_time(struct rtc_time *time)
+ 	save_control = CMOS_READ(RTC_CONTROL);
+ 	CMOS_WRITE((save_control|RTC_SET), RTC_CONTROL);
+ 	save_freq_select = CMOS_READ(RTC_FREQ_SELECT);
+-	CMOS_WRITE((save_freq_select|RTC_DIV_RESET2), RTC_FREQ_SELECT);
++	if (apply_amd_register_a_behavior())
++		CMOS_WRITE((save_freq_select & ~RTC_AMD_BANK_SELECT), RTC_FREQ_SELECT);
++	else
++		CMOS_WRITE((save_freq_select|RTC_DIV_RESET2), RTC_FREQ_SELECT);
  
- void zpci_event_availability(void *data)
+ #ifdef CONFIG_MACH_DECSTATION
+ 	CMOS_WRITE(real_yrs, RTC_DEC_YEAR);
+diff --git a/include/linux/mc146818rtc.h b/include/linux/mc146818rtc.h
+index 0661af17a758..1e0205811394 100644
+--- a/include/linux/mc146818rtc.h
++++ b/include/linux/mc146818rtc.h
+@@ -86,6 +86,8 @@ struct cmos_rtc_board_info {
+    /* 2 values for divider stage reset, others for "testing purposes only" */
+ #  define RTC_DIV_RESET1	0x60
+ #  define RTC_DIV_RESET2	0x70
++   /* In AMD BKDG bit 5 and 6 are reserved, bit 4 is for select dv0 bank */
++#  define RTC_AMD_BANK_SELECT	0x10
+   /* Periodic intr. / Square wave rate select. 0=none, 1=32.8kHz,... 15=2Hz */
+ # define RTC_RATE_SELECT 	0x0F
+ 
 -- 
 2.35.1
 
