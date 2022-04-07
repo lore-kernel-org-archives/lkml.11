@@ -2,115 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F06E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E1AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343602AbiDGNGT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 09:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
+        id S245333AbiDGNGX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 09:06:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245710AbiDGNFv (ORCPT
+        with ESMTP id S1343581AbiDGNFv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 09:05:51 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1363025B449;
-        Thu,  7 Apr 2022 06:03:45 -0700 (PDT)
-X-UUID: 69fa78a6114c440dae54c1391fa946dd-20220407
-X-UUID: 69fa78a6114c440dae54c1391fa946dd-20220407
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1895093916; Thu, 07 Apr 2022 21:03:41 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 7 Apr 2022 21:03:41 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 7 Apr
- 2022 21:03:40 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Apr 2022 21:03:40 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-CC:     Kevin Hilman <khilman@baylibre.com>,
-        Linux-ALSA <alsa-devel@alsa-project.org>, <tzungbi@google.com>,
-        Chen-Yu Tsai <wenst@chromium.org>, <cujomalainey@google.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <sound-open-firmware@alsa-project.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v7 0/1] firmware: mtk: add adsp ipc protocol for SOF
-Date:   Thu, 7 Apr 2022 21:03:37 +0800
-Message-ID: <20220407130338.28939-1-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B81425B910
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 06:03:49 -0700 (PDT)
+Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KZ1jf4bLyz6823d;
+        Thu,  7 Apr 2022 21:01:42 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Apr 2022 15:03:46 +0200
+Received: from [10.47.80.129] (10.47.80.129) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Apr
+ 2022 14:03:45 +0100
+Message-ID: <48e9e622-30b5-0aeb-2860-bf2ea9bff939@huawei.com>
+Date:   Thu, 7 Apr 2022 14:03:44 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v4 1/2] drivers/perf: hisi: Associate PMUs in SICL with
+ CPUs online
+To:     Qi Liu <liuqi115@huawei.com>, <will@kernel.org>,
+        <mark.rutland@arm.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <zhangshaokun@hisilicon.com>
+References: <20220407124617.54521-1-liuqi115@huawei.com>
+ <20220407124617.54521-2-liuqi115@huawei.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <20220407124617.54521-2-liuqi115@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.80.129]
+X-ClientProxiedBy: lhreml728-chm.china.huawei.com (10.201.108.79) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch provides mediatek adsp ipc support for SOF.
-ADSP IPC protocol offers (send/recv) interfaces using
-mediatek-mailbox APIs.
+On 07/04/2022 13:46, Qi Liu wrote:
+> If a PMU is in a SICL (Super IO cluster), it is not appropriate to
+> associate this PMU with a CPU die. So we associate it with all CPUs
+> online.
+> 
+> As the firmware of Hip09 platform hasn't been published yet, change
+> of PMU driver will not influence backwards compatibility between
+> driver and firmware.
+> 
+> Signed-off-by: Qi Liu<liuqi115@huawei.com>
 
-This patch was tested and confirmed to with SOF fw on MT8195
-cherry board.
-
-Based on matthias.bgg/linux.git, v5.18-next/soc
-changes since v6:
-- rebase to matthias.bgg/linux.git, v5.18-next/soc
-- Prefer "GPL" over "GPL v2" for MODULE_LICENSE
-
-changes since v5:
-- fix WARNING: modpost: missing MODULE_LICENSE() in drivers/mailbox
-  /mtk-adsp-mailbox.o. Add MODULE_LICENSE in the last line.
-- Due to WARNING: Missing or malformed SPDX-License-Identifier tag
-  in line 1 in checkpatch, we don't remove SPDX-License in line 1.
-
-changes since v4:
-- add error message for wrong mbox chan
-
-changes since v3:
-- rebase on v5.16-rc8
-- update reviewers
-
-changes since v2:
-- add out tag for two memory free phases
-
-changes since v1:
-- add comments for mtk_adsp_ipc_send and mtk_adsp_ipc_recv
-- remove useless MODULE_LICENSE
-- change label name to out_free
-
-
-Allen-KH Cheng (1):
-  firmware: mediatek: add adsp ipc protocol interface
-
- drivers/firmware/Kconfig                      |   1 +
- drivers/firmware/Makefile                     |   1 +
- drivers/firmware/mediatek/Kconfig             |   9 +
- drivers/firmware/mediatek/Makefile            |   2 +
- drivers/firmware/mediatek/mtk-adsp-ipc.c      | 161 ++++++++++++++++++
- .../linux/firmware/mediatek/mtk-adsp-ipc.h    |  65 +++++++
- 6 files changed, 239 insertions(+)
- create mode 100644 drivers/firmware/mediatek/Kconfig
- create mode 100644 drivers/firmware/mediatek/Makefile
- create mode 100644 drivers/firmware/mediatek/mtk-adsp-ipc.c
- create mode 100644 include/linux/firmware/mediatek/mtk-adsp-ipc.h
-
--- 
-2.18.0
-
+Reviewed-by: John Garry <john.garry@huawei.com>
