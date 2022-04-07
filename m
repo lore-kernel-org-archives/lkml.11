@@ -2,538 +2,1009 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C416AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 529ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240506AbiDGNEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 09:04:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33012 "EHLO
+        id S231624AbiDGNEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 09:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245700AbiDGNCa (ORCPT
+        with ESMTP id S245695AbiDGNCa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 09:02:30 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1673E994A
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 06:00:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649336418; x=1680872418;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2HzDU9iJlkMViSTHOB1v0XvsV1lU5Pq9laruzE8ErdM=;
-  b=KZzw2tFw30Iayz0Vw8XpsJNWr6BpfqzfbnzeCge/+m9EgvfQLLai/lNw
-   a04nhHwXxyIqE9wJgVW0HkZT0slG2lAVU5Z9zwPvdD2Lk7PmmlobYHUbb
-   23Ko84UkDVUn3AacGvdkNvEIX9m4Y7/l69AA6VjmNXysEX+t3KkIIc/Zv
-   gSBqX7oSvdeMcgFk7sS+THzOACukR3hE3g6M7T91X7Q35q7W6LUctGotg
-   3mgmV8lKa5hgHatFrKr64tQmj91L+U2Ry2UmrPyUB+lBNWNLWpNjvVoK1
-   XE4ZERx6o+klvsXWK5DuJXMad7uNZrYvo47lRWqI2ZW1UbRnvLDfnMyw7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10309"; a="248842039"
-X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
-   d="scan'208";a="248842039"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 06:00:17 -0700
-X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
-   d="scan'208";a="571041147"
-Received: from sannilnx.jer.intel.com ([10.12.231.73])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 06:00:12 -0700
-From:   Alexander Usyskin <alexander.usyskin@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 13/20] mei: extend timeouts on slow devices.
-Date:   Thu,  7 Apr 2022 15:58:32 +0300
-Message-Id: <20220407125839.1479249-14-alexander.usyskin@intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220407125839.1479249-1-alexander.usyskin@intel.com>
-References: <20220407125839.1479249-1-alexander.usyskin@intel.com>
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C681AF530;
+        Thu,  7 Apr 2022 06:00:16 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZ1gP6lRMzdZVG;
+        Thu,  7 Apr 2022 20:59:45 +0800 (CST)
+Received: from localhost.localdomain (10.67.164.66) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Apr 2022 21:00:14 +0800
+From:   Yicong Yang <yangyicong@hisilicon.com>
+To:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+        <will@kernel.org>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
+        <joro@8bytes.org>, <john.garry@huawei.com>,
+        <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
+        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>
+CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
+        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
+        <yangyicong@hisilicon.com>
+Subject: [PATCH v7 5/7] perf tool: Add support for HiSilicon PCIe Tune and Trace device driver
+Date:   Thu, 7 Apr 2022 20:58:39 +0800
+Message-ID: <20220407125841.3678-6-yangyicong@hisilicon.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220407125841.3678-1-yangyicong@hisilicon.com>
+References: <20220407125841.3678-1-yangyicong@hisilicon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Parametrize operational timeouts in order
-to support slow firmware on some graphic devices.
+From: Qi Liu <liuqi115@huawei.com>
 
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+'perf record' and 'perf report --dump-raw-trace' supported in this
+patch.
+
+Example usage:
+
+Output will contain raw PTT data and its textual representation, such
+as:
+
+0 0 0x5810 [0x30]: PERF_RECORD_AUXTRACE size: 0x400000  offset: 0
+ref: 0xa5d50c725  idx: 0  tid: -1  cpu: 0
+.
+. ... HISI PTT data: size 4194304 bytes
+.  00000000: 00 00 00 00                                 Prefix
+.  00000004: 08 20 00 60                                 Header DW0
+.  00000008: ff 02 00 01                                 Header DW1
+.  0000000c: 20 08 00 00                                 Header DW2
+.  00000010: 10 e7 44 ab                                 Header DW3
+.  00000014: 2a a8 1e 01                                 Time
+.  00000020: 00 00 00 00                                 Prefix
+.  00000024: 01 00 00 60                                 Header DW0
+.  00000028: 0f 1e 00 01                                 Header DW1
+.  0000002c: 04 00 00 00                                 Header DW2
+.  00000030: 40 00 81 02                                 Header DW3
+.  00000034: ee 02 00 00                                 Time
+....
+
+Signed-off-by: Qi Liu <liuqi115@huawei.com>
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 ---
- drivers/misc/mei/bus-fixup.c |  3 +--
- drivers/misc/mei/client.c    | 14 +++++++-------
- drivers/misc/mei/gsc-me.c    |  2 +-
- drivers/misc/mei/hbm.c       | 12 ++++++------
- drivers/misc/mei/hw-me.c     | 30 ++++++++++++++++--------------
- drivers/misc/mei/hw-me.h     |  2 +-
- drivers/misc/mei/hw-txe.c    |  2 +-
- drivers/misc/mei/hw.h        |  5 +++++
- drivers/misc/mei/init.c      | 19 ++++++++++++++++++-
- drivers/misc/mei/main.c      |  2 +-
- drivers/misc/mei/mei_dev.h   | 16 ++++++++++++++++
- drivers/misc/mei/pci-me.c    |  2 +-
- 12 files changed, 74 insertions(+), 35 deletions(-)
+ tools/perf/arch/arm/util/auxtrace.c           |  76 +++++-
+ tools/perf/arch/arm/util/pmu.c                |   3 +
+ tools/perf/arch/arm64/util/Build              |   2 +-
+ tools/perf/arch/arm64/util/hisi_ptt.c         | 195 ++++++++++++++++
+ tools/perf/util/Build                         |   2 +
+ tools/perf/util/auxtrace.c                    |   4 +
+ tools/perf/util/auxtrace.h                    |   1 +
+ tools/perf/util/hisi-ptt-decoder/Build        |   1 +
+ .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.c   | 170 ++++++++++++++
+ .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.h   |  28 +++
+ tools/perf/util/hisi_ptt.c                    | 218 ++++++++++++++++++
+ tools/perf/util/hisi_ptt.h                    |  28 +++
+ 12 files changed, 724 insertions(+), 4 deletions(-)
+ create mode 100644 tools/perf/arch/arm64/util/hisi_ptt.c
+ create mode 100644 tools/perf/util/hisi-ptt-decoder/Build
+ create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
+ create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
+ create mode 100644 tools/perf/util/hisi_ptt.c
+ create mode 100644 tools/perf/util/hisi_ptt.h
 
-diff --git a/drivers/misc/mei/bus-fixup.c b/drivers/misc/mei/bus-fixup.c
-index 59506ba6fc48..24e91a9ea558 100644
---- a/drivers/misc/mei/bus-fixup.c
-+++ b/drivers/misc/mei/bus-fixup.c
-@@ -164,7 +164,6 @@ static int mei_osver(struct mei_cl_device *cldev)
- 			    sizeof(struct mkhi_fw_ver))
- #define MKHI_FWVER_LEN(__num) (sizeof(struct mkhi_msg_hdr) + \
- 			       sizeof(struct mkhi_fw_ver_block) * (__num))
--#define MKHI_RCV_TIMEOUT 500 /* receive timeout in msec */
- static int mei_fwver(struct mei_cl_device *cldev)
- {
- 	char buf[MKHI_FWVER_BUF_LEN];
-@@ -187,7 +186,7 @@ static int mei_fwver(struct mei_cl_device *cldev)
- 
- 	ret = 0;
- 	bytes_recv = __mei_cl_recv(cldev->cl, buf, sizeof(buf), NULL, 0,
--				   MKHI_RCV_TIMEOUT);
-+				   cldev->bus->timeouts.mkhi_recv);
- 	if (bytes_recv < 0 || (size_t)bytes_recv < MKHI_FWVER_LEN(1)) {
- 		/*
- 		 * Should be at least one version block,
-diff --git a/drivers/misc/mei/client.c b/drivers/misc/mei/client.c
-index 31264ab2eb13..e7a16d9b2241 100644
---- a/drivers/misc/mei/client.c
-+++ b/drivers/misc/mei/client.c
-@@ -870,7 +870,7 @@ static int mei_cl_send_disconnect(struct mei_cl *cl, struct mei_cl_cb *cb)
- 	}
- 
- 	list_move_tail(&cb->list, &dev->ctrl_rd_list);
--	cl->timer_count = MEI_CONNECT_TIMEOUT;
-+	cl->timer_count = dev->timeouts.connect;
- 	mei_schedule_stall_timer(dev);
- 
- 	return 0;
-@@ -945,7 +945,7 @@ static int __mei_cl_disconnect(struct mei_cl *cl)
- 	wait_event_timeout(cl->wait,
- 			   cl->state == MEI_FILE_DISCONNECT_REPLY ||
- 			   cl->state == MEI_FILE_DISCONNECTED,
--			   mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
-+			   dev->timeouts.cl_connect);
- 	mutex_lock(&dev->device_lock);
- 
- 	rets = cl->status;
-@@ -1065,7 +1065,7 @@ static int mei_cl_send_connect(struct mei_cl *cl, struct mei_cl_cb *cb)
- 	}
- 
- 	list_move_tail(&cb->list, &dev->ctrl_rd_list);
--	cl->timer_count = MEI_CONNECT_TIMEOUT;
-+	cl->timer_count = dev->timeouts.connect;
- 	mei_schedule_stall_timer(dev);
- 	return 0;
- }
-@@ -1164,7 +1164,7 @@ int mei_cl_connect(struct mei_cl *cl, struct mei_me_client *me_cl,
- 			 cl->state == MEI_FILE_DISCONNECTED ||
- 			 cl->state == MEI_FILE_DISCONNECT_REQUIRED ||
- 			 cl->state == MEI_FILE_DISCONNECT_REPLY),
--			mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
-+			dev->timeouts.cl_connect);
- 	mutex_lock(&dev->device_lock);
- 
- 	if (!mei_cl_is_connected(cl)) {
-@@ -1562,7 +1562,7 @@ int mei_cl_notify_request(struct mei_cl *cl,
- 			   cl->notify_en == request ||
- 			   cl->status ||
- 			   !mei_cl_is_connected(cl),
--			   mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
-+			   dev->timeouts.cl_connect);
- 	mutex_lock(&dev->device_lock);
- 
- 	if (cl->notify_en != request && !cl->status)
-@@ -2336,7 +2336,7 @@ int mei_cl_dma_alloc_and_map(struct mei_cl *cl, const struct file *fp,
- 	mutex_unlock(&dev->device_lock);
- 	wait_event_timeout(cl->wait,
- 			   cl->dma_mapped || cl->status,
--			   mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
-+			   dev->timeouts.cl_connect);
- 	mutex_lock(&dev->device_lock);
- 
- 	if (!cl->dma_mapped && !cl->status)
-@@ -2415,7 +2415,7 @@ int mei_cl_dma_unmap(struct mei_cl *cl, const struct file *fp)
- 	mutex_unlock(&dev->device_lock);
- 	wait_event_timeout(cl->wait,
- 			   !cl->dma_mapped || cl->status,
--			   mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
-+			   dev->timeouts.cl_connect);
- 	mutex_lock(&dev->device_lock);
- 
- 	if (cl->dma_mapped && !cl->status)
-diff --git a/drivers/misc/mei/gsc-me.c b/drivers/misc/mei/gsc-me.c
-index 6f262ddfd25a..38d035ae2904 100644
---- a/drivers/misc/mei/gsc-me.c
-+++ b/drivers/misc/mei/gsc-me.c
-@@ -48,7 +48,7 @@ static int mei_gsc_probe(struct auxiliary_device *aux_dev,
- 
- 	device = &aux_dev->dev;
- 
--	dev = mei_me_dev_init(device, cfg);
-+	dev = mei_me_dev_init(device, cfg, adev->slow_fw);
- 	if (IS_ERR(dev)) {
- 		ret = PTR_ERR(dev);
- 		goto err;
-diff --git a/drivers/misc/mei/hbm.c b/drivers/misc/mei/hbm.c
-index cebcca6d6d3e..4ff4dbfd07c0 100644
---- a/drivers/misc/mei/hbm.c
-+++ b/drivers/misc/mei/hbm.c
-@@ -232,7 +232,7 @@ int mei_hbm_start_wait(struct mei_device *dev)
- 	mutex_unlock(&dev->device_lock);
- 	ret = wait_event_timeout(dev->wait_hbm_start,
- 			dev->hbm_state != MEI_HBM_STARTING,
--			mei_secs_to_jiffies(MEI_HBM_TIMEOUT));
-+			dev->timeouts.hbm);
- 	mutex_lock(&dev->device_lock);
- 
- 	if (ret == 0 && (dev->hbm_state <= MEI_HBM_STARTING)) {
-@@ -275,7 +275,7 @@ int mei_hbm_start_req(struct mei_device *dev)
- 	}
- 
- 	dev->hbm_state = MEI_HBM_STARTING;
--	dev->init_clients_timer = MEI_CLIENTS_INIT_TIMEOUT;
-+	dev->init_clients_timer = dev->timeouts.client_init;
- 	mei_schedule_stall_timer(dev);
- 	return 0;
- }
-@@ -316,7 +316,7 @@ static int mei_hbm_dma_setup_req(struct mei_device *dev)
- 	}
- 
- 	dev->hbm_state = MEI_HBM_DR_SETUP;
--	dev->init_clients_timer = MEI_CLIENTS_INIT_TIMEOUT;
-+	dev->init_clients_timer = dev->timeouts.client_init;
- 	mei_schedule_stall_timer(dev);
- 	return 0;
- }
-@@ -351,7 +351,7 @@ static int mei_hbm_capabilities_req(struct mei_device *dev)
- 	}
- 
- 	dev->hbm_state = MEI_HBM_CAP_SETUP;
--	dev->init_clients_timer = MEI_CLIENTS_INIT_TIMEOUT;
-+	dev->init_clients_timer = dev->timeouts.client_init;
- 	mei_schedule_stall_timer(dev);
- 	return 0;
- }
-@@ -385,7 +385,7 @@ static int mei_hbm_enum_clients_req(struct mei_device *dev)
- 		return ret;
- 	}
- 	dev->hbm_state = MEI_HBM_ENUM_CLIENTS;
--	dev->init_clients_timer = MEI_CLIENTS_INIT_TIMEOUT;
-+	dev->init_clients_timer = dev->timeouts.client_init;
- 	mei_schedule_stall_timer(dev);
- 	return 0;
- }
-@@ -751,7 +751,7 @@ static int mei_hbm_prop_req(struct mei_device *dev, unsigned long start_idx)
- 		return ret;
- 	}
- 
--	dev->init_clients_timer = MEI_CLIENTS_INIT_TIMEOUT;
-+	dev->init_clients_timer = dev->timeouts.client_init;
- 	mei_schedule_stall_timer(dev);
- 
- 	return 0;
-diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
-index 959b3329af60..93d8b6dcedda 100644
---- a/drivers/misc/mei/hw-me.c
-+++ b/drivers/misc/mei/hw-me.c
-@@ -445,7 +445,7 @@ static int mei_me_hw_ready_wait(struct mei_device *dev)
- 	mutex_unlock(&dev->device_lock);
- 	wait_event_timeout(dev->wait_hw_ready,
- 			dev->recvd_hw_ready,
--			mei_secs_to_jiffies(MEI_HW_READY_TIMEOUT));
-+			dev->timeouts.hw_ready);
- 	mutex_lock(&dev->device_lock);
- 	if (!dev->recvd_hw_ready) {
- 		dev_err(dev->dev, "wait hw ready failed\n");
-@@ -707,7 +707,6 @@ static void mei_me_pg_unset(struct mei_device *dev)
- static int mei_me_pg_legacy_enter_sync(struct mei_device *dev)
- {
- 	struct mei_me_hw *hw = to_me_hw(dev);
--	unsigned long timeout = mei_secs_to_jiffies(MEI_PGI_TIMEOUT);
- 	int ret;
- 
- 	dev->pg_event = MEI_PG_EVENT_WAIT;
-@@ -718,7 +717,8 @@ static int mei_me_pg_legacy_enter_sync(struct mei_device *dev)
- 
- 	mutex_unlock(&dev->device_lock);
- 	wait_event_timeout(dev->wait_pg,
--		dev->pg_event == MEI_PG_EVENT_RECEIVED, timeout);
-+		dev->pg_event == MEI_PG_EVENT_RECEIVED,
-+		dev->timeouts.pgi);
- 	mutex_lock(&dev->device_lock);
- 
- 	if (dev->pg_event == MEI_PG_EVENT_RECEIVED) {
-@@ -744,7 +744,6 @@ static int mei_me_pg_legacy_enter_sync(struct mei_device *dev)
- static int mei_me_pg_legacy_exit_sync(struct mei_device *dev)
- {
- 	struct mei_me_hw *hw = to_me_hw(dev);
--	unsigned long timeout = mei_secs_to_jiffies(MEI_PGI_TIMEOUT);
- 	int ret;
- 
- 	if (dev->pg_event == MEI_PG_EVENT_RECEIVED)
-@@ -756,7 +755,8 @@ static int mei_me_pg_legacy_exit_sync(struct mei_device *dev)
- 
- 	mutex_unlock(&dev->device_lock);
- 	wait_event_timeout(dev->wait_pg,
--		dev->pg_event == MEI_PG_EVENT_RECEIVED, timeout);
-+		dev->pg_event == MEI_PG_EVENT_RECEIVED,
-+		dev->timeouts.pgi);
- 	mutex_lock(&dev->device_lock);
- 
- reply:
-@@ -772,7 +772,8 @@ static int mei_me_pg_legacy_exit_sync(struct mei_device *dev)
- 
- 	mutex_unlock(&dev->device_lock);
- 	wait_event_timeout(dev->wait_pg,
--		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED, timeout);
-+		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED,
-+		dev->timeouts.pgi);
- 	mutex_lock(&dev->device_lock);
- 
- 	if (dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED)
-@@ -887,8 +888,6 @@ static u32 mei_me_d0i3_unset(struct mei_device *dev)
- static int mei_me_d0i3_enter_sync(struct mei_device *dev)
- {
- 	struct mei_me_hw *hw = to_me_hw(dev);
--	unsigned long d0i3_timeout = mei_secs_to_jiffies(MEI_D0I3_TIMEOUT);
--	unsigned long pgi_timeout = mei_secs_to_jiffies(MEI_PGI_TIMEOUT);
- 	int ret;
- 	u32 reg;
- 
-@@ -910,7 +909,8 @@ static int mei_me_d0i3_enter_sync(struct mei_device *dev)
- 
- 	mutex_unlock(&dev->device_lock);
- 	wait_event_timeout(dev->wait_pg,
--		dev->pg_event == MEI_PG_EVENT_RECEIVED, pgi_timeout);
-+		dev->pg_event == MEI_PG_EVENT_RECEIVED,
-+		dev->timeouts.pgi);
- 	mutex_lock(&dev->device_lock);
- 
- 	if (dev->pg_event != MEI_PG_EVENT_RECEIVED) {
-@@ -930,7 +930,8 @@ static int mei_me_d0i3_enter_sync(struct mei_device *dev)
- 
- 	mutex_unlock(&dev->device_lock);
- 	wait_event_timeout(dev->wait_pg,
--		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED, d0i3_timeout);
-+		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED,
-+		dev->timeouts.d0i3);
- 	mutex_lock(&dev->device_lock);
- 
- 	if (dev->pg_event != MEI_PG_EVENT_INTR_RECEIVED) {
-@@ -990,7 +991,6 @@ static int mei_me_d0i3_enter(struct mei_device *dev)
- static int mei_me_d0i3_exit_sync(struct mei_device *dev)
- {
- 	struct mei_me_hw *hw = to_me_hw(dev);
--	unsigned long timeout = mei_secs_to_jiffies(MEI_D0I3_TIMEOUT);
- 	int ret;
- 	u32 reg;
- 
-@@ -1013,7 +1013,8 @@ static int mei_me_d0i3_exit_sync(struct mei_device *dev)
- 
- 	mutex_unlock(&dev->device_lock);
- 	wait_event_timeout(dev->wait_pg,
--		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED, timeout);
-+		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED,
-+		dev->timeouts.pgi);
- 	mutex_lock(&dev->device_lock);
- 
- 	if (dev->pg_event != MEI_PG_EVENT_INTR_RECEIVED) {
-@@ -1684,11 +1685,12 @@ EXPORT_SYMBOL_GPL(mei_me_get_cfg);
-  *
-  * @parent: device associated with physical device (pci/platform)
-  * @cfg: per device generation config
-+ * @slow_fw: configure longer timeouts as FW is slow
-  *
-  * Return: The mei_device pointer on success, NULL on failure.
+diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
+index 5fc6a2a3dbc5..393f5757c039 100644
+--- a/tools/perf/arch/arm/util/auxtrace.c
++++ b/tools/perf/arch/arm/util/auxtrace.c
+@@ -4,9 +4,11 @@
+  * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
   */
- struct mei_device *mei_me_dev_init(struct device *parent,
--				   const struct mei_cfg *cfg)
-+				   const struct mei_cfg *cfg, bool slow_fw)
+ 
++#include <dirent.h>
+ #include <stdbool.h>
+ #include <linux/coresight-pmu.h>
+ #include <linux/zalloc.h>
++#include <api/fs/fs.h>
+ 
+ #include "../../../util/auxtrace.h"
+ #include "../../../util/debug.h"
+@@ -14,6 +16,7 @@
+ #include "../../../util/pmu.h"
+ #include "cs-etm.h"
+ #include "arm-spe.h"
++#include "hisi_ptt.h"
+ 
+ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
  {
- 	struct mei_device *dev;
- 	struct mei_me_hw *hw;
-@@ -1703,7 +1705,7 @@ struct mei_device *mei_me_dev_init(struct device *parent,
- 	for (i = 0; i < DMA_DSCR_NUM; i++)
- 		dev->dr_dscr[i].size = cfg->dma_size[i];
+@@ -50,6 +53,58 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
+ 	return arm_spe_pmus;
+ }
  
--	mei_device_init(dev, parent, &mei_me_hw_ops);
-+	mei_device_init(dev, parent, slow_fw, &mei_me_hw_ops);
- 	hw->cfg = cfg;
- 
- 	dev->fw_f_fw_ver_supported = cfg->fw_ver_supported;
-diff --git a/drivers/misc/mei/hw-me.h b/drivers/misc/mei/hw-me.h
-index ca09274ac299..0e9d90808bcf 100644
---- a/drivers/misc/mei/hw-me.h
-+++ b/drivers/misc/mei/hw-me.h
-@@ -131,7 +131,7 @@ enum mei_cfg_idx {
- const struct mei_cfg *mei_me_get_cfg(kernel_ulong_t idx);
- 
- struct mei_device *mei_me_dev_init(struct device *parent,
--				   const struct mei_cfg *cfg);
-+				   const struct mei_cfg *cfg, bool slow_fw);
- 
- int mei_me_pg_enter_sync(struct mei_device *dev);
- int mei_me_pg_exit_sync(struct mei_device *dev);
-diff --git a/drivers/misc/mei/hw-txe.c b/drivers/misc/mei/hw-txe.c
-index 00652c137cc7..fccfa806bd63 100644
---- a/drivers/misc/mei/hw-txe.c
-+++ b/drivers/misc/mei/hw-txe.c
-@@ -1201,7 +1201,7 @@ struct mei_device *mei_txe_dev_init(struct pci_dev *pdev)
- 	if (!dev)
- 		return NULL;
- 
--	mei_device_init(dev, &pdev->dev, &mei_txe_hw_ops);
-+	mei_device_init(dev, &pdev->dev, false, &mei_txe_hw_ops);
- 
- 	hw = to_txe_hw(dev);
- 
-diff --git a/drivers/misc/mei/hw.h b/drivers/misc/mei/hw.h
-index b46077b17114..9381e5c13b4f 100644
---- a/drivers/misc/mei/hw.h
-+++ b/drivers/misc/mei/hw.h
-@@ -16,11 +16,16 @@
- #define MEI_CONNECT_TIMEOUT         3  /* HPS: at least 2 seconds */
- 
- #define MEI_CL_CONNECT_TIMEOUT     15  /* HPS: Client Connect Timeout */
-+#define MEI_CL_CONNECT_TIMEOUT_SLOW 30 /* HPS: Client Connect Timeout, slow FW */
- #define MEI_CLIENTS_INIT_TIMEOUT   15  /* HPS: Clients Enumeration Timeout */
- 
- #define MEI_PGI_TIMEOUT             1  /* PG Isolation time response 1 sec */
- #define MEI_D0I3_TIMEOUT            5  /* D0i3 set/unset max response time */
- #define MEI_HBM_TIMEOUT             1  /* 1 second */
-+#define MEI_HBM_TIMEOUT_SLOW        5  /* 5 second, slow FW */
++static struct perf_pmu **find_all_hisi_ptt_pmus(int *nr_ptts, int *err)
++{
++	const char *sysfs = sysfs__mountpoint();
++	struct perf_pmu **hisi_ptt_pmus = NULL;
++	struct dirent *dent;
++	char path[PATH_MAX];
++	DIR *dir = NULL;
++	int idx = 0;
 +
-+#define MKHI_RCV_TIMEOUT 500 /* receive timeout in msec */
-+#define MKHI_RCV_TIMEOUT_SLOW 10000 /* receive timeout in msec, slow FW */
- 
- /*
-  * FW page size for DMA allocations
-diff --git a/drivers/misc/mei/init.c b/drivers/misc/mei/init.c
-index 5bb6ba662cc0..ce030a882d0c 100644
---- a/drivers/misc/mei/init.c
-+++ b/drivers/misc/mei/init.c
-@@ -359,14 +359,16 @@ bool mei_write_is_idle(struct mei_device *dev)
- EXPORT_SYMBOL_GPL(mei_write_is_idle);
- 
- /**
-- * mei_device_init  -- initialize mei_device structure
-+ * mei_device_init - initialize mei_device structure
-  *
-  * @dev: the mei device
-  * @device: the device structure
-+ * @slow_fw: configure longer timeouts as FW is slow
-  * @hw_ops: hw operations
-  */
- void mei_device_init(struct mei_device *dev,
- 		     struct device *device,
-+		     bool slow_fw,
- 		     const struct mei_hw_ops *hw_ops)
- {
- 	/* setup our list array */
-@@ -404,6 +406,21 @@ void mei_device_init(struct mei_device *dev,
- 	dev->pg_event = MEI_PG_EVENT_IDLE;
- 	dev->ops      = hw_ops;
- 	dev->dev      = device;
-+
-+	dev->timeouts.hw_ready = mei_secs_to_jiffies(MEI_HW_READY_TIMEOUT);
-+	dev->timeouts.connect = MEI_CONNECT_TIMEOUT;
-+	dev->timeouts.client_init = MEI_CLIENTS_INIT_TIMEOUT;
-+	dev->timeouts.pgi = mei_secs_to_jiffies(MEI_PGI_TIMEOUT);
-+	dev->timeouts.d0i3 = mei_secs_to_jiffies(MEI_D0I3_TIMEOUT);
-+	if (slow_fw) {
-+		dev->timeouts.cl_connect = mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT_SLOW);
-+		dev->timeouts.hbm = mei_secs_to_jiffies(MEI_HBM_TIMEOUT_SLOW);
-+		dev->timeouts.mkhi_recv = msecs_to_jiffies(MKHI_RCV_TIMEOUT_SLOW);
-+	} else {
-+		dev->timeouts.cl_connect = mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT);
-+		dev->timeouts.hbm = mei_secs_to_jiffies(MEI_HBM_TIMEOUT);
-+		dev->timeouts.mkhi_recv = msecs_to_jiffies(MKHI_RCV_TIMEOUT);
++	snprintf(path, PATH_MAX, "%s" EVENT_SOURCE_DEVICE_PATH, sysfs);
++	dir = opendir(path);
++	if (!dir) {
++		pr_err("can't read directory '%s'\n", EVENT_SOURCE_DEVICE_PATH);
++		*err = -EINVAL;
++		goto out;
 +	}
- }
- EXPORT_SYMBOL_GPL(mei_device_init);
++
++	while ((dent = readdir(dir))) {
++		if (strstr(dent->d_name, HISI_PTT_PMU_NAME))
++			(*nr_ptts)++;
++	}
++
++	if (!(*nr_ptts))
++		goto out;
++
++	hisi_ptt_pmus = zalloc(sizeof(struct perf_pmu *) * (*nr_ptts));
++	if (!hisi_ptt_pmus) {
++		pr_err("hisi_ptt alloc failed\n");
++		*err = -ENOMEM;
++		goto out;
++	}
++
++	rewinddir(dir);
++	while ((dent = readdir(dir))) {
++		if (strstr(dent->d_name, HISI_PTT_PMU_NAME) && idx < (*nr_ptts)) {
++			hisi_ptt_pmus[idx] = perf_pmu__find(dent->d_name);
++			if (hisi_ptt_pmus[idx]) {
++				pr_debug2("%s %d: hisi_ptt_pmu %d type %d name %s\n",
++					__func__, __LINE__, idx,
++					hisi_ptt_pmus[idx]->type,
++					hisi_ptt_pmus[idx]->name);
++					idx++;
++			}
++
++		}
++	}
++
++out:
++	closedir(dir);
++	return hisi_ptt_pmus;
++}
++
+ struct auxtrace_record
+ *auxtrace_record__init(struct evlist *evlist, int *err)
+ {
+@@ -57,8 +112,12 @@ struct auxtrace_record
+ 	struct evsel *evsel;
+ 	bool found_etm = false;
+ 	struct perf_pmu *found_spe = NULL;
++	struct perf_pmu *found_ptt = NULL;
+ 	struct perf_pmu **arm_spe_pmus = NULL;
++	struct perf_pmu **hisi_ptt_pmus = NULL;
++
+ 	int nr_spes = 0;
++	int nr_ptts = 0;
+ 	int i = 0;
  
-diff --git a/drivers/misc/mei/main.c b/drivers/misc/mei/main.c
-index 786f7c8f7f61..261939b945ef 100644
---- a/drivers/misc/mei/main.c
-+++ b/drivers/misc/mei/main.c
-@@ -571,7 +571,7 @@ static int mei_ioctl_connect_vtag(struct file *file,
- 				    cl->state == MEI_FILE_DISCONNECTED ||
- 				    cl->state == MEI_FILE_DISCONNECT_REQUIRED ||
- 				    cl->state == MEI_FILE_DISCONNECT_REPLY),
--				   mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
-+				   dev->timeouts.cl_connect);
- 		mutex_lock(&dev->device_lock);
+ 	if (!evlist)
+@@ -66,13 +125,14 @@ struct auxtrace_record
+ 
+ 	cs_etm_pmu = perf_pmu__find(CORESIGHT_ETM_PMU_NAME);
+ 	arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
++	hisi_ptt_pmus = find_all_hisi_ptt_pmus(&nr_ptts, err);
+ 
+ 	evlist__for_each_entry(evlist, evsel) {
+ 		if (cs_etm_pmu &&
+ 		    evsel->core.attr.type == cs_etm_pmu->type)
+ 			found_etm = true;
+ 
+-		if (!nr_spes || found_spe)
++		if ((!nr_spes || found_spe) && (!nr_ptts || found_ptt))
+ 			continue;
+ 
+ 		for (i = 0; i < nr_spes; i++) {
+@@ -81,11 +141,18 @@ struct auxtrace_record
+ 				break;
+ 			}
+ 		}
++
++		for (i = 0; i < nr_ptts; i++) {
++			if (evsel->core.attr.type == hisi_ptt_pmus[i]->type) {
++				found_ptt = hisi_ptt_pmus[i];
++				break;
++			}
++		}
+ 	}
+ 	free(arm_spe_pmus);
+ 
+-	if (found_etm && found_spe) {
+-		pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
++	if (found_etm && found_spe && found_ptt) {
++		pr_err("Concurrent ARM Coresight ETM ,SPE and HiSilicon PCIe Trace operation not currently supported\n");
+ 		*err = -EOPNOTSUPP;
+ 		return NULL;
+ 	}
+@@ -96,6 +163,9 @@ struct auxtrace_record
+ #if defined(__aarch64__)
+ 	if (found_spe)
+ 		return arm_spe_recording_init(err, found_spe);
++
++	if (found_ptt)
++		return hisi_ptt_recording_init(err, found_ptt);
+ #endif
+ 
+ 	/*
+diff --git a/tools/perf/arch/arm/util/pmu.c b/tools/perf/arch/arm/util/pmu.c
+index b8b23b9dc598..89a3cedb4557 100644
+--- a/tools/perf/arch/arm/util/pmu.c
++++ b/tools/perf/arch/arm/util/pmu.c
+@@ -10,6 +10,7 @@
+ #include <linux/string.h>
+ 
+ #include "arm-spe.h"
++#include "hisi_ptt.h"
+ #include "../../../util/pmu.h"
+ 
+ struct perf_event_attr
+@@ -22,6 +23,8 @@ struct perf_event_attr
+ #if defined(__aarch64__)
+ 	} else if (strstarts(pmu->name, ARM_SPE_PMU_NAME)) {
+ 		return arm_spe_pmu_default_config(pmu);
++	} else if (strstarts(pmu->name, HISI_PTT_PMU_NAME)) {
++		pmu->selectable = true;
+ #endif
  	}
  
-diff --git a/drivers/misc/mei/mei_dev.h b/drivers/misc/mei/mei_dev.h
-index 694f866f87ef..16f59b3a45fc 100644
---- a/drivers/misc/mei/mei_dev.h
-+++ b/drivers/misc/mei/mei_dev.h
-@@ -415,6 +415,17 @@ struct mei_fw_version {
- 
- #define MEI_MAX_FW_VER_BLOCKS 3
- 
-+struct mei_dev_timeouts {
-+	unsigned long hw_ready; /* Timeout on ready message, in jiffies */
-+	int connect; /* HPS: at least 2 seconds, in seconds */
-+	unsigned long cl_connect; /* HPS: Client Connect Timeout, in jiffies */
-+	int client_init; /* HPS: Clients Enumeration Timeout, in seconds */
-+	unsigned long pgi; /* PG Isolation time response, in jiffies */
-+	unsigned int d0i3; /* D0i3 set/unset max response time, in jiffies */
-+	unsigned long hbm; /* HBM operation timeout, in jiffies */
-+	unsigned long mkhi_recv; /* receive timeout, in jiffies */
+diff --git a/tools/perf/arch/arm64/util/Build b/tools/perf/arch/arm64/util/Build
+index 9fcb4e68add9..8b7fd1dc9f37 100644
+--- a/tools/perf/arch/arm64/util/Build
++++ b/tools/perf/arch/arm64/util/Build
+@@ -11,4 +11,4 @@ perf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o
+ perf-$(CONFIG_AUXTRACE) += ../../arm/util/pmu.o \
+ 			      ../../arm/util/auxtrace.o \
+ 			      ../../arm/util/cs-etm.o \
+-			      arm-spe.o mem-events.o
++			      arm-spe.o mem-events.o hisi_ptt.o
+diff --git a/tools/perf/arch/arm64/util/hisi_ptt.c b/tools/perf/arch/arm64/util/hisi_ptt.c
+new file mode 100644
+index 000000000000..de3a3523ffd5
+--- /dev/null
++++ b/tools/perf/arch/arm64/util/hisi_ptt.c
+@@ -0,0 +1,195 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * HiSilicon PCIe Trace and Tuning (PTT) support
++ * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
++ */
++
++#include <linux/kernel.h>
++#include <linux/types.h>
++#include <linux/bitops.h>
++#include <linux/log2.h>
++#include <linux/zalloc.h>
++#include <time.h>
++
++#include <internal/lib.h> // page_size
++#include "../../../util/auxtrace.h"
++#include "../../../util/cpumap.h"
++#include "../../../util/debug.h"
++#include "../../../util/event.h"
++#include "../../../util/evlist.h"
++#include "../../../util/evsel.h"
++#include "../../../util/hisi_ptt.h"
++#include "../../../util/pmu.h"
++#include "../../../util/record.h"
++#include "../../../util/session.h"
++#include "../../../util/tsc.h"
++
++#define DEFAULT_PAGE_SIZE 1024
++#define KiB(x) ((x) * DEFAULT_PAGE_SIZE)
++#define MiB(x) ((x) * DEFAULT_PAGE_SIZE * DEFAULT_PAGE_SIZE)
++
++struct hisi_ptt_recording {
++	struct auxtrace_record	itr;
++	struct perf_pmu *hisi_ptt_pmu;
++	struct evlist *evlist;
 +};
 +
- /**
-  * struct mei_device -  MEI private device struct
-  *
-@@ -480,6 +491,8 @@ struct mei_fw_version {
-  * @allow_fixed_address: allow user space to connect a fixed client
-  * @override_fixed_address: force allow fixed address behavior
-  *
-+ * @timeouts: actual timeout values
-+ *
-  * @reset_work  : work item for the device reset
-  * @bus_rescan_work : work item for the bus rescan
-  *
-@@ -568,6 +581,8 @@ struct mei_device {
- 	bool allow_fixed_address;
- 	bool override_fixed_address;
- 
-+	struct mei_dev_timeouts timeouts;
++static size_t
++hisi_ptt_info_priv_size(struct auxtrace_record *itr __maybe_unused,
++			struct evlist *evlist __maybe_unused)
++{
++	return HISI_PTT_AUXTRACE_PRIV_SIZE;
++}
 +
- 	struct work_struct reset_work;
- 	struct work_struct bus_rescan_work;
++static int hisi_ptt_info_fill(struct auxtrace_record *itr,
++			      struct perf_session *session,
++			      struct perf_record_auxtrace_info *auxtrace_info,
++			      size_t priv_size)
++{
++	struct hisi_ptt_recording *pttr =
++			container_of(itr, struct hisi_ptt_recording, itr);
++	struct perf_pmu *hisi_ptt_pmu = pttr->hisi_ptt_pmu;
++
++	if (priv_size != HISI_PTT_AUXTRACE_PRIV_SIZE)
++		return -EINVAL;
++
++	if (!session->evlist->core.nr_mmaps)
++		return -EINVAL;
++
++	auxtrace_info->type = PERF_AUXTRACE_HISI_PTT;
++	auxtrace_info->priv[HISI_PTT_PMU_TYPE] = hisi_ptt_pmu->type;
++
++	return 0;
++}
++
++static int hisi_ptt_set_auxtrace_mmap_page(struct record_opts *opts)
++{
++	bool privileged = perf_event_paranoid_check(-1);
++
++	if (!opts->full_auxtrace)
++		return 0;
++
++	if (opts->full_auxtrace && !opts->auxtrace_mmap_pages) {
++		if (privileged) {
++			opts->auxtrace_mmap_pages = MiB(16) / page_size;
++		} else {
++			opts->auxtrace_mmap_pages = KiB(128) / page_size;
++			if (opts->mmap_pages == UINT_MAX)
++				opts->mmap_pages = KiB(256) / page_size;
++		}
++	}
++
++	/* Validate auxtrace_mmap_pages */
++	if (opts->auxtrace_mmap_pages) {
++		size_t sz = opts->auxtrace_mmap_pages * (size_t)page_size;
++		size_t min_sz = KiB(8);
++
++		if (sz < min_sz || !is_power_of_2(sz)) {
++			pr_err("Invalid mmap size for HISI PTT: must be at least %zuKiB and a power of 2\n",
++			       min_sz / DEFAULT_PAGE_SIZE);
++			return -EINVAL;
++		}
++	}
++
++	return 0;
++}
++
++static int hisi_ptt_recording_options(struct auxtrace_record *itr,
++				      struct evlist *evlist,
++				      struct record_opts *opts)
++{
++	struct hisi_ptt_recording *pttr =
++			container_of(itr, struct hisi_ptt_recording, itr);
++	struct perf_pmu *hisi_ptt_pmu = pttr->hisi_ptt_pmu;
++	struct perf_cpu_map *cpus = evlist->core.cpus;
++	struct evsel *evsel, *hisi_ptt_evsel = NULL;
++	struct evsel *tracking_evsel;
++	int err;
++
++	pttr->evlist = evlist;
++	evlist__for_each_entry(evlist, evsel) {
++		if (evsel->core.attr.type == hisi_ptt_pmu->type) {
++			if (hisi_ptt_evsel) {
++				pr_err("There may be only one " HISI_PTT_PMU_NAME "x event\n");
++				return -EINVAL;
++			}
++			evsel->core.attr.freq = 0;
++			evsel->core.attr.sample_period = 1;
++			hisi_ptt_evsel = evsel;
++			opts->full_auxtrace = true;
++		}
++	}
++
++	err = hisi_ptt_set_auxtrace_mmap_page(opts);
++	if (err)
++		return err;
++	/*
++	 * To obtain the auxtrace buffer file descriptor, the auxtrace event
++	 * must come first.
++	 */
++	evlist__to_front(evlist, hisi_ptt_evsel);
++
++	if (!perf_cpu_map__empty(cpus)) {
++		evsel__set_sample_bit(hisi_ptt_evsel, TIME);
++		evsel__set_sample_bit(hisi_ptt_evsel, CPU);
++	}
++
++	/* Add dummy event to keep tracking */
++	err = parse_events(evlist, "dummy:u", NULL);
++	if (err)
++		return err;
++
++	tracking_evsel = evlist__last(evlist);
++	evlist__set_tracking_event(evlist, tracking_evsel);
++
++	tracking_evsel->core.attr.freq = 0;
++	tracking_evsel->core.attr.sample_period = 1;
++
++	if (!perf_cpu_map__empty(cpus))
++		evsel__set_sample_bit(tracking_evsel, TIME);
++
++	return 0;
++}
++
++static u64 hisi_ptt_reference(struct auxtrace_record *itr __maybe_unused)
++{
++	return rdtsc();
++}
++
++static void hisi_ptt_recording_free(struct auxtrace_record *itr)
++{
++	struct hisi_ptt_recording *pttr =
++			container_of(itr, struct hisi_ptt_recording, itr);
++
++	free(pttr);
++}
++
++struct auxtrace_record *hisi_ptt_recording_init(int *err,
++						struct perf_pmu *hisi_ptt_pmu)
++{
++	struct hisi_ptt_recording *pttr;
++
++	if (!hisi_ptt_pmu) {
++		*err = -ENODEV;
++		return NULL;
++	}
++
++	pttr = zalloc(sizeof(struct hisi_ptt_recording));
++	if (!pttr) {
++		*err = -ENOMEM;
++		return NULL;
++	}
++
++	pttr->hisi_ptt_pmu = hisi_ptt_pmu;
++	pttr->itr.pmu = hisi_ptt_pmu;
++	pttr->itr.recording_options = hisi_ptt_recording_options;
++	pttr->itr.info_priv_size = hisi_ptt_info_priv_size;
++	pttr->itr.info_fill = hisi_ptt_info_fill;
++	pttr->itr.free = hisi_ptt_recording_free;
++	pttr->itr.reference = hisi_ptt_reference;
++	pttr->itr.read_finish = auxtrace_record__read_finish;
++	pttr->itr.alignment = 0;
++
++	*err = 0;
++	return &pttr->itr;
++}
+diff --git a/tools/perf/util/Build b/tools/perf/util/Build
+index 9a7209a99e16..95d2d76c52da 100644
+--- a/tools/perf/util/Build
++++ b/tools/perf/util/Build
+@@ -116,6 +116,8 @@ perf-$(CONFIG_AUXTRACE) += intel-pt.o
+ perf-$(CONFIG_AUXTRACE) += intel-bts.o
+ perf-$(CONFIG_AUXTRACE) += arm-spe.o
+ perf-$(CONFIG_AUXTRACE) += arm-spe-decoder/
++perf-$(CONFIG_AUXTRACE) += hisi_ptt.o
++perf-$(CONFIG_AUXTRACE) += hisi-ptt-decoder/
+ perf-$(CONFIG_AUXTRACE) += s390-cpumsf.o
  
-@@ -632,6 +647,7 @@ static inline u32 mei_slots2data(int slots)
-  */
- void mei_device_init(struct mei_device *dev,
- 		     struct device *device,
-+		     bool slow_fw,
- 		     const struct mei_hw_ops *hw_ops);
- int mei_reset(struct mei_device *dev);
- int mei_start(struct mei_device *dev);
-diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
-index 33e58821e478..0288784f8ffd 100644
---- a/drivers/misc/mei/pci-me.c
-+++ b/drivers/misc/mei/pci-me.c
-@@ -201,7 +201,7 @@ static int mei_me_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	}
+ ifdef CONFIG_LIBOPENCSD
+diff --git a/tools/perf/util/auxtrace.c b/tools/perf/util/auxtrace.c
+index df1c5bbbaa0d..f4841ebaf314 100644
+--- a/tools/perf/util/auxtrace.c
++++ b/tools/perf/util/auxtrace.c
+@@ -51,6 +51,7 @@
+ #include "intel-pt.h"
+ #include "intel-bts.h"
+ #include "arm-spe.h"
++#include "hisi_ptt.h"
+ #include "s390-cpumsf.h"
+ #include "util/mmap.h"
  
- 	/* allocates and initializes the mei dev structure */
--	dev = mei_me_dev_init(&pdev->dev, cfg);
-+	dev = mei_me_dev_init(&pdev->dev, cfg, false);
- 	if (!dev) {
- 		err = -ENOMEM;
- 		goto end;
+@@ -1281,6 +1282,9 @@ int perf_event__process_auxtrace_info(struct perf_session *session,
+ 	case PERF_AUXTRACE_S390_CPUMSF:
+ 		err = s390_cpumsf_process_auxtrace_info(event, session);
+ 		break;
++	case PERF_AUXTRACE_HISI_PTT:
++		err = hisi_ptt_process_auxtrace_info(event, session);
++		break;
+ 	case PERF_AUXTRACE_UNKNOWN:
+ 	default:
+ 		return -EINVAL;
+diff --git a/tools/perf/util/auxtrace.h b/tools/perf/util/auxtrace.h
+index dc38b6f57232..3858c5752ead 100644
+--- a/tools/perf/util/auxtrace.h
++++ b/tools/perf/util/auxtrace.h
+@@ -48,6 +48,7 @@ enum auxtrace_type {
+ 	PERF_AUXTRACE_CS_ETM,
+ 	PERF_AUXTRACE_ARM_SPE,
+ 	PERF_AUXTRACE_S390_CPUMSF,
++	PERF_AUXTRACE_HISI_PTT,
+ };
+ 
+ enum itrace_period_type {
+diff --git a/tools/perf/util/hisi-ptt-decoder/Build b/tools/perf/util/hisi-ptt-decoder/Build
+new file mode 100644
+index 000000000000..db3db8b75033
+--- /dev/null
++++ b/tools/perf/util/hisi-ptt-decoder/Build
+@@ -0,0 +1 @@
++perf-$(CONFIG_AUXTRACE) += hisi-ptt-pkt-decoder.o
+diff --git a/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c b/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
+new file mode 100644
+index 000000000000..3fb7a6949209
+--- /dev/null
++++ b/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
+@@ -0,0 +1,170 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * HiSilicon PCIe Trace and Tuning (PTT) support
++ * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
++ */
++
++#include <stdlib.h>
++#include <stdio.h>
++#include <string.h>
++#include <endian.h>
++#include <byteswap.h>
++#include <linux/bitops.h>
++#include <stdarg.h>
++
++#include "../color.h"
++#include "hisi-ptt-pkt-decoder.h"
++
++/*
++ * For 8DW format, the bit[31:11] of DW0 is always 0x1fffff, which can be
++ * used to distinguish the data format.
++ * 8DW format is like:
++ *   bits [                 31:11                 ][       10:0       ]
++ *        |---------------------------------------|-------------------|
++ *    DW0 [                0x1fffff               ][ Reserved (0x7ff) ]
++ *    DW1 [                       Prefix                              ]
++ *    DW2 [                     Header DW0                            ]
++ *    DW3 [                     Header DW1                            ]
++ *    DW4 [                     Header DW2                            ]
++ *    DW5 [                     Header DW3                            ]
++ *    DW6 [                   Reserved (0x0)                          ]
++ *    DW7 [                        Time                               ]
++ *
++ * 4DW format is like:
++ *   bits [31:30] [ 29:25 ][24][23][22][21][    20:11   ][    10:0    ]
++ *        |-----|---------|---|---|---|---|-------------|-------------|
++ *    DW0 [ Fmt ][  Type  ][T9][T8][TH][SO][   Length   ][    Time    ]
++ *    DW1 [                     Header DW1                            ]
++ *    DW2 [                     Header DW2                            ]
++ *    DW3 [                     Header DW3                            ]
++ */
++
++enum hisi_ptt_8dw_pkt_field_type {
++	HISI_PTT_8DW_PREFIX,
++	HISI_PTT_8DW_HEAD0,
++	HISI_PTT_8DW_HEAD1,
++	HISI_PTT_8DW_HEAD2,
++	HISI_PTT_8DW_HEAD3,
++	HISI_PTT_8DW_TIME,
++	HISI_PTT_8DW_TYPE_MAX
++};
++
++enum hisi_ptt_4dw_pkt_field_type {
++	HISI_PTT_4DW_HEAD1,
++	HISI_PTT_4DW_HEAD2,
++	HISI_PTT_4DW_HEAD3,
++	HISI_PTT_4DW_TYPE_MAX
++};
++
++static const char * const hisi_ptt_8dw_pkt_field_name[] = {
++	[HISI_PTT_8DW_PREFIX]	= "Prefix",
++	[HISI_PTT_8DW_HEAD0]	= "Header DW0",
++	[HISI_PTT_8DW_HEAD1]	= "Header DW1",
++	[HISI_PTT_8DW_HEAD2]	= "Header DW2",
++	[HISI_PTT_8DW_HEAD3]	= "Header DW3",
++	[HISI_PTT_8DW_TIME]	= "Time",
++};
++
++static const char * const hisi_ptt_4dw_pkt_field_name[] = {
++	[HISI_PTT_4DW_HEAD1]	= "Header DW1",
++	[HISI_PTT_4DW_HEAD2]	= "Header DW2",
++	[HISI_PTT_4DW_HEAD3]	= "Header DW3",
++};
++
++/* offset of each member is determined by format of 8dw packet. */
++static uint32_t hisi_ptt_8dw_pkt_field_offset[] = {
++	[HISI_PTT_8DW_PREFIX]	= 4,
++	[HISI_PTT_8DW_HEAD0]	= 4,
++	[HISI_PTT_8DW_HEAD1]	= 4,
++	[HISI_PTT_8DW_HEAD2]	= 4,
++	[HISI_PTT_8DW_HEAD3]	= 4,
++	[HISI_PTT_8DW_TIME]	= 8,
++};
++
++union hisi_ptt_4dw {
++	struct {
++		uint32_t format : 2;
++		uint32_t type : 5;
++		uint32_t t9 : 1;
++		uint32_t t8 : 1;
++		uint32_t th : 1;
++		uint32_t so : 1;
++		uint32_t len : 10;
++		uint32_t time : 11;
++	};
++	uint32_t value;
++};
++
++static void hisi_ptt_print_pkt(const unsigned char *buf, int *pos, const char *desc)
++{
++	const char *color = PERF_COLOR_BLUE;
++	int field_len = sizeof(uint32_t);
++	int i;
++
++	printf(".");
++	color_fprintf(stdout, color, "  %08x: ", *pos);
++	for (i = 0; i < field_len; i++)
++		color_fprintf(stdout, color, "%02x ", buf[i]);
++	for (i = 0; i < HISI_PTT_MAX_SPACE_LEN; i++)
++		color_fprintf(stdout, color, "   ");
++	color_fprintf(stdout, color, "  %s\n", desc);
++	*pos += field_len;
++}
++
++static int hisi_ptt_8dw_kpt_desc(const unsigned char *buf, int pos)
++{
++	int i;
++
++	for (i = HISI_PTT_8DW_PREFIX; i < HISI_PTT_8DW_TYPE_MAX; i++) {
++		buf += hisi_ptt_8dw_pkt_field_offset[i];
++		hisi_ptt_print_pkt(buf, &pos, hisi_ptt_8dw_pkt_field_name[i]);
++	}
++
++	return HISI_PTT_8DW_PKT_SIZE;
++}
++
++static void hisi_ptt_4dw_print_dw0(const unsigned char *buf, int *pos)
++{
++	const char *color = PERF_COLOR_BLUE;
++	int field_len = sizeof(uint32_t);
++	union hisi_ptt_4dw dw0;
++	int i;
++
++	dw0.value = *(uint32_t *)buf;
++	printf(".");
++	color_fprintf(stdout, color, "  %08x: ", *pos);
++	for (i = 0; i < field_len; i++)
++		color_fprintf(stdout, color, "%02x ", buf[i]);
++	for (i = 0; i < HISI_PTT_MAX_SPACE_LEN; i++)
++		color_fprintf(stdout, color, "   ");
++
++	color_fprintf(stdout, color,
++		      "  %s %x %s %x %s %x %s %x %s %x %s %x %s %x %s %x\n",
++		      "Format", dw0.format, "Type", dw0.type, "T9", dw0.t9,
++		      "T8", dw0.t8, "TH", dw0.th, "SO", dw0.so, "Length",
++		      dw0.len, "Time", dw0.time);
++
++	*pos += field_len;
++}
++
++static int hisi_ptt_4dw_kpt_desc(const unsigned char *buf, int pos)
++{
++	int i;
++
++	hisi_ptt_4dw_print_dw0(buf, &pos);
++
++	for (i = HISI_PTT_4DW_HEAD1; i < HISI_PTT_4DW_TYPE_MAX; i++) {
++		buf += sizeof(uint32_t);
++		hisi_ptt_print_pkt(buf, &pos, hisi_ptt_4dw_pkt_field_name[i]);
++	}
++
++	return HISI_PTT_4DW_PKT_SIZE;
++}
++
++int hisi_ptt_pkt_desc(const unsigned char *buf, int pos, enum hisi_ptt_pkt_type type)
++{
++	if (type == HISI_PTT_8DW_PKT)
++		return hisi_ptt_8dw_kpt_desc(buf, pos);
++
++	return hisi_ptt_4dw_kpt_desc(buf, pos);
++}
+diff --git a/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h b/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
+new file mode 100644
+index 000000000000..20c51f230cac
+--- /dev/null
++++ b/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
+@@ -0,0 +1,28 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * HiSilicon PCIe Trace and Tuning (PTT) support
++ * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
++ */
++
++#ifndef INCLUDE__HISI_PTT_PKT_DECODER_H__
++#define INCLUDE__HISI_PTT_PKT_DECODER_H__
++
++#include <stddef.h>
++#include <stdint.h>
++
++#define HISI_PTT_PKT_DESC_MAX		256
++#define HISI_PTT_NEED_MORE_BYTES	-1
++#define HISI_PTT_8DW_CHECK_MASK		GENMASK(31, 11)
++#define HISI_PTT_IS_8DW_PKT		GENMASK(31, 11)
++#define HISI_PTT_8DW_PKT_SIZE		32
++#define HISI_PTT_4DW_PKT_SIZE		16
++#define HISI_PTT_MAX_SPACE_LEN		10
++
++enum hisi_ptt_pkt_type {
++	HISI_PTT_4DW_PKT,
++	HISI_PTT_8DW_PKT,
++};
++
++int hisi_ptt_pkt_desc(const unsigned char *buf, int pos, enum hisi_ptt_pkt_type type);
++
++#endif
+diff --git a/tools/perf/util/hisi_ptt.c b/tools/perf/util/hisi_ptt.c
+new file mode 100644
+index 000000000000..e2934214763c
+--- /dev/null
++++ b/tools/perf/util/hisi_ptt.c
+@@ -0,0 +1,218 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * HiSilicon PCIe Trace and Tuning (PTT) support
++ * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
++ */
++
++#include <byteswap.h>
++#include <endian.h>
++#include <errno.h>
++#include <inttypes.h>
++#include <linux/bitops.h>
++#include <linux/kernel.h>
++#include <linux/log2.h>
++#include <linux/types.h>
++#include <linux/zalloc.h>
++#include <stdlib.h>
++#include <unistd.h>
++
++#include "auxtrace.h"
++#include "color.h"
++#include "debug.h"
++#include "evlist.h"
++#include "evsel.h"
++#include "hisi_ptt.h"
++#include "hisi-ptt-decoder/hisi-ptt-pkt-decoder.h"
++#include "machine.h"
++#include "session.h"
++#include "symbol.h"
++#include "tool.h"
++#include "util/synthetic-events.h"
++
++struct hisi_ptt {
++	struct auxtrace auxtrace;
++	struct auxtrace_queues queues;
++	u32 auxtrace_type;
++	struct perf_session *session;
++	struct machine *machine;
++	u32 pmu_type;
++};
++
++struct hisi_ptt_queue {
++	struct hisi_ptt *ptt;
++	struct auxtrace_buffer *buffer;
++};
++
++static enum hisi_ptt_pkt_type hisi_ptt_check_packet_type(unsigned char *buf)
++{
++	uint32_t head = *(uint32_t *)buf;
++
++	if ((HISI_PTT_8DW_CHECK_MASK & head) == HISI_PTT_IS_8DW_PKT)
++		return HISI_PTT_8DW_PKT;
++
++	return HISI_PTT_4DW_PKT;
++}
++
++static void hisi_ptt_dump(struct hisi_ptt *ptt __maybe_unused,
++			  unsigned char *buf, size_t len)
++{
++	const char *color = PERF_COLOR_BLUE;
++	enum hisi_ptt_pkt_type type;
++	size_t pos = 0;
++	int pkt_len;
++
++	color_fprintf(stdout, color, ". ... HISI PTT data: size %zu bytes\n",
++		      len);
++
++	type = hisi_ptt_check_packet_type(buf);
++	while (len) {
++		pkt_len = hisi_ptt_pkt_desc(buf, pos, type);
++		if (!pkt_len)
++			color_fprintf(stdout, color, " Bad packet!\n");
++
++		pos += pkt_len;
++		buf += pkt_len;
++		len -= pkt_len;
++	}
++}
++
++static void hisi_ptt_dump_event(struct hisi_ptt *ptt, unsigned char *buf,
++				size_t len)
++{
++	printf(".\n");
++
++	hisi_ptt_dump(ptt, buf, len);
++}
++
++static int hisi_ptt_process_event(struct perf_session *session __maybe_unused,
++				  union perf_event *event __maybe_unused,
++				  struct perf_sample *sample __maybe_unused,
++				  struct perf_tool *tool __maybe_unused)
++{
++	return 0;
++}
++
++static int hisi_ptt_process_auxtrace_event(struct perf_session *session,
++					   union perf_event *event,
++					   struct perf_tool *tool __maybe_unused)
++{
++	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
++					    auxtrace);
++	struct auxtrace_buffer *buffer;
++	off_t data_offset;
++	int fd = perf_data__fd(session->data);
++	int err;
++
++	if (perf_data__is_pipe(session->data)) {
++		data_offset = 0;
++	} else {
++		data_offset = lseek(fd, 0, SEEK_CUR);
++		if (data_offset == -1)
++			return -errno;
++	}
++
++	err = auxtrace_queues__add_event(&ptt->queues, session, event,
++					 data_offset, &buffer);
++	if (err)
++		return err;
++
++	if (dump_trace) {
++		if (auxtrace_buffer__get_data(buffer, fd)) {
++			hisi_ptt_dump_event(ptt, buffer->data, buffer->size);
++			auxtrace_buffer__put_data(buffer);
++		}
++	}
++
++	return 0;
++}
++
++static int hisi_ptt_flush(struct perf_session *session __maybe_unused,
++			  struct perf_tool *tool __maybe_unused)
++{
++	return 0;
++}
++
++static void hisi_ptt_free_events(struct perf_session *session)
++{
++	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
++					    auxtrace);
++	struct auxtrace_queues *queues = &ptt->queues;
++	unsigned int i;
++
++	for (i = 0; i < queues->nr_queues; i++) {
++		free(queues->queue_array[i].priv);
++		queues->queue_array[i].priv = NULL;
++	}
++	auxtrace_queues__free(queues);
++}
++
++static void hisi_ptt_free(struct perf_session *session)
++{
++	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
++					    auxtrace);
++
++	hisi_ptt_free_events(session);
++	session->auxtrace = NULL;
++	free(ptt);
++}
++
++static bool hisi_ptt_evsel_is_auxtrace(struct perf_session *session,
++				       struct evsel *evsel)
++{
++	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt, auxtrace);
++
++	return evsel->core.attr.type == ptt->pmu_type;
++}
++
++static const char * const hisi_ptt_info_fmts[] = {
++	[HISI_PTT_PMU_TYPE]		= "  PMU Type           %" PRId64 "\n",
++};
++
++static void hisi_ptt_print_info(__u64 *arr)
++{
++	if (!dump_trace)
++		return;
++
++	fprintf(stdout, hisi_ptt_info_fmts[HISI_PTT_PMU_TYPE], arr[HISI_PTT_PMU_TYPE]);
++}
++
++int hisi_ptt_process_auxtrace_info(union perf_event *event,
++				   struct perf_session *session)
++{
++	struct perf_record_auxtrace_info *auxtrace_info = &event->auxtrace_info;
++	struct hisi_ptt *ptt;
++	int err;
++
++	if (auxtrace_info->header.size < HISI_PTT_AUXTRACE_PRIV_SIZE +
++				sizeof(struct perf_record_auxtrace_info))
++		return -EINVAL;
++
++	ptt = zalloc(sizeof(struct hisi_ptt));
++	if (!ptt)
++		return -ENOMEM;
++
++	err = auxtrace_queues__init(&ptt->queues);
++	if (err)
++		goto err_free;
++
++	ptt->session = session;
++	ptt->machine = &session->machines.host; /* No kvm support */
++	ptt->auxtrace_type = auxtrace_info->type;
++	ptt->pmu_type = auxtrace_info->priv[HISI_PTT_PMU_TYPE];
++
++	ptt->auxtrace.process_event = hisi_ptt_process_event;
++	ptt->auxtrace.process_auxtrace_event = hisi_ptt_process_auxtrace_event;
++	ptt->auxtrace.flush_events = hisi_ptt_flush;
++	ptt->auxtrace.free_events = hisi_ptt_free_events;
++	ptt->auxtrace.free = hisi_ptt_free;
++	ptt->auxtrace.evsel_is_auxtrace = hisi_ptt_evsel_is_auxtrace;
++	session->auxtrace = &ptt->auxtrace;
++
++	hisi_ptt_print_info(&auxtrace_info->priv[0]);
++
++	return 0;
++
++err_free:
++	free(ptt);
++	return err;
++}
+diff --git a/tools/perf/util/hisi_ptt.h b/tools/perf/util/hisi_ptt.h
+new file mode 100644
+index 000000000000..c0b6cbde1221
+--- /dev/null
++++ b/tools/perf/util/hisi_ptt.h
+@@ -0,0 +1,28 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * HiSilicon PCIe Trace and Tuning (PTT) support
++ * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
++ */
++
++#ifndef INCLUDE__PERF_HISI_PTT_H__
++#define INCLUDE__PERF_HISI_PTT_H__
++
++#define HISI_PTT_PMU_NAME "hisi_ptt"
++enum {
++	HISI_PTT_PMU_TYPE,
++	HISI_PTT_PER_CPU_MMAPS,
++	HISI_PTT_AUXTRACE_PRIV_MAX,
++};
++
++#define HISI_PTT_AUXTRACE_PRIV_SIZE (HISI_PTT_AUXTRACE_PRIV_MAX * sizeof(u64))
++union perf_event;
++struct perf_session;
++struct perf_pmu;
++
++struct auxtrace_record *hisi_ptt_recording_init(int *err,
++						struct perf_pmu *hisi_ptt_pmu);
++
++int hisi_ptt_process_auxtrace_info(union perf_event *event,
++				   struct perf_session *session);
++
++#endif
 -- 
-2.32.0
+2.24.0
 
