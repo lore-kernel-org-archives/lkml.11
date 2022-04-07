@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 387ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46958C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344866AbiDGPcP (ORCPT
+        id S1344883AbiDGPc0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:32:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
+        Thu, 7 Apr 2022 11:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344802AbiDGPb4 (ORCPT
+        with ESMTP id S245368AbiDGPb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 11:31:56 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94655BD0;
-        Thu,  7 Apr 2022 08:29:56 -0700 (PDT)
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34D5C7B;
+        Thu,  7 Apr 2022 08:29:53 -0700 (PDT)
 Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:4da4:8da5:b6b4:93c])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: benjamin.gaignard)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id B660A1F467B9;
-        Thu,  7 Apr 2022 16:29:54 +0100 (BST)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 3B1CC1F467B5;
+        Thu,  7 Apr 2022 16:29:52 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649345395;
-        bh=L66tcVRRIZpNzfDD6Qt4u9/IPaHTBDbgBboGmjYb+3s=;
+        s=mail; t=1649345392;
+        bh=aXW5DVxnIPaL0geXj9xXsORUW8/O/jIQ/HhDMbzLuY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b9woSzybglR+ZZ/RAa8I3wqSUagtGSuIeTZkwAwpkaX8ZyKGkg2WTPEkAnny8R8vg
-         NKA/S/mfU3NIk+cbRx8T/KnRgOzqt55zubhUcXf6EFP38Txz8q/23VUedLeNimdU1u
-         ktbMOXQK9qRoYBJ2lNn4FTz0Mqmbi2VV6X9Rz/Wd0WvF0AInJM/aPrPvpYtYBz/Y2c
-         HbJoqKJ1zsRl2EISxOka64YtJnJOynVUVw739Mac/TfKk4MDifE3JAhyvt14HvRxis
-         bpfrJyrGe18H5AhZaq6pmi0T/fDdY0WdyqFiP0/h4JRTwD6LxnvCKirRmrJAOZJuX/
-         vBlk1wYji03kg==
+        b=RblDjRWh6bmq12g9435iKyk0Luojj9bBzG4kLTfUDwzWYb/NYoDulipgReWMZSD8p
+         SvTizidLt+iKcEC66Zk7r86EEIZWD2yg8wOz2fwLoBpZupSsOWqwIBNTl0aIBmAKRR
+         l//gIsEN0UzdEyVAK9NjE8iO+0Mrg0+WEB9tYGWIIWndZc7gQAAnxIs8isonoIWRV/
+         +1w+oucd0DORujf2t/mipcmrLb+pfjwBeZvypvIRtAabpbajoG1i+XVYIClYL7dbQj
+         ksjfgddQhwuBXblK4jZUF790HO6FuMnF6+n/ikihnrVJCiQUFlNeAWTgLWtC1Bjcw0
+         jjKeu1rGLTcow==
 From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
 To:     mchehab@kernel.org, hverkuil@xs4all.nl,
         ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
@@ -44,69 +44,123 @@ Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
         sebastian.fricke@collabora.com,
         Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH v5 10/17] media: uapi: Move parsed HEVC pixel format out of staging
-Date:   Thu,  7 Apr 2022 17:29:33 +0200
-Message-Id: <20220407152940.738159-11-benjamin.gaignard@collabora.com>
+Subject: [PATCH v5 06/17] media: uapi: HEVC: Change pic_order_cnt definition in v4l2_hevc_dpb_entry
+Date:   Thu,  7 Apr 2022 17:29:29 +0200
+Message-Id: <20220407152940.738159-7-benjamin.gaignard@collabora.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
 References: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move HEVC pixel format since we are ready to stabilize the uAPI
+HEVC specifications say that:
+"PicOrderCntVal is derived as follows:
+PicOrderCntVal = PicOrderCntMsb + slice_pic_order_cnt_lsb
+The value of PicOrderCntVal shall be in the range of −231 to 231 − 1, inclusive."
+
+To match with these definitions change __u16 pic_order_cnt[2]
+into __s32 pic_order_cnt_val.
 
 Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 ---
- Documentation/userspace-api/media/v4l/pixfmt-compressed.rst | 5 -----
- include/media/hevc-ctrls.h                                  | 3 ---
- include/uapi/linux/videodev2.h                              | 1 +
- 3 files changed, 1 insertion(+), 8 deletions(-)
+version 5:
+- change __u16 pic_order_cnt[2] into __s32 pic_order_cnt_val
+ drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 4 ++--
+ drivers/staging/media/hantro/hantro_hevc.c        | 2 +-
+ drivers/staging/media/hantro/hantro_hw.h          | 4 ++--
+ drivers/staging/media/sunxi/cedrus/cedrus_h265.c  | 4 ++--
+ include/media/hevc-ctrls.h                        | 2 +-
+ 5 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst b/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst
-index 967fc803ef94..c352d91a73d8 100644
---- a/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst
-+++ b/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst
-@@ -215,11 +215,6 @@ Compressed Formats
- 	See the :ref:`associated Codec Control IDs <v4l2-mpeg-hevc>`.
- 	Buffers associated with this pixel format must contain the appropriate
- 	number of macroblocks to decode a full corresponding frame.
--
--	.. note::
--
--	   This format is not yet part of the public kernel API and it
--	   is expected to change.
-     * .. _V4L2-PIX-FMT-FWHT:
+diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+index c524af41baf5..6f3c774aa3d9 100644
+--- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
++++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+@@ -386,7 +386,7 @@ static int set_ref(struct hantro_ctx *ctx)
+ 	 * pic_order_cnt[0] and ignore pic_order_cnt[1] used in field-coding.
+ 	 */
+ 	for (i = 0; i < decode_params->num_active_dpb_entries && i < ARRAY_SIZE(cur_poc); i++) {
+-		char poc_diff = decode_params->pic_order_cnt_val - dpb[i].pic_order_cnt[0];
++		char poc_diff = decode_params->pic_order_cnt_val - dpb[i].pic_order_cnt_val;
  
-       - ``V4L2_PIX_FMT_FWHT``
+ 		hantro_reg_write(vpu, &cur_poc[i], poc_diff);
+ 	}
+@@ -413,7 +413,7 @@ static int set_ref(struct hantro_ctx *ctx)
+ 	dpb_longterm_e = 0;
+ 	for (i = 0; i < decode_params->num_active_dpb_entries &&
+ 	     i < (V4L2_HEVC_DPB_ENTRIES_NUM_MAX - 1); i++) {
+-		luma_addr = hantro_hevc_get_ref_buf(ctx, dpb[i].pic_order_cnt[0]);
++		luma_addr = hantro_hevc_get_ref_buf(ctx, dpb[i].pic_order_cnt_val);
+ 		if (!luma_addr)
+ 			return -ENOMEM;
+ 
+diff --git a/drivers/staging/media/hantro/hantro_hevc.c b/drivers/staging/media/hantro/hantro_hevc.c
+index b6ec86d03d91..fadd40768579 100644
+--- a/drivers/staging/media/hantro/hantro_hevc.c
++++ b/drivers/staging/media/hantro/hantro_hevc.c
+@@ -54,7 +54,7 @@ static void hantro_hevc_ref_init(struct hantro_ctx *ctx)
+ }
+ 
+ dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx,
+-				   int poc)
++				   s32 poc)
+ {
+ 	struct hantro_hevc_dec_hw_ctx *hevc_dec = &ctx->hevc_dec;
+ 	int i;
+diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging/media/hantro/hantro_hw.h
+index ed018e293ba0..a648c529662b 100644
+--- a/drivers/staging/media/hantro/hantro_hw.h
++++ b/drivers/staging/media/hantro/hantro_hw.h
+@@ -131,7 +131,7 @@ struct hantro_hevc_dec_hw_ctx {
+ 	struct hantro_aux_buf tile_bsd;
+ 	struct hantro_aux_buf ref_bufs[NUM_REF_PICTURES];
+ 	struct hantro_aux_buf scaling_lists;
+-	int ref_bufs_poc[NUM_REF_PICTURES];
++	s32 ref_bufs_poc[NUM_REF_PICTURES];
+ 	u32 ref_bufs_used;
+ 	struct hantro_hevc_dec_ctrls ctrls;
+ 	unsigned int num_tile_cols_allocated;
+@@ -337,7 +337,7 @@ int hantro_hevc_dec_init(struct hantro_ctx *ctx);
+ void hantro_hevc_dec_exit(struct hantro_ctx *ctx);
+ int hantro_g2_hevc_dec_run(struct hantro_ctx *ctx);
+ int hantro_hevc_dec_prepare_run(struct hantro_ctx *ctx);
+-dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, int poc);
++dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, s32 poc);
+ int hantro_hevc_add_ref_buf(struct hantro_ctx *ctx, int poc, dma_addr_t addr);
+ void hantro_hevc_ref_remove_unused(struct hantro_ctx *ctx);
+ size_t hantro_hevc_chroma_offset(const struct v4l2_ctrl_hevc_sps *sps);
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+index 44f385be9f6c..d04521ffd920 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+@@ -143,8 +143,8 @@ static void cedrus_h265_frame_info_write_dpb(struct cedrus_ctx *ctx,
+ 	for (i = 0; i < num_active_dpb_entries; i++) {
+ 		int buffer_index = vb2_find_timestamp(vq, dpb[i].timestamp, 0);
+ 		u32 pic_order_cnt[2] = {
+-			dpb[i].pic_order_cnt[0],
+-			dpb[i].pic_order_cnt[1]
++			dpb[i].pic_order_cnt_val & 0xffff,
++			(dpb[i].pic_order_cnt_val >> 16) & 0xffff
+ 		};
+ 
+ 		cedrus_h265_frame_info_write_single(ctx, i, dpb[i].field_pic,
 diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-index 28049e1a8a07..00abbf930235 100644
+index b3540167df9e..2812778b41f4 100644
 --- a/include/media/hevc-ctrls.h
 +++ b/include/media/hevc-ctrls.h
-@@ -13,9 +13,6 @@
+@@ -138,7 +138,7 @@ struct v4l2_hevc_dpb_entry {
+ 	__u64	timestamp;
+ 	__u8	flags;
+ 	__u8	field_pic;
+-	__u16	pic_order_cnt[2];
++	__s32	pic_order_cnt_val;
+ 	__u8	padding[2];
+ };
  
- #include <linux/videodev2.h>
- 
--/* The pixel format isn't stable at the moment and will likely be renamed. */
--#define V4L2_PIX_FMT_HEVC_SLICE v4l2_fourcc('S', '2', '6', '5') /* HEVC parsed slices */
--
- #define V4L2_CID_STATELESS_HEVC_SPS		(V4L2_CID_CODEC_BASE + 1008)
- #define V4L2_CID_STATELESS_HEVC_PPS		(V4L2_CID_CODEC_BASE + 1009)
- #define V4L2_CID_STATELESS_HEVC_SLICE_PARAMS	(V4L2_CID_CODEC_BASE + 1010)
-diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index 8df13defde75..2888fef3cff7 100644
---- a/include/uapi/linux/videodev2.h
-+++ b/include/uapi/linux/videodev2.h
-@@ -710,6 +710,7 @@ struct v4l2_pix_format {
- #define V4L2_PIX_FMT_FWHT     v4l2_fourcc('F', 'W', 'H', 'T') /* Fast Walsh Hadamard Transform (vicodec) */
- #define V4L2_PIX_FMT_FWHT_STATELESS     v4l2_fourcc('S', 'F', 'W', 'H') /* Stateless FWHT (vicodec) */
- #define V4L2_PIX_FMT_H264_SLICE v4l2_fourcc('S', '2', '6', '4') /* H264 parsed slices */
-+#define V4L2_PIX_FMT_HEVC_SLICE v4l2_fourcc('S', '2', '6', '5') /* HEVC parsed slices */
- 
- /*  Vendor-specific formats   */
- #define V4L2_PIX_FMT_CPIA1    v4l2_fourcc('C', 'P', 'I', 'A') /* cpia1 YUV */
 -- 
 2.32.0
 
