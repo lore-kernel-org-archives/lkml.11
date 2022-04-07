@@ -2,82 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B47C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:34:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243821AbiDGJgT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:36:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48008 "EHLO
+        id S243819AbiDGJg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243814AbiDGJgJ (ORCPT
+        with ESMTP id S243820AbiDGJg0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:36:09 -0400
-Received: from out162-62-57-87.mail.qq.com (out162-62-57-87.mail.qq.com [162.62.57.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61069674DB
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:34:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649324044;
-        bh=DyWMmxwvueYQtUN0i/Vyg4p9gpIkRWzZvm2GGvGoZXg=;
-        h=From:To:Cc:Subject:Date;
-        b=t0oZSTlPkbIPMEHr8zxLHc2+/bA21SivC9bLB+KLrLe05gUP4OkVTJLLLWOlmoyXx
-         u7K/r5ORZa3u6VJuMehzzn+GBDzais55NJ/+QoJbPl+ne8xHA1bxnRaw3XqsZY0s6X
-         3IXtUgsgBf4dDlQ96vpGyOHqXFDL2QGTD/GP+Ln4=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszc8.qq.com (NewEsmtp) with SMTP
-        id 8810AC49; Thu, 07 Apr 2022 17:34:01 +0800
-X-QQ-mid: xmsmtpt1649324041tq9osk1yb
-Message-ID: <tencent_2B9817738F38B02844C245946EFF3B407E09@qq.com>
-X-QQ-XMAILINFO: M3Q/Kj4zjy60dkerLqbXeBwvcAhmYce6CAkj5VIPEgRTkNhoorWI/XYqrIWo2c
-         Jwsvc9UP9gtG638C/RTf9aQqoh0FiQXLFlm3OOE62DtjZPQ8XTx7V27o2x+ve+XkyESFJqI9xwDN
-         U73OiKWhD8ZfiBE2TgOqFwwRTyafrdTtcV7AvJhEhoATREeFfsB/VHzVYSwZYD2TcgdzT9zOYnY/
-         6iL8Biidnl6uY1d+Hv2znImVkut9J5tLDDAWUv/UXhxFY3Rxbr8ly9wqE9hR8//QpaJ2jtxuydgd
-         EpCuliM8XZW27IQxwoz0zLoBIkOLXz/Ovx08fDnqLOEnaHKnFwBoCHMnTnCMttD0W2MQgjrZPyv3
-         QzIwJD6Hsdwtk9dBCxq+6tyxevb+O4s14J9lwIhBlR51eO9COZMHi9XqXXieUhmdE6sgRdYoUtbp
-         Opw//rezjMzSunqtqA8XZOxRQuMgstO8QrRDW9jSha3q+0dX04yn6nOQ38TZ7G7vbgOnAymHmokD
-         jwn+3q1B1CvOjzcRaIMNXBx2h7tZREDVGJ4+s/o2jdCErqJY0CDdMA80+AUWNS0tLco1W+mID43F
-         fyVSlpN9f+ISbOtHwmTDx8g5E9VGq6Wie/Ey3RwR6C09GCKOGjzRl8vcsBYONS4cvBsR3n51LXQl
-         xi8WVvnjLq6u+ozm05NiwoeA/+C8o5MZ37fbccHzvxcbJp0C8r6JtEJ+OLC+1TrlVF3C38m841Mz
-         W0Ui129Qqm/I4QZ33ss0NmkYjJ1wOO936vrAcZURaDIdxKTfWYY5KPObvsCAsJbGrmogjUnp5LGh
-         70qOKHG+yWiD2vPSh3FP7YggKzX844Qeu4xlaDBNALEcrsa801pWptZsj4Ex9w+i40t0OSPpFZmc
-         QDRLX1BWjxNWGXEfoWWrnjMvSFysOsgyXvfCD+rT2gleusfmXaAMb+guK01D4cI0CpgRZRkZdXLw
-         bQbPOpkz3x0yy2RMVa9g==
-From:   xkernel.wang@foxmail.com
-To:     mturquette@baylibre.com, sboyd@kernel.org
-Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH v2] clk: pxa: add a check for the return value of kzalloc()
-Date:   Thu,  7 Apr 2022 17:33:49 +0800
-X-OQ-MSGID: <20220407093349.14639-1-xkernel.wang@foxmail.com>
+        Thu, 7 Apr 2022 05:36:26 -0400
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961C58F9A7
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:34:26 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4F6FE240003;
+        Thu,  7 Apr 2022 09:34:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1649324064;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1QZGZ1l8/R6LZhl//SEGQRr/cjfdJ4XRWOzBWhSBo4I=;
+        b=E0RlPrFXWSHAXPNxV2G21nu0veHQpr26sTTRKSYUb1XKBVxKJVi4xUpdsBFHnjoWGApEUC
+        umKFnAhmhvCBpt+LvvamJ8rkTiq+WMqwcBagV2COABEPuDEcp23nx7LNZSQOjzZGqnzY3S
+        XMZYEaIJAbX/azduTrkHP1SHWwxzGmG2iPmifpxpFjzUzNW3fZFyyBns7bRD8t4N0fhBDt
+        RL2rsXPfW2eCcQbokZ/s0x2KwpEyG8zcv/JSPaTp4qJaI3a4aT2DtfnCD5HSOLqzqU8M83
+        v4oV3rOV13JSuHv6MsmVl/aIZhJc0HTie6N+OdeS7WQAb1ISSXkRUSWPvijwlA==
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] drm: of: Improve error handling in bridge/panel detection
+Date:   Thu,  7 Apr 2022 11:34:08 +0200
+Message-Id: <20220407093408.1478769-1-paul.kocialkowski@bootlin.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+With the previous rework of drm_of_find_panel_or_bridge only
+-EPROBE_DEFER is returned while previous behavior allowed -ENODEV
+to be returned when the port/endpoint is either missing or unavailable.
 
-kzalloc() is a memory allocation function which can return NULL when
-some internal memory errors happen. So it is better to check it to
-prevent potential wrong memory access.
+Make the default return code of the function -ENODEV to handle this and
+only return -EPROBE_DEFER in find_panel_or_bridge when the of device is
+available but not yet registered. Also return the error code whenever
+the remote node exists to avoid checking for child nodes.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Checking child nodes could result in -EPROBE_DEFER returned by
+find_panel_or_bridge with an unrelated child node that would overwrite
+a legitimate -ENODEV from find_panel_or_bridge if the remote node from
+the of graph is unavailable. This happens because find_panel_or_bridge
+has no way to distinguish between a legitimate panel/bridge node that
+isn't yet registered and an unrelated node.
+
+Add comments around to clarify this behavior.
+
+Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Fixes: 67bae5f28c89 ("drm: of: Properly try all possible cases for bridge/panel detection")
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+
 ---
-ChangeLog:
-v1->v2 stop trying to allocate more and return an error.
- drivers/clk/pxa/clk-pxa.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/drm_of.c | 23 ++++++++++++++++++-----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/clk/pxa/clk-pxa.c b/drivers/clk/pxa/clk-pxa.c
-index cfc79f9..be6b950 100644
---- a/drivers/clk/pxa/clk-pxa.c
-+++ b/drivers/clk/pxa/clk-pxa.c
-@@ -102,6 +102,8 @@ int __init clk_pxa_cken_init(const struct desc_clk_cken *clks, int nb_clks)
+diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
+index 8716da6369a6..97ea9d2016ff 100644
+--- a/drivers/gpu/drm/drm_of.c
++++ b/drivers/gpu/drm/drm_of.c
+@@ -223,6 +223,9 @@ static int find_panel_or_bridge(struct device_node *node,
+ 				struct drm_panel **panel,
+ 				struct drm_bridge **bridge)
+ {
++	if (!of_device_is_available(node))
++		return -ENODEV;
++
+ 	if (panel) {
+ 		*panel = of_drm_find_panel(node);
+ 		if (!IS_ERR(*panel))
+@@ -265,7 +268,7 @@ int drm_of_find_panel_or_bridge(const struct device_node *np,
+ 				struct drm_bridge **bridge)
+ {
+ 	struct device_node *node;
+-	int ret;
++	int ret = -ENODEV;
  
- 	for (i = 0; i < nb_clks; i++) {
- 		pxa_clk = kzalloc(sizeof(*pxa_clk), GFP_KERNEL);
-+		if (!pxa_clk)
-+			return -ENOMEM;
- 		pxa_clk->is_in_low_power = clks[i].is_in_low_power;
- 		pxa_clk->lp = clks[i].lp;
- 		pxa_clk->hp = clks[i].hp;
+ 	if (!panel && !bridge)
+ 		return -EINVAL;
+@@ -282,8 +285,12 @@ int drm_of_find_panel_or_bridge(const struct device_node *np,
+ 			ret = find_panel_or_bridge(node, panel, bridge);
+ 			of_node_put(node);
+ 
+-			if (!ret)
+-				return 0;
++			/*
++			 * If the graph/remote node is present we consider it
++			 * to be the legitimate candidate here and return
++			 * whatever code we got from find_panel_or_bridge.
++			 */
++			return ret;
+ 		}
+ 	}
+ 
+@@ -296,12 +303,18 @@ int drm_of_find_panel_or_bridge(const struct device_node *np,
+ 		ret = find_panel_or_bridge(node, panel, bridge);
+ 		of_node_put(node);
+ 
+-		/* Stop at the first found occurrence. */
++		/*
++		 * Note that an unrelated (available) child node will cause
++		 * find_panel_or_bridge to return -EPROBE_DEFER because there
++		 * is no way to distinguish the node from a legitimate
++		 * panel/bridge that didn't register yet. Keep iterating nodes
++		 * and only return on the first found occurrence.
++		 */
+ 		if (!ret)
+ 			return 0;
+ 	}
+ 
+-	return -EPROBE_DEFER;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(drm_of_find_panel_or_bridge);
+ 
 -- 
+2.35.1
+
