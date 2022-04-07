@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B12C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238572AbiDGBZ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:25:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
+        id S238603AbiDGB0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239643AbiDGBTY (ORCPT
+        with ESMTP id S239615AbiDGBTX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:19:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFD31AB9D5;
-        Wed,  6 Apr 2022 18:14:52 -0700 (PDT)
+        Wed, 6 Apr 2022 21:19:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D271AC422;
+        Wed,  6 Apr 2022 18:14:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C09161DAE;
-        Thu,  7 Apr 2022 01:14:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 092F1C385A3;
-        Thu,  7 Apr 2022 01:14:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F04DB8268C;
+        Thu,  7 Apr 2022 01:14:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CBD6C385A3;
+        Thu,  7 Apr 2022 01:14:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294091;
-        bh=ssJYHvkpscxFMbUpBVyB4ceTVTGzImrTC1CGpjG5HWs=;
+        s=k20201202; t=1649294087;
+        bh=kPunzNQI93rtW/+0Eyu9lHowQwG7urzc55cxsv3IxVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bwgPh9yx1BbQQAsWcsNs8baz/Of5ugypD59iBKwqnZje2fcnkhMQC9nRTq59K3xlF
-         xE6DMh0HUGjaoiNNz/DhQNhn0iW1r5xFJuKXnq38WAXeWLmMQ3+pQWIjdP8UEIvre6
-         CuEPFbSMW7HWa+tdaoUpF07w3XewzH5PSJ3YxsUdmczwUSbGPhewKofm/guVnKoakV
-         iGD73bTb9AjyEu70eY2R2tQqEHswppDTDTNRnHAtbv75RSd2gfEHROnw8QRGzuD3Eh
-         qqY1Mx1dxFJOawnfcZ89QgEnq7cGZGBQcghGbNIFLt8nEn3LJDn/eMn/of8ddlOZCz
-         rcv4VhUYUcDqw==
+        b=h9KjL4aoVgwD1R1D9L1Kgb/UnwLJMN4qStJnmref3shjjOR5wIry1pRaFczya4jqY
+         Sg2dwZqFwEGwLv4/aszv8B/V5QAFRSXsyoiEAWXiE4fc0WTeHXp9dyui4q8YORuSZJ
+         igEA/E/Tbpz45/+ju5HLjBgsSUxL4EfDwW8C8lO+9mNOmnoA/eEerutx8HLmags1eZ
+         lJQX/sR03gLDkfl+NUcthfu1PAv3UAJhEt2/P2SXvaacSkxHpECCkRE3rCXya+APtB
+         bONUnVoWuUOTPqYPD0gf9lbJgOEjd849B0E0kxq5GrJj08l7kQ4bZerv/v7dLFJDud
+         UVE4QN7Gbr66A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.10 16/25] tools/virtio: compile with -pthread
-Date:   Wed,  6 Apr 2022 21:14:04 -0400
-Message-Id: <20220407011413.114662-16-sashal@kernel.org>
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, jeremy.szu@canonical.com,
+        wse@tuxedocomputers.com, hui.wang@canonical.com,
+        tanureal@opensource.cirrus.com, cam@neo-zeon.de,
+        kailang@realtek.com, sami@loone.fi, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.10 13/25] ALSA: hda/realtek: Enable headset mic on Lenovo P360
+Date:   Wed,  6 Apr 2022 21:14:01 -0400
+Message-Id: <20220407011413.114662-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011413.114662-1-sashal@kernel.org>
 References: <20220407011413.114662-1-sashal@kernel.org>
@@ -52,36 +54,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Michael S. Tsirkin" <mst@redhat.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit f03560a57c1f60db6ac23ffd9714e1c69e2f95c7 ]
+[ Upstream commit 5a8738571747c1e275a40b69a608657603867b7e ]
 
-When using pthreads, one has to compile and link with -lpthread,
-otherwise e.g. glibc is not guaranteed to be reentrant.
+Lenovo P360 is another platform equipped with ALC897, and it needs
+ALC897_FIXUP_HEADSET_MIC_PIN quirk to make its headset mic work.
 
-This replaces -lpthread.
-
-Reported-by: Matthew Wilcox <willy@infradead.org>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20220325160501.705221-1-kai.heng.feng@canonical.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/virtio/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/pci/hda/patch_realtek.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/virtio/Makefile b/tools/virtio/Makefile
-index 0d7bbe49359d..1b25cc7c64bb 100644
---- a/tools/virtio/Makefile
-+++ b/tools/virtio/Makefile
-@@ -5,7 +5,8 @@ virtio_test: virtio_ring.o virtio_test.o
- vringh_test: vringh_test.o vringh.o virtio_ring.o
- 
- CFLAGS += -g -O2 -Werror -Wno-maybe-uninitialized -Wall -I. -I../include/ -I ../../usr/include/ -Wno-pointer-sign -fno-strict-overflow -fno-strict-aliasing -fno-common -MMD -U_FORTIFY_SOURCE -include ../../include/linux/kconfig.h
--LDFLAGS += -lpthread
-+CFLAGS += -pthread
-+LDFLAGS += -pthread
- vpath %.c ../../drivers/virtio ../../drivers/vhost
- mod:
- 	${MAKE} -C `pwd`/../.. M=`pwd`/vhost_test V=${V}
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 3bd37c02ce0e..91042c445c8c 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -10861,6 +10861,7 @@ static const struct snd_pci_quirk alc662_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x144d, 0xc051, "Samsung R720", ALC662_FIXUP_IDEAPAD),
+ 	SND_PCI_QUIRK(0x14cd, 0x5003, "USI", ALC662_FIXUP_USI_HEADSET_MODE),
+ 	SND_PCI_QUIRK(0x17aa, 0x1036, "Lenovo P520", ALC662_FIXUP_LENOVO_MULTI_CODECS),
++	SND_PCI_QUIRK(0x17aa, 0x1057, "Lenovo P360", ALC897_FIXUP_HEADSET_MIC_PIN),
+ 	SND_PCI_QUIRK(0x17aa, 0x32ca, "Lenovo ThinkCentre M80", ALC897_FIXUP_HEADSET_MIC_PIN),
+ 	SND_PCI_QUIRK(0x17aa, 0x32cb, "Lenovo ThinkCentre M70", ALC897_FIXUP_HEADSET_MIC_PIN),
+ 	SND_PCI_QUIRK(0x17aa, 0x32cf, "Lenovo ThinkCentre M950", ALC897_FIXUP_HEADSET_MIC_PIN),
 -- 
 2.35.1
 
