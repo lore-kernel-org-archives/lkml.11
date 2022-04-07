@@ -2,65 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F32C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:59:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A812C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:01:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344382AbiDGPBX convert rfc822-to-8bit (ORCPT
+        id S1344387AbiDGPD5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33450 "EHLO
+        Thu, 7 Apr 2022 11:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237542AbiDGPBW (ORCPT
+        with ESMTP id S232775AbiDGPDy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:01:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4DA1EF9F6
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:59:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1403CB8278D
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 14:59:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FFACC385A4;
-        Thu,  7 Apr 2022 14:59:19 +0000 (UTC)
-Date:   Thu, 7 Apr 2022 10:59:17 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <mingo@redhat.com>, <mcgrof@kernel.org>, <xiaowei66@huawei.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH -next] ftrace: Fix build warning
-Message-ID: <20220407105917.715eaa2e@gandalf.local.home>
-In-Reply-To: <20220407074612.16608-1-yuehaibing@huawei.com>
-References: <20220407074612.16608-1-yuehaibing@huawei.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 7 Apr 2022 11:03:54 -0400
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06DF270E;
+        Thu,  7 Apr 2022 08:01:53 -0700 (PDT)
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 237F1h7G022667
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 7 Apr 2022 11:01:43 -0400
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 3466715C3EE7; Thu,  7 Apr 2022 11:01:43 -0400 (EDT)
+Date:   Thu, 7 Apr 2022 11:01:43 -0400
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     cgel.zte@gmail.com
+Cc:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] ext4: remove redundant judgment
+Message-ID: <Yk7819rrn4MZlGog@mit.edu>
+References: <20220406090501.2488853-1-lv.ruyi@zte.com.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406090501.2488853-1-lv.ruyi@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 7 Apr 2022 15:46:12 +0800
-YueHaibing <yuehaibing@huawei.com> wrote:
-
-> If CONFIG_SYSCTL and CONFIG_DYNAMIC_FTRACE is n, build warns:
+On Wed, Apr 06, 2022 at 09:05:01AM +0000, cgel.zte@gmail.com wrote:
+> From: Lv Ruyi <lv.ruyi@zte.com.cn>
 > 
-> kernel/trace/ftrace.c:7912:13: error: ‘is_permanent_ops_registered’ defined but not used [-Werror=unused-function]
->  static bool is_permanent_ops_registered(void)
->              ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> kernel/trace/ftrace.c:89:12: error: ‘last_ftrace_enabled’ defined but not used [-Werror=unused-variable]
->  static int last_ftrace_enabled;
->             ^~~~~~~~~~~~~~~~~~~
+> iput() has already handled null and non-null parameter. so there is no
+> need to use if().
 > 
-> Move is_permanent_ops_registered() to ifdef block and mark last_ftrace_enabled as
-> __maybe_unused to fix this.
-> 
-> Fixes: 7cde53da38a3 ("ftrace: move sysctl_ftrace_enabled to ftrace.c")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  kernel/trace/ftrace.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+I'd use the word "conditional" instead of "judgment", so I'd suggest rewording it as:
 
--- Steve
+>ext4: remove unnecessary conditional
+>
+>
+>iput() already tests to see if it is called with a NULL argument, so
+>there is no need to check if the inode is NULL before calling iput().
+
+I've noticed that you've submitted this for other subsystems, so I'd
+thought I'd mention it before just applying the patch and quietly
+adjusting the commit description for clarity.
+
+					- Ted
