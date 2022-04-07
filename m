@@ -2,100 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A180DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECEA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232184AbiDGR41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:56:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40400 "EHLO
+        id S239786AbiDGR6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 13:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232194AbiDGR4V (ORCPT
+        with ESMTP id S1346729AbiDGR5s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:56:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 76CCF66ADD
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:54:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649354054;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=CK9Z5mVDe4mgBGspYQzzn8gJDiHvz3qCsQ86FE3l+us=;
-        b=WRXydbvXYfYpSEMZIYZNKUVjEfx//g2Sv5ZmeMayiluOaiTSHJYVzxCuqrCpmwtpr0So16
-        Ey84+AzbccnLk5ftCHqoWqKelPdbXz3i8Gitdwcq9paSS+5G1yIW8FR6i4K8mVPj95b4Ph
-        q5LreLl5+XgRFWdDWu1Xn2OUSRmn3wE=
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
- [209.85.210.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-656-5H-BLEXWOOWfd-95GyRc2Q-1; Thu, 07 Apr 2022 13:54:13 -0400
-X-MC-Unique: 5H-BLEXWOOWfd-95GyRc2Q-1
-Received: by mail-pf1-f199.google.com with SMTP id o11-20020a62cd0b000000b0050564575a89so1866728pfg.14
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 10:54:13 -0700 (PDT)
+        Thu, 7 Apr 2022 13:57:48 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE5FC6EEB
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:55:48 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id b43so8435219ljr.10
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 10:55:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jsMDlG11v+MVtQRsFhP/CQ1OTrnQ8uEDOmS4RecRlkI=;
+        b=ORkOlLgSKF3a29cfSn0mL3YU5r8sMjqP6eNNEVAVlMWqH8cZr59z4KSyJBj8Rg5uPV
+         Kat/nGraoT5MR97d0DbYvZIsJUqUEynZetH3yz51Ow3TyKFYIjw7341i+nn1RM2todwp
+         DiAHsiTV5wgiPoC91gUO6eZX+IZVmAdg6PkgwomeVonA3bcISCOr/o7MdLHGK0f2lXkz
+         Uxe/eixgFe6VUNM+tzU0Rb5HForMwAvuwVdLbr3CZQK72QXhoPkjH/6jAI9kAhCykZWH
+         Smv8VlghFDTQMxdzmruQJUb2iaBCLz6MPwVAzDR+AT7iHv4YxxoUTHY4C4x6ozBJBs0y
+         Cwiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CK9Z5mVDe4mgBGspYQzzn8gJDiHvz3qCsQ86FE3l+us=;
-        b=i+qJYccEeszrURyStVn5zk+qNOmaqZhj7pSavXZ4d8FFs9OGYS6+1nSSq+n0N32qRa
-         Nn9piPcAmsw0cSWk67fP5KEcxV5LsHInRGKZx9YUb4jMVtgVm1fNla9Mf67+qBGZ9w2M
-         sy4Jsek3TiSUhQkLJ+vwEmv8TggEVhk0E03+71zGdxS/LjmRTKdcObx3eiMV/vlpR/lX
-         Y4eUIqk0qe/w2uo1YGinaes0MUYFSFe/vBbzrkD2PbyHF5S8IP7KIR90ytWKqY+31ODB
-         VK1DDn71mFDLfk+LRHMAUb6tCgCzW7+zbQcmVBxaYeLnbynZ5hN3FVBMjeDPWbcwMS91
-         lSsQ==
-X-Gm-Message-State: AOAM531SEV/4e3Q7Bx/g418dnQbfJZB5ofaMl1vxycC1K8TFzXRJIOt+
-        ilC84/LSTBNsolB8ukip+gdkVxtH0dLwH9USeGFU/aYgkOWthaN37t3TRRmdtKirHKYgWFhs7UM
-        bVXRWpfW+zZArqrctA4BXz+9Q
-X-Received: by 2002:a65:6b92:0:b0:39c:c97b:1b57 with SMTP id d18-20020a656b92000000b0039cc97b1b57mr3129947pgw.517.1649354052365;
-        Thu, 07 Apr 2022 10:54:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxY+f9QwoacEBY4kuGoqYuYwACBfLXX9MLBnkeSnGdArm5ggb+OlgU6GsrW0+ANYwvG2th5MA==
-X-Received: by 2002:a65:6b92:0:b0:39c:c97b:1b57 with SMTP id d18-20020a656b92000000b0039cc97b1b57mr3129928pgw.517.1649354051960;
-        Thu, 07 Apr 2022 10:54:11 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id d8-20020a056a00198800b004fab740dbe6sm23439873pfl.15.2022.04.07.10.54.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 10:54:11 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     pkshih@realtek.com, kvalo@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
-        ndesaulniers@google.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] rtw89: ser: add a break statement
-Date:   Thu,  7 Apr 2022 13:53:49 -0400
-Message-Id: <20220407175349.3053362-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jsMDlG11v+MVtQRsFhP/CQ1OTrnQ8uEDOmS4RecRlkI=;
+        b=CRxJ1Im35Px38MfMKgoeRRya913GEkawI5AhLcZUrtVscIhAgLt+v2PDxwt3DWWkPZ
+         ta2sRfbXGMaCLgkzq4P2KFWWXu3LO5KbeP2/5tYXuVmbZjDiQvY//zxTvZSsq2QD+Lnk
+         +pjGUpqbnEO50v0YcPH0vyjZ/LYaRlA5HkVPLSc8WJYDA6CMQYyf1orhmf5ay7n9HVbP
+         vh/1lkN3hgTPAahugA3Gg1P0uE3lNktbRdbkSJojT9YiGnPfhgodefgc33iYURgSDGpO
+         7U/b4AKQ3sjQZGWYV7gagKLzSNWHMn8X//iHqI0ikj8gEqzoYxs1/Q29vZcwgRW5OrKb
+         gYXw==
+X-Gm-Message-State: AOAM532H3S/+jFQx8/LZQHf6pInOe1oY34uV42ct7ObN3LFnaZzwEHxB
+        eC4dOZv6Xl0/O1tSDWRobLK6KcBt3Cr8Y1HPNJv4mQ==
+X-Google-Smtp-Source: ABdhPJxLqzjwmj+80D/xgfjXP3EthWdIu26JGyBg/CC+rJTVqdM0C3HXG4yahc/S0m8P4pjLJk5kGUCEi83OBzFt8ek=
+X-Received: by 2002:a2e:8859:0:b0:249:83e5:9f9b with SMTP id
+ z25-20020a2e8859000000b0024983e59f9bmr5065725ljj.165.1649354146111; Thu, 07
+ Apr 2022 10:55:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220406153023.500847-1-masahiroy@kernel.org> <20220406153023.500847-6-masahiroy@kernel.org>
+In-Reply-To: <20220406153023.500847-6-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 7 Apr 2022 10:55:34 -0700
+Message-ID: <CAKwvOdnHneCy6YeanmvDrabYMWysfQ=WMopsT_gRyrruT8=1Dw@mail.gmail.com>
+Subject: Re: [PATCH 5/7] kbuild: get rid of duplication in *.mod files
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The clang build fails with
-ser.c:397:2: error: unannotated fall-through
-  between switch labels [-Werror,-Wimplicit-fallthrough]
-        default:
-        ^
-The case above the default does not have a break.
-So add one.
+On Wed, Apr 6, 2022 at 8:31 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> It is allowed to add the same objects multiple times to obj-y / obj-m:
+>
+>   obj-y += foo.o foo.o foo.o
+>   obj-m += bar.o bar.o bar.o
+>
+> It is also allowed to add the same objects multiple times to a composite
+> module:
+>
+>   obj-m    += foo.o
+>   foo-objs := foo1.o foo2.o foo2.o foo1.o
+>
+> This flexibility is useful because the same object might be selected by
+> different CONFIG options, like this:
+>
+>   obj-m               += foo.o
+>   foo-y               := foo1.o
+>   foo-$(CONFIG_FOO_X) += foo2.o
+>   foo-$(CONFIG_FOO_Y) += foo2.o
+>
+> The duplicated objects are omitted at link time. It works naturally in
+> Makefiles because GNU Make removes duplication in $^ without changing
+> the order.
+>
+> It is working well, almost...
+>
+> A small flaw I notice is, *.mod contains duplication in such a case.
+>
+> This is probably not a big deal. As far as I know, the only small
+> problem is scripts/mod/sumversion.c parses the same file multiple
+> times.
+>
+> I am fixing this because I plan to reuse *.mod for other purposes,
+> where the duplication can be problematic.
+>
+> The code change is quite simple. We already use awk to drop duplicated
+> lines in modules.order (see cmd_modules_order in the same file).
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/wireless/realtek/rtw89/ser.c | 1 +
- 1 file changed, 1 insertion(+)
+Why does the top level Makefile reassign cmd_modules_order rather than
+use the original value in scripts/Makefile.build?
 
-diff --git a/drivers/net/wireless/realtek/rtw89/ser.c b/drivers/net/wireless/realtek/rtw89/ser.c
-index 25d1df10f226..5aebd6839d29 100644
---- a/drivers/net/wireless/realtek/rtw89/ser.c
-+++ b/drivers/net/wireless/realtek/rtw89/ser.c
-@@ -394,6 +394,7 @@ static void ser_idle_st_hdl(struct rtw89_ser *ser, u8 evt)
- 		break;
- 	case SER_EV_STATE_OUT:
- 		rtw89_hci_recovery_start(rtwdev);
-+		break;
- 	default:
- 		break;
- 	}
+> I copied the code, but changed RS to use spaces as record separators.
+>
+> I also changed the file format to list one object per line.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+>
+>  scripts/Makefile.build   | 3 ++-
+>  scripts/mod/sumversion.c | 2 +-
+>  2 files changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> index 6ae92d119dfa..f7a30f378e20 100644
+> --- a/scripts/Makefile.build
+> +++ b/scripts/Makefile.build
+> @@ -303,7 +303,8 @@ $(obj)/%.prelink.o: $(obj)/%.o FORCE
+>         $(call if_changed,cc_prelink_modules)
+>  endif
+>
+> -cmd_mod = echo $(addprefix $(obj)/, $(call real-search, $*.o, .o, -objs -y -m)) > $@
+> +cmd_mod = echo $(addprefix $(obj)/, $(call real-search, $*.o, .o, -objs -y -m)) | \
+> +       $(AWK) -v RS='( |\n)' '!x[$$0]++' > $@
+
+God AWK is unreadable. Any reason we can't use GNU make's sort builtin?
+https://www.gnu.org/software/make/manual/html_node/Text-Functions.html
+
+>
+>  $(obj)/%.mod: $(obj)/%$(mod-prelink-ext).o FORCE
+>         $(call if_changed,mod)
+> diff --git a/scripts/mod/sumversion.c b/scripts/mod/sumversion.c
+> index 0125698f2037..79bb9eaa65ac 100644
+> --- a/scripts/mod/sumversion.c
+> +++ b/scripts/mod/sumversion.c
+> @@ -398,7 +398,7 @@ void get_src_version(const char *modname, char sum[], unsigned sumlen)
+>         buf = read_text_file(filelist);
+>
+>         md4_init(&md);
+> -       while ((fname = strsep(&buf, " \n"))) {
+> +       while ((fname = strsep(&buf, "\n"))) {
+>                 if (!*fname)
+>                         continue;
+>                 if (!(is_static_library(fname)) &&
+> --
+> 2.32.0
+>
+
+
 -- 
-2.27.0
-
+Thanks,
+~Nick Desaulniers
