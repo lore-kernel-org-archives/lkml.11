@@ -2,98 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D78D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD7DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242854AbiDGIUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37142 "EHLO
+        id S234120AbiDGIUp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242776AbiDGIUe (ORCPT
+        with ESMTP id S242803AbiDGIUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 04:20:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5CA4D21E503
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:18:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649319513;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jW/rk7FENs40EnB0uCA1bBOqTjnDJxLTwFnAX1mGka8=;
-        b=hw+2QpvcYeynyKijXuBGS4oZeUjC2PVRxAdT1LuEe17Tvbmwg2gST0YST5qWyo8KN6jB9A
-        YlP1d68XPbEnYM5Sz4Y8XKoMewjyGFsdAPkIUeMKkQByr1DeyHy5iS2kvKv/8YmboRzzME
-        1tA6bEiuKGulKRkJ8vIstfkxRWmtuZg=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-1XX1et3ON6mRPYQlCJU-zg-1; Thu, 07 Apr 2022 04:18:32 -0400
-X-MC-Unique: 1XX1et3ON6mRPYQlCJU-zg-1
-Received: by mail-wm1-f72.google.com with SMTP id k16-20020a7bc310000000b0038e6cf00439so2642661wmj.0
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 01:18:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=jW/rk7FENs40EnB0uCA1bBOqTjnDJxLTwFnAX1mGka8=;
-        b=svgPz6uLZ1u7+Km8VHfA5WEcEr+b/6QQvCq1Gplixl8pO1+kmKWyvAokVeKek6/npW
-         QmQB4OY29NfbO2gxuHTDEAbhKYN39ooEYKXelaIGHPR2ARevTqwLrXT1W800nCpWx1Gq
-         H3k4ri9O6Y68SYcmAIZVa0zUepQFEh4SxFlvfaHlSgboU/Pc+9MmwSKkEx55A8O1UAKM
-         CL+L2Ppojzf9xq2dZfC/iDRvyEeMnqWNYD1oj3E72Fz+z5Eo3bIeY8OsGAfXpPWYTJJT
-         1mqST5KbZakttYh9Q4COtPeb1sl6qLxYk3G7JH+AvxR3U2MyVMv9LqPPXWYuMJcTNvo+
-         nfbg==
-X-Gm-Message-State: AOAM530ysCJd5pD39hEuiZK0jf9MIRlLc1E8BdzY5PRU28nW4Jx52FXR
-        wL/fiWVTs+ulosy2JbLgM/hN2QaKNqcWBqAZiInewh/mSth0MKIfQs3UUZYXw/EwzywiFyHXsaX
-        bZH+4EPtNMr/0wBtZ9MuBg9bT
-X-Received: by 2002:a5d:6812:0:b0:203:f854:c380 with SMTP id w18-20020a5d6812000000b00203f854c380mr9677203wru.235.1649319511259;
-        Thu, 07 Apr 2022 01:18:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxClxX14TbXWBIOJlDwZ06lVilSCrfAbdShQ6nkODxUZiE+GQP/JhL48g6k/Zr7Z+5NJx1VgQ==
-X-Received: by 2002:a5d:6812:0:b0:203:f854:c380 with SMTP id w18-20020a5d6812000000b00203f854c380mr9677191wru.235.1649319511074;
-        Thu, 07 Apr 2022 01:18:31 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-96-237.dyn.eolo.it. [146.241.96.237])
-        by smtp.gmail.com with ESMTPSA id y6-20020a05600015c600b00203fa70b4ebsm20316538wry.53.2022.04.07.01.18.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 01:18:30 -0700 (PDT)
-Message-ID: <62711467c3990d38ed8a11bf1c7c2594e8e1b436.camel@redhat.com>
-Subject: Re: [PATCH 0/2] dt-bindings: net: Fix ave descriptions
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Date:   Thu, 07 Apr 2022 10:18:29 +0200
-In-Reply-To: <1649145181-30001-1-git-send-email-hayashi.kunihiko@socionext.com>
-References: <1649145181-30001-1-git-send-email-hayashi.kunihiko@socionext.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7985F7B126;
+        Thu,  7 Apr 2022 01:18:35 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 47B9B11FB;
+        Thu,  7 Apr 2022 01:18:35 -0700 (PDT)
+Received: from e126645.nice.arm.com (e126645.nice.arm.com [10.34.129.54])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2BD3E3F5A1;
+        Thu,  7 Apr 2022 01:18:31 -0700 (PDT)
+From:   Pierre Gondois <pierre.gondois@arm.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ionela.Voinescu@arm.com, Lukasz.Luba@arm.com,
+        Morten.Rasmussen@arm.com, Dietmar.Eggemann@arm.com, maz@kernel.org,
+        Pierre Gondois <Pierre.Gondois@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Fuad Tabba <tabba@google.com>, Rob Herring <robh@kernel.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org
+Subject: [PATCH v2 2/3] cpufreq: CPPC: Add per_cpu efficiency_class
+Date:   Thu,  7 Apr 2022 10:16:17 +0200
+Message-Id: <20220407081620.1662192-3-pierre.gondois@arm.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220407081620.1662192-1-pierre.gondois@arm.com>
+References: <20220407081620.1662192-1-pierre.gondois@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Pierre Gondois <Pierre.Gondois@arm.com>
 
-On Tue, 2022-04-05 at 16:52 +0900, Kunihiko Hayashi wrote:
-> This series fixes dt-schema descriptions for ave4 controller.
-> 
-> Kunihiko Hayashi (2):
->   dt-bindings: net: ave: Clean up clocks, resets, and their names using
->     compatible string
->   dt-bindings: net: ave: Use unevaluatedProperties
-> 
->  .../bindings/net/socionext,uniphier-ave4.yaml | 57 +++++++++++++------
->  1 file changed, 39 insertions(+), 18 deletions(-)
+In ACPI, describing power efficiency of CPUs can be done through the
+following arm specific field:
+ACPI 6.4, s5.2.12.14 'GIC CPU Interface (GICC) Structure',
+'Processor Power Efficiency Class field':
+  Describes the relative power efficiency of the associated pro-
+  cessor. Lower efficiency class numbers are more efficient than
+  higher ones (e.g. efficiency class 0 should be treated as more
+  efficient than efficiency class 1). However, absolute values
+  of this number have no meaning: 2 isn’t necessarily half as
+  efficient as 1.
 
-@Rob: since you acked this series, I guess you prefer/except this will
-go via net net-next tree, is that correct?
+The efficiency_class field is stored in the GicC structure of the
+ACPI MADT table and it's currently supported in Linux for arm64 only.
+Thus, this new functionality is introduced for arm64 only.
 
-Thanks!
+To allow the cppc_cpufreq driver to know and preprocess the
+efficiency_class values of all the CPUs, add a per_cpu efficiency_class
+variable to store them. Also add a static efficiency_class_populated
+to let the driver know efficiency_class values are usable and register
+an artificial Energy Model (EM) based on normalized class values.
 
-Paolo
+At least 2 different efficiency classes must be present,
+otherwise there is no use in creating an Energy Model.
+
+The efficiency_class values are squeezed in [0:#efficiency_class-1]
+while conserving the order. For instance, efficiency classes of:
+  [111, 212, 250]
+will be mapped to:
+  [0 (was 111), 1 (was 212), 2 (was 250)].
+
+Each policy being independently registered in the driver, populating
+the per_cpu efficiency_class is done only once at the driver
+initialization. This prevents from having each policy re-searching the
+efficiency_class values of other CPUs.
+
+The patch also exports acpi_cpu_get_madt_gicc() to fetch the GicC
+structure of the ACPI MADT table for each CPU.
+
+Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
+---
+ arch/arm64/kernel/smp.c        |  1 +
+ drivers/cpufreq/cppc_cpufreq.c | 44 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 45 insertions(+)
+
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index 27df5c1e6baa..67243011279d 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -512,6 +512,7 @@ struct acpi_madt_generic_interrupt *acpi_cpu_get_madt_gicc(int cpu)
+ {
+ 	return &cpu_madt_gicc[cpu];
+ }
++EXPORT_SYMBOL_GPL(acpi_cpu_get_madt_gicc);
+ 
+ /*
+  * acpi_map_gic_cpu_interface - parse processor MADT entry
+diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
+index ffcd9704add2..67a9f48939b6 100644
+--- a/drivers/cpufreq/cppc_cpufreq.c
++++ b/drivers/cpufreq/cppc_cpufreq.c
+@@ -422,12 +422,55 @@ static unsigned int cppc_cpufreq_get_transition_delay_us(unsigned int cpu)
+ 	return cppc_get_transition_latency(cpu) / NSEC_PER_USEC;
+ }
+ 
++static bool efficiency_class_populated;
++static DEFINE_PER_CPU(unsigned int, efficiency_class);
++
++static int populate_efficiency_class(void)
++{
++	struct acpi_madt_generic_interrupt *gicc;
++	DECLARE_BITMAP(used_classes, 256) = {};
++	int class, cpu, index;
++
++	for_each_possible_cpu(cpu) {
++		gicc = acpi_cpu_get_madt_gicc(cpu);
++		class = gicc->efficiency_class;
++		bitmap_set(used_classes, class, 1);
++	}
++
++	if (bitmap_weight(used_classes, 256) <= 1) {
++		pr_debug("Efficiency classes are all equal (=%d). "
++			"No EM registered", class);
++		return -EINVAL;
++	}
++
++	/*
++	 * Squeeze efficiency class values on [0:#efficiency_class-1].
++	 * Values are per spec in [0:255].
++	 */
++	index = 0;
++	for_each_set_bit(class, used_classes, 256) {
++		for_each_possible_cpu(cpu) {
++			gicc = acpi_cpu_get_madt_gicc(cpu);
++			if (gicc->efficiency_class == class)
++				per_cpu(efficiency_class, cpu) = index;
++		}
++		index++;
++	}
++
++	efficiency_class_populated = true;
++	return 0;
++}
++
+ #else
+ 
+ static unsigned int cppc_cpufreq_get_transition_delay_us(unsigned int cpu)
+ {
+ 	return cppc_get_transition_latency(cpu) / NSEC_PER_USEC;
+ }
++static int populate_efficiency_class(void)
++{
++	return 0;
++}
+ #endif
+ 
+ 
+@@ -757,6 +800,7 @@ static int __init cppc_cpufreq_init(void)
+ 
+ 	cppc_check_hisi_workaround();
+ 	cppc_freq_invariance_init();
++	populate_efficiency_class();
+ 
+ 	ret = cpufreq_register_driver(&cppc_cpufreq_driver);
+ 	if (ret)
+-- 
+2.25.1
 
