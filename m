@@ -2,214 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A72C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D288EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:41:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230476AbiDGUmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:42:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59518 "EHLO
+        id S230356AbiDGUnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230521AbiDGUmC (ORCPT
+        with ESMTP id S231883AbiDGUnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:42:02 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B76362FFE
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:28:20 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id a11so8990771qtb.12
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:28:20 -0700 (PDT)
+        Thu, 7 Apr 2022 16:43:11 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C047F322812
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:33:00 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id d29so9509593wra.10
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:33:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EW4jKj0Aht/BtYVNZ+iEkVJaVKtkBsTq1J5snmk+nuY=;
-        b=flcQDSKpQ1QojYalveVlM2QHe4EtNYUqKNuiUf73lypG7bstIhL9ocdBgbQBh5Sqja
-         xwvhtj2rN4/FqHuP1JsNlWwRpWCWnAc6tTUbe+0v1JUFdXEEmb2SI6rUMigoHiIPhEky
-         9RNA6V8JjVxaC7YbWgKp/Hd558UCx0VCb0DxY=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v3aZfabxzekEMOjAePaQMaMpU19mVrYZFeElRmeKm3o=;
+        b=s3DhjuuVvsNc7ISVmTZ3pr4gsFhIbPpcbSBHQJPF5bfVBpwTAAedlSSd3th1nqQmhZ
+         wQck8ROyKEGzCx25khY9rQGLBICgA4uJov/nftmeRFt6t3C1xbzPkqladUp6+kN8y3YS
+         2tjCeKNizXoGc2IPpYR44KFvQrKclhdHkDTvC5rdZ+FgqKYfjGOan6e6yzppkSX8CRjl
+         6DDGyZbLuSGbFotl6BMeyMVCVXfDj6SOF++1KjsOwMYjeNROajoaYSbv0FKKUr8mhvQT
+         jVWrBy83tIVq5W0xqDpdqO7lYE0xTuiLVnFCRukrMic3Cb2ZqRn7xACdg2cho2GrOzWL
+         lhWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EW4jKj0Aht/BtYVNZ+iEkVJaVKtkBsTq1J5snmk+nuY=;
-        b=cojjXEyFLmyS691RcHJZ2bKPizvMKOQUVHFP6SUA6rB+XvAtpHgi9OtUwthis/17Gl
-         WAQwXTS8YmUb1doK6BmEEKFrZN56kOzVIZxKBbS8p/sPNMWqa2yth1/5T8uuFvY6tGDz
-         k7oxFbjKGn+g4KnFK5RtpP2lpSZcqomWI98g2pASL32gW9kRDpFzMiw6gfwRYVXPgtiw
-         Chewz4T3DnrW9yEiS60f728YqeXoCIE8Dsxsk1cK+I23jXb7mw0RMrOi7MEuTNUgOX2S
-         2fWNTn3IJK2oakv4gNk8AELRMN6occdihV1F5hCJfM9AfmPYRymUWM0lViuEsmYHlVjw
-         ougg==
-X-Gm-Message-State: AOAM533ESEZuViJs1xbtPyvlDMXKWbFFBLPuwQdkTb0vYIXEyu+7nyq6
-        PVVkwJ7AoshIz47egyO1I5VsNs4oRo7LRQ==
-X-Google-Smtp-Source: ABdhPJwNaq968o79j7Sy32TZQ5p516IMnSRGKRGZljWrjagyqsAVFjo4QD4QFxfDdSlgbH/rE3i/zQ==
-X-Received: by 2002:a02:a98f:0:b0:315:19db:27a3 with SMTP id q15-20020a02a98f000000b0031519db27a3mr7313724jam.184.1649361633505;
-        Thu, 07 Apr 2022 13:00:33 -0700 (PDT)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id u15-20020a056e021a4f00b002c665afb993sm12217063ilv.11.2022.04.07.13.00.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 13:00:33 -0700 (PDT)
-Subject: Re: [PATCH 3/4] selftests/memfd: add tests for F_SEAL_EXEC
-To:     Daniel Verkamp <dverkamp@chromium.org>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Mattias Nissler <mnissler@chromium.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220401220834.307660-1-dverkamp@chromium.org>
- <20220401220834.307660-4-dverkamp@chromium.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <6f71a4f3-8f8e-926b-883c-1df630cfc1a0@linuxfoundation.org>
-Date:   Thu, 7 Apr 2022 14:00:32 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v3aZfabxzekEMOjAePaQMaMpU19mVrYZFeElRmeKm3o=;
+        b=sGs6MrpURdKzGTjFx/S8s1dVItXbNP/Qa6VcPXCzWbIzkZTyZicP3A5gyV4dfQMNft
+         TWLp+thbQMYxm4b5AvG2d33NjMPe0gGGiwABpGK1YhM0hWG3ivRwloHt+NQcCCoh+rtv
+         QpQv1HyutHjoVD7ZsYlnP/PGEsfHiYvhGJsqcLrSz2AF+60S1KcpCyzt7H0SJnNljJEK
+         T3aYatWaPAzQASmeSGIkLfbcmjjXrwJpD+FC9lu5hdHUYiHIMtsRzpZkKkMvNUvD2RX4
+         ofcQPsjYIhV6gQU3zzTZVqL+4CLvhdoQekK0unUBgF5x+Xk+hj6Q9X6Um1/IO8114+cU
+         O2xA==
+X-Gm-Message-State: AOAM532I3UDSXLw1osxSxgp8C80wdk55o/8/v7m8/MwMjLLKL+qQ7iT7
+        61RIkpS2kyPml2hSpGioi3U7YVPpKMRkUuosifP3gqKCDBA=
+X-Google-Smtp-Source: ABdhPJzMKUVGvuvDCXXirl9amkEhAVZVq6GjbXmwQ6sEGeeeImLSFrFcc4bPuDEMbNimHSV2NgRruSdLbwMh14CgUjk=
+X-Received: by 2002:a05:6512:c01:b0:448:6aec:65c5 with SMTP id
+ z1-20020a0565120c0100b004486aec65c5mr10692711lfu.193.1649361553879; Thu, 07
+ Apr 2022 12:59:13 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220401220834.307660-4-dverkamp@chromium.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220405174637.2074319-1-pgonda@google.com> <Yk3Wg3eZsGZKb3Wm@google.com>
+In-Reply-To: <Yk3Wg3eZsGZKb3Wm@google.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Thu, 7 Apr 2022 13:59:02 -0600
+Message-ID: <CAMkAt6ompYSJK0xgmuyMTacLP2+iBjXapVWvj53sYjfzfDJjKQ@mail.gmail.com>
+Subject: Re: [PATCH v2] KVM: SEV: Mark nested locking of vcpu->mutex
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm list <kvm@vger.kernel.org>,
+        John Sperbeck <jsperbeck@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/1/22 4:08 PM, Daniel Verkamp wrote:
-> Basic tests to ensure that user/group/other execute bits cannot be
-> changed after applying F_SEAL_EXEC to a memfd.
-> 
-> Signed-off-by: Daniel Verkamp <dverkamp@chromium.org>
-> ---
->   tools/testing/selftests/memfd/memfd_test.c | 80 ++++++++++++++++++++++
->   1 file changed, 80 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/memfd/memfd_test.c b/tools/testing/selftests/memfd/memfd_test.c
-> index 94df2692e6e4..fdb0e46e9df9 100644
-> --- a/tools/testing/selftests/memfd/memfd_test.c
-> +++ b/tools/testing/selftests/memfd/memfd_test.c
-> @@ -28,6 +28,10 @@
->   #define MFD_DEF_SIZE 8192
->   #define STACK_SIZE 65536
->   
-> +#ifndef F_SEAL_EXEC
-> +#define F_SEAL_EXEC	0x0020
-> +#endif
-> +
->   /*
->    * Default is not to test hugetlbfs
->    */
-> @@ -594,6 +598,48 @@ static void mfd_fail_grow_write(int fd)
->   	}
->   }
->   
-> +static void mfd_assert_mode(int fd, int mode)
-> +{
-> +	struct stat st;
-> +
-> +	if (fstat(fd, &st) < 0) {
-> +		printf("fstat(%d) failed: %m\n", fd);
+On Wed, Apr 6, 2022 at 12:06 PM Sean Christopherson <seanjc@google.com> wrote:
+>
+> On Tue, Apr 05, 2022, Peter Gonda wrote:
+> > diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+> > index 75fa6dd268f0..673e1ee2cfc9 100644
+> > --- a/arch/x86/kvm/svm/sev.c
+> > +++ b/arch/x86/kvm/svm/sev.c
+> > @@ -1591,14 +1591,21 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
+> >       atomic_set_release(&src_sev->migration_in_progress, 0);
+> >  }
+> >
+> > +#define SEV_MIGRATION_SOURCE 0
+> > +#define SEV_MIGRATION_TARGET 1
+> >
+> > -static int sev_lock_vcpus_for_migration(struct kvm *kvm)
+> > +/*
+> > + * To avoid lockdep warnings callers should pass @vm argument with either
+>
+> I think it's important to call that these are false positives, saying "avoid
+> lockdep warnings" suggests we're intentionally not fixing bugs :-)
+>
+> > + * SEV_MIGRATION_SOURCE or SEV_MIGRATE_TARGET. This allows subclassing of all
+> > + * vCPU mutex locks.
+> > + */
+>
+> If we use an enum, that'll make the param self-documenting.  And we can also use
+> that to eliminate the remaining magic number '2'.  E.g. this as fixup.
 
-Let's print the filename here - just printing fd isn't useful.
-
-> +		abort();
-> +	} else if ((st.st_mode & 07777) != mode) {
-> +		printf("wrong file mode 0%04o, but expected 0%04o\n",
-> +		       (int)st.st_mode & 07777, mode);
-
-This one doesn't even print fd - same comment here about filename.
-
-> +		abort();
-> +	}
-> +}
-> +
-> +static void mfd_assert_chmod(int fd, int mode)
-> +{
-> +	if (fchmod(fd, mode) < 0) {
-> +		printf("fchmod(0%04o) failed: %m\n", mode);
-
-Same here.
-
-> +		abort();
-> +	}
-> +
-> +	mfd_assert_mode(fd, mode);
-> +}
-> +
-> +static void mfd_fail_chmod(int fd, int mode)
-> +{
-> +	struct stat st;
-> +
-> +	if (fstat(fd, &st) < 0) {
-> +		printf("fstat(%d) failed: %m\n", fd);
-
-Same comment about filename
-
-> +		abort();
-> +	}
-> +
-> +	if (fchmod(fd, mode) == 0) {
-> +		printf("fchmod(0%04o) didn't fail as expected\n");
-
-Same comment about filename
-
-> +		abort();
-> +	}
-> +
-> +	/* verify that file mode bits did not change */
-> +	mfd_assert_mode(fd, st.st_mode & 07777);
-> +}
-> +
->   static int idle_thread_fn(void *arg)
->   {
->   	sigset_t set;
-> @@ -880,6 +926,39 @@ static void test_seal_resize(void)
->   	close(fd);
->   }
->   
-> +/*
-> + * Test SEAL_EXEC
-> + * Test that chmod() cannot change x bits after sealing
-> + */
-> +static void test_seal_exec(void)
-> +{
-> +	int fd;
-> +
-> +	printf("%s SEAL-EXEC\n", memfd_str);
-> +
-> +	fd = mfd_assert_new("kern_memfd_seal_exec",
-> +			    mfd_def_size,
-> +			    MFD_CLOEXEC | MFD_ALLOW_SEALING);
-> +
-> +	mfd_assert_mode(fd, 0777);
-> +
-> +	mfd_assert_chmod(fd, 0644);
-> +
-> +	mfd_assert_has_seals(fd, 0);
-> +	mfd_assert_add_seals(fd, F_SEAL_EXEC);
-> +	mfd_assert_has_seals(fd, F_SEAL_EXEC);
-> +
-> +	mfd_assert_chmod(fd, 0600);
-> +	mfd_fail_chmod(fd, 0777);
-> +	mfd_fail_chmod(fd, 0670);
-> +	mfd_fail_chmod(fd, 0605);
-> +	mfd_fail_chmod(fd, 0700);
-> +	mfd_fail_chmod(fd, 0100);
-> +	mfd_assert_chmod(fd, 0666);
-> +
-> +	close(fd);
-> +}
-> +
->   /*
->    * Test sharing via dup()
->    * Test that seals are shared between dupped FDs and they're all equal.
-> @@ -1059,6 +1138,7 @@ int main(int argc, char **argv)
->   	test_seal_shrink();
->   	test_seal_grow();
->   	test_seal_resize();
-> +	test_seal_exec();
->   
->   	test_share_dup("SHARE-DUP", "");
->   	test_share_mmap("SHARE-MMAP", "");
-> 
-
-The rest looks good.
-
-thanks,
--- Shuah
+Sounds good. I took this fixup into the V3. Thanks.
