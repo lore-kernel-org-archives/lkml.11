@@ -2,172 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3303C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 210BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242789AbiDGIFV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:05:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51512 "EHLO
+        id S242802AbiDGIFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242800AbiDGIEp (ORCPT
+        with ESMTP id S242641AbiDGIEq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:04:45 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6347D1680A0;
-        Thu,  7 Apr 2022 01:02:05 -0700 (PDT)
-X-UUID: ee5e79815f2742f892d40b9404a52670-20220407
-X-UUID: ee5e79815f2742f892d40b9404a52670-20220407
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 430986515; Thu, 07 Apr 2022 16:01:59 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 7 Apr 2022 16:01:58 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Apr 2022 16:01:56 +0800
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <yong.wu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, <yen-chang.chen@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>
-Subject: [PATCH v6 32/34] iommu/mediatek: Initialise/Remove for multi bank dev
-Date:   Thu, 7 Apr 2022 15:57:24 +0800
-Message-ID: <20220407075726.17771-33-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220407075726.17771-1-yong.wu@mediatek.com>
-References: <20220407075726.17771-1-yong.wu@mediatek.com>
+        Thu, 7 Apr 2022 04:04:46 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9571AE18A
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:02:08 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id k23so9149637ejd.3
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 01:02:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=FtTGYoZBTW8ow+PLX0i7R21myuU0fNNQcMhb+zblPAc=;
+        b=uxqRn3a8IF8tiUBOJKawK6cuBCNe0K5brhulWQN8q2hgItAdi1G+c+dXI7QqZE4aUB
+         1wkG65UPaesVBVCKQMrS1vu0UlwC6j3d2cNBI1ShEddVE/zRD0LE80pl+zr7jdAMmuPa
+         5MTaLIxmhvn9EEfCiOWIHOH4WvtaqiMl8EmOmhH6bbrgQ2oOJylEJL8pMkIU6nVV/bFw
+         RtvbJSsX6JC1AsJh9BG0zrmr4YWD7LFc3BZ1zHGgSD+rLnArpq+RbsxPWKtE7B2laCDx
+         pZpSWXsmF7esXocSCbMJr/n1Az0KIGD/jABFis9Z+6G5/IJSX9hz0rjSaQmCj2v6dZc6
+         jX6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FtTGYoZBTW8ow+PLX0i7R21myuU0fNNQcMhb+zblPAc=;
+        b=Ldj62W8Hw4RcktemC6A0GcgnZ5sa+44YpCel2Uu6s13AaMi/MV7NxirXJSlVOnwxCg
+         viDaFZfg86PqRQv8ScAQYdzyqhL7X3ohZ2DqvFoOfppvOR6SZLUZhEHeKEZtvaJNu6IP
+         giTSkYfqi+DAFIAK49Gv89zXRYp5yC9+iLs4SOP+QxXKNHQ1cAV3CJet+qZf4MTaygAb
+         3OYRuH5bRwas7CdHNh1pvffNVU5BJVocJ/yABjzdIK4rGH6a8iYc7CX7v8cCfXfFWBpa
+         ygtjIm76//ZFDZgXrusefmes65mTP/JAuWzGgdS3m9nY6+qOcZkAOA8trIWc6k9iJwCD
+         oe9g==
+X-Gm-Message-State: AOAM531wZvRx5VnFY3BFfIP4AZc8HMjZeyF5ztsQuyQ6QPikOqrRZU9a
+        b2AkuoY079P4uw/9H7345Q8IGQ==
+X-Google-Smtp-Source: ABdhPJzwHOmJl6pbXXOV9Hl6T1ll6zknKrQ85BVeGuSYhvTIaYNHSBxWnNk6K2YCmPQf56IPUAM/mQ==
+X-Received: by 2002:a17:907:7f94:b0:6da:64ec:fabc with SMTP id qk20-20020a1709077f9400b006da64ecfabcmr12353370ejc.717.1649318526653;
+        Thu, 07 Apr 2022 01:02:06 -0700 (PDT)
+Received: from [192.168.0.185] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id u10-20020a170906b10a00b006e1004406easm7408620ejy.93.2022.04.07.01.02.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 01:02:06 -0700 (PDT)
+Message-ID: <9bebcd48-b91e-9809-4eea-7c5e818a6b8c@linaro.org>
+Date:   Thu, 7 Apr 2022 10:02:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] ARM: s3c: mark as deprecated and schedule removal
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
+        <linux-samsung-soc@vger.kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Sylwester Nawrocki <snawrocki@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Tomasz Figa <tomasz.figa@gmail.com>
+References: <20220407072319.75614-1-krzysztof.kozlowski@linaro.org>
+ <CAK8P3a07vWeYcVdzNjv4HgP_qhU9rQBkcKKmxoy8Uc9gg_0VUQ@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAK8P3a07vWeYcVdzNjv4HgP_qhU9rQBkcKKmxoy8Uc9gg_0VUQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The registers for each bank of the IOMMU base are in order, delta is
-0x1000. Initialise the base for each bank.
+On 07/04/2022 09:40, Arnd Bergmann wrote:
+> On Thu, Apr 7, 2022 at 9:23 AM Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>>
+>> The Samsung S3C24xx and S3C64xx platforms are very old designs. S3C2416
+>> was introduced in 2008 and S3C6410 in 2009/2010.  They are not widely
+>> available anymore - out-of-stock on FriendlyArm (one of manufacturers of
+>> boards) and only few specialist stores still offer them for quite a high
+>> price.
+>>
+>> The community around these platforms was not very active, so I suspect
+>> no one really uses them anymore. Maintenance takes precious time so
+>> there is little sense in keeping them alive if there are no real users.
+>>
+>> Let's mark all S3C24xx and S3C64xx platforms as deprecated and mention
+>> possible removal in after 2022 for the first and 2024 for the lattere.
+>> The deprecation message will be as text in Kconfig, build message (not a
+>> warning though) and runtime print error.
+>>
+>> If there are any users, they might respond and postpone the removal.
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> Acked-by: Heiko Stuebner <heiko@sntech.de>
+>> Acked-by: Tomasz Figa <tomasz.figa@gmail.com>
+> 
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
+> 
+> Should I pick it up through the fixes branch for 5.18 if there are no
+> immediate objections, or do you prefer to just do it as part of your
+> normal samsung patches for 5.19?
+> 
+> If you have nothing else planned for mach-s3c, I can also add it
+> to the multiplatform branch that already touches the platform.
 
-For all the previous SoC, we only have bank0. thus use "do {} while()"
-to allow bank0 always go.
+Feel free to take it as fixes (or s3c multiplatform).
 
-When removing the device, Not always all the banks are initialised, it
-depend on if there is masters for that bank.
-
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/mtk_iommu.c | 44 ++++++++++++++++++++++++++-------------
- 1 file changed, 30 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index d42b3d35a36e..028dc642a31e 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -113,6 +113,7 @@
- #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
- 
- #define MTK_PROTECT_PA_ALIGN			256
-+#define MTK_IOMMU_BANK_SZ			0x1000
- 
- #define PERICFG_IOMMU_1				0x714
- 
-@@ -1104,7 +1105,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	struct component_match  *match = NULL;
- 	struct regmap		*infracfg;
- 	void                    *protect;
--	int                     ret, banks_num;
-+	int                     ret, banks_num, i = 0;
- 	u32			val;
- 	char                    *p;
- 	struct mtk_iommu_bank_data *bank;
-@@ -1145,27 +1146,36 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		data->enable_4GB = !!(val & F_DDR_4GB_SUPPORT_EN);
- 	}
- 
-+	banks_num = data->plat_data->banks_num;
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (resource_size(res) < banks_num * MTK_IOMMU_BANK_SZ) {
-+		dev_err(dev, "banknr %d. res %pR is not enough.\n", banks_num, res);
-+		return -EINVAL;
-+	}
- 	base = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
- 	ioaddr = res->start;
- 
--	banks_num = data->plat_data->banks_num;
- 	data->bank = devm_kmalloc(dev, banks_num * sizeof(*data->bank), GFP_KERNEL);
- 	if (!data->bank)
- 		return -ENOMEM;
- 
--	bank = &data->bank[0];
--	bank->id = 0;
--	bank->base = base;
--	bank->m4u_dom = NULL;
--	bank->irq = platform_get_irq(pdev, 0);
--	if (bank->irq < 0)
--		return bank->irq;
--	bank->parent_dev = dev;
--	bank->parent_data = data;
--	spin_lock_init(&bank->tlb_lock);
-+	do {
-+		if (!data->plat_data->banks_enable[i])
-+			continue;
-+		bank = &data->bank[i];
-+		bank->id = i;
-+		bank->base = base + i * MTK_IOMMU_BANK_SZ;
-+		bank->m4u_dom = NULL;
-+
-+		bank->irq = platform_get_irq(pdev, i);
-+		if (bank->irq < 0)
-+			return bank->irq;
-+		bank->parent_dev = dev;
-+		bank->parent_data = data;
-+		spin_lock_init(&bank->tlb_lock);
-+	} while (++i < banks_num);
- 
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_BCLK)) {
- 		data->bclk = devm_clk_get(dev, "bclk");
-@@ -1251,7 +1261,8 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- static int mtk_iommu_remove(struct platform_device *pdev)
- {
- 	struct mtk_iommu_data *data = platform_get_drvdata(pdev);
--	struct mtk_iommu_bank_data *bank = &data->bank[0];
-+	struct mtk_iommu_bank_data *bank;
-+	int i;
- 
- 	iommu_device_sysfs_remove(&data->iommu);
- 	iommu_device_unregister(&data->iommu);
-@@ -1268,7 +1279,12 @@ static int mtk_iommu_remove(struct platform_device *pdev)
- #endif
- 	}
- 	pm_runtime_disable(&pdev->dev);
--	devm_free_irq(&pdev->dev, bank->irq, bank);
-+	for (i = 0; i < data->plat_data->banks_num; i++) {
-+		bank = &data->bank[i];
-+		if (!bank->m4u_dom)
-+			continue;
-+		devm_free_irq(&pdev->dev, bank->irq, bank);
-+	}
- 	return 0;
- }
- 
--- 
-2.18.0
-
+Best regards,
+Krzysztof
