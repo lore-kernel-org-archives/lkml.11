@@ -2,167 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7DEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 819C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:29:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346443AbiDGRbJ (ORCPT
+        id S1346449AbiDGRbN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48764 "EHLO
+        Thu, 7 Apr 2022 13:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346467AbiDGR1a (ORCPT
+        with ESMTP id S1347138AbiDGR3b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:27:30 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279CDF55F1;
-        Thu,  7 Apr 2022 10:23:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Cc:To:From:content-disposition;
-        bh=Qrm5texuQYIS48hhNa5mDas14Fbkzf7AsffQMeTIYTY=; b=HN0RN1OGCsnwwSkOngyCf1iXVT
-        NNpQxlYMNW3XwohLm6l1485oVA3Y+uIeazNXrmx4rG1jz5X8s93aVcj6y1Oklp6dLr0j3a+6YzxDr
-        qj3j5qTpjfo68QOg0jHxqjiWWavQbfdk9C5m1AxXIpXDgyx66snnKtdaZmB7A5bt1bCKH5V2W/ler
-        JUzog834AoVaVB1K/wo7qr9mXFGmRH5YcEccoUcdfPZGM4crlfss7YBgMwxkH8uL8AZVRS1pCehy/
-        Zu3pPTQ/vKfVloJKgrq84TclFhKAM9aRyIOy6Tg9J7fYTWTnCj+/twpjJJuA39mRFvOwdQK5SAtgc
-        7ayZ43lQ==;
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
-        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1ncUMM-002BBf-Dc; Thu, 07 Apr 2022 09:47:47 -0600
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1ncUMC-00021Z-Am; Thu, 07 Apr 2022 09:47:36 -0600
-From:   Logan Gunthorpe <logang@deltatee.com>
-To:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-mm@kvack.org, iommu@lists.linux-foundation.org
-Cc:     Stephen Bates <sbates@raithlin.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Don Dutile <ddutile@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Jakowski Andrzej <andrzej.jakowski@intel.com>,
-        Minturn Dave B <dave.b.minturn@intel.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Xiong Jianxin <jianxin.xiong@intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Martin Oliveira <martin.oliveira@eideticom.com>,
-        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Date:   Thu,  7 Apr 2022 09:47:03 -0600
-Message-Id: <20220407154717.7695-8-logang@deltatee.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220407154717.7695-1-logang@deltatee.com>
-References: <20220407154717.7695-1-logang@deltatee.com>
+        Thu, 7 Apr 2022 13:29:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61EA81CC;
+        Thu,  7 Apr 2022 10:26:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D988B82866;
+        Thu,  7 Apr 2022 17:25:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 309CEC385A0;
+        Thu,  7 Apr 2022 17:25:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649352357;
+        bh=Rp3AAoZEhUXKlTVXiDR+mPUkgeKRvkK4oqYwes7kndQ=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=gWQ64C7AQq2qeuiSBgl1jzN4NKdMOKiOM1lCktHxNnt+ofZPc0ubfuIDzVi3nMged
+         ICHE8PuoiY3tinYIvbjvCtWMVZZrt9bs7MxK3esTxrJY9BGu1zSLKNdTwy3kG4wFfT
+         L6ttYBQ5VG7l1Z/J+id9AUzk8C6z3CsmThwb4eC7eIA8Myyny3lSGyXUN1c99tiLzl
+         Coao53kPZU/PK2gLw5JMhSAJHGiYcfBJiZAVsrobY/5swxwb5bBJRPX8LoDkMOxZ4+
+         8R1DF2o0IJpc5yfuCS5CcjvEWWfB0+fxeeHO8Dt81WJvw/uahMx9jB1MdimM3gFTXW
+         llvTQ26Q6yEsg==
+Message-ID: <1e94ae620fcd96f149dc025ceffc66119b70f473.camel@kernel.org>
+Subject: Re: [PATCH v4] VFS: filename_create(): fix incorrect intent.
+From:   Jeff Layton <jlayton@kernel.org>
+To:     NeilBrown <neilb@suse.de>, Al Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-nfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Disseldorp <ddiss@suse.de>
+Date:   Thu, 07 Apr 2022 13:25:55 -0400
+In-Reply-To: <164878611050.25542.6758961460499392000@noble.neil.brown.name>
+References: <164877264126.25542.1271530843099472952@noble.neil.brown.name>
+         <164878611050.25542.6758961460499392000@noble.neil.brown.name>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com, jhubbard@nvidia.com, rcampbell@nvidia.com, jgg@nvidia.com
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v6 07/21] dma-mapping: add flags to dma_map_ops to indicate PCI P2PDMA support
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a flags member to the dma_map_ops structure with one flag to
-indicate support for PCI P2PDMA.
+On Fri, 2022-04-01 at 15:08 +1100, NeilBrown wrote:
+> When asked to create a path ending '/', but which is not to be a
+> directory (LOOKUP_DIRECTORY not set), filename_create() will never try
+> to create the file.  If it doesn't exist, -ENOENT is reported.
+> 
+> However, it still passes LOOKUP_CREATE|LOOKUP_EXCL to the filesystems
+> ->lookup() function, even though there is no intent to create.  This is
+> misleading and can cause incorrect behaviour.
+> 
+> If you try
+>    ln -s foo /path/dir/
+> 
+> where 'dir' is a directory on an NFS filesystem which is not currently
+> known in the dcache, this will fail with ENOENT.
+> As the name is not in the dcache, nfs_lookup gets called with
+> LOOKUP_CREATE|LOOKUP_EXCL and so it returns NULL without performing any
+> lookup, with the expectation that a subsequent call to create the
+> target will be made, and the lookup can be combined with the creation.
+> In the case with a trailing '/' and no LOOKUP_DIRECTORY, that call is never
+> made.  Instead filename_create() sees that the dentry is not (yet)
+> positive and returns -ENOENT - even though the directory actually
+> exists.
+> 
+> So only set LOOKUP_CREATE|LOOKUP_EXCL if there really is an intent
+> to create, and use the absence of these flags to decide if -ENOENT
+> should be returned.
+> 
+> Note that filename_parentat() is only interested in LOOKUP_REVAL, so we
+> split that out and store it in 'reval_flag'.
+> __looku_hash() then gets reval_flag combined with whatever create flags
+> were determined to be needed.
+> 
+> Signed-off-by: NeilBrown <neilb@suse.de>
+> ---
+>  fs/namei.c | 22 ++++++++++------------
+>  1 file changed, 10 insertions(+), 12 deletions(-)
+> 
+> ARG - v3 had a missing semi-colon.  Sorry.
+> 
+> diff --git a/fs/namei.c b/fs/namei.c
+> index 3f1829b3ab5b..509657fdf4f5 100644
+> --- a/fs/namei.c
+> +++ b/fs/namei.c
+> @@ -3673,18 +3673,14 @@ static struct dentry *filename_create(int dfd, struct filename *name,
+>  {
+>  	struct dentry *dentry = ERR_PTR(-EEXIST);
+>  	struct qstr last;
+> +	bool want_dir = lookup_flags & LOOKUP_DIRECTORY;
+> +	unsigned int reval_flag = lookup_flags & LOOKUP_REVAL;
+> +	unsigned int create_flags = LOOKUP_CREATE | LOOKUP_EXCL;
+>  	int type;
+>  	int err2;
+>  	int error;
+> -	bool is_dir = (lookup_flags & LOOKUP_DIRECTORY);
+>  
+> -	/*
+> -	 * Note that only LOOKUP_REVAL and LOOKUP_DIRECTORY matter here. Any
+> -	 * other flags passed in are ignored!
+> -	 */
+> -	lookup_flags &= LOOKUP_REVAL;
+> -
+> -	error = filename_parentat(dfd, name, lookup_flags, path, &last, &type);
+> +	error = filename_parentat(dfd, name, reval_flag, path, &last, &type);
+>  	if (error)
+>  		return ERR_PTR(error);
+>  
+> @@ -3698,11 +3694,13 @@ static struct dentry *filename_create(int dfd, struct filename *name,
+>  	/* don't fail immediately if it's r/o, at least try to report other errors */
+>  	err2 = mnt_want_write(path->mnt);
+>  	/*
+> -	 * Do the final lookup.
+> +	 * Do the final lookup.  Suppress 'create' if there is a trailing
+> +	 * '/', and a directory wasn't requested.
+>  	 */
+> -	lookup_flags |= LOOKUP_CREATE | LOOKUP_EXCL;
+> +	if (last.name[last.len] && !want_dir)
+> +		create_flags = 0;
+>  	inode_lock_nested(path->dentry->d_inode, I_MUTEX_PARENT);
+> -	dentry = __lookup_hash(&last, path->dentry, lookup_flags);
+> +	dentry = __lookup_hash(&last, path->dentry, reval_flag | create_flags);
+>  	if (IS_ERR(dentry))
+>  		goto unlock;
+>  
+> @@ -3716,7 +3714,7 @@ static struct dentry *filename_create(int dfd, struct filename *name,
+>  	 * all is fine. Let's be bastards - you had / on the end, you've
+>  	 * been asking for (non-existent) directory. -ENOENT for you.
+>  	 */
+> -	if (unlikely(!is_dir && last.name[last.len])) {
+> +	if (unlikely(!create_flags)) {
+>  		error = -ENOENT;
+>  		goto fail;
+>  	}
 
-Also, add a helper to check if a device supports PCI P2PDMA.
-
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
----
- include/linux/dma-map-ops.h | 10 ++++++++++
- include/linux/dma-mapping.h |  5 +++++
- kernel/dma/mapping.c        | 18 ++++++++++++++++++
- 3 files changed, 33 insertions(+)
-
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 752f91e5eb5d..4d4161d58ce0 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -11,7 +11,17 @@
- 
- struct cma;
- 
-+/*
-+ * Values for struct dma_map_ops.flags:
-+ *
-+ * DMA_F_PCI_P2PDMA_SUPPORTED: Indicates the dma_map_ops implementation can
-+ * handle PCI P2PDMA pages in the map_sg/unmap_sg operation.
-+ */
-+#define DMA_F_PCI_P2PDMA_SUPPORTED     (1 << 0)
-+
- struct dma_map_ops {
-+	unsigned int flags;
-+
- 	void *(*alloc)(struct device *dev, size_t size,
- 			dma_addr_t *dma_handle, gfp_t gfp,
- 			unsigned long attrs);
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index dca2b1355bb1..f7c61b2b4b5e 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -140,6 +140,7 @@ int dma_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- 		unsigned long attrs);
- bool dma_can_mmap(struct device *dev);
- int dma_supported(struct device *dev, u64 mask);
-+bool dma_pci_p2pdma_supported(struct device *dev);
- int dma_set_mask(struct device *dev, u64 mask);
- int dma_set_coherent_mask(struct device *dev, u64 mask);
- u64 dma_get_required_mask(struct device *dev);
-@@ -250,6 +251,10 @@ static inline int dma_supported(struct device *dev, u64 mask)
- {
- 	return 0;
- }
-+static inline bool dma_pci_p2pdma_supported(struct device *dev)
-+{
-+	return false;
-+}
- static inline int dma_set_mask(struct device *dev, u64 mask)
- {
- 	return -EIO;
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 9f65d1041638..21793506fdb6 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -722,6 +722,24 @@ int dma_supported(struct device *dev, u64 mask)
- }
- EXPORT_SYMBOL(dma_supported);
- 
-+bool dma_pci_p2pdma_supported(struct device *dev)
-+{
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	/* if ops is not set, dma direct will be used which supports P2PDMA */
-+	if (!ops)
-+		return true;
-+
-+	/*
-+	 * Note: dma_ops_bypass is not checked here because P2PDMA should
-+	 * not be used with dma mapping ops that do not have support even
-+	 * if the specific device is bypassing them.
-+	 */
-+
-+	return ops->flags & DMA_F_PCI_P2PDMA_SUPPORTED;
-+}
-+EXPORT_SYMBOL_GPL(dma_pci_p2pdma_supported);
-+
- #ifdef CONFIG_ARCH_HAS_DMA_SET_MASK
- void arch_dma_set_mask(struct device *dev, u64 mask);
- #else
--- 
-2.30.2
-
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
