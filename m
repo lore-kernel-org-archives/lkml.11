@@ -2,103 +2,326 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CFABC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:16:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241880AbiDGLSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 07:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52792 "EHLO
+        id S244677AbiDGLSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 07:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244782AbiDGLSN (ORCPT
+        with ESMTP id S244773AbiDGLSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 07:18:13 -0400
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F8A6A01E;
-        Thu,  7 Apr 2022 04:16:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649330159;
+        Thu, 7 Apr 2022 07:18:08 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396B55D19C;
+        Thu,  7 Apr 2022 04:16:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649330147;
     s=strato-dkim-0002; d=goldelico.com;
     h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
     From:Subject:Sender;
-    bh=XDaMI+4EBmGzpAUX/OBVolCDz/2DUisSrJKiCD/9MvE=;
-    b=S9f/Upmjtl4bOpU4uELMwYuwzEhCC13kefSZU9WN7g0JgHiRfsDxdR95xH1E6KbzY5
-    hw0sw7nh5sJ5U6mjUC0G04rN0AMTZXsvhtlbU2mc/egKb3IeJHhGFuviOMcT9zL2XjOR
-    3E2armbpwAvf8OJXPzgkCc/vr+hKL9XkHtSNQ8wWSD3N51qcONJRdZMq9oORKrCKBMIF
-    fIPNrkpgDniDEyvZEOjjNH6kGIFy0hkjS6AAUEIVOHS0AahP43Ke9D10l2xOOmFxasOR
-    piQBIVqqv7sawpGhgVbdBsThDXmrb93qIIVit9LqlK+UprzBTWh/1d6Lw7ih1TDG61ZY
-    +Ong==
+    bh=HiSVc0ytRqP1ZR3LiiFmgC32MkGIQ9+sLPFAabHsH64=;
+    b=MhhqRxpQgrGpuKy6t/DDwUDbj44Y9UGf9+tq9+E1aLIJNo99vBMaJtlsOBflf32q24
+    CxMrQn2TVBi943FcTKdwHxFOegQk21tTFQETYsQRv/9fN95NGlZI7QWNB7ua9OrA+dYY
+    lgVFnNTJEtLWmIC4/tClzYIxs0XDPUH5CkAHUXiLQb9zlKor5ZHFYFwKFXiBzP3L+hV8
+    SxI9uZHqjy4LTAvdaZ/kCXpR/Z/MpScDn8N/rhtpqeCCsj0B6DGQqRsv7hjHqabUouF0
+    py4HCPZ5ab92OQm7hd6r9f4nuQgxSIw2AVvYpgmrSkJuZGe9wbyHL1QmaRhQrvXkdUAr
+    ZfQA==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3i8MRqg=="
 X-RZG-CLASS-ID: mo00
 Received: from imac.fritz.box
     by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy37BFxjx7
+    with ESMTPSA id k708cfy37BFjjwz
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
         (Client did not present a certificate);
-    Thu, 7 Apr 2022 13:15:59 +0200 (CEST)
+    Thu, 7 Apr 2022 13:15:45 +0200 (CEST)
 Content-Type: text/plain;
         charset=us-ascii
 Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [PATCH v17 6/6] drm/bridge: display-connector: add ddc-en gpio
- support
+Subject: Re: [PATCH v17 4/6] drm/bridge: dw-hdmi: handle unusable or
+ non-configured CSC module
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <Yk6TJgdoSqthWUiz@pendragon.ideasonboard.com>
-Date:   Thu, 7 Apr 2022 13:15:58 +0200
+In-Reply-To: <0a8e4e32-cc86-e901-364b-d1e6e2bd37b5@baylibre.com>
+Date:   Thu, 7 Apr 2022 13:15:44 +0200
 Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
         Robert Foss <robert.foss@linaro.org>,
         Paul Boddie <paul@boddie.org.uk>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
         Paul Cercueil <paul@crapouillou.net>,
         Maxime Ripard <maxime@cerno.tech>,
         Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
-        letux-kernel@openphoenux.org
+        letux-kernel@openphoenux.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Jonas Karlman <jonas@kwiboo.se>
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <30CEC20F-5EE5-448E-9610-3805E18952A6@goldelico.com>
+Message-Id: <0AB1B9C7-3FCC-4466-91FC-71A63D2376DF@goldelico.com>
 References: <cover.1649262368.git.hns@goldelico.com>
- <bf90de303a5dbc587517fe4a1bb437e198b90198.1649262368.git.hns@goldelico.com>
- <Yk6TJgdoSqthWUiz@pendragon.ideasonboard.com>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+ <8de76ca2b478016f4dbed84e37db231e7810e56c.1649262368.git.hns@goldelico.com>
+ <0a8e4e32-cc86-e901-364b-d1e6e2bd37b5@baylibre.com>
+To:     Neil Armstrong <narmstrong@baylibre.com>
 X-Mailer: Apple Mail (2.3445.104.21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Laurent,
+Hi Neil,
 
-> Am 07.04.2022 um 09:30 schrieb Laurent Pinchart =
-<laurent.pinchart@ideasonboard.com>:
+> Am 07.04.2022 um 10:28 schrieb Neil Armstrong =
+<narmstrong@baylibre.com>:
 >=20
-> Hi Nikolaus,
+> Hi,
 >=20
-> Thank you for the patch.
->=20
-> On Wed, Apr 06, 2022 at 06:26:08PM +0200, H. Nikolaus Schaller wrote:
->> "hdmi-connector.yaml" bindings defines an optional property
->> "ddc-en-gpios" for a single gpio to enable DDC operation.
->>=20
->> Usually this controls +5V power on the HDMI connector.
->> This +5V may also be needed for HPD.
->>=20
->> This was not reflected in code but is needed to make the CI20
->> board work.
->>=20
->> Now, the driver activates the ddc gpio after probe and
->> deactivates after remove so it is "almost on".
->>=20
->> But only if this driver is loaded (and not e.g. blacklisted
->> as module).
->>=20
+> On 06/04/2022 18:26, H. Nikolaus Schaller wrote:
+>> From: Neil Armstrong <narmstrong@baylibre.com>
+>> The dw-hdmi integrates an optional Color Space Conversion feature =
+used
+>> to handle color-space conversions.
+>> On some platforms, the CSC isn't built-in or non-functional.
+>> This adds the necessary code to disable the CSC functionality
+>> and limit the bus format negotiation to force using the same
+>> input bus format as the output bus format.
+>> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
 >> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+>> ---
+>>  drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 100 =
++++++++++++++++-------
+>>  drivers/gpu/drm/bridge/synopsys/dw-hdmi.h |   1 +
+>>  include/drm/bridge/dw_hdmi.h              |   1 +
+>>  3 files changed, 71 insertions(+), 31 deletions(-)
+>> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c =
+b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> index f50af40e10340..b5a665c5e406e 100644
+>> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> @@ -158,6 +158,8 @@ struct dw_hdmi {
+>>  	struct hdmi_data_info hdmi_data;
+>>  	const struct dw_hdmi_plat_data *plat_data;
+>>  +	bool csc_available;		/* indicates if the CSC engine =
+is usable */
+>> +
+>>  	int vic;
+>>    	u8 edid[HDMI_EDID_LEN];
+>> @@ -1009,9 +1011,10 @@ static int is_color_space_interpolation(struct =
+dw_hdmi *hdmi)
+>>    static bool is_csc_needed(struct dw_hdmi *hdmi)
+>>  {
+>> -	return is_color_space_conversion(hdmi) ||
+>> -	       is_color_space_decimation(hdmi) ||
+>> -	       is_color_space_interpolation(hdmi);
+>> +	return hdmi->csc_available &&
+>> +	       (is_color_space_conversion(hdmi) ||
+>> +		is_color_space_decimation(hdmi) ||
+>> +		is_color_space_interpolation(hdmi));
+>>  }
+>>    static void dw_hdmi_update_csc_coeffs(struct dw_hdmi *hdmi)
+>> @@ -1064,6 +1067,9 @@ static void hdmi_video_csc(struct dw_hdmi =
+*hdmi)
+>>  	int interpolation =3D HDMI_CSC_CFG_INTMODE_DISABLE;
+>>  	int decimation =3D 0;
+>>  +	if (!hdmi->csc_available)
+>> +		return;
+>> +
+>>  	/* YCC422 interpolation to 444 mode */
+>>  	if (is_color_space_interpolation(hdmi))
+>>  		interpolation =3D =
+HDMI_CSC_CFG_INTMODE_CHROMA_INT_FORMULA1;
+>> @@ -2665,6 +2671,7 @@ static u32 =
+*dw_hdmi_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
+>>  					u32 output_fmt,
+>>  					unsigned int *num_input_fmts)
+>>  {
+>> +	struct dw_hdmi *hdmi =3D bridge->driver_private;
+>>  	u32 *input_fmts;
+>>  	unsigned int i =3D 0;
+>>  @@ -2683,62 +2690,81 @@ static u32 =
+*dw_hdmi_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
+>>  	/* 8bit */
+>>  	case MEDIA_BUS_FMT_RGB888_1X24:
+>>  		input_fmts[i++] =3D MEDIA_BUS_FMT_RGB888_1X24;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_YUV8_1X24;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY8_1X16;
+>> +		if (hdmi->csc_available) {
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_YUV8_1X24;
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY8_1X16;
+>> +		}
+>>  		break;
+>>  	case MEDIA_BUS_FMT_YUV8_1X24:
+>>  		input_fmts[i++] =3D MEDIA_BUS_FMT_YUV8_1X24;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY8_1X16;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_RGB888_1X24;
+>> +		if (hdmi->csc_available) {
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY8_1X16;
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_RGB888_1X24;
+>> +		}
+>>  		break;
+>>  	case MEDIA_BUS_FMT_UYVY8_1X16:
+>>  		input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY8_1X16;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_YUV8_1X24;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_RGB888_1X24;
+>> +		if (hdmi->csc_available) {
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_YUV8_1X24;
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_RGB888_1X24;
+>> +		}
+>>  		break;
+>>    	/* 10bit */
+>>  	case MEDIA_BUS_FMT_RGB101010_1X30:
+>>  		input_fmts[i++] =3D MEDIA_BUS_FMT_RGB101010_1X30;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_YUV10_1X30;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY10_1X20;
+>> +		if (hdmi->csc_available) {
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_YUV10_1X30;
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY10_1X20;
+>> +		}
+>>  		break;
+>>  	case MEDIA_BUS_FMT_YUV10_1X30:
+>>  		input_fmts[i++] =3D MEDIA_BUS_FMT_YUV10_1X30;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY10_1X20;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_RGB101010_1X30;
+>> +		if (hdmi->csc_available) {
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY10_1X20;
+>> +			input_fmts[i++] =3D =
+MEDIA_BUS_FMT_RGB101010_1X30;
+>> +		}
+>>  		break;
+>>  	case MEDIA_BUS_FMT_UYVY10_1X20:
+>>  		input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY10_1X20;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_YUV10_1X30;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_RGB101010_1X30;
+>> +		if (hdmi->csc_available) {
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_YUV10_1X30;
+>> +			input_fmts[i++] =3D =
+MEDIA_BUS_FMT_RGB101010_1X30;
+>> +		}
+>>  		break;
+>>    	/* 12bit */
+>>  	case MEDIA_BUS_FMT_RGB121212_1X36:
+>>  		input_fmts[i++] =3D MEDIA_BUS_FMT_RGB121212_1X36;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_YUV12_1X36;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY12_1X24;
+>> +		if (hdmi->csc_available) {
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_YUV12_1X36;
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY12_1X24;
+>> +		}
+>>  		break;
+>>  	case MEDIA_BUS_FMT_YUV12_1X36:
+>>  		input_fmts[i++] =3D MEDIA_BUS_FMT_YUV12_1X36;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY12_1X24;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_RGB121212_1X36;
+>> +		if (hdmi->csc_available) {
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY12_1X24;
+>> +			input_fmts[i++] =3D =
+MEDIA_BUS_FMT_RGB121212_1X36;
+>> +		}
+>>  		break;
+>>  	case MEDIA_BUS_FMT_UYVY12_1X24:
+>>  		input_fmts[i++] =3D MEDIA_BUS_FMT_UYVY12_1X24;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_YUV12_1X36;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_RGB121212_1X36;
+>> +		if (hdmi->csc_available) {
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_YUV12_1X36;
+>> +			input_fmts[i++] =3D =
+MEDIA_BUS_FMT_RGB121212_1X36;
+>> +		}
+>>  		break;
+>>    	/* 16bit */
+>>  	case MEDIA_BUS_FMT_RGB161616_1X48:
+>>  		input_fmts[i++] =3D MEDIA_BUS_FMT_RGB161616_1X48;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_YUV16_1X48;
+>> +		if (hdmi->csc_available)
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_YUV16_1X48;
+>>  		break;
+>>  	case MEDIA_BUS_FMT_YUV16_1X48:
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_YUV16_1X48;
+>> -		input_fmts[i++] =3D MEDIA_BUS_FMT_RGB161616_1X48;
+>> +		if (hdmi->csc_available)
+>> +			input_fmts[i++] =3D MEDIA_BUS_FMT_YUV16_1X48;
+>>  		break;
+>>    	/*YUV 4:2:0 */
+>> @@ -2767,15 +2793,24 @@ static int dw_hdmi_bridge_atomic_check(struct =
+drm_bridge *bridge,
+>>  {
+>>  	struct dw_hdmi *hdmi =3D bridge->driver_private;
+>>  -	hdmi->hdmi_data.enc_out_bus_format =3D
+>> -			bridge_state->output_bus_cfg.format;
+>> +	if (!hdmi->csc_available &&
+>> +	    bridge_state->output_bus_cfg.format !=3D =
+bridge_state->input_bus_cfg.format) {
+>> +		dev_warn(hdmi->dev, "different input format 0x%04x & =
+output format 0x%04x while CSC isn't usable, fallback to safe format\n",
+>> +			 bridge_state->input_bus_cfg.format,
+>> +			 bridge_state->output_bus_cfg.format);
+>> +		hdmi->hdmi_data.enc_out_bus_format =3D =
+MEDIA_BUS_FMT_FIXED;
+>> +		hdmi->hdmi_data.enc_in_bus_format =3D =
+MEDIA_BUS_FMT_FIXED;
+>> +	} else {
+>> +		hdmi->hdmi_data.enc_out_bus_format =3D
+>> +				bridge_state->output_bus_cfg.format;
+>>  -	hdmi->hdmi_data.enc_in_bus_format =3D
+>> -			bridge_state->input_bus_cfg.format;
+>> +		hdmi->hdmi_data.enc_in_bus_format =3D
+>> +				bridge_state->input_bus_cfg.format;
+>>  -	dev_dbg(hdmi->dev, "input format 0x%04x, output format =
+0x%04x\n",
+>> -		bridge_state->input_bus_cfg.format,
+>> -		bridge_state->output_bus_cfg.format);
+>> +		dev_dbg(hdmi->dev, "input format 0x%04x, output format =
+0x%04x\n",
+>> +			bridge_state->input_bus_cfg.format,
+>> +			bridge_state->output_bus_cfg.format);
+>> +	}
+>>    	return 0;
+>>  }
+>> @@ -3481,6 +3516,9 @@ struct dw_hdmi *dw_hdmi_probe(struct =
+platform_device *pdev,
+>>  		hdmi->cec =3D platform_device_register_full(&pdevinfo);
+>>  	}
+>>  +	/* Get CSC useability from config0 register and permit override =
+for platforms */
+>> +	hdmi->csc_available =3D !plat_data->disable_csc || (config0 & =
+HDMI_CONFIG0_CSC);
+>> +
+>>  	drm_bridge_add(&hdmi->bridge);
+>>    	return hdmi;
+>> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.h =
+b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.h
+>> index 1999db05bc3b2..279722e4d1898 100644
+>> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.h
+>> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.h
+>> @@ -541,6 +541,7 @@ enum {
+>>    /* CONFIG0_ID field values */
+>>  	HDMI_CONFIG0_I2S =3D 0x10,
+>> +	HDMI_CONFIG0_CSC =3D 0x04,
+>>  	HDMI_CONFIG0_CEC =3D 0x02,
+>>    /* CONFIG1_ID field values */
+>> diff --git a/include/drm/bridge/dw_hdmi.h =
+b/include/drm/bridge/dw_hdmi.h
+>> index 2a1f85f9a8a3f..b2f689cbe864c 100644
+>> --- a/include/drm/bridge/dw_hdmi.h
+>> +++ b/include/drm/bridge/dw_hdmi.h
+>> @@ -157,6 +157,7 @@ struct dw_hdmi_plat_data {
+>>  			     unsigned long mpixelclock);
+>>    	unsigned int disable_cec : 1;
+>> +	unsigned int disable_csc : 1;
+>>  };
+>>    struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
 >=20
-> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Is this really still needed now you filter correctly the possible
+> modes in patch 1 ?
 
-Added to v18 (which is needed to remove some now redundant patches
-and fix a detail in the ingenic-drm driver).
+I had not tried to remove them because they were needed in [PATCH v16]
+but indeed they are no longer needed. Something (which I personally
+don't understand) may have blocked it so far, but it is not worth
+further analyses.
+
+So we can shrink the series and no need to touch drm/bridge: dw-hdmi:
+any more!
+
+I'll now post a new v18.
 
 BR and thanks for review,
 Nikolaus
