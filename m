@@ -2,67 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244862AbiDGLna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 07:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43858 "EHLO
+        id S244872AbiDGLnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 07:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237994AbiDGLnV (ORCPT
+        with ESMTP id S238099AbiDGLnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 07:43:21 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB526DA6F9;
-        Thu,  7 Apr 2022 04:41:21 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 4D00122175;
-        Thu,  7 Apr 2022 13:41:20 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649331680;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=anZIlz+C7nCyO9qv7nTAB94XjsPcbeyf8vLkyCHxpOY=;
-        b=FzQxRClq9Dt7zR4qrq5+7nAYwxA8epciMbhR6QgAhAdcsB9VSFnDpXL0e/m2n72UKgQEXa
-        G9f58KhmGMSjHPs1PhKiaYTQeK47TBV3TWKbYtCaSDjp0MUKZFHKuKVZKF986gCWJWycta
-        UUYQeIoTzSwVSja4hsS1NTI4P4EqLCg=
+        Thu, 7 Apr 2022 07:43:22 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DEFDEBB7
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 04:41:22 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1ncQVX-0006Sw-Mv; Thu, 07 Apr 2022 21:41:01 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 07 Apr 2022 19:41:00 +0800
+Date:   Thu, 7 Apr 2022 19:40:59 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, Will Deacon <will@kernel.org>,
+        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
+ ARCH_KMALLOC_MINALIGN
+Message-ID: <Yk7Ny/iFi0NrMXTg@gondor.apana.org.au>
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
+ <20220405135758.774016-8-catalin.marinas@arm.com>
+ <YkzJP6zmkAhc6CI9@gondor.apana.org.au>
+ <CAMj1kXEXhFmGc4VTTcJU1YFsHJhZN44OdJ5Suf2ONG5=LR29HQ@mail.gmail.com>
+ <Yk1UJs6eZMoIp3Eh@arm.com>
+ <Yk5o/lNTyiJWD4Ae@gondor.apana.org.au>
+ <Yk7EbvYhwnQy+pAf@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 07 Apr 2022 13:41:20 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Manohar.Puri@microchip.com, UNGLinuxDriver@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        devicetree@vger.kernel.org, kavyasree.kotagiri@microchip.com,
-        krzk+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        nicolas.ferre@microchip.com, robh+dt@kernel.org,
-        tudor.ambarus@microchip.com
-Subject: Re: [PATCH] spi: atmel,quadspi: Define lan966x QSPI
-In-Reply-To: <Yk7LjrvqSLbzPYkw@sirena.org.uk>
-References: <Yk7Ex5ltaxC7Z+N6@sirena.org.uk>
- <20220407112345.148316-1-michael@walle.cc> <Yk7LjrvqSLbzPYkw@sirena.org.uk>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <561bbc1cf43c3795eee67e10537ba365@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yk7EbvYhwnQy+pAf@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-04-07 13:31, schrieb Mark Brown:
-> On Thu, Apr 07, 2022 at 01:23:45PM +0200, Michael Walle wrote:
->> The subject should also be prefixed with "dt-bindings: ".
-> 
-> I tend to complain about people doing that.
+On Thu, Apr 07, 2022 at 12:01:02PM +0100, Catalin Marinas wrote:
+>
+> The only issue is whether the compiler gets confused by a pointer to a
+> structure with a smaller alignment than alignof(struct ...). I don't see
+> a performance or correctness issue on arm64 here. It would be a problem
+> if instead of 16 we went down to 8 or 4 due to unaligned accesses but
+> from 128 to 64 (or even 16), I don't think it matters.
 
-After all it is mentioned to use that prefix in
-Documentation/devicetree/bindings/submitting-patches.rst. I try to
-remember when submitting SPI related bindings.
+The issue is that there's code in the Crypto API which assumes
+that all pointers returned by kmalloc are aligned to CRYPTO_MINALIGN,
+if you break that then all that code would need to be modified.
 
--michael
+However, I think it's better to change the code that assumes
+CRYPTO_MINALIGN guarantees DMA alignment.
+
+Cheers,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
