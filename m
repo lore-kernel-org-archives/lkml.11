@@ -2,77 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96035C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:11:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345640AbiDGQNe (ORCPT
+        id S1345654AbiDGQNk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 12:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52524 "EHLO
+        Thu, 7 Apr 2022 12:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345616AbiDGQN3 (ORCPT
+        with ESMTP id S1345635AbiDGQNd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 12:13:29 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5009B12082;
-        Thu,  7 Apr 2022 09:11:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=8ilOzeEpMGnqmcxm5ACkIhP+cfoDdajkjlKSouIG/qg=; b=h3DD6AtKVrCXay15nFo1Hm2b9S
-        1LO7hycjezhdpT3vtU9MCsyOM/K4Z1SVW+wZIuBsTllbvCmGDd9V6xrjTeHsdxOC4rFm/UQTA5p8t
-        5QqDxhQWdzdeuGi5oxFQS+BwmvIHf/X11kMCr30FIazWpeX45qK+nZozHAvhmPNkJrJ4=;
-Received: from p200300daa70ef20069621b7d3c575442.dip0.t-ipconnect.de ([2003:da:a70e:f200:6962:1b7d:3c57:5442] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1ncUip-0003Lb-Od; Thu, 07 Apr 2022 18:11:00 +0200
-Message-ID: <7ee0b60b-a931-357e-7d88-ee2fd04f6902@nbd.name>
-Date:   Thu, 7 Apr 2022 18:10:56 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH v2 04/14] dt-bindings: arm: mediatek: document WED binding
- for MT7622
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Thu, 7 Apr 2022 12:13:33 -0400
+X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Apr 2022 09:11:30 PDT
+Received: from confino.investici.org (confino.investici.org [IPv6:2a11:7980:1::2:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834DE12082
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:11:29 -0700 (PDT)
+Received: from mx1.investici.org (unknown [127.0.0.1])
+        by confino.investici.org (Postfix) with ESMTP id 4KZ5VW3F8Pz119V;
+        Thu,  7 Apr 2022 15:52:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=inventati.org;
+        s=stigmate; t=1649346739;
+        bh=YY96/+Dgd8fDn9ZCYrRnAua7OzxXAs/qOe2O/oagfE0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hB6yJ5dsD/HXR6OLOdl2z7fB8tBJwqAD4YRsMwnvfaXOTDNCiwSGbmsD0PrUHfkik
+         GU5Xaw1cazoAm8R0Nd5+/s/s9/SweR2DW4lfifAv9DE8Y2CyOEZgg3HoKJp5k9zRjA
+         ewoDJHelVgz9LiM1K+DbriZhS+KYeKO6dAqGUtrI=
+Received: from [93.190.126.19] (mx1.investici.org [93.190.126.19]) (Authenticated sender: rinni@inventati.org) by localhost (Postfix) with ESMTPSA id 4KZ5VW0Kj1z117n;
+        Thu,  7 Apr 2022 15:52:19 +0000 (UTC)
+From:   Philip Rinn <rinni@inventati.org>
+To:     robh+dt@kernel.org, krzk+dt@kernel.org, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220405195755.10817-1-nbd@nbd.name>
- <20220405195755.10817-5-nbd@nbd.name>
- <d0bffa9a-0ea6-0f59-06b2-7eef3c746de1@linaro.org>
- <e3ea7381-87e3-99e1-2277-80835ec42f15@nbd.name> <Yk8IXno6sjkHVf4g@lunn.ch>
-From:   Felix Fietkau <nbd@nbd.name>
-In-Reply-To: <Yk8IXno6sjkHVf4g@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc:     Philip Rinn <rinni@inventati.org>
+Subject: [PATCH v4] arm64: dts: allwinner: a64: olinuxino: Enable audio
+Date:   Thu,  7 Apr 2022 17:51:45 +0200
+Message-Id: <20220407155145.10891-1-rinni@inventati.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <4fc41278-c46c-6486-a336-f2a329bd6bd0@sholland.org>
+References: <4fc41278-c46c-6486-a336-f2a329bd6bd0@sholland.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07.04.22 17:50, Andrew Lunn wrote:
->> > Isn't this a network offload engine? If yes, then probably it should be
->> > in "net/".
->> It's not a network offload engine by itself. It's a SoC component that
->> connects to the offload engine and controls a MTK PCIe WLAN device,
->> intercepting interrupts and DMA rings in order to be able to inject packets
->> coming in from the offload engine.
-> 
-> Hi Felix
-> 
-> Maybe turn the question around. Can it be used for something other
-> than networking? If not, then somewhere under net seems reasonable.
-I'm fine with moving this to net.
+Enable the audio hardware on the Olimex A64-OLinuXino board family.
+Tested on the A64-OLinuXino-2Ge8G-IND variant.
 
-- Felix
+Signed-off-by: Philip Rinn <rinni@inventati.org>
+---
+
+Changes in v2: added missing &sound {...} part
+Changes in v3: removed HDMI audio part as requested by Jernej Škrabec
+Changes in v4: right microphone jack is also biased on MBIAS
+
+ arch/arm64/boot/dts/allwinner/sun50i-a64-olinuxino.dts    | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-olinuxino.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-olinuxino.dts
+index ec7e2c0e82c1..6f2674bb1b7f 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-olinuxino.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-olinuxino.dts
+@@ -58,6 +58,15 @@ wifi_pwrseq: wifi_pwrseq {
+ 	};
+ };
+ 
++&codec {
++	status = "okay";
++};
++
++&codec_analog {
++	cpvdd-supply = <&reg_eldo1>;
++	status = "okay";
++};
++
+ &cpu0 {
+ 	cpu-supply = <&reg_dcdc2>;
+ };
+@@ -74,6 +83,10 @@ &cpu3 {
+ 	cpu-supply = <&reg_dcdc2>;
+ };
+ 
++&dai {
++	status = "okay";
++};
++
+ &de {
+ 	status = "okay";
+ };
+@@ -328,6 +341,23 @@ &simplefb_hdmi {
+ 	vcc-hdmi-supply = <&reg_dldo1>;
+ };
+ 
++&sound {
++	simple-audio-card,aux-devs = <&codec_analog>;
++	simple-audio-card,widgets = "Microphone", "Microphone Jack Left",
++		    "Microphone", "Microphone Jack Right",
++		    "Headphone", "Headphone Jack";
++	simple-audio-card,routing = "Left DAC", "DACL",
++		    "Right DAC", "DACR",
++		    "Headphone Jack", "HP",
++		    "ADCL", "Left ADC",
++		    "ADCR", "Right ADC",
++		    "Microphone Jack Left", "MBIAS",
++		    "MIC1", "Microphone Jack Left",
++		    "Microphone Jack Right", "MBIAS",
++		    "MIC2", "Microphone Jack Right";
++	status = "okay";
++};
++
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_pb_pins>;
+-- 
+2.34.1
+
