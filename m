@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF40C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E22D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245044AbiDGME4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:04:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54178 "EHLO
+        id S245098AbiDGMFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239565AbiDGMEh (ORCPT
+        with ESMTP id S239517AbiDGMEj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:04:37 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75B8C1C86
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:02:35 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZ0MP16DHzgYSS;
-        Thu,  7 Apr 2022 20:00:49 +0800 (CST)
+        Thu, 7 Apr 2022 08:04:39 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830B8C1CBE
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:02:36 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KZ0Lh49pyzFpZ4;
+        Thu,  7 Apr 2022 20:00:12 +0800 (CST)
 Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 20:02:33 +0800
+ 15.1.2308.21; Thu, 7 Apr 2022 20:02:32 +0800
 Received: from ubuntu1804.huawei.com (10.67.175.36) by
  dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 20:02:33 +0800
+ 15.1.2308.21; Thu, 7 Apr 2022 20:02:32 +0800
 From:   Chen Zhongjin <chenzhongjin@huawei.com>
 To:     <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>
@@ -33,12 +33,10 @@ CC:     <jthierry@redhat.com>, <catalin.marinas@arm.com>,
         <will@kernel.org>, <mark.rutland@arm.com>, <ardb@kernel.org>,
         <masahiroy@kernel.org>, <jpoimboe@redhat.com>,
         <peterz@infradead.org>, <ycote@redhat.com>
-Subject: [RFC PATCH v3 09/13] objtool: arm64: Decode LDR instructions
-Date:   Thu, 7 Apr 2022 20:01:37 +0800
-Message-ID: <20220407120141.43801-10-chenzhongjin@huawei.com>
+Subject: [RFC PATCH v3 00/13] objtool: add base support for arm64
+Date:   Thu, 7 Apr 2022 20:01:28 +0800
+Message-ID: <20220407120141.43801-1-chenzhongjin@huawei.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220407120141.43801-1-chenzhongjin@huawei.com>
-References: <20220407120141.43801-1-chenzhongjin@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.67.175.36]
@@ -49,176 +47,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julien Thierry <jthierry@redhat.com>
+Hi,
 
-Load literal instructions can generate constants inside code sections.
-Record the locations of the constants in order to be able to remove
-their corresponding "struct instruction".
+This series enables objtool to start doing stack validation on arm64
+kernel builds.
 
-Signed-off-by: Julien Thierry <jthierry@redhat.com>
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+The work for objtool has been stopped for a while. Julien and
+Raphael worked for this [1] but it seems now nobody is carrying it
+on.
+
+To re-bring it to people's vision, this v3 update just makes some
+simply changes including rebasing to mainline, code cleanning and
+one bug fix.
+
+Previous patch had finished the decoder part of objtool. It passed
+my building test with allyesconfig and only few of objfile report
+error. Julien had some unorganized commits in his repo [2], mainly
+about changes to arm64 code to eliminate some of these errors.
+
+While fixing these problems in next version, I'm also planning to
+implement the orc unwinder for arm64, then we can completely test
+everything on arm64.
+
+[1] https://lkml.org/lkml/2021/3/3/1135
+[2] https://github.com/julien-thierry/linux.git
 ---
- tools/objtool/arch/arm64/decode.c    | 86 ++++++++++++++++++++++++++++
- tools/objtool/arch/x86/decode.c      |  5 ++
- tools/objtool/check.c                |  3 +
- tools/objtool/include/objtool/arch.h |  3 +
- 4 files changed, 97 insertions(+)
+Changs v2 -> v3:
+- [04] rebase Julien's version to mainstream and solve conflicts.
+- [05, 06, 08] Merge dumplicate "*type = INSN_OTHER".
+- [08, 09, 10] When meeting unrecognized instructions such as  datas
+	in .text code or 0x0 padding insns, last version used
+	"loc->ignorable" to mark and remove them from objtool insn list.
 
-diff --git a/tools/objtool/arch/arm64/decode.c b/tools/objtool/arch/arm64/decode.c
-index 4a868945dcfb..b62addece734 100644
---- a/tools/objtool/arch/arm64/decode.c
-+++ b/tools/objtool/arch/arm64/decode.c
-@@ -22,6 +22,73 @@ static unsigned long sign_extend(unsigned long x, int nbits)
- 	return ((~0UL + (sign_bit ^ 1)) << nbits) | x;
- }
- 
-+struct insn_loc {
-+	const struct section *sec;
-+	unsigned long offset;
-+	struct hlist_node hnode;
-+	bool delete;
-+};
-+
-+DEFINE_HASHTABLE(invalid_insns, 16);
-+
-+static int record_invalid_insn(const struct section *sec,
-+			       unsigned long offset,
-+			       bool delete)
-+{
-+	struct insn_loc *loc;
-+	struct hlist_head *l;
-+
-+	l = &invalid_insns[hash_min(offset, HASH_BITS(invalid_insns))];
-+	if (!hlist_empty(l)) {
-+		loc = hlist_entry(l->first, struct insn_loc, hnode);
-+		loc->delete |= delete;
-+		return 0;
-+	}
-+
-+	loc = malloc(sizeof(*loc));
-+	if (!loc) {
-+		WARN("malloc failed");
-+		return -1;
-+	}
-+
-+	loc->sec = sec;
-+	loc->offset = offset;
-+	loc->delete = delete;
-+
-+	hash_add(invalid_insns, &loc->hnode, loc->offset);
-+
-+	return 0;
-+}
-+
-+int arch_post_process_instructions(struct objtool_file *file)
-+{
-+	struct hlist_node *tmp;
-+	struct insn_loc *loc;
-+	unsigned int bkt;
-+	int res = 0;
-+
-+	hash_for_each_safe(invalid_insns, bkt, tmp, loc, hnode) {
-+		struct instruction *insn;
-+
-+		insn = find_insn(file, (struct section *) loc->sec, loc->offset);
-+		if (insn) {
-+			if (loc->delete) {
-+				list_del(&insn->list);
-+				hash_del(&insn->hash);
-+				free(insn);
-+			} else {
-+				WARN_FUNC("can't decode instruction", insn->sec, insn->offset);
-+				insn->ignore = true;
-+			}
-+		}
-+
-+		hash_del(&loc->hnode);
-+		free(loc);
-+	}
-+
-+	return res;
-+}
-+
- bool arch_callee_saved_reg(unsigned char reg)
- {
- 	switch (reg) {
-@@ -389,6 +456,25 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 		if (ret <= 0)
- 			return ret;
- 
-+		if (aarch64_insn_is_ldr_lit(insn)) {
-+			long pc_offset;
-+
-+			pc_offset = insn & GENMASK(23, 5);
-+			/* Sign extend and multiply by 4 */
-+			pc_offset = (pc_offset << (64 - 23));
-+			pc_offset = ((pc_offset >> (64 - 23)) >> 5) << 2;
-+
-+			if (record_invalid_insn(sec, offset + pc_offset, true))
-+				return -1;
-+
-+			/* 64-bit literal */
-+			if (insn & BIT(30)) {
-+				if (record_invalid_insn(sec,
-+							offset + pc_offset + 4,
-+							true))
-+					return -1;
-+			}
-+		}
- 		break;
- 	}
- 	default:
-diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
-index 943cb41cddf7..c116b6a58898 100644
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -693,6 +693,11 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 	return 0;
- }
- 
-+int arch_post_process_instructions(struct objtool_file *file)
-+{
-+	return 0;
-+}
-+
- void arch_initial_func_cfi_state(struct cfi_init_state *state)
- {
- 	int i;
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 6de5085e3e5a..b2135da41f48 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -436,6 +436,9 @@ static int decode_instructions(struct objtool_file *file)
- 	if (stats)
- 		printf("nr_insns: %lu\n", nr_insns);
- 
-+	if (arch_post_process_instructions(file))
-+		return -1;
-+
- 	return 0;
- 
- err:
-diff --git a/tools/objtool/include/objtool/arch.h b/tools/objtool/include/objtool/arch.h
-index 9b19cc304195..ccd76ce1c92b 100644
---- a/tools/objtool/include/objtool/arch.h
-+++ b/tools/objtool/include/objtool/arch.h
-@@ -67,6 +67,7 @@ struct stack_op {
- 	struct list_head list;
- };
- 
-+struct objtool_file;
- struct instruction;
- 
- void arch_initial_func_cfi_state(struct cfi_init_state *state);
-@@ -77,6 +78,8 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 			    unsigned long *immediate,
- 			    struct list_head *ops_list);
- 
-+int arch_post_process_instructions(struct objtool_file *file);
-+
- bool arch_callee_saved_reg(unsigned char reg);
- 
- unsigned long arch_jump_destination(struct instruction *insn);
+	However there are two problems to do so:
+	1. when meeting insns can't be decoded or excluded, objtool will
+	just stop.
+	2. deleting every insn can cause problems in fellow procedure.
+
+	So I changed "record_invalid_insn" that we can delete one insn or
+	just set it ignored. Now check will throw an error and going on when
+	meeting undecodable instructions. Also, to prevent the confusion
+	between "loc->ignorable" and "insn->ignore" I changed "ignore" to
+	"delete".
+
+Changs v1 -> v2:
+- Drop gcc plugin in favor of -fno-jump-tables
+- miscelaneous fixes and cleanups
+
+--->
+Julien Thierry (12):
+  tools: Add some generic functions and headers
+  tools: arm64: Make aarch64 instruction decoder available to tools
+  tools: bug: Remove duplicate definition
+  objtool: arm64: Add base definition for arm64 backend
+  objtool: arm64: Decode add/sub instructions
+  objtool: arm64: Decode jump and call related instructions
+  objtool: arm64: Decode other system instructions
+  objtool: arm64: Decode load/store instructions
+  objtool: arm64: Decode LDR instructions
+  objtool: arm64: Accept non-instruction data in code sections
+  objtool: arm64: Handle supported relocations in alternatives
+  objtool: arm64: Ignore replacement section for alternative callback
+
+Raphael Gault (1):
+  objtool: arm64: Enable stack validation for arm64
+
+ arch/arm64/Kconfig                            |    1 +
+ arch/arm64/Makefile                           |    4 +
+ tools/arch/arm64/include/asm/insn.h           |  565 +++++++
+ tools/arch/arm64/lib/insn.c                   | 1464 +++++++++++++++++
+ tools/include/asm-generic/bitops/__ffs.h      |   11 +
+ tools/include/linux/bug.h                     |    6 +-
+ tools/include/linux/kernel.h                  |   21 +
+ tools/include/linux/printk.h                  |   40 +
+ tools/objtool/Makefile                        |    5 +
+ tools/objtool/arch/arm64/Build                |    8 +
+ tools/objtool/arch/arm64/decode.c             |  500 ++++++
+ .../arch/arm64/include/arch/cfi_regs.h        |   14 +
+ tools/objtool/arch/arm64/include/arch/elf.h   |    8 +
+ .../arch/arm64/include/arch/endianness.h      |    9 +
+ .../objtool/arch/arm64/include/arch/special.h |   22 +
+ tools/objtool/arch/arm64/special.c            |   36 +
+ tools/objtool/arch/x86/decode.c               |    5 +
+ tools/objtool/check.c                         |    6 +
+ tools/objtool/include/objtool/arch.h          |    3 +
+ tools/objtool/sync-check.sh                   |    5 +
+ 20 files changed, 2728 insertions(+), 5 deletions(-)
+ create mode 100644 tools/arch/arm64/include/asm/insn.h
+ create mode 100644 tools/arch/arm64/lib/insn.c
+ create mode 100644 tools/include/linux/printk.h
+ create mode 100644 tools/objtool/arch/arm64/Build
+ create mode 100644 tools/objtool/arch/arm64/decode.c
+ create mode 100644 tools/objtool/arch/arm64/include/arch/cfi_regs.h
+ create mode 100644 tools/objtool/arch/arm64/include/arch/elf.h
+ create mode 100644 tools/objtool/arch/arm64/include/arch/endianness.h
+ create mode 100644 tools/objtool/arch/arm64/include/arch/special.h
+ create mode 100644 tools/objtool/arch/arm64/special.c
+
 -- 
 2.17.1
 
