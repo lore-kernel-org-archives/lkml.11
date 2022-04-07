@@ -2,85 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB7F7C4321E
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:59:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01FF9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345503AbiDGQBF (ORCPT
+        id S1345512AbiDGQBI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 12:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50604 "EHLO
+        Thu, 7 Apr 2022 12:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345465AbiDGQAP (ORCPT
+        with ESMTP id S1345373AbiDGQAO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 12:00:15 -0400
-Received: from 19.mo581.mail-out.ovh.net (19.mo581.mail-out.ovh.net [178.33.251.118])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807B4DE089
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:58:12 -0700 (PDT)
-Received: from player796.ha.ovh.net (unknown [10.111.208.149])
-        by mo581.mail-out.ovh.net (Postfix) with ESMTP id 3670924394
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 15:19:39 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player796.ha.ovh.net (Postfix) with ESMTPSA id 33AA82932FF73;
-        Thu,  7 Apr 2022 15:19:30 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-99G00317a306e9-b8ed-4920-a317-7c45dbaba21a,
-                    5995496A90EC26C6A3824F4C00BBD29EFE55D398) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-From:   Stephen Kitt <steve@sk2.org>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wolfram Sang <wsa@kernel.org>, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH v2 01/10] clk: cdce706: use simple i2c probe function
-Date:   Thu,  7 Apr 2022 17:18:22 +0200
-Message-Id: <20220407151831.2371706-2-steve@sk2.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220407151831.2371706-1-steve@sk2.org>
-References: <20220407151831.2371706-1-steve@sk2.org>
+        Thu, 7 Apr 2022 12:00:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77E75DE085
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:58:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649347092;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KPIyVXRJ+3a82MhUAQ3Qk34MlgnHhoRbfQUWHnDgoBY=;
+        b=ctHkbjizgZdQKTHmT1UtNn6NUjPP2zl1awbWDc1TIN4Jg12fqDmfDpM/tsN9RarE/KHj8C
+        GEgQXS2PYiBNJA11asAPGs02MUnPBrlCnlRTHYYh/mS9WK+awlLti4Qmd8r5Ig42aorGFB
+        JBR38MMswEP7wFvVP7w4U/j8wEbWeww=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-403-SQHN7HXvMZq3lc4CIyZH4w-1; Thu, 07 Apr 2022 11:58:08 -0400
+X-MC-Unique: SQHN7HXvMZq3lc4CIyZH4w-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ACBBA38009F7;
+        Thu,  7 Apr 2022 15:58:07 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.192.50])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E24C5428EFF;
+        Thu,  7 Apr 2022 15:58:04 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 28/31] KVM: selftests: Sync 'struct hv_vp_assist_page' definition with hyperv-tlfs.h
+Date:   Thu,  7 Apr 2022 17:56:42 +0200
+Message-Id: <20220407155645.940890-29-vkuznets@redhat.com>
+In-Reply-To: <20220407155645.940890-1-vkuznets@redhat.com>
+References: <20220407155645.940890-1-vkuznets@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 75153822891935366
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudejkedgkeejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeejleelvdefieeiuddtfeevkeegueehkeekvdffgedvhedugeekgfejjeekgfeugeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejleeirdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The i2c probe function here doesn't use the id information provided in
-its second argument, so the single-parameter i2c probe function
-("probe_new") can be used instead.
+'struct hv_vp_assist_page' definition doesn't match TLFS. Also, define
+'struct hv_nested_enlightenments_control' and use it instead of opaque
+'__u64'.
 
-This avoids scanning the identifier tables during probes.
-
-Signed-off-by: Stephen Kitt <steve@sk2.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- drivers/clk/clk-cdce706.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ .../selftests/kvm/include/x86_64/evmcs.h      | 22 ++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/clk/clk-cdce706.c b/drivers/clk/clk-cdce706.c
-index c91e9096b070..5467d941ddfd 100644
---- a/drivers/clk/clk-cdce706.c
-+++ b/drivers/clk/clk-cdce706.c
-@@ -627,8 +627,7 @@ of_clk_cdce_get(struct of_phandle_args *clkspec, void *data)
- 	return &cdce->clkout[idx].hw;
- }
+diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+index b6067b555110..9c965ba73dec 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
++++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+@@ -20,14 +20,26 @@
  
--static int cdce706_probe(struct i2c_client *client,
--			 const struct i2c_device_id *id)
-+static int cdce706_probe(struct i2c_client *client)
- {
- 	struct i2c_adapter *adapter = client->adapter;
- 	struct cdce706_dev_data *cdce;
-@@ -692,7 +691,7 @@ static struct i2c_driver cdce706_i2c_driver = {
- 		.name	= "cdce706",
- 		.of_match_table = of_match_ptr(cdce706_dt_match),
- 	},
--	.probe		= cdce706_probe,
-+	.probe_new	= cdce706_probe,
- 	.remove		= cdce706_remove,
- 	.id_table	= cdce706_id,
- };
+ extern bool enable_evmcs;
+ 
++struct hv_nested_enlightenments_control {
++	struct {
++		__u32 directhypercall:1;
++		__u32 reserved:31;
++	} features;
++	struct {
++		__u32 reserved;
++	} hypercallControls;
++} __packed;
++
++/* Define virtual processor assist page structure. */
+ struct hv_vp_assist_page {
+ 	__u32 apic_assist;
+-	__u32 reserved;
+-	__u64 vtl_control[2];
+-	__u64 nested_enlightenments_control[2];
+-	__u32 enlighten_vmentry;
++	__u32 reserved1;
++	__u64 vtl_control[3];
++	struct hv_nested_enlightenments_control nested_control;
++	__u8 enlighten_vmentry;
++	__u8 reserved2[7];
+ 	__u64 current_nested_vmcs;
+-};
++} __packed;
+ 
+ struct hv_enlightened_vmcs {
+ 	u32 revision_id;
 -- 
-2.27.0
+2.35.1
 
