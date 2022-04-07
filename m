@@ -2,86 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6631C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:53:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E49C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245508AbiDGMzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:55:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54788 "EHLO
+        id S245519AbiDGMzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245499AbiDGMzE (ORCPT
+        with ESMTP id S245481AbiDGMzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:55:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA333259B44
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 05:53:03 -0700 (PDT)
+        Thu, 7 Apr 2022 08:55:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AFD6228D1C;
+        Thu,  7 Apr 2022 05:53:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36A9DB82737
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:53:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB428C385A4;
-        Thu,  7 Apr 2022 12:52:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED00EB8276A;
+        Thu,  7 Apr 2022 12:53:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA9D7C385A0;
+        Thu,  7 Apr 2022 12:52:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649335981;
-        bh=NjIi+palNCB5NKFeNpaLrrO5MQoqCi/wHwZIXQz57dc=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Yha0+acwAFEWSMuRW19XgdEliG1fuGz+oErcq5+SUh7tNOrqxQJp2FGDLPESgfDJg
-         ImWoPa2C6B6jdZz9M4qkQhJoJ6Ts7t3E963k3+XNpQoQOmGVbdxo2eXGQnYUk8YTwp
-         4Ke7ZLNIj2KYU2lJnJxzBKM5DENRqad6yLakmP1f8KklK/473ZZULJSkncNW3hlIB4
-         c/mb13pSINWt/F4KwDyjNcxFAvBtIuP/WLgbFAohi6hqyguzkTXhgQcVcqM0I6WJEl
-         QbevRCfILK5msSh5urYtW7KU7DfAeod10vm2KJX8G+Nz2QtYtywepufJ3tj+mru+hb
-         empdovuVUE1BA==
-From:   Mark Brown <broonie@kernel.org>
-To:     dave.stevenson@raspberrypi.com, andriy.shevchenko@linux.intel.com,
-        linux-kernel@vger.kernel.org, detlev.casanova@collabora.com
-Cc:     Liam Girdwood <lgirdwood@gmail.com>
-In-Reply-To: <20220325184508.45670-1-andriy.shevchenko@linux.intel.com>
-References: <20220325184508.45670-1-andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1 1/1] regulator/rpi-panel-attiny: Get rid of duplicate of_node assignment
-Message-Id: <164933597968.2466529.532531148275084481.b4-ty@kernel.org>
-Date:   Thu, 07 Apr 2022 13:52:59 +0100
+        s=k20201202; t=1649335982;
+        bh=Bdy0vhB9JZ2Rbc9AmJ6TuuVktLJMhhrVK6hP2CeREHM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=klrfsbLa32MG+Vk73LSydFpVIG8HpHOFcYOo5fJsg+sdCxezdw+pZE3WyXVcBxI66
+         cBGZup9o67SZqnA9bC5CBOs9opbEl24JPwrpTpul3AMz2LC4KtwbW2G7Yn56TBbhpO
+         Niseu5FWIeEIz8DfUcG+IbkxbbVpsjyvGF3SL36VkCNsGMzjF3dmTD15NxmTtuhZ3f
+         aJGY5q9eZc6xUQZigppWhJDSg8h1cHXYPKF47ZqcoDMDyuHJ+dNm3+GFIa4VCSMUMm
+         EexqfwnmlEEeSpoPCWrFjLBmB7MAQlQzbP97RXLJH2oPz0RWqRP/JLNavveDMgzdjl
+         4QOevvYRraygQ==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [RFC bpf-next 2/4] fprobe: Resolve symbols with kallsyms_lookup_names
+Date:   Thu,  7 Apr 2022 14:52:22 +0200
+Message-Id: <20220407125224.310255-3-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407125224.310255-1-jolsa@kernel.org>
+References: <20220407125224.310255-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Mar 2022 20:45:08 +0200, Andy Shevchenko wrote:
-> GPIO library does copy the of_node from the parent device of
-> the GPIO chip, there is no need to repeat this in the individual
-> drivers. Remove these assignment all at once.
-> 
-> For the details one may look into the of_gpio_dev_init() implementation.
-> 
-> 
-> [...]
+Using kallsyms_lookup_names to speed up symbols lookup
+in register_fprobe_syms API.
 
-Applied to
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ kernel/kallsyms.c     |  2 +-
+ kernel/trace/fprobe.c | 23 ++---------------------
+ 2 files changed, 3 insertions(+), 22 deletions(-)
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
+diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+index a3738ddf9e87..7d89da375c23 100644
+--- a/kernel/kallsyms.c
++++ b/kernel/kallsyms.c
+@@ -230,7 +230,7 @@ unsigned long kallsyms_lookup_name(const char *name)
+ 	return module_kallsyms_lookup_name(name);
+ }
+ 
+-#ifdef CONFIG_LIVEPATCH
++#if defined(CONFIG_LIVEPATCH) || defined(CONFIG_FPROBE)
+ /*
+  * Iterate over all symbols in vmlinux.  For symbols from modules use
+  * module_kallsyms_on_each_symbol instead.
+diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
+index 89d9f994ebb0..d466803dc2b2 100644
+--- a/kernel/trace/fprobe.c
++++ b/kernel/trace/fprobe.c
+@@ -88,36 +88,17 @@ NOKPROBE_SYMBOL(fprobe_exit_handler);
+ /* Convert ftrace location address from symbols */
+ static unsigned long *get_ftrace_locations(const char **syms, int num)
+ {
+-	unsigned long addr, size;
+ 	unsigned long *addrs;
+-	int i;
+ 
+ 	/* Convert symbols to symbol address */
+ 	addrs = kcalloc(num, sizeof(*addrs), GFP_KERNEL);
+ 	if (!addrs)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	for (i = 0; i < num; i++) {
+-		addr = kallsyms_lookup_name(syms[i]);
+-		if (!addr)	/* Maybe wrong symbol */
+-			goto error;
++	if (!kallsyms_lookup_names(syms, num, addrs))
++		return addrs;
+ 
+-		/* Convert symbol address to ftrace location. */
+-		if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
+-			goto error;
+-
+-		addr = ftrace_location_range(addr, addr + size - 1);
+-		if (!addr) /* No dynamic ftrace there. */
+-			goto error;
+-
+-		addrs[i] = addr;
+-	}
+-
+-	return addrs;
+-
+-error:
+ 	kfree(addrs);
+-
+ 	return ERR_PTR(-ENOENT);
+ }
+ 
+-- 
+2.35.1
 
-Thanks!
-
-[1/1] regulator/rpi-panel-attiny: Get rid of duplicate of_node assignment
-      commit: 4917e54997b0c5fbf39a3bd574802a16fa705096
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
