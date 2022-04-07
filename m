@@ -2,363 +2,538 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C81B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C416AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343513AbiDGNE1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 09:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34220 "EHLO
+        id S240506AbiDGNEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 09:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245693AbiDGNCa (ORCPT
+        with ESMTP id S245700AbiDGNCa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 09:02:30 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E89B61AF504;
-        Thu,  7 Apr 2022 06:00:15 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KZ1dw3GwmzgYSS;
-        Thu,  7 Apr 2022 20:58:28 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 7 Apr 2022 21:00:13 +0800
-From:   Yicong Yang <yangyicong@hisilicon.com>
-To:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
-        <joro@8bytes.org>, <john.garry@huawei.com>,
-        <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
-        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>
-CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
-        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
-        <yangyicong@hisilicon.com>
-Subject: [PATCH v7 3/7] hisi_ptt: Add support for dynamically updating the filter list
-Date:   Thu, 7 Apr 2022 20:58:37 +0800
-Message-ID: <20220407125841.3678-4-yangyicong@hisilicon.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220407125841.3678-1-yangyicong@hisilicon.com>
-References: <20220407125841.3678-1-yangyicong@hisilicon.com>
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1673E994A
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 06:00:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649336418; x=1680872418;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=2HzDU9iJlkMViSTHOB1v0XvsV1lU5Pq9laruzE8ErdM=;
+  b=KZzw2tFw30Iayz0Vw8XpsJNWr6BpfqzfbnzeCge/+m9EgvfQLLai/lNw
+   a04nhHwXxyIqE9wJgVW0HkZT0slG2lAVU5Z9zwPvdD2Lk7PmmlobYHUbb
+   23Ko84UkDVUn3AacGvdkNvEIX9m4Y7/l69AA6VjmNXysEX+t3KkIIc/Zv
+   gSBqX7oSvdeMcgFk7sS+THzOACukR3hE3g6M7T91X7Q35q7W6LUctGotg
+   3mgmV8lKa5hgHatFrKr64tQmj91L+U2Ry2UmrPyUB+lBNWNLWpNjvVoK1
+   XE4ZERx6o+klvsXWK5DuJXMad7uNZrYvo47lRWqI2ZW1UbRnvLDfnMyw7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10309"; a="248842039"
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="248842039"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 06:00:17 -0700
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="571041147"
+Received: from sannilnx.jer.intel.com ([10.12.231.73])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 06:00:12 -0700
+From:   Alexander Usyskin <alexander.usyskin@intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc:     Tomas Winkler <tomas.winkler@intel.com>,
+        Alexander Usyskin <alexander.usyskin@intel.com>,
+        Vitaly Lubart <vitaly.lubart@intel.com>,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 13/20] mei: extend timeouts on slow devices.
+Date:   Thu,  7 Apr 2022 15:58:32 +0300
+Message-Id: <20220407125839.1479249-14-alexander.usyskin@intel.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220407125839.1479249-1-alexander.usyskin@intel.com>
+References: <20220407125839.1479249-1-alexander.usyskin@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PCIe devices supported by the PTT trace can be removed/rescanned by
-hotplug or through sysfs.  Add support for dynamically updating the
-available filter list by registering a PCI bus notifier block. Then user
-can always get latest information about available tracing filters and
-driver can block the invalid filters of which related devices no longer
-exist in the system.
+Parametrize operational timeouts in order
+to support slow firmware on some graphic devices.
 
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
 ---
- drivers/hwtracing/ptt/hisi_ptt.c | 159 ++++++++++++++++++++++++++++---
- drivers/hwtracing/ptt/hisi_ptt.h |  34 +++++++
- 2 files changed, 180 insertions(+), 13 deletions(-)
+ drivers/misc/mei/bus-fixup.c |  3 +--
+ drivers/misc/mei/client.c    | 14 +++++++-------
+ drivers/misc/mei/gsc-me.c    |  2 +-
+ drivers/misc/mei/hbm.c       | 12 ++++++------
+ drivers/misc/mei/hw-me.c     | 30 ++++++++++++++++--------------
+ drivers/misc/mei/hw-me.h     |  2 +-
+ drivers/misc/mei/hw-txe.c    |  2 +-
+ drivers/misc/mei/hw.h        |  5 +++++
+ drivers/misc/mei/init.c      | 19 ++++++++++++++++++-
+ drivers/misc/mei/main.c      |  2 +-
+ drivers/misc/mei/mei_dev.h   | 16 ++++++++++++++++
+ drivers/misc/mei/pci-me.c    |  2 +-
+ 12 files changed, 74 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/hwtracing/ptt/hisi_ptt.c b/drivers/hwtracing/ptt/hisi_ptt.c
-index 242b41870380..b1958ac20372 100644
---- a/drivers/hwtracing/ptt/hisi_ptt.c
-+++ b/drivers/hwtracing/ptt/hisi_ptt.c
-@@ -270,27 +270,121 @@ static int hisi_ptt_register_irq(struct hisi_ptt *hisi_ptt)
- 	return 0;
- }
- 
--static int hisi_ptt_init_filters(struct pci_dev *pdev, void *data)
-+static void hisi_ptt_update_filters(struct work_struct *work)
+diff --git a/drivers/misc/mei/bus-fixup.c b/drivers/misc/mei/bus-fixup.c
+index 59506ba6fc48..24e91a9ea558 100644
+--- a/drivers/misc/mei/bus-fixup.c
++++ b/drivers/misc/mei/bus-fixup.c
+@@ -164,7 +164,6 @@ static int mei_osver(struct mei_cl_device *cldev)
+ 			    sizeof(struct mkhi_fw_ver))
+ #define MKHI_FWVER_LEN(__num) (sizeof(struct mkhi_msg_hdr) + \
+ 			       sizeof(struct mkhi_fw_ver_block) * (__num))
+-#define MKHI_RCV_TIMEOUT 500 /* receive timeout in msec */
+ static int mei_fwver(struct mei_cl_device *cldev)
  {
-+	struct delayed_work *delayed_work = to_delayed_work(work);
-+	struct hisi_ptt_filter_update_info info;
- 	struct hisi_ptt_filter_desc *filter;
--	struct hisi_ptt *hisi_ptt = data;
- 	struct list_head *target_list;
-+	struct hisi_ptt *hisi_ptt;
+ 	char buf[MKHI_FWVER_BUF_LEN];
+@@ -187,7 +186,7 @@ static int mei_fwver(struct mei_cl_device *cldev)
  
--	target_list = pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ?
--		      &hisi_ptt->port_filters : &hisi_ptt->req_filters;
-+	hisi_ptt = container_of(delayed_work, struct hisi_ptt, work);
- 
--	filter = kzalloc(sizeof(*filter), GFP_KERNEL);
--	if (!filter) {
--		pci_err(hisi_ptt->pdev, "failed to add filter %s\n", pci_name(pdev));
--		return -ENOMEM;
-+	if (!mutex_trylock(&hisi_ptt->mutex)) {
-+		schedule_delayed_work(&hisi_ptt->work, HISI_PTT_WORK_DELAY_MS);
-+		return;
+ 	ret = 0;
+ 	bytes_recv = __mei_cl_recv(cldev->cl, buf, sizeof(buf), NULL, 0,
+-				   MKHI_RCV_TIMEOUT);
++				   cldev->bus->timeouts.mkhi_recv);
+ 	if (bytes_recv < 0 || (size_t)bytes_recv < MKHI_FWVER_LEN(1)) {
+ 		/*
+ 		 * Should be at least one version block,
+diff --git a/drivers/misc/mei/client.c b/drivers/misc/mei/client.c
+index 31264ab2eb13..e7a16d9b2241 100644
+--- a/drivers/misc/mei/client.c
++++ b/drivers/misc/mei/client.c
+@@ -870,7 +870,7 @@ static int mei_cl_send_disconnect(struct mei_cl *cl, struct mei_cl_cb *cb)
  	}
  
--	filter->pdev = pdev;
--	list_add_tail(&filter->list, target_list);
-+	while (kfifo_get(&hisi_ptt->filter_update_kfifo, &info)) {
-+		bool is_port = pci_pcie_type(info.pdev) == PCI_EXP_TYPE_ROOT_PORT;
-+		u16 val = hisi_ptt_get_filter_val(info.pdev);
- 
--	/* Update the available port mask */
--	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT)
--		hisi_ptt->port_mask |= hisi_ptt_get_filter_val(pdev);
-+		target_list = is_port ? &hisi_ptt->port_filters : &hisi_ptt->req_filters;
-+
-+		if (info.is_add) {
-+			filter = kzalloc(sizeof(*filter), GFP_KERNEL);
-+			if (!filter) {
-+				pci_err(hisi_ptt->pdev, "failed to add filter %s\n",
-+					pci_name(info.pdev));
-+				continue;
-+			}
-+
-+			filter->pdev = info.pdev;
-+			list_add_tail(&filter->list, target_list);
-+		} else {
-+			list_for_each_entry(filter, target_list, list)
-+				if (hisi_ptt_get_filter_val(filter->pdev) == val) {
-+					list_del(&filter->list);
-+					kfree(filter);
-+					break;
-+				}
-+		}
-+
-+		/* Update the available port mask */
-+		if (!is_port)
-+			continue;
-+
-+		if (info.is_add)
-+			hisi_ptt->port_mask |= val;
-+		else
-+			hisi_ptt->port_mask &= ~val;
-+	}
-+
-+	mutex_unlock(&hisi_ptt->mutex);
-+}
-+
-+static void hisi_ptt_update_fifo_in(struct hisi_ptt *hisi_ptt,
-+				    struct hisi_ptt_filter_update_info *info)
-+{
-+	struct pci_dev *root_port = pcie_find_root_port(info->pdev);
-+	u32 port_devid;
-+
-+	if (!root_port)
-+		return;
-+
-+	port_devid = PCI_DEVID(root_port->bus->number, root_port->devfn);
-+	if (port_devid < hisi_ptt->lower ||
-+	    port_devid > hisi_ptt->upper)
-+		return;
-+
-+	if (kfifo_in_spinlocked(&hisi_ptt->filter_update_kfifo, info, 1,
-+				&hisi_ptt->filter_update_lock))
-+		schedule_delayed_work(&hisi_ptt->work, 0);
-+	else
-+		pci_warn(hisi_ptt->pdev,
-+			 "filter update fifo overflow for target %s\n",
-+			 pci_name(info->pdev));
-+}
-+
-+/*
-+ * A PCI bus notifier is used here for dynamically updating the filter
-+ * list.
-+ */
-+static int hisi_ptt_notifier_call(struct notifier_block *nb, unsigned long action,
-+				  void *data)
-+{
-+	struct hisi_ptt *hisi_ptt = container_of(nb, struct hisi_ptt, hisi_ptt_nb);
-+	struct hisi_ptt_filter_update_info info;
-+	struct device *dev = data;
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+
-+	info.pdev = pdev;
-+
-+	switch (action) {
-+	case BUS_NOTIFY_ADD_DEVICE:
-+		info.is_add = true;
-+		break;
-+	case BUS_NOTIFY_DEL_DEVICE:
-+		info.is_add = false;
-+		break;
-+	default:
-+		return 0;
-+	}
-+
-+	hisi_ptt_update_fifo_in(hisi_ptt, &info);
-+
-+	return 0;
-+}
-+
-+static int hisi_ptt_init_filters(struct pci_dev *pdev, void *data)
-+{
-+	struct hisi_ptt_filter_update_info info = {
-+		.pdev = pdev,
-+		.is_add = true,
-+	};
-+	struct hisi_ptt *hisi_ptt = data;
-+
-+	hisi_ptt_update_fifo_in(hisi_ptt, &info);
+ 	list_move_tail(&cb->list, &dev->ctrl_rd_list);
+-	cl->timer_count = MEI_CONNECT_TIMEOUT;
++	cl->timer_count = dev->timeouts.connect;
+ 	mei_schedule_stall_timer(dev);
  
  	return 0;
+@@ -945,7 +945,7 @@ static int __mei_cl_disconnect(struct mei_cl *cl)
+ 	wait_event_timeout(cl->wait,
+ 			   cl->state == MEI_FILE_DISCONNECT_REPLY ||
+ 			   cl->state == MEI_FILE_DISCONNECTED,
+-			   mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
++			   dev->timeouts.cl_connect);
+ 	mutex_lock(&dev->device_lock);
+ 
+ 	rets = cl->status;
+@@ -1065,7 +1065,7 @@ static int mei_cl_send_connect(struct mei_cl *cl, struct mei_cl_cb *cb)
+ 	}
+ 
+ 	list_move_tail(&cb->list, &dev->ctrl_rd_list);
+-	cl->timer_count = MEI_CONNECT_TIMEOUT;
++	cl->timer_count = dev->timeouts.connect;
+ 	mei_schedule_stall_timer(dev);
+ 	return 0;
  }
-@@ -318,6 +412,9 @@ static int hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
- 	int ret;
- 	u32 reg;
+@@ -1164,7 +1164,7 @@ int mei_cl_connect(struct mei_cl *cl, struct mei_me_client *me_cl,
+ 			 cl->state == MEI_FILE_DISCONNECTED ||
+ 			 cl->state == MEI_FILE_DISCONNECT_REQUIRED ||
+ 			 cl->state == MEI_FILE_DISCONNECT_REPLY),
+-			mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
++			dev->timeouts.cl_connect);
+ 	mutex_lock(&dev->device_lock);
  
-+	INIT_DELAYED_WORK(&hisi_ptt->work, hisi_ptt_update_filters);
-+	spin_lock_init(&hisi_ptt->filter_update_lock);
-+	INIT_KFIFO(hisi_ptt->filter_update_kfifo);
- 	INIT_LIST_HEAD(&hisi_ptt->port_filters);
- 	INIT_LIST_HEAD(&hisi_ptt->req_filters);
+ 	if (!mei_cl_is_connected(cl)) {
+@@ -1562,7 +1562,7 @@ int mei_cl_notify_request(struct mei_cl *cl,
+ 			   cl->notify_en == request ||
+ 			   cl->status ||
+ 			   !mei_cl_is_connected(cl),
+-			   mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
++			   dev->timeouts.cl_connect);
+ 	mutex_lock(&dev->device_lock);
  
-@@ -334,6 +431,13 @@ static int hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
- 	hisi_ptt->upper = FIELD_GET(HISI_PTT_DEVICE_RANGE_UPPER, reg);
- 	hisi_ptt->lower = FIELD_GET(HISI_PTT_DEVICE_RANGE_LOWER, reg);
+ 	if (cl->notify_en != request && !cl->status)
+@@ -2336,7 +2336,7 @@ int mei_cl_dma_alloc_and_map(struct mei_cl *cl, const struct file *fp,
+ 	mutex_unlock(&dev->device_lock);
+ 	wait_event_timeout(cl->wait,
+ 			   cl->dma_mapped || cl->status,
+-			   mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
++			   dev->timeouts.cl_connect);
+ 	mutex_lock(&dev->device_lock);
  
-+	/*
-+	 * No need to fail if the bus is NULL here as the device
-+	 * maybe hotplugged after the PTT driver probe, in which
-+	 * case we can detect the event and update the list as
-+	 * we register a bus notifier for dynamically updating
-+	 * the filter list.
-+	 */
- 	bus = pci_find_bus(pci_domain_nr(pdev->bus), PCI_BUS_NUM(hisi_ptt->upper));
- 	if (bus)
- 		pci_walk_bus(bus, hisi_ptt_init_filters, hisi_ptt);
-@@ -760,6 +864,31 @@ static int hisi_ptt_register_pmu(struct hisi_ptt *hisi_ptt)
- 	return perf_pmu_register(&hisi_ptt->hisi_ptt_pmu, pmu_name, -1);
+ 	if (!cl->dma_mapped && !cl->status)
+@@ -2415,7 +2415,7 @@ int mei_cl_dma_unmap(struct mei_cl *cl, const struct file *fp)
+ 	mutex_unlock(&dev->device_lock);
+ 	wait_event_timeout(cl->wait,
+ 			   !cl->dma_mapped || cl->status,
+-			   mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
++			   dev->timeouts.cl_connect);
+ 	mutex_lock(&dev->device_lock);
+ 
+ 	if (cl->dma_mapped && !cl->status)
+diff --git a/drivers/misc/mei/gsc-me.c b/drivers/misc/mei/gsc-me.c
+index 6f262ddfd25a..38d035ae2904 100644
+--- a/drivers/misc/mei/gsc-me.c
++++ b/drivers/misc/mei/gsc-me.c
+@@ -48,7 +48,7 @@ static int mei_gsc_probe(struct auxiliary_device *aux_dev,
+ 
+ 	device = &aux_dev->dev;
+ 
+-	dev = mei_me_dev_init(device, cfg);
++	dev = mei_me_dev_init(device, cfg, adev->slow_fw);
+ 	if (IS_ERR(dev)) {
+ 		ret = PTR_ERR(dev);
+ 		goto err;
+diff --git a/drivers/misc/mei/hbm.c b/drivers/misc/mei/hbm.c
+index cebcca6d6d3e..4ff4dbfd07c0 100644
+--- a/drivers/misc/mei/hbm.c
++++ b/drivers/misc/mei/hbm.c
+@@ -232,7 +232,7 @@ int mei_hbm_start_wait(struct mei_device *dev)
+ 	mutex_unlock(&dev->device_lock);
+ 	ret = wait_event_timeout(dev->wait_hbm_start,
+ 			dev->hbm_state != MEI_HBM_STARTING,
+-			mei_secs_to_jiffies(MEI_HBM_TIMEOUT));
++			dev->timeouts.hbm);
+ 	mutex_lock(&dev->device_lock);
+ 
+ 	if (ret == 0 && (dev->hbm_state <= MEI_HBM_STARTING)) {
+@@ -275,7 +275,7 @@ int mei_hbm_start_req(struct mei_device *dev)
+ 	}
+ 
+ 	dev->hbm_state = MEI_HBM_STARTING;
+-	dev->init_clients_timer = MEI_CLIENTS_INIT_TIMEOUT;
++	dev->init_clients_timer = dev->timeouts.client_init;
+ 	mei_schedule_stall_timer(dev);
+ 	return 0;
  }
+@@ -316,7 +316,7 @@ static int mei_hbm_dma_setup_req(struct mei_device *dev)
+ 	}
  
-+static void hisi_ptt_unregister_filter_update_notifier(void *data)
-+{
-+	struct hisi_ptt *hisi_ptt = data;
-+
-+	bus_unregister_notifier(&pci_bus_type, &hisi_ptt->hisi_ptt_nb);
-+
-+	/* Cancel any work that has been queued */
-+	cancel_delayed_work_sync(&hisi_ptt->work);
-+}
-+
-+/* Register the bus notifier for dynamically updating the filter list */
-+static int hisi_ptt_register_filter_update_notifier(struct hisi_ptt *hisi_ptt)
-+{
-+	int ret;
-+
-+	hisi_ptt->hisi_ptt_nb.notifier_call = hisi_ptt_notifier_call;
-+	ret = bus_register_notifier(&pci_bus_type, &hisi_ptt->hisi_ptt_nb);
-+	if (ret)
-+		return ret;
-+
-+	return devm_add_action_or_reset(&hisi_ptt->pdev->dev,
-+					hisi_ptt_unregister_filter_update_notifier,
-+					hisi_ptt);
-+}
-+
- /*
-  * The DMA of PTT trace can only use direct mapping, due to some
-  * hardware restriction. Check whether there is an IOMMU or the
-@@ -832,6 +961,10 @@ static int hisi_ptt_probe(struct pci_dev *pdev,
+ 	dev->hbm_state = MEI_HBM_DR_SETUP;
+-	dev->init_clients_timer = MEI_CLIENTS_INIT_TIMEOUT;
++	dev->init_clients_timer = dev->timeouts.client_init;
+ 	mei_schedule_stall_timer(dev);
+ 	return 0;
+ }
+@@ -351,7 +351,7 @@ static int mei_hbm_capabilities_req(struct mei_device *dev)
+ 	}
+ 
+ 	dev->hbm_state = MEI_HBM_CAP_SETUP;
+-	dev->init_clients_timer = MEI_CLIENTS_INIT_TIMEOUT;
++	dev->init_clients_timer = dev->timeouts.client_init;
+ 	mei_schedule_stall_timer(dev);
+ 	return 0;
+ }
+@@ -385,7 +385,7 @@ static int mei_hbm_enum_clients_req(struct mei_device *dev)
+ 		return ret;
+ 	}
+ 	dev->hbm_state = MEI_HBM_ENUM_CLIENTS;
+-	dev->init_clients_timer = MEI_CLIENTS_INIT_TIMEOUT;
++	dev->init_clients_timer = dev->timeouts.client_init;
+ 	mei_schedule_stall_timer(dev);
+ 	return 0;
+ }
+@@ -751,7 +751,7 @@ static int mei_hbm_prop_req(struct mei_device *dev, unsigned long start_idx)
  		return ret;
  	}
  
-+	ret = hisi_ptt_register_filter_update_notifier(hisi_ptt);
-+	if (ret)
-+		pci_warn(pdev, "failed to register filter update notifier, ret = %d", ret);
+-	dev->init_clients_timer = MEI_CLIENTS_INIT_TIMEOUT;
++	dev->init_clients_timer = dev->timeouts.client_init;
+ 	mei_schedule_stall_timer(dev);
+ 
+ 	return 0;
+diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
+index 959b3329af60..93d8b6dcedda 100644
+--- a/drivers/misc/mei/hw-me.c
++++ b/drivers/misc/mei/hw-me.c
+@@ -445,7 +445,7 @@ static int mei_me_hw_ready_wait(struct mei_device *dev)
+ 	mutex_unlock(&dev->device_lock);
+ 	wait_event_timeout(dev->wait_hw_ready,
+ 			dev->recvd_hw_ready,
+-			mei_secs_to_jiffies(MEI_HW_READY_TIMEOUT));
++			dev->timeouts.hw_ready);
+ 	mutex_lock(&dev->device_lock);
+ 	if (!dev->recvd_hw_ready) {
+ 		dev_err(dev->dev, "wait hw ready failed\n");
+@@ -707,7 +707,6 @@ static void mei_me_pg_unset(struct mei_device *dev)
+ static int mei_me_pg_legacy_enter_sync(struct mei_device *dev)
+ {
+ 	struct mei_me_hw *hw = to_me_hw(dev);
+-	unsigned long timeout = mei_secs_to_jiffies(MEI_PGI_TIMEOUT);
+ 	int ret;
+ 
+ 	dev->pg_event = MEI_PG_EVENT_WAIT;
+@@ -718,7 +717,8 @@ static int mei_me_pg_legacy_enter_sync(struct mei_device *dev)
+ 
+ 	mutex_unlock(&dev->device_lock);
+ 	wait_event_timeout(dev->wait_pg,
+-		dev->pg_event == MEI_PG_EVENT_RECEIVED, timeout);
++		dev->pg_event == MEI_PG_EVENT_RECEIVED,
++		dev->timeouts.pgi);
+ 	mutex_lock(&dev->device_lock);
+ 
+ 	if (dev->pg_event == MEI_PG_EVENT_RECEIVED) {
+@@ -744,7 +744,6 @@ static int mei_me_pg_legacy_enter_sync(struct mei_device *dev)
+ static int mei_me_pg_legacy_exit_sync(struct mei_device *dev)
+ {
+ 	struct mei_me_hw *hw = to_me_hw(dev);
+-	unsigned long timeout = mei_secs_to_jiffies(MEI_PGI_TIMEOUT);
+ 	int ret;
+ 
+ 	if (dev->pg_event == MEI_PG_EVENT_RECEIVED)
+@@ -756,7 +755,8 @@ static int mei_me_pg_legacy_exit_sync(struct mei_device *dev)
+ 
+ 	mutex_unlock(&dev->device_lock);
+ 	wait_event_timeout(dev->wait_pg,
+-		dev->pg_event == MEI_PG_EVENT_RECEIVED, timeout);
++		dev->pg_event == MEI_PG_EVENT_RECEIVED,
++		dev->timeouts.pgi);
+ 	mutex_lock(&dev->device_lock);
+ 
+ reply:
+@@ -772,7 +772,8 @@ static int mei_me_pg_legacy_exit_sync(struct mei_device *dev)
+ 
+ 	mutex_unlock(&dev->device_lock);
+ 	wait_event_timeout(dev->wait_pg,
+-		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED, timeout);
++		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED,
++		dev->timeouts.pgi);
+ 	mutex_lock(&dev->device_lock);
+ 
+ 	if (dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED)
+@@ -887,8 +888,6 @@ static u32 mei_me_d0i3_unset(struct mei_device *dev)
+ static int mei_me_d0i3_enter_sync(struct mei_device *dev)
+ {
+ 	struct mei_me_hw *hw = to_me_hw(dev);
+-	unsigned long d0i3_timeout = mei_secs_to_jiffies(MEI_D0I3_TIMEOUT);
+-	unsigned long pgi_timeout = mei_secs_to_jiffies(MEI_PGI_TIMEOUT);
+ 	int ret;
+ 	u32 reg;
+ 
+@@ -910,7 +909,8 @@ static int mei_me_d0i3_enter_sync(struct mei_device *dev)
+ 
+ 	mutex_unlock(&dev->device_lock);
+ 	wait_event_timeout(dev->wait_pg,
+-		dev->pg_event == MEI_PG_EVENT_RECEIVED, pgi_timeout);
++		dev->pg_event == MEI_PG_EVENT_RECEIVED,
++		dev->timeouts.pgi);
+ 	mutex_lock(&dev->device_lock);
+ 
+ 	if (dev->pg_event != MEI_PG_EVENT_RECEIVED) {
+@@ -930,7 +930,8 @@ static int mei_me_d0i3_enter_sync(struct mei_device *dev)
+ 
+ 	mutex_unlock(&dev->device_lock);
+ 	wait_event_timeout(dev->wait_pg,
+-		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED, d0i3_timeout);
++		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED,
++		dev->timeouts.d0i3);
+ 	mutex_lock(&dev->device_lock);
+ 
+ 	if (dev->pg_event != MEI_PG_EVENT_INTR_RECEIVED) {
+@@ -990,7 +991,6 @@ static int mei_me_d0i3_enter(struct mei_device *dev)
+ static int mei_me_d0i3_exit_sync(struct mei_device *dev)
+ {
+ 	struct mei_me_hw *hw = to_me_hw(dev);
+-	unsigned long timeout = mei_secs_to_jiffies(MEI_D0I3_TIMEOUT);
+ 	int ret;
+ 	u32 reg;
+ 
+@@ -1013,7 +1013,8 @@ static int mei_me_d0i3_exit_sync(struct mei_device *dev)
+ 
+ 	mutex_unlock(&dev->device_lock);
+ 	wait_event_timeout(dev->wait_pg,
+-		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED, timeout);
++		dev->pg_event == MEI_PG_EVENT_INTR_RECEIVED,
++		dev->timeouts.pgi);
+ 	mutex_lock(&dev->device_lock);
+ 
+ 	if (dev->pg_event != MEI_PG_EVENT_INTR_RECEIVED) {
+@@ -1684,11 +1685,12 @@ EXPORT_SYMBOL_GPL(mei_me_get_cfg);
+  *
+  * @parent: device associated with physical device (pci/platform)
+  * @cfg: per device generation config
++ * @slow_fw: configure longer timeouts as FW is slow
+  *
+  * Return: The mei_device pointer on success, NULL on failure.
+  */
+ struct mei_device *mei_me_dev_init(struct device *parent,
+-				   const struct mei_cfg *cfg)
++				   const struct mei_cfg *cfg, bool slow_fw)
+ {
+ 	struct mei_device *dev;
+ 	struct mei_me_hw *hw;
+@@ -1703,7 +1705,7 @@ struct mei_device *mei_me_dev_init(struct device *parent,
+ 	for (i = 0; i < DMA_DSCR_NUM; i++)
+ 		dev->dr_dscr[i].size = cfg->dma_size[i];
+ 
+-	mei_device_init(dev, parent, &mei_me_hw_ops);
++	mei_device_init(dev, parent, slow_fw, &mei_me_hw_ops);
+ 	hw->cfg = cfg;
+ 
+ 	dev->fw_f_fw_ver_supported = cfg->fw_ver_supported;
+diff --git a/drivers/misc/mei/hw-me.h b/drivers/misc/mei/hw-me.h
+index ca09274ac299..0e9d90808bcf 100644
+--- a/drivers/misc/mei/hw-me.h
++++ b/drivers/misc/mei/hw-me.h
+@@ -131,7 +131,7 @@ enum mei_cfg_idx {
+ const struct mei_cfg *mei_me_get_cfg(kernel_ulong_t idx);
+ 
+ struct mei_device *mei_me_dev_init(struct device *parent,
+-				   const struct mei_cfg *cfg);
++				   const struct mei_cfg *cfg, bool slow_fw);
+ 
+ int mei_me_pg_enter_sync(struct mei_device *dev);
+ int mei_me_pg_exit_sync(struct mei_device *dev);
+diff --git a/drivers/misc/mei/hw-txe.c b/drivers/misc/mei/hw-txe.c
+index 00652c137cc7..fccfa806bd63 100644
+--- a/drivers/misc/mei/hw-txe.c
++++ b/drivers/misc/mei/hw-txe.c
+@@ -1201,7 +1201,7 @@ struct mei_device *mei_txe_dev_init(struct pci_dev *pdev)
+ 	if (!dev)
+ 		return NULL;
+ 
+-	mei_device_init(dev, &pdev->dev, &mei_txe_hw_ops);
++	mei_device_init(dev, &pdev->dev, false, &mei_txe_hw_ops);
+ 
+ 	hw = to_txe_hw(dev);
+ 
+diff --git a/drivers/misc/mei/hw.h b/drivers/misc/mei/hw.h
+index b46077b17114..9381e5c13b4f 100644
+--- a/drivers/misc/mei/hw.h
++++ b/drivers/misc/mei/hw.h
+@@ -16,11 +16,16 @@
+ #define MEI_CONNECT_TIMEOUT         3  /* HPS: at least 2 seconds */
+ 
+ #define MEI_CL_CONNECT_TIMEOUT     15  /* HPS: Client Connect Timeout */
++#define MEI_CL_CONNECT_TIMEOUT_SLOW 30 /* HPS: Client Connect Timeout, slow FW */
+ #define MEI_CLIENTS_INIT_TIMEOUT   15  /* HPS: Clients Enumeration Timeout */
+ 
+ #define MEI_PGI_TIMEOUT             1  /* PG Isolation time response 1 sec */
+ #define MEI_D0I3_TIMEOUT            5  /* D0i3 set/unset max response time */
+ #define MEI_HBM_TIMEOUT             1  /* 1 second */
++#define MEI_HBM_TIMEOUT_SLOW        5  /* 5 second, slow FW */
 +
- 	ret = hisi_ptt_register_pmu(hisi_ptt);
- 	if (ret) {
- 		pci_err(pdev, "failed to register PMU device, ret = %d", ret);
-diff --git a/drivers/hwtracing/ptt/hisi_ptt.h b/drivers/hwtracing/ptt/hisi_ptt.h
-index 29b6d6293d6c..53805f6c9bc2 100644
---- a/drivers/hwtracing/ptt/hisi_ptt.h
-+++ b/drivers/hwtracing/ptt/hisi_ptt.h
-@@ -10,11 +10,15 @@
- #define _HISI_PTT_H
++#define MKHI_RCV_TIMEOUT 500 /* receive timeout in msec */
++#define MKHI_RCV_TIMEOUT_SLOW 10000 /* receive timeout in msec, slow FW */
  
- #include <linux/bits.h>
-+#include <linux/kfifo.h>
- #include <linux/list.h>
- #include <linux/mutex.h>
-+#include <linux/notifier.h>
- #include <linux/pci.h>
- #include <linux/perf_event.h>
-+#include <linux/spinlock.h>
- #include <linux/types.h>
-+#include <linux/workqueue.h>
- 
- #define DRV_NAME "hisi_ptt"
- 
-@@ -57,6 +61,12 @@
- /* Wait time for hardware DMA to reset */
- #define HISI_PTT_RESET_TIMEOUT_US	10UL
- #define HISI_PTT_RESET_POLL_INTERVAL_US	1UL
-+/* FIFO size for dynamically updating the PTT trace filter list. */
-+#define HISI_PTT_FILTER_UPDATE_FIFO_SIZE	16
-+/* Delay time for filter updating work */
-+#define HISI_PTT_WORK_DELAY_MS		100UL
-+/* Wait time for DMA hardware to reset */
-+#define HISI_PTT_RESET_WAIT_MS		1000UL
- /* Poll timeout and interval for waiting hardware work to finish */
- #define HISI_PTT_WAIT_TRACE_TIMEOUT_US	100UL
- #define HISI_PTT_WAIT_POLL_INTERVAL_US	10UL
-@@ -112,6 +122,15 @@ struct hisi_ptt_filter_desc {
- 	struct pci_dev *pdev;
- };
- 
-+/**
-+ * struct hisi_ptt_filter_update_info - information for PTT filter updating
-+ * @pdev:       the PCI device to update in the filter list
-+ * @is_add:     adding to the filter or not
-+ */
-+struct hisi_ptt_filter_update_info {
-+	struct pci_dev *pdev;
-+	bool is_add;
-+};
+ /*
+  * FW page size for DMA allocations
+diff --git a/drivers/misc/mei/init.c b/drivers/misc/mei/init.c
+index 5bb6ba662cc0..ce030a882d0c 100644
+--- a/drivers/misc/mei/init.c
++++ b/drivers/misc/mei/init.c
+@@ -359,14 +359,16 @@ bool mei_write_is_idle(struct mei_device *dev)
+ EXPORT_SYMBOL_GPL(mei_write_is_idle);
  
  /**
-  * struct hisi_ptt_pmu_buf - descriptor of the AUX buffer of PTT trace
-@@ -139,9 +158,13 @@ struct hisi_ptt_pmu_buf {
-  * @port_filters: the filter list of root ports
-  * @req_filters:  the filter list of requester ID
-  * @port_mask:    port mask of the managed root ports
-+ * @work:         delayed work for filter updating
-+ * @filter_update_lock: spinlock to protect the filter update fifo
-+ * @filter_update_fifo: fifo of the filters waiting to update the filter list
+- * mei_device_init  -- initialize mei_device structure
++ * mei_device_init - initialize mei_device structure
+  *
+  * @dev: the mei device
+  * @device: the device structure
++ * @slow_fw: configure longer timeouts as FW is slow
+  * @hw_ops: hw operations
   */
- struct hisi_ptt {
- 	struct hisi_ptt_trace_ctrl trace_ctrl;
-+	struct notifier_block hisi_ptt_nb;
- 	struct pmu hisi_ptt_pmu;
- 	void __iomem *iobase;
- 	struct pci_dev *pdev;
-@@ -159,6 +182,17 @@ struct hisi_ptt {
- 	struct list_head port_filters;
- 	struct list_head req_filters;
- 	u16 port_mask;
+ void mei_device_init(struct mei_device *dev,
+ 		     struct device *device,
++		     bool slow_fw,
+ 		     const struct mei_hw_ops *hw_ops)
+ {
+ 	/* setup our list array */
+@@ -404,6 +406,21 @@ void mei_device_init(struct mei_device *dev,
+ 	dev->pg_event = MEI_PG_EVENT_IDLE;
+ 	dev->ops      = hw_ops;
+ 	dev->dev      = device;
 +
-+	/*
-+	 * We use a delayed work here to avoid indefinitely waiting for
-+	 * the hisi_ptt->mutex which protecting the filter list. The
-+	 * work will be delayed only if the mutex can not be held,
-+	 * otherwise no delay will be applied.
-+	 */
-+	struct delayed_work work;
-+	spinlock_t filter_update_lock;
-+	DECLARE_KFIFO(filter_update_kfifo, struct hisi_ptt_filter_update_info,
-+		      HISI_PTT_FILTER_UPDATE_FIFO_SIZE);
- };
++	dev->timeouts.hw_ready = mei_secs_to_jiffies(MEI_HW_READY_TIMEOUT);
++	dev->timeouts.connect = MEI_CONNECT_TIMEOUT;
++	dev->timeouts.client_init = MEI_CLIENTS_INIT_TIMEOUT;
++	dev->timeouts.pgi = mei_secs_to_jiffies(MEI_PGI_TIMEOUT);
++	dev->timeouts.d0i3 = mei_secs_to_jiffies(MEI_D0I3_TIMEOUT);
++	if (slow_fw) {
++		dev->timeouts.cl_connect = mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT_SLOW);
++		dev->timeouts.hbm = mei_secs_to_jiffies(MEI_HBM_TIMEOUT_SLOW);
++		dev->timeouts.mkhi_recv = msecs_to_jiffies(MKHI_RCV_TIMEOUT_SLOW);
++	} else {
++		dev->timeouts.cl_connect = mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT);
++		dev->timeouts.hbm = mei_secs_to_jiffies(MEI_HBM_TIMEOUT);
++		dev->timeouts.mkhi_recv = msecs_to_jiffies(MKHI_RCV_TIMEOUT);
++	}
+ }
+ EXPORT_SYMBOL_GPL(mei_device_init);
  
- #define to_hisi_ptt(pmu) container_of(pmu, struct hisi_ptt, hisi_ptt_pmu)
+diff --git a/drivers/misc/mei/main.c b/drivers/misc/mei/main.c
+index 786f7c8f7f61..261939b945ef 100644
+--- a/drivers/misc/mei/main.c
++++ b/drivers/misc/mei/main.c
+@@ -571,7 +571,7 @@ static int mei_ioctl_connect_vtag(struct file *file,
+ 				    cl->state == MEI_FILE_DISCONNECTED ||
+ 				    cl->state == MEI_FILE_DISCONNECT_REQUIRED ||
+ 				    cl->state == MEI_FILE_DISCONNECT_REPLY),
+-				   mei_secs_to_jiffies(MEI_CL_CONNECT_TIMEOUT));
++				   dev->timeouts.cl_connect);
+ 		mutex_lock(&dev->device_lock);
+ 	}
+ 
+diff --git a/drivers/misc/mei/mei_dev.h b/drivers/misc/mei/mei_dev.h
+index 694f866f87ef..16f59b3a45fc 100644
+--- a/drivers/misc/mei/mei_dev.h
++++ b/drivers/misc/mei/mei_dev.h
+@@ -415,6 +415,17 @@ struct mei_fw_version {
+ 
+ #define MEI_MAX_FW_VER_BLOCKS 3
+ 
++struct mei_dev_timeouts {
++	unsigned long hw_ready; /* Timeout on ready message, in jiffies */
++	int connect; /* HPS: at least 2 seconds, in seconds */
++	unsigned long cl_connect; /* HPS: Client Connect Timeout, in jiffies */
++	int client_init; /* HPS: Clients Enumeration Timeout, in seconds */
++	unsigned long pgi; /* PG Isolation time response, in jiffies */
++	unsigned int d0i3; /* D0i3 set/unset max response time, in jiffies */
++	unsigned long hbm; /* HBM operation timeout, in jiffies */
++	unsigned long mkhi_recv; /* receive timeout, in jiffies */
++};
++
+ /**
+  * struct mei_device -  MEI private device struct
+  *
+@@ -480,6 +491,8 @@ struct mei_fw_version {
+  * @allow_fixed_address: allow user space to connect a fixed client
+  * @override_fixed_address: force allow fixed address behavior
+  *
++ * @timeouts: actual timeout values
++ *
+  * @reset_work  : work item for the device reset
+  * @bus_rescan_work : work item for the bus rescan
+  *
+@@ -568,6 +581,8 @@ struct mei_device {
+ 	bool allow_fixed_address;
+ 	bool override_fixed_address;
+ 
++	struct mei_dev_timeouts timeouts;
++
+ 	struct work_struct reset_work;
+ 	struct work_struct bus_rescan_work;
+ 
+@@ -632,6 +647,7 @@ static inline u32 mei_slots2data(int slots)
+  */
+ void mei_device_init(struct mei_device *dev,
+ 		     struct device *device,
++		     bool slow_fw,
+ 		     const struct mei_hw_ops *hw_ops);
+ int mei_reset(struct mei_device *dev);
+ int mei_start(struct mei_device *dev);
+diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
+index 33e58821e478..0288784f8ffd 100644
+--- a/drivers/misc/mei/pci-me.c
++++ b/drivers/misc/mei/pci-me.c
+@@ -201,7 +201,7 @@ static int mei_me_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	}
+ 
+ 	/* allocates and initializes the mei dev structure */
+-	dev = mei_me_dev_init(&pdev->dev, cfg);
++	dev = mei_me_dev_init(&pdev->dev, cfg, false);
+ 	if (!dev) {
+ 		err = -ENOMEM;
+ 		goto end;
 -- 
-2.24.0
+2.32.0
 
