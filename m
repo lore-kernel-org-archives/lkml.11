@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B56FCC47087
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E8BBC38A2C
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:21:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239532AbiDGBXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60392 "EHLO
+        id S238378AbiDGBXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238571AbiDGBSX (ORCPT
+        with ESMTP id S238619AbiDGBSZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:18:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C871834E1;
-        Wed,  6 Apr 2022 18:13:13 -0700 (PDT)
+        Wed, 6 Apr 2022 21:18:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC7918A3CA;
+        Wed,  6 Apr 2022 18:13:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA236B81E79;
-        Thu,  7 Apr 2022 01:13:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C915C385A6;
-        Thu,  7 Apr 2022 01:13:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09E3D61DD0;
+        Thu,  7 Apr 2022 01:13:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E4A3C385A6;
+        Thu,  7 Apr 2022 01:13:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649293990;
-        bh=JGTxfCZOOghgkyjf3BWnR1x9TbNLIoiVYqZlPvou4Fk=;
+        s=k20201202; t=1649293998;
+        bh=FcdRimxO9vNxWK12F69s1kl20V31UR0lT7zb1lonvp8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gzOWhxMLyFvUmbiJTj48idLWMvvcpHQrcosYSwu6+8vuozeXgxVp36Y7z94WLBSH/
-         4z9dkeR58BNQgFHhOqaL9izpAxtYfjyQTsos5Qn6VrN7EzwbRxDsIDccuaN5XwGQAc
-         kchvCMWiOAVFVHRtMc94Ms6CY0wuirufkBL8qcogpQQU4zPm5G1paOsqZhXUDJBTAR
-         GbztCJwhS4XjUB34L+XytqY63nIegvBRpIKzyTHPHSeDr4/g5SakHfuwDLDAqcBkdg
-         oklJrYJ3i4V2W2ncbPihUsiNXFSodwA6VoXfMQlB8vckVBPhQbZbqO4Hr49EssY6tZ
-         mTaWk1DZWDdrA==
+        b=lTeqOnVXp18AMrJLKOSYTJ6EyKNAYYmi53MEPoW+FO7EOFHBs5EZW+ft3qosdMu0a
+         LdLHAH3ulgOVoAsKlobuK23G9zFbx4YURtNojVi+YY6RzoJHXtGa9POiyi0NCu+1sT
+         ipxnwaJ0I9ZjbxRhs7Z5lhpKTJtGoan5Vmx9zfDRZwHjwFh/4eXB3j3O1UfR5+OwNL
+         OvIHmLBVeyS/MrM623iqLbk69WeHCqSlvoRXPX+r3TkrL9SHDeNJy7OfnSHU+PV/+2
+         H4JqvQAz0HuHnSR8xwFBLQB1QAWmeIaudqZruxlFVgeawmkU4HvMu6pNLyd/A0heY/
+         Ba2LrXF0nBN8A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Glenn Washburn <development@efficientek.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        linux-um@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 05/27] um: port_user: Improve error handling when port-helper is not found
-Date:   Wed,  6 Apr 2022 21:12:35 -0400
-Message-Id: <20220407011257.114287-5-sashal@kernel.org>
+Cc:     Monish Kumar R <monish.kumar.r@intel.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 08/27] nvme-pci: add quirks for Samsung X5 SSDs
+Date:   Wed,  6 Apr 2022 21:12:38 -0400
+Message-Id: <20220407011257.114287-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407011257.114287-1-sashal@kernel.org>
 References: <20220407011257.114287-1-sashal@kernel.org>
@@ -53,53 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Glenn Washburn <development@efficientek.com>
+From: Monish Kumar R <monish.kumar.r@intel.com>
 
-[ Upstream commit 3cb5a7f167c620a8b0e38b0446df2e024d2243dc ]
+[ Upstream commit bc360b0b1611566e1bd47384daf49af6a1c51837 ]
 
-Check if port-helper exists and is executable. If not, write an error
-message to the kernel log with information to help the user diagnose the
-issue and exit with an error. If UML_PORT_HELPER was not set, write a
-message suggesting that the user set it. This makes it easier to understand
-why telneting to the UML instance is failing and what can be done to fix it.
+Add quirks to not fail the initialization and to have quick resume
+latency after cold/warm reboot.
 
-Signed-off-by: Glenn Washburn <development@efficientek.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/drivers/port_user.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/nvme/host/pci.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/um/drivers/port_user.c b/arch/um/drivers/port_user.c
-index 5b5b64cb1071..133ca7bf2d91 100644
---- a/arch/um/drivers/port_user.c
-+++ b/arch/um/drivers/port_user.c
-@@ -5,6 +5,7 @@
- 
- #include <stdio.h>
- #include <stdlib.h>
-+#include <string.h>
- #include <errno.h>
- #include <termios.h>
- #include <unistd.h>
-@@ -175,6 +176,17 @@ int port_connection(int fd, int *socket, int *pid_out)
- 	if (new < 0)
- 		return -errno;
- 
-+	err = os_access(argv[2], X_OK);
-+	if (err < 0) {
-+		printk(UM_KERN_ERR "port_connection : error accessing port-helper "
-+		       "executable at %s: %s\n", argv[2], strerror(-err));
-+		if (env == NULL)
-+			printk(UM_KERN_ERR "Set UML_PORT_HELPER environment "
-+				"variable to path to uml-utilities port-helper "
-+				"binary\n");
-+		goto out_close;
-+	}
-+
- 	err = os_pipe(socket, 0, 0);
- 	if (err < 0)
- 		goto out_close;
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index b925a5f4afc3..af2af69225ee 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3372,7 +3372,10 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_128_BYTES_SQES |
+ 				NVME_QUIRK_SHARED_TAGS |
+ 				NVME_QUIRK_SKIP_CID_GEN },
+-
++	{ PCI_DEVICE(0x144d, 0xa808),   /* Samsung X5 */
++		.driver_data =  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
++				NVME_QUIRK_NO_DEEPEST_PS |
++				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
+ 	{ 0, }
+ };
 -- 
 2.35.1
 
