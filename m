@@ -2,220 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 694E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EFC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:06:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239198AbiDGJFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34016 "EHLO
+        id S232204AbiDGJIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230140AbiDGJFZ (ORCPT
+        with ESMTP id S229949AbiDGJIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:05:25 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D87718E00
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:03:24 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id g20so5612623edw.6
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 02:03:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=W+1rOYPnAZkSAoFE9WFZU5G0otnwYX5qic+yQYdsVYw=;
-        b=ikVAtHHNfS1qoYViGuL94fCuQ8C+sS0IgCobHN4E5+VSj6BZL+yj96oOWGAUUkJR6j
-         NRB1pT3xl3CiOTSvTd6VKHK50u0XaKBOmFDpQNAb1T85d611C2juxICUAgCCXG7prKLe
-         nXmGV880tstI6aOa/b2NvPHEJAJZP0kATx3Sg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=W+1rOYPnAZkSAoFE9WFZU5G0otnwYX5qic+yQYdsVYw=;
-        b=qteXlEZgYA/pw5rwI6qBNqfsB2C6+76cUn/zssNsw39IIsjyJA8gWw6TBAHouvP8NU
-         ScGKk3mJD5iVSE4cZgjsqDdopLO/LWDogDA8BgdXWYBPuY3KzlrpFKiLX4o2cgeyB0Oz
-         Z1axkl0lViI4ng0ncasfSDs3nGZUWkU4kJzs6vTaogTbwAMa6XEg1yG4MXAES89FWJoD
-         DnvPz/R7lL9ldJ6yt7TZvQYIvoHgl2lixdw3Nq6HMDUxtIaAcmS7LVpjsgR2qADKDUrO
-         R/cPrmFmMb2WEETnnCxfWkbm/orXTrtt5aMxZgQGnU+cyBY424HfpvGqhoplH2rfevOq
-         bCsQ==
-X-Gm-Message-State: AOAM530NTH0/knoOr5mMh4nLCuA6uBtQSm3Nm6Ue4+4sEowF552a6kAe
-        fm8oavndYPNGEYtsUsEUYO0l8nd809VYa7HGhzY=
-X-Google-Smtp-Source: ABdhPJwiSCGjhBdoXYK5Nvas9Re2eGRnUUUVEvu1QLTjngawJF0jewMmPTqZfm9TwzhKEP8c0Pm7GQ==
-X-Received: by 2002:a05:6402:438d:b0:419:4550:d52b with SMTP id o13-20020a056402438d00b004194550d52bmr12998429edc.83.1649322203124;
-        Thu, 07 Apr 2022 02:03:23 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id f13-20020a50bf0d000000b0041cdd9c9147sm3857173edk.40.2022.04.07.02.03.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 02:03:22 -0700 (PDT)
-Date:   Thu, 7 Apr 2022 11:03:20 +0200
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Borislav Petkov <bp@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Miaoqian Lin <linmq006@gmail.com>
-Subject: Re: [RESEND RFC PATCH 1/5] firmware: sysfb: Make
- sysfb_create_simplefb() return a pdev pointer
-Message-ID: <Yk6o2MzkMQeSAcsb@phenom.ffwll.local>
-Mail-Followup-To: Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Borislav Petkov <bp@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Miaoqian Lin <linmq006@gmail.com>
-References: <20220406213919.600294-1-javierm@redhat.com>
- <20220406213919.600294-2-javierm@redhat.com>
+        Thu, 7 Apr 2022 05:08:15 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A8763B0;
+        Thu,  7 Apr 2022 02:06:14 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id ED2481F85B;
+        Thu,  7 Apr 2022 09:06:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649322372; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Dum3SF0MI6FnOAJY62qBL8AI+owi/9ZpbV05X3S6Rl4=;
+        b=xBwZxAqNfyE+iB5/vIqwVf8Wr7grkEWsndIz7kWEBgX7hS+QECEtAhke+FoblsexrQN8oN
+        elyFKc3GlecpLwmChy0KyxEnQ5H7x4KwQT0ovYXU07KksK8eCHyA0zZIMHjjWdA7AIu9RE
+        upjcxoaNsuIHv7nLvEB2C/8ropF3HQk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649322372;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Dum3SF0MI6FnOAJY62qBL8AI+owi/9ZpbV05X3S6Rl4=;
+        b=0YlDnHvi6Mgkx1iaEQmppbm1yU8bxt+u/qxqCjUNCUOUgf7jkl3LHWQ0m+/ZMS6Z/t3HyA
+        kBe12Uh169nMfGAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9797813A66;
+        Thu,  7 Apr 2022 09:06:12 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id RQ7ZIYSpTmLwIAAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Thu, 07 Apr 2022 09:06:12 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id 02b63267;
+        Thu, 7 Apr 2022 09:06:36 +0000 (UTC)
+From:   =?utf-8?Q?Lu=C3=ADs_Henriques?= <lhenriques@suse.de>
+To:     Xiubo Li <xiubli@redhat.com>
+Cc:     Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] ceph: invalidate pages when doing DIO in encrypted
+ inodes
+References: <20220401133243.1075-1-lhenriques@suse.de>
+        <cd8418a0-e0dc-c5ae-d49d-6248bb6fc4d6@redhat.com>
+Date:   Thu, 07 Apr 2022 10:06:36 +0100
+In-Reply-To: <cd8418a0-e0dc-c5ae-d49d-6248bb6fc4d6@redhat.com> (Xiubo Li's
+        message of "Thu, 7 Apr 2022 11:19:09 +0800")
+Message-ID: <87v8vl8dpf.fsf@brahms.olymp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406213919.600294-2-javierm@redhat.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+Content-Type: multipart/mixed; boundary="=-=-="
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 11:39:15PM +0200, Javier Martinez Canillas wrote:
-> This function just returned 0 on success or an errno code on error, but it
-> could be useful to sysfb_init() to get a pointer to the device registered.
-> 
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-You need to rebase this onto 202c08914ba5 ("firmware: sysfb: fix
-platform-device leak in error path") which fixes the same error path leak
-you are fixing in here too. Or we just have a neat conflict when merging
-:-) But in that case please mention that you fix the error path leak too
-so it's less confusing when Linus or someone needs to resolve the
-conflict.
+Xiubo Li <xiubli@redhat.com> writes:
 
-Anyway Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+> Hi Luis,
+>
+> Please try the following patch, to see could it resolve your issue:
 
-> ---
-> 
->  drivers/firmware/sysfb.c          |  4 ++--
->  drivers/firmware/sysfb_simplefb.c | 24 +++++++++++++++---------
->  include/linux/sysfb.h             | 10 +++++-----
->  3 files changed, 22 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
-> index 2bfbb05f7d89..b032f40a92de 100644
-> --- a/drivers/firmware/sysfb.c
-> +++ b/drivers/firmware/sysfb.c
-> @@ -46,8 +46,8 @@ static __init int sysfb_init(void)
->  	/* try to create a simple-framebuffer device */
->  	compatible = sysfb_parse_mode(si, &mode);
->  	if (compatible) {
-> -		ret = sysfb_create_simplefb(si, &mode);
-> -		if (!ret)
-> +		pd = sysfb_create_simplefb(si, &mode);
-> +		if (!IS_ERR(pd))
->  			return 0;
->  	}
->  
-> diff --git a/drivers/firmware/sysfb_simplefb.c b/drivers/firmware/sysfb_simplefb.c
-> index 76c4abc42a30..c42648ed3aad 100644
-> --- a/drivers/firmware/sysfb_simplefb.c
-> +++ b/drivers/firmware/sysfb_simplefb.c
-> @@ -57,8 +57,8 @@ __init bool sysfb_parse_mode(const struct screen_info *si,
->  	return false;
->  }
->  
-> -__init int sysfb_create_simplefb(const struct screen_info *si,
-> -				 const struct simplefb_platform_data *mode)
-> +__init struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
-> +						     const struct simplefb_platform_data *mode)
->  {
->  	struct platform_device *pd;
->  	struct resource res;
-> @@ -76,7 +76,7 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
->  		base |= (u64)si->ext_lfb_base << 32;
->  	if (!base || (u64)(resource_size_t)base != base) {
->  		printk(KERN_DEBUG "sysfb: inaccessible VRAM base\n");
-> -		return -EINVAL;
-> +		return ERR_PTR(-EINVAL);
->  	}
->  
->  	/*
-> @@ -93,7 +93,7 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
->  	length = mode->height * mode->stride;
->  	if (length > size) {
->  		printk(KERN_WARNING "sysfb: VRAM smaller than advertised\n");
-> -		return -EINVAL;
-> +		return ERR_PTR(-EINVAL);
->  	}
->  	length = PAGE_ALIGN(length);
->  
-> @@ -104,25 +104,31 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
->  	res.start = base;
->  	res.end = res.start + length - 1;
->  	if (res.end <= res.start)
-> -		return -EINVAL;
-> +		return ERR_PTR(-EINVAL);
->  
->  	pd = platform_device_alloc("simple-framebuffer", 0);
->  	if (!pd)
-> -		return -ENOMEM;
-> +		return ERR_PTR(-ENOMEM);
->  
->  	sysfb_apply_efi_quirks(pd);
->  
->  	ret = platform_device_add_resources(pd, &res, 1);
->  	if (ret) {
->  		platform_device_put(pd);
-> -		return ret;
-> +		return ERR_PTR(ret);
->  	}
->  
->  	ret = platform_device_add_data(pd, mode, sizeof(*mode));
->  	if (ret) {
->  		platform_device_put(pd);
-> -		return ret;
-> +		return ERR_PTR(ret);
->  	}
->  
-> -	return platform_device_add(pd);
-> +	ret = platform_device_add(pd);
-> +	if (ret) {
-> +		platform_device_put(pd);
-> +		return ERR_PTR(ret);
-> +	}
-> +
-> +	return pd;
->  }
-> diff --git a/include/linux/sysfb.h b/include/linux/sysfb.h
-> index b0dcfa26d07b..708152e9037b 100644
-> --- a/include/linux/sysfb.h
-> +++ b/include/linux/sysfb.h
-> @@ -72,8 +72,8 @@ static inline void sysfb_apply_efi_quirks(struct platform_device *pd)
->  
->  bool sysfb_parse_mode(const struct screen_info *si,
->  		      struct simplefb_platform_data *mode);
-> -int sysfb_create_simplefb(const struct screen_info *si,
-> -			  const struct simplefb_platform_data *mode);
-> +struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
-> +					      const struct simplefb_platform_data *mode);
->  
->  #else /* CONFIG_SYSFB_SIMPLE */
->  
-> @@ -83,10 +83,10 @@ static inline bool sysfb_parse_mode(const struct screen_info *si,
->  	return false;
->  }
->  
-> -static inline int sysfb_create_simplefb(const struct screen_info *si,
-> -					 const struct simplefb_platform_data *mode)
-> +static inline struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
-> +							    const struct simplefb_platform_data *mode)
->  {
-> -	return -EINVAL;
-> +	return ERR_PTR(-EINVAL);
->  }
->  
->  #endif /* CONFIG_SYSFB_SIMPLE */
-> -- 
-> 2.35.1
-> 
+No, this seems to deadlock when running my test.  I'm attaching the code
+I'm using to test it; it's part of generic/647 but I've removed all the
+other test cases that were passing.  I simply mount the filesystem with
+test_dummy_encryption and run this test.  With your patch it'll hang;
+without it it'll show "pwrite (O_DIRECT) is broken".  The extra
+invalidate_inode_pages2_range() will make it pass.
 
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Cheers,
+--=20
+Lu=C3=ADs
+
+
+--=-=-=
+Content-Type: text/x-csrc
+Content-Disposition: attachment; filename=647.c
+
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2021 Red Hat, Inc.  All Rights Reserved.
+ * Written by Andreas Gruenbacher (agruenba@redhat.com)
+ */
+
+/* Trigger page faults in the same file during read and write. */
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE /* to get definition of O_DIRECT flag. */
+#endif
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <err.h>
+
+char *filename;
+unsigned int page_size;
+void *page;
+char *addr;
+int fd;
+ssize_t ret;
+
+/*
+ * Leave a hole at the beginning of the test file and initialize a block of
+ * @page_size bytes at offset @page_size to @c.  Then, reopen the file and
+ * mmap the first two pages.
+ */
+void init(char c, int flags)
+{
+	fd = open(filename, O_CREAT | O_TRUNC | O_WRONLY | O_DIRECT, 0666);
+	if (fd == -1)
+		goto fail;
+	memset(page, c, page_size);
+	ret = pwrite(fd, page, page_size, page_size);
+	if (ret != page_size)
+		goto fail;
+	if (close(fd))
+		goto fail;
+
+	fd = open(filename, flags);
+	if (fd == -1)
+		goto fail;
+	addr = mmap(NULL, 2 * page_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+	if (addr == MAP_FAILED)
+		err(1, NULL);
+	return;
+
+fail:
+	err(1, "%s", filename);
+}
+
+static ssize_t do_write(int fd, const void *buf, size_t count, off_t offset)
+{
+	ssize_t count2 = 0, ret;
+
+	do {
+		ret = pwrite(fd, buf, count, offset);
+		if (ret == -1) {
+			if (errno == EINTR)
+				continue;
+			break;
+		}
+		if (ret == 0)
+			break;
+		count2 += ret;
+		buf += ret;
+		count -= ret;
+	} while (count);
+	return count2;
+}
+
+int main(int argc, char *argv[])
+{
+	if (argc != 2)
+		errx(1, "no test filename argument given");
+	filename = argv[1];
+
+	page_size = ret = sysconf(_SC_PAGE_SIZE);
+	if (ret == -1)
+		err(1, NULL);
+
+	ret = posix_memalign(&page, page_size, page_size);
+	if (ret) {
+		errno = ENOMEM;
+		err(1, NULL);
+	}
+	init('d', O_RDWR | O_DIRECT);
+	ret = do_write(fd, addr + page_size, page_size, 0);
+	if (ret != page_size)
+		err(1, "pwrite %s (O_DIRECT): %ld != %u", filename, ret, page_size);
+	if (memcmp(addr, page, page_size))
+		errx(1, "pwrite (O_DIRECT) is broken");
+
+	if (fsync(fd))
+		errx(1, "fsync");
+	if (close(fd))
+		errx(1, "close");
+
+	if (unlink(filename))
+		err(1, "unlink %s", filename);
+
+	return 0;
+}
+
+--=-=-=
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+
+DQo+DQo+DQo+IGRpZmYgLS1naXQgYS9mcy9jZXBoL2ZpbGUuYyBiL2ZzL2NlcGgvZmlsZS5jDQo+
+IGluZGV4IDVkMzlkOGU1NDI3My4uMzUwN2U0MDY2ZGU0IDEwMDY0NA0KPiAtLS0gYS9mcy9jZXBo
+L2ZpbGUuYw0KPiArKysgYi9mcy9jZXBoL2ZpbGUuYw0KPiBAQCAtMjAxMSw2ICsyMDExLDcgQEAg
+c3RhdGljIHNzaXplX3QgY2VwaF9yZWFkX2l0ZXIoc3RydWN0IGtpb2NiICppb2NiLCBzdHJ1Y3QN
+Cj4gaW92X2l0ZXIgKnRvKQ0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIGNlcGhfY2FwX3N0cmluZyhnb3QpKTsNCj4NCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIGlmIChjaS0+aV9pbmxpbmVfdmVyc2lvbiA9PSBDRVBIX0lOTElORV9OT05FKSB7DQo+
+ICsgZmlsZW1hcF9pbnZhbGlkYXRlX2xvY2soaW5vZGUtPmlfbWFwcGluZyk7DQo+IMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKCFyZXRyeV9vcCAmJg0K
+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+KGlvY2ItPmtpX2ZsYWdzICYgSU9DQl9ESVJFQ1QpICYmDQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAhSVNfRU5DUllQVEVEKGlub2RlKSkg
+ew0KPiBAQCAtMjAyMSw2ICsyMDIyLDcgQEAgc3RhdGljIHNzaXplX3QgY2VwaF9yZWFkX2l0ZXIo
+c3RydWN0IGtpb2NiICppb2NiLCBzdHJ1Y3QNCj4gaW92X2l0ZXIgKnRvKQ0KPiDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH0gZWxzZSB7DQo+IMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJl
+dCA9IGNlcGhfc3luY19yZWFkKGlvY2IsIHRvLCAmcmV0cnlfb3ApOw0KPiDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH0NCj4gKyBmaWxlbWFwX2ludmFsaWRh
+dGVfdW5sb2NrKGlub2RlLT5pX21hcHBpbmcpOw0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgfSBlbHNlIHsNCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCByZXRyeV9vcCA9IFJFQURfSU5MSU5FOw0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgfQ0KPiBAQCAtMjIzOSwxMSArMjI0MSwxMyBAQCBzdGF0aWMgc3NpemVfdCBjZXBo
+X3dyaXRlX2l0ZXIoc3RydWN0IGtpb2NiICppb2NiLA0KPiBzdHJ1Y3QgaW92X2l0ZXIgKmZyb20p
+DQo+DQo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiB3ZSBtaWdodCBuZWVkIHRv
+IHJldmVydCBiYWNrIHRvIHRoYXQgcG9pbnQgKi8NCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIGRhdGEgPSAqZnJvbTsNCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZmls
+ZW1hcF9pbnZhbGlkYXRlX2xvY2soaW5vZGUtPmlfbWFwcGluZyk7DQo+IMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBpZiAoKGlvY2ItPmtpX2ZsYWdzICYgSU9DQl9ESVJFQ1QpICYmICFJ
+U19FTkNSWVBURUQoaW5vZGUpKQ0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIHdyaXR0ZW4gPSBjZXBoX2RpcmVjdF9yZWFkX3dyaXRlKGlvY2IsICZkYXRh
+LCBzbmFwYywNCj4gJnByZWFsbG9jX2NmKTsNCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIGVsc2UNCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCB3cml0dGVuID0gY2VwaF9zeW5jX3dyaXRlKGlvY2IsICZkYXRhLCBwb3MsIHNuYXBjKTsNCj4g
+K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZmlsZW1hcF9pbnZhbGlkYXRlX3VubG9jayhp
+bm9kZS0+aV9tYXBwaW5nKTsNCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmIChk
+aXJlY3RfbG9jaykNCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCBjZXBoX2VuZF9pb19kaXJlY3QoaW5vZGUpOw0KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgZWxzZQ0KPg0KPg0KPg0KPiBPbiA0LzEvMjIgOTozMiBQTSwgTHXDrXMgSGVucmlx
+dWVzIHdyb3RlOg0KPj4gV2hlbiBkb2luZyBESU8gb24gYW4gZW5jcnlwdGVkIG5vZGUsIHdlIG5l
+ZWQgdG8gaW52YWxpZGF0ZSB0aGUgcGFnZSBjYWNoZSBpbg0KPj4gdGhlIHJhbmdlIGJlaW5nIHdy
+aXR0ZW4gdG8sIG90aGVyd2lzZSB0aGUgY2FjaGUgd2lsbCBpbmNsdWRlIGludmFsaWQgZGF0YS4N
+Cj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBMdcOtcyBIZW5yaXF1ZXMgPGxoZW5yaXF1ZXNAc3VzZS5k
+ZT4NCj4+IC0tLQ0KPj4gICBmcy9jZXBoL2ZpbGUuYyB8IDExICsrKysrKysrKystDQo+PiAgIDEg
+ZmlsZSBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQo+Pg0KPj4gQ2hh
+bmdlcyBzaW5jZSB2MToNCj4+IC0gUmVwbGFjZWQgdHJ1bmNhdGVfaW5vZGVfcGFnZXNfcmFuZ2Uo
+KSBieSBpbnZhbGlkYXRlX2lub2RlX3BhZ2VzMl9yYW5nZQ0KPj4gLSBDYWxsIGZzY2FjaGVfaW52
+YWxpZGF0ZSB3aXRoIEZTQ0FDSEVfSU5WQUxfRElPX1dSSVRFIGlmIHdlJ3JlIGRvaW5nIERJTw0K
+Pj4NCj4+IE5vdGU6IEknbSBub3QgcmVhbGx5IHN1cmUgdGhpcyBsYXN0IGNoYW5nZSBpcyByZXF1
+aXJlZCwgaXQgZG9lc24ndCByZWFsbHkNCj4+IGFmZmVjdCBnZW5lcmljLzY0NyByZXN1bHQsIGJ1
+dCBzZWVtcyB0byBiZSB0aGUgbW9zdCBjb3JyZWN0Lg0KPj4NCj4+IGRpZmYgLS1naXQgYS9mcy9j
+ZXBoL2ZpbGUuYyBiL2ZzL2NlcGgvZmlsZS5jDQo+PiBpbmRleCA1MDcyNTcwYzIyMDMuLmIyNzQz
+YzM0MjMwNSAxMDA2NDQNCj4+IC0tLSBhL2ZzL2NlcGgvZmlsZS5jDQo+PiArKysgYi9mcy9jZXBo
+L2ZpbGUuYw0KPj4gQEAgLTE2MDUsNyArMTYwNSw3IEBAIGNlcGhfc3luY193cml0ZShzdHJ1Y3Qg
+a2lvY2IgKmlvY2IsIHN0cnVjdCBpb3ZfaXRlciAqZnJvbSwgbG9mZl90IHBvcywNCj4+ICAgCWlm
+IChyZXQgPCAwKQ0KPj4gICAJCXJldHVybiByZXQ7DQo+PiAgIC0JY2VwaF9mc2NhY2hlX2ludmFs
+aWRhdGUoaW5vZGUsIGZhbHNlKTsNCj4+ICsJY2VwaF9mc2NhY2hlX2ludmFsaWRhdGUoaW5vZGUs
+IChpb2NiLT5raV9mbGFncyAmIElPQ0JfRElSRUNUKSk7DQo+PiAgIAlyZXQgPSBpbnZhbGlkYXRl
+X2lub2RlX3BhZ2VzMl9yYW5nZShpbm9kZS0+aV9tYXBwaW5nLA0KPj4gICAJCQkJCSAgICBwb3Mg
+Pj4gUEFHRV9TSElGVCwNCj4+ICAgCQkJCQkgICAgKHBvcyArIGNvdW50IC0gMSkgPj4gUEFHRV9T
+SElGVCk7DQo+PiBAQCAtMTg5NSw2ICsxODk1LDE1IEBAIGNlcGhfc3luY193cml0ZShzdHJ1Y3Qg
+a2lvY2IgKmlvY2IsIHN0cnVjdCBpb3ZfaXRlciAqZnJvbSwgbG9mZl90IHBvcywNCj4+ICAgCQly
+ZXEtPnJfaW5vZGUgPSBpbm9kZTsNCj4+ICAgCQlyZXEtPnJfbXRpbWUgPSBtdGltZTsNCj4+ICAg
+KwkJaWYgKElTX0VOQ1JZUFRFRChpbm9kZSkgJiYgKGlvY2ItPmtpX2ZsYWdzICYgSU9DQl9ESVJF
+Q1QpKSB7DQo+PiArCQkJcmV0ID0gaW52YWxpZGF0ZV9pbm9kZV9wYWdlczJfcmFuZ2UoDQo+PiAr
+CQkJCWlub2RlLT5pX21hcHBpbmcsDQo+PiArCQkJCXdyaXRlX3BvcyA+PiBQQUdFX1NISUZULA0K
+Pj4gKwkJCQkod3JpdGVfcG9zICsgd3JpdGVfbGVuIC0gMSkgPj4gUEFHRV9TSElGVCk7DQo+PiAr
+CQkJaWYgKHJldCA8IDApDQo+PiArCQkJCWRvdXQoImludmFsaWRhdGVfaW5vZGVfcGFnZXMyX3Jh
+bmdlIHJldHVybmVkICVkXG4iLCByZXQpOw0KPj4gKwkJfQ0KPj4gKw0KPj4gICAJCS8qIFNldCB1
+cCB0aGUgYXNzZXJ0aW9uICovDQo+PiAgIAkJaWYgKHJtdykgew0KPj4gICAJCQkvKg0KPj4NCj4N
+Cg==
+--=-=-=--
