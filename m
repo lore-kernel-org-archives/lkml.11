@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3B1C4321E
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A173C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240503AbiDGBdH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
+        id S236911AbiDGBd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240237AbiDGBTw (ORCPT
+        with ESMTP id S240475AbiDGBUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 21:19:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197D51B7606;
-        Wed,  6 Apr 2022 18:15:33 -0700 (PDT)
+        Wed, 6 Apr 2022 21:20:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757FD182DA1;
+        Wed,  6 Apr 2022 18:16:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2BC061DCF;
-        Thu,  7 Apr 2022 01:15:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 831F7C385A1;
-        Thu,  7 Apr 2022 01:15:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1DAAEB82690;
+        Thu,  7 Apr 2022 01:16:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7993C385A3;
+        Thu,  7 Apr 2022 01:16:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294132;
-        bh=JGTxfCZOOghgkyjf3BWnR1x9TbNLIoiVYqZlPvou4Fk=;
+        s=k20201202; t=1649294194;
+        bh=k25EnSYBuBHACKjBV50Gd+fEfovRN5hpv6egPbQrWPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IfTDA8yfdQTolKfp3k0/nbj3lclzidaZ5ajH+HnR+XSHs0I1Om8jfWyahgX3yqw3k
-         imL6CYHFYRKxk43NtCv/QBqlVEGFqYXZnDlvKfmrZEQ2E0VOHgA9DAsMhActimu6z8
-         7GgG2o//RJPG9DUFZdu6AordA7E+DPwB9LLD/UqX5fC7smBPQcngqHVUGVycMb8MTk
-         uwnuxzQIYmgAma8IR4fB38dvaamD6U8RgMbT4/4vyU+Qow3Tz0T4vJCYwydA0SYIZZ
-         qQHzbTxUL7CThkVaq6m4pIddMMbM4sYtsFCNp+/CFGNtw8JPGClhT+Tj+AmoEVI+Zc
-         xHRaZiJwfwHkA==
+        b=S/+dYpLqR2sQGWxsuruR4uTbN6Q/1Fj9jUdwn7/HoGmzKIJOEmCPiJbowLOgjQvWt
+         JMtn/fzoIPxwKL/TZcP+8zy0rk6i7ugASPGcam7IZHZuD1cdAxKpZcNv+LzvbGF6IH
+         Z3n2VH2FuEPeWJZfUSUFKAQbMv9QdPV7Enk54tZxk6+gWgRYMLWAW7ER4Ie8zUmIb3
+         zYJzq3hQ9Uk1WONICaYuWY13qlnEkqHeluTz95Usn8dC/SKhqn6RcyOhUhNcYuDI8a
+         xhvQF0SwUcQYS2bpZunOjdudkLthjPxMMPFMhlMBaKKp854sMpjImI0frr9oZKF3GN
+         p7Vs90OtRcQcw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Glenn Washburn <development@efficientek.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        linux-um@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 04/17] um: port_user: Improve error handling when port-helper is not found
-Date:   Wed,  6 Apr 2022 21:15:08 -0400
-Message-Id: <20220407011521.115014-4-sashal@kernel.org>
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, john@phrozen.org,
+        wangborong@cdjrlc.com, linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 07/11] MIPS: lantiq: check the return value of kzalloc()
+Date:   Wed,  6 Apr 2022 21:16:04 -0400
+Message-Id: <20220407011609.115258-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011521.115014-1-sashal@kernel.org>
-References: <20220407011521.115014-1-sashal@kernel.org>
+In-Reply-To: <20220407011609.115258-1-sashal@kernel.org>
+References: <20220407011609.115258-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,53 +52,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Glenn Washburn <development@efficientek.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 3cb5a7f167c620a8b0e38b0446df2e024d2243dc ]
+[ Upstream commit 34123208bbcc8c884a0489f543a23fe9eebb5514 ]
 
-Check if port-helper exists and is executable. If not, write an error
-message to the kernel log with information to help the user diagnose the
-issue and exit with an error. If UML_PORT_HELPER was not set, write a
-message suggesting that the user set it. This makes it easier to understand
-why telneting to the UML instance is failing and what can be done to fix it.
+kzalloc() is a memory allocation function which can return NULL when
+some internal memory errors happen. So it is better to check the
+return value of it to prevent potential wrong memory access or
+memory leak.
 
-Signed-off-by: Glenn Washburn <development@efficientek.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/drivers/port_user.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ arch/mips/lantiq/falcon/sysctrl.c |  2 ++
+ arch/mips/lantiq/xway/gptu.c      |  2 ++
+ arch/mips/lantiq/xway/sysctrl.c   | 46 ++++++++++++++++++++-----------
+ 3 files changed, 34 insertions(+), 16 deletions(-)
 
-diff --git a/arch/um/drivers/port_user.c b/arch/um/drivers/port_user.c
-index 5b5b64cb1071..133ca7bf2d91 100644
---- a/arch/um/drivers/port_user.c
-+++ b/arch/um/drivers/port_user.c
-@@ -5,6 +5,7 @@
+diff --git a/arch/mips/lantiq/falcon/sysctrl.c b/arch/mips/lantiq/falcon/sysctrl.c
+index 82bbd0e2e298..714d92659489 100644
+--- a/arch/mips/lantiq/falcon/sysctrl.c
++++ b/arch/mips/lantiq/falcon/sysctrl.c
+@@ -169,6 +169,8 @@ static inline void clkdev_add_sys(const char *dev, unsigned int module,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
  
- #include <stdio.h>
- #include <stdlib.h>
-+#include <string.h>
- #include <errno.h>
- #include <termios.h>
- #include <unistd.h>
-@@ -175,6 +176,17 @@ int port_connection(int fd, int *socket, int *pid_out)
- 	if (new < 0)
- 		return -errno;
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = NULL;
+ 	clk->cl.clk = clk;
+diff --git a/arch/mips/lantiq/xway/gptu.c b/arch/mips/lantiq/xway/gptu.c
+index e304aabd6678..7d4081d67d61 100644
+--- a/arch/mips/lantiq/xway/gptu.c
++++ b/arch/mips/lantiq/xway/gptu.c
+@@ -124,6 +124,8 @@ static inline void clkdev_add_gptu(struct device *dev, const char *con,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
  
-+	err = os_access(argv[2], X_OK);
-+	if (err < 0) {
-+		printk(UM_KERN_ERR "port_connection : error accessing port-helper "
-+		       "executable at %s: %s\n", argv[2], strerror(-err));
-+		if (env == NULL)
-+			printk(UM_KERN_ERR "Set UML_PORT_HELPER environment "
-+				"variable to path to uml-utilities port-helper "
-+				"binary\n");
-+		goto out_close;
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev_name(dev);
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+diff --git a/arch/mips/lantiq/xway/sysctrl.c b/arch/mips/lantiq/xway/sysctrl.c
+index e0af39b33e28..293ebb833659 100644
+--- a/arch/mips/lantiq/xway/sysctrl.c
++++ b/arch/mips/lantiq/xway/sysctrl.c
+@@ -313,6 +313,8 @@ static void clkdev_add_pmu(const char *dev, const char *con, bool deactivate,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
+ 
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+@@ -336,6 +338,8 @@ static void clkdev_add_cgu(const char *dev, const char *con,
+ {
+ 	struct clk *clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
+ 
++	if (!clk)
++		return;
+ 	clk->cl.dev_id = dev;
+ 	clk->cl.con_id = con;
+ 	clk->cl.clk = clk;
+@@ -354,24 +358,28 @@ static void clkdev_add_pci(void)
+ 	struct clk *clk_ext = kzalloc(sizeof(struct clk), GFP_KERNEL);
+ 
+ 	/* main pci clock */
+-	clk->cl.dev_id = "17000000.pci";
+-	clk->cl.con_id = NULL;
+-	clk->cl.clk = clk;
+-	clk->rate = CLOCK_33M;
+-	clk->rates = valid_pci_rates;
+-	clk->enable = pci_enable;
+-	clk->disable = pmu_disable;
+-	clk->module = 0;
+-	clk->bits = PMU_PCI;
+-	clkdev_add(&clk->cl);
++	if (clk) {
++		clk->cl.dev_id = "17000000.pci";
++		clk->cl.con_id = NULL;
++		clk->cl.clk = clk;
++		clk->rate = CLOCK_33M;
++		clk->rates = valid_pci_rates;
++		clk->enable = pci_enable;
++		clk->disable = pmu_disable;
++		clk->module = 0;
++		clk->bits = PMU_PCI;
++		clkdev_add(&clk->cl);
 +	}
-+
- 	err = os_pipe(socket, 0, 0);
- 	if (err < 0)
- 		goto out_close;
+ 
+ 	/* use internal/external bus clock */
+-	clk_ext->cl.dev_id = "17000000.pci";
+-	clk_ext->cl.con_id = "external";
+-	clk_ext->cl.clk = clk_ext;
+-	clk_ext->enable = pci_ext_enable;
+-	clk_ext->disable = pci_ext_disable;
+-	clkdev_add(&clk_ext->cl);
++	if (clk_ext) {
++		clk_ext->cl.dev_id = "17000000.pci";
++		clk_ext->cl.con_id = "external";
++		clk_ext->cl.clk = clk_ext;
++		clk_ext->enable = pci_ext_enable;
++		clk_ext->disable = pci_ext_disable;
++		clkdev_add(&clk_ext->cl);
++	}
+ }
+ 
+ /* xway socs can generate clocks on gpio pins */
+@@ -391,9 +399,15 @@ static void clkdev_add_clkout(void)
+ 		char *name;
+ 
+ 		name = kzalloc(sizeof("clkout0"), GFP_KERNEL);
++		if (!name)
++			continue;
+ 		sprintf(name, "clkout%d", i);
+ 
+ 		clk = kzalloc(sizeof(struct clk), GFP_KERNEL);
++		if (!clk) {
++			kfree(name);
++			continue;
++		}
+ 		clk->cl.dev_id = "1f103000.cgu";
+ 		clk->cl.con_id = name;
+ 		clk->cl.clk = clk;
 -- 
 2.35.1
 
