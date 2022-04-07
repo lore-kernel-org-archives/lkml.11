@@ -2,148 +2,369 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1315C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:53:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F6AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243290AbiDGIzi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:55:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
+        id S243331AbiDGI4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbiDGIzf (ORCPT
+        with ESMTP id S243308AbiDGI4C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:55:35 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB71174EA6
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:53:33 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id e8-20020a17090a118800b001cb13402ea2so1095951pja.0
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 01:53:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8mmueqbLnm3tk7tVIxrPw233tyq03LboORzG5ca8hgQ=;
-        b=isj2jzKX5U7EBQ02gJe8d/pvWluEXF8nTkNftYQmporcsD388FAfJlvlYX3tYcCtc4
-         qBp5/z4g+8o2i0+5Y6HEYjDLAR0/0qEcfriQvVv99iwnckZ/jJDIY5Zj2cxp9ftLwly4
-         9nQNRYkHc2G7eRfJYD+i79S+WQFgcDKOC76KUnq3aFxZn2DxLNI5LbwfZL9HEDEJNdGf
-         00CWlGXTWmbDZM6o45ZbWwbcAr3MH1kT+D6yYnrWjnXIBAQM5Hhh0FIiGZfcNgguKm1g
-         AqdAjyA+1U2H/lGHESLx2XRIY15f9zr29ejfpt/+UdaCMJTN+JorwqPvSPQzpMQfwP1+
-         Jn6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8mmueqbLnm3tk7tVIxrPw233tyq03LboORzG5ca8hgQ=;
-        b=GiEoUZPZEkeHu1802LjmLvcjgfQ1F4a+L8MKJo0xHRWQHz/BgOktGJhI/I+arNs9Kf
-         48CxDkSSDx1x+rJmPpC/8Q9DAeDgaZcA+raY4nYOlorzArqEcxDb2ncpeGdFQwbo07qw
-         loOQ9zDzD6bF3niqThR5LPsfMwHbbXG/0+l00WrciMP3lZj+16stDOW9ifnkPZrjE+UK
-         h9ps1KC9O7Y4geEg7WPfpS49G5ZyKVnxLdgL1KjffCGjYs73bjcHfXf35ftKFL4NkJcq
-         HOzATL28+n3vLWGA3JIXqLZSdDvKNBxUDWFZLhBIbKJzSZhvFSGUp9wFnSwZMxv/hGcw
-         bEJQ==
-X-Gm-Message-State: AOAM533XeoN+QTzhnL2Npa5vKE3zA2AEhGrJ2BxR8/R7AKMEA9fs2/zF
-        HTAET3dQKH2DKSBZYT6l01+U1Zw/EdrMJWUz
-X-Google-Smtp-Source: ABdhPJxF0JgZGdq0qnZLc3MZOz6/F3m9oT65Ox4sm1zdr45nDtltCTbFUB/akj11Tu0h0Y8jm+itgw==
-X-Received: by 2002:a17:902:aa88:b0:156:914b:dc79 with SMTP id d8-20020a170902aa8800b00156914bdc79mr12732694plr.138.1649321613071;
-        Thu, 07 Apr 2022 01:53:33 -0700 (PDT)
-Received: from hyeyoo ([114.29.24.243])
-        by smtp.gmail.com with ESMTPSA id u10-20020a17090a890a00b001cb14240c4csm1235786pjn.1.2022.04.07.01.53.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 01:53:31 -0700 (PDT)
-Date:   Thu, 7 Apr 2022 17:53:24 +0900
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
-Cc:     akpm@linux-foundation.org, cl@linux.com, penberg@kernel.org,
-        rientjes@google.com, iamjoonsoo.kim@lge.com, vbabka@suse.cz,
-        roman.gushchin@linux.dev, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/slab.c: fix comments
-Message-ID: <Yk6mhDuKwhviUxXi@hyeyoo>
-References: <20220407080958.3667-1-caoyixuan2019@email.szu.edu.cn>
+        Thu, 7 Apr 2022 04:56:02 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282B51B2152;
+        Thu,  7 Apr 2022 01:54:00 -0700 (PDT)
+X-UUID: aa2c37f98bb74689b13cc4c0aeca6092-20220407
+X-UUID: aa2c37f98bb74689b13cc4c0aeca6092-20220407
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1543743309; Thu, 07 Apr 2022 16:53:55 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 7 Apr 2022 16:53:54 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 7 Apr 2022 16:53:53 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Jesper Dangaard Brouer" <hawk@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        <linux-kernel@vger.kernel.org>,
+        Maciej enczykowski <maze@google.com>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
+        Lina Wang <lina.wang@mediatek.com>
+Subject: [PATCH v5 1/3] selftests: bpf: add test for bpf_skb_change_proto
+Date:   Thu, 7 Apr 2022 16:47:25 +0800
+Message-ID: <20220407084727.10241-1-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407080958.3667-1-caoyixuan2019@email.szu.edu.cn>
+Content-Type: text/plain; charset="y"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 04:09:58PM +0800, Yixuan Cao wrote:
-> While reading the source code,
-> I noticed some language errors in the comments, so I fixed them.
-> 
-> Signed-off-by: Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
-> ---
->  mm/slab.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/mm/slab.c b/mm/slab.c
-> index 90b16c7ae01a..e882657c1494 100644
-> --- a/mm/slab.c
-> +++ b/mm/slab.c
-> @@ -781,7 +781,7 @@ static inline int cache_free_alien(struct kmem_cache *cachep, void *objp)
->  	int slab_node = slab_nid(virt_to_slab(objp));
->  	int node = numa_mem_id();
->  	/*
-> -	 * Make sure we are not freeing a object from another node to the array
-> +	 * Make sure we are not freeing an object from another node to the array
->  	 * cache on this cpu.
->  	 */
->  	if (likely(node == slab_node))
-> @@ -832,7 +832,7 @@ static int init_cache_node(struct kmem_cache *cachep, int node, gfp_t gfp)
->  
->  	/*
->  	 * The kmem_cache_nodes don't come and go as CPUs
-> -	 * come and go.  slab_mutex is sufficient
-> +	 * come and go.  slab_mutex provides sufficient
->  	 * protection here.
->  	 */
->  	cachep->node[node] = n;
-> @@ -845,7 +845,7 @@ static int init_cache_node(struct kmem_cache *cachep, int node, gfp_t gfp)
->   * Allocates and initializes node for a node on each slab cache, used for
->   * either memory or cpu hotplug.  If memory is being hot-added, the kmem_cache_node
->   * will be allocated off-node since memory is not yet online for the new node.
-> - * When hotplugging memory or a cpu, existing node are not replaced if
-> + * When hotplugging memory or a cpu, existing nodes are not replaced if
->   * already in use.
->   *
->   * Must hold slab_mutex.
-> @@ -1046,7 +1046,7 @@ int slab_prepare_cpu(unsigned int cpu)
->   * offline.
->   *
->   * Even if all the cpus of a node are down, we don't free the
-> - * kmem_cache_node of any cache. This to avoid a race between cpu_down, and
-> + * kmem_cache_node of any cache. This is to avoid a race between cpu_down, and
->   * a kmalloc allocation from another cpu for memory from the node of
->   * the cpu going down.  The kmem_cache_node structure is usually allocated from
->   * kmem_cache_create() and gets destroyed at kmem_cache_destroy().
-> @@ -1890,7 +1890,7 @@ static bool set_on_slab_cache(struct kmem_cache *cachep,
->   * @flags: SLAB flags
->   *
->   * Returns a ptr to the cache on success, NULL on failure.
-> - * Cannot be called within a int, but can be interrupted.
-> + * Cannot be called within an int, but can be interrupted.
->   * The @ctor is run when new pages are allocated by the cache.
->   *
->   * The flags are
-> @@ -3138,7 +3138,7 @@ static void *fallback_alloc(struct kmem_cache *cache, gfp_t flags)
->  }
->  
->  /*
-> - * A interface to enable slab creation on nodeid
-> + * An interface to enable slab creation on nodeid
->   */
->  static void *____cache_alloc_node(struct kmem_cache *cachep, gfp_t flags,
->  				int nodeid)
-> -- 
-> 2.17.1
-> 
-> 
-> 
->
+The code is copied from the Android Open Source Project and the author(
+Maciej Żenczykowski) has gave permission to relicense it under GPLv2.
 
-Acked-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+The test is to change input IPv6 packets to IPv4 ones and output IPv4 to
+IPv6 with bpf_skb_change_proto.
 
-Thanks!
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+---
+ tools/testing/selftests/bpf/progs/nat6to4.c | 293 ++++++++++++++++++++
+ 1 file changed, 293 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/nat6to4.c
 
+diff --git a/tools/testing/selftests/bpf/progs/nat6to4.c b/tools/testing/selftests/bpf/progs/nat6to4.c
+new file mode 100644
+index 000000000000..099950f7a6cc
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/nat6to4.c
+@@ -0,0 +1,293 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * This code is taken from the Android Open Source Project and the author
++ * (Maciej Żenczykowski) has gave permission to relicense it under the 
++ * GPLv2. Therefore this program is free software;
++ * You can redistribute it and/or modify it under the terms of the GNU 
++ * General Public License version 2 as published by the Free Software 
++ * Foundation
++
++ * The original headers, including the original license headers, are
++ * included below for completeness.
++ *
++ * Copyright (C) 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++#include <linux/bpf.h>
++#include <linux/if.h>
++#include <linux/if_ether.h>
++#include <linux/if_packet.h>
++#include <linux/in.h>
++#include <linux/in6.h>
++#include <linux/ip.h>
++#include <linux/ipv6.h>
++#include <linux/pkt_cls.h>
++#include <linux/swab.h>
++#include <stdbool.h>
++#include <stdint.h>
++
++// bionic kernel uapi linux/udp.h header is munged...
++#define __kernel_udphdr udphdr
++#include <linux/udp.h>
++
++#include <bpf/bpf_helpers.h>
++
++#define htons(x) (__builtin_constant_p(x) ? ___constant_swab16(x) : __builtin_bswap16(x))
++#define htonl(x) (__builtin_constant_p(x) ? ___constant_swab32(x) : __builtin_bswap32(x))
++#define ntohs(x) htons(x)
++#define ntohl(x) htonl(x)
++
++// From kernel:include/net/ip.h
++#define IP_DF 0x4000  // Flag: "Don't Fragment"
++
++SEC("schedcls/ingress6/nat_6")
++int sched_cls_ingress6_nat_6_prog(struct __sk_buff *skb)
++{
++
++	const int l2_header_size =  sizeof(struct ethhdr);
++	void *data = (void *)(long)skb->data;
++	const void *data_end = (void *)(long)skb->data_end;
++	const struct ethhdr * const eth = data;  // used iff is_ethernet
++	const struct ipv6hdr * const ip6 =  (void *)(eth + 1);
++
++	// Require ethernet dst mac address to be our unicast address.
++	if  (skb->pkt_type != PACKET_HOST)
++		return TC_ACT_OK;
++
++	// Must be meta-ethernet IPv6 frame
++	if (skb->protocol != htons(ETH_P_IPV6))
++		return TC_ACT_OK;
++
++	// Must have (ethernet and) ipv6 header
++	if (data + l2_header_size + sizeof(*ip6) > data_end)
++		return TC_ACT_OK;
++
++	// Ethertype - if present - must be IPv6
++	if (eth->h_proto != htons(ETH_P_IPV6))
++		return TC_ACT_OK;
++
++	// IP version must be 6
++	if (ip6->version != 6)
++		return TC_ACT_OK;
++	// Maximum IPv6 payload length that can be translated to IPv4
++	if (ntohs(ip6->payload_len) > 0xFFFF - sizeof(struct iphdr))
++		return TC_ACT_OK;
++	switch (ip6->nexthdr) {
++	case IPPROTO_TCP:  // For TCP & UDP the checksum neutrality of the chosen IPv6
++	case IPPROTO_UDP:  // address means there is no need to update their checksums.
++	case IPPROTO_GRE:  // We do not need to bother looking at GRE/ESP headers,
++	case IPPROTO_ESP:  // since there is never a checksum to update.
++		break;
++	default:  // do not know how to handle anything else
++		return TC_ACT_OK;
++	}
++
++	struct ethhdr eth2;  // used iff is_ethernet
++
++	eth2 = *eth;                     // Copy over the ethernet header (src/dst mac)
++	eth2.h_proto = htons(ETH_P_IP);  // But replace the ethertype
++
++	struct iphdr ip = {
++		.version = 4,                                                      // u4
++		.ihl = sizeof(struct iphdr) / sizeof(__u32),                       // u4
++		.tos = (ip6->priority << 4) + (ip6->flow_lbl[0] >> 4),             // u8
++		.tot_len = htons(ntohs(ip6->payload_len) + sizeof(struct iphdr)),  // u16
++		.id = 0,                                                           // u16
++		.frag_off = htons(IP_DF),                                          // u16
++		.ttl = ip6->hop_limit,                                             // u8
++		.protocol = ip6->nexthdr,                                          // u8
++		.check = 0,                                                        // u16
++		.saddr = 0x0201a8c0,                            // u32
++		.daddr = 0x0101a8c0,                                         // u32
++	};
++
++	// Calculate the IPv4 one's complement checksum of the IPv4 header.
++	__wsum sum4 = 0;
++
++	for (int i = 0; i < sizeof(ip) / sizeof(__u16); ++i)
++		sum4 += ((__u16 *)&ip)[i];
++
++	// Note that sum4 is guaranteed to be non-zero by virtue of ip.version == 4
++	sum4 = (sum4 & 0xFFFF) + (sum4 >> 16);  // collapse u32 into range 1 .. 0x1FFFE
++	sum4 = (sum4 & 0xFFFF) + (sum4 >> 16);  // collapse any potential carry into u16
++	ip.check = (__u16)~sum4;                // sum4 cannot be zero, so this is never 0xFFFF
++
++	// Calculate the *negative* IPv6 16-bit one's complement checksum of the IPv6 header.
++	__wsum sum6 = 0;
++	// We'll end up with a non-zero sum due to ip6->version == 6 (which has '0' bits)
++	for (int i = 0; i < sizeof(*ip6) / sizeof(__u16); ++i)
++		sum6 += ~((__u16 *)ip6)[i];  // note the bitwise negation
++
++	// Note that there is no L4 checksum update: we are relying on the checksum neutrality
++	// of the ipv6 address chosen by netd's ClatdController.
++
++	// Packet mutations begin - point of no return, but if this first modification fails
++	// the packet is probably still pristine, so let clatd handle it.
++	if (bpf_skb_change_proto(skb, htons(ETH_P_IP), 0))
++		return TC_ACT_OK;
++	bpf_csum_update(skb, sum6);
++
++	data = (void *)(long)skb->data;
++	data_end = (void *)(long)skb->data_end;
++	if (data + l2_header_size + sizeof(struct iphdr) > data_end)
++		return TC_ACT_SHOT;
++
++	struct ethhdr *new_eth = data;
++
++	// Copy over the updated ethernet header
++	*new_eth = eth2;
++
++	// Copy over the new ipv4 header.
++	*(struct iphdr *)(new_eth + 1) = ip;
++	return bpf_redirect(skb->ifindex, BPF_F_INGRESS);
++}
++SEC("schedcls/egress4/snat4")
++int sched_cls_egress4_snat4_prog(struct __sk_buff *skb)
++{
++	const int l2_header_size =  sizeof(struct ethhdr);
++	void *data = (void *)(long)skb->data;
++	const void *data_end = (void *)(long)skb->data_end;
++	const struct ethhdr *const eth = data;  // used iff is_ethernet
++	const struct iphdr *const ip4 = (void *)(eth + 1);
++
++
++	// Must be meta-ethernet IPv4 frame
++	if (skb->protocol != htons(ETH_P_IP))
++		return TC_ACT_OK;
++
++	// Must have ipv4 header
++	if (data + l2_header_size + sizeof(struct ipv6hdr) > data_end)
++		return TC_ACT_OK;
++
++	// Ethertype - if present - must be IPv4
++	if (eth->h_proto != htons(ETH_P_IP))
++		return TC_ACT_OK;
++
++	// IP version must be 4
++	if (ip4->version != 4)
++		return TC_ACT_OK;
++
++	// We cannot handle IP options, just standard 20 byte == 5 dword minimal IPv4 header
++	if (ip4->ihl != 5)
++		return TC_ACT_OK;
++
++	// Maximum IPv6 payload length that can be translated to IPv4
++	if (htons(ip4->tot_len) > 0xFFFF - sizeof(struct ipv6hdr))
++		return TC_ACT_OK;
++
++	// Calculate the IPv4 one's complement checksum of the IPv4 header.
++	__wsum sum4 = 0;
++
++	for (int i = 0; i < sizeof(*ip4) / sizeof(__u16); ++i)
++		sum4 += ((__u16 *)ip4)[i];
++
++	// Note that sum4 is guaranteed to be non-zero by virtue of ip4->version == 4
++	sum4 = (sum4 & 0xFFFF) + (sum4 >> 16);  // collapse u32 into range 1 .. 0x1FFFE
++	sum4 = (sum4 & 0xFFFF) + (sum4 >> 16);  // collapse any potential carry into u16
++	// for a correct checksum we should get *a* zero, but sum4 must be positive, ie 0xFFFF
++	if (sum4 != 0xFFFF)
++		return TC_ACT_OK;
++
++	// Minimum IPv4 total length is the size of the header
++	if (ntohs(ip4->tot_len) < sizeof(*ip4))
++		return TC_ACT_OK;
++
++	// We are incapable of dealing with IPv4 fragments
++	if (ip4->frag_off & ~htons(IP_DF))
++		return TC_ACT_OK;
++
++	switch (ip4->protocol) {
++	case IPPROTO_TCP:  // For TCP & UDP the checksum neutrality of the chosen IPv6
++	case IPPROTO_GRE:  // address means there is no need to update their checksums.
++	case IPPROTO_ESP:  // We do not need to bother looking at GRE/ESP headers,
++		break;         // since there is never a checksum to update.
++
++	case IPPROTO_UDP:  // See above comment, but must also have UDP header...
++		if (data + sizeof(*ip4) + sizeof(struct udphdr) > data_end)
++			return TC_ACT_OK;
++		const struct udphdr *uh = (const struct udphdr *)(ip4 + 1);
++		// If IPv4/UDP checksum is 0 then fallback to clatd so it can calculate the
++		// checksum.  Otherwise the network or more likely the NAT64 gateway might
++		// drop the packet because in most cases IPv6/UDP packets with a zero checksum
++		// are invalid. See RFC 6935.  TODO: calculate checksum via bpf_csum_diff()
++		if (!uh->check)
++			return TC_ACT_OK;
++		break;
++
++	default:  // do not know how to handle anything else
++		return TC_ACT_OK;
++	}
++	struct ethhdr eth2;  // used iff is_ethernet
++
++	eth2 = *eth;                     // Copy over the ethernet header (src/dst mac)
++	eth2.h_proto = htons(ETH_P_IPV6);  // But replace the ethertype
++
++	struct ipv6hdr ip6 = {
++		.version = 6,                                    // __u8:4
++		.priority = ip4->tos >> 4,                       // __u8:4
++		.flow_lbl = {(ip4->tos & 0xF) << 4, 0, 0},       // __u8[3]
++		.payload_len = htons(ntohs(ip4->tot_len) - 20),  // __be16
++		.nexthdr = ip4->protocol,                        // __u8
++		.hop_limit = ip4->ttl,                           // __u8
++	};
++	ip6.saddr.in6_u.u6_addr32[0] = htonl(0x20010db8);
++	ip6.saddr.in6_u.u6_addr32[1] = 0;
++	ip6.saddr.in6_u.u6_addr32[2] = 0;
++	ip6.saddr.in6_u.u6_addr32[3] = htonl(1);
++	ip6.daddr.in6_u.u6_addr32[0] = htonl(0x20010db8);
++	ip6.daddr.in6_u.u6_addr32[1] = 0;
++	ip6.daddr.in6_u.u6_addr32[2] = 0;
++	ip6.daddr.in6_u.u6_addr32[3] = htonl(2);
++
++	// Calculate the IPv6 16-bit one's complement checksum of the IPv6 header.
++	__wsum sum6 = 0;
++	// We'll end up with a non-zero sum due to ip6.version == 6
++	for (int i = 0; i < sizeof(ip6) / sizeof(__u16); ++i)
++		sum6 += ((__u16 *)&ip6)[i];
++
++	// Packet mutations begin - point of no return, but if this first modification fails
++	// the packet is probably still pristine, so let clatd handle it.
++	if (bpf_skb_change_proto(skb, htons(ETH_P_IPV6), 0))
++		return TC_ACT_OK;
++
++	// This takes care of updating the skb->csum field for a CHECKSUM_COMPLETE packet.
++	// In such a case, skb->csum is a 16-bit one's complement sum of the entire payload,
++	// thus we need to subtract out the ipv4 header's sum, and add in the ipv6 header's sum.
++	// However, we've already verified the ipv4 checksum is correct and thus 0.
++	// Thus we only need to add the ipv6 header's sum.
++	//
++	// bpf_csum_update() always succeeds if the skb is CHECKSUM_COMPLETE and returns an error
++	// (-ENOTSUPP) if it isn't.  So we just ignore the return code (see above for more details).
++	bpf_csum_update(skb, sum6);
++
++	// bpf_skb_change_proto() invalidates all pointers - reload them.
++	data = (void *)(long)skb->data;
++	data_end = (void *)(long)skb->data_end;
++
++	// I cannot think of any valid way for this error condition to trigger, however I do
++	// believe the explicit check is required to keep the in kernel ebpf verifier happy.
++	if (data + l2_header_size + sizeof(ip6) > data_end)
++		return TC_ACT_SHOT;
++
++	struct ethhdr *new_eth = data;
++
++	// Copy over the updated ethernet header
++	*new_eth = eth2;
++	// Copy over the new ipv4 header.
++	*(struct ipv6hdr *)(new_eth + 1) = ip6;
++	return TC_ACT_OK;
++}
++
++char _license[] SEC("license") = ("GPL");
++
 -- 
-Thanks,
-Hyeonggon
+2.18.0
+
