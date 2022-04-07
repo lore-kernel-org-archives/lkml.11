@@ -2,202 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED46C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01106C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243495AbiDGJAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41766 "EHLO
+        id S243454AbiDGJAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243333AbiDGJAZ (ORCPT
+        with ESMTP id S243477AbiDGJAh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:00:25 -0400
-Received: from euporie.uberspace.de (euporie.uberspace.de [185.26.156.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2F2C90CE
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:58:21 -0700 (PDT)
-Received: (qmail 17943 invoked by uid 989); 7 Apr 2022 08:58:20 -0000
-Authentication-Results: euporie.uberspace.de;
-        auth=pass (plain)
-From:   Florian Fischer <florian.fischer@muhq.space>
-To:     Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Florian Schmaus <flow@cs.fau.de>,
-        Florian Fischer <florian.fischer@muhq.space>
-Subject: [PATCH v3 2/3] perf stat: add rusage utime and stime events
-Date:   Thu,  7 Apr 2022 10:57:20 +0200
-Message-Id: <20220407085721.3289414-3-florian.fischer@muhq.space>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407085721.3289414-1-florian.fischer@muhq.space>
-References: <69656438-8b9a-000b-0702-02dc480639f9@linux.intel.com>
- <20220407085721.3289414-1-florian.fischer@muhq.space>
+        Thu, 7 Apr 2022 05:00:37 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107E22229E
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:58:37 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id i15so4520317qvh.0
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 01:58:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5q8e6XxMP1O+ZGeFqgGhcMctHwiGO0fBPY6X3hC/BVg=;
+        b=hmbvr9DWzT6zlFqxQW8VVfwhnQoRbIWMczAwEsFo7jkYdziGIr4AJnnBn+xK5czmsW
+         h2qMfABv8pEZrISXIOPxW70Cj1Dqw/gj17iByJ0DgbVlxw05W5/umNzgYkEtp8XLQKAD
+         3+kMwes3WgOP0ndyudMXNACpP6u9jT/vY8Ng2AJJKl2KjhOFrXEeAtCr0yJxpB6DAo1E
+         kMJ38GMUrF9JWd21N6yJ9o2BcJnLKi5vPp0oCRe3ZS9tyWenjVhVVfejfHZCJD9Fy7E6
+         ePr1w7yH8VD7xxxbK7EOwvIJ1gR6M1y9BoyGKXKdyspnyC2lHnE//MiwYNAdGutD/yPz
+         ub9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5q8e6XxMP1O+ZGeFqgGhcMctHwiGO0fBPY6X3hC/BVg=;
+        b=pHAd17snG6ixRycyjadDRILiDvRjaaR+RkE0sDvosBbvVV7mVkiEplfuVWFatoLYmn
+         o9BvKCPmtEvvc8p3sp0i9SvTFWaRKvyk1bNy+X1jFb0OOGHCqncjmMEJkSPpdbuoq1pl
+         zmPjRgOSHhdZaFX/P6omHb5f3HOjlwb/HyPwyaDVBd4u5HCtTIu662XrrNPpqru6rKO8
+         lPAqm+7bCGOXLHm1elZ40tnPKD7XU5/Xouv48jsIFanmE3WW+sUuR1uZBlOqjXsoSvAn
+         bj6kZQnbX+broJYxcb1v0D6SVJYHTj05TTV8RJEe1vjD/a9dtwdjMAHE/SZJdxilZAAl
+         rxqQ==
+X-Gm-Message-State: AOAM533H1wQSL7SJqKgtCkq1HaskG/ajdgXDpSFVv/xE2vra9/JjHUxj
+        EWXqFmsMxAEu0ozaF3yTxAiPuo9fmSc=
+X-Google-Smtp-Source: ABdhPJwjJIS1cgmsxd1nt3tv416VuFqE22d1BwQDlq2EBl7KnCUyX7xM89R++RLf/vhRbK5r3pFs/Q==
+X-Received: by 2002:a05:6214:1bcb:b0:441:759e:84b9 with SMTP id m11-20020a0562141bcb00b00441759e84b9mr10815383qvc.19.1649321916264;
+        Thu, 07 Apr 2022 01:58:36 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id 22-20020ac85756000000b002e1cabad999sm15878977qtx.89.2022.04.07.01.58.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 01:58:35 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     daniel.lezcano@linaro.org, tglx@linutronix.de
+Cc:     linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] clocksource/drivers/timer-ti-dm: fix missing of_node_put
+Date:   Thu,  7 Apr 2022 08:58:29 +0000
+Message-Id: <20220407085829.2491655-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: -----
-X-Rspamd-Report: R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) REPLY(-4) MID_CONTAINS_FROM(1) BAYES_HAM(-2.939353)
-X-Rspamd-Score: -5.539353
-Received: from unknown (HELO unkown) (::1)
-        by euporie.uberspace.de (Haraka/2.8.28) with ESMTPSA; Thu, 07 Apr 2022 10:58:20 +0200
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It bothered me that during benchmarking using perf stat (to collect
-for example CPU cache events) I could not simultaneously retrieve the
-times spend in user or kernel mode in a machine readable format.
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-When running perf stat the output for humans contains the times
-reported by rusage and wait4.
+of_find_compatible_node returns node pointer with refcount incremented,
+use of_node_put() on it when done.
 
-$ perf stat -e cache-misses:u -- true
-
- Performance counter stats for 'true':
-
-             4,206      cache-misses:u
-
-       0.001113619 seconds time elapsed
-
-       0.001175000 seconds user
-       0.000000000 seconds sys
-
-But perf stat's machine-readable format does not provide this information.
-
-$ perf stat -x, -e cache-misses:u -- true
-4282,,cache-misses:u,492859,100.00,,
-
-I found no way to retrieve this information using the available events
-while using machine-readable output.
-
-This patch adds two new tool internal events 'rusage_user_time'
-and 'rusage_system_time' as well as their aliases 'ru_utime' and
-'ru_stime', similarly to the already present 'duration_time' event.
-
-Both events use the already collected rusage information obtained by wait4
-and tracked in the global ru_stats.
-
-Examples presenting cache-misses and rusage information in both human and
-machine-readable form:
-
-$ ./perf stat -e duration_time,ru_utime,ru_stime,cache-misses -- grep -q -r duration_time .
-
- Performance counter stats for 'grep -q -r duration_time .':
-
-        67,422,542 ns   duration_time:u
-        50,517,000 ns   ru_utime:u
-        16,839,000 ns   ru_stime:u
-            30,937      cache-misses:u
-
-       0.067422542 seconds time elapsed
-
-       0.050517000 seconds user
-       0.016839000 seconds sys
-
-$ ./perf stat -x, -e duration_time,ru_utime,ru_stime,cache-misses -- grep -q -r duration_time .
-72134524,ns,duration_time:u,72134524,100.00,,
-65225000,ns,ru_utime:u,65225000,100.00,,
-6865000,ns,ru_stime:u,6865000,100.00,,
-38705,,cache-misses:u,71189328,100.00,,
-
-Signed-off-by: Florian Fischer <florian.fischer@muhq.space>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 ---
- tools/perf/builtin-stat.c      | 36 ++++++++++++++++++++++++++--------
- tools/perf/util/evsel.h        |  3 +++
- tools/perf/util/parse-events.c |  4 +++-
- tools/perf/util/parse-events.l |  2 ++
- 4 files changed, 36 insertions(+), 9 deletions(-)
+ drivers/clocksource/timer-ti-dm-systimer.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index 61faffb535f5..c73afc8f6da5 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -342,15 +342,35 @@ static int evsel__write_stat_event(struct evsel *counter, int cpu_map_idx, u32 t
- static int read_single_counter(struct evsel *counter, int cpu_map_idx,
- 			       int thread, struct timespec *rs)
- {
--	if (counter->tool_event == PERF_TOOL_DURATION_TIME) {
--		u64 val = rs->tv_nsec + rs->tv_sec*1000000000ULL;
--		struct perf_counts_values *count =
--			perf_counts(counter->counts, cpu_map_idx, thread);
--		count->ena = count->run = val;
--		count->val = val;
--		return 0;
-+	switch(counter->tool_event) {
-+		case PERF_TOOL_DURATION_TIME: {
-+			u64 val = rs->tv_nsec + rs->tv_sec*1000000000ULL;
-+			struct perf_counts_values *count =
-+				perf_counts(counter->counts, cpu_map_idx, thread);
-+			count->ena = count->run = val;
-+			count->val = val;
-+			return 0;
-+		}
-+		case PERF_TOOL_RU_UTIME:
-+		case PERF_TOOL_RU_STIME: {
-+			u64 val;
-+			struct perf_counts_values *count =
-+				perf_counts(counter->counts, cpu_map_idx, thread);
-+			if (counter->tool_event == PERF_TOOL_RU_UTIME)
-+				val = ru_stats.ru_utime_usec_stat.mean;
-+			else
-+				val = ru_stats.ru_stime_usec_stat.mean;
-+			count->ena = count->run = val;
-+			count->val = val;
-+			return 0;
-+		}
-+		default:
-+		case PERF_TOOL_NONE:
-+			return evsel__read_counter(counter, cpu_map_idx, thread);
-+		case PERF_TOOL_LAST:
-+			/* this case should never be reached */
-+			return 0;
+diff --git a/drivers/clocksource/timer-ti-dm-systimer.c b/drivers/clocksource/timer-ti-dm-systimer.c
+index 2737407ff069..a58df7749db3 100644
+--- a/drivers/clocksource/timer-ti-dm-systimer.c
++++ b/drivers/clocksource/timer-ti-dm-systimer.c
+@@ -691,9 +691,11 @@ static int __init dmtimer_percpu_quirk_init(struct device_node *np, u32 pa)
+ 	arm_timer = of_find_compatible_node(NULL, NULL, "arm,armv7-timer");
+ 	if (of_device_is_available(arm_timer)) {
+ 		pr_warn_once("ARM architected timer wrap issue i940 detected\n");
++		of_node_put(arm_timer);
+ 		return 0;
  	}
--	return evsel__read_counter(counter, cpu_map_idx, thread);
- }
  
- /*
-diff --git a/tools/perf/util/evsel.h b/tools/perf/util/evsel.h
-index 041b42d33bf5..e89b1224ae61 100644
---- a/tools/perf/util/evsel.h
-+++ b/tools/perf/util/evsel.h
-@@ -30,6 +30,9 @@ typedef int (evsel__sb_cb_t)(union perf_event *event, void *data);
- enum perf_tool_event {
- 	PERF_TOOL_NONE		= 0,
- 	PERF_TOOL_DURATION_TIME = 1,
-+	PERF_TOOL_RU_UTIME = 2,
-+	PERF_TOOL_RU_STIME = 3,
-+	PERF_TOOL_LAST
- };
- 
- /** struct evsel - event selector
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index 24997925ae00..e9d3d4404ea6 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -402,7 +402,9 @@ static int add_event_tool(struct list_head *list, int *idx,
- 	if (!evsel)
- 		return -ENOMEM;
- 	evsel->tool_event = tool_event;
--	if (tool_event == PERF_TOOL_DURATION_TIME) {
-+	if (tool_event == PERF_TOOL_DURATION_TIME
-+	    || tool_event == PERF_TOOL_RU_UTIME
-+	    || tool_event == PERF_TOOL_RU_STIME) {
- 		free((char *)evsel->unit);
- 		evsel->unit = strdup("ns");
- 	}
-diff --git a/tools/perf/util/parse-events.l b/tools/perf/util/parse-events.l
-index 5b6e4b5249cf..3c7227b8035c 100644
---- a/tools/perf/util/parse-events.l
-+++ b/tools/perf/util/parse-events.l
-@@ -353,6 +353,8 @@ alignment-faults				{ return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_AL
- emulation-faults				{ return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_EMULATION_FAULTS); }
- dummy						{ return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_DUMMY); }
- duration_time					{ return tool(yyscanner, PERF_TOOL_DURATION_TIME); }
-+rusage_user_time|ru_utime	{ return tool(yyscanner, PERF_TOOL_RU_UTIME); }
-+rusage_system_time|ru_stime	{ return tool(yyscanner, PERF_TOOL_RU_STIME); }
- bpf-output					{ return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_BPF_OUTPUT); }
- cgroup-switches					{ return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_CGROUP_SWITCHES); }
- 
++	of_node_put(arm_timer);
+ 	if (pa == 0x4882c000)           /* dra7 dmtimer15 */
+ 		return dmtimer_percpu_timer_init(np, 0);
+ 	else if (pa == 0x4882e000)      /* dra7 dmtimer16 */
 -- 
-2.35.1
+2.25.1
 
