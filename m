@@ -2,242 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A41C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:29:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229882AbiDGUbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57814 "EHLO
+        id S229801AbiDGUbX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiDGUbE (ORCPT
+        with ESMTP id S229756AbiDGUbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:31:04 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391332CF78B;
-        Thu,  7 Apr 2022 13:15:14 -0700 (PDT)
+        Thu, 7 Apr 2022 16:31:05 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD79C2D92FE
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:15:14 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id l62-20020a1c2541000000b0038e4570af2fso4373057wml.5
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:15:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649362514; x=1680898514;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=6YMixsEVwFVkNKmr3eeWBAfpfNcjRCyqzyw6myiN/Vg=;
-  b=Jz+bGai/332LHGVN3axfdrWzzRlmP6We+DCj7k4G60SZKBRNviVJfO2R
-   lv4BZLUJBKa2cElfX9mFL1LmRRUqhxWDc26gOjRfBdUcSRKnr52LUrpto
-   m4vuuYB7dfMu0Us869T7rR+tQw4NYnXNLjH2jX22yzslXhmWkLGkGrjgh
-   E=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 07 Apr 2022 13:11:13 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 13:11:12 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Apr 2022 13:11:12 -0700
-Received: from [10.111.161.146] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 7 Apr 2022
- 13:11:08 -0700
-Message-ID: <c4f086ce-c56f-f7c9-4092-7f2432330d50@quicinc.com>
-Date:   Thu, 7 Apr 2022 13:11:06 -0700
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qGHTBjiRtcoK9jZMs6uWmY+rq4X7h4rZUWallI+80rk=;
+        b=ifLyrYtbKBJqpkzTY9qg722l/SIY+VrF14Uxn3pnIpElJGUIv5AXoPuWrtdw6E8UQO
+         CWOo2cASB1LfSwFNARjJIYE/ZP/Tr2/b77q93Mqx+gLd9X6ddLDdE+9VXIl6GrO+egpH
+         ZI/lRyEWI72uyYV21ynMw29jpOpY3Xd3iI5Tw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qGHTBjiRtcoK9jZMs6uWmY+rq4X7h4rZUWallI+80rk=;
+        b=ZvTUgI+PMXkupvXY9Y4dwk1oo8x1YA1tjOlFX6+qVNvwLMAvwzs94DrUFniHsCNP4n
+         IpOsnMaNVQgwxeNugzipBExbaFTQKtxQIzmhKvUcu5Pf2Wq5YA/SXY6oCX2ufysteL5P
+         6s9tYCx54z2d+WB8aIQRZ8bvtxqSZXxTdjNwsSjfiUi/03FKCQ7WfjOs3boKc/rHnfbR
+         7x8y8lgU1HoQxesZh7An9H+jYl/cIcYrBlAHgqjXm+YrQUx+lMtX5CMfBMobuxE6g1IR
+         pTvD4yRrcNaZE5GWBk5Q7lNVCFkAgi4YpC43CDEbB8AlrZEneYTJedsMpdeJZyOSAKPK
+         DuwA==
+X-Gm-Message-State: AOAM5317U68yCIF/koDdU/061eBnE7MPtNdnqiV8Krw5CZYabG14keRY
+        SIf8ojfQ9K5om0D9a4JDljCU4sCBQ5k4OA==
+X-Google-Smtp-Source: ABdhPJx+12wcWZOcbrmvKuK8j5I5I1mjLJ9VSCFlv+v6bztKlefCbIiyzsVdaTWgA7j8hqSlure3UQ==
+X-Received: by 2002:a05:600c:190e:b0:38c:b19d:59ff with SMTP id j14-20020a05600c190e00b0038cb19d59ffmr13592765wmq.1.1649360207781;
+        Thu, 07 Apr 2022 12:36:47 -0700 (PDT)
+Received: from google.com ([37.228.205.1])
+        by smtp.gmail.com with ESMTPSA id j17-20020a05600c1c1100b0038e389ab62esm14469296wms.9.2022.04.07.12.36.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 12:36:47 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 19:36:45 +0000
+From:   Fabio Baltieri <fabiobaltieri@chromium.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] dt-bindings: update google,cros-ec-pwm
+ documentation
+Message-ID: <Yk89TRQRpL1DIioa@google.com>
+References: <20220331125818.3776912-1-fabiobaltieri@chromium.org>
+ <20220331125818.3776912-4-fabiobaltieri@chromium.org>
+ <Yk20uTE/Vdm2c6jI@robh.at.kernel.org>
+ <Yk73f9yyxy5LBC+V@google.com>
+ <Yk8WBXBH53rtZsBF@robh.at.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v6 1/8] drm/msm/dp: Add eDP support via aux_bus
-Content-Language: en-US
-To:     Doug Anderson <dianders@chromium.org>,
-        "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>
-CC:     quic_kalyant <quic_kalyant@quicinc.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Sean Paul <sean@poorly.run>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
- <1648656179-10347-2-git-send-email-quic_sbillaka@quicinc.com>
- <CAD=FV=X+QvjwoT2zGP82KW4kD0oMUY6ZgCizSikNX_Uj8dNDqA@mail.gmail.com>
- <392b933f-760c-3c81-1040-c514045df3da@linaro.org>
- <CAD=FV=W4PYK-t607yjRbfjDjjEZX0KdgHDRukw_vSH8E8EDH6w@mail.gmail.com>
- <CAA8EJppt9XONbgtKfmHmN+==QNqiVJeb8GKJFdZm=yyY-tgmHQ@mail.gmail.com>
- <CAD=FV=U5-sTDLYdkeJWLAOG-0wgxR49VxtwUyUO7z2PuibLGsg@mail.gmail.com>
- <CAA8EJppgfYgQjG8A4LsR-1wmBj3Ku3eO8cKfAYhxjWXL7e3eHg@mail.gmail.com>
- <CAD=FV=V=a1CnT8fqTJR40WoS3BaDQ3xZ=HnHVHqZh=MEmVUZBA@mail.gmail.com>
- <3e5fa57f-d636-879a-b98f-77323d07c156@linaro.org>
- <CAD=FV=Uibu-kZyix7K4_WVc-+C8xpzTqU4WFy7O=6sukMZrX5g@mail.gmail.com>
- <MW4PR02MB7186245772DAC3E04FA8D1C0E1E69@MW4PR02MB7186.namprd02.prod.outlook.com>
- <CAD=FV=Wk3U7_bVdiCPp8iQ4bcCA_Botemu4pwHeRtgBa3Xk6KQ@mail.gmail.com>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <CAD=FV=Wk3U7_bVdiCPp8iQ4bcCA_Botemu4pwHeRtgBa3Xk6KQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yk8WBXBH53rtZsBF@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Doug and Dmitry
-
-Sorry, but I caught up on this email just now.
-
-Some comments below.
-
-Thanks
-
-Abhinav
-On 4/7/2022 10:07 AM, Doug Anderson wrote:
-> Hi,
+On Thu, Apr 07, 2022 at 11:49:09AM -0500, Rob Herring wrote:
+> On Thu, Apr 07, 2022 at 02:38:55PM +0000, Fabio Baltieri wrote:
+> > Hi Rob,
+> > 
+> > On Wed, Apr 06, 2022 at 10:41:45AM -0500, Rob Herring wrote:
+> > > On Thu, Mar 31, 2022 at 12:58:17PM +0000, Fabio Baltieri wrote:
+> > > > Update google,cros-ec-pwm node documentation to mention the
+> > > > google,use_pwm_type property.
+> > > > 
+> > > > Signed-off-by: Fabio Baltieri <fabiobaltieri@chromium.org>
+> > > > ---
+> > > >  .../devicetree/bindings/pwm/google,cros-ec-pwm.yaml         | 6 ++++++
+> > > >  1 file changed, 6 insertions(+)
+> > > > 
+> > > > diff --git a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+> > > > index 4cfbffd8414a..9c895c990ed8 100644
+> > > > --- a/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+> > > > +++ b/Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.yaml
+> > > > @@ -19,6 +19,12 @@ description: |
+> > > >  properties:
+> > > >    compatible:
+> > > >      const: google,cros-ec-pwm
+> > > > +
+> > > > +  google,use-pwm-type:
+> > > > +    description:
+> > > > +      Use PWM types (CROS_EC_PWM_DT_<...>) instead of generic channels.
+> > > > +    type: boolean
+> > > 
+> > > Either do a new compatible string if the cell interpretation is mutually 
+> > > exclusive (channel number vs. type) or split the number space for the 
+> > > 1st cell between type and channel number. IOW, set a bit (31?) to 
+> > > signify the number is a type, not a channel.
+> > 
+> > Split the number space was my first (tentative) implementation as well,
+> > but it turns out that the PWM subsystem really wants channels to be
+> > zero-based[1], so I don't think flags or bitmasks are really an option.
 > 
-> On Thu, Apr 7, 2022 at 7:19 AM Sankeerth Billakanti (QUIC)
-> <quic_sbillaka@quicinc.com> wrote:
->>
->> Hi Dmitry and Doug,
->>
->>> Hi,
->>>
->>> On Tue, Apr 5, 2022 at 10:36 AM Dmitry Baryshkov
->>> <dmitry.baryshkov@linaro.org> wrote:
->>>>
->>>> On 05/04/2022 20:02, Doug Anderson wrote:
->>>>> Hi,
->>>>>
->>>>> On Tue, Apr 5, 2022 at 5:54 AM Dmitry Baryshkov
->>>>> <dmitry.baryshkov@linaro.org> wrote:
->>>>>>> 3. For DP and eDP HPD means something a little different.
->>>>>>> Essentially there are two concepts: a) is a display physically
->>>>>>> connected and b) is the display powered up and ready. For DP, the
->>>>>>> two are really tied together. From the kernel's point of view you
->>>>>>> never "power down" a DP display and you can't detect that it's
->>>>>>> physically connected until it's ready. Said another way, on you
->>>>>>> tie "is a display there" to the HPD line and the moment a display
->>>>>>> is there it's ready for you to do AUX transfers. For eDP, in the
->>>>>>> lowest power state of a display it _won't_ assert its "HPD"
->>>>>>> signal. However, it's still physically present. For eDP you simply
->>>>>>> have to _assume_ it's present without any actual proof since you
->>>>>>> can't get proof until you power it up. Thus for eDP, you report
->>>>>>> that the display is there as soon as we're asked. We can't _talk_
->>>>>>> to the display yet, though. So in get_modes() we need to be able
->>>>>>> to power the display on enough to talk over the AUX channel to it.
->>>>>>> As part of this, we wait for the signal named "HPD" which really means
->>> "panel finished powering on" in this context.
->>>>>>>
->>>>>>> NOTE: for aux transfer, we don't have the _display_ pipe and
->>>>>>> clocks running. We only have enough stuff running to do the AUX
->>> transfer.
->>>>>>> We're not clocking out pixels. We haven't fully powered on the
->>>>>>> display. The AUX transfer is designed to be something that can be
->>>>>>> done early _before_ you turn on the display.
->>>>>>>
->>>>>>>
->>>>>>> OK, so basically that was a longwinded way of saying: yes, we
->>>>>>> could avoid the AUX transfer in probe, but we can't wait all the
->>>>>>> way to enable. We have to be able to transfer in get_modes(). If
->>>>>>> you think that's helpful I think it'd be a pretty easy patch to
->>>>>>> write even if it would look a tad bit awkward IMO. Let me know if
->>>>>>> you want me to post it up.
->>>>>>
->>>>>> I think it would be a good idea. At least it will allow us to
->>>>>> judge, which is the more correct way.
->>>>>
->>>>> I'm still happy to prototype this, but the more I think about it the
->>>>> more it feels like a workaround for the Qualcomm driver. The eDP
->>>>> panel driver is actually given a pointer to the AUX bus at probe
->>>>> time. It's really weird to say that we can't do a transfer on it
->>>>> yet... As you said, this is a little sideband bus. It should be able
->>>>> to be used without all the full blown infra of the rest of the driver.
->>>>
->>>> Yes, I have that feeling too. However I also have a feeling that just
->>>> powering up the PHY before the bus probe is ... a hack. There are no
->>>> obvious stopgaps for the driver not to power it down later.
->>>
+> Fix the PWM subsystem then...
 
-Lets go back to why we need to power up the PHY before the bus probe.
+It's a good design decision, allows for probe time validation and a good
+debugfs interface, I'm happy to have this feature comply with it.
 
-We need to power up PHY before bus probe because panel-eDP tries to read 
-the EDID in probe() for the panel_id. Not get_modes().
-
-So doug, I didnt follow your comment that panel-eDP only does EDID read 
-in get_modes()
-
-	panel_id = drm_edid_get_panel_id(panel->ddc);
-	if (!panel_id) {
-		dev_err(dev, "Couldn't identify panel via EDID\n");
-		ret = -EIO;
-		goto exit;
-	}
-
-If we do not need this part, we really dont need to power up the PHY 
-before the probe(). The hack which dmitry was referring to.
-
-So this is boiling down to why or how panel-eDP was originally designed.
-
->>> This is why I think we need to move to Runtime PM to manage this. Basically:
->>>
->>> 1. When an AUX transfer happens, you grab a PM runtime reference that
->>> _that_ powers up the PHY.
-
-This will not be trivial and needs to be scoped out as sankeerth said 
-but if the above is the only concern, why do we need to do this? There 
-seems to be an explanation why we are doing this and its not a hack.
-
-How would Dmitry's rework address this? We need some RFC to conclude on 
-that first.
-
->>>
->>> 2. At the end of the AUX transfer function, you do a "put_autosuspend".
->>>
->>> Then it becomes not a hack, right?
->>>
->>>
->>
->> pm runtime ops needs to be implemented for both eDP and DP. This change
->> take good amount of planning and code changes as it affects DP also.
->>
->> Because this patch series consist of basic eDP changes for SC7280 bootup,
->> shall we take this pm_runtime implementation in subsequent patch series?
 > 
-> Dmitry is the real decision maker here, but in my opinion it would be
-> OK to get something landed first that worked OK and wasn't taking us
-> too far in the wrong direction and then we could get a follow up patch
-> to move to pm_runtime.
+> > New compatible sounds good though, I'll rework a v3 with that change.
+> > 
+> > Thanks!
+> > Fabio
+> > 
+> > [1] https://elixir.bootlin.com/linux/v5.17/source/drivers/pwm/core.c#L423
+> > 
+> > -- 
+> > Fabio Baltieri
 
-I would say the discussion changed into a direction of implementing 
-pm-runtime because the current patch series does what it takes to adhere 
-to panel-eDP's design along with aux bus requirements of PHY needing to 
-be on.
-
-So doug, to answer your questions here:
-
-"So I guess the net result is maybe we should just keep it where it is.
-Long term I'd be interested in knowing if there's a reason why we
-can't structure the driver so that AUX transfers can happen with less
-intertwining with the rest of the code, but that can happen later. I
-would expect that you'd basically just need clocks and regulators on
-and maybe your PHY on."
-
-Yes PHY needs to be absolutely on and configured before aux transfers.
-
-If we want to change that up to stop reading the panel_id in the panel 
-probe() and do it later, perhaps some of the changes done here are not 
-needed.
-
-It only seems reasonable that we first prototype that in a separate 
-patch even a RFC perhaps and take this further as these set of changes 
-are needed for basic display functionality on sc7280 chromebooks.
-
-Let us know what are the concerns with doing it in a follow up change.
-
-Thanks
-
-Abhinav
+-- 
+Fabio Baltieri
