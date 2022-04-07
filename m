@@ -2,120 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D169C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:17:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B2E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244136AbiDGKTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 06:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54200 "EHLO
+        id S244156AbiDGKUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 06:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242823AbiDGKTG (ORCPT
+        with ESMTP id S242823AbiDGKUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 06:19:06 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9AA210077C
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 03:17:06 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2eb43ad7909so56376657b3.2
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 03:17:06 -0700 (PDT)
+        Thu, 7 Apr 2022 06:20:00 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045191275BD;
+        Thu,  7 Apr 2022 03:17:59 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id p15so8775187lfk.8;
+        Thu, 07 Apr 2022 03:17:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=wohRNTw8lNqqmdn+Vx53fJpkpUwTxDNz3jWT8qdpbZE=;
-        b=z4+AvWUUynitY8XdyVWSO43Rqy5TxhiJ9B29h/N0ous91xSah+pwksNJmafiFkxnoZ
-         7aLl2eQNfanOZQKGMg682fGB7BjNsobvB8wRwSbMOVxAoNR+u1Ncqmcl9dP7Xt44TL66
-         LVkvysPfS7+JFbgUCiW0fCeoQhdfjBaQH+pJO5t+nNAtG5C/CI8ihItQHIE2CbGfMCMx
-         Xh/c659LIOiDN91dCcNfJes/TVv4KWYivbpxBQWH3HXUt9UysIIaLoz0rZTBXeNpXTOV
-         a58FFgJcnZVykeVpigC+2RMV1CiNa0u5mxq30TzI5qEEBTwEKuKKp3WdlNNqAtkiK9Q1
-         HWgg==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R23eSOYeKnVIkjdK9W7sc64FQ0WoMp1PYcNJNNlM9q8=;
+        b=LCCY2AGWZ59w4m8u4Zq3C46NPZiwUhM/BQyPVysOwHWpHwQWzUooRR7sEFOE0MXoRh
+         H96HxipCICxV3kBucZhdutpHg2sj6grvReAAkY448TOB+yx9qRqqTr/7p/GeaTeFkFbE
+         OOYznV/0UmyISeUOfskgi8RS62Qjmn5UDC/nFgCAbwc9uMM4j3kNTWLHway8iY/Nf5oN
+         HGxLQGlEh/o9VBp58LdMbkJ0TS7YuOaTdVrnr5J+Oxgu7o/NNnYf1YJZIq0xxSIrwu34
+         jH4pbMNnK0E+cr0o/X5sL2/lY0cnZ2a3VQg3/Aar4uWcogQRcmRAVCG99bK+KKp+ZglG
+         b4Iw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=wohRNTw8lNqqmdn+Vx53fJpkpUwTxDNz3jWT8qdpbZE=;
-        b=AkbYmlBmYN/xZxBoX8ZeWCF6ciB49WVbckSqnKWA1+LStj2dmn9Bhpoi7fIy6IDGpg
-         TsLYdcRoX2qN0J9sj8J6ZonuokVwczrjbHSR86CBHZ4l+R3a0yoqz9RkMQk68MEXlDtO
-         CjwNqIzDTa/lXvqrxbJ1eIxipVoQLKKG2EYcPP+/Av60KPbGyYAvahyI2vPJ+n4th438
-         utISEmkmnXZbjs/r3ldgjc3FfQmh3mHrVzn94JuIpDXKlzUugCjq8D8buRYPAFd2t9DC
-         +W7Zt4kSGBgVQQKilVj5zC8U+zu+mn3tcWhjLj+bfUnDPNCXi0amAMh+3VPFQ0Eb943Y
-         ikGw==
-X-Gm-Message-State: AOAM5301YehDHEm5Mi5v4AyZ0bcTHwR82C8UOVj9B1HbpaHUJc+aQaNH
-        96cEoq+yXR2uK+NNzqRENdAqlx7TPOHoslUTPxxTrQ==
-X-Google-Smtp-Source: ABdhPJyT8CGlRssb8AxHOFbKTjM7VrHXbd2+eo+HzGgTQmjA947rwLuTLUExeBPcpzMLnVgI/UlinU+75hXA4GYxBlE=
-X-Received: by 2002:a0d:ffc3:0:b0:2eb:2327:3361 with SMTP id
- p186-20020a0dffc3000000b002eb23273361mr10687139ywf.36.1649326625926; Thu, 07
- Apr 2022 03:17:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R23eSOYeKnVIkjdK9W7sc64FQ0WoMp1PYcNJNNlM9q8=;
+        b=LdnBNx6S70iNeneAhLcH731X57vqzxs2sr4m8CaMca6+r6lSvN7mLJbutwa/KgyclG
+         Sq6TqR1xgKiEKOTCcr19op9U3tJeRGBYRDxBJXCPwFVWbZ0mzwheTuVBOIpKN4xfYYOh
+         RDt5vUca8WID1E6w2TrDVAYXLiOEpXHexcJndofLbZ4jK8jimLXshEazEMPCSgc+wl5H
+         T4HHY0kEqZtrjf0C6rarDw/Fd4JI1VP+wpISDr+hl4ngHnJFbRRLgBCppR0cjYjK8RHG
+         5Yc3AOzlFYuxu6AtmlgjBIwMJPj0SThcazKHZBtEPF71Hdr719KzbdfRZXnDy02G+QC6
+         OTKg==
+X-Gm-Message-State: AOAM532L9cX2mxtYCi76ByeyZ3sShD/2JD3nxckmHU2ZDu61kuOEJaRE
+        NToREEmbePF+SmvUOBGkb3XB7km8AgE=
+X-Google-Smtp-Source: ABdhPJxg3ZbrgiCbN+q3qlkjV//3PevfiKjzGQeO4D4J2bBOvaV9lASYgS5QozSakWrKYPqRoX6/dQ==
+X-Received: by 2002:a05:6512:10c9:b0:44a:fea7:50ac with SMTP id k9-20020a05651210c900b0044afea750acmr8775459lfg.680.1649326676971;
+        Thu, 07 Apr 2022 03:17:56 -0700 (PDT)
+Received: from nergzd-desktop.localdomain ([194.39.226.133])
+        by smtp.gmail.com with ESMTPSA id d2-20020a194f02000000b0044a2b77cd8dsm2121656lfb.105.2022.04.07.03.17.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 03:17:56 -0700 (PDT)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH 0/2] Make AUX gpio pin optional for ktd2692
+Date:   Thu,  7 Apr 2022 13:10:04 +0300
+Message-Id: <20220407101034.13122-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 7 Apr 2022 15:46:53 +0530
-Message-ID: <CA+G9fYvdH87k2sSy6g3ehkqE8W94wdg-ww9-wS_t9w48Sp55PQ@mail.gmail.com>
-Subject: [next] perf build failures: libbpf.c:10946:50: error: format '%li'
- expects argument of type 'long int *', but argument 4 has type 'size_t *'
- {aka 'unsigned int *'} [-Werror=format=]
-To:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        perf-users <perf-users@linaro.org>, lkft-triage@lists.linaro.org
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        NeilBrown <neilb@suse.de>, tanu235m@gmail.com,
-        Matthew Wilcox <willy@infradead.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        mgorman@techsingularity.net,
-        Andrew Morton <akpm@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-perf build errors on i386 [1] on Linux next-20220407 [2]
+Some appliances of ktd2692 don't have the AUX pin connected to
+a GPIO. Specifically, Samsung Galaxy J5 (2015), which uses ktd2692
+for driving the front flash LED, has the pin not connected anywhere on
+schematics. Make specifying the AUX pin optional, since it is additional
+functionality and only affects amount of current going through the LED.
 
-usdt.c:1181:5: error: "__x86_64__" is not defined, evaluates to 0
-[-Werror=undef]
- 1181 | #if __x86_64__
-      |     ^~~~~~~~~~
-usdt.c:1196:5: error: "__x86_64__" is not defined, evaluates to 0
-[-Werror=undef]
- 1196 | #if __x86_64__
-      |     ^~~~~~~~~~
-cc1: all warnings being treated as errors
-make[4]: *** [/builds/linux/tools/build/Makefile.build:97:
-/home/tuxbuild/.cache/tuxmake/builds/1/build/libbpf/staticobjs/usdt.o]
-Error 1
-make[4]: *** Waiting for unfinished jobs....
-  CC      /home/tuxbuild/.cache/tuxmake/builds/1/build/util/values.o
-  CC      /home/tuxbuild/.cache/tuxmake/builds/1/build/tests/backward-ring-buffer.o
-  CC      /home/tuxbuild/.cache/tuxmake/builds/1/build/tests/sdt.o
-  CC      /home/tuxbuild/.cache/tuxmake/builds/1/build/tests/is_printable_array.o
-  CC      /home/tuxbuild/.cache/tuxmake/builds/1/build/util/debug.o
-  CC      /home/tuxbuild/.cache/tuxmake/builds/1/build/util/fncache.o
-  CC      /home/tuxbuild/.cache/tuxmake/builds/1/build/tests/bitmap.o
-  CC      /home/tuxbuild/.cache/tuxmake/builds/1/build/util/machine.o
-libbpf.c: In function 'attach_uprobe':
-libbpf.c:10946:50: error: format '%li' expects argument of type 'long
-int *', but argument 4 has type 'size_t *' {aka 'unsigned int *'}
-[-Werror=format=]
-10946 |         n = sscanf(func_name, "%m[a-zA-Z0-9_.]+%li", &func, &offset);
-      |                                                ~~^          ~~~~~~~
-      |                                                  |          |
-      |                                                  long int *
-size_t * {aka unsigned int *}
-      |                                                %i
-cc1: all warnings being treated as errors
-make[4]: *** [/builds/linux/tools/build/Makefile.build:96:
-/home/tuxbuild/.cache/tuxmake/builds/1/build/libbpf/staticobjs/libbpf.o]
-Error 1
+Also convert the txt device-tree bindings to yaml and pick up maintainership
+over the yaml binding and the driver itself.
 
-metadata:
-  git_ref: master
-  git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
-  git_sha: 2e9a9857569ec27e64d2ddd01294bbe3c736acb1
-  git_describe: next-20220407
-  kernel-config: https://builds.tuxbuild.com/27SL0lCnWoPP04Jn8zKQ5nEEX7i/config
-  target_arch: i386
+Markuss Broks (2):
+  dt-bindings: leds: convert ktd2692 bindings to yaml
+  leds: ktd2692: Make aux-gpios optional
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+ .../bindings/leds/kinetic,ktd2692.yaml        | 87 +++++++++++++++++++
+ .../devicetree/bindings/leds/leds-ktd2692.txt | 50 -----------
+ MAINTAINERS                                   |  6 ++
+ drivers/leds/flash/leds-ktd2692.c             | 18 ++--
+ 4 files changed, 103 insertions(+), 58 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/leds/kinetic,ktd2692.yaml
+ delete mode 100644 Documentation/devicetree/bindings/leds/leds-ktd2692.txt
 
---
-Linaro LKFT
-https://lkft.linaro.org
+-- 
+2.35.1
 
-
-[1] https://builds.tuxbuild.com/27SL0lCnWoPP04Jn8zKQ5nEEX7i/
-[2] https://gitlab.com/Linaro/lkft/mirrors/next/linux-next/-/jobs/2302706510
