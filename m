@@ -2,169 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A7FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45EAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346506AbiDGRpJ (ORCPT
+        id S1346509AbiDGRpM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:45:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42322 "EHLO
+        Thu, 7 Apr 2022 13:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346509AbiDGRoy (ORCPT
+        with ESMTP id S1346522AbiDGRpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:44:54 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2043.outbound.protection.outlook.com [40.107.237.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D427A22C1F0
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:42:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PsmEjzWmAXE6BE5Fj70KsZNaxZArdm9/ohMxo5L0TnXSJsLzmcRC1o5BQond2mNke1LFmOiaacXRgImJWvDpcS/KZGt8kV+9YKzBnKHhLN1xFydtTVfHiR5hwKDCOaE/5T+gUX0lBeZRSlek67iaDY3a0AbSDpRDgirQlNyxR1SSfzD7oDVyx9DQ1FbxBuWRFF03J4KktNMM8nxMSYVwD1WVK1C+EZ7AeMzFxPYqyNyoVfu1FqJXUiZT8dJY6668KPvBtYQPvvuDvtGB6DzZpUZrQ8st46uiGQSTLDGjisI9QyKxPYbYUEBK+dyZ6hCSdrIqFDbIojDDpq31NWqy2A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+1HQu5tXLyNzG2fNFKfMgcJJpdUO1/tc+1V2wh6FpZQ=;
- b=DWkxZlkpzM09l0ZXimHcZCjwDBbIYCUuxcjDEMCqlPY08lFLHDdzmvqu0627JxyMuDqdeEcAgp7RbbtjRaEbbMhubHuGDLiQ1rEh8ADyBhIireDpDi19d8ZxMAHPVCg/XiLWzR/3GZ2v7U5q4pyruK5JLBUI/y9YgxBM20GbXT8h4duPZfqm+FS8Mn5eY4OzpBk8BfWbuoiKm/V4QlR7+Nim+0tSW3WCOLc1Uin3D6EQnbG6Qv5bXFS98oGVQ5y+ml11Lw9EMl4f9kg7ycVW4uCOflnqBE8iSmH/M0MlsOUQEgncYe5CVQkTo90OGzo+Lz6CJrr5iQdRWW7BB67Sww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+1HQu5tXLyNzG2fNFKfMgcJJpdUO1/tc+1V2wh6FpZQ=;
- b=dMpY+GjURvQrG06oRIsOTHo2JKIe7c0igt6cJC/ATI++iM4acgrMp3AALMM5Uxv4+BmNPL/0Z92eWhZyMtOhXXX/QCgASg06EX8AcgQBeZmN+NX+fz6ZFrS0MHShrP4bcboLHrNLgz7SfjMchmBfMJlJQI+s6GBG1zMrEseQHjw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by BN6PR12MB1299.namprd12.prod.outlook.com (2603:10b6:404:1d::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21; Thu, 7 Apr
- 2022 17:42:49 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::1946:2337:6656:ae2e]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::1946:2337:6656:ae2e%8]) with mapi id 15.20.5144.022; Thu, 7 Apr 2022
- 17:42:49 +0000
-Message-ID: <bafc1fed-fe42-08a3-6627-12ea946746c0@amd.com>
-Date:   Thu, 7 Apr 2022 12:42:46 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCHv8 00/30] TDX Guest: TDX core support
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>,
-        Dave Hansen <dave.hansen@intel.com>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, tony.luck@intel.com,
-        vkuznets@redhat.com, wanpengli@tencent.com, brijesh.singh@amd.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-References: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
- <b43720c6-0763-f4bb-64a0-7745c6ad920a@intel.com>
- <Yk8WZn+etpj/o0OM@google.com>
-From:   Tom Lendacky <thomas.lendacky@amd.com>
-In-Reply-To: <Yk8WZn+etpj/o0OM@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH2PR08CA0004.namprd08.prod.outlook.com
- (2603:10b6:610:5a::14) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+        Thu, 7 Apr 2022 13:45:05 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9980622C8D0
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:42:57 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id h63so7646298iof.12
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 10:42:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=SkyAkMzamOPIctFCTmOv0NCTRZwrlIMn+bWahZYrpxo=;
+        b=HM9XybfUuf4K0hNKtK5AJF1Absn1z/1xmHk5WV2rE8pMjAGrog2RUTV24j1qHGz0vI
+         3zwgw/nss8kPmhiMkO95gYnWRJ+2KdBa73VsCXt+f7O/kspXBwEYOuAiNQGla+F21MmP
+         HuxG2e3cFNzpDZeIzOZcy0BQv0Fq00MIbk3Vind7dRvZIKHMjK0jTKoQVML76Vl4fF1F
+         J3mTWlifleXtidkYRC2hQir1UMHGJTyREaAVSc0g7s5XbCNceyiDgh59rx57bVXhnBtn
+         55cqvh3zmFm4UcX+W4PX4jxh6nim1m3YhKxC/WEMmVorXmcf3hD9ubSREfkYv+3Lr9Vt
+         HlpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=SkyAkMzamOPIctFCTmOv0NCTRZwrlIMn+bWahZYrpxo=;
+        b=fN5eDPsnTbG9tLaZYbOIu4+hqLWB/EmfLsWkPb8g5pqek0VwMyl0xS5MttfTkaQ4VV
+         xHs5Z+Te20FxIQYiYLO5Xy0xxVKqGZk4O5+zFlRblP0PzO3yrQnfYjmV18hcAcmS4fQF
+         4IA7ZmmPKpVllmJQxM7odukUJEUSbRtzy8oFSm4DiDf7jGdjtr6rP06KLD6ygLGDPgH9
+         1sJ6FNUp9j3m6I/Sn2olG4jMKeD51KwN9HqWpKU1O4025Lnu/y+g6rQOs/a15AIrJWUR
+         dtVxN/kfuZ8qeSvRil1hAN+ZvVLMyElHUTr0oH/qx0wqaYcuI45lgkUn0708Hh6uw+Yo
+         +F3w==
+X-Gm-Message-State: AOAM532gGfTrmhNXrFJvbJe8ugAsUV4CKHu2iAekmGGePkbThHi65nTW
+        Bew2s1K9ycfzWICLqOPE8O5gJqtsO2tTHiM0rLs=
+X-Google-Smtp-Source: ABdhPJzB9zuPgo1nidR8m7rle6cW6xTVgGgcvmIHXRWZ8GyA4cfKtw8gTLbcFQA6BYTBMZt+5fgo8b8p+dL1/cgVyD0=
+X-Received: by 2002:a05:6638:480f:b0:323:777c:8e35 with SMTP id
+ cp15-20020a056638480f00b00323777c8e35mr7442741jab.199.1649353376684; Thu, 07
+ Apr 2022 10:42:56 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c844fb38-50ab-412c-e888-08da18be0897
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1299:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR12MB12998F8842F08B909E643881ECE69@BN6PR12MB1299.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sPywdbMXrTh1AObqgC2nRgk7Wn29rlTfi/YQWkWGd7HxbzM5i2Kw4nb+LIT8FBU6vtGN5c5kQ7GfHgoDWtorC8ORsyZc9BfVAZAUmRHfsSKV6Vy83hENNZtbMe7E+xuN9uEqpJeLF7sUzTpKh3Lys8+/X123qBipjc7c9BrGploDEwbI+OFJv7CbHnAqTpxEDkYAWtAkbh7QkgKDUB3eBkSty2ybueNI6qb++ZZItrVA5qk5JgZQb7p7WyuCEKTDklJflOaTYa71OvoqNp5Buagm92NpsRhmvHRZvMaAaYAckbcnkDrNI0I2Dx+5SVlSgLRRv5RxgQAo0PA/nhec95jOBCl+ey/wjiRyuCyqvIY+F7ZMVKqWcSZpnY1T7k6m1cEFMCK4y7iUeLczLbcz3MuHk49m6iBMFOxMTiZs26CEyfK3hWYZpER0c8H+HRctJO/SWqVu6AyHx+G7vJ8VBqXm2veXIP93I8/dK/65pZM6R1MYTvPvHgoFED3R89HEFnWqaZg/4NlqUVSc1f9HKzlnQ+RRYKUBZNtT9VmmnfcDNEE7SeRJ1NiynX6q9PVTieTRLDygpc7IYgFKku80E41E+5/Q9hKx85NbIUOkCGvPunQbVzFy4q4fhTcIi/LF4WK7jTpSWi1+7Ofl0d2loJLZZcupJ4QnG3lpz47kA+k0VuG4sQ9qv4pcDHDLKpa6FeHNxVTd5YQ/Wz6lmTwtSJCAIpHLHhHr+Hv0+IFhvpz1imAIgoJ3gbwPgmy2vSEe0PkWHbXhJyjH7YvEZUGcW3sAeBfG+Ne+RO+see1QTNiVSlUqUn6f0pRUCr0h0g3LAShfHa/mK+lflI7uykkYfw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(6486002)(6506007)(8936002)(53546011)(966005)(86362001)(508600001)(6512007)(4326008)(66556008)(8676002)(31696002)(66946007)(31686004)(2616005)(7416002)(26005)(186003)(316002)(110136005)(5660300002)(36756003)(2906002)(6666004)(66476007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?L2tPRjQyZVR0eUdSQzBySWVHYksxN1NwOGR0NTdFMVNzUzIrSXVBSTI5dDBs?=
- =?utf-8?B?U0lMdEV0RUpLMkJqVThWTjVwUmlrc0l0ais4R0Z5UTkwZVp2bjZabDlLL0tE?=
- =?utf-8?B?OWEzVm9kYXF3ZFB4RjJQTGNhVzFGQWZZZ1VyRElnUmwyZWZ0cmVDQTg2a3Z6?=
- =?utf-8?B?VjRoYmNScjY5enVPQW5hOTM3UVRHSVR4VTh3LzZaVWZvZFNXK21UaDVZY0Jq?=
- =?utf-8?B?TEY5WDlLWUVWemx3MHpuMUtOaUpLMnZ5aUtOcUlwOGlNMVAwS0lNVkdTbGdj?=
- =?utf-8?B?d3pGT0RYTXlJOEZia3M1MGRXY3A5ZDVLbExVMVBTa1FqeFYvU0dtWVkxYkFR?=
- =?utf-8?B?UTZ3TjFqRUFZMFlwZ2FNaFg1ckNFcTYvUkNUMUNDSHVzZzZMcVNRY2tFSk1E?=
- =?utf-8?B?YjY1V1BqR25EUmVFc2VseTVLSkw4UXNUMFZjejMvT1h2VXkrMUcyT3dyWStD?=
- =?utf-8?B?V0x6b0RJdFdwaE9NZG9vR3JickdqUS8vLytGWHM3a3hTM3lpZTdTMStUTjVy?=
- =?utf-8?B?NGhsSURrOXBUT3J1akY3NjFsZmswZEVhZ3dYbmVVaHdiaVp0RE1XVE43R3Jh?=
- =?utf-8?B?cFdVR1N3aEV2bkxiNFQ5dE1KSHlBbHVOMm1uMVhGbkxzU0V0OXd5cFhxaGV4?=
- =?utf-8?B?OFpZTWd3cWszVlFCN0NXWHBNRzEvZmkxNGFFeTUwRGtRaUhHS1J1a1V2NTBD?=
- =?utf-8?B?ZVErYTFJT093c2gzR2Y5YjRMT0x6RU1id1FTcjEzelNuV0xzeCtMQ0Fqeldn?=
- =?utf-8?B?RXE1aUt2U05pTmY0T3dvNHRKWXU3TW9vaTQ1c0U3WWx4RE9sZUQ1ZGRBellY?=
- =?utf-8?B?a2FORHA1dVdDb2EyN3Z2TndIQ2dpVlJTSHZUcFFULzlqaU1lTCtBN29oZDIy?=
- =?utf-8?B?K0NQOFFaSko2N3JiTkMvRWFVakkybXNBb2h1eUZlekJJWS9pRk9yK1VaSlBP?=
- =?utf-8?B?bEx4cVdiWTlBTmFUekdOeUIzRUd2bnZIMHV5WHIrM2ZCNkRPTlhwZ3hPTVd4?=
- =?utf-8?B?YVp3Z2R1TzlTa0I2Ulg4Q010ZXk5ZVhBendHK2NBMTdPbytwc3VqNTA0dzVD?=
- =?utf-8?B?cTA4Rkt5eDNiV3IvY3lpM1BTMW1GdUFtSThvNGlGQkloT0QrRnJSU3ViVVN6?=
- =?utf-8?B?M29nTUo0Z1hKTTNMSnZqNU1OTGI2cDUyc1NKZWd1YS9rTEVhcktBOS9xSlk0?=
- =?utf-8?B?akhBVUYyYlZyMjc2V1RuU2NPSXdVbEFnaDJ1VG5rL1pLYlAxa2cyemYxV3k1?=
- =?utf-8?B?M1NJc3BaSzI3STYxbml1bzhVbjFHellzbGM1YmVHTmdjZnluNUhsUEdrZTAv?=
- =?utf-8?B?d2Y2WWtVWUdTeVVuMjdNUlN1V2hlTTBXR0RkNmtwZXBOWFdZd2txeWxLWEpm?=
- =?utf-8?B?eDhDQS9RNVNPMWxHNFpZeUkvSFByVjZtOEtBZElydWRvdldPcUltT0g2aFJW?=
- =?utf-8?B?WW04K1M4VTRpOUVQUCtDdmVWM0wwSWVHWTZzcTlDYkN5eVpoN1kxK1pQSVE1?=
- =?utf-8?B?YWF2RVhDYzRqa25yMVFLc3FRRFZudXVjRE9YQTdKVkhwQ0UrMmFVaWt0ZjRC?=
- =?utf-8?B?aHVIZnVRcHpmTnRJVHdQKzd4VStyTEUyT29BczNudGQxT3lxaW5QbXE4M0pm?=
- =?utf-8?B?QUxSTm1OQVFvbkJBRXczV0dmTEVSdHdNU0l2Z3dLaTBOL2tTQWNXelBWYWFi?=
- =?utf-8?B?dmQrU3ltUE00dXd1dzMzdmdSdlg2cjlDQ3c2bmZJRTFENklHemkveHMwOVBE?=
- =?utf-8?B?T0F0WDVOdHpUUm5qWjhDWTRpUHF2SWlQMHZWaWVOdEovTXlKbVRmbm5PTGZq?=
- =?utf-8?B?VklYb3BrSXd1SG9ZYTAxOVc4WE1LT1NDSmNkV2V1WGdseXBqR2pxZEpRMnd3?=
- =?utf-8?B?ekduSVEwbU8vZWJVKzROd3JHbVNQVVZKK2JmV25JdVJVOGd1UmRwWlVMcmZ2?=
- =?utf-8?B?bGF0V1F4d0J3cE9YeHdncFZYSkNsLzhwTkpXY0l6WGJqalhBbXpYVGpoWG1D?=
- =?utf-8?B?V0lUUk1BVDZtSkFTOWR3T1NoYXJiRXIrWHplUWM3T3JaWkc2ZkRUcEJORHIy?=
- =?utf-8?B?TUI4UjByRnFuaEh4amk5YkVHaFVDMTJZbUs0c1RTUnFHVGtlM1FXcDJmL1k4?=
- =?utf-8?B?eGJaSW9iQ1RpbWNBWGZNV2ZBU1F1d1NTanhIMWVyQVBPK0c2SCtTbW5jSEJh?=
- =?utf-8?B?Rk1kUUxxQ1YrVGxoaW5ubmZlNVBYL01BNXJKOThoV3E0bndVL3ArK2hXMlZ4?=
- =?utf-8?B?V2d5RFRPWk4wdUx2S2J6bVhySkNaSkc4WWNoTXdrVlBLMWVYdXAwYk5SYjlX?=
- =?utf-8?B?SGxBTVNZK0x6bkFuS0Q4NGtmMVVPVEVUTmQxdlB1bU9yS3RKSUE3dz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c844fb38-50ab-412c-e888-08da18be0897
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2022 17:42:49.5403
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7hjE7IBZRNAw5C8EUncjZH0i8j3V3nXm6n1uhfaar3MEhLV8q6fduiCMFZ55SkeQk/YIgYlHwiWpp17eEtQ7pA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1299
+References: <YktYX2OnLtyobRYD@kernel.org> <Ykto1FgmPMMCysbI@dev-arch.thelio-3990X>
+ <CA+icZUVKgLLJvNF6ZU1e7Hjr_FsJO7x0gsGL6Jje1nv2ukhueA@mail.gmail.com>
+ <Yk79WQQjvMyCddiO@dev-arch.thelio-3990X> <CA+icZUXwF+qs0KxSeD8AF7ufrT6PodQa0iVi1w=qvdT0WWhkrA@mail.gmail.com>
+ <CA+icZUUdqQRU7XBjXnG5LHB-RrGMnknmsr-v4PhOLy4Jr2aDOA@mail.gmail.com>
+In-Reply-To: <CA+icZUUdqQRU7XBjXnG5LHB-RrGMnknmsr-v4PhOLy4Jr2aDOA@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Thu, 7 Apr 2022 19:42:20 +0200
+Message-ID: <CA+icZUVOUXgcZc3cKxSi6d8ooNJbB8r32V-F4eMGjdoJ=wStxg@mail.gmail.com>
+Subject: Re: Build perf with clang, failure with libperf
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/7/22 11:50, Sean Christopherson wrote:
-> On Thu, Apr 07, 2022, Dave Hansen wrote:
->> On 4/5/22 16:29, Kirill A. Shutemov wrote:
->> ...
->>>   arch/x86/coco/Makefile                   |   2 +
->>>   arch/x86/coco/core.c                     |  22 +-
->>>   arch/x86/coco/tdx/Makefile               |   3 +
->>>   arch/x86/coco/tdx/tdcall.S               | 204 +++++++
->>>   arch/x86/coco/tdx/tdx.c                  | 692 +++++++++++++++++++++++
->>
->> This coco/ code currently doesn't have a specific MAINTAINERS entry.
->> That makes me a bit worried that folks like Kirill won't get cc'd on
->> patches.
->>
->> Should we just do a MAINTAINERS entry like this?  It would also be
->> really nice to get some SEV folks on the list as well.  I suspect the
->> coco/ directory will grow more common SEV/TDX code over time.
->>
->> X86 CONFIDENTIAL COMPUTING
->> M:      x86@kernel.org
->> R:	Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
->> ...
->> S:      Supported
->> F:      arch/x86/coco/
->> ...
-> 
-> And/or a dedicated vger list?
+On Thu, Apr 7, 2022 at 7:10 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+>
+> On Thu, Apr 7, 2022 at 6:25 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> >
+> > On Thu, Apr 7, 2022 at 5:03 PM Nathan Chancellor <nathan@kernel.org> wrote:
+> > >
+> > > On Thu, Apr 07, 2022 at 12:27:14PM +0200, Sedat Dilek wrote:
+> > > > On Mon, Apr 4, 2022 at 11:53 PM Nathan Chancellor <nathan@kernel.org> wrote:
+> > > > >
+> > > > > Hi Arnaldo,
+> > > > >
+> > > > > On Mon, Apr 04, 2022 at 05:43:11PM -0300, Arnaldo Carvalho de Melo wrote:
+> > > > > > Hi,
+> > > > > >
+> > > > > >       Trying to apply Sedat's patch something changed in my system,
+> > > > > > and that patch wasn't enough, so I had to first apply this one:
+> > > > > >
+> > > > > > commit 173b552663419f40bcd3cf9df4f68285cac72727
+> > > > > > Author: Arnaldo Carvalho de Melo <acme@redhat.com>
+> > > > > > Date:   Mon Apr 4 17:28:48 2022 -0300
+> > > > > >
+> > > > > >     tools build: Use $(shell ) instead of `` to get embedded libperl's ccopts
+> > > > > >
+> > > > > >     Just like its done for ldopts and for both in tools/perf/Makefile.config.
+> > > > > >
+> > > > > >     Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
+> > > > > >
+> > > > > >       $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
+> > > > > >
+> > > > > >     And we need to do it to allow for building with versions of clang where
+> > > > > >     some gcc options selected by distros are not available.
+> > > > > >
+> > > > > >     Cc: Adrian Hunter <adrian.hunter@intel.com>
+> > > > > >     Cc: Fangrui Song <maskray@google.com>
+> > > > > >     Cc: Florian Fainelli <f.fainelli@gmail.com>
+> > > > > >     Cc: Ian Rogers <irogers@google.com>
+> > > > > >     Cc: Jiri Olsa <jolsa@kernel.org>
+> > > > > >     Cc: John Keeping <john@metanate.com>
+> > > > > >     Cc: Leo Yan <leo.yan@linaro.org>
+> > > > > >     Cc: Michael Petlan <mpetlan@redhat.com>
+> > > > > >     Cc: Namhyung Kim <namhyung@kernel.org>
+> > > > > >     Cc: Nathan Chancellor <nathan@kernel.org>
+> > > > > >     Cc: Nick Desaulniers <ndesaulniers@google.com>
+> > > > > >     Cc: Sedat Dilek <sedat.dilek@gmail.com>
+> > > > > >     Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+> > > > > >
+> > > > > > diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
+> > > > > > index 1480910c792e2cb3..90774b60d31b2b8e 100644
+> > > > > > --- a/tools/build/feature/Makefile
+> > > > > > +++ b/tools/build/feature/Makefile
+> > > > > > @@ -217,7 +217,7 @@ strip-libs = $(filter-out -l%,$(1))
+> > > > > >  PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
+> > > > > >  PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
+> > > > > >  PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
+> > > > > > -PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
+> > > > > > +PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
+> > > > > >  FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+> > > > > >
+> > > > > >  $(OUTPUT)test-libperl.bin:
+> > > > > >
+> > > > > > ----------------------------------------------------- 8< -------------------
+> > > > > >
+> > > > > > After this I go on filtering out some of the gcc options that clang
+> > > > > > doesn't grok:
+> > > > > >
+> > > > > > diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
+> > > > > > index 90774b60d31b2b8e..bbc5e263e02385ed 100644
+> > > > > > --- a/tools/build/feature/Makefile
+> > > > > > +++ b/tools/build/feature/Makefile
+> > > > > > @@ -215,9 +215,12 @@ grep-libs  = $(filter -l%,$(1))
+> > > > > >  strip-libs = $(filter-out -l%,$(1))
+> > > > > >
+> > > > > >  PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
+> > > > > > +PERL_EMBED_LDOPTS := $(filter-out -specs=%,$(PERL_EMBED_LDOPTS))
+> > > > > >  PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
+> > > > > >  PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
+> > > > > >  PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
+> > > > > > +PERL_EMBED_CCOPTS := $(filter-out -ffat-lto-objects, $(PERL_EMBED_CCOPTS))
+> > > > > > +PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
+> > > > > >  FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+> > > > > >
+> > > > > >  $(OUTPUT)test-libperl.bin:
+> > > > > >
+> > > > > > ----------------------------------------------------- 8< -------------------
+> > > > > >
+> > > > > > And then get to the problems at the end of this message, which seem
+> > > > > > similar to the problem described here:
+> > > > > >
+> > > > > > From  Nathan Chancellor <>
+> > > > > > Subject       [PATCH] mwifiex: Remove unnecessary braces from HostCmd_SET_SEQ_NO_BSS_INFO
+> > > > > >
+> > > > > > https://lkml.org/lkml/2020/9/1/135
+> > > > > >
+> > > > > > So perhaps in this case its better to disable that
+> > > > > > -Werror,-Wcompound-token-split-by-macro when building with clang?
+> > > > >
+> > > > > Yes, I think that is probably the best solution. As far as I can tell,
+> > > > > at least in this file and context, the warning appears harmless, as the
+> > > > > "create a GNU C statement expression from two different macros" is very
+> > > > > much intentional, based on the presence of PERL_USE_GCC_BRACE_GROUPS.
+> > > > > The warning is fixed in upstream Perl by just avoiding creating GNU C
+> > > > > statement expressions using STMT_START and STMT_END:
+> > > > >
+> > > > > https://github.com/Perl/perl5/issues/18780
+> > > > > https://github.com/Perl/perl5/pull/18984
+> > > > >
+> > > > > If I am reading the source code correctly, an alternative to disabling
+> > > > > the warning would be specifying -DPERL_GCC_BRACE_GROUPS_FORBIDDEN but it
+> > > > > seems like that might end up impacting more than just this site,
+> > > > > according to the issue discussion above.
+> > > > >
+> > > >
+> > > > Thanks for the pointer Nathan.
+> > > >
+> > > > As said I hit the problem with Debian's perl v5.34.
+> > > >
+> > > > Checking perl5 Git reveals:
+> > > >
+> > > > "skip using gcc brace groups for STMT_START/END"
+> > > > https://github.com/Perl/perl5/commit/7169efc77525df70484a824bff4ceebd1fafc760
+> > >
+> > > GitHub says this is in 5.35.2, so it would make sense that 5.34 still
+> > > shows the issue.
+> > >
+> > > > "Partially Revert "skip using gcc brace groups for STMT_START/END""
+> > > > https://github.com/Perl/perl5/commit/e08ee3cb66f362c4901846a46014cfdfcd60326c
+> > > >
+> > > > Perl v5.34.x seems not to have these changes:
+> > > > https://github.com/Perl/perl5/compare/v5.34.0...v5.34.1
+> > > >
+>
+> To summarize the diff between those 2 changes is related to perl.h only.
+>
+> # git diff /usr/lib/x86_64-linux-gnu/perl/5.34.0/CORE/perl.h.orig
+> /usr/lib/x86_64-linux-gnu/perl/5.34.0/CORE/perl.h
+> diff --git a/usr/lib/x86_64-linux-gnu/perl/5.34.0/CORE/perl.h.orig
+> b/usr/lib/x86_64-linux-gnu/perl/5.34.0/CORE/perl.h
+> index 17a21a1c4..bd575fe08 100644
+> --- a/usr/lib/x86_64-linux-gnu/perl/5.34.0/CORE/perl.h.orig
+> +++ b/usr/lib/x86_64-linux-gnu/perl/5.34.0/CORE/perl.h
+> @@ -733,13 +733,8 @@ Example usage:
+>  Trying to select a version that gives no warnings...
+> */
+> #if !(defined(STMT_START) && defined(STMT_END))
+> -# ifdef PERL_USE_GCC_BRACE_GROUPS
+> -#   define STMT_START  (void)( /* gcc supports "({ STATEMENTS; })" */
+> -#   define STMT_END    )
+> -# else
+> #   define STMT_START  do
+> #   define STMT_END    while (0)
+> -# endif
+> #endif
+>
+> #ifndef BYTEORDER  /* Should never happen -- byteorder is in config.h */
+>
+> With this applied plus removing -Wno-compound-token-split-by-macro
+> from ACME's patchset ...
+>
+> $ git log --oneline -2
+> bccc88d26f1f (HEAD -> 5.17.1-6-amd64-clang14-lto) tools build: Filter
+> out options and warnings not supported by clang
+> 19b1b5c6614c tools build: Use $(shell ) instead of `` to get embedded
+> libperl's ccopts
+>
+> $ git diff tools/
+> diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
+> index de66e1cc0734..7e3854a07643 100644
+> --- a/tools/build/feature/Makefile
+> +++ b/tools/build/feature/Makefile
+> @@ -224,7 +224,6 @@ ifeq ($(CC_NO_CLANG), 0)
+>   PERL_EMBED_LDOPTS := $(filter-out -specs=%,$(PERL_EMBED_LDOPTS))
+>   PERL_EMBED_CCOPTS := $(filter-out -flto=auto -ffat-lto-objects,
+> $(PERL_EMBED_CCOPTS))
+>   PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
+> -  FLAGS_PERL_EMBED += -Wno-compound-token-split-by-macro
+> endif
+>
+> $(OUTPUT)test-libperl.bin:
+> diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+> index 312a7a5906ee..913bf509bd17 100644
+> --- a/tools/perf/Makefile.config
+> +++ b/tools/perf/Makefile.config
+> @@ -790,9 +790,6 @@ else
+>     LDFLAGS += $(PERL_EMBED_LDFLAGS)
+>     EXTLIBS += $(PERL_EMBED_LIBADD)
+>     CFLAGS += -DHAVE_LIBPERL_SUPPORT
+> -    ifeq ($(CC_NO_CLANG), 0)
+> -      CFLAGS += -Wno-compound-token-split-by-macro
+> -    endif
+>     $(call detected,CONFIG_LIBPERL)
+>   endif
+> endif
+>
+> ...I am able to build successfully with Debian's LLVM-14 and perl-5.34.
+>
+> Both diffs are attached as Gmail might truncate the formatting.
+>
+> Might be worth writing a Debian bug-report.
+>
 
-There is a linux-coco mailing list (linux-coco@lists.linux.dev):
+Here we go:
 
-https://subspace.kernel.org/lists.linux.dev.html
+libperl5.34: Upstream patches "skip using gcc brace groups for STMT_START/END"
 
-Thanks,
-Tom
+- sed@ -
+
+[1] https://bugs.debian.org/1009149
