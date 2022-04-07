@@ -2,82 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:39:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC9CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:39:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243940AbiDGJlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:41:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
+        id S243905AbiDGJld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243881AbiDGJke (ORCPT
+        with ESMTP id S243952AbiDGJlI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:40:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001381B7567
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:38:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 7 Apr 2022 05:41:08 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1F01BB816
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:39:02 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B16BB826EC
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:38:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 225A9C385A4;
-        Thu,  7 Apr 2022 09:38:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649324312;
-        bh=5s9OskJhRbRG2UiHya741d2AQEc7gXNCfqv7+61bHTo=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=oSgF3ttao0gVuOlFBOMt9yHpO0kCnAqrr5505QzbDPd51pMmOkIeBjYcQRtVRyGyP
-         Ait3GuJuxl0/lyEPOO4Yf1AciPnd5o3Rd6UmadIK6jXimksRI2/q/QI7GfhL1og0f8
-         F6sKXWjfmQQ4Flol+icFsLEmIGMmrSm6bN00haeFXqCqdpm6W5o2m0QaQt4+lM9sbs
-         fwtOS8sWrSWcg5SE2Pyoq7Gn2rcmpwi4TnsOLybt/P1gf7xJVUPwLiBLS3aa9V9W1A
-         2lCl6vYS7ej/9+1Rn4IHNx95h1v9aaKr5YDa+hHBXezAn6TPRcVsue0kemWQfKEp+7
-         Xj0dRH+U6rSmg==
-From:   Mark Brown <broonie@kernel.org>
-To:     rf@opensource.cirrus.com
-Cc:     patches@opensource.cirrus.com, dan.carpenter@oracle.com,
-        lkp@intel.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220404113252.1152659-1-rf@opensource.cirrus.com>
-References: <20220404113252.1152659-1-rf@opensource.cirrus.com>
-Subject: Re: [PATCH] ASoC: simple-card-utils: Avoid NULL deref in asoc_simple_set_tdm()
-Message-Id: <164932431085.3844153.445127549627667818.b4-ty@kernel.org>
-Date:   Thu, 07 Apr 2022 10:38:30 +0100
+        by smtp-out2.suse.de (Postfix) with ESMTPS id EEFF91F85A;
+        Thu,  7 Apr 2022 09:39:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649324340; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=t80M3AxgwPtFqBrAe3eNHmWvOG2zVPYy43qfmNkj2UM=;
+        b=qt5W8Jyn9g+xgxIpsFNHAe1jRMg+ww9Hwr/2wces4xQ6LPSHQrPrlRsGY+8Xv7n+f2OxGf
+        x1uZyqDArGdHlMfem7DcN6viT33f+H9GiS03IuWqZcaHygPJ410EmdfvqX5TQXY3+hFMxV
+        hkiqfiqYKOpqRY4fWR5ONLyUptPfrEw=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C04CA13A66;
+        Thu,  7 Apr 2022 09:39:00 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id zjJlLTSxTmKcMQAAMHmgww
+        (envelope-from <jgross@suse.com>); Thu, 07 Apr 2022 09:39:00 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>
+Subject: [PATCH] xen/balloon: don't use PV mode extra memory for zone device allocations
+Date:   Thu,  7 Apr 2022 11:38:57 +0200
+Message-Id: <20220407093857.1485-1-jgross@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Apr 2022 12:32:52 +0100, Richard Fitzgerald wrote:
-> Don't dereference simple_dai before it has been checked for NULL.
-> 
-> 
+When running as a Xen PV guest use the extra memory (memory which isn't
+allocated for the guest at boot time) only for ballooning purposes and
+not for zone device allocations. This will remove some code without any
+lack of functionality.
 
-Applied to
+While at it move some code to get rid of another #ifdef.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+Remove a comment which is stale since some time now.
 
-Thanks!
+Signed-off-by: Juergen Gross <jgross@suse.com>
+---
+ drivers/xen/balloon.c           | 54 ++++++++++++++-------------------
+ drivers/xen/unpopulated-alloc.c | 33 --------------------
+ 2 files changed, 23 insertions(+), 64 deletions(-)
 
-[1/1] ASoC: simple-card-utils: Avoid NULL deref in asoc_simple_set_tdm()
-      commit: 51a630a7051f7f4f1cfdd64c20c7110f9907c230
+diff --git a/drivers/xen/balloon.c b/drivers/xen/balloon.c
+index dfe26fa17e95..617a7f4f07a8 100644
+--- a/drivers/xen/balloon.c
++++ b/drivers/xen/balloon.c
+@@ -689,29 +689,34 @@ void xen_free_ballooned_pages(unsigned int nr_pages, struct page **pages)
+ }
+ EXPORT_SYMBOL(xen_free_ballooned_pages);
+ 
+-#if defined(CONFIG_XEN_PV) && !defined(CONFIG_XEN_UNPOPULATED_ALLOC)
+-static void __init balloon_add_region(unsigned long start_pfn,
+-				      unsigned long pages)
++static void __init balloon_add_regions(void)
+ {
++#if defined(CONFIG_XEN_PV)
++	unsigned long start_pfn, pages;
+ 	unsigned long pfn, extra_pfn_end;
++	unsigned int i;
+ 
+-	/*
+-	 * If the amount of usable memory has been limited (e.g., with
+-	 * the 'mem' command line parameter), don't add pages beyond
+-	 * this limit.
+-	 */
+-	extra_pfn_end = min(max_pfn, start_pfn + pages);
++	for (i = 0; i < XEN_EXTRA_MEM_MAX_REGIONS; i++) {
++		pages = xen_extra_mem[i].n_pfns;
++		if (!pages)
++			continue;
+ 
+-	for (pfn = start_pfn; pfn < extra_pfn_end; pfn++) {
+-		/* totalram_pages and totalhigh_pages do not
+-		   include the boot-time balloon extension, so
+-		   don't subtract from it. */
+-		balloon_append(pfn_to_page(pfn));
+-	}
++		start_pfn = xen_extra_mem[i].start_pfn;
+ 
+-	balloon_stats.total_pages += extra_pfn_end - start_pfn;
+-}
++		/*
++		 * If the amount of usable memory has been limited (e.g., with
++		 * the 'mem' command line parameter), don't add pages beyond
++		 * this limit.
++		 */
++		extra_pfn_end = min(max_pfn, start_pfn + pages);
++
++		for (pfn = start_pfn; pfn < extra_pfn_end; pfn++)
++			balloon_append(pfn_to_page(pfn));
++
++		balloon_stats.total_pages += extra_pfn_end - start_pfn;
++	}
+ #endif
++}
+ 
+ static int __init balloon_init(void)
+ {
+@@ -745,20 +750,7 @@ static int __init balloon_init(void)
+ 	register_sysctl_table(xen_root);
+ #endif
+ 
+-#if defined(CONFIG_XEN_PV) && !defined(CONFIG_XEN_UNPOPULATED_ALLOC)
+-	{
+-		int i;
+-
+-		/*
+-		 * Initialize the balloon with pages from the extra memory
+-		 * regions (see arch/x86/xen/setup.c).
+-		 */
+-		for (i = 0; i < XEN_EXTRA_MEM_MAX_REGIONS; i++)
+-			if (xen_extra_mem[i].n_pfns)
+-				balloon_add_region(xen_extra_mem[i].start_pfn,
+-						   xen_extra_mem[i].n_pfns);
+-	}
+-#endif
++	balloon_add_regions();
+ 
+ 	task = kthread_run(balloon_thread, NULL, "xen-balloon");
+ 	if (IS_ERR(task)) {
+diff --git a/drivers/xen/unpopulated-alloc.c b/drivers/xen/unpopulated-alloc.c
+index a8b41057c382..a39f2d36dd9c 100644
+--- a/drivers/xen/unpopulated-alloc.c
++++ b/drivers/xen/unpopulated-alloc.c
+@@ -230,39 +230,6 @@ void xen_free_unpopulated_pages(unsigned int nr_pages, struct page **pages)
+ }
+ EXPORT_SYMBOL(xen_free_unpopulated_pages);
+ 
+-#ifdef CONFIG_XEN_PV
+-static int __init init(void)
+-{
+-	unsigned int i;
+-
+-	if (!xen_domain())
+-		return -ENODEV;
+-
+-	if (!xen_pv_domain())
+-		return 0;
+-
+-	/*
+-	 * Initialize with pages from the extra memory regions (see
+-	 * arch/x86/xen/setup.c).
+-	 */
+-	for (i = 0; i < XEN_EXTRA_MEM_MAX_REGIONS; i++) {
+-		unsigned int j;
+-
+-		for (j = 0; j < xen_extra_mem[i].n_pfns; j++) {
+-			struct page *pg =
+-				pfn_to_page(xen_extra_mem[i].start_pfn + j);
+-
+-			pg->zone_device_data = page_list;
+-			page_list = pg;
+-			list_count++;
+-		}
+-	}
+-
+-	return 0;
+-}
+-subsys_initcall(init);
+-#endif
+-
+ static int __init unpopulated_init(void)
+ {
+ 	int ret;
+-- 
+2.34.1
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
