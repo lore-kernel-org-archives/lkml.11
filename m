@@ -2,277 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB269C3526F
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58EE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346332AbiDGRaH (ORCPT
+        id S1346350AbiDGRaO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51896 "EHLO
+        Thu, 7 Apr 2022 13:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346494AbiDGR1e (ORCPT
+        with ESMTP id S1346506AbiDGR1h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:27:34 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD2AD43;
-        Thu,  7 Apr 2022 10:23:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Cc:To:From:content-disposition;
-        bh=Ro5Q2HMUd1HfFndmJ8UruOv1XXFC1TCh+hCWqq4F5HI=; b=lNdxkLiyyrn3aS3xg/neZkhWSy
-        EQ/x8P103d73dG+E1L8gyXZXQahh/qSrQJ5E2iEr3HGbbjjb7dzGf6dxaWlJYS6KdU/r4qMDwRcfG
-        ys+2isPwYgL3Fssvb/g1EA2pA67VavH7fvDXrUi4r5tTa0HGXqDq5EbfzfsxhboyCOB/4brGpq4SS
-        isYKr1pYJiIdDpA/HKBV2mOII+PGWeDJQ7nBCw04HlT2YFgNF+I/TozmncDF0ycCTMS/+TZqwAC8a
-        hYZegZqwnM8JL4gP/ZvJCOgohvEMhqdXQxMe0MR9yRetlpxLKXYpyTIeqcY8Hg0tdilHMMEHWFXQL
-        fTM4xbZA==;
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
-        by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1ncUML-002BBg-70; Thu, 07 Apr 2022 09:47:46 -0600
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
-        (envelope-from <gunthorp@deltatee.com>)
-        id 1ncUMD-00021m-1Y; Thu, 07 Apr 2022 09:47:37 -0600
-From:   Logan Gunthorpe <logang@deltatee.com>
-To:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-mm@kvack.org, iommu@lists.linux-foundation.org
-Cc:     Stephen Bates <sbates@raithlin.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Don Dutile <ddutile@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Jakowski Andrzej <andrzej.jakowski@intel.com>,
-        Minturn Dave B <dave.b.minturn@intel.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Xiong Jianxin <jianxin.xiong@intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Martin Oliveira <martin.oliveira@eideticom.com>,
-        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>
-Date:   Thu,  7 Apr 2022 09:47:06 -0600
-Message-Id: <20220407154717.7695-11-logang@deltatee.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220407154717.7695-1-logang@deltatee.com>
-References: <20220407154717.7695-1-logang@deltatee.com>
+        Thu, 7 Apr 2022 13:27:37 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4FEFDE3D
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:23:48 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id h5so4555916pgc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 10:23:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DFecdRo1OcDJL+E53AYAzBMzke472lhEFN6Lut7X4Ts=;
+        b=RR0h+gY5cOptCFHpbs2kfVqhRd2qnjomTxAX3aw6Z2qukKffYeou0GZ7qiZMXepddM
+         Mdetx+EF5JkUPT1QcKOq7Z8Ce+cYwUQOcv+2b6w4ghfO8gVfSm80kV6smnGW1SQB56lJ
+         q5rsQJHhIz1/1UnwQqwflKnteNhxueIt55HPQJiUJdG3h+Ud4w4uY1lnQIP2l/XlTcA8
+         e+qxhc6VeDth+AaDhNEFM8E5Tp84A2zcvd985556vxoZaohNr47+QJA5015Vq1wS3KGa
+         jUpAHcZ6HJz4g6RxhpX/vo5K+SGTpnzk0PH+pY00W7xEdnnq00YucTWDWjBWIf9JiOjf
+         bgTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DFecdRo1OcDJL+E53AYAzBMzke472lhEFN6Lut7X4Ts=;
+        b=s5kDz1m3PXYtE937ocJskKAZ2PZSwBP0XijxdJd+wqMWg1V/sthZy2UNYbFFhat51d
+         jMnvNhmCEuoUZAhMA8V+wB5Z7tCnPgdQ3os+GZRJnb3cZ7HlebHD9N9L8eo4pKbRFX0v
+         CiPrp2nsYImzFzyzr3s7ZaExCvnuwiE/ZVRLzGENGhaStsl3iBM3apWRJKfHblPHt905
+         Sd/eEIetMBAx4L0r2Ok8T491L4Jv7xAQYpjRbkEV4yIjv1D4pI28lvVl7WY7+OpbN+qO
+         5T6XSa69Ksq1zbA9MCCTCj4ex00K+ZfK+AI3haeyekVG7gzPBTJVftEtUO8LfHK5ns/q
+         //xA==
+X-Gm-Message-State: AOAM531p8p6rqxMuNC7RChUvy5i9iBNfocjNX2alEgwj/RyqUkq98g1U
+        NtZJ098XcFkZJcldakEZakY=
+X-Google-Smtp-Source: ABdhPJxYiR0NcIeHKJJ/5fG4QYKdRPTuU7O5K/S9aM2IXV5B9pWF/vjBEHR94NW+9djC/DDGTvUATw==
+X-Received: by 2002:a62:84d3:0:b0:4fa:72e2:1c64 with SMTP id k202-20020a6284d3000000b004fa72e21c64mr15392218pfd.29.1649352196013;
+        Thu, 07 Apr 2022 10:23:16 -0700 (PDT)
+Received: from [192.168.66.3] (p912131-ipoe.ipoe.ocn.ne.jp. [153.243.13.130])
+        by smtp.gmail.com with ESMTPSA id y16-20020a637d10000000b00381268f2c6fsm19720585pgc.4.2022.04.07.10.23.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 10:23:15 -0700 (PDT)
+Message-ID: <e14f1964-2692-df77-35ac-78236fc84ee2@gmail.com>
+Date:   Fri, 8 Apr 2022 02:23:12 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com, jhubbard@nvidia.com, rcampbell@nvidia.com, mgurtovoy@nvidia.com, kch@nvidia.com
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v6 10/21] nvme-pci: convert to using dma_map_sgtable()
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] platform/chrome: cros_ec_typec: Check for EC driver
+Content-Language: en-US
+To:     Benson Leung <bleung@google.com>
+Cc:     Guenter Roeck <groeck@google.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        chrome-platform@lists.linux.dev,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
+References: <20220404041101.6276-1-akihiko.odaki@gmail.com>
+ <Yk4DGZfpYbK8dofL@chromium.org>
+ <CABXOdTcY3w56hc7kWsDLxKU-c6fCLYt_jigK13tKjjm9OHi2+w@mail.gmail.com>
+ <033c1ec4-4bee-a689-140c-9694dfee435b@gmail.com>
+ <CABXOdTet5ynSXf94qMimobJF4LLzHc89cVbwJ5NuAz8G6jmVdQ@mail.gmail.com>
+ <0fdba110-8743-3b2d-cb30-3a89b7cfa592@gmail.com>
+ <Yk8atphiUdlU0gPO@google.com>
+From:   Akihiko Odaki <akihiko.odaki@gmail.com>
+In-Reply-To: <Yk8atphiUdlU0gPO@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dma_map operations now support P2PDMA pages directly. So remove
-the calls to pci_p2pdma_[un]map_sg_attrs() and replace them with calls
-to dma_map_sgtable().
+On 2022/04/08 2:09, Benson Leung wrote:
+> Hi Akihiko,
+> 
+> On Fri, Apr 08, 2022 at 02:03:52AM +0900, Akihiko Odaki wrote:
+>> If I read the code correctly, the registration itself happens synchronously
+>> and platform_device_register_data() always returns a non-NULL value unless
+>> it returns -ENOMEM. The driver, however, can be asynchronously bound and
+>> dev_get_drvdata(&typec->ec->ec->dev) can return NULL as the consequence. It
+>> would have a call trace like the following when scheduling asynchronous
+>> driver binding:
+>> platform_device_register_data()
+>> platform_device_register_resndata()
+>> platform_device_register_full()
+>> -  This always creates and returns platform_device.
+>> platform_device_add()
+>> - This adds the created platform_device.
+>> device_add()
+>> bus_probe_device()
+>> device_initial_probe()
+>> __device_attach()
+>> - This schedules asynchronous probing.
+>>
+>> typec->ec->ec should be pointing to the correct platform_device as the
+>> patched driver works without Oops on my computer. It is not NULL at least.
+> 
+> Can you provide more information about your test computer in this case?
+> 
+> Is it a Chromebook running stock firmware (if so, please let us know which
+> model, and which firmware version it is running).
+> In the past, we've also gotten some reports from people running MrChromebox
+> custom firmware on older Chromebooks which have exposed other bugs in
+> this driver.
+> 
+> Let us know if that's the case here, and where we can get that firmware.
 
-dma_map_sgtable() returns more complete error codes than dma_map_sg()
-and allows differentiating EREMOTEIO errors in case an unsupported
-P2PDMA transfer is requested. When this happens, return BLK_STS_TARGET
-so the request isn't retried.
+My computer is Lenovo ThinkPad C13 Yoga Chromebook. It is running the 
+stock firmware. The firmware was updated by running the following 
+command on Google Chrome OS Version 99.0.4844.86 (Official Build) (64-Bit):
+chromeos-firmwareupdate --mode=recovery
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
----
- drivers/nvme/host/pci.c | 69 +++++++++++++++++------------------------
- 1 file changed, 29 insertions(+), 40 deletions(-)
+Regards,
+Akihiko Odaki
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index fec4c7191310..07412116d4d1 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -230,11 +230,10 @@ struct nvme_iod {
- 	bool use_sgl;
- 	int aborted;
- 	int npages;		/* In the PRP list. 0 means small pool in use */
--	int nents;		/* Used in scatterlist */
- 	dma_addr_t first_dma;
- 	unsigned int dma_len;	/* length of single DMA segment mapping */
- 	dma_addr_t meta_dma;
--	struct scatterlist *sg;
-+	struct sg_table sgt;
- };
- 
- static inline unsigned int nvme_dbbuf_size(struct nvme_dev *dev)
-@@ -524,7 +523,7 @@ static void nvme_commit_rqs(struct blk_mq_hw_ctx *hctx)
- static void **nvme_pci_iod_list(struct request *req)
- {
- 	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
--	return (void **)(iod->sg + blk_rq_nr_phys_segments(req));
-+	return (void **)(iod->sgt.sgl + blk_rq_nr_phys_segments(req));
- }
- 
- static inline bool nvme_pci_use_sgls(struct nvme_dev *dev, struct request *req)
-@@ -576,17 +575,6 @@ static void nvme_free_sgls(struct nvme_dev *dev, struct request *req)
- 	}
- }
- 
--static void nvme_unmap_sg(struct nvme_dev *dev, struct request *req)
--{
--	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
--
--	if (is_pci_p2pdma_page(sg_page(iod->sg)))
--		pci_p2pdma_unmap_sg(dev->dev, iod->sg, iod->nents,
--				    rq_dma_dir(req));
--	else
--		dma_unmap_sg(dev->dev, iod->sg, iod->nents, rq_dma_dir(req));
--}
--
- static void nvme_unmap_data(struct nvme_dev *dev, struct request *req)
- {
- 	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
-@@ -597,9 +585,10 @@ static void nvme_unmap_data(struct nvme_dev *dev, struct request *req)
- 		return;
- 	}
- 
--	WARN_ON_ONCE(!iod->nents);
-+	WARN_ON_ONCE(!iod->sgt.nents);
-+
-+	dma_unmap_sgtable(dev->dev, &iod->sgt, rq_dma_dir(req), 0);
- 
--	nvme_unmap_sg(dev, req);
- 	if (iod->npages == 0)
- 		dma_pool_free(dev->prp_small_pool, nvme_pci_iod_list(req)[0],
- 			      iod->first_dma);
-@@ -607,7 +596,7 @@ static void nvme_unmap_data(struct nvme_dev *dev, struct request *req)
- 		nvme_free_sgls(dev, req);
- 	else
- 		nvme_free_prps(dev, req);
--	mempool_free(iod->sg, dev->iod_mempool);
-+	mempool_free(iod->sgt.sgl, dev->iod_mempool);
- }
- 
- static void nvme_print_sgl(struct scatterlist *sgl, int nents)
-@@ -630,7 +619,7 @@ static blk_status_t nvme_pci_setup_prps(struct nvme_dev *dev,
- 	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
- 	struct dma_pool *pool;
- 	int length = blk_rq_payload_bytes(req);
--	struct scatterlist *sg = iod->sg;
-+	struct scatterlist *sg = iod->sgt.sgl;
- 	int dma_len = sg_dma_len(sg);
- 	u64 dma_addr = sg_dma_address(sg);
- 	int offset = dma_addr & (NVME_CTRL_PAGE_SIZE - 1);
-@@ -703,16 +692,16 @@ static blk_status_t nvme_pci_setup_prps(struct nvme_dev *dev,
- 		dma_len = sg_dma_len(sg);
- 	}
- done:
--	cmnd->dptr.prp1 = cpu_to_le64(sg_dma_address(iod->sg));
-+	cmnd->dptr.prp1 = cpu_to_le64(sg_dma_address(iod->sgt.sgl));
- 	cmnd->dptr.prp2 = cpu_to_le64(iod->first_dma);
- 	return BLK_STS_OK;
- free_prps:
- 	nvme_free_prps(dev, req);
- 	return BLK_STS_RESOURCE;
- bad_sgl:
--	WARN(DO_ONCE(nvme_print_sgl, iod->sg, iod->nents),
-+	WARN(DO_ONCE(nvme_print_sgl, iod->sgt.sgl, iod->sgt.nents),
- 			"Invalid SGL for payload:%d nents:%d\n",
--			blk_rq_payload_bytes(req), iod->nents);
-+			blk_rq_payload_bytes(req), iod->sgt.nents);
- 	return BLK_STS_IOERR;
- }
- 
-@@ -738,12 +727,13 @@ static void nvme_pci_sgl_set_seg(struct nvme_sgl_desc *sge,
- }
- 
- static blk_status_t nvme_pci_setup_sgls(struct nvme_dev *dev,
--		struct request *req, struct nvme_rw_command *cmd, int entries)
-+		struct request *req, struct nvme_rw_command *cmd)
- {
- 	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
- 	struct dma_pool *pool;
- 	struct nvme_sgl_desc *sg_list;
--	struct scatterlist *sg = iod->sg;
-+	struct scatterlist *sg = iod->sgt.sgl;
-+	unsigned int entries = iod->sgt.nents;
- 	dma_addr_t sgl_dma;
- 	int i = 0;
- 
-@@ -841,7 +831,7 @@ static blk_status_t nvme_map_data(struct nvme_dev *dev, struct request *req,
- {
- 	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
- 	blk_status_t ret = BLK_STS_RESOURCE;
--	int nr_mapped;
-+	int rc;
- 
- 	if (blk_rq_nr_phys_segments(req) == 1) {
- 		struct bio_vec bv = req_bvec(req);
-@@ -859,26 +849,25 @@ static blk_status_t nvme_map_data(struct nvme_dev *dev, struct request *req,
- 	}
- 
- 	iod->dma_len = 0;
--	iod->sg = mempool_alloc(dev->iod_mempool, GFP_ATOMIC);
--	if (!iod->sg)
-+	iod->sgt.sgl = mempool_alloc(dev->iod_mempool, GFP_ATOMIC);
-+	if (!iod->sgt.sgl)
- 		return BLK_STS_RESOURCE;
--	sg_init_table(iod->sg, blk_rq_nr_phys_segments(req));
--	iod->nents = blk_rq_map_sg(req->q, req, iod->sg);
--	if (!iod->nents)
-+	sg_init_table(iod->sgt.sgl, blk_rq_nr_phys_segments(req));
-+	iod->sgt.orig_nents = blk_rq_map_sg(req->q, req, iod->sgt.sgl);
-+	if (!iod->sgt.orig_nents)
- 		goto out_free_sg;
- 
--	if (is_pci_p2pdma_page(sg_page(iod->sg)))
--		nr_mapped = pci_p2pdma_map_sg_attrs(dev->dev, iod->sg,
--				iod->nents, rq_dma_dir(req), DMA_ATTR_NO_WARN);
--	else
--		nr_mapped = dma_map_sg_attrs(dev->dev, iod->sg, iod->nents,
--					     rq_dma_dir(req), DMA_ATTR_NO_WARN);
--	if (!nr_mapped)
-+	rc = dma_map_sgtable(dev->dev, &iod->sgt, rq_dma_dir(req),
-+			     DMA_ATTR_NO_WARN);
-+	if (rc) {
-+		if (rc == -EREMOTEIO)
-+			ret = BLK_STS_TARGET;
- 		goto out_free_sg;
-+	}
- 
- 	iod->use_sgl = nvme_pci_use_sgls(dev, req);
- 	if (iod->use_sgl)
--		ret = nvme_pci_setup_sgls(dev, req, &cmnd->rw, nr_mapped);
-+		ret = nvme_pci_setup_sgls(dev, req, &cmnd->rw);
- 	else
- 		ret = nvme_pci_setup_prps(dev, req, &cmnd->rw);
- 	if (ret != BLK_STS_OK)
-@@ -886,9 +875,9 @@ static blk_status_t nvme_map_data(struct nvme_dev *dev, struct request *req,
- 	return BLK_STS_OK;
- 
- out_unmap_sg:
--	nvme_unmap_sg(dev, req);
-+	dma_unmap_sgtable(dev->dev, &iod->sgt, rq_dma_dir(req), 0);
- out_free_sg:
--	mempool_free(iod->sg, dev->iod_mempool);
-+	mempool_free(iod->sgt.sgl, dev->iod_mempool);
- 	return ret;
- }
- 
-@@ -912,7 +901,7 @@ static blk_status_t nvme_prep_rq(struct nvme_dev *dev, struct request *req)
- 
- 	iod->aborted = 0;
- 	iod->npages = -1;
--	iod->nents = 0;
-+	iod->sgt.nents = 0;
- 
- 	ret = nvme_setup_cmd(req->q->queuedata, req);
- 	if (ret)
--- 
-2.30.2
+> 
+> Thanks,
+> Benson
+> 
 
