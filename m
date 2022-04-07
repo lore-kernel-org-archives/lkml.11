@@ -2,63 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C1D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:16:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04767C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242855AbiDGISX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:18:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52150 "EHLO
+        id S242875AbiDGIS1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242882AbiDGIRp (ORCPT
+        with ESMTP id S238056AbiDGISQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:17:45 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22DBD1F6BE0;
-        Thu,  7 Apr 2022 01:15:42 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 9A61F8125;
-        Thu,  7 Apr 2022 08:13:19 +0000 (UTC)
-Date:   Thu, 7 Apr 2022 11:15:40 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Keerthy <j-keerthy@ti.com>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/4] clocksource/drivers/timer-ti-dm: Update defines for
- am6 for inline functions
-Message-ID: <Yk6drKxwOSVdrKp+@atomide.com>
-References: <20220407071006.37031-1-tony@atomide.com>
- <20220407071006.37031-2-tony@atomide.com>
- <9671f0a5-6860-8a75-d65e-345ce890cd88@linaro.org>
+        Thu, 7 Apr 2022 04:18:16 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D841FF232
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 01:16:17 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id p23so5457799edi.8
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 01:16:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xUYWxyJEg6leDM0Xoa+hYl6e09Zj0klrd/06rKmbpmY=;
+        b=VDt+MTz290lEtYWH2rYjozi9VS/wDkTwYnmZ1LHSDAEKP9qIm5ptabMoOVy2BND0Jd
+         0L/LUQaem3vZwxfUuvDjdbtMswNl1eX0QWzsSivBnM1zpfkIFZ4hXbyDzByJBJkrf2yo
+         llVHCnqcLTsm62tnuOi5v/6b71TBZCDJNbHwM/PM0+G57hSSWjRQi+4dEon9BUSW8EIA
+         hozevSwzAYq/hABD6Yre/N7t1Spx9rVku5XMnFRlg8vFRtQ5gD5N0lyqR4Vr1D/G7s7d
+         WDjA5Dm7s8ar9mDYFoj7tTOBGU+uGdcq4XJBDLpdni7lwiaorQQeU5BNNHm43b2JjE+I
+         qywQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xUYWxyJEg6leDM0Xoa+hYl6e09Zj0klrd/06rKmbpmY=;
+        b=4BEbf1C9soTc1iLW4Fh49bXtLdN8mBdH7w/e/rd9SgxrZWOSI6iexi71vYSAN5Fm3v
+         q/5Objv4mhTsz8iyB4W05iuMkYt1LDdOCJNgz4RTzGVs9SglInibLcbBh1CSwizfIygD
+         /E/sPLwoVGfRUIlA+aHSEy+F9RUWHbpdF2hZ0AuwrF9i3gQ32Op9TbYMpz1DO5snOzCa
+         s9H9fPpAS0+xF3r1vx3zNntpgLQ2v32CTPebXQ/0mVsT1VWabvLHWYdQOU1eD67ygGJW
+         8LwRCsR3nNTWtw1ivmoe7QBHqD36oz+BCvA+EfNAXt8ovAbYs5buB+xULENskTvTgMki
+         hNpA==
+X-Gm-Message-State: AOAM532+Jm6xT2Uorr2nBDcMvaJO71Z0PPV14YRWBmNyb8gZALfYzoDx
+        7amMIM/rslCk7cFXv6XrVhaR4Q==
+X-Google-Smtp-Source: ABdhPJy/ERLqCYKh9BpiL5bF6j78reR9LcaBuPraPoj6GLaivpbUlPeSk3kUE3ntnN95zAfa0g/A9w==
+X-Received: by 2002:aa7:cc96:0:b0:410:b9ac:241 with SMTP id p22-20020aa7cc96000000b00410b9ac0241mr13117970edt.246.1649319375803;
+        Thu, 07 Apr 2022 01:16:15 -0700 (PDT)
+Received: from [192.168.0.185] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id g10-20020a056402090a00b004196250baeasm8923523edz.95.2022.04.07.01.16.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 01:16:15 -0700 (PDT)
+Message-ID: <c46aa011-1292-0dfb-2f10-a4d9f9a4fdaa@linaro.org>
+Date:   Thu, 7 Apr 2022 10:16:14 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9671f0a5-6860-8a75-d65e-345ce890cd88@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [GIT PULL] ARM: samsung: Fixes for v5.18 (current cycle)
+Content-Language: en-US
+To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        arm@kernel.org, soc@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+References: <20220407080545.112290-1-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220407080545.112290-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Daniel Lezcano <daniel.lezcano@linaro.org> [220407 08:01]:
-> On 07/04/2022 09:10, Tony Lindgren wrote:
-> > @@ -251,7 +251,8 @@ int omap_dm_timers_active(void);
-> >    * The below are inlined to optimize code size for system timers. Other code
-> >    * should not need these at all.
-> >    */
-> > -#if defined(CONFIG_ARCH_OMAP1) || defined(CONFIG_ARCH_OMAP2PLUS)
-> > +#if defined(CONFIG_ARCH_OMAP1) || defined(CONFIG_ARCH_OMAP2PLUS) || \
-> > +	defined(CONFIG_ARCH_K3)
+On 07/04/2022 10:05, Krzysztof Kozlowski wrote:
+> From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 > 
-> Why not replace the above by CONFIG_OMAP_DM_TIMER ?
+> Hi,
+> 
+> For the v5.18, please.
 
-Hmm that's a good question for why it was not that way earlier.
+Argh, I need to update my email in my scripts as well. The tag is done
+with correct identity.
 
-This series changes things for tristate "OMAP dual-mode timer driver" if
-ARCH_K3 || COMPILE_TEST though. So the inline stubs are still needed for
-COMPILE_TEST it seems.
 
-Regards,
-
-Tony
+Best regards,
+Krzysztof
