@@ -2,115 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37EC6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:23:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:23:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346181AbiDGRZR (ORCPT
+        id S1346291AbiDGRZW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
+        Thu, 7 Apr 2022 13:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346141AbiDGRYN (ORCPT
+        with ESMTP id S1346170AbiDGRYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:24:13 -0400
+        Thu, 7 Apr 2022 13:24:17 -0400
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13692DA9F;
-        Thu,  7 Apr 2022 10:22:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81D133E07;
+        Thu,  7 Apr 2022 10:22:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Cc:To:From:content-disposition;
-        bh=Nx50PJtvGhphGZXf/1XGmZRg6RGOlaGtqP7f50ukagw=; b=jzm7m5DYH4sfzjYBB8mLijU5Mu
-        8yjfUysXi6ZAqs3yL1ob6tiPOBWuLjowWMQM5MNBbA8fiUTS0HKoMiy3G636mVtT3/1mUfXdEXNv1
-        KparX8YnOZmwmCSiKji0FXpI0tFNCrypJrr9n86GpGFizaVlBHqWocqQrQPaV8Fz0a2TQKS2odOKt
-        Xlu683AaYUFZ+Cn+nsa8JQCXH7eMVRlcGrJ0/7yTrfVIeVSIxByPcpnPuEDZLoFmQk+JJv+Wkhyoq
-        UpAgsJlvYd73eZsD0WtwYOGwrB8dHpNMf8EAMJPmF0hQRhOt1pB+YssSv3tylIT8VYXPVrE5oO0/W
-        Pu5YgCfQ==;
+        d=deltatee.com; s=20200525; h=Subject:MIME-Version:Message-Id:Date:Cc:To:From
+        :references:content-disposition:in-reply-to;
+        bh=Rh0EdEfVAD3LFkwOeFqoKK6fKePqsB8IaNskci6Qleo=; b=ehhkv6TOCZi3EMvIL/7cxCKUmL
+        1ofmwTSG0njRc1Ym+cYBjgYnGVBuqk3qlIWCAbSNb8GdtduaM7qoPcr/7ff6Jvy7aSZ6ait7hgzAW
+        hTmOoJRZnHSKFjHVivyBgqMNiojIQrkWphmLP1u1j+LuYF3qplGhTY7Tru67Cnyl6T4Peptg9pGs3
+        3J6ncnboeDKbeJCaJALPD/3W/EpGCVATPKw3Zf5ixuAXNJj/jNnsAugZWCwrleAD51LHdhxceonXf
+        4bW3loWffn2d1FMjxKY9sfQwCTsO/gfmBOVo98QOweD4MaighgYFFT+2/M1sm6AaK7Og8gYVnAKJh
+        1bLAX+/w==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
         by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1ncUMJ-002BBh-Mu; Thu, 07 Apr 2022 09:47:44 -0600
+        id 1ncVG1-002CHk-9v; Thu, 07 Apr 2022 10:45:19 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
         (envelope-from <gunthorp@deltatee.com>)
-        id 1ncUME-00022I-Vr; Thu, 07 Apr 2022 09:47:39 -0600
+        id 1ncVFz-0002DZ-O2; Thu, 07 Apr 2022 10:45:15 -0600
 From:   Logan Gunthorpe <logang@deltatee.com>
-To:     linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-mm@kvack.org, iommu@lists.linux-foundation.org
-Cc:     Stephen Bates <sbates@raithlin.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Don Dutile <ddutile@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Jakowski Andrzej <andrzej.jakowski@intel.com>,
-        Minturn Dave B <dave.b.minturn@intel.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Xiong Jianxin <jianxin.xiong@intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Martin Oliveira <martin.oliveira@eideticom.com>,
-        Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
+To:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
+        Song Liu <song@kernel.org>
+Cc:     Shaohua Li <shli@kernel.org>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Stephen Bates <sbates@raithlin.com>,
+        Martin Oliveira <Martin.Oliveira@eideticom.com>,
+        David Sloan <David.Sloan@eideticom.com>,
         Logan Gunthorpe <logang@deltatee.com>
-Date:   Thu,  7 Apr 2022 09:47:14 -0600
-Message-Id: <20220407154717.7695-19-logang@deltatee.com>
+Date:   Thu,  7 Apr 2022 10:45:03 -0600
+Message-Id: <20220407164511.8472-1-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220407154717.7695-1-logang@deltatee.com>
-References: <20220407154717.7695-1-logang@deltatee.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com, logang@deltatee.com
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, song@kernel.org, shli@kernel.org, guoqing.jiang@linux.dev, sbates@raithlin.com, Martin.Oliveira@eideticom.com, David.Sloan@eideticom.com, logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v6 18/21] block: set FOLL_PCI_P2PDMA in __bio_iov_iter_get_pages()
+Subject: [PATCH v1 0/8] Improve Raid5 Lock Contention
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a bio's queue supports PCI P2PDMA, set FOLL_PCI_P2PDMA for
-iov_iter_get_pages_flags(). This allows PCI P2PDMA pages to be passed
-from userspace and enables the O_DIRECT path in iomap based filesystems
-and direct to block devices.
+Hi,
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
----
- block/bio.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+I've been doing some work trying to improve the bulk write performance of
+raid5 on large systems with fast NVMe drives. The bottleneck appears
+largely to be lock contention on the hash_lock and device_lock. This
+series improves the situation slightly by addressing a couple of low
+hanging fruit ways to take the lock fewer times in the request path.
 
-diff --git a/block/bio.c b/block/bio.c
-index 3406c0450db3..271a720a6dc1 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -1149,6 +1149,7 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
- 	struct bio_vec *bv = bio->bi_io_vec + bio->bi_vcnt;
- 	struct page **pages = (struct page **)bv;
- 	bool same_page = false;
-+	unsigned int flags = 0;
- 	ssize_t size, left;
- 	unsigned len, i;
- 	size_t offset;
-@@ -1161,7 +1162,12 @@ static int __bio_iov_iter_get_pages(struct bio *bio, struct iov_iter *iter)
- 	BUILD_BUG_ON(PAGE_PTRS_PER_BVEC < 2);
- 	pages += entries_left * (PAGE_PTRS_PER_BVEC - 1);
- 
--	size = iov_iter_get_pages(iter, pages, LONG_MAX, nr_pages, &offset);
-+	if (bio->bi_bdev && bio->bi_bdev->bd_disk &&
-+	    blk_queue_pci_p2pdma(bio->bi_bdev->bd_disk->queue))
-+		flags |= FOLL_PCI_P2PDMA;
-+
-+	size = iov_iter_get_pages_flags(iter, pages, LONG_MAX, nr_pages,
-+					&offset, flags);
- 	if (unlikely(size <= 0))
- 		return size ? size : -EFAULT;
- 
--- 
+Patch 5 adjusts how batching works by keeping a reference to the
+previous stripe_head in raid5_make_request(). Under most situtations,
+this removes the need to take the hash_lock in stripe_add_to_batch_list()
+which should reduce the number of times the lock is taken by a factor of
+about 2.
+
+Patch 8 pivots the way raid5_make_request() works. Before the patch, the
+code must find the stripe_head for every 4KB page in the request, so each
+stripe head must be found once for every data disk. The patch changes this
+so that all the data disks can be added to a stripe_head at once and the
+number of times the stripe_head must be found (and thus the number of
+times the hash_lock is taken) should be reduced by a factor roughly equal
+to the number of data disks.
+
+The remaining patches are just cleanup and prep patches for those two
+patches.
+
+Doing apples to apples testing this series on a small VM with 5 ram disks,
+I saw a bandwidth increase of roughly 14% and lock contentions on the
+hash_lock (as reported by lock stat) reduced by more than a factor of
+5 (though is still significantly contended).
+
+Testing on larger systems with NVMe drives saw similar small bandwidth
+increases from 3% to 20% depending on the parameters. Oddly small arrays
+had larger gains, likely due to them having lower starting bandwidths; I
+would have expected larger gains with larger arrays (seeing there
+should have been even fewer locks taken in raid5_make_request()).
+
+Logan
+
+--
+
+Logan Gunthorpe (8):
+  md/raid5: Refactor raid5_make_request loop
+  md/raid5: Move stripe_add_to_batch_list() call out of add_stripe_bio()
+  md/raid5: Move common stripe count increment code into __find_stripe()
+  md/raid5: Make common label for schedule/retry in raid5_make_request()
+  md/raid5: Keep a reference to last stripe_head for batch
+  md/raid5: Refactor add_stripe_bio()
+  md/raid5: Check all disks in a stripe_head for reshape progress
+  md/raid5: Pivot raid5_make_request()
+
+ drivers/md/raid5.c | 442 +++++++++++++++++++++++++++------------------
+ drivers/md/raid5.h |   1 +
+ 2 files changed, 270 insertions(+), 173 deletions(-)
+
+
+base-commit: 3123109284176b1532874591f7c81f3837bbdc17
+--
 2.30.2
-
