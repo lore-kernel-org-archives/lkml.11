@@ -2,127 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91375C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0FCC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344282AbiDGOvt (ORCPT
+        id S1344295AbiDGOx1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46550 "EHLO
+        Thu, 7 Apr 2022 10:53:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241089AbiDGOvn (ORCPT
+        with ESMTP id S241089AbiDGOxY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:51:43 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0C01C7C25
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:49:42 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZ4494wkVzgYXB;
-        Thu,  7 Apr 2022 22:47:53 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 22:49:38 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 22:49:38 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     Russell King <linux@armlinux.org.uk>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     Rob Herring <robh@kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH 2/2] amba: fix memory leak in amba_device_try_add()
-Date:   Thu, 7 Apr 2022 23:02:40 +0800
-Message-ID: <20220407150240.151166-2-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220407150240.151166-1-wangkefeng.wang@huawei.com>
-References: <20220407150240.151166-1-wangkefeng.wang@huawei.com>
+        Thu, 7 Apr 2022 10:53:24 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9BBC054F
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:51:19 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id j20-20020a17090ae61400b001ca9553d073so6450348pjy.5
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 07:51:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+saCSnArnxO2TUlvbHmXQoFiDXGA5TGiskFrczuz73Y=;
+        b=gHTdAdlGBmpoT+iYDeLwfYqrMCSYrMcJVsXDPpLHU3NBKwlohuLKsUBjowQ1O2LiOJ
+         KZffRjcfwLSL6o96OsbDefjoXwv1mvenp7oEbdCKjdurcoUI7auXyhHB5WHqQ4OWkQlw
+         IFDwCExv6ewWhlpPReqoL5OwUVapAHbqScbIH5uXL4fiqZrs4ymU0+44GkINgNYx8Ovr
+         cEql/OO9nI49LTrPCuPEfNQp1GkO39m0yw8Si97vRBbODsWIWbo8Gys0dZ6AZQKoYAa+
+         SDzbUpIdz3zViyGPYpdbQz594K4IeR/Do0h2paWmrHYt5Xyer4S+73NFgjXB759C1SEl
+         yi8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+saCSnArnxO2TUlvbHmXQoFiDXGA5TGiskFrczuz73Y=;
+        b=3oRz+FrRhFN4VIpMg75crvx4lH7W4g+Cm5FWJBJWyDZ6n3VaKOZMaXm0lH9ZWvShQo
+         KubNNwqTaXWEaZ6MySPrNszDiWNZG1ynCkjVPbiOuGLrwFNPQMqgEEagv9yN82B9tnQW
+         yRyGwVzUuu1vsnFcQbVNErT6Te6DcLTIDhcQD4aL4idnSxaeWbY0j4ONKzWzljnlawFE
+         mweE0abGEKxxOvj18DCAFp93MpqEiOVRRWrK+lrGMJ0ZLBTrtvhFKfZPVI39K/AwosxG
+         6wVKPjeO35y0hCA4wSn6CY45Vr4giJLncoRgN/qxJtHLUkzeXzYo2X282I+uk6ddCWG0
+         ak3w==
+X-Gm-Message-State: AOAM531tc9gfYZmdFNJdoJl7NJSZCtVS8IBrmLwBtZXtSx1a0TS8U1fY
+        ecUtY4V2IsObuGROs5fLnTNFaQ==
+X-Google-Smtp-Source: ABdhPJxvrmY5um1dyneAX/623gzNPdyhWp8QxZWMYrK+6acrVNRKTmaYM1eWQbXVtos9Vd5O6e4Hbg==
+X-Received: by 2002:a17:90a:4417:b0:1ca:a861:3fbf with SMTP id s23-20020a17090a441700b001caa8613fbfmr16611866pjg.80.1649343077600;
+        Thu, 07 Apr 2022 07:51:17 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id rm5-20020a17090b3ec500b001c7559762e9sm9173481pjb.20.2022.04.07.07.51.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 07:51:16 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 14:51:13 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     isaku.yamahata@intel.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
+        Connor Kuehl <ckuehl@redhat.com>
+Subject: Re: [RFC PATCH v5 092/104] KVM: TDX: Handle TDX PV HLT hypercall
+Message-ID: <Yk76Yd2VTmONGA8H@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <6da55adb2ddb6f287ebd46aad02cfaaac2088415.1646422845.git.isaku.yamahata@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6da55adb2ddb6f287ebd46aad02cfaaac2088415.1646422845.git.isaku.yamahata@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If amba_device_try_add() return error code (not EPROBE_DEFER),
-memory leak occurred when amba device fails to read periphid.
+On Fri, Mar 04, 2022, isaku.yamahata@intel.com wrote:
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
+> 
+> Wire up TDX PV HLT hypercall to the KVM backend function.
+> 
+> When the guest issues HLT, the hypercall instruction can be the right after
+> CLI instruction.  Atomically unmask virtual interrupt and issue HLT
+> hypercall. The virtual interrupts can arrive right after CLI instruction
+> before switching back to VMM.  In such a case, the VMM should return to the
+> guest without losing the interrupt.  Check if interrupts arrived before the
+> TDX module switching to VMM.  And return to the guest in such cases.
 
-unreferenced object 0xc1c60800 (size 1024):
-  comm "swapper/0", pid 1, jiffies 4294937333 (age 75.200s)
-  hex dump (first 32 bytes):
-    40 40 db c1 04 08 c6 c1 04 08 c6 c1 00 00 00 00  @@..............
-    00 d9 c1 c1 84 6f 38 c1 00 00 00 00 01 00 00 00  .....o8.........
-  backtrace:
-    [<(ptrval)>] kmem_cache_alloc_trace+0x168/0x2b4
-    [<(ptrval)>] amba_device_alloc+0x38/0x7c
-    [<(ptrval)>] of_platform_bus_create+0x2f4/0x4e8
-    [<(ptrval)>] of_platform_bus_create+0x380/0x4e8
-    [<(ptrval)>] of_platform_bus_create+0x380/0x4e8
-    [<(ptrval)>] of_platform_bus_create+0x380/0x4e8
-    [<(ptrval)>] of_platform_populate+0x70/0xc4
-    [<(ptrval)>] of_platform_default_populate_init+0xb4/0xcc
-    [<(ptrval)>] do_one_initcall+0x58/0x218
-    [<(ptrval)>] kernel_init_freeable+0x250/0x29c
-    [<(ptrval)>] kernel_init+0x24/0x148
-    [<(ptrval)>] ret_from_fork+0x14/0x1c
-    [<00000000>] 0x0
-unreferenced object 0xc1db4040 (size 64):
-  comm "swapper/0", pid 1, jiffies 4294937333 (age 75.200s)
-  hex dump (first 32 bytes):
-    31 63 30 66 30 30 30 30 2e 77 64 74 00 00 00 00  1c0f0000.wdt....
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<(ptrval)>] __kmalloc_track_caller+0x19c/0x2f8
-    [<(ptrval)>] kvasprintf+0x60/0xcc
-    [<(ptrval)>] kvasprintf_const+0x54/0x78
-    [<(ptrval)>] kobject_set_name_vargs+0x34/0xa8
-    [<(ptrval)>] dev_set_name+0x40/0x5c
-    [<(ptrval)>] of_device_make_bus_id+0x128/0x1f8
-    [<(ptrval)>] of_platform_bus_create+0x4dc/0x4e8
-    [<(ptrval)>] of_platform_bus_create+0x380/0x4e8
-    [<(ptrval)>] of_platform_bus_create+0x380/0x4e8
-    [<(ptrval)>] of_platform_bus_create+0x380/0x4e8
-    [<(ptrval)>] of_platform_populate+0x70/0xc4
-    [<(ptrval)>] of_platform_default_populate_init+0xb4/0xcc
-    [<(ptrval)>] do_one_initcall+0x58/0x218
-    [<(ptrval)>] kernel_init_freeable+0x250/0x29c
-    [<(ptrval)>] kernel_init+0x24/0x148
-    [<(ptrval)>] ret_from_fork+0x14/0x1c
-
-Fix them by adding amba_device_put() to release device name and
-amba device.
-
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- drivers/amba/bus.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-index 0073d8ba0353..7e775ba6fdd9 100644
---- a/drivers/amba/bus.c
-+++ b/drivers/amba/bus.c
-@@ -478,8 +478,14 @@ static int amba_device_try_add(struct amba_device *dev, struct resource *parent)
- 		goto skip_probe;
- 
- 	ret = amba_read_periphid(dev);
--	if (ret)
-+	if (ret) {
-+		if (ret != -EPROBE_DEFER) {
-+			amba_device_put(dev);
-+			goto err_out;
-+		}
- 		goto err_release;
-+	}
-+
- skip_probe:
- 	ret = device_add(&dev->dev);
- err_release:
--- 
-2.26.2
-
+Pretty sure you mean STI, not CLI.
