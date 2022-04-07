@@ -2,176 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 21:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCDDAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 21:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231706AbiDGVhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 17:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42710 "EHLO
+        id S231819AbiDGViB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 17:38:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiDGVhA (ORCPT
+        with ESMTP id S231860AbiDGVhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 17:37:00 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B5AB19FF7E
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 14:34:59 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id x131so11834692ybe.11
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 14:34:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=eclypsium.com; s=google;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=yaGos3SERrC2jdiQiJ/85vABo3kZeiwvqRtqI7sWR/o=;
-        b=UnoHu1EK+12NpKKA6uHxlvH9RUZbPSgYKriZSpsoZk125w5ipGaiJ7sTtSTGJbeMdp
-         Di350AKk06PeKhYE+MJWSKTJDYk4A7TfEFWKJ92lqYXLXG0/bkkDCtMSY4ru7ns8Cs30
-         0NIEgnHab0r5/k/hTOZPAKpTGMTGQGQyTK33Uukp8gs2IzZlnPz6LrjMGmCnCqLwUZ25
-         18itwsp3ELXHwK29xjTTLEMg8uzfg7NH4o8JLk0FisLvmB12XKsQ7g2lpr3Ncu5s+INw
-         N+bbiivMFNquAbOtNEkdbNn0yw4WP/NnDLWLnUCQIm4OAwysRaQ56esx+QbJW1tI3C1l
-         7+hQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=yaGos3SERrC2jdiQiJ/85vABo3kZeiwvqRtqI7sWR/o=;
-        b=ntjt7vzjFNjVxX7xMxLl5Lj5F0hAdHLHO+JQdNKcaP1G3AxhZboEcrzQyn4Dw+WIbr
-         CLmmUeyVjGDdsk7z/3UFwmZyKnduKmAcZobZk45Xs0MC9zYqSN4uyaOEAu6NPwOeKtEv
-         oY4391Sqx8bgoU9tjQIjUaYPQ3Bg7iQhgdz6xvxXlFneV3hE1hMLE/NmM2CZ+1v0g1xb
-         pg529Rorpc2uSRuIInbdM6AyCObM/xhkUjlxHIFpv64hMtp5q6DWgIzU/MyQZbd8xNW/
-         +t7SgxUUBJF2OBo3p4HtJztj/Utsb5g9XK7AELEvU5f4OHZ2RYMiVNb29czQt7lXf2d5
-         YZXw==
-X-Gm-Message-State: AOAM532B1VKh1gg2rJT05euS7Aq74X0gUYxnmIl5WTjV+ssp6fKk7ibG
-        xin0bcWpUmO86nyKd3jLCx80iBBHEzPXyDNfE6/w2Q==
-X-Google-Smtp-Source: ABdhPJwJEywGIqQdg8hh0sUZXnA5G8Sb7DVlb0w1/35HRGGNTC17jceSOFtlb3SQWN4PMoqW6FMkZ+50oK/6iZFFy60=
-X-Received: by 2002:a25:e689:0:b0:63e:4f58:d27 with SMTP id
- d131-20020a25e689000000b0063e4f580d27mr4753250ybh.341.1649367298317; Thu, 07
- Apr 2022 14:34:58 -0700 (PDT)
+        Thu, 7 Apr 2022 17:37:47 -0400
+Received: from sonic305-28.consmr.mail.ne1.yahoo.com (sonic305-28.consmr.mail.ne1.yahoo.com [66.163.185.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D53D0AAC
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 14:35:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1649367346; bh=s1tbTejuxOu/lam7b4cMnSGO5wWBpi4ZK3vddXbJyRI=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=cUNmdK8q7IURdofpIBFsu0g1ftka0gvnrSHO2esbeV+Us2aOd918TviDUMXEBLVTINbXSt+IM93pm6OLORvrazWUQytjNs2ucPrvLfNx2NsQ8yVqgvWy1gYL5QmNrMqPmK8RYe4GgdL0cNj7/xaNzbqXqmxsG/AQsbKj6rrnXGCI8o3HcOakJYQubtCVJ6n3iAnhsIbMbOZtoKPL3a0lyzgQQlpOSGzDJ1q4z1IDuYYqu9zYphex0KoEgC/9bMEO50QeRmFlrwbb1E2mIiKusErIX1kVWhdTYSQHBwY0M8jl+SxDofa31l9SZEOBHfB+6fsqoxqjJv3uPjEr2YL7SQ==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1649367346; bh=fKaUpCEP48TjVzQyfQSkxjGUU+/GmwT4kDCeQAEaYtr=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=boICMon9rSPoBJeXBh/VpM8kd9ep+DzW9q4RDIR4Z41eSWemZUoLMvn3kgccYZQj+ZnhoTmbJP9VUpIkktIGu9rNPxAFmxPKhqiToKpgdZktbPXm7bc8teHBuv1VhaPx7zG+nZuHUUoPitnKDWbIEbAJetfvxxESvDKFOZt7Yek5LqRM8RCAzG7vC/fGEL01qcZm501r1f2LwQpYHgjs0auaT6fzSEyCEWhAwe2U6v4YrnlLOh443lgSoV3SgXgplRyQiFEo0PuC9RfH4GkxsK8MIiSeop2x1t9Hzr5ZFcAGuptu3GvBuC5kKGqR7IWPZAX9zEPxAAwYxWwJzCf6jw==
+X-YMail-OSG: .WSANpwVM1m0b7abDVo1TuLxNXOEV729QjzX5yE2t2GTab8iCCijgdJ1Ge7uUS1
+ A.o3_XP..wjL8wfr_3LYOhAwONBgm04MNxPnJTF9Dokz49SpoK59sLWz3u2_xpqfYy112.yIOww7
+ t4gnQ6tlzmSYVYRdUWTG70EVXdcbMD3EQn_zU3iI3ME9BhbItYJJSuKRNsE_HFP1PYlJIywTQxyM
+ mM6WiJCZv64ue7i5dgiszWiK3AH41Wv559_PmNIgxTYTA_0tyPBD8LpppQtCpmqKBiSV5_mtohWu
+ tq0gAI5h6AScoPSgMxlhJfAUl3NosOHhMGtakEW9wyeUfKLdVZ8W8OcxHEyyFe0j1GZY9snp8ore
+ B4UPVi.M3JrcKWze.gNXYsUrdcYXf7N4sYIB49UL9ZmLSaOfJbhy18oqUO3tlDyo6J_okhcNhGUq
+ .Yz1szJo.tuWln8HwWWiQ.JOY2fj8sJzEXxnCvNe7iadk0Of0eFrkJR93Z4OYM91ThOv3gMWpa3i
+ lQsVscQxd2R9QF6I6ZaP6f69DC16tC2IwZJYr8osT0xtRy.d_wEE4J_p_J0cjwQdXAEht83d._sX
+ 4sDWkEh22keB1g6HOvu4IPz6hLu2J6ktmo1EtTpNY0U_3_FB6y2DsSa_sRBEasqr1_rn6R0WWsqd
+ fMslFCklRkLVs_GxSlPGgD0UhkySBDQoE7skfNCWQcA6eZ0SxaPT6PDNTWRzqimaqn.MhttCquZg
+ rFQjK2WtkLdUEBrgIs8UCyAgfXucACQAVGATDq6CAdNeBvh0VJga3Sm48wVN1g2RIYoymezZaDvi
+ .zNDYKaRMM1TPj0ml9nBahoMDZaaql3r.OnMyPBRwP9dRdVZ_gi97ZSPQWDgJ6MsxNtKOljCwSrW
+ Lp4lzGzefF6xYpxJ0TbAJsJ2DySLyGQ8YKigIuFwzTp0dfZncCy6ukmjV4rnesqdT0.rKYlkXWkY
+ lHTQ82c63RrJMoVRftERqAzv6uleRHzjEOhdjZ8r.lwQ5tPg6Pvk4qqwOrT43dBAdjTWcTo9q2mg
+ ThgsLCibZMDTqX1x74BEv4bmirPAqOis.WCNFXU9GEPiyU5h2GUZRmyLSmb1rDMW_bjhEQ4khnyU
+ Tvnyy1ViZ7ZLxpe3phb4JDE2ur4Uzn1Ijqt.acRP0uuAGmC5ngVDfpoIdER8SMyCub954JCynfr6
+ Pdm8wwkoLjCCiuu2UHYeBO0pdG9xlEwyuK0wQZODcIRMvIU1rw0weVvhY80nHPHE9DvhFTwqSBr9
+ ws3MdnKEpZwzBsyEX9jl32_5BY.IL78n1A8srAcvcwyutWQfIvLEerEnoQrZWP6N_zUg83LEXhd5
+ ZTMnMVg5.PV0VlM5fwpLEIwY02cX2O3DkPi7L3nkD.OjH8R9arlOkxYiTqtZT_ICzFSLBsMWIrw7
+ oxoNSlqTJ0NG.pZne5VzeSPBKd6nRLr5owsfR5ugf4pUUTW6yBUbCL_q47hNqjc3UJHyOymtkjea
+ lhFkUNexc9lHWthSCvgLXs3YW7eHb52gOE7Js5.xaDAYz6MKvSd5ZI4FnOB59bxcV82nXt7Thwpl
+ 4NfZXju_0V_9AE1kZp741Chx2qPLQiGWOZ3IDfpXa2lCo34niR2ShphJPwUtfbLH7tumBZeLZzYD
+ 85z2ncRfJCjKolqYczL8HTPnkFMuac2bSqDrYpziYB0yJZ1mAipXPihF.UK2ai_C344Ux7ed5lmb
+ qpB_hNspFRoJKzF7pOLe61DZTcLlhURkJ9DTT.H7D_0aCJQebmrqWiWefK5zs7Pvngs.O09dXQFB
+ eK8fZUmjszhAf9VZl2PDimzXA2vdSAE_acDzTXavLK81Wy9Pd88EFbwKBWx3QvZM_xN6cYBMtsVi
+ ohmt7AMFscQ2TRnew7hlEVQbLoq9HaaAMjtuVKiA1RT_U8GHjsOL5CLk0.LqHDujMqv4j5ilt.Bh
+ Fjm8EM4MfIgntuyVAn3qLL0dytW4Fe9mvYNfTUeiKraTN5UScT70.z6xPQljexvxADpgu_GAR494
+ 0h3NSBllx4BkYIDI3BsLutvdm8PLrPXAp7eTPClY12UGqPzGARtnqG6dSfGILAy4Ptgjd0nvBEWJ
+ QSyJVAVI_Kcn8nfLKIAcm1oFHwA7IVPHa.BRGO7ErJblamAHJKWYG9dji4VWQxu2iRwXOSwrJusE
+ vcYvbQwo0ZFTPrG4ZzymjytInK1mM8r5_hBFJPHrC9NtF00ylGctna5z1fvy8M.gN97Xn3BaN6Ht
+ a7oJltsPZ2U1x93u4hs21IhlACwv3rq7TFj_i_txfRWlhEGL5rfKS2GVvqA--
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic305.consmr.mail.ne1.yahoo.com with HTTP; Thu, 7 Apr 2022 21:35:46 +0000
+Received: by hermes--canary-production-bf1-665cdb9985-zm65g (VZM Hermes SMTP Server) with ESMTPA ID fb411508bea18f2038d235ae662d3bf0;
+          Thu, 07 Apr 2022 21:35:43 +0000 (UTC)
+From:   Casey Schaufler <casey@schaufler-ca.com>
+To:     casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
+        keescook@chromium.org, john.johansen@canonical.com,
+        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
+        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
+Subject: [PATCH v34 24/29] LSM: Add a function to report multiple LSMs
+Date:   Thu,  7 Apr 2022 14:22:25 -0700
+Message-Id: <20220407212230.12893-25-casey@schaufler-ca.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407212230.12893-1-casey@schaufler-ca.com>
+References: <20220407212230.12893-1-casey@schaufler-ca.com>
 MIME-Version: 1.0
-Received: by 2002:a81:10a:0:0:0:0:0 with HTTP; Thu, 7 Apr 2022 14:34:57 -0700 (PDT)
-In-Reply-To: <CAFd5g46JiiddNxHW_jK6fjdfjGMjWsXsFuvL6H9xcZc98HWQyQ@mail.gmail.com>
-References: <20220311072859.2174624-1-brendanhiggins@google.com>
- <1e1472e8-1813-3903-f934-cb0ae7f09864@linuxfoundation.org> <CAFd5g46JiiddNxHW_jK6fjdfjGMjWsXsFuvL6H9xcZc98HWQyQ@mail.gmail.com>
-From:   Martin Fernandez <martin.fernandez@eclypsium.com>
-Date:   Thu, 7 Apr 2022 18:34:57 -0300
-Message-ID: <CAKgze5bCf+v4PoS92XCDV2cD7d0iUvCvxHbPqAnLoW8pwoKbtQ@mail.gmail.com>
-Subject: Re: [PATCH v1] kunit: add support for kunit_suites that reference
- init code
-To:     Brendan Higgins <brendanhiggins@google.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>, shuah@kernel.org,
-        davidgow@google.com, dlatypov@google.com,
-        daniel.gutson@eclypsium.com, linux-kselftest@vger.kernel.org,
-        kunit-dev@googlegroups.com, linux-kernel@vger.kernel.org,
-        keescook@chromium.org, jk@codeconstruct.com.au
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/4/22, Brendan Higgins <brendanhiggins@google.com> wrote:
-> On Mon, Apr 4, 2022 at 6:37 PM Shuah Khan <skhan@linuxfoundation.org>
-> wrote:
->>
->> Hi Brendan,
->>
->> On 3/11/22 12:28 AM, Brendan Higgins wrote:
->> > Add support for a new kind of kunit_suite registration macro called
->> > kunit_test_init_suite(); this new registration macro allows the
->> > registration of kunit_suites that reference functions marked __init and
->> > data marked __initdata.
->> >
->> > Signed-off-by: Brendan Higgins <brendanhiggins@google.com>
->> > Tested-by: Martin Fernandez <martin.fernandez@eclypsium.com>
->> > Reviewed-by: Kees Cook <keescook@chromium.org>
->> > Reviewed-by: David Gow <davidgow@google.com>
->> > ---
->> >
->>
->> I almost applied it ...
->>
->> > This is a follow-up to the RFC here[1].
->> >
->> > This patch is in response to a KUnit user issue[2] in which the user
->> > was
->> > attempting to test some init functions; although this is a functional
->> > solution as long as KUnit tests only run during the init phase, we will
->> > need to do more work if we ever allow tests to run after the init phase
->> > is over; it is for this reason that this patch adds a new registration
->> > macro rather than simply modifying the existing macros.
->> >
->> > Changes since last version:
->> >   - I added more to the kunit_test_init_suites() kernel-doc comment
->> >     detailing "how" the modpost warnings are suppressed in addition to
->> >     the existing information regarding "why" it is OK for the modpost
->> >     warnings to be suppressed.
->> >
->> > [1]
->> > https://lore.kernel.org/linux-kselftest/20220310210210.2124637-1-brendanhiggins@google.com/
->> > [2] https://groups.google.com/g/kunit-dev/c/XDjieRHEneg/m/D0rFCwVABgAJ
->> >
->> > ---
->> >   include/kunit/test.h | 26 ++++++++++++++++++++++++++
->> >   1 file changed, 26 insertions(+)
->> >
->> > diff --git a/include/kunit/test.h b/include/kunit/test.h
->> > index b26400731c02..7f303a06bc97 100644
->> > --- a/include/kunit/test.h
->> > +++ b/include/kunit/test.h
->> > @@ -379,6 +379,32 @@ static inline int kunit_run_all_tests(void)
->> >
->> >   #define kunit_test_suite(suite)     kunit_test_suites(&suite)
->> >
->> > +/**
->> > + * kunit_test_init_suites() - used to register one or more &struct
->> > kunit_suite
->> > + *                         containing init functions or init data.
->> > + *
->> > + * @__suites: a statically allocated list of &struct kunit_suite.
->> > + *
->> > + * This functions identically as &kunit_test_suites() except that it
->> > suppresses
->> > + * modpost warnings for referencing functions marked __init or data
->> > marked
->> > + * __initdata; this is OK because currently KUnit only runs tests upon
->> > boot
->> > + * during the init phase or upon loading a module during the init
->> > phase.
->> > + *
->> > + * NOTE TO KUNIT DEVS: If we ever allow KUnit tests to be run after
->> > boot, these
->> > + * tests must be excluded.
->> > + *
->> > + * The only thing this macro does that's different from
->> > kunit_test_suites is
->> > + * that it suffixes the array and suite declarations it makes with
->> > _probe;
->> > + * modpost suppresses warnings about referencing init data for symbols
->> > named in
->> > + * this manner.
->> > + */
->> > +#define kunit_test_init_suites(__suites...)                          \
->> > +     __kunit_test_suites(CONCATENATE(__UNIQUE_ID(array), _probe),    \
->> > +                         CONCATENATE(__UNIQUE_ID(suites), _probe),   \
->> > +                         ##__suites)
->> > +
->> > +#define kunit_test_init_suite(suite) kunit_test_init_suites(&suite)
->> > +
->> >   #define kunit_suite_for_each_test_case(suite, test_case)            \
->> >       for (test_case = suite->test_cases; test_case->run_case;
->> > test_case++)
->> >
->> >
->>
->> The naming of the function and macro are rather confusing and can become
->> error prone. Let's find better naming scheme.
->
-> Yeah, I wasn't sure about the name. I didn't have any better ideas
-> initially though. Any suggestions?
->
+Add a new boolean function lsm_multiple_contexts() to
+identify when multiple security modules provide security
+context strings.
 
-What about kunit_test_init_section_suite?
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+---
+ include/linux/security.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
->> > base-commit: 330f4c53d3c2d8b11d86ec03a964b86dc81452f5
->> >
->>
->> thanks,
->> -- Shuah
->
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 0d3931723361..52b5046c0956 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -232,6 +232,15 @@ static inline bool lsmblob_equal(const struct lsmblob *bloba,
+ extern int lsm_name_to_slot(char *name);
+ extern const char *lsm_slot_to_name(int slot);
+ 
++static inline bool lsm_multiple_contexts(void)
++{
++#ifdef CONFIG_SECURITY
++	return lsm_slot_to_name(1) != NULL;
++#else
++	return false;
++#endif
++}
++
+ /**
+  * lsmblob_value - find the first non-zero value in an lsmblob structure.
+  * @blob: Pointer to the data
+-- 
+2.35.1
+
