@@ -2,106 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C728C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 05:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D584C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 05:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237201AbiDGFEF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 01:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59886 "EHLO
+        id S237278AbiDGFMW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 01:12:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231152AbiDGFEB (ORCPT
+        with ESMTP id S231185AbiDGFMQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 01:04:01 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B5A2274E3;
-        Wed,  6 Apr 2022 22:02:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1649307705;
-        bh=9b4Md4MYesGBOCKdPFfjC1F90x94GBzNXqnzdUTVZd8=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=GBHR1ClBeHf+LIalxer3RZT3wCCEvSnqm+KOEefnvUKNWFZg+GZ7WVdiAp4HB1fna
-         8xWixhakAklSvEiCMBoD/Dp69XCsBWoFrSF9UJ8dEDmvnv8oKuHjnTgqd387MjT9ns
-         Vm6HMaWvbB1U6QN5uRsqolBE2IohofxjCsrkBom0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [141.30.226.129] ([141.30.226.129]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N49hB-1o32G80QpV-0108Gw; Thu, 07
- Apr 2022 07:01:45 +0200
-Subject: Re: [BUG] hwmon: (adt7470) warning when removing the module
-To:     Zheyu Ma <zheyuma97@gmail.com>, jdelvare@suse.com,
-        linux@roeck-us.net
-Cc:     linux-hwmon@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <CAMhUBjmTObCwaF=enLNkRSzxqSzK6KdkHf+4cWo5fqOO7B40iw@mail.gmail.com>
-From:   Armin Wolf <W_Armin@gmx.de>
-Message-ID: <5f3a3672-6b99-7e24-9003-443c571f2dcc@gmx.de>
-Date:   Thu, 7 Apr 2022 07:01:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Thu, 7 Apr 2022 01:12:16 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92E0954AD;
+        Wed,  6 Apr 2022 22:10:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649308216; x=1680844216;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=myTDEhVwrLnCdPZFU3d6dVMJ7GMZKVQMpzunGAxXFgE=;
+  b=LVS757+haaJZimKvi+Tvbvd5scm0rb7uW4kilUCqWxy8y6flnVLfdr6f
+   FJBIhVtkvnsfeF8n7Ml2bN8JFjJuL/thBuro5EDyydoxOBLrUFDzLI/TZ
+   T13XtH+++VK6IO5t60A8Tcaf3TzlUXEcJrgLc/eYBHgTBwdYmOBadx4Yj
+   Y9mjs40p5QHV7/MzhDOKwr34RkmxspmVPBF5nOt/38cIjnKl4scxRSj+Q
+   eytXdzAuzAgy3WZJuVTkR8fSYdUSYs+LIsLjZdf1gR4p8a87zbvpoW9xh
+   jr3ongXncqSuy5cSryuMMBx/93z0GCioDfe59Vue47kkj8f1xJ0VpNItd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="260066691"
+X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
+   d="scan'208";a="260066691"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 22:10:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
+   d="scan'208";a="506008518"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 06 Apr 2022 22:10:13 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ncKPM-00055m-NU;
+        Thu, 07 Apr 2022 05:10:12 +0000
+Date:   Thu, 7 Apr 2022 13:09:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        stable@vger.kernel.org,
+        Marek =?iso-8859-1?Q?Marczykowski-G=F3recki?= 
+        <marmarek@invisiblethingslab.com>
+Subject: Re: [PATCH] xen/balloon: fix page onlining when populating new zone
+Message-ID: <202204071359.uas4tsu0-lkp@intel.com>
+References: <20220406133229.15979-1-jgross@suse.com>
 MIME-Version: 1.0
-In-Reply-To: <CAMhUBjmTObCwaF=enLNkRSzxqSzK6KdkHf+4cWo5fqOO7B40iw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Provags-ID: V03:K1:F3RHcOiHphE4QAbvUpOKlf7XOPwbz+FGcbxA5BdUpH7CWGhES6I
- eSQDih/kvSA8JjEw7KybVOZ2e2H30l59sljCvAYIKoThlHJTwzEwq4pzI7lGn7DeX5HX9DN
- IbRamr9iiLp1VVGCThlrFwGQgGz1HT3WP258BNjXnBoEfGZmUxQXvwacNMAC0/V3eLGZCEn
- E4JfpSKQd41zIsUYXnF5A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:wFm7vKDxtio=:5DAjUG1UoiliBiTTl8a/dm
- IYuGe0oEW6IahwC5l04DAXpDoOjdkAMQ4EWAj69rWGAJTdlepLziwRcGyT391pn0YbnI9GWrs
- efNOThZHFvrlQIBOLf0keKqkGjeitXW02YOj6BPltJxDJs84cwIyzPDo/0PG55SLkLq0DIfTP
- dmUmzWAGu7Cvg5GoEC0fpMKuZhYmWG8bH/lKF/8qJPbF1QZqiidbIg6QZF9o9ftp7Hl2QmRiX
- UdLS9OAmMjD/qGHdDEmQ32feptZj4vRQhQ/KaJRwaSg9qDnfLcbkjO/ayrMjWwJGxSvu1XMrF
- VbrCod5AvP2h+Y7Wjo+97zMhDwXHg+TRZ4pyGOBer+Z5vxAaBvT0bBH8PiYDRrSPMLYjRDt1u
- AijSw2TKZQ5WyC2/Se1V6mvR3D3HSvN1H6+yW+eYi0gTNIQAM9PIae8/MY6vq0qZl6wh/xYOg
- EDtpQ2DHv4MyPZNdWgoJzMtQJnHXAZTgoXrP5OwmAPgaTgivZZ3F+dZlHlv3pMN9c0xcXFVqm
- xB3VsLz6SFiF/aFP36tn/3EMaS+ffhKuIa94zCy97VOScbCFFXTrmBRKn4syMEtyvcWKOWURI
- XOU5UZbm9AE/Kc9AmraeTnKzqFV+mlKmhw7yApg+p5AedaRCb5Q9wclvPsrAksViX2anKXo0l
- RCWw1/kAZ0itv/QF4N92PzbmiRXhg56+X4PClEfw3bUXXds5gfF+NjpxYFizcVNCLWS5WF4i8
- WxBLkyzAY4JMWTevikrBLgMdkVA/aGohMDNHIvC6yboHIkBqnAZUfGn5+BWjw/VA16JBUmxOv
- CnnKWX1grmaTG0K2MvwLMPO24lNHF7Nk9eH+mWCIMiDr23uby4mzR8RoSvCULggpHdk3JuhHy
- 1kCca0oLFPt6QRMAM5GKrEI7q3IMsS99VS7Cp3qwp9+o5DKeWa/yjrEoyCSavs7MpokJsDQlm
- QeBq1jc2Og/pQUoVnqRt09FgBcMzThsryoCT4fWy/xv4guDKF6Pwot4kAyZuuekLSbmMBYYwo
- /sLFWr5rw5JqsB36Q6LdSVXOBW8IHpPrvhA4boWSiVyuxLB2SutC7pDuHLtp+5EEdjLy1NBn+
- jUFH0wCacsTHQc=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406133229.15979-1-jgross@suse.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 07.04.22 um 05:17 schrieb Zheyu Ma:
+Hi Juergen,
 
-> I found a bug when removing the adt7470 module.
->
-> The following log can reveal it:
->
-> [   18.459479] ------------[ cut here ]------------
-> [   18.459852] do not call blocking ops when !TASK_RUNNING; state=1
-> set at [<ffffffffa006052b>] adt7470_update_thread+0x7b/0x130 [adt7470]
-> [   18.460857] WARNING: CPU: 7 PID: 365 at kernel/sched/core.c:9660
-> __might_sleep+0x96/0xb0
-> [   18.461523] Modules linked in: adt7470(-)
-> [   18.464568] RIP: 0010:__might_sleep+0x96/0xb0
-> [   18.472577] Call Trace:
-> [   18.472778]  <TASK>
-> [   18.472957]  exit_signals+0x2f/0x3b0
-> [   18.473251]  do_exit+0xcd/0x18c0
-> [   18.473534]  ? __mutex_unlock_slowpath+0x1b8/0x740
-> [   18.473927]  kthread_exit+0x42/0x60
-> [   18.474212]  ? adt7470_detect+0x140/0x140 [adt7470]
-> [   18.474622]  kthread+0x272/0x2e0
-> [   18.474885]  ? adt7470_detect+0x140/0x140 [adt7470]
-> [   18.475277]  ? kthread_blkcg+0xa0/0xa0
-> [   18.475601]  ret_from_fork+0x22/0x30
-> [   18.475901]  </TASK>
->
-> Regards,
-> Zheyu Ma
+I love your patch! Yet something to improve:
 
-Please correct me if i am wrong, but i think the issue lies in adt7470_update_thread()
-leaving the kthread in TASK_INTERRUPTIBLE state when the second check for kthread_should_stop()
-returns true and causes the kthread to exit. Since kthread_exit() might sleep in exit_signals(),
-we get this warning.
-Maybe moving set_current_state(TASK_INTERRUPTIBLE) below the second check for kthread_should_stop()
-would fix the issue?
+[auto build test ERROR on xen-tip/linux-next]
+[also build test ERROR on linus/master linux/master v5.18-rc1 next-20220406]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Armin Wolf
+url:    https://github.com/intel-lab-lkp/linux/commits/Juergen-Gross/xen-balloon-fix-page-onlining-when-populating-new-zone/20220407-000935
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/xen/tip.git linux-next
+config: arm64-randconfig-r011-20220406 (https://download.01.org/0day-ci/archive/20220407/202204071359.uas4tsu0-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/b3deb59d5386ade4fb227038f202a9bdb8ade4ab
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Juergen-Gross/xen-balloon-fix-page-onlining-when-populating-new-zone/20220407-000935
+        git checkout b3deb59d5386ade4fb227038f202a9bdb8ade4ab
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/
 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/xen/balloon.c: In function 'decrease_reservation':
+>> drivers/xen/balloon.c:518:24: error: implicit declaration of function 'alloc_page_for_balloon' [-Werror=implicit-function-declaration]
+     518 |                 page = alloc_page_for_balloon(gfp);
+         |                        ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/xen/balloon.c:518:22: warning: assignment to 'struct page *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+     518 |                 page = alloc_page_for_balloon(gfp);
+         |                      ^
+>> drivers/xen/balloon.c:545:17: error: implicit declaration of function 'add_page_to_balloon' [-Werror=implicit-function-declaration]
+     545 |                 add_page_to_balloon(page);
+         |                 ^~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/alloc_page_for_balloon +518 drivers/xen/balloon.c
+
+   505	
+   506	static enum bp_state decrease_reservation(unsigned long nr_pages, gfp_t gfp)
+   507	{
+   508		enum bp_state state = BP_DONE;
+   509		unsigned long i;
+   510		struct page *page, *tmp;
+   511		int ret;
+   512		LIST_HEAD(pages);
+   513	
+   514		if (nr_pages > ARRAY_SIZE(frame_list))
+   515			nr_pages = ARRAY_SIZE(frame_list);
+   516	
+   517		for (i = 0; i < nr_pages; i++) {
+ > 518			page = alloc_page_for_balloon(gfp);
+   519			if (page == NULL) {
+   520				nr_pages = i;
+   521				state = BP_EAGAIN;
+   522				break;
+   523			}
+   524			list_add(&page->lru, &pages);
+   525		}
+   526	
+   527		/*
+   528		 * Ensure that ballooned highmem pages don't have kmaps.
+   529		 *
+   530		 * Do this before changing the p2m as kmap_flush_unused()
+   531		 * reads PTEs to obtain pages (and hence needs the original
+   532		 * p2m entry).
+   533		 */
+   534		kmap_flush_unused();
+   535	
+   536		/*
+   537		 * Setup the frame, update direct mapping, invalidate P2M,
+   538		 * and add to balloon.
+   539		 */
+   540		i = 0;
+   541		list_for_each_entry_safe(page, tmp, &pages, lru) {
+   542			frame_list[i++] = xen_page_to_gfn(page);
+   543	
+   544			list_del(&page->lru);
+ > 545			add_page_to_balloon(page);
+   546		}
+   547	
+   548		flush_tlb_all();
+   549	
+   550		ret = xenmem_reservation_decrease(nr_pages, frame_list);
+   551		BUG_ON(ret != nr_pages);
+   552	
+   553		balloon_stats.current_pages -= nr_pages;
+   554	
+   555		return state;
+   556	}
+   557	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
