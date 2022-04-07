@@ -2,96 +2,312 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:43:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4521C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344987AbiDGPpM (ORCPT
+        id S1344989AbiDGPp4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41292 "EHLO
+        Thu, 7 Apr 2022 11:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242094AbiDGPpA (ORCPT
+        with ESMTP id S229825AbiDGPpz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:45:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75675B6E5A;
-        Thu,  7 Apr 2022 08:43:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A701961E86;
-        Thu,  7 Apr 2022 15:42:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75291C385A4;
-        Thu,  7 Apr 2022 15:42:43 +0000 (UTC)
-Date:   Thu, 7 Apr 2022 11:42:41 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: runtime warning after merge of the cel-fixes tree
-Message-ID: <20220407114241.0c52b8f0@gandalf.local.home>
-In-Reply-To: <F1B98786-A0C4-4907-9B44-7D13050237F2@oracle.com>
-References: <20220407144524.2a592ed6@canb.auug.org.au>
-        <F83867B8-2737-4850-83A6-13B95973A0BB@oracle.com>
-        <20220407105446.186114c3@gandalf.local.home>
-        <20220407111318.649f908d@gandalf.local.home>
-        <F1B98786-A0C4-4907-9B44-7D13050237F2@oracle.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 7 Apr 2022 11:45:55 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F131024
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:43:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649346234; x=1680882234;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fMsSAYP+jwGG6DbwDAYSzcCYg9E40r0k7rBWB9j3SVk=;
+  b=mvDfTktR/rlvedMN1w4BAoF4b5sdxPRDZN1WIQHTPHJTcHvHdfEbh6v/
+   2qLSJ3oEHbulENN6qz+4DRlMXG355ZdIsXRlMNE1RgYPH2PdZB5ARjy1x
+   adML1wJvdfl9V5R13hoF/K/n4POY+2RygjHdh8hM5pKxSCXmPSxDXZK5o
+   03Upnw8KFxdXBGB2nMOHnU2ImxP9+0Nde5aB2qXHG4+O99rEg0JrSPdr3
+   pJt2pkpSgvgYl0ePBkkOCdgf5hErbB6yFw8PIHEEv1kc/LTmkHar4ybp8
+   Zj2RfDM63NqdLir1l/f5ylUTao5MPWT3kutzNC4m8b46vFiRTtMwUAsTQ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="241953163"
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="241953163"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 08:43:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="697839079"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 07 Apr 2022 08:43:52 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ncUIZ-0005Xv-ST;
+        Thu, 07 Apr 2022 15:43:51 +0000
+Date:   Thu, 07 Apr 2022 23:43:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Subject: [gustavoars:for-next/kspp-fam0-uapi] BUILD SUCCESS WITH WARNING
+ 862abfce15c96ae3daa696f8f125ebefbbb76ce7
+Message-ID: <624f069b./33L5YlWDRAAR1MH%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 7 Apr 2022 15:35:24 +0000
-Chuck Lever III <chuck.lever@oracle.com> wrote:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git for-next/kspp-fam0-uapi
+branch HEAD: 862abfce15c96ae3daa696f8f125ebefbbb76ce7  treewide: uapi: Replace zero-length arrays with flexible-array members
 
-> > --- a/kernel/trace/trace_events.c
-> > +++ b/kernel/trace/trace_events.c
-> > @@ -392,8 +392,9 @@ static void test_event_printk(struct trace_event_call *call)
-> > 			if (!(dereference_flags & (1ULL << arg)))
-> > 				goto next_arg;
-> > 
-> > -			/* Check for __get_sockaddr */;
-> > -			if (str_has_prefix(fmt + i, "__get_sockaddr(")) {
-> > +			/* Check for __get_sockaddr or __get_dynamic_array */;
-> > +			if (str_has_prefix(fmt + i, "__get_sockaddr(") ||
-> > +			    str_has_prefix(fmt + i, "__get_dynamic_array(")) {
-> > 				dereference_flags &= ~(1ULL << arg);
-> > 				goto next_arg;
-> > 			}  
-> 
-> That looks reasonable for present and future kernels.
+Warning reports:
 
-Actually, I found an issue with the above that will not fix it, but the fix
-to that is not that difficult (currently testing it this time).
+https://lore.kernel.org/lkml/202204071723.D6aqUADV-lkp@intel.com
 
-> 
-> We're looking for a solution that can be back-ported to stable,
-> however, because the patch Mr. Rothwell had to revert is meant
-> to address a NULL pointer deref that was introduced several years
-> ago. (Otherwise I would have just used __get_sockaddr() and put
-> my pencil down).
+Warning: (recently discovered and may have been fixed)
 
-I can make a stable version of this patch, as __get_dynamic_array() has
-been around for a long time. We could even keep the check for
-"__get_sock_addr()" even though it does not exist in older kernels, but
-this is just a string check, so that doesn't matter.
+./usr/include/linux/netfilter/x_tables.h:66:25: warning: field 'target' with variable sized type 'struct xt_entry_target' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/linux/netfilter_ipv6/ip6_tables.h:131:20: warning: field 'entry' with variable sized type 'struct ip6t_entry' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/linux/seg6_hmac.h:12:17: warning: field 'tlvhdr' with variable sized type 'struct sr6_tlv' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:1016:2: warning: field '' with variable sized type 'union ib_uverbs_flow_spec_action_handle::(anonymous at ./usr/include/rdma/ib_user_verbs.h:1016:2)' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:1029:2: warning: field '' with variable sized type 'union ib_uverbs_flow_spec_action_count::(anonymous at ./usr/include/rdma/ib_user_verbs.h:1029:2)' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:1046:2: warning: field '' with variable sized type 'union ib_uverbs_flow_spec_tunnel::(anonymous at ./usr/include/rdma/ib_user_verbs.h:1046:2)' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:1064:2: warning: field '' with variable sized type 'union ib_uverbs_flow_spec_esp::(anonymous at ./usr/include/rdma/ib_user_verbs.h:1064:2)' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:1091:2: warning: field '' with variable sized type 'union ib_uverbs_flow_spec_gre::(anonymous at ./usr/include/rdma/ib_user_verbs.h:1091:2)' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:1114:2: warning: field '' with variable sized type 'union ib_uverbs_flow_spec_mpls::(anonymous at ./usr/include/rdma/ib_user_verbs.h:1114:2)' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:436:34: warning: field 'base' with variable sized type 'struct ib_uverbs_create_cq_resp' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:644:34: warning: field 'base' with variable sized type 'struct ib_uverbs_create_qp_resp' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:740:29: warning: field 'base' with variable sized type 'struct ib_uverbs_modify_qp' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:916:2: warning: field '' with variable sized type 'union ib_uverbs_flow_spec_eth::(anonymous at ./usr/include/rdma/ib_user_verbs.h:916:2)' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:938:2: warning: field '' with variable sized type 'union ib_uverbs_flow_spec_ipv4::(anonymous at ./usr/include/rdma/ib_user_verbs.h:938:2)' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:956:2: warning: field '' with variable sized type 'union ib_uverbs_flow_spec_tcp_udp::(anonymous at ./usr/include/rdma/ib_user_verbs.h:956:2)' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:979:2: warning: field '' with variable sized type 'union ib_uverbs_flow_spec_ipv6::(anonymous at ./usr/include/rdma/ib_user_verbs.h:979:2)' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
+./usr/include/rdma/ib_user_verbs.h:992:2: warning: field '' with variable sized type 'union ib_uverbs_flow_spec_action_tag::(anonymous at ./usr/include/rdma/ib_user_verbs.h:992:2)' not at the end of a struct or class is a GNU extension [-Wgnu-variable-sized-type-not-at-end]
 
-> 
-> The simplest option is to take a brute-force approach and
-> convert the sockaddr to a presentation address with an snprintf()
-> call in the TP_fast_assign() arm of the tracepoints. Allow that
-> to be carried into -stable as needed; then in v5.19 apply a
-> clean-up that converts that mess into a proper __get_sockaddr().
-> 
-> That way, it stays my issue to address without needing to
-> co-ordinate with fixes in other areas.
+Warning ids grouped by kconfigs:
 
-This change makes the tracing system more robust, which means it's not just
-changing to solve an issue with your code. I'm happy to get this working
-and backported.
+clang_recent_errors
+|-- i386-randconfig-a004
+|   |-- usr-include-linux-netfilter-x_tables.h:warning:field-target-with-variable-sized-type-struct-xt_entry_target-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-linux-netfilter_ipv6-ip6_tables.h:warning:field-entry-with-variable-sized-type-struct-ip6t_entry-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-linux-seg6_hmac.h:warning:field-tlvhdr-with-variable-sized-type-struct-sr6_tlv-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_create_cq_resp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_create_qp_resp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_modify_qp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_count::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_handle::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-i
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_tag::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_esp::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_eth::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_gre::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_ipv4::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_ipv6::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_mpls::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_tcp_udp::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GN
+|   `-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_tunnel::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU
+|-- i386-randconfig-a006
+|   |-- usr-include-linux-netfilter-x_tables.h:warning:field-target-with-variable-sized-type-struct-xt_entry_target-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-linux-netfilter_ipv6-ip6_tables.h:warning:field-entry-with-variable-sized-type-struct-ip6t_entry-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-linux-seg6_hmac.h:warning:field-tlvhdr-with-variable-sized-type-struct-sr6_tlv-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_create_cq_resp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_create_qp_resp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_modify_qp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_count::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_handle::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-i
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_tag::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_esp::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_eth::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_gre::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_ipv4::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_ipv6::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_mpls::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_tcp_udp::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GN
+|   `-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_tunnel::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU
+|-- i386-randconfig-a013
+|   |-- usr-include-linux-netfilter-x_tables.h:warning:field-target-with-variable-sized-type-struct-xt_entry_target-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-linux-netfilter_ipv6-ip6_tables.h:warning:field-entry-with-variable-sized-type-struct-ip6t_entry-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-linux-seg6_hmac.h:warning:field-tlvhdr-with-variable-sized-type-struct-sr6_tlv-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_create_cq_resp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_create_qp_resp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_modify_qp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_count::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_handle::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-i
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_tag::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_esp::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_eth::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_gre::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_ipv4::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_ipv6::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_mpls::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_tcp_udp::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GN
+|   `-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_tunnel::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU
+|-- i386-randconfig-c001
+|   |-- usr-include-linux-netfilter-x_tables.h:warning:field-target-with-variable-sized-type-struct-xt_entry_target-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-linux-netfilter_ipv6-ip6_tables.h:warning:field-entry-with-variable-sized-type-struct-ip6t_entry-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-linux-seg6_hmac.h:warning:field-tlvhdr-with-variable-sized-type-struct-sr6_tlv-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_create_cq_resp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_create_qp_resp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_modify_qp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_count::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_handle::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-i
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_tag::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_esp::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_eth::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_gre::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_ipv4::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_ipv6::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_mpls::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+|   |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_tcp_udp::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GN
+|   `-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_tunnel::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU
+`-- x86_64-randconfig-a016
+    |-- usr-include-linux-netfilter-x_tables.h:warning:field-target-with-variable-sized-type-struct-xt_entry_target-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+    |-- usr-include-linux-netfilter_ipv6-ip6_tables.h:warning:field-entry-with-variable-sized-type-struct-ip6t_entry-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+    |-- usr-include-linux-seg6_hmac.h:warning:field-tlvhdr-with-variable-sized-type-struct-sr6_tlv-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_create_cq_resp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_create_qp_resp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-base-with-variable-sized-type-struct-ib_uverbs_modify_qp-not-at-the-end-of-a-struct-or-class-is-a-GNU-extension
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_count::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_handle::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-i
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_action_tag::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_esp::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_eth::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_gre::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-ex
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_ipv4::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_ipv6::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_mpls::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU-e
+    |-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_tcp_udp::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GN
+    `-- usr-include-rdma-ib_user_verbs.h:warning:field-with-variable-sized-type-union-ib_uverbs_flow_spec_tunnel::(anonymous-at-.-usr-include-rdma-ib_user_verbs.h)-not-at-the-end-of-a-struct-or-class-is-a-GNU
 
--- Steve
+elapsed time: 726m
+
+configs tested: 118
+configs skipped: 3
+
+gcc tested configs:
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+arc                        nsim_700_defconfig
+powerpc                        warp_defconfig
+mips                           ci20_defconfig
+arm                             rpc_defconfig
+powerpc                 linkstation_defconfig
+ia64                             allmodconfig
+m68k                        m5407c3_defconfig
+powerpc                         wii_defconfig
+arc                        vdk_hs38_defconfig
+arm                            pleb_defconfig
+powerpc64                           defconfig
+sh                        apsh4ad0a_defconfig
+powerpc                      chrp32_defconfig
+parisc64                         alldefconfig
+arm                        trizeps4_defconfig
+m68k                            q40_defconfig
+sh                           se7722_defconfig
+nios2                         3c120_defconfig
+ia64                         bigsur_defconfig
+mips                       capcella_defconfig
+sh                          rsk7201_defconfig
+sh                          lboxre2_defconfig
+ia64                             alldefconfig
+powerpc                mpc7448_hpc2_defconfig
+arm                            qcom_defconfig
+sh                        sh7785lcr_defconfig
+arc                          axs101_defconfig
+mips                         db1xxx_defconfig
+x86_64                           alldefconfig
+um                                  defconfig
+mips                          rb532_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220406
+ia64                             allyesconfig
+ia64                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+nios2                               defconfig
+arc                              allyesconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+arc                  randconfig-r043-20220406
+s390                 randconfig-r044-20220406
+riscv                randconfig-r042-20220406
+arc                  randconfig-r043-20220407
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                         rhel-8.3-kunit
+x86_64                               rhel-8.3
+
+clang tested configs:
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220407
+powerpc              randconfig-c003-20220406
+riscv                randconfig-c006-20220407
+riscv                randconfig-c006-20220406
+mips                 randconfig-c004-20220407
+mips                 randconfig-c004-20220406
+arm                  randconfig-c002-20220406
+arm                  randconfig-c002-20220407
+s390                 randconfig-c005-20220406
+arm                       mainstone_defconfig
+arm                        multi_v5_defconfig
+mips                     cu1830-neo_defconfig
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
