@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DAA5C47084
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C2FC35296
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345015AbiDGPcj (ORCPT
+        id S1345162AbiDGPeU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45232 "EHLO
+        Thu, 7 Apr 2022 11:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344798AbiDGPb4 (ORCPT
+        with ESMTP id S1344820AbiDGPcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:31:56 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB5DCC3;
-        Thu,  7 Apr 2022 08:29:55 -0700 (PDT)
+        Thu, 7 Apr 2022 11:32:00 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A16C38;
+        Thu,  7 Apr 2022 08:30:00 -0700 (PDT)
 Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:4da4:8da5:b6b4:93c])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: benjamin.gaignard)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 4825E1F467B2;
-        Thu,  7 Apr 2022 16:29:50 +0100 (BST)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 8164B1F467AD;
+        Thu,  7 Apr 2022 16:29:58 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649345390;
-        bh=bowMSxciKZ4e4jd3aI13NZ259r8hIcdS0hJZN8hF4F0=;
+        s=mail; t=1649345399;
+        bh=dxFd90PKaKs1drm560L1Ce28iJxwQPcN4TYFhRoGyhs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J1k/g/9Px4ol57ne52muVyKFjbWyFrs3sLAKmMeeBYIbdRQw0I9jbk/7pxvrZZqcq
-         +CRcxeNt1y6QdIp3nc5xb1uWGB8x9h1mzdO+oCijp2zNt8vmM4BIAOJtxIneMQYf7m
-         uIW11iXBN5xNUWaoC/pfuxy1djL83Z8qg569hk1IUKQNmc0EBvH5s9jwJgn+XsWwEZ
-         PdXqk2KoNLyKBQgCAxDka6Vz01Z9VO8O8kVM6zeWY3QdSPAN+/QHtYd/5IB0G37uBy
-         gOvVePFGbCQRmws+jrPJS41tZZOS+lfOxt6Jl9jVrKTgBbEk7ku15eRH6KRephR72v
-         SnE1B1QXTlc6Q==
+        b=T0+o1SMjyTfUJ1JxuyqfIxLwsWc5AytKLHwNWsBY0f/TfUe5TOYxp3DX3sgsLlsmw
+         ob1Fu51AMUUXE1dn8g9E/4xeF6bTIQe69h10h7cyLlht79925nE+dYU/iOCKhmR8Yj
+         /cUEaMFq81FzLqcnaOeXpaS2G2YJMD8teswr+ynWpdZGc8i8DVVPXDlYMolD6JfHDg
+         a2b80qpMeJH07ZivXjAjHz5qU8mC1modbfKTjQmuittdRA1Yz76OUH70YYe/w2Asao
+         nZ6Zlw3PXE8jZGsXwDXuKlzHjKICUVKYP5qCGv8f09XSq6PMMy/UksupEuCNSLxv9M
+         jN+Wwvc/L8J2w==
 From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
 To:     mchehab@kernel.org, hverkuil@xs4all.nl,
         ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
@@ -43,10 +43,10 @@ Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
         sebastian.fricke@collabora.com,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Subject: [PATCH v5 03/17] vivid: add dynamic array test control
-Date:   Thu,  7 Apr 2022 17:29:26 +0200
-Message-Id: <20220407152940.738159-4-benjamin.gaignard@collabora.com>
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Subject: [PATCH v5 16/17] media: uapi: Change data_bit_offset definition
+Date:   Thu,  7 Apr 2022 17:29:39 +0200
+Message-Id: <20220407152940.738159-17-benjamin.gaignard@collabora.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
 References: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
@@ -56,56 +56,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+'F.7.3.6.1 General slice segment header syntax' section of HEVC
+specification describes that a slice header always end byte aligned,
+therefore we only need to provide the data offset in byte.
 
-Add a dynamic array test control to help test support for this
-feature.
-
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 ---
- drivers/media/test-drivers/vivid/vivid-ctrls.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+version 5:
+- Fix numbers of bits computation in cedrus_h265_skip_bits() parameters
+ Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst | 4 ++--
+ drivers/staging/media/sunxi/cedrus/cedrus_h265.c          | 2 +-
+ include/media/hevc-ctrls.h                                | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/media/test-drivers/vivid/vivid-ctrls.c b/drivers/media/test-drivers/vivid/vivid-ctrls.c
-index e7516dc1227b..7267892dc18a 100644
---- a/drivers/media/test-drivers/vivid/vivid-ctrls.c
-+++ b/drivers/media/test-drivers/vivid/vivid-ctrls.c
-@@ -34,6 +34,7 @@
- #define VIVID_CID_U8_4D_ARRAY		(VIVID_CID_CUSTOM_BASE + 10)
- #define VIVID_CID_AREA			(VIVID_CID_CUSTOM_BASE + 11)
- #define VIVID_CID_RO_INTEGER		(VIVID_CID_CUSTOM_BASE + 12)
-+#define VIVID_CID_U32_DYN_ARRAY		(VIVID_CID_CUSTOM_BASE + 13)
+diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+index a3b1a063deba..48b3f533bc17 100644
+--- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
++++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+@@ -2986,8 +2986,8 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+       - ``bit_size``
+       - Size (in bits) of the current slice data.
+     * - __u32
+-      - ``data_bit_offset``
+-      - Offset (in bits) to the video data in the current slice data.
++      - ``data_byte_offset``
++      - Offset (in bytes) to the video data in the current slice data.
+     * - __u32
+       - ``num_entry_point_offsets``
+       - Specifies the number of entry point offset syntax elements in the slice header.
+diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+index d04521ffd920..4f31f2f3b745 100644
+--- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
++++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+@@ -405,7 +405,7 @@ static void cedrus_h265_setup(struct cedrus_ctx *ctx,
+ 	/* Initialize bitstream access. */
+ 	cedrus_write(dev, VE_DEC_H265_TRIGGER, VE_DEC_H265_TRIGGER_INIT_SWDEC);
  
- #define VIVID_CID_VIVID_BASE		(0x00f00000 | 0xf000)
- #define VIVID_CID_VIVID_CLASS		(0x00f00000 | 1)
-@@ -189,6 +190,19 @@ static const struct v4l2_ctrl_config vivid_ctrl_u32_array = {
- 	.dims = { 1 },
- };
+-	cedrus_h265_skip_bits(dev, slice_params->data_bit_offset);
++	cedrus_h265_skip_bits(dev, slice_params->data_byte_offset * 8);
  
-+static const struct v4l2_ctrl_config vivid_ctrl_u32_dyn_array = {
-+	.ops = &vivid_user_gen_ctrl_ops,
-+	.id = VIVID_CID_U32_DYN_ARRAY,
-+	.name = "U32 Dynamic Array",
-+	.type = V4L2_CTRL_TYPE_U32,
-+	.flags = V4L2_CTRL_FLAG_DYNAMIC_ARRAY,
-+	.def = 50,
-+	.min = 10,
-+	.max = 90,
-+	.step = 1,
-+	.dims = { 100 },
-+};
-+
- static const struct v4l2_ctrl_config vivid_ctrl_u16_matrix = {
- 	.ops = &vivid_user_gen_ctrl_ops,
- 	.id = VIVID_CID_U16_MATRIX,
-@@ -1612,6 +1626,7 @@ int vivid_create_controls(struct vivid_dev *dev, bool show_ccs_cap,
- 	dev->ro_int32 = v4l2_ctrl_new_custom(hdl_user_gen, &vivid_ctrl_ro_int32, NULL);
- 	v4l2_ctrl_new_custom(hdl_user_gen, &vivid_ctrl_area, NULL);
- 	v4l2_ctrl_new_custom(hdl_user_gen, &vivid_ctrl_u32_array, NULL);
-+	v4l2_ctrl_new_custom(hdl_user_gen, &vivid_ctrl_u32_dyn_array, NULL);
- 	v4l2_ctrl_new_custom(hdl_user_gen, &vivid_ctrl_u16_matrix, NULL);
- 	v4l2_ctrl_new_custom(hdl_user_gen, &vivid_ctrl_u8_4d_array, NULL);
+ 	/* Bitstream parameters. */
  
+diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
+index e6cdd122726c..1834072c0a43 100644
+--- a/include/media/hevc-ctrls.h
++++ b/include/media/hevc-ctrls.h
+@@ -310,7 +310,7 @@ struct v4l2_hevc_pred_weight_table {
+  * V4L2_CTRL_FLAG_DYNAMIC_ARRAY flag must be set when using it.
+  *
+  * @bit_size: size (in bits) of the current slice data
+- * @data_bit_offset: offset (in bits) to the video data in the current slice data
++ * @data_byte_offset: offset (in bytes) to the video data in the current slice data
+  * @num_entry_point_offsets: specifies the number of entry point offset syntax
+  *			     elements in the slice header.
+  * @nal_unit_type: specifies the coding type of the slice (B, P or I)
+@@ -354,7 +354,7 @@ struct v4l2_hevc_pred_weight_table {
+  */
+ struct v4l2_ctrl_hevc_slice_params {
+ 	__u32	bit_size;
+-	__u32	data_bit_offset;
++	__u32	data_byte_offset;
+ 	__u32	num_entry_point_offsets;
+ 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: NAL unit header */
+ 	__u8	nal_unit_type;
 -- 
 2.32.0
 
