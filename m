@@ -2,105 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE9C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 880F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:40:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242011AbiDGHm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
+        id S242022AbiDGHmp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:42:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241992AbiDGHmU (ORCPT
+        with ESMTP id S242001AbiDGHm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:42:20 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BA93C734;
-        Thu,  7 Apr 2022 00:40:20 -0700 (PDT)
-Received: from mail-wr1-f45.google.com ([209.85.221.45]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mr8SG-1oMzVE30Jq-00oFUf; Thu, 07 Apr 2022 09:40:18 +0200
-Received: by mail-wr1-f45.google.com with SMTP id m30so6563832wrb.1;
-        Thu, 07 Apr 2022 00:40:18 -0700 (PDT)
-X-Gm-Message-State: AOAM530BES5OuM3KjCLrK3fVK7jiE8C3m5Ieq6mc1S3IKrfevhxuFLDC
-        P9RzLTop26a8DxRsmSjqUen0UpxscFaczXcj3N8=
-X-Google-Smtp-Source: ABdhPJwQaMXR4hEgDadKcEPnGvv0CtA9y/3CdA6x65M2N0RVjV5eAMECbKu5Ycw7OXAjX0lZWRQeJETM26C6EL4Wlc8=
-X-Received: by 2002:adf:cd02:0:b0:206:ff2:236 with SMTP id w2-20020adfcd02000000b002060ff20236mr9785565wrm.192.1649317218318;
- Thu, 07 Apr 2022 00:40:18 -0700 (PDT)
+        Thu, 7 Apr 2022 03:42:26 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71C57E5AA;
+        Thu,  7 Apr 2022 00:40:24 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id A15501F85A;
+        Thu,  7 Apr 2022 07:40:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649317223; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7tdKrRRhBcgriuTuifhqw7ASOmfz1N4EF+9FSFvKM0E=;
+        b=r6Fua2gzlgwm1Hp5y5shaiTcDw1GVtrXgPXQb3p55UEWWygcN+jDp11/05+NYmm1vYKIPm
+        7lKd36aXjuqVnfrCXhRi1YOIr/f0RG7VdejwUm/BA3RtBxq+NH8LIxlM76mVrvdJ9L4eTi
+        qlUYyggclZvcVPbb3HDCBf6Y35i3cPo=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id DF5F4A3B82;
+        Thu,  7 Apr 2022 07:40:18 +0000 (UTC)
+Date:   Thu, 7 Apr 2022 09:40:22 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Zhaoyang Huang <huangzhaoyang@gmail.com>
+Cc:     Suren Baghdasaryan <surenb@google.com>,
+        "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        cgroups mailinglist <cgroups@vger.kernel.org>,
+        Ke Wang <ke.wang@unisoc.com>
+Subject: Re: [RFC PATCH] cgroup: introduce dynamic protection for memcg
+Message-ID: <Yk6VZlGnB48RqnYW@dhcp22.suse.cz>
+References: <CAGWkznFTQCm0cusVxA_55fu2WfT-w2coVHrT=JA1D_9_2728mQ@mail.gmail.com>
+ <YkqxpEW4m6iU3zMq@dhcp22.suse.cz>
+ <CAGWkznG4L3w=9bpZp8TjyWHmqFyZQk-3m4xCZ96zhHCLPawBgQ@mail.gmail.com>
+ <CAGWkznGMRohE2_at4Qh8KbwSqNmNqOAG2N1EM+7uE9wKqzRm0A@mail.gmail.com>
+ <Ykq7KUleuAg5QnNU@dhcp22.suse.cz>
+ <CAGWkznGbd5TOTHZE8uUhak3SnHqEWx_9QCJVtUFUSg9rk3xYEQ@mail.gmail.com>
+ <Ykrkx4JML4c81gBV@dhcp22.suse.cz>
+ <CAGWkznEaEavCz9GeiYuTqsox2qZK43iQKevt8njkzaHv6KiW-A@mail.gmail.com>
+ <YkwxNaJIg6ptJOYT@dhcp22.suse.cz>
+ <CAGWkznG=QH3HRSzgum0sQBkyQAahqgiWf8nXCv1qXstxrn7e8w@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220407072319.75614-1-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220407072319.75614-1-krzysztof.kozlowski@linaro.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 7 Apr 2022 09:40:02 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a07vWeYcVdzNjv4HgP_qhU9rQBkcKKmxoy8Uc9gg_0VUQ@mail.gmail.com>
-Message-ID: <CAK8P3a07vWeYcVdzNjv4HgP_qhU9rQBkcKKmxoy8Uc9gg_0VUQ@mail.gmail.com>
-Subject: Re: [PATCH v2] ARM: s3c: mark as deprecated and schedule removal
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Sylwester Nawrocki <snawrocki@kernel.org>,
-        Olof Johansson <olof@lixom.net>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Tomasz Figa <tomasz.figa@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:eRgpEhRrZSfs4zeyJyyPv+2a1fVuIoAw2xn8GeYkzsFjSiZs7+x
- IXxmeLG55NNJR+kEmFJSTmO3MsQt8xRov5DG2QesDgnWXLbGczRER66eLAzySuO1Vlm4GNV
- nwYC7qUtbrdHc6cl7TyIG8Ji9/6Axtwcm1egKPpOWiOqQAlZEDu4TxULSNL/PqEMVi0v8Bx
- ajl7tpUQwa/0RZS0DkkwA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:bb4tTj7z6XU=:ZNJrEo51Kr4AR2YqxTv+d4
- 6wPQ32L+M8GPAPvkgku4zEZofeuGPLro5F2Y0QmAlRm/BNiDj/aalL1gywUVTGYqK6vz+4MoB
- JtMjSv62JiDnFOZWjU+HpJCplAvhwaBTLQw+Cu29LfbWf4tGAFPMxuR9BMUDUNCeJOtJHyop2
- kdGBAa8DTHRxKZb04Q6G9CpdEesHzRbngU/NvDbpZ4UB+m/paD+UwzymdV6woYmkL88R9WlTL
- gWGxlHGuFoTJQNjhCDcM4V3dYu1Tyjrp0Ps4lXVpQ8JrKfNdv61J6Bn1efOGe/OGwOz1HzRhl
- kTJ4mhlzbRFrmwLZvub9g17yh8A6/wrqJJadl2LZjgkv6BaEDUqiyGPOrkI0gOecGh1k/gv90
- iJoR7CPI5TSvqLyzQszHcvmcmOqGiOBwaYbEkSScK9kx3Rm1Zky8WUOKXDPQNzw1waVhuLhwy
- zASmbNyELGNzEP+6JiMz5cl1Qb0cdpKI5Xt4ACXLYPVvbl4taF7L2TynyQmG4GYcksFzyqyKc
- iFYXVeLhF1Chnhij7V9tipCsDb50rVcoepv+oZbKlNyn2reumZztpqHARtTEG+8JKDf+uuDMA
- JgUBBxcTLZA36TSureVIq1HJ3mamyavTWepqlN4w4aC8KRl0dYj+/YIaMM0D6isfYUdTgItpJ
- jejPSyEOWGTUhz82VSl67ImI6s0hgZhKfxpU14Ugfg65c8Cd8eB0xk13cYbEQAEbptRqgjsc6
- Qr5ow4UA0rDRdZw5hSwinv3VcuITkS5JAVwqHszQTmZBiE33qW9yil2FR/I3Ws+0b6zTiUbyM
- pfIIJHPQrP9VSMy2uD1M4l4wAhnZbhYKB72pMElwmKfT4danmQ=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGWkznG=QH3HRSzgum0sQBkyQAahqgiWf8nXCv1qXstxrn7e8w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 9:23 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> The Samsung S3C24xx and S3C64xx platforms are very old designs. S3C2416
-> was introduced in 2008 and S3C6410 in 2009/2010.  They are not widely
-> available anymore - out-of-stock on FriendlyArm (one of manufacturers of
-> boards) and only few specialist stores still offer them for quite a high
-> price.
->
-> The community around these platforms was not very active, so I suspect
-> no one really uses them anymore. Maintenance takes precious time so
-> there is little sense in keeping them alive if there are no real users.
->
-> Let's mark all S3C24xx and S3C64xx platforms as deprecated and mention
-> possible removal in after 2022 for the first and 2024 for the lattere.
-> The deprecation message will be as text in Kconfig, build message (not a
-> warning though) and runtime print error.
->
-> If there are any users, they might respond and postpone the removal.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Acked-by: Heiko Stuebner <heiko@sntech.de>
-> Acked-by: Tomasz Figa <tomasz.figa@gmail.com>
+On Wed 06-04-22 10:11:19, Zhaoyang Huang wrote:
+> On Tue, Apr 5, 2022 at 8:08 PM Michal Hocko <mhocko@suse.com> wrote:
+> >
+> > On Mon 04-04-22 21:14:40, Zhaoyang Huang wrote:
+> > [...]
+> > > Please be noticed that this patch DOES protect the memcg when external
+> > > pressure is 1GB as fixed low does.
+> >
+> > This is getting more and more confusing (at least to me). Could you
+> > describe the behavior of the reclaim for the following setups/situations?
+> >
+> > a) mostly reclaiming a clean page cache - via kswapd
+> > b) same as above but the direct reclaim is necessary but very
+> >    lightweight
+> > c) direct reclaim makes fwd progress but not enough to satisfy the
+> >    allocation request (so the reclaim has to be retried)
+> > d) direct reclaim not making progress and low limit protection is
+> >    ignored.
+> >
+> > Say we have several memcgs and only some have low memory protection
+> > configured. What is the user observable state of the protected group and
+> > when and how much the protection can be updated?
+> I am not sure if I understand you right. Do you have suspicions on the
+> test result as you think protected memcg has no chance to update the
+> protection or the global reclaim should have been satisfied with the
+> reclaiming(step d is hard to reach?). Let me try to answer it under my
+> understanding, please give me feedback if you need more info. The
+> protection is updated while mem_cgroup_calculate_protection is called
+> during either kswapd or direct reclaim for each round of the priority
+> reclaiming and then the memcg's lruvec will be reached in step d.
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+This means that limits are altered even if there is memory to be
+reclaimed from other memcgs. Why? How does this line up with the
+basic property of the low limit to act as a protection from the reclaim?
 
-Should I pick it up through the fixes branch for 5.18 if there are no
-immediate objections, or do you prefer to just do it as part of your
-normal samsung patches for 5.19?
+> > I think it would be also helpful to describe the high level semantic of
+> > this feature.
 
-If you have nothing else planned for mach-s3c, I can also add it
-to the multiplatform branch that already touches the platform.
-
-        Arnd
+Please focus on this part. Without a high level semantic explained we
+will not move forward.
+-- 
+Michal Hocko
+SUSE Labs
