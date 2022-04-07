@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 551BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 19:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF94FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 19:29:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230511AbiDGTas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 15:30:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58242 "EHLO
+        id S230402AbiDGTbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 15:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbiDGTak (ORCPT
+        with ESMTP id S230457AbiDGTaq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 15:30:40 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC1429AD3D
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:28:32 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id r10so7614399eda.1
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 12:28:32 -0700 (PDT)
+        Thu, 7 Apr 2022 15:30:46 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911B629B7DC
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 12:28:39 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id bg10so12976928ejb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 12:28:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=spUrDlTPoQb5W/WISiaHwyVQFy34aqJXbfUX39rUuXo=;
-        b=Aqbx7GkMI7y3Mql3+83x97cVq81FAobXYw3EYgB12+sq7PCKL3BtUqylLZGXxHYU6B
-         5MHQdGl4PeqwrjydEQrzzK5bDrymR9qPSJqCc/nf7K9wk7hM1/nQjPEQ+374QYvNOFbW
-         zdOmlj4553NM4DOqRCJKoysqoxQge2RHM17mPBb7woEba9yx0I+pPWFddhU4YlG0lLx3
-         /2cZFmh6Cfwnbr5E9VZbWf9U+/MF1iIZfgrl8Oypej/ULmm5Y9hkpr3VIdtkIxLkdk9r
-         CDJsmf7XpYK/DHKhi0T5S/Mp0aieQffFrbhXpFalnef/6MrxtoxIvY2G9fhxa9aHi6Rl
-         JN6w==
+        bh=wnTbVdy3uat7re2/juPonFklxWNyK89ebuwaKNLBbWU=;
+        b=bHEgGFlejC0vA5GIGYJCTRgW+62fOE07VV1oIh0ULpSxNPVDs7Crq8tng1eP3bPCrr
+         MZejo/w74kPfI5tmypAEQNOw/08WlUNbWKariIeozihTmnO+8rB7XbLD5EnbQFtf5yHR
+         KXFO/D3lm1DqtgxbypU98uHO6/Kjsv/kbn1NRyRA7ffAwvxXwCN1zMqk8/YQGCH2P85b
+         b+05e+MzDSmtp6Sz2ENZyioygmJT+pOFIbDY0FpVQ2PUWHoGjDqx6MUBo1v4BE9HRNB6
+         bsqphuASgGWefs25oLSr2NM0LQuHnV/gvAMzfTEp8y6defaTuhCNtSL1wr62j0JPgqGa
+         7eXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=spUrDlTPoQb5W/WISiaHwyVQFy34aqJXbfUX39rUuXo=;
-        b=bqkxsDm1ZP5O2t6LXJQNornTlbAk0ANlI2g4vafbUJ7TAqOPc0Zp0kCWW6k8eh8wnV
-         3XjhRifQ1edsv6jtGInQ8qK/cS8yLmD1+YlrlbwL5D4plKt2IsPfuiNHaBtz/TDN1bft
-         iXP2es4xoZWdQkqZqQl7Q4clI5RhSp/bN2opBVTxTcB9zdVyHhp5pzltUcBWICi3dKju
-         9L58teSLh0BHkm8nTIg3RD5utsfn1BiGJvXAsS9Ae/yy2PJbtUbJb23G661oCLgQIZCc
-         PJlnq114FYO34r759xGrBpPoFwbeb1PhccR7Mlu4Fk67R8TIjQiNhvYvdKXKBI8ISRV5
-         A9yw==
-X-Gm-Message-State: AOAM532bIUUDAPZEGljZoK6F4vvQ66AQavMR9lZuPOrJML4fKZe040tJ
-        42z9LzIeEF6KEdxdxul+c6o=
-X-Google-Smtp-Source: ABdhPJy0WSU5QEc5x0vj8sGv8dkjsmkhDZ5gorxeDFvh5gqutGlefXOAZ95I0YAKafdhoNI0oqpDsg==
-X-Received: by 2002:a05:6402:27d1:b0:419:1b02:4a04 with SMTP id c17-20020a05640227d100b004191b024a04mr15790385ede.218.1649359703905;
-        Thu, 07 Apr 2022 12:28:23 -0700 (PDT)
+        bh=wnTbVdy3uat7re2/juPonFklxWNyK89ebuwaKNLBbWU=;
+        b=GDcI4gxK4cFgCKN0rPctmSz9TsFa2ct/eIixm3XSik0Jg9kRh/GCRqT1wAkF1+pgFS
+         lhZ5ghD8gPft1gV9POfNjPALKolw5BcvmXkCkLVS1oRDQUaBnQ46mB+fWP+HSXYlQ0pG
+         jxPFhUy0XLvg3TeCt2tGSGXkGORZy2P+BDReJ+RgiQyKIaD/Exz0f0QcZgnMPvqpaT1e
+         SQCSvB/5X7whUIWM8WoTyORXuP42Nj+wi7t+czn5e8hCC0hemGdC5YkTchlEgWoIAIYG
+         pHWt9IhyDB7PHHvtYcAC3So7srKtsRc3pknAjun0W5sX/uQsmZhDGiXlKB88H9+J4huL
+         kd4g==
+X-Gm-Message-State: AOAM531mlhIrveDQGiNVs/bWLf2ccOFcYUhT++88OgFtm84z2gklKvHO
+        DhHdmaSMW6m0aQqS8MH988Q=
+X-Google-Smtp-Source: ABdhPJw46DX5p9tNemvjd8lEzMNSiQDkXYThLCxegQUrEqGXGes/Jno7y/w1kC/1LeRIyYPy5J//UA==
+X-Received: by 2002:a17:907:7252:b0:6df:75cc:615e with SMTP id ds18-20020a170907725200b006df75cc615emr15235818ejc.683.1649359706161;
+        Thu, 07 Apr 2022 12:28:26 -0700 (PDT)
 Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id k14-20020a50e18e000000b0041b6f23f7f6sm9652798edl.22.2022.04.07.12.28.23
+        by smtp.gmail.com with ESMTPSA id k14-20020a50e18e000000b0041b6f23f7f6sm9652798edl.22.2022.04.07.12.28.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 12:28:23 -0700 (PDT)
+        Thu, 07 Apr 2022 12:28:25 -0700 (PDT)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 1/8] staging: r8188eu: remove unused macros from basic_types.h
-Date:   Thu,  7 Apr 2022 21:28:12 +0200
-Message-Id: <20220407192819.10661-2-straube.linux@gmail.com>
+Subject: [PATCH 4/8] staging: r8188eu: remove unused fields from struct eeprom_priv
+Date:   Thu,  7 Apr 2022 21:28:15 +0200
+Message-Id: <20220407192819.10661-5-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407192819.10661-1-straube.linux@gmail.com>
 References: <20220407192819.10661-1-straube.linux@gmail.com>
@@ -65,125 +65,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove unused macros from basic_types.h.
+Remove unused fields from struct eeprom_priv.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/include/basic_types.h | 73 +------------------
- 1 file changed, 1 insertion(+), 72 deletions(-)
+ drivers/staging/r8188eu/include/rtw_eeprom.h | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/include/basic_types.h b/drivers/staging/r8188eu/include/basic_types.h
-index d82b2171d584..ffb21170e898 100644
---- a/drivers/staging/r8188eu/include/basic_types.h
-+++ b/drivers/staging/r8188eu/include/basic_types.h
-@@ -4,9 +4,6 @@
- #ifndef __BASIC_TYPES_H__
- #define __BASIC_TYPES_H__
+diff --git a/drivers/staging/r8188eu/include/rtw_eeprom.h b/drivers/staging/r8188eu/include/rtw_eeprom.h
+index 3e8d3bb48903..d8d48ace356c 100644
+--- a/drivers/staging/r8188eu/include/rtw_eeprom.h
++++ b/drivers/staging/r8188eu/include/rtw_eeprom.h
+@@ -11,10 +11,7 @@
  
--#define SUCCESS	0
--#define FAIL	(-1)
--
- #include <linux/types.h>
- #define NDIS_OID uint
- 
-@@ -14,9 +11,6 @@ typedef void (*proc_t)(void *);
- 
- #define FIELD_OFFSET(s, field)	((ssize_t)&((s *)(0))->field)
- 
--#define MEM_ALIGNMENT_OFFSET	(sizeof(size_t))
--#define MEM_ALIGNMENT_PADDING	(sizeof(size_t) - 1)
--
- /* port from fw */
- /*  TODO: Macros Below are Sync from SD7-Driver. It is necessary
-  * to check correctness */
-@@ -31,86 +25,21 @@ typedef void (*proc_t)(void *);
- /* Convert little data endian to host ordering */
- #define EF1BYTE(_val)		\
- 	((u8)(_val))
--#define EF2BYTE(_val)		\
--	(le16_to_cpu(_val))
--#define EF4BYTE(_val)		\
--	(le32_to_cpu(_val))
--
--/* Read data from memory */
--#define READEF1BYTE(_ptr)	\
--	EF1BYTE(*((u8 *)(_ptr)))
--/* Read le16 data from memory and convert to host ordering */
--#define READEF2BYTE(_ptr)	\
--	EF2BYTE(*(_ptr))
--#define READEF4BYTE(_ptr)	\
--	EF4BYTE(*(_ptr))
- 
--/* Write data to memory */
--#define WRITEEF1BYTE(_ptr, _val)			\
--	do {						\
--		(*((u8 *)(_ptr))) = EF1BYTE(_val)	\
--	} while (0)
--/* Write le data to memory in host ordering */
--#define WRITEEF2BYTE(_ptr, _val)			\
--	do {						\
--		(*((u16 *)(_ptr))) = EF2BYTE(_val)	\
--	} while (0)
--
--#define WRITEEF4BYTE(_ptr, _val)			\
--	do {						\
--		(*((u32 *)(_ptr))) = EF2BYTE(_val)	\
--	} while (0)
--
--/* Create a bit mask
-- * Examples:
-- * BIT_LEN_MASK_32(0) => 0x00000000
-- * BIT_LEN_MASK_32(1) => 0x00000001
-- * BIT_LEN_MASK_32(2) => 0x00000003
-- * BIT_LEN_MASK_32(32) => 0xFFFFFFFF
-- */
--#define BIT_LEN_MASK_32(__bitlen)	 \
--	(0xFFFFFFFF >> (32 - (__bitlen)))
--#define BIT_LEN_MASK_16(__bitlen)	 \
--	(0xFFFF >> (16 - (__bitlen)))
-+/* Create a bit mask  */
- #define BIT_LEN_MASK_8(__bitlen) \
- 	(0xFF >> (8 - (__bitlen)))
- 
--/* Create an offset bit mask
-- * Examples:
-- * BIT_OFFSET_LEN_MASK_32(0, 2) => 0x00000003
-- * BIT_OFFSET_LEN_MASK_32(16, 2) => 0x00030000
-- */
--#define BIT_OFFSET_LEN_MASK_32(__bitoffset, __bitlen) \
--	(BIT_LEN_MASK_32(__bitlen) << (__bitoffset))
--#define BIT_OFFSET_LEN_MASK_16(__bitoffset, __bitlen) \
--	(BIT_LEN_MASK_16(__bitlen) << (__bitoffset))
--#define BIT_OFFSET_LEN_MASK_8(__bitoffset, __bitlen) \
--	(BIT_LEN_MASK_8(__bitlen) << (__bitoffset))
--
- /*Description:
-  * Return 4-byte value in host byte ordering from
-  * 4-byte pointer in little-endian system.
-  */
--#define LE_P4BYTE_TO_HOST_4BYTE(__pstart) \
--	(EF4BYTE(*((__le32 *)(__pstart))))
--#define LE_P2BYTE_TO_HOST_2BYTE(__pstart) \
--	(EF2BYTE(*((__le16 *)(__pstart))))
- #define LE_P1BYTE_TO_HOST_1BYTE(__pstart) \
- 	(EF1BYTE(*((u8 *)(__pstart))))
- 
- /*Description:
- Translate subfield (continuous bits in little-endian) of 4-byte
- value to host byte ordering.*/
--#define LE_BITS_TO_4BYTE(__pstart, __bitoffset, __bitlen) \
--	( \
--		(LE_P4BYTE_TO_HOST_4BYTE(__pstart) >> (__bitoffset))  & \
--		BIT_LEN_MASK_32(__bitlen) \
--	)
--#define LE_BITS_TO_2BYTE(__pstart, __bitoffset, __bitlen) \
--	( \
--		(LE_P2BYTE_TO_HOST_2BYTE(__pstart) >> (__bitoffset)) & \
--		BIT_LEN_MASK_16(__bitlen) \
--	)
- #define LE_BITS_TO_1BYTE(__pstart, __bitoffset, __bitlen) \
- 	( \
- 		(LE_P1BYTE_TO_HOST_1BYTE(__pstart) >> (__bitoffset)) & \
+ struct eeprom_priv {
+ 	u8		bautoload_fail_flag;
+-	u8		bloadfile_fail_flag;
+-	u8		bloadmac_fail_flag;
+ 	u8		mac_addr[ETH_ALEN] __aligned(2); /* PermanentAddress */
+-	u16		channel_plan;
+ 	u8		EepromOrEfuse;
+ 	u8		efuse_eeprom_data[HWSET_MAX_SIZE_512] __aligned(4);
+ };
 -- 
 2.35.1
 
