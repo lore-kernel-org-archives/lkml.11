@@ -2,109 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0803C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 698A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:16:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241573AbiDGHSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51154 "EHLO
+        id S241654AbiDGHSW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:18:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241622AbiDGHRX (ORCPT
+        with ESMTP id S241686AbiDGHR2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:17:23 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E851480F4;
-        Thu,  7 Apr 2022 00:15:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649315716; x=1680851716;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JTDMVVeRAftI6o86ZjLgMdKfDtLtM/8TSv3TYrBRguw=;
-  b=ukR3b7DYTqPAMZBrMoUhyTycA9Sw6aEzq9OJ9vrxndBtvhuj/HwMWyQt
-   Aj+6MzTTpRBOORzpAlw2TyKbQYU6QAn7YtV4lKwBLVWm9rn68yjIuPfvh
-   mPHrBLEKvdi4wa2Y9uP5shLbZhhZiQBaaL9tTRQ+FbQP8horu07lFXrmi
-   StgeFTLkSSoUGLPCK+mA9wOBxsoCtFVih95/4qZkd1MpDV1kEfhnZTrPK
-   Ft0MX/+jYn1aD7OnMy6pvK5VQJYtsQktG1cM5XC8UfyFI4qrTIu4Hq97G
-   zZLlIzZ+4irGg+ME7U9ky7tELgcIISqloPo8uY4jhUTr94+/0QVnaGaGR
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,241,1643698800"; 
-   d="scan'208";a="159679140"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Apr 2022 00:15:15 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 7 Apr 2022 00:15:15 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 7 Apr 2022 00:15:12 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
-        <linux@armlinux.org.uk>, <sre@kernel.org>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 05/10] power: reset: at91-reset: document structures and enums
-Date:   Thu, 7 Apr 2022 10:17:03 +0300
-Message-ID: <20220407071708.3848812-6-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220407071708.3848812-1-claudiu.beznea@microchip.com>
-References: <20220407071708.3848812-1-claudiu.beznea@microchip.com>
+        Thu, 7 Apr 2022 03:17:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941C51107ED;
+        Thu,  7 Apr 2022 00:15:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30D1E61DCE;
+        Thu,  7 Apr 2022 07:15:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7FB9C385A0;
+        Thu,  7 Apr 2022 07:15:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649315725;
+        bh=9/pSQxZKSCCWBCzwEN5pmuogYawG56/M6P8na1rHLYw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mIw6a9MKBB0tYMm6O1XK0svoSqZWLx5wNXDG/G4yLfdr4qVuaALQXCj1++qvmEcez
+         KGzd9NPQo7eynh+CNiyOIthPUfrI0MLRvcfxE1v4sUQNFU3FUHKIED1ERVPo+LlvQr
+         XsMI+ad/xrevLWPXNwMfgFbHo1yf6kr0x03u3sfY=
+Date:   Thu, 7 Apr 2022 09:15:22 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>, usama.anjum@collabora.com,
+        Collabora Kernel ML <kernel@collabora.com>,
+        groeck@chromium.org, bleung@chromium.org, dtor@chromium.org,
+        gwendal@chromium.org, vbendeb@chromium.org, andy@infradead.org,
+        Ayman Bagabas <ayman.bagabas@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        =?utf-8?B?Qmxhxb4=?= Hrastnik <blaz@mxxn.io>,
+        Darren Hart <dvhart@infradead.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jeremy Soller <jeremy@system76.com>,
+        Mattias Jacobsson <2pi@mok.nu>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Rajat Jain <rajatja@google.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Enric Balletbo i Serra <eballetbo@gmail.com>
+Subject: Re: [PATCH v5] platform: x86: Add ChromeOS ACPI device driver
+Message-ID: <Yk6Pip7f3iUsIHTr@kroah.com>
+References: <Yk6ODSxQTiGOrTj/@debian-BULLSEYE-live-builder-AMD64>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yk6ODSxQTiGOrTj/@debian-BULLSEYE-live-builder-AMD64>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document structures and enums.
+On Thu, Apr 07, 2022 at 12:09:01PM +0500, Enric Balletbo i Serra wrote:
+> --- /dev/null
+> +++ b/drivers/platform/x86/chromeos_acpi.c
+> @@ -0,0 +1,515 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * ChromeOS specific ACPI extensions
+> + *
+> + * Copyright 2011 Google, Inc.
+> + * Copyright 2020 Google LLC
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/power/reset/at91-reset.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
-
-diff --git a/drivers/power/reset/at91-reset.c b/drivers/power/reset/at91-reset.c
-index 64def79d557a..e62798750b6b 100644
---- a/drivers/power/reset/at91-reset.c
-+++ b/drivers/power/reset/at91-reset.c
-@@ -39,6 +39,17 @@
- #define AT91_RSTC_URSTIEN	BIT(4)		/* User Reset Interrupt Enable */
- #define AT91_RSTC_ERSTL		GENMASK(11, 8)	/* External Reset Length */
- 
-+/**
-+ * enum reset_type - reset types
-+ * @RESET_TYPE_GENERAL:		first power-up reset
-+ * @RESET_TYPE_WAKEUP:		return from backup mode
-+ * @RESET_TYPE_WATCHDOG:	watchdog fault
-+ * @RESET_TYPE_SOFTWARE:	processor reset required by software
-+ * @RESET_TYPE_USER:		NRST pin detected low
-+ * @RESET_TYPE_CPU_FAIL:	CPU clock failure detection
-+ * @RESET_TYPE_XTAL_FAIL:	32KHz crystal failure dectection fault
-+ * @RESET_TYPE_ULP2:		ULP2 reset
-+ */
- enum reset_type {
- 	RESET_TYPE_GENERAL	= 0,
- 	RESET_TYPE_WAKEUP	= 1,
-@@ -50,6 +61,15 @@ enum reset_type {
- 	RESET_TYPE_ULP2		= 8,
- };
- 
-+/**
-+ * struct at91_reset - AT91 reset specific data structure
-+ * @rstc_base:		base address for system reset
-+ * @ramc_base:		array with base addresses of RAM controllers
-+ * @sclk:		slow clock
-+ * @nb:			reset notifier block
-+ * @args:		SoC specific system reset arguments
-+ * @ramc_lpr:		SDRAM Controller Low Power Register
-+ */
- struct at91_reset {
- 	void __iomem *rstc_base;
- 	void __iomem *ramc_base[2];
--- 
-2.32.0
+You haven't touched this file in 2 years?
 
