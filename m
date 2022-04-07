@@ -2,88 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C992C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A92B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 07:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241948AbiDGHj4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 03:39:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60392 "EHLO
+        id S241993AbiDGHmU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 03:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241935AbiDGHjn (ORCPT
+        with ESMTP id S231745AbiDGHmS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 03:39:43 -0400
-Received: from out203-205-221-235.mail.qq.com (out203-205-221-235.mail.qq.com [203.205.221.235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF81853E2E
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:37:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649317056;
-        bh=qIYpRIIGIZS6wznmSd1MMDOKoS66e0FCfSniC9O6YO8=;
-        h=From:To:Cc:Subject:Date;
-        b=k9/DIsZFXTUX3VT2nhO6wT5hRErr6YLuQJVBWohdxPNGuNxx9myjxQ3nhqw2vcyY/
-         t+1Fc4uF4IHuAhTHNgYn+60n4E+qSqDUp6FIBfna6Cmpvx1OuXYulqNi4fQd/B/G21
-         +mkPcenZAoej0BPuYt9bj8iBDgixaCMD4kp/0dYU=
-Received: from localhost.localdomain ([43.227.138.48])
-        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
-        id 95F9B854; Thu, 07 Apr 2022 15:37:31 +0800
-X-QQ-mid: xmsmtpt1649317051tejii460c
-Message-ID: <tencent_27FF59903EE6AB5C0D0E6D0A8E7059A59007@qq.com>
-X-QQ-XMAILINFO: MmpliBmRb3iC6dVTi0w/K2/r2cPQgQ2DFLTrf+BMVpkat8EXSvi5QcmiBXXBxE
-         +EbsXIPZxYM48llGGFI7YiycvP3J39n27EiKyTjwnpV0pmzpFuh1Ydrrk7FRzwPiIyG+WGId3y1v
-         +87S3ViPl0ujHBcpvBgRUvvqphw1l5z93+AD1g81EF5iAxX1i97wWBSAqoeiruyhdMQQBGrs7h9f
-         K1ofMxYadZpJ+yyepf8yiqd+vT41kYRqK6fjkjwjUq90vYAB6/qDJYZ2yZ9mhAsIj8K8hZcCp95l
-         HKVO/nulyPJYtvBmMAYWZ5f64BfnD+fCJGUAW/uYtU86LIdUGlgOvSeBRxWsiVrhLz1z/JETwykH
-         SCoqiVKCHEjSWCW3mv/WlLZU3rPD43SlkK5r79/wZcF1yIDUyMKirLli+uVKUutIYWe5ZAWAEUjI
-         LtLZWAIOjM2pqHd9rhaycpgC6vdYWIcFXNJPXmwXW21302b6FTwpngn5DbglMKBWEs0/PDRtxoqH
-         QbkEpZFJsquywnE4rbPsC0FdPuzHnvTZEtwSmMet8fMhcyt4W4pAvxdnV95gGSee1R4RDekvmDqn
-         dhf7rSpmJHoCyEdt76YPM4XqcMIpF4mZMOEdhI2aiGWnBTF7QHo3KJZSkcuKwBp8wFs+ro2PLR2a
-         3+0dApzm9QX4pd4WjkJl6Ye7A6NJR+tTm7a1ZdCjZ14NF6+HP4B44RSsJzghT9PjN26BYxvOtb52
-         VP8zlP6DdjAi0ucYtFI6TNEicLH946xf7zCQMzPpe+9Rx3k0n9KnLnabAChR7kiqpvRxia5su1TH
-         b8ht0JAGUuC1tc7v9VguXoxh7ddmVLimy480C0N2E0ZQqA7DPJWI21/9mujBXBYgaSoRggn6b0lu
-         fmuhLGKK0VVnhT6AzGcS0CaAR45EbK+9XOw7HwXYB/s23Nw8i863ALaYwHPpcQkIE/EFrYLWXZOb
-         BwUgadjM5L6e05Is013V/KXlRIJxf9
-From:   xkernel.wang@foxmail.com
-To:     abel.vesa@nxp.com, mturquette@baylibre.com, sboyd@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] clk: imx: scu: fix a potential memory leak in __imx_clk_gpr_scu()
-Date:   Thu,  7 Apr 2022 15:37:22 +0800
-X-OQ-MSGID: <20220407073722.13934-1-xkernel.wang@foxmail.com>
+        Thu, 7 Apr 2022 03:42:18 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3036437A10
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 00:40:17 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KYtXk6BHGzgYVj;
+        Thu,  7 Apr 2022 15:38:30 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 7 Apr 2022 15:40:15 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 7 Apr 2022 15:40:14 +0800
+Subject: Re: [PATCH RESEND v5 1/5] iommu: Refactor iommu_group_store_type()
+To:     John Garry <john.garry@huawei.com>, <joro@8bytes.org>,
+        <will@kernel.org>, <robin.murphy@arm.com>
+CC:     <mst@redhat.com>, <jasowang@redhat.com>,
+        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <chenxiang66@hisilicon.com>, <jean-philippe@linaro.org>,
+        <linuxarm@huawei.com>
+References: <1649071634-188535-1-git-send-email-john.garry@huawei.com>
+ <1649071634-188535-2-git-send-email-john.garry@huawei.com>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <e1d18bb1-db35-fe36-0212-7d6d83112e31@huawei.com>
+Date:   Thu, 7 Apr 2022 15:40:14 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1649071634-188535-2-git-send-email-john.garry@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
 
-In __imx_clk_gpr_scu(), if imx_scu_clk_is_valid(rsrc_id) fails, then
-`clk_node` which is allocated by kzalloc() is not properly released,
-which may lead to memory leak.
-So this patch added kfree(clk_node) on the above error path before
-return ERR_PTR(-EINVAL).
+On 2022/4/4 19:27, John Garry wrote:
+> Function iommu_group_store_type() supports changing the default domain
+> of an IOMMU group.
+> 
+> Many conditions need to be satisfied and steps taken for this action to be
+> successful.
+> 
+> Satisfying these conditions and steps will be required for setting other
+> IOMMU group attributes, so factor into a common part and a part specific
+> to update the IOMMU group attribute.
+> 
+> No functional change intended.
+> 
+> Some code comments are tidied up also.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>  drivers/iommu/iommu.c | 96 ++++++++++++++++++++++++++++---------------
+>  1 file changed, 62 insertions(+), 34 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index f2c45b85b9fc..0dd766030baf 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -3000,21 +3000,57 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+>  	return ret;
+>  }
+>  
+> +enum iommu_group_op {
+> +	CHANGE_GROUP_TYPE,
+> +};
+> +
+> +static int __iommu_group_store_type(const char *buf, struct iommu_group *group,
+> +				    struct device *dev)
+> +{
+> +	int type;
+> +
+> +	if (sysfs_streq(buf, "identity"))
+> +		type = IOMMU_DOMAIN_IDENTITY;
+> +	else if (sysfs_streq(buf, "DMA"))
+> +		type = IOMMU_DOMAIN_DMA;
+> +	else if (sysfs_streq(buf, "DMA-FQ"))
+> +		type = IOMMU_DOMAIN_DMA_FQ;
+> +	else if (sysfs_streq(buf, "auto"))
+> +		type = 0;
+> +	else
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * Check if the only device in the group still has a driver bound or
+> +	 * we're transistioning from DMA -> DMA-FQ
+> +	 */
+> +	if (device_is_bound(dev) && !(type == IOMMU_DOMAIN_DMA_FQ &&
+> +	    group->default_domain->type == IOMMU_DOMAIN_DMA)) {
+> +		pr_err_ratelimited("Device is still bound to driver\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	return iommu_change_dev_def_domain(group, dev, type);
+> +}
+> +
+>  /*
+>   * Changing the default domain through sysfs requires the users to unbind the
+>   * drivers from the devices in the iommu group, except for a DMA -> DMA-FQ
+> - * transition. Return failure if this isn't met.
+> + * transition. Changing or any other IOMMU group attribute still requires the
+> + * user to unbind the drivers from the devices in the iommu group. Return
+> + * failure if these conditions are not met.
+>   *
+>   * We need to consider the race between this and the device release path.
+>   * device_lock(dev) is used here to guarantee that the device release path
+>   * will not be entered at the same time.
+>   */
+> -static ssize_t iommu_group_store_type(struct iommu_group *group,
+> -				      const char *buf, size_t count)
+> +static ssize_t iommu_group_store_common(struct iommu_group *group,
+> +					enum iommu_group_op op,
+> +					const char *buf, size_t count)
+>  {
+>  	struct group_device *grp_dev;
+>  	struct device *dev;
+> -	int ret, req_type;
+> +	int ret;
+>  
+>  	if (!capable(CAP_SYS_ADMIN) || !capable(CAP_SYS_RAWIO))
+>  		return -EACCES;
+> @@ -3022,27 +3058,16 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
+>  	if (WARN_ON(!group))
+>  		return -EINVAL;
+>  
+> -	if (sysfs_streq(buf, "identity"))
+> -		req_type = IOMMU_DOMAIN_IDENTITY;
+> -	else if (sysfs_streq(buf, "DMA"))
+> -		req_type = IOMMU_DOMAIN_DMA;
+> -	else if (sysfs_streq(buf, "DMA-FQ"))
+> -		req_type = IOMMU_DOMAIN_DMA_FQ;
+> -	else if (sysfs_streq(buf, "auto"))
+> -		req_type = 0;
+> -	else
+> -		return -EINVAL;
+> -
+>  	/*
+>  	 * Lock/Unlock the group mutex here before device lock to
+> -	 * 1. Make sure that the iommu group has only one device (this is a
+> +	 * 1. Make sure that the IOMMU group has only one device (this is a
+>  	 *    prerequisite for step 2)
+>  	 * 2. Get struct *dev which is needed to lock device
+>  	 */
+>  	mutex_lock(&group->mutex);
+>  	if (iommu_group_device_count(group) != 1) {
+>  		mutex_unlock(&group->mutex);
+> -		pr_err_ratelimited("Cannot change default domain: Group has more than one device\n");
+> +		pr_err_ratelimited("Cannot change IOMMU group default domain attribute: Group has more than one device\n");
+>  		return -EINVAL;
+>  	}
+>  
+> @@ -3054,16 +3079,16 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
+>  	/*
+>  	 * Don't hold the group mutex because taking group mutex first and then
+>  	 * the device lock could potentially cause a deadlock as below. Assume
+> -	 * two threads T1 and T2. T1 is trying to change default domain of an
+> -	 * iommu group and T2 is trying to hot unplug a device or release [1] VF
+> -	 * of a PCIe device which is in the same iommu group. T1 takes group
+> -	 * mutex and before it could take device lock assume T2 has taken device
+> -	 * lock and is yet to take group mutex. Now, both the threads will be
+> -	 * waiting for the other thread to release lock. Below, lock order was
+> -	 * suggested.
+> +	 * two threads, T1 and T2. T1 is trying to change default domain
+> +	 * attribute of an IOMMU group and T2 is trying to hot unplug a device
+> +	 * or release [1] VF of a PCIe device which is in the same IOMMU group.
+> +	 * T1 takes the group mutex and before it could take device lock T2 may
+> +	 * have taken device lock and is yet to take group mutex. Now, both the
+> +	 * threads will be waiting for the other thread to release lock. Below,
+> +	 * lock order was suggested.
+>  	 * device_lock(dev);
+>  	 *	mutex_lock(&group->mutex);
+> -	 *		iommu_change_dev_def_domain();
+> +	 *		cb->iommu_change_dev_def_domain(); [example cb]
+>  	 *	mutex_unlock(&group->mutex);
+>  	 * device_unlock(dev);
+>  	 *
+> @@ -3077,21 +3102,24 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
+>  	 */
+>  	mutex_unlock(&group->mutex);
+>  
+> -	/* Check if the device in the group still has a driver bound to it */
+>  	device_lock(dev);
+> -	if (device_is_bound(dev) && !(req_type == IOMMU_DOMAIN_DMA_FQ &&
+> -	    group->default_domain->type == IOMMU_DOMAIN_DMA)) {
+> -		pr_err_ratelimited("Device is still bound to driver\n");
+> -		ret = -EBUSY;
+> -		goto out;
+> +	switch (op) {
+> +	case CHANGE_GROUP_TYPE:
+> +		ret = __iommu_group_store_type(buf, group, dev);
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+>  	}
+> -
+> -	ret = iommu_change_dev_def_domain(group, dev, req_type);
+>  	ret = ret ?: count;
+>  
+> -out:
+>  	device_unlock(dev);
+>  	put_device(dev);
+>  
+>  	return ret;
+>  }
+> +
+> +static ssize_t iommu_group_store_type(struct iommu_group *group,
+> +				      const char *buf, size_t count)
+> +{
+> +	return iommu_group_store_common(group, CHANGE_GROUP_TYPE, buf, count);
+> +}
+> 
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
- drivers/clk/imx/clk-scu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/clk/imx/clk-scu.c b/drivers/clk/imx/clk-scu.c
-index 083da31..ed3c01d 100644
---- a/drivers/clk/imx/clk-scu.c
-+++ b/drivers/clk/imx/clk-scu.c
-@@ -837,8 +837,10 @@ struct clk_hw *__imx_clk_gpr_scu(const char *name, const char * const *parent_na
- 	if (!clk_node)
- 		return ERR_PTR(-ENOMEM);
- 
--	if (!imx_scu_clk_is_valid(rsrc_id))
-+	if (!imx_scu_clk_is_valid(rsrc_id)) {
-+		kfree(clk_node);
- 		return ERR_PTR(-EINVAL);
-+	}
- 
- 	clk = kzalloc(sizeof(*clk), GFP_KERNEL);
- 	if (!clk) {
 -- 
+Regards,
+  Zhen Lei
