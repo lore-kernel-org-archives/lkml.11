@@ -2,138 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFF0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04609C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345178AbiDGPur (ORCPT
+        id S1345194AbiDGPuu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
+        Thu, 7 Apr 2022 11:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245209AbiDGPuh (ORCPT
+        with ESMTP id S1345073AbiDGPui (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 11:50:37 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E989C55B4;
-        Thu,  7 Apr 2022 08:48:34 -0700 (PDT)
-Date:   Thu, 07 Apr 2022 15:48:31 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649346513;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mSV1Y0A1YFqBZyGZ5+k6dqhl1M9bVriVuqUTvC59O9s=;
-        b=HUBqG69MDoi41D91M1gJ5qTtImY+x37B2lO1PGinJW4hinxdcw0un00ARcUVJJpKUMqWjK
-        pHjlm3xC0p2sgskZeK8MyisRh96/7meRRZdFdayS8f/FUlO1tRdBOkmi9Ht4Jtte/xosDu
-        zy+esjLDuHxtIqtNUw3uzVOdpEZOo0UYDf5q7mhIT/jn6K70nb3jSYNDsRFaUjs74i6Gtq
-        eNSUGtQ3mzc35J2v9O1aqDfh8kBNQuaws3XBDh9TdQtJuY98RIgXoAmhlKOrtewNzIhCB0
-        iCntTHL1SbIZTH6vIsWjl+NiW/IrXS/bAZ8jadzrmK5iUbk7M3Y3+RiMJzDdag==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649346513;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mSV1Y0A1YFqBZyGZ5+k6dqhl1M9bVriVuqUTvC59O9s=;
-        b=lbWlV1rpOXTdno6LIjCxmr5P8DUda65y6kKUoPUacA7OM/5FK+EW1NTz84++kjxvAji9vb
-        KXvg1GQzSsBDhrBA==
-From:   "tip-bot2 for Mike Travis" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/platform] x86/platform/uv: Update NMI Handler for UV5
-Cc:     Mike Travis <mike.travis@hpe.com>, Steve Wahl <steve.wahl@hpe.com>,
-        Borislav Petkov <bp@suse.de>,
-        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220406195149.228164-2-steve.wahl@hpe.com>
-References: <20220406195149.228164-2-steve.wahl@hpe.com>
+        Thu, 7 Apr 2022 11:50:38 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E801C31FE
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 08:48:34 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id j20-20020a17090ae61400b001ca9553d073so6622025pjy.5
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 08:48:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rVDzWasu4LFPtiTdtuT0fQJci+geW8prRAJMs0MvNJs=;
+        b=CqLAkxFmqY7uZa3FljfJImGtbKmA+thnG6EVDsvnMdd2RYi8gErG4Qr5O6uGEInw/C
+         22K2/oBO3Y8kbhbNZH55C3ksossqFrGbMGU7thIA6QdIXEP1gHjHR3FF3LK6xegRLA6l
+         2Dljb87Kou54TIsHSUa44eMkR2KVfbLq42BQoJWNPB8F0vXMbXV8E9uOxZKrPCCqqbV+
+         fgize+a4113hCczqwowcoyC27WFFddosYa7TxdXame3rdGVizCxPWZxdpEodFGhhKtTm
+         Vv2c3Tl9Y85xBNbFSxwSDx3nxkSGcXPrZDNUgxGj/0kb89HKbUcf6ma7ZzuKARbB+Lv9
+         e+vQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rVDzWasu4LFPtiTdtuT0fQJci+geW8prRAJMs0MvNJs=;
+        b=QTURmVgkjtoUdTx4i3bP+MceeRgWzFRyQEjtWrwelrKJalNG9Wbt+OFC7hpyhqlDM/
+         iDH3rS8CsJQ1LpxCKEkLXni2bEEFFeNIBb4B/w8mLPImsRCX1AoO+K5s26ACuXnKxBSp
+         l6mAMHlrp6DCgLSpTe1Txn+1knHn+46w74lXMfN4Lh3j+c65BzK0BxW/XwKLDffvM4eh
+         SmglOp82+d+csKN/f4PW7F928St5wEa5G47EHywae5iFadaedGB/tjvYdusVUhLzsUf6
+         xmL8Ct+5SidENXkCj5uOvYD84eHbJcb170j3xVp6evHgnhcHF76qFn0NnifOH7FcjCAg
+         MKMQ==
+X-Gm-Message-State: AOAM531otTXIYV2AAuF949yKP2NfWnQyObT0OFP3k/su3KSNzk2adXR/
+        YQTxSJuart5fxVDlRE0zJGWvZA==
+X-Google-Smtp-Source: ABdhPJwAqIaxlU8mEcMM7hZI51g7vTHBP9V64lhp+ZhQiHP0SJO2cTwqtlWnMIj6dTDayO+qdSus4w==
+X-Received: by 2002:a17:90a:380f:b0:1bd:4aa6:651 with SMTP id w15-20020a17090a380f00b001bd4aa60651mr16533861pjb.83.1649346514409;
+        Thu, 07 Apr 2022 08:48:34 -0700 (PDT)
+Received: from x1.hsd1.or.comcast.net ([2601:1c2:1001:7090:172d:8708:69ef:da3a])
+        by smtp.gmail.com with ESMTPSA id f6-20020a056a00238600b004fae79a3cbfsm24695938pfc.100.2022.04.07.08.48.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 08:48:33 -0700 (PDT)
+From:   Drew Fustini <dfustini@baylibre.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Dave Gerlach <d-gerlach@ti.com>, Suman Anna <s-anna@ti.com>,
+        Tony Lindgren <tony@atomide.com>, Nishanth Menon <nm@ti.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Drew Fustini <dfustini@baylibre.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3] dt-bindings: soc: ti: wkup_m3_ipc: convert bindings to json-schema
+Date:   Thu,  7 Apr 2022 08:46:20 -0700
+Message-Id: <20220407154618.2297171-1-dfustini@baylibre.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Message-ID: <164934651199.389.15893962455606491477.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/platform branch of tip:
+Convert the wkup_m3_ipc bindings documentation to json-schema.
 
-Commit-ID:     d812f7c475c6a4dcfff02a85fbfd7a9c87e6a094
-Gitweb:        https://git.kernel.org/tip/d812f7c475c6a4dcfff02a85fbfd7a9c87e6a094
-Author:        Mike Travis <mike.travis@hpe.com>
-AuthorDate:    Wed, 06 Apr 2022 14:51:47 -05:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Thu, 07 Apr 2022 17:23:20 +02:00
-
-x86/platform/uv: Update NMI Handler for UV5
-
-Update NMI handler for UV5 hardware. A platform register changed, and
-UV5 only uses one of the two NMI methods used on previous hardware.
-
-Signed-off-by: Mike Travis <mike.travis@hpe.com>
-Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Dimitri Sivanich <dimitri.sivanich@hpe.com>
-Acked-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/20220406195149.228164-2-steve.wahl@hpe.com
+Link: https://lore.kernel.org/linux-arm-kernel/20220221125522.l3tntb6i7yjxp6vb@flattered/
+Suggested-by: Nishanth Menon <nm@ti.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Drew Fustini <dfustini@baylibre.com>
 ---
- arch/x86/platform/uv/uv_nmi.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ .../bindings/soc/ti/wkup-m3-ipc.yaml          | 81 +++++++++++++++++++
+ .../bindings/soc/ti/wkup_m3_ipc.txt           | 57 -------------
+ 2 files changed, 81 insertions(+), 57 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt
 
-diff --git a/arch/x86/platform/uv/uv_nmi.c b/arch/x86/platform/uv/uv_nmi.c
-index 1e9ff28..61ec3be 100644
---- a/arch/x86/platform/uv/uv_nmi.c
-+++ b/arch/x86/platform/uv/uv_nmi.c
-@@ -244,8 +244,10 @@ static inline bool uv_nmi_action_is(const char *action)
- /* Setup which NMI support is present in system */
- static void uv_nmi_setup_mmrs(void)
- {
-+	bool new_nmi_method_only = false;
+Changes in v3:
+- rename underscores to hyphens in the filename
+
+Changes in v2:
+- removed unnecessary line breaks and shorten property descriptions
+
+diff --git a/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml b/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
+new file mode 100644
+index 000000000000..d855c01ce61c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/ti/wkup-m3-ipc.yaml
+@@ -0,0 +1,81 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/ti/wkup-m3-ipc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 	/* First determine arch specific MMRs to handshake with BIOS */
--	if (UVH_EVENT_OCCURRED0_EXTIO_INT0_MASK) {
-+	if (UVH_EVENT_OCCURRED0_EXTIO_INT0_MASK) {	/* UV2,3,4 setup */
- 		uvh_nmi_mmrx = UVH_EVENT_OCCURRED0;
- 		uvh_nmi_mmrx_clear = UVH_EVENT_OCCURRED0_ALIAS;
- 		uvh_nmi_mmrx_shift = UVH_EVENT_OCCURRED0_EXTIO_INT0_SHFT;
-@@ -255,26 +257,25 @@ static void uv_nmi_setup_mmrs(void)
- 		uvh_nmi_mmrx_req = UVH_BIOS_KERNEL_MMR_ALIAS_2;
- 		uvh_nmi_mmrx_req_shift = 62;
- 
--	} else if (UVH_EVENT_OCCURRED1_EXTIO_INT0_MASK) {
-+	} else if (UVH_EVENT_OCCURRED1_EXTIO_INT0_MASK) { /* UV5+ setup */
- 		uvh_nmi_mmrx = UVH_EVENT_OCCURRED1;
- 		uvh_nmi_mmrx_clear = UVH_EVENT_OCCURRED1_ALIAS;
- 		uvh_nmi_mmrx_shift = UVH_EVENT_OCCURRED1_EXTIO_INT0_SHFT;
- 		uvh_nmi_mmrx_type = "OCRD1-EXTIO_INT0";
- 
--		uvh_nmi_mmrx_supported = UVH_EXTIO_INT0_BROADCAST;
--		uvh_nmi_mmrx_req = UVH_BIOS_KERNEL_MMR_ALIAS_2;
--		uvh_nmi_mmrx_req_shift = 62;
-+		new_nmi_method_only = true;		/* Newer nmi always valid on UV5+ */
-+		uvh_nmi_mmrx_req = 0;			/* no request bit to clear */
- 
- 	} else {
--		pr_err("UV:%s:cannot find EVENT_OCCURRED*_EXTIO_INT0\n",
--			__func__);
-+		pr_err("UV:%s:NMI support not available on this system\n", __func__);
- 		return;
- 	}
- 
- 	/* Then find out if new NMI is supported */
--	if (likely(uv_read_local_mmr(uvh_nmi_mmrx_supported))) {
--		uv_write_local_mmr(uvh_nmi_mmrx_req,
--					1UL << uvh_nmi_mmrx_req_shift);
-+	if (new_nmi_method_only || uv_read_local_mmr(uvh_nmi_mmrx_supported)) {
-+		if (uvh_nmi_mmrx_req)
-+			uv_write_local_mmr(uvh_nmi_mmrx_req,
-+						1UL << uvh_nmi_mmrx_req_shift);
- 		nmi_mmr = uvh_nmi_mmrx;
- 		nmi_mmr_clear = uvh_nmi_mmrx_clear;
- 		nmi_mmr_pending = 1UL << uvh_nmi_mmrx_shift;
++title: Wakeup M3 IPC device
++
++maintainers:
++  - Dave Gerlach <d-gerlach@ti.com>
++  - Drew Fustini <dfustini@baylibre.com>
++
++description: |+
++  The TI AM33xx and AM43xx family of devices use a small Cortex M3 co-processor
++  (commonly referred to as Wakeup M3 or CM3) to help with various low power tasks
++  that cannot be controlled from the MPU, like suspend/resume and certain deep
++  C-states for CPU Idle. Once the wkup_m3_ipc driver uses the wkup_m3_rproc driver
++  to boot the wkup_m3, it handles communication with the CM3 using IPC registers
++  present in the SoC's control module and a mailbox. The wkup_m3_ipc exposes an
++  API to allow the SoC PM code to execute specific PM tasks.
++
++  Wkup M3 Device Node
++  ====================
++  A wkup_m3_ipc device node is used to represent the IPC registers within an
++  SoC.
++
++properties:
++  compatible:
++    enum:
++      - ti,am3352-wkup-m3-ipc # for AM33xx SoCs
++      - ti,am4372-wkup-m3-ipc # for AM43xx SoCs
++
++  reg:
++    description:
++      The IPC register address space to communicate with the Wakeup M3 processor
++    maxItems: 1
++
++  interrupts:
++    description: wkup_m3 interrupt that signals the MPU
++    maxItems: 1
++
++  ti,rproc:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      phandle to the wkup_m3 rproc node so the IPC driver can boot it
++
++  mboxes:
++    description:
++      phandles used by IPC framework to get correct mbox
++      channel for communication. Must point to appropriate
++      mbox_wkupm3 child node.
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - ti,rproc
++  - mboxes
++
++additionalProperties: false
++
++examples:
++  - |
++    soc {
++        #address-cells = <1>;
++        #size-cells = <1>;
++
++        mailbox: mailbox {
++            #mbox-cells = <1>;
++        };
++
++        wkup_m3_ipc: wkup_m3_ipc@1324 {
++           compatible = "ti,am3352-wkup-m3-ipc";
++           reg = <0x1324 0x24>;
++           interrupts = <78>;
++           ti,rproc = <&wkup_m3>;
++           mboxes = <&mailbox &mbox_wkupm3>;
++        };
++    };
++...
+diff --git a/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt b/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt
+deleted file mode 100644
+index 401550487ed6..000000000000
+--- a/Documentation/devicetree/bindings/soc/ti/wkup_m3_ipc.txt
++++ /dev/null
+@@ -1,57 +0,0 @@
+-Wakeup M3 IPC Driver
+-=====================
+-
+-The TI AM33xx and AM43xx family of devices use a small Cortex M3 co-processor
+-(commonly referred to as Wakeup M3 or CM3) to help with various low power tasks
+-that cannot be controlled from the MPU, like suspend/resume and certain deep
+-C-states for CPU Idle. Once the wkup_m3_ipc driver uses the wkup_m3_rproc driver
+-to boot the wkup_m3, it handles communication with the CM3 using IPC registers
+-present in the SoC's control module and a mailbox. The wkup_m3_ipc exposes an
+-API to allow the SoC PM code to execute specific PM tasks.
+-
+-Wkup M3 Device Node:
+-====================
+-A wkup_m3_ipc device node is used to represent the IPC registers within an
+-SoC.
+-
+-Required properties:
+---------------------
+-- compatible:		Should be,
+-				"ti,am3352-wkup-m3-ipc" for AM33xx SoCs
+-				"ti,am4372-wkup-m3-ipc" for AM43xx SoCs
+-- reg:			Contains the IPC register address space to communicate
+-			with the Wakeup M3 processor
+-- interrupts:		Contains the interrupt information for the wkup_m3
+-			interrupt that signals the MPU.
+-- ti,rproc:		phandle to the wkup_m3 rproc node so the IPC driver
+-			can boot it.
+-- mboxes:		phandles used by IPC framework to get correct mbox
+-			channel for communication. Must point to appropriate
+-			mbox_wkupm3 child node.
+-
+-Example:
+---------
+-/* AM33xx */
+-	l4_wkup: l4_wkup@44c00000 {
+-		...
+-
+-		scm: scm@210000 {
+-			compatible = "ti,am3-scm", "simple-bus";
+-			reg = <0x210000 0x2000>;
+-			#address-cells = <1>;
+-			#size-cells = <1>;
+-			ranges = <0 0x210000 0x2000>;
+-
+-			...
+-
+-			wkup_m3_ipc: wkup_m3_ipc@1324 {
+-				compatible = "ti,am3352-wkup-m3-ipc";
+-				reg = <0x1324 0x24>;
+-				interrupts = <78>;
+-				ti,rproc = <&wkup_m3>;
+-				mboxes = <&mailbox &mbox_wkupm3>;
+-			};
+-
+-			...
+-		};
+-	};
+-- 
+2.32.0
+
