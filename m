@@ -2,96 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA24C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:32:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 058CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbiDGUeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:34:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
+        id S229923AbiDGUer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbiDGUd4 (ORCPT
+        with ESMTP id S230116AbiDGUd5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:33:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68DA031B15D;
-        Thu,  7 Apr 2022 13:19:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0073F61EE6;
-        Thu,  7 Apr 2022 20:19:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE944C385A4;
-        Thu,  7 Apr 2022 20:19:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649362776;
-        bh=43Ks1+7o5QTBATLt2DKx9NXn0gmOmfKI+9QObBYvt+4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pAR6nSGhVobVRFdTbFqlysyIQ45czKeWhIZdIqEG6AKgjTG5pMk4BDP2Oez/W7DX0
-         kNVb6yyY48fXEVEaflOiWZtiY9KEq5LaAlTCXjHkB/ZeKrhQkfjnVuUr9xYOBxI3ZH
-         huFVK4+n0APpRsI3vtt/w/T4hQ8SqY1qN723gjlySk/knLWxksGiIp+tbPar2hj7na
-         P6BwGJvL8gvjYEUR5YiTcjIntZf5vDz2weAJPT4XUQkDdTrJminIK0GXxIgBW5Aiw9
-         gjK0LixxKCAYcGDjBaIwQJJFLOGH5ucR2IZnIFcChbR90a6eeZYU2SmV/3gC5JLDQ/
-         U3lrABQftK9Ng==
-Date:   Thu, 7 Apr 2022 22:19:33 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 10/10] clk: renesas-pcie: use simple i2c probe function
-Message-ID: <Yk9HVQHrEyPQLILr@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Stephen Kitt <steve@sk2.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220407151831.2371706-1-steve@sk2.org>
- <20220407151831.2371706-11-steve@sk2.org>
+        Thu, 7 Apr 2022 16:33:57 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D798931E7AA;
+        Thu,  7 Apr 2022 13:19:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1649362790;
+        bh=Clsw0azBwmGv5vn3jDer0ePY2DqZzo6JWD5bNEgFlHo=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=TZ0ut+ah7scmN3K90tIZFBtomDyqygWdzSN96yUbZZ4R7dgj8zn6wvR3szBboZD+8
+         84T1rbd17cf/t5rqhA4RzCp+v5+7+Tqq1Ha9Fn7OCrvMz3r8KjHy131uw/iK9yIKvH
+         2/AqJY6TCJ8aoTHfYCuMRZXWdGem9hmLkToLFYqk=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.161.122]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MIdeR-1noJXE2wM9-00EeY8; Thu, 07
+ Apr 2022 21:37:49 +0200
+Message-ID: <7fc5853e-dbe6-c2d2-2130-003e3b9777bc@gmx.de>
+Date:   Thu, 7 Apr 2022 21:36:04 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="aNPgm7TukXW16rov"
-Content-Disposition: inline
-In-Reply-To: <20220407151831.2371706-11-steve@sk2.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH printk v2 09/12] printk: add functions to prefer direct
+ printing
+Content-Language: en-US
+To:     John Ogness <john.ogness@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Wei Liu <wei.liu@kernel.org>,
+        Xiaoming Ni <nixiaoming@huawei.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Marco Elver <elver@google.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Phil Auld <pauld@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Wang Qing <wangqing@vivo.com>, rcu@vger.kernel.org
+References: <20220405132535.649171-1-john.ogness@linutronix.de>
+ <20220405132535.649171-10-john.ogness@linutronix.de> <Yk61Q+w7tWTjh8xl@alley>
+ <b746d99e-729f-ca0d-5d30-6d803d1cd833@gmx.de>
+ <87zgkxnepg.fsf@jogness.linutronix.de>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <87zgkxnepg.fsf@jogness.linutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:KM0MoXUmeybSpeJsUO31eMZugL3Jyztha+nscPvfSeRyQ75lMwJ
+ jdF50G7Dun6S1n9No6dcWJPl9KTw7q3ABK56owgE5UKbmM13Pm+0uBOuPyNPN74djSQ3b/1
+ DT5vDBXp7CGAnQ+RQr2yFzU1+0fFR5sqfi62aVWnT4YRmJg5YHchyHrsirljLPjd223yPRl
+ S2dC4CHIy8d6XnxO5l5zA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:w/iol8Z6M84=:wwrJWOQZ5TP9VKmXrav8hi
+ mhuCDg9PM4LOasXt2kj43ZtB3CTAA9oAX6t4zetDbHvE/M5JWAk6M9jB9Zc92ttymDTcDoEDD
+ 14A6OiNi5Pib8ooFsH94Ud+K2QUUYKh09vC4uwtlJj2NjdLc/SqJ9S5mtqhXw6CCbW2zY/286
+ rBUl5nI77EOOzqtHJpzEUxjPvsHrC0Mpkv4D4m36UsKCakYCK5DwWt585BA9VA0mbR2B7tRsG
+ E0evN3e4Q4MvvcGkDoteoUsER8xHx8DR3qQ1ZIDp97dS6sBlCG4dFjmYo3qx3GAAk7xPM2Xn5
+ k1nDAgnZxKO2WoeR/Mc8dQDktkw4Qj6vQUgrT987PlRj8Qyp9PadWHuIG/fpymtPAkUUg5PYH
+ tEprTFIUPwCzMfVZbGQAa8ZV3jUtl4tiqsLg2Cenqh2/BawXH8bGOmXHoMcCmGVQ0LW1lUkLj
+ 7cSdZ31h5hKqEoXla0vMPGtJAp34CgaRSPS12oiyB7R/6uMeT128mEcyz1Ckwm0IiVUdsGR/0
+ rVtVjenpcyZdn8sVU6Ktr5ak18/wpxY6lhEbZk8b9DeUi2mxPevHJPaZHrLjlYI7FWlVF9tjH
+ fLrtkux96ulwj8qXkbGNjEjnqiAtJnYGUqIuJ5TME1CKIcDCFxpjFtOonyS21Np63uzAFui8G
+ hxkQC1ul/5lME3NSMbWctGkw0V7yMSTz0QmrgYk8jrmXVzTMt28V2D6EaFe9zgpiEEUfXf9ND
+ 4n3knr7vR5y10QYvmUX2M8+905n+NGytzk72e1grIiguJV8cvte5ccSC5RFVEVqFlezn/tUKa
+ RiJ4hPu7OjB46eeofv9Mqamc9cjEZkEHol1uKG23LK4ZEywQ88zO41pOodKuZmC/K3q/sSioW
+ RWLO7liIWlwVKrhU4WS07t4Isqr+GK1+ghHTeIpoOBxZ1YVYb2ArfESaSX1k9RIiIcj5EPaia
+ TQ2YWEOn6jqmHePVyWrvxRT2L3sO0Zaz6rkx3ZRowtTwOtW5EMXMsmC0IycPvz74H7jA+tLea
+ MxvY03dsq5kPD+yErItEO3zf7NQuSC4WTm1rpXfMZtOjYbfKAXaHpup9BybUd8iFzLUMA0n90
+ 8QmfWsDz5NyV10=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi John,
 
---aNPgm7TukXW16rov
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 4/7/22 16:35, John Ogness wrote:
+> On 2022-04-07, Helge Deller <deller@gmx.de> wrote:
+>>>>  - emergency reboot/shutdown
+>>>>  - cpu and rcu stalls
+>>>>  - hard and soft lockups
+>>>>  - hung tasks
+>>>>  - warn
+>>>>  - sysrq
+>>
+>> I agree that those needs direct printing.
+>> Did you maybe checked how much (e.g. in percentage) of a normal log is
+>> then still left to be printed threadened?  Just in case it's not much,
+>> is there still a benefit to introduce threadened printing?
+>
+> A "normal" log can still contain many many messages. There have been
+> reports [0] where the system died because _printk_ killed it. This was
+> not any of the scenarios that we want direct printing for. It was just a
+> lot of messages that some driver wanted to output.
+>
+> Until now the response was always to reduce printk usage or avoid it
+> altogether. printk has a bad reputation because it is so unpredictable
+> and expensive. So we are fixing printk. With threaded printers, we make
+> a dramatic change. printk becomes 100% lockless and consistently quite
+> fast. You can use it to debug or log messages within any code in the
+> kernel and not need to worry about horrible latencies being introduced.
+>
+> For drivers that start dumping tons of messages, there is no concern
+> that the system will die because of the messages.
 
-On Thu, Apr 07, 2022 at 05:18:31PM +0200, Stephen Kitt wrote:
-> The i2c probe function here doesn't use the id information provided in
-> its second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
->=20
-> This avoids scanning the identifier tables during probes.
->=20
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
+Thank you for this good explanation!
 
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+In my case - while I debug low-level kernel code - I then just need to use
+pr_warn() or pr_emerg() and get it printed non-threadened. That's sufficie=
+nt for me.
 
+>> Or another example, e.g. when running on a slow console (the best
+>> testcase I know of is a 9600 baud serial port), where some printks are
+>> threadened. Then a warn printk() has to be shown, doesn't it mean all
+>> threadened printks have to be flushed (waited for) until the warning
+>> can be shown. Will there then still be a measureable time benefit?
+>
+> Now you are talking about something else, unrelated to the threaded
+> printing. A warn is considered a serious non-normal event. In this case,
+> printk temporarily falls back to the direct, slow, unpredictable,
+> printk-caller-context behavior we know today.
 
---aNPgm7TukXW16rov
-Content-Type: application/pgp-signature; name="signature.asc"
+Good.
 
------BEGIN PGP SIGNATURE-----
+> If we see that direct printing is being used during normal operation
+> (i.e. developers are performing warns just for fun), then we should not
+> mark warns for direct printing. We will need to get some real-world
+> experience here, but the goal is that systems do not use direct printing
+> unless a real serious emergency is going on. Otherwise, the system risks
+> dying because of the messages rather than the problem being reported.
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJPR1UACgkQFA3kzBSg
-KbbZARAAjE9cZ9y/W2P31lrexCWxLDy9W5Sy6t5G5+rtXH1W0WZg3NcRE+gWNRGU
-oLomSEavBtoKJSWDQntyJsX/Ztv6xsuRWmmc/Z7Q37SzzF90Pma+YqaD3xx3eZ+p
-SzJI+nLz0LpKibaIObcQIWE2lI6US+2BremtUu18zZAHdkUMlysRAlo0DQcWtC/E
-0KbxEJ0PAk4is8DZ6tqNL6IPaJ1al+IK2si14AmonGD3OGxQgxGLQBMxf0P1CPjM
-Xes42wGbSsqvp/juh8i9jLOsZExJtD0nPJO9X/SBMQNLnXK+qU/2DH9Lo5obDhDT
-0CBDlYSSxvP3g7YMizXf6DzHmecJw1NvYgF7gpSbT7aFbeINTR67P5oGhTHYGgQN
-wdP7ILPOL4Ok4LzeiwBoyCgFDOqQixVz8EFKFk5HJqiHxvNQ0FXg/v5pmcG8MBZj
-1lPHjxMFnIlkOrTSlmbY1ru6xT1y+ZPJTcBRDN+9RZpE5BxXpEZih/cFa0zgbFdi
-cvzM7URKpyS+XjSyfEFszsBlGoxQ2LZjpZ+4COs6IifGuidZ4B0f6oJ8zORKsJGJ
-R6RugQz7zRCJoX6bPsROw4+1G3LtJD0blfAHEkScNNCEs1bHSo3eLhGYf0LaTF8+
-hLmRzQNBXxy/vZvXLcBJUjJnyEfOXHR/3YwFSwM/LscGG3sF+wc=
-=EkIi
------END PGP SIGNATURE-----
+I agree, it's good if this gets fixed at some point.
 
---aNPgm7TukXW16rov--
+Thanks!
+Helge
+
+> John
+>
+> [0] https://lore.kernel.org/all/20190306171943.12345598@oasis.local.home
