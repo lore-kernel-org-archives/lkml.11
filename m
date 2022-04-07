@@ -2,89 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3202C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9DD9C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 06:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240975AbiDGGUo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 02:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35186 "EHLO
+        id S240983AbiDGGVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 02:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236654AbiDGGUk (ORCPT
+        with ESMTP id S236654AbiDGGVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 02:20:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4222D1A8C17;
-        Wed,  6 Apr 2022 23:18:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAE0A61D0D;
-        Thu,  7 Apr 2022 06:18:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DB1AC385A0;
-        Thu,  7 Apr 2022 06:18:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649312320;
-        bh=WNjt/W0EC5NHsxTNHptluiTrADyC31f+9oWaPnEp5d0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HYerDy/KYCFxq39gnJ4RAqvZZ3raYPvCXbukjYlfWMfdsehpkjbkcRJoWGFl8Qv/K
-         Jc3iEUV7A/EAEiqc1uacaPN04am8D5R3JmocyWfL5fkyjLY/ShDRa8KeBmTGJYrhed
-         GSvUer54e2rVTaXRQqVnoMl2kZifHYi6YCgYhJQY=
-Date:   Thu, 7 Apr 2022 08:18:35 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Laurent Vivier <laurent@vivier.eu>
-Cc:     linux-kernel@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-m68k@lists.linux-m68k.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-rtc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Alessandro Zummo <a.zummo@towertech.it>, stable@vger.kernel.org
-Subject: Re: [PATCH v16 1/4] tty: goldfish: introduce
- gf_ioread32()/gf_iowrite32()
-Message-ID: <Yk6CO11wyo86ylee@kroah.com>
-References: <20220406201523.243733-1-laurent@vivier.eu>
- <20220406201523.243733-2-laurent@vivier.eu>
- <Yk5tNOPE4b2QbHLG@kroah.com>
- <198be9ea-a8c2-0f9e-6ae5-a7358035def4@vivier.eu>
+        Thu, 7 Apr 2022 02:21:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC86E4C42F
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 23:19:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649312348;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TSoQ5rtvOHp3Q8UdZ46y3auvh3IsXFHtX0lRwfM7Hh0=;
+        b=AdW5jKWSyHVueE8MHBdBL5cEFKdgbYIKUmWZL7UFWIjoYUXarmgeBz0TghHUEoLpiihoC2
+        /JorNQgq9fD7N8DxnAcBaay/5Y4Mw3PDdcXC/4jbNw08qaiUPy5IsMeE32nJWdZLUFqA05
+        lTyCM7gautL5BmrEpx2rFfbdSb7RY9g=
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
+ [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-554-AsLJcbsaMc-JfaW1qLfvVw-1; Thu, 07 Apr 2022 02:19:07 -0400
+X-MC-Unique: AsLJcbsaMc-JfaW1qLfvVw-1
+Received: by mail-pl1-f198.google.com with SMTP id f10-20020a170902ce8a00b00156a6b150e4so2308505plg.7
+        for <linux-kernel@vger.kernel.org>; Wed, 06 Apr 2022 23:19:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TSoQ5rtvOHp3Q8UdZ46y3auvh3IsXFHtX0lRwfM7Hh0=;
+        b=B76/Swox4ZP09HafNqfvhoCuMkqMo0juaC9MnxJ0HBcy3Uj0HSDuQ0uCXlGzhvZAZT
+         zY73E3IiYt1//u+aiPEUWAYWMagwTrLsGcPm2G9NUKn1INkNCi2rTywvRm1O360YowD7
+         ulhEEQZbqtG5QavgRdp+YOuYA3fDVC3WbkeFNWe99/hpZoGah0uvQmhbHO6U+SaDDzKb
+         ZlBxsU8mLrki+WkOPxMoGQcbVC3Ad5igRUUr3On9NqIix2EXgnfAH9vdjQ+0SQfbnd9H
+         yq7nsMqWCaU/B4OVuc1FIc0lMUeipCmTP5PocPgLZJ25V6M73VFHQGKXKn5pE1/xCQRA
+         m1IA==
+X-Gm-Message-State: AOAM532dnfGTEepAe3sMcy70iU56dUQBDrfv+Vhrz/VJkUD+8R8aAObY
+        zwwMO5UOrzDshaZKH/sFD7Z/dcGAKzhhX5M4R3zQgCwzs/w6pfaAyOCOo2ucWFXuhqXjOIiU18A
+        SbA0OXG3KE7oHxSS4Mg4fRnQk
+X-Received: by 2002:a17:90b:4b10:b0:1c7:5b66:28df with SMTP id lx16-20020a17090b4b1000b001c75b6628dfmr14030857pjb.33.1649312346596;
+        Wed, 06 Apr 2022 23:19:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJweJp2zPRrmAPlPETh78WGTKxsWNZZmlfTbsV43Rw8FTB6b1dnjjPEVt0sxXbGTw9H+3SE4Fw==
+X-Received: by 2002:a17:90b:4b10:b0:1c7:5b66:28df with SMTP id lx16-20020a17090b4b1000b001c75b6628dfmr14030831pjb.33.1649312346324;
+        Wed, 06 Apr 2022 23:19:06 -0700 (PDT)
+Received: from [10.72.13.105] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id b10-20020a056a00114a00b004f784ba5e6asm21959166pfm.17.2022.04.06.23.19.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 23:19:05 -0700 (PDT)
+Message-ID: <be2dd73d-7394-20d0-fa2b-652fdaa5700f@redhat.com>
+Date:   Thu, 7 Apr 2022 14:19:00 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [PATCH V2 1/5] virtio: use virtio_device_ready() in
+ virtio_device_restore()
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, maz@kernel.org, tglx@linutronix.de,
+        peterz@infradead.org, sgarzare@redhat.com,
+        "Paul E. McKenney" <paulmck@kernel.org>
+References: <20220406083538.16274-1-jasowang@redhat.com>
+ <20220406083538.16274-2-jasowang@redhat.com>
+ <20220406073803-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220406073803-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <198be9ea-a8c2-0f9e-6ae5-a7358035def4@vivier.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 08:00:08AM +0200, Laurent Vivier wrote:
-> Le 07/04/2022 à 06:48, Greg KH a écrit :
-> > On Wed, Apr 06, 2022 at 10:15:20PM +0200, Laurent Vivier wrote:
-> > > Revert
-> > > commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
-> > > 
-> > > and define gf_ioread32()/gf_iowrite32() to be able to use accessors
-> > > defined by the architecture.
-> > > 
-> > > Cc: stable@vger.kernel.org # v5.11+
-> > > Fixes: da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
-> > > Signed-off-by: Laurent Vivier <laurent@vivier.eu>
-> > > Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > ---
-> > >   drivers/tty/goldfish.c   | 20 ++++++++++----------
-> > >   include/linux/goldfish.h | 15 +++++++++++----
-> > >   2 files changed, 21 insertions(+), 14 deletions(-)
-> > > 
-> > 
-> > Why is this a commit for the stable trees?  What bug does it fix?  You
-> > did not describe the problem in the changelog text at all, this looks
-> > like a housekeeping change only.
-> 
-> Arnd asked for that in:
-> 
->   Re: [PATCH v11 2/5] tty: goldfish: introduce gf_ioread32()/gf_iowrite32()
->   https://lore.kernel.org/lkml/CAK8P3a1oN8NrUjkh2X8jHQbyz42Xo6GSa=5n0gD6vQcXRjmq1Q@mail.gmail.com/
 
-You did not provide a reason in this changelog to explain any of that :(
+åœ¨ 2022/4/6 ä¸‹åˆ7:44, Michael S. Tsirkin å†™é“:
+> patch had wrong mime type. I managed to extra it but pls fix.
+>
+>>
+>> From: Stefano Garzarella <sgarzare@redhat.com>
+>>
+>> It will allows us
+> will allow us
+>
+>> to do extension on virtio_device_ready() without
+>> duplicating codes.
+> code
+>
+>> Cc: Thomas Gleixner <tglx@linutronix.de>
+>> Cc: Peter Zijlstra <peterz@infradead.org>
+>> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+>> Cc: Marc Zyngier <maz@kernel.org>
+>> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>> ---
+>>   drivers/virtio/virtio.c | 5 +++--
+>>   1 file changed, 3 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+>> index 22f15f444f75..75c8d560bbd3 100644
+>> --- a/drivers/virtio/virtio.c
+>> +++ b/drivers/virtio/virtio.c
+>> @@ -526,8 +526,9 @@ int virtio_device_restore(struct virtio_device *dev)
+>>   			goto err;
+>>   	}
+>>   
+>> -	/* Finally, tell the device we're all set */
+>> -	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER_OK);
+>> +	/* If restore didn't do it, mark device DRIVER_OK ourselves. */
+>> +	if (!(dev->config->get_status(dev) & VIRTIO_CONFIG_S_DRIVER_OK))
+>> +		virtio_device_ready(dev);
+>>   
+>>   	virtio_config_enable(dev);
+> it's unfortunate that this adds an extra vmexit since virtio_device_ready
+> calls get_status too.
+>
+> We now have:
+>
+> static inline
+> void virtio_device_ready(struct virtio_device *dev)
+> {
+>          unsigned status = dev->config->get_status(dev);
+>                  
+>          BUG_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
+>          dev->config->set_status(dev, status | VIRTIO_CONFIG_S_DRIVER_OK);
+> }
+>
+>
+> I propose adding a helper and putting common code there.
+
+
+Ok, let me fix it.
+
+Thanks
+
+
+>
+>>   
+>> -- 
+>> 2.25.1
+
