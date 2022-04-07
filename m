@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3634BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:30:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD7E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 15:30:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344838AbiDGPcG (ORCPT
+        id S1344852AbiDGPcL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 11:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45226 "EHLO
+        Thu, 7 Apr 2022 11:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344799AbiDGPb4 (ORCPT
+        with ESMTP id S1344800AbiDGPb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 7 Apr 2022 11:31:56 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80831D6D;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9F8D70;
         Thu,  7 Apr 2022 08:29:55 -0700 (PDT)
 Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:4da4:8da5:b6b4:93c])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: benjamin.gaignard)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id D55DF1F467B6;
-        Thu,  7 Apr 2022 16:29:52 +0100 (BST)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id E43761F467B3;
+        Thu,  7 Apr 2022 16:29:50 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649345393;
-        bh=a2Uju64yuLz/FG3F9H5xkBA4VAF8rTIHnlWQrussMFw=;
+        s=mail; t=1649345391;
+        bh=cggodh8ZKRQM2uMDDiBLIiWUcdySLF5JRn52xfOpCyY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C/YC5cQBKMmfgxt+ebKpxs9mC10dqOp/OiTGWynMQZiwGnevRZmICGyQRYyCKX+rM
-         LUSpXUSAJMZFJYXHokiXq2aMuA6aqUBYHVYufV0SINyHAZPSJ6l2sT2WL/VtNLU7Fd
-         YJUUTkZhZqquIJWHUmLsLXbIPi6Tq5WlJQhfqLyqJOPZUHUa5JKv4ypjIX2/e26SvL
-         1ICsydRSSBMUILbE1H3eHs+pUDwA4H6uH5eGz7Je8M2ya6NFi7ri6Nv43wrk/koPTS
-         K7i9k0WATxNyaX21cWyBvGt/Sc56cfzMqZfzkEzJZAeBivGe2nLa6qFTVz4D6w+Dcc
-         uIk9GL39nq9zw==
+        b=k8HVnSXlzSK9VtnOHPf9EZCCIjAONGI2kh+mSlMGZVcC1Y+MNh61f6VftC+lvm3pW
+         Y2r4VB73CkVpAu40CcxCxHRq/bmZ56SjZpWGE2ZcKQ96HObELRDz5htXHb41mg3KYW
+         ipooM/avnsB8Ufdr/iYfHxo6fT7Q/tbv23DAksbj2Dyh6sY1Oix9GNeJcaTkEDiDP5
+         xPTD1fIVPUrt0YWKC6hiw3bMIlqad6gdPZA/+yAhHLKMe5qM4z9RChpwx+YaKFqVYD
+         kp5CE3WBNXkOe6KrXDfDoVEtbDQ+drbIIZPAVLkn+EbFvAuxkrrOPsCM5mR0y2D/kx
+         Ztre7wyz8iKtw==
 From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
 To:     mchehab@kernel.org, hverkuil@xs4all.nl,
         ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
@@ -44,9 +44,9 @@ Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
         sebastian.fricke@collabora.com,
         Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH v5 07/17] media: uapi: HEVC: Add SEI pic struct flags
-Date:   Thu,  7 Apr 2022 17:29:30 +0200
-Message-Id: <20220407152940.738159-8-benjamin.gaignard@collabora.com>
+Subject: [PATCH v5 04/17] media: uapi: HEVC: Add missing fields in HEVC controls
+Date:   Thu,  7 Apr 2022 17:29:27 +0200
+Message-Id: <20220407152940.738159-5-benjamin.gaignard@collabora.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
 References: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
@@ -56,113 +56,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The possible values for field_pic field in v4l2_hevc_dpb_entry
-structure are defined table D.2 in HEVC specification section D.3.3.
-Add flags and documentation for each of them.
+Complete the HEVC controls with missing fields from H.265 specifications.
+Even if these fields aren't used by the current mainlined drivers
+they will be need for (at least) rkvdec driver.
 
 Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 ---
- .../media/v4l/ext-ctrls-codec.rst             | 54 +++++++++++++++++++
- include/media/hevc-ctrls.h                    | 14 +++++
- 2 files changed, 68 insertions(+)
+ .../media/v4l/ext-ctrls-codec.rst             | 19 +++++++++++++++++++
+ include/media/hevc-ctrls.h                    |  6 +++++-
+ 2 files changed, 24 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-index c679b17b4426..b44ea85c6f0e 100644
+index 4cd7c541fc30..dbb08603217b 100644
 --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
 +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-@@ -3193,6 +3193,7 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
-     * - __u8
-       - ``field_pic``
-       - Whether the reference is a field picture or a frame.
-+        See :ref:`HEVC dpb field pic Flags <hevc_dpb_field_pic_flags>`
+@@ -2661,6 +2661,16 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+     :stub-columns: 0
+     :widths:       1 1 2
+ 
++    * - __u8
++      - ``video_parameter_set_id``
++      - Specifies the value of the vps_video_parameter_set_id of the active VPS
++        as descibed in section "7.4.3.2.1 General sequence parameter set RBSP semantics"
++        of H.265 specifications.
++    * - __u8
++      - ``seq_parameter_set_id``
++      - Provides an identifier for the SPS for reference by other syntax elements
++        as descibed in section "7.4.3.2.1 General sequence parameter set RBSP semantics"
++        of H.265 specifications.
      * - __u16
-       - ``pic_order_cnt[2]``
-       - The picture order count of the reference. Only the first element of the
-@@ -3206,6 +3207,59 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+       - ``pic_width_in_luma_samples``
+       -
+@@ -2800,6 +2810,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+     :stub-columns: 0
+     :widths:       1 1 2
  
-     \normalsize
- 
-+.. _hevc_dpb_field_pic_flags:
-+
-+``HEVC dpb field pic Flags``
-+
-+.. raw:: latex
-+
-+    \scriptsize
-+
-+.. flat-table::
-+    :header-rows:  0
-+    :stub-columns: 0
-+    :widths:       1 1 2
-+
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_FRAME``
-+      - 0
-+      - (progressive) Frame
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_TOP_FIELD``
-+      - 1
-+      - Top field
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_BOTTOM_FIELD``
-+      - 2
-+      - Bottom field
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_TOP_BOTTOM``
-+      - 3
-+      - Top field, bottom field, in that order
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_BOTTOM_TOP``
-+      - 4
-+      - Bottom field, top field, in that order
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_TOP_BOTTOM_TOP``
-+      - 5
-+      - Top field, bottom field, top field repeated, in that order
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_BOTTOM_TOP_BOTTOM``
-+      - 6
-+      - Bottom field, top field, bottom field repeated, in that order
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_FRAME_DOUBLING``
-+      - 7
-+      - Frame doubling
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_FRAME_TRIPLING``
-+      - 8
-+      - Frame tripling
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_TOP_PAIRED_PREVIOUS_BOTTOM``
-+      - 9
-+      - Top field paired with previous bottom field in output order
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_BOTTOM_PAIRED_PREVIOUS_TOP``
-+      - 10
-+      - Bottom field paired with previous top field in output order
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_TOP_PAIRED_NEXT_BOTTOM``
-+      - 11
-+      - Top field paired with next bottom field in output order
-+    * - ``V4L2_HEVC_SEI_PIC_STRUCT_BOTTOM_PAIRED_NEXT_TOP``
-+      - 12
-+      - Bottom field paired with next top field in output order
-+
- .. c:type:: v4l2_hevc_pred_weight_table
- 
- .. raw:: latex
++    * - __u8
++      - ``pic_parameter_set_id``
++      - Identifies the PPS for reference by other syntax elements.
+     * - __u8
+       - ``num_extra_slice_header_bits``
+       -
+@@ -3026,6 +3039,12 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
+     * - __u8
+       - ``ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
+       - The list of L1 reference elements as indices in the DPB.
++    * - __u16
++      - ``short_term_ref_pic_set_size``
++      - Specifies the size of short-term reference pictures set included in the SPS.
++    * - __u16
++      - ``long_term_ref_pic_set_size``
++      - Specifies the size of long-term reference pictures set include in the SPS.
+     * - __u8
+       - ``padding``
+       - Applications and drivers must set this to zero.
 diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-index 2812778b41f4..e76a23e22a35 100644
+index 01ccda48d8c5..a329e086a89a 100644
 --- a/include/media/hevc-ctrls.h
 +++ b/include/media/hevc-ctrls.h
-@@ -132,6 +132,20 @@ struct v4l2_ctrl_hevc_pps {
+@@ -58,6 +58,8 @@ enum v4l2_mpeg_video_hevc_start_code {
+ /* The controls are not stable at the moment and will likely be reworked. */
+ struct v4l2_ctrl_hevc_sps {
+ 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Sequence parameter set */
++	__u8	video_parameter_set_id;
++	__u8	seq_parameter_set_id;
+ 	__u16	pic_width_in_luma_samples;
+ 	__u16	pic_height_in_luma_samples;
+ 	__u8	bit_depth_luma_minus8;
+@@ -108,6 +110,7 @@ struct v4l2_ctrl_hevc_sps {
  
- #define V4L2_HEVC_DPB_ENTRY_LONG_TERM_REFERENCE	0x01
+ struct v4l2_ctrl_hevc_pps {
+ 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Picture parameter set */
++	__u8	pic_parameter_set_id;
+ 	__u8	num_extra_slice_header_bits;
+ 	__u8	num_ref_idx_l0_default_active_minus1;
+ 	__u8	num_ref_idx_l1_default_active_minus1;
+@@ -199,7 +202,8 @@ struct v4l2_ctrl_hevc_slice_params {
+ 	__u32	slice_segment_addr;
+ 	__u8	ref_idx_l0[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+ 	__u8	ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
+-
++	__u16	short_term_ref_pic_set_size;
++	__u16	long_term_ref_pic_set_size;
+ 	__u8	padding;
  
-+#define V4L2_HEVC_SEI_PIC_STRUCT_FRAME				0
-+#define V4L2_HEVC_SEI_PIC_STRUCT_TOP_FIELD			1
-+#define V4L2_HEVC_SEI_PIC_STRUCT_BOTTOM_FIELD			2
-+#define V4L2_HEVC_SEI_PIC_STRUCT_TOP_BOTTOM			3
-+#define V4L2_HEVC_SEI_PIC_STRUCT_BOTTOM_TOP			4
-+#define V4L2_HEVC_SEI_PIC_STRUCT_TOP_BOTTOM_TOP			5
-+#define V4L2_HEVC_SEI_PIC_STRUCT_BOTTOM_TOP_BOTTOM		6
-+#define V4L2_HEVC_SEI_PIC_STRUCT_FRAME_DOUBLING			7
-+#define V4L2_HEVC_SEI_PIC_STRUCT_FRAME_TRIPLING			8
-+#define V4L2_HEVC_SEI_PIC_STRUCT_TOP_PAIRED_PREVIOUS_BOTTOM	9
-+#define V4L2_HEVC_SEI_PIC_STRUCT_BOTTOM_PAIRED_PREVIOUS_TOP	10
-+#define V4L2_HEVC_SEI_PIC_STRUCT_TOP_PAIRED_NEXT_BOTTOM		11
-+#define V4L2_HEVC_SEI_PIC_STRUCT_BOTTOM_PAIRED_NEXT_TOP		12
-+
- #define V4L2_HEVC_DPB_ENTRIES_NUM_MAX		16
- 
- struct v4l2_hevc_dpb_entry {
+ 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Weighted prediction parameter */
 -- 
 2.32.0
 
