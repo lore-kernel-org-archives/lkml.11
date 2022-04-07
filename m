@@ -2,142 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85DEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF58C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:11:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345615AbiDGQMy (ORCPT
+        id S1345627AbiDGQNa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 12:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51690 "EHLO
+        Thu, 7 Apr 2022 12:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232236AbiDGQMx (ORCPT
+        with ESMTP id S232154AbiDGQN1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 12:12:53 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA0885950
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:10:52 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id w21so8596884wra.2
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 09:10:52 -0700 (PDT)
+        Thu, 7 Apr 2022 12:13:27 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C2212082
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:11:26 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id h5so4385935pgc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 09:11:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=message-id:date:mime-version:user-agent:reply-to:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=x3pmqaNa0PtoIU8gER1caXrBLSF1ODzqLerDmxXVK74=;
-        b=MgRcFKvzVOm0BRJ319dcP8h1WJEwcpMeVvWHzlMWQr0kErX58XxhIu7uM1vZ0ppypR
-         LZhIW2MhkAeb1lep7tKBBvc/Bx1daATg6H0d8iJcak05ID3LNkRl1I21jJDE8tnwdywY
-         5x8nJQHS4JNm8I7KCMbjnWQOx2ji0VycJiunDlt9/CVHtp6Q9JdkK41obWdoNhMd68cX
-         OwUXm0x/HcMIAcTbwhZsxI3dNpA2/9q1teuEl9daUDS0hPYh/+n/ksmmi+K92PMhUH9b
-         4jVWenunsBgb7yAwVgMqQotVzS0oouIz+ZuEXQFXB3cXWxJ/oPdgElH9k8HCXeaA997o
-         Aq9Q==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zZ+X5NwIT3Ilre3MBBFmMIR7GaB22k8MhpZuVDzBpfg=;
+        b=alOLYFapVJTwjNCt+HI8OgHd4gZ7wRBv6j9rqciH7HeTcTE0zUmp1UzM0juI6ONaNd
+         /x6sTIs/2QyP14JTKesaY7AzYWzmW6Dg9o8Nb/jZ7oAVtSL82LAEKymuFTyaGrExb5dZ
+         kcvlnoeFawLSjkW6h3PmF4SZ7oHJ8SqQGNf57pRnX1nQlOZdPsr+lNxi4kKkgxoCip8U
+         uV2THYWuW2JfO7WAZe/II0fF7ljf/vWTnSTVQh9Nu1byvBovupmqArUmffcbm4eV0m8v
+         KZuYS+xCfJlY1ve8w2G+nE+egKTDFyOOrUyCHtwiAAWMoqOnnO95xxnxhmE46JnIu3RY
+         4REw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
-         :subject:content-language:to:cc:references:from:organization
-         :in-reply-to:content-transfer-encoding;
-        bh=x3pmqaNa0PtoIU8gER1caXrBLSF1ODzqLerDmxXVK74=;
-        b=gEwMH/SXtEAQS17oZDtpsDz4ESOj+Y7rcChLYkoPCK6ft5EEnNe5movqe8my1KFM6o
-         BlkCytPZqQVogO6NJx1ybRb3e+++0xfLJnH6GlfsaU87JpcH8uhtVC+oTGTmNd+74nAb
-         ntmsJaD1GM4D+Gu3Vzo7MFqWTaflGyHsoso+p7OZH8SZ8oIDT29rCMU22aBuAnkuB4LD
-         Pz49vN1cP9XNrMZIA69TjoNFnVIR6RqP3Q/AO2gqI7wSSBnLqhSScGTRi0DMNO1RKcZy
-         GmotXinn/d/fy/b14+1kP33rqK1N2+ZWvno/gv6v8VNxlDHFaz2u/Px6fANtbf29peRu
-         TROA==
-X-Gm-Message-State: AOAM530iMT8bwZvwxm3ATaJCrtU7UsTlcpbIIyTBtD4TWzKVz3EFEW2z
-        qYTxOhUw9rzxe7LrlW+NjJX4sQ==
-X-Google-Smtp-Source: ABdhPJw3v3eQrWyaBWPZCs/0STYwsAh4zpwNJHkq77RkY9jCBCfXuw86xtXgxD9aX1BYf7EwzrEKNg==
-X-Received: by 2002:adf:f90e:0:b0:203:e0fd:e9af with SMTP id b14-20020adff90e000000b00203e0fde9afmr11446956wrr.154.1649347850954;
-        Thu, 07 Apr 2022 09:10:50 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:6115:f172:4f40:31e9? ([2a01:e0a:b41:c160:6115:f172:4f40:31e9])
-        by smtp.gmail.com with ESMTPSA id f9-20020adff589000000b002060fcd92e9sm11380422wro.14.2022.04.07.09.10.50
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zZ+X5NwIT3Ilre3MBBFmMIR7GaB22k8MhpZuVDzBpfg=;
+        b=hzLY5UCKFQE96QaHCzZACgtBPS0HKAWaSXTaRM4RhXWRv3Am/14fgfShT4jO3vocjL
+         Le1rJ1OGjrOV/Woz9urYAGHUWmtvDgS4T4rGJBvH82dMl+wqIe7apEdSxP0rJaJdz0AE
+         sp1sQKBjbMIT39BXXR0H2geLTYyzWYOitMTHqqIQLu9VjwfkmeThPsyVwFpxEeV49fl0
+         CWU7uDlvBYzxGl5/Z+H9PTeq+zDnsGzqc5Lb/YWg9VuI+Fq9O/tvAtEe/OmL5Nsh00+S
+         WXUMksTKmRzl+e2Svoyto1+T90Nya5mIfRZXh+pYpCDkp2D1h2iBG30T3p7vJ9lQTSm1
+         j5DA==
+X-Gm-Message-State: AOAM533k4NQogik8C33nXecJYVMgmsFTajIKD4GrnY8OxNnrBcHiGsWR
+        u5+oGT/2ltJJl+CH1Y2QLJo=
+X-Google-Smtp-Source: ABdhPJzXpBKnMk8RUBqHUQgMBr4hdwI+4c4C1MfdJdjMdh8OLbohG8kS5yhbNPL3aaJRQtENqg68RA==
+X-Received: by 2002:a05:6a00:1589:b0:4fb:e7c:7c53 with SMTP id u9-20020a056a00158900b004fb0e7c7c53mr14654280pfk.78.1649347886338;
+        Thu, 07 Apr 2022 09:11:26 -0700 (PDT)
+Received: from [192.168.66.3] (p912131-ipoe.ipoe.ocn.ne.jp. [153.243.13.130])
+        by smtp.gmail.com with ESMTPSA id b14-20020a056a000cce00b004fabc39519esm24090890pfv.5.2022.04.07.09.11.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 09:10:50 -0700 (PDT)
-Message-ID: <59150cd5-9950-2479-a992-94dcdaa5e63c@6wind.com>
-Date:   Thu, 7 Apr 2022 18:10:49 +0200
+        Thu, 07 Apr 2022 09:11:25 -0700 (PDT)
+Message-ID: <f86a10e1-b5a7-5c59-8e53-cec65d97234b@gmail.com>
+Date:   Fri, 8 Apr 2022 01:11:22 +0900
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH] ipv6:fix crash when idev is NULL
+Subject: Re: [PATCH] ASoC: rt5682: Add jack kcontrol
 Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>,
-        kongweibin <kongweibin2@huawei.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, rose.chen@huawei.com,
-        liaichun@huawei.com
-References: <20220407112512.2099221-1-kongweibin2@huawei.com>
- <CANn89iLx5HRnyRShNatPveTBhdjoQTxaRn-8_gYk-6_NuSCiOQ@mail.gmail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <CANn89iLx5HRnyRShNatPveTBhdjoQTxaRn-8_gYk-6_NuSCiOQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+To:     Mark Brown <broonie@kernel.org>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Jaroslav Kysela <perex@perex.cz>,
+        Oder Chiou <oder_chiou@realtek.com>,
+        Liam Girdwood <lgirdwood@gmail.com>
+References: <20220407141316.5099-1-akihiko.odaki@gmail.com>
+ <Yk7+jbQ0KBM0zVh9@sirena.org.uk>
+ <96dae189-c0ff-4054-3d00-41c3b44c2cd6@gmail.com>
+ <Yk8Ktyyt0veW4g+j@sirena.org.uk>
+From:   Akihiko Odaki <akihiko.odaki@gmail.com>
+In-Reply-To: <Yk8Ktyyt0veW4g+j@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-Le 07/04/2022 à 16:08, Eric Dumazet a écrit :
-[snip]
+On 2022/04/08 1:00, Mark Brown wrote:
+> On Fri, Apr 08, 2022 at 12:46:04AM +0900, Akihiko Odaki wrote:
+>> On 2022/04/08 0:09, Mark Brown wrote:
 > 
-> And CC patch author for feedback.
-Thanks Eric.
-
+>>> Why not use DAPM for the jack?  Note that normally the jack is part of
+>>> the machine driver not the CODEC - there's no way the CODEC can know how
+>>> it's been wired in on any given system.
 > 
-> In this case I suspect:
+>> It seems it is an unsual case where the codec knows the source of the jack.
+>> RT5682 has interrupts and registers for the jack; see e.g.
+>> rt5682_button_detect in sound/soc/codecs/rt5682.c for details.
 > 
-> commit ccd27f05ae7b8ebc40af5b004e94517a919aa862
-> Author: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-> Date:   Tue Jul 6 11:13:35 2021 +0200
-> 
->     ipv6: fix 'disable_policy' for fwd packets
-I agree.
+> That bit is very common but there's still machine specific aspects - is
+> the required hardware wired up, if it is wired up how exactly are things
+> wired (separate microphone jack, headset jack, one of many jacks?).  A
+> lot of the machine driver part of things is about labeling things so
+> that it can be displayed in a way that's easy to connect to the physical
+> system.  Generally the machine driver would define a jack and then
+> connect the CODEC to it.
 
-> 
-> 
-> 
->> ---
->>  net/ipv6/ip6_output.c | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
->> index 54cabf1c2..347b5600d 100644
->> --- a/net/ipv6/ip6_output.c
->> +++ b/net/ipv6/ip6_output.c
->> @@ -495,6 +495,9 @@ int ip6_forward(struct sk_buff *skb)
->>         u32 mtu;
->>
->>         idev = __in6_dev_get_safely(dev_get_by_index_rcu(net, IP6CB(skb)->iif));
->> +       if (!idev)
->> +               goto drop;
->> +
->>         if (net->ipv6.devconf_all->forwarding == 0)
->>                 goto error;
-
-Dropping packet in this case may introduce another regression, because there was
-no drop before commit ccd27f05ae7b ("ipv6: fix 'disable_policy' for fwd packets").
-
-Maybe something like this:
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -485,7 +485,7 @@ int ip6_forward(struct sk_buff *skb)
-                goto drop;
-
-        if (!net->ipv6.devconf_all->disable_policy &&
--           !idev->cnf.disable_policy &&
-+           (!idev || !idev->cnf.disable_policy) &&
-            !xfrm6_policy_check(NULL, XFRM_POLICY_FWD, skb)) {
-                __IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
-                goto drop;
-
-I could submit it formally tomorrow.
-
-
-Regards,
-Nicolas
+Whether the required hardware wired is told from the user of the codec 
+via jack's type specified with snd_soc_card_jack_new(). The other 
+details live in the codec.
