@@ -2,102 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A84AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:40:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A72C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231131AbiDGUmE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:42:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55498 "EHLO
+        id S230476AbiDGUmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:42:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230245AbiDGUln (ORCPT
+        with ESMTP id S230521AbiDGUmC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:41:43 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5773A35FB55;
-        Thu,  7 Apr 2022 13:27:40 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id n9so6055019plc.4;
-        Thu, 07 Apr 2022 13:27:40 -0700 (PDT)
+        Thu, 7 Apr 2022 16:42:02 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B76362FFE
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 13:28:20 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id a11so8990771qtb.12
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 13:28:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kJceoc9W0NY6WQcLWDMIjUqaSV6YiSwG7eotLlprMMg=;
-        b=QJu7DvN0eWTomcuK6UZ/vOM3RvOr+ZoXAeWbsasj4HCWNICOkIgYYpSkqlbswtVm1z
-         Acy1HWO3rk9a983uxCW0/xcfkEMMp8FFtfk79qp5tMrrmH9JsBsy9n4c6fEVVnFw+K3/
-         n1JFF8CE6pHhcISKrcAohYImmD3QcJSmYFRQRHje790xtHkylQiO8spF6Pgdl48Ve7aN
-         psUslbw8LIksxjefWNb3VVI23vM0UpeObvySgkOFDDRBbnGq5zrH72S1PBN6L1xpg3Vl
-         jtYEkc9P6l1InTcglroX/L7LL24Fpsxw6KQzm8sRSl3QYGOOmbhosKRWgQtuyy8i6BSD
-         eogw==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=EW4jKj0Aht/BtYVNZ+iEkVJaVKtkBsTq1J5snmk+nuY=;
+        b=flcQDSKpQ1QojYalveVlM2QHe4EtNYUqKNuiUf73lypG7bstIhL9ocdBgbQBh5Sqja
+         xwvhtj2rN4/FqHuP1JsNlWwRpWCWnAc6tTUbe+0v1JUFdXEEmb2SI6rUMigoHiIPhEky
+         9RNA6V8JjVxaC7YbWgKp/Hd558UCx0VCb0DxY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=kJceoc9W0NY6WQcLWDMIjUqaSV6YiSwG7eotLlprMMg=;
-        b=RQYTgNbL7b8lArSE5+dBT61ESMfJ6Z+3vNCTPiTOtnROXGnLUROeFODdEvpPVK/f0b
-         BqxJA+Ne54GVpbAcrhM/NFexFllJioicMvpljXGIuWSg0V3SKLmweo6jnrjYPI3U2Ij/
-         Xuj59rGHDH5gkC5oLQlsEZgAXEpf8RlH8/YeNWwoMDYNPLiewA5Smrt3unugdmFKCNlG
-         0uhV5yshXUKVbTSYkYbeOsNWqw8/sWGGjemAQ7sH7F3fNUlWKe/D6JE4tRg6g2Br8eyB
-         BR5WtI9eBZfyziZAIoIlg6u+SMX7M0FenTODEEKGsRppi6wrq897XPGX5piWEvTEkk5O
-         OkJw==
-X-Gm-Message-State: AOAM530IRODXjMSSqa3r4W0XlkI+vqZrBWzkkhc6A7Xqglny11+xpTyB
-        yvB19Inct+EqiWgSLbBqIss=
-X-Google-Smtp-Source: ABdhPJxZXljtWG1ZL15O/6dRhB5QKE8O289YejrO4KoHkde3SlpynJRKXjvUmXAJbl+CD0L7QvChaQ==
-X-Received: by 2002:a17:902:8b88:b0:156:2b14:cb6e with SMTP id ay8-20020a1709028b8800b001562b14cb6emr15911211plb.14.1649363259814;
-        Thu, 07 Apr 2022 13:27:39 -0700 (PDT)
-Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
-        by smtp.gmail.com with ESMTPSA id ng17-20020a17090b1a9100b001c9f79927bfsm10251800pjb.25.2022.04.07.13.27.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 13:27:38 -0700 (PDT)
-From:   Rob Clark <robdclark@gmail.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
-        Rob Clark <robdclark@chromium.org>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] drm/msm: Fix range size vs end confusion
-Date:   Thu,  7 Apr 2022 13:28:33 -0700
-Message-Id: <20220407202836.1211268-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        bh=EW4jKj0Aht/BtYVNZ+iEkVJaVKtkBsTq1J5snmk+nuY=;
+        b=cojjXEyFLmyS691RcHJZ2bKPizvMKOQUVHFP6SUA6rB+XvAtpHgi9OtUwthis/17Gl
+         WAQwXTS8YmUb1doK6BmEEKFrZN56kOzVIZxKBbS8p/sPNMWqa2yth1/5T8uuFvY6tGDz
+         k7oxFbjKGn+g4KnFK5RtpP2lpSZcqomWI98g2pASL32gW9kRDpFzMiw6gfwRYVXPgtiw
+         Chewz4T3DnrW9yEiS60f728YqeXoCIE8Dsxsk1cK+I23jXb7mw0RMrOi7MEuTNUgOX2S
+         2fWNTn3IJK2oakv4gNk8AELRMN6occdihV1F5hCJfM9AfmPYRymUWM0lViuEsmYHlVjw
+         ougg==
+X-Gm-Message-State: AOAM533ESEZuViJs1xbtPyvlDMXKWbFFBLPuwQdkTb0vYIXEyu+7nyq6
+        PVVkwJ7AoshIz47egyO1I5VsNs4oRo7LRQ==
+X-Google-Smtp-Source: ABdhPJwNaq968o79j7Sy32TZQ5p516IMnSRGKRGZljWrjagyqsAVFjo4QD4QFxfDdSlgbH/rE3i/zQ==
+X-Received: by 2002:a02:a98f:0:b0:315:19db:27a3 with SMTP id q15-20020a02a98f000000b0031519db27a3mr7313724jam.184.1649361633505;
+        Thu, 07 Apr 2022 13:00:33 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id u15-20020a056e021a4f00b002c665afb993sm12217063ilv.11.2022.04.07.13.00.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 13:00:33 -0700 (PDT)
+Subject: Re: [PATCH 3/4] selftests/memfd: add tests for F_SEAL_EXEC
+To:     Daniel Verkamp <dverkamp@chromium.org>, linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Mattias Nissler <mnissler@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220401220834.307660-1-dverkamp@chromium.org>
+ <20220401220834.307660-4-dverkamp@chromium.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <6f71a4f3-8f8e-926b-883c-1df630cfc1a0@linuxfoundation.org>
+Date:   Thu, 7 Apr 2022 14:00:32 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220401220834.307660-4-dverkamp@chromium.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+On 4/1/22 4:08 PM, Daniel Verkamp wrote:
+> Basic tests to ensure that user/group/other execute bits cannot be
+> changed after applying F_SEAL_EXEC to a memfd.
+> 
+> Signed-off-by: Daniel Verkamp <dverkamp@chromium.org>
+> ---
+>   tools/testing/selftests/memfd/memfd_test.c | 80 ++++++++++++++++++++++
+>   1 file changed, 80 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/memfd/memfd_test.c b/tools/testing/selftests/memfd/memfd_test.c
+> index 94df2692e6e4..fdb0e46e9df9 100644
+> --- a/tools/testing/selftests/memfd/memfd_test.c
+> +++ b/tools/testing/selftests/memfd/memfd_test.c
+> @@ -28,6 +28,10 @@
+>   #define MFD_DEF_SIZE 8192
+>   #define STACK_SIZE 65536
+>   
+> +#ifndef F_SEAL_EXEC
+> +#define F_SEAL_EXEC	0x0020
+> +#endif
+> +
+>   /*
+>    * Default is not to test hugetlbfs
+>    */
+> @@ -594,6 +598,48 @@ static void mfd_fail_grow_write(int fd)
+>   	}
+>   }
+>   
+> +static void mfd_assert_mode(int fd, int mode)
+> +{
+> +	struct stat st;
+> +
+> +	if (fstat(fd, &st) < 0) {
+> +		printf("fstat(%d) failed: %m\n", fd);
 
-The fourth param is size, rather than range_end.
+Let's print the filename here - just printing fd isn't useful.
 
-Note that we could increase the address space size if we had a way to
-prevent buffers from spanning a 4G split, mostly just to avoid fw bugs
-with 64b math.
+> +		abort();
+> +	} else if ((st.st_mode & 07777) != mode) {
+> +		printf("wrong file mode 0%04o, but expected 0%04o\n",
+> +		       (int)st.st_mode & 07777, mode);
 
-Fixes: 84c31ee16f90 ("drm/msm/a6xx: Add support for per-instance pagetables")
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This one doesn't even print fd - same comment here about filename.
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 17de46fc4bf2..80d57608b34a 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -1742,7 +1742,7 @@ a6xx_create_private_address_space(struct msm_gpu *gpu)
- 		return ERR_CAST(mmu);
- 
- 	return msm_gem_address_space_create(mmu,
--		"gpu", 0x100000000ULL, 0x1ffffffffULL);
-+		"gpu", 0x100000000ULL, SZ_4G);
- }
- 
- static uint32_t a6xx_get_rptr(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
--- 
-2.35.1
+> +		abort();
+> +	}
+> +}
+> +
+> +static void mfd_assert_chmod(int fd, int mode)
+> +{
+> +	if (fchmod(fd, mode) < 0) {
+> +		printf("fchmod(0%04o) failed: %m\n", mode);
 
+Same here.
+
+> +		abort();
+> +	}
+> +
+> +	mfd_assert_mode(fd, mode);
+> +}
+> +
+> +static void mfd_fail_chmod(int fd, int mode)
+> +{
+> +	struct stat st;
+> +
+> +	if (fstat(fd, &st) < 0) {
+> +		printf("fstat(%d) failed: %m\n", fd);
+
+Same comment about filename
+
+> +		abort();
+> +	}
+> +
+> +	if (fchmod(fd, mode) == 0) {
+> +		printf("fchmod(0%04o) didn't fail as expected\n");
+
+Same comment about filename
+
+> +		abort();
+> +	}
+> +
+> +	/* verify that file mode bits did not change */
+> +	mfd_assert_mode(fd, st.st_mode & 07777);
+> +}
+> +
+>   static int idle_thread_fn(void *arg)
+>   {
+>   	sigset_t set;
+> @@ -880,6 +926,39 @@ static void test_seal_resize(void)
+>   	close(fd);
+>   }
+>   
+> +/*
+> + * Test SEAL_EXEC
+> + * Test that chmod() cannot change x bits after sealing
+> + */
+> +static void test_seal_exec(void)
+> +{
+> +	int fd;
+> +
+> +	printf("%s SEAL-EXEC\n", memfd_str);
+> +
+> +	fd = mfd_assert_new("kern_memfd_seal_exec",
+> +			    mfd_def_size,
+> +			    MFD_CLOEXEC | MFD_ALLOW_SEALING);
+> +
+> +	mfd_assert_mode(fd, 0777);
+> +
+> +	mfd_assert_chmod(fd, 0644);
+> +
+> +	mfd_assert_has_seals(fd, 0);
+> +	mfd_assert_add_seals(fd, F_SEAL_EXEC);
+> +	mfd_assert_has_seals(fd, F_SEAL_EXEC);
+> +
+> +	mfd_assert_chmod(fd, 0600);
+> +	mfd_fail_chmod(fd, 0777);
+> +	mfd_fail_chmod(fd, 0670);
+> +	mfd_fail_chmod(fd, 0605);
+> +	mfd_fail_chmod(fd, 0700);
+> +	mfd_fail_chmod(fd, 0100);
+> +	mfd_assert_chmod(fd, 0666);
+> +
+> +	close(fd);
+> +}
+> +
+>   /*
+>    * Test sharing via dup()
+>    * Test that seals are shared between dupped FDs and they're all equal.
+> @@ -1059,6 +1138,7 @@ int main(int argc, char **argv)
+>   	test_seal_shrink();
+>   	test_seal_grow();
+>   	test_seal_resize();
+> +	test_seal_exec();
+>   
+>   	test_share_dup("SHARE-DUP", "");
+>   	test_share_mmap("SHARE-MMAP", "");
+> 
+
+The rest looks good.
+
+thanks,
+-- Shuah
