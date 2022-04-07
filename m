@@ -2,122 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 18:02:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23077C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 18:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346736AbiDGSEs (ORCPT
+        id S1346744AbiDGSFJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 14:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39020 "EHLO
+        Thu, 7 Apr 2022 14:05:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbiDGSEl (ORCPT
+        with ESMTP id S229612AbiDGSFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 14:04:41 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D42C6F3A
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 11:02:41 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id y8so996225pfw.0
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 11:02:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zbKPegUyU45rH7gKXzXri3LhcGQyiXiZ1PMj8OU0FUE=;
-        b=WMCAx2IfBApetXXM+o1hQqfbJJFX3JosvV/3p1o7C8/ibPs7xeX4qidxmU+Fvco93Y
-         4pk+iLH4xmNMXIh+8wTSS36ZAK4Shtfyz5i5XfjD/iZGMnhsvT7TvSz/fNqjrlVwID7e
-         5I+lfT5wZ9s20r5rj0lth1+csSfBiNebQzYfuPLpYtAVYVvPr7APYIe/PufbSYn9bLuO
-         GXHIqnRxPdYvDe+mLtl693jF5vJ8gyREX5JC2k+RAPwyQy3yZbO6yseboHoWrzXy7TEl
-         W4LU/O5IriVnhmUPr68/P/OP/5WPKJ1VB9ds3/BLJfc4q7j50pbQd+WLLlwMRPdi/PS6
-         5ZnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zbKPegUyU45rH7gKXzXri3LhcGQyiXiZ1PMj8OU0FUE=;
-        b=T/fCkD5rMm4RK3e/ME8pB4dYOjJ+o4fyPjLMeopeFS4Wo7C18USHl2w7LxJLGkUjUH
-         hr/rWXged7QJOJp5OgqFS4BH7h4gfvNvXSos+JqKEiJqOooRhCgUKDWn3E1PJfBPkhXH
-         O+Xom89mOenyZOwrB0fo9zj7m+P72nZT4jpidNlvJYPs/0zemwk+qUu4mUvhVkO+p9RW
-         /2urPyaxDKYLfdnDoJGBL4HB5kRtBwFt/6wSix3p1rtfjz26kU1p1IS7Yktk6IIFwZPq
-         tf1HzI5JrNnzGpfaQrRfr6/I46o/gsREz2R+94dbuG4aNWOoVkgMHOr92vAgaHoK0Z7q
-         RtSA==
-X-Gm-Message-State: AOAM530ayYR4t+l9MMGUAVMH6jisYJOUh/qmjh92wK048qrS8tsGm/Xb
-        vJ6/9JO+t1JK4LT8Pk7xPUb/Ug==
-X-Google-Smtp-Source: ABdhPJxpRm9mSw+aTuqx1VxQurUVq7hqNTK0hkzfMmj9tFaZLwawtq+kEVdY+TdodFQhTaaG5iN2uA==
-X-Received: by 2002:a63:2b0d:0:b0:386:322:f05c with SMTP id r13-20020a632b0d000000b003860322f05cmr12320393pgr.11.1649354560357;
-        Thu, 07 Apr 2022 11:02:40 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h13-20020a056a00230d00b004f427ffd485sm26051672pfh.143.2022.04.07.11.02.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 11:02:39 -0700 (PDT)
-Date:   Thu, 7 Apr 2022 18:02:36 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 01/31] KVM: x86: hyper-v: Resurrect dedicated
- KVM_REQ_HV_TLB_FLUSH flag
-Message-ID: <Yk8nPJ45PJzN9o+L@google.com>
-References: <20220407155645.940890-1-vkuznets@redhat.com>
- <20220407155645.940890-2-vkuznets@redhat.com>
+        Thu, 7 Apr 2022 14:05:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75838CD644
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 11:03:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1144B61874
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 18:03:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33FABC385A4;
+        Thu,  7 Apr 2022 18:03:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649354585;
+        bh=+yMtJUm6feZXxZqTlDnWwouUGLx0qcjo0z4uDWA8UyY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=q3uWEl+mmqyGILtDhV3tico+Pa5LYwylnlSPAYjjJAdreKmdVbxliuwon2JYO8BLh
+         3LV8FKBQnHUQ0pAnYKdidtAXqJJ1yYdukD7TlZ6JCVPmr/WB3Kknp20uT/8G0WK+yz
+         c8k0C+QUkNDWlI3Xu73w3pqcHCBWf7+6r9ja78Us8RMxRB5IalL5wBsgR8v3vEi7tC
+         J0eSZI1/92t09vdy6pFLh3KkLvLxjK0OtJTZ6nAdG27hcW0GBtiN6rKpxhlhmC+ZCO
+         L3hi1jIB5eMUs9Pv0VAqbSIytp62TIOvpm+JHLjwkNtVvgnmmanlGDOz4m+g3AGt2S
+         ZvXRL23/W0Big==
+Date:   Thu, 7 Apr 2022 11:03:03 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Tom Rix <trix@redhat.com>
+Cc:     ndesaulniers@google.com, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] MAINTAINERS: add self as clang reviewer
+Message-ID: <Yk8nV1kBngon+o6N@dev-arch.thelio-3990X>
+References: <20220407175715.3378998-1-trix@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220407155645.940890-2-vkuznets@redhat.com>
+In-Reply-To: <20220407175715.3378998-1-trix@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022, Vitaly Kuznetsov wrote:
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index e9647614dc8c..3c54f6804b7b 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -3341,7 +3341,12 @@ void kvm_service_local_tlb_flush_requests(struct kvm_vcpu *vcpu)
->  	if (kvm_check_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu))
->  		kvm_vcpu_flush_tlb_current(vcpu);
->  
-> -	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu))
-> +	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu)) {
-> +		kvm_vcpu_flush_tlb_guest(vcpu);
-> +		kvm_clear_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
-> +	}
-> +
-> +	if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu))
->  		kvm_vcpu_flush_tlb_guest(vcpu);
+On Thu, Apr 07, 2022 at 01:57:15PM -0400, Tom Rix wrote:
+> I have been helping with build breaks and
+> other clang things and would like to help
+> with the reviews.
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
-It'd be slightly more performant to do:
+Thanks a lot Tom!
 
-	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu)) {
-		kvm_vcpu_flush_tlb_guest(vcpu);
-		kvm_clear_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
-	} else if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu)) {
-		kvm_hv_vcpu_flush_tlb(vcpu);
-	}
+Acked-by: Nathan Chancellor <nathan@kernel.org>
 
-And then when the code becomes
+I think we might need to CC Andrew Morton for this, as we do not
+currently pick up patches ourselves.
 
-
-	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu)) {
-		kvm_vcpu_flush_tlb_guest(vcpu);
-		if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu))
-			kvm_hv_vcpu_empty_flush_tlb(vcpu);
-	} else if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu)) {
-		kvm_hv_vcpu_flush_tlb(vcpu);
-	}
-
-the elif will help unsuspecting readers see that the HV_TLB_FLUSH request is
-cleared by kvm_check_request() in the TLB_FLUSH_GUEST path.
-
-The elif could result in having to bail from VM-Entry if the request becomes
-pending after the check/clear inside TLB_FLUSH_GUEST, but that should be a very
-rare case.
-
->  }
->  EXPORT_SYMBOL_GPL(kvm_service_local_tlb_flush_requests);
+> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 9ebfc93d8f0d..8da670067a34 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -4797,6 +4797,7 @@ F:	.clang-format
+>  CLANG/LLVM BUILD SUPPORT
+>  M:	Nathan Chancellor <nathan@kernel.org>
+>  M:	Nick Desaulniers <ndesaulniers@google.com>
+> +R:	Tom Rix <trix@redhat.com>
+>  L:	llvm@lists.linux.dev
+>  S:	Supported
+>  W:	https://clangbuiltlinux.github.io/
 > -- 
-> 2.35.1
+> 2.27.0
+> 
 > 
