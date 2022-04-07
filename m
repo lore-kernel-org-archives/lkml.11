@@ -2,107 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 031B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C0FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 14:38:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343942AbiDGOk0 (ORCPT
+        id S1344145AbiDGOk2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 10:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33972 "EHLO
+        Thu, 7 Apr 2022 10:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344087AbiDGOkV (ORCPT
+        with ESMTP id S1344124AbiDGOkZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 10:40:21 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD5A163E3C;
-        Thu,  7 Apr 2022 07:38:21 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id B76DB1F85E;
-        Thu,  7 Apr 2022 14:38:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649342292; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=CKo5P0+IINNApxT8SqgJZMHI5ahw3+NgqnnbLxnbVog=;
-        b=tIY9qc2J9fjwaH10ymJNmn+4YDyXMySBNX8eumG7uD8wraF3k0qtU9onrc+TVhddI/fSwL
-        qIOPPGGbaMlOVtRYn3L0HmmcqWag6SMysAD3yBfDyaz4KisjltNKrkjLWRw1NTcMQbKZ+I
-        CP8S9YWrA4F97VtoUh9lscuYGVlvoJ8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649342292;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=CKo5P0+IINNApxT8SqgJZMHI5ahw3+NgqnnbLxnbVog=;
-        b=RK4YwKjrz/cHmy19x5GhR/8HDXwA60FHwKmK1ZNnmCw5Oqq4wL3iqXd1AqP34S+vgk04YD
-        ncS0V/UMyTE+k/Bw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5177313485;
-        Thu,  7 Apr 2022 14:38:12 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id uk/0EFT3TmKdVwAAMHmgww
-        (envelope-from <lhenriques@suse.de>); Thu, 07 Apr 2022 14:38:12 +0000
-Received: from localhost (brahms.olymp [local])
-        by brahms.olymp (OpenSMTPD) with ESMTPA id c9aa668c;
-        Thu, 7 Apr 2022 14:38:35 +0000 (UTC)
-From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
-Subject: [PATCH v3] ceph: invalidate pages when doing direct/sync writes
-Date:   Thu,  7 Apr 2022 15:38:34 +0100
-Message-Id: <20220407143834.7516-1-lhenriques@suse.de>
+        Thu, 7 Apr 2022 10:40:25 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08992163E3C
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 07:38:23 -0700 (PDT)
+Received: from kwepemi100004.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KZ3rL3S5qz1HBbG;
+        Thu,  7 Apr 2022 22:37:38 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100004.china.huawei.com (7.221.188.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Apr 2022 22:38:06 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 7 Apr 2022 22:38:05 +0800
+Message-ID: <ac80045b-24f0-a163-ea96-be0d01c48d29@huawei.com>
+Date:   Thu, 7 Apr 2022 22:38:04 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [RFC PATCH -next V2 5/7] arm64: add get_user to machine check
+ safe
+To:     Mark Rutland <mark.rutland@arm.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>
+References: <20220406091311.3354723-1-tongtiangen@huawei.com>
+ <20220406091311.3354723-6-tongtiangen@huawei.com>
+ <Yk14AwR92MX0LKqZ@FVFF77S0Q05N>
+From:   Tong Tiangen <tongtiangen@huawei.com>
+In-Reply-To: <Yk14AwR92MX0LKqZ@FVFF77S0Q05N>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When doing a direct/sync write, we need to invalidate the page cache in
-the range being written to.  If we don't do this, the cache will include
-invalid data as we just did a write that avoided the page cache.
 
-Signed-off-by: Luís Henriques <lhenriques@suse.de>
----
- fs/ceph/file.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
 
-Ok, here's a new attempt.  After discussion in this thread and on IRC, I
-think this is the right fix.  generic/647 now passes with and without
-encryption.  Thanks!
+在 2022/4/6 19:22, Mark Rutland 写道:
+> On Wed, Apr 06, 2022 at 09:13:09AM +0000, Tong Tiangen wrote:
+>> Add scenarios get_user to machine check safe. The processing of
+>> EX_TYPE_UACCESS_ERR_ZERO and EX_TYPE_UACCESS_ERR_ZERO_UCE_RECOVERY is same
+>> and both return -EFAULT.
+> 
+> Which uaccess cases do we expect to *not* be recoverable?
+> 
+> Naively I would assume that if we're going to treat a memory error on a uaccess
+> as fatal to userspace we should be able to do that for *any* uacesses.
+> 
+> The commit message should explain why we need the distinction between a
+> recoverable uaccess and a non-recoverable uaccess.
+> 
+> Thanks,
+> Mark.
+> 
 
-Changes since v2:
-- Invalidation needs to be done after a write
+Currently, any memory error consumed in kernel mode will lead to panic
+(do_sea()).
 
-Changes since v1:
-- Replaced truncate_inode_pages_range() by invalidate_inode_pages2_range
-- Call fscache_invalidate with FSCACHE_INVAL_DIO_WRITE if we're doing DIO
+My idea is that not all memory errors consumed in kernel mode are fatal,
+such as copy_ from_ user/get_ user is a memory error consumed when
+reading user data in the process context. In this case, we can not let 
+the kernel panic, just kill the process without affecting the operation
+of the system.
 
-diff --git a/fs/ceph/file.c b/fs/ceph/file.c
-index 5072570c2203..63e67eb60310 100644
---- a/fs/ceph/file.c
-+++ b/fs/ceph/file.c
-@@ -1938,6 +1938,15 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
- 			break;
- 		}
- 		ceph_clear_error_write(ci);
-+		ret = invalidate_inode_pages2_range(
-+				inode->i_mapping,
-+				pos >> PAGE_SHIFT,
-+				(pos + len - 1) >> PAGE_SHIFT);
-+		if (ret < 0) {
-+			dout("invalidate_inode_pages2_range returned %d\n",
-+			     ret);
-+			ret = 0;
-+		}
- 		pos += len;
- 		written += len;
- 		dout("sync_write written %d\n", written);
+However, not all uaccess can be recovered without affecting the normal
+operation of the system. The key is not whether it is uaccess, but 
+whether there are key data affecting the normal operation of the system 
+in the read page.
+
+Thanks,
+Tong.
+
+
+>>
+>> Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
+>> ---
+>>   arch/arm64/include/asm/asm-extable.h | 14 +++++++++++++-
+>>   arch/arm64/include/asm/uaccess.h     |  2 +-
+>>   arch/arm64/mm/extable.c              |  1 +
+>>   3 files changed, 15 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/arm64/include/asm/asm-extable.h b/arch/arm64/include/asm/asm-extable.h
+>> index 74d1db74fd86..bfc2d224cbae 100644
+>> --- a/arch/arm64/include/asm/asm-extable.h
+>> +++ b/arch/arm64/include/asm/asm-extable.h
+>> @@ -10,8 +10,11 @@
+>>   
+>>   /* _MC indicates that can fixup from machine check errors */
+>>   #define EX_TYPE_FIXUP_MC		5
+>> +#define EX_TYPE_UACCESS_ERR_ZERO_MC	6
+>>   
+>> -#define IS_EX_TYPE_MC(type) (type == EX_TYPE_FIXUP_MC)
+>> +#define IS_EX_TYPE_MC(type)			\
+>> +	(type == EX_TYPE_FIXUP_MC ||		\
+>> +	 type == EX_TYPE_UACCESS_ERR_ZERO_MC)
+>>   
+>>   #ifdef __ASSEMBLY__
+>>   
+>> @@ -77,6 +80,15 @@
+>>   #define EX_DATA_REG(reg, gpr)						\
+>>   	"((.L__gpr_num_" #gpr ") << " __stringify(EX_DATA_REG_##reg##_SHIFT) ")"
+>>   
+>> +#define _ASM_EXTABLE_UACCESS_ERR_ZERO_MC(insn, fixup, err, zero)		\
+>> +	__DEFINE_ASM_GPR_NUMS							\
+>> +	__ASM_EXTABLE_RAW(#insn, #fixup,					\
+>> +			  __stringify(EX_TYPE_UACCESS_ERR_ZERO_MC),		\
+>> +			  "("							\
+>> +			    EX_DATA_REG(ERR, err) " | "				\
+>> +			    EX_DATA_REG(ZERO, zero)				\
+>> +			  ")")
+>> +
+>>   #define _ASM_EXTABLE_UACCESS_ERR_ZERO(insn, fixup, err, zero)		\
+>>   	__DEFINE_ASM_GPR_NUMS						\
+>>   	__ASM_EXTABLE_RAW(#insn, #fixup, 				\
+>> diff --git a/arch/arm64/include/asm/uaccess.h b/arch/arm64/include/asm/uaccess.h
+>> index e8dce0cc5eaa..24b662407fbd 100644
+>> --- a/arch/arm64/include/asm/uaccess.h
+>> +++ b/arch/arm64/include/asm/uaccess.h
+>> @@ -236,7 +236,7 @@ static inline void __user *__uaccess_mask_ptr(const void __user *ptr)
+>>   	asm volatile(							\
+>>   	"1:	" load "	" reg "1, [%2]\n"			\
+>>   	"2:\n"								\
+>> -	_ASM_EXTABLE_UACCESS_ERR_ZERO(1b, 2b, %w0, %w1)			\
+>> +	_ASM_EXTABLE_UACCESS_ERR_ZERO_MC(1b, 2b, %w0, %w1)		\
+>>   	: "+r" (err), "=&r" (x)						\
+>>   	: "r" (addr))
+>>   
+>> diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
+>> index f1134c88e849..7c05f8d2bce0 100644
+>> --- a/arch/arm64/mm/extable.c
+>> +++ b/arch/arm64/mm/extable.c
+>> @@ -95,6 +95,7 @@ bool fixup_exception(struct pt_regs *regs, unsigned int esr)
+>>   	case EX_TYPE_BPF:
+>>   		return ex_handler_bpf(ex, regs);
+>>   	case EX_TYPE_UACCESS_ERR_ZERO:
+>> +	case EX_TYPE_UACCESS_ERR_ZERO_MC:
+>>   		return ex_handler_uaccess_err_zero(ex, regs);
+>>   	case EX_TYPE_LOAD_UNALIGNED_ZEROPAD:
+>>   		return ex_handler_load_unaligned_zeropad(ex, regs);
+>> -- 
+>> 2.18.0.huawei.25
+>>
+>>
+>> _______________________________________________
+>> linux-arm-kernel mailing list
+>> linux-arm-kernel@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> .
