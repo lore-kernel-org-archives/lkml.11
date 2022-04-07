@@ -2,144 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D0DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F3CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 16:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242083AbiDGQyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 12:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49838 "EHLO
+        id S1345870AbiDGQ4E (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 12:56:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345874AbiDGQxh (ORCPT
+        with ESMTP id S232172AbiDGQ4C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 12:53:37 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA665DE78;
-        Thu,  7 Apr 2022 09:51:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649350297; x=1680886297;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=zWgHs9WoOcSa0eb+PT/FFhzIfcD017bTdrABzx78AoA=;
-  b=FUpXUQZ8jDaKyE3dRbEKHSFUqRcJjj/r5XFUdd44utfo5Kd8tXn/qQXO
-   nygI5t4BW8BgDf7XtMaEYoZipQAg7m4EcCgp0F1DZcH89nQNOh/iSBtVz
-   b71wc56C4R2fkXSQub87TPR13VZ9snRWLklYJY/j0mRsz8zRXSfte1boi
-   M=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 07 Apr 2022 09:51:35 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 09:51:35 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Apr 2022 09:51:34 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 7 Apr 2022 09:51:34 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
-        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
-        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
-        <bjorn.andersson@linaro.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
-        <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] drm/msm/dp: add fail safe mode outside of event_mutex context
-Date:   Thu, 7 Apr 2022 09:51:26 -0700
-Message-ID: <1649350286-11504-1-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 7 Apr 2022 12:56:02 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2069063BF7
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 09:54:02 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id C57101F85F;
+        Thu,  7 Apr 2022 16:54:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649350440; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dcvuNZmzf9IanKboANqk11ZG1S1mH/HQloafcR5di/E=;
+        b=vOdTkOEgefoWGNss7iZx6b0aqJsoCT3qjrhpLn1fX+o9ZGI6btnZDvhlOJs5jVGBdtQTBN
+        yPFSrh3SnsttT36a3bgFVWVPueDkxVjHAFGsUjAzsDTlUk1Gj4QVi0E284kkMyu7T1g4Ck
+        iZMMxP7KhAy5RbOs+I0zigTFYBpHVx0=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A4797A3B87;
+        Thu,  7 Apr 2022 16:54:00 +0000 (UTC)
+Date:   Thu, 7 Apr 2022 18:53:59 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: wake_up_klogd(): was: Re: [PATCH printk v2 10/12] printk: add
+ kthread console printers
+Message-ID: <Yk8XJ7NX2JGOQLna@alley>
+References: <20220405132535.649171-1-john.ogness@linutronix.de>
+ <20220405132535.649171-11-john.ogness@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405132535.649171-11-john.ogness@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is possible circular locking dependency detected on event_mutex.
-To break this possible circular locking, this patch move setting fail
-safe mode out of event_mutex scope.
+On Tue 2022-04-05 15:31:33, John Ogness wrote:
+> Create a kthread for each console to perform console printing. During
+> normal operation (@system_state == SYSTEM_RUNNING), the kthread
+> printers are responsible for all printing on their respective
+> consoles.
+> 
+> During non-normal operation, console printing is done as it has been:
+> within the context of the printk caller or within irq work triggered
+> by the printk caller.
+> 
+> Console printers synchronize against each other and against console
+> lockers by taking the console lock for each message that is printed.
+> 
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -3445,40 +3659,64 @@ static void wake_up_klogd_work_func(struct irq_work *irq_work)
+>  	int pending = this_cpu_xchg(printk_pending, 0);
+>  
+>  	if (pending & PRINTK_PENDING_OUTPUT) {
+> +		printk_prefer_direct_enter();
 
-Fixes: d4aca422539c ("drm/msm/dp:  always add fail-safe mode into connector mode list")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
----
- drivers/gpu/drm/msm/dp/dp_display.c |  6 ++++++
- drivers/gpu/drm/msm/dp/dp_panel.c   | 20 ++++++++++----------
- drivers/gpu/drm/msm/dp/dp_panel.h   |  1 +
- 3 files changed, 17 insertions(+), 10 deletions(-)
+Please, rename PRINTK_PENDING_OUTPUT to PRINTK_PENDING_DIRECT_OUTPUT.
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 178b774..a42732b 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -580,6 +580,12 @@ static int dp_hpd_plug_handle(struct dp_display_private *dp, u32 data)
- 			dp->dp_display.connector_type, state);
- 	mutex_unlock(&dp->event_mutex);
- 
-+	/*
-+	 * add fail safe mode outside event_mutex scope
-+	 * to avoid potiential circular lock with drm thread
-+	 */
-+	dp_panel_add_fail_safe_mode(dp->dp_display.connector);
-+
- 	/* uevent will complete connection part */
- 	return 0;
- };
-diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
-index f141872..26c3653 100644
---- a/drivers/gpu/drm/msm/dp/dp_panel.c
-+++ b/drivers/gpu/drm/msm/dp/dp_panel.c
-@@ -151,6 +151,15 @@ static int dp_panel_update_modes(struct drm_connector *connector,
- 	return rc;
- }
- 
-+void dp_panel_add_fail_safe_mode(struct drm_connector *connector)
-+{
-+	/* fail safe edid */
-+	mutex_lock(&connector->dev->mode_config.mutex);
-+	if (drm_add_modes_noedid(connector, 640, 480))
-+		drm_set_preferred_mode(connector, 640, 480);
-+	mutex_unlock(&connector->dev->mode_config.mutex);
-+}
-+
- int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
- 	struct drm_connector *connector)
- {
-@@ -207,16 +216,7 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
- 			goto end;
- 		}
- 
--		/* fail safe edid */
--		mutex_lock(&connector->dev->mode_config.mutex);
--		if (drm_add_modes_noedid(connector, 640, 480))
--			drm_set_preferred_mode(connector, 640, 480);
--		mutex_unlock(&connector->dev->mode_config.mutex);
--	} else {
--		/* always add fail-safe mode as backup mode */
--		mutex_lock(&connector->dev->mode_config.mutex);
--		drm_add_modes_noedid(connector, 640, 480);
--		mutex_unlock(&connector->dev->mode_config.mutex);
-+		dp_panel_add_fail_safe_mode(connector);
- 	}
- 
- 	if (panel->aux_cfg_update_done) {
-diff --git a/drivers/gpu/drm/msm/dp/dp_panel.h b/drivers/gpu/drm/msm/dp/dp_panel.h
-index 9023e5b..99739ea 100644
---- a/drivers/gpu/drm/msm/dp/dp_panel.h
-+++ b/drivers/gpu/drm/msm/dp/dp_panel.h
-@@ -59,6 +59,7 @@ int dp_panel_init_panel_info(struct dp_panel *dp_panel);
- int dp_panel_deinit(struct dp_panel *dp_panel);
- int dp_panel_timing_cfg(struct dp_panel *dp_panel);
- void dp_panel_dump_regs(struct dp_panel *dp_panel);
-+void dp_panel_add_fail_safe_mode(struct drm_connector *connector);
- int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
- 		struct drm_connector *connector);
- u32 dp_panel_get_mode_bpp(struct dp_panel *dp_panel, u32 mode_max_bpp,
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+The change confused me a lot. I wrote many lines about why it is
+(not) needed. Then I continued the review and found that it started making
+sense after the change in defer_console_output(). ;-)
 
+This patch changes the meaning of the flag. It would deserve renaming.
+
+> +
+>  		/* If trylock fails, someone else is doing the printing */
+>  		if (console_trylock())
+>  			console_unlock();
+> +
+> +		printk_prefer_direct_exit();
+>  	}
+>  
+>  	if (pending & PRINTK_PENDING_WAKEUP)
+> -		wake_up_interruptible(&log_wait);
+> +		wake_up_interruptible_all(&log_wait);
+
+This would deserve some explanation in the commit message.
+I think that this actually was needed even before. IMHO, more
+pending waiters had to wait for more new messages. It was
+not guaranteed the the woken waiter woke another one.
+
+It would be nice to put it into separate patch and do it first.
+
+>  }
+>  
+>  static DEFINE_PER_CPU(struct irq_work, wake_up_klogd_work) =
+>  	IRQ_WORK_INIT_LAZY(wake_up_klogd_work_func);
+>  
+> -void wake_up_klogd(void)
+> +static void __wake_up_klogd(int val)
+>  {
+>  	if (!printk_percpu_data_ready())
+>  		return;
+>  
+>  	preempt_disable();
+> -	if (waitqueue_active(&log_wait)) {
+> -		this_cpu_or(printk_pending, PRINTK_PENDING_WAKEUP);
+> +	/*
+> +	 * Guarantee any new records can be seen by printing threads before
+> +	 * checking if the wait queue is empty.
+> +	 *
+> +	 * The full memory barrier within wq_has_sleeper() pairs with the full
+> +	 * memory barrier within set_current_state() of
+> +	 * prepare_to_wait_event(), which is called after ___wait_event() adds
+> +	 * the waiter but before it has checked the wait condition.
+> +	 *
+> +	 * See printk_kthread_func:A for the pairing memory barrier.
+> +	 */
+
+I guess that this problem was there even before but it was less
+visible. Do I get it correctly, please?
+
+
+> +	if (wq_has_sleeper(&log_wait) || /* LMM(__wake_up_klogd:A) */
+> +	    (val & PRINTK_PENDING_OUTPUT)) {
+> +		this_cpu_or(printk_pending, val);
+>  		irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+>  	}
+>  	preempt_enable();
+>  }
+>  
+> +void wake_up_klogd(void)
+> +{
+> +	__wake_up_klogd(PRINTK_PENDING_WAKEUP);
+> +}
+> +
+>  void defer_console_output(void)
+>  {
+> -	if (!printk_percpu_data_ready())
+> -		return;
+
+	/* Always wakeup waiters because there are not only printk kthreads. */
+> +	int val = PRINTK_PENDING_WAKEUP;
+
+IMHO, this was actually needed even before. Otherwise, nobody woken
+log waiters for deferred messages.
+
+IMHO, it is a regression caused by moving wake_up_klogd() from
+console_unlock() to vprintk_emit(). It was the commit
+43a17111c2553925f6 ("printk: wake up klogd in vprintk_emit").
+
+If I am right then we should fix it separately.
+
+
+> -	preempt_disable();
+> -	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
+> -	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
+> -	preempt_enable();
+> +	/*
+> +	 * If console deferring was called with preferred direct printing,
+> +	 * make the irqwork perform the direct printing.
+> +	 */
+> +	if (atomic_read(&printk_prefer_direct))
+> +		val |= PRINTK_PENDING_OUTPUT;
+> +
+> +	__wake_up_klogd(val);
+>  }
+
+And we should call defer_console_output() also in
+printk_prefer_direct_enter() to make sure that a potential
+pending messages are printed.
+
+My understanding is that the kthreads stop processing the messages
+when the direct output is preferred. I think that this was not
+the case in v1 and I asked you do it this way so that kthreads
+do not block entering the direct mode.
+
+Best Regards,
+Petr
