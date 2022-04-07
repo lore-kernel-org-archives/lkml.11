@@ -2,88 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98BCDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D824EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 13:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343491AbiDGNFP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 09:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
+        id S231562AbiDGNF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 09:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245686AbiDGNC3 (ORCPT
+        with ESMTP id S1343604AbiDGNFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 09:02:29 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823DD9F38A
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 06:00:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649336415; x=1680872415;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=bnSUp6cwq6Caf0TGHF8XKZbohNnmqtwjwu8uNCq5o18=;
-  b=N+UOWyEQkOcg3+oSHwHwZ7du8uIrXlwMc6At+Ul391xH+4IZdKGqwNNQ
-   huWGp2SkuAazzpR2hsxb9FUEB0v50DNnJRm5gZUiZnOlWugXmFdf2muAt
-   4oO85q5PU9gThqXIsCxFKgOJL6x2cCNKac0Qs2jeAxB6rr3IP+xHfuN3w
-   h65grxe+B/NAZWzpvdruZoqaadbYZwxWmdolQrBOnmtZuRs1wu3stu/Gh
-   +VyPYwcL0sszSMOv4XJTrnFd6k0JZYADbIR6tNe1ZzHQHwyOrHbhA0xQS
-   jzipzA5JMwMWpTJqe963vZbZfE0dZWqt2pYgMF745jQlqUl42IqIVt9m5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10309"; a="248842022"
-X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
-   d="scan'208";a="248842022"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 06:00:14 -0700
-X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
-   d="scan'208";a="571041131"
-Received: from sannilnx.jer.intel.com ([10.12.231.73])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 06:00:07 -0700
-From:   Alexander Usyskin <alexander.usyskin@intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc:     Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Vitaly Lubart <vitaly.lubart@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 12/20] mei: gsc: wait for reset thread on stop
-Date:   Thu,  7 Apr 2022 15:58:31 +0300
-Message-Id: <20220407125839.1479249-13-alexander.usyskin@intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220407125839.1479249-1-alexander.usyskin@intel.com>
-References: <20220407125839.1479249-1-alexander.usyskin@intel.com>
+        Thu, 7 Apr 2022 09:05:45 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 511F725C5A6
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 06:03:24 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZ1l22cf4zdZhx;
+        Thu,  7 Apr 2022 21:02:54 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Apr
+ 2022 21:03:22 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>
+CC:     <shy828301@gmail.com>, <mike.kravetz@oracle.com>,
+        <david@redhat.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
+Subject: [PATCH 1/3] mm/memory-failure.c: avoid false-postive PageSwapCache test
+Date:   Thu, 7 Apr 2022 21:03:50 +0800
+Message-ID: <20220407130352.15618-2-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220407130352.15618-1-linmiaohe@huawei.com>
+References: <20220407130352.15618-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wait for reset work to complete before initiating
-stop reset flow sequence.
+PageSwapCache is only reliable when PageAnon is true because PG_swapcache
+serves as PG_owner_priv_1 which can be used by fs if it's pagecache page.
+So we should test PageAnon to distinguish pagecache page from swapcache
+page to avoid false-postive PageSwapCache test.
 
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- drivers/misc/mei/init.c | 2 ++
- 1 file changed, 2 insertions(+)
+ mm/memory-failure.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/misc/mei/init.c b/drivers/misc/mei/init.c
-index eb052005ca86..5bb6ba662cc0 100644
---- a/drivers/misc/mei/init.c
-+++ b/drivers/misc/mei/init.c
-@@ -320,6 +320,8 @@ void mei_stop(struct mei_device *dev)
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index ef402b490663..2e97302d62e4 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -2262,7 +2262,7 @@ static int __soft_offline_page(struct page *page)
+ 		return 0;
+ 	}
  
- 	mei_clear_interrupts(dev);
- 	mei_synchronize_irq(dev);
-+	/* to catch HW-initiated reset */
-+	mei_cancel_work(dev);
- 
- 	mutex_lock(&dev->device_lock);
- 
+-	if (!PageHuge(page) && PageLRU(page) && !PageSwapCache(page))
++	if (!PageHuge(page) && PageLRU(page) && !PageAnon(page))
+ 		/*
+ 		 * Try to invalidate first. This should work for
+ 		 * non dirty unmapped page cache pages.
 -- 
-2.32.0
+2.23.0
 
