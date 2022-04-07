@@ -2,133 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B62A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A44BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:50:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245740AbiDGRvN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59388 "EHLO
+        id S1344429AbiDGRwl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 13:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346587AbiDGRvI (ORCPT
+        with ESMTP id S1346625AbiDGRwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:51:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D10722EBD7
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:49:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30A9CB828FF
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 17:49:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DF03C385A0;
-        Thu,  7 Apr 2022 17:49:00 +0000 (UTC)
-Date:   Thu, 7 Apr 2022 18:48:57 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mark Brown <broonie@kernel.org>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Roman Gushchin <guro@fb.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Rustam Kovhaev <rkovhaev@gmail.com>,
-        David Laight <David.Laight@aculab.com>
-Subject: Re: [PATCH 00/10] mm, arm64: Reduce ARCH_KMALLOC_MINALIGN below the
- cache line size
-Message-ID: <Yk8kCQnSa0F5yIfC@arm.com>
-References: <20220405135758.774016-1-catalin.marinas@arm.com>
- <0966c4b0-6fff-3283-71c3-2d4e211f7385@suse.cz>
+        Thu, 7 Apr 2022 13:52:25 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BF122EBEA
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:50:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649353823; x=1680889823;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JUgoIzkbObqNcLqCN60nFlf3X8vseVwgWs8e1aCpjC8=;
+  b=Sl5M0A9acxrYaaSxBvivkfyF1w7sSIx12rXvhcBxiI8PPk1859P0l7Sg
+   2uRVCh7++cKAM0eqVccZE8u37rm6Vh23mEEGu/UQDLTcTwFKA3XMlz8E6
+   SexUC3u1s+S1bafrEU+R/w/uF7edxDKWJ7IOJMQ+9Etk7x895OYfTir11
+   5PwmgUh8wKqNCUaZ0p2tTNQE0KZXxdEVuMGxVUSMfilT0Fr406FPKHf3l
+   gTa+tSAB8Dj+i6OEx7FPa6Kqjq029wGzJDnbQ2LQ/E8RB+sAf6hLT4uTz
+   m+lL/ry7ap2c4j2s/pom9C5NwCTQsINI20gdWBwH/KuoWDvxLvkzzr26i
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="324557191"
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="324557191"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 10:50:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="793042580"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 07 Apr 2022 10:50:00 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 156B3132; Thu,  7 Apr 2022 20:47:44 +0300 (EEST)
+Date:   Thu, 7 Apr 2022 20:47:44 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, luto@kernel.org,
+        peterz@infradead.org, sathyanarayanan.kuppuswamy@linux.intel.com,
+        aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
+        david@redhat.com, hpa@zytor.com, jgross@suse.com,
+        jmattson@google.com, joro@8bytes.org, jpoimboe@redhat.com,
+        knsathya@kernel.org, pbonzini@redhat.com, sdeep@vmware.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv8 00/30] TDX Guest: TDX core support
+Message-ID: <20220407174744.cskt3rg63io4lkug@black.fi.intel.com>
+References: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
+ <b43720c6-0763-f4bb-64a0-7745c6ad920a@intel.com>
+ <Yk8WZn+etpj/o0OM@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0966c4b0-6fff-3283-71c3-2d4e211f7385@suse.cz>
+In-Reply-To: <Yk8WZn+etpj/o0OM@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 04:40:15PM +0200, Vlastimil Babka wrote:
-> On 4/5/22 15:57, Catalin Marinas wrote:
-> > This series is beneficial to arm64 even if it's only reducing the
-> > kmalloc() minimum alignment to 64. While it would be nice to reduce this
-> > further to 8 (or 16) on SoCs known to be fully DMA coherent, detecting
-> > this is via arch_setup_dma_ops() is problematic, especially with late
-> > probed devices. I'd leave it for an additional RFC series on top of
-> > this (there are ideas like bounce buffering for non-coherent devices if
-> > the SoC was deemed coherent).
-[...]
-> - due to ARCH_KMALLOC_MINALIGN and dma guarantees we should return
-> allocations aligned to ARCH_KMALLOC_MINALIGN and the prepended size header
-> should also not share their ARCH_KMALLOC_MINALIGN block with another
-> (shorter) allocation that has a different lifetime, for the dma coherency
-> reasons
-> - this is very wasteful especially with the 128 bytes alignment, and seems
-> we already violate it in some scenarios anyway [2]. Extending this to all
-> objects would be even more wasteful.
+On Thu, Apr 07, 2022 at 04:50:46PM +0000, Sean Christopherson wrote:
+> On Thu, Apr 07, 2022, Dave Hansen wrote:
+> > On 4/5/22 16:29, Kirill A. Shutemov wrote:
+> > ...
+> > >  arch/x86/coco/Makefile                   |   2 +
+> > >  arch/x86/coco/core.c                     |  22 +-
+> > >  arch/x86/coco/tdx/Makefile               |   3 +
+> > >  arch/x86/coco/tdx/tdcall.S               | 204 +++++++
+> > >  arch/x86/coco/tdx/tdx.c                  | 692 +++++++++++++++++++++++
+> > 
+> > This coco/ code currently doesn't have a specific MAINTAINERS entry.
+> > That makes me a bit worried that folks like Kirill won't get cc'd on
+> > patches.
+> > 
+> > Should we just do a MAINTAINERS entry like this?
+
+No objections on my side.
+
+> > It would also be really nice to get some SEV folks on the list as
+> > well.  I suspect the coco/ directory will grow more common SEV/TDX
+> > code over time.
+> > 
+> > X86 CONFIDENTIAL COMPUTING
+> > M:      x86@kernel.org
+> > R:	Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> > ...
+> > S:      Supported
+> > F:      arch/x86/coco/
+> > ...
 > 
-> So this series would help here, especially if we can get to the 8/16 size.
+> And/or a dedicated vger list?
 
-If we get to 8/16 size, it would only be for platforms that are fully
-coherent. Otherwise, with non-coherent DMA, the minimum kmalloc()
-alignment would still be the cache line size (typically 64) even if
-ARCH_KMALLOC_MINALIGN is 8.
-
-IIUC your point is that if ARCH_KMALLOC_MINALIGN is 8, kmalloc() could
-return pointers 8-byte aligned only as long as DMA safety is preserved
-(like not sharing the rest of the cache line with anything other
-writers).
-
-> But now I also wonder if keeping the name and meaning of "MINALIGN" is in
-> fact misleading and unnecessarily constraining us? What this is really about
-> is "granularity of exclusive access", no?
-
-Not necessarily. Yes, in lots of cases it is about granularity of access
-but there are others where the code does need the pointer returned
-aligned to ARCH_DMA_MINALIGN (currently via ARCH_KMALLOC_MINALIGN).
-Crypto seems to have such requirement (see the sub-thread with Herbert).
-Some (all?) callers ask kmalloc() for the aligned size and there's an
-expectation that if the size is a multiple of a power of two, kmalloc()
-will return a pointer aligned to that power of two. I think we need to
-preserve these semantics which may lead to some more wastage if you add
-the header (e.g. a size of 3*64 returns a pointer either aligned to 192
-or 256).
-
-> Let's say the dma granularity is 64bytes, and there's a kmalloc(56).
-
-In your example, the size is not a power of two (or multiple of), so I
-guess there's no expectation for a 64-byte alignment (it can be 8)
-unless DMA is involved. See below.
-
-> If SLOB find a 64-bytes aligned block, uses the first 8 bytes for the
-> size header and returns the remaining 56 bytes, then the returned
-> pointer is not *aligned* to 64 bytes, but it's still aligned enough
-> for cpu accesses (which need only e.g. 8), and non-coherent dma should
-> be also safe because nobody will be accessing the 8 bytes header,
-> until the user of the object calls kfree() which should happen only
-> when it's done with any dma operations. Is my reasoning correct and
-> would this be safe?
-
-From the DMA perspective, it's not safe currently. Let's say we have an
-inbound DMA transfer, the DMA API will invalidate the cache line prior
-to DMA. In arm64 terms, it means that the cache line is discarded, not
-flushed to memory. If the first 8 bytes had not been written back to
-RAM, they'd be lost. If we can guarantee that no CPU write happens to
-the cache line during the DMA transfer, we can change the DMA mapping
-operation to do a clean+invalidate (flush the cacheline to RAM) first. I
-guess this could be done with an IS_ENABLED(CONFIG_SLOB) check.
+We already have linux-coco@lists.linux.dev. Although, it is not
+x86-specific.
 
 -- 
-Catalin
+ Kirill A. Shutemov
