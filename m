@@ -2,173 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62EBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:53:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A99B6C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 12:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245492AbiDGMy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 08:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53226 "EHLO
+        id S245506AbiDGMzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 08:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245497AbiDGMyx (ORCPT
+        with ESMTP id S245372AbiDGMzA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 08:54:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF910259B78;
-        Thu,  7 Apr 2022 05:52:53 -0700 (PDT)
+        Thu, 7 Apr 2022 08:55:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCFF259B58;
+        Thu,  7 Apr 2022 05:53:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DC12B8276E;
-        Thu,  7 Apr 2022 12:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E31EAC385A7;
-        Thu,  7 Apr 2022 12:52:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FF0161366;
+        Thu,  7 Apr 2022 12:53:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1672CC385A7;
+        Thu,  7 Apr 2022 12:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649335971;
-        bh=yEgxalyouDOhCPVfvRQ3DDbeM5FBr/AeYPdte+FiyQE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p7uBFAD9XglW/HNYFw6X+3fEDChWBUurYqWLUh7RBoh21sHzbuHaVGc38F4uUVQcD
-         7SkK/Q8Ql7pE7Hvw3Vm2FOh9BltPh+ddqvzbM43Za3ZzDSgSZxgrmy8cNMXkqw2cQ8
-         cr038MpkV9dRZrGnToFvKeMu2PdHJin9UpltKIoAm1ptKVDTZhWBz9x86tQzuDCg4s
-         iqcw0YYbtBPqpCOnDbvkBQTujHqVh2+iqSEJPEfQuqkw0xK+hr3zH2zaWIorAxknRC
-         lhz0u8shbFQNLr7LwDzSYWF75Ub4AvicwkmoE5ADX5FMK76FPxAjYJSHdVN2XMVGLx
-         MLW5f6v5g9+qg==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [RFC bpf-next 1/4] kallsyms: Add kallsyms_lookup_names function
-Date:   Thu,  7 Apr 2022 14:52:21 +0200
-Message-Id: <20220407125224.310255-2-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407125224.310255-1-jolsa@kernel.org>
-References: <20220407125224.310255-1-jolsa@kernel.org>
+        s=k20201202; t=1649335979;
+        bh=yyt0fkY+OiU6yD+EkfeH4xIYmR/qozETlEVmaOo3eWc=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=XLPs56zj2KFjCgl3aufO8uTuY6UuttnvDpQhSv9IM3z4T3KILbsMium+G5WoHUXro
+         n33yIeWltQ1unN6/Vn0BUfrUz38ntDANNZUgpDTwyBnTzh+z69HnL4yodgZmeME6Gz
+         Y7gJRRuU5vBOXhk0rYrH0CQqCVALHDnfKt0X1SyhL6qWoQsW9BLUZs1thLQI2KaHy/
+         9n7vzqc0odLXL+4DCHSqw/3MTqo67gYnc8Ponb9WmXD5wydUDkQ2Yr/2Ar47ELV9rj
+         ueIVvN36TTtzEM3UFOOw0fF40k4yYI8jcMtilaXsjj3Qlx27rg5bVcE/vLWjwtQ1gr
+         vm4ahJUQuIXYA==
+From:   Mark Brown <broonie@kernel.org>
+To:     robh+dt@kernel.org, u0084500@gmail.com
+Cc:     linux-kernel@vger.kernel.org, cy_huang@richtek.com,
+        devicetree@vger.kernel.org, gene_chen@richtek.com,
+        lgirdwood@gmail.com
+In-Reply-To: <1648294788-11758-1-git-send-email-u0084500@gmail.com>
+References: <1648294788-11758-1-git-send-email-u0084500@gmail.com>
+Subject: Re: [PATCH v2 0/2] Add Richtek RT5759 buck converter support
+Message-Id: <164933597780.2466529.16895833631668270427.b4-ty@kernel.org>
+Date:   Thu, 07 Apr 2022 13:52:57 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding kallsyms_lookup_names function that resolves array of symbols
-with single pass over kallsyms.
+On Sat, 26 Mar 2022 19:39:46 +0800, cy_huang wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
+> 
+> This patch series add Richtek RT5759 buck converter support.
+> 
+> since V2
+> - Fix typo in title description.
+> - Put allOf and if/then to be together.
+> - Change node name to generic 'regulator'.
+> - Remove seperate wdt_enable variable.
+> - Add of_match_ptr in struct driver of_match_table declaration.
+> 
+> [...]
 
-The user provides array of string pointers with count and pointer to
-allocated array for resolved values.
+Applied to
 
-  int kallsyms_lookup_names(const char **syms, u32 cnt,
-                            unsigned long *addrs)
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
 
-Before we iterate kallsyms we sort user provided symbols by name and
-then use that in kalsyms iteration to find each kallsyms symbol in
-user provided symbols.
+Thanks!
 
-We also check each symbol to pass ftrace_location, because this API
-will be used for fprobe symbols resolving. This can be optional in
-future if there's a need.
+[1/2] dt-bindings: regulator: Add binding for Richtek RT5759 DCDC converter
+      commit: 2a826d9c4251e4a64aa79113aac8cedf7cd0ff57
+[2/2] regulator: rt5759: Add support for Richtek RT5759 DCDC converter
+      commit: 7b36ddb208bd1744f4769f11e530bc08c3701964
 
-Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- include/linux/kallsyms.h |  6 +++++
- kernel/kallsyms.c        | 48 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 54 insertions(+)
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
-index ce1bd2fbf23e..5320a5e77f61 100644
---- a/include/linux/kallsyms.h
-+++ b/include/linux/kallsyms.h
-@@ -72,6 +72,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
- #ifdef CONFIG_KALLSYMS
- /* Lookup the address for a symbol. Returns 0 if not found. */
- unsigned long kallsyms_lookup_name(const char *name);
-+int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs);
- 
- extern int kallsyms_lookup_size_offset(unsigned long addr,
- 				  unsigned long *symbolsize,
-@@ -103,6 +104,11 @@ static inline unsigned long kallsyms_lookup_name(const char *name)
- 	return 0;
- }
- 
-+int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs)
-+{
-+	return -ERANGE;
-+}
-+
- static inline int kallsyms_lookup_size_offset(unsigned long addr,
- 					      unsigned long *symbolsize,
- 					      unsigned long *offset)
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index 79f2eb617a62..a3738ddf9e87 100644
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -29,6 +29,8 @@
- #include <linux/compiler.h>
- #include <linux/module.h>
- #include <linux/kernel.h>
-+#include <linux/bsearch.h>
-+#include <linux/sort.h>
- 
- /*
-  * These will be re-linked against their real values
-@@ -572,6 +574,52 @@ int sprint_backtrace_build_id(char *buffer, unsigned long address)
- 	return __sprint_symbol(buffer, address, -1, 1, 1);
- }
- 
-+static int symbols_cmp(const void *a, const void *b)
-+{
-+	const char **str_a = (const char **) a;
-+	const char **str_b = (const char **) b;
-+
-+	return strcmp(*str_a, *str_b);
-+}
-+
-+struct kallsyms_data {
-+	unsigned long *addrs;
-+	const char **syms;
-+	u32 cnt;
-+	u32 found;
-+};
-+
-+static int kallsyms_callback(void *data, const char *name,
-+			     struct module *mod, unsigned long addr)
-+{
-+	struct kallsyms_data *args = data;
-+
-+	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
-+		return 0;
-+
-+	addr = ftrace_location(addr);
-+	if (!addr)
-+		return 0;
-+
-+	args->addrs[args->found++] = addr;
-+	return args->found == args->cnt ? 1 : 0;
-+}
-+
-+int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs)
-+{
-+	struct kallsyms_data args;
-+
-+	sort(syms, cnt, sizeof(*syms), symbols_cmp, NULL);
-+
-+	args.addrs = addrs;
-+	args.syms = syms;
-+	args.cnt = cnt;
-+	args.found = 0;
-+	kallsyms_on_each_symbol(kallsyms_callback, &args);
-+
-+	return args.found == args.cnt ? 0 : -EINVAL;
-+}
-+
- /* To avoid using get_symbol_offset for every symbol, we carry prefix along. */
- struct kallsym_iter {
- 	loff_t pos;
--- 
-2.35.1
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
