@@ -2,77 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0247C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 02:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3BBFC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 02:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238460AbiDGCUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 22:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58770 "EHLO
+        id S238575AbiDGCVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 22:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236780AbiDGCUR (ORCPT
+        with ESMTP id S231488AbiDGCVv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 22:20:17 -0400
-X-Greylist: delayed 2169 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 19:18:13 PDT
-Received: from spam.unicloud.com (smgmail.unic2.com.cn [220.194.70.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9932E329B8;
-        Wed,  6 Apr 2022 19:18:11 -0700 (PDT)
-Received: from spam.unicloud.com (localhost [127.0.0.2] (may be forged))
-        by spam.unicloud.com with ESMTP id 2371g3vt034159;
-        Thu, 7 Apr 2022 09:42:03 +0800 (GMT-8)
-        (envelope-from luofei@unicloud.com)
-Received: from eage.unicloud.com ([220.194.70.35])
-        by spam.unicloud.com with ESMTP id 2371eVLN032798;
-        Thu, 7 Apr 2022 09:40:31 +0800 (GMT-8)
-        (envelope-from luofei@unicloud.com)
-Received: from localhost.localdomain (10.10.1.7) by zgys-ex-mb09.Unicloud.com
- (10.10.0.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2375.17; Thu, 7
- Apr 2022 09:40:30 +0800
-From:   luofei <luofei@unicloud.com>
-To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>
-CC:     <pbonzini@redhat.com>, <seanjc@google.com>, <vkuznets@redhat.com>,
-        <wanpengli@tencent.com>, <jmattson@google.com>, <joro@8bytes.org>,
-        <hpa@zytor.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, luofei <luofei@unicloud.com>
-Subject: [PATCH] KVM: x86/mmu: remove unnecessary kvm_shadow_root_allocated() check
-Date:   Wed, 6 Apr 2022 21:40:16 -0400
-Message-ID: <20220407014016.1266469-1-luofei@unicloud.com>
-X-Mailer: git-send-email 2.27.0
+        Wed, 6 Apr 2022 22:21:51 -0400
+Received: from mail.meizu.com (edge01.meizu.com [14.29.68.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C369512529B;
+        Wed,  6 Apr 2022 19:19:52 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
+ (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 7 Apr 2022
+ 10:19:51 +0800
+Received: from [172.16.137.70] (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 7 Apr
+ 2022 10:19:50 +0800
+Message-ID: <0470221e-0561-0c6f-1caf-9cf2f1679aa5@meizu.com>
+Date:   Thu, 7 Apr 2022 10:19:31 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.10.1.7]
-X-ClientProxiedBy: zgys-ex-mb06.Unicloud.com (10.10.0.52) To
- zgys-ex-mb09.Unicloud.com (10.10.0.24)
-X-DNSRBL: 
-X-MAIL: spam.unicloud.com 2371g3vt034159
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V2] s390: Simplify the calculation of variables
+To:     Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>
+CC:     Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        <linux-s390@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <Ykq2H+POaGs0GHVU@osiris>
+ <1649212651-32038-1-git-send-email-baihaowen@meizu.com>
+ <Yk1TOpjLnmUcRQt3@osiris>
+ <6208840a-bb97-6b45-7b8e-80ad79849129@linux.ibm.com>
+From:   baihaowen <baihaowen@meizu.com>
+In-Reply-To: <6208840a-bb97-6b45-7b8e-80ad79849129@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When we reach here, the return value of kvm_shadow_root_allocated()
-has already been checked to false under kvm->slots_arch_lock.
-So remove the unnecessary recheck.
+在 4/7/22 12:44 AM, Peter Oberparleiter 写道:
+> On 06.04.2022 10:45, Heiko Carstens wrote:
+>> On Wed, Apr 06, 2022 at 10:37:31AM +0800, Haowen Bai wrote:
+>>> Fix the following coccicheck warnings:
+>>> ./arch/s390/include/asm/scsw.h:695:47-49: WARNING
+>>>  !A || A && B is equivalent to !A || B
+>>>
+>>> I apply a readable version just to get rid of a warning.
+>>>
+>>> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+>>> ---
+>>> V1->V2: apply a readable and simple version as suggestion.
+>>>
+>>>  arch/s390/include/asm/scsw.h | 47 ++++++++++++++++++++++++++++++--------------
+>>>  1 file changed, 32 insertions(+), 15 deletions(-)
+>> [full quote below]
+>>
+>> Vineeth, Peter, could one of you please Review and or ACK the patch
+>> below?
+> This patch changes scsw->cmd access to scsw->tm access, which is
+> incorrect, so I cannot ACK them as is.
+>
+> Also I'm somewhat torn on the general question if these functions should
+> be changed:
+>
+> - the current implementation is unreadable => change it
+> - the current implementation works => keep it
+> - improvement patches like this one seem to appear regularly and consume
+>   time in reviewing => change it
+>
+> If there was a new version that really improved readability, this would
+> be really welcome. The problem is that the definition of readability is
+> special for these functions: each of these functions implement a
+> validity check based on text from the s390 Principles of Operations
+> (PoP) document [1]. "Readable" for myself would mean: I can easily
+> correlate the code to the text from the PoP so that I can spot errors or
+> adjust code to changed text.
+>
+> I'm adding some examples how that could look like below. My question to
+> the original author would be, if this is something they could implement,
+> or if we'd rather do that at some point in time in the future by ourselves.
+>
+>>> diff --git a/arch/s390/include/asm/scsw.h b/arch/s390/include/asm/scsw.h
+>>> index a7c3ccf681da..b7e65f96de3c 100644
+>>> --- a/arch/s390/include/asm/scsw.h
+>>> +++ b/arch/s390/include/asm/scsw.h
+>>> @@ -508,9 +508,13 @@ static inline int scsw_cmd_is_valid_zcc(union scsw *scsw)
+>>>   */
+>>>  static inline int scsw_cmd_is_valid_ectl(union scsw *scsw)
+>>>  {
+>>> -	return (scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND) &&
+>>> -	       !(scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS) &&
+>>> -	       (scsw->cmd.stctl & SCSW_STCTL_ALERT_STATUS);
+>>> +	if (!(scsw->tm.stctl & SCSW_STCTL_STATUS_PEND))
+>>> +		return 0;
+>>> +	if (scsw->tm.stctl & SCSW_STCTL_INTER_STATUS)
+>>> +		return 0;
+>>> +	if (scsw->tm.stctl & SCSW_STCTL_ALERT_STATUS)
+>>> +		return 1;
+>>> +	return 0;
+>>>  }
+> Here's the PoP text that is the base for this function (note ECTL=E):
+>
+> "The E bit is meaningful whenever the subchannel is status pending with
+> alert status either alone or together with primary status, secondary
+> status, or both."
+>
+> A readable version for me would therefore contain code that can easily
+> be matched against that text, e.g. something like:
+>
+> /* Must be status pending. */
+> if (!(scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND))
+>   return 0;
+>
+> /* Must have alert status. */
+> if (!(scsw->cmd.stctl & SCSW_STCTL_ALERT_STATUS))
+>   return 0;
+>
+> /* Must be alone or together with primary, secondary or both,
+>  * => no intermediate status. */
+> if (scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS)
+>   return 0;
+>
+> return 1;
+>
+>>>  /**
+>>> @@ -522,10 +526,15 @@ static inline int scsw_cmd_is_valid_ectl(union scsw *scsw)
+>>>   */
+>>>  static inline int scsw_cmd_is_valid_pno(union scsw *scsw)
+>>>  {
+>>> -	return (scsw->cmd.fctl != 0) &&
+>>> -	       (scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND) &&
+>>> -	       (!(scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS) ||
+>>> -		  (scsw->cmd.actl & SCSW_ACTL_SUSPENDED));
+>>> +	if (!scsw->tm.fctl)
+>>> +		return 0;
+>>> +	if (!(scsw->tm.stctl & SCSW_STCTL_STATUS_PEND))
+>>> +		return 0;
+>>> +	if (!(scsw->tm.stctl & SCSW_STCTL_INTER_STATUS))
+>>> +		return 1;
+>>> +	if (scsw->tm.actl & SCSW_ACTL_SUSPENDED)
+>>> +		return 1;
+>>> +	return 0;
+>>>  }
+> Here's the associated PoP text for this function (note: PNO=N)
+>
+> "The N bit is meaningful whenever the status-control field contains any
+> of the indications listed below and at least one basic I/O function is
+> also indicated at the subchannel:
+> - Status pending with any combination of primary, secondary, or alert
+>   status
+> - Status pending alone
+> - Status pending with intermediate status when the subchannel is also
+>   suspended"
+>
+> Again a readable version could look like:
+>
+> /* Must indicate at least one I/O function. */
+> if (!scsw->cmd.fctl)
+>   return 0;
+>
+> /* Must be status pending. */
+> if (!(scsw->cmd.stctl & SCSW_STCTL_STATUS_PEND))
+>   return 0;
+>
+> /* Can be status pending alone, or with any combination of primary,
+>  * secondary and alert => no intermediate status. */
+> if (!(scsw->cmd.stctl & SCSW_STCTL_INTER_STATUS))
+>   return 1;
+>
+> /* If intermediate, must be suspended. */
+> if (scsw->cmd.actl & SCSW_ACTL_SUSPENDED)
+>   return 1;
+>
+> return 0;
+>
+> The _tm_ functions below should be changed in the exact same way, while
+> accessing the corresponding data fields in scsw->tm instead of scsw->cmd.
+>
+>>>  static inline int scsw_tm_is_valid_ectl(union scsw *scsw)
+>>>  static inline int scsw_tm_is_valid_pno(union scsw *scsw)
+> [1] https://www.ibm.com/support/pages/zarchitecture-principles-operation
+>
+Dear Peter Oberparleiter
 
-Signed-off-by: luofei <luofei@unicloud.com>
----
- arch/x86/kvm/mmu/mmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Well done. Thank you for your kindly and professional explain what we need to do best.
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 8f19ea752704..1978ee527298 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3394,7 +3394,7 @@ static int mmu_first_shadow_root_alloc(struct kvm *kvm)
- 	 * Check if anything actually needs to be allocated, e.g. all metadata
- 	 * will be allocated upfront if TDP is disabled.
- 	 */
--	if (kvm_memslots_have_rmaps(kvm) &&
-+	if (!is_tdp_mmu_enabled(kvm) &&
- 	    kvm_page_track_write_tracking_enabled(kvm))
- 		goto out_success;
- 
 -- 
-2.27.0
+Haowen Bai
 
