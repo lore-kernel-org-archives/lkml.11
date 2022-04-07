@@ -2,113 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:47:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11CE8C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 17:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346582AbiDGRtC (ORCPT
+        id S1346592AbiDGRup (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 13:49:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57172 "EHLO
+        Thu, 7 Apr 2022 13:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235671AbiDGRs7 (ORCPT
+        with ESMTP id S232005AbiDGRum (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 13:48:59 -0400
-Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D632186FB;
-        Thu,  7 Apr 2022 10:46:58 -0700 (PDT)
-Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-d39f741ba0so7107973fac.13;
-        Thu, 07 Apr 2022 10:46:58 -0700 (PDT)
+        Thu, 7 Apr 2022 13:50:42 -0400
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0971F0462
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 10:48:25 -0700 (PDT)
+Received: by mail-pg1-f173.google.com with SMTP id t4so5577231pgc.1
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 10:48:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0ylGqf4i8xaVHnuzuNWAr0rdTSo9ggN34EheyoaVllw=;
+        b=T2XNQRl+r0zIk1OVANQpnZ0kLjjeMgE3T1kBSsEGPJ/WdktFsvAc6X1DcFRBLJ7mXg
+         1Pb558/lqG3HBzLaYiOUJtl+vFvbc0IFPOfaPNP1pkXW8UwqxKmu3yHnPqHHHXDCn/Ee
+         qR5agD1tj66okNOXjq8CR9JdBjoHqbekDcnLMfdocVzpTAJtb23SiMaUGSWtSGNCdFO3
+         JdYOdYW9CBhjqgmsk/96rqmSmtHRwBmoBDOXQoyh31jggD2mHXLUIYoAk90jtAUP8/vB
+         59FDufcnLIH89VvuMJ9R5IlLMlUuujlWd4acEgEC2mWXax4J2y6zr6micuF65FeWVXvQ
+         gFvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=MmJLuyekwoblpDX5b95jqgHit0wkMxVufsew2de6Slo=;
-        b=0T5kaHlE1ipsHES8GxwMFE+DH+UvG7yo9S1SjOA8OaNGX0IYQzJZo76rn0/intxKMZ
-         K8NK3KQ1dN+0sl8WOZ02/N46Lc8fb9hrdG7BdBQd2iepC2Bim6q1d53u3BLucg4zT9pu
-         O5kShshmE5PSZIfYNoVJqV0hZ+vGJI8F3GV5Gp9/M2YeuL1sMKhqbJtxOGn5yZUnclsv
-         9MvEAozfXc7r2sGIEsRav/byS/MGRed01yqoFimbNOb7vvXb9E1hDvlrp5Jr1uDG1OY1
-         rxI1Ll9U6ANtOtjiPL6Q5XEX2Lp8guKUMCzVwiZXEuCELrGDCMXgTFmJdlu3R/TlmPyD
-         V+FA==
-X-Gm-Message-State: AOAM530oNeayLCliorKugaC151UzHBIFWIX6pJXW/QHK11eSjUUf03Kw
-        7cLwE1yj+jZ9IFecKMYE2Q==
-X-Google-Smtp-Source: ABdhPJw754vwBgnN/nBlQiTizQIA1UI3kDsgOYrCH4cfGSEpTe/2uKtRnMgf93qE3ml0Uw6wprvEeA==
-X-Received: by 2002:a05:6870:2310:b0:da:b3f:2b76 with SMTP id w16-20020a056870231000b000da0b3f2b76mr6804229oao.277.1649353617755;
-        Thu, 07 Apr 2022 10:46:57 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o17-20020a9d5c11000000b005b2611a13edsm8263373otk.61.2022.04.07.10.46.56
+        bh=0ylGqf4i8xaVHnuzuNWAr0rdTSo9ggN34EheyoaVllw=;
+        b=rdm2tuz5CHuc7kipjZVnix34GBE/sGUIoYOiOFZe3DLLhsGc3mztc5X+fVr3hk38aq
+         3T7Fwb0MIHiIRIa97DQGL7q6vDvjsjLrcsRbOy1Dc7yIRnxyvVzH9qy4XMz7/QdduZTF
+         I6aPEF/7WzpDrBihC309xByWIWP/KFeejzvrvPsy+JpXqtR8m8MLtT04faaZRnv1EBRu
+         ILzYbHbTC1oQtHgbN50ElvWSl8hp778y7RLEjBCbelHwJKqN/ciVwrRUuRtK29zp6E9s
+         dNESwrTkXtQ17Nn55S5Ps4yOKJKZ0Sb1O38Iezuih5kX8yJIrja7NyCf9vEKUDPnfh3b
+         4ECA==
+X-Gm-Message-State: AOAM532e7Xb3BaCttlf2646v3mFN/twR7wCVwvoXtXQT0S1PCa30GX6o
+        wO7ZmUrdmjlZZd7SrFNK0q+8tQ==
+X-Google-Smtp-Source: ABdhPJz9gLSTqTEoNtyZG0nVnVCMWvVfvlkvkWMvPMxGQ/pln4HEy6TzKBmrC6xpjbWUw0Q91GsMzw==
+X-Received: by 2002:a05:6a00:1252:b0:4fa:afcc:7d24 with SMTP id u18-20020a056a00125200b004faafcc7d24mr15180138pfi.85.1649353643466;
+        Thu, 07 Apr 2022 10:47:23 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id t6-20020a17090a2f8600b001cb162f1f52sm2829320pjd.53.2022.04.07.10.47.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 10:46:57 -0700 (PDT)
-Received: (nullmailer pid 1614078 invoked by uid 1000);
-        Thu, 07 Apr 2022 17:46:56 -0000
-Date:   Thu, 7 Apr 2022 12:46:56 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Subject: Re: [PATCH v4 0/9] dt-bindings: qcom: convert entire GSBI (QUP
- I2C/SPI/UART) to DT schema
-Message-ID: <Yk8jkJepgcRMo73l@robh.at.kernel.org>
-References: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
+        Thu, 07 Apr 2022 10:47:22 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 17:47:19 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 03/31] KVM: x86: hyper-v: Handle
+ HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls gently
+Message-ID: <Yk8jp5ZoQO6X8aTG@google.com>
+References: <20220407155645.940890-1-vkuznets@redhat.com>
+ <20220407155645.940890-4-vkuznets@redhat.com>
+ <Yk8gTB+x2UVE34Ds@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220405063451.12011-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <Yk8gTB+x2UVE34Ds@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 08:34:42AM +0200, Krzysztof Kozlowski wrote:
-> Hi,
+On Thu, Apr 07, 2022, Sean Christopherson wrote:
+> > @@ -1857,12 +1940,13 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+> >  	struct hv_tlb_flush_ex flush_ex;
+> >  	struct hv_tlb_flush flush;
+> >  	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
+> > +	u64 entries[KVM_HV_TLB_FLUSH_RING_SIZE - 2];
 > 
-> Changes since v3
-> ================
-> 1. Correct dmas in serial/UART bindings example.
-> 2. Use "const" in compatible for GSBI.
-> 3. Add review tags.
+> What's up with the -2?  And given the multitude of things going on in this code,
+> I'd strongly prefer this be tlbflush_entries.
 > 
-> Changes since v2
-> ================
-> 1. Several new schema patches (GSBI, I2C and UART schema).
-> 2. Several DTS fixes for clocks and DMAs. The choice of dma tx-rx
->    and clocks core-iface was by more-or-less number of fixes needed.
-> 3. Add Kuldeep acks to patches without changes.
+> Actually, if you do:
 > 
-> Changes since v1
-> ================
-> 1. Fix path in com/qcom,gsbi.txt.
-> 2. Merge clock-names in example, correct $ref path (Kuldeep).
-> 
-> Merging
-> =======
-> 1. The DTS patches are independent and silence warnings pointed
->     out by schema.
-> 
-> 2. The DT schema patches should be taken together as GSBI (final patch)
->    depends on previous bindings.
-> 
-> Best regards,
-> Krzysztof
-> 
-> Cc: Kuldeep Singh <singh.kuldeep87k@gmail.com>
-> 
-> Krzysztof Kozlowski (9):
->   arm64: dts: qcom: align dmas in I2C/SPI/UART with DT schema
->   arm64: dts: qcom: align clocks in I2C/SPI with DT schema
->   ARM: dts: qcom: ipq4019: align dmas in SPI/UART with DT schema
->   ARM: dts: qcom: ipq4019: align clocks in I2C with DT schema
->   ARM: dts: qcom: msm8660: disable GSBI8
->   spi: dt-bindings: qcom,spi-qup: convert to dtschema
->   dt-bindings: serial: qcom,msm-uartdm: convert to dtschema
->   dt-bindings: i2c: qcom,i2c-qup: convert to dtschema
->   dt-bindings: qcom: qcom,gsbi: convert to dtschema
+> 	u64 __tlbflush_entries[KVM_HV_TLB_FLUSH_RING_SIZE - 2];
+> 	u64 *tlbflush_entries;
 
-Patches 6-9 applied.
+Looking at future patches, tlb_flush_entries is better for consistency (apply everywhere).
 
-Rob
+> and drop all_addr, the code to get entries can be
+> 
+> 	if (hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE ||
+> 	    hc->code == HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX ||
+> 	    hc->rep_cnt > ARRAY_SIZE(tlbflush_entries)) {
+> 		tlbfluish_entries = NULL;
+> 	} else {
+> 		if (kvm_hv_get_tlbflush_entries(kvm, hc, __tlbflush_entries,
+> 						consumed_xmm_halves, data_offset))
+> 			return HV_STATUS_INVALID_HYPERCALL_INPUT;
+> 		tlbfluish_entries = __tlbflush_entries;
+
+Heh, fluish, because TLB entries are somewhat fluid?
+
+> 	}
+> 
+> and the calls to queue flushes becomes
+> 
+> 			hv_tlb_flush_ring_enqueue(v, tlbflush_entries, hc->rep_cnt);
+> 
+> That way a bug will "just" be a NULL pointer dereference and not consumption of
+> uninitialized data (though such a bug might be caught be caught by the compiler).
