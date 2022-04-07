@@ -2,96 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16481C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF6EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 20:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229743AbiDGUaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 16:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54610 "EHLO
+        id S229615AbiDGUau (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 16:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229654AbiDGUa1 (ORCPT
+        with ESMTP id S229721AbiDGUa2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 16:30:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C602DCC99;
-        Thu,  7 Apr 2022 13:14:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6100CCE29BF;
-        Thu,  7 Apr 2022 20:14:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 401EFC385A4;
-        Thu,  7 Apr 2022 20:14:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649362455;
-        bh=WW8rVy2QPJiQmDJ/9CJJp7rEmsJBUAeYshtZ8r09Shc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SYZRJQpPQTzZtgAKcI+8tv9khBU8zZbYgKEQAAbFJEjzucAqYpRs01JaOB1/+aNf7
-         mFeM2D8GuNG2QVut/TW/soCOoX2n6OD5mQQpZugj4wiPzN+UVk7d/8kWF4h9n8Mn3l
-         Xf9Qdogxk3HFUCvyK7rzf8WLa6fgp4KD2+JJgtMkydDEVD+3OZxfTU+qbFP5N/4e6H
-         7KEB+OGWrXm467+Em2b/siPc53aL761eoktjk1aR2k6D4Ky7A5X7Djud5UatU08R2f
-         GDDhOdYyE20TrEDxyCoNKzdEo89F84iPgXft2kUsX/QxoIMIf5902OnDayo71M7DLB
-         IhINbOOC/GW9w==
-Date:   Thu, 7 Apr 2022 22:14:12 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 03/10] clk: cs2000-cp: use simple i2c probe function
-Message-ID: <Yk9GFB9vcWTgtGEA@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Stephen Kitt <steve@sk2.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220407151831.2371706-1-steve@sk2.org>
- <20220407151831.2371706-4-steve@sk2.org>
+        Thu, 7 Apr 2022 16:30:28 -0400
+Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF01048AB25;
+        Thu,  7 Apr 2022 13:14:48 -0700 (PDT)
+Received: from omf20.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay10.hostedemail.com (Postfix) with ESMTP id DE0032FA6;
+        Thu,  7 Apr 2022 20:14:46 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id 6ABB020029;
+        Thu,  7 Apr 2022 20:14:45 +0000 (UTC)
+Message-ID: <2fd88e6119f62b968477ef9781abb1832d399fd6.camel@perches.com>
+Subject: [PATCH] rtw89: rtw89_ser: add const to struct state_ent and
+ event_ent
+From:   Joe Perches <joe@perches.com>
+To:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Date:   Thu, 07 Apr 2022 13:14:44 -0700
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="bbJtj6fnE7MR9usx"
-Content-Disposition: inline
-In-Reply-To: <20220407151831.2371706-4-steve@sk2.org>
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout08
+X-Rspamd-Queue-Id: 6ABB020029
+X-Stat-Signature: caq8wo8cxjieg5swcm8b8jhioa6nxfnj
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19bwPQLqVZELSCoodEWphNBTv2jJE9vPKo=
+X-HE-Tag: 1649362485-65274
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Change the struct and the uses to const to reduce data.
 
---bbJtj6fnE7MR9usx
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+$ size drivers/net/wireless/realtek/rtw89/ser.o* (x86-64 defconfig w/ rtw89)
+   text	   data	    bss	    dec	    hex	filename
+   3741	      8	      0	   3749	    ea5	drivers/net/wireless/realtek/rtw89/ser.o.new
+   3437	    312	      0	   3749	    ea5	drivers/net/wireless/realtek/rtw89/ser.o.old
 
-On Thu, Apr 07, 2022 at 05:18:24PM +0200, Stephen Kitt wrote:
-> The i2c probe function here doesn't use the id information provided in
-> its second argument, so the single-parameter i2c probe function
-> ("probe_new") can be used instead.
->=20
-> This avoids scanning the identifier tables during probes.
->=20
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
+Signed-off-by: Joe Perches <joe@perches.com>
+---
+ drivers/net/wireless/realtek/rtw89/core.h | 4 ++--
+ drivers/net/wireless/realtek/rtw89/ser.c  | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+diff --git a/drivers/net/wireless/realtek/rtw89/core.h b/drivers/net/wireless/realtek/rtw89/core.h
+index 771722132c53b..9bf56ce5ab43f 100644
+--- a/drivers/net/wireless/realtek/rtw89/core.h
++++ b/drivers/net/wireless/realtek/rtw89/core.h
+@@ -2853,8 +2853,8 @@ struct rtw89_ser {
+ 
+ 	struct work_struct ser_hdl_work;
+ 	struct delayed_work ser_alarm_work;
+-	struct state_ent *st_tbl;
+-	struct event_ent *ev_tbl;
++	const struct state_ent *st_tbl;
++	const struct event_ent *ev_tbl;
+ 	struct list_head msg_q;
+ 	spinlock_t msg_q_lock; /* lock when read/write ser msg */
+ 	DECLARE_BITMAP(flags, RTW89_NUM_OF_SER_FLAGS);
+diff --git a/drivers/net/wireless/realtek/rtw89/ser.c b/drivers/net/wireless/realtek/rtw89/ser.c
+index 837cdc366a61a..7fbda7ef96bbb 100644
+--- a/drivers/net/wireless/realtek/rtw89/ser.c
++++ b/drivers/net/wireless/realtek/rtw89/ser.c
+@@ -396,7 +396,7 @@ static void ser_l2_reset_st_hdl(struct rtw89_ser *ser, u8 evt)
+ 	}
+ }
+ 
+-static struct event_ent ser_ev_tbl[] = {
++static const struct event_ent ser_ev_tbl[] = {
+ 	{SER_EV_NONE, "SER_EV_NONE"},
+ 	{SER_EV_STATE_IN, "SER_EV_STATE_IN"},
+ 	{SER_EV_STATE_OUT, "SER_EV_STATE_OUT"},
+@@ -412,7 +412,7 @@ static struct event_ent ser_ev_tbl[] = {
+ 	{SER_EV_MAXX, "SER_EV_MAX"}
+ };
+ 
+-static struct state_ent ser_st_tbl[] = {
++static const struct state_ent ser_st_tbl[] = {
+ 	{SER_IDLE_ST, "SER_IDLE_ST", ser_idle_st_hdl},
+ 	{SER_RESET_TRX_ST, "SER_RESET_TRX_ST", ser_reset_trx_st_hdl},
+ 	{SER_DO_HCI_ST, "SER_DO_HCI_ST", ser_do_hci_st_hdl},
 
 
---bbJtj6fnE7MR9usx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJPRhQACgkQFA3kzBSg
-KbZA9Q/+MhzyslImzTueIs+gB6FQHloAdO3nD9UUrIWnldG8Hm7wpbcBxRG1axYb
-jewbwt51w1ICW1eXK7Ft6l28qBGtD0zPXeQq3NJ19tdM7MdZu9fvhUvkj3WtBmp2
-BbgvMyYsAiVNeUbmDr04mPG4k1XTrEJSRLXpj8r6Yr8nFFOBHBVRC/EV1sFfXFVY
-PHDWspBFJTUsKoHpM6s50J03+KNsQRCvbmdZIL13bUlv340ew7g+Cf+LfhwL+s2A
-Mt/mvGX0br86Be0cIrjrUyQ8iLvFJaQV8NgeEwY3A2bxUMnySpQgeljRDP/uv/+F
-xzWu9PRuvNSEq2lgvUZqqXZdcEei73ZRn1BbdWpl70n+Ib6s/BdxhCCwKxm5ZIAp
-LLtv5nOgS4FfzA0B+vqWh2l44qYNuIE1FTm7db5hcodW7vNsz8+hJoEu6UBvp4F5
-+HUEOaadqZ27uLsWNr3FQ2O1mSrSm69hzsWySzTlowxX92x+oo2Hkx4TC8sZZO/2
-JTxjEgcuoHYPgBg29c1Ke2QNOpF44p0s7Iul8RVgcD5lgdk6aZDFaVfzvIpa46ha
-ZlCAzf/SLb3l0SOgCY68EaoWJh6scQLE7pp1H0E7WI5HVOu5PjGkPc/PXasQiH/N
-8WRkZqG2Qz0OGjrEdCb4ar88ta2Xrwl0ukfsYUGazcSnXtsXNXw=
-=Wsn6
------END PGP SIGNATURE-----
-
---bbJtj6fnE7MR9usx--
