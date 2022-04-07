@@ -2,106 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 768F1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96021C43219
 	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 01:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240815AbiDGBaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 21:30:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
+        id S240992AbiDGBad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 21:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240524AbiDGBUD (ORCPT
+        with ESMTP id S240527AbiDGBUD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 6 Apr 2022 21:20:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A17215B85B;
-        Wed,  6 Apr 2022 18:18:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B04A61DA8;
-        Thu,  7 Apr 2022 01:18:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1CA1C385A7;
-        Thu,  7 Apr 2022 01:18:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649294282;
-        bh=6jNmCwqW0fu4CPFR3J5FzbGjeFGMlP2sKf6skwD6jqA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Asu9K+l3LEMeieAYMciFHQsAM9+JPSmRYaxUDeQlu8FsQGi0gM2/7xxvsK8ZUaQXP
-         EN1SPPT6kewY4zmjmlAPV9PBQF27mf2izegOPGU2l5rbzGOxfQyRj7JKZq7GY4tMW/
-         m6rdAhBWeqLA1B/1gz9ZuMCqimK2NtqixsgWcxhmjTBGo3JjvijXKaNMlQGXxhckJc
-         7PJIfz1ajHHFxROrUAHlYK6R6vNLe8BN8/hbjLFsmcBBzjQ5rbzj5qm6FaNr1pygJ7
-         Vz8pwVf7gLsYi2hs+cTJHClf8rSz0QG5TXUL8VMvLSVHk2wXMu87Thz340MkP4nyP8
-         FALCU8RKzWsFg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        philipp.reisner@linbit.com, lars.ellenberg@linbit.com,
-        christoph.boehmwalder@linbit.com, drbd-dev@lists.linbit.com,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 6/7] drbd: remove usage of list iterator variable after loop
-Date:   Wed,  6 Apr 2022 21:17:39 -0400
-Message-Id: <20220407011740.115717-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407011740.115717-1-sashal@kernel.org>
-References: <20220407011740.115717-1-sashal@kernel.org>
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F7EB98;
+        Wed,  6 Apr 2022 18:17:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649294279; x=1680830279;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=2JbrfSY6uP2wUo1/4/a1W0qsDUA/7Yo093jm6g0+yKI=;
+  b=lzwmhFuyQLK+HOAfj8NPae5JzUBo1sFrAY+KjQIZ3qJyVVzz4XHmqO9d
+   tlKnnGcsG2cpdxvlHh3CvfmpCytHlIXsYCCDS9lmO0QN0vebVRJTSrc1r
+   sD9Z1GHql3NYLW92Inv/CNzDjn1qdL3ZzBDE+DhdcDFgY8Z+/mRRvilE4
+   AZ0CKi0XGWDlSmxOgGIz3kVnIawzLzlZi/ibUbbocVMCabp94eoEK2BSf
+   tkUQt/nzbkmylsPJFQZJbhPLl7idEZ7n5gLbgn9nT6yjqtHhstez9Q949
+   ozRs7ddVUg03iuIUFGb5TUzKWOb/z1hvlRGM6PkMvPb0XOVqo3n07SJSb
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="260035421"
+X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
+   d="scan'208";a="260035421"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 18:17:58 -0700
+X-IronPort-AV: E=Sophos;i="5.90,241,1643702400"; 
+   d="scan'208";a="722746220"
+Received: from zitianwa-mobl.ccr.corp.intel.com (HELO [10.255.28.125]) ([10.255.28.125])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 18:17:54 -0700
+Message-ID: <8aa0cf5b-bfda-bcf8-45f9-dc5113532caa@intel.com>
+Date:   Thu, 7 Apr 2022 09:17:51 +0800
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.7.0
+Subject: Re: [RFC PATCH v5 026/104] KVM: TDX: x86: Add vm ioctl to get TDX
+ systemwide parameters
+Content-Language: en-US
+To:     Kai Huang <kai.huang@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <5ff08ce32be458581afe59caa05d813d0e4a1ef0.1646422845.git.isaku.yamahata@intel.com>
+ <586be87a-4f81-ea43-2078-a6004b4aba08@redhat.com>
+ <17981a2e-03e3-81df-0654-5ccb29f43546@intel.com>
+ <bf3e61bcc2096e72a02f56b70524928e6c3cfa3e.camel@intel.com>
+From:   Xiaoyao Li <xiaoyao.li@intel.com>
+In-Reply-To: <bf3e61bcc2096e72a02f56b70524928e6c3cfa3e.camel@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+On 4/7/2022 9:07 AM, Kai Huang wrote:
+> On Wed, 2022-04-06 at 09:54 +0800, Xiaoyao Li wrote:
+>> On 4/5/2022 8:52 PM, Paolo Bonzini wrote:
+>>> On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+>>>> Implement a VM-scoped subcomment to get system-wide parameters.  Although
+>>>> this is system-wide parameters not per-VM, this subcomand is VM-scoped
+>>>> because
+>>>> - Device model needs TDX system-wide parameters after creating KVM VM.
+>>>> - This subcommands requires to initialize TDX module.  For lazy
+>>>>     initialization of the TDX module, vm-scope ioctl is better.
+>>>
+>>> Since there was agreement to install the TDX module on load, please
+>>> place this ioctl on the /dev/kvm file descriptor.
+>>>
+>>> At least for SEV, there were cases where the system-wide parameters are
+>>> needed outside KVM, so it's better to avoid requiring a VM file descriptor.
+>>
+>> I don't have strong preference on KVM-scope ioctl or VM-scope.
+>>
+>> Initially, we made it KVM-scope and change it to VM-scope in this
+>> version. Yes, it returns the info from TDX module, which doesn't vary
+>> per VM. However, what if we want to return different capabilities
+>> (software controlled capabilities) per VM?
+>>
+> 
+> In this case, you don't return different capabilities, instead, you return the
+> same capabilities but control the capabilities on per-VM basis.
 
-[ Upstream commit 901aeda62efa21f2eae937bccb71b49ae531be06 ]
+yes, so I'm not arguing it or insisting on per-VM.
 
-In preparation to limit the scope of a list iterator to the list
-traversal loop, use a dedicated pointer to iterate through the list [1].
+I just speak out my concern since it's user ABI.
 
-Since that variable should not be used past the loop iteration, a
-separate variable is used to 'remember the current location within the
-loop'.
-
-To either continue iterating from that position or skip the iteration
-(if the previous iteration was complete) list_prepare_entry() is used.
-
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Link: https://lore.kernel.org/r/20220331220349.885126-1-jakobkoschel@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/block/drbd/drbd_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index daa9cef96ec6..f4537a5eef02 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -193,7 +193,7 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
- 		unsigned int set_size)
- {
- 	struct drbd_request *r;
--	struct drbd_request *req = NULL;
-+	struct drbd_request *req = NULL, *tmp = NULL;
- 	int expect_epoch = 0;
- 	int expect_size = 0;
- 
-@@ -247,8 +247,11 @@ void tl_release(struct drbd_connection *connection, unsigned int barrier_nr,
- 	 * to catch requests being barrier-acked "unexpectedly".
- 	 * It usually should find the same req again, or some READ preceding it. */
- 	list_for_each_entry(req, &connection->transfer_log, tl_requests)
--		if (req->epoch == expect_epoch)
-+		if (req->epoch == expect_epoch) {
-+			tmp = req;
- 			break;
-+		}
-+	req = list_prepare_entry(tmp, &connection->transfer_log, tl_requests);
- 	list_for_each_entry_safe_from(req, r, &connection->transfer_log, tl_requests) {
- 		if (req->epoch != expect_epoch)
- 			break;
--- 
-2.35.1
+>> Part of the TDX capabilities
+>> serves like get_supported_cpuid, making it KVM wide lacks the
+>> flexibility to return differentiated capabilities for different TDs.
+>>
+>>
+>>> Thanks,
+>>>
+>>> Paolo
+>>>
+>>
+> 
 
