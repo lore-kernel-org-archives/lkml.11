@@ -2,79 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03E93C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 02:38:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 02:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239302AbiDGCkZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 6 Apr 2022 22:40:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46756 "EHLO
+        id S232799AbiDGCmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 6 Apr 2022 22:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233222AbiDGCkV (ORCPT
+        with ESMTP id S231734AbiDGCmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 6 Apr 2022 22:40:21 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5218ADE903;
-        Wed,  6 Apr 2022 19:38:21 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 7 Apr
- 2022 10:38:20 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 7 Apr
- 2022 10:38:19 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-CC:     Haowen Bai <baihaowen@meizu.com>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] libbpf: potential NULL dereference in usdt_manager_attach_usdt()
-Date:   Thu, 7 Apr 2022 10:38:17 +0800
-Message-ID: <1649299098-2069-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 6 Apr 2022 22:42:09 -0400
+X-Greylist: delayed 924 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 19:40:09 PDT
+Received: from spam2.hygon.cn (unknown [110.188.70.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1332A220EC
+        for <linux-kernel@vger.kernel.org>; Wed,  6 Apr 2022 19:40:08 -0700 (PDT)
+Received: from spam2.hygon.cn (localhost [127.0.0.2] (may be forged))
+        by spam2.hygon.cn with ESMTP id 2372Oc4M016374
+        for <linux-kernel@vger.kernel.org>; Thu, 7 Apr 2022 10:24:38 +0800 (GMT-8)
+        (envelope-from puwen@hygon.cn)
+Received: from MK-DB.hygon.cn ([172.23.18.60])
+        by spam2.hygon.cn with ESMTP id 2372JkUG015975;
+        Thu, 7 Apr 2022 10:19:46 +0800 (GMT-8)
+        (envelope-from puwen@hygon.cn)
+Received: from cncheex02.Hygon.cn ([172.23.18.12])
+        by MK-DB.hygon.cn with ESMTP id 2372Jo1R063189;
+        Thu, 7 Apr 2022 10:19:50 +0800 (GMT-8)
+        (envelope-from puwen@hygon.cn)
+Received: from cncheex01.Hygon.cn (172.23.18.10) by cncheex02.Hygon.cn
+ (172.23.18.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Apr
+ 2022 10:19:28 +0800
+Received: from cncheex01.Hygon.cn ([172.23.18.10]) by cncheex01.Hygon.cn
+ ([172.23.18.10]) with mapi id 15.01.2375.024; Thu, 7 Apr 2022 10:19:28 +0800
+From:   Wen Pu <puwen@hygon.cn>
+To:     Peter Zijlstra <peterz@infradead.org>
+CC:     Wyes Karny <wyes.karny@amd.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Lewis.Carroll@amd.com" <Lewis.Carroll@amd.com>,
+        "Mario.Limonciello@amd.com" <Mario.Limonciello@amd.com>,
+        "gautham.shenoy@amd.com" <gautham.shenoy@amd.com>,
+        "Ananth.Narayan@amd.com" <Ananth.Narayan@amd.com>,
+        "bharata@amd.com" <bharata@amd.com>,
+        "len.brown@intel.com" <len.brown@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "chang.seok.bae@intel.com" <chang.seok.bae@intel.com>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "metze@samba.org" <metze@samba.org>,
+        "zhengqi.arch@bytedance.com" <zhengqi.arch@bytedance.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>
+Subject: Re: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
+Thread-Topic: [PATCH] x86: Prefer MWAIT over HALT on AMD processors
+Thread-Index: AQHYSPZ2i5fvSUiei0GnFDYbI7mXuKzjM8cA
+Date:   Thu, 7 Apr 2022 02:19:28 +0000
+Message-ID: <5c57dae3-966a-b579-c971-e346b14a8695@hygon.cn>
+References: <20220405130021.557880-1-wyes.karny@amd.com>
+ <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
+In-Reply-To: <YkxNFyXqC12nXyfM@hirez.programming.kicks-ass.net>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.23.18.44]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <4053828FB938304D86CAE8649A34B29D@Hygon.cn>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+X-MAIL: spam2.hygon.cn 2372Oc4M016374
+X-DNSRBL: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-link could be null but still dereference bpf_link__destroy(&link->link)
-and it will lead to a null pointer access.
-
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- tools/lib/bpf/usdt.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/tools/lib/bpf/usdt.c b/tools/lib/bpf/usdt.c
-index 1bce2eab5e89..b02ebc4ba57c 100644
---- a/tools/lib/bpf/usdt.c
-+++ b/tools/lib/bpf/usdt.c
-@@ -996,7 +996,7 @@ struct bpf_link *usdt_manager_attach_usdt(struct usdt_manager *man, const struct
- 	link = calloc(1, sizeof(*link));
- 	if (!link) {
- 		err = -ENOMEM;
--		goto err_out;
-+		goto link_err;
- 	}
- 
- 	link->usdt_man = man;
-@@ -1072,7 +1072,7 @@ struct bpf_link *usdt_manager_attach_usdt(struct usdt_manager *man, const struct
- 
- err_out:
- 	bpf_link__destroy(&link->link);
--
-+link_err:
- 	free(targets);
- 	hashmap__free(specs_hash);
- 	if (elf)
--- 
-2.7.4
-
+DQpPbiAyMDIyLzQvNSAyMjowNywgUGV0ZXIgWmlqbHN0cmEgd3JvdGU6DQo+IE9uIFR1ZSwgQXBy
+IDA1LCAyMDIyIGF0IDA2OjMwOjIxUE0gKzA1MzAsIFd5ZXMgS2Fybnkgd3JvdGU6DQo+PiArc3Rh
+dGljIGlubGluZSBib29sIGVhcmx5X213YWl0X3N1cHBvcnRlZChjb25zdCBzdHJ1Y3QgY3B1aW5m
+b194ODYgKmMpDQo+PiArew0KPj4gKwlpZiAoYy0+eDg2X3ZlbmRvciA9PSBYODZfVkVORE9SX0lO
+VEVMKQ0KPj4gKwkJcmV0dXJuIHRydWU7DQo+PiArDQo+PiArCWlmIChjLT54ODZfdmVuZG9yID09
+IFg4Nl9WRU5ET1JfQU1EICYmIGNwdV9oYXMoYywgWDg2X0ZFQVRVUkVfWkVOKSkNCj4gDQo+IFdo
+YXQgYWJvdXQgSHlnb24/IEZvciBzb21lIHJlYXNvbiB5b3UgZ3V5cyBkb24ndCBjby1vcmRpbmF0
+ZSBhbmQgd2UgZW5kDQo+IHVwIGdldHRpbmcgZW5kbGVzcyAnbWFrZS1zYW1lJyBwYXRjaGVzLCBz
+b21ldGltZXMgc2VwYXJhdGVkIGJ5IHllYXJzIDovDQoNCg0KSHlnb24gQ1BVIHN1cHBvcnRzIE1X
+QUlULCBzbyB0aGlzIHBhdGNoIGFsc28gbWFrZSBzZW5zZSBmb3IgSHlnb24gOikNCkFzIERhdmUg
+SGFuc2VuIGFuZCBMZXdpcyBDYXJvbGwgbWVudGlvbmVkIGluIHRoZSBmb2xsb3dpbmcgdGhyZWFk
+cywNCkh5Z29uIGhhcyBhbHJlYWR5IHNldCB0aGUgWDg2X0ZFQVRVUkVfWkVOIGZsYWcsIHNvIGl0
+J3MgYmV0dGVyIHRvDQp1c2UgWDg2X0ZFQVRVUkVfWkVOIGZvciBhbGwgWmVuIHVhcmNoIENQVXMu
+DQoNCj4+ICsJCXJldHVybiB0cnVlOw0KPj4gKw0KPj4gKwlyZXR1cm4gZmFsc2U7DQo+PiArfQ0K
+DQotLSANClJlZ2FyZHMsDQpQdSBXZW4=
