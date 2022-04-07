@@ -2,118 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25625C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 08:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243346AbiDGI4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 04:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
+        id S243366AbiDGI5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 04:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243352AbiDGI4U (ORCPT
+        with ESMTP id S234575AbiDGI5G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 04:56:20 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CD4256677;
-        Thu,  7 Apr 2022 01:54:15 -0700 (PDT)
-X-UUID: 5f971f37c6b34234ac9c872879471170-20220407
-X-UUID: 5f971f37c6b34234ac9c872879471170-20220407
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1309223339; Thu, 07 Apr 2022 16:54:11 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 7 Apr 2022 16:54:10 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 7 Apr
- 2022 16:54:04 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Apr 2022 16:54:03 +0800
-From:   Lina Wang <lina.wang@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "Jesper Dangaard Brouer" <hawk@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        <linux-kernel@vger.kernel.org>,
-        Maciej enczykowski <maze@google.com>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
-        Lina Wang <lina.wang@mediatek.com>
-Subject: [PATCH v5 3/3] net: fix wrong network header length
-Date:   Thu, 7 Apr 2022 16:47:27 +0800
-Message-ID: <20220407084727.10241-3-lina.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220407084727.10241-1-lina.wang@mediatek.com>
-References: <20220407084727.10241-1-lina.wang@mediatek.com>
+        Thu, 7 Apr 2022 04:57:06 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04DE1C7F26;
+        Thu,  7 Apr 2022 01:55:05 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id ch16-20020a17090af41000b001ca867ef52bso6035448pjb.0;
+        Thu, 07 Apr 2022 01:55:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=e/SRJZVa+pnGFAQo/DwKcWQpRPq+V+tMl7YCYye8ky8=;
+        b=Za5XoHpE3z6/fpXB3ca8tbDAq9xX0zhpil4PKZb0dvl/rgE7sgQg/bkx4mHJY/IH6P
+         cxjXlZrvDwbZsfqacuCmxrQTj/qqlcy0c7kC9y7DUMM7hER+FC6zVmEghCMBeQo1s9uG
+         U3FLUTf0zpoFMszLWUbyisyJzur9Z/1hWs9jg6yYjkWVNcxYJZRyO8YptFBnwLPM0YNb
+         Nc3MEaFgzw6zKKzbbcU0ghuGBbxJYjMxb34t16Alh+BkliXaf088ALOrs+vuWYh8mMpa
+         i8a92U9ExfWjLS+/1QSgKbjwNxdnZZs288jgwSFDt+WF0iwMmV8ye4lQBiYuvsHUYZWz
+         6sXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=e/SRJZVa+pnGFAQo/DwKcWQpRPq+V+tMl7YCYye8ky8=;
+        b=HbCig1hR2hMG33ps6PxVk5vNDuC/IW2A8L9yNNu/hvcir36CgrdD4fh/DKzqDu6HyD
+         YtmzbyFutirf1CBMQyRwrMXseM08lMzlrSXUp6I65XFsGyXV3L3/xZUeA2EjZPfkvOV+
+         0HpIThUJVD2ocY1a5scqdq1yCY/CYswpmJu+Hv7ZCj6GJGlqR/2DP7aZmg6vLS0Y0z7T
+         v388i9Vdll3q9WplcKwhRVWVdMH3H1J9Wof+nSKl15oUih1Su0EkyK4XNvqeEOvF/v7H
+         +BXbI0ArZh3v0Cmi5q7CvmjIn0NkHyEkuaigWlOwXvOnSqFwJATB8PvZdIPpSoEtJC+S
+         KKlw==
+X-Gm-Message-State: AOAM531EWXuGSB1pw7gHF5JSGgazxcH8iAJvfdAqSepGkcAUZBnOxD0s
+        fOdChWDwet8SxbR7BgIl68U=
+X-Google-Smtp-Source: ABdhPJzq6mIJdzeGR7PpscKazLC0a0+GeljWRO9npUDAFsvbjAAsjD2jwiPFr4UEIWuK3k51pQoe7A==
+X-Received: by 2002:a17:90a:7f94:b0:1cb:1853:da1b with SMTP id m20-20020a17090a7f9400b001cb1853da1bmr1334040pjl.14.1649321705066;
+        Thu, 07 Apr 2022 01:55:05 -0700 (PDT)
+Received: from [192.168.43.80] (subs32-116-206-28-43.three.co.id. [116.206.28.43])
+        by smtp.gmail.com with ESMTPSA id t38-20020a634626000000b0039cc30b7c93sm1672908pga.82.2022.04.07.01.55.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 01:55:04 -0700 (PDT)
+Message-ID: <7a7fbb50-2f6f-ad99-2bf5-68b2b4028acc@gmail.com>
+Date:   Thu, 7 Apr 2022 15:54:58 +0700
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.16 0000/1014] 5.16.19-rc2 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220406133109.570377390@linuxfoundation.org>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <20220406133109.570377390@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
-several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
-ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
-network_header\transport_header\mac_header have been updated as ipv4 acts,
-but other skbs in frag_list didnot update anything, just ipv6 packets.
+On 06/04/22 20.44, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.19 release.
+> There are 1014 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
 
-udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
-frag_list and make sure right udp payload is delivered to user space.
-Unfortunately, other skbs in frag_list who are still ipv6 packets are
-updated like the first skb and will have wrong transport header length.
+Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0) and
+powerpc (ps3_defconfig, gcc 11.2.0).
 
-e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
-has the same network_header(24)& transport_header(64), after
-bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
-skb's network_header is 44,transport_header is 64, other skbs in frag_list
-didnot change.After skb_segment_list, the other skbs in frag_list has
-different network_header(24) and transport_header(44), so there will be 20
-bytes different from original,that is difference between ipv6 header and
-ipv4 header. Just change transport_header to be the same with original.
+Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-Actually, there are two solutions to fix it, one is traversing all skbs
-and changing every skb header in bpf_skb_proto_6_to_4, the other is
-modifying frag_list skb's header in skb_segment_list. Considering
-efficiency, adopt the second one--- when the first skb and other skbs in
-frag_list has different network_header length, restore them to make sure
-right udp payload is delivered to user space.
-
-Signed-off-by: Lina Wang <lina.wang@mediatek.com>
----
- net/core/skbuff.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 10bde7c6db44..e8006e0a1b25 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3897,7 +3897,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 	unsigned int delta_len = 0;
- 	struct sk_buff *tail = NULL;
- 	struct sk_buff *nskb, *tmp;
--	int err;
-+	int len_diff, err;
- 
- 	skb_push(skb, -skb_network_offset(skb) + offset);
- 
-@@ -3937,9 +3937,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		skb_push(nskb, -skb_network_offset(nskb) + offset);
- 
- 		skb_release_head_state(nskb);
-+		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
- 		__copy_skb_header(nskb, skb);
- 
- 		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
-+		nskb->transport_header += len_diff;
- 		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
- 						 nskb->data - tnl_hlen,
- 						 offset + tnl_hlen);
 -- 
-2.18.0
-
+An old man doll... just what I always wanted! - Clara
