@@ -2,114 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1837C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9538DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 11:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233869AbiDGLIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 07:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45204 "EHLO
+        id S235833AbiDGLJM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 07:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235628AbiDGLId (ORCPT
+        with ESMTP id S234265AbiDGLJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 07:08:33 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 320318F9A1;
-        Thu,  7 Apr 2022 04:06:24 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 7 Apr 2022 19:05:54
- +0800 (GMT+08:00)
-X-Originating-IP: [10.181.226.201]
-Date:   Thu, 7 Apr 2022 19:05:54 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Max Filippov" <jcmvbkbc@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        "Chris Zankel" <chris@zankel.net>, mustafa.ismail@intel.com,
-        shiraz.saleem@intel.com, jgg@ziepe.ca, wg@grandegger.com,
-        mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, pabeni@redhat.com,
-        jes@trained-monkey.org,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jiri Slaby" <jirislaby@kernel.org>, alexander.deucher@amd.com,
-        "open list:TENSILICA XTENSA PORT (xtensa)" 
-        <linux-xtensa@linux-xtensa.org>, linux-rdma@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        linux-hippi@sunsite.dk, linux-staging@lists.linux.dev,
-        linux-serial@vger.kernel.org,
-        "USB list" <linux-usb@vger.kernel.org>, linma@zju.edu.cn
-Subject: Re: Re: [PATCH 11/11] arch: xtensa: platforms: Fix deadlock in
- rs_close()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.8 build 20200806(7a9be5e8)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <CAMo8BfLG_u2z2HwY9Qo6cFgNoSrrz2mS2iD+rtj-uyrKhZYmLw@mail.gmail.com>
-References: <cover.1649310812.git.duoming@zju.edu.cn>
- <9ca3ab0b40c875b6019f32f031c68a1ae80dd73a.1649310812.git.duoming@zju.edu.cn>
- <CAMo8BfLG_u2z2HwY9Qo6cFgNoSrrz2mS2iD+rtj-uyrKhZYmLw@mail.gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Thu, 7 Apr 2022 07:09:06 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C2681494;
+        Thu,  7 Apr 2022 04:07:06 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 340A621118;
+        Thu,  7 Apr 2022 11:07:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649329625; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LE2tVt6E1/57kcFgpWdjdBQU6aDSlbFwP46O5S44+90=;
+        b=Tp5lGLf1ElWVIcInGlUGAoJ1sx0YdUjQTq9tC8LzRgATKZFC9iS34ryFP2GTDsBD0Mirv1
+        vRg/4eIJkZ5rGRuZIS6FxwFEhz62Vaik76t94HU2LQ2QePTUL26rXUg85lWH0KUDm4GPrG
+        NFM/0kDfL93OeH1mpzliJJGkaQkmwQk=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id E1E68A3B82;
+        Thu,  7 Apr 2022 11:07:04 +0000 (UTC)
+Date:   Thu, 7 Apr 2022 13:07:04 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org,
+        Marek =?iso-8859-1?Q?Marczykowski-G=F3recki?= 
+        <marmarek@invisiblethingslab.com>, Mel Gorman <mgorman@suse.de>
+Subject: Re: [PATCH] mm, page_alloc: fix build_zonerefs_node()
+Message-ID: <Yk7F2KzRrhLjYw4Z@dhcp22.suse.cz>
+References: <20220407093221.1090-1-jgross@suse.com>
+ <Yk6+QBacbb6oI8lW@dhcp22.suse.cz>
+ <f08c1493-9238-0009-56b4-dc0ab3571b33@suse.com>
 MIME-Version: 1.0
-Message-ID: <569b0b8a.3f281.18003b3c5c4.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgB3HwCSxU5iMGyRAQ--.28878W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgYNAVZdtZExiwABsc
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f08c1493-9238-0009-56b4-dc0ab3571b33@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sCgpPbiBUaHUsIDcgQXByIDIwMjIgMDA6MjE6NTggLTA3MDAgTWF4IEZpbGlwcG92IHdy
-b3RlOgoKPiA+IFRoZXJlIGlzIGEgZGVhZGxvY2sgaW4gcnNfY2xvc2UoKSwgd2hpY2ggaXMgc2hv
-d24KPiA+IGJlbG93Ogo+ID4KPiA+ICAgIChUaHJlYWQgMSkgICAgICAgICAgICAgIHwgICAgICAo
-VGhyZWFkIDIpCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IHJzX29wZW4oKQo+ID4g
-cnNfY2xvc2UoKSAgICAgICAgICAgICAgICAgfCAgbW9kX3RpbWVyKCkKPiA+ICBzcGluX2xvY2tf
-YmgoKSAvLygxKSAgICAgIHwgICh3YWl0IGEgdGltZSkKPiA+ICAuLi4gICAgICAgICAgICAgICAg
-ICAgICAgIHwgcnNfcG9sbCgpCj4gPiAgZGVsX3RpbWVyX3N5bmMoKSAgICAgICAgICB8ICBzcGlu
-X2xvY2soKSAvLygyKQo+ID4gICh3YWl0IHRpbWVyIHRvIHN0b3ApICAgICAgfCAgLi4uCj4gPgo+
-ID4gV2UgaG9sZCB0aW1lcl9sb2NrIGluIHBvc2l0aW9uICgxKSBvZiB0aHJlYWQgMSBhbmQKPiA+
-IHVzZSBkZWxfdGltZXJfc3luYygpIHRvIHdhaXQgdGltZXIgdG8gc3RvcCwgYnV0IHRpbWVyIGhh
-bmRsZXIKPiA+IGFsc28gbmVlZCB0aW1lcl9sb2NrIGluIHBvc2l0aW9uICgyKSBvZiB0aHJlYWQg
-Mi4KPiA+IEFzIGEgcmVzdWx0LCByc19jbG9zZSgpIHdpbGwgYmxvY2sgZm9yZXZlci4KPiAKPiBJ
-IGFncmVlIHdpdGggdGhpcy4KPiAKPiA+IFRoaXMgcGF0Y2ggZXh0cmFjdHMgZGVsX3RpbWVyX3N5
-bmMoKSBmcm9tIHRoZSBwcm90ZWN0aW9uIG9mCj4gPiBzcGluX2xvY2tfYmgoKSwgd2hpY2ggY291
-bGQgbGV0IHRpbWVyIGhhbmRsZXIgdG8gb2J0YWluCj4gPiB0aGUgbmVlZGVkIGxvY2suCj4gCj4g
-TG9va2luZyBhdCB0aGUgdGltZXJfbG9jayBJIGRvbid0IHJlYWxseSB1bmRlcnN0YW5kIHdoYXQg
-aXQgcHJvdGVjdHMuCj4gSXQgbG9va3MgbGlrZSBpdCBpcyBub3QgbmVlZGVkIGF0IGFsbC4KClRo
-ZXJlIGlzIG5vIHJhY2UgY29uZGl0aW9uIGJldHdlZW4gcnNfY2xvc2UgYW5kIHJzX3BvbGwodGlt
-ZXIgaGFuZGxlciksCkkgdGhpbmsgd2UgY291bGQgcmVtb3ZlIHRoZSB0aW1lcl9sb2NrIGluIHJz
-X2Nsb3NlKCksIHJzX29wZW4oKSBhbmQgcnNfcG9sbCgpLgoKPiBBbHNvLCBJIHNlZSB0aGF0IHJz
-X3BvbGwgcmV3aW5kcyB0aGUgdGltZXIgcmVnYXJkbGVzcyBvZiB3aGV0aGVyIGRlbF90aW1lcl9z
-eW5jCj4gd2FzIGNhbGxlZCBvciBub3QsIHdoaWNoIHZpb2xhdGVzIGRlbF90aW1lcl9zeW5jIHJl
-cXVpcmVtZW50cy4KCkkgd3JvdGUgYSBrZXJuZWwgbW9kdWxlIHRvIHRlc3Qgd2hldGhlciBkZWxf
-dGltZXJfc3luYygpIGNvdWxkIGZpbmlzaCBhIHRpbWVyIGhhbmRsZXIKdGhhdCB1c2UgbW9kX3Rp
-bWVyKCkgdG8gcmV3aW5kIGl0c2VsZi4gVGhlIGZvbGxvd2luZyBpcyB0aGUgcmVzdWx0LgoKIyBp
-bnNtb2QgZGVsX3RpbWVyX3N5bmMua28gClsgIDkyOS4zNzQ0MDVdIG15X3RpbWVyIHdpbGwgYmUg
-Y3JlYXRlLgpbICA5MjkuMzc0NzM4XSB0aGUgamlmZmllcyBpcyA6NDI5NTU5NTU3MgpbICA5MzAu
-NDExNTgxXSBJbiBteV90aW1lcl9mdW5jdGlvbgpbICA5MzAuNDExOTU2XSB0aGUgamlmZmllcyBp
-cyA0Mjk1NTk2NjA5ClsgIDkzNS40NjY2NDNdIEluIG15X3RpbWVyX2Z1bmN0aW9uClsgIDkzNS40
-Njc1MDVdIHRoZSBqaWZmaWVzIGlzIDQyOTU2MDE2NjUKWyAgOTQwLjU4NjUzOF0gSW4gbXlfdGlt
-ZXJfZnVuY3Rpb24KWyAgOTQwLjU4NjkxNl0gdGhlIGppZmZpZXMgaXMgNDI5NTYwNjc4NApbICA5
-NDUuNzA2NTc5XSBJbiBteV90aW1lcl9mdW5jdGlvbgpbICA5NDUuNzA2ODg1XSB0aGUgamlmZmll
-cyBpcyA0Mjk1NjExOTA0CgojIAojIHJtbW9kIGRlbF90aW1lcl9zeW5jLmtvClsgIDk0OC41MDc2
-OTJdIHRoZSBkZWxfdGltZXJfc3luYyBpcyA6MQpbICA5NDguNTA3NjkyXSAKIyAKIyAKClRoZSBy
-ZXN1bHQgb2YgdGhlIGV4cGVyaW1lbnQgc2hvd3MgdGhhdCB0aGUgdGltZXIgaGFuZGxlciBjb3Vs
-ZApiZSBraWxsZWQgYWZ0ZXIgd2UgZXhlY3V0ZSBkZWxfdGltZXJfc3luYygpLgoKPiA+IFNpZ25l
-ZC1vZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1LmNuPgo+ID4gLS0tCj4gPiAg
-YXJjaC94dGVuc2EvcGxhdGZvcm1zL2lzcy9jb25zb2xlLmMgfCA0ICsrKy0KPiA+ICAxIGZpbGUg
-Y2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4gPgo+ID4gZGlmZiAtLWdp
-dCBhL2FyY2gveHRlbnNhL3BsYXRmb3Jtcy9pc3MvY29uc29sZS5jIGIvYXJjaC94dGVuc2EvcGxh
-dGZvcm1zL2lzcy9jb25zb2xlLmMKPiA+IGluZGV4IDgxZDdjN2U4ZjdlLi5kNDMxYjYxYWUzYyAx
-MDA2NDQKPiA+IC0tLSBhL2FyY2gveHRlbnNhL3BsYXRmb3Jtcy9pc3MvY29uc29sZS5jCj4gPiAr
-KysgYi9hcmNoL3h0ZW5zYS9wbGF0Zm9ybXMvaXNzL2NvbnNvbGUuYwo+ID4gQEAgLTUxLDggKzUx
-LDEwIEBAIHN0YXRpYyBpbnQgcnNfb3BlbihzdHJ1Y3QgdHR5X3N0cnVjdCAqdHR5LCBzdHJ1Y3Qg
-ZmlsZSAqIGZpbHApCj4gPiAgc3RhdGljIHZvaWQgcnNfY2xvc2Uoc3RydWN0IHR0eV9zdHJ1Y3Qg
-KnR0eSwgc3RydWN0IGZpbGUgKiBmaWxwKQo+ID4gIHsKPiA+ICAgICAgICAgc3Bpbl9sb2NrX2Jo
-KCZ0aW1lcl9sb2NrKTsKPiA+IC0gICAgICAgaWYgKHR0eS0+Y291bnQgPT0gMSkKPiA+ICsgICAg
-ICAgaWYgKHR0eS0+Y291bnQgPT0gMSkgewo+ID4gKyAgICAgICAgICAgICAgIHNwaW5fdW5sb2Nr
-X2JoKCZ0aW1lcl9sb2NrKTsKPiA+ICAgICAgICAgICAgICAgICBkZWxfdGltZXJfc3luYygmc2Vy
-aWFsX3RpbWVyKTsKPiA+ICsgICAgICAgfQo+ID4gICAgICAgICBzcGluX3VubG9ja19iaCgmdGlt
-ZXJfbG9jayk7Cj4gCj4gTm93IGluIGNhc2UgdHR5LT5jb3VudCA9PSAxIHRoZSB0aW1lcl9sb2Nr
-IHdvdWxkIGJlIHVubG9ja2VkIHR3aWNlLgoKSSB3aWxsIHJlbW92ZSB0aGUgdGltZXJfbG9jayBp
-biByc19jbG9zZSgpLCByc19vcGVuKCkgYW5kIHJzX3BvbGwoKS4KClRoYW5rcyBhIGxvdCBmb3Ig
-eW91ciB0aW1lIGFuZCBhZHZpY2UhCgpCZXN0IHJlZ2FyZHMsCkR1b21pbmcgWmhvdQ==
+On Thu 07-04-22 12:45:41, Juergen Gross wrote:
+> On 07.04.22 12:34, Michal Hocko wrote:
+> > Ccing Mel
+> > 
+> > On Thu 07-04-22 11:32:21, Juergen Gross wrote:
+> > > Since commit 9d3be21bf9c0 ("mm, page_alloc: simplify zonelist
+> > > initialization") only zones with free memory are included in a built
+> > > zonelist. This is problematic when e.g. all memory of a zone has been
+> > > ballooned out.
+> > 
+> > What is the actual problem there?
+> 
+> When running as Xen guest new hotplugged memory will not be onlined
+> automatically, but only on special request. This is done in order to
+> support adding e.g. the possibility to use another GB of memory, while
+> adding only a part of that memory initially.
+> 
+> In case adding that memory is populating a new zone, the page allocator
+> won't be able to use this memory when it is onlined, as the zone wasn't
+> added to the zonelist, due to managed_zone() returning 0.
+
+How is that memory onlined? Because "regular" onlining (online_pages())
+does rebuild zonelists if their zone hasn't been populated before.
+
+-- 
+Michal Hocko
+SUSE Labs
