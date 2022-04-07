@@ -2,83 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5651C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9689BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 09:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243765AbiDGJaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 05:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52704 "EHLO
+        id S242792AbiDGJdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 05:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233212AbiDGJan (ORCPT
+        with ESMTP id S230193AbiDGJdt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 05:30:43 -0400
-Received: from out203-205-221-164.mail.qq.com (out203-205-221-164.mail.qq.com [203.205.221.164])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB7144A06
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 02:28:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1649323718;
-        bh=qrEk1KaQqHvx86BvGZbTrk+9iRUH0cmWZPEc61qHsBI=;
-        h=From:To:Cc:Subject:Date;
-        b=LDd5Jay6Ua4M7Rk3quFdJb8SgDPSuZjtqWrWwqliBIg5ntSUNjqp/XacMdFtX7jJp
-         /X/fkzdKAMvVmFPEWFBR5+U+YOHa9IUv2mpP35DLCjkdZ6mH4VgDyKFE3QoEKTYe/d
-         ap5kgwwuIo7p3ExFZYpafOI6djHPnxvewqi5BfBA=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrszb7.qq.com (NewEsmtp) with SMTP
-        id 720A506C; Thu, 07 Apr 2022 17:28:32 +0800
-X-QQ-mid: xmsmtpt1649323712txu21a4wf
-Message-ID: <tencent_FE734C50BC851F2AB5FE1380F833A7E67A0A@qq.com>
-X-QQ-XMAILINFO: N7h1OCCDntuj7gXE9EPckixmarPTNotNuv+oSnMoBzpUK/sMEAhv3nREl6ig4F
-         WQJ6nhIBxe2K/G1fr9R9+gtZonkh3jygJuZ11VbRvBqkl5ltFnuySv/Ab/xXcSbXLs/I26jTHjYw
-         Ue94j8EPgpcxzvysMVwld7y8MEbEIOq/E4BOaBeW8/kMyxhPwSTTiPQ3MOX7MDNLUB+lfky6+oMd
-         uSxl0GUqHlZdpZPfN0KYKeI8Knxijp76AVpKZfEmmnom/CEKwg9NwiOzjILt4ZottQlcuA4isZI1
-         jxGg2MFn2Mb6PNfTfBKhlDvxASNCfpkOwvK/HyWYTaivYPstV4gqChWxWclJgOXtuqQ1e3rHDwhR
-         E5WFqZGKDFfXkByYRoqsN/qnitiIgXsAuSTKAgWxS8NCPyD1b0LuUYzoKuXImaZc9TchccBLE4tA
-         AGZkm9AmCXPumw1p1FNP6y0N7vmQlAub0vil0WaN4TbWDQQuYFtKSMoDx7TLX+uXuhWYdIltiR2/
-         m8okaFJ+Kqz6N/xt4eEy4Ejv2Qpa0E+yaT/LoU4xn4K9r6wbSd5PqfXbWty57ne8XcmBEQRArlAo
-         tvk9rp2HNOnTwphtSaeWOHph0juckClHzUyvvcvC21s/1MCH6bM/EviXSKH0kfqUXbuJREFF0NA0
-         K06MIYPG929N93yoTBdhpN9yLFKOqjkF8VuSm0p5ewxQZ9A23FBUtAl+Q9VBfugEZs8Y8dEtzglv
-         59qZsx+fsWyxH1kfRDDeEPLQqZgkc7B5nUr8sxvZ9QjjXK6nq2/hh3kOxBzwz0oJLrdLP0lYNzEi
-         O6gTz8WCRcBZXshOfUfT90itR1do5p+lKNawaEIIkv155skoaya19lO4/5+nSKYFti2oNGuFtpQ8
-         dnp9yrsJiXTwC73mMqm8VB9ggIKxe9oaUuRGmwP+W6fQrZFg+LgM9XTS8FcnYFgHCn+hiihv4tru
-         6p8ph7Pu7QCPHt1RcbTWBImgJyEfXKKucZRq8W7nEeBuH89iORSw==
-From:   xkernel.wang@foxmail.com
-To:     narmstrong@baylibre.com, jbrunet@baylibre.com,
-        mturquette@baylibre.com, sboyd@kernel.org, khilman@baylibre.com
-Cc:     martin.blumenstingl@googlemail.com, p.zabel@pengutronix.de,
-        linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] clk: meson: meson8b: fix a memory leak in meson8b_clkc_init_common()
-Date:   Thu,  7 Apr 2022 17:28:23 +0800
-X-OQ-MSGID: <20220407092823.14526-1-xkernel.wang@foxmail.com>
+        Thu, 7 Apr 2022 05:33:49 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB38E38B3;
+        Thu,  7 Apr 2022 02:31:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649323910; x=1680859910;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=BCRZxfN5u5JLU9Zt+mjsZ9L8T/2RoTAfKmMcjDuvmm0=;
+  b=Surj3vnZ9zmjZeZErECeuTIuJrpLDIHmx3gA+MBRvP12PwefDP4PQpn1
+   C9m+ncJR+qRBmX3DL2cMrpWHQpWqsWTena65bijuUHwEKi/kD8teBvGRU
+   kcmTmvgK9QHm8l/GMeIsX9b56SW2g7aAbWcMgibSVHdJxZVk5DXHZF00q
+   o=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 07 Apr 2022 02:31:50 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 02:31:50 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 7 Apr 2022 02:31:49 -0700
+Received: from c-sanm-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 7 Apr 2022 02:31:45 -0700
+From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>
+CC:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
+        <quic_ppratap@quicinc.com>, <quic_kriskura@quicinc.com>,
+        <quic_vpulyala@quicinc.com>,
+        Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Subject: [PATCH v3 1/2] usb: host: xhci-plat: Add device property to set XHCI_SKIP_PHY_INIT quirk
+Date:   Thu, 7 Apr 2022 15:01:27 +0530
+Message-ID: <1649323888-12420-2-git-send-email-quic_c_sanm@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649323888-12420-1-git-send-email-quic_c_sanm@quicinc.com>
+References: <1649323888-12420-1-git-send-email-quic_c_sanm@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+Add device property usb-skip-phy-init to check and set XHCI_SKIP_PHY_INIT
+quirk.
+Runtime suspend of phy drivers was failing from DWC3 driver as
+runtime usage value is 2 because the phy is initialized from
+DWC3 core and HCD core.
+Some controllers like DWC3 and CDNS3 manage phy in their core drivers.
+This property can be set to avoid phy initialization in HCD core.
 
-`rstc` is allocated by kzalloc() for resetting the controller register,
-however, if reset_controller_register() fails, `rstc` is not properly
-released before returning, which can lead to memory leak.
-Therefore, this patch adds kfree(rstc) on the above error path.
-
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
 ---
- drivers/clk/meson/meson8b.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/host/xhci-plat.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/clk/meson/meson8b.c b/drivers/clk/meson/meson8b.c
-index a844d35..823eacc 100644
---- a/drivers/clk/meson/meson8b.c
-+++ b/drivers/clk/meson/meson8b.c
-@@ -3741,6 +3741,7 @@ static void __init meson8b_clkc_init_common(struct device_node *np,
- 	if (ret) {
- 		pr_err("%s: Failed to register clkc reset controller: %d\n",
- 		       __func__, ret);
-+		kfree(rstc);
- 		return;
- 	}
+diff --git a/drivers/usb/host/xhci-plat.c b/drivers/usb/host/xhci-plat.c
+index 649ffd8..7624ed9 100644
+--- a/drivers/usb/host/xhci-plat.c
++++ b/drivers/usb/host/xhci-plat.c
+@@ -305,6 +305,9 @@ static int xhci_plat_probe(struct platform_device *pdev)
+ 		if (device_property_read_bool(tmpdev, "quirk-broken-port-ped"))
+ 			xhci->quirks |= XHCI_BROKEN_PORT_PED;
  
++		if (device_property_read_bool(tmpdev, "usb-skip-phy-init"))
++			xhci->quirks |= XHCI_SKIP_PHY_INIT;
++
+ 		device_property_read_u32(tmpdev, "imod-interval-ns",
+ 					 &xhci->imod_interval);
+ 	}
 -- 
+2.7.4
+
