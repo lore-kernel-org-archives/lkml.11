@@ -2,172 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9163EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BDF1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  7 Apr 2022 10:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243687AbiDGKek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 06:34:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53106 "EHLO
+        id S244467AbiDGKen (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 06:34:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244328AbiDGKdi (ORCPT
+        with ESMTP id S244385AbiDGKeR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 06:33:38 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A736CC1CBA;
-        Thu,  7 Apr 2022 03:31:17 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bq8so9852331ejb.10;
-        Thu, 07 Apr 2022 03:31:17 -0700 (PDT)
+        Thu, 7 Apr 2022 06:34:17 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FED410A94D
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 03:32:09 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id x131so8725139ybe.11
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 03:32:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MSY1nTudb+PZHTwNW0++Hw3ZkegN7YQIOboMBZ6jBg0=;
-        b=Brx4PkxB2qdWTRw7gD0HT3PEDbMMWi0XZkbblBnTtAVRKFZm8RAn4P1cLxUzGaUSWj
-         r6JxWEq0muCi0zq0RyRsEDl8YQa7DCNKZBC1Gj5rF17+x2LK3VvqVWEVI6k/8DvOCHIq
-         xClZCgthVxp4u5kv6LFjYJJnSkK1bZEibqrgmMQ0JP8dYZ+15cOAVnkRAzi3IgoT+dqm
-         k4uFx+UARieV2bsoVD67F5Xff9RQaJx4M76B8zZgTKoP9mHwlZS7m8uDs2+oJzpKPok8
-         ktve3WHvQOVXDYKLjmG23a4XmTmuEu3OvZtYcVC0FpEHV2nWXBTKR8Gatcf/PU9USmof
-         mfYg==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Wy0uyCS1qMtmqWkLdDlY+fw3ha4Ox49szf2Z/w5iJz8=;
+        b=ULvQ8J0NHwAroiN0gQMyw4doWv/BUOM/jXdoFJmlel/ZOrF3tXg3KunG7ncNoxTynM
+         t78PtoZ4jaryotXnIDKfjCoGzfVQumxeDB5O+9fUMbTof2H8lXAo5QzjWA4WNWF8Ewhu
+         bKuYJksQgmBmL6iAG1Ogs2ohHaNv6Hu1MAcqqc8ekrIpcw7c+4ksAmkwLrjeozCJLCxO
+         jSJKh0v3Iu9bEWAWnrgg6EHpDZM4Qye7CozZvt1vRJGvJMT/TD2avWTXaFyHM0m+I/GB
+         2tDvyYd7Wr79/Gn7v2yJtRT3Nnyo4uqANJqSQ5orntNmPTm/H0V9sh8f8TUyEwucebGW
+         ghqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MSY1nTudb+PZHTwNW0++Hw3ZkegN7YQIOboMBZ6jBg0=;
-        b=ckTcCs6ZE6xhKT2L22ndE8SCvAvO9GcuOf8zM6maRdqkuucT7RsL2akx70vST9v0nF
-         YCBjioYlahIsz59Hq4C5oPPnJMjqfd8Ykm4pp7/wM2QF5EO5qnwq2EBSCkx6Hy8trrb7
-         MOstPNETajqcAnvDvBS1nrapMwwvzNpBtZBvXpSYHVLGDFtLg3P8zWONXB9kb2jje9Jd
-         me2xHG6QcmEF1DOheH8Xjv98yJEgvM3yBzBLt7jIFzGLZq/pwGK2iAnknYeCh+6DSxGC
-         Hh1eUtLwZh/jxlLEOkuP08WRWIvvq4W/HBpDTEy9jYH6SGhmAzgwYf0r/4xqJC1H8Gb4
-         novQ==
-X-Gm-Message-State: AOAM532ZB7otaXQTIW/yAvBksqnn+Fcoy/fruAVOGE9t8bG16uejSUxt
-        6zxCxurfG+TLlcLehtcZPvM=
-X-Google-Smtp-Source: ABdhPJwwT5jmVo5qc9B+eZATYpRQi7yTuAnE1UXZHjgZUgliXLWJp7twbPBsvZlMRQCsjFWFpTIFiQ==
-X-Received: by 2002:a17:907:7f1a:b0:6e8:4127:6bc4 with SMTP id qf26-20020a1709077f1a00b006e841276bc4mr375201ejc.496.1649327476146;
-        Thu, 07 Apr 2022 03:31:16 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm7413573ejz.57.2022.04.07.03.31.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 03:31:15 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Michael Walle <michael@walle.cc>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next 12/15] net: netcp: Remove usage of list iterator for list_add() after loop body
-Date:   Thu,  7 Apr 2022 12:28:57 +0200
-Message-Id: <20220407102900.3086255-13-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220407102900.3086255-1-jakobkoschel@gmail.com>
-References: <20220407102900.3086255-1-jakobkoschel@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Wy0uyCS1qMtmqWkLdDlY+fw3ha4Ox49szf2Z/w5iJz8=;
+        b=bCVxctrNAe8OO5Kah6FBJXWnFBVBnrzkpm+S7CQ5/ST5Bqk7X8FGtk2iDqNDHfMgmM
+         ThGGoQaYvVADBfnBwEciKiIMygBMoa5yxliz62pqevv8+i6Ocfj/+UwmggVVDkFDUKYA
+         rldUfBK7Kmh5kti7GrDhRZJ/LCk3pgWNijbs3C5nLZZoItJMHLwpR1nOz8AO3mjwL35c
+         Uqo5fCL3f7vBl7QuwWXJw7oznYp32ivGrQfLIdENAM7v+iPqqb5MYpE7psVymoWkTgrY
+         82E4oUf1PM7DQJR1cTcpBm8xzSu/sq3znytiiJtVik7ci4eY0eO5q9KeNgv6IsU4P/DF
+         KPdg==
+X-Gm-Message-State: AOAM533cUbgXUwNtrm4PiXs7iGaMlNI841Pj2hlQr1z4erOXgrinTx7H
+        UtgSEV++phK9zRyJdeq2mxy/DV7RQ2uwVwLTNyqz1A==
+X-Google-Smtp-Source: ABdhPJzFJYch+rFa/0xnIHJ/PRfuIEQ9WRgmTGn31Ca1e6umhZ7jkyFs92IJDSK1g760k6BUOZ5COhh97rMGMOoM81Y=
+X-Received: by 2002:a25:9846:0:b0:61a:3deb:4d39 with SMTP id
+ k6-20020a259846000000b0061a3deb4d39mr9500630ybo.537.1649327527925; Thu, 07
+ Apr 2022 03:32:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220406133055.820319940@linuxfoundation.org>
+In-Reply-To: <20220406133055.820319940@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 7 Apr 2022 16:01:56 +0530
+Message-ID: <CA+G9fYujM5fTQbHMSdMnGMj-=VUfTp5N70agiY82EyANy-g-_A@mail.gmail.com>
+Subject: Re: [PATCH 5.15 000/911] 5.15.33-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to limit the scope of a list iterator to the list
-traversal loop, use a dedicated pointer to point to the found element [1].
+On Wed, 6 Apr 2022 at 19:14, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.33 release.
+> There are 911 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Fri, 08 Apr 2022 13:27:53 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.15.33-rc2.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Before, the code implicitly used the head when no element was found
-when using &pos->list. Since the new variable is only set if an
-element was found, the list_add() is performed within the loop
-and only done after the loop if it is done on the list head directly.
 
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
----
- drivers/net/ethernet/ti/netcp_core.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-diff --git a/drivers/net/ethernet/ti/netcp_core.c b/drivers/net/ethernet/ti/netcp_core.c
-index 16507bff652a..7f89fd82ecc8 100644
---- a/drivers/net/ethernet/ti/netcp_core.c
-+++ b/drivers/net/ethernet/ti/netcp_core.c
-@@ -471,8 +471,8 @@ struct netcp_hook_list {
- int netcp_register_txhook(struct netcp_intf *netcp_priv, int order,
- 			  netcp_hook_rtn *hook_rtn, void *hook_data)
- {
-+	struct netcp_hook_list *next = NULL, *iter;
- 	struct netcp_hook_list *entry;
--	struct netcp_hook_list *next;
- 	unsigned long flags;
- 
- 	entry = devm_kzalloc(netcp_priv->dev, sizeof(*entry), GFP_KERNEL);
-@@ -484,11 +484,15 @@ int netcp_register_txhook(struct netcp_intf *netcp_priv, int order,
- 	entry->order     = order;
- 
- 	spin_lock_irqsave(&netcp_priv->lock, flags);
--	list_for_each_entry(next, &netcp_priv->txhook_list_head, list) {
--		if (next->order > order)
-+	list_for_each_entry(iter, &netcp_priv->txhook_list_head, list) {
-+		if (iter->order > order) {
-+			next = iter;
-+			list_add_tail(&entry->list, &iter->list);
- 			break;
-+		}
- 	}
--	__list_add(&entry->list, next->list.prev, &next->list);
-+	if (!next)
-+		list_add_tail(&entry->list, &netcp_priv->txhook_list_head);
- 	spin_unlock_irqrestore(&netcp_priv->lock, flags);
- 
- 	return 0;
-@@ -520,8 +524,8 @@ EXPORT_SYMBOL_GPL(netcp_unregister_txhook);
- int netcp_register_rxhook(struct netcp_intf *netcp_priv, int order,
- 			  netcp_hook_rtn *hook_rtn, void *hook_data)
- {
-+	struct netcp_hook_list *next = NULL, *iter;
- 	struct netcp_hook_list *entry;
--	struct netcp_hook_list *next;
- 	unsigned long flags;
- 
- 	entry = devm_kzalloc(netcp_priv->dev, sizeof(*entry), GFP_KERNEL);
-@@ -533,11 +537,15 @@ int netcp_register_rxhook(struct netcp_intf *netcp_priv, int order,
- 	entry->order     = order;
- 
- 	spin_lock_irqsave(&netcp_priv->lock, flags);
--	list_for_each_entry(next, &netcp_priv->rxhook_list_head, list) {
--		if (next->order > order)
-+	list_for_each_entry(iter, &netcp_priv->rxhook_list_head, list) {
-+		if (iter->order > order) {
-+			next = iter;
-+			list_add_tail(&entry->list, &iter->list);
- 			break;
-+		}
- 	}
--	__list_add(&entry->list, next->list.prev, &next->list);
-+	if (!next)
-+		list_add_tail(&entry->list, &netcp_priv->rxhook_list_head);
- 	spin_unlock_irqrestore(&netcp_priv->lock, flags);
- 
- 	return 0;
--- 
-2.25.1
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+## Build
+* kernel: 5.15.33-rc2
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.15.y
+* git commit: a476e005a81c4076389bd02ccd88711b777ede1c
+* git describe: v5.15.32-912-ga476e005a81c
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
+.32-912-ga476e005a81c
+
+## Test Regressions (compared to v5.15.32-902-g1a1c2efda160)
+No test regressions found.
+
+## Metric Regressions (compared to v5.15.32-902-g1a1c2efda160)
+No metric regressions found.
+
+## Test Fixes (compared to v5.15.32-902-g1a1c2efda160)
+No metric fixes found.
+
+## Metric Fixes (compared to v5.15.32-902-g1a1c2efda160)
+No metric fixes found.
+
+## Test result summary
+total: 104758, pass: 88256, fail: 1001, skip: 14337, xfail: 1164
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 291 total, 291 passed, 0 failed
+* arm64: 41 total, 41 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 40 total, 40 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 54 passed, 6 failed
+* riscv: 27 total, 22 passed, 5 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 41 total, 41 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselft[
+* kselftest-
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
