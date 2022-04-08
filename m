@@ -2,120 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00C03C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:48:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235903AbiDHMtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53578 "EHLO
+        id S235922AbiDHMud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232606AbiDHMtv (ORCPT
+        with ESMTP id S232606AbiDHMua (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:49:51 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E5B2EE4F5;
-        Fri,  8 Apr 2022 05:47:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649422068; x=1680958068;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GieTI1WB4H2GA1M0xA2lOtUkaNXzhrdcKPpmxIylHsc=;
-  b=iOkPcVNZmtIITC2baZk5TmkHUabZrFr+kd84u5Xir98KB8oHlJhmWGnF
-   jDMpa7ZhrPnUFj+PhmaaSq2Yu5P7flQBcN7LywS/hv4EUgcKoh/U5SKHx
-   chh3qbZVtmgIdsShhCPlAZeC4paomStfa4c52eH5FgNeXuX2f9BNwwYcD
-   bhzYd+53vSkGDCBaEFKlJMSBtuKeHBetMeuETu0ySFBlkrmxBU5j70esu
-   yh+PLBGUvUMlX8SEc6VPsiVE1DY6P2kTIbGag4/sYws0ULPQGhsLmFfFl
-   XJTbeGywshSpF0cgVIIbsWHAVVKu7VhHNhDnFX6wiVTwMQRegKqfsQKQp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="260418310"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="260418310"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:47:48 -0700
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="525364161"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:47:45 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ncny7-000Hsh-SI;
-        Fri, 08 Apr 2022 15:44:03 +0300
-Date:   Fri, 8 Apr 2022 15:44:03 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Michael Walle <michael@walle.cc>
-Cc:     linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-Subject: Re: [PATCH v5 1/4] device property: Allow error pointer to be passed
- to fwnode APIs
-Message-ID: <YlAuEzW0fUuuXTN6@smile.fi.intel.com>
-References: <20220406130552.30930-1-andriy.shevchenko@linux.intel.com>
- <df3a78036864716fbeecf3cd94dbcbbe@walle.cc>
- <Yk66wHWlMg3QLy6u@smile.fi.intel.com>
+        Fri, 8 Apr 2022 08:50:30 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49BF395A1D
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 05:48:26 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id a38so4657693qkp.5
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 05:48:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VQDI6YuAr8Eowoco7O858WVzXH3UkvuYAnRhC5A1scM=;
+        b=aWdwJeUD/a4zIRed0XxjGwJ74BNKFq4B7EWPMeUNhdeY5dJDzcb3riXc6hBpMpVD5G
+         GheWkYvfEpgEmKVdPZECt2I2HbY1Sfm0HOaNxsvQfQFPVYs9y1e5x1QE5V3K8F/n2T2R
+         dxMa64HX3TMuHD/uIKXUgWlm5hAY1L9/dt29oPX2IKpwwjh7lZ6exu/d0DeikubO2po1
+         A6AuK8MDLCkex64rjVBcdClMdJtIU6d8+B+bA0IaFnCox9kDbXi9Y33pd4zKQ76MizSb
+         hDu71MPFRVq0bUGbopVKGwnusYQ5foX2jGOXKyTkRm8CUSsZqFdud7vzMSNPBsNjiFOv
+         HOtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VQDI6YuAr8Eowoco7O858WVzXH3UkvuYAnRhC5A1scM=;
+        b=zvC4hWnRD65Z2jMBbXcYZhHWhToLLDY/dZ064rQAEvRLh/W9rJY2ZlIWkFiteVXil+
+         RqVSBol/79/SbG4biJbXuJmJ9IlwfQxGs4Q8JtA9F0feXkBQ0+qDQzYyvWC4zaSA12vC
+         CZAuWjXotst7pUcUfXBlhdodfZFPfDGKCc9fGF7rbew7s+5OMAAIlQqzUsApCbaLf4In
+         g7H1lFmhc8/KmN6DO+dg+Wdmds4nKwOlsxX31j44PSFVoFHAO7dPC7/1+vfhtjl8yseC
+         jlu9Mmy/cGOobeA5XJO8IZM/uuJbVivnjrRqp/h4AJJp2k7aVeORIJdkW42Df0R6gKnd
+         /aOw==
+X-Gm-Message-State: AOAM531dIw5hvbV0TlLOJ584ltWqEjoVxyXx2kQjczVfh4HR0sixyamD
+        1qMP6K0fWGvN5952fnmMJo8GZA==
+X-Google-Smtp-Source: ABdhPJwTiOGFNTDsV2ncSsHyu47DcJ64QqNfBV6JNjBfrtkBcDpHD2Er+HjU3PwNrV5kQJVKAriQBw==
+X-Received: by 2002:a05:620a:bce:b0:662:e587:fbbf with SMTP id s14-20020a05620a0bce00b00662e587fbbfmr12558832qki.757.1649422105456;
+        Fri, 08 Apr 2022 05:48:25 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id v3-20020a05622a014300b002e1dcd4cfa9sm18777436qtw.64.2022.04.08.05.48.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 05:48:24 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nco2K-00Eytz-9H; Fri, 08 Apr 2022 09:48:24 -0300
+Date:   Fri, 8 Apr 2022 09:48:24 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Niklas Schnelle <schnelle@linux.ibm.com>
+Cc:     Matthew Rosato <mjrosato@linux.ibm.com>,
+        linux-s390@vger.kernel.org, alex.williamson@redhat.com,
+        cohuck@redhat.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH v5 14/21] KVM: s390: pci: provide routines for
+ enabling/disabling interrupt forwarding
+Message-ID: <20220408124824.GZ64706@ziepe.ca>
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+ <20220404174349.58530-15-mjrosato@linux.ibm.com>
+ <9a551f04c3878ecb3a26fed6aff2834fbfe41f18.camel@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yk66wHWlMg3QLy6u@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <9a551f04c3878ecb3a26fed6aff2834fbfe41f18.camel@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 01:19:44PM +0300, Andy Shevchenko wrote:
-> On Wed, Apr 06, 2022 at 08:05:23PM +0200, Michael Walle wrote:
-
-...
-
-> > > +	if (IS_ERR_OR_NULL(fwnode))
-> > > +		return -ENOENT;
-> > > +
-> > >  	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
-> > >  				 nargs, index, args);
-> > > +	if (ret == 0)
-> > > +		return ret;
-> > > 
-> > > -	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
-> > > -	    !IS_ERR_OR_NULL(fwnode->secondary))
-> > > -		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
-> > > -					 prop, nargs_prop, nargs, index, args);
-> > > +	if (IS_ERR_OR_NULL(fwnode->secondary))
-> > > +		return -ENOENT;
+On Tue, Apr 05, 2022 at 03:39:19PM +0200, Niklas Schnelle wrote:
+> On Mon, 2022-04-04 at 13:43 -0400, Matthew Rosato wrote:
+> > These routines will be wired into a kvm ioctl in order to respond to
+> > requests to enable / disable a device for Adapter Event Notifications /
+> > Adapter Interuption Forwarding.
 > > 
-> > Doesn't this mean you overwrite any return code != 0 with -ENOENT?
-> > Is this intended?
+> > Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> >  arch/s390/kvm/pci.c      | 247 +++++++++++++++++++++++++++++++++++++++
+> >  arch/s390/kvm/pci.h      |   1 +
+> >  arch/s390/pci/pci_insn.c |   1 +
+> >  3 files changed, 249 insertions(+)
+> > 
+> > diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
+> > index 01bd8a2f503b..f0fd68569a9d 100644
+> > +++ b/arch/s390/kvm/pci.c
+> > @@ -11,6 +11,7 @@
+> >  #include <linux/pci.h>
+> >  #include <asm/pci.h>
+> >  #include <asm/pci_insn.h>
+> > +#include <asm/pci_io.h>
+> >  #include "pci.h"
+> >  
+> >  struct zpci_aift *aift;
+> > @@ -152,6 +153,252 @@ int kvm_s390_pci_aen_init(u8 nisc)
+> >  	return rc;
+> >  }
+> >  
+> > +/* Modify PCI: Register floating adapter interruption forwarding */
+> > +static int kvm_zpci_set_airq(struct zpci_dev *zdev)
+> > +{
+> > +	u64 req = ZPCI_CREATE_REQ(zdev->fh, 0, ZPCI_MOD_FC_REG_INT);
+> > +	struct zpci_fib fib = {};
 > 
-> Indeed, it would shadow the error code.
+> Hmm this one uses '{}' as initializer while all current callers of
+> zpci_mod_fc() use '{0}'. As far as I know the empty braces are a GNU
+> extension so should work for the kernel but for consistency I'd go with
+> '{0}' or possibly '{.foo = bar, ...}' where that is more readable.
+> There too uninitialized fields will be set to 0. Unless of course there
+> is a conflicting KVM convention that I don't know about.
 
-I was thinking more on this and am not sure about the best approach here.
-On one hand in the original code this returns the actual error code from
-the call against primary fwnode. But it can be at least -ENOENT or -EINVAL.
+{} is not a GNU extension, it is the preferred way to write it.
 
-But when we check the secondary fwnode we want to have understanding that it's
-secondary fwnode which has not been found, but this requires to have a good
-distinguishing between error codes from the callback.
+The standard has a weird distinction between {} and {0} that results
+in different behavior.
 
-That said, the error codes convention of ->get_reference_args() simply
-sucks. Sakari, do you have it on your TODO to fix this mess out, if it's
-even feasible?
-
-To be on safest side, I will change as suggested in previous mail (see below)
-so it won't have impact on -EINVAL case.
-
-> So, it should go with
-> 
-> 	if (IS_ERR_OR_NULL(fwnode->secondary))
-> 		return ret;
-> 
-> then.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Jason
