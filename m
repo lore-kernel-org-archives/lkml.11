@@ -2,178 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00AA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231979AbiDHQfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 12:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54828 "EHLO
+        id S232081AbiDHQgM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 12:36:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231303AbiDHQfq (ORCPT
+        with ESMTP id S231303AbiDHQgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 12:35:46 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8905D65C9;
-        Fri,  8 Apr 2022 09:33:42 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nicolas)
-        with ESMTPSA id CCA771F472F7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649435620;
-        bh=/tbQC/9J2hf57DwJAeFvsuSkxP9cojOW7/Vitx+0DRc=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=kFCddj/7WhsLUGeDoxNvsCJWGmgYoMZVEFWH4gti4wECBFfvu0xvDcVJK++EQr8x9
-         TdRePj0wTS24e6Z+I3VW7OM+YENce42o3jmUssrwRWk0QkSfqXpLGvGGLPQjZa/SQ4
-         /SS15K6Hf31vIrRhVn935ZhafdEYHGtogv+h622eHRSS4Nhp71nd/xtzuvlDVZakcV
-         wsRIfhoKNVeqh1pKakIL+L3Igv4dkEC6TUY3i5mU1JlRhq9x5W0jBIrvn3tWlfk9Mv
-         wNAe4MWkw4yTBpD+9peYs3j/ckqNdoWV9qn/ps2JL6TprzzS9DJxsLjrkpgwHRQ8TV
-         7nHlvVd62nj3Q==
-Message-ID: <34f586efdd6401b509cf11fba75039d5494c4eff.camel@collabora.com>
-Subject: Re: [PATCH v5 06/17] media: uapi: HEVC: Change pic_order_cnt
- definition in v4l2_hevc_dpb_entry
-From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        mchehab@kernel.org, hverkuil@xs4all.nl,
-        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, mripard@kernel.org,
-        paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        sebastian.fricke@collabora.com
-Date:   Fri, 08 Apr 2022 12:33:28 -0400
-In-Reply-To: <20220407152940.738159-7-benjamin.gaignard@collabora.com>
-References: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
-         <20220407152940.738159-7-benjamin.gaignard@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
+        Fri, 8 Apr 2022 12:36:09 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C849724959;
+        Fri,  8 Apr 2022 09:34:04 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id bu29so16107601lfb.0;
+        Fri, 08 Apr 2022 09:34:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Pz40nRgvhtcOeXUbzgyo9Hq14GrnezoaHqBr+KLvPIo=;
+        b=NOIUQsr6XphXreR0Ws3aESzt6zh125cSmmUwY+ZOQLs8O6OUb4qHsG8YTp+btiQw3S
+         v6ceYcQ66PpxMlfOA9B1O3YEAvx8LqrXvjN6NrTmrWZwhU/1a2ZrvKyW7SUbW0yDURXY
+         HnF7XNSUNEoPdwlHmVcIvjfGHoiTLwUppVoAIF8JJ/m1m5OTGpCjJ2+vbmLVB4Oo7j0T
+         CmqtGgqhDvLlsNNyJ2k1kc1CDRGTIG3z+BoLPnXJlrcyUGEQ8sy09gkm+XObgLA6h5Bm
+         5gU11d3p60aUF4HiOnVZ/Nc7BXIppHqC8hp5HLQZ9cavka/bgFdYIjMsmLV/5lhvSmKN
+         e11w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Pz40nRgvhtcOeXUbzgyo9Hq14GrnezoaHqBr+KLvPIo=;
+        b=n9WpLAR2eWd5ryIVGxKrH35c3/SDmCQoaB2ndBl/OOYJxOB1IvDtTTqhaMzUqHzRNW
+         0woyDHxcVw7MQ8+AW5Zpa74vTNmV+gONdu79pxTAvkjIA6m1AVOQHxBZyrzwLQ2B5f69
+         CkkdbXMCkBaDwsury9VJbQa38EVbMmyr7aR9nZngfUsnZMxsXhAS22n1iWuzdXwHLKUO
+         020Vb2Wtri4x35iOnViirzURmmwb1+5h7nxTd1KXHVgM5XPegHX9orpfdMdsp2DBk2wz
+         ldalk0CEfpuVlwygPfJJSnjuG3WkHo2vCGfw+brI0VmftYUwbrpgFKCy0D2pSeuS2uDO
+         F0sQ==
+X-Gm-Message-State: AOAM533+GINLp6m4eAHjrnFfoYlRN0gTsGH9Y/WuRMn8hNNAOoTaA9/2
+        eMpPse70oZWrEfmC2HLqzdC+4yu1wFs=
+X-Google-Smtp-Source: ABdhPJxq6jWHs4Q8uMOLnsxSSSKI55rbTZr/y0gclVa6MyldkPT7fEd3IQU521XN1VdJl8L7ZCJOIg==
+X-Received: by 2002:a05:6512:4002:b0:46b:8490:2ba3 with SMTP id br2-20020a056512400200b0046b84902ba3mr2565733lfb.632.1649435642808;
+        Fri, 08 Apr 2022 09:34:02 -0700 (PDT)
+Received: from nergzd-desktop.localdomain ([194.39.226.133])
+        by smtp.gmail.com with ESMTPSA id q4-20020a0565123a8400b0044a27a8c63asm2495403lfu.80.2022.04.08.09.34.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 09:34:02 -0700 (PDT)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v4 0/2] Make AUX gpio pin optional for ktd2692
+Date:   Fri,  8 Apr 2022 19:33:26 +0300
+Message-Id: <20220408163330.200898-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le jeudi 07 avril 2022 =C3=A0 17:29 +0200, Benjamin Gaignard a =C3=A9crit=
-=C2=A0:
-> HEVC specifications say that:
-> "PicOrderCntVal is derived as follows:
-> PicOrderCntVal =3D PicOrderCntMsb + slice_pic_order_cnt_lsb
-> The value of PicOrderCntVal shall be in the range of =E2=88=92231 to 231 =
-=E2=88=92 1, inclusive."
->=20
-> To match with these definitions change __u16 pic_order_cnt[2]
-> into __s32 pic_order_cnt_val.
+Some appliances of ktd2692 don't have the AUX pin connected to
+a GPIO. Specifically, Samsung Galaxy J5 (2015), which uses ktd2692
+for driving the front flash LED, has the pin not connected anywhere on
+schematics. Make specifying the AUX pin optional, since it is additional
+functionality and only affects amount of current going through the LED.
 
-You forgot to update the slice_params->slice_pic_order_count.
+Also convert the txt device-tree bindings to yaml and pick up maintenance
+over the yaml binding and the driver itself.
 
-Nicolas
+v2:
+- fix the dt_binding_check
+v3:
+- set the aux_gpio to NULL to avoid passing ERR_PTR as a gpio
+v4:
+- maintainership -> maintenance (description)
+- remove the if (led->aux_gpio)
+- use devm_gpiod_get_optional for aux gpio
 
->=20
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> ---
-> version 5:
-> - change __u16 pic_order_cnt[2] into __s32 pic_order_cnt_val
->  drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 4 ++--
->  drivers/staging/media/hantro/hantro_hevc.c        | 2 +-
->  drivers/staging/media/hantro/hantro_hw.h          | 4 ++--
->  drivers/staging/media/sunxi/cedrus/cedrus_h265.c  | 4 ++--
->  include/media/hevc-ctrls.h                        | 2 +-
->  5 files changed, 8 insertions(+), 8 deletions(-)
->=20
-> diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/=
-staging/media/hantro/hantro_g2_hevc_dec.c
-> index c524af41baf5..6f3c774aa3d9 100644
-> --- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-> +++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
-> @@ -386,7 +386,7 @@ static int set_ref(struct hantro_ctx *ctx)
->  	 * pic_order_cnt[0] and ignore pic_order_cnt[1] used in field-coding.
->  	 */
->  	for (i =3D 0; i < decode_params->num_active_dpb_entries && i < ARRAY_SI=
-ZE(cur_poc); i++) {
-> -		char poc_diff =3D decode_params->pic_order_cnt_val - dpb[i].pic_order_=
-cnt[0];
-> +		char poc_diff =3D decode_params->pic_order_cnt_val - dpb[i].pic_order_=
-cnt_val;
-> =20
->  		hantro_reg_write(vpu, &cur_poc[i], poc_diff);
->  	}
-> @@ -413,7 +413,7 @@ static int set_ref(struct hantro_ctx *ctx)
->  	dpb_longterm_e =3D 0;
->  	for (i =3D 0; i < decode_params->num_active_dpb_entries &&
->  	     i < (V4L2_HEVC_DPB_ENTRIES_NUM_MAX - 1); i++) {
-> -		luma_addr =3D hantro_hevc_get_ref_buf(ctx, dpb[i].pic_order_cnt[0]);
-> +		luma_addr =3D hantro_hevc_get_ref_buf(ctx, dpb[i].pic_order_cnt_val);
->  		if (!luma_addr)
->  			return -ENOMEM;
-> =20
-> diff --git a/drivers/staging/media/hantro/hantro_hevc.c b/drivers/staging=
-/media/hantro/hantro_hevc.c
-> index b6ec86d03d91..fadd40768579 100644
-> --- a/drivers/staging/media/hantro/hantro_hevc.c
-> +++ b/drivers/staging/media/hantro/hantro_hevc.c
-> @@ -54,7 +54,7 @@ static void hantro_hevc_ref_init(struct hantro_ctx *ctx=
-)
->  }
-> =20
->  dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx,
-> -				   int poc)
-> +				   s32 poc)
->  {
->  	struct hantro_hevc_dec_hw_ctx *hevc_dec =3D &ctx->hevc_dec;
->  	int i;
-> diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging/m=
-edia/hantro/hantro_hw.h
-> index ed018e293ba0..a648c529662b 100644
-> --- a/drivers/staging/media/hantro/hantro_hw.h
-> +++ b/drivers/staging/media/hantro/hantro_hw.h
-> @@ -131,7 +131,7 @@ struct hantro_hevc_dec_hw_ctx {
->  	struct hantro_aux_buf tile_bsd;
->  	struct hantro_aux_buf ref_bufs[NUM_REF_PICTURES];
->  	struct hantro_aux_buf scaling_lists;
-> -	int ref_bufs_poc[NUM_REF_PICTURES];
-> +	s32 ref_bufs_poc[NUM_REF_PICTURES];
->  	u32 ref_bufs_used;
->  	struct hantro_hevc_dec_ctrls ctrls;
->  	unsigned int num_tile_cols_allocated;
-> @@ -337,7 +337,7 @@ int hantro_hevc_dec_init(struct hantro_ctx *ctx);
->  void hantro_hevc_dec_exit(struct hantro_ctx *ctx);
->  int hantro_g2_hevc_dec_run(struct hantro_ctx *ctx);
->  int hantro_hevc_dec_prepare_run(struct hantro_ctx *ctx);
-> -dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, int poc);
-> +dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, s32 poc);
->  int hantro_hevc_add_ref_buf(struct hantro_ctx *ctx, int poc, dma_addr_t =
-addr);
->  void hantro_hevc_ref_remove_unused(struct hantro_ctx *ctx);
->  size_t hantro_hevc_chroma_offset(const struct v4l2_ctrl_hevc_sps *sps);
-> diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/s=
-taging/media/sunxi/cedrus/cedrus_h265.c
-> index 44f385be9f6c..d04521ffd920 100644
-> --- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-> +++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
-> @@ -143,8 +143,8 @@ static void cedrus_h265_frame_info_write_dpb(struct c=
-edrus_ctx *ctx,
->  	for (i =3D 0; i < num_active_dpb_entries; i++) {
->  		int buffer_index =3D vb2_find_timestamp(vq, dpb[i].timestamp, 0);
->  		u32 pic_order_cnt[2] =3D {
-> -			dpb[i].pic_order_cnt[0],
-> -			dpb[i].pic_order_cnt[1]
-> +			dpb[i].pic_order_cnt_val & 0xffff,
-> +			(dpb[i].pic_order_cnt_val >> 16) & 0xffff
->  		};
-> =20
->  		cedrus_h265_frame_info_write_single(ctx, i, dpb[i].field_pic,
-> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-> index b3540167df9e..2812778b41f4 100644
-> --- a/include/media/hevc-ctrls.h
-> +++ b/include/media/hevc-ctrls.h
-> @@ -138,7 +138,7 @@ struct v4l2_hevc_dpb_entry {
->  	__u64	timestamp;
->  	__u8	flags;
->  	__u8	field_pic;
-> -	__u16	pic_order_cnt[2];
-> +	__s32	pic_order_cnt_val;
->  	__u8	padding[2];
->  };
-> =20
+Markuss Broks (2):
+  dt-bindings: leds: convert ktd2692 bindings to yaml
+  leds: ktd2692: Make aux-gpios optional
+
+ .../bindings/leds/kinetic,ktd2692.yaml        | 87 +++++++++++++++++++
+ .../devicetree/bindings/leds/leds-ktd2692.txt | 50 -----------
+ MAINTAINERS                                   |  6 ++
+ drivers/leds/flash/leds-ktd2692.c             | 18 ++--
+ 4 files changed, 103 insertions(+), 58 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/leds/kinetic,ktd2692.yaml
+ delete mode 100644 Documentation/devicetree/bindings/leds/leds-ktd2692.txt
+
+-- 
+2.35.1
 
