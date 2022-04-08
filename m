@@ -2,136 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C24EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236542AbiDHNve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 09:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35146 "EHLO
+        id S236544AbiDHNvu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 09:51:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234611AbiDHNv2 (ORCPT
+        with ESMTP id S236545AbiDHNvr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 09:51:28 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C0622BF6;
-        Fri,  8 Apr 2022 06:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649425761; x=1680961761;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JHxUCB/6BRTe6TReGYNBtiqtMSGrnYkHBfI8LfQrgAc=;
-  b=MkpuAuyrMLyJ1ArysSQdpCuaxLCiO6z0Sdoi/DxQ1w/mH9YZUjglsKMH
-   ZrkSNIkanshoxM/3iMjLb/RR0nLooF2vKPMjAaLWUabNjaMR/S70uw0hY
-   xtRkZRmpM1+T/H3lJKNiaOnpXWhdsY8eJiPgKOrIF7iNEBF7ydS6bPXWb
-   4BkXBD706+QKUEQVis8tuE4oimpU/i+Mplqz53h/WLng0M4Qav4T+RPyL
-   5yZbrKjOll54TE8eIzspyldle1MrVq6qHllQbSz6/vknpQoMQ91msjyML
-   rfaMCw7NfEutKhEQ5f6BcxbnXjwdtUgxkpFrIA4o/Jhf4IB0OOTHWJ2F9
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="242189596"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="242189596"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 06:49:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="550507028"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga007.jf.intel.com with ESMTP; 08 Apr 2022 06:49:16 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 238DnFvK003958;
-        Fri, 8 Apr 2022 14:49:15 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org,
-        poros@redhat.com, mschmidt@redhat.com, jacob.e.keller@intel.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Brett Creeley <brett@pensando.io>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: Re: [PATCH net v2] ice: Fix incorrect locking in ice_vc_process_vf_msg()
-Date:   Fri,  8 Apr 2022 15:47:14 +0200
-Message-Id: <20220408134714.1834349-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220401104052.1711721-1-ivecera@redhat.com>
-References: <20220401104052.1711721-1-ivecera@redhat.com>
+        Fri, 8 Apr 2022 09:51:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 54F8528994
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 06:49:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649425778;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2/8jlF212Dq8hkyxMbM3GcH6GkK/VKjh9OP6Uu7H4G8=;
+        b=TRrfZ96TNAreHPN5zqgIztR/XQ48ybbev4Bvrgs3z4a/P/KCsjAO/2KF+A/EN/Vd1290iN
+        DkyvCJVScoaObgXBDllYx2vmb3jJ3E36dMXx4fS3BWSqHu86Z+/RdzA/N+Gtev7EvjJPkn
+        mSw2MHuB37GDNk/AE12GqRA3dYL1Mmk=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-571-qutjP0mfMQ2lbZyzAAT6JQ-1; Fri, 08 Apr 2022 09:49:37 -0400
+X-MC-Unique: qutjP0mfMQ2lbZyzAAT6JQ-1
+Received: by mail-qk1-f199.google.com with SMTP id o15-20020ae9f50f000000b00680a61f51c4so3633280qkg.15
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 06:49:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=2/8jlF212Dq8hkyxMbM3GcH6GkK/VKjh9OP6Uu7H4G8=;
+        b=A20rCdEXYCRhT9dk3Pabte0T+KXpTVQNNf/ZUK4oi/CvIzYUQoixMqpeRYvSvD+kyP
+         1GvjerJzADz4O0haetQ5RtuNtbhfHEY9m87XYNccp8gYO3GY6KYIEdR/D7nZIsuO1pcP
+         bLf50lr+EQB9yBOUSaNcR6ywMolb1ueOFqsE6J+7934qRNfA84VJGuVyySY7NWCnlayz
+         gWJEB5tnxHMWrw3txm1wBYNsxqRIOuhZsUAJJ68UbCg5e6mqIgwm2a634EENid/IVR6U
+         ENBeaBWCN8ITLMz/cXPbyJYo6evejA2ubq3085HikwwfctJv9ixgRkLcqWpxfi8UeNRZ
+         wsIA==
+X-Gm-Message-State: AOAM532OeSoHvfFwQPYzZ+xJfwag06EeCYZaep1tBnNBfaqUl5UVX9h0
+        WgHq2B2XAGb1eToyT2zZYo8cy6ebX3KWmOxmBVLE0h7c3MH/IfdDWxN/12XoaHvX+9tetJDTr8R
+        zBIv4/pQeIcQbMgDbRurLm5nA
+X-Received: by 2002:a05:622a:64f:b0:2e0:6a11:7b0d with SMTP id a15-20020a05622a064f00b002e06a117b0dmr15799568qtb.9.1649425776816;
+        Fri, 08 Apr 2022 06:49:36 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJywxztvYVFzqW0tZLwRDsrMH8wHvSk844odzCLr7i9gAaMUGLRE8wta2F/K7vQWPD5JyW60Dw==
+X-Received: by 2002:a05:622a:64f:b0:2e0:6a11:7b0d with SMTP id a15-20020a05622a064f00b002e06a117b0dmr15799554qtb.9.1649425776626;
+        Fri, 08 Apr 2022 06:49:36 -0700 (PDT)
+Received: from fionn (bras-base-rdwyon0600w-grc-11-174-88-121-127.dsl.bell.ca. [174.88.121.127])
+        by smtp.gmail.com with ESMTPSA id f12-20020a379c0c000000b0069a048e7f0bsm2802111qke.76.2022.04.08.06.49.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 06:49:36 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 09:49:35 -0400 (EDT)
+From:   John Kacur <jkacur@redhat.com>
+To:     Daniel Bristot de Oliveira <bristot@redhat.com>
+cc:     lkml <linux-kernel@vger.kernel.org>,
+        RT <linux-rt-users@vger.kernel.org>,
+        linux-trace-devel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 2/2] rtla: Minor fix to grammar in README.txt
+In-Reply-To: <24f79a7c-0146-ad0a-988a-608edd402faa@redhat.com>
+Message-ID: <6b8d24c-d793-866c-30a7-f015c7babd2d@redhat.com>
+References: <20220402043939.6962-1-jkacur@redhat.com> <20220402043939.6962-2-jkacur@redhat.com> <24f79a7c-0146-ad0a-988a-608edd402faa@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ivan Vecera <ivecera@redhat.com>
-Date: Fri,  1 Apr 2022 12:40:52 +0200
 
-> Usage of mutex_trylock() in ice_vc_process_vf_msg() is incorrect
-> because message sent from VF is ignored and never processed.
+
+On Fri, 8 Apr 2022, Daniel Bristot de Oliveira wrote:
+
+> On 4/2/22 06:39, John Kacur wrote:
+> > "The rtla" doesn't make sense, change it to "The rtla tool"
+> > This is better than removing the word "The" since some packaging tools
+> > need the description to start with a capital letter.
+> > 
+> > Signed-off-by: John Kacur <jkacur@redhat.com>
+> > ---
+> >  tools/tracing/rtla/README.txt | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/tools/tracing/rtla/README.txt b/tools/tracing/rtla/README.txt
+> > index 6c88446f7e74..3b809eeff5f9 100644
+> > --- a/tools/tracing/rtla/README.txt
+> > +++ b/tools/tracing/rtla/README.txt
+> > @@ -1,6 +1,6 @@
+> >  RTLA: Real-Time Linux Analysis tools
+> >  
+> > -The rtla is a meta-tool that includes a set of commands that
+> > +The rtla tool is a meta-tool that includes a set of commands that
 > 
-> Use mutex_lock() instead to fix the issue. It is safe because this
-> mutex is used to prevent races between VF related NDOs and
-> handlers processing request messages from VF and these handlers
-> are running in ice_service_task() context. Additionally move this
-> mutex lock prior ice_vc_is_opcode_allowed() call to avoid potential
-> races during allowlist acccess.
+> I do not like bike-shedding but 'the rtla tool is a meta-tool" sounds repetitive.
 > 
-> Fixes: e6ba5273d4ed ("ice: Fix race conditions between virtchnl handling and VF ndo ops")
-> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-
-Hey Tony,
-
-I guess you missed this one due to being on a vacation previously.
-It's been previously reviewed IIRC, could you take it into
-net-queue?
-
-> ---
->  drivers/net/ethernet/intel/ice/ice_virtchnl.c | 21 +++++++------------
->  1 file changed, 7 insertions(+), 14 deletions(-)
+> Does:
 > 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-> index 3f1a63815bac..a465f3743ffc 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-> @@ -3642,14 +3642,6 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
->  			err = -EINVAL;
->  	}
->  
-> -	if (!ice_vc_is_opcode_allowed(vf, v_opcode)) {
-> -		ice_vc_send_msg_to_vf(vf, v_opcode,
-> -				      VIRTCHNL_STATUS_ERR_NOT_SUPPORTED, NULL,
-> -				      0);
-> -		ice_put_vf(vf);
-> -		return;
-> -	}
-> -
->  error_handler:
->  	if (err) {
->  		ice_vc_send_msg_to_vf(vf, v_opcode, VIRTCHNL_STATUS_ERR_PARAM,
-> @@ -3660,12 +3652,13 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
->  		return;
->  	}
->  
-> -	/* VF is being configured in another context that triggers a VFR, so no
-> -	 * need to process this message
-> -	 */
-> -	if (!mutex_trylock(&vf->cfg_lock)) {
-> -		dev_info(dev, "VF %u is being configured in another context that will trigger a VFR, so there is no need to handle this message\n",
-> -			 vf->vf_id);
-> +	mutex_lock(&vf->cfg_lock);
-> +
-> +	if (!ice_vc_is_opcode_allowed(vf, v_opcode)) {
-> +		ice_vc_send_msg_to_vf(vf, v_opcode,
-> +				      VIRTCHNL_STATUS_ERR_NOT_SUPPORTED, NULL,
-> +				      0);
-> +		mutex_unlock(&vf->cfg_lock);
->  		ice_put_vf(vf);
->  		return;
->  	}
-> -- 
-> 2.35.1
+> The rtla meta-tool includes a set of commands...
+> 
+> sound good for you?
+> 
+> -- Daniel
+> 
+> 
 
-Thanks,
-Al
+Perfect
+
