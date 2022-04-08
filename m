@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF4EC4321E
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A182DC4321E
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:38:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238852AbiDHSki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 14:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
+        id S233780AbiDHSkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 14:40:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiDHSkU (ORCPT
+        with ESMTP id S234857AbiDHSkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 8 Apr 2022 14:40:20 -0400
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6280425E9D;
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6257D140A3;
         Fri,  8 Apr 2022 11:38:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649443084;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=2o374XSGH6w+NYSOHuoGIHbtPJSsHXo7puMDhNeRPp8=;
-    b=IkV5798Z0qu/CJxvzdERC5c0lsVXjl7ufso/22uwK0cnjoVpKseNMyWx66stF6I7QT
-    6UIW59YF2QownrkLJ3S1hzo79esvtmuACe37fSnogoB8xT2xTgAW2PuXrQt4/CE4Jyq1
-    ++K3Q92T0Pr6ZlGSChsXHgytIvWeL7AWdG5XAVb0AkAJRmaLGZ5TFBdgkz17gOjcvIJs
-    rhkGGLgKRXitKG1++U81m3srAwRgO1/hVlROi0NUkzJuyDN0hVOVlXAR2V6XUVQFBR0i
-    Sq19aOwmVHsa6eKcHF+LXGT0hj6+gMTD3d4teqw1HZWqFrnqGt4g9GmI79zu1tAnH2e6
-    0qcg==
+    bh=AififXgRpoTwo6DBtCzSPTWcO0jEFyMvLEtO2+QLpDU=;
+    b=hi+5US5o4fK98V5wdUCXCfgcAH+LHAM+kfnEhexax0KWpkdMBuhTomWsoXV/+9JVgl
+    4WW7iy3xEdcv79hkR78PAJKs997F7UJYhL0Nm0OWZffg5z9d2VDtD1SivgkoezEIgMI7
+    leAmx2A8OnAPsW9FO93foEbY9QtqQSkNvVSF9eEEvedPHf+RJEANeyv0Bck/+6a4gCNg
+    Z3JDYXz3nM9QZIm7Uzmwolv0fgnVgh4/VVq+RcayKypEyYKf13T9z0HNIQiX8IB9cH9k
+    YTiyhSqaXsy1eK+1PhAsRPQvU2HzwncSfaNKFsJkJFQiOnbyyvoFRCyqMIbvIxZ+8rSy
+    MFkQ==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbgdr/a"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy38Ic3snw
+    with ESMTPSA id k708cfy38Ic4snz
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Fri, 8 Apr 2022 20:38:03 +0200 (CEST)
+    Fri, 8 Apr 2022 20:38:04 +0200 (CEST)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Krzysztof Kozlowski <krzk@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -44,9 +44,9 @@ To:     Krzysztof Kozlowski <krzk@kernel.org>,
 Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-mips@vger.kernel.org, letux-kernel@openphoenux.org,
         "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH 05/18] MIPS: DTS: jz4780: fix pinctrl as reported by dtbscheck
-Date:   Fri,  8 Apr 2022 20:37:48 +0200
-Message-Id: <1941bc4ed553b27f399ad00ea61ff2b0237d14e3.1649443080.git.hns@goldelico.com>
+Subject: [PATCH 08/18] MIPS: DTS: jz4780: fix lcd controllers as reported by dtbscheck
+Date:   Fri,  8 Apr 2022 20:37:51 +0200
+Message-Id: <a948ce9c6126eb9d5daf9a24e76cc6c01c22c685.1649443080.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1649443080.git.hns@goldelico.com>
 References: <cover.1649443080.git.hns@goldelico.com>
@@ -56,27 +56,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arch/mips/boot/dts/ingenic/ci20.dtb: pin-controller@10010000: $nodename:0: 'pin-controller@10010000' does not match '^(pinctrl|pinmux)(@[0-9a-f]+)?$'
-	From schema: Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.yaml
+/Volumes/CaseSensitive/master/arch/mips/boot/dts/ingenic/ci20.dtb: lcdc0@13050000: $nodename:0: 'lcdc0@13050000' does not match '^lcd-controller@[0-9a-f]+$'
+	From schema: /Volumes/CaseSensitive/master/Documentation/devicetree/bindings/display/ingenic,lcd.yaml
+/Volumes/CaseSensitive/master/arch/mips/boot/dts/ingenic/ci20.dtb: lcdc0@13050000: clock-names:0: 'lcd_pclk' was expected
+	From schema: /Volumes/CaseSensitive/master/Documentation/devicetree/bindings/display/ingenic,lcd.yaml
+/Volumes/CaseSensitive/master/arch/mips/boot/dts/ingenic/ci20.dtb: lcdc0@13050000: clock-names:1: 'lcd' was expected
+	From schema: /Volumes/CaseSensitive/master/Documentation/devicetree/bindings/display/ingenic,lcd.yaml
+/Volumes/CaseSensitive/master/arch/mips/boot/dts/ingenic/ci20.dtb: lcdc1@130a0000: $nodename:0: 'lcdc1@130a0000' does not match '^lcd-controller@[0-9a-f]+$'
+	From schema: /Volumes/CaseSensitive/master/Documentation/devicetree/bindings/display/ingenic,lcd.yaml
+/Volumes/CaseSensitive/master/arch/mips/boot/dts/ingenic/ci20.dtb: lcdc1@130a0000: clock-names:0: 'lcd_pclk' was expected
+	From schema: /Volumes/CaseSensitive/master/Documentation/devicetree/bindings/display/ingenic,lcd.yaml
+/Volumes/CaseSensitive/master/arch/mips/boot/dts/ingenic/ci20.dtb: lcdc1@130a0000: clock-names:1: 'lcd' was expected
+	From schema: /Volumes/CaseSensitive/master/Documentation/devicetree/bindings/display/ingenic,lcd.yaml
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/boot/dts/ingenic/jz4780.dtsi | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-index 5f44cf004d473..b5299eaffb84a 100644
+index c5124459678b7..8b95486c8afa7 100644
 --- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
 +++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-@@ -155,7 +155,7 @@ rtc_dev: rtc@10003000 {
- 		clock-names = "rtc";
+@@ -457,12 +457,12 @@ hdmi: hdmi@10180000 {
+ 		status = "disabled";
  	};
  
--	pinctrl: pin-controller@10010000 {
-+	pinctrl: pinctrl@10010000 {
- 		compatible = "ingenic,jz4780-pinctrl";
- 		reg = <0x10010000 0x600>;
+-	lcdc0: lcdc0@13050000 {
++	lcdc0: lcd-controller@13050000 {
+ 		compatible = "ingenic,jz4780-lcd";
+ 		reg = <0x13050000 0x1800>;
  
+-		clocks = <&cgu JZ4780_CLK_TVE>, <&cgu JZ4780_CLK_LCD0PIXCLK>;
+-		clock-names = "lcd", "lcd_pclk";
++		clocks = <&cgu JZ4780_CLK_LCD0PIXCLK>, <&cgu JZ4780_CLK_TVE>;
++		clock-names = "lcd_pclk", "lcd";
+ 
+ 		interrupt-parent = <&intc>;
+ 		interrupts = <31>;
+@@ -470,12 +470,12 @@ lcdc0: lcdc0@13050000 {
+ 		status = "disabled";
+ 	};
+ 
+-	lcdc1: lcdc1@130a0000 {
++	lcdc1: lcd-controller@130a0000 {
+ 		compatible = "ingenic,jz4780-lcd";
+ 		reg = <0x130a0000 0x1800>;
+ 
+-		clocks = <&cgu JZ4780_CLK_TVE>, <&cgu JZ4780_CLK_LCD1PIXCLK>;
+-		clock-names = "lcd", "lcd_pclk";
++		clocks = <&cgu JZ4780_CLK_LCD1PIXCLK>, <&cgu JZ4780_CLK_TVE>;
++		clock-names = "lcd_pclk", "lcd";
+ 
+ 		interrupt-parent = <&intc>;
+ 		interrupts = <23>;
 -- 
 2.33.0
 
