@@ -2,150 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33024C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:56:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CDE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237866AbiDHP6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58070 "EHLO
+        id S237786AbiDHQAs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 12:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237862AbiDHP6j (ORCPT
+        with ESMTP id S231631AbiDHQAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 11:58:39 -0400
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB2FDF3D
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 08:56:35 -0700 (PDT)
-Received: by mail-ot1-x333.google.com with SMTP id x8-20020a9d6288000000b005b22c373759so6376473otk.8
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 08:56:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zgPFew/129J9uUrYqgZcVA+g7qNHsWob0wEdFbRdpLU=;
-        b=dktOw19q9ZbYejGac9aUvdm7bnjZO6AVQ9nVh7HYnAnDGbZlxD+btfMrdrWirobS88
-         OfBJr4SOeGf7ASzNiaXh3mN79WPPil6Ob2DuXBqxXgJMZH48aNxvRGHb5b1SluttE4RZ
-         77iMMPzO7WtymN5YLYlbS3iVXWDnNyfzvDHJStRQL33gyQLOprl6NjKepSdRDSiPXUmU
-         1jJizhER3IGFh/+FrDPao35luJJyGYEL53f7TCMTuIQ+mcUA/DObmR2IOCcSYYOAE726
-         GMdR+PSEAT7TZEMDfSEhb9gooThqU5UnXh0Hne6kqF3hyNtPveqNs7sQi5Jl/oqaYClP
-         vWOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zgPFew/129J9uUrYqgZcVA+g7qNHsWob0wEdFbRdpLU=;
-        b=RI75Men7g30IHLL0wqagw6AaKOox0WtFVqL2MK7mvgsh2y4LrobO5beDU9kTV+7KGi
-         ON7/oAxuPGPG59rAGaO557A7sPiZOnVzYMsPB2f/ZgOok+WL/I4jx5N/XMyPTazwQ9kM
-         RJEaRWgeahtpangTuHwKZFb46kdrlgUlAJA1fovMlY/d1UZ8KN0VbzMhIfvG1YvALd3v
-         9XKuNH9OPxpm52tOzB2vLsVtszSzIK3BrSb0oaKWgA8p2EJRWBQ7gKaKnAJ9ljlPhfEN
-         zlCO0s5Z+beYGbMPW88kgPJF86B1msT9NbTAM2UXr3rC46KDt8ni9wRgj/VgDnyMVZxV
-         NgRA==
-X-Gm-Message-State: AOAM531JNd3qmB7JMs9bSl4Xg+xvx60u5i5LiAkxEVlCH++jg/UWjD1Z
-        xgO/VaFWn+Ct8CwCqP4q8RnNUCwrdpn0iDcwf5o/UU5OYw4=
-X-Google-Smtp-Source: ABdhPJyuyaJRBQCOjtaH0m0rI1qNrPzvqTn/RpB560wfXhQSx2kwk8zS8cWzYR3Xe6H+fvl1IN49y2SVV0Rc1dw4VrQ=
-X-Received: by 2002:a9d:4702:0:b0:5cd:481a:148a with SMTP id
- a2-20020a9d4702000000b005cd481a148amr7010989otf.200.1649433394746; Fri, 08
- Apr 2022 08:56:34 -0700 (PDT)
+        Fri, 8 Apr 2022 12:00:42 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECEF6AE6A;
+        Fri,  8 Apr 2022 08:58:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 428C6CE2A4D;
+        Fri,  8 Apr 2022 15:58:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98943C385A1;
+        Fri,  8 Apr 2022 15:58:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649433514;
+        bh=0w7CX4PrjpdyKdIGRRbs32uv6uKXSuvOdR768kCHqEc=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=hofeAabyDR6ibecdIuTeVv4ItV78H+h3JySoIZU/YELvkfkhJsWqckY9RabMpVXRh
+         FbOqk2qW6ggGrXszDGlIavBvL2hI5CpappCPwb8dVLBc7ZXhFVmHmRY0zvpYWt9ftL
+         FncN++P7beuG4N3bSPS52bIbDrIDVoxchA54f10HreJpRTHBP2JN7nRzyRMFsd7lBV
+         0QwGDlj0/SQUkTBT+KhQR5MeHpvl9xCQRgQl369iN6Fra//GU8e+Rl4bBxXe1Gn+Ww
+         WA/VcHDOcyhkapwuf5IiWgFRoejxUo8iv9uHKL+XzcMjWBHGl2yl0o3qjMeocmRa12
+         8oS6lWbUVxz2A==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 34DAB5C0176; Fri,  8 Apr 2022 08:58:34 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 08:58:34 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Joel Fernandes <joel@joelfernandes.org>,
+        Kalesh Singh <kaleshsingh@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        kernel-team <kernel-team@android.com>, Tejun Heo <tj@kernel.org>,
+        Tim Murray <timmurray@google.com>, Wei Wang <wvw@google.com>,
+        Kyle Lin <kylelin@google.com>,
+        Chunwei Lu <chunweilu@google.com>,
+        Lulu Wang <luluw@google.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] EXP rcu: Move expedited grace period (GP) work to RT
+ kthread_worker
+Message-ID: <20220408155834.GI4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220408045734.1158817-1-kaleshsingh@google.com>
+ <CAEXW_YSqY2nFZrn4AjpUzJ+dwZc7jaVMG9RG5gvTyb3zFYWtQA@mail.gmail.com>
+ <20220408113946.056c083e@gandalf.local.home>
 MIME-Version: 1.0
-References: <20220408154447.3519453-1-richard.gong@amd.com>
- <BL1PR12MB51576654D3EEB10F5DF862A7E2E99@BL1PR12MB5157.namprd12.prod.outlook.com>
- <CADnq5_PmxGxrJG5uZkkFXQ1YbJbDZTvAqb2oYqdCE=NtqBojqw@mail.gmail.com>
-In-Reply-To: <CADnq5_PmxGxrJG5uZkkFXQ1YbJbDZTvAqb2oYqdCE=NtqBojqw@mail.gmail.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Fri, 8 Apr 2022 11:56:23 -0400
-Message-ID: <CADnq5_M2HBGhVod+ECmPbtBN6FGizjGkgU-m-mtGSqGjMh8b9w@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdgpu: disable ASPM for legacy products that don't
- support ASPM
-To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Cc:     "Gong, Richard" <Richard.Gong@amd.com>,
-        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "Koenig, Christian" <Christian.Koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "daniel@ffwll.ch" <daniel@ffwll.ch>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220408113946.056c083e@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 11:54 AM Alex Deucher <alexdeucher@gmail.com> wrote:
->
-> On Fri, Apr 8, 2022 at 11:47 AM Limonciello, Mario
-> <Mario.Limonciello@amd.com> wrote:
-> >
-> > [Public]
-> >
-> >
-> >
-> > > -----Original Message-----
-> > > From: Gong, Richard <Richard.Gong@amd.com>
-> > > Sent: Friday, April 8, 2022 10:45
-> > > To: Deucher, Alexander <Alexander.Deucher@amd.com>; Koenig, Christian
-> > > <Christian.Koenig@amd.com>; Pan, Xinhui <Xinhui.Pan@amd.com>;
-> > > airlied@linux.ie; daniel@ffwll.ch
-> > > Cc: amd-gfx@lists.freedesktop.org; dri-devel@lists.freedesktop.org; linux-
-> > > kernel@vger.kernel.org; Limonciello, Mario <Mario.Limonciello@amd.com>;
-> > > Gong, Richard <Richard.Gong@amd.com>
-> > > Subject: [PATCH] drm/amdgpu: disable ASPM for legacy products that don't
-> > > support ASPM
-> > >
-> > > Active State Power Management (ASPM) feature is enabled since kernel
-> > > 5.14.
-> > > However there are some legacy products (WX3200 and RX640 are examples)
-> > > that
-> > > do not support ASPM. Use them as video/display output and system would
-> > > hang
-> > > during suspend/resume.
-> > >
-> > > Add extra check to disable ASPM for old products that don't have
-> > > ASPM support.
->
-> The patch description is incorrect.  ASPM works just fine on these
-> GPUs.  It's more of an issue with whether the underlying platform
-> supports ASPM or not.  Rather than disabling a chip family, I would
-> prefer to add a check for problematic platforms and disable ASPM on
-> those platforms.
+On Fri, Apr 08, 2022 at 11:39:46AM -0400, Steven Rostedt wrote:
+> On Fri, 8 Apr 2022 06:21:03 -0400
+> Joel Fernandes <joel@joelfernandes.org> wrote:
+> 
+> > > +       default !PREEMPT_RT && NR_CPUS <= 32  
+> > 
+> > What is the benefit of turning it off on PREEMPT_RT, even if
+> > PREEMPT_RT does not use expedited GPs much post-boot? I would think in
+> > the future if PREEMPT_RT ever uses expedited GPs, they would want this
+> > feature even more. I'd rather be future-proof now as I don't see any
+> > advantages of disabling it on !PREEMPT_RT (And a drawback that the fix
+> > won't apply to those systems). Also will keep the config simple.
+> 
+> The default kthread priority is 1. This should not affect PREEMPT_RT, as
+> PREEMPT_RT users are usually more concerned by the performance of their
+> higher priority tasks. Priority 1 is not considered an issue.
+> 
+> I do not see why PREEMPT_RT is special here. Why was it singled out?
 
-For example, see intel_core_rkl_chk() in smu7_hwmgr.c.  We disable
-PCIe DPM on RKL platforms due to compatibility issues with that
-particular platform.
+Because I didn't see the point of doing kthread_create_worker() to create
+a pair of kthread_worker structuress that were never going to be used
+in PREEMPT_RT kernels.
 
-Alex
+Or are PREEMPT_RT kernels no longer booting with rcupdate.rcu_normal?
+Last I knew, they all did this to avoid IPI latencies from expedited
+grace periods.  Has this changed?
 
->
-> Alex
->
-> > >
-> > > Signed-off-by: Richard Gong <richard.gong@amd.com>
-> > > Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
-> > > ---
-> > >  drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > >
-> > > diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> > > b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> > > index bb1c025d9001..8987107f41ee 100644
-> > > --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> > > +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> > > @@ -2012,6 +2012,10 @@ static int amdgpu_pci_probe(struct pci_dev
-> > > *pdev,
-> > >       if (amdgpu_aspm == -1 && !pcie_aspm_enabled(pdev))
-> > >               amdgpu_aspm = 0;
-> > >
-> > > +     /* disable ASPM for the legacy products that don't support ASPM */
-> > > +     if ((flags & AMD_ASIC_MASK) == CHIP_POLARIS12)
-> > > +             amdgpu_aspm = 0;
-> > > +
-> >
-> > I think it's problematic to disable it for the entire driver.  There might be multiple
-> > AMDGPUs in the system, and others may support ASPM.
-> >
-> > Can it be done just as part of probe for Polaris?
-> >
-> > >       if (amdgpu_virtual_display ||
-> > >           amdgpu_device_asic_has_dc_support(flags & AMD_ASIC_MASK))
-> > >               supports_atomic = true;
-> > > --
-> > > 2.25.1
+							Thanx, Paul
