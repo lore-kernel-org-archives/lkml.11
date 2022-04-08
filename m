@@ -2,208 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7EC2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA57C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:12:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbiDHIOZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 04:14:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46770 "EHLO
+        id S231254AbiDHIOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 04:14:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiDHIOT (ORCPT
+        with ESMTP id S230391AbiDHIOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 04:14:19 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D514AE0D;
-        Fri,  8 Apr 2022 01:12:15 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id s7so10080555qtk.6;
-        Fri, 08 Apr 2022 01:12:15 -0700 (PDT)
+        Fri, 8 Apr 2022 04:14:53 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27124D9D5;
+        Fri,  8 Apr 2022 01:12:49 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id f3so7784046pfe.2;
+        Fri, 08 Apr 2022 01:12:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jw/XuL4gze/EjFGmPl0tsO01dQMr5OjXvuq1Bzbys1Q=;
-        b=irp/7ScHoeQsUxSmCUbAbcmEFlRuyij8MQCMERCJiRm+THOMIlWJki09aJB2hid65U
-         /rxDnCPH03txnpSNWJhtBWWKthYSeN6w/nrPv+kdpTz6CEmReXQ4MahGS54VstfzT5Al
-         rPQTvbtnpJxfnd0KeUL8Lb9A7ZOW7X6KiYmJ3fJNWVo4iruVR9PZHeFI9HidNJIKaVHx
-         P763oWiScRxs52CJGi4NKf76AQtHbmvfn11sQOXX6d9vL+VLFslPM7ZJFo4XbrVW9Nv4
-         2ELk8SSeH+VGzRRDmktslJHWAWJah9gyiMjr5MQuntfw9Em06dAfHeoqBsKJccm8oJWh
-         wigQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=i81WX7FswRmN0nILDi9RrrLL61mjGBMdEL5aeO/NWhs=;
+        b=U6hCdq2C2y+iUG2UPSevB61dRc2HSIIRYDKuvW+p9P4db98VcdhNUp+tEwSM3B0Xzi
+         vjrH23nCwj4DPG5m/XPuaI/M3Z2ZjnKjabHyqvr/T+6+/mpvtj9Injl9jBSVe9qJ5DYI
+         Ww6JHQjFzhU+UDoOe7fzyCimY7yNn68nDs9zEtHwmfEvwhwIr0EkL+JtdXuxIDMOaS3J
+         Yxy1+E5ydOpzJ65JTZpkm5j7u6kiOcwMjM/ANI9HO+l56FtBZdVvfHJYdt9Ejnf+z/o/
+         +qEisZGxMnaVtXKB8wjxEE+CsIQXKQRDbmFu9bFzLN9Wx8qhwxPLEefMjSKy1CFIixJY
+         6/0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=jw/XuL4gze/EjFGmPl0tsO01dQMr5OjXvuq1Bzbys1Q=;
-        b=Pap+e8iU6HKO8xVz/EspvjG0cAFxpNlCkmdKwXuoD2ipapxvYOPeheJELVfNVT2hyD
-         IIvhn2BsDWvFBr+eu1EH3umi5p4JWQ/so1sPwxxwTXw/IRjhxmc38fG60tsiX1Y21EHy
-         aVMwPmMsw4Lc2ZDwmTrOoPaL0Gyctp3MfUBRpK7Q81h1hEmvbL6VDvb6s017rcLsa+PD
-         /TfBYO6sGrBtoYrkjf2GFHksma001AmqYOf5dzqTb/tkEYQx7KReY9It76tp63CziRb0
-         5R5d80WTFM2DsGMr4jXx6HfgPCIXXeINBeUt11fcyOcGlYhCjmBCPBBmBwCkx8yYQQFP
-         v/mw==
-X-Gm-Message-State: AOAM530Bi89mUN8jVTt/7lfOz68E3gQEgdy955Z8sadvrNLwWihmbbM2
-        xIX+Gbk/gtAbD/MiI7N1pdI=
-X-Google-Smtp-Source: ABdhPJx3epWw8SnQaL8w47Y6EpL+Nxb2TfF2wFBPcUkPnpy1geqdfdb4Fr2esV6hzF8GexBy05uDgw==
-X-Received: by 2002:ac8:5895:0:b0:2e1:c997:a629 with SMTP id t21-20020ac85895000000b002e1c997a629mr14991481qta.124.1649405534737;
-        Fri, 08 Apr 2022 01:12:14 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id m6-20020a05622a118600b002ebb68c31d5sm10487776qtk.45.2022.04.08.01.12.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 01:12:14 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kvalo@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] wlcore: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Fri,  8 Apr 2022 08:12:05 +0000
-Message-Id: <20220408081205.2494512-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        bh=i81WX7FswRmN0nILDi9RrrLL61mjGBMdEL5aeO/NWhs=;
+        b=gVn0/vQkJMrHhVWmCHW1dBs7jfas+o3JSqqwSj0o+THRYMvQxpIXKDKOmHFkcJsm5v
+         wDGYTM1jsKasAno54o399P1B86zSZZnrqlom842wLGBlut/kQXkr+8dAbpn2uRGGhAC8
+         oQBXC++kKRCG+8irSinbLSiodwtomwKFdLb51gGcRINA2Vnbh5ZV2/R9ekP/Dg/uR7Zi
+         zzAA1KGYaaxjYM4zjHsW5yUTy9iFcazyBXQSuurchFUonnbljHXjjTV4j4qkt5SgXkS5
+         GXcTr7MYssa5cEfA3V0K7P30Z5VJDWG/nO2Qciu1bVri4VN7tNHAjjrYMIqh1luqnAli
+         FLMg==
+X-Gm-Message-State: AOAM533m9nF/zczQ6xSjnH4KUPIDi6eumigwD9M5LMEQQAxv2fBTc2ee
+        84YcZv8CIqwE9/fwOEtleLE=
+X-Google-Smtp-Source: ABdhPJwGgnAbq+6WkP5vvu10B3UmeSluhoyU+rZLwCcJ2MbKbQXukjKNioViA6bFtiBt/cZCZsv9IA==
+X-Received: by 2002:a05:6a00:2392:b0:4fa:dcd2:5bc1 with SMTP id f18-20020a056a00239200b004fadcd25bc1mr18210652pfc.8.1649405569109;
+        Fri, 08 Apr 2022 01:12:49 -0700 (PDT)
+Received: from [192.168.43.80] (subs03-180-214-233-82.three.co.id. [180.214.233.82])
+        by smtp.gmail.com with ESMTPSA id i7-20020a628707000000b004fa6eb33b02sm24692846pfe.49.2022.04.08.01.12.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 01:12:48 -0700 (PDT)
+Message-ID: <0811d6f9-1fd0-ca29-3c58-84f217b80d3d@gmail.com>
+Date:   Fri, 8 Apr 2022 15:12:43 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 5.10 000/597] 5.10.110-rc3 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220407183749.142181327@linuxfoundation.org>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <20220407183749.142181327@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+On 08/04/22 01.45, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.110 release.
+> There are 597 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
 
-Using pm_runtime_resume_and_get is more appropriate
-for simplifing code
+Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0) and
+powerpc (ps3_defconfig, gcc 11.2.0).
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/net/wireless/ti/wlcore/debugfs.c | 52 ++++++++----------------
- 1 file changed, 17 insertions(+), 35 deletions(-)
+Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
 
-diff --git a/drivers/net/wireless/ti/wlcore/debugfs.c b/drivers/net/wireless/ti/wlcore/debugfs.c
-index cce8d75d8b81..eb3d3f0e0b4d 100644
---- a/drivers/net/wireless/ti/wlcore/debugfs.c
-+++ b/drivers/net/wireless/ti/wlcore/debugfs.c
-@@ -52,11 +52,9 @@ void wl1271_debugfs_update_stats(struct wl1271 *wl)
- 	if (unlikely(wl->state != WLCORE_STATE_ON))
- 		goto out;
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	if (!wl->plt &&
- 	    time_after(jiffies, wl->stats.fw_stats_update +
-@@ -108,12 +106,9 @@ static void chip_op_handler(struct wl1271 *wl, unsigned long value,
- 		return;
- 	}
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
--
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		return;
--	}
- 
- 	chip_op = arg;
- 	chip_op(wl);
-@@ -279,11 +274,9 @@ static ssize_t dynamic_ps_timeout_write(struct file *file,
- 	if (unlikely(wl->state != WLCORE_STATE_ON))
- 		goto out;
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	/* In case we're already in PSM, trigger it again to set new timeout
- 	 * immediately without waiting for re-association
-@@ -349,11 +342,9 @@ static ssize_t forced_ps_write(struct file *file,
- 	if (unlikely(wl->state != WLCORE_STATE_ON))
- 		goto out;
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	/* In case we're already in PSM, trigger it again to switch mode
- 	 * immediately without waiting for re-association
-@@ -831,11 +822,9 @@ static ssize_t rx_streaming_interval_write(struct file *file,
- 
- 	wl->conf.rx_streaming.interval = value;
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	wl12xx_for_each_wlvif_sta(wl, wlvif) {
- 		wl1271_recalc_rx_streaming(wl, wlvif);
-@@ -889,11 +878,9 @@ static ssize_t rx_streaming_always_write(struct file *file,
- 
- 	wl->conf.rx_streaming.always = value;
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	wl12xx_for_each_wlvif_sta(wl, wlvif) {
- 		wl1271_recalc_rx_streaming(wl, wlvif);
-@@ -939,11 +926,9 @@ static ssize_t beacon_filtering_write(struct file *file,
- 
- 	mutex_lock(&wl->mutex);
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	wl12xx_for_each_wlvif(wl, wlvif) {
- 		ret = wl1271_acx_beacon_filter_opt(wl, wlvif, !!value);
-@@ -1021,11 +1006,9 @@ static ssize_t sleep_auth_write(struct file *file,
- 		goto out;
- 	}
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	ret = wl1271_acx_sleep_auth(wl, value);
- 	if (ret < 0)
-@@ -1254,9 +1237,8 @@ static ssize_t fw_logger_write(struct file *file,
- 	}
- 
- 	mutex_lock(&wl->mutex);
--	ret = pm_runtime_get_sync(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
- 	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
- 		count = ret;
- 		goto out;
- 	}
 -- 
-2.25.1
-
+An old man doll... just what I always wanted! - Clara
