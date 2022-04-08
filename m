@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1313C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238898AbiDHSlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 14:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42766 "EHLO
+        id S238907AbiDHSlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 14:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238826AbiDHSkc (ORCPT
+        with ESMTP id S238827AbiDHSkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 8 Apr 2022 14:40:32 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC06525E9D;
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [85.215.255.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A992DA8B;
         Fri,  8 Apr 2022 11:38:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649443083;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649443084;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=hJ1J5LMNjhwZoX0fR0DkYrCb1jeXSRImxFlYVSKJrjo=;
-    b=QdFtZeUva8D21fofBJHCr2WtmWFVFlWLXz2oEzPZVA6mDxXLO9UHRg0U5fsHDcWIhu
-    zjmEb7yN+E1RXyQ90uBKEW5mSOdHQj1C68Ydpsjex4pxCM0U8zkeFWcbFiToDBpAYSZc
-    oWGK9YQ7g8f+xJNLKC87qARRYdgimqns/+WEmVmHBpCoCWkIrAJHPLzYtkbhNLDYjKjU
-    3P7qI8tW2WWNdIFSLK8byFVCT468x3BJ561F4nkEEjVSV5t6SqZ4G5xncWqhFfStNy+W
-    NE+WwdDz21h169p7ViBvud3SeFPME+rr4ROrYIiGE8VEMvrKbqF2ztdo3oyRnZEL5vmw
-    Xeyw==
+    bh=bNIR+Wzhbvm+wU9DNMXN2Rv35lJlQbfLLKdlltaiO+A=;
+    b=IGs7cxHNaOVq+PeiCjWStRPzT3Z8Gqvd3JhpC0x2RYMJyhw3GKAWVHaH8GnEKu15Iv
+    CLCYUOubpET6585oQ+gRbDhoth9lvyUVbeDvhlXnHKWgakIoXPrVvqJ4/qtEddo5+Ls2
+    zcq1djy1joGz/hPTiFTIRU9w4u627aZi48/USzJlhjo6IyeKeKs62CAqhaeDX77AElNM
+    6gEW732ISqvAIGOw4XsTgp38c6dLZsAQznCJ4WONIbbuI79oFUcAbbs95W3N+oYob+a9
+    fQWD1KR3zzg2FOP6dwCJq1zngvrqu68HaouSX4lfviSoD6k7Sy7vRUcsDtX48TmEz8Gv
+    HQJw==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbgdr/a"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy38Ic2sns
+    with ESMTPSA id k708cfy38Ic4sny
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Fri, 8 Apr 2022 20:38:02 +0200 (CEST)
+    Fri, 8 Apr 2022 20:38:04 +0200 (CEST)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Krzysztof Kozlowski <krzk@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -44,9 +44,9 @@ To:     Krzysztof Kozlowski <krzk@kernel.org>,
 Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-mips@vger.kernel.org, letux-kernel@openphoenux.org,
         "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH 01/18] MIPS: DTS: jz4780: remove cpu clock-names as reported by dtbscheck
-Date:   Fri,  8 Apr 2022 20:37:44 +0200
-Message-Id: <064a1f029a82ea3895109efe8fb1f472581d4581.1649443080.git.hns@goldelico.com>
+Subject: [PATCH 07/18] MIPS: DTS: jz4780: fix otg node as reported by dtbscheck
+Date:   Fri,  8 Apr 2022 20:37:50 +0200
+Message-Id: <298162bfa2e7225ccc753865e1ffa39ce2722b2a.1649443080.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1649443080.git.hns@goldelico.com>
 References: <cover.1649443080.git.hns@goldelico.com>
@@ -56,36 +56,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arch/mips/boot/dts/ingenic/ci20.dtb: cpu@0: clock-names does not match any of the regexes: pinctrl-[0-9]+
-	From schema: Documentation/devicetree/bindings/mips/ingenic/ingenic,cpu.yaml
-arch/mips/boot/dts/ingenic/ci20.dtb: cpu@1: clock-names does not match any of the regexes: pinctrl-[0-9]+
-	From schema: Documentation/devicetree/bindings/mips/ingenic/ingenic,cpu.yaml
+arch/mips/boot/dts/ingenic/ci20.dtb: usb@13500000: compatible: 'oneOf' conditional failed, one must be fixed:
+	['ingenic,jz4780-otg', 'snps,dwc2'] is too long
+	['ingenic,jz4780-otg', 'snps,dwc2'] is too short
+	'brcm,bcm2835-usb' was expected
+	'hisilicon,hi6220-usb' was expected
+	'rockchip,rk3066-usb' was expected
+	'ingenic,jz4780-otg' is not one of ['rockchip,px30-usb', 'rockchip,rk3036-usb', 'rockchip,rk3188-usb', 'rockchip,rk3228-usb', 'rockchip,rk3288-usb', 'rockchip,rk3308-usb', 'rockchip,rk3328-usb', 'rockchip,rk3368-usb', 'rockchip,rv1108-usb']
+	'lantiq,arx100-usb' was expected
+	'lantiq,xrx200-usb' was expected
+	'ingenic,jz4780-otg' is not one of ['amlogic,meson8-usb', 'amlogic,meson8b-usb', 'amlogic,meson-gxbb-usb', 'amlogic,meson-g12a-usb', 'intel,socfpga-agilex-hsotg']
+	'amcc,dwc-otg' was expected
+	'apm,apm82181-dwc-otg' was expected
+	'snps,dwc2' was expected
+	'st,stm32f4x9-fsotg' was expected
+	'st,stm32f4x9-hsotg' was expected
+	'st,stm32f7-hsotg' was expected
+	'st,stm32mp15-fsotg' was expected
+	'st,stm32mp15-hsotg' was expected
+	'samsung,s3c6400-hsotg' was expected
+	'intel,socfpga-agilex-hsotg' was expected
+	From schema: Documentation/devicetree/bindings/usb/dwc2.yaml
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 --
- 1 file changed, 2 deletions(-)
+ arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-index b998301f179ce..710605df40ed3 100644
+index 2021836983c96..c5124459678b7 100644
 --- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
 +++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-@@ -18,7 +18,6 @@ cpu0: cpu@0 {
- 			reg = <0>;
- 
- 			clocks = <&cgu JZ4780_CLK_CPU>;
--			clock-names = "cpu";
- 		};
- 
- 		cpu1: cpu@1 {
-@@ -27,7 +26,6 @@ cpu1: cpu@1 {
- 			reg = <1>;
- 
- 			clocks = <&cgu JZ4780_CLK_CORE1>;
--			clock-names = "cpu";
- 		};
+@@ -576,7 +576,7 @@ bch: bch@134d0000 {
  	};
  
+ 	otg: usb@13500000 {
+-		compatible = "ingenic,jz4780-otg", "snps,dwc2";
++		compatible = "snps,dwc2";
+ 		reg = <0x13500000 0x40000>;
+ 
+ 		interrupt-parent = <&intc>;
 -- 
 2.33.0
 
