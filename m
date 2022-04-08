@@ -2,181 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E844C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC710C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:10:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236257AbiDHOLk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 10:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54320 "EHLO
+        id S236754AbiDHOMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 10:12:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232875AbiDHOLg (ORCPT
+        with ESMTP id S236782AbiDHOMn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 10:11:36 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B884330B96D;
-        Fri,  8 Apr 2022 07:09:32 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id o15so10694871qtv.8;
-        Fri, 08 Apr 2022 07:09:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4TNi/yaqFQE6T+l9n5l5tGxRgXhjywuUJADf5dPUVmA=;
-        b=caS4zbIr1sgZEa+jj88EO96nUbZ42WUbjDVNUTYdItlrbJfnl3mhl2acuW5CFx0YQN
-         YFjhRM7y9Sx3K7u9+sovWBxzcPvf/ERmxqd3/onBu8jehvNHSlZL6pLlO6DfWs5iZ8rr
-         6Tjfy/h48PNwguNYEyv1E2Y8VwMHIM55cUivcLRWxQNXDaaFOAv3jbQJ3t/Clrx0udzV
-         KqT1m0ygYzsVI7N+M0dTi8UMYpx0+rshvD1zR/aAG2f4xjRDSUPS+JFJhrE/8BAiARGT
-         20mXyQNLpo4ELBFj8bT41TC6G90FcJqt55yK1heGyAoNY5K4VLJmW7PhcJTGGdWVB77g
-         PdEg==
+        Fri, 8 Apr 2022 10:12:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DBFD339FF1
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 07:10:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649427039;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2qPRVhB9AVe6YB9JUrETqOb6ci3qytc3rllum+fD0JE=;
+        b=iAYjqHMeby8d0AjbF2+i1Q89V5ofiK59Nucdws+pg4jTmom4EWTb0Edx5+u9ow+DTZYkVL
+        Zz/IFamSsAU8DUMIGad3Jd7J/oRyVuvZp5pTcr3pPLYau+UgY5T0t0QFT1J8R58Mpfqm9k
+        aRLJpjlGgXHfljQzXClM1bQZCMnTk1k=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-251-YfSM5KFUOiSlWGV6uSZ3oQ-1; Fri, 08 Apr 2022 10:10:38 -0400
+X-MC-Unique: YfSM5KFUOiSlWGV6uSZ3oQ-1
+Received: by mail-qt1-f197.google.com with SMTP id d18-20020ac81192000000b002ebdd6ef307so2415696qtj.20
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 07:10:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4TNi/yaqFQE6T+l9n5l5tGxRgXhjywuUJADf5dPUVmA=;
-        b=GaayfsGdCZdr6Hg8LxPUiI1vSdOxHUxCb+amqxpu93JhXA40Iz/Ec1Jg0XBlCYMFqQ
-         YNdqm+cYeKyWsOzqmtMGTEF1c1eB8pBnB1NBFsRb8RPXQvLrL/qJICGimQqeVXEWSHGJ
-         bCLNk6NZff5BpagFsHxIPCftR4bMYlSHoOlJNXrX5bqTkDDItgQoX+zg1h42uEY1bAJc
-         8xnTdmR3sBmWcGxiVaqtLHwsu3RlWIiOciwRDPEdDrYoJZlzswaSWjpJPm0oRgIS1TZ4
-         Tr30nWpvxpU88pfB8Vx+Cbr63bPf/86rD8PByuJqDSGP/L+fDohQ/+KdrTok90VnQ5FY
-         4Uqg==
-X-Gm-Message-State: AOAM530WsMFpCofMNLioDdEszepqRizuOHBvjMgUfTMCeaVLJAvV7q7H
-        OKruE/W+AcuiA3AEj1kEmhWNJ4hDzsM6
-X-Google-Smtp-Source: ABdhPJxK4h9DfpyeCgGMnHuVkat9kpG7atAGqVV+gcddA6jpxnLrymZr7loATIuJ//dzG+kTRt8CKA==
-X-Received: by 2002:ac8:454f:0:b0:2eb:d22b:934b with SMTP id z15-20020ac8454f000000b002ebd22b934bmr6430578qtn.269.1649426971750;
-        Fri, 08 Apr 2022 07:09:31 -0700 (PDT)
-Received: from arch.. ([2607:fb90:96c:82d2:8e89:a5ff:fe6f:56d3])
-        by smtp.gmail.com with ESMTPSA id o13-20020ac87c4d000000b002e1e732dea5sm18474280qtv.70.2022.04.08.07.09.30
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2qPRVhB9AVe6YB9JUrETqOb6ci3qytc3rllum+fD0JE=;
+        b=jOgQuV5dkqCFqMNGQjEnTF0cxGpXhEc4PYFwY7YzMkW+MRG7Sb0tQj7HS1Uz5t6zSM
+         Mck52OOQ9tIlLhxliP10MOELemYs7OrtXRtc+ITf3j9XsJkXE/3VskMK/GdgqSfktpib
+         YJ32mdQW+56POfepX2CZe3cc1UKsnN92EFl3rwzUA7cnI4uCmD6+OzZfXh7avK+RmcPM
+         +WzHWHcCudO1pTUt+2sYLamCaTuuF1TU8SPvlkmG9yRHTx7C0AoaTGOJlga93Y2w7B5a
+         X2R8q7zXxhBMNEm6J16ZwJK4JGm5+5PtOHv/r7Ahx0GZgBqov6DF5czEBBO7LzpB7VTh
+         1G9Q==
+X-Gm-Message-State: AOAM533hSLM7Vgnh+vQGzk6Oo0742Cl35Yf3Rfl4JWaILj6OZ3PxzZWk
+        c7k0VDE8SyJ8qwfbN0dt5ToX97F0ji9Xnu3rs2sLcm48TfxcO/o3w5huHVQSGXVVh7sucSMfvXP
+        ovxD1qDn2BCZ264TeG4OHmH/R
+X-Received: by 2002:a37:694:0:b0:69b:e728:3e8a with SMTP id 142-20020a370694000000b0069be7283e8amr1138451qkg.583.1649427037523;
+        Fri, 08 Apr 2022 07:10:37 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxr0PoVNuadzIE0cbpzGvukXZlb4TRsIEGW7PM8cZCdDlYqjlDoRt/rchhKf/FcCJn4ObrBFg==
+X-Received: by 2002:a37:694:0:b0:69b:e728:3e8a with SMTP id 142-20020a370694000000b0069be7283e8amr1138424qkg.583.1649427037259;
+        Fri, 08 Apr 2022 07:10:37 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::15])
+        by smtp.gmail.com with ESMTPSA id n13-20020a37a40d000000b0069bdff39d1bsm892281qke.36.2022.04.08.07.10.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 07:09:31 -0700 (PDT)
-From:   Daniel Bomar <dbdaniel42@gmail.com>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Daniel Bomar <dbdaniel42@gmail.com>
-Subject: [PATCH] HID: microsoft: Fix button/axis mapping for Xbox One S Controller
-Date:   Fri,  8 Apr 2022 09:09:02 -0500
-Message-Id: <20220408140902.15966-1-dbdaniel42@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 08 Apr 2022 07:10:36 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 07:10:34 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        rick.p.edgecombe@intel.com
+Subject: Re: [PATCH 0/4] objtool: Fixes
+Message-ID: <20220408141034.nof6d6l2e3dowlbn@treble>
+References: <20220408094552.432447640@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220408094552.432447640@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remaps several buttons and axes to match how these are mapped in the
-xpad driver (same controller over USB).
+On Fri, Apr 08, 2022 at 11:45:52AM +0200, Peter Zijlstra wrote:
+> Fix various objtool whinges:
+> 
+>   lib/strnlen_user.o: warning: objtool: strnlen_user()+0x33: call to do_strnlen_user() with UACCESS enabled
+>   lib/strncpy_from_user.o: warning: objtool: strncpy_from_user()+0x33: call to do_strncpy_from_user() with UACCESS enabled
+> 
+>   vmlinux.o: warning: objtool: pvh_start_xen()+0x0: unreachable
+>   vmlinux.o: warning: objtool: start_secondary()+0x10e: unreachable
+>   vmlinux.o: warning: objtool: asm_exc_xen_unknown_trap()+0x16: unreachable instruction
 
-This is also how they are documented to be mapped in
-Documentation/input/gamepad.rst
----
- drivers/hid/hid-microsoft.c | 73 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 72 insertions(+), 1 deletion(-)
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
 
-diff --git a/drivers/hid/hid-microsoft.c b/drivers/hid/hid-microsoft.c
-index 071fd093a5f4..903e09a3d898 100644
---- a/drivers/hid/hid-microsoft.c
-+++ b/drivers/hid/hid-microsoft.c
-@@ -27,6 +27,7 @@
- #define MS_DUPLICATE_USAGES	BIT(5)
- #define MS_SURFACE_DIAL		BIT(6)
- #define MS_QUIRK_FF		BIT(7)
-+#define MS_XBOX			BIT(8)
- 
- struct ms_data {
- 	unsigned long quirks;
-@@ -179,6 +180,70 @@ static int ms_surface_dial_quirk(struct hid_input *hi, struct hid_field *field,
- 	return 0;
- }
- 
-+#define ms_map_abs_clear(c)	hid_map_usage_clear(hi, usage, bit, max, \
-+					EV_ABS, (c))
-+/*
-+ * Remap buttons and axes on Xbox controllers over bluetooth so they match
-+ * with the xpad driver (USB interface) and with mapping specified in
-+ * Documentation/input/gamepad.rst
-+*/
-+static int ms_xbox_quirk(struct hid_input *hi, struct hid_usage *usage,
-+		unsigned long **bit, int *max)
-+{
-+	int code;
-+	switch (usage->hid & HID_USAGE_PAGE) {
-+		/*
-+		 * Remap "Xbox" and Select buttons from consumer page to gamepad buttons.
-+		 * This allows these buttons to show up on the /dev/input/js* interface.
-+		*/
-+		case HID_UP_CONSUMER:
-+			switch (usage->hid & HID_USAGE) {
-+				case 0x223:
-+					ms_map_key_clear(BTN_MODE);
-+					return 1;
-+				case 0x224:
-+					ms_map_key_clear(BTN_SELECT);
-+					return 1;
-+			}
-+			break;
-+		/* These buttons do not physically exist on the controller. Ignore them. */
-+		case HID_UP_BUTTON:
-+			code = ((usage->hid - 1) & HID_USAGE) + BTN_GAMEPAD;
-+			switch (code) {
-+				case BTN_C:
-+				case BTN_Z:
-+				case BTN_TL2:
-+				case BTN_TR2:
-+					return -1;
-+			}
-+			break;
-+		/* Remap right joystick to RX/RY */
-+		case HID_UP_GENDESK:
-+			switch (usage->hid) {
-+				case HID_GD_Z:
-+					ms_map_abs_clear(ABS_RX);
-+					return 1;
-+				case HID_GD_RZ:
-+					ms_map_abs_clear(ABS_RY);
-+					return 1;
-+			}
-+			break;
-+		/* Remap left and right triggers from "gas" and "break" to RZ/Z */
-+		case HID_UP_SIMULATION:
-+			switch (usage->hid & HID_USAGE) {
-+				case 0xc4:
-+					ms_map_abs_clear(ABS_RZ);
-+					return 1;
-+				case 0xc5:
-+					ms_map_abs_clear(ABS_Z);
-+					return 1;
-+			}
-+			break;
-+	}
-+
-+	return 0;
-+}
-+
- static int ms_input_mapping(struct hid_device *hdev, struct hid_input *hi,
- 		struct hid_field *field, struct hid_usage *usage,
- 		unsigned long **bit, int *max)
-@@ -203,6 +268,12 @@ static int ms_input_mapping(struct hid_device *hdev, struct hid_input *hi,
- 			return ret;
- 	}
- 
-+	if (quirks & MS_XBOX) {
-+		int ret = ms_xbox_quirk(hi, usage, bit, max);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	return 0;
- }
- 
-@@ -447,7 +518,7 @@ static const struct hid_device_id ms_devices[] = {
- 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_MICROSOFT, 0x091B),
- 		.driver_data = MS_SURFACE_DIAL },
- 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_XBOX_ONE_S_CONTROLLER),
--		.driver_data = MS_QUIRK_FF },
-+		.driver_data = MS_QUIRK_FF | MS_XBOX },
- 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_8BITDO_SN30_PRO_PLUS),
- 		.driver_data = MS_QUIRK_FF },
- 	{ }
 -- 
-2.35.1
+Josh
 
