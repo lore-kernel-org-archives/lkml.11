@@ -2,290 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E51C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:34:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88ED9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238200AbiDHRg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 13:36:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
+        id S238219AbiDHRgf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 13:36:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238187AbiDHRgW (ORCPT
+        with ESMTP id S238190AbiDHRgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 13:36:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED5A9FF2;
-        Fri,  8 Apr 2022 10:34:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6ECCB82C74;
-        Fri,  8 Apr 2022 17:34:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABA72C385AD;
-        Fri,  8 Apr 2022 17:34:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649439255;
-        bh=2FNQFcCzy4bkMXND1CdqdkczuDKjm0NWFCzPIYiwF1U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=t4Sb/PuBjQVHG08V1qSdfCZJqfOk31+DfZ0u4i8kSboue3jqCG6LEqNpI1D0IB5pi
-         kHEhqjbBPb2lTNnVVS8nvUy59o43WdVEG0CrYtyP6plO620qnXXbJCYGyxne3Uwz/z
-         82xaeOxVkWX6pgaLzRcdkq2wqwhFOrsWuXEFhALqz0paiurtoBmz59DAcJSk8IN0vI
-         X5NVJv6sYlSM99BG6R8p6o3GjHIDHNXMNPIYaQjxVkFbprO40onkrZy96iEreQT9UL
-         Nj6rLMb74XtNAp9v9IBLwlLAV/UhN3UsvdOjUV0rKSXAVN5Pk+wYogAuuCSeSW2ORi
-         AZBk8JsXFxDBA==
-Received: by mail-io1-f49.google.com with SMTP id p135so5554354iod.2;
-        Fri, 08 Apr 2022 10:34:15 -0700 (PDT)
-X-Gm-Message-State: AOAM533HLaUen1JH3KitRfHIPr0N6w4RX7VtyhGrBdJm+cfhYYni0vgq
-        5pdM43M6F9uF251sTzFJHWtsRag1HR04MtqfUw==
-X-Google-Smtp-Source: ABdhPJz4t1OZNAOgRzAOyHMhVdKQaso86XVuEijoNXeMmOAH83RpxvLTQL2gj55OBYntF9Cb1IJ72Bd5qFQLuYJvHGs=
-X-Received: by 2002:a05:6638:3052:b0:317:79e1:8b7f with SMTP id
- u18-20020a056638305200b0031779e18b7fmr10016438jak.239.1649439254533; Fri, 08
- Apr 2022 10:34:14 -0700 (PDT)
+        Fri, 8 Apr 2022 13:36:24 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE86AACAA
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 10:34:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649439260; x=1680975260;
+  h=message-id:date:mime-version:to:cc:from:subject:
+   content-transfer-encoding;
+  bh=hsHvmXkAO7Z/X+ZfPmp4tfAodc4efwkezWwR3R+tMlI=;
+  b=tI2mxe4QtT1P7i9ZD7n9p+YCzCFnZuQ9OZ1z8uJeZMhcQqPjrbK9qXG6
+   bbK/WDmMoZ5OCm0gTTtTz1b9Mzz96011itJrsHzdUAnSDvPe0iCLbfVSX
+   kkOTlMcNINM2We4XvtbApgK0JzGiVBVSZvoyF4cNP3E84uRltp8U4Xn+H
+   c=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 Apr 2022 10:34:20 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 10:34:18 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 8 Apr 2022 10:34:18 -0700
+Received: from [10.226.58.18] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 8 Apr 2022
+ 10:34:18 -0700
+Message-ID: <6410d0d5-bd88-64d5-6ae7-cca33746b302@quicinc.com>
+Date:   Fri, 8 Apr 2022 11:34:17 -0600
 MIME-Version: 1.0
-References: <20220408172103.371637-1-frowand.list@gmail.com>
-In-Reply-To: <20220408172103.371637-1-frowand.list@gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Fri, 8 Apr 2022 12:34:03 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJC6pKxEmwMeirVLwJEbOH0WD+01VEfFXC257a+ZDRtsw@mail.gmail.com>
-Message-ID: <CAL_JsqJC6pKxEmwMeirVLwJEbOH0WD+01VEfFXC257a+ZDRtsw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] of: overlay: of_overlay_apply() kfree() errors
-To:     Frank Rowand <frowand.list@gmail.com>
-Cc:     Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
-        Slawomir Stepien <slawomir.stepien@nokia.com>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Alan Tull <atull@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Content-Language: en-US
+To:     Thomas Gleixner <tglx@linutronix.de>
+CC:     Marc Zyngier <maz@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
+Subject: x86 multi-msi w/o iommu
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 12:21 PM <frowand.list@gmail.com> wrote:
->
-> From: Frank Rowand <frank.rowand@sony.com>
+Hi Thomas,
 
-The subject needs a verb.
+I'd like to get multi-MSI without IOMMU working on x86.  I'm hoping you 
+could help me understand the current state of things, and if there is a 
+path toward enabling this.
 
->
-> Fix various kfree() issues related to of_overlay_apply().
->   - Double kfree() of fdt and tree when init_overlay_changeset()
->     returns an error.
->   - free_overlay_changeset() free of the root of the unflattened
->     overlay (variable tree) instead of the memory that contains
->     the unflattened overlay.
->   - Move similar kfree()s from multiple error locations to a
->     common error path (err_free_tree_unlocked:).
+This is an overly simplistic assessment, but this reportedly works in 
+other OSes, so it looks like Linux is broken in comparison.
 
-What about my question/suggestion on the original patch from Slawomir?
+In my investigation so far, the failure stems from 
+x86_vector_alloc_irqs() in arch/x86/kernel/apic/vector.c [1].  If we 
+need a contiguous allocation of more than one irq, the allocation 
+immediately fails:
 
->
-> Double kfree()
-> Reported-by: Slawomir Stepien <slawomir.stepien@nokia.com>
->
-> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
-> ---
->  drivers/of/overlay.c | 64 ++++++++++++++++++++++++++++----------------
->  1 file changed, 41 insertions(+), 23 deletions(-)
->
-> diff --git a/drivers/of/overlay.c b/drivers/of/overlay.c
-> index d80160cf34bb..1b9a90d61496 100644
-> --- a/drivers/of/overlay.c
-> +++ b/drivers/of/overlay.c
-> @@ -58,6 +58,7 @@ struct fragment {
->   * @id:                        changeset identifier
->   * @ovcs_list:         list on which we are located
->   * @fdt:               base of memory allocated to hold aligned FDT that was unflattened to create @overlay_tree
-> + * @overlay_mem:       the memory chunk that contains @overlay_tree
->   * @overlay_tree:      expanded device tree that contains the fragment nodes
->   * @count:             count of fragment structures
->   * @fragments:         fragment nodes in the overlay expanded device tree
-> @@ -68,6 +69,7 @@ struct overlay_changeset {
->         int id;
->         struct list_head ovcs_list;
->         const void *fdt;
-> +       const void *overlay_mem;
->         struct device_node *overlay_tree;
->         int count;
->         struct fragment *fragments;
-> @@ -720,6 +722,7 @@ static struct device_node *find_target(struct device_node *info_node)
->   * init_overlay_changeset() - initialize overlay changeset from overlay tree
->   * @ovcs:      Overlay changeset to build
->   * @fdt:       base of memory allocated to hold aligned FDT that was unflattened to create @tree
-> + * @tree_mem:  Memory that contains @tree
->   * @tree:      Contains the overlay fragments and overlay fixup nodes
->   *
->   * Initialize @ovcs.  Populate @ovcs->fragments with node information from
-> @@ -730,13 +733,23 @@ static struct device_node *find_target(struct device_node *info_node)
->   * detected in @tree, or -ENOSPC if idr_alloc() error.
->   */
->  static int init_overlay_changeset(struct overlay_changeset *ovcs,
-> -               const void *fdt, struct device_node *tree)
-> +               const void *fdt, const void *tree_mem, struct device_node *tree)
->  {
->         struct device_node *node, *overlay_node;
->         struct fragment *fragment;
->         struct fragment *fragments;
->         int cnt, id, ret;
->
-> +       /*
-> +        * Must set these fields before any error return. fdt and tree_mem
-> +        * will be freed by free_overlay_changeset(), which is called if
-> +        * init_overlay_changeset() returns an error.
-> +        */
-> +
-> +       ovcs->fdt = fdt;
-> +       ovcs->overlay_mem = tree_mem;
-> +       ovcs->overlay_tree = tree;
-> +
->         /*
->          * Warn for some issues.  Can not return -EINVAL for these until
->          * of_unittest_apply_overlay() is fixed to pass these checks.
-> @@ -750,9 +763,6 @@ static int init_overlay_changeset(struct overlay_changeset *ovcs,
->         if (!of_node_is_root(tree))
->                 pr_debug("%s() tree is not root\n", __func__);
->
-> -       ovcs->overlay_tree = tree;
-> -       ovcs->fdt = fdt;
-> -
->         INIT_LIST_HEAD(&ovcs->ovcs_list);
->
->         of_changeset_init(&ovcs->cset);
-> @@ -865,7 +875,7 @@ static void free_overlay_changeset(struct overlay_changeset *ovcs)
->          * ovcs->fdt due to the policy that overlay notifiers are not allowed
->          * to retain pointers into the overlay devicetree.
->          */
-> -       kfree(ovcs->overlay_tree);
-> +       kfree(ovcs->overlay_mem);
->         kfree(ovcs->fdt);
->         kfree(ovcs);
->  }
-> @@ -875,6 +885,7 @@ static void free_overlay_changeset(struct overlay_changeset *ovcs)
->   *
->   * of_overlay_apply() - Create and apply an overlay changeset
->   * @fdt:       base of memory allocated to hold the aligned FDT
-> + * @tree_mem:  Memory that contains @tree
->   * @tree:      Expanded overlay device tree
->   * @ovcs_id:   Pointer to overlay changeset id
->   *
-> @@ -913,31 +924,27 @@ static void free_overlay_changeset(struct overlay_changeset *ovcs)
->   * id is returned to *ovcs_id.
->   */
->
-> -static int of_overlay_apply(const void *fdt, struct device_node *tree,
-> -               int *ovcs_id)
-> +static int of_overlay_apply(const void *fdt, void *tree_mem,
-> +               struct device_node *tree, int *ovcs_id)
->  {
->         struct overlay_changeset *ovcs;
->         int ret = 0, ret_revert, ret_tmp;
->
->         /*
-> -        * As of this point, fdt and tree belong to the overlay changeset.
-> +        * As of this point, fdt and tree_mem belong to the overlay changeset.
->          * overlay changeset code is responsible for freeing them.
->          */
->
->         if (devicetree_corrupt()) {
->                 pr_err("devicetree state suspect, refuse to apply overlay\n");
-> -               kfree(fdt);
-> -               kfree(tree);
->                 ret = -EBUSY;
-> -               goto out;
-> +               goto err_free_tree_unlocked;
->         }
->
->         ovcs = kzalloc(sizeof(*ovcs), GFP_KERNEL);
->         if (!ovcs) {
-> -               kfree(fdt);
-> -               kfree(tree);
->                 ret = -ENOMEM;
-> -               goto out;
-> +               goto err_free_tree_unlocked;
->         }
->
->         of_overlay_mutex_lock();
-> @@ -947,9 +954,14 @@ static int of_overlay_apply(const void *fdt, struct device_node *tree,
->         if (ret)
->                 goto err_free_tree;
->
-> -       ret = init_overlay_changeset(ovcs, fdt, tree);
-> +       /*
-> +        * init_overlay_changeset() promises to add tree_mem and tree to ovcs
-> +        * even in the case of an early error return, so they can be freed by
-> +        * free_overlay_changeset().
-> +        */
-> +       ret = init_overlay_changeset(ovcs, fdt, tree_mem, tree);
->         if (ret)
-> -               goto err_free_tree;
-> +               goto err_free_overlay_changeset;
->
->         /*
->          * after overlay_notify(), ovcs->overlay_tree related pointers may have
-> @@ -999,7 +1011,7 @@ static int of_overlay_apply(const void *fdt, struct device_node *tree,
->
->  err_free_tree:
->         kfree(fdt);
-> -       kfree(tree);
-> +       kfree(tree_mem);
->
->  err_free_overlay_changeset:
->         free_overlay_changeset(ovcs);
-> @@ -1008,9 +1020,14 @@ static int of_overlay_apply(const void *fdt, struct device_node *tree,
->         mutex_unlock(&of_mutex);
->         of_overlay_mutex_unlock();
->
-> -out:
->         pr_debug("%s() err=%d\n", __func__, ret);
->
-> +       return ret;
-> +
-> +err_free_tree_unlocked:
-> +       kfree(fdt);
-> +       kfree(tree_mem);
-> +
->         return ret;
->  }
->
-> @@ -1019,6 +1036,7 @@ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
->  {
->         void *new_fdt;
->         void *new_fdt_align;
-> +       void *overlay_mem;
->         int ret;
->         u32 size;
->         struct device_node *overlay_root = NULL;
-> @@ -1046,18 +1064,17 @@ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
->         new_fdt_align = PTR_ALIGN(new_fdt, FDT_ALIGN_SIZE);
->         memcpy(new_fdt_align, overlay_fdt, size);
->
-> -       of_fdt_unflatten_tree(new_fdt_align, NULL, &overlay_root);
-> -       if (!overlay_root) {
-> +       overlay_mem = of_fdt_unflatten_tree(new_fdt_align, NULL, &overlay_root);
-> +       if (!overlay_mem) {
->                 pr_err("unable to unflatten overlay_fdt\n");
->                 ret = -EINVAL;
->                 goto out_free_new_fdt;
->         }
->
-> -       ret = of_overlay_apply(new_fdt, overlay_root, ovcs_id);
-> +       ret = of_overlay_apply(new_fdt, overlay_mem, overlay_root, ovcs_id);
->         if (ret < 0) {
->                 /*
-> -                * new_fdt and overlay_root now belong to the overlay
-> -                * changeset.
-> +                * new_fdt and overlay_mem now belong to the overlay changeset.
->                  * overlay changeset code is responsible for freeing them.
->                  */
->                 goto out;
-> @@ -1067,6 +1084,7 @@ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
->
->
->  out_free_new_fdt:
-> +       kfree(overlay_mem);
->         kfree(new_fdt);
->
->  out:
-> --
-> Frank Rowand <frank.rowand@sony.com>
->
+	/* Currently vector allocator can't guarantee contiguous allocations */
+	if ((info->flags & X86_IRQ_ALLOC_CONTIGUOUS_VECTORS) && nr_irqs > 1)
+		return -ENOSYS;
+
+
+As I'm sure you are aware, this only impacts MSI without IOMMU as both 
+MSI-X and MSI with IOMMU can handle a discontinuous allocation (the flag 
+is not set for either of those cases).
+
+That check was added back in 2015 with [2].  In 2017, it looks like you 
+refactored the allocator to the irq_matrix component [3].  However, the 
+limitation remains to today.
+
+Digging a bit further, it looks like the internal function 
+matrix_alloc_area() [4] is capable of doing a contiguous allocation, but 
+all the callers of that via the public api hardcode num to 1.  I 
+wouldn't say it would be trivial to refactor the irq_matrix public api 
+to do a contigious range allocation, and refactor 
+x86_vector_alloc_irqs() to do that based on 
+X86_IRQ_ALLOC_CONTIGUOUS_VECTORS, but since it seems like that hasn't 
+been tackled in 5-7 years (depending on how you look at the history), I 
+suspect I'm missing something.
+
+Since I'm poking my nose in an area of the kernel that I haven't gone 
+poking into before, I'm guessing there is a lot I don't know.  Would you 
+kindly educate me on what the concerns might be?
+
+I look forward to your expertise and opinions.
+
+Thanks
+
+-Jeff
+
+
+
+[1]: 
+https://elixir.bootlin.com/linux/v5.18-rc1/source/arch/x86/kernel/apic/vector.c#L542
+[2]: 
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/arch/x86/kernel/apic/vector.c?h=v5.18-rc1&id=b5dc8e6c21e7ffba0246bf39cea97805c142bf85
+[3]: 
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/arch/x86/kernel/apic/vector.c?h=v5.18-rc1&id=69cde0004a4b5cfc7d1cec4ef9ce4cf4e26142f0
+[4]: 
+https://elixir.bootlin.com/linux/v5.18-rc1/source/kernel/irq/matrix.c#L110
