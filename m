@@ -2,85 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07620C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:36:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234864AbiDHLc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 07:32:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49820 "EHLO
+        id S234701AbiDHLiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 07:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231959AbiDHLcV (ORCPT
+        with ESMTP id S229550AbiDHLiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 07:32:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E6116BF5C;
-        Fri,  8 Apr 2022 04:30:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE58561FF5;
-        Fri,  8 Apr 2022 11:30:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1FB69C385A1;
-        Fri,  8 Apr 2022 11:30:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649417416;
-        bh=N++kWg6tmJMduGzzAXaaygWea3gRrf1JYMIm/yTrKXM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cHewQVj+pcC9ybfjCA/W5eCNRvGtR7gDIAIN9zHA/ZtIUmgqQ3UMW4Qg/bJz/F9kW
-         Hv4vH7xiF9Fh/R6dnDNB5Y5dIwzTt3lSmT2fYK5QMJ/nV9zfbU5munKLpZ4YPekqiZ
-         Z3cRHIDXB8M4hxNnATjlvxu7BeznfidvOzHGVBeOy7sbyzcWrTXhfo6e9W9W809/KJ
-         Tbdbcr5jxZ/N6ZN/gzPY1lHUlUzxUdNna6W9KwNTUAnLzM/7kf9Rh4WghBT73p8X27
-         3PjqdeqbLlNeStEuXA12OtfSaX1gr1CHbPSqmFYTcNUKKM3r/g83XxbY5IiQZ4cWq/
-         Br29I8zlwfRFg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 06EB4E8DBDA;
-        Fri,  8 Apr 2022 11:30:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 8 Apr 2022 07:38:18 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECDBF1FA5F;
+        Fri,  8 Apr 2022 04:36:13 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B73D311FB;
+        Fri,  8 Apr 2022 04:36:13 -0700 (PDT)
+Received: from e123427-lin.arm.com (unknown [10.57.11.200])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E00BC3F73B;
+        Fri,  8 Apr 2022 04:36:11 -0700 (PDT)
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     Li Yang <leoyang.li@nxp.com>, Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
+        linux-pci@vger.kernel.org, Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/4] layerscape-pci binding updates
+Date:   Fri,  8 Apr 2022 12:36:11 +0100
+Message-Id: <164941775622.8829.451405503326194255.b4-ty@arm.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220311234938.8706-1-leoyang.li@nxp.com>
+References: <20220311234938.8706-1-leoyang.li@nxp.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/3] Add Clause 45 support for Aspeed MDIO
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164941741602.31457.17503589605450894981.git-patchwork-notify@kernel.org>
-Date:   Fri, 08 Apr 2022 11:30:16 +0000
-References: <20220407011738.7189-1-potin.lai@quantatw.com>
-In-Reply-To: <20220407011738.7189-1-potin.lai@quantatw.com>
-To:     Potin Lai <potin.lai@quantatw.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, joel@jms.id.au,
-        andrew@aj.id.au, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        patrick@stwcx.xyz
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu,  7 Apr 2022 09:17:35 +0800 you wrote:
-> This patch series add Clause 45 support for Aspeed MDIO driver, and
-> separate c22 and c45 implementation into different functions.
+On Fri, 11 Mar 2022 17:49:34 -0600, Li Yang wrote:
+> This series includes two binding changes from Zhiqiang's previous
+> submission ("[PATCHv5 0/6] PCI: layerscape: Add power management
+> support") and rebased to latest 5.17-rc1:
 > 
-> 
-> LINK: [v1] https://lore.kernel.org/all/20220329161949.19762-1-potin.lai@quantatw.com/
-> LINK: [v2] https://lore.kernel.org/all/20220406170055.28516-1-potin.lai@quantatw.com/
+> They describe the hardware and are not necessarily connected with the PM
+> driver changes.  The series also includes two other binding updates to
+> better describe the pcie hardware.
 > 
 > [...]
 
-Here is the summary with links:
-  - [net-next,v3,1/3] net: mdio: aspeed: move reg accessing part into separate functions
-    https://git.kernel.org/netdev/net-next/c/737ca352569e
-  - [net-next,v3,2/3] net: mdio: aspeed: Introduce read write function for c22 and c45
-    https://git.kernel.org/netdev/net-next/c/eb0571932314
-  - [net-next,v3,3/3] net: mdio: aspeed: Add c45 support
-    https://git.kernel.org/netdev/net-next/c/e6df1b4a2759
+Applied to pci/layerscape, thanks!
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+[1/4] dt-bindings: pci: layerscape-pci: Add a optional property big-endian
+      https://git.kernel.org/lpieralisi/pci/c/6c389328c9
+[2/4] dt-bindings: pci: layerscape-pci: Update the description of SCFG property
+      https://git.kernel.org/lpieralisi/pci/c/84f293b204
+[3/4] dt-bindings: pci: layerscape-pci: Add EP mode compatible strings for ls1028a
+      https://git.kernel.org/lpieralisi/pci/c/cddc1a9ab3
+[4/4] dt-bindings: pci: layerscape-pci: define AER/PME interrupts
+      https://git.kernel.org/lpieralisi/pci/c/a3b18f5f1d
 
-
+Thanks,
+Lorenzo
