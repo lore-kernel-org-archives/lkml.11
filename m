@@ -2,97 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CD0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2430C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229869AbiDHHVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 03:21:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58706 "EHLO
+        id S229769AbiDHHVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 03:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbiDHHUb (ORCPT
+        with ESMTP id S229718AbiDHHUa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 03:20:31 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E578721FC62
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 00:18:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649402308; x=1680938308;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=1iiz65dkewXFVU2JVgR+NgxlENZAlIxCKHCCdhdsNGI=;
-  b=MaO7jxSlL7ZMwNtaVqNSaSFDchqPxuv5pD1KxYhrgjSg0HPtWoF64kDc
-   AsB+rPuFm0mpgBKQ4E/TOEy4mvvk15MwIal0FoINAmrkAmEgWH899OYdd
-   SBZojPsn8VTXubSKjk1mTnrEkO4lftcKy6jc5H3C1N4P8sRHN7lGrBpVy
-   qR/JAWsO0cB4DhJJFY+TotLbu+e9CMC4BUxkP1oSGPbcwDCcRIN/M+LKu
-   o2WdFNLPdGC+vN+kEWjjF2o6ySirX7NuKZ7hvg0IjP0UlvAURYwFDdyKP
-   bvRuHMHdzYy9EHeaYxQlImcyGikZJLZWBtVXdCouM41aGiUHIs5vYqqdc
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="286521195"
-X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
-   d="scan'208";a="286521195"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 00:18:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
-   d="scan'208";a="653155830"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 08 Apr 2022 00:18:25 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ncisy-00069w-Ht;
-        Fri, 08 Apr 2022 07:18:24 +0000
-Date:   Fri, 8 Apr 2022 15:17:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Gabe Teeger <gabe.teeger@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
-Subject: [agd5f:drm-next 16/132]
- drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubp.c:57:6: warning:
- no previous prototype for 'hubp31_program_extended_blank'
-Message-ID: <202204081535.oinzrfCs-lkp@intel.com>
+        Fri, 8 Apr 2022 03:20:30 -0400
+Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896A121FF50;
+        Fri,  8 Apr 2022 00:18:27 -0700 (PDT)
+Received: by mail-vk1-f178.google.com with SMTP id q10so2160327vkh.0;
+        Fri, 08 Apr 2022 00:18:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=d3gNHoy16ZlsDLV8bQepLcY1WMSrBsifmbORH9+6qxw=;
+        b=yEHmvUbRlGG/64Tp/hE7IQilX4hPaFUk9Kplh6hHXG+y9jzxyhOmkMxvo6UKdquqD0
+         GqbhIQvTg9Ir1fiKk2mOm8Vd5zCLpQD6oI4m11KSes0a5wFcz0L+kRlptA0t7HHZJkZL
+         Ex8wdx6+eQ9P9LQ6iQQvd39WKHmu8wrAo/qdVQpniC9tH6uJy/fdDQEe6cCXAoLQ6PmI
+         aKZzSzYLiw2Hiw1vCouRUkJ+PGr+F1Q0NDF3Y1UWhlsnTH+yfy8dUTcBeCKI8lDfMMA1
+         bAoDpxqqhuGywM9AcEwgqUmpO/CGhk1L7bkJJgGfAJI/HhF4/zqm6BM4viKkLxOz+YLx
+         mobg==
+X-Gm-Message-State: AOAM5305y6X9OEJqN8iKzQar0h2gTVN9qvIKdCFIAYIP3R9lfJO7yxht
+        w0aTwJqLXs27e+RXd3SNQKbDv3I1+/JWoA==
+X-Google-Smtp-Source: ABdhPJw4nW6JPKtb3JaLOFRJubHdhfutGfqcOb/CxCgc7qJdWXGvxzx4A5tgytHWyDyuluBP+Y6uiw==
+X-Received: by 2002:a1f:2c4b:0:b0:345:698:582a with SMTP id s72-20020a1f2c4b000000b003450698582amr2249252vks.25.1649402306187;
+        Fri, 08 Apr 2022 00:18:26 -0700 (PDT)
+Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com. [209.85.217.43])
+        by smtp.gmail.com with ESMTPSA id x6-20020a67c086000000b003227f6f6b44sm2408043vsi.17.2022.04.08.00.18.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 00:18:25 -0700 (PDT)
+Received: by mail-vs1-f43.google.com with SMTP id r25so4563594vsa.13;
+        Fri, 08 Apr 2022 00:18:25 -0700 (PDT)
+X-Received: by 2002:a05:6102:32c3:b0:325:c919:bef4 with SMTP id
+ o3-20020a05610232c300b00325c919bef4mr5902203vss.60.1649402305499; Fri, 08 Apr
+ 2022 00:18:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220326102229.421718-1-tanure@linux.com> <20220326102229.421718-3-tanure@linux.com>
+ <c789adcd-d072-bec2-a823-5f5993704365@baylibre.com>
+In-Reply-To: <c789adcd-d072-bec2-a823-5f5993704365@baylibre.com>
+Reply-To: tanure@linux.com
+From:   Lucas Tanure <tanure@linux.com>
+Date:   Fri, 8 Apr 2022 08:18:14 +0100
+X-Gmail-Original-Message-ID: <CAJX_Q+3WHCKmg3Fq5jPTY=PNjow2HdLkgFVLd9GQRuGg_q96=Q@mail.gmail.com>
+Message-ID: <CAJX_Q+3WHCKmg3Fq5jPTY=PNjow2HdLkgFVLd9GQRuGg_q96=Q@mail.gmail.com>
+Subject: Re: [PATCH 2/3] i2c: meson: Use 50% duty cycle for I2C clock
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
-head:   49aa98ca30cd186ab33fc5802066e2024d3bfa39
-commit: e5fc78252ccd8dfc260f87d83905e9dffff6d975 [16/132] drm/amd/display: Add support for zstate during extended vblank
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220408/202204081535.oinzrfCs-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
-        git fetch --no-tags agd5f drm-next
-        git checkout e5fc78252ccd8dfc260f87d83905e9dffff6d975
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/
+On Wed, Apr 6, 2022 at 12:31 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
+>
+> Hi,
+>
+> On 26/03/2022 11:22, Lucas Tanure wrote:
+> > The duty cycle of 33% is less than the required
+> > by the I2C specs for the LOW period of the SCL
+> > clock.
+> >
+> > Move the duty cyle to 50% for 100Khz or lower
+> > clocks, and (40% High SCL / 60% Low SCL) duty
+> > cycle for clocks above 100Khz.
+> >
+> > Signed-off-by: Lucas Tanure <tanure@linux.com>
+> > ---
+> >   drivers/i2c/busses/i2c-meson.c | 45 +++++++++++++++++++++++++---------
+> >   1 file changed, 33 insertions(+), 12 deletions(-)
+> >
+> > diff --git a/drivers/i2c/busses/i2c-meson.c b/drivers/i2c/busses/i2c-meson.c
+> > index 4b4a5b2d77ab..b913ba20f06e 100644
+> > --- a/drivers/i2c/busses/i2c-meson.c
+> > +++ b/drivers/i2c/busses/i2c-meson.c
+> > @@ -140,29 +140,50 @@ static void meson_i2c_add_token(struct meson_i2c *i2c, int token)
+> >   static void meson_i2c_set_clk_div(struct meson_i2c *i2c, unsigned int freq)
+> >   {
+> >       unsigned long clk_rate = clk_get_rate(i2c->clk);
+> > -     unsigned int div;
+> > +     unsigned int div_h, div_l;
+> >
+> > -     div = DIV_ROUND_UP(clk_rate, freq);
+> > -     div -= FILTER_DELAY;
+> > -     div = DIV_ROUND_UP(div, i2c->data->div_factor);
+> > +     if (freq <= 100000) {
+>
+> You should use I2C_MAX_STANDARD_MODE_FREQ instead here
+>
+> > +             div_h = DIV_ROUND_UP(clk_rate, freq);
+> > +             div_l = DIV_ROUND_UP(div_h, 4);
+> > +             div_h = DIV_ROUND_UP(div_h, 2) - FILTER_DELAY;
+> > +     } else {
+> > +     /* According to I2C-BUS Spec 2.1, in FAST-MODE, the minimum LOW period is 1.3uS, and
+> > +      * minimum HIGH is least 0.6us.
+> > +      * For 400000 freq, the period is 2.5us. To keep within the specs, give 40% of period to
+> > +      * HIGH and 60% to LOW. This means HIGH at 1.0us and LOW 1.5us.
+> > +      * The same applies for Fast-mode plus, where LOW is 0.5us and HIGH is 0.26us.
+> > +      * Duty = H/(H + L) = 2/5
+> > +      */
+>
+> Please move the comment before the if()
+>
+> > +             div_h = DIV_ROUND_UP(clk_rate * 2, freq * 5) - FILTER_DELAY;
+> > +             div_l = DIV_ROUND_UP(clk_rate * 3, freq * 5 * 2);
+> > +     }
+> >
+> >       /* clock divider has 12 bits */
+> > -     if (div > GENMASK(11, 0)) {
+> > +     if (div_h > GENMASK(11, 0)) {
+> >               dev_err(i2c->dev, "requested bus frequency too low\n");
+> > -             div = GENMASK(11, 0);
+> > +             div_h = GENMASK(11, 0);
+> > +     }
+> > +     if (div_l > GENMASK(11, 0)) {
+> > +             dev_err(i2c->dev, "requested bus frequency too low\n");
+> > +             div_l = GENMASK(11, 0);
+> >       }
+> >
+> >       meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_CLKDIV_MASK,
+> > -                        FIELD_PREP(REG_CTRL_CLKDIV_MASK, div & GENMASK(9, 0)));
+> > +                        FIELD_PREP(REG_CTRL_CLKDIV_MASK, div_h & GENMASK(9, 0)));
+> >
+> >       meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_CLKDIVEXT_MASK,
+> > -                        FIELD_PREP(REG_CTRL_CLKDIVEXT_MASK, div >> 10));
+> > +                        FIELD_PREP(REG_CTRL_CLKDIVEXT_MASK, div_h >> 10));
+> > +
+> > +
+> > +     /* set SCL low delay */
+> > +     meson_i2c_set_mask(i2c, REG_SLAVE_ADDR, REG_SLV_SCL_LOW_MASK,
+> > +                        (div_l << REG_SLV_SCL_LOW_SHIFT) & REG_SLV_SCL_LOW_MASK);
+>
+> You could use FIELD_PREP() here
+>
+> >
+> > -     /* Disable HIGH/LOW mode */
+> > -     meson_i2c_set_mask(i2c, REG_SLAVE_ADDR, REG_SLV_SCL_LOW_EN, 0);
+> > +     /* Enable HIGH/LOW mode */
+> > +     meson_i2c_set_mask(i2c, REG_SLAVE_ADDR, REG_SLV_SCL_LOW_EN, REG_SLV_SCL_LOW_EN);
+> >
+> > -     dev_dbg(i2c->dev, "%s: clk %lu, freq %u, div %u\n", __func__,
+> > -             clk_rate, freq, div);
+> > +     dev_dbg(i2c->dev, "%s: clk %lu, freq %u, divh %u, divl %u\n", __func__,
+> > +             clk_rate, freq, div_h, div_l);
+> >   }
+> >
+> >   static void meson_i2c_get_data(struct meson_i2c *i2c, char *buf, int len)
+>
+> I looked at different amlogic downstream sources, and those match the recommended
+> calculations.
+>
+> So with the legacy back for Meson6, it will be OK.
+>
+> Neil
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Ok, I will do the modifications this weekend.
+I only tested i2c3 and i2c_ao and will execute more measures and show
+the results.
 
-All warnings (new ones prefixed by >>):
-
->> drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubp.c:57:6: warning: no previous prototype for 'hubp31_program_extended_blank' [-Wmissing-prototypes]
-      57 | void hubp31_program_extended_blank(struct hubp *hubp, unsigned int min_dst_y_next_start_optimized)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/hubp31_program_extended_blank +57 drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubp.c
-
-    56	
-  > 57	void hubp31_program_extended_blank(struct hubp *hubp, unsigned int min_dst_y_next_start_optimized)
-    58	{
-    59		struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
-    60	
-    61		REG_SET(BLANK_OFFSET_1, 0, MIN_DST_Y_NEXT_START, min_dst_y_next_start_optimized);
-    62	}
-    63	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks
+Lucas
