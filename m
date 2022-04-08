@@ -2,96 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2658AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BFAAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:32:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239869AbiDHVd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 17:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51090 "EHLO
+        id S239878AbiDHVep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 17:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239857AbiDHVdX (ORCPT
+        with ESMTP id S230477AbiDHVem (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 17:33:23 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285BE268
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 14:31:19 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-e2a00f2cc8so1621200fac.4
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 14:31:19 -0700 (PDT)
+        Fri, 8 Apr 2022 17:34:42 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510AC6155
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 14:32:38 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id r66so8838167pgr.3
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 14:32:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wAjxJ00rzVd7933xOrVtD/yYO0OUizXN18WkzZFM9PI=;
-        b=bqBQGqZWhIP3WbdI8SHEDWomaWcxao9qHr8rCwd7K80SXl4n0POtJLGVK7w1E4pxqm
-         6R7l/tcs/67ZhhDnH4mg6O6bi++sTJIqMYwmQtoYvwjBJ7rhOO7glW9w4IYJkcbrYbcr
-         ukwoAr38jsqOcTCWQLe4bioFyR+e3araP0RIfH+wCVdMRnvzKTcnHm7xX0NvnOIQ00cK
-         5F3hZ4GqDrFiwsEbMzA/Yp045zQPmi9jTF5cJ2mPIJv6IJwx4XzKjj5UWYCM0IM85/+J
-         sBTJ3+Yp57FR+wc0lAVvgTy/pc7nf42b5fb7DniVvuxtDQA1FwlPgusbih8NGJUfNhw9
-         HDJA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Tak/peBIKT6UVGXS7hYNJ30uDtO8wQxTMCgn2NCJfwo=;
+        b=nVefE23XWYCerZu/aug04cs7bFFfV3oUKcSChEd75hYrCONQxtq8UoTwnERPLksn6e
+         tOGK/HwxvyCigXuFmnYSRi8Pnd3v/uFJaznvRQXEoasHqd6OJJR3xTc9nfZysFECq7ae
+         j8P2mkc/U2iawvKQe0r6djKkzeLNy8j244w3ScpNrJ1kgXj00UvelE7aziDZJjeWNYJV
+         WJntqAWU8o3P4J3I3Wvp4wCQPyNQmfb/4bbLaan4ET3H2VW3Q6CeslCnLeTjqMqpGDhy
+         NkkQYaeGoc6MPW6ZFgOdbZ3w+y2gF/zoaZ0lgLRByuC3CmWff8zd4P4qaPq7y6CXISyi
+         dw7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wAjxJ00rzVd7933xOrVtD/yYO0OUizXN18WkzZFM9PI=;
-        b=isBYeF9av7S/BxYjwftccHGiriYecjKEIwb4TfSbxQwxsGWm0yzoLuCBy8L0ny6BbP
-         /MVyCC3gSKwCRWcnJMQ1WG0iUj0JPmJQ3QeoXINdrdQj0vkaRogb41ozHFabuWAVvTSA
-         ZlPNNfbU4nNG/R9jQ57b+1giB9lKFLqOixIdTuw67Qk130dmuA/UMZAJHYT/19+5qDgM
-         A7RqNZC7XugAB6rnx7g1VgeEzreYvBD+qpkD66CghLPnqVEkhR/wkR1J/DO0Lma0U7bq
-         umj6U4Aosa1wz84tpJSe3PmiqdEmbpAyBvPDpp5FIOfLSb3ugn+ixHYcP0hgWKjoB5Xe
-         JJjQ==
-X-Gm-Message-State: AOAM533MBLCBJhAe8sYatWF9XVn6iHI1kCtTKoe+PXNzOfMo4RzSN09Q
-        G06TJXbqR4kBc5YdtbvwSws8JQ==
-X-Google-Smtp-Source: ABdhPJx03+oZ7ijUH3UF+Brex0fuUtkrjtUO/nfpOmQ23cV2t8IJnSNHez/UYG0TZeVdPP0rUNG+gg==
-X-Received: by 2002:a05:6870:910a:b0:e1:ee2c:8528 with SMTP id o10-20020a056870910a00b000e1ee2c8528mr9131080oae.134.1649453478588;
-        Fri, 08 Apr 2022 14:31:18 -0700 (PDT)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id m126-20020aca3f84000000b002ef895f4bf8sm8983536oia.24.2022.04.08.14.31.17
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Tak/peBIKT6UVGXS7hYNJ30uDtO8wQxTMCgn2NCJfwo=;
+        b=SgGrRcN32iU8XC0aEkTSVeF+WAyKCRIn2Ol1ab58jbJRjvMTH/ZwbJvJNKnfOFpAjW
+         QgZ7WVguCFVEgMMGGuCNwkAg7IVKxND1GZszNGarFhk5Eg2N8wksypNy/ZLAilqL5pQs
+         ZkP5U7vWQBMuSgIfrVpEXhNskCTBKRj1CCKgMvNJcoxkXhpI3h1z/xUjWBy4fMryCN57
+         +tN3qWNQeHgCYJ5+Q1eFlsYJ4vFZ9eorsQPEKiXOR6hMEtDJifVjW7qqdIatj1H/PDnn
+         cHG5XDaNQju0oNf2lO+GPI6eaybXWYQzLlVUrZK/7N1JkXqIDrvkaTfTafTfdMpdbobf
+         KcoQ==
+X-Gm-Message-State: AOAM533w4TuJfZmv+bDV06ejjQzSHmYmsQ6x3qImnZa53BRUNm8iKT39
+        X6SlDtOsNF6Tptpb9ZIuAJL2PQ==
+X-Google-Smtp-Source: ABdhPJyIcVSF8NCUAmrbPJmc02JxzH4iJpSrNMM/p5XL26C87MCZRDAit08INOcVmUFfDxb6ssXRnA==
+X-Received: by 2002:a63:788:0:b0:39c:c451:be53 with SMTP id 130-20020a630788000000b0039cc451be53mr9002487pgh.71.1649453557666;
+        Fri, 08 Apr 2022 14:32:37 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id s3-20020a056a00194300b004f6da3a1a3bsm30436673pfk.8.2022.04.08.14.32.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 14:31:18 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Luca Weiss <luca.weiss@fairphone.com>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH 3/3] soc: qcom: llcc: Add MODULE_DEVICE_TABLE()
-Date:   Fri,  8 Apr 2022 14:33:36 -0700
-Message-Id: <20220408213336.581661-3-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220408213336.581661-1-bjorn.andersson@linaro.org>
-References: <20220408213336.581661-1-bjorn.andersson@linaro.org>
+        Fri, 08 Apr 2022 14:32:36 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 21:32:33 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Isaku Yamahata <isaku.yamahata@gmail.com>
+Cc:     SU Hang <darcy.sh@antgroup.com>, kvm@vger.kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Radim Kr???m?????? <rkrcmar@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] KVM: x86/mmu: Derive EPT violation RWX bits from
+ EPTE RWX bits
+Message-ID: <YlCp8RrWeHPt3rJo@google.com>
+References: <20220329030108.97341-1-darcy.sh@antgroup.com>
+ <20220329030108.97341-3-darcy.sh@antgroup.com>
+ <20220408211140.GE857847@ls.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220408211140.GE857847@ls.amr.corp.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The llcc-qcom driver can be compiled as a module, but lacks
-MODULE_DEVICE_TABLE() and will therefore not be loaded automatically.
-Fix this.
+On Fri, Apr 08, 2022, Isaku Yamahata wrote:
+> On Tue, Mar 29, 2022 at 11:01:07AM +0800,
+> SU Hang <darcy.sh@antgroup.com> wrote:
+> 
+> > From: Sean Christopherson <seanjc@google.com>
+> > 
+> > Derive the mask of RWX bits reported on EPT violations from the mask of
+> > RWX bits that are shoved into EPT entries; the layout is the same, the
+> > EPT violation bits are simply shifted by three.  Use the new shift and a
+> > slight copy-paste of the mask derivation instead of completely open
+> > coding the same to convert between the EPT entry bits and the exit
+> > qualification when synthesizing a nested EPT Violation.
+> > 
+> > No functional change intended.
+> > 
+> > Cc: SU Hang <darcy.sh@antgroup.com>
+> > Signed-off-by: Sean Christopherson <seanjc@google.com>
+> > ---
+> >  arch/x86/include/asm/vmx.h     | 7 +------
+> >  arch/x86/kvm/mmu/paging_tmpl.h | 8 +++++++-
+> >  arch/x86/kvm/vmx/vmx.c         | 4 +---
+> >  3 files changed, 9 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/arch/x86/include/asm/vmx.h b/arch/x86/include/asm/vmx.h
+> > index 3586d4aeaac7..46bc7072f6a2 100644
+> > --- a/arch/x86/include/asm/vmx.h
+> > +++ b/arch/x86/include/asm/vmx.h
+> > @@ -543,17 +543,12 @@ enum vm_entry_failure_code {
+> >  #define EPT_VIOLATION_ACC_READ_BIT	0
+> >  #define EPT_VIOLATION_ACC_WRITE_BIT	1
+> >  #define EPT_VIOLATION_ACC_INSTR_BIT	2
+> > -#define EPT_VIOLATION_READABLE_BIT	3
+> > -#define EPT_VIOLATION_WRITABLE_BIT	4
+> > -#define EPT_VIOLATION_EXECUTABLE_BIT	5
+> >  #define EPT_VIOLATION_GVA_IS_VALID_BIT	7
+> >  #define EPT_VIOLATION_GVA_TRANSLATED_BIT 8
+> >  #define EPT_VIOLATION_ACC_READ		(1 << EPT_VIOLATION_ACC_READ_BIT)
+> >  #define EPT_VIOLATION_ACC_WRITE		(1 << EPT_VIOLATION_ACC_WRITE_BIT)
+> >  #define EPT_VIOLATION_ACC_INSTR		(1 << EPT_VIOLATION_ACC_INSTR_BIT)
+> > -#define EPT_VIOLATION_READABLE		(1 << EPT_VIOLATION_READABLE_BIT)
+> > -#define EPT_VIOLATION_WRITABLE		(1 << EPT_VIOLATION_WRITABLE_BIT)
+> > -#define EPT_VIOLATION_EXECUTABLE	(1 << EPT_VIOLATION_EXECUTABLE_BIT)
+> > +#define EPT_VIOLATION_RWX_MASK		(VMX_EPT_RWX_MASK << EPT_VIOLATION_RWX_SHIFT)
+> 
+> 
+> "#define EPT_VIOLATION_RWX_SHIFT 3" is missing.
+> It fails to compile.
+> 
+>   CC [M]  arch/x86/kvm/vmx/vmx.o
+> In file included from linux/arch/x86/include/asm/virtext.h:18,
+>                  from /linux/arch/x86/kvm/vmx/vmx.c:49:
+> /linux/arch/x86/kvm/vmx/vmx.c: In function 'handle_ept_violation':
+> /linux/arch/x86/include/asm/vmx.h:551:54: error: 'EPT_VIOLATION_RWX_SHIFT' undeclared (first use in this function); did you mean 'EPT_VIOLATION_RWX_MASK'?
+>   551 | #define EPT_VIOLATION_RWX_MASK  (VMX_EPT_RWX_MASK << EPT_VIOLATION_RWX_SHIFT)
+>       |                                                      ^~~~~~~~~~~~~~~~~~~~~~~
 
-Fixes: a3134fb09e0b ("drivers: soc: Add LLCC driver")
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- drivers/soc/qcom/llcc-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
+Yeah, not sure how that one line got dropped.
 
-diff --git a/drivers/soc/qcom/llcc-qcom.c b/drivers/soc/qcom/llcc-qcom.c
-index a76d58195637..918bfd0df0e2 100644
---- a/drivers/soc/qcom/llcc-qcom.c
-+++ b/drivers/soc/qcom/llcc-qcom.c
-@@ -809,6 +809,7 @@ static const struct of_device_id qcom_llcc_of_match[] = {
- 	{ .compatible = "qcom,sm8450-llcc", .data = &sm8450_cfg },
- 	{ }
- };
-+MODULE_DEVICE_TABLE(of, qcom_llcc_of_match);
- 
- static struct platform_driver qcom_llcc_driver = {
- 	.driver = {
--- 
-2.35.1
-
+https://lore.kernel.org/all/20220408202815.386932-1-seanjc@google.com
