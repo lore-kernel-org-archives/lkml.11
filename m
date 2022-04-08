@@ -2,100 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69237C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 01:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D990DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 01:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233431AbiDHBYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 21:24:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49168 "EHLO
+        id S233399AbiDHBZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 21:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233385AbiDHBYR (ORCPT
+        with ESMTP id S233384AbiDHBZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 21:24:17 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5426445
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 18:22:15 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id i10-20020a17090a2aca00b001ca56c9ab16so7244154pjg.1
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 18:22:15 -0700 (PDT)
+        Thu, 7 Apr 2022 21:25:19 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29BB1560B4;
+        Thu,  7 Apr 2022 18:23:17 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id g20so8396185edw.6;
+        Thu, 07 Apr 2022 18:23:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=A6OclNo6fSItQpTxQTpaUCER7lHP82G03LIl77so8jw=;
-        b=zSb4agSs6+sEx1Gos/tvaPy9cnZsjfM6UBsveMu1xbXuLiS2sYW5lZu5i5fVIaC2Uc
-         TnBbYZzHnB6Lfdx4TY/UdQbAZQm0p/8+FUrOEYttBaMsqVgEBTaUxbv+MIbOmKf1hN88
-         1y4BpCaILLtwuVHG+12DtsYjcMbWUaz489ALsW7l/a5CmmDrI9GkoUMUsMAHHsHqgUIR
-         cUhDqIqhiUxL0nDHDJZH1iJxSzUbp8LKnCIWFtXLBPm4+qRPAFgIPzoYgLs9WNl8bhb/
-         DmpmuQnOVqtw5NH7a1ZqG/NN+gIQwyGPCj3MT0Tfd3rP2jBe0g2HTC+b4Y0LjmweN30a
-         Agvw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q6GIjfl38828TDx/Er/l1ydNAbsDZX6DyamisKv9xlI=;
+        b=O8z6RVsDroCjPfHv/rRZ7ILks4hW8GgdUuvtwRzcLa7aaepbm3bE6m+mpb2Tik4RCh
+         b/0ka341wHE+Mpxj72S95ZIxb7gnMPbKDSVercfbkn6nKVJ3QnSzXuiZ45s4C9/AraOA
+         YFrDlA0bUoxTRDAVDZ38CkhO7TD8ROjmnFYTVT5y7ur8q+49njhBxooxb29brEqcVjrH
+         zM45MKYK+MTJ41h0BznFCDIpl74lZ4qqVaB3iSLoDr6CT18gNXWMTA+f9WzZhRaiVXv2
+         0JdvTHfmtLcxifq6sBUpXFdo97AkszWt2pTn/8ITXzulkiogiZLj8Rq+PLZg/6uy+vDG
+         ZFMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=A6OclNo6fSItQpTxQTpaUCER7lHP82G03LIl77so8jw=;
-        b=MSnbrUhX9XrjObesaMxUk/bckFktVMV8Kh/5SPwrWa83re90OVd2kMP6WQGtVVVzLz
-         Qbp2VZ8FPlfw9CpPKs3N+SILhguhZLYuKG0/ZM4QwX5T2KnQvuCyG6hleeBYh24Rbj0K
-         Ox1winFm+xY8c0zg6P4Kxqv4BndZgHPXPA6ZjpMSfOEofzcFQXXyvJAQjUHrlEZSTXf/
-         pZyn4SrfsCmNj1KbyKlSjWpuxQxBlZcITI3YBRzD5oJnap6q9vY8cZqf/RveY+4Fv1nh
-         cIuikObARay9wY1dpT0S6ur9SS8881NggPCqnNwMNfT8JIzTFVg7HOfb3E7URskFRvPB
-         GMRQ==
-X-Gm-Message-State: AOAM532xvrOORw5KKGDbawurehYX6jefBb+LAismpI3XeiwJA1kFMCjS
-        jciijdBiYmAI0TN0QTt5oRlHwg==
-X-Google-Smtp-Source: ABdhPJwhsbSFMkUvU8wzdDL8blnk++f7WzgqCYdkmeqpKagtwMsEnmQtneoW8sDRmpOVWWTI40PeuA==
-X-Received: by 2002:a17:90a:bf12:b0:1ca:69bd:9a10 with SMTP id c18-20020a17090abf1200b001ca69bd9a10mr18877946pjs.92.1649380934743;
-        Thu, 07 Apr 2022 18:22:14 -0700 (PDT)
-Received: from [10.76.15.169] ([61.120.150.76])
-        by smtp.gmail.com with ESMTPSA id q28-20020a656a9c000000b00372f7ecfcecsm21038355pgu.37.2022.04.07.18.20.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 18:21:10 -0700 (PDT)
-Message-ID: <e77ae1d9-49f3-97e8-f88f-a8518ff0573b@bytedance.com>
-Date:   Fri, 8 Apr 2022 09:17:10 +0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q6GIjfl38828TDx/Er/l1ydNAbsDZX6DyamisKv9xlI=;
+        b=yjI1JglrfmrXrTl5aeNIxS62oEjLK6ZaZbg4j1Ydyi+iGuqseY8nTJpjGdIG/9OFR7
+         BxaLB4iIri4sR+zknApqzSfnlLIIS/gy4OLUxr+4mEP4+mUobsX+KjkDSzJkRB86QSuE
+         GZmS0aOzMi3pdXxlUupkvK6zfdaOCWnEzM42MGWnDJQwqVvaeESKws4XQ3jc1iXaKMbp
+         QNqBXGkuG95QImCRpVD7UggbkNIlFfLvrjC8BdTKcbdN65HaT2khF2Yabjjmqgp6jKxu
+         pwUge+RoM2tJZxF1pz2/zQniGCgWRi1iAW3GrTGM2L2faJuzK4La/qj2tv1rVEIMH098
+         eE5A==
+X-Gm-Message-State: AOAM533jd9R4mAII6p0yyP+e1jnXgtMcKs+hNYMK0KbFGsD614FqDacf
+        aWfVw6Wr6Uol13ZEO9FrY1Y6tqQMrSylwodHOSw=
+X-Google-Smtp-Source: ABdhPJxz/9ig7zQdygj91MyAfQi9EI8Vsso7YJ4STSYEAI15UX+5nGgqlSfnECcaXfW9w6++A479MAK1M3k/ugQkZt8=
+X-Received: by 2002:a05:6402:190d:b0:41b:a70d:1367 with SMTP id
+ e13-20020a056402190d00b0041ba70d1367mr16907289edz.155.1649380996125; Thu, 07
+ Apr 2022 18:23:16 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: Re: [PATCH] mm: fix kernel NULL pointer dereference in
- page_vma_mapped_walk
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Mike Kravetz <mike.kravetz@oracle.com>, akpm@linux-foundation.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220407064008.71869-1-pizhenwei@bytedance.com>
- <Yk7tIi4UKjiqQyoF@casper.infradead.org>
- <Yk7yd5ho2a7jWNfS@casper.infradead.org>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-In-Reply-To: <Yk7yd5ho2a7jWNfS@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220406224809.29197-1-kgroeneveld@lenbrook.com>
+In-Reply-To: <20220406224809.29197-1-kgroeneveld@lenbrook.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Thu, 7 Apr 2022 22:23:03 -0300
+Message-ID: <CAOMZO5CbTUTkoFCKwrpT5h7CfHxbLtci1qAtMwkAi_LD_5yeyQ@mail.gmail.com>
+Subject: Re: [PATCH] dmaengine: imx-sdma: fix regression with uart scripts
+To:     Kevin Groeneveld <kgroeneveld@lenbrook.com>
+Cc:     Vinod Koul <vkoul@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Robin Gong <yibin.gong@nxp.com>, dmaengine@vger.kernel.org,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/7/22 22:17, Matthew Wilcox wrote:
-> On Thu, Apr 07, 2022 at 02:54:42PM +0100, Matthew Wilcox wrote:
->> On Thu, Apr 07, 2022 at 02:40:08PM +0800, zhenwei pi wrote:
->>> size_to_hstate(4K) returns NULL pointer, this leads kernel BUG in
->>> function page_vma_mapped_walk.
->>
->> Yes, I think this is the right fix.  It's not immediately obvious from
->> the bug and the patch, but what's going on is:
->>
->> page_mapped_in_vma() sets nr_pages to 1.  This is correct because we
->> usually only want to know about the precise page, and not about the
->> folio containing it.  But hugetlbfs is special (... in so many ways ...)
->> and actually wants to work on the entire folio.  We could set nr_pages
->> specially for hugetlb pages, but it's better to ignore it in
->> page_vma_mapped_walk() for the hugetlb case.
->>
->> I'll fix up the changelog and add it to my pile of fixes that I'm
->> sending tomorrow.
->> https://git.infradead.org/users/willy/pagecache.git/shortlog/refs/heads/for-next
-> 
-> I looked over the patch in context, and realised we now don't need to
-> call size_to_hstate since we're getting the hstate from the VMA.
-> 
-> https://git.infradead.org/users/willy/pagecache.git/commitdiff/98ea02597b9967c0817d29fee2f96d21b9e59ca5
-> 
-Thanks!
--- 
-zhenwei pi
+Hi Kevin,
+
+On Wed, Apr 6, 2022 at 7:48 PM Kevin Groeneveld
+<kgroeneveld@lenbrook.com> wrote:
+>
+> Commit b98ce2f4e32b ("dmaengine: imx-sdma: add uart rom script") broke
+> uart rx on imx5 when using sdma firmware from older Freescale 2.6.35
+> kernel. In this case reading addr->uartXX_2_mcu_addr was going out of
+> bounds of the firmware memory and corrupting the uart script addresses.
+>
+> Simply adding a bounds check before accessing addr->uartXX_2_mcu_addr
+> does not work as the uartXX_2_mcu_addr members are now beyond the size
+> of the older firmware and the uart addresses would never be populated
+> in that case. There are other ways to fix this but overall the logic
+> seems clearer to me to revert the uartXX_2_mcu_ram_addr structure
+> entries back to uartXX_2_mcu_addr, change the newer entries to
+> uartXX_2_mcu_rom_addr and update the logic accordingly.
+>
+> Fixes: b98ce2f4e32b ("dmaengine: imx-sdma: add uart rom script")
+> Signed-off-by: Kevin Groeneveld <kgroeneveld@lenbrook.com>
+
+Thanks for the fix:
+
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
