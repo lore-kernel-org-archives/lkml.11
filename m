@@ -2,156 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90579C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232194AbiDHInn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 04:43:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52260 "EHLO
+        id S232221AbiDHIoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 04:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232127AbiDHIng (ORCPT
+        with ESMTP id S232214AbiDHIoB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 04:43:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F2CE589CC8
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 01:41:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649407291;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hfm3ta5VF34jEcNTC76QZOHm3mie3+2AwQoQ84bW2eg=;
-        b=HHXMPnKCSvldf1yi1T2MuLN/5kkXpvjYxI2TMrOVw/AAaqdJ76LVRbGkR/LO46wbKhHihS
-        OXAlvRddOniUZu7t6Yxt8N1a06ln1cTEtBEHTDRNrGTrbkEOWTWqNsqnZOxBZa4pCVp82X
-        048QavF6oxN953AADhYTDfRep849EvM=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-646-0yhlYKHQORucY4P2Oel2LQ-1; Fri, 08 Apr 2022 04:41:30 -0400
-X-MC-Unique: 0yhlYKHQORucY4P2Oel2LQ-1
-Received: by mail-qv1-f71.google.com with SMTP id p3-20020a05621421e300b0044427d0ab90so556840qvj.17
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 01:41:29 -0700 (PDT)
+        Fri, 8 Apr 2022 04:44:01 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E957220B03;
+        Fri,  8 Apr 2022 01:41:56 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id l9-20020a05600c4f0900b0038ccd1b8642so5618122wmq.0;
+        Fri, 08 Apr 2022 01:41:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S5+1UtlGwYKkF7opqY/T3NqGuhDfW8xZhok4zd8KdsM=;
+        b=ITBoi9cOPvG3YVC3BNTn6KLguMVBmjaMQeAkXpKE7PI+X6POzR3tYOcoERHugUccnJ
+         0vJe0rpTkxTECnMRU+J1eZg0wHG8hOGsZakSdL9wfTFBtX9+VWTnwCGgAvvBHglP+hfl
+         Lu2ypLBavTWx3kMEpqgyw1eJppDgeLq88KtnBMRR4adzni+ErT3ZfD34FyqIV7mQ1PoP
+         AdWTAtvVfIr6NuTkTv9ThTtllAFjLc+0EXXo8eENivM38+LzC0Ld5PI+PQ9Y/pfXltP3
+         SxdZSIWwClVq/Z3YMEd3qqdeJSIX5N1IbXnxDpDWbNEHj/YG4Bi7g40a1qUCjkqGZyj8
+         t1Cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=hfm3ta5VF34jEcNTC76QZOHm3mie3+2AwQoQ84bW2eg=;
-        b=e6ghWTnEXyBg5FdiAuTc2UYj2nGXrYqGhwjMzRWibhcuCWOxbPf2in+oYHdY1MhA9Y
-         OE034VwdujkMHqAJRcxn7a+LPMiuYH4tSSnq9q70HNKfNTbVt9UbjIkrTgKCoBea0ilQ
-         SaPAf/RnKpVnATBgz945P7j9162AJU5N/0i0SyvmZt/YCxbcP4u3f9R0Jxme8YGUjLQv
-         Qji1EyRTDHY8NAzzEdLuvr97/jhdMunquEhVKczmd7j/ozWNll14entGfHnU6m4cfBJF
-         X9JO1hLyXSyNSb8Kb3cTuMyKfyHbb2RsPdmMNTGtnMJWxbvh7V6nFapwFxTyUBVBlvJX
-         x4BQ==
-X-Gm-Message-State: AOAM532lEacoJkc6yAmQKDI+0H/3qD4jOZR6RtVv7DiX9Xnny7t2wmc5
-        R5GmNiZolArH6ioBUp3v4ZuyqOyY8Ecrh0yp4qoR1ShoIAfYV6uGiw+YrdVKKpI7t4japmx84sy
-        K5CC/sSA5y3Glit3kxppveISj
-X-Received: by 2002:ad4:5ba2:0:b0:441:402c:2534 with SMTP id 2-20020ad45ba2000000b00441402c2534mr14981910qvq.75.1649407289635;
-        Fri, 08 Apr 2022 01:41:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw3NYk1umtpKK/Yl6GxoWxDcDTzzxyZCQ9JzpN5/chhlU6uzvzsQ5/3if7JRUo2FsPUePWm5w==
-X-Received: by 2002:ad4:5ba2:0:b0:441:402c:2534 with SMTP id 2-20020ad45ba2000000b00441402c2534mr14981891qvq.75.1649407289457;
-        Fri, 08 Apr 2022 01:41:29 -0700 (PDT)
-Received: from [192.168.0.188] ([24.48.139.231])
-        by smtp.gmail.com with ESMTPSA id t19-20020ac85893000000b002e1afa26591sm19538890qta.52.2022.04.08.01.41.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Apr 2022 01:41:29 -0700 (PDT)
-Message-ID: <ee07a31c-c514-4a88-599f-14a30e93f32e@redhat.com>
-Date:   Fri, 8 Apr 2022 04:41:27 -0400
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S5+1UtlGwYKkF7opqY/T3NqGuhDfW8xZhok4zd8KdsM=;
+        b=fTGa8lXrgl0N1NLIeI9ujCKpbdC/SXUD0N5IQ0cJQqzf3mTBT6qr0rcYS1mDGVHcGR
+         aLz//vLUDlc1XJKokSuRt1NFjHA+i4HJ1kmXWTkp21GpaWWv0Q5H1ikR+h8gpPsEoTrX
+         FHNu3n6uLLyCeJIUJma/uzMeDuYB2q+xc0WPfaVVVk00PUQJfwNMIxbxnmmC94kkaENw
+         G+HdM0m/3l9EzefOke2qZQngryDC/FfC4+zH67bkepNZxBzcUa1hKVAAXVyeqSCaWj21
+         mYzmsArpiNAJjGpQuDWDmgaoITZKR1l7g+MFB/cjID+IMpHSsE4RBpyUkGt0QXQRLcLq
+         tGPg==
+X-Gm-Message-State: AOAM533okIBogah7hZwSvi6MmuTgJ5Q/cUc9kPSPWP0a+OAEKecGf0/H
+        J9wSGP/AYVMEnMuiX0zoFYmEgta90IJX9+hpvrscdjsHePA=
+X-Google-Smtp-Source: ABdhPJzteP0F4FeuB37n4ePWBpBTPOQDsn99XBM32u7k9FR5x3dN571qljfJwS1XtyftSl+yEsENpx0fnAhcDbotQnM=
+X-Received: by 2002:a05:600c:4141:b0:38e:714e:5ca9 with SMTP id
+ h1-20020a05600c414100b0038e714e5ca9mr15733089wmm.175.1649407315261; Fri, 08
+ Apr 2022 01:41:55 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v8] oom_kill.c: futex: Don't OOM reap the VMA containing
- the robust_list_head
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Rafael Aquini <aquini@redhat.com>,
-        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Christoph von Recklinghausen <crecklin@redhat.com>,
-        Don Dutile <ddutile@redhat.com>,
-        "Herton R . Krzesinski" <herton@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>,
-        Darren Hart <dvhart@infradead.org>, stable@kernel.org
-References: <20220408032809.3696798-1-npache@redhat.com>
- <20220408081549.GM2731@worktop.programming.kicks-ass.net>
-From:   Nico Pache <npache@redhat.com>
-In-Reply-To: <20220408081549.GM2731@worktop.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <676075ca-4d5d-7388-61ac-42a0b9f1ed50@intel.com>
+ <20220408021428.18009-1-chengdongli@tencent.com> <c4ce0947-e21f-d3b1-96b8-f2778a2e35e6@intel.com>
+In-Reply-To: <c4ce0947-e21f-d3b1-96b8-f2778a2e35e6@intel.com>
+From:   Bryton Lee <brytonlee01@gmail.com>
+Date:   Fri, 8 Apr 2022 16:41:43 +0800
+Message-ID: <CAC2pzGdMFmtV8YNR4DszoATjM80uYNwrnW5As6vgBsyXVcWueA@mail.gmail.com>
+Subject: Re: [PATCH v3] perf test tsc: Fix error message report when not supported.
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        peterz@infradead.org, mingo@redhat.com,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>, ak@linux.intel.com,
+        likexu@tencent.com, chengdongli@tencent.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Apr 8, 2022 at 3:58 PM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>
+> On 08/04/2022 5.14, Chengdong Li wrote:
+> > By default `perf test tsc` does not return the error message
+> > when the child process detected kernel does not support. Instead,
+> > the child process print error message to stderr, unfortunately
+> > the stderr is redirected to /dev/null when verbose <= 0.
+> >
+> > This patch did three things:
+> > - returns TEST_SKIP to the parent process instead of TEST_OK when
+> >   perf_read_tsc_conversion() is not supported.
+> > - add a new subtest of testing if TSC is supported on current
+> >   architecture by moving exist code to a separate function.
+> >   It avoids two places in test__perf_time_to_tsc() that return
+> >   TEST_SKIP by doing this.
+> > - extended test suite definition to contain above two subtests.
+> >   Current test_suite and test_case structs do not support printing
+> >   skip reason when the number of subtest less than 1. To print skip
+> >   reason, it is necessary to extend current test suite definition.
+> >
+> > Changes since v2:
+> > - refine error message format.
+> > - refine commit log message according to Adrian's review comments.
+> >
+> > Changes since v1 (thanks for the feedback from Adrian Hunter):
+> > - rebase commit to current source.
+> >
+> > Signed-off-by: Chengdong Li <chengdongli@tencent.com>
+>
+> It is better to try to consistently use the same email address
+> for the same person for git logs, unless you have a sensible
+> reason not to.
+>
+
+Sorry for the inconvenience. I can not use my company email account to send
+patches via `git send-email` due to lack of email protocol support in
+our email system.
+
+> So in this case it looks like you should use the same email
+> address for the "From:" and "Signed-off-by:".  Note you can
+> optionally put the "From:" line before the commit message e.g.
+>
+> From: Chengdong Li <chengdongli@tencent.com>
+>
+> By default `perf test tsc` does not return the error message
+> ...
+
+Thanks for your guidance, I will resend this patch again.
+
+>
+> Otherwise you can add:
+>
+> Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
+>
+>
+> > ---
+> >  tools/perf/tests/perf-time-to-tsc.c | 36 +++++++++++++++++++++--------
+> >  1 file changed, 27 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/tools/perf/tests/perf-time-to-tsc.c b/tools/perf/tests/perf-time-to-tsc.c
+> > index d12d0ad81801..cc6df49a65a1 100644
+> > --- a/tools/perf/tests/perf-time-to-tsc.c
+> > +++ b/tools/perf/tests/perf-time-to-tsc.c
+> > @@ -47,6 +47,17 @@
+> >       }                                       \
+> >  }
+> >
+> > +static int test__tsc_is_supported(struct test_suite *test __maybe_unused,
+> > +                               int subtest __maybe_unused)
+> > +{
+> > +     if (!TSC_IS_SUPPORTED) {
+> > +             pr_debug("Test not supported on this architecture\n");
+> > +             return TEST_SKIP;
+> > +     }
+> > +
+> > +     return TEST_OK;
+> > +}
+> > +
+> >  /**
+> >   * test__perf_time_to_tsc - test converting perf time to TSC.
+> >   *
+> > @@ -70,7 +81,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+> >       struct perf_cpu_map *cpus = NULL;
+> >       struct evlist *evlist = NULL;
+> >       struct evsel *evsel = NULL;
+> > -     int err = -1, ret, i;
+> > +     int err = TEST_FAIL, ret, i;
+> >       const char *comm1, *comm2;
+> >       struct perf_tsc_conversion tc;
+> >       struct perf_event_mmap_page *pc;
+> > @@ -79,10 +90,6 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+> >       u64 test_time, comm1_time = 0, comm2_time = 0;
+> >       struct mmap *md;
+> >
+> > -     if (!TSC_IS_SUPPORTED) {
+> > -             pr_debug("Test not supported on this architecture");
+> > -             return TEST_SKIP;
+> > -     }
+> >
+> >       threads = thread_map__new(-1, getpid(), UINT_MAX);
+> >       CHECK_NOT_NULL__(threads);
+> > @@ -124,8 +131,8 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+> >       ret = perf_read_tsc_conversion(pc, &tc);
+> >       if (ret) {
+> >               if (ret == -EOPNOTSUPP) {
+> > -                     fprintf(stderr, " (not supported)");
+> > -                     return 0;
+> > +                     pr_debug("perf_read_tsc_conversion is not supported in current kernel\n");
+> > +                     err = TEST_SKIP;
+> >               }
+> >               goto out_err;
+> >       }
+> > @@ -191,7 +198,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+> >           test_tsc >= comm2_tsc)
+> >               goto out_err;
+> >
+> > -     err = 0;
+> > +     err = TEST_OK;
+> >
+> >  out_err:
+> >       evlist__delete(evlist);
+> > @@ -200,4 +207,15 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+> >       return err;
+> >  }
+> >
+> > -DEFINE_SUITE("Convert perf time to TSC", perf_time_to_tsc);
+> > +static struct test_case time_to_tsc_tests[] = {
+> > +     TEST_CASE_REASON("TSC support", tsc_is_supported,
+> > +                      "This architecture does not support"),
+> > +     TEST_CASE_REASON("Perf time to TSC", perf_time_to_tsc,
+> > +                      "perf_read_tsc_conversion is not supported"),
+> > +     { .name = NULL, }
+> > +};
+> > +
+> > +struct test_suite suite__perf_time_to_tsc = {
+> > +     .desc = "Convert perf time to TSC",
+> > +     .test_cases = time_to_tsc_tests,
+> > +};
+>
 
 
-On 4/8/22 04:15, Peter Zijlstra wrote:
-> On Thu, Apr 07, 2022 at 11:28:09PM -0400, Nico Pache wrote:
->> The pthread struct is allocated on PRIVATE|ANONYMOUS memory [1] which can
->> be targeted by the oom reaper. This mapping is used to store the futex
->> robust list head; the kernel does not keep a copy of the robust list and
->> instead references a userspace address to maintain the robustness during
->> a process death. A race can occur between exit_mm and the oom reaper that
->> allows the oom reaper to free the memory of the futex robust list before
->> the exit path has handled the futex death:
->>
->>     CPU1                               CPU2
->> ------------------------------------------------------------------------
->>     page_fault
->>     do_exit "signal"
->>     wake_oom_reaper
->>                                         oom_reaper
->>                                         oom_reap_task_mm (invalidates mm)
->>     exit_mm
->>     exit_mm_release
->>     futex_exit_release
->>     futex_cleanup
->>     exit_robust_list
->>     get_user (EFAULT- can't access memory)
->>
->> If the get_user EFAULT's, the kernel will be unable to recover the
->> waiters on the robust_list, leaving userspace mutexes hung indefinitely.
->>
->> Use the robust_list address stored in the kernel to skip the VMA that holds
->> it, allowing a successful futex_cleanup.
->>
->> Theoretically a failure can still occur if there are locks mapped as
->> PRIVATE|ANON; however, the robust futexes are a best-effort approach.
->> This patch only strengthens that best-effort.
->>
->> The following case can still fail:
->> robust head (skipped) -> private lock (reaped) -> shared lock (skipped)
-> 
-> This is still all sorts of confused.. it's a list head, the entries can
-> be in any random other VMA. You must not remove *any* user memory before
-> doing the robust thing. Not removing the VMA that contains the head is
-> pointless in the extreme.
-Not sure how its pointless if it fixes all the different reproducers we've
-written for it. As for the private lock case we stated here, we havent been able
-to reproduce it, but I could see how it can be a potential issue (which is why
-its noted).
-> 
-> Did you not read the previous discussion?
+-- 
+Best Regards
 
-I did... Thats why I added the blurb about best-effort and the case that can
-theoretically still fail.
-
-The oom reaper doesn't reap shared memory but WITHOUT this change it was reaping
-the head (PRIVATE|ANON) which is needed to get to those shared mappings; so
-shared locks are safe with this added change.
-
-If a user implements private locks they can only be used within that process. If
-that process is OOMing then it doesnt really matter what happens to the
-futexes... all of those threads running under that process will terminate anyways.
-
-Perhaps I'm misunderstanding you.
-
--- Nico
-
+Bryton.Lee
