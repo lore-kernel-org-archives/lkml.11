@@ -2,187 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33822C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:49:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232297AbiDHIuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 04:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48284 "EHLO
+        id S232318AbiDHIvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 04:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232263AbiDHIuG (ORCPT
+        with ESMTP id S232263AbiDHIvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 04:50:06 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174C6B13;
-        Fri,  8 Apr 2022 01:48:04 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id s11so7301233pla.8;
-        Fri, 08 Apr 2022 01:48:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=I46UWeD98++HQALI8PtJ0TTP79FrXlHlDLM23fJH0TE=;
-        b=AMz/XhD4j+40NOgknVlsh0fHAwSm7KnOySa6l8Ft38KfLtGZOXWBTbIDEpOUbeAKHL
-         jO8J6IpYhF0ufvMwfCHs2uB+61dM8oHqrS8xtcoJ5/wBoEUG1x4Wgr7ypBWaCutsTM9l
-         kBCh7W1+eBVG84ibOFB0OgId55+DUJMx2itlnrW0lQgzhSjYIiHrsrnJdsx0eZZFNjo3
-         u0lGhZZ09lcU4A6vPkmXaebedsNTDXBKzDmfd0LW1imuZXZXTUcC7n7tUqKHKpHjtN4m
-         cUZmrTPh+RBB77t1ylPgxGvneFvThMP13CRyCgmBZRd1IgwbA1IMNNZdUSmI70PSg7zi
-         k0EQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=I46UWeD98++HQALI8PtJ0TTP79FrXlHlDLM23fJH0TE=;
-        b=Bdk4WMIRG309ertNAJok5l8RDDKC+pCGcBbCNiAl2lt+Gf7FedMli63Dz31Y0NImrW
-         vvrZx93YHhVWG41lWzQPaJIifvWNhtrweh1vzzKS9jkb87xYckRTd4p3ZXNeMsUvs+RY
-         6cfE+sS0uAvS/nZDy6w3gq7FLTVmACnnNIVxmYaXjMjRs/TW19A+HWd31psxRrHTHrke
-         TrrEFhyT+I5GrgkH+kU/Q/A/xSvGxZ0RqwsLhwakLv06Ofis5+KWeeJR4aF2wqfHgyIr
-         6mgTMZhwhtZrGoRLO2H97YiLmTLYZSGJbiCqj+2SVNgyYjfboRGvmCPaxy7w8mchjuyj
-         G3Ng==
-X-Gm-Message-State: AOAM531qLVWusepjkN/1p3/CZWGHsQDGhnes+uU4WirZAP9RJuEP7FW7
-        c8tdf47625WjwbcWPO3xvK0=
-X-Google-Smtp-Source: ABdhPJzF0G8x7dcWJzCeZT6g4GPh+o/q1DLD1IO0VBU9rC9Kh1hcN6yMub0dhGcwbN7OC1+nNMxR+w==
-X-Received: by 2002:a17:90a:9204:b0:1ca:8698:2470 with SMTP id m4-20020a17090a920400b001ca86982470mr20643616pjo.199.1649407683593;
-        Fri, 08 Apr 2022 01:48:03 -0700 (PDT)
-Received: from CHENGDONGLI-MB0.localdomain ([203.205.141.113])
-        by smtp.gmail.com with ESMTPSA id cq25-20020a056a00331900b004faf3a0c89csm23531322pfb.91.2022.04.08.01.48.02
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 08 Apr 2022 01:48:02 -0700 (PDT)
-From:   Chengdong Li <brytonlee01@gmail.com>
-X-Google-Original-From: Chengdong Li <chengdongli@tencent.com>
-Received: by CHENGDONGLI-MB0.localdomain (Postfix, from userid 501)
-        id 93A506D931DE; Fri,  8 Apr 2022 16:47:56 +0800 (CST)
-To:     adrian.hunter@intel.com, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, peterz@infradead.org,
-        mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
-        namhyung@kernel.org
-Cc:     ak@linux.intel.com, likexu@tencent.com, chengdongli@tencent.com
-Subject: [PATCH v4] perf test tsc: Fix error message report when not supported.
-Date:   Fri,  8 Apr 2022 16:47:48 +0800
-Message-Id: <20220408084748.43707-1-chengdongli@tencent.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <CAC2pzGdMFmtV8YNR4DszoATjM80uYNwrnW5As6vgBsyXVcWueA@mail.gmail.com>
-References: <CAC2pzGdMFmtV8YNR4DszoATjM80uYNwrnW5As6vgBsyXVcWueA@mail.gmail.com>
+        Fri, 8 Apr 2022 04:51:10 -0400
+Received: from srv1.home.kabele.me (gw.home.kabele.me [195.88.143.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABC32357713;
+        Fri,  8 Apr 2022 01:49:06 -0700 (PDT)
+Received: from srv1.home.kabele.me (localhost [IPv6:::1])
+        by srv1.home.kabele.me (Postfix) with ESMTP id 05783188967;
+        Fri,  8 Apr 2022 10:49:02 +0200 (CEST)
+Received: from localhost ([77.8.79.100])
+        by srv1.home.kabele.me with ESMTPSA
+        id jqVFOf72T2LBmRcAnmUwTQ
+        (envelope-from <vit@kabele.me>); Fri, 08 Apr 2022 10:49:02 +0200
+Date:   Fri, 8 Apr 2022 10:46:46 +0200
+From:   Vit Kabele <vit@kabele.me>
+To:     platform-driver-x86@vger.kernel.org
+Cc:     r.marek@assembler.cz, x86@kernel.org, linux-kernel@vger.kernel.org,
+        rafael@kernel.org, mingo@redhat.com
+Subject: [PATCH v2] arch/x86: Check validity of EBDA pointer in mpparse.c
+Message-ID: <Yk/2dh4kDobivStp@czspare1-lap.sysgo.cz>
+References: <CAJZ5v0gBbdzUO9MRxbKESEnaeaNAu-+3oP6ADMretch=iHPNJA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0gBbdzUO9MRxbKESEnaeaNAu-+3oP6ADMretch=iHPNJA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengdong Li <chengdongli@tencent.com>
+The pointer to EBDA area is retrieved from a word at 0x40e in BDA.
+In case that the memory there is not initialized and contains garbage,
+it might happen that the kernel touches memory above 640K.
 
-By default `perf test tsc` does not return the error message
-when the child process detected kernel does not support. Instead,
-the child process print error message to stderr, unfortunately
-the stderr is redirected to /dev/null when verbose <= 0.
+This may cause unwanted reads from VGA memory which may not be decoded,
+or even present when running under virtualization.
 
-This patch did three things:
-- returns TEST_SKIP to the parent process instead of TEST_OK when
-  perf_read_tsc_conversion() is not supported.
-- add a new subtest of testing if TSC is supported on current
-  architecture by moving exist code to a separate function.
-  It avoids two places in test__perf_time_to_tsc() that return
-  TEST_SKIP by doing this.
-- extended test suite definition to contain above two subtests.
-  Current test_suite and test_case structs do not support printing
-  skip reason when the number of subtest less than 1. To print skip
-  reason, it is necessary to extend current test suite definition.
+This patch adds sanity check for the EBDA pointer retrieved from the memory
+so that scanning EBDA does not leave the low memory.
 
-Changes since v3:
-- refine commit message again to make it clear. 
-
-Changes since v2:
-- refine error message format.
-- refine commit log message according to Adrian's review comments.
-
-Changes since v1 (thanks for the feedback from Adrian Hunter):
-- rebase commit to current source.
-
-Signed-off-by: Chengdong Li <chengdongli@tencent.com>
+Signed-off-by: Vit Kabele <vit@kabele.me>
+Reviewed-by: Rudolf Marek <r.marek@assembler.cz>
 ---
- tools/perf/tests/perf-time-to-tsc.c | 36 +++++++++++++++++++++--------
- 1 file changed, 27 insertions(+), 9 deletions(-)
+changes in v2:
+ * Fix the comment formating
+ * Change the condition. I used already defined symbol for easier
+    interpretation
 
-diff --git a/tools/perf/tests/perf-time-to-tsc.c b/tools/perf/tests/perf-time-to-tsc.c
-index d12d0ad81801..cc6df49a65a1 100644
---- a/tools/perf/tests/perf-time-to-tsc.c
-+++ b/tools/perf/tests/perf-time-to-tsc.c
-@@ -47,6 +47,17 @@
- 	}					\
+ arch/x86/include/asm/bios_ebda.h |  3 +++
+ arch/x86/kernel/ebda.c           |  3 ---
+ arch/x86/kernel/mpparse.c        | 14 ++++++++++++--
+ 3 files changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/include/asm/bios_ebda.h b/arch/x86/include/asm/bios_ebda.h
+index 4d5a17e2febe..c3133c01d5b7 100644
+--- a/arch/x86/include/asm/bios_ebda.h
++++ b/arch/x86/include/asm/bios_ebda.h
+@@ -4,6 +4,9 @@
+ 
+ #include <asm/io.h>
+ 
++#define BIOS_START_MIN		0x20000U	/* 128K, less than this is insane */
++#define BIOS_START_MAX		0x9f000U	/* 640K, absolute maximum */
++
+ /*
+  * Returns physical address of EBDA.  Returns 0 if there is no EBDA.
+  */
+diff --git a/arch/x86/kernel/ebda.c b/arch/x86/kernel/ebda.c
+index 38e7d597b660..86c0801fc3ce 100644
+--- a/arch/x86/kernel/ebda.c
++++ b/arch/x86/kernel/ebda.c
+@@ -50,9 +50,6 @@
+ 
+ #define BIOS_RAM_SIZE_KB_PTR	0x413
+ 
+-#define BIOS_START_MIN		0x20000U	/* 128K, less than this is insane */
+-#define BIOS_START_MAX		0x9f000U	/* 640K, absolute maximum */
+-
+ void __init reserve_bios_regions(void)
+ {
+ 	unsigned int bios_start, ebda_start;
+diff --git a/arch/x86/kernel/mpparse.c b/arch/x86/kernel/mpparse.c
+index fed721f90116..9e0b4820f33b 100644
+--- a/arch/x86/kernel/mpparse.c
++++ b/arch/x86/kernel/mpparse.c
+@@ -633,8 +633,18 @@ void __init default_find_smp_config(void)
+ 	 */
+ 
+ 	address = get_bios_ebda();
+-	if (address)
+-		smp_scan_config(address, 0x400);
++
++	/*
++	 * Check that the EBDA address is sane and the get_bios_ebda() did not
++	 * return just garbage from memory.
++	 * The upper bound is considered valid if it points below 1K before
++	 * end of the lower memory (i.e. 639K). The EBDA can be smaller
++	 * than 1K in which case the pointer will point above 639K but that
++	 * case is handled in step 2) above, and we don't need to adjust scan
++	 * size to not bump into the memory above 640K.
++	 */
++	if (address >= BIOS_START_MIN && address < (BIOS_START_MAX - 1024))
++		smp_scan_config(address, 1024);
  }
  
-+static int test__tsc_is_supported(struct test_suite *test __maybe_unused,
-+				  int subtest __maybe_unused)
-+{
-+	if (!TSC_IS_SUPPORTED) {
-+		pr_debug("Test not supported on this architecture\n");
-+		return TEST_SKIP;
-+	}
-+
-+	return TEST_OK;
-+}
-+
- /**
-  * test__perf_time_to_tsc - test converting perf time to TSC.
-  *
-@@ -70,7 +81,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	struct perf_cpu_map *cpus = NULL;
- 	struct evlist *evlist = NULL;
- 	struct evsel *evsel = NULL;
--	int err = -1, ret, i;
-+	int err = TEST_FAIL, ret, i;
- 	const char *comm1, *comm2;
- 	struct perf_tsc_conversion tc;
- 	struct perf_event_mmap_page *pc;
-@@ -79,10 +90,6 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	u64 test_time, comm1_time = 0, comm2_time = 0;
- 	struct mmap *md;
- 
--	if (!TSC_IS_SUPPORTED) {
--		pr_debug("Test not supported on this architecture");
--		return TEST_SKIP;
--	}
- 
- 	threads = thread_map__new(-1, getpid(), UINT_MAX);
- 	CHECK_NOT_NULL__(threads);
-@@ -124,8 +131,8 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	ret = perf_read_tsc_conversion(pc, &tc);
- 	if (ret) {
- 		if (ret == -EOPNOTSUPP) {
--			fprintf(stderr, " (not supported)");
--			return 0;
-+			pr_debug("perf_read_tsc_conversion is not supported in current kernel\n");
-+			err = TEST_SKIP;
- 		}
- 		goto out_err;
- 	}
-@@ -191,7 +198,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	    test_tsc >= comm2_tsc)
- 		goto out_err;
- 
--	err = 0;
-+	err = TEST_OK;
- 
- out_err:
- 	evlist__delete(evlist);
-@@ -200,4 +207,15 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	return err;
- }
- 
--DEFINE_SUITE("Convert perf time to TSC", perf_time_to_tsc);
-+static struct test_case time_to_tsc_tests[] = {
-+	TEST_CASE_REASON("TSC support", tsc_is_supported,
-+			 "This architecture does not support"),
-+	TEST_CASE_REASON("Perf time to TSC", perf_time_to_tsc,
-+			 "perf_read_tsc_conversion is not supported"),
-+	{ .name = NULL, }
-+};
-+
-+struct test_suite suite__perf_time_to_tsc = {
-+	.desc = "Convert perf time to TSC",
-+	.test_cases = time_to_tsc_tests,
-+};
+ #ifdef CONFIG_X86_IO_APIC
 -- 
-2.27.0
+2.30.2
 
