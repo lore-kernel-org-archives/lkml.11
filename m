@@ -2,169 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8272C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E756C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:15:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232842AbiDHLQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 07:16:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46708 "EHLO
+        id S232897AbiDHLR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 07:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbiDHLQR (ORCPT
+        with ESMTP id S229688AbiDHLR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 07:16:17 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58CB3632F;
-        Fri,  8 Apr 2022 04:14:13 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 238BDcR5122754;
-        Fri, 8 Apr 2022 06:13:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649416418;
-        bh=+SNjO1IUOnRYTs23vqywM5c9gOYSHSLoyH11tDb5yOk=;
-        h=From:To:CC:Subject:Date;
-        b=MgooNM0+tVkvtFTMNkxHRB0uFY9BfyfabOgZebe4K/7PxBZXjjn3q8S7dPLJhN+dd
-         0g/Z/rT+Nsponu1ySqHLn0fxKlOdBjP+3rB4gK35Z/vWTzE8S3hX5PeZKaN4lp2oV6
-         1+p/6UiEXNV4JineYzcTfFc4p2Sqcdg8S7ms9RSo=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 238BDcqZ026182
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 8 Apr 2022 06:13:38 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 8
- Apr 2022 06:13:37 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 8 Apr 2022 06:13:37 -0500
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 238BDYJi018497;
-        Fri, 8 Apr 2022 06:13:35 -0500
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     Aswath Govindraju <a-govindraju@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        <linux-phy@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-can@vger.kernel.org>
-Subject: [PATCH v5] phy: phy-can-transceiver: Add support for setting mux
-Date:   Fri, 8 Apr 2022 16:43:16 +0530
-Message-ID: <20220408111316.21189-1-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 8 Apr 2022 07:17:26 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2122527BD;
+        Fri,  8 Apr 2022 04:15:21 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id z99so1065473ede.5;
+        Fri, 08 Apr 2022 04:15:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aa7QZzIFVFDFbunq9XhVZaHXC3Qs6q5HoIqOfQS/Ym0=;
+        b=Ebq/3CFzWxM8qOh59YVH2MLYRjSnNcFwOCUvzxHE9Tbiurl/HsdJniiD1qliVZEERU
+         egaLCA4UmdSfDDN4EPXlUQ+PS23hRirNXWulOyJhJfUged92Dj3FhTk1J4IJz6ZUyLAu
+         eyZiQgZ64kpqJK+yU6ddWURM04C7fRJ9zFadeHEtp96BCtlb+gQpFIysmzvQkmIKjs+S
+         yHJ0SontZJT/j9Q1IYD+29wUihigkLmLLmjmhlkqmm/c7z9LVxxiiB3t8XGHCl/rpJOD
+         76p5WnLAs7lPxHuxR0L12v31RA0rUoi9fnTewbklVrxk03jNZkTbX+2Wg/R9zcGYHzLt
+         VpSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aa7QZzIFVFDFbunq9XhVZaHXC3Qs6q5HoIqOfQS/Ym0=;
+        b=VIbor8fRrXjG13k6iochpisGjz0af4DalIM1Ffsebdffk2AIcx1X4bImnm0T1br08S
+         AYGNwahAsR1bkfbHNTxbQXkIthUXa7j1Ly9dGYKabV2SaC43cTLWrbrcEkGOH97hhk3t
+         IqiOI2qjxC19+DJLx2L7rduf3gMKBnRHBraPyzfAIrt7mkJHO0L4lT9bZTEb44F/9Zar
+         QT4YWd3pKJrTOiYxGQdRs9f7xeUmjNEAGj9Tg2gPf+ERtxOdQPSXHF5QlK3kDM+wcSKn
+         HvGeamWmW3y95Br6m/YHiGFnPlrgilw5ivSLXW5GxTkIi4BUxPkYaLJk6LNtKr9HSyIJ
+         5a1Q==
+X-Gm-Message-State: AOAM532PwW7UUY//ro7mT438QsK3T/eI2biiRGudp1Gta5P3K/Zpt8UM
+        fm6ETkpydXdi/vTRBXZnng5AhSrlBAb/w6xmwBtQYtGIKNLyDEjQ
+X-Google-Smtp-Source: ABdhPJwTfsTBXB3ob+uJK79ZSJa5OgMnE+cTkAqMYO9XInOo/wP0oHo9pORKY6Cub50GFUTgpI9H5oRJ7wNnqKs1i0g=
+X-Received: by 2002:a50:e696:0:b0:419:998d:5feb with SMTP id
+ z22-20020a50e696000000b00419998d5febmr19167579edm.122.1649416520116; Fri, 08
+ Apr 2022 04:15:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220407183941.36555-1-eajames@linux.ibm.com> <20220407183941.36555-2-eajames@linux.ibm.com>
+In-Reply-To: <20220407183941.36555-2-eajames@linux.ibm.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 8 Apr 2022 14:11:05 +0300
+Message-ID: <CAHp75VedZdEYB-BjJTVaKJgPwQ9a1DhTp=MYsrh1Ve9Eyfnytw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] leds: pca955x: Clean up and optimize
+To:     Eddie James <eajames@linux.ibm.com>
+Cc:     Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Joel Stanley <joel@jms.id.au>, patrick@stwcx.xyz
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On some boards, for routing CAN signals from controller to transceiver,
-muxes might need to be set. Therefore, add support for setting the mux by
-reading the mux-states property from the device tree node.
+On Thu, Apr 7, 2022 at 10:42 PM Eddie James <eajames@linux.ibm.com> wrote:
+>
+> Clean up the I2C access functions to avoid fetching the pca955x
+> driver data again. Optimize the probe to do at most 4 reads and
+> 4 writes of the LED selector regs, rather than 16 of each.
 
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
----
+> Rename some functions and variables to be more consistent and
+> descriptive.
 
-Changes since v4:
-- Rebased on top of latest next head.
+Separate patch.
 
-Changes since v3:
-- Rebased on top of the linux-next head
-- Dependencies are now merged in linux next.
-  84564481bc45 (mux: Add support for reading mux state from consumer DT node)
-- Dropped bindings patch from the series since it has been
-  picked up from the earlier version
-  https://lore.kernel.org/all/YieG22mgIzsL7TMn@robh.at.kernel.org/
+> +               dev_err(&pca955x->client->dev,
+> +                       "%s: reg 0x%x, val 0x%x, err %d\n", __func__, n, val,
+> +                       ret);
 
-Changes since v2:
-- Fixed the bindings removing the description about
-  the arguments in mux-states property
+This can be indented better.
 
-Changes since v1:
-- Fixed the description for mux-states property in bindings
-  file
-- appended declaration of variable ret in the end
+I would add a temporary dev pointer variable and put this on one line.
 
- drivers/phy/Kconfig               |  1 +
- drivers/phy/phy-can-transceiver.c | 24 +++++++++++++++++++++++-
- 2 files changed, 24 insertions(+), 1 deletion(-)
+ struct device *dev = &pca955x->client->dev;
 
-diff --git a/drivers/phy/Kconfig b/drivers/phy/Kconfig
-index 82b63e60c5a2..300b0f2b5f84 100644
---- a/drivers/phy/Kconfig
-+++ b/drivers/phy/Kconfig
-@@ -64,6 +64,7 @@ config USB_LGM_PHY
- config PHY_CAN_TRANSCEIVER
- 	tristate "CAN transceiver PHY"
- 	select GENERIC_PHY
-+	select MULTIPLEXER
- 	help
- 	  This option enables support for CAN transceivers as a PHY. This
- 	  driver provides function for putting the transceivers in various
-diff --git a/drivers/phy/phy-can-transceiver.c b/drivers/phy/phy-can-transceiver.c
-index 6f3fe37dee0e..95c6dbb52da7 100644
---- a/drivers/phy/phy-can-transceiver.c
-+++ b/drivers/phy/phy-can-transceiver.c
-@@ -10,6 +10,7 @@
- #include<linux/module.h>
- #include<linux/gpio.h>
- #include<linux/gpio/consumer.h>
-+#include <linux/mux/consumer.h>
- 
- struct can_transceiver_data {
- 	u32 flags;
-@@ -21,13 +22,22 @@ struct can_transceiver_phy {
- 	struct phy *generic_phy;
- 	struct gpio_desc *standby_gpio;
- 	struct gpio_desc *enable_gpio;
-+	struct mux_state *mux_state;
- };
- 
- /* Power on function */
- static int can_transceiver_phy_power_on(struct phy *phy)
- {
- 	struct can_transceiver_phy *can_transceiver_phy = phy_get_drvdata(phy);
--
-+	int ret;
-+
-+	if (can_transceiver_phy->mux_state) {
-+		ret = mux_state_select(can_transceiver_phy->mux_state);
-+		if (ret) {
-+			dev_err(&phy->dev, "Failed to select CAN mux: %d\n", ret);
-+			return ret;
-+		}
-+	}
- 	if (can_transceiver_phy->standby_gpio)
- 		gpiod_set_value_cansleep(can_transceiver_phy->standby_gpio, 0);
- 	if (can_transceiver_phy->enable_gpio)
-@@ -45,6 +55,8 @@ static int can_transceiver_phy_power_off(struct phy *phy)
- 		gpiod_set_value_cansleep(can_transceiver_phy->standby_gpio, 1);
- 	if (can_transceiver_phy->enable_gpio)
- 		gpiod_set_value_cansleep(can_transceiver_phy->enable_gpio, 0);
-+	if (can_transceiver_phy->mux_state)
-+		mux_state_deselect(can_transceiver_phy->mux_state);
- 
- 	return 0;
- }
-@@ -95,6 +107,16 @@ static int can_transceiver_phy_probe(struct platform_device *pdev)
- 	match = of_match_node(can_transceiver_phy_ids, pdev->dev.of_node);
- 	drvdata = match->data;
- 
-+	if (of_property_read_bool(dev->of_node, "mux-states")) {
-+		struct mux_state *mux_state;
-+
-+		mux_state = devm_mux_state_get(dev, NULL);
-+		if (IS_ERR(mux_state))
-+			return dev_err_probe(&pdev->dev, PTR_ERR(mux_state),
-+					     "failed to get mux\n");
-+		can_transceiver_phy->mux_state = mux_state;
-+	}
-+
- 	phy = devm_phy_create(dev, dev->of_node,
- 			      &can_transceiver_phy_ops);
- 	if (IS_ERR(phy)) {
+               dev_err(dev, "%s: reg 0x%x, val 0x%x, err %d\n",
+__func__, n, val, ret);
+
+...
+
+> +               dev_err(&pca955x->client->dev,
+> +                       "%s: reg 0x%x, val 0x%x, err %d\n", __func__, n, val,
+> +                       ret);
+
+Ditto.
+
+...
+
+> +               dev_err(&pca955x->client->dev,
+> +                       "%s: reg 0x%x, val 0x%x, err %d\n", __func__, n, val,
+> +                       ret);
+
+Ditto.
+
+...
+
+> +               dev_err(&pca955x->client->dev, "%s: reg 0x%x, err %d\n",
+>                         __func__, n, ret);
+
+Ditto.
+
+...
+
+> +               dev_err(&pca955x->client->dev, "%s: reg 0x%x, err %d\n",
+>                         __func__, n, ret);
+
+Ditto.
+
+...
+
+> +       struct pca955x_led *pca955x_led = container_of(led_cdev,
+> +                                                      struct pca955x_led,
+> +                                                      led_cdev);
+
+Is it used once? If more than once, consider a helper for that as well.
+
 -- 
-2.17.1
-
+With Best Regards,
+Andy Shevchenko
