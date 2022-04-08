@@ -2,279 +2,513 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 04:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68683C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 04:58:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234451AbiDHFAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 01:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
+        id S234408AbiDHFAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 01:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234386AbiDHE7x (ORCPT
+        with ESMTP id S234417AbiDHE74 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 00:59:53 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C966B2AC78
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 21:57:47 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id d10-20020a17090a3b0a00b001ca93b34e3cso4755224pjc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 21:57:47 -0700 (PDT)
+        Fri, 8 Apr 2022 00:59:56 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE9036E27
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 21:57:53 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2eb5d4fbd54so66613077b3.4
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 21:57:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=NjSiOM/35CoR66GddgJGkPcuLjrAQk87146PcI+7fw0=;
-        b=aSNVD8Dv1pAjAIp1MJf2LmZJVyOsK+n7bFr2jOZjil/rmLRiCSWTwcrXHDdy7/oHe/
-         Bv37xIDzncGkL6U8iAB8xE0qgotdzer+GesJprbrbN3tE3/AcvGuyaa2hqNOnYLnd5ez
-         RR5OJTb4hxOJBAzLiZvp0SfHpR9AC0CGAa57NYjTeSonjqhTEd/aYSa7+PW2l0M9an7c
-         oGf7opkEGVC2n1NR9o+AT++usov2GpzMn2bsSu7Vq/6dkvjUVtG4dOiR8RH1fTj7Zdy1
-         i6ipH575Xw22gZ6xNEZXfmXS7bA+BGy4czwQICZYNXytSU6mfDYit92feNqqhuD7m9zA
-         SUUQ==
+        h=date:message-id:mime-version:subject:from:cc;
+        bh=hzCMu/UvPPObe/qwkBEl/biRS3XgDzvZOugIenmIcl0=;
+        b=NFeCEmxXLlCoG+zdPC2x4cjLF3M2w1av4st2op2odVZ41dnIMXkzcB/+4yftB0EP0g
+         gwPBcjlQyiQcfmFd0+3bUEWAnFTUASDa+5XNE52LT0Tl+EM9DdocIuNvOM00i/VUjqDM
+         PnZWJOWbx4PUqFeqVaXKLV5NO3JQv0UTY7b/J8sjmaB9/muzVnV2N54uF/p2rwPMXXeP
+         8pqc7aqVrVQnFFRgmkvNKaLOYRsUeqXRdNHEJp3zjMRxgMA12Mazd1sbXqP2zkHCPEoM
+         7xNNgBp8bkztm0sIQT67n3/vJXZy1erOPi6G57ndb4IYBdDNY2xyFHHgIiPnhIbt3XSH
+         W21w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=NjSiOM/35CoR66GddgJGkPcuLjrAQk87146PcI+7fw0=;
-        b=SJVbm1ihipEVEZNApj9Bf1/TzdtqDjKb7vHSRlb7eRQkV4xvNLfVfzPgvKdkgAlLhV
-         3shgDjfMN8e6DIctV54HsGaTcXg+VkGOeAY0+mhkVKoYU+u4i0LgLngrH9fRuac4Glom
-         DTnZo+0ptXNNlwDHTeBVDeN9/BJemU0GixY7RHDf7WoTjNPfn7r+5QYmI+fVeitAK0dW
-         nhfF4TlBZbiXlOsEgzJjDDCGFGGtImX5rd8TkyU/8U93hCWuIOqk+G5c2UC2Jq53d+q8
-         FS8oXdRaKMD6FfEKfnnkBi4LUfO/8uMvgtxh7uslgfQo/rO8fkb1THY7fP3PqIAG9K+E
-         ozhg==
-X-Gm-Message-State: AOAM533gHKTiRBN0sfI7XZ9JAdRKxrru3wXoVB79IR+wbYL6Oq3EXe3O
-        dBjwyENoY4Nww70+g9knL5OQg0BIhfUlT41P
-X-Google-Smtp-Source: ABdhPJywussi7i/xLF5mokT59v1xMo0FnOaWa7Wq5Iefmfbat7pCbV7jYYk7OWFFGxZnl4nnGMYwR5ffLABQzYhx
-X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a63:1117:0:b0:399:2df0:7fb9 with SMTP
- id g23-20020a631117000000b003992df07fb9mr14473499pgl.40.1649393867335; Thu,
- 07 Apr 2022 21:57:47 -0700 (PDT)
-Date:   Fri,  8 Apr 2022 04:57:40 +0000
-In-Reply-To: <20220408045743.1432968-1-yosryahmed@google.com>
-Message-Id: <20220408045743.1432968-2-yosryahmed@google.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:cc;
+        bh=hzCMu/UvPPObe/qwkBEl/biRS3XgDzvZOugIenmIcl0=;
+        b=zQgMwE4w0L6cBCTZeh05mnF6MwD1fNGlgdSkXLOFN4WYktYaC9eq7TbCE0a1O7xqwf
+         gAELG01SzEXFD8eg+maXBLUR9lmAEPKsYNIGlFegHMmxxHTCo+YdvDHEOnjXsaILx3NH
+         v84g0e5Kk+ZQCipPHVtIoqF3i6Uhr1bpzuseo8+Q5rb+bNHNDUakk0KDLkeCMUpaQH8H
+         p26W1ZHCIRd7WAFyV3k3m0+Jaok3v+rEeHtgnxsEYJQsaVIgkGuyw7MMXNvpN3YG06KF
+         p0xdKzqCn930KISormjbVgHbmo52uIkq3qYiR8hnGQcOQlV/WugNuqUh/5j13BEv/k3o
+         bbxg==
+X-Gm-Message-State: AOAM533DSeCOtdumaHwL+ikaE9xcd01sr+pMhwh3+rRtx6KW9jWHDY8y
+        d54nCFgsBQ2wIgFgb8RS3FzllyZjiWC5oEibxA==
+X-Google-Smtp-Source: ABdhPJxjdPSUagnWnW95NOKDMyJxv9f80ZaJEBs5/vCEOCj4/Ub1URqP0Gms7cKwOgokNUvDIsY8kdTMo6NSFfJLLw==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:f0ed:c8a:dab7:ecc2])
+ (user=kaleshsingh job=sendgmr) by 2002:a25:888a:0:b0:63d:d378:6c0a with SMTP
+ id d10-20020a25888a000000b0063dd3786c0amr12560827ybl.646.1649393873214; Thu,
+ 07 Apr 2022 21:57:53 -0700 (PDT)
+Date:   Thu,  7 Apr 2022 21:57:34 -0700
+Message-Id: <20220408045734.1158817-1-kaleshsingh@google.com>
 Mime-Version: 1.0
-References: <20220408045743.1432968-1-yosryahmed@google.com>
 X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH v3 1/4] memcg: introduce per-memcg reclaim interface
-From:   Yosry Ahmed <yosryahmed@google.com>
-To:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     David Rientjes <rientjes@google.com>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, Yu Zhao <yuzhao@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Chen Wandun <chenwandun@huawei.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        "=?UTF-8?q?Michal=20Koutn=C3=BD?=" <mkoutny@suse.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>, cgroups@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Michal Hocko <mhocko@suse.com>
+Subject: [PATCH v2] EXP rcu: Move expedited grace period (GP) work to RT kthread_worker
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     surenb@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Tim Murray <timmurray@google.com>, Wei Wang <wvw@google.com>,
+        Kyle Lin <kylelin@google.com>,
+        Chunwei Lu <chunweilu@google.com>,
+        Lulu Wang <luluw@google.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shakeel Butt <shakeelb@google.com>
+Enabling CONFIG_RCU_BOOST did not reduce RCU expedited grace-period
+latency because its workqueues run at SCHED_OTHER, and thus can be
+delayed by normal processes.  This commit avoids these delays by moving
+the expedited GP work items to a real-time-priority kthread_worker.
 
-Introduce a memcg interface to trigger memory reclaim on a memory cgroup.
+The results were evaluated on arm64 Android devices (6GB ram) running
+5.10 kernel, and capturing trace data in critical user-level code.
 
-Use case: Proactive Reclaim
----------------------------
+The table below shows the resulting order-of-magnitude improvements
+in synchronize_rcu_expedited() latency:
 
-A userspace proactive reclaimer can continuously probe the memcg to
-reclaim a small amount of memory. This gives more accurate and
-up-to-date workingset estimation as the LRUs are continuously
-sorted and can potentially provide more deterministic memory
-overcommit behavior. The memory overcommit controller can provide
-more proactive response to the changing behavior of the running
-applications instead of being reactive.
+------------------------------------------------------------------------
+|                          |   workqueues  |  kthread_worker |  Diff   |
+------------------------------------------------------------------------
+| Count                    |          725  |            688  |         |
+------------------------------------------------------------------------
+| Min Duration       (ns)  |          326  |            447  |  37.12% |
+------------------------------------------------------------------------
+| Q1                 (ns)  |       39,428  |         38,971  |  -1.16% |
+------------------------------------------------------------------------
+| Q2 - Median        (ns)  |       98,225  |         69,743  | -29.00% |
+------------------------------------------------------------------------
+| Q3                 (ns)  |      342,122  |        126,638  | -62.98% |
+------------------------------------------------------------------------
+| Max Duration       (ns)  |  372,766,967  |      2,329,671  | -99.38% |
+------------------------------------------------------------------------
+| Avg Duration       (ns)  |    2,746,353  |        151,242  | -94.49% |
+------------------------------------------------------------------------
+| Standard Deviation (ns)  |   19,327,765  |        294,408  |         |
+------------------------------------------------------------------------
 
-A userspace reclaimer's purpose in this case is not a complete replacement
-for kswapd or direct reclaim, it is to proactively identify memory savings
-opportunities and reclaim some amount of cold pages set by the policy
-to free up the memory for more demanding jobs or scheduling new jobs.
+The below table show the range of maximums/minimums for
+synchronize_rcu_expedited() latency from all experiments:
 
-A user space proactive reclaimer is used in Google data centers.
-Additionally, Meta's TMO paper recently referenced a very similar
-interface used for user space proactive reclaim:
-https://dl.acm.org/doi/pdf/10.1145/3503222.3507731
+------------------------------------------------------------------------
+|                          |   workqueues  |  kthread_worker |  Diff   |
+------------------------------------------------------------------------
+| Total No. of Experiments |           25  |             23  |         |
+------------------------------------------------------------------------
+| Largest  Maximum   (ns)  |  372,766,967  |      2,329,671  | -99.38% |
+------------------------------------------------------------------------
+| Smallest Maximum   (ns)  |       38,819  |         86,954  | 124.00% |
+------------------------------------------------------------------------
+| Range of Maximums  (ns)  |  372,728,148  |      2,242,717  |         |
+------------------------------------------------------------------------
+| Largest  Minimum   (ns)  |       88,623  |         27,588  | -68.87% |
+------------------------------------------------------------------------
+| Smallest Minimum   (ns)  |          326  |            447  |  37.12% |
+------------------------------------------------------------------------
+| Range of Minimums  (ns)  |       88,297  |         27,141  |         |
+------------------------------------------------------------------------
 
-Benefits of a user space reclaimer:
------------------------------------
-
-1) More flexible on who should be charged for the cpu of the memory
-reclaim. For proactive reclaim, it makes more sense to be centralized.
-
-2) More flexible on dedicating the resources (like cpu). The memory
-overcommit controller can balance the cost between the cpu usage and
-the memory reclaimed.
-
-3) Provides a way to the applications to keep their LRUs sorted, so,
-under memory pressure better reclaim candidates are selected. This also
-gives more accurate and uptodate notion of working set for an
-application.
-
-Why memory.high is not enough?
-------------------------------
-
-- memory.high can be used to trigger reclaim in a memcg and can
-  potentially be used for proactive reclaim.
-  However there is a big downside in using memory.high. It can potentially
-  introduce high reclaim stalls in the target application as the
-  allocations from the processes or the threads of the application can hit
-  the temporary memory.high limit.
-
-- Userspace proactive reclaimers usually use feedback loops to decide
-  how much memory to proactively reclaim from a workload. The metrics
-  used for this are usually either refaults or PSI, and these metrics
-  will become messy if the application gets throttled by hitting the
-  high limit.
-
-- memory.high is a stateful interface, if the userspace proactive
-  reclaimer crashes for any reason while triggering reclaim it can leave
-  the application in a bad state.
-
-- If a workload is rapidly expanding, setting memory.high to proactively
-  reclaim memory can result in actually reclaiming more memory than
-  intended.
-
-The benefits of such interface and shortcomings of existing interface
-were further discussed in this RFC thread:
-https://lore.kernel.org/linux-mm/5df21376-7dd1-bf81-8414-32a73cea45dd@google.com/
-
-Interface:
-----------
-
-Introducing a very simple memcg interface 'echo 10M > memory.reclaim' to
-trigger reclaim in the target memory cgroup.
-
-The interface is introduced as a nested-keyed file to allow for future
-optional arguments to be easily added to configure the behavior of
-reclaim.
-
-Possible Extensions:
---------------------
-
-- This interface can be extended with an additional parameter or flags
-  to allow specifying one or more types of memory to reclaim from (e.g.
-  file, anon, ..).
-
-- The interface can also be extended with a node mask to reclaim from
-  specific nodes. This has use cases for reclaim-based demotion in memory
-  tiering systens.
-
-- A similar per-node interface can also be added to support proactive
-  reclaim and reclaim-based demotion in systems without memcg.
-
-- Add a timeout parameter to make it easier for user space to call the
-  interface without worrying about being blocked for an undefined amount
-  of time.
-
-For now, let's keep things simple by adding the basic functionality.
-
-[yosryahmed@google.com: refreshed to current master, updated commit
-message based on recent discussions and use cases]
-Signed-off-by: Shakeel Butt <shakeelb@google.com>
-Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Acked-by: Wei Xu <weixugc@google.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Tejun Heo <tj@kernel.org>
+Reported-by: Tim Murray <timmurray@google.com>
+Reported-by: Wei Wang <wvw@google.com>
+Tested-by: Kyle Lin <kylelin@google.com>
+Tested-by: Chunwei Lu <chunweilu@google.com>
+Tested-by: Lulu Wang <luluw@google.com>
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
 ---
- Documentation/admin-guide/cgroup-v2.rst | 21 ++++++++++++++
- mm/memcontrol.c                         | 37 +++++++++++++++++++++++++
- 2 files changed, 58 insertions(+)
 
-diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
-index 69d7a6983f78..19bcd73cad03 100644
---- a/Documentation/admin-guide/cgroup-v2.rst
-+++ b/Documentation/admin-guide/cgroup-v2.rst
-@@ -1208,6 +1208,27 @@ PAGE_SIZE multiple when read back.
- 	high limit is used and monitored properly, this limit's
- 	utility is limited to providing the final safety net.
+Changes in v2:
+  - Add stats on variation: standard deviation, range of maxs, etc; per Paul
+  - Make this optimization configurable (CONFIG_RCU_EXP_KTHREAD); per Paul
+
+ kernel/rcu/Kconfig    |  10 +++
+ kernel/rcu/rcu.h      |   5 ++
+ kernel/rcu/tree.c     |  51 ++++++++++++++-
+ kernel/rcu/tree.h     |   5 ++
+ kernel/rcu/tree_exp.h | 147 +++++++++++++++++++++++++++++++++---------
+ 5 files changed, 184 insertions(+), 34 deletions(-)
+
+diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
+index bf8e341e75b4..56c6552c2af6 100644
+--- a/kernel/rcu/Kconfig
++++ b/kernel/rcu/Kconfig
+@@ -195,6 +195,16 @@ config RCU_BOOST_DELAY
  
-+  memory.reclaim
-+	A write-only nested-keyed file which exists for all cgroups.
+ 	  Accept the default if unsure.
+ 
++config RCU_EXP_KTHREAD
++	bool "Perform RCU expedited work in a real-time kthread"
++	depends on RCU_BOOST && RCU_EXPERT
++	default !PREEMPT_RT && NR_CPUS <= 32
++	help
++	  Use this option to further reduce the latencies of expedited
++	  grace periods at the expense of being more disruptive.
 +
-+	This is a simple interface to trigger memory reclaim in the
-+	target cgroup.
++	  Accept the default if unsure.
 +
-+	This file accepts a single key, the number of bytes to reclaim.
-+	No nested keys are currently supported.
-+
-+	Example::
-+
-+	  echo "1G" > memory.reclaim
-+
-+	The interface can be later extended with nested keys to
-+	configure the reclaim behavior. For example, specify the
-+	type of memory to reclaim from (anon, file, ..).
-+
-+	Please note that the kernel can over or under reclaim from
-+	the target cgroup. If less bytes are reclaimed than the
-+	specified amount, -EAGAIN is returned.
-+
-   memory.oom.group
- 	A read-write single value file which exists on non-root
- 	cgroups.  The default value is "0".
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 725f76723220..2b214b66d333 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -6355,6 +6355,38 @@ static ssize_t memory_oom_group_write(struct kernfs_open_file *of,
- 	return nbytes;
+ config RCU_NOCB_CPU
+ 	bool "Offload RCU callback processing from boot-selected CPUs"
+ 	depends on TREE_RCU
+diff --git a/kernel/rcu/rcu.h b/kernel/rcu/rcu.h
+index 24b5f2c2de87..5510d2231c32 100644
+--- a/kernel/rcu/rcu.h
++++ b/kernel/rcu/rcu.h
+@@ -534,7 +534,12 @@ int rcu_get_gp_kthreads_prio(void);
+ void rcu_fwd_progress_check(unsigned long j);
+ void rcu_force_quiescent_state(void);
+ extern struct workqueue_struct *rcu_gp_wq;
++#ifdef CONFIG_RCU_EXP_KTHREAD
++extern struct kthread_worker *rcu_exp_gp_kworker;
++extern struct kthread_worker *rcu_exp_par_gp_kworker;
++#else /* !CONFIG_RCU_EXP_KTHREAD */
+ extern struct workqueue_struct *rcu_par_gp_wq;
++#endif /* CONFIG_RCU_EXP_KTHREAD */
+ #endif /* #else #ifdef CONFIG_TINY_RCU */
+ 
+ #ifdef CONFIG_RCU_NOCB_CPU
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index a4b8189455d5..763e45fdf49b 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -4471,6 +4471,51 @@ static int rcu_pm_notify(struct notifier_block *self,
+ 	return NOTIFY_OK;
  }
  
-+static ssize_t memory_reclaim(struct kernfs_open_file *of, char *buf,
-+			      size_t nbytes, loff_t off)
++#ifdef CONFIG_RCU_EXP_KTHREAD
++struct kthread_worker *rcu_exp_gp_kworker;
++struct kthread_worker *rcu_exp_par_gp_kworker;
++
++static void __init rcu_start_exp_gp_kworkers(void)
 +{
-+	struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
-+	unsigned int nr_retries = MAX_RECLAIM_RETRIES;
-+	unsigned long nr_to_reclaim, nr_reclaimed = 0;
-+	int err;
++	const char *par_gp_kworker_name = "rcu_exp_par_gp_kthread_worker";
++	const char *gp_kworker_name = "rcu_exp_gp_kthread_worker";
++	struct sched_param param = { .sched_priority = kthread_prio };
 +
-+	buf = strstrip(buf);
-+	err = page_counter_memparse(buf, "", &nr_to_reclaim);
-+	if (err)
-+		return err;
-+
-+	while (nr_reclaimed < nr_to_reclaim) {
-+		unsigned long reclaimed;
-+
-+		if (signal_pending(current))
-+			break;
-+
-+		reclaimed = try_to_free_mem_cgroup_pages(memcg,
-+						nr_to_reclaim - nr_reclaimed,
-+						GFP_KERNEL, true);
-+
-+		if (!reclaimed && !nr_retries--)
-+			break;
-+
-+		nr_reclaimed += reclaimed;
++	rcu_exp_gp_kworker = kthread_create_worker(0, gp_kworker_name);
++	if (IS_ERR_OR_NULL(rcu_exp_gp_kworker)) {
++		pr_err("Failed to create %s!\n", gp_kworker_name);
++		return;
 +	}
 +
-+	return nr_reclaimed < nr_to_reclaim ? -EAGAIN : nbytes;
++	rcu_exp_par_gp_kworker = kthread_create_worker(0, par_gp_kworker_name);
++	if (IS_ERR_OR_NULL(rcu_exp_par_gp_kworker)) {
++		pr_err("Failed to create %s!\n", par_gp_kworker_name);
++		kthread_destroy_worker(rcu_exp_gp_kworker);
++		return;
++	}
++
++	sched_setscheduler_nocheck(rcu_exp_gp_kworker->task, SCHED_FIFO, &param);
++	sched_setscheduler_nocheck(rcu_exp_par_gp_kworker->task, SCHED_FIFO,
++				   &param);
 +}
 +
- static struct cftype memory_files[] = {
- 	{
- 		.name = "current",
-@@ -6413,6 +6445,11 @@ static struct cftype memory_files[] = {
- 		.seq_show = memory_oom_group_show,
- 		.write = memory_oom_group_write,
- 	},
-+	{
-+		.name = "reclaim",
-+		.flags = CFTYPE_NS_DELEGATABLE,
-+		.write = memory_reclaim,
-+	},
- 	{ }	/* terminate */
++static inline void rcu_alloc_par_gp_wq(void)
++{
++}
++#else /* !CONFIG_RCU_EXP_KTHREAD */
++struct workqueue_struct *rcu_par_gp_wq;
++
++static void __init rcu_start_exp_gp_kworkers(void)
++{
++}
++
++static inline void rcu_alloc_par_gp_wq(void)
++{
++	rcu_par_gp_wq = alloc_workqueue("rcu_par_gp", WQ_MEM_RECLAIM, 0);
++	WARN_ON(!rcu_par_gp_wq);
++}
++#endif /* CONFIG_RCU_EXP_KTHREAD */
++
+ /*
+  * Spawn the kthreads that handle RCU's grace periods.
+  */
+@@ -4500,6 +4545,8 @@ static int __init rcu_spawn_gp_kthread(void)
+ 	rcu_spawn_nocb_kthreads();
+ 	rcu_spawn_boost_kthreads();
+ 	rcu_spawn_core_kthreads();
++	/* Create kthread worker for expedited GPs */
++	rcu_start_exp_gp_kworkers();
+ 	return 0;
+ }
+ early_initcall(rcu_spawn_gp_kthread);
+@@ -4745,7 +4792,6 @@ static void __init rcu_dump_rcu_node_tree(void)
+ }
+ 
+ struct workqueue_struct *rcu_gp_wq;
+-struct workqueue_struct *rcu_par_gp_wq;
+ 
+ static void __init kfree_rcu_batch_init(void)
+ {
+@@ -4811,8 +4857,7 @@ void __init rcu_init(void)
+ 	/* Create workqueue for Tree SRCU and for expedited GPs. */
+ 	rcu_gp_wq = alloc_workqueue("rcu_gp", WQ_MEM_RECLAIM, 0);
+ 	WARN_ON(!rcu_gp_wq);
+-	rcu_par_gp_wq = alloc_workqueue("rcu_par_gp", WQ_MEM_RECLAIM, 0);
+-	WARN_ON(!rcu_par_gp_wq);
++	rcu_alloc_par_gp_wq();
+ 
+ 	/* Fill in default value for rcutree.qovld boot parameter. */
+ 	/* -After- the rcu_node ->lock fields are initialized! */
+diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
+index 926673ebe355..b577cdfdc851 100644
+--- a/kernel/rcu/tree.h
++++ b/kernel/rcu/tree.h
+@@ -10,6 +10,7 @@
+  */
+ 
+ #include <linux/cache.h>
++#include <linux/kthread.h>
+ #include <linux/spinlock.h>
+ #include <linux/rtmutex.h>
+ #include <linux/threads.h>
+@@ -23,7 +24,11 @@
+ /* Communicate arguments to a workqueue handler. */
+ struct rcu_exp_work {
+ 	unsigned long rew_s;
++#ifdef CONFIG_RCU_EXP_KTHREAD
++	struct kthread_work rew_work;
++#else
+ 	struct work_struct rew_work;
++#endif /* CONFIG_RCU_EXP_KTHREAD */
  };
  
+ /* RCU's kthread states for tracing. */
+diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
+index 60197ea24ceb..2c6c0e0bc83a 100644
+--- a/kernel/rcu/tree_exp.h
++++ b/kernel/rcu/tree_exp.h
+@@ -334,15 +334,13 @@ static bool exp_funnel_lock(unsigned long s)
+  * Select the CPUs within the specified rcu_node that the upcoming
+  * expedited grace period needs to wait for.
+  */
+-static void sync_rcu_exp_select_node_cpus(struct work_struct *wp)
++static void __sync_rcu_exp_select_node_cpus(struct rcu_exp_work *rewp)
+ {
+ 	int cpu;
+ 	unsigned long flags;
+ 	unsigned long mask_ofl_test;
+ 	unsigned long mask_ofl_ipi;
+ 	int ret;
+-	struct rcu_exp_work *rewp =
+-		container_of(wp, struct rcu_exp_work, rew_work);
+ 	struct rcu_node *rnp = container_of(rewp, struct rcu_node, rew);
+ 
+ 	raw_spin_lock_irqsave_rcu_node(rnp, flags);
+@@ -417,13 +415,119 @@ static void sync_rcu_exp_select_node_cpus(struct work_struct *wp)
+ 		rcu_report_exp_cpu_mult(rnp, mask_ofl_test, false);
+ }
+ 
++static void rcu_exp_sel_wait_wake(unsigned long s);
++
++#ifdef CONFIG_RCU_EXP_KTHREAD
++static void sync_rcu_exp_select_node_cpus(struct kthread_work *wp)
++{
++	struct rcu_exp_work *rewp =
++		container_of(wp, struct rcu_exp_work, rew_work);
++
++	__sync_rcu_exp_select_node_cpus(rewp);
++}
++
++static inline bool rcu_gp_par_worker_started(void)
++{
++	return !!READ_ONCE(rcu_exp_par_gp_kworker);
++}
++
++static inline void sync_rcu_exp_select_cpus_queue_work(struct rcu_node *rnp)
++{
++	kthread_init_work(&rnp->rew.rew_work, sync_rcu_exp_select_node_cpus);
++	/*
++	 * Use rcu_exp_par_gp_kworker, because flushing a work item from
++	 * another work item on the same kthread worker can result in
++	 * deadlock.
++	 */
++	kthread_queue_work(rcu_exp_par_gp_kworker, &rnp->rew.rew_work);
++}
++
++static inline void sync_rcu_exp_select_cpus_flush_work(struct rcu_node *rnp)
++{
++	kthread_flush_work(&rnp->rew.rew_work);
++}
++
++/*
++ * Work-queue handler to drive an expedited grace period forward.
++ */
++static void wait_rcu_exp_gp(struct kthread_work *wp)
++{
++	struct rcu_exp_work *rewp;
++
++	rewp = container_of(wp, struct rcu_exp_work, rew_work);
++	rcu_exp_sel_wait_wake(rewp->rew_s);
++}
++
++static inline void synchronize_rcu_expedited_queue_work(struct rcu_exp_work *rew)
++{
++	kthread_init_work(&rew->rew_work, wait_rcu_exp_gp);
++	kthread_queue_work(rcu_exp_gp_kworker, &rew->rew_work);
++}
++
++static inline void synchronize_rcu_expedited_destroy_work(struct rcu_exp_work *rew)
++{
++}
++#else /* !CONFIG_RCU_EXP_KTHREAD */
++static void sync_rcu_exp_select_node_cpus(struct work_struct *wp)
++{
++	struct rcu_exp_work *rewp =
++		container_of(wp, struct rcu_exp_work, rew_work);
++
++	__sync_rcu_exp_select_node_cpus(rewp);
++}
++
++static inline bool rcu_gp_par_worker_started(void)
++{
++	return !!READ_ONCE(rcu_par_gp_wq);
++}
++
++static inline void sync_rcu_exp_select_cpus_queue_work(struct rcu_node *rnp)
++{
++	int cpu = find_next_bit(&rnp->ffmask, BITS_PER_LONG, -1);
++
++	INIT_WORK(&rnp->rew.rew_work, sync_rcu_exp_select_node_cpus);
++	/* If all offline, queue the work on an unbound CPU. */
++	if (unlikely(cpu > rnp->grphi - rnp->grplo))
++		cpu = WORK_CPU_UNBOUND;
++	else
++		cpu += rnp->grplo;
++	queue_work_on(cpu, rcu_par_gp_wq, &rnp->rew.rew_work);
++}
++
++static inline void sync_rcu_exp_select_cpus_flush_work(struct rcu_node *rnp)
++{
++	flush_work(&rnp->rew.rew_work);
++}
++
++/*
++ * Work-queue handler to drive an expedited grace period forward.
++ */
++static void wait_rcu_exp_gp(struct work_struct *wp)
++{
++	struct rcu_exp_work *rewp;
++
++	rewp = container_of(wp, struct rcu_exp_work, rew_work);
++	rcu_exp_sel_wait_wake(rewp->rew_s);
++}
++
++static inline void synchronize_rcu_expedited_queue_work(struct rcu_exp_work *rew)
++{
++	INIT_WORK_ONSTACK(&rew->rew_work, wait_rcu_exp_gp);
++	queue_work(rcu_gp_wq, &rew->rew_work);
++}
++
++static inline void synchronize_rcu_expedited_destroy_work(struct rcu_exp_work *rew)
++{
++	destroy_work_on_stack(&rew->rew_work);
++}
++#endif /* CONFIG_RCU_EXP_KTHREAD */
++
+ /*
+  * Select the nodes that the upcoming expedited grace period needs
+  * to wait for.
+  */
+ static void sync_rcu_exp_select_cpus(void)
+ {
+-	int cpu;
+ 	struct rcu_node *rnp;
+ 
+ 	trace_rcu_exp_grace_period(rcu_state.name, rcu_exp_gp_seq_endval(), TPS("reset"));
+@@ -435,28 +539,21 @@ static void sync_rcu_exp_select_cpus(void)
+ 		rnp->exp_need_flush = false;
+ 		if (!READ_ONCE(rnp->expmask))
+ 			continue; /* Avoid early boot non-existent wq. */
+-		if (!READ_ONCE(rcu_par_gp_wq) ||
++		if (!rcu_gp_par_worker_started() ||
+ 		    rcu_scheduler_active != RCU_SCHEDULER_RUNNING ||
+ 		    rcu_is_last_leaf_node(rnp)) {
+-			/* No workqueues yet or last leaf, do direct call. */
++			/* No worker started yet or last leaf, do direct call. */
+ 			sync_rcu_exp_select_node_cpus(&rnp->rew.rew_work);
+ 			continue;
+ 		}
+-		INIT_WORK(&rnp->rew.rew_work, sync_rcu_exp_select_node_cpus);
+-		cpu = find_next_bit(&rnp->ffmask, BITS_PER_LONG, -1);
+-		/* If all offline, queue the work on an unbound CPU. */
+-		if (unlikely(cpu > rnp->grphi - rnp->grplo))
+-			cpu = WORK_CPU_UNBOUND;
+-		else
+-			cpu += rnp->grplo;
+-		queue_work_on(cpu, rcu_par_gp_wq, &rnp->rew.rew_work);
++		sync_rcu_exp_select_cpus_queue_work(rnp);
+ 		rnp->exp_need_flush = true;
+ 	}
+ 
+-	/* Wait for workqueue jobs (if any) to complete. */
++	/* Wait for jobs (if any) to complete. */
+ 	rcu_for_each_leaf_node(rnp)
+ 		if (rnp->exp_need_flush)
+-			flush_work(&rnp->rew.rew_work);
++			sync_rcu_exp_select_cpus_flush_work(rnp);
+ }
+ 
+ /*
+@@ -622,17 +719,6 @@ static void rcu_exp_sel_wait_wake(unsigned long s)
+ 	rcu_exp_wait_wake(s);
+ }
+ 
+-/*
+- * Work-queue handler to drive an expedited grace period forward.
+- */
+-static void wait_rcu_exp_gp(struct work_struct *wp)
+-{
+-	struct rcu_exp_work *rewp;
+-
+-	rewp = container_of(wp, struct rcu_exp_work, rew_work);
+-	rcu_exp_sel_wait_wake(rewp->rew_s);
+-}
+-
+ #ifdef CONFIG_PREEMPT_RCU
+ 
+ /*
+@@ -848,20 +934,19 @@ void synchronize_rcu_expedited(void)
+ 	} else {
+ 		/* Marshall arguments & schedule the expedited grace period. */
+ 		rew.rew_s = s;
+-		INIT_WORK_ONSTACK(&rew.rew_work, wait_rcu_exp_gp);
+-		queue_work(rcu_gp_wq, &rew.rew_work);
++		synchronize_rcu_expedited_queue_work(&rew);
+ 	}
+ 
+ 	/* Wait for expedited grace period to complete. */
+ 	rnp = rcu_get_root();
+ 	wait_event(rnp->exp_wq[rcu_seq_ctr(s) & 0x3],
+ 		   sync_exp_work_done(s));
+-	smp_mb(); /* Workqueue actions happen before return. */
++	smp_mb(); /* Work actions happen before return. */
+ 
+ 	/* Let the next expedited grace period start. */
+ 	mutex_unlock(&rcu_state.exp_mutex);
+ 
+ 	if (likely(!boottime))
+-		destroy_work_on_stack(&rew.rew_work);
++		synchronize_rcu_expedited_destroy_work(&rew);
+ }
+ EXPORT_SYMBOL_GPL(synchronize_rcu_expedited);
+
+base-commit: 42e7a03d3badebd4e70aea5362d6914dfc7c220b
 -- 
 2.35.1.1178.g4f1659d476-goog
 
