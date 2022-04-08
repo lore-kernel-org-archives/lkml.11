@@ -2,173 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43453C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBFD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235768AbiDHMej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45398 "EHLO
+        id S235779AbiDHMf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231622AbiDHMeg (ORCPT
+        with ESMTP id S232409AbiDHMf0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:34:36 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B2681FFFA9
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 05:32:32 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E5C04113E;
-        Fri,  8 Apr 2022 05:32:31 -0700 (PDT)
-Received: from [10.57.9.161] (unknown [10.57.9.161])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CB9673F5A1;
-        Fri,  8 Apr 2022 05:32:29 -0700 (PDT)
-Message-ID: <08e480cf-90d4-8225-1af9-fe187fc622be@arm.com>
-Date:   Fri, 8 Apr 2022 13:32:28 +0100
+        Fri, 8 Apr 2022 08:35:26 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC063408B1;
+        Fri,  8 Apr 2022 05:33:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649421202; x=1680957202;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=XRRTHcC3vib6U8pYsXScDVRRZguO7b/FSE9Su8vSm/M=;
+  b=bWzSEBFm26TNweia8ol7JU5R0vs//P7U0Ap5x+LqkBGETB03c6wTAg4d
+   Jz/jKRJHCTAJY+y2cayWfqTGyFYUdODGPExoIt9jZRWFbkQLoq3qNKLz8
+   pvud4cYBzxBseWZf2V3Gigr1Lznlqmw92LNrWvL0lYyAT0sOZ96fEraR8
+   xjPDCsMSl05HHgtH0os1N1iZy12mQUlcQirNXSXzAsgGKUAoPjqMS9VBh
+   oLeyC33IRYS6U8qW7Fa0y39/GsZs0aPh9bo6FpBhZargfh5zWHWHhKUcf
+   hxM2f6+etlIGLq5zGcaj++7Yro1Nk2eNeZKAOEU4cXqEVtE7Zu9rbUNXk
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="249111951"
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="249111951"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:33:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="525361097"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga006.jf.intel.com with ESMTP; 08 Apr 2022 05:33:19 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 238CXHcv017340;
+        Fri, 8 Apr 2022 13:33:17 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Madhu Chittim <madhu.chittim@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Brett Creeley <brett@pensando.io>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>
+Subject: Re: [PATCH v2 net] ice: arfs: fix use-after-free when freeing @rx_cpu_rmap
+Date:   Fri,  8 Apr 2022 14:31:20 +0200
+Message-Id: <20220408123120.1829671-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220404161509.3489310-1-alexandr.lobakin@intel.com>
+References: <20220404161509.3489310-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] kasan: Fix hw tags enablement when KUNIT tests are
- disabled
-Content-Language: en-US
-To:     Andrey Konovalov <andreyknvl@gmail.com>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-References: <20220408100340.43620-1-vincenzo.frascino@arm.com>
- <CA+fCnZcoFWXyhjfKSxPh2djiTWjYCh2xmirPehyJS94DaoJC9w@mail.gmail.com>
-From:   Vincenzo Frascino <vincenzo.frascino@arm.com>
-In-Reply-To: <CA+fCnZcoFWXyhjfKSxPh2djiTWjYCh2xmirPehyJS94DaoJC9w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andrey,
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
+Date: Mon, 4 Apr 2022 18:15:09 +0200
 
-On 4/8/22 1:26 PM, Andrey Konovalov wrote:
-> On Fri, Apr 8, 2022 at 12:04 PM Vincenzo Frascino
-> <vincenzo.frascino@arm.com> wrote:
->>
->> Kasan enables hw tags via kasan_enable_tagging() which based on the mode
->> passed via kernel command line selects the correct hw backend.
->> kasan_enable_tagging() is meant to be invoked indirectly via the cpu features
->> framework of the architectures that support these backends.
->> Currently the invocation of this function is guarded by CONFIG_KASAN_KUNIT_TEST
->> which allows the enablement of the correct backend only when KUNIT tests are
->> enabled in the kernel.
+> The CI testing bots triggered the following splat:
 > 
->> ... and prevents to enable MTE on arm64 when KUNIT tests for kasan hw_tags are
->> disabled.
+> [  718.203054] BUG: KASAN: use-after-free in free_irq_cpu_rmap+0x53/0x80
+> [  718.206349] Read of size 4 at addr ffff8881bd127e00 by task sh/20834
+> [  718.212852] CPU: 28 PID: 20834 Comm: sh Kdump: loaded Tainted: G S      W IOE     5.17.0-rc8_nextqueue-devqueue-02643-g23f3121aca93 #1
+> [  718.219695] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0012.070720200218 07/07/2020
+> [  718.223418] Call Trace:
+> [  718.227139]
+> [  718.230783]  dump_stack_lvl+0x33/0x42
+> [  718.234431]  print_address_description.constprop.9+0x21/0x170
+> [  718.238177]  ? free_irq_cpu_rmap+0x53/0x80
+> [  718.241885]  ? free_irq_cpu_rmap+0x53/0x80
+> [  718.245539]  kasan_report.cold.18+0x7f/0x11b
+> [  718.249197]  ? free_irq_cpu_rmap+0x53/0x80
+> [  718.252852]  free_irq_cpu_rmap+0x53/0x80
+> [  718.256471]  ice_free_cpu_rx_rmap.part.11+0x37/0x50 [ice]
+> [  718.260174]  ice_remove_arfs+0x5f/0x70 [ice]
+> [  718.263810]  ice_rebuild_arfs+0x3b/0x70 [ice]
+> [  718.267419]  ice_rebuild+0x39c/0xb60 [ice]
+> [  718.270974]  ? asm_sysvec_apic_timer_interrupt+0x12/0x20
+> [  718.274472]  ? ice_init_phy_user_cfg+0x360/0x360 [ice]
+> [  718.278033]  ? delay_tsc+0x4a/0xb0
+> [  718.281513]  ? preempt_count_sub+0x14/0xc0
+> [  718.284984]  ? delay_tsc+0x8f/0xb0
+> [  718.288463]  ice_do_reset+0x92/0xf0 [ice]
+> [  718.292014]  ice_pci_err_resume+0x91/0xf0 [ice]
+> [  718.295561]  pci_reset_function+0x53/0x80
+> <...>
+> [  718.393035] Allocated by task 690:
+> [  718.433497] Freed by task 20834:
+> [  718.495688] Last potentially related work creation:
+> [  718.568966] The buggy address belongs to the object at ffff8881bd127e00
+>                 which belongs to the cache kmalloc-96 of size 96
+> [  718.574085] The buggy address is located 0 bytes inside of
+>                 96-byte region [ffff8881bd127e00, ffff8881bd127e60)
+> [  718.579265] The buggy address belongs to the page:
+> [  718.598905] Memory state around the buggy address:
+> [  718.601809]  ffff8881bd127d00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+> [  718.604796]  ffff8881bd127d80: 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc
+> [  718.607794] >ffff8881bd127e00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+> [  718.610811]                    ^
+> [  718.613819]  ffff8881bd127e80: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
+> [  718.617107]  ffff8881bd127f00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
 > 
-> Oh, indeed. Thanks for finding this!
+> This is due to that free_irq_cpu_rmap() is always being called
+> *after* (devm_)free_irq() and thus it tries to work with IRQ descs
+> already freed. For example, on device reset the driver frees the
+> rmap right before allocating a new one (the splat above).
+> Make rmap creation and freeing function symmetrical with
+> {request,free}_irq() calls i.e. do that on ifup/ifdown instead
+> of device probe/remove/resume. These operations can be performed
+> independently from the actual device aRFS configuration.
+> Also, make sure ice_vsi_free_irq() clears IRQ affinity notifiers
+> only when aRFS is disabled -- otherwise, CPU rmap sets and clears
+> its own and they must not be touched manually.
 > 
->> This inconsistency was introduced in commit:
->>
->>   f05842cfb9ae2 ("kasan, arm64: allow using KUnit tests with HW_TAGS mode")
-> 
-> No, that commit is fine. The issue was introduced recently in
-> ed6d74446cbf ("kasan: test: support async (again) and asymm modes for
-> HW_TAGS"), where I changed kasan_init_hw_tags_cpu() to call
-> kasan_enable_tagging() instead of hw_enable_tagging_*().
->
+> Fixes: 28bf26724fdb0 ("ice: Implement aRFS")
+> Co-developed-by: Ivan Vecera <ivecera@redhat.com>
+> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-Thanks for pointing this out, the commit message above is referring to when the
-guard was introduced but I agree it is more correct to refer to when the logical
-issue was introduced. I will update it in v2.
+Bah, forgot to mention in v2 that it's an urgent fix. Tony, are you
+okay with posting it to netdev or allowing it to go directly to
+-net? It's been tested by Ivan already (I had also asked Konrad, but
+he hasn't replied yet).
 
->> Fix the issue making sure that the CONFIG_KASAN_KUNIT_TEST guard does not
->> prevent the correct invocation of kasan_enable_tagging().
->>
->> Fixes: f05842cfb9ae2 ("kasan, arm64: allow using KUnit tests with HW_TAGS mode")
->> Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
->> Cc: Alexander Potapenko <glider@google.com>
->> Cc: Andrey Konovalov <andreyknvl@gmail.com>
->> Cc: Dmitry Vyukov <dvyukov@google.com>
->> Cc: Andrew Morton <akpm@linux-foundation.org>
->> Cc: Catalin Marinas <catalin.marinas@arm.com>
->> Cc: Will Deacon <will@kernel.org>
->> Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
->> ---
->>  mm/kasan/hw_tags.c |  4 ++--
->>  mm/kasan/kasan.h   | 10 ++++++----
->>  2 files changed, 8 insertions(+), 6 deletions(-)
->>
->> diff --git a/mm/kasan/hw_tags.c b/mm/kasan/hw_tags.c
->> index 07a76c46daa5..e2677501c36e 100644
->> --- a/mm/kasan/hw_tags.c
->> +++ b/mm/kasan/hw_tags.c
->> @@ -336,8 +336,6 @@ void __kasan_poison_vmalloc(const void *start, unsigned long size)
->>
->>  #endif
->>
->> -#if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
->> -
->>  void kasan_enable_tagging(void)
->>  {
->>         if (kasan_arg_mode == KASAN_ARG_MODE_ASYNC)
->> @@ -349,6 +347,8 @@ void kasan_enable_tagging(void)
->>  }
->>  EXPORT_SYMBOL_GPL(kasan_enable_tagging);
+> ---
+> From v1[0]:
+>  - remove the obsolete `!vsi->arfs_fltr_list` check from
+>    ice_free_cpu_rx_rmap() leading to a leak and trace (Ivan).
 > 
-> Please keep this EXPORT_SYMBOL_GPL under CONFIG_KASAN_KUNIT_TEST.
-> 
+> [0] https://lore.kernel.org/netdev/20220404132832.1936529-1-alexandr.lobakin@intel.com
+> ---
 
-Will do. Thanks!
+--- 8< ---
 
->>
->> +#if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
->> +
->>  void kasan_force_async_fault(void)
->>  {
->>         hw_force_async_tag_fault();
->> diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
->> index d79b83d673b1..b01b4bbe0409 100644
->> --- a/mm/kasan/kasan.h
->> +++ b/mm/kasan/kasan.h
->> @@ -355,25 +355,27 @@ static inline const void *arch_kasan_set_tag(const void *addr, u8 tag)
->>  #define hw_set_mem_tag_range(addr, size, tag, init) \
->>                         arch_set_mem_tag_range((addr), (size), (tag), (init))
->>
->> +void kasan_enable_tagging(void);
->> +
->>  #else /* CONFIG_KASAN_HW_TAGS */
->>
->>  #define hw_enable_tagging_sync()
->>  #define hw_enable_tagging_async()
->>  #define hw_enable_tagging_asymm()
->>
->> +static inline void kasan_enable_tagging(void) { }
->> +
->>  #endif /* CONFIG_KASAN_HW_TAGS */
->>
->>  #if defined(CONFIG_KASAN_HW_TAGS) && IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
->>
->> -void kasan_enable_tagging(void);
->>  void kasan_force_async_fault(void);
->>
->> -#else /* CONFIG_KASAN_HW_TAGS || CONFIG_KASAN_KUNIT_TEST */
->> +#else /* CONFIG_KASAN_HW_TAGS && CONFIG_KASAN_KUNIT_TEST */
->>
->> -static inline void kasan_enable_tagging(void) { }
->>  static inline void kasan_force_async_fault(void) { }
->>
->> -#endif /* CONFIG_KASAN_HW_TAGS || CONFIG_KASAN_KUNIT_TEST */
->> +#endif /* CONFIG_KASAN_HW_TAGS && CONFIG_KASAN_KUNIT_TEST */
->>
->>  #ifdef CONFIG_KASAN_SW_TAGS
->>  u8 kasan_random_tag(void);
->> --
->> 2.35.1
->>
-> 
-> Thank you, Vincenzo!
+> -- 
+> 2.35.1
 
--- 
-Regards,
-Vincenzo
+Thanks,
+Al
