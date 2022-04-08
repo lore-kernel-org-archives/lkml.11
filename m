@@ -2,228 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E474C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 00:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F75FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 00:38:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232952AbiDHAjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 20:39:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
+        id S232929AbiDHAkP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 20:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232174AbiDHAjc (ORCPT
+        with ESMTP id S232174AbiDHAkN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 20:39:32 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE78108BED;
-        Thu,  7 Apr 2022 17:37:28 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649378246;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to; bh=v8wAVqTjtr3S+yNv24Qoju4enrtKRg9Vl4AVQdzomKw=;
-        b=EMhH88jCeXdBb1SKvMaZwP6woFbq2hzV0FAO3tm1K9W1Upm0GFyR+9p7LY0jhTcEra8UlP
-        Z8rAb+JxBHZpZBq7+l3VMyr84gBs4Khq/9tCFMsboYlFJp9d8MmEoyv5XW31TpnbsnUOkt
-        3CkV014aq4TYNi8CFJB4XyTdQZrIadAGOo7Zx8nB/yUvxgHNOrC9ffZgHug/ZZV0LVJ/Do
-        dT/gys9+jRQiQTki4Q31k/Ye/f2xWLRFbZLlSXkJL7oWca/RItkDw5TriDM4sLOUb0M/rH
-        41UbjLf2EaC2yQDiCv+mzWhZL3erlEdwl9dcaenFxtO1nG8dwiyDhlnTrudrTw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649378246;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to; bh=v8wAVqTjtr3S+yNv24Qoju4enrtKRg9Vl4AVQdzomKw=;
-        b=l+aIohejJ8RgDSgG7Yq473re5HP4cGl8sszvF4o4IpgtFIq89KPjotDtzACMNeGJIJH38R
-        pUUKwix4YDTBIGDg==
-To:     Artem Savkov <asavkov@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Anna-Maria Behnsen <anna-maria@linutronix.de>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
-Subject: Re: [PATCH v4 1/2] timer: add a function to adjust timeouts to be
- upper bound
-In-Reply-To: <20220407075242.118253-2-asavkov@redhat.com>
-Date:   Fri, 08 Apr 2022 02:37:25 +0200
-Message-ID: <87zgkwjtq2.ffs@tglx>
+        Thu, 7 Apr 2022 20:40:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF3EF16F6FF;
+        Thu,  7 Apr 2022 17:38:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0CA2B829B3;
+        Fri,  8 Apr 2022 00:38:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3463EC385A5;
+        Fri,  8 Apr 2022 00:38:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649378289;
+        bh=CVHEzTa06w9IXQftEgZii1PHojo5m4h3tRQOFvFM99s=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=pDZeBdKpytYf/RpT1wvDDi+93EZlNj/SQN1mhUKsjCetKqxsE6F3pgzwpBfPDQ4fZ
+         FDAD/ljw+OPvXlLbCvfQe2svXgSycFXKpYYoJGp6rRxieZiVYeHpGCmUAoDCCYtbH8
+         W0I7eNZQyi5sGKmBCFfHHlnjslk1VjRGX4MgsJIG25DPlKKkCEzt6tC+wrqhv541qD
+         KcvHrx1Imk/jfBC24wbY57AvDUSKiSYtmLuBDiwoz+VEmkkC3QUCfdFDn4R5qxpKdk
+         RWivXlbHO75PU/0wbwV8D3L2WTTXoFKGTqcxs4lIMSLbDNu+PUM0Jb/NB8Dy4v6GLr
+         4OesR0MEr+z9g==
+Received: by mail-yb1-f169.google.com with SMTP id r5so2738659ybd.8;
+        Thu, 07 Apr 2022 17:38:09 -0700 (PDT)
+X-Gm-Message-State: AOAM533OExlC8UVxblCgT71lQitsvmTOOnRLDx7GDxhtF9DtK4ztokLu
+        2QAymecNd5vFiuZulMpO3wN83pej61ButXrhYHI=
+X-Google-Smtp-Source: ABdhPJxZSEJvXnOSEuuJQrEwsomQA54vyst5hwzUzcTr7GcAKkuWwIWw4Yq8ZGv7YBWuDHCKqqxUUcRUzkhhmnK8mdE=
+X-Received: by 2002:a25:8b81:0:b0:629:17d5:68c1 with SMTP id
+ j1-20020a258b81000000b0062917d568c1mr11288152ybl.449.1649378288275; Thu, 07
+ Apr 2022 17:38:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220328080559.25984-1-xiam0nd.tong@gmail.com>
+In-Reply-To: <20220328080559.25984-1-xiam0nd.tong@gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Thu, 7 Apr 2022 17:37:55 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW6AJAo_k1a5-EiUp-Qx9Rp=jkON155AtOMRO2JmhBVFjw@mail.gmail.com>
+Message-ID: <CAPhsuW6AJAo_k1a5-EiUp-Qx9Rp=jkON155AtOMRO2JmhBVFjw@mail.gmail.com>
+Subject: Re: [PATCH] md: fix an incorrect NULL check in md_reload_sb
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     rgoldwyn@suse.com, Guoqing Jiang <guoqing.jiang@linux.dev>,
+        linux-raid <linux-raid@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07 2022 at 09:52, Artem Savkov wrote:
-> Current timer wheel implementation is optimized for performance and
-> energy usage but lacks in precision. This, normally, is not a problem as
-> most timers that use timer wheel are used for timeouts and thus rarely
-> expire, instead they often get canceled or modified before expiration.
-> Even when they don't, expiring a bit late is not an issue for timeout
-> timers.
+On Mon, Mar 28, 2022 at 1:06 AM Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
 >
-> TCP keepalive timer is a special case, it's aim is to prevent timeouts,
-> so triggering earlier rather than later is desired behavior. In a
-> reported case the user had a 3600s keepalive timer for preventing firewall
-> disconnects (on a 3650s interval). They observed keepalive timers coming
-> in up to four minutes late, causing unexpected disconnects.
+> The bug is here:
+>         if (!rdev || rdev->desc_nr != nr) {
 >
-> This commit adds upper_bound_timeout() function that takes a relative
+> The list iterator value 'rdev' will *always* be set and non-NULL
+> by rdev_for_each_rcu(), so it is incorrect to assume that the
+> iterator value will be NULL if the list is empty or no element
+> found (In fact, it will be a bogus pointer to an invalid struct
+> object containing the HEAD). Otherwise it will bypass the check
+> and lead to invalid memory access passing the check.
+>
+> To fix the bug, use a new variable 'iter' as the list iterator,
+> while using the original variable 'pdev' as a dedicated pointer to
+> point to the found element.
+>
+> Cc: stable@vger.kernel.org
+> Fixes: 70bcecdb1534 ("amd-cluster: Improve md_reload_sb to be less error prone")
 
-s/This commit adds/Add a new function to ..../
+s/amd-cluster/md-cluster/
 
-See Documentation/process/*
-
-> timeout and adjusts it based on timer wheel granularity so that supplied
-> value effectively becomes an upper bound for the timer.
->  
-> -static int calc_wheel_index(unsigned long expires, unsigned long clk,
-> -			    unsigned long *bucket_expiry)
-> +static inline int get_wheel_lvl(unsigned long delta)
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> ---
+>
+> changes from v1:
+>  - rephrase the subject (Guoqing Jiang)
+>
+> v1:https://lore.kernel.org/lkml/20220327080111.12028-1-xiam0nd.tong@gmail.com/
+>
+> ---
+>  drivers/md/md.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/md/md.c b/drivers/md/md.c
+> index 7476fc204172..f156678c08bc 100644
+> --- a/drivers/md/md.c
+> +++ b/drivers/md/md.c
+> @@ -9794,16 +9794,18 @@ static int read_rdev(struct mddev *mddev, struct md_rdev *rdev)
+>
+>  void md_reload_sb(struct mddev *mddev, int nr)
 >  {
-> -	unsigned long delta = expires - clk;
-> -	unsigned int idx;
-> -
->  	if (delta < LVL_START(1)) {
-> -		idx = calc_index(expires, 0, bucket_expiry);
-> +		return 0;
->  	} else if (delta < LVL_START(2)) {
-
-Can you please get rid of all those brackets?
-
-> +	return -1;
-> +}
-> +
-> +static int calc_wheel_index(unsigned long expires, unsigned long clk,
-> +			    unsigned long *bucket_expiry)
-> +{
-> +	unsigned long delta = expires - clk;
-> +	unsigned int idx;
-> +	int lvl = get_wheel_lvl(delta);
-> +
-> +	if (lvl >= 0) {
-> +		idx = calc_index(expires, lvl, bucket_expiry);
->  	} else if ((long) delta < 0) {
->  		idx = clk & LVL_MASK;
->  		*bucket_expiry = clk;
-> @@ -545,6 +555,38 @@ static int calc_wheel_index(unsigned long expires, unsigned long clk,
->  	return idx;
->  }
-
-This generates horrible code on various compilers. I ran that through a
-couple of perf test scenarios and came up with the following, which
-still is a tad slower for the level 0 case depending on the branch
-predictor state. But it at least prevents the compilers from doing
-stupid things and on average it's on par.
-
-Though the level 0 case matters because of *drumroll* networking.
-
-static int calc_wheel_index(unsigned long expires, unsigned long clk,
-			    unsigned long *bucket_expiry)
-{
-	unsigned long delta = expires - clk;
-	int lvl = get_wheel_lvl(delta);
-
-	if (likely(lvl) >= 0)
-		return __calc_index(expires, lvl, bucket_expiry);
-
-	if ((long) delta < 0) {
-		*bucket_expiry = clk;
-		return clk & LVL_MASK;
-	}
-
-	/*
-	 * Force expire obscene large timeouts to expire at the capacity
-	 * limit of the wheel.
-	 */
-	if (delta >= WHEEL_TIMEOUT_CUTOFF)
-		expires = clk + WHEEL_TIMEOUT_MAX;
-
-	return __calc_index(expires, LVL_DEPTH - 1, bucket_expiry);
-}
-
-Just for the record. I told you last time that your patch creates a
-measurable overhead and I explained you in depth why the performance of
-this stupid thing matters. So why are you not providing a proper
-analysis for that?
-
-> +/**
-> + * upper_bound_timeout - return granularity-adjusted timeout
-> + * @timeout: timeout value in jiffies
-> + *
-> + * This function return supplied timeout adjusted based on timer wheel
-> + * granularity effectively making supplied value an upper bound at which the
-> + * timer will expire. Due to the way timer wheel works timeouts smaller than
-> + * LVL_GRAN on their respecrive levels will be _at least_
-> + * LVL_GRAN(lvl) - LVL_GRAN(lvl -1)) jiffies early.
-
-Contrary to the simple "timeout - timeout/8" this gives better accuracy
-as it does not converge to the early side for long timeouts.
-
-With the quirk that this cuts timeout=1 to 0, which means it expires
-immediately. The wonders of integer math avoid that with the simple
-timeout -= timeout >> 3 approach for timeouts up to 8 ticks. :)
-
-But that want's to be properly documented.
-
-> +unsigned long upper_bound_timeout(unsigned long timeout)
-> +{
-> +	int lvl = get_wheel_lvl(timeout);
-
-which is equivalent to:
-
-         lvl = calc_wheel_index(timeout, 0, &dummy) >> LVL_BITS;
-
-Sorry, could not resist. :)
-
-The more interesting question is, how frequently this upper bounds
-function is used. It's definitely not something which you want to
-inflict onto a high frequency (re)arming timer.
-
-Did you analyse that? And if so, then why is that analysis missing from
-the change log of the keepalive timer patch?
-
-Aside of that it clearly lacks any argument why the simple, stupid, but
-fast approach of shortening the timeout by 12.5% is not good enough and
-why we need yet another function which is just going to be another
-source of 'optimizations' for the wrong reasons.
-
-Seriously, I apprecitate that you want to make this 'perfect', but it's
-never going to be perfect and the real question is whether there is any
-reasonable difference between 'good' and almost 'perfect'.
-
-And this clearly resonates in your changelog of the network patch:
-
- "Make sure TCP keepalive timer does not expire late. Switching to upper
-  bound timers means it can fire off early but in case of keepalive
-  tcp_keepalive_timer() handler checks elapsed time and resets the timer
-  if it was triggered early. This results in timer "cascading" to a
-  higher precision and being just a couple of milliseconds off it's
-  original mark."
-
-Which reinvents the cascading effect of the original timer wheel just
-with more overhead. Where is the justification for this?
-
-Is this really true for all the reasons where the keep alive timers are
-armed? I seriously doubt that. Why?
-
-On the end which waits for the keep alive packet to arrive in time it
-does not matter at all, whether the cutoff is a bit later than defined.
-
-     So why do you want to let the timer fire early just to rearm it? 
-
-But it matters a lot on the sender side. If that is late and the other
-end is strict about the timeout then you lost. But does it matter
-whether you send the packet too early? No, it does not matter at all
-because the important point is that you send it _before_ the other side
-decides to give up.
-
-     So why do you want to let the timer fire precise?
-
-You are solving the sender side problem by introducing a receiver side
-problem and both suffer from the overhead for no reason.
-
-Aside of the theoerical issue why this matters at all I have yet ot see
-a reasonable argument what the practical problen is. If this would be a
-real problem in the wild then why haven't we ssen a reassonable bug
-report within 6 years?
-
-Thanks,
-
-        tglx
+> -       struct md_rdev *rdev;
+> +       struct md_rdev *rdev = NULL, *iter;
+>         int err;
+>
+>         /* Find the rdev */
+> -       rdev_for_each_rcu(rdev, mddev) {
+> -               if (rdev->desc_nr == nr)
+> +       rdev_for_each_rcu(iter, mddev) {
+> +               if (iter->desc_nr == nr) {
+> +                       rdev = iter;
+>                         break;
+> +               }
+>         }
+>
+> -       if (!rdev || rdev->desc_nr != nr) {
+> +       if (!rdev) {
+>                 pr_warn("%s: %d Could not find rdev with nr %d\n", __func__, __LINE__, nr);
+>                 return;
+>         }
+> --
+> 2.17.1
+>
