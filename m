@@ -2,113 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6640CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:53:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232918AbiDHMzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:55:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47348 "EHLO
+        id S235985AbiDHMzX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:55:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233840AbiDHMzI (ORCPT
+        with ESMTP id S235978AbiDHMzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:55:08 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817F516590;
-        Fri,  8 Apr 2022 05:53:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649422384; x=1680958384;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=j4WT+QkS5ARvkWcd8WkQSnzVMZ9Z9qQyb45mo3nJ7oE=;
-  b=YCVU4UvSg5l8AGcem/mT/Swss1slAyd8L2uLOAkaHu9UumZ7XRXTuNII
-   grJdVelC8RhlSTvezbOnXjBwmnh85a/56r70+Gy0La8vNronV0Jzj4LxJ
-   3sirKQsFRac7wysJuCPXhZaWMSfSwPHR6FVFEg3Mdz35j3lJLB/ThW7PA
-   Te8hZELb1Dhx6+CvWCFY2etKSKlKmYY0LZWM1p6OaBvuUg7DnRz9z/85F
-   twoI1aTZcPtfcbZ/COvuHBHXYTyeN+6pEwT/21FiNJNydOR8yj5yy7+RN
-   vp/mCIWzjCFvdiFF0HVaFavDbZtskfHdZ1cuj05/Cr783cuo2LvJdriEZ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="259184073"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="259184073"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:53:03 -0700
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="525365038"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:53:01 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nco3E-000Hxa-C3;
-        Fri, 08 Apr 2022 15:49:20 +0300
-Date:   Fri, 8 Apr 2022 15:49:20 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial <linux-serial@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v2 2/3] tty: Add lookahead param to receive_buf
-Message-ID: <YlAvUL2rMreUZwdF@smile.fi.intel.com>
-References: <20220408113954.9749-1-ilpo.jarvinen@linux.intel.com>
- <20220408113954.9749-3-ilpo.jarvinen@linux.intel.com>
- <YlAjfAab+Oh3HcCR@smile.fi.intel.com>
- <42fc2746-6a7c-9b44-87a5-32f219c1231@linux.intel.com>
+        Fri, 8 Apr 2022 08:55:19 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C233F4635;
+        Fri,  8 Apr 2022 05:53:16 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 238BpF1d008179;
+        Fri, 8 Apr 2022 12:53:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=wsBnHun015lCQuaK8oqGWat9NvvVMJqWW59CeiA+eZs=;
+ b=lV79TKqM5iF4fzhoD5BO75GRYiIe0EAMnA34RAKRgG+PxB1a2wwD3htfbgOM3tB/sclc
+ OcCqMlaDiSv0ZNTSX6caSbCIkMjZm3OrLHK0Ba0dLJdjk/hpOObwZgj6YjeDLVcv2/GA
+ FB4DAhpRBS7iCnntyz5dPklegwfYkr2b1zi9cFPGjETDtgw0qgh36P0mz62KqluxJMf0
+ CRmDOj4/EUCq9JRhEIMjyKi6MfxEFBKWHWbtOOMwjiMiIzSxeHTXgtL08YtZ2nxMeFQ3
+ ypma3T5ZsIst2Kt5qNbL8h5rBUL1DQuBU6Jl6QlugJP8URdFE6636VCETCH4oZBxWfMy FQ== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3fa5fb1nyn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 08 Apr 2022 12:53:08 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 238Cr6hR022864;
+        Fri, 8 Apr 2022 12:53:06 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma06fra.de.ibm.com with ESMTP id 3f6drhspys-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 08 Apr 2022 12:53:06 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 238Cr3me54329806
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 8 Apr 2022 12:53:03 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7916FA405F;
+        Fri,  8 Apr 2022 12:53:03 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 21989A405B;
+        Fri,  8 Apr 2022 12:53:03 +0000 (GMT)
+Received: from [9.145.39.73] (unknown [9.145.39.73])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  8 Apr 2022 12:53:03 +0000 (GMT)
+Message-ID: <c4c5ae75-29e0-c2f0-045c-1911d0f28067@linux.ibm.com>
+Date:   Fri, 8 Apr 2022 14:53:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <42fc2746-6a7c-9b44-87a5-32f219c1231@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Subject: Re: [PATCH V3] s390: Simplify the calculation of variables
+Content-Language: en-US
+To:     Haowen Bai <baihaowen@meizu.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <6208840a-bb97-6b45-7b8e-80ad79849129@linux.ibm.com>
+ <1649297808-5048-1-git-send-email-baihaowen@meizu.com>
+From:   Peter Oberparleiter <oberpar@linux.ibm.com>
+In-Reply-To: <1649297808-5048-1-git-send-email-baihaowen@meizu.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 1sv5n2Zy8wqCZ2_FrwYTQDKjAV0qN3WO
+X-Proofpoint-ORIG-GUID: 1sv5n2Zy8wqCZ2_FrwYTQDKjAV0qN3WO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-08_04,2022-04-08_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 impostorscore=0 lowpriorityscore=0 phishscore=0
+ clxscore=1015 adultscore=0 bulkscore=0 suspectscore=0 malwarescore=0
+ mlxscore=0 mlxlogscore=862 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204080064
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 03:34:27PM +0300, Ilpo Järvinen wrote:
-> On Fri, 8 Apr 2022, Andy Shevchenko wrote:
-> > On Fri, Apr 08, 2022 at 02:39:53PM +0300, Ilpo Järvinen wrote:
-
-...
-
-> > > +		if (c == STOP_CHAR(tty)) {
-> > > +			if (!lookahead_done)
-> > 
-> > But now it can be as below
-> > 
-> > 		if (c == STOP_CHAR(tty) && !lookahead_done)
-> > 
-> > > +				stop_tty(tty);
-> > > +		} else if ((c == START_CHAR(tty) && !lookahead_done) ||
-> > >  			 (tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
-> > >  			  c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
-> > >  			  c != SUSP_CHAR(tty))) {
+On 07.04.2022 04:16, Haowen Bai wrote:
+> Fix the following coccicheck warnings:
+> ./arch/s390/include/asm/scsw.h:695:47-49: WARNING
+>  !A || A && B is equivalent to !A || B
 > 
-> Are you sure about this? ...If I make that change to the first if, the 
-> second part of the else if's condition get a chance it didn't have 
-> previously.
-
-Oh, indeed. This will give a chance to the rest of the second conditional to be
-triggered because of ||.
-
-> What I'd like to do here is to take advantage of the function that was 
-> added:
+> I apply a readable version just to get rid of a warning.
 > 
-> 		if (!n_tty_receive_char_flow_ctrl(tty, c) &&
-> 		    tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
->         	    c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
-> 	            c != SUSP_CHAR(tty))) {
-> 			start_tty(tty);
-> 			process_echoes(tty);
-> 		}
-> ...but it will change STOP_CHAR vs START_CHAR precedence for the case 
-> where they're the same characters. I don't know if it matters.
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 
-No idea of impact of such change.
+A definitive improvement over the current version. Thanks!
+
+Reviewed-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Peter Oberparleiter
+Linux on IBM Z Development - IBM Germany R&D
