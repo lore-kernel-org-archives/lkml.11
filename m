@@ -2,136 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD48C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234570AbiDHKG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 06:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58690 "EHLO
+        id S229607AbiDHKKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 06:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234401AbiDHKGj (ORCPT
+        with ESMTP id S229565AbiDHKJ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 06:06:39 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18B2ADB2E7
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:04:24 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AEA2F139F;
-        Fri,  8 Apr 2022 03:04:01 -0700 (PDT)
-Received: from e119884-lin.cambridge.arm.com (e119884-lin.cambridge.arm.com [10.1.196.72])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4002A3F73B;
-        Fri,  8 Apr 2022 03:04:00 -0700 (PDT)
-From:   Vincenzo Frascino <vincenzo.frascino@arm.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com
-Cc:     vincenzo.frascino@arm.com,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH] kasan: Fix hw tags enablement when KUNIT tests are disabled
-Date:   Fri,  8 Apr 2022 11:03:40 +0100
-Message-Id: <20220408100340.43620-1-vincenzo.frascino@arm.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 8 Apr 2022 06:09:57 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B32235DEC
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:07:52 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nclWo-0001D7-OD; Fri, 08 Apr 2022 12:07:42 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nclWo-001mY5-FE; Fri, 08 Apr 2022 12:07:41 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nclWl-001wSJ-UN; Fri, 08 Apr 2022 12:07:39 +0200
+Date:   Fri, 8 Apr 2022 12:07:21 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        linux-pwm@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] pwm: sifive: simplify if-if to if-else
+Message-ID: <20220408100721.rinvvgard3nr5wff@pengutronix.de>
+References: <20220408083007.41538-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5hmg2yezfbimyu7f"
+Content-Disposition: inline
+In-Reply-To: <20220408083007.41538-1-wanjiabing@vivo.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kasan enables hw tags via kasan_enable_tagging() which based on the mode
-passed via kernel command line selects the correct hw backend.
-kasan_enable_tagging() is meant to be invoked indirectly via the cpu features
-framework of the architectures that support these backends.
-Currently the invocation of this function is guarded by CONFIG_KASAN_KUNIT_TEST
-which allows the enablement of the correct backend only when KUNIT tests are
-enabled in the kernel.
 
-This inconsistency was introduced in commit:
+--5hmg2yezfbimyu7f
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-  f05842cfb9ae2 ("kasan, arm64: allow using KUnit tests with HW_TAGS mode")
+On Fri, Apr 08, 2022 at 04:30:07PM +0800, Wan Jiabing wrote:
+> use if and else instead of if(A) and if (!A).
+>=20
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> ---
+>  drivers/pwm/pwm-sifive.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-sifive.c b/drivers/pwm/pwm-sifive.c
+> index 253c4a17d255..e6d05a329002 100644
+> --- a/drivers/pwm/pwm-sifive.c
+> +++ b/drivers/pwm/pwm-sifive.c
+> @@ -138,10 +138,9 @@ static int pwm_sifive_enable(struct pwm_chip *chip, =
+bool enable)
+>  			dev_err(ddata->chip.dev, "Enable clk failed\n");
+>  			return ret;
+>  		}
+> -	}
+> -
+> -	if (!enable)
+> +	} else {
+>  		clk_disable(ddata->clk);
+> +	}
+> =20
+>  	return 0;
+>  }
 
-... and prevents to enable MTE on arm64 when KUNIT tests for kasan hw_tags are
-disabled.
+The patch looks fine. I wonder if it would be sensible to clean up even
+more: pwm_sifive_apply() is only a single caller of
+pwm_sifive_enable(). If this is optimized to skip the duty_cycle and
+period calculation for the state->enabled =3D false case and just disables
+the clock this should still work.
 
-Fix the issue making sure that the CONFIG_KASAN_KUNIT_TEST guard does not
-prevent the correct invocation of kasan_enable_tagging().
+Also I wonder if there is a clk mismatch issue in this driver: .probe
+enables the clk and if the PWM is off (i.e. .get_state diagnoses that)
+the clock will never be disabled while the driver is bound, will it?
 
-Fixes: f05842cfb9ae2 ("kasan, arm64: allow using KUnit tests with HW_TAGS mode")
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Andrey Konovalov <andreyknvl@gmail.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
----
- mm/kasan/hw_tags.c |  4 ++--
- mm/kasan/kasan.h   | 10 ++++++----
- 2 files changed, 8 insertions(+), 6 deletions(-)
+Best regards
+Uwe
 
-diff --git a/mm/kasan/hw_tags.c b/mm/kasan/hw_tags.c
-index 07a76c46daa5..e2677501c36e 100644
---- a/mm/kasan/hw_tags.c
-+++ b/mm/kasan/hw_tags.c
-@@ -336,8 +336,6 @@ void __kasan_poison_vmalloc(const void *start, unsigned long size)
- 
- #endif
- 
--#if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
--
- void kasan_enable_tagging(void)
- {
- 	if (kasan_arg_mode == KASAN_ARG_MODE_ASYNC)
-@@ -349,6 +347,8 @@ void kasan_enable_tagging(void)
- }
- EXPORT_SYMBOL_GPL(kasan_enable_tagging);
- 
-+#if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
-+
- void kasan_force_async_fault(void)
- {
- 	hw_force_async_tag_fault();
-diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-index d79b83d673b1..b01b4bbe0409 100644
---- a/mm/kasan/kasan.h
-+++ b/mm/kasan/kasan.h
-@@ -355,25 +355,27 @@ static inline const void *arch_kasan_set_tag(const void *addr, u8 tag)
- #define hw_set_mem_tag_range(addr, size, tag, init) \
- 			arch_set_mem_tag_range((addr), (size), (tag), (init))
- 
-+void kasan_enable_tagging(void);
-+
- #else /* CONFIG_KASAN_HW_TAGS */
- 
- #define hw_enable_tagging_sync()
- #define hw_enable_tagging_async()
- #define hw_enable_tagging_asymm()
- 
-+static inline void kasan_enable_tagging(void) { }
-+
- #endif /* CONFIG_KASAN_HW_TAGS */
- 
- #if defined(CONFIG_KASAN_HW_TAGS) && IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
- 
--void kasan_enable_tagging(void);
- void kasan_force_async_fault(void);
- 
--#else /* CONFIG_KASAN_HW_TAGS || CONFIG_KASAN_KUNIT_TEST */
-+#else /* CONFIG_KASAN_HW_TAGS && CONFIG_KASAN_KUNIT_TEST */
- 
--static inline void kasan_enable_tagging(void) { }
- static inline void kasan_force_async_fault(void) { }
- 
--#endif /* CONFIG_KASAN_HW_TAGS || CONFIG_KASAN_KUNIT_TEST */
-+#endif /* CONFIG_KASAN_HW_TAGS && CONFIG_KASAN_KUNIT_TEST */
- 
- #ifdef CONFIG_KASAN_SW_TAGS
- u8 kasan_random_tag(void);
--- 
-2.35.1
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
+--5hmg2yezfbimyu7f
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmJQCVcACgkQwfwUeK3K
+7Al38Af7BAOq90kL/kjCqKlWjXccUKG6Dj3BDwGcg5UfGg/JRiJmYayalIAR2LIn
+mKa9mxv/NmCLa9jl5uPCJ5WqvJnmYcdz4rL11wXGwlEY93YYn56FOG0U7MBo1ij9
+NUdVK8np9+RnN2HYy3YWeiIwGnHFu4xoU9Iv1ahdfPGw+UAPiH2VSYCUkQguXjZ5
+0Lf49mFIHiOBjyiWCHO2pV1k7JWAXLlbPbSthFLufhdQORrYkfqb6K+o8/LfgPtL
+VswPzS7Hd/LNUzP3pHKF1tig1XNRMaTq1E+vkG4x680WLeVgCzWxeIjqeB+wZFar
+8g21tTWYs3nI8bfyBzbE27vAwKI58w==
+=xpSm
+-----END PGP SIGNATURE-----
+
+--5hmg2yezfbimyu7f--
