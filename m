@@ -2,56 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 348AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 09:09:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 09:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232805AbiDHJLT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 05:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35692 "EHLO
+        id S232814AbiDHJLW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 05:11:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232675AbiDHJKo (ORCPT
+        with ESMTP id S232695AbiDHJKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 05:10:44 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05EDA11F7B0;
-        Fri,  8 Apr 2022 02:08:41 -0700 (PDT)
-Date:   Fri, 08 Apr 2022 09:08:38 -0000
+        Fri, 8 Apr 2022 05:10:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6A7105AB2;
+        Fri,  8 Apr 2022 02:08:44 -0700 (PDT)
+Date:   Fri, 08 Apr 2022 09:08:41 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649408919;
+        s=2020; t=1649408922;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=P9loCIcZWuloRmup6F6lG+cHL/7arn1eHPDRcJsO7Ag=;
-        b=T1YjY5bnyur53zEUFYWAULYEY+mDYUbWGZQs5NgHL73y2buMSZjraqsQvaVMELKi0yQSHj
-        Rfv9jg3u6rP2hKhfpBQp8TR5bIE4lWvUGH/glAaMC5oGDju8NvOWUtFJq+5dbaDUd+rHgO
-        7XuHsnodAt9QjbPWboL69203kF4YX6E9W7dnee3BrNLSV8PWO02CT7uUNUIM7Y8yxFagtp
-        CWP2RJTa72KbMYreyr4MTsx5PqIVSeh5LRh0c20M0cjz3Pvom3vvEbYoZf95yGccJxTozq
-        ic2HawLqDrie1WeXjcDjY4Xdt7ugSX3BngWo3Sg4EjjdyZzATvKLHa6B1BesqQ==
+        bh=CzPVVFUo8TuPgGereZMvL+A1ibQCd4jFEELtppx3i3Y=;
+        b=21La6cqMZfUZOwJHZaOleMwx2UDfUHQ6zReqH6eOKlw4xPYnYtqhA9JslyZ+wEWt+1NsUl
+        hgaAHZSOhtA9Ad+DrUVequxP4g6tOKPu9WghZ/i/QRQEqgS/avm3VP/v+OufnqPGx1FLGx
+        j3Y8t1AIQIgF65lFDf40BYg7fyZOOEo+e/P3uQms9VtZ2nHfb4S6ky1RAhVz0+HG+Wy5E8
+        MMGA9k9VmWdEwhBkGRV58DtuCRsmKFKgBJwFWuASUJBiIy1Q1zu9zd3oocEB90KtvGrMs8
+        4A8qAjLHZyrJMjdyFLsNM5Y+0+4R/jOhuIndLM4mOcGFo9SCJoPxOQYLtfOPzA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649408919;
+        s=2020e; t=1649408922;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=P9loCIcZWuloRmup6F6lG+cHL/7arn1eHPDRcJsO7Ag=;
-        b=U6MlC4n/QFu3L655iBEeHDVlDT8BFvI9DJjcqu9WWwqN/+nRdm4/DxZrtu+5v4JzJHxJpX
-        JqDS2HwRpMN14rAw==
+        bh=CzPVVFUo8TuPgGereZMvL+A1ibQCd4jFEELtppx3i3Y=;
+        b=m+ZLk0DY3ZlSrTNGdOIppuMpSVOOVuLHh4fvyl13Yh55BMTDR6O+WT3BqumnDJG+8SupPW
+        pDvvn/Mw8rPLcLDw==
 From:   "tip-bot2 for Brijesh Singh" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/sev] virt: sevguest: Add support to derive key
+Subject: [tip: x86/sev] x86/sev: Provide support for SNP guest request NAEs
 Cc:     Brijesh Singh <brijesh.singh@amd.com>,
-        Borislav Petkov <bp@suse.de>,
-        Liam Merwick <liam.merwick@oracle.com>, x86@kernel.org,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220307213356.2797205-45-brijesh.singh@amd.com>
-References: <20220307213356.2797205-45-brijesh.singh@amd.com>
+In-Reply-To: <20220307213356.2797205-42-brijesh.singh@amd.com>
+References: <20220307213356.2797205-42-brijesh.singh@amd.com>
 MIME-Version: 1.0
-Message-ID: <164940891854.389.12806195110088894268.tip-bot2@tip-bot2>
+Message-ID: <164940892163.389.17769861371376066698.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,155 +61,171 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/sev branch of tip:
 
-Commit-ID:     68de0b2f938642079c0c853b219bdb88c4dc4d13
-Gitweb:        https://git.kernel.org/tip/68de0b2f938642079c0c853b219bdb88c4dc4d13
+Commit-ID:     d5af44dde5461d125d1602ac913ab5c6bdf09b8b
+Gitweb:        https://git.kernel.org/tip/d5af44dde5461d125d1602ac913ab5c6bdf09b8b
 Author:        Brijesh Singh <brijesh.singh@amd.com>
-AuthorDate:    Thu, 24 Feb 2022 10:56:23 -06:00
+AuthorDate:    Mon, 07 Mar 2022 15:33:51 -06:00
 Committer:     Borislav Petkov <bp@suse.de>
 CommitterDate: Thu, 07 Apr 2022 16:47:12 +02:00
 
-virt: sevguest: Add support to derive key
+x86/sev: Provide support for SNP guest request NAEs
 
-The SNP_GET_DERIVED_KEY ioctl interface can be used by the SNP guest to
-ask the firmware to provide a key derived from a root key. The derived
-key may be used by the guest for any purposes it chooses, such as a
-sealing key or communicating with the external entities.
+Version 2 of GHCB specification provides SNP_GUEST_REQUEST and
+SNP_EXT_GUEST_REQUEST NAE that can be used by the SNP guest to
+communicate with the PSP.
 
-See SEV-SNP firmware spec for more information.
+While at it, add a snp_issue_guest_request() helper that will be used by
+driver or other subsystem to issue the request to PSP.
 
-  [ bp: No need to memset "req" - it will get overwritten. ]
+See SEV-SNP firmware and GHCB spec for more details.
 
 Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
-Link: https://lore.kernel.org/r/20220307213356.2797205-45-brijesh.singh@amd.com
+Link: https://lore.kernel.org/r/20220307213356.2797205-42-brijesh.singh@amd.com
 ---
- Documentation/virt/coco/sevguest.rst  | 17 ++++++++++-
- drivers/virt/coco/sevguest/sevguest.c | 45 ++++++++++++++++++++++++++-
- include/uapi/linux/sev-guest.h        | 17 ++++++++++-
- 3 files changed, 79 insertions(+)
+ arch/x86/include/asm/sev-common.h |  3 ++-
+ arch/x86/include/asm/sev.h        | 14 +++++++-
+ arch/x86/include/uapi/asm/svm.h   |  4 ++-
+ arch/x86/kernel/sev.c             | 57 ++++++++++++++++++++++++++++++-
+ 4 files changed, 78 insertions(+)
 
-diff --git a/Documentation/virt/coco/sevguest.rst b/Documentation/virt/coco/sevguest.rst
-index 3da782e..4135c14 100644
---- a/Documentation/virt/coco/sevguest.rst
-+++ b/Documentation/virt/coco/sevguest.rst
-@@ -77,6 +77,23 @@ On success, the snp_report_resp.data will contains the report. The report
- contain the format described in the SEV-SNP specification. See the SEV-SNP
- specification for further details.
+diff --git a/arch/x86/include/asm/sev-common.h b/arch/x86/include/asm/sev-common.h
+index 0759af9..b8357d6 100644
+--- a/arch/x86/include/asm/sev-common.h
++++ b/arch/x86/include/asm/sev-common.h
+@@ -128,6 +128,9 @@ struct snp_psc_desc {
+ 	struct psc_entry entries[VMGEXIT_PSC_MAX_ENTRY];
+ } __packed;
  
-+2.2 SNP_GET_DERIVED_KEY
-+-----------------------
-+:Technology: sev-snp
-+:Type: guest ioctl
-+:Parameters (in): struct snp_derived_key_req
-+:Returns (out): struct snp_derived_key_resp on success, -negative on error
++/* Guest message request error code */
++#define SNP_GUEST_REQ_INVALID_LEN	BIT_ULL(32)
 +
-+The SNP_GET_DERIVED_KEY ioctl can be used to get a key derive from a root key.
-+The derived key can be used by the guest for any purpose, such as sealing keys
-+or communicating with external entities.
-+
-+The ioctl uses the SNP_GUEST_REQUEST (MSG_KEY_REQ) command provided by the
-+SEV-SNP firmware to derive the key. See SEV-SNP specification for further details
-+on the various fields passed in the key derivation request.
-+
-+On success, the snp_derived_key_resp.data contains the derived key value. See
-+the SEV-SNP specification for further details.
+ #define GHCB_MSR_TERM_REQ		0x100
+ #define GHCB_MSR_TERM_REASON_SET_POS	12
+ #define GHCB_MSR_TERM_REASON_SET_MASK	0xf
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index 84d3d51..c63a1d4 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -87,6 +87,14 @@ extern bool handle_vc_boot_ghcb(struct pt_regs *regs);
  
- Reference
- ---------
-diff --git a/drivers/virt/coco/sevguest/sevguest.c b/drivers/virt/coco/sevguest/sevguest.c
-index beda93c..393777b 100644
---- a/drivers/virt/coco/sevguest/sevguest.c
-+++ b/drivers/virt/coco/sevguest/sevguest.c
-@@ -391,6 +391,48 @@ e_free:
- 	return rc;
- }
+ #define RMPADJUST_VMSA_PAGE_BIT		BIT(16)
  
-+static int get_derived_key(struct snp_guest_dev *snp_dev, struct snp_guest_request_ioctl *arg)
++/* SNP Guest message request */
++struct snp_req_data {
++	unsigned long req_gpa;
++	unsigned long resp_gpa;
++	unsigned long data_gpa;
++	unsigned int data_npages;
++};
++
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+ extern struct static_key_false sev_es_enable_key;
+ extern void __sev_es_ist_enter(struct pt_regs *regs);
+@@ -154,6 +162,7 @@ void snp_set_memory_private(unsigned long vaddr, unsigned int npages);
+ void snp_set_wakeup_secondary_cpu(void);
+ bool snp_init(struct boot_params *bp);
+ void snp_abort(void);
++int snp_issue_guest_request(u64 exit_code, struct snp_req_data *input, unsigned long *fw_err);
+ #else
+ static inline void sev_es_ist_enter(struct pt_regs *regs) { }
+ static inline void sev_es_ist_exit(void) { }
+@@ -173,6 +182,11 @@ static inline void snp_set_memory_private(unsigned long vaddr, unsigned int npag
+ static inline void snp_set_wakeup_secondary_cpu(void) { }
+ static inline bool snp_init(struct boot_params *bp) { return false; }
+ static inline void snp_abort(void) { }
++static inline int snp_issue_guest_request(u64 exit_code, struct snp_req_data *input,
++					  unsigned long *fw_err)
 +{
-+	struct snp_guest_crypto *crypto = snp_dev->crypto;
-+	struct snp_derived_key_resp resp = {0};
-+	struct snp_derived_key_req req;
-+	int rc, resp_len;
-+	/* Response data is 64 bytes and max authsize for GCM is 16 bytes. */
-+	u8 buf[64 + 16];
++	return -ENOTTY;
++}
+ #endif
+ 
+ #endif
+diff --git a/arch/x86/include/uapi/asm/svm.h b/arch/x86/include/uapi/asm/svm.h
+index cfea5e8..f69c168 100644
+--- a/arch/x86/include/uapi/asm/svm.h
++++ b/arch/x86/include/uapi/asm/svm.h
+@@ -109,6 +109,8 @@
+ #define SVM_VMGEXIT_SET_AP_JUMP_TABLE		0
+ #define SVM_VMGEXIT_GET_AP_JUMP_TABLE		1
+ #define SVM_VMGEXIT_PSC				0x80000010
++#define SVM_VMGEXIT_GUEST_REQUEST		0x80000011
++#define SVM_VMGEXIT_EXT_GUEST_REQUEST		0x80000012
+ #define SVM_VMGEXIT_AP_CREATION			0x80000013
+ #define SVM_VMGEXIT_AP_CREATE_ON_INIT		0
+ #define SVM_VMGEXIT_AP_CREATE			1
+@@ -225,6 +227,8 @@
+ 	{ SVM_VMGEXIT_AP_HLT_LOOP,	"vmgexit_ap_hlt_loop" }, \
+ 	{ SVM_VMGEXIT_AP_JUMP_TABLE,	"vmgexit_ap_jump_table" }, \
+ 	{ SVM_VMGEXIT_PSC,		"vmgexit_page_state_change" }, \
++	{ SVM_VMGEXIT_GUEST_REQUEST,	"vmgexit_guest_request" }, \
++	{ SVM_VMGEXIT_EXT_GUEST_REQUEST, "vmgexit_ext_guest_request" }, \
+ 	{ SVM_VMGEXIT_AP_CREATION,	"vmgexit_ap_creation" }, \
+ 	{ SVM_VMGEXIT_HV_FEATURES,	"vmgexit_hypervisor_feature" }, \
+ 	{ SVM_EXIT_ERR,         "invalid_guest_state" }
+diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+index 70ecc6e..7237b41 100644
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -2106,3 +2106,60 @@ static int __init init_sev_config(char *str)
+ 	return 1;
+ }
+ __setup("sev=", init_sev_config);
 +
-+	lockdep_assert_held(&snp_cmd_mutex);
++int snp_issue_guest_request(u64 exit_code, struct snp_req_data *input, unsigned long *fw_err)
++{
++	struct ghcb_state state;
++	struct es_em_ctxt ctxt;
++	unsigned long flags;
++	struct ghcb *ghcb;
++	int ret;
 +
-+	if (!arg->req_data || !arg->resp_data)
++	if (!cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
++		return -ENODEV;
++
++	if (!fw_err)
 +		return -EINVAL;
 +
 +	/*
-+	 * The intermediate response buffer is used while decrypting the
-+	 * response payload. Make sure that it has enough space to cover the
-+	 * authtag.
++	 * __sev_get_ghcb() needs to run with IRQs disabled because it is using
++	 * a per-CPU GHCB.
 +	 */
-+	resp_len = sizeof(resp.data) + crypto->a_len;
-+	if (sizeof(buf) < resp_len)
-+		return -ENOMEM;
++	local_irq_save(flags);
 +
-+	if (copy_from_user(&req, (void __user *)arg->req_data, sizeof(req)))
-+		return -EFAULT;
++	ghcb = __sev_get_ghcb(&state);
++	if (!ghcb) {
++		ret = -EIO;
++		goto e_restore_irq;
++	}
 +
-+	rc = handle_guest_request(snp_dev, SVM_VMGEXIT_GUEST_REQUEST, arg->msg_version,
-+				  SNP_MSG_KEY_REQ, &req, sizeof(req), buf, resp_len,
-+				  &arg->fw_err);
-+	if (rc)
-+		return rc;
++	vc_ghcb_invalidate(ghcb);
 +
-+	memcpy(resp.data, buf, sizeof(resp.data));
-+	if (copy_to_user((void __user *)arg->resp_data, &resp, sizeof(resp)))
-+		rc = -EFAULT;
++	if (exit_code == SVM_VMGEXIT_EXT_GUEST_REQUEST) {
++		ghcb_set_rax(ghcb, input->data_gpa);
++		ghcb_set_rbx(ghcb, input->data_npages);
++	}
 +
-+	/* The response buffer contains the sensitive data, explicitly clear it. */
-+	memzero_explicit(buf, sizeof(buf));
-+	memzero_explicit(&resp, sizeof(resp));
-+	return rc;
++	ret = sev_es_ghcb_hv_call(ghcb, true, &ctxt, exit_code, input->req_gpa, input->resp_gpa);
++	if (ret)
++		goto e_put;
++
++	if (ghcb->save.sw_exit_info_2) {
++		/* Number of expected pages are returned in RBX */
++		if (exit_code == SVM_VMGEXIT_EXT_GUEST_REQUEST &&
++		    ghcb->save.sw_exit_info_2 == SNP_GUEST_REQ_INVALID_LEN)
++			input->data_npages = ghcb_get_rbx(ghcb);
++
++		*fw_err = ghcb->save.sw_exit_info_2;
++
++		ret = -EIO;
++	}
++
++e_put:
++	__sev_put_ghcb(&state);
++e_restore_irq:
++	local_irq_restore(flags);
++
++	return ret;
 +}
-+
- static long snp_guest_ioctl(struct file *file, unsigned int ioctl, unsigned long arg)
- {
- 	struct snp_guest_dev *snp_dev = to_snp_dev(file);
-@@ -420,6 +462,9 @@ static long snp_guest_ioctl(struct file *file, unsigned int ioctl, unsigned long
- 	case SNP_GET_REPORT:
- 		ret = get_report(snp_dev, &input);
- 		break;
-+	case SNP_GET_DERIVED_KEY:
-+		ret = get_derived_key(snp_dev, &input);
-+		break;
- 	default:
- 		break;
- 	}
-diff --git a/include/uapi/linux/sev-guest.h b/include/uapi/linux/sev-guest.h
-index 38f11d7..598367f 100644
---- a/include/uapi/linux/sev-guest.h
-+++ b/include/uapi/linux/sev-guest.h
-@@ -30,6 +30,20 @@ struct snp_report_resp {
- 	__u8 data[4000];
- };
- 
-+struct snp_derived_key_req {
-+	__u32 root_key_select;
-+	__u32 rsvd;
-+	__u64 guest_field_select;
-+	__u32 vmpl;
-+	__u32 guest_svn;
-+	__u64 tcb_version;
-+};
-+
-+struct snp_derived_key_resp {
-+	/* response data, see SEV-SNP spec for the format */
-+	__u8 data[64];
-+};
-+
- struct snp_guest_request_ioctl {
- 	/* message version number (must be non-zero) */
- 	__u8 msg_version;
-@@ -47,4 +61,7 @@ struct snp_guest_request_ioctl {
- /* Get SNP attestation report */
- #define SNP_GET_REPORT _IOWR(SNP_GUEST_REQ_IOC_TYPE, 0x0, struct snp_guest_request_ioctl)
- 
-+/* Get a derived key from the root */
-+#define SNP_GET_DERIVED_KEY _IOWR(SNP_GUEST_REQ_IOC_TYPE, 0x1, struct snp_guest_request_ioctl)
-+
- #endif /* __UAPI_LINUX_SEV_GUEST_H_ */
++EXPORT_SYMBOL_GPL(snp_issue_guest_request);
