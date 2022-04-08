@@ -2,185 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3104C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:46:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232321AbiDHKsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 06:48:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57224 "EHLO
+        id S233408AbiDHKsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 06:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiDHKsB (ORCPT
+        with ESMTP id S231509AbiDHKsC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 06:48:01 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0307433761C;
-        Fri,  8 Apr 2022 03:45:59 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id z16so8056395pfh.3;
-        Fri, 08 Apr 2022 03:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=B+y9O7YBtL9hDUsmV9qnq8IDPIYek1TEN2GRHOTz3g4=;
-        b=qoqbOn292okenjH4dD/yS4XaKvgDIJY5ldJEkv6XLn4lVxXvLjMdg2SjBw9llwNxVG
-         8mK0mwhynt3ihKUHU1FuvkqJwJ3H5tGmpifKYvFf8ejUD4UY6kPw3Cu7MrmK2vVQZa93
-         43O/T4KXxH2h9Or+4Tss1KW1UxUW4/6qfwpw4jAGOk+tIFgeLGSJIZBXTuS+1jzJbxPV
-         brTNWG4oqiCaWOioNXFFM1sSmB/UP3R/vdLT9NugMVNAyFuSzhnQJjrG2jgHto8fW+69
-         8/8FXl3dt6O7/JIA++fuYMK+dRlli61QJYDM1CR7MjyWwSCfbwci4h0h3RynUNyynRKW
-         lcTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=B+y9O7YBtL9hDUsmV9qnq8IDPIYek1TEN2GRHOTz3g4=;
-        b=JKHo5i7700EMDlyzSkf9mjfAE4KWcSO9rqUHJAZkAdXpwj0gw/mMKV72Y9aljEBHGz
-         a5bhiQgiJg173cn1+q/gjZWoU8lCVkIE+fVg653DfTLnldnvkCZnhynBVayqFGbvuSCQ
-         P/Is23LBsKwWiCoLX/o3EZ4dA51czA/hTpt9c8mmOoAZy7O1CqCsxRyzcWcj4XNvBz/v
-         F86CTRRG/miRxGwZOF9ZYgNO3/+gd1hsS3a+l801XypTHnHXNXRsmXuEUT5OjxFQtGae
-         pSXNnk2C6r/YOEnnB+Z5+qJIapS+COM3ZJv5R1z1aqYKRgViGaML/dV8OhyyLsMZPJwz
-         QUew==
-X-Gm-Message-State: AOAM530WPJVt4fwpBUE0rtOVevS7uFpkj1CLu/+mHNiwAWuZ3usdD7Sc
-        OAE2VEmSyttG1ZSP64ZHL+w=
-X-Google-Smtp-Source: ABdhPJxEK4D6xs1b3TDJapTXT/xSOcY9IFlWQJQ419VRYJBDhw9q2QDA8arWGO9D07QCBMSDbQFFdg==
-X-Received: by 2002:a63:1c5c:0:b0:398:f69b:1996 with SMTP id c28-20020a631c5c000000b00398f69b1996mr15007543pgm.370.1649414758351;
-        Fri, 08 Apr 2022 03:45:58 -0700 (PDT)
-Received: from tj10039pcu.spreadtrum.com ([117.18.48.102])
-        by smtp.gmail.com with ESMTPSA id m17-20020a17090a859100b001bc20ddcc67sm11184902pjn.34.2022.04.08.03.45.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 03:45:57 -0700 (PDT)
-From:   Cixi Geng <gengcixi@gmail.com>
-To:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com
-Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] dt-bindings: clk: sprd: add bindings for ums512 clock controller
-Date:   Fri,  8 Apr 2022 18:45:18 +0800
-Message-Id: <20220408104520.1896568-2-gengcixi@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220408104520.1896568-1-gengcixi@gmail.com>
-References: <20220408104520.1896568-1-gengcixi@gmail.com>
+        Fri, 8 Apr 2022 06:48:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 69250337621
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:45:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649414758;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DNGOrOLahpfdtq4Itt85bojNjsMMU06RvvV1e8kDRUw=;
+        b=Eo1pR8s5V02t29xAx+r37U5uIQll2Rz9vAEWZTij28/19wAYf9lcFOh3G3Ob4MFca5ccky
+        JQTF91kphdmh4F/v4Q+oQGqH9TKAoP91/fGCGQnkNU+LT9x9IwLcRmjeEuCkWs5K0yMlOw
+        Er2aFj/e4FGXRjC9kmsSUYCRJjNk8uE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-584-k_B2GAPqOK6ewssLM0W8uw-1; Fri, 08 Apr 2022 06:45:55 -0400
+X-MC-Unique: k_B2GAPqOK6ewssLM0W8uw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0074C3817493;
+        Fri,  8 Apr 2022 10:45:55 +0000 (UTC)
+Received: from kate-fedora.redhat.com (unknown [10.2.16.34])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2193440470D5;
+        Fri,  8 Apr 2022 10:45:51 +0000 (UTC)
+From:   Kate Hsuan <hpa@redhat.com>
+To:     Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Bingbu Cao <bingbu.cao@intel.com>,
+        Tianshu Qiu <tian.shu.qiu@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>,
+        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, hdegoede@redhat.com,
+        Kate Hsuan <hpa@redhat.com>
+Subject: [PATCH v3] staging: media: ipu3: Fix AWB x_start position when rightmost stripe is used
+Date:   Fri,  8 Apr 2022 18:42:22 +0800
+Message-Id: <20220408104222.13893-1-hpa@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cixi Geng <cixi.geng1@unisoc.com>
+An not calibrated x_start setting would result in an incorrect AWB grid
+configuration on a sensor when only the rightmost stripe is used.
 
-add a new bindings to describe ums512 clock compatible string.
+If the AWB grid coordinate is set to the rightmost stripe, for example,
+x_start is greater than 640, the AWB grid will be at the rightmost edge of
+the sensor. The AWB statistic will be fetched from the wrong place of the
+sensor and results in an incorrect AWB estimation result. Therefore,
+stripe offset should subtract from x_start to have a correct grid
+configuration for the rightmost stripe.
 
-Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+Signed-off-by: Kate Hsuan <hpa@redhat.com>
 ---
- .../bindings/clock/sprd,ums512-clk.yaml       | 100 ++++++++++++++++++
- 1 file changed, 100 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml
+ drivers/staging/media/ipu3/ipu3-css-params.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml b/Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml
-new file mode 100644
-index 000000000000..a80bd6ca4a7a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/clock/sprd,ums512-clk.yaml
-@@ -0,0 +1,100 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright 2022 Unisoc Inc.
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/clock/sprd,ums512-clk.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+diff --git a/drivers/staging/media/ipu3/ipu3-css-params.c b/drivers/staging/media/ipu3/ipu3-css-params.c
+index f84cf11358a8..76ad802d694e 100644
+--- a/drivers/staging/media/ipu3/ipu3-css-params.c
++++ b/drivers/staging/media/ipu3/ipu3-css-params.c
+@@ -2636,6 +2636,17 @@ int imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,
+ 	    acc->stripe.down_scaled_stripes[1].offset + min_overlap) {
+ 		/* Enable only for rightmost stripe, disable left */
+ 		acc->awb.stripes[0].rgbs_thr_b &= ~IPU3_UAPI_AWB_RGBS_THR_B_EN;
 +
-+title: UMS512 Clock Control Unit Device Tree Bindings
++		acc->awb.stripes[1].grid.x_start =
++			(acc->awb.stripes[1].grid.x_start -
++			 acc->stripe.down_scaled_stripes[1].offset) &
++			IPU3_UAPI_GRID_START_MASK;
 +
-+maintainers:
-+  - Orson Zhai <orsonzhai@gmail.com>
-+  - Baolin Wang <baolin.wang7@gmail.com>
-+  - Chunyan Zhang <zhang.lyra@gmail.com>
-+
-+properties:
-+  "#clock-cells":
-+    const: 1
-+
-+  compatible:
-+    enum:
-+      - sprd,ums512-aon-gate
-+      - sprd,ums512-apahb-gate
-+      - sprd,ums512-apapb-gate
-+      - sprd,ums512-audcpahb-gate
-+      - sprd,ums512-audcpapb-gate
-+      - sprd,ums512-g0-pll
-+      - sprd,ums512-g2-pll
-+      - sprd,ums512-g3-pll
-+      - sprd,ums512-gc-pll
-+      - sprd,ums512-gpu-clk
-+      - sprd,ums512-mm-clk
-+      - sprd,ums512-mm-gate-clk
-+      - sprd,ums512-pmu-gate
-+
-+  clocks:
-+    minItems: 1
-+    maxItems: 4
-+    description: |
-+      The input parent clock(s) phandle for this clock, only list fixed
-+      clocks which are declared in devicetree.
-+
-+  clock-names:
-+    minItems: 1
-+    items:
-+      - const: ext-26m
-+      - const: ext-32k
-+      - const: ext-4m
-+      - const: rco-100m
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - '#clock-cells'
-+
-+if:
-+  properties:
-+    compatible:
-+      enum:
-+        - sprd,ums512-ap-clk
-+        - sprd,ums512-aonapb-clk
-+then:
-+  required:
-+    - reg
-+
-+else:
-+  description: |
-+    Other UMS512 clock nodes should be the child of a syscon node in
-+    which compatible string should be:
-+            "sprd,ums512-glbregs", "syscon", "simple-mfd"
-+
-+    The 'reg' property for the clock node is also required if there is a sub
-+    range of registers for the clocks.
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        ap_clk: clock-controller@20200000 {
-+                compatible = "sprd,ums512-ap-clk";
-+                reg = <0 0x20200000 0 0x1000>;
-+                clocks = <&ext_26m>;
-+                clock-names = "ext-26m";
-+                #clock-cells = <1>;
-+        };
-+
-+        syscon@20100000{
-+               compatible = "sprd,ums512-glbregs", "syscon","simple-mfd";
-+               reg = <0 0x20100000 0 0x4000>;
-+               clocks = <&ext_32k>, <&ext_26m>;
-+               clock-names = "ext-32k", "ext-26m";
-+               #clock-cells = <1>;
-+        };
-+    };
-+...
++		b_w_log2 = acc->awb.stripes[1].grid.block_width_log2;
++		acc->awb.stripes[1].grid.x_end =
++			imgu_css_grid_end(acc->awb.stripes[1].grid.x_start,
++					  acc->awb.stripes[1].grid.width,
++					  b_w_log2);
+ 	} else if (acc->awb.config.grid.x_end <=
+ 		   acc->stripe.bds_out_stripes[0].width - min_overlap) {
+ 		/* Enable only for leftmost stripe, disable right */
 -- 
-2.25.1
+2.35.1
 
