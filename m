@@ -2,152 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66994C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DACEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239705AbiDHVIK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 17:08:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
+        id S239714AbiDHVIN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 17:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239676AbiDHVH6 (ORCPT
+        with ESMTP id S239685AbiDHVH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 17:07:58 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176B313CCF4
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 14:05:54 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id e25-20020a0568301e5900b005b236d5d74fso6968627otj.0
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 14:05:54 -0700 (PDT)
+        Fri, 8 Apr 2022 17:07:59 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D561404CA
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 14:05:55 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id om8-20020a17090b3a8800b001c68e7ccd5fso8405892pjb.9
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 14:05:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aV4gP9imWb5RV0sDAD5Q2cONnZ9+iBwKt8kNT5bBOgs=;
-        b=EPNSfj2nSYc7mOIqFUv4NpJ2ph3jKTAr6r155GsfmKoMjl+mstddRpU/PdkCD+veSr
-         RRmRFlM2YM1vcHvSJOD16KHHggz7wTKD4KnPt2wSVe8I+KLt7zb2acZz8sBiiVifWvMI
-         89QabWBFFUOuxcNwBpwpcOj/q4R2tLjw14g37tshRqdCwtxB/jvy3JDhfQRlsjwaauYJ
-         MeuOb0c1u1AeWs9lU8KrdCEdbsORexjiWQFpe3SkflxGFQn9vCsryZO1CPhC/nA/L64U
-         nk/F3WpK5aV6MdVZ9roK+zUfKDksBpag9Xp5jN+0GPLtufE3lREvNi2WfaVfsjG+Fa9d
-         xC0w==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=rlJkFcNcYd6mPNnge4ujHl+5hUg478jozPBxCeiplcU=;
+        b=kD8vKqNMy0pBGS7eymZaRDQYbCNZT+UEHGxZV9YZX4Xm8SiuB0c/ypoS9pSwv0tLYB
+         HpcVD4HioKpNuQKaD3c4terg5FTGEDvP/LrN0nbTKAdGOUmsHVYS8Ei92SqUAd/2Ye6+
+         Ic+jODJNU3xgl9cTfgGDuAalpa70HzKMZ+mmGOu+SHcXOO3ONMt6qujDh28WdL0wn89X
+         HgUxOQHBTtaDJ+Skf4i3LxR2zpMF3o/infccnKr16BKp1eI81jsXJLeFnnKMa8VRDD5C
+         2RiTV0MygW7LyqGZ+RxlAnFjspv1Jm/3O9QZCKEvxpdvVG2CujC8yCUJy8+HeeE3Lf/L
+         4/Rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aV4gP9imWb5RV0sDAD5Q2cONnZ9+iBwKt8kNT5bBOgs=;
-        b=YVQyaMNjgtGQlkOJWGKIqA6rzfEKiD9kM+HvK2AeSRNInE3kW22dzNztl8eox6yVVs
-         dy+C1g4gHn3cRXB/UpcexEchLveMiJ6K9Y5x1gP3d2kmZd4Q8SJR9sZtPac97wHIpOoX
-         gIiUXbAN5W+KmGhpkYroGqmqCsySLrJ4WDt5MWp8BF8eVsAdieFGtPScBundCeR5x3RD
-         s3V+4qsjtKHcXY9KyDIfDEnsTjGAJ04lB6K17HBwnCye0e3ZPzRtGzHZzaVDUtDXwbQg
-         nkOG94Wnm6Lca/liAEt17MSW/DxQBZqHJHfWFWkC7uyZrzFiJu1xg2ryDBdiadabLDkt
-         anwg==
-X-Gm-Message-State: AOAM531gwtZs1RJ3yczvgVtVBfOa+pCxm/MekhhSTJY3+9Dx5errkABR
-        X4GRRJiqqbspLiJfW17F5iElZQ==
-X-Google-Smtp-Source: ABdhPJzHAUSFVblBCfU82rzxb0/OF2t7uWRv3V+7FZkZRXyvsJrWXXh9cYS+NGxmn7hZPw0F8IU1Tg==
-X-Received: by 2002:a9d:6447:0:b0:5b2:35ae:7ad6 with SMTP id m7-20020a9d6447000000b005b235ae7ad6mr7240550otl.275.1649451953460;
-        Fri, 08 Apr 2022 14:05:53 -0700 (PDT)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id y18-20020a056871011200b000e1f5910d45sm6560356oab.7.2022.04.08.14.05.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 14:05:52 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/2] dt-bindings: display: msm: Add optional resets
-Date:   Fri,  8 Apr 2022 14:08:12 -0700
-Message-Id: <20220408210813.581391-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=rlJkFcNcYd6mPNnge4ujHl+5hUg478jozPBxCeiplcU=;
+        b=ZKJIVQP9Dr3Kai9jSxKTKLecI3G3gXX5qdOKrrYE7Qwes/Wpg/97yYnHFGpB7h35K3
+         +epVtMe1Ep/+ORr2Sv6f8P40ycJL9oQuVvhdqjEc/W/oQqJ5nqHwcusaPiXwVi/uSYaM
+         MgaaTxz7pgSZHJneUlKJrzY4/IpYgUTRxw04m1nFazlSy+AJ42VyYaCSiARKiy0E7t+y
+         YyBfJkjdhiGQbUa1U7JRRUilYfE7t1EmKJ7JlQY/Z5JaFGYC+C/QKwY0a+AB/JJpN1l6
+         UAExWkdI+LhcvuZwlJRsIa2IcdSlukm6Fa4eVRFIHvzttUSitjjXiaj16VLgTf2wLwvU
+         Lp2g==
+X-Gm-Message-State: AOAM532hAviy2FQZWnebdUKUQiTJbT58lR04LZoLrqNqmm5ugZoFUFY8
+        gP01OgjuxFnBuAICx7SurycyhK0KYQItDPil
+X-Google-Smtp-Source: ABdhPJxlvfncBAZX5WHOx5BNkCJlbFqniaKc+b2JesTBq+VaT+G3FdaPBqWx9JKhyKVqo/FZpF/gO6FixnKe/EqS
+X-Received: from vannapurve2.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:41f8])
+ (user=vannapurve job=sendgmr) by 2002:a17:90b:2384:b0:1cb:5223:9dc4 with SMTP
+ id mr4-20020a17090b238400b001cb52239dc4mr313643pjb.1.1649451954536; Fri, 08
+ Apr 2022 14:05:54 -0700 (PDT)
+Date:   Fri,  8 Apr 2022 21:05:41 +0000
+In-Reply-To: <20220408210545.3915712-1-vannapurve@google.com>
+Message-Id: <20220408210545.3915712-2-vannapurve@google.com>
+Mime-Version: 1.0
+References: <20220408210545.3915712-1-vannapurve@google.com>
+X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
+Subject: [RFC V1 PATCH 1/5] x86: kvm: HACK: Allow testing of priv memfd approach
+From:   Vishal Annapurve <vannapurve@google.com>
+To:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, shauh@kernel.org, yang.zhong@intel.com,
+        drjones@redhat.com, ricarkol@google.com, aaronlewis@google.com,
+        wei.w.wang@intel.com, kirill.shutemov@linux.intel.com,
+        corbet@lwn.net, hughd@google.com, jlayton@kernel.org,
+        bfields@fieldses.org, akpm@linux-foundation.org,
+        chao.p.peng@linux.intel.com, yu.c.zhang@linux.intel.com,
+        jun.nakajima@intel.com, dave.hansen@intel.com,
+        michael.roth@amd.com, qperret@google.com, steven.price@arm.com,
+        ak@linux.intel.com, david@redhat.com, luto@kernel.org,
+        vbabka@suse.cz, marcorr@google.com, erdemaktas@google.com,
+        pgonda@google.com, seanjc@google.com, diviness@google.com,
+        Vishal Annapurve <vannapurve@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an optional reference to the MDSS_CORE reset, which when specified
-can be used by the implementation to reset the hardware blocks.
+Add plumbing in KVM logic to allow private memfd series:
+https://lore.kernel.org/linux-mm/20220310140911.50924-1-chao.p.peng@linux.intel.com/
+to be tested with non-confidential VMs.
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+1) Existing hypercall KVM_HC_MAP_GPA_RANGE is modified to support
+marking pages of the guest memory as privately accessed or
+accessed in a shared fashion.
+
+2) kvm_vcpu_is_private_gfn is defined to allow guest accesses to
+be categorized as shared or private based on the values set by
+KVM_HC_MAP_GPA_RANGE hypercall.
+
+3) KVM_MEM_PRIVATE flag for memslots is marked as always supported.
+
+Signed-off-by: Vishal Annapurve <vannapurve@google.com>
 ---
+ arch/x86/include/uapi/asm/kvm_para.h |  1 +
+ arch/x86/kvm/mmu/mmu.c               |  9 +++++----
+ arch/x86/kvm/x86.c                   | 16 ++++++++++++++--
+ include/linux/kvm_host.h             |  3 +++
+ virt/kvm/kvm_main.c                  |  2 +-
+ 5 files changed, 24 insertions(+), 7 deletions(-)
 
-Resending these two patches again as I put "v2" in the subject, even though I
-meant v3. Sorry about that.
-
-Changes since v2:
-- None
-
- .../devicetree/bindings/display/msm/dpu-qcm2290.yaml          | 4 ++++
- Documentation/devicetree/bindings/display/msm/dpu-sc7180.yaml | 4 ++++
- Documentation/devicetree/bindings/display/msm/dpu-sc7280.yaml | 4 ++++
- Documentation/devicetree/bindings/display/msm/dpu-sdm845.yaml | 4 ++++
- 4 files changed, 16 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/display/msm/dpu-qcm2290.yaml b/Documentation/devicetree/bindings/display/msm/dpu-qcm2290.yaml
-index 6fb7e321f011..734d14de966d 100644
---- a/Documentation/devicetree/bindings/display/msm/dpu-qcm2290.yaml
-+++ b/Documentation/devicetree/bindings/display/msm/dpu-qcm2290.yaml
-@@ -66,6 +66,10 @@ properties:
-   interconnect-names:
-     const: mdp0-mem
+diff --git a/arch/x86/include/uapi/asm/kvm_para.h b/arch/x86/include/uapi/asm/kvm_para.h
+index 6e64b27b2c1e..3bc9add4095d 100644
+--- a/arch/x86/include/uapi/asm/kvm_para.h
++++ b/arch/x86/include/uapi/asm/kvm_para.h
+@@ -102,6 +102,7 @@ struct kvm_clock_pairing {
+ #define KVM_MAP_GPA_RANGE_PAGE_SZ_2M	(1 << 0)
+ #define KVM_MAP_GPA_RANGE_PAGE_SZ_1G	(1 << 1)
+ #define KVM_MAP_GPA_RANGE_ENC_STAT(n)	(n << 4)
++#define KVM_MARK_GPA_RANGE_ENC_ACCESS	(1 << 8)
+ #define KVM_MAP_GPA_RANGE_ENCRYPTED	KVM_MAP_GPA_RANGE_ENC_STAT(1)
+ #define KVM_MAP_GPA_RANGE_DECRYPTED	KVM_MAP_GPA_RANGE_ENC_STAT(0)
  
-+  resets:
-+    items:
-+      - description: MDSS_CORE reset
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index b1a30a751db0..ee9bc36011de 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3895,10 +3895,11 @@ static bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 
+ static bool kvm_vcpu_is_private_gfn(struct kvm_vcpu *vcpu, gfn_t gfn)
+ {
+-	/*
+-	 * At this time private gfn has not been supported yet. Other patch
+-	 * that enables it should change this.
+-	 */
++	gpa_t priv_gfn_end = vcpu->priv_gfn + vcpu->priv_pages;
 +
- patternProperties:
-   "^display-controller@[0-9a-f]+$":
-     type: object
-diff --git a/Documentation/devicetree/bindings/display/msm/dpu-sc7180.yaml b/Documentation/devicetree/bindings/display/msm/dpu-sc7180.yaml
-index 12a86b1ec1bc..b41991eaa454 100644
---- a/Documentation/devicetree/bindings/display/msm/dpu-sc7180.yaml
-+++ b/Documentation/devicetree/bindings/display/msm/dpu-sc7180.yaml
-@@ -65,6 +65,10 @@ properties:
-   interconnect-names:
-     const: mdp0-mem
- 
-+  resets:
-+    items:
-+      - description: MDSS_CORE reset
++	if ((gfn >= vcpu->priv_gfn) && (gfn < priv_gfn_end))
++		return true;
 +
- patternProperties:
-   "^display-controller@[0-9a-f]+$":
-     type: object
-diff --git a/Documentation/devicetree/bindings/display/msm/dpu-sc7280.yaml b/Documentation/devicetree/bindings/display/msm/dpu-sc7280.yaml
-index fbeb931a026e..6e417d06fc79 100644
---- a/Documentation/devicetree/bindings/display/msm/dpu-sc7280.yaml
-+++ b/Documentation/devicetree/bindings/display/msm/dpu-sc7280.yaml
-@@ -64,6 +64,10 @@ properties:
-   interconnect-names:
-     const: mdp0-mem
+ 	return false;
+ }
  
-+  resets:
-+    items:
-+      - description: MDSS_CORE reset
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 11a949928a85..3b17fa7f2192 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -9186,8 +9186,20 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
+ 		if (!(vcpu->kvm->arch.hypercall_exit_enabled & (1 << KVM_HC_MAP_GPA_RANGE)))
+ 			break;
+ 
+-		if (!PAGE_ALIGNED(gpa) || !npages ||
+-		    gpa_to_gfn(gpa) + npages <= gpa_to_gfn(gpa)) {
++		if (!PAGE_ALIGNED(gpa) ||
++			gpa_to_gfn(gpa) + npages < gpa_to_gfn(gpa)) {
++			ret = -KVM_EINVAL;
++			break;
++		}
 +
- patternProperties:
-   "^display-controller@[0-9a-f]+$":
-     type: object
-diff --git a/Documentation/devicetree/bindings/display/msm/dpu-sdm845.yaml b/Documentation/devicetree/bindings/display/msm/dpu-sdm845.yaml
-index 0dca4b3d66e4..1a42491efdbc 100644
---- a/Documentation/devicetree/bindings/display/msm/dpu-sdm845.yaml
-+++ b/Documentation/devicetree/bindings/display/msm/dpu-sdm845.yaml
-@@ -57,6 +57,10 @@ properties:
- 
-   ranges: true
- 
-+  resets:
-+    items:
-+      - description: MDSS_CORE reset
++		if (attrs & KVM_MARK_GPA_RANGE_ENC_ACCESS) {
++			vcpu->priv_gfn = gpa_to_gfn(gpa);
++			vcpu->priv_pages = npages;
++			ret = 0;
++			break;
++		}
 +
- patternProperties:
-   "^display-controller@[0-9a-f]+$":
-     type: object
++		if (!npages) {
+ 			ret = -KVM_EINVAL;
+ 			break;
+ 		}
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 0150e952a131..7c12a0bdb495 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -311,6 +311,9 @@ struct kvm_vcpu {
+ 	u64 requests;
+ 	unsigned long guest_debug;
+ 
++	uint64_t priv_gfn;
++	uint64_t priv_pages;
++
+ 	struct mutex mutex;
+ 	struct kvm_run *run;
+ 
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index df5311755a40..a31a58aa1b79 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -1487,7 +1487,7 @@ static void kvm_replace_memslot(struct kvm *kvm,
+ 
+ bool __weak kvm_arch_private_memory_supported(struct kvm *kvm)
+ {
+-	return false;
++	return true;
+ }
+ 
+ static int check_memory_region_flags(struct kvm *kvm,
 -- 
-2.35.1
+2.35.1.1178.g4f1659d476-goog
 
