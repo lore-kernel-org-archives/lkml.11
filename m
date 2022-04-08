@@ -2,129 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5302EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:24:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D051AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238684AbiDHS0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 14:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44534 "EHLO
+        id S238651AbiDHS0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 14:26:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238672AbiDHSZg (ORCPT
+        with ESMTP id S238683AbiDHSZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 14:25:36 -0400
-Received: from smtp.smtpout.orange.fr (smtp10.smtpout.orange.fr [80.12.242.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FFF038FEFE
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 11:23:28 -0700 (PDT)
-Received: from [192.168.1.18] ([86.243.180.246])
-        by smtp.orange.fr with ESMTPA
-        id ctGUnWKJjD97rctGVn6qy3; Fri, 08 Apr 2022 20:23:26 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Fri, 08 Apr 2022 20:23:26 +0200
-X-ME-IP: 86.243.180.246
-Message-ID: <d08f3202-54f1-4c5a-01bd-70816a917b50@wanadoo.fr>
-Date:   Fri, 8 Apr 2022 20:23:22 +0200
+        Fri, 8 Apr 2022 14:25:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4795B396E17;
+        Fri,  8 Apr 2022 11:23:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCD7262213;
+        Fri,  8 Apr 2022 18:23:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8946FC385A5;
+        Fri,  8 Apr 2022 18:23:32 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="X5Gkobvj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1649442212;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=X+SOXCxlTVp5T6r4OXCDhv2RSY3Z97e2yzOuZYoobyg=;
+        b=X5Gkobvj4quH9iXj/OmVaky1rOe+XlIiOQkQwsW/YXlqbHU2kvCpAxr3F4BlAiUBJjacz4
+        4hLrdMULeI/cM/0ZYjOyJ5ULjjQszeCJT4hYpzk92ZapKgN5ISsrXbdV5iB2kpZxcK0qe6
+        yMVMQkcZxubXBYCwgD1TiGQ4JjUNu+I=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a12bc66c (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 8 Apr 2022 18:23:31 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        arnd@arndb.de
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
+        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, x86@kernel.org,
+        linux-xtensa@linux-xtensa.org
+Subject: [PATCH RFC v1 10/10] xtensa: use sched_clock() for random_get_entropy() instead of zero
+Date:   Fri,  8 Apr 2022 20:21:45 +0200
+Message-Id: <20220408182145.142506-11-Jason@zx2c4.com>
+In-Reply-To: <20220408182145.142506-1-Jason@zx2c4.com>
+References: <20220408182145.142506-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v5 2/2] leds: ktd2692: Make aux-gpios optional
-Content-Language: en-GB
-To:     Markuss Broks <markuss.broks@gmail.com>,
-        linux-kernel@vger.kernel.org
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220408175929.281453-1-markuss.broks@gmail.com>
- <20220408175929.281453-3-markuss.broks@gmail.com>
-From:   Marion & Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220408175929.281453-3-markuss.broks@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is really not the best we can do.
+Instead, at least calling sched_clock() would be preferable, because
+that always needs to return _something_, even falling back to jiffies
+eventually. It's not as though sched_clock() is super high precision or
+guaranteed to be entropic, but basically anything that's not zero all
+the time is better than returning zero all the time.
 
-Le 08/04/2022 à 19:59, Markuss Broks a écrit :
-> Make the AUX pin optional, since it isn't a core part of functionality,
-> and the device is designed to be operational with only one CTRL pin.
->
-> Also pick up maintenance for the LED driver and the yaml bindings.
->
-> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
-> ---
->   MAINTAINERS                       | 6 ++++++
->   drivers/leds/flash/leds-ktd2692.c | 4 ++--
->   2 files changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 2db49ea7ae55..8ef5667a1d98 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -10479,6 +10479,12 @@ S:	Maintained
->   F:	Documentation/devicetree/bindings/leds/backlight/kinetic,ktd253.yaml
->   F:	drivers/video/backlight/ktd253-backlight.c
->   
-> +KTD2692 FLASH LED DRIVER
-> +M:	Markuss Broks <markuss.broks@gmail.com>
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/leds/backlight/kinetic,ktd2692.yaml
-> +F:	drivers/leds/flash/leds-ktd2692.yaml
-> +
->   KTEST
->   M:	Steven Rostedt <rostedt@goodmis.org>
->   M:	John Hawley <warthog9@eaglescrag.net>
-> diff --git a/drivers/leds/flash/leds-ktd2692.c b/drivers/leds/flash/leds-ktd2692.c
-> index f341da1503a4..fc9c2e441caa 100644
-> --- a/drivers/leds/flash/leds-ktd2692.c
-> +++ b/drivers/leds/flash/leds-ktd2692.c
-> @@ -284,8 +284,8 @@ static int ktd2692_parse_dt(struct ktd2692_context *led, struct device *dev,
->   		return ret;
->   	}
->   
-> -	led->aux_gpio = devm_gpiod_get(dev, "aux", GPIOD_ASIS);
-> -	ret = PTR_ERR_OR_ZERO(led->aux_gpio);
-> +	led->aux_gpio = devm_gpiod_get_optional(dev, "aux", GPIOD_ASIS);
-> +	ret = PTR_ERR(led->aux_gpio);
->   	if (ret) {
->   		dev_err(dev, "cannot get aux-gpios %d\n", ret);
->   		return ret;
+This is accomplished by just including the asm-generic code like on
+other architectures, which means we can get rid of the empty stub
+function here.
 
-Hi,
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ arch/xtensa/include/asm/timex.h | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-Sorry if I was unclear. What I was meaning is below.
-
-This v5 is just wrong. If 'led->aux_gpio' is a valid pointer, then 
-'PTR_ERR(led->aux_gpio)' will be non-0 and you will bail-out with a 
-pointless error value.
-
-PTR_ERR(x) is a valid error value if IS_ERR(x) is true. Otherwise it is 
-just 'x' casted as a long. So if 'x' is valid, it can be anything.
-
-
-What I had in mind was more something like:
-
-@@ -284,10 +284,9 @@ static int ktd2692_parse_dt(struct ktd2692_context *led, struct device *dev,
-  		return ret;
-  	}
-  
--	led->aux_gpio = devm_gpiod_get(dev, "aux", GPIOD_ASIS);
--	ret = PTR_ERR_OR_ZERO(led->aux_gpio);
--	if (ret) {
--		dev_err(dev, "cannot get aux-gpios %d\n", ret);
-+	led->aux_gpio = devm_gpiod_get_optional(dev, "aux", GPIOD_ASIS);
-+	if (IS_ERR(led->aux_gpio)) {
-+		ret = PTR_ERR(led->aux_gpio);
-+		dev_err(dev, "cannot get aux-gpios: %d\n", ret);
-  		return ret;
-  	}
-  
-
-
-I guess that using PTR_ERR_OR_ZERO() is an option (like in the original 
-code) but personally I find it less readable (but it is just a matter of 
-taste)
-
-CJ
+diff --git a/arch/xtensa/include/asm/timex.h b/arch/xtensa/include/asm/timex.h
+index 233ec75e60c6..3f2462f2d027 100644
+--- a/arch/xtensa/include/asm/timex.h
++++ b/arch/xtensa/include/asm/timex.h
+@@ -29,10 +29,6 @@
+ 
+ extern unsigned long ccount_freq;
+ 
+-typedef unsigned long long cycles_t;
+-
+-#define get_cycles()	(0)
+-
+ void local_timer_setup(unsigned cpu);
+ 
+ /*
+@@ -59,4 +55,6 @@ static inline void set_linux_timer (unsigned long ccompare)
+ 	xtensa_set_sr(ccompare, SREG_CCOMPARE + LINUX_TIMER);
+ }
+ 
++#include <asm-generic/timex.h>
++
+ #endif	/* _XTENSA_TIMEX_H */
+-- 
+2.35.1
 
