@@ -2,145 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B6DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:58:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 705ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236042AbiDHNAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 09:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40820 "EHLO
+        id S236050AbiDHNFW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 09:05:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236027AbiDHNAL (ORCPT
+        with ESMTP id S232621AbiDHNFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 09:00:11 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2056.outbound.protection.outlook.com [40.107.244.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784D010E8;
-        Fri,  8 Apr 2022 05:58:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CfWdGGxKkibHows+OObpcdt2AT3POb+e9MsPMTtsSrID6D1F9hmWdoNqo69aFy26hAtRcaupGkKEDhwPXPaienVt4mAyKo4L43+bPR1G6vMvL76g5a4C8SVp3XiGKFuJURN1P+1QvKuEvVwupa8gJi9YNLL7+Li0gE+IW6C8fMJkl542r4zzCJ/18hj6rRqa4q3TeOm2AcpvtxLo/I2OA+eKdu5PBEX4i2q0KH9IV8ZbzQjYNEaqM1fgaIhC+IE7ZcVE9TDYdZR9PFOdtpxSdTa0hMfe9zpjl6yrTkraCAFhdWEx8+ivBBHD0Y7S67tDmiVcobnCnf9nNxGSlt4zGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DZCL8Mqtzmb1k1dA8bAd8IZrnchykILZD0XL0mJHJtw=;
- b=Np136gKq/M23wqa3widldqPnQB4qh2dzWWGtU1dqhZn8nZQngeWs3Fjfn9cxKhPfG3srPSHYbZ5i+qUxVj/rfmI5i4ew1BzIWy+GrQTD+5zBAEl5/xHF5QmGBE+QrQcSFMpYSE3R4PGSPMmPiesFkeVv6R0BFlVCAp400n0+Y0yeeemXECpfGZXcY8qmE+cVLi+LKstmRAOn4oeX7Zrg4IRvK3pCC2KkdKQJlRnufoUaQHmqLTnsM3NNFvNaZgdSEVXKxPoBQGb+IQlhAKe1/qXCl4cfsl4kwShJpAJKIugpCpAvuRx7Y+OY3lh05e4f8qfQgygi5YjoMl0nSJt7GQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DZCL8Mqtzmb1k1dA8bAd8IZrnchykILZD0XL0mJHJtw=;
- b=p9zelp5hEyquH66HooRNVoEwy5U6vbfi+8HHip7sNL+/sxdWpqw9loc5RaN+gIlBnOPfFYSSshe45rDSLOBvQzdNqgKlnlqB+zLNKcaswZe/kSjMiUipTLIRapT1QYhWQDcigEi/BXUhtk8AJ/BRm3h9oKvwpIJss7/dvB7iPqo=
-Received: from MW4PR04CA0069.namprd04.prod.outlook.com (2603:10b6:303:6b::14)
- by DM5PR12MB1643.namprd12.prod.outlook.com (2603:10b6:4:11::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5144.26; Fri, 8 Apr 2022 12:58:05 +0000
-Received: from CO1NAM11FT009.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:6b:cafe::41) by MW4PR04CA0069.outlook.office365.com
- (2603:10b6:303:6b::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.25 via Frontend
- Transport; Fri, 8 Apr 2022 12:58:04 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT009.mail.protection.outlook.com (10.13.175.61) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5144.20 via Frontend Transport; Fri, 8 Apr 2022 12:58:04 +0000
-Received: from ethanolx5673host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 8 Apr
- 2022 07:58:02 -0500
-From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
-CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
-        <jon.grimm@amd.com>, <brijesh.singh@amd.com>,
-        <thomas.lendacky@amd.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v2] KVM: SVM: Do not activate AVIC for SEV-enabled guest
-Date:   Fri, 8 Apr 2022 08:37:10 -0500
-Message-ID: <20220408133710.54275-1-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 8 Apr 2022 09:05:17 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774751E868C;
+        Fri,  8 Apr 2022 06:03:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649422993; x=1680958993;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=fGTAiXBITEf6vhZtefTnJfo1Ql9L0wnvDyySANGwVrA=;
+  b=VImeqnQFsQyUuCRPDCbJI0VwXqNsrM93rbqct0nITwfbOLFGAfVcYnc7
+   MWggwbdwC7x+2YyvFCrHG1ewR8ekCYytgA7PiakRUQ+bvk791xwRER23P
+   oMQCDb+wuzhGZXS1GM3SnvtBIiwb6cdp56uJ9J4sU/bntxkZYzySEClMP
+   AmCw2UsRDJjK/8JuCkeAgk0EvJ6S7n5EWUkb6Is70uKAt7+5x74YJRUa/
+   wabL4YapZrjwggaXRXmEhIOIVmrvKLTvLpX7db/HkBEg9W1nZr+AmC3cW
+   5xwmSKUtes9mwNELZycnETTuXRjo28ANyie8lgMFfySkf5Uc1LFOfm+v9
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="242181296"
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="242181296"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 06:03:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="698175603"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by fmsmga001.fm.intel.com with ESMTP; 08 Apr 2022 06:03:05 -0700
+Date:   Fri, 8 Apr 2022 21:02:54 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: Re: [PATCH v5 04/13] mm/shmem: Restrict MFD_INACCESSIBLE memory
+ against RLIMIT_MEMLOCK
+Message-ID: <20220408130254.GB57095@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-5-chao.p.peng@linux.intel.com>
+ <Yk8L0CwKpTrv3Rg3@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 29973427-8219-4383-eda6-08da195f6bd8
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1643:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1643BBFC402E99423BDB4B02F3E99@DM5PR12MB1643.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JMHgVtCzR/y557fLPQffwqX8s+Cc0CsgszsO03bix2krjR+yK0rqZaX87GUsfyrcFkOs/Qb4YrvT+JSK+xsAxIdsPYl5k8PLzZW4HaH9ap/D49Ed2CT49WKbluVMlTOvy3FKT3lwNRjI+cNHy1dX6Fthr9y9tesnyvFTOJ3fwCjD44Dkjyzr3uas1Wcbn9MJFjO8WPl8dJh6JznuiyfISDZxwseR1Zrsl5OPQM+8fLRBe1qbIiw1K4v2Rie8noEQnePgKaJJWScYdIYtCS+Hz9/4Vewb7EUw+WFnaDjgw4uFRrxFAiaDXx1YEgHDF8Nb2LXhxpOpmnU6oBKXKXa19ggiISZitqzqw1c20JVuIN1HfStP9+NWRBXu7rSqyGNNXsuAIj3qL6/iIjqXaLbgK8FdGomPyVgGu+x2f2xqQI5iW/qT/zeCk0GysoXZll/+pZ4RNiZ7wV6mTHXOTNU1I/+bbQARyzP6pr/RVEXge2l+OfBGj4/yq5q7Zd9mi+9DYHFfEmhP0RLyShuqgi2/abYINW1V8DzcAIgTIgeS0N39HrXn08gzzTXcWN4WRvgS227r285ZcWYpXQXeg1PMrQcQvqK8xIJXRl9D66Qyalv5FRy5sMpLYBCPDqm0oB9z8vHe1sfAw+dMSnvURr35dJAuyxi/8sx6Gt81CMqWf1DUwCXcs/af1C0KrmXNcr5sosN6JKZICfj8901g4E25CQ==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(70586007)(70206006)(4326008)(8676002)(2616005)(82310400005)(36756003)(7696005)(1076003)(316002)(81166007)(110136005)(54906003)(16526019)(26005)(186003)(36860700001)(44832011)(8936002)(83380400001)(336012)(6666004)(426003)(356005)(86362001)(5660300002)(40460700003)(508600001)(2906002)(47076005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2022 12:58:04.6281
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 29973427-8219-4383-eda6-08da195f6bd8
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT009.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1643
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yk8L0CwKpTrv3Rg3@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since current AVIC implementation cannot support encrypted memory,
-inhibit AVIC for SEV-enabled guest.
+On Thu, Apr 07, 2022 at 04:05:36PM +0000, Sean Christopherson wrote:
+> On Thu, Mar 10, 2022, Chao Peng wrote:
+> > Since page migration / swapping is not supported yet, MFD_INACCESSIBLE
+> > memory behave like longterm pinned pages and thus should be accounted to
+> > mm->pinned_vm and be restricted by RLIMIT_MEMLOCK.
+> > 
+> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> > ---
+> >  mm/shmem.c | 25 ++++++++++++++++++++++++-
+> >  1 file changed, 24 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/mm/shmem.c b/mm/shmem.c
+> > index 7b43e274c9a2..ae46fb96494b 100644
+> > --- a/mm/shmem.c
+> > +++ b/mm/shmem.c
+> > @@ -915,14 +915,17 @@ static void notify_fallocate(struct inode *inode, pgoff_t start, pgoff_t end)
+> >  static void notify_invalidate_page(struct inode *inode, struct folio *folio,
+> >  				   pgoff_t start, pgoff_t end)
+> >  {
+> > -#ifdef CONFIG_MEMFILE_NOTIFIER
+> >  	struct shmem_inode_info *info = SHMEM_I(inode);
+> >  
+> > +#ifdef CONFIG_MEMFILE_NOTIFIER
+> >  	start = max(start, folio->index);
+> >  	end = min(end, folio->index + folio_nr_pages(folio));
+> >  
+> >  	memfile_notifier_invalidate(&info->memfile_notifiers, start, end);
+> >  #endif
+> > +
+> > +	if (info->xflags & SHM_F_INACCESSIBLE)
+> > +		atomic64_sub(end - start, &current->mm->pinned_vm);
+> 
+> As Vishal's to-be-posted selftest discovered, this is broken as current->mm may
+> be NULL.  Or it may be a completely different mm, e.g. AFAICT there's nothing that
+> prevents a different process from punching hole in the shmem backing.
+> 
+> I don't see a sane way of tracking this in the backing store unless the inode is
+> associated with a single mm when it's created, and that opens up a giant can of
+> worms, e.g. what happens with the accounting if the creating process goes away?
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- arch/x86/include/asm/kvm_host.h | 1 +
- arch/x86/kvm/svm/avic.c         | 3 ++-
- arch/x86/kvm/svm/sev.c          | 2 ++
- 3 files changed, 5 insertions(+), 1 deletion(-)
+Yes, I realized this.
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index d23e80a56eb8..ee5b0589d2b3 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1052,6 +1052,7 @@ enum kvm_apicv_inhibit {
- 	APICV_INHIBIT_REASON_X2APIC,
- 	APICV_INHIBIT_REASON_BLOCKIRQ,
- 	APICV_INHIBIT_REASON_ABSENT,
-+	APICV_INHIBIT_REASON_SEV,
- };
- 
- struct kvm_arch {
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index a1cf9c31273b..421619540ff9 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -837,7 +837,8 @@ bool avic_check_apicv_inhibit_reasons(enum kvm_apicv_inhibit reason)
- 			  BIT(APICV_INHIBIT_REASON_IRQWIN) |
- 			  BIT(APICV_INHIBIT_REASON_PIT_REINJ) |
- 			  BIT(APICV_INHIBIT_REASON_X2APIC) |
--			  BIT(APICV_INHIBIT_REASON_BLOCKIRQ);
-+			  BIT(APICV_INHIBIT_REASON_BLOCKIRQ) |
-+			  BIT(APICV_INHIBIT_REASON_SEV);
- 
- 	return supported & BIT(reason);
- }
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 75fa6dd268f0..6524409f8e07 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -260,6 +260,8 @@ static int sev_guest_init(struct kvm *kvm, struct kvm_sev_cmd *argp)
- 	INIT_LIST_HEAD(&sev->regions_list);
- 	INIT_LIST_HEAD(&sev->mirror_vms);
- 
-+	kvm_set_apicv_inhibit(kvm, APICV_INHIBIT_REASON_SEV);
-+
- 	return 0;
- 
- e_free:
--- 
-2.17.1
+> 
+> I think the correct approach is to not do the locking automatically for SHM_F_INACCESSIBLE,
+> and instead require userspace to do shmctl(.., SHM_LOCK, ...) if userspace knows the
+> consumers don't support migrate/swap.  That'd require wrapping migrate_page() and then
+> wiring up notifier hooks for migrate/swap, but IMO that's a good thing to get sorted
+> out sooner than later.  KVM isn't planning on support migrate/swap for TDX or SNP,
+> but supporting at least migrate for a software-only implementation a la pKVM should
+> be relatively straightforward.  On the notifiee side, KVM can terminate the VM if it
+> gets an unexpected migrate/swap, e.g. so that TDX/SEV VMs don't die later with
+> exceptions and/or data corruption (pre-SNP SEV guests) in the guest.
 
+SHM_LOCK sounds like a good match.
+
+Thanks,
+Chao
+> 
+> Hmm, shmem_writepage() already handles SHM_F_INACCESSIBLE by rejecting the swap, so
+> maybe it's just the page migration path that needs to be updated?
