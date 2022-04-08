@@ -2,86 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86734C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:10:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42AB4C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:11:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236729AbiDHOM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 10:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
+        id S236743AbiDHONR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 10:13:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233821AbiDHOMz (ORCPT
+        with ESMTP id S236720AbiDHONM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 10:12:55 -0400
-X-Greylist: delayed 419 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 08 Apr 2022 07:10:52 PDT
-Received: from smtpservice.6wind.com (unknown [185.13.181.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65A85345477
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 07:10:52 -0700 (PDT)
-Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
-        by smtpservice.6wind.com (Postfix) with ESMTPS id 7D7E0600DD;
-        Fri,  8 Apr 2022 16:03:52 +0200 (CEST)
-Received: from dichtel by bretzel with local (Exim 4.92)
-        (envelope-from <dichtel@6wind.com>)
-        id 1ncpDM-00051l-De; Fri, 08 Apr 2022 16:03:52 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        kongweibin <kongweibin2@huawei.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Vasily Averin <vvs@virtuozzo.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, rose.chen@huawei.com,
-        liaichun@huawei.com, Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        stable@vger.kernel.org
-Subject: [PATCH net] ipv6: fix panic when forwarding a pkt with no in6 dev
-Date:   Fri,  8 Apr 2022 16:03:42 +0200
-Message-Id: <20220408140342.19311-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <59150cd5-9950-2479-a992-94dcdaa5e63c@6wind.com>
-References: <59150cd5-9950-2479-a992-94dcdaa5e63c@6wind.com>
+        Fri, 8 Apr 2022 10:13:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B10B34CA0F
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 07:11:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649427067;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zqy0/ETekPLWIA7UmgVZ0eT5yPuRDnDxC9XVs/Ymk8c=;
+        b=SFJXRJbZKwWdFsgifIPtH4UgtlWg6AIxbwaoU89f1YCPlpSsrKJHedT/ZbHGnbL/glUYnH
+        vwZQPWFWLC9ZjHmF7TC0Z/K1bmiUipmppvoGoE+3wdaF/sBjVGll+SyBTo2olaXaUuH98Q
+        WkpNdX+HszANLNr9bcMTqmIryjDlXRE=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-512-vt_K6kNqNHWqTap-Q5iJBA-1; Fri, 08 Apr 2022 10:11:06 -0400
+X-MC-Unique: vt_K6kNqNHWqTap-Q5iJBA-1
+Received: by mail-ej1-f70.google.com with SMTP id sc14-20020a1709078a0e00b006e773507c0cso4972310ejc.10
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 07:11:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zqy0/ETekPLWIA7UmgVZ0eT5yPuRDnDxC9XVs/Ymk8c=;
+        b=NavtFAiKp+IAdM6/9e5EnSnFtIWmvaB0NUTcUyxTFwdRUWGtYrWKnB475/67IvpLh3
+         FDUP21UUbXEqwFMsqJ0PH4AfNXXZMKqrevYUzLwN5dAJh5jhxhhuj9j/BmXK5+t4FPt0
+         lEvmgTmp3ahgss4xHraZ6/whpS8Q8NTd+5v4MjRDXxJMMWJAVEHSuXLpQ2Xa0ywIAxvg
+         /PW7MJsfT5O5W7kH48Hr/2iZGQpT9eWp4TVa99oDlMB5AF4vcje8WOkf2lI2BfuRyJlC
+         LsB6x2uOgwt9g4Yg9NtTEBf2veiR19Oze0T5vuR2FmuGqgpOyF0O2ZSkIWQ+J/wtgulz
+         jFRg==
+X-Gm-Message-State: AOAM531Y0kG4Qxm4Nv0dhrfcBERrEj7KGfAmM3RLZj6MvP6sk3Xgvsiv
+        VdgidGqaPKtD30KYw/akUx1Et4UoXNrUZbSDl1W5fRacBQMn4eQvlqXxPik4jcfyjbhmwEHbdJC
+        S6MjUXFV8WSPqG3CTXuf1KAli
+X-Received: by 2002:a05:6402:d7:b0:413:673:ba2f with SMTP id i23-20020a05640200d700b004130673ba2fmr19804696edu.29.1649427064777;
+        Fri, 08 Apr 2022 07:11:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxz2QYbOAS6gQvm5hSttLC55Jx/uzKl8NPt10gwYa8XKd5lkS0jIF6mruPngPWmHh2Ot4kDoA==
+X-Received: by 2002:a05:6402:d7:b0:413:673:ba2f with SMTP id i23-20020a05640200d700b004130673ba2fmr19804684edu.29.1649427064609;
+        Fri, 08 Apr 2022 07:11:04 -0700 (PDT)
+Received: from [10.0.0.45] (host-95-245-33-130.retail.telecomitalia.it. [95.245.33.130])
+        by smtp.gmail.com with ESMTPSA id gg7-20020a170906e28700b006e73ac96f99sm6694825ejb.224.2022.04.08.07.11.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 07:11:04 -0700 (PDT)
+Message-ID: <36540bb7-ada0-451b-f935-a3a1f9c83d41@redhat.com>
+Date:   Fri, 8 Apr 2022 16:11:03 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/2] rtla: Minor fix to grammar in README.txt
+Content-Language: en-US
+To:     John Kacur <jkacur@redhat.com>
+Cc:     lkml <linux-kernel@vger.kernel.org>,
+        RT <linux-rt-users@vger.kernel.org>,
+        linux-trace-devel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+References: <20220402043939.6962-1-jkacur@redhat.com>
+ <20220402043939.6962-2-jkacur@redhat.com>
+ <24f79a7c-0146-ad0a-988a-608edd402faa@redhat.com>
+ <6b8d24c-d793-866c-30a7-f015c7babd2d@redhat.com>
+From:   Daniel Bristot de Oliveira <bristot@redhat.com>
+In-Reply-To: <6b8d24c-d793-866c-30a7-f015c7babd2d@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kongweibin reported a kernel panic in ip6_forward() when input interface
-has no in6 dev associated.
 
-The following tc commands were used to reproduce this panic:
-tc qdisc del dev vxlan100 root
-tc qdisc add dev vxlan100 root netem corrupt 5%
+>>> -The rtla is a meta-tool that includes a set of commands that
+>>> +The rtla tool is a meta-tool that includes a set of commands that
+>> I do not like bike-shedding but 'the rtla tool is a meta-tool" sounds repetitive.
+>>
+>> Does:
+>>
+>> The rtla meta-tool includes a set of commands...
+>>
+>> sound good for you?
+>>
+>> -- Daniel
+>>
+>>
+> Perfect
+> 
 
-CC: stable@vger.kernel.org
-Fixes: ccd27f05ae7b ("ipv6: fix 'disable_policy' for fwd packets")
-Reported-by: kongweibin <kongweibin2@huawei.com>
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
+Would you mind re-sending this patch?
 
-kongweibin, could you test this patch with your setup?
-
-Thanks,
-Nicolas
-
- net/ipv6/ip6_output.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index e23f058166af..fa63ef2bd99c 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -485,7 +485,7 @@ int ip6_forward(struct sk_buff *skb)
- 		goto drop;
- 
- 	if (!net->ipv6.devconf_all->disable_policy &&
--	    !idev->cnf.disable_policy &&
-+	    (!idev || !idev->cnf.disable_policy) &&
- 	    !xfrm6_policy_check(NULL, XFRM_POLICY_FWD, skb)) {
- 		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
- 		goto drop;
--- 
-2.33.0
+You will also need to adjust the paragraph alignment as the first line is
+shorter now ...
+-- Daniel
 
