@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A74C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 875A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232613AbiDHQvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 12:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
+        id S234909AbiDHQv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 12:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234169AbiDHQvT (ORCPT
+        with ESMTP id S234207AbiDHQvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 12:51:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45FC4127BE1
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 09:49:15 -0700 (PDT)
+        Fri, 8 Apr 2022 12:51:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E3F127BE1;
+        Fri,  8 Apr 2022 09:49:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C620B6211D
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 16:49:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 32A46C385AA;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FCBCB82AB3;
+        Fri,  8 Apr 2022 16:49:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3F95BC385A8;
         Fri,  8 Apr 2022 16:49:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1649436554;
-        bh=7xExulffrxewtutCFupsz/wc7uzLipKSH+Y1wJYAaPU=;
+        bh=n8OefGfWJmU2Q8NJK8cALcPoHUUvnBG35UH0onnI9ac=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=jGeghzmyOEuk+wpcQodoKGefuHiwJTbkiTW8138Vf6fnbRBgBgTGae6FqaJqiR5ky
-         2linUNZ1PYuIKgWerF86Fm9Z2Ac9bL5uSw+kguVehce0HMy7HhpHm4cfjwUYP53tj9
-         8RACwK2PR6RRCCh7Ij7tuUv+9z08r1tN0DcbK6YV2ZWOxbj4qzhTt/UxtgiGb1R5ES
-         9uGZ4I8QQk2CBK8BhtBS1VTjn47huxmAW/BNWAAtW9wu1ps+Vxe42MMdDjMkLLMpRM
-         2GI+qDcZN5IMHpIQzWh2Nb1SUM9L+dnXga5htJKnqAef+UOHIWpHAH5t8hdwY+ag5M
-         8/nO33MIam9PQ==
+        b=EcFXGi4EbqOJHDbFg8ZvEpnAVrBxeMks1WJbp1Zm3rKiB5/pF2q8aw9RgldfPoYcg
+         xlcj0OmYGFP768J/8zEPgPm5lesKu7a2MEd6bvhVXCxVxMQ3G0bdlGHzBuzOmOoM8d
+         bXG5CCguMAzGs6+VYPjk90zMdCmKA8PRM78ab3RBBvXALDclKX6tgF5Yl/XYpvNqb5
+         Y9EvGpoLwbvGYoU3ByOHuUFmlQ2d4t8x82gBkX+bE6DXVaFKY+TTnGUnOlTjP6z/mk
+         F5wa+S24v61tlNw4d83qgzF0h9ynCiq6IeMcKM++Ti4PoM4vthBk25ulKzP+yo1U19
+         VnMsnwgOZNPiA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 183D6E8DCCE;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 28F70E85BCB;
         Fri,  8 Apr 2022 16:49:14 +0000 (UTC)
-Subject: Re: [GIT PULL] regulator fixes for v5.18-rc1
+Subject: Re: [GIT PULL] SPI fixes for v5.18-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220408145656.4A774C385A1@smtp.kernel.org>
-References: <20220408145656.4A774C385A1@smtp.kernel.org>
+In-Reply-To: <20220408145718.166A6C385A3@smtp.kernel.org>
+References: <20220408145718.166A6C385A3@smtp.kernel.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220408145656.4A774C385A1@smtp.kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git tags/regulator-fix-v5.18-rc1
-X-PR-Tracked-Commit-Id: 908b768f9a8ffca2ef69f3145e23a6a259f99ac3
+X-PR-Tracked-Message-Id: <20220408145718.166A6C385A3@smtp.kernel.org>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-fix-v5.18-rc1
+X-PR-Tracked-Commit-Id: 2c7d1b281286c46049cd22b43435cecba560edde
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 98849765a58b56479dbb105565a24417752eff25
-Message-Id: <164943655409.24432.16864249162143377254.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: d00c50b35101b862c3db270ffeba53a63a1063d9
+Message-Id: <164943655416.24432.10191237600657481484.pr-tracker-bot@kernel.org>
 Date:   Fri, 08 Apr 2022 16:49:14 +0000
 To:     Mark Brown <broonie@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
+        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 08 Apr 2022 15:56:49 +0100:
+The pull request you sent on Fri, 08 Apr 2022 15:57:02 +0100:
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git tags/regulator-fix-v5.18-rc1
+> https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-fix-v5.18-rc1
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/98849765a58b56479dbb105565a24417752eff25
+https://git.kernel.org/torvalds/c/d00c50b35101b862c3db270ffeba53a63a1063d9
 
 Thank you!
 
