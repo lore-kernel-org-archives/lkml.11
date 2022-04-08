@@ -2,113 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28CCFC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 03:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F768C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 03:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231552AbiDHDdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 23:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
+        id S231594AbiDHDgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 23:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231473AbiDHDdL (ORCPT
+        with ESMTP id S230133AbiDHDgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 23:33:11 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C558B33223D
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 20:31:07 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KZP0F2bY6z1HBT5;
-        Fri,  8 Apr 2022 11:30:37 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Apr 2022 11:31:05 +0800
-Subject: Re: [PATCH v7] mm/hwpoison: fix race between hugetlb free/demotion
- and memory_failure_hugetlb()
-To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>
-CC:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-References: <20220407112929.1344748-1-naoya.horiguchi@linux.dev>
- <4b5ad6c3-99a0-b04f-21ad-8ade46984c76@huawei.com>
- <20220408015610.GA3061012@hori.linux.bs1.fc.nec.co.jp>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <e928b6a2-2bb4-82dc-1508-5b293ecb7539@huawei.com>
-Date:   Fri, 8 Apr 2022 11:31:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Thu, 7 Apr 2022 23:36:03 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBB41D2B47;
+        Thu,  7 Apr 2022 20:34:00 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id q142so6658799pgq.9;
+        Thu, 07 Apr 2022 20:34:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=dw+ROn8RvBkqEEh4rGoMJ1WVteSRDkuc1/T16Z5qZMc=;
+        b=EeBrjzYK8SkX1OqjP+i4bvgZKa+egv6bbbX6Xseqd75gu8/cTyTmEKI66pcq42X4Tt
+         jUu+tdejhl+pgRUDFf3ekJue/654i8tzbQvbIqOElao4jnOElmCskBymalqtkaTdS7td
+         4B41UNZxOQSsBUXzZI7JAuypNaXHFhb90Int7OPOhfDVDz7wMoiEOiUf8ka6R2+Qk7H0
+         2SHBCSD0e181CRTA+6Ww96XYGQD6xsDEiQ/BlD4kvrq4ITL/TcB1KFDGKNft7l/ycYcC
+         l666RQJjkeA7+bKN3J4WOGxeH8isiZMHyGn8NoU+Am/JyeLwRLmzOppBIF6BOofCi9mi
+         IqdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=dw+ROn8RvBkqEEh4rGoMJ1WVteSRDkuc1/T16Z5qZMc=;
+        b=mJF17z/z7me98J0N1Piupk6WPYhieZxg7exRZwf8Y1nT5jcHiBPslDK3t7L3gBZRlv
+         g4mLYYKm9XNh4TF4mxtn4TPEr1tYL0kMv9Nf3TnewmqOhRME5ArucHNXJkONCtdzn80Z
+         HT50FuVZXOrT2RwBRBWWrhXNcc6vviRa0aLFYGxM9LCMDrXizj5fkGMijBwSgxU0r27H
+         yoQfgXfZb/UE9hi/0RxB7/eiXuD4MBvfM/+kzMg3mZwHhiH74dZSqNusupijoMTY/hT1
+         3zCHgGwXBhs2L8LQ/y/HKxYPOT9SOq+gZW3YRaLfZJRI/RQaSFPBVnAMphfyBDhZPqAF
+         YBfw==
+X-Gm-Message-State: AOAM531Y/eV58Ja8e7DILfILX1GTcKqETKxfheeq0yqXMQaOA2V32EC5
+        jC2Jfmior7DPo2sA7iMuQjk=
+X-Google-Smtp-Source: ABdhPJw2JVZSjgvThPvGb8qxgxHfxjyJ37Kl9thDcERfEhZZSRsH+ojMV4RqYMA6JgZqguQ1nXD3wg==
+X-Received: by 2002:a63:f24c:0:b0:383:c279:e662 with SMTP id d12-20020a63f24c000000b00383c279e662mr13907253pgk.303.1649388839948;
+        Thu, 07 Apr 2022 20:33:59 -0700 (PDT)
+Received: from localhost ([192.55.54.52])
+        by smtp.gmail.com with ESMTPSA id r10-20020a17090a454a00b001c96a912aa0sm10618624pjm.3.2022.04.07.20.33.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 20:33:59 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 20:33:57 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Kai Huang <kai.huang@intel.com>
+Cc:     Xiaoyao Li <xiaoyao.li@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        isaku.yamahata@gmail.com, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [RFC PATCH v5 027/104] KVM: TDX: initialize VM with TDX specific
+ parameters
+Message-ID: <20220408033357.GF2864606@ls.amr.corp.intel.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <c3b37cf5c83f92be0e153075d81a80729bf1031e.1646422845.git.isaku.yamahata@intel.com>
+ <e392b53a-fbaa-4724-07f4-171424144f70@redhat.com>
+ <a1052ec0-4ea6-d5db-a729-deec08712683@intel.com>
+ <34d773c8d32c8d38033aae7e0fee572d757e242c.camel@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220408015610.GA3061012@hori.linux.bs1.fc.nec.co.jp>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+In-Reply-To: <34d773c8d32c8d38033aae7e0fee572d757e242c.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/8 9:56, HORIGUCHI NAOYA(堀口 直也) wrote:
-> On Thu, Apr 07, 2022 at 09:38:26PM +0800, Miaohe Lin wrote:
->> On 2022/4/7 19:29, Naoya Horiguchi wrote:
-> ...
->>> +int __get_huge_page_for_hwpoison(unsigned long pfn, int flags)
->>> +{
->>> +	struct page *page = pfn_to_page(pfn);
->>> +	struct page *head = compound_head(page);
->>> +	int ret = 2;	/* fallback to normal page handling */
->>> +	bool count_increased = false;
->>> +
->>> +	if (!PageHeadHuge(head))
->>> +		goto out;
->>> +
->>> +	if (flags & MF_COUNT_INCREASED) {
->>> +		ret = 1;
->>> +		count_increased = true;
->>> +	} else if (HPageFreed(head) || HPageMigratable(head)) {
->>> +		ret = get_page_unless_zero(head);
->>> +		if (ret)
->>> +			count_increased = true;
->>> +	} else {
->>> +		ret = -EBUSY;
->>> +		goto out;
->>> +	}
->>> +
->>> +	if (hwpoison_filter(page)) {
->>> +		ret = -EOPNOTSUPP;
->>> +		goto out;
->>> +	}
->>
->> Now hwpoison_filter is done without lock_page + unlock_page. Is this ok or
->> lock_page + unlock_page pair is indeed required?
-> 
-> Hmm, we had better call hwpoison_filter in page lock for hugepages.
-> I'll move this too, thank you.
-> 
->>> +
->>> +	if (TestSetPageHWPoison(head)) {
->>> +		ret = -EHWPOISON;
->>> +		goto out;
->>> +	}
->>
->> Without this patch, page refcnt is not decremented if MF_COUNT_INCREASED is set in flags
->> when PageHWPoison is already set. So I think this patch also fixes that issue. Thanks!
-> 
-> Good point, I even didn't notice that. And the issue still seems to exist
-> for normal page's cases.  Maybe encountering "already hwpoisoned" case from
-> madvise_inject_error() is rare but could happen when the first call failed
-> to contain the error (which is still accessible from the calling process).
+On Thu, Apr 07, 2022 at 01:51:38PM +1200,
+Kai Huang <kai.huang@intel.com> wrote:
 
-Oh, I missed normal page's issue. :) Will you fix this issue kindly or am I supposed
-to fix it?
-
-Many thanks.
-
+> On Thu, 2022-04-07 at 09:29 +0800, Xiaoyao Li wrote:
+> > On 4/5/2022 8:58 PM, Paolo Bonzini wrote:
+> > > On 3/4/22 20:48, isaku.yamahata@intel.com wrote:
+> > > > +    td_params->attributes = init_vm->attributes;
+> > > > +    if (td_params->attributes & TDX_TD_ATTRIBUTE_PERFMON) {
+> > > > +        pr_warn("TD doesn't support perfmon. KVM needs to save/restore "
+> > > > +            "host perf registers properly.\n");
+> > > > +        return -EOPNOTSUPP;
+> > > > +    }
+> > > 
+> > > Why does KVM have to hardcode this (and LBR/AMX below)?  Is the level of 
+> > > hardware support available from tdx_caps, for example through the CPUID 
+> > > configs (0xA for this one, 0xD for LBR and AMX)?
+> > 
+> > It's wrong code. PMU is allowed.
+> > 
+> > AMX and LBR are disallowed because and the time we wrote the codes they 
+> > are not supported by KVM. Now AMX should be allowed, but (arch-)LBR 
+> > should be still blocked until KVM merges arch-LBR support.
 > 
-...
+> I think Isaku's idea is we don't support them in the first submission?
+> 
+> If so as I suggested, we should add a TODO in comment..
+
+Sure, will add a TODO comment.
+
+-- 
+Isaku Yamahata <isaku.yamahata@gmail.com>
