@@ -2,99 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F37C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:16:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91D7C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238079AbiDHRSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 13:18:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
+        id S238091AbiDHRU3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 13:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234749AbiDHRSD (ORCPT
+        with ESMTP id S238082AbiDHRU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 13:18:03 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C70DF1F
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 10:15:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649438159; x=1680974159;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=qB0q0fqvmsHFyPwGvPxPmeyxmyNVu7+h3oTBX87IKuo=;
-  b=QN3XqF72M58RZPFp1DA4V4m6MIqgBe/PN4TKRfE7ZNw0iXJNcC1ywR0H
-   87BbKfBjRqAsFSHnagJNi5NQsJdmKbz/gP0FYRG1fzM76ddPeqfEQir+u
-   VDQ2glpTAcAjhHKj6iXdBuS/Xz0lAlkshT4VPe/NvcY1oRnRUocOw+U2u
-   lV5Cr9vt1Ofy49FjWjaEpnDX9rRGbbNhCKwwWfyOROyL86Ez9Q11hVBSR
-   aJldlF52hybIRYLsa80Ue+WwONoDGTwLfzmcVNlyHWMluKuNEiQ1kuEtz
-   MMbSuUWiUvUbZA0exdqp7JJ5V6AYDTa8VJXiWwxgizIHCU5M+02qoijo/
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="241581257"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="241581257"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 10:15:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="698250496"
-Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 08 Apr 2022 10:15:58 -0700
-Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ncsDF-0000UT-FQ;
-        Fri, 08 Apr 2022 17:15:57 +0000
-Date:   Sat, 9 Apr 2022 01:15:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dave Stevenson <dave.stevenson@raspberrypi.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dom Cobley <popcornmix@gmail.com>
-Subject: [l1k:smsc95xx_5.17 281/887]
- drivers/staging/vc04_services/vc-sm-cma/vc_sm_cma_vchi.c:472:55: sparse:
- sparse: Using plain integer as NULL pointer
-Message-ID: <202204090144.S9m5LfZs-lkp@intel.com>
+        Fri, 8 Apr 2022 13:20:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64FB10504D;
+        Fri,  8 Apr 2022 10:18:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40F3862175;
+        Fri,  8 Apr 2022 17:18:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E285C385AA;
+        Fri,  8 Apr 2022 17:18:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649438302;
+        bh=MbZ+trhl7zeD1lTZLqOn8O3zllxwQ5hjkWePlpqfncc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Tdc1pj5M3xQ4d3BE2ILiOy/9SVR4lC22W57HI2PTiihJ171vzw6AZt7jyp0QRvTj1
+         6z0aHHGApwW62oiyq7BpINCnoThD2FFJ4a1/VdVDC/j4jjEPcUjdA9axtw/CaDZl8Q
+         LyNpJTQjZAuy0B84rLhfxkDFgiB1HcI4lMPK/fF2e2w2OIsj5d8oIfyQbU/V+M+MOA
+         iRp9J8WrpGFGb0ndmQs68J/LmndlE577IoHsPd6iEwLuJiwCtxHjGlupOnl+wbj5Yv
+         8/twPKBzA9tiH1AKJoqVOU80NjcUK3ly987H0vmQIUsHV9CMjiyYR6NhXhCoIaZlMR
+         vmi7hE6EZrmuA==
+Received: by mail-yb1-f177.google.com with SMTP id f38so16277585ybi.3;
+        Fri, 08 Apr 2022 10:18:22 -0700 (PDT)
+X-Gm-Message-State: AOAM533i5FMDwHnXSoqpu0xJe5Xwyd8lqUprH/OQWGEKqGhpEKJWnr2q
+        97XcP3KJtQZe//JoKh5pTFDs2YifDd3usGOutfk=
+X-Google-Smtp-Source: ABdhPJx3lRrAf8LzfOfLcw9K6468JToUxW9zoGSZLqq0kwo5P4Vc1Oz8upqdJlDhdaqwdUY/ES0I7SKBi32XaC+iBLQ=
+X-Received: by 2002:a25:8546:0:b0:61e:1d34:ec71 with SMTP id
+ f6-20020a258546000000b0061e1d34ec71mr13416194ybn.259.1649438301674; Fri, 08
+ Apr 2022 10:18:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220407165713.9243-1-logang@deltatee.com>
+In-Reply-To: <20220407165713.9243-1-logang@deltatee.com>
+From:   Song Liu <song@kernel.org>
+Date:   Fri, 8 Apr 2022 10:18:10 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW4=Ubc6LTmot97Tx2oGzuuBmV2U7yMWuEQMhPzjb+ed=w@mail.gmail.com>
+Message-ID: <CAPhsuW4=Ubc6LTmot97Tx2oGzuuBmV2U7yMWuEQMhPzjb+ed=w@mail.gmail.com>
+Subject: Re: [PATCH v1 0/7] Minor Raid5 Fixes and Cleanup
+To:     Logan Gunthorpe <logang@deltatee.com>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        linux-raid <linux-raid@vger.kernel.org>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/l1k/linux smsc95xx_5.17
-head:   05d68ced287b30f62f18f95b5476135ef669804a
-commit: 56d0cd616fe11877854ad1b0768b3be67bb30349 [281/887] staging: vc04_services: Add new vc-sm-cma driver
-config: csky-randconfig-s031-20220408 (https://download.01.org/0day-ci/archive/20220409/202204090144.S9m5LfZs-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/l1k/linux/commit/56d0cd616fe11877854ad1b0768b3be67bb30349
-        git remote add l1k https://github.com/l1k/linux
-        git fetch --no-tags l1k smsc95xx_5.17
-        git checkout 56d0cd616fe11877854ad1b0768b3be67bb30349
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=csky SHELL=/bin/bash drivers/staging/vc04_services/vc-sm-cma/ drivers/staging/vc04_services/vchiq-mmal/
+On Thu, Apr 7, 2022 at 9:57 AM Logan Gunthorpe <logang@deltatee.com> wrote:
+>
+> Hi,
+>
+> This series contains a few cleanup and minor fixes to the raid5 code
+> to make it a bit easier to hack on.
+>
+> Patch 1 cleans up the error returns in setup_conf() (I had an
+> abandonded patch that added another error out and needed this clean
+> more sensible).
+>
+> Patch 2 fixes a sparse warning with the raid5_percpu structure.
+>
+> Patch 3 through 6 fixes sparse warnings related to missing __rcu
+> annotations when using the RCU calls.
+>
+> Patch 7 just adds some basic __must_hold annotations for the device_lock
+> to any function that is called while holding the lock. Sparse doesn't
+> really check this, but the annotation makes the locks a little easier
+> to analyze.
+>
+> Thanks,
+>
+> Logan
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Applied to md-next. Thanks!
 
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/staging/vc04_services/vc-sm-cma/vc_sm_cma_vchi.c:472:55: sparse: sparse: Using plain integer as NULL pointer
-   drivers/staging/vc04_services/vc-sm-cma/vc_sm_cma_vchi.c:501:59: sparse: sparse: Using plain integer as NULL pointer
-
-vim +472 drivers/staging/vc04_services/vc-sm-cma/vc_sm_cma_vchi.c
-
-   467	
-   468	int vc_sm_cma_vchi_free(struct sm_instance *handle, struct vc_sm_free_t *msg,
-   469				u32 *cur_trans_id)
-   470	{
-   471		return vc_sm_cma_vchi_send_msg(handle, VC_SM_MSG_TYPE_FREE,
- > 472					   msg, sizeof(*msg), 0, 0, cur_trans_id, 0);
-   473	}
-   474	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>
+> --
+>
+> Logan Gunthorpe (7):
+>   md/raid5: Cleanup setup_conf() error returns
+>   md/raid5: Un-nest struct raid5_percpu definition
+>   md/raid5: Add __rcu annotation to struct disk_info
+>   md/raid5: Annotate rdev/replacement accesses when nr_pending is
+>     elevated
+>   md/raid5: Annotate rdev/replacement access when mddev_lock is held
+>   md/raid5-ppl: Annotate with rcu_dereference_protected()
+>   md/raid5: Annotate functions that hold device_lock with __must_hold
+>
+>  drivers/md/raid5-ppl.c |  13 ++-
+>  drivers/md/raid5.c     | 179 ++++++++++++++++++++++++++---------------
+>  drivers/md/raid5.h     |  23 +++---
+>  3 files changed, 139 insertions(+), 76 deletions(-)
+>
+>
+> base-commit: 3123109284176b1532874591f7c81f3837bbdc17
+> --
+> 2.30.2
