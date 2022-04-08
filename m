@@ -2,148 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADCCAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:01:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D92C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231981AbiDHODL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 10:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50444 "EHLO
+        id S236703AbiDHODR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 10:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236702AbiDHOCg (ORCPT
+        with ESMTP id S236712AbiDHOCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 10:02:36 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC65D1066D6
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 07:00:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649426432; x=1680962432;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=JGEahfptMaisGpqsTz3IjwWEbJiEh74BgJcUZ8EK2Dk=;
-  b=jY4+1Bn8g1PR2Ji/qlGVhpCSmGcm3+1rAY4te+QVTDTWsVw2BgrAAfbl
-   apgeuxxZzXnBOjQ4egd/wxufu9BVb+zlBtqyo7Pwgtyv8OtF3QFiEQxrM
-   8IyDCRzjWrzN6ZsL0HeVWMg6B+cGEE+ZPkIJM1hbwNFjoaoVlO1XFlmn4
-   CxY4IVnQOFyVA+CvoOlUxBnsasWYbi6gaiS6CwOlXbmGojk4kGggr8P/b
-   KAlYOr/6Thi5JzFn/vwP/s3NADCA/UndpFP/IoMP2cTzomVH6Gvq5NHaC
-   VFCnDiP66I0xcN6aZcq5JT8dyDSC4RVML9Yurl2SidaFECPsedTnw8DlZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="260434422"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="260434422"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 07:00:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="852077676"
-Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 08 Apr 2022 07:00:31 -0700
-Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ncpA6-0000Kj-E6;
-        Fri, 08 Apr 2022 14:00:30 +0000
-Date:   Fri, 8 Apr 2022 21:59:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Amir Goldstein <amir73il@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [amir73il:fan_evictable 6/16]
- include/linux/fsnotify_backend.h:269:36: sparse: sparse: incorrect type in
- assignment (different base types)
-Message-ID: <202204082112.PhSsWj1q-lkp@intel.com>
+        Fri, 8 Apr 2022 10:02:38 -0400
+Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311C13A5C5;
+        Fri,  8 Apr 2022 07:00:35 -0700 (PDT)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id 3256C1E9; Fri,  8 Apr 2022 16:00:33 +0200 (CEST)
+Date:   Fri, 8 Apr 2022 16:00:31 +0200
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
+Message-ID: <YlA//+zdOqgaFkUc@8bytes.org>
+References: <20220308054421.847385-1-baolu.lu@linux.intel.com>
+ <20220315002125.GU11336@nvidia.com>
+ <Yk/q1BGN8pC5HVZp@8bytes.org>
+ <1033ebe4-fa92-c9bd-a04b-8b28b21e25ea@linux.intel.com>
+ <20220408122352.GW2120790@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220408122352.GW2120790@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/amir73il/linux fan_evictable
-head:   bac37b7aec7f4dc6f4bc9c96356341245620fb5e
-commit: cb71ef37a75afb4856098c9bf1b2e860b836e74e [6/16] fsnotify: create helpers for group mark_mutex lock
-config: openrisc-randconfig-s032-20220408 (https://download.01.org/0day-ci/archive/20220408/202204082112.PhSsWj1q-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/amir73il/linux/commit/cb71ef37a75afb4856098c9bf1b2e860b836e74e
-        git remote add amir73il https://github.com/amir73il/linux
-        git fetch --no-tags amir73il fan_evictable
-        git checkout cb71ef37a75afb4856098c9bf1b2e860b836e74e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=openrisc SHELL=/bin/bash fs/notify/
+On Fri, Apr 08, 2022 at 09:23:52AM -0300, Jason Gunthorpe wrote:
+> Why rc3? It has been 4 weeks now with no futher comments.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Because I start applying new code to branches based on -rc3. In the past
+I used different -rc's for the topic branches (usually the latest -rc
+available when I started applying to that branch), but that caused silly
+merge conflicts from time to time. So I am now basing every topic branch
+on the same -rc, which is usually -rc3. Rationale is that by -rc3 time
+the kernel should have reasonably stabilized after the merge window.
 
+Regards,
 
-sparse warnings: (new ones prefixed by >>)
-   fs/notify/mark.c:279:9: sparse: sparse: context imbalance in 'fsnotify_put_mark' - unexpected unlock
-   fs/notify/mark.c: note: in included file:
->> include/linux/fsnotify_backend.h:269:36: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted gfp_t [usertype] owner_flags @@     got unsigned int @@
-   include/linux/fsnotify_backend.h:269:36: sparse:     expected restricted gfp_t [usertype] owner_flags
-   include/linux/fsnotify_backend.h:269:36: sparse:     got unsigned int
->> include/linux/fsnotify_backend.h:275:44: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int flags @@     got restricted gfp_t [usertype] owner_flags @@
-   include/linux/fsnotify_backend.h:275:44: sparse:     expected unsigned int flags
-   include/linux/fsnotify_backend.h:275:44: sparse:     got restricted gfp_t [usertype] owner_flags
-   fs/notify/mark.c:545:39: sparse: sparse: context imbalance in 'fsnotify_grab_connector' - different lock contexts for basic block
-   fs/notify/mark.c:657:20: sparse: sparse: context imbalance in 'fsnotify_add_mark_list' - unexpected unlock
->> include/linux/fsnotify_backend.h:269:36: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted gfp_t [usertype] owner_flags @@     got unsigned int @@
-   include/linux/fsnotify_backend.h:269:36: sparse:     expected restricted gfp_t [usertype] owner_flags
-   include/linux/fsnotify_backend.h:269:36: sparse:     got unsigned int
->> include/linux/fsnotify_backend.h:275:44: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int flags @@     got restricted gfp_t [usertype] owner_flags @@
-   include/linux/fsnotify_backend.h:275:44: sparse:     expected unsigned int flags
-   include/linux/fsnotify_backend.h:275:44: sparse:     got restricted gfp_t [usertype] owner_flags
-   fs/notify/mark.c:738:25: sparse: sparse: context imbalance in 'fsnotify_find_mark' - unexpected unlock
->> include/linux/fsnotify_backend.h:269:36: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted gfp_t [usertype] owner_flags @@     got unsigned int @@
-   include/linux/fsnotify_backend.h:269:36: sparse:     expected restricted gfp_t [usertype] owner_flags
-   include/linux/fsnotify_backend.h:269:36: sparse:     got unsigned int
->> include/linux/fsnotify_backend.h:275:44: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int flags @@     got restricted gfp_t [usertype] owner_flags @@
-   include/linux/fsnotify_backend.h:275:44: sparse:     expected unsigned int flags
-   include/linux/fsnotify_backend.h:275:44: sparse:     got restricted gfp_t [usertype] owner_flags
->> include/linux/fsnotify_backend.h:269:36: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted gfp_t [usertype] owner_flags @@     got unsigned int @@
-   include/linux/fsnotify_backend.h:269:36: sparse:     expected restricted gfp_t [usertype] owner_flags
-   include/linux/fsnotify_backend.h:269:36: sparse:     got unsigned int
->> include/linux/fsnotify_backend.h:275:44: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int flags @@     got restricted gfp_t [usertype] owner_flags @@
-   include/linux/fsnotify_backend.h:275:44: sparse:     expected unsigned int flags
-   include/linux/fsnotify_backend.h:275:44: sparse:     got restricted gfp_t [usertype] owner_flags
->> include/linux/fsnotify_backend.h:275:44: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int flags @@     got restricted gfp_t [usertype] owner_flags @@
-   include/linux/fsnotify_backend.h:275:44: sparse:     expected unsigned int flags
-   include/linux/fsnotify_backend.h:275:44: sparse:     got restricted gfp_t [usertype] owner_flags
-   fs/notify/mark.c:812:17: sparse: sparse: context imbalance in 'fsnotify_destroy_marks' - unexpected unlock
---
-   fs/notify/fdinfo.c: note: in included file:
->> include/linux/fsnotify_backend.h:269:36: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted gfp_t [usertype] owner_flags @@     got unsigned int @@
-   include/linux/fsnotify_backend.h:269:36: sparse:     expected restricted gfp_t [usertype] owner_flags
-   include/linux/fsnotify_backend.h:269:36: sparse:     got unsigned int
->> include/linux/fsnotify_backend.h:275:44: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int flags @@     got restricted gfp_t [usertype] owner_flags @@
-   include/linux/fsnotify_backend.h:275:44: sparse:     expected unsigned int flags
-   include/linux/fsnotify_backend.h:275:44: sparse:     got restricted gfp_t [usertype] owner_flags
-
-vim +269 include/linux/fsnotify_backend.h
-
-   260	
-   261	/*
-   262	 * These helpers are used to prevent deadlock when reclaiming inodes with
-   263	 * evictable marks of the same group that is allocating a new mark.
-   264	 */
-   265	static inline void fsnotify_group_lock(struct fsnotify_group *group)
-   266	{
-   267		mutex_lock(&group->mark_mutex);
-   268		if (FSNOTIFY_GROUP_FLAG(group, NOFS))
- > 269			group->owner_flags = memalloc_nofs_save();
-   270	}
-   271	
-   272	static inline void fsnotify_group_unlock(struct fsnotify_group *group)
-   273	{
-   274		if (FSNOTIFY_GROUP_FLAG(group, NOFS))
- > 275			memalloc_nofs_restore(group->owner_flags);
-   276		mutex_unlock(&group->mark_mutex);
-   277	}
-   278	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+	Joerg
