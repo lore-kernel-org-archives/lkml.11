@@ -2,105 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97487C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 20:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D47E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 20:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239554AbiDHUxl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 16:53:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39592 "EHLO
+        id S239149AbiDHU4q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 16:56:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239550AbiDHUxZ (ORCPT
+        with ESMTP id S229586AbiDHU4n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 16:53:25 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2502EF15B
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 13:51:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649451081; x=1680987081;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=u1zt2GErlMYJ+NdZYUUhcH4dQfa9vZ0KgBSF7aAR2Is=;
-  b=kYtHmSkui9maeEHsDfVCdfVEQfnCwe6nFbhy2RFJl8io1u9w1B3gZYf9
-   dq4kEi3UoEzrkGVPRBJga2igv0PUMZCXkEBX2BbHCO2NqkAiOe/SzbhgO
-   L6aJErg6GWtvSxl9/F2s+c590UJM9Y/20wRLjcimDzhn4FaM1O8nz0ma8
-   M4COOY3rjGdn+6k/+MbROszgMEpSelFeu2g1QPLA5+jbsPe2UGrX85Rck
-   0KSD8dMG01+/TjFcnMS4od4vSjF3b4ejovDlxQoRHCtaKrLhtJZzu7D+j
-   gZ4tZ3SJW1d+NXZIzJ/tiIheQXOuYk9BqyEHhpOqPv6l+Q7kgOV5xVcDJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="241619997"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="241619997"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 13:51:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="524920240"
-Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 08 Apr 2022 13:51:19 -0700
-Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ncvZe-0000dB-En;
-        Fri, 08 Apr 2022 20:51:18 +0000
-Date:   Sat, 9 Apr 2022 04:50:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sudeep Holla <sudeep.holla@arm.com>, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Sudeep Holla <sudeep.holla@arm.com>,
-        op-tee@lists.trustedfirmware.org,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Balint Dobszay <balint.dobszay@arm.com>
-Subject: Re: [PATCH] tee: Add Arm FF-A TEE driver
-Message-ID: <202204090424.doAuWAHT-lkp@intel.com>
-References: <20220408134144.1532704-1-sudeep.holla@arm.com>
+        Fri, 8 Apr 2022 16:56:43 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EDC55F60
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 13:54:37 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id h19so9451765pfv.1
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 13:54:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=s2fZHIotgsxswHvP6sguOxIbmh2IU0gAkJkvl8us6mg=;
+        b=kSFN4A0aUO7j8SQVn5H/Fqr4jiYtS3UROq0rDlzzLesv4zln2QvOKFdhoBiD9nrnC/
+         ly6HOweBb7Y5mjm30ZI8ER4Re7zKQSAGymlBiqijlENVEIFYc2ZzF5hFv8CvosOQL9lc
+         lC5sjl4V1mY5YoZsvNeeBGsn0cHuojNJtdav3e8b9n3m90EyJ3EvkcY17N5xM6EifeKI
+         ZcUvor38Bav3ISeUKVY4+7HmiA4Vugkp8gijpYdcN+hHV249zDdfnXZH1+welko7hklG
+         PKbutjw0UbA3REDa4Md8VLUI2Ol/jr9gYv+b86jyY/fpCBngvmZPhPAoaG5BjgUApDN7
+         BeDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=s2fZHIotgsxswHvP6sguOxIbmh2IU0gAkJkvl8us6mg=;
+        b=lQiWUvJdlIGMdur+ijPULmv6+LmhO9yq/ysySM1edXk5CjyzcGT2BO7DFZZMrnN0qY
+         mtvmd6BSqVuZDHWonBln5YkX9y4HcK22MonMd5tdH1VepXneC0vMgdhnlm9QoYXzoPwA
+         B7BBl4P8LYKMBevLdTptptruvYVg41K7eo5Wma5am0G4vWR61a0NDLT6MnD9iI9s2otT
+         C89Pi37njvZ+++PDN7VMHILrgzacS258Wcl7G03p33CU921juY2QBKu0W0ScM+R2ZuGE
+         GyiX6nE5agMzknM+ie97Moz2lZTdNnZ6zkx/RXDime/kLvDIRGVtHH2HZLy5LzFILm5N
+         bV2g==
+X-Gm-Message-State: AOAM531Hrw/FKfCzmCOXE3shpTVUCISqsKqAEp74zhokjox77yt3vGLS
+        yfLlI5ny+6CZFajvZ6Wq19bb4g==
+X-Google-Smtp-Source: ABdhPJzl2qcM0uP6/pCLd+oZzLdz9tDMXdCr5zj20GepMe5DR+cWERKZFDNS6wBxjC7dH6BrquqL6w==
+X-Received: by 2002:a63:121d:0:b0:39c:c252:135a with SMTP id h29-20020a63121d000000b0039cc252135amr9281357pgl.289.1649451277433;
+        Fri, 08 Apr 2022 13:54:37 -0700 (PDT)
+Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
+        by smtp.gmail.com with ESMTPSA id s35-20020a056a001c6300b004fb20b5d6c1sm26732009pfw.40.2022.04.08.13.54.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 13:54:37 -0700 (PDT)
+From:   Kevin Hilman <khilman@baylibre.com>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
+        viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     matthias.bgg@gmail.com, jia-wei.chang@mediatek.com,
+        roger.lu@mediatek.com, hsinyi@google.com, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH V2 13/15] cpufreq: mediatek: Link CCI device to CPU
+In-Reply-To: <20220408045908.21671-14-rex-bc.chen@mediatek.com>
+References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
+ <20220408045908.21671-14-rex-bc.chen@mediatek.com>
+Date:   Fri, 08 Apr 2022 13:54:36 -0700
+Message-ID: <7hfsmn5m9f.fsf@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220408134144.1532704-1-sudeep.holla@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sudeep,
+Rex-BC Chen <rex-bc.chen@mediatek.com> writes:
 
-I love your patch! Yet something to improve:
+> From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+>
+> In some MediaTek SoCs, like MT8183, CPU and CCI share the same power
+> supplies. Cpufreq needs to check if CCI devfreq exists and wait until
+> CCI devfreq ready before scaling frequency.
+>
+> - Add is_ccifreq_ready() to link CCI device to CPI, and CPU will start
+>   DVFS when CCI is ready.
+> - Add platform data for MT8183.
+>
+> Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on linux/master v5.18-rc1]
-[cannot apply to next-20220408]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+The checks here are not enough, and will lead to unexpected behavior.
+IIUC, before doing DVFS, you're checking:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Sudeep-Holla/tee-Add-Arm-FF-A-TEE-driver/20220408-214327
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 1831fed559732b132aef0ea8261ac77e73f7eadf
-config: powerpc-allnoconfig (https://download.01.org/0day-ci/archive/20220409/202204090424.doAuWAHT-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/e95f1810cd4b79dd9b7378d1d7769ddbd2d9e1df
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Sudeep-Holla/tee-Add-Arm-FF-A-TEE-driver/20220408-214327
-        git checkout e95f1810cd4b79dd9b7378d1d7769ddbd2d9e1df
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc INSTALL_HDR_PATH=/tmp/usr/src/linux-headers-powerpc-allnoconfig-e95f1810cd4b79dd9b7378d1d7769ddbd2d9e1df headers_install
+1) if the "cci" DT node is present and
+2) if the driver for that device is bound
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+If both those conditions are not met, you don't actually fail, you just
+silently do nothing in ->set_target().  As Angelo pointed out also, this
+is not a good idea, and will be rather confusing to users.
 
-All errors (new ones prefixed by >>):
+The same thing would happen if the cci DT node was present, but the CCI
+devfreq driver was disabled.  Silent failure would also be quite
+unexpected behavior.  Similarily, if the cci DT node is not present at
+all (like it is in current upstream DT), this CPUfreq driver will
+silently do nothing.  Not good.
 
->> error: include/uapi/linux/arm_ffa_tee.h: missing "WITH Linux-syscall-note" for SPDX-License-Identifier
-   make[2]: *** [scripts/Makefile.headersinst:63: usr/include/linux/arm_ffa_tee.h] Error 1
-   make[2]: Target '__headers' not remade because of errors.
-   make[1]: *** [Makefile:1280: headers] Error 2
-   make[1]: Target 'headers_install' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'headers_install' not remade because of errors.
+So, this patch needs to handle several scenarios:
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+1) CCI DT node not present
+
+In this case, the driver should still operate normally.  With no CCI
+node, or driver there's no conflict.
+
+2) CCI DT present/enabled but not yet bound
+
+In this case, you could return -EAGAIN as suggested by Angelo, or maybe
+better, it should do a deferred probe.
+
+3) CCI DT present, but driver disabled
+
+This case is similar to (1), this driver should continue to work.
+
+Kevin
