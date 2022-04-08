@@ -2,180 +2,316 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E4A6C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 19:53:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E793FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 19:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239285AbiDHTzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 15:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
+        id S239292AbiDHT4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 15:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231140AbiDHTzu (ORCPT
+        with ESMTP id S231140AbiDHT4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 15:55:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF738194A8D;
-        Fri,  8 Apr 2022 12:53:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A00061295;
-        Fri,  8 Apr 2022 19:53:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 784A8C385A3;
-        Fri,  8 Apr 2022 19:53:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649447624;
-        bh=EO6y/2Vxfwx/PPY6ps/w8g8ppeuV134S5BhypszPVmM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=NLTvKltG8EiziSelx3ZHmUIAtdqz+Z7UQ1XGAWrJUXy8RrE3rKrpGstycYTeONBqk
-         mE7CnK62NvcctuMVC41g3oPMYTVVdGsRBaQUoqwruVEn59NO1N0Qx/RcGl3I/bTk6B
-         2FFe6B/o+DEIrYDd817Y4imaACqjsLLB/UYlyRtQFB+FjIz400DDtuS8neo2etXtDq
-         8Vm9J3AOx1SW23Io8fjYX1Zezm9hh5ByScec1Zlttj33v5su1Yw5ctskjuBx0S/8aF
-         lQEfhv/wZQA06c4ekrHhyLX4fVBNmvT2o9fMRHCoKnsAnrlgVy86cJSBqndb2//dRd
-         W0WWKM1VPAPYw==
-Date:   Fri, 8 Apr 2022 14:53:42 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Linux PCI <linux-pci@vger.kernel.org>,
-        Stefan Gottwald <gottwald@igel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] PCI: PM: Quirk bridge D3 on Elo i2
-Message-ID: <20220408195342.GA339430@bhelgaas>
+        Fri, 8 Apr 2022 15:56:06 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6F61A395E;
+        Fri,  8 Apr 2022 12:54:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1649447641; x=1680983641;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=78KzzoULlHztaD6JKoh2QWioOahWxYDIMygij3c91ks=;
+  b=dgQrROpFXdXTeV0Fn/Wf87mOWzOhNhvnxx2lAF6D64ITBLhdoD+0EGyk
+   OWygiJYTfUUxc2mSOb2Cwv1MeLq+uyKMLw3jrn2P8MTg0ryP4QfYOVIG0
+   9ZPgr4PYtdpMa195u1XoFDle6nvKNtHynM+Q29Nc+T3mK1ghQGW97feVM
+   8=;
+X-IronPort-AV: E=Sophos;i="5.90,245,1643673600"; 
+   d="scan'208";a="193163929"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-92ba9394.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 08 Apr 2022 19:53:59 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2a-92ba9394.us-west-2.amazon.com (Postfix) with ESMTPS id 4921841791;
+        Fri,  8 Apr 2022 19:53:58 +0000 (UTC)
+Received: from EX13D02UWC004.ant.amazon.com (10.43.162.236) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Fri, 8 Apr 2022 19:53:57 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13D02UWC004.ant.amazon.com (10.43.162.236) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Fri, 8 Apr 2022 19:53:56 +0000
+Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
+ (172.19.181.128) by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP
+ Server id 15.0.1497.32 via Frontend Transport; Fri, 8 Apr 2022 19:53:56 +0000
+Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
+        id 75F552C24; Fri,  8 Apr 2022 19:53:55 +0000 (UTC)
+From:   Ali Saidi <alisaidi@amazon.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <german.gomez@arm.com>,
+        <leo.yan@linaro.org>, <acme@kernel.org>
+CC:     <alisaidi@amazon.com>, <benh@kernel.crashing.org>,
+        <Nick.Forrington@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <andrew.kilroy@arm.com>, <james.clark@arm.com>,
+        <john.garry@huawei.com>, <jolsa@kernel.org>, <kjain@linux.ibm.com>,
+        <lihuafei1@huawei.com>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <mingo@redhat.com>,
+        <namhyung@kernel.org>, <peterz@infradead.org>, <will@kernel.org>
+Subject: [PATCH v5 4/5] perf arm-spe: Use SPE data source for neoverse cores
+Date:   Fri, 8 Apr 2022 19:53:43 +0000
+Message-ID: <20220408195344.32764-5-alisaidi@amazon.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220408195344.32764-1-alisaidi@amazon.com>
+References: <20220408195344.32764-1-alisaidi@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0g9cg=nJ0yr5-a_phNnJLiU74KrfsULsAEsWBKeRr7HCQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 04:46:14PM +0200, Rafael J. Wysocki wrote:
-> On Fri, Apr 1, 2022 at 1:34 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> > On Thu, Mar 31, 2022 at 11:57 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
-> > > On Thu, Mar 31, 2022 at 07:38:51PM +0200, Rafael J. Wysocki wrote:
-> > > > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> > > >
-> > > > If one of the PCIe root ports on Elo i2 is put into D3cold and then
-> > > > back into D0, the downstream device becomes permanently inaccessible,
-> > > > so add a bridge D3 DMI quirk for that system.
-> > > >
-> > > > This was exposed by commit 14858dcc3b35 ("PCI: Use
-> > > > pci_update_current_state() in pci_enable_device_flags()"), but before
-> > > > that commit the root port in question had never been put into D3cold
-> > > > for real due to a mismatch between its power state retrieved from the
-> > > > PCI_PM_CTRL register (which was accessible even though the platform
-> > > > firmware indicated that the port was in D3cold) and the state of an
-> > > > ACPI power resource involved in its power management.
-> > >
-> > > In the bug report you suspect a firmware issue.  Any idea what that
-> > > might be?  It looks like a Gemini Lake Root Port, so I wouldn't think
-> > > it would be a hardware issue.
-> >
-> > The _ON method of the ACPI power resource associated with the root
-> > port doesn't work correctly.
-> >
-> > > Weird how things come in clumps.  Was just looking at Mario's patch,
-> > > which also has to do with bridges and D3.
-> > >
-> > > Do we need a Fixes line?  E.g.,
-> > >
-> > >   Fixes: 14858dcc3b35 ("PCI: Use pci_update_current_state() in pci_enable_device_flags()")
-> >
-> > Strictly speaking, it is not a fix for the above commit.
-> >
-> > It is a workaround for a firmware issue uncovered by it which wasn't
-> > visible, because power management was not used correctly on the
-> > affected system because of another firmware problem addressed by
-> > 14858dcc3b35.  It wouldn't have worked anyway had it been attempted
-> > AFAICS.
-> >
-> > I was thinking about CCing this change to -stable instead.
+When synthesizing data from SPE, augment the type with source information
+for Arm Neoverse cores. The field is IMPLDEF but the Neoverse cores all use
+the same encoding. I can't find encoding information for any other SPE
+implementations to unify their choices with Arm's thus that is left for
+future work.
 
-Makes sense, thanks.
+This change populates the mem_lvl_num for Neoverse cores instead of the
+deprecated mem_lvl namespace.
 
-> > > > BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215715
-> > > > Reported-by: Stefan Gottwald <gottwald@igel.com>
-> > > > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> > > > ---
-> > > >  drivers/pci/pci.c |   10 ++++++++++
-> > > >  1 file changed, 10 insertions(+)
-> > > >
-> > > > Index: linux-pm/drivers/pci/pci.c
-> > > > ===================================================================
-> > > > --- linux-pm.orig/drivers/pci/pci.c
-> > > > +++ linux-pm/drivers/pci/pci.c
-> > > > @@ -2920,6 +2920,16 @@ static const struct dmi_system_id bridge
-> > > >                       DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
-> > > >                       DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
-> > > >               },
-> > > > +             /*
-> > > > +              * Downstream device is not accessible after putting a root port
-> > > > +              * into D3cold and back into D0 on Elo i2.
-> > > > +              */
-> > > > +             .ident = "Elo i2",
-> > > > +             .matches = {
-> > > > +                     DMI_MATCH(DMI_SYS_VENDOR, "Elo Touch Solutions"),
-> > > > +                     DMI_MATCH(DMI_PRODUCT_NAME, "Elo i2"),
-> > > > +                     DMI_MATCH(DMI_PRODUCT_VERSION, "RevB"),
-> > > > +             },
-> > >
-> > > Is this bridge_d3_blacklist[] similar to the PCI_DEV_FLAGS_NO_D3 bit?
-> >
-> > Not really.  The former applies to the entire platform and not to an
-> > individual device.
-> >
-> > > Could they be folded together?  We have a lot of bits that seem
-> > > similar but maybe not exactly the same (dev->bridge_d3,
-> > > dev->no_d3cold, dev->d3cold_allowed, dev->runtime_d3cold,
-> > > PCI_DEV_FLAGS_NO_D3, pci_bridge_d3_force, etc.)  Ugh.
-> >
-> > Yes, I agree that this needs to be cleaned up.
-> >
-> > > bridge_d3_blacklist[] itself was added by 85b0cae89d52 ("PCI:
-> > > Blacklist power management of Gigabyte X299 DESIGNARE EX PCIe ports"),
-> > > which honestly looks kind of random, i.e., it doesn't seem to be
-> > > working around a hardware or even a firmware defect.
-> > >
-> > > Apparently the X299 issue is that 00:1c.4 is connected to a
-> > > Thunderbolt controller, and the BIOS keeps the Thunderbolt controller
-> > > powered off unless something is attached to it?  At least, 00:1c.4
-> > > leads to bus 05, and in the dmesg log attached to [1] shows no devices
-> > > on bus 05.
-> > >
-> > > It also says the platform doesn't support PCIe native hotplug, which
-> > > matches what Mika said about it using ACPI hotplug.  If a system is
-> > > using ACPI hotplug, it seems like maybe *that* should prevent us from
-> > > putting things in D3cold?  How can we know whether ACPI hotplug
-> > > depends on a certain power state?
-> >
-> > We have this check in pci_bridge_d3_possible():
-> >
-> > if (bridge->is_hotplug_bridge && !pciehp_is_native(bridge))
-> >             return false;
-> >
-> > but this only applies to the case when the particular bridge itself is
-> > a hotplug one using ACPI hotplug.
-> >
-> > If ACPI hotplug is used, it generally is unsafe to put PCIe ports into
-> > D3cold, because in that case it is unclear what the platform
-> > firmware's assumptions regarding control of the config space are.
-> >
-> > However, I'm not sure how this is related to the patch at hand.
-> 
-> So I'm not sure how you want to proceed here.
-> 
-> The platform is quirky, so the quirk for it will need to be added this
-> way or another.  The $subject patch adds it using the existing
-> mechanism, which is the least intrusive way.
-> 
-> You seem to be thinking that the existing mechanism may not be
-> adequate, but I'm not sure for what reason and anyway I think that it
-> can be adjusted after adding the quirk.
-> 
-> Please let me know what you think.
+Signed-off-by: Ali Saidi <alisaidi@amazon.com>
+---
+ .../util/arm-spe-decoder/arm-spe-decoder.c    |   1 +
+ .../util/arm-spe-decoder/arm-spe-decoder.h    |  12 ++
+ tools/perf/util/arm-spe.c                     | 127 ++++++++++++++++--
+ 3 files changed, 126 insertions(+), 14 deletions(-)
 
-I don't understand all that's going on here, but I applied it to
-pci/pm for v5.19, thanks!
+diff --git a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
+index 5e390a1a79ab..091987dd3966 100644
+--- a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
++++ b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.c
+@@ -220,6 +220,7 @@ static int arm_spe_read_record(struct arm_spe_decoder *decoder)
+ 
+ 			break;
+ 		case ARM_SPE_DATA_SOURCE:
++			decoder->record.source = payload;
+ 			break;
+ 		case ARM_SPE_BAD:
+ 			break;
+diff --git a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
+index 69b31084d6be..46a61df1145b 100644
+--- a/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
++++ b/tools/perf/util/arm-spe-decoder/arm-spe-decoder.h
+@@ -29,6 +29,17 @@ enum arm_spe_op_type {
+ 	ARM_SPE_ST		= 1 << 1,
+ };
+ 
++enum arm_spe_neoverse_data_source {
++	ARM_SPE_NV_L1D		 = 0x0,
++	ARM_SPE_NV_L2		 = 0x8,
++	ARM_SPE_NV_PEER_CORE	 = 0x9,
++	ARM_SPE_NV_LOCAL_CLUSTER = 0xa,
++	ARM_SPE_NV_SYS_CACHE	 = 0xb,
++	ARM_SPE_NV_PEER_CLUSTER	 = 0xc,
++	ARM_SPE_NV_REMOTE	 = 0xd,
++	ARM_SPE_NV_DRAM		 = 0xe,
++};
++
+ struct arm_spe_record {
+ 	enum arm_spe_sample_type type;
+ 	int err;
+@@ -40,6 +51,7 @@ struct arm_spe_record {
+ 	u64 virt_addr;
+ 	u64 phys_addr;
+ 	u64 context_id;
++	u16 source;
+ };
+ 
+ struct arm_spe_insn;
+diff --git a/tools/perf/util/arm-spe.c b/tools/perf/util/arm-spe.c
+index d2b64e3f588b..a20285cf98e3 100644
+--- a/tools/perf/util/arm-spe.c
++++ b/tools/perf/util/arm-spe.c
+@@ -34,6 +34,7 @@
+ #include "arm-spe-decoder/arm-spe-decoder.h"
+ #include "arm-spe-decoder/arm-spe-pkt-decoder.h"
+ 
++#include "../../arch/arm64/include/asm/cputype.h"
+ #define MAX_TIMESTAMP (~0ULL)
+ 
+ struct arm_spe {
+@@ -45,6 +46,7 @@ struct arm_spe {
+ 	struct perf_session		*session;
+ 	struct machine			*machine;
+ 	u32				pmu_type;
++	u64				midr;
+ 
+ 	struct perf_tsc_conversion	tc;
+ 
+@@ -399,33 +401,127 @@ static bool arm_spe__is_memory_event(enum arm_spe_sample_type type)
+ 	return false;
+ }
+ 
+-static u64 arm_spe__synth_data_source(const struct arm_spe_record *record)
++static const struct midr_range neoverse_spe[] = {
++	MIDR_ALL_VERSIONS(MIDR_NEOVERSE_N1),
++	MIDR_ALL_VERSIONS(MIDR_NEOVERSE_N2),
++	MIDR_ALL_VERSIONS(MIDR_NEOVERSE_V1),
++	{},
++};
++
++
++static void arm_spe__synth_data_source_neoverse(const struct arm_spe_record *record,
++						union perf_mem_data_src *data_src)
+ {
+-	union perf_mem_data_src	data_src = { 0 };
++	/*
++	 * Even though four levels of cache hierarchy are possible, no known
++	 * production Neoverse systems currently include more than three levels
++	 * so for the time being we assume three exist. If a production system
++	 * is built with four the this function would have to be changed to
++	 * detect the number of levels for reporting.
++	 */
+ 
+-	if (record->op == ARM_SPE_LD)
+-		data_src.mem_op = PERF_MEM_OP_LOAD;
+-	else
+-		data_src.mem_op = PERF_MEM_OP_STORE;
++	/*
++	 * We have no data on the hit level or data source for stores in the
++	 * Neoverse SPE records.
++	 */
++	if (record->op & ARM_SPE_ST) {
++		data_src->mem_lvl = PERF_MEM_LVL_NA;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_ANY_CACHE;
++		data_src->mem_snoop = PERF_MEM_SNOOP_NA;
++		return;
++	}
++
++
++	switch (record->source) {
++	case ARM_SPE_NV_L1D:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L1;
++		data_src->mem_snoop = PERF_MEM_SNOOP_NONE;
++		break;
++	case ARM_SPE_NV_L2:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L2;
++		data_src->mem_snoop = PERF_MEM_SNOOP_NONE;
++		break;
++	case ARM_SPE_NV_PEER_CORE:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_snoopx = PERF_MEM_SNOOPX_PEER;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L2;
++		break;
++	/*
++	 * We don't know if this is L1, L2 but we do know it was a cache-2-cache
++	 * transfer, so set SNOOPX_PEER
++	 */
++	case ARM_SPE_NV_LOCAL_CLUSTER:
++	case ARM_SPE_NV_PEER_CLUSTER:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_snoopx = PERF_MEM_SNOOPX_PEER;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L3;
++		break;
++	/*
++	 * System cache is assumed to be L3
++	 */
++	case ARM_SPE_NV_SYS_CACHE:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L3;
++		data_src->mem_snoop = PERF_MEM_SNOOP_HIT;
++		break;
++	/*
++	 * We don't know what level it hit in, except it came from the other
++	 * socket
++	 */
++	case ARM_SPE_NV_REMOTE:
++		data_src->mem_snoop = PERF_MEM_SNOOP_HIT;
++		data_src->mem_remote = PERF_MEM_REMOTE_REMOTE;
++		data_src->mem_snoop = PERF_MEM_SNOOP_NA;
++		break;
++	case ARM_SPE_NV_DRAM:
++		data_src->mem_lvl = PERF_MEM_LVL_HIT;
++		data_src->mem_lvl_num = PERF_MEM_LVLNUM_RAM;
++		data_src->mem_snoop = PERF_MEM_SNOOP_NONE;
++		break;
++	default:
++		break;
++	}
++}
+ 
++static void arm_spe__synth_data_source_generic(const struct arm_spe_record *record,
++						union perf_mem_data_src *data_src)
++{
+ 	if (record->type & (ARM_SPE_LLC_ACCESS | ARM_SPE_LLC_MISS)) {
+-		data_src.mem_lvl = PERF_MEM_LVL_L3;
++		data_src->mem_lvl = PERF_MEM_LVL_L3;
+ 
+ 		if (record->type & ARM_SPE_LLC_MISS)
+-			data_src.mem_lvl |= PERF_MEM_LVL_MISS;
++			data_src->mem_lvl |= PERF_MEM_LVL_MISS;
+ 		else
+-			data_src.mem_lvl |= PERF_MEM_LVL_HIT;
++			data_src->mem_lvl |= PERF_MEM_LVL_HIT;
+ 	} else if (record->type & (ARM_SPE_L1D_ACCESS | ARM_SPE_L1D_MISS)) {
+-		data_src.mem_lvl = PERF_MEM_LVL_L1;
++		data_src->mem_lvl = PERF_MEM_LVL_L1;
+ 
+ 		if (record->type & ARM_SPE_L1D_MISS)
+-			data_src.mem_lvl |= PERF_MEM_LVL_MISS;
++			data_src->mem_lvl |= PERF_MEM_LVL_MISS;
+ 		else
+-			data_src.mem_lvl |= PERF_MEM_LVL_HIT;
++			data_src->mem_lvl |= PERF_MEM_LVL_HIT;
+ 	}
+ 
+ 	if (record->type & ARM_SPE_REMOTE_ACCESS)
+-		data_src.mem_lvl |= PERF_MEM_LVL_REM_CCE1;
++		data_src->mem_lvl |= PERF_MEM_LVL_REM_CCE1;
++}
++
++static u64 arm_spe__synth_data_source(const struct arm_spe_record *record, u64 midr)
++{
++	union perf_mem_data_src	data_src = { 0 };
++	bool is_neoverse = is_midr_in_range(midr, neoverse_spe);
++
++	if (record->op & ARM_SPE_LD)
++		data_src.mem_op = PERF_MEM_OP_LOAD;
++	else
++		data_src.mem_op = PERF_MEM_OP_STORE;
++
++	if (is_neoverse)
++		arm_spe__synth_data_source_neoverse(record, &data_src);
++	else
++		arm_spe__synth_data_source_generic(record, &data_src);
+ 
+ 	if (record->type & (ARM_SPE_TLB_ACCESS | ARM_SPE_TLB_MISS)) {
+ 		data_src.mem_dtlb = PERF_MEM_TLB_WK;
+@@ -446,7 +542,7 @@ static int arm_spe_sample(struct arm_spe_queue *speq)
+ 	u64 data_src;
+ 	int err;
+ 
+-	data_src = arm_spe__synth_data_source(record);
++	data_src = arm_spe__synth_data_source(record, spe->midr);
+ 
+ 	if (spe->sample_flc) {
+ 		if (record->type & ARM_SPE_L1D_MISS) {
+@@ -1183,6 +1279,8 @@ int arm_spe_process_auxtrace_info(union perf_event *event,
+ 	struct perf_record_auxtrace_info *auxtrace_info = &event->auxtrace_info;
+ 	size_t min_sz = sizeof(u64) * ARM_SPE_AUXTRACE_PRIV_MAX;
+ 	struct perf_record_time_conv *tc = &session->time_conv;
++	const char *cpuid = perf_env__cpuid(session->evlist->env);
++	u64 midr = strtol(cpuid, NULL, 16);
+ 	struct arm_spe *spe;
+ 	int err;
+ 
+@@ -1202,6 +1300,7 @@ int arm_spe_process_auxtrace_info(union perf_event *event,
+ 	spe->machine = &session->machines.host; /* No kvm support */
+ 	spe->auxtrace_type = auxtrace_info->type;
+ 	spe->pmu_type = auxtrace_info->priv[ARM_SPE_PMU_TYPE];
++	spe->midr = midr;
+ 
+ 	spe->timeless_decoding = arm_spe__is_timeless_decoding(spe);
+ 
+-- 
+2.32.0
 
-Bjorn
