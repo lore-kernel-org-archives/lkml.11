@@ -2,89 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 19:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02094C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 19:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239235AbiDHTbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 15:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41704 "EHLO
+        id S239249AbiDHTdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 15:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiDHTbc (ORCPT
+        with ESMTP id S229457AbiDHTdq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 15:31:32 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F7843EF2;
-        Fri,  8 Apr 2022 12:29:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649446167; x=1680982167;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IeX+LwFKu9WkBhOrMB4NDU8d3pZ1SH+32hd88PLD2W4=;
-  b=ITpHK21TcM1iohOJaQFnvsqt5KgQStAd9Ha5zDcniRDcvV6j2EnmbjaN
-   SdNfKGAdVDH+w3JyiDShiN0CnvldhCTrEZ3Y3UxSLDT1KxUY3eMZyJkTw
-   CbpJH2MR/SdFV1ot2KvVSzWBiQb1MiMLWc8NrLPHCkO5wjniWWM8jCFLu
-   v6IAIQZGudoYqacst+ngr7AE0I1lb0SEx/K/mSTtZ+WaV+1h+zdBj8Hg6
-   T8kKj3KfTku7oIbPO+UF1FCffEqNHJX+wuFTrHLqzUJjpHpiGsdeDS/3q
-   Wu5/Wzo/MxMMmT+Wq/wonQZWtPnJm/AzxT+oXiBwuRkxuAFesngYmXWnJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="249199123"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="249199123"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 12:29:26 -0700
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="506670178"
-Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 12:29:26 -0700
-Date:   Fri, 8 Apr 2022 12:29:24 -0700
-From:   "Luck, Tony" <tony.luck@intel.com>
-To:     "Koralahalli Channabasappa, Smita" <skoralah@amd.com>
-Cc:     Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        Yazen Ghannam <yazen.ghannam@amd.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>
-Subject: Re: [RFC PATCH 5/5] x86/mce: Handle AMD threshold interrupt storms
-Message-ID: <YlCNFCZgV0tOk4LI@agluck-desk3.sc.intel.com>
-References: <20220406063542.183946-1-Smita.KoralahalliChannabasappa@amd.com>
- <20220406063542.183946-6-Smita.KoralahalliChannabasappa@amd.com>
- <b140590dadea411ca3641b0537bfcd9f@intel.com>
- <30c01863-85ef-4cd4-9e73-340e2d98b9bf@amd.com>
+        Fri, 8 Apr 2022 15:33:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF5342B260
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 12:31:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649446300;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=J/4FS6QgJbYZUbVh33aTHwESfnBXpb7C9e5m+pOdZFI=;
+        b=Tu30R8NZip4K2SmpzPSvfm9YXChGAYwvAztUfY3zSgq37ZqCLDoNLGDrXoH/cJXbv7+n9X
+        Hfujf5fs+T2eDSqmufcNxVziYm1zBRZVD3BuXL8tsjExDZL3v9GTGdfrI8EdArF/pPQ+8V
+        51WiEtWyfWxaBMkoDR66Pg/2IRiwtgk=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-182-tw_CLlFuMmqYreCtsYiu4Q-1; Fri, 08 Apr 2022 15:31:39 -0400
+X-MC-Unique: tw_CLlFuMmqYreCtsYiu4Q-1
+Received: by mail-qv1-f70.google.com with SMTP id 7-20020a0562140dc700b004442d23d2d8so730990qvt.2
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 12:31:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=J/4FS6QgJbYZUbVh33aTHwESfnBXpb7C9e5m+pOdZFI=;
+        b=WUYXb4I9c14Kfdv5INz7AMbwHd6GLuPeZgBIzZrbd5qZC86X1WhgyDYRmZg8ccm1tU
+         +RNvE6GWpiCOndDnXjMBc5cyWS0xjD7Yvyh1PD+jYqfsc933EedUBRado6hF+wi5I6OS
+         QnVWURquKc17dAgunl2b5RQP+hU1rRL/QQXQvRC2TDAxyH7+aSrCNawhYL5XiB27N7pM
+         iGaK3scBrT9RhbB5fLd77HWPG1eLhld5J3EW24AX+IXmVHHwFDJChNfD7n2U0oeIlMN6
+         Zr0Od8KNP0eaDrpnDTVzCG/Z8luiiQ6MQtZ1ThmnL41Qp4y1tWahXqBHcFlCn/xJ1fb3
+         i/3A==
+X-Gm-Message-State: AOAM531xsflKTQGEvai6rraE3projwGMYQXHpl0/ngw9O6gGlK1LFNGI
+        om8g+moKifHGvKZVW1iGmuVIfrwRhWNGS9AQOqr3aIVks24jwq0l92t55CxMvFWbbqn3xmbda+t
+        0ZRYiLHOOgpxjkfy9PKiFxilb
+X-Received: by 2002:a0c:a942:0:b0:443:a395:cc1f with SMTP id z2-20020a0ca942000000b00443a395cc1fmr17508597qva.68.1649446298777;
+        Fri, 08 Apr 2022 12:31:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy6WRzVBUsxr4z76/Vo1yRAQPt5Sh/twBX7OswYQzgS+mj+QgxLxxuRtinZMaRFYjPQaDiZQA==
+X-Received: by 2002:a0c:a942:0:b0:443:a395:cc1f with SMTP id z2-20020a0ca942000000b00443a395cc1fmr17508574qva.68.1649446298496;
+        Fri, 08 Apr 2022 12:31:38 -0700 (PDT)
+Received: from emilne (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id u129-20020a376087000000b0067e401d7177sm14788983qkb.3.2022.04.08.12.31.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 12:31:37 -0700 (PDT)
+Message-ID: <c121430b1b5c8f5816b2b42b9178d00889260c90.camel@redhat.com>
+Subject: Re: [PATCH 1/4] scsi: core: constify pointer to scsi_host_template
+From:   "Ewan D. Milne" <emilne@redhat.com>
+To:     John Garry <john.garry@huawei.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Doug Gilbert <dgilbert@interlog.com>,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     james.smart@broadcom.com
+Date:   Fri, 08 Apr 2022 15:31:35 -0400
+In-Reply-To: <7b3885e3-dbae-ff0b-21dc-c28d635d950b@huawei.com>
+References: <20220408103027.311624-1-krzysztof.kozlowski@linaro.org>
+         <2a88a992-641a-b3ff-fe39-7a61fff87cb6@huawei.com>
+         <4c3be5b6-50ef-9e9a-6cee-9642df943342@linaro.org>
+         <7b3885e3-dbae-ff0b-21dc-c28d635d950b@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <30c01863-85ef-4cd4-9e73-340e2d98b9bf@amd.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 02:48:47AM -0500, Koralahalli Channabasappa, Smita wrote:
-> Hi,
+On Fri, 2022-04-08 at 13:57 +0100, John Garry wrote:
+> On 08/04/2022 13:32, Krzysztof Kozlowski wrote:
+> > On 08/04/2022 14:14, John Garry wrote:
+> > > On 08/04/2022 11:30, Krzysztof Kozlowski wrote:
+> > > > Several pointers to 'struct scsi_host_template' do not modify it, so
+> > > > made them const for safety.
+> > > > 
+> > > Is this standard practice? What is so special here?
+> > This is standard practice and there is nothing special here. Pointers to
+> > const are preferred because:
+> > 1. They add safety if data is actually const. This is not yet the case,
+> > but scsi_host_template allocation could be made const with some effort.
+
+This seems unlikely, because some drivers, e.g. vmw_pvscsi and scsi_debug,
+modify the scsi_host_template based on things like module parameters.
+
 > 
-> On 4/6/22 5:44 PM, Luck, Tony wrote:
+> To me this seems better, but I think that some drivers might modify 
+> their scsi_host_template (so not possible)
+
+Several drivers modify scsi_host_template, e.g. .can_queue, .cmd_per_lun
+
+There is also code in lpfc_create_port() that initializes a scsi_host_template
+that is embedded in the lpfc_hba struct.  I don't think it gets modified after
+scsi_add_host() but it seems like driver maintainers might expect to be able
+to do so, in general.
+
+-Ewan
+
 > 
-> > +		/* Return early on an interrupt storm */
-> > +		if (this_cpu_read(bank_storm[bank]))
-> > +			return;
+> > 2. The more const variables, the easier function contents and its impact
+> > is to understand. This is actually the biggest benefit when dealing with
+> > code touching different structures.
 > > 
-> > Is you reasoning for early return that you already have plenty of
-> > logged errors from this bank, so OK to skip additional processing
-> > of this one?
+> > In general, constifying is a common practice everywhere in the kernel.
 > 
-> The idea behind this was: Once, the interrupts are turned off by
-> track_cmci_storm() on a storm, (which is called before this "if
-> statement") logging and handling of subsequent corrected errors
-> will be taken care by machine_check_poll(). Hence, no need to
-> redo this again in the handler....
+> Thanks,
+> John
 > 
-> Let me know what are your thoughts on this?
 
-Makes sense. There's a storm, so picking up this error now,
-or waiting for machine_check_poll() to get it makes little
-difference.
-
--Tony
