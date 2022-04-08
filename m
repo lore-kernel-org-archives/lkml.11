@@ -2,158 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA996C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1471C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236623AbiDHSYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 14:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40842 "EHLO
+        id S238609AbiDHSYw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 14:24:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238561AbiDHSYj (ORCPT
+        with ESMTP id S238570AbiDHSYm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 14:24:39 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE923767C2
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 11:22:35 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id g21so11571160iom.13
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 11:22:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RYwXnig9f21Chdat6SF+WPZVd4H+/rQmk5ghVe03Nnc=;
-        b=h0dxrAmJeLpuLhuCdZMXB9uBDxr79JzYzqk41IZ3Cees0HePkzfq7y61ayTKYZ4Kp0
-         stXuxDVzJwTGmgi1Py3QiOg/Wo/l5wAxlJPBwlvu8vRzkDPo7CnCEcWnv+OWUJwXSxsT
-         670r3vFrfqToyuEk94z29hg+JrtVflXzwY7A0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RYwXnig9f21Chdat6SF+WPZVd4H+/rQmk5ghVe03Nnc=;
-        b=Yleuw+orI3PxwYePvtBUCFuylF1npzu9oMBborFaNmbMprprJ1IuZCz79MJaICqoJq
-         kwhxqDmG95SvrnPhw2sDpcgvvH1B1im6F6aaFmc7MjP2iiFSmaorQkxBiuMVfOnUN9lI
-         GXJLwEnfiEqwEpHpmVd+1UNzuKgCqh3fkcai+3ylzocXT2qULCCmARfAU2vSIu6e059u
-         jhf0T+6XhKL2B/9QvBC7rHTD+lzFRT+8f8TUGGaAQ+Ho/K5bOE/mNO2H4DdbJ9D6bfaW
-         wvxUZyAuLzsSUNPW7cbC676tyiFrweVQl89QFH0OckPQcOYpI0hnJLKIPmDRD2XuxadH
-         4K8A==
-X-Gm-Message-State: AOAM531f5ON678HkEV7dUJ+MXrjDClDgcbnZp5uavjFdi40XbNIURQuu
-        8Tc5PLt3mDzJT1ru4f4SgqfxcK7WfzpzGKaOkfFmnAkZJ7g=
-X-Google-Smtp-Source: ABdhPJyH5A0/apLQNtsrXZwFHVr4iUeSw4iaQWZCvOiGUKrDUk8rTYV3pv5fABdZD/WULtvh1va7xOrMP1IlfUl2pNw=
-X-Received: by 2002:a5d:8450:0:b0:64c:cc87:c5fc with SMTP id
- w16-20020a5d8450000000b0064ccc87c5fcmr8769758ior.190.1649442154606; Fri, 08
- Apr 2022 11:22:34 -0700 (PDT)
+        Fri, 8 Apr 2022 14:24:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C01337868E;
+        Fri,  8 Apr 2022 11:22:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DADB66220E;
+        Fri,  8 Apr 2022 18:22:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97ECEC385A3;
+        Fri,  8 Apr 2022 18:22:33 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="djbMPAQR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1649442153;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jAgaDVvKz2mrahZxhZJxvyI0QeySOXC+VCOwMUwenjM=;
+        b=djbMPAQR4aqJUQDv+3pg3YapaJCJtrqHTv182qnVHzhzX38f/Gy5cwbRLXMn1fX0kpVI9h
+        EMnqZPYoR76vXVWG+QR8GFe8DR0F8gnqmvU01F8MCU5X46mkfIP/s+eXJyzk4PzQijiyvd
+        zxhAQBPpNZOLAiRbTPg/OR/eSF3huiY=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9ab255ec (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 8 Apr 2022 18:22:32 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        arnd@arndb.de
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
+        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, x86@kernel.org,
+        linux-xtensa@linux-xtensa.org
+Subject: [PATCH RFC v1 03/10] riscv: use sched_clock() for random_get_entropy() instead of zero
+Date:   Fri,  8 Apr 2022 20:21:38 +0200
+Message-Id: <20220408182145.142506-4-Jason@zx2c4.com>
+In-Reply-To: <20220408182145.142506-1-Jason@zx2c4.com>
+References: <20220408182145.142506-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-References: <20220407210734.2548973-1-joel@joelfernandes.org>
- <20220408142232.GA4285@paulmck-ThinkPad-P17-Gen-1> <CAEXW_YQWeqfcKdAKmCn4fFGyWXjOGd=29wvi6bL3k7s2bGkDJw@mail.gmail.com>
- <20220408155002.GF4285@paulmck-ThinkPad-P17-Gen-1> <CAEXW_YQDgSO2XkkVhN3RBBz3vwYdAtTuPz-xYYsAPnwEnbYZPA@mail.gmail.com>
- <20220408174908.GK4285@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20220408174908.GK4285@paulmck-ThinkPad-P17-Gen-1>
-From:   Joel Fernandes <joel@joelfernandes.org>
-Date:   Fri, 8 Apr 2022 14:22:22 -0400
-Message-ID: <CAEXW_YQ+oE3xQ0tLnBMFxRXLqKZkT5UfjF+CULxnhf9F-dEA2g@mail.gmail.com>
-Subject: Re: [PATCH RFC] rcu/nocb: Provide default all-CPUs mask for RCU_NOCB_CPU=y
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        rcu <rcu@vger.kernel.org>, Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 1:49 PM Paul E. McKenney <paulmck@kernel.org> wrote:
->
-> On Fri, Apr 08, 2022 at 01:20:02PM -0400, Joel Fernandes wrote:
-> > On Fri, Apr 8, 2022 at 11:50 AM Paul E. McKenney <paulmck@kernel.org> wrote:
-> > >
-> > > On Fri, Apr 08, 2022 at 10:52:21AM -0400, Joel Fernandes wrote:
-> > > > On Fri, Apr 8, 2022 at 10:22 AM Paul E. McKenney <paulmck@kernel.org> wrote:
-> > > > >
-> > > > > On Thu, Apr 07, 2022 at 09:07:33PM +0000, Joel Fernandes wrote:
-> > > > > > On systems with CONFIG_RCU_NOCB_CPU=y, there is no default mask provided
-> > > > > > which ends up not offloading any CPU. This patch removes yet another
-> > > > > > dependency from the bootloader having to know about RCU, about how many
-> > > > > > CPUs the system has, and about how to provide the mask. Basically, I
-> > > > > > think we should stop pretending that the user knows what they are doing :).
-> > > > > > In other words, if NO_CB_CPU is enabled, lets make use of it.
-> > > > > >
-> > > > > > My goal is to make RCU as zero-config as possible with sane defaults. If
-> > > > > > user wants to provide rcu_nocbs= or nohz_full= options, then those will
-> > > > > > take precedence and this patch will have no effect.
-> > > > > >
-> > > > > > I tested providing rcu_nocbs= option, ensuring that is preferred over this.
-> > > > >
-> > > > > Unless something has changed, this would change behavior relied upon
-> > > > > the enterprise distros.  Last I checked, they want to supply a single
-> > > > > binary, as evidenced by the recent CONFIG_PREEMPT_DYNAMIC Kconfig option,
-> > > > > and they also want the default to be non-offloaded.  That is, given a
-> > > > > kernel built with CONFIG_RCU_NOCB_CPU=y and without either a nohz_full
-> > > > > or a nocbs_cpu boot parameter, all of the CPUs must be non-offloaded.
-> > > >
-> > > > Just curious, do you have information (like data, experiment results)
-> > > > on why they want default non-offloaded? Or maybe they haven't tried
-> > > > the recent work done in NOCB code?
-> > >
-> > > I most definitely do.  When I first introduced callback offloading, I
-> > > made it completely replace softirq callback invocation.  There were some
-> > > important throughput-oriented workloads that got hit with significant
-> > > performance degradation due to this change.  Enterprise Java workloads
-> > > were the worst hit.
-> > >
-> > > Android does not run these workloads, and I am not aware of ChromeOS
-> > > running them, either.
-> >
-> > Thanks a lot for mentioning this, I was not aware and will make note
-> > of it :-). I wonder if the scheduler had something to do with the
-> > degradation.
->
-> It is all too easy to blame the scheduler and all too easy to forget
-> that the scheduler has a hard job.  ;-)
->
-> And in this case, the scheduler was just doing what it was told.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is really not the best we can do.
+Instead, at least calling sched_clock() would be preferable, because
+that always needs to return _something_, even falling back to jiffies
+eventually. It's not as though sched_clock() is super high precision or
+guaranteed to be entropic, but basically anything that's not zero all
+the time is better than returning zero all the time.
 
-No was just saying the scheduler has to do more work with NOCB because
-of the extra threads, so that likely degrades the workloads (context
-switch, wake ups, etc).
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ arch/riscv/include/asm/timex.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> > > > > And is it really all -that- hard to specify an additional boot parameter
-> > > > > across ChromeOS devices?  Android seems to manage it.  ;-)
-> > > >
-> > > > That's not the hard part I think. The hard part is to make sure a
-> > > > future Linux user who is not an RCU expert does not forget to turn it
-> > > > on. ChromeOS is not the only OS that I've seen someone forget to do it
-> > > > ;-D. AFAIR, there were Android devices too in the past where I saw
-> > > > this forgotten. I don't think we should rely on the users doing the
-> > > > right thing (as much as possible).
-> > > >
-> > > > The single kernel binary point makes sense but in this case, I think
-> > > > the bigger question that I'd have is what is the default behavior and
-> > > > what do *most* users of RCU want. So we can keep sane defaults for the
-> > > > majority and reduce human errors related to configuration.
-> > >
-> > > If both the ChromeOS and Android guys need it, I could reinstate the
-> > > old RCU_NOCB_CPU_ALL Kconfig option.  This was removed due to complaints
-> > > about RCU Kconfig complexity, but I believe that Reviewed-by from ChromeOS
-> > > and Android movers and shakers would overcome lingering objections.
-> > >
-> > > Would that help?
-> >
-> > Yes, I think I would love for such a change. I am planning to add a
-> > test to ChromeOS to check whether config options were correctly set
-> > up. So I can test for both the RCU_NOCB_CPU options.
->
-> Very good!
->
-> Do you love such a change enough to create the patch and to collect
-> convincing Reviewed-by tags?
+diff --git a/arch/riscv/include/asm/timex.h b/arch/riscv/include/asm/timex.h
+index 507cae273bc6..5b802755ca3a 100644
+--- a/arch/riscv/include/asm/timex.h
++++ b/arch/riscv/include/asm/timex.h
+@@ -7,6 +7,7 @@
+ #define _ASM_RISCV_TIMEX_H
+ 
+ #include <asm/csr.h>
++#include <linux/sched/clock.h>
+ 
+ typedef unsigned long cycles_t;
+ 
+@@ -41,7 +42,7 @@ static inline u32 get_cycles_hi(void)
+ static inline unsigned long random_get_entropy(void)
+ {
+ 	if (unlikely(clint_time_val == NULL))
+-		return 0;
++		return sched_clock();
+ 	return get_cycles();
+ }
+ #define random_get_entropy()	random_get_entropy()
+-- 
+2.35.1
 
-Yes sure, just so I understand - basically I have to make the code in
-my patch run when RCU_NOCB_CPU_ALL option is passed (and keep the
-option default disabled), but otherwise default to the current
-behavior, right?
-
-Thanks,
-
-- Joel
