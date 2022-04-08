@@ -2,129 +2,291 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59DEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:36:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3EEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:37:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234582AbiDHKiw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 06:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
+        id S234622AbiDHKjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 06:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230421AbiDHKiv (ORCPT
+        with ESMTP id S230421AbiDHKjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 06:38:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBA7B31C41F
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:36:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649414207;
+        Fri, 8 Apr 2022 06:39:46 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F5B31C41F
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:37:42 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649414261;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=F28wkZSv5A1NMfrHvZh1ec20dPy/XDhI8frJaxMcDE4=;
-        b=Zv2Fz3wFV3Igaq36M9mEk6vA3F/iy6GTVbSQBil+Y/Upx+0ZgfD6a6RCGcEHuo3Y4a46Og
-        6qX0AKXqTtFAS0D2TbQfyCJoGzsOxEFX6+HJkf/Yehvc8M2um17qbZem8rmuSPXYihe+/b
-        KADWVlomVdTtom/rii8e6s1UVpKK9OU=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-88-0rryqG5-P5CaMvelP4YtAw-1; Fri, 08 Apr 2022 06:36:43 -0400
-X-MC-Unique: 0rryqG5-P5CaMvelP4YtAw-1
-Received: by mail-qt1-f197.google.com with SMTP id a24-20020ac81098000000b002e1e06a72aeso7440195qtj.6
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 03:36:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=F28wkZSv5A1NMfrHvZh1ec20dPy/XDhI8frJaxMcDE4=;
-        b=nBELeUBqFOH53WNa12S4pi5cTn/b1Nlrf36+v+mUhjsOmRTpFtIae70aUmi3Jt3qGy
-         frT833PKKapGXVnQZ34BLUmuB3mKqp+KVPYXLTOEFN7bgwbJ+FO7mORGOvBHY1JHZjqP
-         DNBXDR/GlCXEM1/h9TF6bFKrneEQVH0pDSjQFWrEfCe9JzdxcX2vNTvLHV012R1TczlN
-         6KXIEs/w7eUtp6GJWiqgl0B2//DvVt1h/K+9uwTbwkTgYhbNKJUqqOcYg0MjuURtyCGP
-         bfApTqtDpVX1BfG9ru8Am9I1u3s9j580F6BS7yDDIRmqURj3Yzel2bdI1PvHXkjcae1T
-         d6PA==
-X-Gm-Message-State: AOAM531dYFodhCqzf4RnNs21ALZ+s1UQLUgbXPZg8Yh3AD2UNjwCDCfs
-        J2ZvbeeH7/fwAh3alTiE/MSGB/kRh1VHe9nec1ou/RP2WlJVkOqFG+502tM/qXooIVB9BTgN1DR
-        CjTPdhMuqME6umSGRBtJlenXD
-X-Received: by 2002:ac8:130c:0:b0:2e2:3919:d62f with SMTP id e12-20020ac8130c000000b002e23919d62fmr15511844qtj.206.1649414203172;
-        Fri, 08 Apr 2022 03:36:43 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJymKdCMVYacKzzkoZ3u3HDIG1VcbL28nI/RY3Mv66Wp0IoR8Cy7tXMDu7Wqj6ip9Sf4VgNQuw==
-X-Received: by 2002:ac8:130c:0:b0:2e2:3919:d62f with SMTP id e12-20020ac8130c000000b002e23919d62fmr15511826qtj.206.1649414202954;
-        Fri, 08 Apr 2022 03:36:42 -0700 (PDT)
-Received: from [192.168.0.188] ([24.48.139.231])
-        by smtp.gmail.com with ESMTPSA id z6-20020ae9c106000000b0067d3b9ef387sm13187004qki.28.2022.04.08.03.36.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Apr 2022 03:36:42 -0700 (PDT)
-Message-ID: <2293c547-3878-435a-ec1c-854c3181ad14@redhat.com>
-Date:   Fri, 8 Apr 2022 06:36:40 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v8] oom_kill.c: futex: Don't OOM reap the VMA containing
- the robust_list_head
-Content-Language: en-US
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Rafael Aquini <aquini@redhat.com>,
-        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Christoph von Recklinghausen <crecklin@redhat.com>,
-        Don Dutile <ddutile@redhat.com>,
-        "Herton R . Krzesinski" <herton@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
+        bh=gooJh1ycw0mpkkHgM8sBrp88UdjExzMkVWdERQN1YmM=;
+        b=utDWGIv5ZvcwWrvBUJ8bOFwvVfLo0/0BQtbFsVo13VUndbWS9QwfmFfFasqYPW7yGEvQX0
+        hgbBQ9Ohb4C2b3vSKPQ94oEbn+LUlYfAJ+mAL0mT45eUyc75jJ/BX+UmLebcnds8XclEHZ
+        f5T/yPzs7XdqhmlFzAsF178lLtRZ6BewuXDTrfI6dCK07K3iCA0dBzmwQs2oo+ThnnXvFK
+        c4PtLOTWm2yYCWW5ksy/hAyG+MadRZcuXL0i+IraTDJM9rZm8cQuopsonUZOebD+cenY88
+        NPxJ7FasnJtiSy2WxRwxNCmfS1Y+F1RMwEfB8Qh55QuU41Yl61Y7FNjkQT+1jQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649414261;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gooJh1ycw0mpkkHgM8sBrp88UdjExzMkVWdERQN1YmM=;
+        b=pBV/5viB15XTtZFQ+zbdb5sBBx2RHja3b7JQi0Pl1yWOZtUEaf8ywaiV3eetqq29iw+6Sb
+        Rfo+PpA0z5gIOKAA==
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     jstultz@google.com, Stephen Boyd <sboyd@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Joel Savitz <jsavitz@redhat.com>,
-        Darren Hart <dvhart@infradead.org>, stable@kernel.org
-References: <20220408032809.3696798-1-npache@redhat.com>
- <20220408081549.GM2731@worktop.programming.kicks-ass.net>
- <87tub4j7hg.ffs@tglx> <ddf1755e-fe69-b60e-ee07-e78d663b11b2@redhat.com>
- <YlACJMp7AFaVa/Gt@dhcp22.suse.cz>
- <676fb197-d045-c537-c1f7-e18320a6d15f@redhat.com>
- <YlAHfU7VEI0wYAb/@dhcp22.suse.cz>
-From:   Nico Pache <npache@redhat.com>
-In-Reply-To: <YlAHfU7VEI0wYAb/@dhcp22.suse.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Peter Zijlstra <peterz@infradead.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [RFC][PATCH] timers: Add del_time_free() to be called before
+ freeing timers
+In-Reply-To: <20220407161745.7d6754b3@gandalf.local.home>
+References: <20220407161745.7d6754b3@gandalf.local.home>
+Date:   Fri, 08 Apr 2022 12:37:40 +0200
+Message-ID: <87pmlrkgi3.ffs@tglx>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Apr 07 2022 at 16:17, Steven Rostedt wrote:
+> diff --git a/include/linux/timer.h b/include/linux/timer.h
+> index fda13c9d1256..cc76ab0659f3 100644
+> --- a/include/linux/timer.h
+> +++ b/include/linux/timer.h
+> @@ -67,11 +67,12 @@ struct timer_list {
+>  #define TIMER_DEFERRABLE	0x00080000
+>  #define TIMER_PINNED		0x00100000
+>  #define TIMER_IRQSAFE		0x00200000
+> +#define TIMER_FREED		0x00400000
+>  #define TIMER_INIT_FLAGS	(TIMER_DEFERRABLE | TIMER_PINNED | TIMER_IRQSAFE)
+> -#define TIMER_ARRAYSHIFT	22
+> -#define TIMER_ARRAYMASK		0xFFC00000
+> +#define TIMER_ARRAYSHIFT	23
+> +#define TIMER_ARRAYMASK		0xFF800000
 
+#define LVL_BITS	6
+#define LVL_SIZE	(1UL << LVL_BITS)
 
-On 4/8/22 05:59, Michal Hocko wrote:
-> On Fri 08-04-22 05:40:09, Nico Pache wrote:
->>
->>
->> On 4/8/22 05:36, Michal Hocko wrote:
->>> On Fri 08-04-22 04:52:33, Nico Pache wrote:
->>> [...]
->>>> In a heavily contended CPU with high memory pressure the delay may also
->>>> lead to other processes unnecessarily OOMing.
->>>
->>> Let me just comment on this part because there is likely a confusion
->>> inlved. Delaying the oom_reaper _cannot_ lead to additional OOM killing
->>> because the the oom killing is throttled by existence of a preexisting
->>> OOM victim. In other words as long as there is an alive victim no
->>> further victims are not selected and the oom killer backs off. The
->>> oom_repaer will hide the alive oom victim after it is processed.
->>> The longer the delay will be the longer an oom victim can block a
->>> further progress but it cannot really cause unnecessary OOMing.
->> Is it not the case that if we delay an OOM, the amount of available memory stays
->> limited and other processes that are allocating memory can become OOM candidates?
-> 
-> No. Have a look at oom_evaluate_task (tsk_is_oom_victim check).
-Ok I see.
+#if HZ > 100
+# define LVL_DEPTH	9
+# else
+# define LVL_DEPTH	8
+#endif
 
-Doesnt the delay then allow the system to run into the following case more easily?:
-pr_warn("Out of memory and no killable processes...\n");
-panic("System is deadlocked on memory\n");
+#define WHEEL_SIZE	(LVL_SIZE * LVL_DEPTH)
 
-If the system cant select another OOM candidate, the oom_reaper is delayed, and
-the exit is blocked, then we panic.
+WHEEL_SIZE(HZ > 100) = (1 << 6) * 9 = 576
+max_index(HZ > 100) = 575 = 0x23f
 
--- Nico
+0x23f << ARRAY_SHIFT = 0x11f800000
 
+Q: Does 0x11f800000 fit into 32bit?
+A: No, and we are not making flags 64bit just because.
+
+If you want a bit you have to steal it from the CPUMASK field, but you
+could simply set timer->function to NULL, so you can spare extra checks,
+no?
+
+> @@ -966,6 +966,8 @@ __mod_timer(struct timer_list *timer, unsigned long expires, unsigned int option
+>  
+>  	BUG_ON(!timer->function);
+>  
+> +	WARN_ON(timer->flags & TIMER_FREED);
+
+So this would become:
+
+-  	BUG_ON(!timer->function);
++	if (WARN_ON(!timer->function))
++		return -EBROKEN;
+
+You really want to return here and not proceed.
+
+That needs a corresponding change in add_timer_on() plus:
+
+-		fn = timer->function;
++		fn = READ_ONCE(timer->function);
+
+in expire_timers().
+
+> +int del_timer_free(struct timer_list *timer)
+> +{
+> +	struct timer_base *base;
+> +	unsigned long flags;
+> +	int ret;
+> +
+> +	debug_assert_init(timer);
+> +
+> +	for (;;) {
+> +		ret = -1;
+> +		base = lock_timer_base(timer, &flags);
+> +
+> +		if (base->running_timer != timer)
+> +			ret = detach_if_pending(timer, base, true);
+> +
+> +		if (ret >= 0) {
+> +			timer->flags |= TIMER_FREED;
+> +			raw_spin_unlock_irqrestore(&base->lock, flags);
+> +			break;
+> +		}
+> +
+> +		raw_spin_unlock_irqrestore(&base->lock, flags);
+> +
+> +		del_timer_wait_running(timer);
+> +		cpu_relax();
+> +	}
+> +
+> +	return ret;
+> +}
+
+So this reimplements del_timer_sync() just slightly different for no
+reason. Something like the uncompiled below.
+
+Thanks,
+
+        tglx
+---
+--- a/include/linux/timer.h
++++ b/include/linux/timer.h
+@@ -183,12 +183,17 @@ extern int timer_reduce(struct timer_lis
+ extern void add_timer(struct timer_list *timer);
+ 
+ extern int try_to_del_timer_sync(struct timer_list *timer);
++extern int __del_timer_sync(struct timer_list *timer, bool free);
+ 
+-#if defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT)
+-  extern int del_timer_sync(struct timer_list *timer);
+-#else
+-# define del_timer_sync(t)		del_timer(t)
+-#endif
++static inline int del_timer_sync(struct timer_list *timer)
++{
++	return __del_timer_sync(timer, false);
++}
++
++static inline int del_timer_sync_free(struct timer_list *timer)
++{
++	return __del_timer_sync(timer, true);
++}
+ 
+ #define del_singleshot_timer_sync(t) del_timer_sync(t)
+ 
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -964,7 +964,8 @@ static inline int
+ 	unsigned int idx = UINT_MAX;
+ 	int ret = 0;
+ 
+-	BUG_ON(!timer->function);
++	if (WARN_ON(!timer->function))
++		return -EINVAL;
+ 
+ 	/*
+ 	 * This is a common optimization triggered by the networking code - if
+@@ -1140,7 +1141,8 @@ EXPORT_SYMBOL(timer_reduce);
+  */
+ void add_timer(struct timer_list *timer)
+ {
+-	BUG_ON(timer_pending(timer));
++	if (WARN_ON(timer_pending(timer)))
++		return;
+ 	__mod_timer(timer, timer->expires, MOD_TIMER_NOTPENDING);
+ }
+ EXPORT_SYMBOL(add_timer);
+@@ -1157,7 +1159,8 @@ void add_timer_on(struct timer_list *tim
+ 	struct timer_base *new_base, *base;
+ 	unsigned long flags;
+ 
+-	BUG_ON(timer_pending(timer) || !timer->function);
++	if (WARN_ON(timer_pending(timer) || !timer->function))
++		return;
+ 
+ 	new_base = get_timer_cpu_base(timer->flags, cpu);
+ 
+@@ -1213,14 +1216,7 @@ int del_timer(struct timer_list *timer)
+ }
+ EXPORT_SYMBOL(del_timer);
+ 
+-/**
+- * try_to_del_timer_sync - Try to deactivate a timer
+- * @timer: timer to delete
+- *
+- * This function tries to deactivate a timer. Upon successful (ret >= 0)
+- * exit the timer is not queued and the handler is not running on any CPU.
+- */
+-int try_to_del_timer_sync(struct timer_list *timer)
++static int __try_to_del_timer_sync(struct timer_list *timer, boot free)
+ {
+ 	struct timer_base *base;
+ 	unsigned long flags;
+@@ -1232,11 +1228,25 @@ int try_to_del_timer_sync(struct timer_l
+ 
+ 	if (base->running_timer != timer)
+ 		ret = detach_if_pending(timer, base, true);
++	if (free)
++		timer->function = NULL;
+ 
+ 	raw_spin_unlock_irqrestore(&base->lock, flags);
+ 
+ 	return ret;
+ }
++
++/**
++ * try_to_del_timer_sync - Try to deactivate a timer
++ * @timer: timer to delete
++ *
++ * This function tries to deactivate a timer. Upon successful (ret >= 0)
++ * exit the timer is not queued and the handler is not running on any CPU.
++ */
++int try_to_del_timer_sync(struct timer_list *timer)
++{
++	return __try_to_del_timer_sync(timer, false);
++}
+ EXPORT_SYMBOL(try_to_del_timer_sync);
+ 
+ #ifdef CONFIG_PREEMPT_RT
+@@ -1312,7 +1322,6 @@ static inline void timer_sync_wait_runni
+ static inline void del_timer_wait_running(struct timer_list *timer) { }
+ #endif
+ 
+-#if defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT)
+ /**
+  * del_timer_sync - deactivate a timer and wait for the handler to finish.
+  * @timer: the timer to be deactivated
+@@ -1349,7 +1358,7 @@ static inline void del_timer_wait_runnin
+  *
+  * The function returns whether it has deactivated a pending timer or not.
+  */
+-int del_timer_sync(struct timer_list *timer)
++int __del_timer_sync(struct timer_list *timer, bool free)
+ {
+ 	int ret;
+ 
+@@ -1379,7 +1388,7 @@ int del_timer_sync(struct timer_list *ti
+ 		lockdep_assert_preemption_enabled();
+ 
+ 	do {
+-		ret = try_to_del_timer_sync(timer);
++		ret = __try_to_del_timer_sync(timer, free);
+ 
+ 		if (unlikely(ret < 0)) {
+ 			del_timer_wait_running(timer);
+@@ -1389,8 +1398,7 @@ int del_timer_sync(struct timer_list *ti
+ 
+ 	return ret;
+ }
+-EXPORT_SYMBOL(del_timer_sync);
+-#endif
++EXPORT_SYMBOL(__del_timer_sync);
+ 
+ static void call_timer_fn(struct timer_list *timer,
+ 			  void (*fn)(struct timer_list *),
