@@ -2,113 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB483C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E580C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:18:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbiDHHUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 03:20:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56686 "EHLO
+        id S229725AbiDHHUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 03:20:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiDHHUE (ORCPT
+        with ESMTP id S229450AbiDHHU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 03:20:04 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D93E21F746
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 00:18:02 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2ebebe631ccso1762537b3.4
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 00:18:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e1eAc+/ZTYosIlDGpvTMl5b2fSKIdNvBP3h/M7XqTbM=;
-        b=Ir9TzH9EwGidF3qd4S3sWxRXlCY8hHDid3Xkww9Q4bSw+ofszVekY/3BS6Gd6eHF/M
-         nCKvNwNFpazqtIavhHX4+BHZ/n9t2e0k2/f8iPQIkTvhkKVgiYlcuKWqw5Ae9vaDqrPB
-         2Jvwq6xOgQYCJ02SUBcQd5w9i9+XRmjPRQeWPGYU6kDqxK2saC8Vn7JXESwa+coF+oqD
-         +/MHQAIXvmptSHEq/PIkCRfpyVBeveDIixO7rBakqb+IIkCFqX+mI+wDOYqxyIWBsWHr
-         3ntvCeGf0t6q+SBKRRCwIp1beMO67oLZghNmYsOfutOQB9m9pzDaN08j+lWJN/EKKcKk
-         n/sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e1eAc+/ZTYosIlDGpvTMl5b2fSKIdNvBP3h/M7XqTbM=;
-        b=0r8YFEqFZvTP3jawXFo8uAY0p/VB47sqsbraL7aD34IFOCpCZybmxQ9f9+M9AnweG3
-         XQl/2hYIY/0sJ6iN6yT7k45HaZ7jzKZFv7vpTD61GQM2u7XWrVdkBZPb6u7RcZx7ZYPP
-         OemMV+zVpf8pm5no7xYrdClrNznrrDhMA6/b0tBlBQaHyGt+lz1sL4eQjtM+svNttTx1
-         9oI8pklLNuO1+WCYV5WBpoxBwCs/bGvvv0SvWgw+1KR3UZmvx91OWWKxxk6k/vnOmy2G
-         K40f3wWwIINIrUHiQC1vwuzue3tkK7lS2CfH0GiQsnxG1e2FTjayPEX0mjQowXpvcbxn
-         qTLg==
-X-Gm-Message-State: AOAM530R5paZHAyfOcjbf/7o/L5EmN/pyKXthefdlT7ZpE93NH/4guvn
-        1xY/LIFIl2YSt/DeAwOsoxl0EPZ7+BF4HZgEIyntqA==
-X-Google-Smtp-Source: ABdhPJw6ynzTGftsrf/Xfed6r3eZH/mqtNaepkmKZxdABE0Ve2pztP5M9pS84NPguk9D1Mg5cjTDeIvI9mgNmrmh+/A=
-X-Received: by 2002:a81:59d7:0:b0:2eb:7156:40bc with SMTP id
- n206-20020a8159d7000000b002eb715640bcmr14774847ywb.67.1649402281380; Fri, 08
- Apr 2022 00:18:01 -0700 (PDT)
+        Fri, 8 Apr 2022 03:20:27 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C076D21FC62;
+        Fri,  8 Apr 2022 00:18:24 -0700 (PDT)
+Received: from kwepemi500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZV110VXTzgY8K;
+        Fri,  8 Apr 2022 15:16:37 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ kwepemi500009.china.huawei.com (7.221.188.199) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 8 Apr 2022 15:18:22 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 8 Apr 2022 15:18:21 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <mkubecek@suse.cz>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
+        <chenhao288@hisilicon.com>, <wangjie125@huawei.com>
+Subject: [PATCH net-next 0/3] net: ethool: add support to get/set tx push by ethtool -G/g
+Date:   Fri, 8 Apr 2022 15:12:42 +0800
+Message-ID: <20220408071245.40554-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20220407021729.16655-1-zhouchengming@bytedance.com>
-In-Reply-To: <20220407021729.16655-1-zhouchengming@bytedance.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Fri, 8 Apr 2022 09:17:50 +0200
-Message-ID: <CAKfTPtCNNJsT8fqG2eT0AZVFvNdxkyMzy8SdXajsHFqSH-PZ-Q@mail.gmail.com>
-Subject: Re: [PATCH 1/2] sched/fair: Fix cfs_rq_clock_pelt() for throttled cfs_rq
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, songmuchun@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 7 Apr 2022 at 04:17, Chengming Zhou <zhouchengming@bytedance.com> wrote:
->
-> Since commit 23127296889f ("sched/fair: Update scale invariance of PELT")
-> change to use rq_clock_pelt() instead of rq_clock_task(), we should also
-> use rq_clock_pelt() for throttled_clock_task_time and throttled_clock_task
-> accounting.
->
-> Fixes: 23127296889f ("sched/fair: Update scale invariance of PELT")
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+From: Jie Wang <wangjie125@huawei.com>
 
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+These three patches add tx push in ring params and adapt the set and get APIs
+of ring params.
 
-> ---
->  kernel/sched/fair.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index d4bd299d67ab..e6fa5d1141b4 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -4846,7 +4846,7 @@ static int tg_unthrottle_up(struct task_group *tg, void *data)
->
->         cfs_rq->throttle_count--;
->         if (!cfs_rq->throttle_count) {
-> -               cfs_rq->throttled_clock_task_time += rq_clock_task(rq) -
-> +               cfs_rq->throttled_clock_task_time += rq_clock_pelt(rq) -
->                                              cfs_rq->throttled_clock_task;
->
->                 /* Add cfs_rq with load or one or more already running entities to the list */
-> @@ -4864,7 +4864,7 @@ static int tg_throttle_down(struct task_group *tg, void *data)
->
->         /* group is entering throttled state, stop time */
->         if (!cfs_rq->throttle_count) {
-> -               cfs_rq->throttled_clock_task = rq_clock_task(rq);
-> +               cfs_rq->throttled_clock_task = rq_clock_pelt(rq);
->                 list_del_leaf_cfs_rq(cfs_rq);
->         }
->         cfs_rq->throttle_count++;
-> @@ -5308,7 +5308,7 @@ static void sync_throttle(struct task_group *tg, int cpu)
->         pcfs_rq = tg->parent->cfs_rq[cpu];
->
->         cfs_rq->throttle_count = pcfs_rq->throttle_count;
-> -       cfs_rq->throttled_clock_task = rq_clock_task(cpu_rq(cpu));
-> +       cfs_rq->throttled_clock_task = rq_clock_pelt(cpu_rq(cpu));
->  }
->
->  /* conditionally throttle active cfs_rq's from put_prev_entity() */
-> --
-> 2.35.1
->
+ChangeLog:
+
+RFC V4->V1
+1.Add detailed description about the tx push mode
+2.Modify the patch subject title
+link: https://lore.kernel.org/netdev/20220331084342.27043-1-wangjie125@huawei.com/
+
+RFC V3->RFC V4
+1.Put three request checks before rtnl_lock() in ethnl_set_rings
+2.Add tx push feature description in Documentation/networking/ethtool-netlink.rst
+3.Use netdev_dbg to track changes in hns3_set_tx_push
+link: https://lore.kernel.org/netdev/20220329091913.17869-1-wangjie125@huawei.com/
+
+RFC V2->RFC V3
+1.Add tx push documentation in Documentation/networking/ethtool-netlink.rst
+2.Use u8 to store tx push in struct kernel_ethtool_ringparam
+3.Add ETHTOOL_RING_USE_TX_PUSH to reject setting for unsupported driver
+4.Use NLA_POLICY_MAX(NLA_U8, 1) to limit the tx push value
+link: https://lore.kernel.org/netdev/20220326085102.14111-1-wangjie125@huawei.com/
+
+RFC V1->RFC V2
+1.Extend tx push param in ringparam, suggested by Jakub Kicinski.
+link: https://lore.kernel.org/netdev/20220315032108.57228-1-wangjie125@huawei.com/
+
+Jie Wang (3):
+  net: ethtool: extend ringparam set/get APIs for tx_push
+  net: ethtool: move checks before rtnl_lock() in ethnl_set_rings
+  net: hns3: add tx push support in hns3 ring param process
+
+ Documentation/networking/ethtool-netlink.rst  |  8 +++
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 33 ++++++++++-
+ include/linux/ethtool.h                       |  3 +
+ include/uapi/linux/ethtool_netlink.h          |  1 +
+ net/ethtool/netlink.h                         |  2 +-
+ net/ethtool/rings.c                           | 56 ++++++++++++-------
+ 6 files changed, 81 insertions(+), 22 deletions(-)
+
+-- 
+2.33.0
+
