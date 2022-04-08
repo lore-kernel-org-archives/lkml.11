@@ -2,219 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C4B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231640AbiDHKMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 06:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57354 "EHLO
+        id S233970AbiDHKMX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 06:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232000AbiDHKME (ORCPT
+        with ESMTP id S233166AbiDHKML (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 06:12:04 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030C4A207D;
-        Fri,  8 Apr 2022 03:10:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649412601; x=1680948601;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9N0ZWNAd9mIyPI9EhwvOQXkX/MDUGG76apuykOonzGU=;
-  b=zWmDqrs6VQl8KrJ/aa0APBepBz6NAeFzFsERmNPaMgnPc+I3NCcIfe2q
-   OATaReo9AiXtSI+QXQDWABdudAtgC835pPCXleLqbc9DU65dSbeQ0q3De
-   7s+RgQ4bp8gNFjUIJ0ZXui62t8/xt1nXPFgpFiuYiqYhY7cfniyqeC+M4
-   SFdX5dDazG3hEL+/gTjttGeE9p5LlvEULVrBNZGYgNdojOXBojQKW3lxk
-   2BtyuJ4noFqW4ut6WO9nf+iuAzR0MG3zYhyV3dG7a9cgHj+7Lu5OQDpJg
-   GEVuYDumXip9B2kCFpQwVip+HUvJKxR0HKYnSN/5QjLu9OvDS436BChhS
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,244,1643698800"; 
-   d="scan'208";a="152002989"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Apr 2022 03:10:01 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 8 Apr 2022 03:09:59 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 8 Apr 2022 03:09:58 -0700
-From:   <conor.dooley@microchip.com>
-To:     <herbert@gondor.apana.org.au>
-CC:     <linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v2 1/1] hwrng: mpfs - add polarfire soc hwrng support
-Date:   Fri, 8 Apr 2022 10:09:12 +0000
-Message-ID: <20220408100911.1638478-2-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220408100911.1638478-1-conor.dooley@microchip.com>
-References: <20220408100911.1638478-1-conor.dooley@microchip.com>
+        Fri, 8 Apr 2022 06:12:11 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2345EA9940
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:10:08 -0700 (PDT)
+Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KZYq76kfGzgYZZ;
+        Fri,  8 Apr 2022 18:08:19 +0800 (CST)
+Received: from huawei.com (10.67.174.157) by kwepemi500014.china.huawei.com
+ (7.221.188.232) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 8 Apr
+ 2022 18:10:05 +0800
+From:   Li Zhengyu <lizhengyu3@huawei.com>
+To:     <palmer@dabbelt.com>, <liaochang1@huawei.com>
+CC:     <alex@ghiti.fr>, <aou@eecs.berkeley.edu>, <bjorn.topel@gmail.com>,
+        <ebiederm@xmission.com>, <guoren@linux.alibaba.com>,
+        <jszhang@kernel.org>, <kexec@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <mick@ics.forth.gr>, <paul.walmsley@sifive.com>,
+        <penberg@kernel.org>, <sunnanyong@huawei.com>,
+        <wangkefeng.wang@huawei.com>
+Subject: [PATCH v3 -next 0/6] riscv: kexec: add kexec_file_load() support
+Date:   Fri, 8 Apr 2022 18:09:08 +0800
+Message-ID: <20220408100914.150110-1-lizhengyu3@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-Originating-IP: [10.67.174.157]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500014.china.huawei.com (7.221.188.232)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+This patchset implement kexec_file_load() support on riscv, Most of the
+code is based on the kexec-tool-patch repo developed by Nick Kossifids.
 
-Add a driver to access the hardware random number generator on the
-Polarfire SoC. The hwrng can only be accessed via the system controller,
-so use the mailbox interface the system controller exposes to access the
-hwrng.
+This patch series enables us to load the riscv vmlinux by specifying
+its file decriptor, instead of user-filled buffer via kexec_file_load()
+syscall.
+``
+Contrary to kexec_load() system call, we reuse the dt blob of the first
+kernel to the 2nd explicitly.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- drivers/char/hw_random/Kconfig    |  13 ++++
- drivers/char/hw_random/Makefile   |   1 +
- drivers/char/hw_random/mpfs-rng.c | 104 ++++++++++++++++++++++++++++++
- 3 files changed, 118 insertions(+)
- create mode 100644 drivers/char/hw_random/mpfs-rng.c
+To use kexec_file_load() system call, instead of kexec_load(), at kexec
+command, '-s' options must be specified. The patch for kexec_tools has
+to be apply to riscv architecture source like this:
 
-diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
-index a087156a5818..c3a9f17bf31c 100644
---- a/drivers/char/hw_random/Kconfig
-+++ b/drivers/char/hw_random/Kconfig
-@@ -385,6 +385,19 @@ config HW_RANDOM_PIC32
- 
- 	  If unsure, say Y.
- 
-+config HW_RANDOM_POLARFIRE_SOC
-+	tristate "Microchip PolarFire SoC Random Number Generator support"
-+	depends on HW_RANDOM && POLARFIRE_SOC_SYS_CTRL
-+	help
-+	  This driver provides kernel-side support for the Random Number
-+	  Generator hardware found on PolarFire SoC (MPFS).
-+
-+	  To compile this driver as a module, choose M here. The
-+	  module will be called mfps_rng.
-+
-+	  If unsure, say N.
-+
-+
- config HW_RANDOM_MESON
- 	tristate "Amlogic Meson Random Number Generator support"
- 	depends on HW_RANDOM
-diff --git a/drivers/char/hw_random/Makefile b/drivers/char/hw_random/Makefile
-index 584d47ba32f7..3e948cf04476 100644
---- a/drivers/char/hw_random/Makefile
-+++ b/drivers/char/hw_random/Makefile
-@@ -46,3 +46,4 @@ obj-$(CONFIG_HW_RANDOM_CCTRNG) += cctrng.o
- obj-$(CONFIG_HW_RANDOM_XIPHERA) += xiphera-trng.o
- obj-$(CONFIG_HW_RANDOM_ARM_SMCCC_TRNG) += arm_smccc_trng.o
- obj-$(CONFIG_HW_RANDOM_CN10K) += cn10k-rng.o
-+obj-$(CONFIG_HW_RANDOM_POLARFIRE_SOC) += mpfs-rng.o
-diff --git a/drivers/char/hw_random/mpfs-rng.c b/drivers/char/hw_random/mpfs-rng.c
-new file mode 100644
-index 000000000000..5813da617a48
---- /dev/null
-+++ b/drivers/char/hw_random/mpfs-rng.c
-@@ -0,0 +1,104 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Microchip PolarFire SoC (MPFS) hardware random driver
-+ *
-+ * Copyright (c) 2020-2022 Microchip Corporation. All rights reserved.
-+ *
-+ * Author: Conor Dooley <conor.dooley@microchip.com>
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/hw_random.h>
-+#include <linux/platform_device.h>
-+#include <soc/microchip/mpfs.h>
-+
-+#define CMD_OPCODE	0x21
-+#define CMD_DATA_SIZE	0U
-+#define CMD_DATA	NULL
-+#define MBOX_OFFSET	0U
-+#define RESP_OFFSET	0U
-+#define RNG_RESP_BYTES	32U
-+
-+struct mpfs_rng {
-+	struct mpfs_sys_controller *sys_controller;
-+	struct hwrng rng;
-+};
-+
-+static int mpfs_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
-+{
-+	struct mpfs_rng *rng_priv = container_of(rng, struct mpfs_rng, rng);
-+	u32 response_msg[RNG_RESP_BYTES / sizeof(u32)];
-+	unsigned int count = 0, copy_size_bytes;
-+	int ret;
-+
-+	struct mpfs_mss_response response = {
-+		.resp_status = 0U,
-+		.resp_msg = (u32 *)response_msg,
-+		.resp_size = RNG_RESP_BYTES
-+	};
-+	struct mpfs_mss_msg msg = {
-+		.cmd_opcode = CMD_OPCODE,
-+		.cmd_data_size = CMD_DATA_SIZE,
-+		.response = &response,
-+		.cmd_data = CMD_DATA,
-+		.mbox_offset = MBOX_OFFSET,
-+		.resp_offset = RESP_OFFSET
-+	};
-+
-+	while (count < max) {
-+		ret = mpfs_blocking_transaction(rng_priv->sys_controller, &msg);
-+		if (ret)
-+			return ret;
-+
-+		copy_size_bytes = max - count > RNG_RESP_BYTES ? RNG_RESP_BYTES : max - count;
-+		memcpy(buf + count, response_msg, copy_size_bytes);
-+
-+		count += copy_size_bytes;
-+		if (!wait)
-+			break;
-+	}
-+
-+	return count;
-+}
-+
-+static int mpfs_rng_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct mpfs_rng *rng_priv;
-+	int ret;
-+
-+	rng_priv = devm_kzalloc(dev, sizeof(*rng_priv), GFP_KERNEL);
-+	if (!rng_priv)
-+		return -ENOMEM;
-+
-+	rng_priv->sys_controller =  mpfs_sys_controller_get(&pdev->dev);
-+	if (IS_ERR(rng_priv->sys_controller))
-+		return dev_err_probe(dev, PTR_ERR(rng_priv->sys_controller),
-+				     "Failed to register system controller hwrng sub device\n");
-+
-+	rng_priv->rng.read = mpfs_rng_read;
-+	rng_priv->rng.name = pdev->name;
-+	rng_priv->rng.quality = 1024;
-+
-+	platform_set_drvdata(pdev, rng_priv);
-+
-+	ret = devm_hwrng_register(&pdev->dev, &rng_priv->rng);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret, "Failed to register MPFS hwrng\n");
-+
-+	dev_info(&pdev->dev, "Registered MPFS hwrng\n");
-+
-+	return 0;
-+}
-+
-+static struct platform_driver mpfs_rng_driver = {
-+	.driver = {
-+		.name = "mpfs-rng",
-+	},
-+	.probe = mpfs_rng_probe,
-+};
-+module_platform_driver(mpfs_rng_driver);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Conor Dooley <conor.dooley@microchip.com>");
-+MODULE_DESCRIPTION("PolarFire SoC (MPFS) hardware random driver");
+int elf_riscv_load(int argc, char **argv, const char *buf, off_t len,
+	...
+	if (info->file_mode) {
+		return prepare_kexec_file_options(info);
+	}
+	...
+
+Add following routine to prepare cmdline_ptr, cmdline_len and initrd_fd
+for syscall kexec_file_load:
+
+int prepare_kexec_file_options(struct kexec_info *info)
+{
+	int fd;
+	ssize_t result;
+	struct stat stats;
+
+	if (arch_options.cmdline) {
+		info->command_line = (char *)arch_options.cmdline;
+		info->command_line_len = strlen(info->command_line) + 1;
+	}
+
+	if (!arch_options.initrd_path) {
+		info->initrd_fd = -1;
+		return 0;
+	}
+
+	fd = open(arch_options.initrd_path, O_RDONLY | _O_BINARY);
+	if (fd < 0) {
+		fprintf(stderr, "Cannot open `%s': %s\n", arch_options.initrd_path,
+				strerror(errno));
+		return -EINVAL;
+	}
+	result = fstat(fd, &stats);
+	if (result < 0) {
+		close(fd);
+		fprintf(stderr, "Cannot stat: %s: %s\n", arch_options.initrd_path,
+				strerror(errno));
+		return -EINVAL;
+	}
+	info->initrd_fd = fd;
+	return 0;
+}
+
+The basic usage of kexec_file is:
+1) Reload capture kernel image:
+$ kexec -s -l <riscv-vmlinux> --reuse-cmdline
+
+2) Startup capture kernel:
+$ kexec -e
+
+For kdump:
+1) Reload capture kernel image:
+$ kexec -s -p <riscv-vmlinux> --reuse-cmdline
+
+2) Do something to crash, like:
+$ echo c > /proc/sysrq-trigger
+
+v3:
+ * Rebase on v5.18-rc1
+ * Workaround for -Wmissing-prototypes
+
+v2:
+ * Support kdump
+ * Support purgatory
+ * Minor cleanups
+
+Li Zhengyu (3):
+  RISC-V: Support for kexec_file on panic
+  RISC-V: Add purgatory
+  RISC-V: Load purgatory in kexec_file
+
+Liao Chang (3):
+  kexec_file: Fix kexec_file.c build error for riscv platform
+  RISC-V: use memcpy for kexec_file mode
+  RISC-V: Add kexec_file support
+
+ arch/riscv/Kbuild                      |   2 +
+ arch/riscv/Kconfig                     |  17 +
+ arch/riscv/include/asm/kexec.h         |   4 +
+ arch/riscv/kernel/Makefile             |   1 +
+ arch/riscv/kernel/elf_kexec.c          | 448 +++++++++++++++++++++++++
+ arch/riscv/kernel/machine_kexec.c      |   4 +-
+ arch/riscv/kernel/machine_kexec_file.c |  14 +
+ arch/riscv/purgatory/.gitignore        |   4 +
+ arch/riscv/purgatory/Makefile          |  95 ++++++
+ arch/riscv/purgatory/entry.S           |  47 +++
+ arch/riscv/purgatory/purgatory.c       |  45 +++
+ include/linux/kexec.h                  |   2 +-
+ kernel/kexec_file.c                    |   4 +-
+ 13 files changed, 683 insertions(+), 4 deletions(-)
+ create mode 100644 arch/riscv/kernel/elf_kexec.c
+ create mode 100644 arch/riscv/kernel/machine_kexec_file.c
+ create mode 100644 arch/riscv/purgatory/.gitignore
+ create mode 100644 arch/riscv/purgatory/Makefile
+ create mode 100644 arch/riscv/purgatory/entry.S
+ create mode 100644 arch/riscv/purgatory/purgatory.c
+
 -- 
-2.35.1
+2.17.1
 
