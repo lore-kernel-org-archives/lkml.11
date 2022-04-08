@@ -2,140 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46CC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 00:58:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5902C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 00:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233200AbiDHBAc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 21:00:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47876 "EHLO
+        id S233205AbiDHBA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 21:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233205AbiDHBA0 (ORCPT
+        with ESMTP id S233290AbiDHBAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 21:00:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8901030C206;
-        Thu,  7 Apr 2022 17:58:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 70F8FCE29EC;
-        Fri,  8 Apr 2022 00:58:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA37AC385A0;
-        Fri,  8 Apr 2022 00:58:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649379500;
-        bh=RnBqrO05wig0Mia6VfsR65TYl3CuXN2/hell+ZhumPM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pgxzGhdEl3K3/DLBH0PVog7yDE1sPRdYQTj22pnBvD8EeEEiWJ17jps9bM3WxhN3x
-         xf9jYu/QZ+pjhhik8wL252/US+TpoVA/i0gKwxF4KyYz7sJPRAB2umgbuCz4rfKg0g
-         HWGhOFDBtCRRP3noX+JXI86TVEcSwOiea3fcfiXXnPfdojcvbCRvHr+/7Tys/nYbaJ
-         D3aaL48ElX0s97jqMNewjsnQQbr8mXd8s3GqO237aV/bP/XyP/BgiMaWzMs70qExx3
-         lDnpuAR1OUBg8QZdA5RK5OD7hp+ZTM8gFYqdEidDFgTXoBbq0ao+dckHoqbx65B2ed
-         DbezCPa2sabTA==
-Date:   Fri, 8 Apr 2022 09:58:15 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [RFC bpf-next 2/4] fprobe: Resolve symbols with
- kallsyms_lookup_names
-Message-Id: <20220408095815.9827bcf7aa98127046f69481@kernel.org>
-In-Reply-To: <20220407125224.310255-3-jolsa@kernel.org>
-References: <20220407125224.310255-1-jolsa@kernel.org>
-        <20220407125224.310255-3-jolsa@kernel.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 7 Apr 2022 21:00:46 -0400
+X-Greylist: delayed 915 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 07 Apr 2022 17:58:40 PDT
+Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 23E6F30CB90;
+        Thu,  7 Apr 2022 17:58:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=31tFs
+        14/hmEFriPL+huf8+43YyXdMqfNdNECql3AeLY=; b=GvVZnnvs2HPhWoZWaBWRO
+        gMLwwmYNGA7v2djsGWoUK7aBqwQhFNpRZuTXNuRQTjj9cHMV2TGc3L9FIK5xCERF
+        B+g9xKWszjLFK3DJNjgxbDGW1fBXZL+/osmJiXZI83wercjflJE8ZCapN2RKxEpW
+        nZpCIYpuAnPdl7ksK/1Reg=
+Received: from localhost.localdomain (unknown [101.86.109.27])
+        by smtp7 (Coremail) with SMTP id C8CowAAnnmHphE9i3wPwAA--.23557S2;
+        Fri, 08 Apr 2022 08:42:19 +0800 (CST)
+From:   jackygam2001 <jacky_gam_2001@163.com>
+To:     edumazet@google.com
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        rostedt@goodmis.org, mingo@redhat.com, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yhs@fb.com, ping.gan@dell.com
+Subject: Re: [PATCH net-next] tcp: Add tracepoint for tcp_set_ca_state
+Date:   Fri,  8 Apr 2022 08:40:49 +0800
+Message-Id: <20220408004050.27292-1-jacky_gam_2001@163.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <CANn89iKXK6m45eBDCDw8Pij1H=iybZTTi2Yf9DFYu96KDpnyPA@mail.gmail.com>
+References: <CANn89iKXK6m45eBDCDw8Pij1H=iybZTTi2Yf9DFYu96KDpnyPA@mail.gmail.com>
+Reply-To: edumazet@google.com
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: C8CowAAnnmHphE9i3wPwAA--.23557S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrKrW5Aw45JF17uF48ArW7XFb_yoW3AFcE9F
+        WIvr1kJrs8Jry8Xan3AryxXrn7GayvgF98Aw17tryFva42yFW8XFnrWrs5urZxW3WxWry3
+        uwn3Jan0y342gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUUNzV5UUUUU==
+X-Originating-IP: [101.86.109.27]
+X-CM-SenderInfo: 5mdfy55bjdzsisqqiqqrwthudrp/xS2BdAPbKVgi1hfy0AABsd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu,  7 Apr 2022 14:52:22 +0200
-Jiri Olsa <jolsa@kernel.org> wrote:
-
-> Using kallsyms_lookup_names to speed up symbols lookup
-> in register_fprobe_syms API.
-
-OK, this looks good to me.
-
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-
-Thank you!
-
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  kernel/kallsyms.c     |  2 +-
->  kernel/trace/fprobe.c | 23 ++---------------------
->  2 files changed, 3 insertions(+), 22 deletions(-)
-> 
-> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-> index a3738ddf9e87..7d89da375c23 100644
-> --- a/kernel/kallsyms.c
-> +++ b/kernel/kallsyms.c
-> @@ -230,7 +230,7 @@ unsigned long kallsyms_lookup_name(const char *name)
->  	return module_kallsyms_lookup_name(name);
->  }
->  
-> -#ifdef CONFIG_LIVEPATCH
-> +#if defined(CONFIG_LIVEPATCH) || defined(CONFIG_FPROBE)
->  /*
->   * Iterate over all symbols in vmlinux.  For symbols from modules use
->   * module_kallsyms_on_each_symbol instead.
-> diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-> index 89d9f994ebb0..d466803dc2b2 100644
-> --- a/kernel/trace/fprobe.c
-> +++ b/kernel/trace/fprobe.c
-> @@ -88,36 +88,17 @@ NOKPROBE_SYMBOL(fprobe_exit_handler);
->  /* Convert ftrace location address from symbols */
->  static unsigned long *get_ftrace_locations(const char **syms, int num)
->  {
-> -	unsigned long addr, size;
->  	unsigned long *addrs;
-> -	int i;
->  
->  	/* Convert symbols to symbol address */
->  	addrs = kcalloc(num, sizeof(*addrs), GFP_KERNEL);
->  	if (!addrs)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	for (i = 0; i < num; i++) {
-> -		addr = kallsyms_lookup_name(syms[i]);
-> -		if (!addr)	/* Maybe wrong symbol */
-> -			goto error;
-> +	if (!kallsyms_lookup_names(syms, num, addrs))
-> +		return addrs;
->  
-> -		/* Convert symbol address to ftrace location. */
-> -		if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
-> -			goto error;
-> -
-> -		addr = ftrace_location_range(addr, addr + size - 1);
-> -		if (!addr) /* No dynamic ftrace there. */
-> -			goto error;
-> -
-> -		addrs[i] = addr;
-> -	}
-> -
-> -	return addrs;
-> -
-> -error:
->  	kfree(addrs);
-> -
->  	return ERR_PTR(-ENOENT);
->  }
->  
-> -- 
-> 2.35.1
-> 
+At 2022-04-07 14:05:42, "Eric Dumazet" <edumazet@google.com> wrote:
+> On Tue, Apr 5, 2022 at 6:12 PM jackygam2001 <jacky_gam_2001@163.com> wrote:
+> >
+> > From: Ping Gan <jacky_gam_2001@163.com>
+> >
+> > The congestion status of a tcp flow may be updated since there
+> > is congestion between tcp sender and receiver. It makes sense to
+> > add tracepoint for congestion status set function to summate cc
+> > status duration and evaluate the performance of network
+> > and congestion algorithm. the backgound of this patch is below.
+> >
+> > Link: https://github.com/iovisor/bcc/pull/3899
+> >
+> > Signed-off-by: Ping Gan <jacky_gam_2001@163.com>
+> > ---
+>
+> This seems good to me, thanks.
+>
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
+Thanks for you comment and review!
 
 
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
