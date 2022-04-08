@@ -2,142 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA07FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9811C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237463AbiDHPPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35436 "EHLO
+        id S237512AbiDHPPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 11:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237431AbiDHPOu (ORCPT
+        with ESMTP id S237473AbiDHPPO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 11:14:50 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FBE1017DF;
-        Fri,  8 Apr 2022 08:12:46 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id z15so1667132qtj.13;
+        Fri, 8 Apr 2022 11:15:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD7B1017D0;
+        Fri,  8 Apr 2022 08:12:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0227061F40;
+        Fri,  8 Apr 2022 15:12:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62316C385C1;
+        Fri,  8 Apr 2022 15:12:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649430766;
+        bh=Vb9ZJRhyCFckFYpPHjtuunbxhp174/M4q/M7Vp10tWU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=sIa9ENYGM+gzmBtzAW5EYaDOBPLLH7d1PzrZ/x+d1jMG3IGmpvpVLkpFZ/Qd+Fk3U
+         FWE3pLZbQRHkELHgKkULRcm8Euxxc9pmrhVr8zuajRltNwDPPoiUlKNFXkG/Eiw154
+         87fsgvKu3euj2wO5+D47MGxZlJu1tvelBPzuymUr/uPdUe3d+M1/VAxEKeNKU6HDuc
+         4Y5i0/AK788TPhSS9T4DE93YvygrKXQdOnbkWJdxgVL16olmzAFAhrew+Qi4zijJHN
+         udXqltsx1fVIzsGoooDtImHWnXAZD+Cx923lCYY3zI7hCLykSpGo6GZbzKALmNZNFT
+         blaa7DPl7g9kA==
+Received: by mail-wr1-f42.google.com with SMTP id w21so13388295wra.2;
         Fri, 08 Apr 2022 08:12:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BiTCbZuuiqDpXPtBKnm7lrk6/Udlslh2uUBYoU46tJs=;
-        b=mbS4q19oIqjAQ62E/SZBSAS+VQIoZvxk+Lvp/grvWdLSp1HSOjFEPHff+FMIPeer47
-         ZTtnIRo7fEiU88/vZmzjyRJGJAnUet7X+rkS/8K3MzFektq6sA8aK2HLGW3AOHFZZVOm
-         1tbnwiFwgBiEyC0e0JUnY1SF+1lHuSD2IioJQccwK5XE24rU0dTV3NawdCQD3o0Vkl3Y
-         Pv1F9cPRFLNNWorCW6K8QglPWTwwGNXyGuKMT8Gdd+0aW0EROo5D5gyZzSvueyD9IEUA
-         pv2KqNKRfPWeQaxsgaIkCbpSKmXxwRHN1G+aFCGb/IMkNTtPOBcwwtneyAOwMSUdjB/Y
-         JhPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BiTCbZuuiqDpXPtBKnm7lrk6/Udlslh2uUBYoU46tJs=;
-        b=eZHx4RdKulj1I3zSjYdV1iY5FqB46J5+ZhYcYB94oY3/xOS0kqa5E0xOJMcmLQpztK
-         4V4qKNTYpYe8s+OL99ndW3RGxKUqhewsaV1c3qZASyO2WVSM/Lhbvxo7aMgrcS3BfTB+
-         m0qNGe1c+XMx8+BZStMMscUPc9bqPin6Mkzshid/7Z3sHF8LRZmTxn7S+GlILIsqEPgk
-         LNWxqsXH9YwzuTvEFg91udEE9yoz3cGDc8O6LsjMOW2/QY7opfn2WeBa0PyWyBgeICwK
-         t0ujriFM7PDeOav8YD2+mUlzwCTrVrZrn0KZfMMg1Lu4z5hSig4O6k54cPMSOVw4zZMF
-         uQdQ==
-X-Gm-Message-State: AOAM532XsNMzHB5qDUe0XzswXcpV7Kx2QwylUA7xH4SHzLYH21o60XVJ
-        CgguQEBLw2DhDVx9qHlzQmc=
-X-Google-Smtp-Source: ABdhPJxfCAacR/8MMW94Q5F36iZ+s7P9L3sPX/KHUxhf9Szg+AfYfAADj3i67pPKqBOD9hxbtum3Kw==
-X-Received: by 2002:a05:622a:1894:b0:2e1:cbdb:8b74 with SMTP id v20-20020a05622a189400b002e1cbdb8b74mr15793603qtc.643.1649430765418;
-        Fri, 08 Apr 2022 08:12:45 -0700 (PDT)
-Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id 191-20020a3707c8000000b0069a13545fcfsm2266052qkh.123.2022.04.08.08.12.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 08:12:45 -0700 (PDT)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     linux-rockchip@lists.infradead.org,
-        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 4/5] arm64: dts: rockchip: enable dwc3 on quartz64-a
-Date:   Fri,  8 Apr 2022 11:12:36 -0400
-Message-Id: <20220408151237.3165046-5-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220408151237.3165046-1-pgwipeout@gmail.com>
-References: <20220408151237.3165046-1-pgwipeout@gmail.com>
+X-Gm-Message-State: AOAM5303dlMDTzZI2RqBWBUYDzenAxVHVG04tEcQLQFTZBw3zYPKGvif
+        1awom0xAYVM4vbwcVoXQaIHUZbPhWUqh5nnfxeI=
+X-Google-Smtp-Source: ABdhPJyFw2dT2aWjYaAvHF77JNUxndIajbOPX4lldS3CPnCvoH9+Y+2vwBOU81XHAOhivBVHGIxOtJQ5LlXm43fQALY=
+X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id
+ e12-20020a056000178c00b002040648b4c4mr14707557wrg.219.1649430764377; Fri, 08
+ Apr 2022 08:12:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220405091750.3076973-1-arnd@kernel.org> <CACRpkdbVHOyq_dt7dtr8htzQqJ0BbL2K4_p1HX97miJJ4qnUnQ@mail.gmail.com>
+In-Reply-To: <CACRpkdbVHOyq_dt7dtr8htzQqJ0BbL2K4_p1HX97miJJ4qnUnQ@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Fri, 8 Apr 2022 17:12:28 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1UObWkbOZzN0BLSgjJXBj94Hw85dEoH_VNWGG=bDNjkQ@mail.gmail.com>
+Message-ID: <CAK8P3a1UObWkbOZzN0BLSgjJXBj94Hw85dEoH_VNWGG=bDNjkQ@mail.gmail.com>
+Subject: Re: [PATCH 00/12] ARM: ARMv5 multiplatform conversions
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Hartley Sweeten <hsweeten@visionengravers.com>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Hubert Feurstein <hubert.feurstein@contec.at>,
+        Lukasz Majewski <lukma@denx.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Imre Kaloz <kaloz@openwrt.org>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Simtec Linux Team <linux@simtec.co.uk>,
+        Liviu Dudau <Liviu.Dudau@arm.com>,
+        Sudeep Holla <Sudeep.Holla@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
+        <linux-samsung-soc@vger.kernel.org>, patches@opensource.cirrus.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The quartz64 model a has support for both the dwc3 otg port and the dwc3
-host port. Add the otg power supply and dwc3 nodes to the device tree to
-enable support for these.
+On Thu, Apr 7, 2022 at 10:42 PM Linus Walleij <linus.walleij@linaro.org> wrote:
+>
+> On Tue, Apr 5, 2022 at 11:18 AM Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> These two:
+>
+> > Arnd Bergmann (12):
+> >   ARM: rework endianess selection
+> >   ARM: ixp4xx: enable multiplatform support
+>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Tested-by: Linus Walleij <linus.walleij@linaro.org>
+>
+> I booted on the Gateway GW-2348 which has some ethernet,
+> PCI and compact flash, LED and a button, so I could test a
+> whole lot of stuff.
 
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
----
- .../boot/dts/rockchip/rk3566-quartz64-a.dts   | 37 +++++++++++++++++++
- 1 file changed, 37 insertions(+)
+Perfect, thanks!
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
-index dd7f4b9b686b..141a433429b5 100644
---- a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
-@@ -151,6 +151,16 @@ vcc5v0_usb20_host: vcc5v0_usb20_host {
- 		vin-supply = <&vcc5v0_usb>;
- 	};
- 
-+	vcc5v0_usb20_otg: vcc5v0_usb20_otg {
-+		compatible = "regulator-fixed";
-+		enable-active-high;
-+		gpio = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
-+		regulator-name = "vcc5v0_usb20_otg";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		vin-supply = <&dcdc_boost>;
-+	};
-+
- 	vcc3v3_sd: vcc3v3_sd {
- 		compatible = "regulator-fixed";
- 		enable-active-low;
-@@ -187,6 +197,10 @@ vcc_wl: vcc_wl {
- 	};
- };
- 
-+&combphy1 {
-+	status = "okay";
-+};
-+
- &cpu0 {
- 	cpu-supply = <&vdd_cpu>;
- };
-@@ -672,6 +686,29 @@ &usb_host1_ohci {
- 	status = "okay";
- };
- 
-+&usb_host0_xhci {
-+	status = "okay";
-+};
-+
-+/* usb3 controller is muxed with sata1 */
-+&usb_host1_xhci {
-+	status = "okay";
-+};
-+
-+&usb2phy0 {
-+	status = "okay";
-+};
-+
-+&usb2phy0_host {
-+	phy-supply = <&vcc5v0_usb20_host>;
-+	status = "okay";
-+};
-+
-+&usb2phy0_otg {
-+	phy-supply = <&vcc5v0_usb20_otg>;
-+	status = "okay";
-+};
-+
- &usb2phy1 {
- 	status = "okay";
- };
--- 
-2.25.1
+> However when switching over to multiplatform I needed to severely
+> overhaul the ixp4xx_defconfig for it to bring the same drivers in as
+> before, I will send my patch for that which I think need to go in in
+> tandem with this rework for a smooth transition.
 
+Ah right, I was planning to go through the patches again to make
+sure I get them all. I did the change for some platforms but at least
+missed this one. I folded in this change and will make sure I do the
+same for the others as well:
+
+--- a/arch/arm/configs/ixp4xx_defconfig
++++ b/arch/arm/configs/ixp4xx_defconfig
+@@ -6,6 +6,7 @@ CONFIG_EXPERT=y
+ CONFIG_MODULES=y
+ CONFIG_MODVERSIONS=y
+ # CONFIG_BLK_DEV_BSG is not set
++# CONFIG_ARCH_MULTI_V7 is not set
+ CONFIG_ARCH_IXP4XX=y
+ CONFIG_MACH_NSLU2=y
+ CONFIG_MACH_AVILA=y
