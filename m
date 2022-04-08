@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE717C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:10:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2646FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234384AbiDHKMd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 06:12:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58054 "EHLO
+        id S234453AbiDHKMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 06:12:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233799AbiDHKMM (ORCPT
+        with ESMTP id S233738AbiDHKMM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 8 Apr 2022 06:12:12 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69CA7AA023
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:10:09 -0700 (PDT)
-Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZYqB0DzSzgYXn;
-        Fri,  8 Apr 2022 18:08:22 +0800 (CST)
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C2A58E6D
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:10:08 -0700 (PDT)
+Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KZYmK4QSrzBsCF;
+        Fri,  8 Apr 2022 18:05:53 +0800 (CST)
 Received: from huawei.com (10.67.174.157) by kwepemi500014.china.huawei.com
  (7.221.188.232) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 8 Apr
- 2022 18:10:06 +0800
+ 2022 18:10:05 +0800
 From:   Li Zhengyu <lizhengyu3@huawei.com>
 To:     <palmer@dabbelt.com>, <liaochang1@huawei.com>
 CC:     <alex@ghiti.fr>, <aou@eecs.berkeley.edu>, <bjorn.topel@gmail.com>,
@@ -31,9 +31,9 @@ CC:     <alex@ghiti.fr>, <aou@eecs.berkeley.edu>, <bjorn.topel@gmail.com>,
         <mick@ics.forth.gr>, <paul.walmsley@sifive.com>,
         <penberg@kernel.org>, <sunnanyong@huawei.com>,
         <wangkefeng.wang@huawei.com>
-Subject: [PATCH v3 -next 3/6] RISC-V: Add kexec_file support
-Date:   Fri, 8 Apr 2022 18:09:11 +0800
-Message-ID: <20220408100914.150110-4-lizhengyu3@huawei.com>
+Subject: [PATCH v3 -next 1/6] kexec_file: Fix kexec_file.c build error for riscv platform
+Date:   Fri, 8 Apr 2022 18:09:09 +0800
+Message-ID: <20220408100914.150110-2-lizhengyu3@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220408100914.150110-1-lizhengyu3@huawei.com>
 References: <20220408100914.150110-1-lizhengyu3@huawei.com>
@@ -49,279 +49,73 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Liao Chang <liaochang1@huawei.com>
 
-This patch adds support for kexec_file on RISC-V. I tested it on riscv64
-QEMU with busybear-linux and single core along with the OpenSBI firmware
-fw_jump.bin for generic platform.
+When CONFIG_KEXEC_FILE is set for riscv platform, the compilation of
+kernel/kexec_file.c generate build error:
 
-On SMP system, it depends on CONFIG_{HOTPLUG_CPU, RISCV_SBI} to
-resume/stop hart through OpenSBI firmware, it also needs a OpenSBI that
-support the HSM extension.
+kernel/kexec_file.c: In function 'crash_prepare_elf64_headers':
+./arch/riscv/include/asm/page.h:110:71: error: request for member 'virt_addr' in something not a structure or union
+  110 |  ((x) >= PAGE_OFFSET && (!IS_ENABLED(CONFIG_64BIT) || (x) < kernel_map.virt_addr))
+      |                                                                       ^
+./arch/riscv/include/asm/page.h:131:2: note: in expansion of macro 'is_linear_mapping'
+  131 |  is_linear_mapping(_x) ?       \
+      |  ^~~~~~~~~~~~~~~~~
+./arch/riscv/include/asm/page.h:140:31: note: in expansion of macro '__va_to_pa_nodebug'
+  140 | #define __phys_addr_symbol(x) __va_to_pa_nodebug(x)
+      |                               ^~~~~~~~~~~~~~~~~~
+./arch/riscv/include/asm/page.h:143:24: note: in expansion of macro '__phys_addr_symbol'
+  143 | #define __pa_symbol(x) __phys_addr_symbol(RELOC_HIDE((unsigned long)(x), 0))
+      |                        ^~~~~~~~~~~~~~~~~~
+kernel/kexec_file.c:1327:36: note: in expansion of macro '__pa_symbol'
+ 1327 |   phdr->p_offset = phdr->p_paddr = __pa_symbol(_text);
+
+This occurs is because the "kernel_map" referenced in macro
+is_linear_mapping()  is suppose to be the one of struct kernel_mapping
+defined in arch/riscv/mm/init.c, but the 2nd argument of
+crash_prepare_elf64_header() has same symbol name, in expansion of macro
+is_linear_mapping in function crash_prepare_elf64_header(), "kernel_map"
+actually is the local variable.
 
 Signed-off-by: Liao Chang <liaochang1@huawei.com>
-Signed-off-by: Li Zhengyu <lizhengyu3@huawei.com>
 ---
- arch/riscv/Kconfig                     |  11 ++
- arch/riscv/include/asm/kexec.h         |   4 +
- arch/riscv/kernel/Makefile             |   1 +
- arch/riscv/kernel/elf_kexec.c          | 180 +++++++++++++++++++++++++
- arch/riscv/kernel/machine_kexec_file.c |  14 ++
- 5 files changed, 210 insertions(+)
- create mode 100644 arch/riscv/kernel/elf_kexec.c
- create mode 100644 arch/riscv/kernel/machine_kexec_file.c
+ include/linux/kexec.h | 2 +-
+ kernel/kexec_file.c   | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 00fd9c548f26..e95e4c390514 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -383,6 +383,17 @@ config KEXEC
+diff --git a/include/linux/kexec.h b/include/linux/kexec.h
+index 58d1b58a971e..ebb1bffbf068 100644
+--- a/include/linux/kexec.h
++++ b/include/linux/kexec.h
+@@ -227,7 +227,7 @@ struct crash_mem {
+ extern int crash_exclude_mem_range(struct crash_mem *mem,
+ 				   unsigned long long mstart,
+ 				   unsigned long long mend);
+-extern int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
++extern int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_map,
+ 				       void **addr, unsigned long *sz);
+ #endif /* CONFIG_KEXEC_FILE */
  
- 	  The name comes from the similarity to the exec system call.
+diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
+index 8347fc158d2b..331a4f0f10f5 100644
+--- a/kernel/kexec_file.c
++++ b/kernel/kexec_file.c
+@@ -1260,7 +1260,7 @@ int crash_exclude_mem_range(struct crash_mem *mem,
+ 	return 0;
+ }
  
-+config KEXEC_FILE
-+	bool "kexec file based systmem call"
-+	select KEXEC_CORE
-+	select KEXEC_ELF
-+	select HAVE_IMA_KEXEC if IMA
-+	help
-+	  This is new version of kexec system call. This system call is
-+	  file based and takes file descriptors as system call argument
-+	  for kernel and initramfs as opposed to list of segments as
-+	  accepted by previous system call.
-+
- config CRASH_DUMP
- 	bool "Build kdump crash kernel"
- 	help
-diff --git a/arch/riscv/include/asm/kexec.h b/arch/riscv/include/asm/kexec.h
-index e4e291d40759..206217b23301 100644
---- a/arch/riscv/include/asm/kexec.h
-+++ b/arch/riscv/include/asm/kexec.h
-@@ -53,4 +53,8 @@ typedef void (*riscv_kexec_method)(unsigned long first_ind_entry,
+-int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
++int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_map,
+ 			  void **addr, unsigned long *sz)
+ {
+ 	Elf64_Ehdr *ehdr;
+@@ -1324,7 +1324,7 @@ int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
+ 	phdr++;
  
- extern riscv_kexec_method riscv_kexec_norelocate;
- 
-+#ifdef CONFIG_KEXEC_FILE
-+extern const struct kexec_file_ops elf_kexec_ops;
-+#endif
-+
- #endif
-diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
-index 87adbe47bc15..6673c50c58e2 100644
---- a/arch/riscv/kernel/Makefile
-+++ b/arch/riscv/kernel/Makefile
-@@ -64,6 +64,7 @@ endif
- obj-$(CONFIG_HOTPLUG_CPU)	+= cpu-hotplug.o
- obj-$(CONFIG_KGDB)		+= kgdb.o
- obj-$(CONFIG_KEXEC)		+= kexec_relocate.o crash_save_regs.o machine_kexec.o
-+obj-$(CONFIG_KEXEC_FILE)	+= elf_kexec.o machine_kexec_file.o
- obj-$(CONFIG_CRASH_DUMP)	+= crash_dump.o
- 
- obj-$(CONFIG_JUMP_LABEL)	+= jump_label.o
-diff --git a/arch/riscv/kernel/elf_kexec.c b/arch/riscv/kernel/elf_kexec.c
-new file mode 100644
-index 000000000000..2d442a849871
---- /dev/null
-+++ b/arch/riscv/kernel/elf_kexec.c
-@@ -0,0 +1,180 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Load ELF vmlinux file for the kexec_file_load syscall.
-+ *
-+ * Copyright (C) 2021 Huawei Technologies Co, Ltd.
-+ *
-+ * Author: Liao Chang (liaochang1@huawei.com)
-+ *
-+ * Based on kexec-tools' kexec-elf-riscv.c, heavily modified
-+ * for kernel.
-+ */
-+
-+#define pr_fmt(fmt)	"kexec_image: " fmt
-+
-+#include <linux/elf.h>
-+#include <linux/kexec.h>
-+#include <linux/slab.h>
-+#include <linux/of.h>
-+#include <linux/libfdt.h>
-+#include <linux/types.h>
-+
-+static int riscv_kexec_elf_load(struct kimage *image, struct elfhdr *ehdr,
-+				struct kexec_elf_info *elf_info, unsigned long old_pbase,
-+				unsigned long new_pbase)
-+{
-+	int i;
-+	int ret = 0;
-+	size_t size;
-+	struct kexec_buf kbuf;
-+	const struct elf_phdr *phdr;
-+
-+	kbuf.image = image;
-+
-+	for (i = 0; i < ehdr->e_phnum; i++) {
-+		phdr = &elf_info->proghdrs[i];
-+		if (phdr->p_type != PT_LOAD)
-+			continue;
-+
-+		size = phdr->p_filesz;
-+		if (size > phdr->p_memsz)
-+			size = phdr->p_memsz;
-+
-+		kbuf.buffer = (void *) elf_info->buffer + phdr->p_offset;
-+		kbuf.bufsz = size;
-+		kbuf.buf_align = phdr->p_align;
-+		kbuf.mem = phdr->p_paddr - old_pbase + new_pbase;
-+		kbuf.memsz = phdr->p_memsz;
-+		kbuf.top_down = false;
-+		ret = kexec_add_buffer(&kbuf);
-+		if (ret)
-+			break;
-+	}
-+
-+	return ret;
-+}
-+
-+/*
-+ * Go through the available phsyical memory regions and find one that hold
-+ * an image of the specified size.
-+ */
-+static int elf_find_pbase(struct kimage *image, unsigned long kernel_len,
-+			  struct elfhdr *ehdr, struct kexec_elf_info *elf_info,
-+			  unsigned long *old_pbase, unsigned long *new_pbase)
-+{
-+	int i;
-+	int ret;
-+	struct kexec_buf kbuf;
-+	const struct elf_phdr *phdr;
-+	unsigned long lowest_paddr = ULONG_MAX;
-+	unsigned long lowest_vaddr = ULONG_MAX;
-+
-+	for (i = 0; i < ehdr->e_phnum; i++) {
-+		phdr = &elf_info->proghdrs[i];
-+		if (phdr->p_type != PT_LOAD)
-+			continue;
-+
-+		if (lowest_paddr > phdr->p_paddr)
-+			lowest_paddr = phdr->p_paddr;
-+
-+		if (lowest_vaddr > phdr->p_vaddr)
-+			lowest_vaddr = phdr->p_vaddr;
-+	}
-+
-+	kbuf.image = image;
-+	kbuf.buf_min = lowest_paddr;
-+	kbuf.buf_max = ULONG_MAX;
-+	kbuf.buf_align = PAGE_SIZE;
-+	kbuf.mem = KEXEC_BUF_MEM_UNKNOWN;
-+	kbuf.memsz = ALIGN(kernel_len, PAGE_SIZE);
-+	kbuf.top_down = false;
-+	ret = arch_kexec_locate_mem_hole(&kbuf);
-+	if (!ret) {
-+		*old_pbase = lowest_paddr;
-+		*new_pbase = kbuf.mem;
-+		image->start = ehdr->e_entry - lowest_vaddr + kbuf.mem;
-+	}
-+	return ret;
-+}
-+
-+static void *elf_kexec_load(struct kimage *image, char *kernel_buf,
-+			    unsigned long kernel_len, char *initrd,
-+			    unsigned long initrd_len, char *cmdline,
-+			    unsigned long cmdline_len)
-+{
-+	int ret;
-+	unsigned long old_kernel_pbase = ULONG_MAX;
-+	unsigned long new_kernel_pbase = 0UL;
-+	unsigned long initrd_pbase = 0UL;
-+	void *fdt;
-+	struct elfhdr ehdr;
-+	struct kexec_buf kbuf;
-+	struct kexec_elf_info elf_info;
-+
-+	ret = kexec_build_elf_info(kernel_buf, kernel_len, &ehdr, &elf_info);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	ret = elf_find_pbase(image, kernel_len, &ehdr, &elf_info,
-+			     &old_kernel_pbase, &new_kernel_pbase);
-+	if (ret)
-+		goto out;
-+	pr_notice("The entry point of kernel at 0x%lx\n", image->start);
-+
-+	/* Add the kernel binary to the image */
-+	ret = riscv_kexec_elf_load(image, &ehdr, &elf_info,
-+				   old_kernel_pbase, new_kernel_pbase);
-+	if (ret)
-+		goto out;
-+
-+	kbuf.image = image;
-+	kbuf.buf_min = new_kernel_pbase + kernel_len;
-+	kbuf.buf_max = ULONG_MAX;
-+	/* Add the initrd to the image */
-+	if (initrd != NULL) {
-+		kbuf.buffer = initrd;
-+		kbuf.bufsz = kbuf.memsz = initrd_len;
-+		kbuf.buf_align = PAGE_SIZE;
-+		kbuf.top_down = false;
-+		kbuf.mem = KEXEC_BUF_MEM_UNKNOWN;
-+		ret = kexec_add_buffer(&kbuf);
-+		if (ret)
-+			goto out;
-+		initrd_pbase = kbuf.mem;
-+		pr_notice("Loaded initrd at 0x%lx\n", initrd_pbase);
-+	}
-+
-+	/* Add the DTB to the image */
-+	fdt = of_kexec_alloc_and_setup_fdt(image, initrd_pbase,
-+					   initrd_len, cmdline, 0);
-+	if (!fdt) {
-+		pr_err("Error setting up the new device tree.\n");
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	fdt_pack(fdt);
-+	kbuf.buffer = fdt;
-+	kbuf.bufsz = kbuf.memsz = fdt_totalsize(fdt);
-+	kbuf.buf_align = PAGE_SIZE;
-+	kbuf.mem = KEXEC_BUF_MEM_UNKNOWN;
-+	kbuf.top_down = true;
-+	ret = kexec_add_buffer(&kbuf);
-+	if (ret) {
-+		pr_err("Error add DTB kbuf ret=%d\n", ret);
-+		goto out_free_fdt;
-+	}
-+	pr_notice("Loaded device tree at 0x%lx\n", kbuf.mem);
-+	goto out;
-+
-+out_free_fdt:
-+	kvfree(fdt);
-+out:
-+	kexec_free_elf_info(&elf_info);
-+	return ret ? ERR_PTR(ret) : NULL;
-+}
-+
-+const struct kexec_file_ops elf_kexec_ops = {
-+	.probe = kexec_elf_probe,
-+	.load  = elf_kexec_load,
-+};
-diff --git a/arch/riscv/kernel/machine_kexec_file.c b/arch/riscv/kernel/machine_kexec_file.c
-new file mode 100644
-index 000000000000..b0bf8c1722c0
---- /dev/null
-+++ b/arch/riscv/kernel/machine_kexec_file.c
-@@ -0,0 +1,14 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * kexec_file for riscv, use vmlinux as the dump-capture kernel image.
-+ *
-+ * Copyright (C) 2021 Huawei Technologies Co, Ltd.
-+ *
-+ * Author: Liao Chang (liaochang1@huawei.com)
-+ */
-+#include <linux/kexec.h>
-+
-+const struct kexec_file_ops * const kexec_file_loaders[] = {
-+	&elf_kexec_ops,
-+	NULL
-+};
+ 	/* Prepare PT_LOAD type program header for kernel text region */
+-	if (kernel_map) {
++	if (need_kernel_map) {
+ 		phdr->p_type = PT_LOAD;
+ 		phdr->p_flags = PF_R|PF_W|PF_X;
+ 		phdr->p_vaddr = (unsigned long) _text;
 -- 
 2.17.1
 
