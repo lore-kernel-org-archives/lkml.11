@@ -2,127 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D27AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6FEEC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232030AbiDHIfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 04:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
+        id S232075AbiDHIg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 04:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231904AbiDHIfB (ORCPT
+        with ESMTP id S232042AbiDHIgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 04:35:01 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D520B2FF537;
-        Fri,  8 Apr 2022 01:32:58 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1nck1W-000SEY-Od; Fri, 08 Apr 2022 18:31:20 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 08 Apr 2022 16:31:19 +0800
-Date:   Fri, 8 Apr 2022 16:31:19 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Amit Shah <amit@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eli Cohen <eli@mellanox.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Felipe Balbi <felipe.balbi@linux.intel.com>,
-        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>,
-        Igor Kotrasinski <i.kotrasinsk@samsung.com>,
-        Valentina Manea <valentina.manea.m@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Jussi Kivilinna <jussi.kivilinna@mbnet.fi>,
-        Joachim Fritschi <jfritschi@freenet.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Karol Herbst <karolherbst@gmail.com>,
-        Pekka Paalanen <ppaalanen@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-usb@vger.kernel.org, nouveau@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org, x86@kernel.org
-Subject: Re: [PATCH 8/9] x86/crypto: eliminate anonymous module_init &
- module_exit
-Message-ID: <Yk/y12WSN5+PpDkP@gondor.apana.org.au>
-References: <20220316192010.19001-1-rdunlap@infradead.org>
- <20220316192010.19001-9-rdunlap@infradead.org>
+        Fri, 8 Apr 2022 04:36:24 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C49052FF599;
+        Fri,  8 Apr 2022 01:34:20 -0700 (PDT)
+Received: from zn.tnic (p200300ea971561a9329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9715:61a9:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 5116B1EC0445;
+        Fri,  8 Apr 2022 10:34:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649406855;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=+UM7gmu9BXYvquOX3OamJYimXfFmDeZA/dtmCZUBglw=;
+        b=k1y/zw+J9AQWVow8qwgv05yji5qd8InFZbomSek/ZxF0rApG5eH5fq0qUwCQ5FXz4ni7HF
+        IhPcVjKeKNKkaiAie5vHf5rYNByHSJt4ZoZuogfwB3JVkLi0qaxdvnKjhNR9BbZcB01V1X
+        1oK94rVdY/dg5+zzOYYOC+4r6XIWWwY=
+Date:   Fri, 8 Apr 2022 10:34:13 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Jithu Joseph <jithu.joseph@intel.com>
+Cc:     hdegoede@redhat.com, markgross@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, corbet@lwn.net, gregkh@linuxfoundation.org,
+        andriy.shevchenko@linux.intel.com, ashok.raj@intel.com,
+        tony.luck@intel.com, rostedt@goodmis.org, dan.j.williams@intel.com,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
+        ravi.v.shankar@intel.com
+Subject: Re: [PATCH v2 01/10] x86/microcode/intel: expose
+ collect_cpu_info_early() for IFS
+Message-ID: <Yk/zhV3SGib6TaI5@zn.tnic>
+References: <20220407191347.9681-1-jithu.joseph@intel.com>
+ <20220407191347.9681-2-jithu.joseph@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220316192010.19001-9-rdunlap@infradead.org>
+In-Reply-To: <20220407191347.9681-2-jithu.joseph@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 12:20:09PM -0700, Randy Dunlap wrote:
-> Eliminate anonymous module_init() and module_exit(), which can lead to
-> confusion or ambiguity when reading System.map, crashes/oops/bugs,
-> or an initcall_debug log.
-> 
-> Give each of these init and exit functions unique driver-specific
-> names to eliminate the anonymous names.
-> 
-> Example 1: (System.map)
->  ffffffff832fc78c t init
->  ffffffff832fc79e t init
->  ffffffff832fc8f8 t init
-> 
-> Example 2: (initcall_debug log)
->  calling  init+0x0/0x12 @ 1
->  initcall init+0x0/0x12 returned 0 after 15 usecs
->  calling  init+0x0/0x60 @ 1
->  initcall init+0x0/0x60 returned 0 after 2 usecs
->  calling  init+0x0/0x9a @ 1
->  initcall init+0x0/0x9a returned 0 after 74 usecs
-> 
-> Fixes: 64b94ceae8c1 ("crypto: blowfish - add x86_64 assembly implementation")
-> Fixes: 676a38046f4f ("crypto: camellia-x86_64 - module init/exit functions should be static")
-> Fixes: 0b95ec56ae19 ("crypto: camellia - add assembler implementation for x86_64")
-> Fixes: 56d76c96a9f3 ("crypto: serpent - add AVX2/x86_64 assembler implementation of serpent cipher")
-> Fixes: b9f535ffe38f ("[CRYPTO] twofish: i586 assembly version")
-> Fixes: ff0a70fe0536 ("crypto: twofish-x86_64-3way - module init/exit functions should be static")
-> Fixes: 8280daad436e ("crypto: twofish - add 3-way parallel x86_64 assembler implemention")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
-> Cc: Joachim Fritschi <jfritschi@freenet.de>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: linux-crypto@vger.kernel.org
-> Cc: x86@kernel.org
-> ---
->  arch/x86/crypto/blowfish_glue.c     |    8 ++++----
->  arch/x86/crypto/camellia_glue.c     |    8 ++++----
->  arch/x86/crypto/serpent_avx2_glue.c |    8 ++++----
->  arch/x86/crypto/twofish_glue.c      |    8 ++++----
->  arch/x86/crypto/twofish_glue_3way.c |    8 ++++----
->  5 files changed, 20 insertions(+), 20 deletions(-)
+On Thu, Apr 07, 2022 at 12:13:38PM -0700, Jithu Joseph wrote:
+> diff --git a/arch/x86/include/asm/microcode_intel.h b/arch/x86/include/asm/microcode_intel.h
+> index d85a07d7154f..cf0fd1d712b4 100644
+> --- a/arch/x86/include/asm/microcode_intel.h
+> +++ b/arch/x86/include/asm/microcode_intel.h
+> @@ -68,6 +68,10 @@ static inline u32 intel_get_microcode_revision(void)
+>  	return rev;
+>  }
+>  
+> +int cpu_collect_info_early(struct ucode_cpu_info *uci);
+> +bool cpu_signatures_match(unsigned int s1, unsigned int p1,
+> +			  unsigned int s2, unsigned int p2);
+> +
 
-Patch applied.  Thanks.
+So you can't move the functions to cpu/intel.c but put the
+prototype declarations in the microcode header - they should go to
+arch/x86/include/asm/cpu.h or so.
+
+
+>  #ifdef CONFIG_MICROCODE_INTEL
+>  extern void __init load_ucode_intel_bsp(void);
+>  extern void load_ucode_intel_ap(void);
+> diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+> index 8321c43554a1..2008c8267fd3 100644
+> --- a/arch/x86/kernel/cpu/intel.c
+> +++ b/arch/x86/kernel/cpu/intel.c
+> @@ -181,6 +181,53 @@ static bool bad_spectre_microcode(struct cpuinfo_x86 *c)
+>  	return false;
+>  }
+>  
+> +bool cpu_signatures_match(unsigned int s1, unsigned int p1,
+
+That function is Intel-specific:
+
+intel_cpu_signatures_match()
+
+and it is small enough to stick it in the above header and make it an
+inline without the need for an export.
+
+> +			  unsigned int s2, unsigned int p2)
+> +{
+> +	if (s1 != s2)
+> +		return false;
+> +
+> +	/* Processor flags are either both 0 ... */
+> +	if (!p1 && !p2)
+> +		return true;
+> +
+> +	/* ... or they intersect. */
+> +	return p1 & p2;
+> +}
+> +EXPORT_SYMBOL_GPL(cpu_signatures_match);
+> +
+> +int cpu_collect_info_early(struct ucode_cpu_info *uci)
+
+intel_collect_cpu_info_early()
+
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
