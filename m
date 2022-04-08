@@ -2,215 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC3F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D33C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231229AbiDHKdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 06:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55030 "EHLO
+        id S234529AbiDHKeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 06:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234400AbiDHKck (ORCPT
+        with ESMTP id S234479AbiDHKd7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 06:32:40 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB2CDED9
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:30:35 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id r13so12147925wrr.9
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 03:30:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bMG1g7rr9n+ottfcmWcC55uPNKGnZnLQG5qxdVFfJ/c=;
-        b=GuN0iCXM2lz9mjvP6iCzd1e6rt5RPWJ4nuZzuAoDx9NGZHH5tDKPTiy7cAaUL5oRNe
-         2XLkko5EpqaKsJHS92hd9/F/7EJGNUCcK/kgY41x0mhgLq1wC8Tb25SjOpJKLc17SrPs
-         sw/kQskX+44pPyNZRYH5GEPFCLQ8DUSzAxoLkRmHT3cJQBi6za7uPIfDwD1E2gk9q2Iy
-         MmiiotFxmzNl3MQYH1pdYhyYFRCpu4ANdni/IMv+Q5k1H4NplH67700EAIufIXm7Fs3H
-         WP6mmanTZx0mJ9ZhpOOH1VT3NcNuO2Ve3VvisNFx6vvaXpCvmHYjAjboqXzIdax2xvZF
-         ynWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bMG1g7rr9n+ottfcmWcC55uPNKGnZnLQG5qxdVFfJ/c=;
-        b=3FeTj+z9+8F8Vd4+Crq/0JYQqfl8/qcmXp8Ll0Vq3dtxRE1CBPHn4biD4lfjk7F5us
-         t3Ouy9grgv1hylY3MNuy1fONKV6RT6UrSy81OYhFYELXGxVPtvhi2MakxoMQzfqf0Au2
-         fQCD/gERHynCBiSorI0FbpDKuqo2q0x9Felhb0qbzNUX04255aAHKpAFeBp1WBtBRMjx
-         uww7/JvAAtBVMcsFjuKf10b4k3D2M+eYZYjCiIitJeG4eoUKGf0yM+yVX5JM4hnHvl9t
-         HmbsXTYvAy8zSQ9lsry3i/RhnGnPmDR9X9ZwaBrcGXOYPwe6Q8jT+OjKwWnWzHhk3oAv
-         9alg==
-X-Gm-Message-State: AOAM530X0H0+03LPqv4pmiUD40MJIUrl0pPUllx4jDHCPJQEK0QcLN0I
-        YNQ8CKyBqgNees32IhZo9f5buw==
-X-Google-Smtp-Source: ABdhPJwZ7jM3+apmEvFrdIdfPicFrGgQZzpdM5I4/wXm33byVs6x5S9P0Qn+4Q4HU8JohFPXPiB7yA==
-X-Received: by 2002:a5d:47c1:0:b0:206:1c38:ab87 with SMTP id o1-20020a5d47c1000000b002061c38ab87mr13380817wrc.620.1649413834040;
-        Fri, 08 Apr 2022 03:30:34 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id n2-20020adfb742000000b00205eda3b3c1sm20181920wre.34.2022.04.08.03.30.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 03:30:33 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Doug Gilbert <dgilbert@interlog.com>,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 1/4] scsi: core: constify pointer to scsi_host_template
-Date:   Fri,  8 Apr 2022 12:30:24 +0200
-Message-Id: <20220408103027.311624-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        Fri, 8 Apr 2022 06:33:59 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8AC571DF654;
+        Fri,  8 Apr 2022 03:31:56 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1BF4D11FB;
+        Fri,  8 Apr 2022 03:31:56 -0700 (PDT)
+Received: from lpieralisi (unknown [10.57.11.200])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 05FE73F73B;
+        Fri,  8 Apr 2022 03:31:53 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 11:31:52 +0100
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>, Andrew Lunn <andrew@lunn.ch>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/4] dt-bindings: Add 'slot-power-limit-milliwatt'
+ PCIe port property
+Message-ID: <YlAPGCSQraPJA3bV@lpieralisi>
+References: <20220325093827.4983-1-pali@kernel.org>
+ <20220325093827.4983-3-pali@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220325093827.4983-3-pali@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Several pointers to 'struct scsi_host_template' do not modify it, so
-made them const for safety.
+On Fri, Mar 25, 2022 at 10:38:25AM +0100, Pali Rohár wrote:
+> This property specifies slot power limit in mW unit. It is a form-factor
+> and board specific value and must be initialized by hardware.
+> 
+> Some PCIe controllers delegate this work to software to allow hardware
+> flexibility and therefore this property basically specifies what should
+> host bridge program into PCIe Slot Capabilities registers.
+> 
+> The property needs to be specified in mW unit instead of the special format
+> defined by Slot Capabilities (which encodes scaling factor or different
+> unit). Host drivers should convert the value from mW to needed format.
+> 
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> Signed-off-by: Marek Behún <kabel@kernel.org>
+> 
+> ---
+> This change was already accepted into dt-schema repo by Rob Herring:
+> https://github.com/devicetree-org/dt-schema/pull/66
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- drivers/scsi/hosts.c      |  2 +-
- drivers/scsi/scsi_error.c | 17 +++++++++--------
- drivers/scsi/scsi_proc.c  |  2 +-
- drivers/scsi/scsi_sysfs.c |  6 +++---
- 4 files changed, 14 insertions(+), 13 deletions(-)
+Is there a way I can check a DT binding was pulled into the schema
+without having to read the patch (eg just checking Rob's Acked/Reviewed
+tags ?)
 
-diff --git a/drivers/scsi/hosts.c b/drivers/scsi/hosts.c
-index f69b77cbf538..65616a01761a 100644
---- a/drivers/scsi/hosts.c
-+++ b/drivers/scsi/hosts.c
-@@ -209,7 +209,7 @@ EXPORT_SYMBOL(scsi_remove_host);
- int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
- 			   struct device *dma_dev)
- {
--	struct scsi_host_template *sht = shost->hostt;
-+	const struct scsi_host_template *sht = shost->hostt;
- 	int error = -EINVAL;
- 
- 	shost_printk(KERN_INFO, shost, "%s\n",
-diff --git a/drivers/scsi/scsi_error.c b/drivers/scsi/scsi_error.c
-index cdaca13ac1f1..0bca4108aae2 100644
---- a/drivers/scsi/scsi_error.c
-+++ b/drivers/scsi/scsi_error.c
-@@ -58,7 +58,7 @@
- #define HOST_RESET_SETTLE_TIME  (10)
- 
- static int scsi_eh_try_stu(struct scsi_cmnd *scmd);
--static enum scsi_disposition scsi_try_to_abort_cmd(struct scsi_host_template *,
-+static enum scsi_disposition scsi_try_to_abort_cmd(const struct scsi_host_template *,
- 						   struct scsi_cmnd *);
- 
- void scsi_eh_wakeup(struct Scsi_Host *shost)
-@@ -692,7 +692,7 @@ EXPORT_SYMBOL_GPL(scsi_check_sense);
- 
- static void scsi_handle_queue_ramp_up(struct scsi_device *sdev)
- {
--	struct scsi_host_template *sht = sdev->host->hostt;
-+	const struct scsi_host_template *sht = sdev->host->hostt;
- 	struct scsi_device *tmp_sdev;
- 
- 	if (!sht->track_queue_depth ||
-@@ -724,7 +724,7 @@ static void scsi_handle_queue_ramp_up(struct scsi_device *sdev)
- 
- static void scsi_handle_queue_full(struct scsi_device *sdev)
- {
--	struct scsi_host_template *sht = sdev->host->hostt;
-+	const struct scsi_host_template *sht = sdev->host->hostt;
- 	struct scsi_device *tmp_sdev;
- 
- 	if (!sht->track_queue_depth)
-@@ -833,7 +833,7 @@ static enum scsi_disposition scsi_try_host_reset(struct scsi_cmnd *scmd)
- 	unsigned long flags;
- 	enum scsi_disposition rtn;
- 	struct Scsi_Host *host = scmd->device->host;
--	struct scsi_host_template *hostt = host->hostt;
-+	const struct scsi_host_template *hostt = host->hostt;
- 
- 	SCSI_LOG_ERROR_RECOVERY(3,
- 		shost_printk(KERN_INFO, host, "Snd Host RST\n"));
-@@ -863,7 +863,7 @@ static enum scsi_disposition scsi_try_bus_reset(struct scsi_cmnd *scmd)
- 	unsigned long flags;
- 	enum scsi_disposition rtn;
- 	struct Scsi_Host *host = scmd->device->host;
--	struct scsi_host_template *hostt = host->hostt;
-+	const struct scsi_host_template *hostt = host->hostt;
- 
- 	SCSI_LOG_ERROR_RECOVERY(3, scmd_printk(KERN_INFO, scmd,
- 		"%s: Snd Bus RST\n", __func__));
-@@ -905,7 +905,7 @@ static enum scsi_disposition scsi_try_target_reset(struct scsi_cmnd *scmd)
- 	unsigned long flags;
- 	enum scsi_disposition rtn;
- 	struct Scsi_Host *host = scmd->device->host;
--	struct scsi_host_template *hostt = host->hostt;
-+	const struct scsi_host_template *hostt = host->hostt;
- 
- 	if (!hostt->eh_target_reset_handler)
- 		return FAILED;
-@@ -934,7 +934,7 @@ static enum scsi_disposition scsi_try_target_reset(struct scsi_cmnd *scmd)
- static enum scsi_disposition scsi_try_bus_device_reset(struct scsi_cmnd *scmd)
- {
- 	enum scsi_disposition rtn;
--	struct scsi_host_template *hostt = scmd->device->host->hostt;
-+	const struct scsi_host_template *hostt = scmd->device->host->hostt;
- 
- 	if (!hostt->eh_device_reset_handler)
- 		return FAILED;
-@@ -963,7 +963,8 @@ static enum scsi_disposition scsi_try_bus_device_reset(struct scsi_cmnd *scmd)
-  *    link down on FibreChannel)
-  */
- static enum scsi_disposition
--scsi_try_to_abort_cmd(struct scsi_host_template *hostt, struct scsi_cmnd *scmd)
-+scsi_try_to_abort_cmd(const struct scsi_host_template *hostt,
-+		      struct scsi_cmnd *scmd)
- {
- 	if (!hostt->eh_abort_handler)
- 		return FAILED;
-diff --git a/drivers/scsi/scsi_proc.c b/drivers/scsi/scsi_proc.c
-index 95aee1ad1383..6f023a2f951b 100644
---- a/drivers/scsi/scsi_proc.c
-+++ b/drivers/scsi/scsi_proc.c
-@@ -137,7 +137,7 @@ void scsi_proc_hostdir_rm(struct scsi_host_template *sht)
-  */
- void scsi_proc_host_add(struct Scsi_Host *shost)
- {
--	struct scsi_host_template *sht = shost->hostt;
-+	const struct scsi_host_template *sht = shost->hostt;
- 	struct proc_dir_entry *p;
- 	char name[10];
- 
-diff --git a/drivers/scsi/scsi_sysfs.c b/drivers/scsi/scsi_sysfs.c
-index dc6872e352bd..cdc6e1ab8ce7 100644
---- a/drivers/scsi/scsi_sysfs.c
-+++ b/drivers/scsi/scsi_sysfs.c
-@@ -296,7 +296,7 @@ store_host_reset(struct device *dev, struct device_attribute *attr,
- 		const char *buf, size_t count)
- {
- 	struct Scsi_Host *shost = class_to_shost(dev);
--	struct scsi_host_template *sht = shost->hostt;
-+	const struct scsi_host_template *sht = shost->hostt;
- 	int ret = -EINVAL;
- 	int type;
- 
-@@ -1017,7 +1017,7 @@ sdev_store_queue_depth(struct device *dev, struct device_attribute *attr,
- {
- 	int depth, retval;
- 	struct scsi_device *sdev = to_scsi_device(dev);
--	struct scsi_host_template *sht = sdev->host->hostt;
-+	const struct scsi_host_template *sht = sdev->host->hostt;
- 
- 	if (!sht->change_queue_depth)
- 		return -EINVAL;
-@@ -1584,7 +1584,7 @@ void scsi_sysfs_device_initialize(struct scsi_device *sdev)
- {
- 	unsigned long flags;
- 	struct Scsi_Host *shost = sdev->host;
--	struct scsi_host_template *hostt = shost->hostt;
-+	const struct scsi_host_template *hostt = shost->hostt;
- 	struct scsi_target  *starget = sdev->sdev_target;
- 
- 	device_initialize(&sdev->sdev_gendev);
--- 
-2.32.0
+I think this patch should have been posted to
+devicetree@vger.kernel.org, by the way.
 
+Lorenzo
+
+>  Documentation/devicetree/bindings/pci/pci.txt | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pci/pci.txt b/Documentation/devicetree/bindings/pci/pci.txt
+> index 6a8f2874a24d..b0cc133ed00d 100644
+> --- a/Documentation/devicetree/bindings/pci/pci.txt
+> +++ b/Documentation/devicetree/bindings/pci/pci.txt
+> @@ -32,6 +32,12 @@ driver implementation may support the following properties:
+>     root port to downstream device and host bridge drivers can do programming
+>     which depends on CLKREQ signal existence. For example, programming root port
+>     not to advertise ASPM L1 Sub-States support if there is no CLKREQ signal.
+> +- slot-power-limit-milliwatt:
+> +   If present, this property specifies slot power limit in milliwatts. Host
+> +   drivers can parse this property and use it for programming Root Port or host
+> +   bridge, or for composing and sending PCIe Set_Slot_Power_Limit messages
+> +   through the Root Port or host bridge when transitioning PCIe link from a
+> +   non-DL_Up Status to a DL_Up Status.
+>  
+>  PCI-PCI Bridge properties
+>  -------------------------
+> -- 
+> 2.20.1
+> 
