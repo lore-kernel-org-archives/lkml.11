@@ -2,138 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 069B5C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D53C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbiDHIAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 04:00:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
+        id S230214AbiDHIAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 04:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbiDHIAY (ORCPT
+        with ESMTP id S230095AbiDHIA1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 04:00:24 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B42101F19
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 00:58:20 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id j9so5598623lfe.9
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 00:58:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LDg0VuOdkCKm0C8uZKp3vKpTf/VpsO8U9ed6vcjhQTo=;
-        b=TAfmtGR4a9a3jgYPSlQ7/KHOY55cHJ2ZPH+9tvKC7XSRQzemgPxT5uuo5NqPmlMrYb
-         g7/2IJN9Xzw2TASKcNKcaffTQV8aDR6Vbb4hDIMyK0Mdujx5V4YWTFmXzhnZvDk2UlIi
-         tgWzh1dy3QsKgBEpmqFUlP9Bmrxw6qzurk0R1TofqqHib2TrmWnkKE2A/1xWbAcemmnw
-         Lbuk3qPIMCx7WSAaZSshBYhR7x+Rhla24TRiM++omihK0V4+pxuPlvFwQyA3OKBaaoKd
-         c3z1qXih8x1kjR1ndEVUZej/p/Cne/Zo0XrpIJQLX+9KhYKPnvy4amdrAX6U/aqAnFD6
-         9oCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LDg0VuOdkCKm0C8uZKp3vKpTf/VpsO8U9ed6vcjhQTo=;
-        b=3JZMCNIt+i0fb3tslGLDPCUp6XOUfinxZE+XfMlXzvIWfX3pq385JGvJ0k57GrG3Px
-         y+lNuV62wYuJX0hhYAn/t6dVzkS/HHkuyKqtxXEnZbs3cCns4CAbx9+6yA9WP3Um/wzB
-         SmxPwJB7os3/kWn7j5rcVCfIxQyG0lZC7htKnIVNQN6FFPkld0kB3Zodt+OXAw2xY+WY
-         nakXuCv4lSRexTJ74hMqJZPXhjcAslbf0G12HFGeE0AoTiv0asWMb1Wn/b2MNQUeRQ1d
-         pU2h07vMf1UdDgeJec8ZL5Iansf/guRo7nvdCGrPTa8u4qsMcG8L1Y+3RJ/BMwndE0UE
-         Ac7g==
-X-Gm-Message-State: AOAM530sOhLLH6PxapOHG56y3F7k9QqdZOORc+8aPtotJCZx0Y4ABCUB
-        nj/+pvaEKEfctP76NsxevzQ=
-X-Google-Smtp-Source: ABdhPJyYta5aydqTXUvGMWiC0TCQ8PlSIHqgPbTB0TDQ6KifZ6JROMRtolpO3so0hsiB92awnmsKrg==
-X-Received: by 2002:a19:f00f:0:b0:443:ae5c:47d0 with SMTP id p15-20020a19f00f000000b00443ae5c47d0mr12061146lfc.332.1649404698181;
-        Fri, 08 Apr 2022 00:58:18 -0700 (PDT)
-Received: from noname.. ([2a02:2698:8c2a:149d:6d9:f5ff:fecb:a8ab])
-        by smtp.googlemail.com with ESMTPSA id g9-20020a2e9cc9000000b0024afe85d0c8sm2170520ljj.121.2022.04.08.00.58.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 00:58:17 -0700 (PDT)
-From:   Grigory Vasilyev <h0tc0d3@gmail.com>
-To:     Rodrigo.Siqueira@amd.com, Melissa Wen <mwen@igalia.com>
-Cc:     Grigory Vasilyev <h0tc0d3@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>, Huang Rui <ray.huang@amd.com>,
-        Peng Ju Zhou <PengJu.Zhou@amd.com>,
-        Evan Quan <evan.quan@amd.com>,
-        Chengming Gui <Jack.Gui@amd.com>,
-        Yifan Zhang <yifan1.zhang@amd.com>,
-        Guchun Chen <guchun.chen@amd.com>,
-        Joseph Greathouse <Joseph.Greathouse@amd.com>,
-        yipechai <YiPeng.Chai@amd.com>, Lijo Lazar <lijo.lazar@amd.com>,
-        Victor Skvortsov <victor.skvortsov@amd.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/amdgpu: Fix incorrect enum type
-Date:   Fri,  8 Apr 2022 10:58:17 +0300
-Message-Id: <20220408075820.10396-1-h0tc0d3@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 8 Apr 2022 04:00:27 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC461169797;
+        Fri,  8 Apr 2022 00:58:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649404705; x=1680940705;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=WJKyd+Fl6YLBO12mh2a443xCDWtg4F7sbnlIRNccMxc=;
+  b=h4up6pMraM4eGneg+TxCKOg+pCZdjdfZ3yJWSQ89acXyS0k7QixUzLSH
+   P+oMV1YohwjRbhAjf8iv3PB7W+JoTmSlZoATFwU2hSMg71rDdvb7sP9Ip
+   KT61+55bWlqUUCUPRTqdVEGSlVCzJgugk+g+hli7VIGSs4bWhJsoK2VTT
+   2uYI25pUUCxZ/hXcJthq64/ES2+k9DivEzBVcp2NHW8PyAszrFCqcJXeP
+   tICQiv1dz5IDQRhu2KTtL1Holo8pdSyhW6hv5wta5J3lFg3ZwFtKeLEy5
+   3ADv1Q+6E7Wbd3H2ZjMbwPiEMcRa1/WySbp4SxN+ryRmHKnds1+HlSOlx
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,244,1643698800"; 
+   d="scan'208";a="151988423"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Apr 2022 00:58:24 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 8 Apr 2022 00:58:23 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 8 Apr 2022 00:58:19 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <robh+dt@kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <p.zabel@pengutronix.de>,
+        <linux@armlinux.org.uk>, <sre@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <cristian.birsan@microchip.com>, <linux-pm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 02/10] dt-bindings: reset: convert Atmel/Microchip reset controller to YAML
+Date:   Fri, 8 Apr 2022 11:00:23 +0300
+Message-ID: <20220408080031.2527232-3-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220408080031.2527232-1-claudiu.beznea@microchip.com>
+References: <20220408080031.2527232-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of the 'amdgpu_ring_priority_level' type,
-the 'amdgpu_gfx_pipe_priority' type was used,
-which is an error when setting ring priority.
-This is a minor error, but may cause problems in the future.
+Convert Atmel/Microchip reset controller to YAML.
 
-Instead of AMDGPU_RING_PRIO_2 = 2, we can use AMDGPU_RING_PRIO_MAX = 3,
-but AMDGPU_RING_PRIO_2 = 2 is used for compatibility with
-AMDGPU_GFX_PIPE_PRIO_HIGH = 2, and not change the behavior of the
-code.
-
-Signed-off-by: Grigory Vasilyev <h0tc0d3@gmail.com>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gfx_v10_0.c | 2 +-
- drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c  | 2 +-
- drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c  | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/arm/atmel-sysregs.txt | 15 ------
+ .../reset/atmel,at91sam9260-reset.yaml        | 49 +++++++++++++++++++
+ 2 files changed, 49 insertions(+), 15 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/gfx_v10_0.c b/drivers/gpu/drm/amd/amdgpu/gfx_v10_0.c
-index b3081c28db0a..1d9120a4b3f5 100644
---- a/drivers/gpu/drm/amd/amdgpu/gfx_v10_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gfx_v10_0.c
-@@ -4745,7 +4745,7 @@ static int gfx_v10_0_compute_ring_init(struct amdgpu_device *adev, int ring_id,
- 		+ ((ring->me - 1) * adev->gfx.mec.num_pipe_per_mec)
- 		+ ring->pipe;
- 	hw_prio = amdgpu_gfx_is_high_priority_compute_queue(adev, ring) ?
--			AMDGPU_GFX_PIPE_PRIO_HIGH : AMDGPU_GFX_PIPE_PRIO_NORMAL;
-+			AMDGPU_RING_PRIO_2 : AMDGPU_RING_PRIO_DEFAULT;
- 	/* type-2 packets are deprecated on MEC, use type-3 instead */
- 	r = amdgpu_ring_init(adev, ring, 1024, &adev->gfx.eop_irq, irq_type,
- 			     hw_prio, NULL);
-diff --git a/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
-index 5554084ec1f1..9bc26395f833 100644
---- a/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gfx_v8_0.c
-@@ -1929,7 +1929,7 @@ static int gfx_v8_0_compute_ring_init(struct amdgpu_device *adev, int ring_id,
- 		+ ring->pipe;
+diff --git a/Documentation/devicetree/bindings/arm/atmel-sysregs.txt b/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
+index 16eef600d599..ab1b352344ae 100644
+--- a/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
++++ b/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
+@@ -25,21 +25,6 @@ System Timer (ST) required properties:
+ Its subnodes can be:
+ - watchdog: compatible should be "atmel,at91rm9200-wdt"
  
- 	hw_prio = amdgpu_gfx_is_high_priority_compute_queue(adev, ring) ?
--			AMDGPU_GFX_PIPE_PRIO_HIGH : AMDGPU_RING_PRIO_DEFAULT;
-+			AMDGPU_RING_PRIO_2 : AMDGPU_RING_PRIO_DEFAULT;
- 	/* type-2 packets are deprecated on MEC, use type-3 instead */
- 	r = amdgpu_ring_init(adev, ring, 1024, &adev->gfx.eop_irq, irq_type,
- 			     hw_prio, NULL);
-diff --git a/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-index 71cf025a2bbd..029c97c92463 100644
---- a/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-@@ -2278,7 +2278,7 @@ static int gfx_v9_0_compute_ring_init(struct amdgpu_device *adev, int ring_id,
- 		+ ((ring->me - 1) * adev->gfx.mec.num_pipe_per_mec)
- 		+ ring->pipe;
- 	hw_prio = amdgpu_gfx_is_high_priority_compute_queue(adev, ring) ?
--			AMDGPU_GFX_PIPE_PRIO_HIGH : AMDGPU_GFX_PIPE_PRIO_NORMAL;
-+			AMDGPU_RING_PRIO_2 : AMDGPU_RING_PRIO_DEFAULT;
- 	/* type-2 packets are deprecated on MEC, use type-3 instead */
- 	return amdgpu_ring_init(adev, ring, 1024, &adev->gfx.eop_irq, irq_type,
- 				hw_prio, NULL);
+-RSTC Reset Controller required properties:
+-- compatible: Should be "atmel,<chip>-rstc".
+-  <chip> can be "at91sam9260", "at91sam9g45", "sama5d3" or "samx7"
+-  it also can be "microchip,sam9x60-rstc"
+-- reg: Should contain registers location and length
+-- clocks: phandle to input clock.
+-
+-Example:
+-
+-	rstc@fffffd00 {
+-		compatible = "atmel,at91sam9260-rstc";
+-		reg = <0xfffffd00 0x10>;
+-		clocks = <&clk32k>;
+-	};
+-
+ RAMC SDRAM/DDR Controller required properties:
+ - compatible: Should be "atmel,at91rm9200-sdramc", "syscon"
+ 			"atmel,at91sam9260-sdramc",
+diff --git a/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml b/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
+new file mode 100644
+index 000000000000..34c40b875e20
+--- /dev/null
++++ b/Documentation/devicetree/bindings/reset/atmel,at91sam9260-reset.yaml
+@@ -0,0 +1,49 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/reset/atmel,at91sam9260-reset.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Atmel/Microchip System Reset Controller
++
++maintainers:
++  - Claudiu Beznea <claudiu.beznea@microchip.com>
++
++description: |
++  The system reset controller can be used to reset the CPU.
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - atmel,at91sam9260-rstc
++              - atmel,at91sam9g45-rstc
++              - atmel,sama5d3-rstc
++              - microchip,sam9x60-rstc
++      - items:
++          - const: atmel,sama5d3-rstc
++          - const: atmel,at91sam9g45-rstc
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/at91.h>
++
++    reset-controller@fffffd00 {
++        compatible = "atmel,at91sam9260-rstc";
++        reg = <0xfffffd00 0x10>;
++        clocks = <&pmc PMC_TYPE_CORE PMC_SLOW>;
++    };
 -- 
-2.35.1
+2.32.0
 
