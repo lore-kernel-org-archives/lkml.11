@@ -2,97 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 05:00:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E12C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 05:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234469AbiDHFCs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 01:02:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38970 "EHLO
+        id S234676AbiDHFDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 01:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234381AbiDHFBa (ORCPT
+        with ESMTP id S234557AbiDHFDD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 01:01:30 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6615D19F210;
-        Thu,  7 Apr 2022 21:59:25 -0700 (PDT)
-X-UUID: 73ab34b585de4c52b3844959c9f451bb-20220408
-X-UUID: 73ab34b585de4c52b3844959c9f451bb-20220408
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 240213834; Fri, 08 Apr 2022 12:59:14 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 8 Apr 2022 12:59:13 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 8 Apr
- 2022 12:59:13 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 8 Apr 2022 12:59:13 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>
-CC:     <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
-        <roger.lu@mediatek.com>, <hsinyi@google.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH V2 14/15] cpufreq: mediatek: Add support for MT8186
-Date:   Fri, 8 Apr 2022 12:59:07 +0800
-Message-ID: <20220408045908.21671-15-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
-References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
+        Fri, 8 Apr 2022 01:03:03 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62AFB1AF7EC
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 22:00:57 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id a2so1834669wrh.5
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 22:00:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KEUIEi9adSNdoXW8KXtclgU3RetFXDHu8Pw4dW2isbA=;
+        b=o7RXxtZ1cDCZRue0sRrHz1TVue0enjTGqt1HjvEk+IA8raVTONQrvfvX0FeTXqSKvX
+         FtSzfFjcRFZtxjtFHjiRKr9z2um3s99f3Jn4Jsb9WAydhWNJHdtJM7igBo8PjX7H3Rjf
+         mqqkKxr+7KexBHf3vNHS9f0qPUmgY37p2YUyp6/AflZqY2NsKxUitAvgrFQyRqvJQyc5
+         KmKCzAK9duyoWb5HnTL7/rqzXKXmJFmeqhaGPBh4Z/8PXETA2bYyWEL3YDL6NLNSN2z3
+         kMv5ynQ4wZtEKiYYloH6n1Z8y/rIw4HEW4YYgpLXpX24QberMRKQ3RVbD3QPsFyyd6Ym
+         K6og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KEUIEi9adSNdoXW8KXtclgU3RetFXDHu8Pw4dW2isbA=;
+        b=OkPn9FC9M9cnIbE6KqNNi98YtFr/zZePexPV8IdsXaCrJg/tAWxm3yeY8leMV4VUbI
+         tN4anptrgD9QsSh4IpBR/ombZ/gpxM+Q/x7Jaat3xQFdWIsy0WFY/I3dCe0l4EVJsKhe
+         M41w9s7yxToVROBSNYWbh6Uk5vTrgWzdPEgeUJJFZw/z4ZoTAs9Wz687XlmIJ47Ftk5b
+         jkiU9pO4dt/UUMC0QL9lXr1km2k0WOxBodn0BzESSXe2zod7n14CWTDScr/8HJfSI+Wy
+         DBrju2zput95Pywz4Y3CaAX4D4uS8sz5wrP3FfVGxeM4tPo9EX+/Z4m5fR2ZI8W3dd9n
+         siuA==
+X-Gm-Message-State: AOAM530+bBiT72+eyBFt7VpfmWj2/EjR+s2NIw9jMECYDvNxMzBMZ8K6
+        8WVy6P5rB8uvYoI2HBaGs1Y6pDGYUNTSlSJFbDf2sw==
+X-Google-Smtp-Source: ABdhPJx8gwwFGKo9JHFub9Glw4ixcEqLNimwl5VmXqky+27dSQgR/DF9ZrdodFvPPP+gdnMxF2HiStZfvRzIoAASGEo=
+X-Received: by 2002:adf:8066:0:b0:206:1563:8b2b with SMTP id
+ 93-20020adf8066000000b0020615638b2bmr13333325wrk.582.1649394055492; Thu, 07
+ Apr 2022 22:00:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20220407224244.1374102-1-yosryahmed@google.com>
+ <20220407224244.1374102-4-yosryahmed@google.com> <CAJD7tkaPaXQ4M_w-YxJizD2DG8co-3Q2bVDfd7_FaG2ivgT6UA@mail.gmail.com>
+In-Reply-To: <CAJD7tkaPaXQ4M_w-YxJizD2DG8co-3Q2bVDfd7_FaG2ivgT6UA@mail.gmail.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Thu, 7 Apr 2022 22:00:07 -0700
+Message-ID: <CAJD7tkZNAts_4M9TZx02L1y24hp5ty4H5vgrzryZk4a_uFR=6Q@mail.gmail.com>
+Subject: Re: [PATCH v2 3/4] selftests: cgroup: fix alloc_anon_noexit()
+ instantly freeing memory
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     David Rientjes <rientjes@google.com>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <shuah@kernel.org>, Yu Zhao <yuzhao@google.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
+        Chen Wandun <chenwandun@huawei.com>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, Huang@google.com,
+        Ying <ying.huang@intel.com>,
+        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tim Chen <tim.c.chen@linux.intel.com>, cgroups@vger.kernel.org,
+        linux-doc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org,
+        Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+On Thu, Apr 7, 2022 at 4:04 PM Yosry Ahmed <yosryahmed@google.com> wrote:
+>
+> On Thu, Apr 7, 2022 at 3:43 PM Yosry Ahmed <yosryahmed@google.com> wrote:
+> >
+> > Currently, alloc_anon_noexit() calls alloc_anon() which instantly frees
+> > the allocated memory. alloc_anon_noexit() is usually used with
+> > cg_run_nowait() to run a process in the background that allocates
+> > memory. It makes sense for the background process to keep the memory
+> > allocated and not instantly free it (otherwise there is no point of
+> > running it in the background).
+> >
+> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> > ---
+> >  tools/testing/selftests/cgroup/test_memcontrol.c | 9 +++++++--
+> >  1 file changed, 7 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/cgroup/test_memcontrol.c b/tools/testing/selftests/cgroup/test_memcontrol.c
+> > index 36ccf2322e21..c1ec71d83af7 100644
+> > --- a/tools/testing/selftests/cgroup/test_memcontrol.c
+> > +++ b/tools/testing/selftests/cgroup/test_memcontrol.c
+> > @@ -211,13 +211,18 @@ static int alloc_pagecache_50M_noexit(const char *cgroup, void *arg)
+> >  static int alloc_anon_noexit(const char *cgroup, void *arg)
+> >  {
+> >         int ppid = getppid();
+> > +       size_t size = (unsigned long)arg;
+> > +       char *buf, *ptr;
+> >
+> > -       if (alloc_anon(cgroup, arg))
+> > -               return -1;
+> > +       buf = malloc(size);
+> > +       for (ptr = buf; ptr < buf + size; ptr += PAGE_SIZE)
+> > +               *ptr = 0;
+> >
+> >         while (getppid() == ppid)
+> >                 sleep(1);
+> >
+> > +       printf("Freeing buffer");
+>
+> Hey Andew,
+>
+> I am very sorry but I left a debugging printf there by mistake. If
+> it's no hassle, do you mind removing it from the patch (assuming I
+> won't need to send a v3 anyway)?
 
-The platform data of MT8186 is different from previous MediaTek SoCs,
-so we add a new compatible and platform data for it.
-
-Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
----
- drivers/cpufreq/mediatek-cpufreq.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
-index cebe5af2ef5d..07d3b31e3ee0 100644
---- a/drivers/cpufreq/mediatek-cpufreq.c
-+++ b/drivers/cpufreq/mediatek-cpufreq.c
-@@ -689,6 +689,15 @@ static const struct mtk_cpufreq_platform_data mt8183_platform_data = {
- 	.is_ccifreq_support = true,
- };
- 
-+static const struct mtk_cpufreq_platform_data mt8186_platform_data = {
-+	.min_volt_shift = 100000,
-+	.max_volt_shift = 250000,
-+	.proc_max_volt = 1118750,
-+	.sram_min_volt = 850000,
-+	.sram_max_volt = 1118750,
-+	.is_ccifreq_support = true,
-+};
-+
- /* List of machines supported by this driver */
- static const struct of_device_id mtk_cpufreq_machines[] __initconst = {
- 	{ .compatible = "mediatek,mt2701", .data = &mtk_platform_data },
-@@ -700,6 +709,7 @@ static const struct of_device_id mtk_cpufreq_machines[] __initconst = {
- 	{ .compatible = "mediatek,mt8173", .data = &mtk_platform_data },
- 	{ .compatible = "mediatek,mt8176", .data = &mtk_platform_data },
- 	{ .compatible = "mediatek,mt8183", .data = &mt8183_platform_data },
-+	{ .compatible = "mediatek,mt8186", .data = &mt8186_platform_data },
- 	{ .compatible = "mediatek,mt8365", .data = &mtk_platform_data },
- 	{ .compatible = "mediatek,mt8516", .data = &mtk_platform_data },
- 	{ }
--- 
-2.18.0
-
+Never mind I already sent v3 and removed it with other fixes.
+>
+> Thanks!
+>
+> > +       free(buf);
+> >         return 0;
+> >  }
+> >
+> > --
+> > 2.35.1.1178.g4f1659d476-goog
+> >
