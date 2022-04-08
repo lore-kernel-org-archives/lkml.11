@@ -2,146 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:10:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231755AbiDHKKc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 06:10:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50732 "EHLO
+        id S232888AbiDHKMK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 06:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiDHKK2 (ORCPT
+        with ESMTP id S229565AbiDHKME (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 06:10:28 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13623BA50;
-        Fri,  8 Apr 2022 03:08:24 -0700 (PDT)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nclXN-0003iK-As; Fri, 08 Apr 2022 12:08:17 +0200
-Message-ID: <715d745d-5a85-092a-68c2-b9b1dd8ad53e@leemhuis.info>
-Date:   Fri, 8 Apr 2022 12:08:16 +0200
+        Fri, 8 Apr 2022 06:12:04 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC8B58E6D;
+        Fri,  8 Apr 2022 03:09:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649412599; x=1680948599;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=PRW1z5BDKUyVp87gb5BA0bIYa/nZ8N7XjvhnUwpnBG8=;
+  b=HnOM63grL35nN5rXKNAZs0ATZoPm0DdcdILckJ2J5HKi28HQpdFb/3xO
+   +YrF7qJFfn0WsYhslTGUdxz8LgTx6sXnh3ubpbdqq4vcVWDKAhq/fHTvV
+   VEyVcPAskcfOtGhwE30y6UZNTTr39blTGCm5FUxBQdVAkTCXcbhNmkbZv
+   Mu12++WAXPXKmJKiNqkokPMpJgVUZWqmAth8gbuvyIKydGQh0UKEPbjhL
+   6PaIiXhZRsG6RI4xUS0+m9Sh9VH31wL9a7rqnrfvLVOKY5csJEkTdGbs6
+   sQm3668t3Vk1ynJG/rJwdqoATWKWeBm8yzTCfOzml/ZY4HzBnmenKa2HI
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,244,1643698800"; 
+   d="scan'208";a="91749499"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Apr 2022 03:09:58 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 8 Apr 2022 03:09:57 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 8 Apr 2022 03:09:56 -0700
+From:   <conor.dooley@microchip.com>
+To:     <herbert@gondor.apana.org.au>
+CC:     <linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [v2] Add support for hwrng on PolarFire SoC
+Date:   Fri, 8 Apr 2022 10:09:11 +0000
+Message-ID: <20220408100911.1638478-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        Moritz Duge <duge@pre-sense.de>,
-        Aurelien Aptel <aaptel@suse.com>,
-        Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>
-To:     "Paulo Alcantara (SUSE)" <pc@cjr.nz>
-Subject: Regression: CIFS umount fails since 14302ee33 with some servers (exit
- code 32)
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1649412504;6f8dbe02;
-X-HE-SMSGID: 1nclXN-0003iK-As
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker.
+From: Conor Dooley <conor.dooley@microchip.com>
 
-Paul, it seems a commit authored by you causes a regression:
+As it says on the tin, add support for the hardware rng on PolarFire
+SoC, which is accessed via the system controller.
+I dropped the maintainers entry change that v1 had, I will send a
+single update via RISCV to avoid any conflicts.
 
-I noticed a regression report in bugzilla.kernel.org that afaics nobody
-acted upon since it was reported about a week ago, that's why I decided
-to forward it to the lists and all people that seemed to be relevant
-here. To quote from
-https://bugzilla.kernel.org/show_bug.cgi?id=215782
+On v1 I replied saying there was a refcount issue, but that's not
+actually the case, so no changes required there.
 
->  Moritz Duge 2022-03-31 16:47:35 UTC
-> 
-> With upstream kernel 5.16.9 CIFS umount fails when using certain SMB servers.
-> 
-> "umount" returns exit code 32 and the "mount" command still lists the mount as being present.
-> See below for the bad commit I've bisected.
-> 
-> The bug has been reproduced multiple times with upstream kernel 5.16.9!
-> But additionally I've done much testing with openSUSE kernels.
-> Here's the openSUSE bugreport:
-> https://bugzilla.opensuse.org/show_bug.cgi?id=1194945
-> Additionally with the same servers there's a problem showing the free space with the "df" command. But I haven't been able to find out if this is really related to the umount problem.
-> 
-> 
-> 
-> 
-> = SMB Server =
-> 
-> I haven't been able to identify the exact server side settings. But this problem occured with at least this SMB server (with upstream kernel 5.16.9):
-> NetApp (Release 9.7P12) with dfs and CIFS mount options "vers=3.1.1,seal"
-> (quota state unknown)
-> 
-> Additionally I've verified the bug with the openSUSE kernel 5.3.18-lp152.72-default and this SMB server:
-> Windows Server 2019 with dfs and quota enabled
-> (no explicit "vers" or "seal" mount options)
-> 
-> Additionally the bug appeared with another NetApp SMB server (tested upstream 5.16.9) and two unknown servers (tested only openSUSE-15.2 kernels).
-> 
-> Also it looks like the bug may need a setup where the user can only read //server/share/username/ but has no permissions to read //server/share/.
-> 
-> 
-> 
-> 
-> = Bad Commit =
-> 
-> With the openSUSE kernel I bisected the problem down to this commit (6ae27f2b2) between openSUSE-15.2 kernels 5.3.18-lp152.69.1 and 5.3.18-lp152.72.1.
-> https://github.com/SUSE/kernel/commit/6ae27f2b260e91f16583bbc1ded3147e0f7c5d94
-> 
-> This commit is also present in the upstream kernel (14302ee33).
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?h=14302ee3301b3a77b331cc14efb95bf7184c73cc
-> And it has been merged between 5.11 and 5.12.
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?h=d0df9aabefda4d0a64730087f939f53f91e29ee6
-> 
-> As said I can't reproduce this with arbitrary SMB servers. And it's always a time consuming procedure for me to do a test with the affected production SMB servers. But if you're really unhappy with the bisect search on the openSUSE kernel, I can repeat the test with the upstream commit 14302ee33 and it's predecessor.
+Thanks,
+Conor
 
+Changes since v1:
+- Rebased on v5.18-rc1
+- Dropped the MAINTAINERS change
+- Added quality estimation
 
-Could somebody take a look into this? Or was this discussed somewhere
-else already? Or even fixed?
+Conor Dooley (1):
+  hwrng: mpfs - add polarfire soc hwrng support
 
-Anyway, to get this tracked:
-
-#regzbot introduced: 14302ee3301b3a77b331cc14
-#regzbot from: Moritz Duge <duge@pre-sense.de>
-#regzbot title: CIFS: umount fails with some servers (exit code 32)
-#regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215782
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-reports on my table. I can only look briefly into most of them and lack
-knowledge about most of the areas they concern. I thus unfortunately
-will sometimes get things wrong or miss something important. I hope
-that's not the case here; if you think it is, don't hesitate to tell me
-in a public reply, it's in everyone's interest to set the public record
-straight.
+ drivers/char/hw_random/Kconfig    |  13 ++++
+ drivers/char/hw_random/Makefile   |   1 +
+ drivers/char/hw_random/mpfs-rng.c | 104 ++++++++++++++++++++++++++++++
+ 3 files changed, 118 insertions(+)
+ create mode 100644 drivers/char/hw_random/mpfs-rng.c
 
 -- 
-Additional information about regzbot:
+2.35.1
 
-If you want to know more about regzbot, check out its web-interface, the
-getting start guide, and the references documentation:
-
-https://linux-regtracking.leemhuis.info/regzbot/
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
-
-The last two documents will explain how you can interact with regzbot
-yourself if your want to.
-
-Hint for reporters: when reporting a regression it's in your interest to
-CC the regression list and tell regzbot about the issue, as that ensures
-the regression makes it onto the radar of the Linux kernel's regression
-tracker -- that's in your interest, as it ensures your report won't fall
-through the cracks unnoticed.
-
-Hint for developers: you normally don't need to care about regzbot once
-it's involved. Fix the issue as you normally would, just remember to
-include 'Link:' tag in the patch descriptions pointing to all reports
-about the issue. This has been expected from developers even before
-regzbot showed up for reasons explained in
-'Documentation/process/submitting-patches.rst' and
-'Documentation/process/5.Posting.rst'.
