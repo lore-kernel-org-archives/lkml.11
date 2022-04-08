@@ -2,73 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F99C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A71DFC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239856AbiDHV30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 17:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
+        id S237212AbiDHVdW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 17:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229733AbiDHV3W (ORCPT
+        with ESMTP id S230223AbiDHVdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 17:29:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83FB83EAB7;
-        Fri,  8 Apr 2022 14:27:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 20AC961B2A;
-        Fri,  8 Apr 2022 21:27:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E281C385A1;
-        Fri,  8 Apr 2022 21:27:15 +0000 (UTC)
-Date:   Fri, 8 Apr 2022 17:27:14 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Joel Fernandes <joel@joelfernandes.org>,
-        Kalesh Singh <kaleshsingh@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        kernel-team <kernel-team@android.com>, Tejun Heo <tj@kernel.org>,
-        Tim Murray <timmurray@google.com>, Wei Wang <wvw@google.com>,
-        Kyle Lin <kylelin@google.com>,
-        Chunwei Lu <chunweilu@google.com>,
-        Lulu Wang <luluw@google.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] EXP rcu: Move expedited grace period (GP) work to RT
- kthread_worker
-Message-ID: <20220408172714.52d64c84@gandalf.local.home>
-In-Reply-To: <20220408155834.GI4285@paulmck-ThinkPad-P17-Gen-1>
-References: <20220408045734.1158817-1-kaleshsingh@google.com>
-        <CAEXW_YSqY2nFZrn4AjpUzJ+dwZc7jaVMG9RG5gvTyb3zFYWtQA@mail.gmail.com>
-        <20220408113946.056c083e@gandalf.local.home>
-        <20220408155834.GI4285@paulmck-ThinkPad-P17-Gen-1>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 8 Apr 2022 17:33:21 -0400
+Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AFB3268
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 14:31:17 -0700 (PDT)
+Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-deb9295679so11067767fac.6
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 14:31:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NCXerAg3RiR6sAncXhe6SRUNMIY2ewR13FV7NqYeMsM=;
+        b=nDkYFZaPXyfKGG9NlDkwdIWXSFF5M4kZqyVqQcFjRJBuHyE50GCgD5riUuVTlGsL5f
+         WE1bOBt9V1IlGPnxIcoA+F4N94ywyPkS3IeZnF7lDQeyRmHRLrCAyh0wqYedOpDqmw1X
+         iLSTZZzmUFPZJFuVt5E4bkng41agOoSMepTngq+zYQsEPVuqohEcIocXTfFoMhCjmIgC
+         ChD9T3xtZ+UHC5Hoh0kDlBztjI0byBfw5uqZPT2gNstSfGluMjeBtVLuB8mGmF1///Ll
+         oJPEgrClW8Biu0IkcvzUFnLdzT+TIWzKFAy9q4R/mG86CaS4wTB3X5cI1SlMoH/9G6w7
+         myaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NCXerAg3RiR6sAncXhe6SRUNMIY2ewR13FV7NqYeMsM=;
+        b=jNOI5NQWUYPpv4z43KQJKIj6GNY7msSpNjvFnBaD302kxNTA2nTLcRfbFqU8pSP738
+         urS3eCgjNgcDQhoEOW47bVwYbZGH5Nd5xZFNI8NI+u39/u1JHqboyB0SNhkLYg4zHBHl
+         b/Lx6aNGlbSFTWOK/yhqYsaljQi1s6h/VkJfyp/n4rZnNBEsfEpGQclsPHLgw2xwyh9q
+         mMZMlfKi7hP7Hlew3sYeHBr6QvvYnRGabn7D97MxSsmK7OHGV+svALQ7dPcxlOB07yQl
+         BifeChZF8UDUNT24FciQ6zqDAfMKJTX4CLRk3nQZx9OdM0FYekDdXBv7y6tRTrH2G8HG
+         Z21w==
+X-Gm-Message-State: AOAM531k1N2XgfkDcNhXlqsI0ps09LP5nhlLd4WkD3tEGeHr1M9sbq/+
+        7JU+QgwtRoqlXHKU4W5DkJPVlA==
+X-Google-Smtp-Source: ABdhPJwdui+5MCqqNXXmEfaprj3EHpdYLgxX9Xr9sukJWNWC5S46/fsFrj6P0jLX9/SsM9AYSuEU6w==
+X-Received: by 2002:a05:6870:610d:b0:e1:f70a:9e8a with SMTP id s13-20020a056870610d00b000e1f70a9e8amr9871449oae.120.1649453476476;
+        Fri, 08 Apr 2022 14:31:16 -0700 (PDT)
+Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id m126-20020aca3f84000000b002ef895f4bf8sm8983536oia.24.2022.04.08.14.31.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 14:31:15 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH 1/3] dt-bindings: arm: msm: Add sc8180x and sc8280xp LLCC compatibles
+Date:   Fri,  8 Apr 2022 14:33:34 -0700
+Message-Id: <20220408213336.581661-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 8 Apr 2022 08:58:34 -0700
-"Paul E. McKenney" <paulmck@kernel.org> wrote:
+Add compatibles for the SC8180X and SC8280XP platforms to the existing
+LLCC binding.
 
-> > I do not see why PREEMPT_RT is special here. Why was it singled out?  
-> 
-> Because I didn't see the point of doing kthread_create_worker() to create
-> a pair of kthread_worker structuress that were never going to be used
-> in PREEMPT_RT kernels.
-> 
-> Or are PREEMPT_RT kernels no longer booting with rcupdate.rcu_normal?
-> Last I knew, they all did this to avoid IPI latencies from expedited
-> grace periods.  Has this changed?
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
+ Documentation/devicetree/bindings/arm/msm/qcom,llcc.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Honestly, I don't know. But I guess I can go and find out ;-)
-
--- Steve
+diff --git a/Documentation/devicetree/bindings/arm/msm/qcom,llcc.yaml b/Documentation/devicetree/bindings/arm/msm/qcom,llcc.yaml
+index 30fcbe2ad8a3..5ea506412b4e 100644
+--- a/Documentation/devicetree/bindings/arm/msm/qcom,llcc.yaml
++++ b/Documentation/devicetree/bindings/arm/msm/qcom,llcc.yaml
+@@ -23,6 +23,8 @@ properties:
+     enum:
+       - qcom,sc7180-llcc
+       - qcom,sc7280-llcc
++      - qcom,sc8180x-llcc
++      - qcom,sc8280xp-llcc
+       - qcom,sdm845-llcc
+       - qcom,sm6350-llcc
+       - qcom,sm8150-llcc
+-- 
+2.35.1
 
