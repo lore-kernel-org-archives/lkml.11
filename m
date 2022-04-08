@@ -2,56 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB441C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 09:14:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 622D0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 09:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233689AbiDHJQP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 05:16:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42460 "EHLO
+        id S233175AbiDHJQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 05:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233056AbiDHJMD (ORCPT
+        with ESMTP id S233076AbiDHJMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 05:12:03 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7071E86AF;
-        Fri,  8 Apr 2022 02:09:09 -0700 (PDT)
-Date:   Fri, 08 Apr 2022 09:09:06 -0000
+        Fri, 8 Apr 2022 05:12:05 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E591E95E1;
+        Fri,  8 Apr 2022 02:09:11 -0700 (PDT)
+Date:   Fri, 08 Apr 2022 09:09:08 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649408947;
+        s=2020; t=1649408950;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=81Dl+NL4i86EUD/tDxKsulOhMJAcoi2yESqh2e3S44U=;
-        b=xGsY6jF4wLeK5IozVrZG6lBbW/XFdUV/xMBbn0lfC0nh0ThSP2ajsJeOUmuaPpGtk3umAD
-        2gcoUT19kXUBqz80SFZOLXiNsChKy/a1BxKh+vKLeuUuHF1RGwsaSHvODLWWOVcfiRXNng
-        CpGWUpDGw1F72wX9S/hxKYaMLcyqXKu2x+xJMQl5GUMTpM6EQISj+TJFT39K+tk+tdI2v4
-        qDirJheAKFIpa1VgsT7XazCGj1Ce6bV1owPfO853u5DlX7SabdUtu+gWzSW0MBGPLDgskl
-        ZPc4L9JT6fPVedLZKHac1KVHZQQkRYAiGKoVFYkj6O1igf21JxnGDzUS7MP1VA==
+        bh=U6BbRaW/uSvLscYBsOnZuEO87siDzNKmlEzTIZmqJXk=;
+        b=C77iKNgEWIBmGP2Qx1Cme761D4rdwcTDm79cPSqFOfi4lRNuJSOiQamUWgTNDjIDVyq5A5
+        UGdOnJOC0s8RNZaP+14Y66lvhAEdghgcf5bT69gZ6TeBLRDfKhHIm15pmN/uKuk9fuQ5hV
+        e1wArbXTBw/wEDt+SoGhC5Jhf4C3D7q15XcHKi8fNyWqff2ZRWUvhMT4Dj+KxtZxgYWSW9
+        ZbVGzrctzPs22Gjnr+KjaRnMk3GTbJAnScSi7wbgBVKr9s71EoBy70AyBEf9JwKb89OmoP
+        h5hKeSlncabFtxlLB+3QO5Jyk9OQOuoKnin9zp/PpOmeBKQfUc06GYfwR+f0Mg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649408947;
+        s=2020e; t=1649408950;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=81Dl+NL4i86EUD/tDxKsulOhMJAcoi2yESqh2e3S44U=;
-        b=KH+U8nS5LWBUNs2gF3jb/qoG5EU5zWNZ4aAFrEYRmqp3FGGAZy8X8Wl/+wrXe0iFS9GHzG
-        yCyZkeITFLDGbQCA==
+        bh=U6BbRaW/uSvLscYBsOnZuEO87siDzNKmlEzTIZmqJXk=;
+        b=2L7j8e47EQcbmC5/1k6m+tZP0zm+lPpiXin3V7Uji8A/t0s07KkMkkFczozgi0iMms3FGB
+        m0rQCteqoFnKtZAw==
 From:   "tip-bot2 for Brijesh Singh" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/sev] x86/compressed: Add helper for validating pages in the
- decompression stage
+Subject: [tip: x86/sev] x86/sev: Check SEV-SNP features support
 Cc:     Brijesh Singh <brijesh.singh@amd.com>,
         Borislav Petkov <bp@suse.de>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220307213356.2797205-16-brijesh.singh@amd.com>
-References: <20220307213356.2797205-16-brijesh.singh@amd.com>
+In-Reply-To: <20220307213356.2797205-13-brijesh.singh@amd.com>
+References: <20220307213356.2797205-13-brijesh.singh@amd.com>
 MIME-Version: 1.0
-Message-ID: <164940894646.389.17136891705750729768.tip-bot2@tip-bot2>
+Message-ID: <164940894898.389.17627611818379551536.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,208 +61,241 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/sev branch of tip:
 
-Commit-ID:     4f9c403e44e5e88feb27d5e617d1adc9cc7ef684
-Gitweb:        https://git.kernel.org/tip/4f9c403e44e5e88feb27d5e617d1adc9cc7ef684
+Commit-ID:     cbd3d4f7c4e5a93edae68e5142a269368fde77d6
+Gitweb:        https://git.kernel.org/tip/cbd3d4f7c4e5a93edae68e5142a269368fde77d6
 Author:        Brijesh Singh <brijesh.singh@amd.com>
-AuthorDate:    Wed, 09 Feb 2022 12:10:09 -06:00
+AuthorDate:    Wed, 09 Feb 2022 12:10:06 -06:00
 Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Wed, 06 Apr 2022 13:10:40 +02:00
+CommitterDate: Wed, 06 Apr 2022 13:10:23 +02:00
 
-x86/compressed: Add helper for validating pages in the decompression stage
+x86/sev: Check SEV-SNP features support
 
-Many of the integrity guarantees of SEV-SNP are enforced through the
-Reverse Map Table (RMP). Each RMP entry contains the GPA at which a
-particular page of DRAM should be mapped. The VMs can request the
-hypervisor to add pages in the RMP table via the Page State Change
-VMGEXIT defined in the GHCB specification.
+Version 2 of the GHCB specification added the advertisement of features
+that are supported by the hypervisor. If the hypervisor supports SEV-SNP
+then it must set the SEV-SNP features bit to indicate that the base
+functionality is supported.
 
-Inside each RMP entry is a Validated flag; this flag is automatically
-cleared to 0 by the CPU hardware when a new RMP entry is created for a
-guest. Each VM page can be either validated or invalidated, as indicated
-by the Validated flag in the RMP entry. Memory access to a private page
-that is not validated generates a #VC. A VM must use the PVALIDATE
-instruction to validate a private page before using it.
+Check that feature bit while establishing the GHCB; if failed, terminate
+the guest.
 
-To maintain the security guarantee of SEV-SNP guests, when transitioning
-pages from private to shared, the guest must invalidate the pages before
-asking the hypervisor to change the page state to shared in the RMP table.
+Version 2 of the GHCB specification adds several new Non-Automatic Exits
+(NAEs), most of them are optional except the hypervisor feature. Now
+that the hypervisor feature NAE is implemented, bump the GHCB maximum
+supported protocol version.
 
-After the pages are mapped private in the page table, the guest must
-issue a page state change VMGEXIT to mark the pages private in the RMP
-table and validate them.
+While at it, move the GHCB protocol negotiation check from the #VC
+exception handler to sev_enable() so that all feature detection happens
+before the first #VC exception.
 
-Upon boot, BIOS should have validated the entire system memory.
-During the kernel decompression stage, early_setup_ghcb() uses
-set_page_decrypted() to make the GHCB page shared (i.e. clear encryption
-attribute). And while exiting from the decompression, it calls
-set_page_encrypted() to make the page private.
+While at it, document why the GHCB page cannot be setup from
+load_stage2_idt().
 
-Add snp_set_page_{private,shared}() helpers that are used by
-set_page_{decrypted,encrypted}() to change the page state in the RMP
-table.
-
-  [ bp: Massage commit message and comments. ]
+  [ bp: Massage commit message. ]
 
 Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220307213356.2797205-16-brijesh.singh@amd.com
+Link: https://lore.kernel.org/r/20220307213356.2797205-13-brijesh.singh@amd.com
 ---
- arch/x86/boot/compressed/ident_map_64.c | 18 ++++++++-
- arch/x86/boot/compressed/misc.h         |  4 ++-
- arch/x86/boot/compressed/sev.c          | 46 ++++++++++++++++++++++++-
- arch/x86/include/asm/sev-common.h       | 26 ++++++++++++++-
- 4 files changed, 93 insertions(+), 1 deletion(-)
+ arch/x86/boot/compressed/idt_64.c | 18 +++++++++++++++++-
+ arch/x86/boot/compressed/sev.c    | 20 +++++++++++++++-----
+ arch/x86/include/asm/sev-common.h |  6 ++++++
+ arch/x86/include/asm/sev.h        |  2 +-
+ arch/x86/include/uapi/asm/svm.h   |  2 ++
+ arch/x86/kernel/sev-shared.c      | 20 ++++++++++++++++++++
+ arch/x86/kernel/sev.c             | 14 ++++++++++++++
+ 7 files changed, 75 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/boot/compressed/ident_map_64.c b/arch/x86/boot/compressed/ident_map_64.c
-index f7213d0..613367e 100644
---- a/arch/x86/boot/compressed/ident_map_64.c
-+++ b/arch/x86/boot/compressed/ident_map_64.c
-@@ -275,15 +275,31 @@ static int set_clr_page_flags(struct x86_mapping_info *info,
- 	 * Changing encryption attributes of a page requires to flush it from
- 	 * the caches.
- 	 */
--	if ((set | clr) & _PAGE_ENC)
-+	if ((set | clr) & _PAGE_ENC) {
- 		clflush_page(address);
- 
-+		/*
-+		 * If the encryption attribute is being cleared, change the page state
-+		 * to shared in the RMP table.
-+		 */
-+		if (clr)
-+			snp_set_page_shared(__pa(address & PAGE_MASK));
-+	}
-+
- 	/* Update PTE */
- 	pte = *ptep;
- 	pte = pte_set_flags(pte, set);
- 	pte = pte_clear_flags(pte, clr);
- 	set_pte(ptep, pte);
- 
-+	/*
-+	 * If the encryption attribute is being set, then change the page state to
-+	 * private in the RMP entry. The page state change must be done after the PTE
-+	 * is updated.
-+	 */
-+	if (set & _PAGE_ENC)
-+		snp_set_page_private(__pa(address & PAGE_MASK));
-+
- 	/* Flush TLB after changing encryption attribute */
- 	write_cr3(top_level_pgt);
- 
-diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
-index 23e0e39..01cc13c 100644
---- a/arch/x86/boot/compressed/misc.h
-+++ b/arch/x86/boot/compressed/misc.h
-@@ -124,6 +124,8 @@ static inline void console_init(void)
- void sev_enable(struct boot_params *bp);
- void sev_es_shutdown_ghcb(void);
- extern bool sev_es_check_ghcb_fault(unsigned long address);
-+void snp_set_page_private(unsigned long paddr);
-+void snp_set_page_shared(unsigned long paddr);
- #else
- static inline void sev_enable(struct boot_params *bp) { }
- static inline void sev_es_shutdown_ghcb(void) { }
-@@ -131,6 +133,8 @@ static inline bool sev_es_check_ghcb_fault(unsigned long address)
- {
- 	return false;
+diff --git a/arch/x86/boot/compressed/idt_64.c b/arch/x86/boot/compressed/idt_64.c
+index 9b93567..6debb81 100644
+--- a/arch/x86/boot/compressed/idt_64.c
++++ b/arch/x86/boot/compressed/idt_64.c
+@@ -39,7 +39,23 @@ void load_stage1_idt(void)
+ 	load_boot_idt(&boot_idt_desc);
  }
-+static inline void snp_set_page_private(unsigned long paddr) { }
-+static inline void snp_set_page_shared(unsigned long paddr) { }
- #endif
  
- /* acpi.c */
+-/* Setup IDT after kernel jumping to  .Lrelocated */
++/*
++ * Setup IDT after kernel jumping to  .Lrelocated.
++ *
++ * initialize_identity_maps() needs a #PF handler to be setup
++ * in order to be able to fault-in identity mapping ranges; see
++ * do_boot_page_fault().
++ *
++ * This #PF handler setup needs to happen in load_stage2_idt() where the
++ * IDT is loaded and there the #VC IDT entry gets setup too.
++ *
++ * In order to be able to handle #VCs, one needs a GHCB which
++ * gets setup with an already set up pagetable, which is done in
++ * initialize_identity_maps(). And there's the catch 22: the boot #VC
++ * handler do_boot_stage2_vc() needs to call early_setup_ghcb() itself
++ * (and, especially set_page_decrypted()) because the SEV-ES setup code
++ * cannot initialize a GHCB as there's no #PF handler yet...
++ */
+ void load_stage2_idt(void)
+ {
+ 	boot_idt_desc.address = (unsigned long)boot_idt;
 diff --git a/arch/x86/boot/compressed/sev.c b/arch/x86/boot/compressed/sev.c
-index eb42178..5f2c268 100644
+index 56e941d..5b38931 100644
 --- a/arch/x86/boot/compressed/sev.c
 +++ b/arch/x86/boot/compressed/sev.c
-@@ -116,6 +116,52 @@ static enum es_result vc_read_mem(struct es_em_ctxt *ctxt,
+@@ -116,11 +116,8 @@ static enum es_result vc_read_mem(struct es_em_ctxt *ctxt,
  /* Include code for early handlers */
  #include "../../kernel/sev-shared.c"
  
-+static inline bool sev_snp_enabled(void)
-+{
-+	return sev_status & MSR_AMD64_SEV_SNP_ENABLED;
-+}
-+
-+static void __page_state_change(unsigned long paddr, enum psc_op op)
-+{
-+	u64 val;
-+
-+	if (!sev_snp_enabled())
-+		return;
-+
-+	/*
-+	 * If private -> shared then invalidate the page before requesting the
-+	 * state change in the RMP table.
-+	 */
-+	if (op == SNP_PAGE_STATE_SHARED && pvalidate(paddr, RMP_PG_SIZE_4K, 0))
-+		sev_es_terminate(SEV_TERM_SET_LINUX, GHCB_TERM_PVALIDATE);
-+
-+	/* Issue VMGEXIT to change the page state in RMP table. */
-+	sev_es_wr_ghcb_msr(GHCB_MSR_PSC_REQ_GFN(paddr >> PAGE_SHIFT, op));
-+	VMGEXIT();
-+
-+	/* Read the response of the VMGEXIT. */
-+	val = sev_es_rd_ghcb_msr();
-+	if ((GHCB_RESP_CODE(val) != GHCB_MSR_PSC_RESP) || GHCB_MSR_PSC_RESP_VAL(val))
-+		sev_es_terminate(SEV_TERM_SET_LINUX, GHCB_TERM_PSC);
-+
-+	/*
-+	 * Now that page state is changed in the RMP table, validate it so that it is
-+	 * consistent with the RMP entry.
-+	 */
-+	if (op == SNP_PAGE_STATE_PRIVATE && pvalidate(paddr, RMP_PG_SIZE_4K, 1))
-+		sev_es_terminate(SEV_TERM_SET_LINUX, GHCB_TERM_PVALIDATE);
-+}
-+
-+void snp_set_page_private(unsigned long paddr)
-+{
-+	__page_state_change(paddr, SNP_PAGE_STATE_PRIVATE);
-+}
-+
-+void snp_set_page_shared(unsigned long paddr)
-+{
-+	__page_state_change(paddr, SNP_PAGE_STATE_SHARED);
-+}
-+
- static bool early_setup_ghcb(void)
+-static bool early_setup_sev_es(void)
++static bool early_setup_ghcb(void)
  {
+-	if (!sev_es_negotiate_protocol())
+-		sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SEV_ES_PROT_UNSUPPORTED);
+-
  	if (set_page_decrypted((unsigned long)&boot_ghcb_page))
+ 		return false;
+ 
+@@ -171,7 +168,7 @@ void do_boot_stage2_vc(struct pt_regs *regs, unsigned long exit_code)
+ 	struct es_em_ctxt ctxt;
+ 	enum es_result result;
+ 
+-	if (!boot_ghcb && !early_setup_sev_es())
++	if (!boot_ghcb && !early_setup_ghcb())
+ 		sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SEV_ES_GEN_REQ);
+ 
+ 	vc_ghcb_invalidate(boot_ghcb);
+@@ -235,5 +232,18 @@ void sev_enable(struct boot_params *bp)
+ 	if (!(sev_status & MSR_AMD64_SEV_ENABLED))
+ 		return;
+ 
++	/* Negotiate the GHCB protocol version. */
++	if (sev_status & MSR_AMD64_SEV_ES_ENABLED) {
++		if (!sev_es_negotiate_protocol())
++			sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SEV_ES_PROT_UNSUPPORTED);
++	}
++
++	/*
++	 * SNP is supported in v2 of the GHCB spec which mandates support for HV
++	 * features.
++	 */
++	if (sev_status & MSR_AMD64_SEV_SNP_ENABLED && !(get_hv_features() & GHCB_HV_FT_SNP))
++		sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SNP_UNSUPPORTED);
++
+ 	sme_me_mask = BIT_ULL(ebx & 0x3f);
+ }
 diff --git a/arch/x86/include/asm/sev-common.h b/arch/x86/include/asm/sev-common.h
-index 7ac5842..fe7fe16 100644
+index 94f0ea5..6f037c2 100644
 --- a/arch/x86/include/asm/sev-common.h
 +++ b/arch/x86/include/asm/sev-common.h
-@@ -57,6 +57,32 @@
- #define GHCB_MSR_AP_RESET_HOLD_REQ	0x006
- #define GHCB_MSR_AP_RESET_HOLD_RESP	0x007
- 
-+/*
-+ * SNP Page State Change Operation
-+ *
-+ * GHCBData[55:52] - Page operation:
-+ *   0x0001	Page assignment, Private
-+ *   0x0002	Page assignment, Shared
-+ */
-+enum psc_op {
-+	SNP_PAGE_STATE_PRIVATE = 1,
-+	SNP_PAGE_STATE_SHARED,
-+};
-+
-+#define GHCB_MSR_PSC_REQ		0x014
-+#define GHCB_MSR_PSC_REQ_GFN(gfn, op)			\
-+	/* GHCBData[55:52] */				\
-+	(((u64)((op) & 0xf) << 52) |			\
-+	/* GHCBData[51:12] */				\
-+	((u64)((gfn) & GENMASK_ULL(39, 0)) << 12) |	\
-+	/* GHCBData[11:0] */				\
-+	GHCB_MSR_PSC_REQ)
-+
-+#define GHCB_MSR_PSC_RESP		0x015
-+#define GHCB_MSR_PSC_RESP_VAL(val)			\
-+	/* GHCBData[63:32] */				\
-+	(((u64)(val) & GENMASK_ULL(63, 32)) >> 32)
-+
+@@ -60,6 +60,11 @@
  /* GHCB Hypervisor Feature Request/Response */
  #define GHCB_MSR_HV_FT_REQ		0x080
  #define GHCB_MSR_HV_FT_RESP		0x081
++#define GHCB_MSR_HV_FT_RESP_VAL(v)			\
++	/* GHCBData[63:12] */				\
++	(((u64)(v) & GENMASK_ULL(63, 12)) >> 12)
++
++#define GHCB_HV_FT_SNP			BIT_ULL(0)
+ 
+ #define GHCB_MSR_TERM_REQ		0x100
+ #define GHCB_MSR_TERM_REASON_SET_POS	12
+@@ -77,6 +82,7 @@
+ #define SEV_TERM_SET_GEN		0
+ #define GHCB_SEV_ES_GEN_REQ		0
+ #define GHCB_SEV_ES_PROT_UNSUPPORTED	1
++#define GHCB_SNP_UNSUPPORTED		2
+ 
+ /* Linux-specific reason codes (used with reason set 1) */
+ #define SEV_TERM_SET_LINUX		1
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index 9b9c190..17b75f6 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -13,7 +13,7 @@
+ #include <asm/sev-common.h>
+ 
+ #define GHCB_PROTOCOL_MIN	1ULL
+-#define GHCB_PROTOCOL_MAX	1ULL
++#define GHCB_PROTOCOL_MAX	2ULL
+ #define GHCB_DEFAULT_USAGE	0ULL
+ 
+ #define	VMGEXIT()			{ asm volatile("rep; vmmcall\n\r"); }
+diff --git a/arch/x86/include/uapi/asm/svm.h b/arch/x86/include/uapi/asm/svm.h
+index efa9693..b0ad00f 100644
+--- a/arch/x86/include/uapi/asm/svm.h
++++ b/arch/x86/include/uapi/asm/svm.h
+@@ -108,6 +108,7 @@
+ #define SVM_VMGEXIT_AP_JUMP_TABLE		0x80000005
+ #define SVM_VMGEXIT_SET_AP_JUMP_TABLE		0
+ #define SVM_VMGEXIT_GET_AP_JUMP_TABLE		1
++#define SVM_VMGEXIT_HV_FEATURES			0x8000fffd
+ #define SVM_VMGEXIT_UNSUPPORTED_EVENT		0x8000ffff
+ 
+ /* Exit code reserved for hypervisor/software use */
+@@ -218,6 +219,7 @@
+ 	{ SVM_VMGEXIT_NMI_COMPLETE,	"vmgexit_nmi_complete" }, \
+ 	{ SVM_VMGEXIT_AP_HLT_LOOP,	"vmgexit_ap_hlt_loop" }, \
+ 	{ SVM_VMGEXIT_AP_JUMP_TABLE,	"vmgexit_ap_jump_table" }, \
++	{ SVM_VMGEXIT_HV_FEATURES,	"vmgexit_hypervisor_feature" }, \
+ 	{ SVM_EXIT_ERR,         "invalid_guest_state" }
+ 
+ 
+diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
+index 91105f5..4a876e6 100644
+--- a/arch/x86/kernel/sev-shared.c
++++ b/arch/x86/kernel/sev-shared.c
+@@ -48,6 +48,26 @@ static void __noreturn sev_es_terminate(unsigned int set, unsigned int reason)
+ 		asm volatile("hlt\n" : : : "memory");
+ }
+ 
++/*
++ * The hypervisor features are available from GHCB version 2 onward.
++ */
++static u64 get_hv_features(void)
++{
++	u64 val;
++
++	if (ghcb_version < 2)
++		return 0;
++
++	sev_es_wr_ghcb_msr(GHCB_MSR_HV_FT_REQ);
++	VMGEXIT();
++
++	val = sev_es_rd_ghcb_msr();
++	if (GHCB_RESP_CODE(val) != GHCB_MSR_HV_FT_RESP)
++		return 0;
++
++	return GHCB_MSR_HV_FT_RESP_VAL(val);
++}
++
+ static bool sev_es_negotiate_protocol(void)
+ {
+ 	u64 val;
+diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+index 19ad097..cb20fb0 100644
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -43,6 +43,9 @@ static struct ghcb boot_ghcb_page __bss_decrypted __aligned(PAGE_SIZE);
+  */
+ static struct ghcb __initdata *boot_ghcb;
+ 
++/* Bitmap of SEV features supported by the hypervisor */
++static u64 sev_hv_features __ro_after_init;
++
+ /* #VC handler runtime per-CPU data */
+ struct sev_es_runtime_data {
+ 	struct ghcb ghcb_page;
+@@ -766,6 +769,17 @@ void __init sev_es_init_vc_handling(void)
+ 	if (!sev_es_check_cpu_features())
+ 		panic("SEV-ES CPU Features missing");
+ 
++	/*
++	 * SNP is supported in v2 of the GHCB spec which mandates support for HV
++	 * features.
++	 */
++	if (cc_platform_has(CC_ATTR_GUEST_SEV_SNP)) {
++		sev_hv_features = get_hv_features();
++
++		if (!(sev_hv_features & GHCB_HV_FT_SNP))
++			sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SNP_UNSUPPORTED);
++	}
++
+ 	/* Enable SEV-ES special handling */
+ 	static_branch_enable(&sev_es_enable_key);
+ 
