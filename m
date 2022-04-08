@@ -2,167 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B758CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72553C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:50:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237810AbiDHPwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:52:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
+        id S237848AbiDHPwh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 11:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237793AbiDHPwS (ORCPT
+        with ESMTP id S237830AbiDHPwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 11:52:18 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3CFCA6FB;
-        Fri,  8 Apr 2022 08:50:12 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id EB2ECC0003;
-        Fri,  8 Apr 2022 15:50:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649433011;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rAt83kGtVYJZF3EBEbN5MMvf2qH0ArJM1Y4wwCRzF+U=;
-        b=goYCf35UiOfKb4ovjeqCSFHPqjUX3tM40fxE3XD+Wq4RyPbPohztgA71H3Yi9bpVbBXBi5
-        gMskv8UFPDa90U/jaP3a/s6KsVrUrCb2wUT7rwKTCVgWAeX/xraUBK5dF4+7kGeJJYQpC2
-        aezVXmlE4tN8MSGGIu6pSlC1vTGmxM+M7H/n/cxYXjO4q3OKklOvPMscUXsybbIFmaad04
-        gFm+Jb0iPYEL6s6Tt8wIYS5tJljiUduDVbo5TtJ3WAloASa/kYC87so4fltXcq2Z2Ii79R
-        B35n6YO3fyqhB4hJ/WzTI6ZbTe+wkldCQMwNqt+o7Mf86A0AKrmqqSTo/j+6OQ==
-Date:   Fri, 8 Apr 2022 17:48:41 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Lizhi Hou <lizhi.hou@xilinx.com>,
-        Sonal Santan <sonal.santan@xilinx.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v2 0/3] add fwnode support to reset subsystem
-Message-ID: <20220408174841.34458529@fixe.home>
-In-Reply-To: <Yk2TVAfPVh9a1tUR@robh.at.kernel.org>
-References: <20220324141237.297207-1-clement.leger@bootlin.com>
-        <Ykst0Vb4fk+iALzc@robh.at.kernel.org>
-        <20220405092434.6e424ed4@fixe.home>
-        <YkxWeMNw9Ba0KjHM@robh.at.kernel.org>
-        <20220405175120.23fc6b2a@fixe.home>
-        <CAL_JsqLdBcAw1KPnrATHqEngRWkx6moxDODH1xV67EKAufc6_w@mail.gmail.com>
-        <20220406094019.670a2956@fixe.home>
-        <Yk2TVAfPVh9a1tUR@robh.at.kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Fri, 8 Apr 2022 11:52:31 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498E1C6240
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 08:50:27 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id c23so8266620plo.0
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 08:50:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:user-agent:in-reply-to:references
+         :message-id:mime-version:content-transfer-encoding;
+        bh=EECD+Me6/Huy4Qn5FMgGm7o7wAzxnDwetNqFWGOrV6A=;
+        b=YggnnolWi023lk90yBu/tFpzYvuhEO/YiTkjlD9l4jo765VdHRvWKIacsDBzBUaJ9d
+         eXV+ZcPxibevfcNrhnLQ7L6fjUF/T2X//YlikBzwBWWvu6cZvjuy3j6Y/XPIS3EMf8ps
+         pY1P7KCJosQfOnLhrHVIVZZwlu027/mdUPdFQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
+         :references:message-id:mime-version:content-transfer-encoding;
+        bh=EECD+Me6/Huy4Qn5FMgGm7o7wAzxnDwetNqFWGOrV6A=;
+        b=dU/6UCeXRkRnQ1JO/S6c9eklsiaD2rF0Awfev6A+7t5HXwCoKOpyyF7qVDYYH6Umb7
+         H/Gk5imT5fBfoAhDnA4B4owg02jg7XiQuEPgQI+PAb7JUssaCTaDVX/XuCW/uFEJ00R/
+         Fd8qa0c0Wuyqa9uznuieYrJ/d/khTr6JB7asKInsh85bBGR9DB5C280yblHGYexDJIgn
+         i7sKJ25DMR0ZqRBPsvZOTkWplOy8fcel4S5AC5nWZEDQfMr7B2b/korWGhHc5QCcM6dX
+         yOavwq253p/1VS2m41YhX1zavkRKjptrwtCGlsMW6iOzHBcAq5k4q3EfzswwUBGDSADc
+         3r1A==
+X-Gm-Message-State: AOAM531QE7oykv72U11oFqVe8dl43aFUJGtTnG6nBUm77h3QErL6bhFX
+        a/PwOVseqQNwKxOdTeirsRdikw==
+X-Google-Smtp-Source: ABdhPJxw/RmcZOj0b5L0AITFoynrTExtTzTA4Jq0x688TceLroThWO9GswHNOnr79NeltB65YO/jxQ==
+X-Received: by 2002:a17:90b:4d87:b0:1c9:7f58:e5ca with SMTP id oj7-20020a17090b4d8700b001c97f58e5camr21963191pjb.154.1649433026723;
+        Fri, 08 Apr 2022 08:50:26 -0700 (PDT)
+Received: from [127.0.0.1] (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id k137-20020a633d8f000000b0039800918b00sm22115695pga.77.2022.04.08.08.50.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 08:50:26 -0700 (PDT)
+Date:   Fri, 08 Apr 2022 08:50:24 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        David Stevens <stevensd@chromium.org>
+CC:     linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC] PCI: sysfs: add bypass for config read admin check
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20220406111751.GA132418@bhelgaas>
+References: <20220406111751.GA132418@bhelgaas>
+Message-ID: <C36237FA-F23D-4C52-BCB5-1D05D86ED9F4@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Wed, 6 Apr 2022 08:19:16 -0500,
-Rob Herring <robh@kernel.org> a =C3=A9crit :
 
-> >  =20
-> > >=20
-> > >  =20
-> > > > > I've told the Xilinx folks the same thing, but I would separate t=
-his
-> > > > > into 2 parts. First is just h/w work in a DT based system. Second=
- is
-> > > > > creating a base tree an overlay can be applied to. The first part=
- should
-> > > > > be pretty straightforward. We already have PCI bus bindings. The =
-only
-> > > > > tricky part is getting address translation working from leaf devi=
-ce thru
-> > > > > the PCI bus to host bus, but support for that should all be in pl=
-ace
-> > > > > (given we support ISA buses off of PCI bus). The second part will
-> > > > > require generating PCI DT nodes at runtime. That may be needed fo=
-r both
-> > > > > DT and ACPI systems as we don't always describe all the PCI hiera=
-rchy
-> > > > > in DT.   =20
-> > > >
-> > > > But then, if the driver generate the nodes, it will most probably
-> > > > have to describe the nodes by hardcoding them right ?   =20
-> > >=20
-> > > No, the kernel already maintains its own tree of devices. You just
-> > > need to use that to generate the tree. That's really not much more
-> > > than nodes with a 'reg' property encoding the device and function
-> > > numbers. =20
-> >=20
-> > Just to clarified a point, my PCI device exposes multiple peripherals
-> > behind one single PCI function. =20
->=20
-> Right. I would expect your PCI device DT node to have a 'simple-bus'=20
-> child node with all those peripherals. And maybe there's other nodes=20
-> like fixed-clocks, etc.
->=20
-> > To be sure I understood what you are suggesting, you propose to create
-> > a DT node from the PCI driver that has been probed dynamically
-> > matching this same PCI device with a 'reg' property. I also think
-> > this would requires to generate some 'pci-ranges' to remap the
-> > downstream devices that are described in the DTBO, finally, load the
-> > overlay to be apply under this newly created node. Is that right ? =20
->=20
-> Right. You'll need to take the BAR address(es) for the device and stick=20
-> those into 'ranges' to translate offsets to BAR+offset.
 
-Hi Rob,
+On April 6, 2022 4:17:51 AM PDT, Bjorn Helgaas <helgaas@kernel=2Eorg> wrot=
+e:
+>[+cc Kees]
+>
+>On Wed, Apr 06, 2022 at 04:11:31PM +0900, David Stevens wrote:
+>> From: David Stevens <stevensd@chromium=2Eorg>
+>>=20
+>> Add a moduleparam that can be set to bypass the check that limits users
+>> without CAP_SYS_ADMIN to only being able to read the first 64 bytes of
+>> the config space=2E This allows systems without problematic hardware to=
+ be
+>> configured to allow users without CAP_SYS_ADMIN to read PCI
+>> capabilities=2E
+>
+>Can you expand this a bit to explain the purpose of this?  I guess it
+>makes "lspci -v" work without having to be root?  How much of a
+>problem is that?  Is there some specific use case that needs this
+>change?  Maybe there's some way to address that without having to add
+>a new parameter that bypasses CAP_SYS_ADMIN=2E
 
-I got something working (address translation, probing and so on) using
-what you started. I switch to using changeset however, I'm not sure that
-it make sense for property creation since the node has not yet been
-added to the tree. Attaching the node with changeset however seems
-to make sense. But I'm no expert here, so any advise is welcome.
+Yeah, this doesn't seem right to me=2E There are tons of ways in userspace=
+ to deal with these permissions (e=2Eg=2E sudo with lspci, suid wrapper, et=
+c)=2E
 
-Based on what we said, I created a PCI driver which uses a builtin
-overlay. In order to be able to apply the overlay on the correct PCI
-node -the one on which the card was plugged) and thus be totally plug
-and play, the 'target-path' property is patched using direct fdt
-function and replaced the target with the PCI device node path.
-I don't see any other way to do that before applying the overlay since
-of_overlay_fdt_apply() takes a fdt blob as input.
+-Kees
 
-The driver also insert correct ranges into the PCI device in order to
-translate the downstream node addresses to BAR addresses. It seems
-reasonnable to assume that this depends on the driver and thus should
-not be done by the PCI of core at all.
 
-Finally, the driver probes the newly added childs using
-of_platform_populate(). With all of that, the address translation
-and the probing works correctly and the platform devices are created.
-There is still a few things to fix such as the following:
-
-[ 2830.324773] OF: overlay: WARNING: memory leak will occur if overlay
-removed, property: /pci/pci@2,6/dev@0,0/compatible
-
-But it seems like this is something that works and would allow to
-support various use cases. From what I see, it should also work on
-other platforms. Major advantage of that over fwnode is that the
-changes are pretty small and relatively contained.
-
-However, one point that might be a bit of a problem is enabling
-CONFIG_OF on x86 for instance. While it seems to work, is there any
-potential concerns about this ? Moreover, ideally, I would want the
-driver to "select OF" since without that, the driver won't be visible.
-Or should it "depends on OF" but thus, it would be almost mandatory to
-enable CONFIG_OF on x86 kernels if we want to support this driver
-without the need to recompile a kernel.
-
-Thanks,
+>
+>> Signed-off-by: David Stevens <stevensd@chromium=2Eorg>
+>> ---
+>>  drivers/pci/pci-sysfs=2Ec | 10 +++++++++-
+>>  1 file changed, 9 insertions(+), 1 deletion(-)
+>>=20
+>> diff --git a/drivers/pci/pci-sysfs=2Ec b/drivers/pci/pci-sysfs=2Ec
+>> index 602f0fb0b007=2E=2E162423b3c052 100644
+>> --- a/drivers/pci/pci-sysfs=2Ec
+>> +++ b/drivers/pci/pci-sysfs=2Ec
+>> @@ -28,10 +28,17 @@
+>>  #include <linux/pm_runtime=2Eh>
+>>  #include <linux/msi=2Eh>
+>>  #include <linux/of=2Eh>
+>> +#include <linux/moduleparam=2Eh>
+>>  #include "pci=2Eh"
+>> =20
+>>  static int sysfs_initialized;	/* =3D 0 */
+>> =20
+>> +static bool allow_unsafe_config_reads;
+>> +module_param_named(allow_unsafe_config_reads,
+>> +		   allow_unsafe_config_reads, bool, 0644);
+>> +MODULE_PARM_DESC(allow_unsafe_config_reads,
+>> +		 "Enable full read access to config space without CAP_SYS_ADMIN=2E")=
+;
+>> +
+>>  /* show configuration fields */
+>>  #define pci_config_attr(field, format_string)				\
+>>  static ssize_t								\
+>> @@ -696,7 +703,8 @@ static ssize_t pci_read_config(struct file *filp, s=
+truct kobject *kobj,
+>>  	u8 *data =3D (u8 *) buf;
+>> =20
+>>  	/* Several chips lock up trying to read undefined config space */
+>> -	if (file_ns_capable(filp, &init_user_ns, CAP_SYS_ADMIN))
+>> +	if (allow_unsafe_config_reads ||
+>> +	    file_ns_capable(filp, &init_user_ns, CAP_SYS_ADMIN))
+>>  		size =3D dev->cfg_size;
+>>  	else if (dev->hdr_type =3D=3D PCI_HEADER_TYPE_CARDBUS)
+>>  		size =3D 128;
+>> --=20
+>> 2=2E35=2E1=2E1094=2Eg7c7d902a7c-goog
+>>=20
 
 --=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Kees Cook
