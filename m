@@ -2,87 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E41C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 04:15:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A997C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 04:15:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234207AbiDHERV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 00:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38688 "EHLO
+        id S234236AbiDHERa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 00:17:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232658AbiDHERT (ORCPT
+        with ESMTP id S232658AbiDHER2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 00:17:19 -0400
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1FC2D9A28
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 21:15:16 -0700 (PDT)
+        Fri, 8 Apr 2022 00:17:28 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68EAC2E0F20;
+        Thu,  7 Apr 2022 21:15:25 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so8481238pjk.4;
+        Thu, 07 Apr 2022 21:15:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=uTabu/53bsyjVq/ChwDFv7CtxaAxu/V7Z38X06Q53J8=;
-  b=GCcL5h9eISAZu40VAIaRYGmVcO2zZWvbtlq4m0c24CoerRPi4HxCPVTo
-   FnnS2mXXBEIcrSfMSyldAZgPP+2NgsQ2WX+TcXBt3TQ87QJIOytjey1iA
-   l8mbqpKak2PwBsHsxpCQDS5tUpMHGGIIqBollj7SXqDt9U1gFsL/xVTpx
-   8=;
-Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.90,243,1643670000"; 
-   d="scan'208";a="30688890"
-Received: from lputeaux-656-1-153-249.w217-128.abo.wanadoo.fr (HELO hadrien) ([217.128.47.249])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 06:15:14 +0200
-Date:   Fri, 8 Apr 2022 06:15:14 +0200 (CEST)
-From:   Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: julia@hadrien
-To:     Rebecca Mckeever <remckee0@gmail.com>
-cc:     outreachy@lists.linux.dev,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] staging: rtl8192u: replace ternary statement with
- if and assignment
-In-Reply-To: <36059ec66a2f3d58a8e339aa4f262772eabd3ef0.1649378587.git.remckee0@gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2204080614400.2199@hadrien>
-References: <cover.1649378587.git.remckee0@gmail.com> <36059ec66a2f3d58a8e339aa4f262772eabd3ef0.1649378587.git.remckee0@gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4+rOEzFAMJJgXNy15jCz7SsQISiJWacBJllHkfSFDfk=;
+        b=KTJGOHY1jWaNKMCowdV/0KshrzntST/NJ2chxhHVG54H7LfhRJb3PdOmoV4vHk+dKM
+         RUFI7CS0leoZ+SvwHFyaN0W9MuV+RqDQ0RQvW8CDZl8rWUtEC3fn+9n9RRJaV6StWf7K
+         rEMdl/86TDCo2CaDLveZaSAECeIy2KSZOJOs+acpnWyXp1UXGkhylydCDBPvi4d4721j
+         GsIPPpMlcazsxT/Nd7gulCvAiaDdKMNhAmuIVisB3FcPHEEsp3pCIVCjRF58drpMXMSw
+         1ZaeoiuxjGZC4xakz68ISoyZgv2lCPNYkijTEkS6dWaj9aXqMZZC+fm1J5szybcNCDdZ
+         VUSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4+rOEzFAMJJgXNy15jCz7SsQISiJWacBJllHkfSFDfk=;
+        b=cY68dX53NWczIZHElkIC2XYCqlZrbGDqpfHgi/53HNGxCoK6dZ+xEQJGt7xe4GlnZu
+         1V0KThCOa+jWFeGlPTAaJ1TVliTjVZgXIM+GMMlr3EDzNHzpMpSdXbzlLSD7XorR1P7X
+         EmWjq7MwLDueO1In5eHREMv1OMv7eB8/eQDUPNN4a51cxpGsBdDDbDtFl7PeePDUtF2Q
+         3o2MpqUa9aAMagxV5m3ulR8tlzUUgxoyks5sCtbF2axoOyVRv9KVk64KeZHMTMGc5FeQ
+         w6vQ0qVvTS9bwbRG4fff8p809R0cPP1BpVI0xUxPrPsGpBE+wArUIA//0j/IURl0I5M9
+         snxg==
+X-Gm-Message-State: AOAM530g7yz6R9NT5hriCdSwU054V5LV8el/cjHdj03ekyi9+HJSC8YT
+        nq+LCQjjkmBEMjLTuu7xdVc=
+X-Google-Smtp-Source: ABdhPJzBrWIOQA+LTz4iR7Gep1go2uzqC8EpRYuxlUgPRF1HnaokeSNqgrWe/R9KPRFBDelGdd1EGA==
+X-Received: by 2002:a17:903:1104:b0:154:c628:e7c2 with SMTP id n4-20020a170903110400b00154c628e7c2mr17648425plh.54.1649391324970;
+        Thu, 07 Apr 2022 21:15:24 -0700 (PDT)
+Received: from localhost.localdomain ([43.132.141.8])
+        by smtp.gmail.com with ESMTPSA id f14-20020a056a0022ce00b004fabe9fac23sm25789042pfj.151.2022.04.07.21.15.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 21:15:24 -0700 (PDT)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     skhan@linuxfoundation.org
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, hengqi.chen@gmail.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, shuah@kernel.org, songliubraving@fb.com,
+        yhs@fb.com, ytcoode@gmail.com
+Subject: [PATCH bpf-next v2] selftests/bpf: Fix return value checks in perf_event_stackmap.c
+Date:   Fri,  8 Apr 2022 12:14:52 +0800
+Message-Id: <20220408041452.933944-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.35.0.rc2
+In-Reply-To: <7ac36fbe-aa44-9311-320b-1e953c29a3c4@linuxfoundation.org>
+References: <7ac36fbe-aa44-9311-320b-1e953c29a3c4@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The bpf_get_stackid() function may also return 0 on success.
 
+Correct checks from 'val > 0' to 'val >= 0' to ensure that they cover all
+possible success return values.
 
-On Thu, 7 Apr 2022, Rebecca Mckeever wrote:
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+v1 -> v2: update commit message
 
-> Replace ternary statement with an if statement followed by an assignment
-> to increase readability and make error handling more obvious.
-> Found with minmax coccinelle script.
->
-> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
-> ---
->  drivers/staging/rtl8192u/ieee80211/ieee80211_wx.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_wx.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_wx.c
-> index 78cc8f357bbc..9885917b9199 100644
-> --- a/drivers/staging/rtl8192u/ieee80211/ieee80211_wx.c
-> +++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_wx.c
-> @@ -470,7 +470,9 @@ int ieee80211_wx_get_encode(struct ieee80211_device *ieee,
->  		return 0;
->  	}
->  	len = crypt->ops->get_key(keybuf, SCM_KEY_LEN, NULL, crypt->priv);
-> -	erq->length = (len >= 0 ? len : 0);
-> +	if (len < 0)
-> +		len = 0;
-> +	erq->length = len;
+ tools/testing/selftests/bpf/progs/perf_event_stackmap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Maybe you could use max here?
+diff --git a/tools/testing/selftests/bpf/progs/perf_event_stackmap.c b/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
+index b3fcb5274ee0..f793280a3238 100644
+--- a/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
++++ b/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
+@@ -35,10 +35,10 @@ int oncpu(void *ctx)
+ 	long val;
+ 
+ 	val = bpf_get_stackid(ctx, &stackmap, 0);
+-	if (val > 0)
++	if (val >= 0)
+ 		stackid_kernel = 2;
+ 	val = bpf_get_stackid(ctx, &stackmap, BPF_F_USER_STACK);
+-	if (val > 0)
++	if (val >= 0)
+ 		stackid_user = 2;
+ 
+ 	trace = bpf_map_lookup_elem(&stackdata_map, &key);
+-- 
+2.35.0.rc2
 
-julia
-
->
->  	erq->flags |= IW_ENCODE_ENABLED;
->
-> --
-> 2.32.0
->
->
->
