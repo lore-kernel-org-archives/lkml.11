@@ -2,73 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C123FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 546C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237706AbiDHPmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51406 "EHLO
+        id S237716AbiDHPom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 11:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237687AbiDHPlz (ORCPT
+        with ESMTP id S230231AbiDHPok (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 11:41:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960FDDE098;
-        Fri,  8 Apr 2022 08:39:51 -0700 (PDT)
+        Fri, 8 Apr 2022 11:44:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD12F83005;
+        Fri,  8 Apr 2022 08:42:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 330836201B;
-        Fri,  8 Apr 2022 15:39:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9009C385A3;
-        Fri,  8 Apr 2022 15:39:48 +0000 (UTC)
-Date:   Fri, 8 Apr 2022 11:39:46 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     Kalesh Singh <kaleshsingh@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        kernel-team <kernel-team@android.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Tim Murray <timmurray@google.com>, Wei Wang <wvw@google.com>,
-        Kyle Lin <kylelin@google.com>,
-        Chunwei Lu <chunweilu@google.com>,
-        Lulu Wang <luluw@google.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] EXP rcu: Move expedited grace period (GP) work to RT
- kthread_worker
-Message-ID: <20220408113946.056c083e@gandalf.local.home>
-In-Reply-To: <CAEXW_YSqY2nFZrn4AjpUzJ+dwZc7jaVMG9RG5gvTyb3zFYWtQA@mail.gmail.com>
-References: <20220408045734.1158817-1-kaleshsingh@google.com>
-        <CAEXW_YSqY2nFZrn4AjpUzJ+dwZc7jaVMG9RG5gvTyb3zFYWtQA@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 307846201B;
+        Fri,  8 Apr 2022 15:42:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AA1DC385A1;
+        Fri,  8 Apr 2022 15:42:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649432553;
+        bh=s1dk+PG922eEPvuS1m9W/dJr95X0ai1l0ApPhrkX+3w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Tbyfbz1oeXMpnv1/dhVsJn/u+z2iWryVor30Rpl/Da08h/Oso9wnShLBxMQj2yOGG
+         Dhh7XsMFfQpufv6joYyFXru8mVE2/7nWEOhiulCp52VbarDopgQPZC+W+PTvLxTwlL
+         hImN/Mb30aK1FWsDmoSDtPpHLSQmYXeHcBkgOjw4=
+Date:   Fri, 8 Apr 2022 17:42:30 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Sasha Levin <sashal@kernel.org>, stable <stable@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH stable 0/3] SOF_TIMESTAMPING_OPT_ID backport to 4.14 and
+ 4.19
+Message-ID: <YlBX5lhYHIXE0oBK@kroah.com>
+References: <20220406192956.3291614-1-vladimir.oltean@nxp.com>
+ <20220408152929.4zd2mclusdpazclv@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220408152929.4zd2mclusdpazclv@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 8 Apr 2022 06:21:03 -0400
-Joel Fernandes <joel@joelfernandes.org> wrote:
-
-> > +       default !PREEMPT_RT && NR_CPUS <= 32  
+On Fri, Apr 08, 2022 at 03:29:30PM +0000, Vladimir Oltean wrote:
+> Hello Greg, Sasha,
 > 
-> What is the benefit of turning it off on PREEMPT_RT, even if
-> PREEMPT_RT does not use expedited GPs much post-boot? I would think in
-> the future if PREEMPT_RT ever uses expedited GPs, they would want this
-> feature even more. I'd rather be future-proof now as I don't see any
-> advantages of disabling it on !PREEMPT_RT (And a drawback that the fix
-> won't apply to those systems). Also will keep the config simple.
+> On Wed, Apr 06, 2022 at 10:29:53PM +0300, Vladimir Oltean wrote:
+> > As discussed with Willem here:
+> > https://lore.kernel.org/netdev/CA+FuTSdQ57O6RWj_Lenmu_Vd3NEX9xMzMYkB0C3rKMzGgcPc6A@mail.gmail.com/T/
+> > 
+> > the kernel silently doesn't act upon the SOF_TIMESTAMPING_OPT_ID socket
+> > option in several cases on older kernels, yet user space has no way to
+> > find out about this, practically resulting in broken functionality.
+> > 
+> > This patch set backports the support towards linux-4.14.y and linux-4.19.y,
+> > which fixes the issue described above by simply making the kernel act
+> > upon SOF_TIMESTAMPING_OPT_ID as expected.
+> > 
+> > Testing was done with the most recent (not the vintage-correct one)
+> > kselftest script at:
+> > tools/testing/selftests/networking/timestamping/txtimestamp.sh
+> > with the message "OK. All tests passed".
+> 
+> Could you please pick up these backports for "stable"? Thanks.
 
-The default kthread priority is 1. This should not affect PREEMPT_RT, as
-PREEMPT_RT users are usually more concerned by the performance of their
-higher priority tasks. Priority 1 is not considered an issue.
+You sent this 2 days ago!
 
-I do not see why PREEMPT_RT is special here. Why was it singled out?
-
--- Steve
+Please relax :)
