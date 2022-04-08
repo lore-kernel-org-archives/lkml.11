@@ -2,513 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68683C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 04:58:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D210C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 04:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234408AbiDHFAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 01:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60632 "EHLO
+        id S234464AbiDHFA1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 01:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234417AbiDHE74 (ORCPT
+        with ESMTP id S234452AbiDHFAN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 00:59:56 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE9036E27
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 21:57:53 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2eb5d4fbd54so66613077b3.4
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 21:57:53 -0700 (PDT)
+        Fri, 8 Apr 2022 01:00:13 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C90E136FE1
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 21:58:08 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-2ebd70a4cf5so25087147b3.3
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 21:58:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:cc;
-        bh=hzCMu/UvPPObe/qwkBEl/biRS3XgDzvZOugIenmIcl0=;
-        b=NFeCEmxXLlCoG+zdPC2x4cjLF3M2w1av4st2op2odVZ41dnIMXkzcB/+4yftB0EP0g
-         gwPBcjlQyiQcfmFd0+3bUEWAnFTUASDa+5XNE52LT0Tl+EM9DdocIuNvOM00i/VUjqDM
-         PnZWJOWbx4PUqFeqVaXKLV5NO3JQv0UTY7b/J8sjmaB9/muzVnV2N54uF/p2rwPMXXeP
-         8pqc7aqVrVQnFFRgmkvNKaLOYRsUeqXRdNHEJp3zjMRxgMA12Mazd1sbXqP2zkHCPEoM
-         7xNNgBp8bkztm0sIQT67n3/vJXZy1erOPi6G57ndb4IYBdDNY2xyFHHgIiPnhIbt3XSH
-         W21w==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ZX5okEH0sxWRyDJLsGr6K2bum/cs4WAHaeg4beO8EcU=;
+        b=DAAhVYhLZCjI176h4Y/+Ew2tlsNKNXjaimnB3l8ghCIUm1eDG0517Z85L0qW8WMQeD
+         4ZtzKQXW2yzjBjf8ZnhpR2uBwXpE4CZxUM1KvK6RiUV+CHE95HpU8CB0Pt0q06fihBiB
+         KCA4j42R7SeJoeYNKGQsZHxrJ8pBzlZ4OywDNt8/TKU6SmjRt/4CXCfTIdZtKoUZUF6x
+         dbSmHcfQKB/chBQlIpnDZHnudWjZvSTcucrRPdkeaVIcEEUcqGKERrBQCfdihSOZhDaV
+         IOT8+J0A8ccUqY+9pMYL0Zv4DbfV3pzensCG/qeI6KvBl5iFxBT0DIZpjjh5xsVREvxt
+         q9IA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:cc;
-        bh=hzCMu/UvPPObe/qwkBEl/biRS3XgDzvZOugIenmIcl0=;
-        b=zQgMwE4w0L6cBCTZeh05mnF6MwD1fNGlgdSkXLOFN4WYktYaC9eq7TbCE0a1O7xqwf
-         gAELG01SzEXFD8eg+maXBLUR9lmAEPKsYNIGlFegHMmxxHTCo+YdvDHEOnjXsaILx3NH
-         v84g0e5Kk+ZQCipPHVtIoqF3i6Uhr1bpzuseo8+Q5rb+bNHNDUakk0KDLkeCMUpaQH8H
-         p26W1ZHCIRd7WAFyV3k3m0+Jaok3v+rEeHtgnxsEYJQsaVIgkGuyw7MMXNvpN3YG06KF
-         p0xdKzqCn930KISormjbVgHbmo52uIkq3qYiR8hnGQcOQlV/WugNuqUh/5j13BEv/k3o
-         bbxg==
-X-Gm-Message-State: AOAM533DSeCOtdumaHwL+ikaE9xcd01sr+pMhwh3+rRtx6KW9jWHDY8y
-        d54nCFgsBQ2wIgFgb8RS3FzllyZjiWC5oEibxA==
-X-Google-Smtp-Source: ABdhPJxjdPSUagnWnW95NOKDMyJxv9f80ZaJEBs5/vCEOCj4/Ub1URqP0Gms7cKwOgokNUvDIsY8kdTMo6NSFfJLLw==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:f0ed:c8a:dab7:ecc2])
- (user=kaleshsingh job=sendgmr) by 2002:a25:888a:0:b0:63d:d378:6c0a with SMTP
- id d10-20020a25888a000000b0063dd3786c0amr12560827ybl.646.1649393873214; Thu,
- 07 Apr 2022 21:57:53 -0700 (PDT)
-Date:   Thu,  7 Apr 2022 21:57:34 -0700
-Message-Id: <20220408045734.1158817-1-kaleshsingh@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH v2] EXP rcu: Move expedited grace period (GP) work to RT kthread_worker
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Tim Murray <timmurray@google.com>, Wei Wang <wvw@google.com>,
-        Kyle Lin <kylelin@google.com>,
-        Chunwei Lu <chunweilu@google.com>,
-        Lulu Wang <luluw@google.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ZX5okEH0sxWRyDJLsGr6K2bum/cs4WAHaeg4beO8EcU=;
+        b=vlL3HSWAAIFn4cSdVD3vEd6svPzQlLcP/ebrTk5uOuEqEhGCBUOlRYFHNax0DfW/+Z
+         ahDKxccqTxBJuS9/HMqpd97uwxy4WPLGnmPCQRxR2GitmAySou+V2wG9ijtTGOpy27g7
+         2Hhbw8lWmiok2qjuFnVqKDepoDH5jpPvmN6Am/G+rNQrT7K6TIh/zHQisjfZhjEC/V2Z
+         26r3Kcds4AQJXeMva3ROgOa3n7qkgce2uAgAmKX3UjSCQivzdyqCHcdfGOC2b6JO2uhq
+         M3OmQvbIpnEFvsOCP6F+rJBRykwsgRz0jao+FXHXnNpOSN5NDnYNmWktnE5kvIJtLBhr
+         /5pQ==
+X-Gm-Message-State: AOAM533Yh965QSO0gij0/N9pU8R8oRn6FueK6vUIZ/ZgP5TJlAfBv6bK
+        Bd9CPdpUVX7reLW8LByvRSdkwgheGXtkwE5dBi/O+g==
+X-Google-Smtp-Source: ABdhPJz9wMmJWQtIFzqEg8rC3BctdinsPVGW0ai+XVLN52fMF1F3b2ZuQix/RS1NZrE5RkAOxtSou+z+GjdE8Mdq1yI=
+X-Received: by 2002:a81:478b:0:b0:2ea:da8c:5c21 with SMTP id
+ u133-20020a81478b000000b002eada8c5c21mr15028974ywa.189.1649393887091; Thu, 07
+ Apr 2022 21:58:07 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220407183749.142181327@linuxfoundation.org>
+In-Reply-To: <20220407183749.142181327@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Fri, 8 Apr 2022 10:27:55 +0530
+Message-ID: <CA+G9fYvUptenwZkRPyiXKv9yK43Ornk1ptqgYL3-8zLMq2R7tg@mail.gmail.com>
+Subject: Re: [PATCH 5.10 000/597] 5.10.110-rc3 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
 Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enabling CONFIG_RCU_BOOST did not reduce RCU expedited grace-period
-latency because its workqueues run at SCHED_OTHER, and thus can be
-delayed by normal processes.  This commit avoids these delays by moving
-the expedited GP work items to a real-time-priority kthread_worker.
+On Fri, 8 Apr 2022 at 00:15, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.10.110 release.
+> There are 597 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sat, 09 Apr 2022 18:35:00 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.10.110-rc3.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.10.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-The results were evaluated on arm64 Android devices (6GB ram) running
-5.10 kernel, and capturing trace data in critical user-level code.
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-The table below shows the resulting order-of-magnitude improvements
-in synchronize_rcu_expedited() latency:
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-------------------------------------------------------------------------
-|                          |   workqueues  |  kthread_worker |  Diff   |
-------------------------------------------------------------------------
-| Count                    |          725  |            688  |         |
-------------------------------------------------------------------------
-| Min Duration       (ns)  |          326  |            447  |  37.12% |
-------------------------------------------------------------------------
-| Q1                 (ns)  |       39,428  |         38,971  |  -1.16% |
-------------------------------------------------------------------------
-| Q2 - Median        (ns)  |       98,225  |         69,743  | -29.00% |
-------------------------------------------------------------------------
-| Q3                 (ns)  |      342,122  |        126,638  | -62.98% |
-------------------------------------------------------------------------
-| Max Duration       (ns)  |  372,766,967  |      2,329,671  | -99.38% |
-------------------------------------------------------------------------
-| Avg Duration       (ns)  |    2,746,353  |        151,242  | -94.49% |
-------------------------------------------------------------------------
-| Standard Deviation (ns)  |   19,327,765  |        294,408  |         |
-------------------------------------------------------------------------
+## Build
+* kernel: 5.10.110-rc3
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.10.y
+* git commit: 32dde4a44c8d6f6dd9cda13300bfda1468e13ec6
+* git describe: v5.10.109-598-g32dde4a44c8d
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10=
+.109-598-g32dde4a44c8d
 
-The below table show the range of maximums/minimums for
-synchronize_rcu_expedited() latency from all experiments:
+## Test Regressions (compared to v5.10.109-593-gd189d4a7b878)
+No test regressions found.
 
-------------------------------------------------------------------------
-|                          |   workqueues  |  kthread_worker |  Diff   |
-------------------------------------------------------------------------
-| Total No. of Experiments |           25  |             23  |         |
-------------------------------------------------------------------------
-| Largest  Maximum   (ns)  |  372,766,967  |      2,329,671  | -99.38% |
-------------------------------------------------------------------------
-| Smallest Maximum   (ns)  |       38,819  |         86,954  | 124.00% |
-------------------------------------------------------------------------
-| Range of Maximums  (ns)  |  372,728,148  |      2,242,717  |         |
-------------------------------------------------------------------------
-| Largest  Minimum   (ns)  |       88,623  |         27,588  | -68.87% |
-------------------------------------------------------------------------
-| Smallest Minimum   (ns)  |          326  |            447  |  37.12% |
-------------------------------------------------------------------------
-| Range of Minimums  (ns)  |       88,297  |         27,141  |         |
-------------------------------------------------------------------------
+## Metric Regressions (compared to v5.10.109-593-gd189d4a7b878)
+No metric regressions found.
 
-Cc: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: Tejun Heo <tj@kernel.org>
-Reported-by: Tim Murray <timmurray@google.com>
-Reported-by: Wei Wang <wvw@google.com>
-Tested-by: Kyle Lin <kylelin@google.com>
-Tested-by: Chunwei Lu <chunweilu@google.com>
-Tested-by: Lulu Wang <luluw@google.com>
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
----
+## Test Fixes (compared to v5.10.109-593-gd189d4a7b878)
+No test fixes found.
 
-Changes in v2:
-  - Add stats on variation: standard deviation, range of maxs, etc; per Paul
-  - Make this optimization configurable (CONFIG_RCU_EXP_KTHREAD); per Paul
+## Metric Fixes (compared to v5.10.109-593-gd189d4a7b878)
+No metric fixes found.
 
- kernel/rcu/Kconfig    |  10 +++
- kernel/rcu/rcu.h      |   5 ++
- kernel/rcu/tree.c     |  51 ++++++++++++++-
- kernel/rcu/tree.h     |   5 ++
- kernel/rcu/tree_exp.h | 147 +++++++++++++++++++++++++++++++++---------
- 5 files changed, 184 insertions(+), 34 deletions(-)
+## Test result summary
+total: 99811, pass: 84222, fail: 869, skip: 13789, xfail: 931
 
-diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
-index bf8e341e75b4..56c6552c2af6 100644
---- a/kernel/rcu/Kconfig
-+++ b/kernel/rcu/Kconfig
-@@ -195,6 +195,16 @@ config RCU_BOOST_DELAY
- 
- 	  Accept the default if unsure.
- 
-+config RCU_EXP_KTHREAD
-+	bool "Perform RCU expedited work in a real-time kthread"
-+	depends on RCU_BOOST && RCU_EXPERT
-+	default !PREEMPT_RT && NR_CPUS <= 32
-+	help
-+	  Use this option to further reduce the latencies of expedited
-+	  grace periods at the expense of being more disruptive.
-+
-+	  Accept the default if unsure.
-+
- config RCU_NOCB_CPU
- 	bool "Offload RCU callback processing from boot-selected CPUs"
- 	depends on TREE_RCU
-diff --git a/kernel/rcu/rcu.h b/kernel/rcu/rcu.h
-index 24b5f2c2de87..5510d2231c32 100644
---- a/kernel/rcu/rcu.h
-+++ b/kernel/rcu/rcu.h
-@@ -534,7 +534,12 @@ int rcu_get_gp_kthreads_prio(void);
- void rcu_fwd_progress_check(unsigned long j);
- void rcu_force_quiescent_state(void);
- extern struct workqueue_struct *rcu_gp_wq;
-+#ifdef CONFIG_RCU_EXP_KTHREAD
-+extern struct kthread_worker *rcu_exp_gp_kworker;
-+extern struct kthread_worker *rcu_exp_par_gp_kworker;
-+#else /* !CONFIG_RCU_EXP_KTHREAD */
- extern struct workqueue_struct *rcu_par_gp_wq;
-+#endif /* CONFIG_RCU_EXP_KTHREAD */
- #endif /* #else #ifdef CONFIG_TINY_RCU */
- 
- #ifdef CONFIG_RCU_NOCB_CPU
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index a4b8189455d5..763e45fdf49b 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -4471,6 +4471,51 @@ static int rcu_pm_notify(struct notifier_block *self,
- 	return NOTIFY_OK;
- }
- 
-+#ifdef CONFIG_RCU_EXP_KTHREAD
-+struct kthread_worker *rcu_exp_gp_kworker;
-+struct kthread_worker *rcu_exp_par_gp_kworker;
-+
-+static void __init rcu_start_exp_gp_kworkers(void)
-+{
-+	const char *par_gp_kworker_name = "rcu_exp_par_gp_kthread_worker";
-+	const char *gp_kworker_name = "rcu_exp_gp_kthread_worker";
-+	struct sched_param param = { .sched_priority = kthread_prio };
-+
-+	rcu_exp_gp_kworker = kthread_create_worker(0, gp_kworker_name);
-+	if (IS_ERR_OR_NULL(rcu_exp_gp_kworker)) {
-+		pr_err("Failed to create %s!\n", gp_kworker_name);
-+		return;
-+	}
-+
-+	rcu_exp_par_gp_kworker = kthread_create_worker(0, par_gp_kworker_name);
-+	if (IS_ERR_OR_NULL(rcu_exp_par_gp_kworker)) {
-+		pr_err("Failed to create %s!\n", par_gp_kworker_name);
-+		kthread_destroy_worker(rcu_exp_gp_kworker);
-+		return;
-+	}
-+
-+	sched_setscheduler_nocheck(rcu_exp_gp_kworker->task, SCHED_FIFO, &param);
-+	sched_setscheduler_nocheck(rcu_exp_par_gp_kworker->task, SCHED_FIFO,
-+				   &param);
-+}
-+
-+static inline void rcu_alloc_par_gp_wq(void)
-+{
-+}
-+#else /* !CONFIG_RCU_EXP_KTHREAD */
-+struct workqueue_struct *rcu_par_gp_wq;
-+
-+static void __init rcu_start_exp_gp_kworkers(void)
-+{
-+}
-+
-+static inline void rcu_alloc_par_gp_wq(void)
-+{
-+	rcu_par_gp_wq = alloc_workqueue("rcu_par_gp", WQ_MEM_RECLAIM, 0);
-+	WARN_ON(!rcu_par_gp_wq);
-+}
-+#endif /* CONFIG_RCU_EXP_KTHREAD */
-+
- /*
-  * Spawn the kthreads that handle RCU's grace periods.
-  */
-@@ -4500,6 +4545,8 @@ static int __init rcu_spawn_gp_kthread(void)
- 	rcu_spawn_nocb_kthreads();
- 	rcu_spawn_boost_kthreads();
- 	rcu_spawn_core_kthreads();
-+	/* Create kthread worker for expedited GPs */
-+	rcu_start_exp_gp_kworkers();
- 	return 0;
- }
- early_initcall(rcu_spawn_gp_kthread);
-@@ -4745,7 +4792,6 @@ static void __init rcu_dump_rcu_node_tree(void)
- }
- 
- struct workqueue_struct *rcu_gp_wq;
--struct workqueue_struct *rcu_par_gp_wq;
- 
- static void __init kfree_rcu_batch_init(void)
- {
-@@ -4811,8 +4857,7 @@ void __init rcu_init(void)
- 	/* Create workqueue for Tree SRCU and for expedited GPs. */
- 	rcu_gp_wq = alloc_workqueue("rcu_gp", WQ_MEM_RECLAIM, 0);
- 	WARN_ON(!rcu_gp_wq);
--	rcu_par_gp_wq = alloc_workqueue("rcu_par_gp", WQ_MEM_RECLAIM, 0);
--	WARN_ON(!rcu_par_gp_wq);
-+	rcu_alloc_par_gp_wq();
- 
- 	/* Fill in default value for rcutree.qovld boot parameter. */
- 	/* -After- the rcu_node ->lock fields are initialized! */
-diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
-index 926673ebe355..b577cdfdc851 100644
---- a/kernel/rcu/tree.h
-+++ b/kernel/rcu/tree.h
-@@ -10,6 +10,7 @@
-  */
- 
- #include <linux/cache.h>
-+#include <linux/kthread.h>
- #include <linux/spinlock.h>
- #include <linux/rtmutex.h>
- #include <linux/threads.h>
-@@ -23,7 +24,11 @@
- /* Communicate arguments to a workqueue handler. */
- struct rcu_exp_work {
- 	unsigned long rew_s;
-+#ifdef CONFIG_RCU_EXP_KTHREAD
-+	struct kthread_work rew_work;
-+#else
- 	struct work_struct rew_work;
-+#endif /* CONFIG_RCU_EXP_KTHREAD */
- };
- 
- /* RCU's kthread states for tracing. */
-diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-index 60197ea24ceb..2c6c0e0bc83a 100644
---- a/kernel/rcu/tree_exp.h
-+++ b/kernel/rcu/tree_exp.h
-@@ -334,15 +334,13 @@ static bool exp_funnel_lock(unsigned long s)
-  * Select the CPUs within the specified rcu_node that the upcoming
-  * expedited grace period needs to wait for.
-  */
--static void sync_rcu_exp_select_node_cpus(struct work_struct *wp)
-+static void __sync_rcu_exp_select_node_cpus(struct rcu_exp_work *rewp)
- {
- 	int cpu;
- 	unsigned long flags;
- 	unsigned long mask_ofl_test;
- 	unsigned long mask_ofl_ipi;
- 	int ret;
--	struct rcu_exp_work *rewp =
--		container_of(wp, struct rcu_exp_work, rew_work);
- 	struct rcu_node *rnp = container_of(rewp, struct rcu_node, rew);
- 
- 	raw_spin_lock_irqsave_rcu_node(rnp, flags);
-@@ -417,13 +415,119 @@ static void sync_rcu_exp_select_node_cpus(struct work_struct *wp)
- 		rcu_report_exp_cpu_mult(rnp, mask_ofl_test, false);
- }
- 
-+static void rcu_exp_sel_wait_wake(unsigned long s);
-+
-+#ifdef CONFIG_RCU_EXP_KTHREAD
-+static void sync_rcu_exp_select_node_cpus(struct kthread_work *wp)
-+{
-+	struct rcu_exp_work *rewp =
-+		container_of(wp, struct rcu_exp_work, rew_work);
-+
-+	__sync_rcu_exp_select_node_cpus(rewp);
-+}
-+
-+static inline bool rcu_gp_par_worker_started(void)
-+{
-+	return !!READ_ONCE(rcu_exp_par_gp_kworker);
-+}
-+
-+static inline void sync_rcu_exp_select_cpus_queue_work(struct rcu_node *rnp)
-+{
-+	kthread_init_work(&rnp->rew.rew_work, sync_rcu_exp_select_node_cpus);
-+	/*
-+	 * Use rcu_exp_par_gp_kworker, because flushing a work item from
-+	 * another work item on the same kthread worker can result in
-+	 * deadlock.
-+	 */
-+	kthread_queue_work(rcu_exp_par_gp_kworker, &rnp->rew.rew_work);
-+}
-+
-+static inline void sync_rcu_exp_select_cpus_flush_work(struct rcu_node *rnp)
-+{
-+	kthread_flush_work(&rnp->rew.rew_work);
-+}
-+
-+/*
-+ * Work-queue handler to drive an expedited grace period forward.
-+ */
-+static void wait_rcu_exp_gp(struct kthread_work *wp)
-+{
-+	struct rcu_exp_work *rewp;
-+
-+	rewp = container_of(wp, struct rcu_exp_work, rew_work);
-+	rcu_exp_sel_wait_wake(rewp->rew_s);
-+}
-+
-+static inline void synchronize_rcu_expedited_queue_work(struct rcu_exp_work *rew)
-+{
-+	kthread_init_work(&rew->rew_work, wait_rcu_exp_gp);
-+	kthread_queue_work(rcu_exp_gp_kworker, &rew->rew_work);
-+}
-+
-+static inline void synchronize_rcu_expedited_destroy_work(struct rcu_exp_work *rew)
-+{
-+}
-+#else /* !CONFIG_RCU_EXP_KTHREAD */
-+static void sync_rcu_exp_select_node_cpus(struct work_struct *wp)
-+{
-+	struct rcu_exp_work *rewp =
-+		container_of(wp, struct rcu_exp_work, rew_work);
-+
-+	__sync_rcu_exp_select_node_cpus(rewp);
-+}
-+
-+static inline bool rcu_gp_par_worker_started(void)
-+{
-+	return !!READ_ONCE(rcu_par_gp_wq);
-+}
-+
-+static inline void sync_rcu_exp_select_cpus_queue_work(struct rcu_node *rnp)
-+{
-+	int cpu = find_next_bit(&rnp->ffmask, BITS_PER_LONG, -1);
-+
-+	INIT_WORK(&rnp->rew.rew_work, sync_rcu_exp_select_node_cpus);
-+	/* If all offline, queue the work on an unbound CPU. */
-+	if (unlikely(cpu > rnp->grphi - rnp->grplo))
-+		cpu = WORK_CPU_UNBOUND;
-+	else
-+		cpu += rnp->grplo;
-+	queue_work_on(cpu, rcu_par_gp_wq, &rnp->rew.rew_work);
-+}
-+
-+static inline void sync_rcu_exp_select_cpus_flush_work(struct rcu_node *rnp)
-+{
-+	flush_work(&rnp->rew.rew_work);
-+}
-+
-+/*
-+ * Work-queue handler to drive an expedited grace period forward.
-+ */
-+static void wait_rcu_exp_gp(struct work_struct *wp)
-+{
-+	struct rcu_exp_work *rewp;
-+
-+	rewp = container_of(wp, struct rcu_exp_work, rew_work);
-+	rcu_exp_sel_wait_wake(rewp->rew_s);
-+}
-+
-+static inline void synchronize_rcu_expedited_queue_work(struct rcu_exp_work *rew)
-+{
-+	INIT_WORK_ONSTACK(&rew->rew_work, wait_rcu_exp_gp);
-+	queue_work(rcu_gp_wq, &rew->rew_work);
-+}
-+
-+static inline void synchronize_rcu_expedited_destroy_work(struct rcu_exp_work *rew)
-+{
-+	destroy_work_on_stack(&rew->rew_work);
-+}
-+#endif /* CONFIG_RCU_EXP_KTHREAD */
-+
- /*
-  * Select the nodes that the upcoming expedited grace period needs
-  * to wait for.
-  */
- static void sync_rcu_exp_select_cpus(void)
- {
--	int cpu;
- 	struct rcu_node *rnp;
- 
- 	trace_rcu_exp_grace_period(rcu_state.name, rcu_exp_gp_seq_endval(), TPS("reset"));
-@@ -435,28 +539,21 @@ static void sync_rcu_exp_select_cpus(void)
- 		rnp->exp_need_flush = false;
- 		if (!READ_ONCE(rnp->expmask))
- 			continue; /* Avoid early boot non-existent wq. */
--		if (!READ_ONCE(rcu_par_gp_wq) ||
-+		if (!rcu_gp_par_worker_started() ||
- 		    rcu_scheduler_active != RCU_SCHEDULER_RUNNING ||
- 		    rcu_is_last_leaf_node(rnp)) {
--			/* No workqueues yet or last leaf, do direct call. */
-+			/* No worker started yet or last leaf, do direct call. */
- 			sync_rcu_exp_select_node_cpus(&rnp->rew.rew_work);
- 			continue;
- 		}
--		INIT_WORK(&rnp->rew.rew_work, sync_rcu_exp_select_node_cpus);
--		cpu = find_next_bit(&rnp->ffmask, BITS_PER_LONG, -1);
--		/* If all offline, queue the work on an unbound CPU. */
--		if (unlikely(cpu > rnp->grphi - rnp->grplo))
--			cpu = WORK_CPU_UNBOUND;
--		else
--			cpu += rnp->grplo;
--		queue_work_on(cpu, rcu_par_gp_wq, &rnp->rew.rew_work);
-+		sync_rcu_exp_select_cpus_queue_work(rnp);
- 		rnp->exp_need_flush = true;
- 	}
- 
--	/* Wait for workqueue jobs (if any) to complete. */
-+	/* Wait for jobs (if any) to complete. */
- 	rcu_for_each_leaf_node(rnp)
- 		if (rnp->exp_need_flush)
--			flush_work(&rnp->rew.rew_work);
-+			sync_rcu_exp_select_cpus_flush_work(rnp);
- }
- 
- /*
-@@ -622,17 +719,6 @@ static void rcu_exp_sel_wait_wake(unsigned long s)
- 	rcu_exp_wait_wake(s);
- }
- 
--/*
-- * Work-queue handler to drive an expedited grace period forward.
-- */
--static void wait_rcu_exp_gp(struct work_struct *wp)
--{
--	struct rcu_exp_work *rewp;
--
--	rewp = container_of(wp, struct rcu_exp_work, rew_work);
--	rcu_exp_sel_wait_wake(rewp->rew_s);
--}
--
- #ifdef CONFIG_PREEMPT_RCU
- 
- /*
-@@ -848,20 +934,19 @@ void synchronize_rcu_expedited(void)
- 	} else {
- 		/* Marshall arguments & schedule the expedited grace period. */
- 		rew.rew_s = s;
--		INIT_WORK_ONSTACK(&rew.rew_work, wait_rcu_exp_gp);
--		queue_work(rcu_gp_wq, &rew.rew_work);
-+		synchronize_rcu_expedited_queue_work(&rew);
- 	}
- 
- 	/* Wait for expedited grace period to complete. */
- 	rnp = rcu_get_root();
- 	wait_event(rnp->exp_wq[rcu_seq_ctr(s) & 0x3],
- 		   sync_exp_work_done(s));
--	smp_mb(); /* Workqueue actions happen before return. */
-+	smp_mb(); /* Work actions happen before return. */
- 
- 	/* Let the next expedited grace period start. */
- 	mutex_unlock(&rcu_state.exp_mutex);
- 
- 	if (likely(!boottime))
--		destroy_work_on_stack(&rew.rew_work);
-+		synchronize_rcu_expedited_destroy_work(&rew);
- }
- EXPORT_SYMBOL_GPL(synchronize_rcu_expedited);
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 291 total, 291 passed, 0 failed
+* arm64: 41 total, 41 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 40 total, 40 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 51 passed, 9 failed
+* riscv: 27 total, 27 passed, 0 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 41 total, 41 passed, 0 failed
 
-base-commit: 42e7a03d3badebd4e70aea5362d6914dfc7c220b
--- 
-2.35.1.1178.g4f1659d476-goog
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
 
+--
+Linaro LKFT
+https://lkft.linaro.org
