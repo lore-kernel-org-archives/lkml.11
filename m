@@ -2,181 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A70DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:35:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238195AbiDHRgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 13:36:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57928 "EHLO
+        id S236669AbiDHRhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 13:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238213AbiDHRgf (ORCPT
+        with ESMTP id S238217AbiDHRg6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 13:36:35 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4431EB647F
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 10:34:27 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id bg10so18735835ejb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 10:34:27 -0700 (PDT)
+        Fri, 8 Apr 2022 13:36:58 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CF557B10
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 10:34:54 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id e71so1790513ybf.8
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 10:34:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=n5q8/1C+/LCbS5CGbOTUmNklFZ3s8en/gT9RzZm5DDc=;
-        b=RkdT3bAfCsYXfpYn3lLDYi0cSQYw5M7wL2Dtjp+OeAWeABPG+zU7s1FrQqWG3rEgIH
-         2plHifG930QHOJt+6Db04vhR+Be4ww9DOKsmVfxE5mjk86shotqKwsriKGoJvX05nGFP
-         9GywnNWyFrNXlD8QyRq/CdJw0XY7GLSxy2WxbWmZgO3OXS78uDYp+hpTz8E410y2KwRW
-         oMFG/FkNVnvd4nNQeKSf4wQJspfWrRDDQpV9suKKvyOvGDJATYr+vh3NyonqtEl177T9
-         g/wPvaSvxoG6SRXy8AxWT6uM3eJcIA8HAclf+ABYD54bJGBG/acxBZLDcwykZ33OOFsV
-         hSxw==
+        bh=Jd42eljeoA7am6iun/EUSb1/8DBUsy7OfKLkpCfQnwI=;
+        b=LCmXkljF/PTt+d5imunqFnne5A0MjGLtTl1xSjGaE0A5FsH+fLknxoJFEWyEWwjgnO
+         /4HSeVhdLNK52NjIYtcP/h0qXSOrEpVM1ysII5gkbbxdG8ideLw0TrAkHoOBPZHeXKus
+         pR1pnrTNIOXO7xPIapV0Hfy2GnHgaRnrhr/wMG1hReEJkvPiChzVc9gzgb7Puz3MRNQm
+         3Cjzu8TaYow5v5QZ/JnvRso6K2M3Uxvgb0yEdEGOV2jEYUdG0tmFsttOJKlVR4P9HgrQ
+         cCZz469HW8rEd5ZXwyQ0P7kgBAUurURAbHxE4ZXbZ9yCYeBKNtze6BsUx4OieqJLGnX4
+         8p0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=n5q8/1C+/LCbS5CGbOTUmNklFZ3s8en/gT9RzZm5DDc=;
-        b=h74wV0tsgmPo36xbagL53q43llYgbleU2vvHZypCtm/Y2H380YucEUmg2NNwmpJdWJ
-         gDY8PzXoUKl3fb6hTE3f1pmkmIqc7qmcswdUKsFytjibM4e+icP7I6k6MKvcnWvcMEIZ
-         yb7qcGJSEnwGNZfz2u9VE541jLoEL46ATiSa9ewehUW6cAoOGM1VWBxlwOEvrPjJpLsr
-         8kUGodwIY05SRqMorPTZ/B1lyk+q7JiGF8TUhhGgz61fLlpWBQidRa4VCwa1uXEStOKw
-         Bzet7H7bUGCF6DaFOrLz04ITPlijgqKeuG1daaHYl/lhp5NtsHwe+d5SfxmEz8bxCI/Z
-         A/0A==
-X-Gm-Message-State: AOAM533DY0OWy5DBTovD5TQm/YvgC+gH5C2APOMl1oWuD9hF4nBPAqjd
-        TzWqK9GXPTZE8Crhb8a4GuV4ZDHatvsylBA+U//HSg==
-X-Google-Smtp-Source: ABdhPJxUdTTfOC8xk8IxPqBula9pbr5FFbrrkvwV/bYi8BkwLA/q8/uH+2yVpXjm2fATL/FjeejHnbxi3qwMFMHID80=
-X-Received: by 2002:a17:907:d06:b0:6e0:e2f5:4f55 with SMTP id
- gn6-20020a1709070d0600b006e0e2f54f55mr20243918ejc.618.1649439265440; Fri, 08
- Apr 2022 10:34:25 -0700 (PDT)
+        bh=Jd42eljeoA7am6iun/EUSb1/8DBUsy7OfKLkpCfQnwI=;
+        b=YrlwbDq60Cir7cSaPchHSx38/YQTfu8pXu48OqGLa/5/HQA75QIEbRwuYUsYBrL+Iq
+         4PWO9CaBJCaGighXvTCsrog5KbljO6zC8ZR6+E21l1i5NmqRUSqBwUfy4eiBay/EDvuO
+         X5FaiXnzRNMOOSaU2BvC8DcCVVHUOdpI4LHjgv3qbCUdA6/Pys0oxOfaXrs7zOgfP3Ec
+         H6CK7oSza2zh5IkYDqNDyhOWQnaWgyJdLg+U0GeLoAAaoPaBJaD4brSgRXuMq8QhVpGR
+         70wsS9PoEZmMIm1cqxgXIl5UZHWr9kRiKpY4HN7mY+JygsCyUjIdc8hVGB9hP6P6A+5A
+         +7TQ==
+X-Gm-Message-State: AOAM532nk6WEkP0F2XY+n/VqLxO8LFY3+onxI7lvz9BgBI7lBzRmi92v
+        msIKvFmh9C9SHS8xTl7WZ+/0yHC9e/Pd0QvoFwbVOA==
+X-Google-Smtp-Source: ABdhPJyJF/Vu21u1Ybk49qtraB/Ha/OoaBBpU4AzP6a6DQvrKFHEfKt9PFNVhB8Y0En5o6Xn94X9VMasp0/Xh92pKhg=
+X-Received: by 2002:a25:dfc4:0:b0:63d:b28e:93ec with SMTP id
+ w187-20020a25dfc4000000b0063db28e93ecmr15429921ybg.474.1649439293125; Fri, 08
+ Apr 2022 10:34:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220311072859.2174624-1-brendanhiggins@google.com>
- <1e1472e8-1813-3903-f934-cb0ae7f09864@linuxfoundation.org>
- <CAFd5g46JiiddNxHW_jK6fjdfjGMjWsXsFuvL6H9xcZc98HWQyQ@mail.gmail.com> <CAKgze5bCf+v4PoS92XCDV2cD7d0iUvCvxHbPqAnLoW8pwoKbtQ@mail.gmail.com>
-In-Reply-To: <CAKgze5bCf+v4PoS92XCDV2cD7d0iUvCvxHbPqAnLoW8pwoKbtQ@mail.gmail.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Fri, 8 Apr 2022 13:34:12 -0400
-Message-ID: <CAFd5g44nSfp=3A+VDCY6o-WzgDtnCw4NCChoXv_RKvmZc7Seog@mail.gmail.com>
-Subject: Re: [PATCH v1] kunit: add support for kunit_suites that reference
- init code
-To:     Martin Fernandez <martin.fernandez@eclypsium.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>, shuah@kernel.org,
-        davidgow@google.com, dlatypov@google.com,
-        daniel.gutson@eclypsium.com, linux-kselftest@vger.kernel.org,
-        kunit-dev@googlegroups.com, linux-kernel@vger.kernel.org,
-        keescook@chromium.org, jk@codeconstruct.com.au
+References: <20220407011605.1966778-1-rananta@google.com> <20220407011605.1966778-3-rananta@google.com>
+ <87ilrlb6un.wl-maz@kernel.org> <CAJHc60yFD=osoifUpB4LBNo93eVq9zNV41bnu7uBZ0HsBGbMeA@mail.gmail.com>
+ <87v8vj1pfl.wl-maz@kernel.org>
+In-Reply-To: <87v8vj1pfl.wl-maz@kernel.org>
+From:   Raghavendra Rao Ananta <rananta@google.com>
+Date:   Fri, 8 Apr 2022 10:34:42 -0700
+Message-ID: <CAJHc60wwXyC=cgpBHf4XXcpvuN=+HW2hjiOX+NidQ2euRHb-qg@mail.gmail.com>
+Subject: Re: [PATCH v5 02/10] KVM: arm64: Setup a framework for hypercall
+ bitmap firmware registers
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 5:34 PM Martin Fernandez
-<martin.fernandez@eclypsium.com> wrote:
+On Fri, Apr 8, 2022 at 9:59 AM Marc Zyngier <maz@kernel.org> wrote:
 >
-> On 4/4/22, Brendan Higgins <brendanhiggins@google.com> wrote:
-> > On Mon, Apr 4, 2022 at 6:37 PM Shuah Khan <skhan@linuxfoundation.org>
-> > wrote:
-> >>
-> >> Hi Brendan,
-> >>
-> >> On 3/11/22 12:28 AM, Brendan Higgins wrote:
-> >> > Add support for a new kind of kunit_suite registration macro called
-> >> > kunit_test_init_suite(); this new registration macro allows the
-> >> > registration of kunit_suites that reference functions marked __init and
-> >> > data marked __initdata.
-> >> >
-> >> > Signed-off-by: Brendan Higgins <brendanhiggins@google.com>
-> >> > Tested-by: Martin Fernandez <martin.fernandez@eclypsium.com>
-> >> > Reviewed-by: Kees Cook <keescook@chromium.org>
-> >> > Reviewed-by: David Gow <davidgow@google.com>
-> >> > ---
-> >> >
-> >>
-> >> I almost applied it ...
-> >>
-> >> > This is a follow-up to the RFC here[1].
-> >> >
-> >> > This patch is in response to a KUnit user issue[2] in which the user
-> >> > was
-> >> > attempting to test some init functions; although this is a functional
-> >> > solution as long as KUnit tests only run during the init phase, we will
-> >> > need to do more work if we ever allow tests to run after the init phase
-> >> > is over; it is for this reason that this patch adds a new registration
-> >> > macro rather than simply modifying the existing macros.
-> >> >
-> >> > Changes since last version:
-> >> >   - I added more to the kunit_test_init_suites() kernel-doc comment
-> >> >     detailing "how" the modpost warnings are suppressed in addition to
-> >> >     the existing information regarding "why" it is OK for the modpost
-> >> >     warnings to be suppressed.
-> >> >
-> >> > [1]
-> >> > https://lore.kernel.org/linux-kselftest/20220310210210.2124637-1-brendanhiggins@google.com/
-> >> > [2] https://groups.google.com/g/kunit-dev/c/XDjieRHEneg/m/D0rFCwVABgAJ
-> >> >
-> >> > ---
-> >> >   include/kunit/test.h | 26 ++++++++++++++++++++++++++
-> >> >   1 file changed, 26 insertions(+)
-> >> >
-> >> > diff --git a/include/kunit/test.h b/include/kunit/test.h
-> >> > index b26400731c02..7f303a06bc97 100644
-> >> > --- a/include/kunit/test.h
-> >> > +++ b/include/kunit/test.h
-> >> > @@ -379,6 +379,32 @@ static inline int kunit_run_all_tests(void)
-> >> >
-> >> >   #define kunit_test_suite(suite)     kunit_test_suites(&suite)
-> >> >
-> >> > +/**
-> >> > + * kunit_test_init_suites() - used to register one or more &struct
-> >> > kunit_suite
-> >> > + *                         containing init functions or init data.
-> >> > + *
-> >> > + * @__suites: a statically allocated list of &struct kunit_suite.
-> >> > + *
-> >> > + * This functions identically as &kunit_test_suites() except that it
-> >> > suppresses
-> >> > + * modpost warnings for referencing functions marked __init or data
-> >> > marked
-> >> > + * __initdata; this is OK because currently KUnit only runs tests upon
-> >> > boot
-> >> > + * during the init phase or upon loading a module during the init
-> >> > phase.
-> >> > + *
-> >> > + * NOTE TO KUNIT DEVS: If we ever allow KUnit tests to be run after
-> >> > boot, these
-> >> > + * tests must be excluded.
-> >> > + *
-> >> > + * The only thing this macro does that's different from
-> >> > kunit_test_suites is
-> >> > + * that it suffixes the array and suite declarations it makes with
-> >> > _probe;
-> >> > + * modpost suppresses warnings about referencing init data for symbols
-> >> > named in
-> >> > + * this manner.
-> >> > + */
-> >> > +#define kunit_test_init_suites(__suites...)                          \
-> >> > +     __kunit_test_suites(CONCATENATE(__UNIQUE_ID(array), _probe),    \
-> >> > +                         CONCATENATE(__UNIQUE_ID(suites), _probe),   \
-> >> > +                         ##__suites)
-> >> > +
-> >> > +#define kunit_test_init_suite(suite) kunit_test_init_suites(&suite)
-> >> > +
-> >> >   #define kunit_suite_for_each_test_case(suite, test_case)            \
-> >> >       for (test_case = suite->test_cases; test_case->run_case;
-> >> > test_case++)
-> >> >
-> >> >
-> >>
-> >> The naming of the function and macro are rather confusing and can become
-> >> error prone. Let's find better naming scheme.
+> On Thu, 07 Apr 2022 18:24:14 +0100,
+> Raghavendra Rao Ananta <rananta@google.com> wrote:
 > >
-> > Yeah, I wasn't sure about the name. I didn't have any better ideas
-> > initially though. Any suggestions?
+> > Hi Marc,
 > >
+> > > > +#define KVM_REG_ARM_STD_BIT_TRNG_V1_0                BIT(0)
+> > >
+> > > I'm really in two minds about this. Having one bit per service is easy
+> > > from an implementation perspective, but is also means that this
+> > > disallow fine grained control over which hypercalls are actually
+> > > available. If tomorrow TRNG 1.1 adds a new hypercall and that KVM
+> > > implements both, how does the selection mechanism works? You will
+> > > need a version selector (a la PSCI), which defeats this API somehow
+> > > (and renders the name of the #define invalid).
+> > >
+> > > I wonder if a more correct way to look at this is to enumerate the
+> > > hypercalls themselves (all 5 of them), though coming up with an
+> > > encoding is tricky (RNG32 and RNG64 would clash, for example).
+> > >
+> > > Thoughts?
+> > >
+> > I was on the fence about this too. The TRNG spec (ARM DEN 0098,
+> > Table-4) mentions that v1.0 should have VERSION, FEATURES, GET_UUID,
+> > and RND as mandatory features. Hence, if KVM advertised that it
+> > supports TRNG v1.0, I thought it would be best to expose all or
+> > nothing of v1.0 by guarding them with a single bit.
+> > Broadly, the idea is to have a bit per version. If v1.1 comes along,
+> > we can have another bit for that. If it's not too ugly to implement,
+> > we can be a little more aggressive and ensure that userspace doesn't
+> > enable v1.1 without enabling v1.0.
 >
-> What about kunit_test_init_section_suite?
-
-Sounds fine to me. Shuah, does that sound OK to you?
-
-> >> > base-commit: 330f4c53d3c2d8b11d86ec03a964b86dc81452f5
-> >> >
-> >>
-> >> thanks,
-> >> -- Shuah
+> OK, that'd be assuming that we'll never see a service where version A
+> is incompatible with version B and that we have to exclude one or the
+> other. Meh. Let's cross that bridge once it is actually built.
+>
+> [...]
+>
+> > > > +     mutex_lock(&kvm->lock);
+> > > > +
+> > > > +     /*
+> > > > +      * If the VM (any vCPU) has already started running, return success
+> > > > +      * if there's no change in the value. Else, return -EBUSY.
+> > >
+> > > No, this should *always* fail if a vcpu has started. Otherwise, you
+> > > start allowing hard to spot races.
+> > >
+> > The idea came from the fact that userspace could spawn multiple
+> > threads to configure the vCPU registers. Since we don't have the
+> > VM-scoped registers yet, it may be possible that userspace has issued
+> > a KVM_RUN on one of the vCPU, while the others are lagging behind and
+> > still configuring the registers. The slower threads may see -EBUSY and
+> > could panic. But if you feel that it's an overkill and the userspace
+> > should deal with it, we can return EBUSY for all writes after KVM_RUN.
+>
+> I'd rather have that. There already is stuff that rely on things not
+> changing once a vcpu has run, so I'd rather be consistent.
+>
+Sure, I'll return EBUSY if the VM has started regardless of the incoming value.
 > >
+> > > > +      */
+> > > > +     if (test_bit(KVM_ARCH_FLAG_HAS_RAN_ONCE, &kvm->arch.flags)) {
+> > > > +             ret = *fw_reg_bmap != val ? -EBUSY : 0;
+> > > > +             goto out;
+> > > > +     }
+> > > > +
+> > > > +     WRITE_ONCE(*fw_reg_bmap, val);
+> > >
+> > > I'm not sure what this WRITE_ONCE guards against. Do you expect
+> > > concurrent reads at this stage?
+> > >
+> > Again, the assumption here is that userspace could have multiple
+> > threads reading and writing to these registers. Without the VM scoped
+> > registers in place, we may end up with a read/write to the same memory
+> > location for all the vCPUs.
+>
+> We only have one vcpu updating this at any given time (that's what the
+> lock ensures). A simple write should be OK, as far as I can tell.
+>
+I agree that a write against another write should be fine without the
+WRITE_ONCE. But my little concern was this write against a read
+(unsure how userspace accesses these registers). I'm guessing it
+shouldn't hurt to keep them in place, no? :)
+
+Regards,
+Raghavendra
+
+> Thanks,
+>
+>         M.
+>
+> --
+> Without deviation from the norm, progress is not possible.
