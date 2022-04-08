@@ -2,150 +2,316 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBFD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B94D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:34:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235779AbiDHMf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
+        id S235784AbiDHMgK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232409AbiDHMf0 (ORCPT
+        with ESMTP id S235782AbiDHMgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:35:26 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC063408B1;
-        Fri,  8 Apr 2022 05:33:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649421202; x=1680957202;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=XRRTHcC3vib6U8pYsXScDVRRZguO7b/FSE9Su8vSm/M=;
-  b=bWzSEBFm26TNweia8ol7JU5R0vs//P7U0Ap5x+LqkBGETB03c6wTAg4d
-   Jz/jKRJHCTAJY+y2cayWfqTGyFYUdODGPExoIt9jZRWFbkQLoq3qNKLz8
-   pvud4cYBzxBseWZf2V3Gigr1Lznlqmw92LNrWvL0lYyAT0sOZ96fEraR8
-   xjPDCsMSl05HHgtH0os1N1iZy12mQUlcQirNXSXzAsgGKUAoPjqMS9VBh
-   oLeyC33IRYS6U8qW7Fa0y39/GsZs0aPh9bo6FpBhZargfh5zWHWHhKUcf
-   hxM2f6+etlIGLq5zGcaj++7Yro1Nk2eNeZKAOEU4cXqEVtE7Zu9rbUNXk
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="249111951"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="249111951"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:33:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="525361097"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga006.jf.intel.com with ESMTP; 08 Apr 2022 05:33:19 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 238CXHcv017340;
-        Fri, 8 Apr 2022 13:33:17 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Madhu Chittim <madhu.chittim@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Brett Creeley <brett@pensando.io>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>
-Subject: Re: [PATCH v2 net] ice: arfs: fix use-after-free when freeing @rx_cpu_rmap
-Date:   Fri,  8 Apr 2022 14:31:20 +0200
-Message-Id: <20220408123120.1829671-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220404161509.3489310-1-alexandr.lobakin@intel.com>
-References: <20220404161509.3489310-1-alexandr.lobakin@intel.com>
+        Fri, 8 Apr 2022 08:36:08 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2FF341EDB
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 05:34:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 407EACE2ADA
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 12:34:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E9AFC385A3;
+        Fri,  8 Apr 2022 12:33:57 +0000 (UTC)
+Date:   Fri, 8 Apr 2022 08:33:55 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>, jstultz@google.com,
+        Stephen Boyd <sboyd@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [RFC][PATCH] timers: Add del_time_free() to be called before
+ freeing timers
+Message-ID: <20220408083355.3aab1cad@rorschach.local.home>
+In-Reply-To: <87pmlrkgi3.ffs@tglx>
+References: <20220407161745.7d6754b3@gandalf.local.home>
+        <87pmlrkgi3.ffs@tglx>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
-Date: Mon, 4 Apr 2022 18:15:09 +0200
+On Fri, 08 Apr 2022 12:37:40 +0200
+Thomas Gleixner <tglx@linutronix.de> wrote:
 
-> The CI testing bots triggered the following splat:
+> On Thu, Apr 07 2022 at 16:17, Steven Rostedt wrote:
+> > diff --git a/include/linux/timer.h b/include/linux/timer.h
+> > index fda13c9d1256..cc76ab0659f3 100644
+> > --- a/include/linux/timer.h
+> > +++ b/include/linux/timer.h
+> > @@ -67,11 +67,12 @@ struct timer_list {
+> >  #define TIMER_DEFERRABLE	0x00080000
+> >  #define TIMER_PINNED		0x00100000
+> >  #define TIMER_IRQSAFE		0x00200000
+> > +#define TIMER_FREED		0x00400000
+> >  #define TIMER_INIT_FLAGS	(TIMER_DEFERRABLE | TIMER_PINNED | TIMER_IRQSAFE)
+> > -#define TIMER_ARRAYSHIFT	22
+> > -#define TIMER_ARRAYMASK		0xFFC00000
+> > +#define TIMER_ARRAYSHIFT	23
+> > +#define TIMER_ARRAYMASK		0xFF800000  
 > 
-> [  718.203054] BUG: KASAN: use-after-free in free_irq_cpu_rmap+0x53/0x80
-> [  718.206349] Read of size 4 at addr ffff8881bd127e00 by task sh/20834
-> [  718.212852] CPU: 28 PID: 20834 Comm: sh Kdump: loaded Tainted: G S      W IOE     5.17.0-rc8_nextqueue-devqueue-02643-g23f3121aca93 #1
-> [  718.219695] Hardware name: Intel Corporation S2600WFT/S2600WFT, BIOS SE5C620.86B.02.01.0012.070720200218 07/07/2020
-> [  718.223418] Call Trace:
-> [  718.227139]
-> [  718.230783]  dump_stack_lvl+0x33/0x42
-> [  718.234431]  print_address_description.constprop.9+0x21/0x170
-> [  718.238177]  ? free_irq_cpu_rmap+0x53/0x80
-> [  718.241885]  ? free_irq_cpu_rmap+0x53/0x80
-> [  718.245539]  kasan_report.cold.18+0x7f/0x11b
-> [  718.249197]  ? free_irq_cpu_rmap+0x53/0x80
-> [  718.252852]  free_irq_cpu_rmap+0x53/0x80
-> [  718.256471]  ice_free_cpu_rx_rmap.part.11+0x37/0x50 [ice]
-> [  718.260174]  ice_remove_arfs+0x5f/0x70 [ice]
-> [  718.263810]  ice_rebuild_arfs+0x3b/0x70 [ice]
-> [  718.267419]  ice_rebuild+0x39c/0xb60 [ice]
-> [  718.270974]  ? asm_sysvec_apic_timer_interrupt+0x12/0x20
-> [  718.274472]  ? ice_init_phy_user_cfg+0x360/0x360 [ice]
-> [  718.278033]  ? delay_tsc+0x4a/0xb0
-> [  718.281513]  ? preempt_count_sub+0x14/0xc0
-> [  718.284984]  ? delay_tsc+0x8f/0xb0
-> [  718.288463]  ice_do_reset+0x92/0xf0 [ice]
-> [  718.292014]  ice_pci_err_resume+0x91/0xf0 [ice]
-> [  718.295561]  pci_reset_function+0x53/0x80
-> <...>
-> [  718.393035] Allocated by task 690:
-> [  718.433497] Freed by task 20834:
-> [  718.495688] Last potentially related work creation:
-> [  718.568966] The buggy address belongs to the object at ffff8881bd127e00
->                 which belongs to the cache kmalloc-96 of size 96
-> [  718.574085] The buggy address is located 0 bytes inside of
->                 96-byte region [ffff8881bd127e00, ffff8881bd127e60)
-> [  718.579265] The buggy address belongs to the page:
-> [  718.598905] Memory state around the buggy address:
-> [  718.601809]  ffff8881bd127d00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-> [  718.604796]  ffff8881bd127d80: 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc
-> [  718.607794] >ffff8881bd127e00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-> [  718.610811]                    ^
-> [  718.613819]  ffff8881bd127e80: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-> [  718.617107]  ffff8881bd127f00: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+> #define LVL_BITS	6
+> #define LVL_SIZE	(1UL << LVL_BITS)
 > 
-> This is due to that free_irq_cpu_rmap() is always being called
-> *after* (devm_)free_irq() and thus it tries to work with IRQ descs
-> already freed. For example, on device reset the driver frees the
-> rmap right before allocating a new one (the splat above).
-> Make rmap creation and freeing function symmetrical with
-> {request,free}_irq() calls i.e. do that on ifup/ifdown instead
-> of device probe/remove/resume. These operations can be performed
-> independently from the actual device aRFS configuration.
-> Also, make sure ice_vsi_free_irq() clears IRQ affinity notifiers
-> only when aRFS is disabled -- otherwise, CPU rmap sets and clears
-> its own and they must not be touched manually.
+> #if HZ > 100
+> # define LVL_DEPTH	9
+> # else
+> # define LVL_DEPTH	8
+> #endif
 > 
-> Fixes: 28bf26724fdb0 ("ice: Implement aRFS")
-> Co-developed-by: Ivan Vecera <ivecera@redhat.com>
-> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> #define WHEEL_SIZE	(LVL_SIZE * LVL_DEPTH)
+> 
+> WHEEL_SIZE(HZ > 100) = (1 << 6) * 9 = 576
+> max_index(HZ > 100) = 575 = 0x23f
+> 
+> 0x23f << ARRAY_SHIFT = 0x11f800000
+> 
+> Q: Does 0x11f800000 fit into 32bit?
+> A: No, and we are not making flags 64bit just because.
 
-Bah, forgot to mention in v2 that it's an urgent fix. Tony, are you
-okay with posting it to netdev or allowing it to go directly to
--net? It's been tested by Ivan already (I had also asked Konrad, but
-he hasn't replied yet).
+And this is why it's a RFC patch. ;-)
 
+I figured shrinking that mask was going to break something, but I
+wanted to know if this approach was sound before digging further into
+making it correct.
+
+> 
+> If you want a bit you have to steal it from the CPUMASK field, but you
+> could simply set timer->function to NULL, so you can spare extra checks,
+> no?
+
+
+That could work. Thanks.
+
+> 
+> > @@ -966,6 +966,8 @@ __mod_timer(struct timer_list *timer, unsigned long expires, unsigned int option
+> >  
+> >  	BUG_ON(!timer->function);
+> >  
+> > +	WARN_ON(timer->flags & TIMER_FREED);  
+> 
+> So this would become:
+> 
+> -  	BUG_ON(!timer->function);
+> +	if (WARN_ON(!timer->function))
+> +		return -EBROKEN;
+> 
+> You really want to return here and not proceed.
+
+I mention exactly this later in the thread with my discussions with
+Guenter. But it was for the flag check, and not the NULL function.
+
+> 
+> That needs a corresponding change in add_timer_on() plus:
+> 
+> -		fn = timer->function;
+> +		fn = READ_ONCE(timer->function);
+> 
+> in expire_timers().
+
+OK.
+
+> 
+> > +int del_timer_free(struct timer_list *timer)
+> > +{
+> > +	struct timer_base *base;
+> > +	unsigned long flags;
+> > +	int ret;
+> > +
+> > +	debug_assert_init(timer);
+> > +
+> > +	for (;;) {
+> > +		ret = -1;
+> > +		base = lock_timer_base(timer, &flags);
+> > +
+> > +		if (base->running_timer != timer)
+> > +			ret = detach_if_pending(timer, base, true);
+> > +
+> > +		if (ret >= 0) {
+> > +			timer->flags |= TIMER_FREED;
+> > +			raw_spin_unlock_irqrestore(&base->lock, flags);
+> > +			break;
+> > +		}
+> > +
+> > +		raw_spin_unlock_irqrestore(&base->lock, flags);
+> > +
+> > +		del_timer_wait_running(timer);
+> > +		cpu_relax();
+> > +	}
+> > +
+> > +	return ret;
+> > +}  
+> 
+> So this reimplements del_timer_sync() just slightly different for no
+> reason. Something like the uncompiled below.
+
+Yeah, I was going to try a helper function for both, but wasn't sure I
+would mess up something subtle, so for the RFC patch, I figured I just
+implement it completely.
+
+> 
+> Thanks,
+> 
+>         tglx
 > ---
-> From v1[0]:
->  - remove the obsolete `!vsi->arfs_fltr_list` check from
->    ice_free_cpu_rx_rmap() leading to a leak and trace (Ivan).
-> 
-> [0] https://lore.kernel.org/netdev/20220404132832.1936529-1-alexandr.lobakin@intel.com
-> ---
+> --- a/include/linux/timer.h
+> +++ b/include/linux/timer.h
 
---- 8< ---
+I'll take a look at the below later today.
 
-> -- 
-> 2.35.1
+Thanks for the review.
 
-Thanks,
-Al
+-- Steve
+
+> @@ -183,12 +183,17 @@ extern int timer_reduce(struct timer_lis
+>  extern void add_timer(struct timer_list *timer);
+>  
+>  extern int try_to_del_timer_sync(struct timer_list *timer);
+> +extern int __del_timer_sync(struct timer_list *timer, bool free);
+>  
+> -#if defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT)
+> -  extern int del_timer_sync(struct timer_list *timer);
+> -#else
+> -# define del_timer_sync(t)		del_timer(t)
+> -#endif
+> +static inline int del_timer_sync(struct timer_list *timer)
+> +{
+> +	return __del_timer_sync(timer, false);
+> +}
+> +
+> +static inline int del_timer_sync_free(struct timer_list *timer)
+> +{
+> +	return __del_timer_sync(timer, true);
+> +}
+>  
+>  #define del_singleshot_timer_sync(t) del_timer_sync(t)
+>  
+> --- a/kernel/time/timer.c
+> +++ b/kernel/time/timer.c
+> @@ -964,7 +964,8 @@ static inline int
+>  	unsigned int idx = UINT_MAX;
+>  	int ret = 0;
+>  
+> -	BUG_ON(!timer->function);
+> +	if (WARN_ON(!timer->function))
+> +		return -EINVAL;
+>  
+>  	/*
+>  	 * This is a common optimization triggered by the networking code - if
+> @@ -1140,7 +1141,8 @@ EXPORT_SYMBOL(timer_reduce);
+>   */
+>  void add_timer(struct timer_list *timer)
+>  {
+> -	BUG_ON(timer_pending(timer));
+> +	if (WARN_ON(timer_pending(timer)))
+> +		return;
+>  	__mod_timer(timer, timer->expires, MOD_TIMER_NOTPENDING);
+>  }
+>  EXPORT_SYMBOL(add_timer);
+> @@ -1157,7 +1159,8 @@ void add_timer_on(struct timer_list *tim
+>  	struct timer_base *new_base, *base;
+>  	unsigned long flags;
+>  
+> -	BUG_ON(timer_pending(timer) || !timer->function);
+> +	if (WARN_ON(timer_pending(timer) || !timer->function))
+> +		return;
+>  
+>  	new_base = get_timer_cpu_base(timer->flags, cpu);
+>  
+> @@ -1213,14 +1216,7 @@ int del_timer(struct timer_list *timer)
+>  }
+>  EXPORT_SYMBOL(del_timer);
+>  
+> -/**
+> - * try_to_del_timer_sync - Try to deactivate a timer
+> - * @timer: timer to delete
+> - *
+> - * This function tries to deactivate a timer. Upon successful (ret >= 0)
+> - * exit the timer is not queued and the handler is not running on any CPU.
+> - */
+> -int try_to_del_timer_sync(struct timer_list *timer)
+> +static int __try_to_del_timer_sync(struct timer_list *timer, boot free)
+>  {
+>  	struct timer_base *base;
+>  	unsigned long flags;
+> @@ -1232,11 +1228,25 @@ int try_to_del_timer_sync(struct timer_l
+>  
+>  	if (base->running_timer != timer)
+>  		ret = detach_if_pending(timer, base, true);
+> +	if (free)
+> +		timer->function = NULL;
+>  
+>  	raw_spin_unlock_irqrestore(&base->lock, flags);
+>  
+>  	return ret;
+>  }
+> +
+> +/**
+> + * try_to_del_timer_sync - Try to deactivate a timer
+> + * @timer: timer to delete
+> + *
+> + * This function tries to deactivate a timer. Upon successful (ret >= 0)
+> + * exit the timer is not queued and the handler is not running on any CPU.
+> + */
+> +int try_to_del_timer_sync(struct timer_list *timer)
+> +{
+> +	return __try_to_del_timer_sync(timer, false);
+> +}
+>  EXPORT_SYMBOL(try_to_del_timer_sync);
+>  
+>  #ifdef CONFIG_PREEMPT_RT
+> @@ -1312,7 +1322,6 @@ static inline void timer_sync_wait_runni
+>  static inline void del_timer_wait_running(struct timer_list *timer) { }
+>  #endif
+>  
+> -#if defined(CONFIG_SMP) || defined(CONFIG_PREEMPT_RT)
+>  /**
+>   * del_timer_sync - deactivate a timer and wait for the handler to finish.
+>   * @timer: the timer to be deactivated
+> @@ -1349,7 +1358,7 @@ static inline void del_timer_wait_runnin
+>   *
+>   * The function returns whether it has deactivated a pending timer or not.
+>   */
+> -int del_timer_sync(struct timer_list *timer)
+> +int __del_timer_sync(struct timer_list *timer, bool free)
+>  {
+>  	int ret;
+>  
+> @@ -1379,7 +1388,7 @@ int del_timer_sync(struct timer_list *ti
+>  		lockdep_assert_preemption_enabled();
+>  
+>  	do {
+> -		ret = try_to_del_timer_sync(timer);
+> +		ret = __try_to_del_timer_sync(timer, free);
+>  
+>  		if (unlikely(ret < 0)) {
+>  			del_timer_wait_running(timer);
+> @@ -1389,8 +1398,7 @@ int del_timer_sync(struct timer_list *ti
+>  
+>  	return ret;
+>  }
+> -EXPORT_SYMBOL(del_timer_sync);
+> -#endif
+> +EXPORT_SYMBOL(__del_timer_sync);
+>  
+>  static void call_timer_fn(struct timer_list *timer,
+>  			  void (*fn)(struct timer_list *),
+
