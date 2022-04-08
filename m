@@ -2,113 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DEC6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235833AbiDHPC1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:02:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47492 "EHLO
+        id S234692AbiDHPDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 11:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235739AbiDHPCY (ORCPT
+        with ESMTP id S237413AbiDHPCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 11:02:24 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2D62DE17D
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 08:00:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649430020; x=1680966020;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Fvu7Xj2KZeoBoWYVxKXIZ/ZE9uRhVfjO5sJnAbr0H6g=;
-  b=dtaTR0NviXRXhKqbUh8siFEKalrVdmtKVmGsD0B9pMuP/lMO1JyxGXMo
-   3sC5JeJ/3Z5g2v/mau2xqxfUBYkiNOuCcB+AdTVq0iF1OuDzCKqONgmv9
-   e75u2NLm0j71c7IFKx1TWnvFqjWzOznriehjXK2/AwUD8G5IUBSxJXFUW
-   74u3HzLbSc5v5+8zqM19oogkO0PR5uszdPHxC1d4XaoUdqvqxcO3dasAg
-   500Z5LwzAgusAeDjzcJXZcIw2vOcXblSipR0SGQ+00XeyQEJKXStKf7na
-   VPOLXphjMTCh61y+2wWh/zcOOPcEpzdqzavaBNfa8r/u8MsSinqMoezGs
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="261300824"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="261300824"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 08:00:19 -0700
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="524802808"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 08:00:17 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ncq2N-000Kqr-9K;
-        Fri, 08 Apr 2022 17:56:35 +0300
-Date:   Fri, 8 Apr 2022 17:56:35 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/5] drm: Fix monochrome conversion for sdd130x
-Message-ID: <YlBNIyimU0DGpWK3@smile.fi.intel.com>
-References: <20220317081830.1211400-1-geert@linux-m68k.org>
- <f94c0f44-36f1-e1a9-5963-5da0bafb8c90@redhat.com>
- <YjSMWDFxTeJZZ/CB@smile.fi.intel.com>
- <20220318142145.kwq46bf6exgce6wu@houat>
- <YjSYL5oPaDuCXOJQ@smile.fi.intel.com>
- <20220408135413.2vwp4oyzdlu7iczs@houat>
+        Fri, 8 Apr 2022 11:02:54 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C491931C40C
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 08:00:49 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id t6so1743028plg.7
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 08:00:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HRWUAlNBur3Yy5C0NRAoK2xdzrJ+Jexf+aRU2zrKWJc=;
+        b=bf3suufmkspeWIJ1fa0tczHNYnLVzf8qgkWOY7NpPyLB3Rb08foLy5byCD4zs0v+qi
+         1oLoJtCuS2OlMoGaeO34Gbl2+HLaUlHo2ymX+6d7SH6eKLpe/RKiqbMtF0MoP5gcYNBy
+         K2oZ6T7d6by0XhvAq4hIy3cMTZjsmag6UR9s7y5LBhSemBQ5RPwTvbfNGAzPMXKXs6vt
+         zGkaPMMzwxCx+P2WdIJVwu4DzrnG2uwU2Zhdz/Kniuvxxa9YCvBwkow4rZlQX0QFHQ3z
+         zBOmOnLPJKGGp96kNae9MY9rE+4FJON/OOXGVaCVau4GbqMKBF/5i+7QJs+0sv41qlAz
+         6W7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HRWUAlNBur3Yy5C0NRAoK2xdzrJ+Jexf+aRU2zrKWJc=;
+        b=FACKHDU4jBdVKFgOE7Bfldc1kNMEgeHcZ2avMbz8g3AJ5tU4n+Jjqhap8VHo+8dGHA
+         vZPK/Z3P46KCaJkZBvWRAzZzHntIGCRNIgy0VxQ4xRsT5f7OW6N1dKiwYvKnJkRewNDZ
+         c5uzFdsBtmaa+ucR4KmdqD7kqVYKHjeuRh11WAyJbxj99kG47v0YjRbXnLeAgwny1xBR
+         DkUl1HIXReLy7unJKnvLIbXFfDRnMf3Ihko40dV6nK9my9yk/Qgu4v7yDwhjm6G1NflI
+         hPtHXlFWmlLcOfwhVmwoW2T18p811unN7yyYTcQGD4kKqf7cebP/JaUY9oJOg1Ju8RVy
+         zeBQ==
+X-Gm-Message-State: AOAM5316IZEYPI0UdapniAJG8va2X5w40I7o4rWd/9ddVgvaSEMqHdcd
+        Sp5JAcGrqaUxomat+cPMx9TO
+X-Google-Smtp-Source: ABdhPJy72wqAoAwBFvzJmgBCIEukHMQLwiiNKaYUPf4htSfYlBfB92ze7uyzufyeXBx3xOxeYOLhMw==
+X-Received: by 2002:a17:90b:1c03:b0:1c7:5523:6a27 with SMTP id oc3-20020a17090b1c0300b001c755236a27mr22325188pjb.29.1649430048703;
+        Fri, 08 Apr 2022 08:00:48 -0700 (PDT)
+Received: from localhost.localdomain ([59.92.100.79])
+        by smtp.gmail.com with ESMTPSA id s35-20020a056a001c6300b004fb20b5d6c1sm26214636pfw.40.2022.04.08.08.00.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 08:00:48 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     mhi@lists.linux.dev
+Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        loic.poulain@linaro.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        stable@vger.kernel.org
+Subject: [PATCH v2] bus: mhi: host: pci_generic: Flush recovery worker during freeze
+Date:   Fri,  8 Apr 2022 20:30:39 +0530
+Message-Id: <20220408150039.17297-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220408135413.2vwp4oyzdlu7iczs@houat>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 03:54:13PM +0200, Maxime Ripard wrote:
-> On Fri, Mar 18, 2022 at 04:33:19PM +0200, Andy Shevchenko wrote:
-> > On Fri, Mar 18, 2022 at 03:21:45PM +0100, Maxime Ripard wrote:
-> > > On Fri, Mar 18, 2022 at 03:42:48PM +0200, Andy Shevchenko wrote:
-> > > > On Thu, Mar 17, 2022 at 12:39:57PM +0100, Javier Martinez Canillas wrote:
-> > > > > On 3/17/22 09:18, Geert Uytterhoeven wrote:
-> > > > 
-> > > > > By the way, you should probably request commit access to the drm-misc tree:
-> > > > > 
-> > > > > https://drm.pages.freedesktop.org/maintainer-tools/commit-access.html
-> > > > 
-> > > > Does it really work? I tried and no one replied to request.
-> > > > Keeping silent is a bad service. If people don't want a person
-> > > > to have such access it should be well communicated.
-> > > 
-> > > I don't see any issue on Gitlab to request commit access, so I'm not
-> > > sure what you did exactly but it's not surprising you didn't get any
-> > > answer.
-> > 
-> > https://gitlab.freedesktop.org/freedesktop/freedesktop/-/issues/311
-> 
-> Indeed, I wasn't expecting it to be that old.
+It is possible that the recovery work might be running while the freeze
+gets executed (during hibernation etc.,). Currently, we don't powerdown
+the stack if it is not up but if the recovery work completes after freeze,
+then the device will be up afterwards. This will not be a sane situation.
 
-That's part of "non-working" process.
+So let's flush the recovery worker before trying to powerdown the device.
 
-> I'm not sure why it fell through the cracks, sorry for that.
-> 
-> That being said, the criteria for requesting drm-misc commit access are
-> listed here:
-> https://drm.pages.freedesktop.org/maintainer-tools/commit-access.html#drm-misc
-> 
-> And looking at your commit history so far, I'm not sure you qualifies
-> yet for the first criteria. All your patches to drivers/gpu/drm, while
-> definitely useful, only seem to be conversions to helpers and general
-> best practices changes, which could be classified as trivial.
+Cc: stable@vger.kernel.org
+Fixes: 5f0c2ee1fe8d ("bus: mhi: pci-generic: Fix hibernation")
+Reported-by: Bhaumik Vasav Bhatt <quic_bbhatt@quicinc.com>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
 
-Can you, please, comment it there then and close the request?
+Changes in v2:
 
+* Switched to flush_work() as the workqueue used is global one.
+
+ drivers/bus/mhi/host/pci_generic.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
+index ef85dbfb3216..541ced27d941 100644
+--- a/drivers/bus/mhi/host/pci_generic.c
++++ b/drivers/bus/mhi/host/pci_generic.c
+@@ -1060,6 +1060,7 @@ static int __maybe_unused mhi_pci_freeze(struct device *dev)
+ 	 * the intermediate restore kernel reinitializes MHI device with new
+ 	 * context.
+ 	 */
++	flush_work(&mhi_pdev->recovery_work);
+ 	if (test_and_clear_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status)) {
+ 		mhi_power_down(mhi_cntrl, true);
+ 		mhi_unprepare_after_power_down(mhi_cntrl);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
