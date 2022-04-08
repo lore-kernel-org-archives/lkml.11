@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2591C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC19FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238959AbiDHSle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 14:41:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42846 "EHLO
+        id S238941AbiDHSlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 14:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238832AbiDHSkc (ORCPT
+        with ESMTP id S238811AbiDHSkZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 14:40:32 -0400
-Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [85.215.255.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761A032ECF;
-        Fri,  8 Apr 2022 11:38:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649443085;
+        Fri, 8 Apr 2022 14:40:25 -0400
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD55140A3;
+        Fri,  8 Apr 2022 11:38:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649443083;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=gcUekKrTLPRq8EGHHTRZ7CwmCNdjRQBiU/2KaAknpeo=;
-    b=ejq19stivQSMvn+YP2dF5MyfVFSeBQ7a2VsIDZoqct+4OxnG5XOUhtEE8Aq0fRvLS/
-    204HeDajMxo84m9C5rx0N6dEZm7fR6g46QPGlriP1Z7yUE2An0pA/nqHCwwniae4lqQj
-    RTCXfz3FYLei9mQIXLYTzuWartb9DNvN59VvfqQyUKM/4YBvMUnJlD56oCz9tEt7Spip
-    EuZ1yvvpVrsYhdXo3aZdjVOjCD4Px1poWp9FwydD5I5dzMFGiJJiqfyhrtF2ahOTfUxZ
-    pClPSGuIBz8C5F4moLXUSaqZHguD/0lRfHP/PdyP/GEwFf2Yf4HqmawcInZeN0d6cPKV
-    rs5Q==
+    bh=zOv4vpytn9gP/3c5V0tH+m+bUz7dSLAbrW0h70y0Rf0=;
+    b=a1HEuaOu8t2Cis2xGvlS1ROAR1N6A3vQmiDo3rLsHpkUU++RtKI/31ZCiPpk/U2cwN
+    EZQ46FSMLPDczNiAlYLi9tPcnBcK71qjfSk3YLXaiEcsYYk4hVkWNmpLq8lYuf2HHZeG
+    Gr93XD0wVlxVcWhvSoDZ/a2S6vkOvh8kIBmOkRtkWqjTD5CW1l45A53Z8cei5wgps3CG
+    sGL95NDjS2Xa2Huax/d8ZOxY4QZTdXezZvCJjrxVG7yKViWcH1X5lO5Y2UniA9y5nrLb
+    vbdl2JHDM8RQRfEYPD3Vt9pFmxRLwqfRYRarvoQtqaHvzpwnWN1GXpN0hesQlbxQrjfK
+    /xnw==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbgdr/a"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy38Ic5so2
+    with ESMTPSA id k708cfy38Ic3snt
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Fri, 8 Apr 2022 20:38:05 +0200 (CEST)
+    Fri, 8 Apr 2022 20:38:03 +0200 (CEST)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Krzysztof Kozlowski <krzk@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -44,9 +44,9 @@ To:     Krzysztof Kozlowski <krzk@kernel.org>,
 Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-mips@vger.kernel.org, letux-kernel@openphoenux.org,
         "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH 11/18] MIPS: DTS: jz4780: fix i2c dmas as reported by dtbscheck
-Date:   Fri,  8 Apr 2022 20:37:54 +0200
-Message-Id: <e9ec735684b3ab8393bfa87c692ba030e669795c.1649443080.git.hns@goldelico.com>
+Subject: [PATCH 02/18] MIPS: DTS: jz4780: fix cgu as reported by dtbscheck
+Date:   Fri,  8 Apr 2022 20:37:45 +0200
+Message-Id: <6665d5059c840a240721f9ea6ae4abc8536d0400.1649443080.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1649443080.git.hns@goldelico.com>
 References: <cover.1649443080.git.hns@goldelico.com>
@@ -56,89 +56,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arch/mips/boot/dts/ingenic/ci20.dtb: i2c@10050000: 'dma-names' is a required property
-	From schema: Documentation/devicetree/bindings/i2c/ingenic,i2c.yaml
-arch/mips/boot/dts/ingenic/ci20.dtb: i2c@10051000: 'dmas' is a required property
-	From schema: Documentation/devicetree/bindings/i2c/ingenic,i2c.yaml
-arch/mips/boot/dts/ingenic/ci20.dtb: i2c@10051000: 'dma-names' is a required property
-	From schema: Documentation/devicetree/bindings/i2c/ingenic,i2c.yaml
-arch/mips/boot/dts/ingenic/ci20.dtb: i2c@10052000: 'dmas' is a required property
-	From schema: Documentation/devicetree/bindings/i2c/ingenic,i2c.yaml
-arch/mips/boot/dts/ingenic/ci20.dtb: i2c@10052000: 'dma-names' is a required property
-	From schema: Documentation/devicetree/bindings/i2c/ingenic,i2c.yaml
-arch/mips/boot/dts/ingenic/ci20.dtb: i2c@10053000: 'dmas' is a required property
-	From schema: Documentation/devicetree/bindings/i2c/ingenic,i2c.yaml
-arch/mips/boot/dts/ingenic/ci20.dtb: i2c@10053000: 'dma-names' is a required property
-	From schema: Documentation/devicetree/bindings/i2c/ingenic,i2c.yaml
-arch/mips/boot/dts/ingenic/ci20.dtb: i2c@10054000: 'dmas' is a required property
-	From schema: Documentation/devicetree/bindings/i2c/ingenic,i2c.yaml
-arch/mips/boot/dts/ingenic/ci20.dtb: i2c@10054000: 'dma-names' is a required property
-	From schema: Documentation/devicetree/bindings/i2c/ingenic,i2c.yaml
+arch/mips/boot/dts/ingenic/ci20.dtb: jz4780-cgu@10000000: $nodename:0: 'jz4780-cgu@10000000' does not match '^clock-controller@[0-9a-f]+$'
+	From schema: Documentation/devicetree/bindings/clock/ingenic,cgu.yaml
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- arch/mips/boot/dts/ingenic/jz4780.dtsi | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-index 73cd05cf26472..dcb93d0158856 100644
+index 710605df40ed3..6fb6229c3186b 100644
 --- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
 +++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-@@ -392,6 +392,10 @@ i2c0: i2c@10050000 {
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pins_i2c0_data>;
- 
-+		dmas = <&dma JZ4780_DMA_SMB0_RX 0xffffffff>,
-+		       <&dma JZ4780_DMA_SMB0_TX 0xffffffff>;
-+		dma-names = "rx", "tx";
-+
- 		status = "disabled";
+@@ -58,7 +58,7 @@ rtc: rtc {
+ 		clock-frequency = <32768>;
  	};
  
-@@ -409,6 +413,10 @@ i2c1: i2c@10051000 {
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pins_i2c1_data>;
- 
-+		dmas = <&dma JZ4780_DMA_SMB1_RX 0xffffffff>,
-+		       <&dma JZ4780_DMA_SMB1_TX 0xffffffff>;
-+		dma-names = "rx", "tx";
-+
- 		status = "disabled";
- 	};
- 
-@@ -426,6 +434,10 @@ i2c2: i2c@10052000 {
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pins_i2c2_data>;
- 
-+		dmas = <&dma JZ4780_DMA_SMB2_RX 0xffffffff>,
-+		       <&dma JZ4780_DMA_SMB2_TX 0xffffffff>;
-+		dma-names = "rx", "tx";
-+
- 		status = "disabled";
- 	};
- 
-@@ -443,6 +455,10 @@ i2c3: i2c@10053000 {
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pins_i2c3_data>;
- 
-+		dmas = <&dma JZ4780_DMA_SMB3_RX 0xffffffff>,
-+		       <&dma JZ4780_DMA_SMB3_TX 0xffffffff>;
-+		dma-names = "rx", "tx";
-+
- 		status = "disabled";
- 	};
- 
-@@ -460,6 +476,10 @@ i2c4: i2c@10054000 {
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pins_i2c4_data>;
- 
-+		dmas = <&dma JZ4780_DMA_SMB4_RX 0xffffffff>,
-+		       <&dma JZ4780_DMA_SMB4_TX 0xffffffff>;
-+		dma-names = "rx", "tx";
-+
- 		status = "disabled";
- 	};
- 
+-	cgu: jz4780-cgu@10000000 {
++	cgu: clock-controller@10000000 {
+ 		compatible = "ingenic,jz4780-cgu", "simple-mfd";
+ 		reg = <0x10000000 0x100>;
+ 		#address-cells = <1>;
 -- 
 2.33.0
 
