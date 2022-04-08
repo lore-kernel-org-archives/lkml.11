@@ -2,131 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 912DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7554C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239791AbiDHVNt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 17:13:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60908 "EHLO
+        id S239794AbiDHVOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 17:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239129AbiDHVNr (ORCPT
+        with ESMTP id S239792AbiDHVON (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 17:13:47 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7272184B66;
-        Fri,  8 Apr 2022 14:11:42 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id k13so3752420plk.12;
-        Fri, 08 Apr 2022 14:11:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=foN+znjNsM8Dv5GG5QumEF5L4dA6jEDJmOc3EsCSs7A=;
-        b=Fg6djJJF1vpX9BIUkzLnoEQyMYbzsC2lKM2Gvzu/xJypypof1mfAGQBnWxylv9TMOe
-         SsBI8YmWTpxsbSfZAcKaPeJ0Nqg2OKwbXgQ1JGt4t67/egLcz07MS3TVumiHfrjaBAFI
-         Y0eDPHPPV+uI49yyRV2CAZfw7Jxg6phzu27n7sJ25la1WA4+qbXxsjfJAD5YisB3rYvV
-         jkSR484ou09PQqMfXlayOZ6VDFqPjeVnkoR1/SLwkoyezIy3r4hQAo1kyaalmr+xxLkt
-         yihtS6Bq4e7poWs39oZ0IvZacvaXSBhX/a21Eg6AZ1eeFZ6aP55A1jeyPGeO5H0WYOEX
-         /Tgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=foN+znjNsM8Dv5GG5QumEF5L4dA6jEDJmOc3EsCSs7A=;
-        b=abgimLwY+fc37BCQgDksRzRG+X7pFBK5Mebv7zXyLaRz/TXnAx3RdpQZgcpueO/ZJu
-         i7VFQ2V7l9yzKIqlMItl/3unyL3qfrx9BCj9SLH8vRALmZiFS/kJtfJ6Hl7DGYJjmWxZ
-         TnFxGTdzEewoz9izB6uy4KCvmVz7/GVpzOLEwlQzUVlZtvbJps01SVRGVWtQuDM53HiF
-         F5d0QE19qBNvVozjPmorqTCw5HryBTAzRCqWEUNnoaYvR7CF6bUAeKSLyqGzCAAunqVe
-         IgmHT0I73uW9SJWSr3VmD36jVMKnjQd1dwhf8oaQOfg6O36digFFKUH8yATGS6Wk6M+H
-         SU5Q==
-X-Gm-Message-State: AOAM531iVgiCU9nMtOhy70hm38zJMZU4VlmJKSMoksU5TeGanYsLbEjW
-        oJh4ol/7+roSyQlAIcOx29U=
-X-Google-Smtp-Source: ABdhPJwuyKDp8x2YcNc2jp/QykaM+ri2Vg9UJJEGuE+XzAzacSJY8FSl4T7gxhghAcyG1UuNGduAyw==
-X-Received: by 2002:a17:903:281:b0:14c:f3b3:209b with SMTP id j1-20020a170903028100b0014cf3b3209bmr21223265plr.87.1649452302275;
-        Fri, 08 Apr 2022 14:11:42 -0700 (PDT)
-Received: from localhost ([192.55.54.52])
-        by smtp.gmail.com with ESMTPSA id u9-20020a056a00158900b004faad3ae570sm27996158pfk.189.2022.04.08.14.11.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 14:11:41 -0700 (PDT)
-Date:   Fri, 8 Apr 2022 14:11:40 -0700
-From:   Isaku Yamahata <isaku.yamahata@gmail.com>
-To:     SU Hang <darcy.sh@antgroup.com>
-Cc:     seanjc@google.com, kvm@vger.kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Radim Kr???m?????? <rkrcmar@redhat.com>,
-        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com
-Subject: Re: [PATCH v2 2/2] KVM: x86/mmu: Derive EPT violation RWX bits from
- EPTE RWX bits
-Message-ID: <20220408211140.GE857847@ls.amr.corp.intel.com>
-References: <20220329030108.97341-1-darcy.sh@antgroup.com>
- <20220329030108.97341-3-darcy.sh@antgroup.com>
+        Fri, 8 Apr 2022 17:14:13 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B99D18857E
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 14:12:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649452328; x=1680988328;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=oOnE/mTJZo1cLGs58Bcvu0FFjsM9iac91CNW9O8kwGw=;
+  b=l9X72tegVRuJnsrdR7AZYivAyfjEl9mqFPKJ8stm7XrG4GRc4JN78/iY
+   wSETKojPqL0lbpxhgvyvQnd+Q4I/LKyqDWLuxozG9RQyfVUyTmqa/bOpm
+   lsWefWmajBOom6p45Dfh1rOBConVKwEIQ2j3IyDZEXP+qXToMrLgp4YcR
+   yXwVjFxcSeg3c5KejobksQZkaHKxOpJhU0OEwWWfyt2kv2akfv0oAT++I
+   8fGRoaMsIqn4DHB+fMIkKPdIegLR/ploE5pzjZUQKrOuvfE1XpF1T+fQO
+   jYM4H/WIURQ2EkHuX2wWH5t+LmvfHFfdJyulQ08dvMiaKn9mASeR8UJAT
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="249213359"
+X-IronPort-AV: E=Sophos;i="5.90,246,1643702400"; 
+   d="scan'208";a="249213359"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 14:12:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,246,1643702400"; 
+   d="scan'208";a="698314316"
+Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 08 Apr 2022 14:12:05 -0700
+Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ncvtk-0000dw-Li;
+        Fri, 08 Apr 2022 21:12:04 +0000
+Date:   Sat, 9 Apr 2022 05:11:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     gellert <gellert@raspberrypi.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Dom Cobley <popcornmix@gmail.com>,
+        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
+        Phil Elwell <phil@raspberrypi.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Yaroslav Rosomakho <yaroslavros@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Juerg Haefliger <juergh@canonical.com>
+Subject: [l1k:smsc95xx_5.17 62/888] drivers/mmc/host/bcm2835-mmc.c:655:6:
+ warning: no previous prototype for 'bcm2835_mmc_send_command'
+Message-ID: <202204090513.DJZRq10M-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220329030108.97341-3-darcy.sh@antgroup.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 11:01:07AM +0800,
-SU Hang <darcy.sh@antgroup.com> wrote:
+tree:   https://github.com/l1k/linux smsc95xx_5.17
+head:   240f56c27361c195cd502d95aba51c6b8e5b808c
+commit: 07021b7ee2fdb60a60c3289c983cc1c1d1494c71 [62/888] MMC: added alternative MMC driver
+config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220409/202204090513.DJZRq10M-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/l1k/linux/commit/07021b7ee2fdb60a60c3289c983cc1c1d1494c71
+        git remote add l1k https://github.com/l1k/linux
+        git fetch --no-tags l1k smsc95xx_5.17
+        git checkout 07021b7ee2fdb60a60c3289c983cc1c1d1494c71
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/lib/ drivers/char/ drivers/gpio/ drivers/mmc/host/ drivers/perf/
 
-> From: Sean Christopherson <seanjc@google.com>
-> 
-> Derive the mask of RWX bits reported on EPT violations from the mask of
-> RWX bits that are shoved into EPT entries; the layout is the same, the
-> EPT violation bits are simply shifted by three.  Use the new shift and a
-> slight copy-paste of the mask derivation instead of completely open
-> coding the same to convert between the EPT entry bits and the exit
-> qualification when synthesizing a nested EPT Violation.
-> 
-> No functional change intended.
-> 
-> Cc: SU Hang <darcy.sh@antgroup.com>
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/include/asm/vmx.h     | 7 +------
->  arch/x86/kvm/mmu/paging_tmpl.h | 8 +++++++-
->  arch/x86/kvm/vmx/vmx.c         | 4 +---
->  3 files changed, 9 insertions(+), 10 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/vmx.h b/arch/x86/include/asm/vmx.h
-> index 3586d4aeaac7..46bc7072f6a2 100644
-> --- a/arch/x86/include/asm/vmx.h
-> +++ b/arch/x86/include/asm/vmx.h
-> @@ -543,17 +543,12 @@ enum vm_entry_failure_code {
->  #define EPT_VIOLATION_ACC_READ_BIT	0
->  #define EPT_VIOLATION_ACC_WRITE_BIT	1
->  #define EPT_VIOLATION_ACC_INSTR_BIT	2
-> -#define EPT_VIOLATION_READABLE_BIT	3
-> -#define EPT_VIOLATION_WRITABLE_BIT	4
-> -#define EPT_VIOLATION_EXECUTABLE_BIT	5
->  #define EPT_VIOLATION_GVA_IS_VALID_BIT	7
->  #define EPT_VIOLATION_GVA_TRANSLATED_BIT 8
->  #define EPT_VIOLATION_ACC_READ		(1 << EPT_VIOLATION_ACC_READ_BIT)
->  #define EPT_VIOLATION_ACC_WRITE		(1 << EPT_VIOLATION_ACC_WRITE_BIT)
->  #define EPT_VIOLATION_ACC_INSTR		(1 << EPT_VIOLATION_ACC_INSTR_BIT)
-> -#define EPT_VIOLATION_READABLE		(1 << EPT_VIOLATION_READABLE_BIT)
-> -#define EPT_VIOLATION_WRITABLE		(1 << EPT_VIOLATION_WRITABLE_BIT)
-> -#define EPT_VIOLATION_EXECUTABLE	(1 << EPT_VIOLATION_EXECUTABLE_BIT)
-> +#define EPT_VIOLATION_RWX_MASK		(VMX_EPT_RWX_MASK << EPT_VIOLATION_RWX_SHIFT)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/mmc/host/bcm2835-mmc.c:655:6: warning: no previous prototype for 'bcm2835_mmc_send_command' [-Wmissing-prototypes]
+     655 | void bcm2835_mmc_send_command(struct bcm2835_host *host, struct mmc_command *cmd)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/mmc/host/bcm2835-mmc.c:1063:6: warning: no previous prototype for 'bcm2835_mmc_set_clock' [-Wmissing-prototypes]
+    1063 | void bcm2835_mmc_set_clock(struct bcm2835_host *host, unsigned int clock)
+         |      ^~~~~~~~~~~~~~~~~~~~~
 
 
-"#define EPT_VIOLATION_RWX_SHIFT 3" is missing.
-It fails to compile.
+vim +/bcm2835_mmc_send_command +655 drivers/mmc/host/bcm2835-mmc.c
 
-  CC [M]  arch/x86/kvm/vmx/vmx.o
-In file included from linux/arch/x86/include/asm/virtext.h:18,
-                 from /linux/arch/x86/kvm/vmx/vmx.c:49:
-/linux/arch/x86/kvm/vmx/vmx.c: In function 'handle_ept_violation':
-/linux/arch/x86/include/asm/vmx.h:551:54: error: 'EPT_VIOLATION_RWX_SHIFT' undeclared (first use in this function); did you mean 'EPT_VIOLATION_RWX_MASK'?
-  551 | #define EPT_VIOLATION_RWX_MASK  (VMX_EPT_RWX_MASK << EPT_VIOLATION_RWX_SHIFT)
-      |                                                      ^~~~~~~~~~~~~~~~~~~~~~~
+   654	
+ > 655	void bcm2835_mmc_send_command(struct bcm2835_host *host, struct mmc_command *cmd)
+   656	{
+   657		int flags;
+   658		u32 mask;
+   659		unsigned long timeout;
+   660	
+   661		WARN_ON(host->cmd);
+   662	
+   663		/* Wait max 10 ms */
+   664		timeout = 1000;
+   665	
+   666		mask = SDHCI_CMD_INHIBIT;
+   667		if ((cmd->data != NULL) || (cmd->flags & MMC_RSP_BUSY))
+   668			mask |= SDHCI_DATA_INHIBIT;
+   669	
+   670		/* We shouldn't wait for data inihibit for stop commands, even
+   671		   though they might use busy signaling */
+   672		if (host->mrq->data && (cmd == host->mrq->data->stop))
+   673			mask &= ~SDHCI_DATA_INHIBIT;
+   674	
+   675		while (bcm2835_mmc_readl(host, SDHCI_PRESENT_STATE) & mask) {
+   676			if (timeout == 0) {
+   677				pr_err("%s: Controller never released inhibit bit(s).\n",
+   678					mmc_hostname(host->mmc));
+   679				bcm2835_mmc_dumpregs(host);
+   680				cmd->error = -EIO;
+   681				tasklet_schedule(&host->finish_tasklet);
+   682				return;
+   683			}
+   684			timeout--;
+   685			udelay(10);
+   686		}
+   687	
+   688		if ((1000-timeout)/100 > 1 && (1000-timeout)/100 > host->max_delay) {
+   689			host->max_delay = (1000-timeout)/100;
+   690			pr_warn("Warning: MMC controller hung for %d ms\n", host->max_delay);
+   691		}
+   692	
+   693		timeout = jiffies;
+   694		if (!cmd->data && cmd->busy_timeout > 9000)
+   695			timeout += DIV_ROUND_UP(cmd->busy_timeout, 1000) * HZ + HZ;
+   696		else
+   697			timeout += 10 * HZ;
+   698		mod_timer(&host->timer, timeout);
+   699	
+   700		host->cmd = cmd;
+   701		host->use_dma = false;
+   702	
+   703		bcm2835_mmc_prepare_data(host, cmd);
+   704	
+   705		bcm2835_mmc_writel(host, cmd->arg, SDHCI_ARGUMENT, 6);
+   706	
+   707		bcm2835_mmc_set_transfer_mode(host, cmd);
+   708	
+   709		if ((cmd->flags & MMC_RSP_136) && (cmd->flags & MMC_RSP_BUSY)) {
+   710			pr_err("%s: Unsupported response type!\n",
+   711				mmc_hostname(host->mmc));
+   712			cmd->error = -EINVAL;
+   713			tasklet_schedule(&host->finish_tasklet);
+   714			return;
+   715		}
+   716	
+   717		if (!(cmd->flags & MMC_RSP_PRESENT))
+   718			flags = SDHCI_CMD_RESP_NONE;
+   719		else if (cmd->flags & MMC_RSP_136)
+   720			flags = SDHCI_CMD_RESP_LONG;
+   721		else if (cmd->flags & MMC_RSP_BUSY)
+   722			flags = SDHCI_CMD_RESP_SHORT_BUSY;
+   723		else
+   724			flags = SDHCI_CMD_RESP_SHORT;
+   725	
+   726		if (cmd->flags & MMC_RSP_CRC)
+   727			flags |= SDHCI_CMD_CRC;
+   728		if (cmd->flags & MMC_RSP_OPCODE)
+   729			flags |= SDHCI_CMD_INDEX;
+   730	
+   731		if (cmd->data)
+   732			flags |= SDHCI_CMD_DATA;
+   733	
+   734		bcm2835_mmc_writew(host, SDHCI_MAKE_CMD(cmd->opcode, flags), SDHCI_COMMAND);
+   735	}
+   736	
 
-Thanks,
 -- 
-Isaku Yamahata <isaku.yamahata@gmail.com>
+0-DAY CI Kernel Test Service
+https://01.org/lkp
