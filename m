@@ -2,180 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 873F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 178C8C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239747AbiDHVUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 17:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58896 "EHLO
+        id S239844AbiDHV0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 17:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiDHVUU (ORCPT
+        with ESMTP id S233408AbiDHV0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 17:20:20 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2E11C3903
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 14:18:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649452695; x=1680988695;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=yVF77GJQtgBeYaa7SxVUW6n0tVCcfpok//7nG85Pi1E=;
-  b=a/jHgbR9qqbO9PAMGSXdyQU6j/gh5HVe2dOSpU6ciUWLZDHv36hFpoax
-   65ihJtYI/dhIdj/2ifFSVDzLIuzaJVBgVWbqDMAJf2E7IrXSKJ0X0AKg/
-   hE49y1q2wWK9D/X1iexkvGC4DJE3gQfV6Q3L6MHMiaTrFa5xwurlzlfNO
-   pD1CoHBsOiQ/9owWhrUWtP+6K2o572ZpPnJXBgfmpgeMGayzqp84mrywX
-   shJ4/2v1lRhvJS2ZT7mxMqZUeavwFSaCGq1a0/zYo7mQ9jwV/wQ4ag0hQ
-   OOb6TbouGPhzc7VPlLAuf4mlQRdwPejFxBfa6NDuq/SmmWesactkgIWyQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="243818785"
-X-IronPort-AV: E=Sophos;i="5.90,246,1643702400"; 
-   d="scan'208";a="243818785"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 14:18:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,246,1643702400"; 
-   d="scan'208";a="525526042"
-Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 08 Apr 2022 14:18:14 -0700
-Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ncvzh-0000e5-E1;
-        Fri, 08 Apr 2022 21:18:13 +0000
-Date:   Sat, 09 Apr 2022 05:18:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/sev] BUILD SUCCESS
- e720ea52e85c9d00cf8c5769795d0a3e585524f6
-Message-ID: <6250a68c.GxilTUj2OFmuj3G5%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 8 Apr 2022 17:26:03 -0400
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BB631539;
+        Fri,  8 Apr 2022 14:23:57 -0700 (PDT)
+Received: by mail-oi1-f172.google.com with SMTP id j83so10124037oih.6;
+        Fri, 08 Apr 2022 14:23:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0T6S7+QP7qWOZqAmU2HeursYTQCWQoHrmh79ye1Au6A=;
+        b=pJva/3tYgYHpnd2TM+FiU+CstOvIUQh0r8s/vGIVtKgy3PhYEobIOAI7GoDqwM0bGk
+         lvxaopfx1E73kjj6oXb9FK1H5VQzrLoFpZlTDLMbzEeCjQtNtr2QAKk9VeqO3Ttj+4Ki
+         2f8/p+Be0PgX2PWLv6AENf37gtZJrDbTxX0Mo6M0whAFyMOGT8KMOAIXI3mv3IkeN+2b
+         QQBsO9B/+ZiYM4srL/BqYDgs7pMOQn/g7bxPvDLknO4WTsBlhjZKtrNphchYhixvAd8C
+         tF3T99yRlxf1OPptXwIu6l7utLE5fx2/9guwxxcFcZyAh0n95wTHf2ah2Rn9PWGY5WBT
+         8Zcw==
+X-Gm-Message-State: AOAM532USHl1RzYgI3C6j5sbDJOzrBkrNpcgvfkKvHtVv07fXe3Ukv9s
+        NqhmADg8TFjPjHjwijQXOg==
+X-Google-Smtp-Source: ABdhPJzJGJC0SnhPZeOBXHawRPojHmwZQHykZy3Yf4Unn2+H1trg/FFezSEv1rfslsihDjHVXco/Qg==
+X-Received: by 2002:a05:6808:1b12:b0:2da:28e1:39f7 with SMTP id bx18-20020a0568081b1200b002da28e139f7mr786027oib.289.1649453037335;
+        Fri, 08 Apr 2022 14:23:57 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id bp21-20020a056820199500b003298e6877c7sm2982402oob.29.2022.04.08.14.23.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 14:23:56 -0700 (PDT)
+Received: (nullmailer pid 4094588 invoked by uid 1000);
+        Fri, 08 Apr 2022 21:23:55 -0000
+Date:   Fri, 8 Apr 2022 16:23:55 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Pratyush Yadav <p.yadav@ti.com>, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Richard Weinberger <richard@nod.at>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        devicetree@vger.kernel.org, Vignesh Raghavendra <vigneshr@ti.com>,
+        Michael Walle <michael@walle.cc>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        linux-mtd@lists.infradead.org
+Subject: Re: [PATCH v2] dt-bindings: mtd: jedec,spi-nor: remove unneeded
+ properties
+Message-ID: <YlCn639koXzXcAY8@robh.at.kernel.org>
+References: <20220408063720.12826-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20220408063720.12826-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/sev
-branch HEAD: e720ea52e85c9d00cf8c5769795d0a3e585524f6  x86/sev-es: Replace open-coded hlt-loop with sev_es_terminate()
+On Fri, 08 Apr 2022 08:37:20 +0200, Krzysztof Kozlowski wrote:
+> After conversion the jedec,spi-nor DT schema to reference other schemas
+> (SPI and MTD) and use unevaluatedProperties, few properties are
+> redundant.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+> 
+> ---
+> 
+> Changes since v1:
+> 1. Do not remove address/size cells (Rob).
+> 2. Add Pratyush review.
+> ---
+>  Documentation/devicetree/bindings/mtd/jedec,spi-nor.yaml | 8 --------
+>  1 file changed, 8 deletions(-)
+> 
 
-elapsed time: 734m
-
-configs tested: 100
-configs skipped: 3
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220408
-mips                           ip32_defconfig
-ia64                      gensparse_defconfig
-openrisc                    or1ksim_defconfig
-arm                      integrator_defconfig
-powerpc                     taishan_defconfig
-sh                          polaris_defconfig
-mips                      fuloong2e_defconfig
-xtensa                    smp_lx200_defconfig
-arc                         haps_hs_defconfig
-ia64                         bigsur_defconfig
-sh                           se7780_defconfig
-mips                            ar7_defconfig
-xtensa                           alldefconfig
-sh                          sdk7780_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220408
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a006
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-arc                  randconfig-r043-20220408
-s390                 randconfig-r044-20220408
-riscv                randconfig-r042-20220408
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
-
-clang tested configs:
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220408
-riscv                randconfig-c006-20220408
-mips                 randconfig-c004-20220408
-arm                  randconfig-c002-20220408
-powerpc                     mpc512x_defconfig
-powerpc                     powernv_defconfig
-mips                           rs90_defconfig
-arm                                 defconfig
-arm                         socfpga_defconfig
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Reviewed-by: Rob Herring <robh@kernel.org>
