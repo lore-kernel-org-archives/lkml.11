@@ -2,107 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:21:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DC8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:22:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238549AbiDHSX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 14:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
+        id S238553AbiDHSYR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 14:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230348AbiDHSXV (ORCPT
+        with ESMTP id S229969AbiDHSYN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 14:23:21 -0400
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC82360437;
-        Fri,  8 Apr 2022 11:21:17 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2ebdf6ebd29so34699217b3.2;
-        Fri, 08 Apr 2022 11:21:17 -0700 (PDT)
+        Fri, 8 Apr 2022 14:24:13 -0400
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DFD36DD9E;
+        Fri,  8 Apr 2022 11:22:08 -0700 (PDT)
+Received: by mail-ot1-f42.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso6635164otf.12;
+        Fri, 08 Apr 2022 11:22:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lCVpHEZAuFYpT8MoYL/wQ4fDYm6F2aWVl7tmD78GJ5A=;
-        b=yTdG7iM0rTMFQvDClGza8PQw9GrLpjlYWIfN5vMUi1SM8GpH225/CF+n5bSVpLBfNS
-         FiGq7bveFnVFvAV+jVbFI2LUrXnVymDYRRaOKu7a9NEz96xbyGf8qmer/fuaTr/W5zDH
-         m5KoVRvnVICOxRmElz2Wuti+6p++rnJSRaIempnXJ/sGNV/J92vuOgMjDFJPkn8aB4Kg
-         mLu/7H67XqpDTXmEGnHxIQrdEfIRhdczD8/GOoNv9XyVPevbrZC6TltPxtFUHS8n5WhK
-         yEz6ONbxAkG+aX5meV1dzQMVWEHFlLxmhkjyAaylqO1Oc4oBjK88Cnib/kUBS1B31KWh
-         +Dvg==
-X-Gm-Message-State: AOAM530ApCRRZxBkUGFDNTnSpHs/oyA6snI5ytx4LmYLDVldpJpgKMKY
-        YRt1cuGR1uzHZPgmGBvmoMi/nuORPQ103xi64bGMrMjv
-X-Google-Smtp-Source: ABdhPJzGh+iKXmN5NP9Y/+KpdVxbwKsYfj7oFxaxISg2qW8gZjldXVGjXW/suZ2XAiJyRtuNMMgiDnTN939LblH5yaw=
-X-Received: by 2002:a81:7c45:0:b0:2eb:4759:cc32 with SMTP id
- x66-20020a817c45000000b002eb4759cc32mr17293086ywc.515.1649442076610; Fri, 08
- Apr 2022 11:21:16 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Lf2HIDOgcxd3N/SJmrm+i3BU0QKkjgIH52w0l9HZULg=;
+        b=EqzXutcN6XQcvHV0Lyf70TjAnCMJVdNvbZpDJAk+l2d16apb+brgxkf91hYThQx1V8
+         kxr+E+pysmSEpHCMTqjpBxvdhXruwdHZXPqln9EgMoNDWpmVYRzlpmxIdaP2I3Z6N6YC
+         yUc/UaQ0fdjxK/NAebS9XLh3WjVmtf2aVtb6H3bkBI43SQ2t0EKrAbG/IO4J9EQBUsG1
+         HJ4kDQji5gg8dc4VoqvMKArAlrfaZ9qtZEK14a7WHnCXbZWE/UpQiCcE5cpHblZ+WORP
+         uulri5klj+DrPAbxSAy9YGASK37alaDRnXUQ+b8gw7gnAs4RbCVm2WaOBblPH12h/d0d
+         IYbg==
+X-Gm-Message-State: AOAM533M7hmHhZEsat/RmTqE+KKdVkjAR6fHw0iZbj/twx/GkMJMHYTV
+        tConhtg14Xx3xmakarGzb9W/obrPOQ==
+X-Google-Smtp-Source: ABdhPJy91m7vj0F/F1zyS9qB+nTfpd/raBdG+Fj65mRFlO9Vv/D+Ezuacy99dHSUu24EJa4eacDzpg==
+X-Received: by 2002:a9d:4798:0:b0:5b2:3791:beb7 with SMTP id b24-20020a9d4798000000b005b23791beb7mr7026104otf.123.1649442127768;
+        Fri, 08 Apr 2022 11:22:07 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id z3-20020a056870d68300b000e2a0a74f9fsm394717oap.37.2022.04.08.11.22.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 11:22:07 -0700 (PDT)
+Received: (nullmailer pid 3810091 invoked by uid 1000);
+        Fri, 08 Apr 2022 18:22:06 -0000
+Date:   Fri, 8 Apr 2022 13:22:06 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Chen-Yu Tsai <wens@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/5] dt-bindings: display: ssd1307fb: Deprecate fbdev
+ compatible strings
+Message-ID: <YlB9TsbhoQblo1H8@robh.at.kernel.org>
+References: <20220407200205.28838-1-javierm@redhat.com>
+ <20220407200205.28838-2-javierm@redhat.com>
 MIME-Version: 1.0
-References: <4412361.LvFx2qVVIh@kreacher> <20220407154901.GA239301@bhelgaas>
-In-Reply-To: <20220407154901.GA239301@bhelgaas>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 8 Apr 2022 20:21:05 +0200
-Message-ID: <CAJZ5v0hC1Z6TrRtG8nkDJ4uk=qg=PQ1m6k4W_ho6G2YR2iZ0LQ@mail.gmail.com>
-Subject: Re: [PATCH v1] PCI: PM: Power up all devices during runtime resume
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220407200205.28838-2-javierm@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 5:49 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> On Wed, Apr 06, 2022 at 09:00:52PM +0200, Rafael J. Wysocki wrote:
-> > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> >
-> > Currently, endpoint devices may not be powered up entirely during
-> > runtime resume that follows a D3hot -> D0 transition of the parent
-> > bridge.
-> >
-> > Namely, even if the power state of an endpoint device, as indicated
-> > by its PCI_PM_CTRL register, is D0 after powering up its parent
-> > bridge, it may be still necessary to bring its ACPI companion into
-> > D0 and that should be done before accessing it.  However, the current
-> > code assumes that reading the PCI_PM_CTRL register is sufficient to
-> > establish the endpoint device's power state, which may lead to
-> > problems.
-> >
-> > Address that by forcing a power-up of all PCI devices, including the
-> > platform firmware part of it, during runtime resume.
-> >
-> > Link: https://lore.kernel.org/linux-pm/11967527.O9o76ZdvQC@kreacher
-> > Fixes: 5775b843a619 ("PCI: Restore config space on runtime resume despite being unbound")
-> > Reported-by: Abhishek Sahu <abhsahu@nvidia.com>
-> > Tested-by: Abhishek Sahu <abhsahu@nvidia.com>
-> > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
->
-> Applied with Mika's reviewed-by to pci/pm for v5.19, thanks!
+On Thu, Apr 07, 2022 at 10:02:00PM +0200, Javier Martinez Canillas wrote:
+> The current compatible strings for SSD130x I2C controllers contain an -fb
+> suffix, this seems to indicate that are for a fbdev driver. But the DT is
+> supposed to describe the hardware and not Linux implementation details.
 
-This doesn't compile when CONFIG_PM_SLEEP in uset, sorry about this.
+True, but compatible is just an identifier. There's no reason to 
+deprecate unless the binding as a whole needs to be redone.
 
-I'll send a v2, but if you prefer an incremental fix, please let me know.
+I imagine you also want 2 compatibles for 2 drivers. That's saying you 
+should change your firmware to switch drivers. The fact that we have 2 
+drivers for the same h/w is a kernel problem. Don't bring DT into it.
 
->
-> > ---
-> >  drivers/pci/pci-driver.c |    2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > Index: linux-pm/drivers/pci/pci-driver.c
-> > ===================================================================
-> > --- linux-pm.orig/drivers/pci/pci-driver.c
-> > +++ linux-pm/drivers/pci/pci-driver.c
-> > @@ -1312,7 +1312,7 @@ static int pci_pm_runtime_resume(struct
-> >        * to a driver because although we left it in D0, it may have gone to
-> >        * D3cold when the bridge above it runtime suspended.
-> >        */
-> > -     pci_restore_standard_config(pci_dev);
-> > +     pci_pm_default_resume_early(pci_dev);
-> >
-> >       if (!pci_dev->driver)
-> >               return 0;
-> >
-> >
-> >
+> Let's deprecate those compatible strings and add a new enum that contains
+> compatible strings that don't have a -fb suffix. These will be matched by
+> the ssd130x-i2c DRM driver.
+> 
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> ---
+> 
+>  .../bindings/display/solomon,ssd1307fb.yaml   | 36 ++++++++++++-------
+>  1 file changed, 24 insertions(+), 12 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> index ade61d502edd..46207f2c12b8 100644
+> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> @@ -12,12 +12,24 @@ maintainers:
+>  
+>  properties:
+>    compatible:
+> -    enum:
+> -      - sinowealth,sh1106-i2c
+> -      - solomon,ssd1305fb-i2c
+> -      - solomon,ssd1306fb-i2c
+> -      - solomon,ssd1307fb-i2c
+> -      - solomon,ssd1309fb-i2c
+> +    oneOf:
+> +      # Deprecated compatible strings
+> +      - items:
+> +          - enum:
+> +              - solomon,ssd1305fb-i2c
+> +              - solomon,ssd1306fb-i2c
+> +              - solomon,ssd1307fb-i2c
+> +              - solomon,ssd1309fb-i2c
+> +        deprecated: true
+> +
+> +      # SSD130x I2C controllers
+> +      - items:
+> +          - enum:
+> +              - sinowealth,sh1106-i2c
+> +              - solomon,ssd1305-i2c
+> +              - solomon,ssd1306-i2c
+> +              - solomon,ssd1307-i2c
+> +              - solomon,ssd1309-i2c
+
+There's also no reason to put the bus interface into the compatible as 
+the same compatible will work on different buses. But since you want to 
+add SPI, just using the 'i2c' one will confuse people. For that reason 
+you could add 'solomon,ssd1305', etc. for both SPI support and I2C DRM. 
+(You should also support the 'fb-i2c' variant in DRM IMO, but doubtful 
+that I'll review that.)
+
+Rob
