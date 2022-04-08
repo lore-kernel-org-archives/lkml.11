@@ -2,156 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94135C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F59C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:14:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237951AbiDHQQG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 12:16:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
+        id S237953AbiDHQQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 12:16:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbiDHQPv (ORCPT
+        with ESMTP id S230319AbiDHQPw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 12:15:51 -0400
+        Fri, 8 Apr 2022 12:15:52 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A86EE2C642
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 09:13:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75F4D106638
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 09:13:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649434414;
+        s=mimecast20190719; t=1649434426;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=RABOyYo670sPAWQ+PEuN77+r1YMjgpRyhVZuUCYWh68=;
-        b=PNyu3Jtp9Os/ahfXBaAZ6gV/TnEfy27U50z2YbBdwcJ8xOBenGU5JS2kXufrL4vfEkhQ23
-        I1xvBFdVxOU2wjfvKcw6jmOd1R7MTfjm02CiZvb8Q5bLEQyd8IRLaA3HX5VG00gVNOG9Qs
-        6M++qv85lTlMTkPZZdwHVdwcTnlRqAs=
-Received: from mail-yw1-f199.google.com (mail-yw1-f199.google.com
- [209.85.128.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=zcEitY10iZAiJ+J3+u8UtqIoWNDWTfj8MjNNemYgu3M=;
+        b=RT50AdxshudiL9//klnex79SPAzomTCteajelybwihE7Pze5BBXwnjSg9BSupBoTQFcaWZ
+        3V3K6ZtLldAgyq9SK+Qz8uzB1xYBqMiMUHPe3v/AizbTiQk9YD57xfJeZwSTetfKlxsU4L
+        PSn2L9k55Ksoa5VsXVxl238ALk0tdbQ=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-246-Vkn7yk-1MXKE3z6tCmA0PA-1; Fri, 08 Apr 2022 12:13:33 -0400
-X-MC-Unique: Vkn7yk-1MXKE3z6tCmA0PA-1
-Received: by mail-yw1-f199.google.com with SMTP id 00721157ae682-2ebebe9f982so12334497b3.17
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 09:13:33 -0700 (PDT)
+ us-mta-590-4RV9tRvJOReX3hB0cxCATw-1; Fri, 08 Apr 2022 12:13:45 -0400
+X-MC-Unique: 4RV9tRvJOReX3hB0cxCATw-1
+Received: by mail-wm1-f71.google.com with SMTP id f12-20020a05600c154c00b0038ea9ed0a4aso712357wmg.1
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 09:13:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RABOyYo670sPAWQ+PEuN77+r1YMjgpRyhVZuUCYWh68=;
-        b=qJhG0XhSunNFCbu4A4W/qRZ9XgC/Ml2tBKhnCLbNHBKtFJJHsh3BHzxP+uKemKSHL1
-         2vYGqNFsybPltT+zHBYVqrWhxtWBZNC733HA9n1yxB337kaawPZluN12Z84c/zFY7i4W
-         6sR1V1OXuafD/Z5LJj3aeM3nMjTIDLvheyZcgwUsDkpmswweWg7q1YIACrnfMSUYQ/6F
-         3u5xfko53f+GdMdQlNl1neUa5JOzrrdqNWn3wvHqwuL/ZEEaPFVTO0d/cs+e4dAeA7PJ
-         0cnkYFiVmHstzw9os7vYXH6YXy+MGZbNtM20EZ713TGH3mT26WHKEldTHsfd8Y7POBWj
-         BSLg==
-X-Gm-Message-State: AOAM530OWup7SujbvGNOh69z5BY8ecNmhrvpUk54WSSMOy4WbmxK5IDK
-        GkxdWBL5t+eBn/OVquBkP7zoxCrwcT0CATNsnnaCV9zwwlsHEXfP5tyU/aebMHFX0AbKB0eZb5N
-        Z0dnNYlKq5c/0EilLROjWOodFG6qC2DJId/f2t3wa
-X-Received: by 2002:a25:adc8:0:b0:633:b79d:92ee with SMTP id d8-20020a25adc8000000b00633b79d92eemr14066212ybe.457.1649434412957;
-        Fri, 08 Apr 2022 09:13:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxRgvqC+MnDBFtFpOj0kzf4fzJqLCJ33Or5sPWhBYgE8Lr6rPUPkktLh7gmkeG3+q2BSQNdr/IZiHbdDYQjY1w=
-X-Received: by 2002:a25:adc8:0:b0:633:b79d:92ee with SMTP id
- d8-20020a25adc8000000b00633b79d92eemr14066179ybe.457.1649434412748; Fri, 08
- Apr 2022 09:13:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zcEitY10iZAiJ+J3+u8UtqIoWNDWTfj8MjNNemYgu3M=;
+        b=1DfNZ0XIvDbiO1wanLau4cNCz86pNnVC75xx5fMgVDasev65GhEDSY6NgqLQkWAVRl
+         aWM+Igk9h1rkACbmhIwpmTvf1OkRkkG+dt8HJfZa1B8QF+jMRXjN6O+mrBwwOgL3XsYd
+         hjis95ZY11JnePH44H7mAgIEG40/kTuQlMM0PLLL84aFjHkzPN2l42bMVM7boRO4/XRL
+         EKD9rmSa4F4xZyMV4Hb6r8cjSvT6dyKHKH6MIF1QChMnEVGI4C59QqZtLbLDMzDDLPoF
+         UZhKDm+GEO6Zkrf4UGCeCCSR+EzDJ7py+sCW24dcuU+zR+qsICz+JUjLCO6P0q0R8eAm
+         0zQg==
+X-Gm-Message-State: AOAM533ebl1om4o9yIMHLKYAs6tfNXjnz3iYDKYwBeks2m4vLtypPYqG
+        QtBKJBlPk3vmwLaoyyrign1u1imP0Bq2TmcC/cAu+qL9r75jZPMOodaMdrgYVhfDBK3GgspbdE8
+        La1zKKRjlN3QEjm7HLkSDqE71aSZAU8Chze+TeWQs2wPX4FqH7GLar2YVIHWjda+BgwvK5nckN3
+        w=
+X-Received: by 2002:a5d:6785:0:b0:204:f8f:8fab with SMTP id v5-20020a5d6785000000b002040f8f8fabmr15369353wru.353.1649434423709;
+        Fri, 08 Apr 2022 09:13:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxt3Rj+zw8mIsN24LhLbQy+hWefHkvvpTKfeMVqAFvoZziJC7qiikDxng1MGBPfgLZBQiYEtg==
+X-Received: by 2002:a5d:6785:0:b0:204:f8f:8fab with SMTP id v5-20020a5d6785000000b002040f8f8fabmr15369313wru.353.1649434423340;
+        Fri, 08 Apr 2022 09:13:43 -0700 (PDT)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id t15-20020adfeb8f000000b002060d26c211sm14377455wrn.114.2022.04.08.09.13.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 09:13:43 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Changcheng Deng <deng.changcheng@zte.com.cn>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Helge Deller <deller@gmx.de>, Sam Ravnborg <sam@ravnborg.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        linux-fbdev@vger.kernel.org
+Subject: [PATCH v2 3/5] fbdev: Restart conflicting fb removal loop when unregistering devices
+Date:   Fri,  8 Apr 2022 18:13:20 +0200
+Message-Id: <20220408161322.270176-4-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220408161322.270176-1-javierm@redhat.com>
+References: <20220408161322.270176-1-javierm@redhat.com>
 MIME-Version: 1.0
-References: <20220408032809.3696798-1-npache@redhat.com> <20220408081549.GM2731@worktop.programming.kicks-ass.net>
- <ee07a31c-c514-4a88-599f-14a30e93f32e@redhat.com> <87k0bzk7e5.ffs@tglx>
-In-Reply-To: <87k0bzk7e5.ffs@tglx>
-From:   Joel Savitz <jsavitz@redhat.com>
-Date:   Fri, 8 Apr 2022 12:13:16 -0400
-Message-ID: <CAL1p7m4ukBQdQihkeSTjGHTM+HAF-GVf=QSnNPhRmetC213ANg@mail.gmail.com>
-Subject: Re: [PATCH v8] oom_kill.c: futex: Don't OOM reap the VMA containing
- the robust_list_head
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Nico Pache <npache@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, linux-mm@kvack.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Rafael Aquini <aquini@redhat.com>,
-        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
-        Christoph von Recklinghausen <crecklin@redhat.com>,
-        Don Dutile <ddutile@redhat.com>,
-        "Herton R . Krzesinski" <herton@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Darren Hart <dvhart@infradead.org>, stable@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> ---
-> #include <errno.h>
-> #include <fcntl.h>
-> #include <pthread.h>
-> #include <time.h>
-> #include <stdio.h>
-> #include <string.h>
-> #include <unistd.h>
->
-> #include <sys/types.h>
-> #include <sys/mman.h>
->
-> static char n[4096];
->
-> int main(void)
-> {
->         pthread_mutexattr_t mat_s, mat_p;
->         pthread_mutex_t *mut_s, *mut_p;
->         pthread_barrierattr_t ba;
->         pthread_barrier_t *b;
->         struct timespec to;
->         void *pri, *shr;
->         int r;
->
->         shr = mmap(NULL, sizeof(n), PROT_READ | PROT_WRITE,
->                    MAP_SHARED | MAP_ANONYMOUS, -1, 0);
->
->         pthread_mutexattr_init(&mat_s);
->         pthread_mutexattr_setrobust(&mat_s, PTHREAD_MUTEX_ROBUST);
->         mut_s = shr;
->         pthread_mutex_init(mut_s, &mat_s);
->
->         pthread_barrierattr_init(&ba);
->         pthread_barrierattr_setpshared(&ba, PTHREAD_PROCESS_SHARED);
->         b = shr + 1024;
->         pthread_barrier_init(b, &ba, 2);
->
->         if (!fork()) {
->                 pri = mmap(NULL, 1<<20, PROT_READ | PROT_WRITE,
->                            MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
->                 pthread_mutexattr_init(&mat_p);
->                 pthread_mutexattr_setpshared(&mat_p, PTHREAD_PROCESS_PRIVATE);
->                 pthread_mutexattr_setrobust(&mat_p, PTHREAD_MUTEX_ROBUST);
-One thing I don't understand is what kind of sane use case relies on
-robust futex for a process-private lock?
-Is there a purpose to a lock being on the robust list if there are no
-other processes that must be woken in case the holder process is
-killed?
-If this usage serves no purpose besides causing races during oom, we
-should discourage this use, perhaps by adding a note on the manpage.
+Drivers that want to remove registered conflicting framebuffers prior to
+register their own framebuffer, calls remove_conflicting_framebuffers().
 
->                 mut_p = pri;
->                 pthread_mutex_init(mut_p, &mat_p);
->
->                 // With lock order s, p parent gets timeout
->                 // With lock order p, s parent gets owner died
->                 pthread_mutex_lock(mut_s);
->                 pthread_mutex_lock(mut_p);
->                 // Remove unmap and lock order does not matter
->                 munmap(pri, sizeof(n));
->                 pthread_barrier_wait(b);
->                 printf("child gone\n");
->         } else {
->                 pthread_barrier_wait(b);
->                 printf("parent lock\n");
->                 clock_gettime(CLOCK_REALTIME, &to);
->                 to.tv_sec += 1;
->                 r = pthread_mutex_timedlock(mut_s, &to);
->                 printf("parent lock returned: %s\n", strerror(r));
->         }
->         return 0;
-> }
->
+This function takes the registration_lock mutex, to prevent a races when
+drivers register framebuffer devices. But if a conflicting framebuffer
+device is found, the underlaying platform device is unregistered and this
+will lead to the platform driver .remove callback to be called, which in
+turn will call to the unregister_framebuffer() that takes the same lock.
+
+To prevent this, a struct fb_info.forced_out field was used as indication
+to unregister_framebuffer() whether the mutex has to be grabbed or not.
+
+A cleaner solution is to drop the lock before platform_device_unregister()
+so unregister_framebuffer() can take it when called from the fbdev driver,
+and just grab the lock again after the device has been registered and do
+a removal loop restart.
+
+Since the framebuffer devices will already be removed, the loop would just
+finish when no more conflicting framebuffers are found.
+
+Suggested-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+---
+
+(no changes since v1)
+
+ drivers/video/fbdev/core/fbmem.c | 29 +++++++++++++++++++----------
+ include/linux/fb.h               |  1 -
+ 2 files changed, 19 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
+index bdd00d381bbc..bcdbbe543466 100644
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -1553,6 +1553,7 @@ static void do_remove_conflicting_framebuffers(struct apertures_struct *a,
+ {
+ 	int i;
+ 
++restart_removal:
+ 	/* check all firmware fbs and kick off if the base addr overlaps */
+ 	for_each_registered_fb(i) {
+ 		struct apertures_struct *gen_aper;
+@@ -1576,16 +1577,28 @@ static void do_remove_conflicting_framebuffers(struct apertures_struct *a,
+ 			 * VESA, EFI, etc. A native driver will then be able to
+ 			 * allocate the memory range.
+ 			 *
+-			 * If it's not a platform device, at least print a warning. A
+-			 * fix would add code to remove the device from the system.
++			 * Drop the lock because if the device is unregistered, its
++			 * drivers will call to unregister_framebuffer() that takes
++			 * this lock.
+ 			 */
++			mutex_unlock(&registration_lock);
+ 			if (dev_is_platform(device)) {
+-				registered_fb[i]->forced_out = true;
+ 				platform_device_unregister(to_platform_device(device));
+ 			} else {
++				/*
++				 * If it's not a platform device, at least print a warning. A
++				 * fix would add to code to remove the device from the system.
++				 */
+ 				pr_warn("fb%d: cannot remove device\n", i);
+-				do_unregister_framebuffer(registered_fb[i]);
++				/* call unregister_framebuffer() so it can take the lock */
++				unregister_framebuffer(registered_fb[i]);
+ 			}
++			mutex_lock(&registration_lock);
++			/*
++			 * Restart the removal loop now that the device has been
++			 * unregistered and its associated framebuffer gone.
++			 */
++			goto restart_removal;
+ 		}
+ 	}
+ }
+@@ -1892,13 +1905,9 @@ EXPORT_SYMBOL(register_framebuffer);
+ void
+ unregister_framebuffer(struct fb_info *fb_info)
+ {
+-	bool forced_out = fb_info->forced_out;
+-
+-	if (!forced_out)
+-		mutex_lock(&registration_lock);
++	mutex_lock(&registration_lock);
+ 	do_unregister_framebuffer(fb_info);
+-	if (!forced_out)
+-		mutex_unlock(&registration_lock);
++	mutex_unlock(&registration_lock);
+ }
+ EXPORT_SYMBOL(unregister_framebuffer);
+ 
+diff --git a/include/linux/fb.h b/include/linux/fb.h
+index f95da1af9ff6..b781bc721113 100644
+--- a/include/linux/fb.h
++++ b/include/linux/fb.h
+@@ -502,7 +502,6 @@ struct fb_info {
+ 	} *apertures;
+ 
+ 	bool skip_vt_switch; /* no VT switch on suspend/resume required */
+-	bool forced_out; /* set when being removed by another driver */
+ };
+ 
+ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
+-- 
+2.35.1
 
