@@ -2,87 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 237C3C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232874AbiDHQiT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 12:38:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35792 "EHLO
+        id S232916AbiDHQii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 12:38:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232671AbiDHQiP (ORCPT
+        with ESMTP id S232893AbiDHQid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 12:38:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9E0E886C;
-        Fri,  8 Apr 2022 09:36:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FDDDB82A1D;
-        Fri,  8 Apr 2022 16:36:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 263C7C385A3;
-        Fri,  8 Apr 2022 16:36:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649435766;
-        bh=K5Kb3Xp0nCtSmnffNpkwtXLSVOyZuSrWwz3IcdaEMsg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=WoNz2bF6JO0f/m2ru+xTXSU2mwhtzBKkDAtQZn+Uaryd6WxxDeiYxn0a+MGIN4e+0
-         1F22ktcK6ICMlzaCXccBwbv79SK3QJdLiapBugH9E6tgGfD3EKmD+w5jqopJ73GCve
-         EyMxOp0ckbP6T19dkF3aKe7HpIegg0x/+dFEi4PaZpi2gaQ9HdLNEg5fixdSNwam4T
-         ddYGwQXQ5aHe9+BHkEjg/12Dw6YuZWerS9t0U23OsoDQarHu1pqd2FTzIz1gbhgl4C
-         e0rR/O9ZRq9yUxODI2O1CZ+2NZhyp6UuP4mVmcziWVlvGnPWqnFQ181ih/jOXTSjJn
-         TBt/gq1632CxQ==
-Received: by mail-yb1-f172.google.com with SMTP id w134so16029149ybe.10;
-        Fri, 08 Apr 2022 09:36:06 -0700 (PDT)
-X-Gm-Message-State: AOAM531FUb+y9ivPz2iB9PXHfGgol2+GUNbHuzv8t3TtjKJ5KMI7VjEk
-        FM1XZ7qkwLi/rYKBpX2TqnGJr6W1Uo3ped+/1H0=
-X-Google-Smtp-Source: ABdhPJyKLjZmpdguSVpuN09IKlc04KncOOIfRxhBm2fII7mzd2UxjW7i6caa6tBWW95cP9i+gMEge8We3t1NQBHRysw=
-X-Received: by 2002:a25:6909:0:b0:63d:afc8:8b01 with SMTP id
- e9-20020a256909000000b0063dafc88b01mr14441952ybc.561.1649435765226; Fri, 08
- Apr 2022 09:36:05 -0700 (PDT)
+        Fri, 8 Apr 2022 12:38:33 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145F4EDF0A
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 09:36:28 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so10185733pjk.4
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 09:36:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pfTINF2/xfnGZVEw3z7BP1PK6XdQNXLNLCDBaw1lD30=;
+        b=k3QEquPd6TbgYblR0v+H84O27eBKCRbzHIFxGdsYYB40L1E1Hg8j/KLx93Xi7dKNj/
+         wSrZGo7VSZ27nRZuzyDGEFtUNlcz8DME06ys8Pf1kpzaYQJ4Yv/9J7YOJ2xt9yXAmUXJ
+         XDgu5LFZ+RYji5fR2baD2MzYNqx3kQpm9QDaNfg0B1qQ1XuB7o3E1RlAJ96H+hBmftyH
+         r4xacVo/0CRgDYxd4qWVcXs0kY5uTQhRzpirhWzT7XkVLveECKs4GK9GE/IfWKnL0g/o
+         YmHn4NWd8SeJ2fpGKVQMT+3J7e9eQ80vgoql8JPSY7wVl/0ur/7XelAmQ3kL1ISVvkt3
+         d8Cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pfTINF2/xfnGZVEw3z7BP1PK6XdQNXLNLCDBaw1lD30=;
+        b=BnHawJpwbcukBr8OEQMKjXadxdzFj21+Leoxe4LjIpPL36UiJ21AtvVIugRDc47yJL
+         Ucozcb4C2kyaA+yOVBTmmWij7r+uOEMJ380jpYWXCWvg+l8SxcrFgdHPke6kjmUFIr9t
+         /EEaaziIpms1KQtVfW/xSgZhEbaeYEFVXxVkrZLx0WCkHXHQzOn4VRdDJrOi8S4WeYRM
+         b6IomMYRCpTFjs7wbMSCKtrtu75aaUHh46AuR0eTbTPUcaWRvD6cbOuTFxG19/JuspJn
+         phdPusfzuJyzUFSKBJVXWZPe1vqOd+l41GGjVV45tyeCvafu/Z5uxRHSRS0I2U4U6xD/
+         lX4Q==
+X-Gm-Message-State: AOAM532ezHBGtUxc6fwZx8AxajSu6d903LeO07IpGkmbf0GnZwF0c4P3
+        uRFnkM6CWZ4Hgn7CX3fDZVAiqg==
+X-Google-Smtp-Source: ABdhPJy2KFW8FNw7hgTBTNpq63UwbSqcFK5XldeiM0tVPoz8diTDX0olaI5+v9g/NsDXbO+BJHk2vA==
+X-Received: by 2002:a17:902:e546:b0:157:832:2c0a with SMTP id n6-20020a170902e54600b0015708322c0amr8979222plf.37.1649435788330;
+        Fri, 08 Apr 2022 09:36:28 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id o32-20020a635d60000000b0039cd48c7f6asm4585009pgm.32.2022.04.08.09.36.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 09:36:27 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 16:36:24 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     isaku.yamahata@intel.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
+        Connor Kuehl <ckuehl@redhat.com>
+Subject: Re: [RFC PATCH v5 076/104] KVM: x86: Add option to force LAPIC
+ expiration wait
+Message-ID: <YlBkiOmTGk8VlWFh@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <52b0451a4ffba54455acf710b443715ac16effd4.1646422845.git.isaku.yamahata@intel.com>
 MIME-Version: 1.0
-References: <20220408083728.25701-1-xiam0nd.tong@gmail.com> <20220408122348.bt7lkaumwhv36a2q@fiona>
-In-Reply-To: <20220408122348.bt7lkaumwhv36a2q@fiona>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 8 Apr 2022 09:35:54 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5qZiE4z0j_+pJbiHQ+zK9oVw3DLgEXdSQ0m=m5ULX1Mw@mail.gmail.com>
-Message-ID: <CAPhsuW5qZiE4z0j_+pJbiHQ+zK9oVw3DLgEXdSQ0m=m5ULX1Mw@mail.gmail.com>
-Subject: Re: [PATCH v3] md: fix an incorrect NULL check in does_sb_need_changing
-To:     Goldwyn Rodrigues <rgoldwyn@suse.de>
-Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        linux-raid <linux-raid@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <52b0451a4ffba54455acf710b443715ac16effd4.1646422845.git.isaku.yamahata@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 5:23 AM Goldwyn Rodrigues <rgoldwyn@suse.de> wrote:
->
-> On 16:37 08/04, Xiaomeng Tong wrote:
-> > The bug is here:
-> >       if (!rdev)
-> >
-> > The list iterator value 'rdev' will *always* be set and non-NULL
-> > by rdev_for_each(), so it is incorrect to assume that the iterator
-> > value will be NULL if the list is empty or no element found.
-> > Otherwise it will bypass the NULL check and lead to invalid memory
-> > access passing the check.
-> >
-> > To fix the bug, use a new variable 'iter' as the list iterator,
-> > while using the original variable 'rdev' as a dedicated pointer to
-> > point to the found element.
-> >
-> > Cc: stable@vger.kernel.org
-> > Fixes: 2aa82191ac36 ("md-cluster: Perform a lazy update")
-> > Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-> > Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
->
-> Also safeguards from reading sb from a faulty device if all devices are
-> faulty.
->
-> Acked-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+On Fri, Mar 04, 2022, isaku.yamahata@intel.com wrote:
+> From: Sean Christopherson <sean.j.christopherson@intel.com>
+> 
+> Add an option to skip the IRR check-in kvm_wait_lapic_expire().  This
+> will be used by TDX to wait if there is an outstanding notification for
+> a TD, i.e. a virtual interrupt is being triggered via posted interrupt
+> processing.  KVM TDX doesn't emulate PI processing, i.e. there will
+> never be a bit set in IRR/ISR, so the default behavior for APICv of
+> querying the IRR doesn't work as intended.
+> 
+> Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>  arch/x86/kvm/lapic.c   | 4 ++--
+>  arch/x86/kvm/lapic.h   | 2 +-
+>  arch/x86/kvm/svm/svm.c | 2 +-
+>  arch/x86/kvm/vmx/vmx.c | 2 +-
+>  4 files changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+> index 9322e6340a74..d49f029ef0e3 100644
+> --- a/arch/x86/kvm/lapic.c
+> +++ b/arch/x86/kvm/lapic.c
+> @@ -1620,12 +1620,12 @@ static void __kvm_wait_lapic_expire(struct kvm_vcpu *vcpu)
+>  		__wait_lapic_expire(vcpu, tsc_deadline - guest_tsc);
+>  }
+>  
+> -void kvm_wait_lapic_expire(struct kvm_vcpu *vcpu)
+> +void kvm_wait_lapic_expire(struct kvm_vcpu *vcpu, bool force_wait)
+>  {
+>  	if (lapic_in_kernel(vcpu) &&
+>  	    vcpu->arch.apic->lapic_timer.expired_tscdeadline &&
+>  	    vcpu->arch.apic->lapic_timer.timer_advance_ns &&
+> -	    lapic_timer_int_injected(vcpu))
+> +	    (force_wait || lapic_timer_int_injected(vcpu)))
+>  		__kvm_wait_lapic_expire(vcpu);
 
-Applied to md-next. Thanks!
+If the guest_apic_protected idea works, rather than require TDX to tell the local
+APIC that it should wait, the common code can instead assume a timer IRQ is pending
+if the IRR holds garbage.
+
+Again, compile tested only...
+
+From: Sean Christopherson <seanjc@google.com>
+Date: Fri, 8 Apr 2022 09:24:39 -0700
+Subject: [PATCH] KVM: x86: Assume timer IRQ was injected if APIC state is
+ proteced
+
+If APIC state is protected, i.e. the vCPU is a TDX guest, assume a timer
+IRQ was injected when deciding whether or not to busy wait in the "timer
+advanced" path.  The "real" vIRR is not readable/writable, so trying to
+query for a pending timer IRQ will return garbage.
+
+Note, TDX can scour the PIR if it wants to be more precise and skip the
+"wait" call entirely.
+
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/kvm/lapic.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 50a483abc0fe..e5555dce8db8 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -1531,8 +1531,17 @@ static void apic_update_lvtt(struct kvm_lapic *apic)
+ static bool lapic_timer_int_injected(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_lapic *apic = vcpu->arch.apic;
+-	u32 reg = kvm_lapic_get_reg(apic, APIC_LVTT);
++	u32 reg;
+
++	/*
++	 * Assume a timer IRQ was "injected" if the APIC is protected.  KVM's
++	 * copy of the vIRR is bogus, it's the responsibility of the caller to
++	 * precisely check whether or not a timer IRQ is pending.
++	 */
++	if (apic->guest_apic_protected)
++		return true;
++
++	reg  = kvm_lapic_get_reg(apic, APIC_LVTT);
+ 	if (kvm_apic_hw_enabled(apic)) {
+ 		int vec = reg & APIC_VECTOR_MASK;
+ 		void *bitmap = apic->regs + APIC_ISR;
+
+base-commit: 33f2439cd63c84fcbc8b4cdd4eb731e83deead90
+--
