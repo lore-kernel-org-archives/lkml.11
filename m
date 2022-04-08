@@ -2,94 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:34:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 752ACC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:40:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235811AbiDHMgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53998 "EHLO
+        id S235820AbiDHMmo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiDHMgi (ORCPT
+        with ESMTP id S235812AbiDHMmg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:36:38 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4297D34419D;
-        Fri,  8 Apr 2022 05:34:35 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2389pBUC030712;
-        Fri, 8 Apr 2022 14:34:17 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=bp+advT6TM4LuIU9sLQaID0/TZyMgJN3G2xJZz8o1AU=;
- b=eABha4MSL/xg7cgiJru/aiX8yjGl3v7qG+TgqX0x9EsmjR7fprmru21plFCCWv0iUtD/
- Pc3sf5vj+xJXhbfr6Hgye9ZtH2MTzJu4XZMx2e+hrZyMKtTftOHiKjUhSIu3HQXPrDeN
- ZwvNLsljApLl40aI69xulJOMayBQbX/6xwqKLoO7Q+MWnRiTwcpjngYQNDjSgkwrdvGr
- H/KlWHLk60AXq2cTkQMx6LIMZYkIvdgax71qLWkIwMNS57yHVMbH/aAhRxAINsjmY7q8
- 6sZJLd7wy9k1zskvea3CbUUDVk9wpr+xddm3XTF9d35ul0mBw10+phSsYU8cB3R7UA/j ig== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3f6du1c173-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 08 Apr 2022 14:34:17 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 0FC3C10002A;
-        Fri,  8 Apr 2022 14:34:17 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 08C2E21A233;
-        Fri,  8 Apr 2022 14:34:17 +0200 (CEST)
-Received: from [10.201.20.168] (10.75.127.50) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 8 Apr
- 2022 14:34:16 +0200
-Message-ID: <01e5e489-024c-89c1-4df0-21a12557401b@foss.st.com>
-Date:   Fri, 8 Apr 2022 14:34:16 +0200
+        Fri, 8 Apr 2022 08:42:36 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B3A295252
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 05:40:29 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id bi13-20020a05600c3d8d00b0038c2c33d8f3so7465457wmb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 05:40:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=JtXxBqYHvoARiWzEnaLQz1KM8jdVHYhcJ4+dJSrCNho=;
+        b=DaN6uMg1mWoy0sJAV0g1YvUeexSJXdw69mB/G8cDTl88B7hvvTMuHBQkKlxH+KxDBa
+         H81GzezGvpaDopE334/4Okotf/kCCXHz0vTpmLLKEx+Bku9pLOU5FLpp5gk3GohhXLd2
+         zblz1C20kzVUnt868ukX1W9mV9hWWq59Ym5miWpnU+vOc0PlqLBFpI4eiVEtZciOwdpN
+         9oRD1RByZh4b3H8vb6DNYjQgBx23gDCP7JeF9fdpNoGmFL1sUyzTBxx/b2Te50F26SqH
+         T5Cz05dVjRAjbO/3D1xZCcCuQgILdFS7HDXoHATbCKG4OH8TImR3t40881bgVzivKS3t
+         mUHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=JtXxBqYHvoARiWzEnaLQz1KM8jdVHYhcJ4+dJSrCNho=;
+        b=VZBfg/gcQj6T3S6XPjd4x7jJyE8GqxVkDlGbnJF5VpkfE3/D/MjWHq2HPepjbIDrxJ
+         3lPnxQ2zsbWbReVceu2Mom2pNYstk2/Oh198EWtHhS4CwLwqe2WGWNWvRXNXmJVdlonA
+         6s1GGEJ2yLLSXOg1TEVzzpKIQgyO1iIEvaf5vRJFByPOBXd+jxaVpb9L8fyZPa+QvlFM
+         AuGBly8g05NLS6kxmUjvQ6BQ2ulyayWHdlGMgv4EQR434Z2Jut/1yg58Al/FKYiJPUlH
+         U7YBtd6/5VMQu55GuKAIr+8sWiyjE2sd7XaLOAMb238d47N5mwhzfJyE7xcxGz1NL4xW
+         oJxQ==
+X-Gm-Message-State: AOAM531D4wqsF9hBuyt6SSvEBWOjNo4avd9GaDY8SImnoivVtPfyURZ3
+        aq2IYmKx3QjljKDVgKFHPCINMw==
+X-Google-Smtp-Source: ABdhPJwoCjsjihXGrySnrwKn6BzJl3Dg6+P50meXlcaikWCGLEuuq9Lafl4Wwjjb/OVp8TTTx0TyAg==
+X-Received: by 2002:a05:600c:3d86:b0:38d:581:89ad with SMTP id bi6-20020a05600c3d8600b0038d058189admr17088800wmb.42.1649421627958;
+        Fri, 08 Apr 2022 05:40:27 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:eacd:ce6:e294:acd1? ([2001:861:44c0:66c0:eacd:ce6:e294:acd1])
+        by smtp.gmail.com with ESMTPSA id u7-20020a05600c19c700b0038cc9aac1a3sm11597138wmq.23.2022.04.08.05.40.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 05:40:27 -0700 (PDT)
+Message-ID: <25ca3826-44ee-ca6f-fb6b-1ef62f6da456@baylibre.com>
+Date:   Fri, 8 Apr 2022 14:40:23 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 0/3] serial: stm32: add earlycon and polling mode
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 3/5] drm: bridge: dw_hdmi: Enable GCP only for Deep
+ Color
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>
-CC:     Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        <linux-serial@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>
-References: <20220407123109.132035-1-valentin.caron@foss.st.com>
-From:   Valentin CARON <valentin.caron@foss.st.com>
-In-Reply-To: <20220407123109.132035-1-valentin.caron@foss.st.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Sandor Yu <Sandor.yu@nxp.com>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, andrzej.hajda@intel.com,
+        robert.foss@linaro.org, Laurent.pinchart@ideasonboard.com,
+        jonas@kwiboo.se, jernej.skrabec@gmail.com, hverkuil-cisco@xs4all.nl
+Cc:     shengjiu.wang@nxp.com, cai.huoqing@linux.dev, maxime@cerno.tech,
+        harry.wentland@amd.com
+References: <cover.1649412256.git.Sandor.yu@nxp.com>
+ <a0f9def7e7438592f78ef0a16cd0a560be0e6133.1649412256.git.Sandor.yu@nxp.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <a0f9def7e7438592f78ef0a16cd0a560be0e6133.1649412256.git.Sandor.yu@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-08_04,2022-04-08_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/7/22 14:31, Valentin Caron wrote:
-> - Add support of early console and polling mode in stm32-usart driver.
-> - Avoid a possible infinite loop in putchar function.
->
-> Valentin Caron (3):
->    serial: stm32: remove infinite loop possibility in putchar function
->    serial: stm32: add KGDB support
->    serial: stm32: add earlycon support
->
->   .../admin-guide/kernel-parameters.txt         |   6 ++
->   drivers/tty/serial/Kconfig                    |   1 +
->   drivers/tty/serial/stm32-usart.c              | 101 +++++++++++++++++-
->   drivers/tty/serial/stm32-usart.h              |   2 +
->   4 files changed, 105 insertions(+), 5 deletions(-)
->
-Hi,
+On 08/04/2022 12:32, Sandor Yu wrote:
+> HDMI1.4b specification section 6.5.3:
+> Source shall only send GCPs with non-zero CD to sinks
+> that indicate support for Deep Color.
+> 
+> DW HDMI GCP default enabled, clear gpc_auto bit for 24-bit color depth.
 
-Please drop this series, I sent a V2
+It's right because we do not handle AVMUTE, Pixel Packing nor Default_Phase.
+
+> 
+> Signed-off-by: Sandor Yu <Sandor.yu@nxp.com>
+> ---
+>   drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 12 ++++++++++++
+>   1 file changed, 12 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+> index 02d8f7e08814..5a7ec066e37a 100644
+> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+> @@ -1108,6 +1108,8 @@ static void hdmi_video_packetize(struct dw_hdmi *hdmi)
+>   	unsigned int output_select = HDMI_VP_CONF_OUTPUT_SELECTOR_PP;
+>   	struct hdmi_data_info *hdmi_data = &hdmi->hdmi_data;
+>   	u8 val, vp_conf;
+> +	u8 clear_gcp_auto = 0;
+> +
+>   
+>   	if (hdmi_bus_fmt_is_rgb(hdmi->hdmi_data.enc_out_bus_format) ||
+>   	    hdmi_bus_fmt_is_yuv444(hdmi->hdmi_data.enc_out_bus_format) ||
+> @@ -1117,6 +1119,7 @@ static void hdmi_video_packetize(struct dw_hdmi *hdmi)
+>   		case 8:
+>   			color_depth = 4;
+>   			output_select = HDMI_VP_CONF_OUTPUT_SELECTOR_BYPASS;
+> +			clear_gcp_auto = 1;
+>   			break;
+>   		case 10:
+>   			color_depth = 5;
+> @@ -1136,6 +1139,7 @@ static void hdmi_video_packetize(struct dw_hdmi *hdmi)
+>   		case 0:
+>   		case 8:
+>   			remap_size = HDMI_VP_REMAP_YCC422_16bit;
+> +			clear_gcp_auto = 1;
+>   			break;
+>   		case 10:
+>   			remap_size = HDMI_VP_REMAP_YCC422_20bit;
+> @@ -1160,6 +1164,14 @@ static void hdmi_video_packetize(struct dw_hdmi *hdmi)
+>   		HDMI_VP_PR_CD_DESIRED_PR_FACTOR_MASK);
+>   	hdmi_writeb(hdmi, val, HDMI_VP_PR_CD);
+>   
+> +	val = hdmi_readb(hdmi, HDMI_FC_DATAUTO3);
+> +	if (clear_gcp_auto == 1)
+> +		/* disable Auto GCP when 24-bit color */
+
+Maybe add a new define for HDMI_FC_DATAUTO3_GCP_AUTO bit and use it here.
+
+> +		val &= ~0x4;
+> +	else
+> +		val |= 0x4;
+> +	hdmi_writeb(hdmi, val, HDMI_FC_DATAUTO3);
+
+Please also add a comment explaining we clear GCP because we only
+transmit CD and do not handle AVMUTE, PP nor Default_Phase (yet).
+
+> +
+>   	hdmi_modb(hdmi, HDMI_VP_STUFF_PR_STUFFING_STUFFING_MODE,
+>   		  HDMI_VP_STUFF_PR_STUFFING_MASK, HDMI_VP_STUFF);
+>   
 
 Thanks,
-Valentin
+Neil
