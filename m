@@ -2,104 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B42CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B2DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233430AbiDHQkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 12:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44662 "EHLO
+        id S233484AbiDHQn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 12:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233337AbiDHQkj (ORCPT
+        with ESMTP id S230014AbiDHQnX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 12:40:39 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F3E12341F
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 09:38:35 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id ot30so18310779ejb.12
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 09:38:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vI6Hm9RSMRrV2TmLm8c0QGf/x0XfSnUFVHwkf1u/cYU=;
-        b=BxrkPd3dEBKjVdg/dsd4TZyXGu4bqaDpOKVzfI804SgulnHfXNYBY6K7NbAEHMb0vQ
-         1eqvWhPYQEPkX/bFkGuaNE49kkZDnrOWGXmXI97ojj33RS8N/kExB8+g0/atQNppiZin
-         mRI1I6cvMxghA7Xfoe3KmNfvu+owZEXF1QIpuLhndsSiCmNtD+F8jvBeISSOHUO8w0m/
-         cF27mqHuey7vl0Us7cXKvLxwlPi8nZZV59beh6e8vtzFch9t/h8bpoBa7OmqvyP9nVy6
-         x6W+KlH4rIQewx5c7h4xTWgWqSkGXeIGeOqOKsTnvj1gKsIGyPfQN5sNge6d1LX426VH
-         Kfhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vI6Hm9RSMRrV2TmLm8c0QGf/x0XfSnUFVHwkf1u/cYU=;
-        b=TUQ5CQuy3CCAvtmzmfoy3GpSBAzERIQ4iXVRFSKlEOsuKKMg4dwSjOWsezX9jvYy5F
-         x+dS6gVaBHS8sZjh5ZgnLozDYGRTLq68sKTrt282xsr1FXKt+BVtmVXTwYpebUcX93+N
-         2yKpJJFZAvsW0kUx72QSMJyC6jSFmRX/4BKpvlz1lC2GPH7XQ49/otc2Aiv9pDhXFPLs
-         8fRS4lJIc/InZvQd8hmHqz2IO7u9H8KttWhCCxSecGHpTtHPwrOx9KxbnY/7swW4taGC
-         8nQAk+v87Peivn6s5Ik3PYlcUAAFX1hwTnh7J2ruqLHZ4Sp0U1doW6DRJHxtAT+Oi98v
-         NDSA==
-X-Gm-Message-State: AOAM532NOtPpbSji/qagVevsNwy8Rzzjr9OJcbcq0T32PbObb9roNny+
-        56fTcRGBFJZ/5oDyGUcor3vzRG7/1mw=
-X-Google-Smtp-Source: ABdhPJx6WFUNQdUb7zVq2jmr/Es7R3OD4JX6GnIevR9IaUsVo4aUGIiBTqGxDIDDQVgLJrCuLucckg==
-X-Received: by 2002:a17:906:c149:b0:6df:f047:1698 with SMTP id dp9-20020a170906c14900b006dff0471698mr19247907ejc.16.1649435914282;
-        Fri, 08 Apr 2022 09:38:34 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
-        by smtp.gmail.com with ESMTPSA id 22-20020a17090600d600b006dfbc46efabsm8899314eji.126.2022.04.08.09.38.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 09:38:33 -0700 (PDT)
-From:   Michael Straube <straube.linux@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH] staging: r8188eu: convert else if to else in rtw_led.c
-Date:   Fri,  8 Apr 2022 18:38:25 +0200
-Message-Id: <20220408163825.29069-1-straube.linux@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 8 Apr 2022 12:43:23 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B652A10E9;
+        Fri,  8 Apr 2022 09:41:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649436079; x=1680972079;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=aAbi/qmKq+r/hL4lQDiEEDWm+BnU3Db3wanrG3/Vskg=;
+  b=RjnOTixhwA9lwoKCBk2+xaerM8hMPcB47cZjmyeOTLzJCbS2JSxn0LBD
+   taT1hPg2zYxrZUo5uddpjvwlZT+fvhzQIEuQeRztUqxT+2kJRsSG6sStz
+   oWUeZzW6Lv95vmEJlLUrBSvCflKl07AKzA5IB6UFhJVrUnhNvNnQUIN9K
+   kVn20bf5SYiMVKl5YHwbtJ7bIk8FWezleaM21bejZDqj6ggzf8gu5S4tQ
+   5CbsM82QnMtWxc+XtatlzH0elCB+rrx5JxERE8l1YEQ7iYEpcVkHzM7eb
+   SGGaifQVyR2UriXi9Kjo9T2BgH+pODCU0ulORxV/FU1hL/sBpQeqXzH2/
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="243768602"
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="243768602"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 09:41:19 -0700
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="571547038"
+Received: from zengguan-mobl1.ccr.corp.intel.com (HELO [10.254.213.22]) ([10.254.213.22])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 09:41:14 -0700
+Message-ID: <b8f753b0-1b57-3e42-3516-27cc0359c584@intel.com>
+Date:   Sat, 9 Apr 2022 00:41:03 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v7 8/8] KVM: VMX: enable IPI virtualization
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Hu, Robert" <robert.hu@intel.com>,
+        "Gao, Chao" <chao.gao@intel.com>
+References: <20220304080725.18135-1-guang.zeng@intel.com>
+ <20220304080725.18135-9-guang.zeng@intel.com> <YkZlhI7nAAqDhT0D@google.com>
+ <54df6da8-ad68-cc75-48db-d18fc87430e9@intel.com>
+ <YksxiAnNmdR2q65S@google.com>
+From:   Zeng Guang <guang.zeng@intel.com>
+In-Reply-To: <YksxiAnNmdR2q65S@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The else if in this block is redundant, it can be a simple else.
 
-if (x) {
-  ...
-} else if (!x) {
-  ...
-}
+On 4/5/2022 1:57 AM, Sean Christopherson wrote:
+> On Sun, Apr 03, 2022, Zeng Guang wrote:
+>> On 4/1/2022 10:37 AM, Sean Christopherson wrote:
+>>>> @@ -4219,14 +4226,21 @@ static void vmx_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
+>>>>    	pin_controls_set(vmx, vmx_pin_based_exec_ctrl(vmx));
+>>>>    	if (cpu_has_secondary_exec_ctrls()) {
+>>>> -		if (kvm_vcpu_apicv_active(vcpu))
+>>>> +		if (kvm_vcpu_apicv_active(vcpu)) {
+>>>>    			secondary_exec_controls_setbit(vmx,
+>>>>    				      SECONDARY_EXEC_APIC_REGISTER_VIRT |
+>>>>    				      SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
+>>>> -		else
+>>>> +			if (enable_ipiv)
+>>>> +				tertiary_exec_controls_setbit(vmx,
+>>>> +						TERTIARY_EXEC_IPI_VIRT);
+>>>> +		} else {
+>>>>    			secondary_exec_controls_clearbit(vmx,
+>>>>    					SECONDARY_EXEC_APIC_REGISTER_VIRT |
+>>>>    					SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
+>>>> +			if (enable_ipiv)
+>>>> +				tertiary_exec_controls_clearbit(vmx,
+>>>> +						TERTIARY_EXEC_IPI_VIRT);
+>>> Oof.  The existing code is kludgy.  We should never reach this point without
+>>> enable_apicv=true, and enable_apicv should be forced off if APICv isn't supported,
+>>> let alone seconary exec being support.
+>>>
+>>> Unless I'm missing something, throw a prep patch earlier in the series to drop
+>>> the cpu_has_secondary_exec_ctrls() check, that will clean this code up a smidge.
+>> cpu_has_secondary_exec_ctrls() check can avoid wrong vmcs write in case mistaken
+>> invocation.
+> KVM has far bigger problems on buggy invocation, and in that case the resulting
+> printk + WARN from the failed VMWRITE is a good thing.
 
-Convert two such else if statements to simple else in rw_led.c.
 
-Signed-off-by: Michael Straube <straube.linux@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_led.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+SDM doesn't define VMWRITE failure for such case. But it says the logical
+processor operates as if all the secondary processor-based VM-execution
+controls were 0 if "activate secondary controls" primary processor-based
+VM-execution control is 0. So we may add WARN() to detect this kind of
+buggy invocation instead.
 
-diff --git a/drivers/staging/r8188eu/core/rtw_led.c b/drivers/staging/r8188eu/core/rtw_led.c
-index 4b047c438389..2f3000428af7 100644
---- a/drivers/staging/r8188eu/core/rtw_led.c
-+++ b/drivers/staging/r8188eu/core/rtw_led.c
-@@ -110,7 +110,7 @@ static void blink_work(struct work_struct *work)
- 				pLed->bLedLinkBlinkInProgress = true;
- 				pLed->CurrLedState = LED_BLINK_NORMAL;
- 				schedule_delayed_work(&pLed->blink_work, LED_BLINK_LINK_INTVL);
--			} else if (!check_fwstate(pmlmepriv, _FW_LINKED)) {
-+			} else {
- 				pLed->bLedNoLinkBlinkInProgress = true;
- 				pLed->CurrLedState = LED_BLINK_SLOWLY;
- 				schedule_delayed_work(&pLed->blink_work, LED_BLINK_NO_LINK_INTVL);
-@@ -131,7 +131,7 @@ static void blink_work(struct work_struct *work)
- 				pLed->bLedLinkBlinkInProgress = true;
- 				pLed->CurrLedState = LED_BLINK_NORMAL;
- 				schedule_delayed_work(&pLed->blink_work, LED_BLINK_LINK_INTVL);
--			} else if (!check_fwstate(pmlmepriv, _FW_LINKED)) {
-+			} else {
- 				pLed->bLedNoLinkBlinkInProgress = true;
- 				pLed->CurrLedState = LED_BLINK_SLOWLY;
- 				schedule_delayed_work(&pLed->blink_work, LED_BLINK_NO_LINK_INTVL);
--- 
-2.35.1
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 61e075e16c19..6c370b507b45 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -4200,22 +4200,22 @@ static void vmx_refresh_apicv_exec_ctrl(struct 
+kvm_vcpu *vcpu)
+         struct vcpu_vmx *vmx = to_vmx(vcpu);
+
+         pin_controls_set(vmx, vmx_pin_based_exec_ctrl(vmx));
+-       if (cpu_has_secondary_exec_ctrls()) {
+-               if (kvm_vcpu_apicv_active(vcpu)) {
+-                       secondary_exec_controls_setbit(vmx,
+- SECONDARY_EXEC_APIC_REGISTER_VIRT |
+- SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
+-                       if (enable_ipiv)
+-                               tertiary_exec_controls_setbit(vmx,
+- TERTIARY_EXEC_IPI_VIRT);
+-               } else {
+-                       secondary_exec_controls_clearbit(vmx,
+- SECONDARY_EXEC_APIC_REGISTER_VIRT |
+- SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
+-                       if (enable_ipiv)
+- tertiary_exec_controls_clearbit(vmx,
+- TERTIARY_EXEC_IPI_VIRT);
+-               }
++
++       WARN(!cpu_has_secondary_exec_ctrls(),
++                    "VMX: unexpected vmwrite with inactive secondary 
+exec controls");
++
++       if (kvm_vcpu_apicv_active(vcpu)) {
++               secondary_exec_controls_setbit(vmx,
++                             SECONDARY_EXEC_APIC_REGISTER_VIRT |
++ SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
++               if (enable_ipiv)
++                       tertiary_exec_controls_setbit(vmx, 
+TERTIARY_EXEC_IPI_VIRT);
++       } else {
++               secondary_exec_controls_clearbit(vmx,
++                             SECONDARY_EXEC_APIC_REGISTER_VIRT |
++ SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY);
++               if (enable_ipiv)
++                       tertiary_exec_controls_clearbit(vmx, 
+TERTIARY_EXEC_IPI_VIRT);
+         }
+
+         vmx_update_msr_bitmap_x2apic(vcpu);
+
+>
+>>>> +	 */
+>>>> +	if (vmx_can_use_ipiv(vcpu->kvm)) {
+>>>> +		struct kvm_vmx *kvm_vmx = to_kvm_vmx(vcpu->kvm);
+>>>> +
+>>>> +		mutex_lock(&vcpu->kvm->lock);
+>>>> +		err = vmx_alloc_pid_table(kvm_vmx);
+>>>> +		mutex_unlock(&vcpu->kvm->lock);
+>>> This belongs in vmx_vm_init(), doing it in vCPU creation is a remnant of the
+>>> dynamic resize approach that's no longer needed.
+>> We cannot allocate pid table in vmx_vm_init() as userspace has no chance to
+>> set max_vcpu_ids at this stage. That's the reason we do it in vCPU creation
+>> instead.
+> Ah, right.  Hrm.  And that's going to be a recurring problem if we try to use the
+> dynamic kvm->max_vcpu_ids to reduce other kernel allocations.
+>
+> Argh, and even kvm_arch_vcpu_precreate() isn't protected by kvm->lock.
+>
+> Taking kvm->lock isn't problematic per se, I just hate doing it so deep in a
+> per-vCPU flow like this.
+>
+> A really gross hack/idea would be to make this 64-bit only and steal the upper
+> 32 bits of @type in kvm_create_vm() for the max ID.
+>
+> I think my first choice would be to move kvm_arch_vcpu_precreate() under kvm->lock.
+> None of the architectures that have a non-nop implemenation (s390, arm64 and x86)
+> do significant work, so holding kvm->lock shouldn't harm performance.  s390 has to
+> acquire kvm->lock in its implementation, so we could drop that.  And looking at
+> arm64, I believe its logic should also be done under kvm->lock.
+>
+> It'll mean adding yet another kvm_x86_ops, but I like that more than burying the
+> code deep in vCPU creation.
+>
+> Paolo, any thoughts on this?
+
+Sounds reasonable. I will prepare patch to refactor the 
+kvm_arch_vcpu_precreate()
+and make pid table allocation done there.
+
+Thanks.
 
