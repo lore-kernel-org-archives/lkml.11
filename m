@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08855C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:19:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbiDHHU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 03:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58522 "EHLO
+        id S229869AbiDHHVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 03:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiDHHU2 (ORCPT
+        with ESMTP id S229726AbiDHHUb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 03:20:28 -0400
+        Fri, 8 Apr 2022 03:20:31 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8798A21FF74
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 00:18:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E578721FC62
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 00:18:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649402306; x=1680938306;
+  t=1649402308; x=1680938308;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=9LTlvbPaoYNE/G17yBNjMXG8Hs/vK2YIpRMxwYxU/94=;
-  b=UwJyBDfllJ/guEATzpVsp9dD53s8TnvPK804MkBHfXTPYOl4IfaaGC3x
-   ufuNI404Oksk2r1+AePZys8fjQOqnNnbXQU9IyQKRjnVa7+V5QopsAmA9
-   Jexc7RyrSNLDsTwW7ox6GlXwnRsXGXoaUtPlTTUDv4GrfpOG+IaM0R3xc
-   pVX7cFk99opYBv6RW/I2JYjL8qGH3rPXUW0AbssQ/4YGmV9KFlQqc9DuF
-   BGP0+M6u31syBHaWjXAyylHs5Pq1stHYM9pGMl0CbC9AHnB5QxfIbcHgz
-   W1ABIjdsICLF720kgIIE7rPH2VJ8cp/WsJXPkbbOx5cZqm5aZOnKunEpo
+  bh=1iiz65dkewXFVU2JVgR+NgxlENZAlIxCKHCCdhdsNGI=;
+  b=MaO7jxSlL7ZMwNtaVqNSaSFDchqPxuv5pD1KxYhrgjSg0HPtWoF64kDc
+   AsB+rPuFm0mpgBKQ4E/TOEy4mvvk15MwIal0FoINAmrkAmEgWH899OYdd
+   SBZojPsn8VTXubSKjk1mTnrEkO4lftcKy6jc5H3C1N4P8sRHN7lGrBpVy
+   qR/JAWsO0cB4DhJJFY+TotLbu+e9CMC4BUxkP1oSGPbcwDCcRIN/M+LKu
+   o2WdFNLPdGC+vN+kEWjjF2o6ySirX7NuKZ7hvg0IjP0UlvAURYwFDdyKP
+   bvRuHMHdzYy9EHeaYxQlImcyGikZJLZWBtVXdCouM41aGiUHIs5vYqqdc
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="286521193"
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="286521195"
 X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
-   d="scan'208";a="286521193"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+   d="scan'208";a="286521195"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 00:18:26 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
-   d="scan'208";a="621540337"
+   d="scan'208";a="653155830"
 Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 08 Apr 2022 00:18:25 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 08 Apr 2022 00:18:25 -0700
 Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1ncisy-00069t-HV;
+        id 1ncisy-00069w-Ht;
         Fri, 08 Apr 2022 07:18:24 +0000
-Date:   Fri, 8 Apr 2022 15:17:50 +0800
+Date:   Fri, 8 Apr 2022 15:17:46 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Dave Stevenson <dave.stevenson@raspberrypi.com>
+To:     Gabe Teeger <gabe.teeger@amd.com>
 Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dom Cobley <popcornmix@gmail.com>
-Subject: [l1k:smsc95xx_5.17 281/887]
- drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:1465:17: error: unknown type
- name 'compat_uptr_t'
-Message-ID: <202204081500.XmYHs9n7-lkp@intel.com>
+        Alex Deucher <alexander.deucher@amd.com>,
+        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
+Subject: [agd5f:drm-next 16/132]
+ drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubp.c:57:6: warning:
+ no previous prototype for 'hubp31_program_extended_blank'
+Message-ID: <202204081535.oinzrfCs-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -58,59 +59,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/l1k/linux smsc95xx_5.17
-head:   05d68ced287b30f62f18f95b5476135ef669804a
-commit: 56d0cd616fe11877854ad1b0768b3be67bb30349 [281/887] staging: vc04_services: Add new vc-sm-cma driver
-config: sparc-randconfig-r012-20220408 (https://download.01.org/0day-ci/archive/20220408/202204081500.XmYHs9n7-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 11.2.0
+tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
+head:   49aa98ca30cd186ab33fc5802066e2024d3bfa39
+commit: e5fc78252ccd8dfc260f87d83905e9dffff6d975 [16/132] drm/amd/display: Add support for zstate during extended vblank
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220408/202204081535.oinzrfCs-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
 reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/l1k/linux/commit/56d0cd616fe11877854ad1b0768b3be67bb30349
-        git remote add l1k https://github.com/l1k/linux
-        git fetch --no-tags l1k smsc95xx_5.17
-        git checkout 56d0cd616fe11877854ad1b0768b3be67bb30349
+        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
+        git fetch --no-tags agd5f drm-next
+        git checkout e5fc78252ccd8dfc260f87d83905e9dffff6d975
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash drivers/staging/vc04_services/vc-sm-cma/
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
-   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:731:1: warning: no previous prototype for 'vc_sm_cma_import_dmabuf_internal' [-Wmissing-prototypes]
-     731 | vc_sm_cma_import_dmabuf_internal(struct vc_sm_privdata_t *private,
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:1114:5: warning: no previous prototype for 'vc_sm_cma_ioctl_alloc' [-Wmissing-prototypes]
-    1114 | int vc_sm_cma_ioctl_alloc(struct vc_sm_privdata_t *private,
-         |     ^~~~~~~~~~~~~~~~~~~~~
-   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c: In function 'cache_op_to_func':
-   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:1267:24: error: 'dmac_flush_range' undeclared (first use in this function)
-    1267 |                 return dmac_flush_range;
-         |                        ^~~~~~~~~~~~~~~~
-   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:1267:24: note: each undeclared identifier is reported only once for each function it appears in
-   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c: At top level:
->> drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:1465:17: error: unknown type name 'compat_uptr_t'
-    1465 |                 compat_uptr_t start_address;
-         |                 ^~~~~~~~~~~~~
+>> drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubp.c:57:6: warning: no previous prototype for 'hubp31_program_extended_blank' [-Wmissing-prototypes]
+      57 | void hubp31_program_extended_blank(struct hubp *hubp, unsigned int min_dst_y_next_start_optimized)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-vim +/compat_uptr_t +1465 drivers/staging/vc04_services/vc-sm-cma/vc_sm.c
+vim +/hubp31_program_extended_blank +57 drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubp.c
 
-  1458	
-  1459	#ifdef CONFIG_COMPAT
-  1460	struct vc_sm_cma_ioctl_clean_invalid2_32 {
-  1461		u32 op_count;
-  1462		struct vc_sm_cma_ioctl_clean_invalid_block_32 {
-  1463			u16 invalidate_mode;
-  1464			u16 block_count;
-> 1465			compat_uptr_t start_address;
-  1466			u32 block_size;
-  1467			u32 inter_block_stride;
-  1468		} s[0];
-  1469	};
-  1470	
+    56	
+  > 57	void hubp31_program_extended_blank(struct hubp *hubp, unsigned int min_dst_y_next_start_optimized)
+    58	{
+    59		struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
+    60	
+    61		REG_SET(BLANK_OFFSET_1, 0, MIN_DST_Y_NEXT_START, min_dst_y_next_start_optimized);
+    62	}
+    63	
 
 -- 
 0-DAY CI Kernel Test Service
