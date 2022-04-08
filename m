@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C008C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 04:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E3EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 04:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234409AbiDHFAN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 01:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60594 "EHLO
+        id S234451AbiDHFAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 01:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234387AbiDHE74 (ORCPT
+        with ESMTP id S234386AbiDHE7x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 00:59:56 -0400
+        Fri, 8 Apr 2022 00:59:53 -0400
 Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC2F27CD7
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 21:57:52 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id c11-20020a17090a4d0b00b001cab6569b8cso4105484pjg.5
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 21:57:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C966B2AC78
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 21:57:47 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id d10-20020a17090a3b0a00b001ca93b34e3cso4755224pjc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 21:57:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=3pTs/VmZPxq5q5wYSF5wNcPHcga+GtsVQl1Ey1cMTYA=;
-        b=rvhnsrqMv4sgVKJh1vywJDwJ5U1YIrm4qeZ+xvYMN5iNrp3UBtoPAwLYGST3GoaiMm
-         WHOaYmhgN89ZSkqq/rrlyrpsoAk9snev93OB3iD6xwnbay5f9TY/LZvY0DCAezc6XBkq
-         xL4SfAAQ1Asd+mUQruSX/RHQfET7mMtUa5hZPgL9lbYKPNV6DK0EbhmuK9i82PR/5pAt
-         /NhixDWU/pG6CKN2oFTyr8dDewwdERP0qYAzylJbweyHFeoMsu6trfoKBuDfsepu7Rek
-         a8aShEUZ343hISjyHiMcMdIBoVEqcQ1IoADLU9STJVAAr7sxoIvQ8281ix2aOcgAz9HZ
-         /kVw==
+        bh=NjSiOM/35CoR66GddgJGkPcuLjrAQk87146PcI+7fw0=;
+        b=aSNVD8Dv1pAjAIp1MJf2LmZJVyOsK+n7bFr2jOZjil/rmLRiCSWTwcrXHDdy7/oHe/
+         Bv37xIDzncGkL6U8iAB8xE0qgotdzer+GesJprbrbN3tE3/AcvGuyaa2hqNOnYLnd5ez
+         RR5OJTb4hxOJBAzLiZvp0SfHpR9AC0CGAa57NYjTeSonjqhTEd/aYSa7+PW2l0M9an7c
+         oGf7opkEGVC2n1NR9o+AT++usov2GpzMn2bsSu7Vq/6dkvjUVtG4dOiR8RH1fTj7Zdy1
+         i6ipH575Xw22gZ6xNEZXfmXS7bA+BGy4czwQICZYNXytSU6mfDYit92feNqqhuD7m9zA
+         SUUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=3pTs/VmZPxq5q5wYSF5wNcPHcga+GtsVQl1Ey1cMTYA=;
-        b=GphcQFyGpTXGNVa/SDeg2tYYVk0xVK5muqP5P8hdIQ4LMhEb5BxT5/DtOpO7jzQQjb
-         VPM2mKt3EqIhpluilNbmz87//Fw+8IF/IYpkJwtZWlxZJ+LA+Zl4BwHa8GexsRIqXxBP
-         A0Q3w4lMZRl8Q1dE4CwzYKpDVMfLXi0kCa1uOONzYT4B6AKAvrQIWSagkPn5Isf2iNG6
-         7Ardj08Y9ReeFGBKoyrzWTjIZClj/C20yP/mVtYbBtPzqDedq0iRzoBpgeQC5HFPmEL3
-         wn80wgT9hiULAy2mODB0o+3a9idJvc6wMRJhtaWqH+8D4eLSdL/O2vKAyaVk0uuKwPp+
-         ueTw==
-X-Gm-Message-State: AOAM5308HR//Ovnhi1WtpCk2eltVLFc1fUNRigL+y09jpLJHVJPBhplM
-        eRGNKIiBMvolClVsDiqzVA7qMg3lOq5LDmIp
-X-Google-Smtp-Source: ABdhPJwrP7dagj8dnlFgC14HxELMunGPx+PFv2E1bWL6b6NRaIqpjG704ThFr7Q8pI5XpMISvNAO5NCYkQKyivj5
+        bh=NjSiOM/35CoR66GddgJGkPcuLjrAQk87146PcI+7fw0=;
+        b=SJVbm1ihipEVEZNApj9Bf1/TzdtqDjKb7vHSRlb7eRQkV4xvNLfVfzPgvKdkgAlLhV
+         3shgDjfMN8e6DIctV54HsGaTcXg+VkGOeAY0+mhkVKoYU+u4i0LgLngrH9fRuac4Glom
+         DTnZo+0ptXNNlwDHTeBVDeN9/BJemU0GixY7RHDf7WoTjNPfn7r+5QYmI+fVeitAK0dW
+         nhfF4TlBZbiXlOsEgzJjDDCGFGGtImX5rd8TkyU/8U93hCWuIOqk+G5c2UC2Jq53d+q8
+         FS8oXdRaKMD6FfEKfnnkBi4LUfO/8uMvgtxh7uslgfQo/rO8fkb1THY7fP3PqIAG9K+E
+         ozhg==
+X-Gm-Message-State: AOAM533gHKTiRBN0sfI7XZ9JAdRKxrru3wXoVB79IR+wbYL6Oq3EXe3O
+        dBjwyENoY4Nww70+g9knL5OQg0BIhfUlT41P
+X-Google-Smtp-Source: ABdhPJywussi7i/xLF5mokT59v1xMo0FnOaWa7Wq5Iefmfbat7pCbV7jYYk7OWFFGxZnl4nnGMYwR5ffLABQzYhx
 X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a17:903:22c4:b0:154:8399:5285 with SMTP
- id y4-20020a17090322c400b0015483995285mr17325689plg.56.1649393871741; Thu, 07
- Apr 2022 21:57:51 -0700 (PDT)
-Date:   Fri,  8 Apr 2022 04:57:43 +0000
+ (user=yosryahmed job=sendgmr) by 2002:a63:1117:0:b0:399:2df0:7fb9 with SMTP
+ id g23-20020a631117000000b003992df07fb9mr14473499pgl.40.1649393867335; Thu,
+ 07 Apr 2022 21:57:47 -0700 (PDT)
+Date:   Fri,  8 Apr 2022 04:57:40 +0000
 In-Reply-To: <20220408045743.1432968-1-yosryahmed@google.com>
-Message-Id: <20220408045743.1432968-5-yosryahmed@google.com>
+Message-Id: <20220408045743.1432968-2-yosryahmed@google.com>
 Mime-Version: 1.0
 References: <20220408045743.1432968-1-yosryahmed@google.com>
 X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH v3 4/4] selftests: cgroup: add a selftest for memory.reclaim
+Subject: [PATCH v3 1/4] memcg: introduce per-memcg reclaim interface
 From:   Yosry Ahmed <yosryahmed@google.com>
 To:     Johannes Weiner <hannes@cmpxchg.org>,
         Michal Hocko <mhocko@kernel.org>,
@@ -71,123 +71,210 @@ Cc:     David Rientjes <rientjes@google.com>, Tejun Heo <tj@kernel.org>,
         Tim Chen <tim.c.chen@linux.intel.com>, cgroups@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
-        Yosry Ahmed <yosryahmed@google.com>
+        Yosry Ahmed <yosryahmed@google.com>,
+        Michal Hocko <mhocko@suse.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new test for memory.reclaim that verifies that the interface
-correctly reclaims memory as intended, from both anon and file pages.
+From: Shakeel Butt <shakeelb@google.com>
 
+Introduce a memcg interface to trigger memory reclaim on a memory cgroup.
+
+Use case: Proactive Reclaim
+---------------------------
+
+A userspace proactive reclaimer can continuously probe the memcg to
+reclaim a small amount of memory. This gives more accurate and
+up-to-date workingset estimation as the LRUs are continuously
+sorted and can potentially provide more deterministic memory
+overcommit behavior. The memory overcommit controller can provide
+more proactive response to the changing behavior of the running
+applications instead of being reactive.
+
+A userspace reclaimer's purpose in this case is not a complete replacement
+for kswapd or direct reclaim, it is to proactively identify memory savings
+opportunities and reclaim some amount of cold pages set by the policy
+to free up the memory for more demanding jobs or scheduling new jobs.
+
+A user space proactive reclaimer is used in Google data centers.
+Additionally, Meta's TMO paper recently referenced a very similar
+interface used for user space proactive reclaim:
+https://dl.acm.org/doi/pdf/10.1145/3503222.3507731
+
+Benefits of a user space reclaimer:
+-----------------------------------
+
+1) More flexible on who should be charged for the cpu of the memory
+reclaim. For proactive reclaim, it makes more sense to be centralized.
+
+2) More flexible on dedicating the resources (like cpu). The memory
+overcommit controller can balance the cost between the cpu usage and
+the memory reclaimed.
+
+3) Provides a way to the applications to keep their LRUs sorted, so,
+under memory pressure better reclaim candidates are selected. This also
+gives more accurate and uptodate notion of working set for an
+application.
+
+Why memory.high is not enough?
+------------------------------
+
+- memory.high can be used to trigger reclaim in a memcg and can
+  potentially be used for proactive reclaim.
+  However there is a big downside in using memory.high. It can potentially
+  introduce high reclaim stalls in the target application as the
+  allocations from the processes or the threads of the application can hit
+  the temporary memory.high limit.
+
+- Userspace proactive reclaimers usually use feedback loops to decide
+  how much memory to proactively reclaim from a workload. The metrics
+  used for this are usually either refaults or PSI, and these metrics
+  will become messy if the application gets throttled by hitting the
+  high limit.
+
+- memory.high is a stateful interface, if the userspace proactive
+  reclaimer crashes for any reason while triggering reclaim it can leave
+  the application in a bad state.
+
+- If a workload is rapidly expanding, setting memory.high to proactively
+  reclaim memory can result in actually reclaiming more memory than
+  intended.
+
+The benefits of such interface and shortcomings of existing interface
+were further discussed in this RFC thread:
+https://lore.kernel.org/linux-mm/5df21376-7dd1-bf81-8414-32a73cea45dd@google.com/
+
+Interface:
+----------
+
+Introducing a very simple memcg interface 'echo 10M > memory.reclaim' to
+trigger reclaim in the target memory cgroup.
+
+The interface is introduced as a nested-keyed file to allow for future
+optional arguments to be easily added to configure the behavior of
+reclaim.
+
+Possible Extensions:
+--------------------
+
+- This interface can be extended with an additional parameter or flags
+  to allow specifying one or more types of memory to reclaim from (e.g.
+  file, anon, ..).
+
+- The interface can also be extended with a node mask to reclaim from
+  specific nodes. This has use cases for reclaim-based demotion in memory
+  tiering systens.
+
+- A similar per-node interface can also be added to support proactive
+  reclaim and reclaim-based demotion in systems without memcg.
+
+- Add a timeout parameter to make it easier for user space to call the
+  interface without worrying about being blocked for an undefined amount
+  of time.
+
+For now, let's keep things simple by adding the basic functionality.
+
+[yosryahmed@google.com: refreshed to current master, updated commit
+message based on recent discussions and use cases]
+Signed-off-by: Shakeel Butt <shakeelb@google.com>
 Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Acked-by: Michal Hocko <mhocko@suse.com>
+Acked-by: Wei Xu <weixugc@google.com>
 ---
- .../selftests/cgroup/test_memcontrol.c        | 85 +++++++++++++++++++
- 1 file changed, 85 insertions(+)
+ Documentation/admin-guide/cgroup-v2.rst | 21 ++++++++++++++
+ mm/memcontrol.c                         | 37 +++++++++++++++++++++++++
+ 2 files changed, 58 insertions(+)
 
-diff --git a/tools/testing/selftests/cgroup/test_memcontrol.c b/tools/testing/selftests/cgroup/test_memcontrol.c
-index f2ffb3a30194..75ae441c01c3 100644
---- a/tools/testing/selftests/cgroup/test_memcontrol.c
-+++ b/tools/testing/selftests/cgroup/test_memcontrol.c
-@@ -760,6 +760,90 @@ static int test_memcg_max(const char *root)
- 	return ret;
+diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
+index 69d7a6983f78..19bcd73cad03 100644
+--- a/Documentation/admin-guide/cgroup-v2.rst
++++ b/Documentation/admin-guide/cgroup-v2.rst
+@@ -1208,6 +1208,27 @@ PAGE_SIZE multiple when read back.
+ 	high limit is used and monitored properly, this limit's
+ 	utility is limited to providing the final safety net.
+ 
++  memory.reclaim
++	A write-only nested-keyed file which exists for all cgroups.
++
++	This is a simple interface to trigger memory reclaim in the
++	target cgroup.
++
++	This file accepts a single key, the number of bytes to reclaim.
++	No nested keys are currently supported.
++
++	Example::
++
++	  echo "1G" > memory.reclaim
++
++	The interface can be later extended with nested keys to
++	configure the reclaim behavior. For example, specify the
++	type of memory to reclaim from (anon, file, ..).
++
++	Please note that the kernel can over or under reclaim from
++	the target cgroup. If less bytes are reclaimed than the
++	specified amount, -EAGAIN is returned.
++
+   memory.oom.group
+ 	A read-write single value file which exists on non-root
+ 	cgroups.  The default value is "0".
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 725f76723220..2b214b66d333 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -6355,6 +6355,38 @@ static ssize_t memory_oom_group_write(struct kernfs_open_file *of,
+ 	return nbytes;
  }
  
-+/*
-+ * This test checks that memory.reclaim reclaims the given
-+ * amount of memory (from both anon and file).
-+ */
-+static int test_memcg_reclaim(const char *root)
++static ssize_t memory_reclaim(struct kernfs_open_file *of, char *buf,
++			      size_t nbytes, loff_t off)
 +{
-+	int ret = KSFT_FAIL, fd;
-+	char *memcg;
-+	long current, to_reclaim;
-+	char buf[64];
++	struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
++	unsigned int nr_retries = MAX_RECLAIM_RETRIES;
++	unsigned long nr_to_reclaim, nr_reclaimed = 0;
++	int err;
 +
-+	memcg = cg_name(root, "memcg_test");
-+	if (!memcg)
-+		goto cleanup;
++	buf = strstrip(buf);
++	err = page_counter_memparse(buf, "", &nr_to_reclaim);
++	if (err)
++		return err;
 +
-+	if (cg_create(memcg))
-+		goto cleanup;
++	while (nr_reclaimed < nr_to_reclaim) {
++		unsigned long reclaimed;
 +
-+	current = cg_read_long(memcg, "memory.current");
-+	if (current != 0)
-+		goto cleanup;
-+
-+	cg_run_nowait(memcg, alloc_anon_noexit, (void *) MB(50));
-+	sleep(1);
-+
-+	fd = get_temp_fd();
-+	if (fd < 0)
-+		goto cleanup;
-+
-+	cg_run_nowait(memcg, alloc_pagecache_50M_noexit, (void *)(long)fd);
-+	sleep(1);
-+
-+	current = cg_read_long(memcg, "memory.current");
-+	if (!values_close(current, MB(100), 10))
-+		goto cleanup;
-+
-+	/*
-+	 * Reclaim until current reaches 30M, make sure to reclaim over 50M to
-+	 * hit both anon and file.
-+	 */
-+	while (true) {
-+		int err;
-+
-+		current = cg_read_long(memcg, "memory.current");
-+		to_reclaim = current - MB(30);
-+
-+		/*
-+		 * We only keep looping if we get EAGAIN, which means we could
-+		 * not reclaim the full amount.
-+		 */
-+		if (to_reclaim <= 0)
-+			goto cleanup;
-+
-+
-+		snprintf(buf, sizeof(buf), "%ld", to_reclaim);
-+		err = cg_write(memcg, "memory.reclaim", buf);
-+		if (!err) {
-+			/*
-+			 * If writing succeeds, then the written amount should have been
-+			 * fully reclaimed (and maybe more).
-+			 */
-+			current = cg_read_long(memcg, "memory.current");
-+			if (!values_close(current, MB(30), 3) && current > MB(30))
-+				goto cleanup;
++		if (signal_pending(current))
 +			break;
-+		}
 +
-+		/* The kernel could not reclaim the full amount, try again. */
-+		if (err == EAGAIN)
-+			continue;
++		reclaimed = try_to_free_mem_cgroup_pages(memcg,
++						nr_to_reclaim - nr_reclaimed,
++						GFP_KERNEL, true);
 +
-+		/* We got an unexpected error. */
-+		goto cleanup;
++		if (!reclaimed && !nr_retries--)
++			break;
++
++		nr_reclaimed += reclaimed;
 +	}
 +
-+	ret = KSFT_PASS;
-+cleanup:
-+	cg_destroy(memcg);
-+	free(memcg);
-+	close(fd);
-+
-+	return ret;
++	return nr_reclaimed < nr_to_reclaim ? -EAGAIN : nbytes;
 +}
 +
- static int alloc_anon_50M_check_swap(const char *cgroup, void *arg)
- {
- 	long mem_max = (long)arg;
-@@ -1263,6 +1347,7 @@ struct memcg_test {
- 	T(test_memcg_high),
- 	T(test_memcg_high_sync),
- 	T(test_memcg_max),
-+	T(test_memcg_reclaim),
- 	T(test_memcg_oom_events),
- 	T(test_memcg_swap_max),
- 	T(test_memcg_sock),
+ static struct cftype memory_files[] = {
+ 	{
+ 		.name = "current",
+@@ -6413,6 +6445,11 @@ static struct cftype memory_files[] = {
+ 		.seq_show = memory_oom_group_show,
+ 		.write = memory_oom_group_write,
+ 	},
++	{
++		.name = "reclaim",
++		.flags = CFTYPE_NS_DELEGATABLE,
++		.write = memory_reclaim,
++	},
+ 	{ }	/* terminate */
+ };
+ 
 -- 
 2.35.1.1178.g4f1659d476-goog
 
