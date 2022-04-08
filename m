@@ -2,124 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9EAC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F2FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237278AbiDHPAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
+        id S237287AbiDHPAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 11:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230139AbiDHPAR (ORCPT
+        with ESMTP id S235049AbiDHPAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 8 Apr 2022 11:00:17 -0400
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B8C119242;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7580119278;
         Fri,  8 Apr 2022 07:58:12 -0700 (PDT)
 Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1N7hjq-1nzVfg0q4g-014n5Q;
- Fri, 08 Apr 2022 16:57:50 +0200
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MulRf-1nvKg00Qkt-00rqfV;
+ Fri, 08 Apr 2022 16:57:43 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
         Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Fabio Estevam <festevam@gmail.com>,
         Frank Rowand <frowand.list@gmail.com>,
+        Heiko Schocher <hs@denx.de>, Jacky Bai <ping.bai@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Kuldeep Singh <kuldeep.singh@nxp.com>,
         Li Yang <leoyang.li@nxp.com>,
         Lucas Stach <l.stach@pengutronix.de>,
         Matthias Schiffer <matthias.schiffer@tq-group.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Olof Johansson <olof@lixom.net>, Peng Fan <peng.fan@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Reinhold Mueller <reinhold.mueller@emtrion.com>,
         Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/3] dt-bindings: arm: fsl: add toradex,verdin-imx8mp et al.
-Date:   Fri,  8 Apr 2022 16:57:24 +0200
-Message-Id: <20220408145725.812566-3-marcel@ziswiler.com>
+        Tim Harvey <tharvey@gateworks.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/3] arm64: prepare and add verdin imx8m plus support
+Date:   Fri,  8 Apr 2022 16:57:22 +0200
+Message-Id: <20220408145725.812566-1-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220408145725.812566-1-marcel@ziswiler.com>
-References: <20220408145725.812566-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:2/AsQ6UrVrCDPK0+f9eWxnJSWE1X5spdcfPQ6AtEnJhQEcaX2cE
- 0qaYwaripdlAbqs35Nk/iRa1GuA2L3pRgdCNEW+Yk28tkRSsktVzp1O6N1uDr9d1g1AMlsy
- CozFGWnwwi+tvxbba0F0A1K4p+Qu9w6lUkjP8ai6bm6bPRXPy3fzmDU41oZdliOZECjWUDo
- ENXwPNfLTnPCPrTO9JJXQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Nz+trrcOXbc=:9zlXrl0rSvwaZH3gD//CE4
- KmaPeiSIzH4wWV8b/SD6D4o9MUbHlMv+Fn4ChGRJ+o1fbIpZnwmQiA+/Xm4UUOIGOjqg6PHeQ
- uRR6ZHNxensim3zFkRngK3x+YZRjBXBj9lcmWAlP0etA/mcIvUCE4ZQmZDp/OG9UmPnnbUcaY
- Ff5h1BMKSsRTRsE6EoswHSlEPN1KhVhTYn9ogEv9E7ZZikpoWirkfq1XjKknh/D39yUiAeUbz
- d0eNyh7kpp+hijlbwJgxKmgv7z4CKPJXfPCUnaVAYgFn7vPlukNtXlp/jqDe50lfw5IMDoqy8
- XAEWXBlBxBRq1EZLBwlPV5Y2/7I/Gez84PwrLyv5PZNC+BjgFED5g9m0r8HFM0D9g54/8hgR3
- fcn95VX4UwGIlGqd10lnH6wcR3VLJN3vA0BFBt7Wv0fzFeyzEDS+mLb5OormWdEYQniq4SHHE
- /HU5UfhZ9o1vZq+DDWNXXmxUna6uioTggyNmA/2UnGccY+rvFikWpxkPg4RzrucWxY1+GCOXJ
- IM7xwQwRcEcx74R5kkIz1+nvW9dRtY4mLfObFr7w5NzrBTMGrIeL6Xd7jVMiJWKtUccznJ1E0
- gOAbUJg2XPQP3KQMK566yRXVqUF3y4c9XsPPZ8Dv0H3q2VvulJs7d7/5uuXU4mcIiUDVjbC9d
- 28rGqzt9XNm++fUQDMpgrT7knJWAe/4Cxpe9elGGeyVvhqmp0U/2gpCxV+5O9zqQQoN0=
+X-Provags-ID: V03:K1:GJ100Ph/AlprSBXidRKIqO1jfuHULfMHeRBA0Ew1BMxe1b7sLhP
+ J9M0IUo7z1E/SnM/Iq33Rp0JFUe43NRJbFmaP28hlCTOZ6HdcaoUNuVNnKRDNQr4dgk5jYI
+ BKEmzGGXKSCfVAHp7NMueA95MlGqcpRuYpnr/+pYNOHF82mgHzRb1eKDAiktt3Z8U5OfD6j
+ 2nGcQS9Otnk5O6K/E5QWw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:hoWg9qK/Oig=:bS5wZd0Iz2F3WVYFmwIH8I
+ iGiNEFTb4VO3+2ROW892M7PkInACe0dfjY8ryxi14CpRn/mm7jYuDLTYNcdQXvxBwY2wSn3C2
+ fE+84VFqeJQL3hmvXB4spFXDnxvXO+ljDzQnmzWXNTVWe3g1e1H1rjOJ8XssfRRnVaz1c4int
+ 7Eziv+xTqlbcgkRGlJNCNGJkPVQGxiBSE5DnZIDn8EAU8DQ9c2YmPN1Yf46OBOyr2ote1nm8b
+ BE1KyLVSu+uKE4GTkeO4voWOcM72puCKR+AHvO8k2O1whFRtwhHYdj8oIORL54RjRyxO6bbPw
+ w1BpZl42oQBr8C/KQzAEZwZz5ZaekSsxZMKbZ3VoQmWMc9mkWiviT8vvXZSAsZ+8VvAD6frW5
+ jmL+ni/CMtuea6fEDCFWQu2Deje0lWZCM47bDrrqCKnothFDxoDK6fbCdSftHbqExCmukRdGc
+ 4mhNLTuA8qlEZnbU7eD+gwVvODl3EnN4wnc8CTzG/OxLBKztd9BEz1hSBwk9DZ03BXRGzYTk+
+ uLAOiv5A7siG8+7NK2GLmMtaqekDTa2TgvrB/YNceyyHfSNe3ANt4iHXO0G4xvI/t+PQ2IuUu
+ 99qTJTijFhLU9mazemTQhs842NxRxRHm0lTnOl3ShdN6xzxiqKRJu+4Ngg6HpdVjFnU1v3oTi
+ ZOo8idlhqejXw7oGI9vThSqYytmJcHOrGW1VyJQiqjgUQ3NuK1t1bM+TguyySCid/424=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Add toradex,verdin-imx8mp for the Verdin iMX8M Plus modules, its nonwifi
-and wifi variants and the carrier boards (both Dahlia and the Verdin
-Development Board) they may be mated in.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+Add DMA properties to uart2 node of the base i.MX 8M Plus device tree,
+add toradex,verdin-imx8mp et al. to dt-bindings and finally, add
+initial support for Verdin iMX8M Plus.
 
----
-
-(no changes since v2)
+Changes in v3:
+- Add missing audio codec todo on development board as well.
+- Actually define scl/sda-gpios for Verdin I2C_2_DSI aka i2c2. Also
+  pointed out by Laurent. Thanks!
+- Update PMIC LDO4 and I2C level shifter enablement comment.
+- Fix USDHC2_VSELECT sleep pinctrl value and add a comment.
+- Add comment about lowering frequency on Verdin I2C_2_DSI as suggested
+  by Laurent.
+- Re-based on top of Shawn's latest for-next based on 5.18-rc1.
 
 Changes in v2:
+- Add Laurent's reviewed-by tag.
 - Add Krzysztof's reviewed-by tag.
+- Fix capitalisation of verdin in comments as reported by Laurent.
+- Add/modify todo comments as suggested by Laurent.
+- Add Laurent's reviewed- and tested-by tags.
 
- .../devicetree/bindings/arm/fsl.yaml          | 21 +++++++++++++++++++
- 1 file changed, 21 insertions(+)
+Marcel Ziswiler (3):
+  arm64: dts: imx8mp: add uart2 dma
+  dt-bindings: arm: fsl: add toradex,verdin-imx8mp et al.
+  arm64: dts: freescale: add initial support for verdin imx8m plus
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index 03b8d8cf2c6b..98722d698253 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -907,6 +907,9 @@ properties:
-         items:
-           - enum:
-               - fsl,imx8mp-evk            # i.MX8MP EVK Board
-+              - toradex,verdin-imx8mp     # Verdin iMX8M Plus Modules
-+              - toradex,verdin-imx8mp-nonwifi  # Verdin iMX8M Plus Modules without Wi-Fi / BT
-+              - toradex,verdin-imx8mp-wifi  # Verdin iMX8M Plus Wi-Fi / BT Modules
-           - const: fsl,imx8mp
- 
-       - description: PHYTEC phyCORE-i.MX8MP SoM based boards
-@@ -915,6 +918,24 @@ properties:
-           - const: phytec,imx8mp-phycore-som         # phyCORE-i.MX8MP SoM
-           - const: fsl,imx8mp
- 
-+      - description: Toradex Boards with Verdin iMX8M Plus Modules
-+        items:
-+          - enum:
-+              - toradex,verdin-imx8mp-nonwifi-dahlia # Verdin iMX8M Plus Module on Dahlia
-+              - toradex,verdin-imx8mp-nonwifi-dev    # Verdin iMX8M Plus Module on Verdin Development Board
-+          - const: toradex,verdin-imx8mp-nonwifi     # Verdin iMX8M Plus Module without Wi-Fi / BT
-+          - const: toradex,verdin-imx8mp             # Verdin iMX8M Plus Module
-+          - const: fsl,imx8mp
-+
-+      - description: Toradex Boards with Verdin iMX8M Plus Wi-Fi / BT Modules
-+        items:
-+          - enum:
-+              - toradex,verdin-imx8mp-wifi-dahlia # Verdin iMX8M Plus Wi-Fi / BT Module on Dahlia
-+              - toradex,verdin-imx8mp-wifi-dev    # Verdin iMX8M Plus Wi-Fi / BT M. on Verdin Development B.
-+          - const: toradex,verdin-imx8mp-wifi     # Verdin iMX8M Plus Wi-Fi / BT Module
-+          - const: toradex,verdin-imx8mp          # Verdin iMX8M Plus Module
-+          - const: fsl,imx8mp
-+
-       - description: i.MX8MQ based Boards
-         items:
-           - enum:
+ .../devicetree/bindings/arm/fsl.yaml          |   21 +
+ arch/arm64/boot/dts/freescale/Makefile        |    4 +
+ .../dts/freescale/imx8mp-verdin-dahlia.dtsi   |  129 ++
+ .../boot/dts/freescale/imx8mp-verdin-dev.dtsi |   46 +
+ .../imx8mp-verdin-nonwifi-dahlia.dts          |   18 +
+ .../freescale/imx8mp-verdin-nonwifi-dev.dts   |   18 +
+ .../dts/freescale/imx8mp-verdin-nonwifi.dtsi  |   54 +
+ .../freescale/imx8mp-verdin-wifi-dahlia.dts   |   18 +
+ .../dts/freescale/imx8mp-verdin-wifi-dev.dts  |   18 +
+ .../dts/freescale/imx8mp-verdin-wifi.dtsi     |   82 +
+ .../boot/dts/freescale/imx8mp-verdin.dtsi     | 1380 +++++++++++++++++
+ arch/arm64/boot/dts/freescale/imx8mp.dtsi     |    2 +
+ 12 files changed, 1790 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-dahlia.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-dev.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-nonwifi-dahlia.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-nonwifi-dev.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-nonwifi.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi-dahlia.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi-dev.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+
 -- 
 2.35.1
 
