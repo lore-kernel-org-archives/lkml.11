@@ -2,87 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA57C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A95E9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbiDHIOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 04:14:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49018 "EHLO
+        id S231286AbiDHIPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 04:15:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiDHIOx (ORCPT
+        with ESMTP id S231266AbiDHIPC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 04:14:53 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27124D9D5;
-        Fri,  8 Apr 2022 01:12:49 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id f3so7784046pfe.2;
-        Fri, 08 Apr 2022 01:12:49 -0700 (PDT)
+        Fri, 8 Apr 2022 04:15:02 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C404B57B0D;
+        Fri,  8 Apr 2022 01:12:58 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id j6so4212687qkp.9;
+        Fri, 08 Apr 2022 01:12:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=i81WX7FswRmN0nILDi9RrrLL61mjGBMdEL5aeO/NWhs=;
-        b=U6hCdq2C2y+iUG2UPSevB61dRc2HSIIRYDKuvW+p9P4db98VcdhNUp+tEwSM3B0Xzi
-         vjrH23nCwj4DPG5m/XPuaI/M3Z2ZjnKjabHyqvr/T+6+/mpvtj9Injl9jBSVe9qJ5DYI
-         Ww6JHQjFzhU+UDoOe7fzyCimY7yNn68nDs9zEtHwmfEvwhwIr0EkL+JtdXuxIDMOaS3J
-         Yxy1+E5ydOpzJ65JTZpkm5j7u6kiOcwMjM/ANI9HO+l56FtBZdVvfHJYdt9Ejnf+z/o/
-         +qEisZGxMnaVtXKB8wjxEE+CsIQXKQRDbmFu9bFzLN9Wx8qhwxPLEefMjSKy1CFIixJY
-         6/0Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=A1kYgClPNkXttcnpJuxPc0b6ZRe4IN7sg6hgxvxZY2I=;
+        b=kyEjHYb+mQEqY7tdjXMs0+hof/gNfwAwz9dja0FAcYnl7Kn2yZMySrQKi8P9cC9n1c
+         CrtjN1tyIdNUF+51+SrlLfuU7ya2y0WJG246oGGjod0iZExbZVBbxz+lGF1Db4h/s2qA
+         i6Id7+u85d6f6SJ9fRU8zrC9Iy8Rw9JXIieXMCRdohRYua+ZYihU6UkNdqGlGYDPoQ8u
+         5r+d1x+aw1ZgnjTyjkG17EDh5N7rJJ8+Of6ms6W/m0OflU8zKwhmz2dJXJXf4PQjJZIr
+         ASahsPzrYQ3mTyOjiwbFaQSNl8+tdhB1PhF7L3BP8uSvcE5CKutKj9nyn8Gv569dZdOJ
+         ICEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=i81WX7FswRmN0nILDi9RrrLL61mjGBMdEL5aeO/NWhs=;
-        b=gVn0/vQkJMrHhVWmCHW1dBs7jfas+o3JSqqwSj0o+THRYMvQxpIXKDKOmHFkcJsm5v
-         wDGYTM1jsKasAno54o399P1B86zSZZnrqlom842wLGBlut/kQXkr+8dAbpn2uRGGhAC8
-         oQBXC++kKRCG+8irSinbLSiodwtomwKFdLb51gGcRINA2Vnbh5ZV2/R9ekP/Dg/uR7Zi
-         zzAA1KGYaaxjYM4zjHsW5yUTy9iFcazyBXQSuurchFUonnbljHXjjTV4j4qkt5SgXkS5
-         GXcTr7MYssa5cEfA3V0K7P30Z5VJDWG/nO2Qciu1bVri4VN7tNHAjjrYMIqh1luqnAli
-         FLMg==
-X-Gm-Message-State: AOAM533m9nF/zczQ6xSjnH4KUPIDi6eumigwD9M5LMEQQAxv2fBTc2ee
-        84YcZv8CIqwE9/fwOEtleLE=
-X-Google-Smtp-Source: ABdhPJwGgnAbq+6WkP5vvu10B3UmeSluhoyU+rZLwCcJ2MbKbQXukjKNioViA6bFtiBt/cZCZsv9IA==
-X-Received: by 2002:a05:6a00:2392:b0:4fa:dcd2:5bc1 with SMTP id f18-20020a056a00239200b004fadcd25bc1mr18210652pfc.8.1649405569109;
-        Fri, 08 Apr 2022 01:12:49 -0700 (PDT)
-Received: from [192.168.43.80] (subs03-180-214-233-82.three.co.id. [180.214.233.82])
-        by smtp.gmail.com with ESMTPSA id i7-20020a628707000000b004fa6eb33b02sm24692846pfe.49.2022.04.08.01.12.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Apr 2022 01:12:48 -0700 (PDT)
-Message-ID: <0811d6f9-1fd0-ca29-3c58-84f217b80d3d@gmail.com>
-Date:   Fri, 8 Apr 2022 15:12:43 +0700
+        bh=A1kYgClPNkXttcnpJuxPc0b6ZRe4IN7sg6hgxvxZY2I=;
+        b=w0UE7Uwx5KM0P6teHFMe/RkzEZJRDDvCRAQApPft5ov+eJ59uWPkTOjfdiQ7omjTPo
+         lySpc0cDkUEUbwQbBxbBsGmCOCFpd4oiIeaZM8TmP5g8kUGiKekURtsXWEqA3AbYv5f6
+         TAbznEuU4g5lM9F6Qmh6NQKX2+ts6iLG76Tff/dqTI2eR1y3IOnjzvV0KqV9DKSBC353
+         RtT/Gyv9gDW/R3YEay+F9Z64ppETppLsk6QgAbDA3JTVJjxx1gHE+9BuWn/fhJFSEP3l
+         9fLFs20Wr99JrOWz4rTqyPx9eSdWlo9Q5H+GQ+VI09fmdqIAH0dlvgmb9hiKeuS114p2
+         6HsA==
+X-Gm-Message-State: AOAM532sIIrjJb8c3r6bpGLg1mzRc42oTv0emySLeBhnmm0ty7Kkbtq2
+        /LsRpNjZxHSk8dFSh0Cw68M=
+X-Google-Smtp-Source: ABdhPJxW/8z2WJJs+ZAhz+Xmzvh9kcBG41vVI4/HDjmZkkMAhj9pbXxrlb1zk92Dm7AY+6aJROjPYA==
+X-Received: by 2002:a37:787:0:b0:69a:854:caae with SMTP id 129-20020a370787000000b0069a0854caaemr4189817qkh.20.1649405578000;
+        Fri, 08 Apr 2022 01:12:58 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id h11-20020a05622a170b00b002ebc9d47207sm4985436qtk.91.2022.04.08.01.12.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 01:12:57 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     peppe.cavallaro@st.com
+Cc:     alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] net: stmmac: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Fri,  8 Apr 2022 08:12:50 +0000
+Message-Id: <20220408081250.2494588-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 5.10 000/597] 5.10.110-rc3 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220407183749.142181327@linuxfoundation.org>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220407183749.142181327@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/04/22 01.45, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.110 release.
-> There are 597 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Successfully cross-compiled for arm64 (bcm2711_defconfig, gcc 10.2.0) and
-powerpc (ps3_defconfig, gcc 11.2.0).
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
 
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 24 +++++++------------
+ 1 file changed, 8 insertions(+), 16 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+index a5d150c5f3d8..9bc625fccca0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -88,11 +88,9 @@ static int stmmac_xgmac2_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
+ 	u32 tmp, addr, value = MII_XGMAC_BUSY;
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(priv->device);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(priv->device);
++	ret = pm_runtime_resume_and_get(priv->device);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	/* Wait until any existing MII operation is complete */
+ 	if (readl_poll_timeout(priv->ioaddr + mii_data, tmp,
+@@ -156,11 +154,9 @@ static int stmmac_xgmac2_mdio_write(struct mii_bus *bus, int phyaddr,
+ 	u32 addr, tmp, value = MII_XGMAC_BUSY;
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(priv->device);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(priv->device);
++	ret = pm_runtime_resume_and_get(priv->device);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	/* Wait until any existing MII operation is complete */
+ 	if (readl_poll_timeout(priv->ioaddr + mii_data, tmp,
+@@ -229,11 +225,9 @@ static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
+ 	int data = 0;
+ 	u32 v;
+ 
+-	data = pm_runtime_get_sync(priv->device);
+-	if (data < 0) {
+-		pm_runtime_put_noidle(priv->device);
++	data = pm_runtime_resume_and_get(priv->device);
++	if (data < 0)
+ 		return data;
+-	}
+ 
+ 	value |= (phyaddr << priv->hw->mii.addr_shift)
+ 		& priv->hw->mii.addr_mask;
+@@ -297,11 +291,9 @@ static int stmmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
+ 	u32 value = MII_BUSY;
+ 	u32 v;
+ 
+-	ret = pm_runtime_get_sync(priv->device);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(priv->device);
++	ret = pm_runtime_resume_and_get(priv->device);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	value |= (phyaddr << priv->hw->mii.addr_shift)
+ 		& priv->hw->mii.addr_mask;
 -- 
-An old man doll... just what I always wanted! - Clara
+2.25.1
+
