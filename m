@@ -2,200 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00278C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94135C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:14:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237917AbiDHQQB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 12:16:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34878 "EHLO
+        id S237951AbiDHQQG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 12:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230511AbiDHQPv (ORCPT
+        with ESMTP id S230108AbiDHQPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 8 Apr 2022 12:15:51 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 277B690FF9
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 09:13:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A86EE2C642
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 09:13:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649434423;
+        s=mimecast20190719; t=1649434414;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=siz3X/UqDfw+7svtYWKLABxX78u03m0eRqZg4+H+2FU=;
-        b=i06gfDSaxusgLQ8Mxtpdkno17BkxGvyZJQrLfxGznHfqNsyS79UbACZzSQVRdySDrwnKD5
-        ZcqW8KK5/41wG+ATZuObV3ApFQ78h5H1UD6lpbldSYqrrzcEBFNb9eDeYXyqWzU7FHVrYo
-        23YzQE2c6yq9FqqFdydTYuqNpwH9Ye8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=RABOyYo670sPAWQ+PEuN77+r1YMjgpRyhVZuUCYWh68=;
+        b=PNyu3Jtp9Os/ahfXBaAZ6gV/TnEfy27U50z2YbBdwcJ8xOBenGU5JS2kXufrL4vfEkhQ23
+        I1xvBFdVxOU2wjfvKcw6jmOd1R7MTfjm02CiZvb8Q5bLEQyd8IRLaA3HX5VG00gVNOG9Qs
+        6M++qv85lTlMTkPZZdwHVdwcTnlRqAs=
+Received: from mail-yw1-f199.google.com (mail-yw1-f199.google.com
+ [209.85.128.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-632-kN5oLAwxMaaW4BHClx1emg-1; Fri, 08 Apr 2022 12:13:42 -0400
-X-MC-Unique: kN5oLAwxMaaW4BHClx1emg-1
-Received: by mail-wm1-f72.google.com with SMTP id x8-20020a7bc768000000b0038e73173886so4568082wmk.6
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 09:13:42 -0700 (PDT)
+ us-mta-246-Vkn7yk-1MXKE3z6tCmA0PA-1; Fri, 08 Apr 2022 12:13:33 -0400
+X-MC-Unique: Vkn7yk-1MXKE3z6tCmA0PA-1
+Received: by mail-yw1-f199.google.com with SMTP id 00721157ae682-2ebebe9f982so12334497b3.17
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 09:13:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=siz3X/UqDfw+7svtYWKLABxX78u03m0eRqZg4+H+2FU=;
-        b=fsynYV/Nh94jfV+f1bQIC49NDN2ett1rLxgiXtqmgwX9YZvZJ31fN3hyHhk6l4Drl+
-         EA0GCS2ZsUHHDRz0Un+2h6/sFybdVgKw4lFUo7/5OVKzye7iHrpLOqcBRKoWXHD+7kEa
-         LzpV1SNf3fhCLLi76t4J6L8TfHO+LWo3oSbWGPMZ9sPXsR50AkV8obg/Q3CvM2id30aX
-         e1+dTwYv/NGkqHLBC30pHCzP/zFibERWpaH1ivUXKWMBcRQtGX7L+NWcc8Kw7x5NjBdC
-         QufRfB7tMWDGsonZ3Si2cn7yn8Lrs8hWA2xPuhM3YLelLFEQuHqm6BGY8cxwRpHl/UDt
-         TcOQ==
-X-Gm-Message-State: AOAM5331E3OsLiIg596w1E2M7avJTrWm/7XENZ2tAwsMBLQCn2wOoi0n
-        ioFsCevLO/L7dhnB0uEw/yDd/YUCRIqVB/AP3PKmIijduppgV5STdnNltE+poP5wILqnbqvkCcM
-        ksmOOLeH9yHpWiJUfNcFdYM7yEoah8qIpv0Jg6VA2rY0dhVRLdCU1Uwy5qLzvzhq/oSBUN/D1oZ
-        A=
-X-Received: by 2002:a7b:cc12:0:b0:37c:1ae:100a with SMTP id f18-20020a7bcc12000000b0037c01ae100amr17200088wmh.54.1649434420932;
-        Fri, 08 Apr 2022 09:13:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwq9i7g5A8Qdq92aXqmOvWOWToxcYSKRxuzMjwX82CkOUOdA+5yc/tgzh001RXjv6GYYOhx5Q==
-X-Received: by 2002:a7b:cc12:0:b0:37c:1ae:100a with SMTP id f18-20020a7bcc12000000b0037c01ae100amr17200054wmh.54.1649434420622;
-        Fri, 08 Apr 2022 09:13:40 -0700 (PDT)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id t15-20020adfeb8f000000b002060d26c211sm14377455wrn.114.2022.04.08.09.13.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 09:13:40 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Borislav Petkov <bp@suse.de>, Johan Hovold <johan@kernel.org>,
-        Miaoqian Lin <linmq006@gmail.com>
-Subject: [PATCH v2 1/5] firmware: sysfb: Make sysfb_create_simplefb() return a pdev pointer
-Date:   Fri,  8 Apr 2022 18:13:18 +0200
-Message-Id: <20220408161322.270176-2-javierm@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220408161322.270176-1-javierm@redhat.com>
-References: <20220408161322.270176-1-javierm@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RABOyYo670sPAWQ+PEuN77+r1YMjgpRyhVZuUCYWh68=;
+        b=qJhG0XhSunNFCbu4A4W/qRZ9XgC/Ml2tBKhnCLbNHBKtFJJHsh3BHzxP+uKemKSHL1
+         2vYGqNFsybPltT+zHBYVqrWhxtWBZNC733HA9n1yxB337kaawPZluN12Z84c/zFY7i4W
+         6sR1V1OXuafD/Z5LJj3aeM3nMjTIDLvheyZcgwUsDkpmswweWg7q1YIACrnfMSUYQ/6F
+         3u5xfko53f+GdMdQlNl1neUa5JOzrrdqNWn3wvHqwuL/ZEEaPFVTO0d/cs+e4dAeA7PJ
+         0cnkYFiVmHstzw9os7vYXH6YXy+MGZbNtM20EZ713TGH3mT26WHKEldTHsfd8Y7POBWj
+         BSLg==
+X-Gm-Message-State: AOAM530OWup7SujbvGNOh69z5BY8ecNmhrvpUk54WSSMOy4WbmxK5IDK
+        GkxdWBL5t+eBn/OVquBkP7zoxCrwcT0CATNsnnaCV9zwwlsHEXfP5tyU/aebMHFX0AbKB0eZb5N
+        Z0dnNYlKq5c/0EilLROjWOodFG6qC2DJId/f2t3wa
+X-Received: by 2002:a25:adc8:0:b0:633:b79d:92ee with SMTP id d8-20020a25adc8000000b00633b79d92eemr14066212ybe.457.1649434412957;
+        Fri, 08 Apr 2022 09:13:32 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxRgvqC+MnDBFtFpOj0kzf4fzJqLCJ33Or5sPWhBYgE8Lr6rPUPkktLh7gmkeG3+q2BSQNdr/IZiHbdDYQjY1w=
+X-Received: by 2002:a25:adc8:0:b0:633:b79d:92ee with SMTP id
+ d8-20020a25adc8000000b00633b79d92eemr14066179ybe.457.1649434412748; Fri, 08
+ Apr 2022 09:13:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220408032809.3696798-1-npache@redhat.com> <20220408081549.GM2731@worktop.programming.kicks-ass.net>
+ <ee07a31c-c514-4a88-599f-14a30e93f32e@redhat.com> <87k0bzk7e5.ffs@tglx>
+In-Reply-To: <87k0bzk7e5.ffs@tglx>
+From:   Joel Savitz <jsavitz@redhat.com>
+Date:   Fri, 8 Apr 2022 12:13:16 -0400
+Message-ID: <CAL1p7m4ukBQdQihkeSTjGHTM+HAF-GVf=QSnNPhRmetC213ANg@mail.gmail.com>
+Subject: Re: [PATCH v8] oom_kill.c: futex: Don't OOM reap the VMA containing
+ the robust_list_head
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Nico Pache <npache@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>, linux-mm@kvack.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Christoph von Recklinghausen <crecklin@redhat.com>,
+        Don Dutile <ddutile@redhat.com>,
+        "Herton R . Krzesinski" <herton@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Darren Hart <dvhart@infradead.org>, stable@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This function just returned 0 on success or an errno code on error, but it
-could be useful for sysfb_init() callers to have a pointer to the device.
+> ---
+> #include <errno.h>
+> #include <fcntl.h>
+> #include <pthread.h>
+> #include <time.h>
+> #include <stdio.h>
+> #include <string.h>
+> #include <unistd.h>
+>
+> #include <sys/types.h>
+> #include <sys/mman.h>
+>
+> static char n[4096];
+>
+> int main(void)
+> {
+>         pthread_mutexattr_t mat_s, mat_p;
+>         pthread_mutex_t *mut_s, *mut_p;
+>         pthread_barrierattr_t ba;
+>         pthread_barrier_t *b;
+>         struct timespec to;
+>         void *pri, *shr;
+>         int r;
+>
+>         shr = mmap(NULL, sizeof(n), PROT_READ | PROT_WRITE,
+>                    MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+>
+>         pthread_mutexattr_init(&mat_s);
+>         pthread_mutexattr_setrobust(&mat_s, PTHREAD_MUTEX_ROBUST);
+>         mut_s = shr;
+>         pthread_mutex_init(mut_s, &mat_s);
+>
+>         pthread_barrierattr_init(&ba);
+>         pthread_barrierattr_setpshared(&ba, PTHREAD_PROCESS_SHARED);
+>         b = shr + 1024;
+>         pthread_barrier_init(b, &ba, 2);
+>
+>         if (!fork()) {
+>                 pri = mmap(NULL, 1<<20, PROT_READ | PROT_WRITE,
+>                            MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+>                 pthread_mutexattr_init(&mat_p);
+>                 pthread_mutexattr_setpshared(&mat_p, PTHREAD_PROCESS_PRIVATE);
+>                 pthread_mutexattr_setrobust(&mat_p, PTHREAD_MUTEX_ROBUST);
+One thing I don't understand is what kind of sane use case relies on
+robust futex for a process-private lock?
+Is there a purpose to a lock being on the robust list if there are no
+other processes that must be woken in case the holder process is
+killed?
+If this usage serves no purpose besides causing races during oom, we
+should discourage this use, perhaps by adding a note on the manpage.
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
----
-
-Changes in v2:
-- Rebase on top of latest drm-misc-next and fix conflicts (Daniel Vetter).
-
- drivers/firmware/sysfb.c          |  4 ++--
- drivers/firmware/sysfb_simplefb.c | 16 ++++++++--------
- include/linux/sysfb.h             | 10 +++++-----
- 3 files changed, 15 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
-index 2bfbb05f7d89..b032f40a92de 100644
---- a/drivers/firmware/sysfb.c
-+++ b/drivers/firmware/sysfb.c
-@@ -46,8 +46,8 @@ static __init int sysfb_init(void)
- 	/* try to create a simple-framebuffer device */
- 	compatible = sysfb_parse_mode(si, &mode);
- 	if (compatible) {
--		ret = sysfb_create_simplefb(si, &mode);
--		if (!ret)
-+		pd = sysfb_create_simplefb(si, &mode);
-+		if (!IS_ERR(pd))
- 			return 0;
- 	}
- 
-diff --git a/drivers/firmware/sysfb_simplefb.c b/drivers/firmware/sysfb_simplefb.c
-index bda8712bfd8c..a353e27f83f5 100644
---- a/drivers/firmware/sysfb_simplefb.c
-+++ b/drivers/firmware/sysfb_simplefb.c
-@@ -57,8 +57,8 @@ __init bool sysfb_parse_mode(const struct screen_info *si,
- 	return false;
- }
- 
--__init int sysfb_create_simplefb(const struct screen_info *si,
--				 const struct simplefb_platform_data *mode)
-+__init struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
-+						     const struct simplefb_platform_data *mode)
- {
- 	struct platform_device *pd;
- 	struct resource res;
-@@ -76,7 +76,7 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
- 		base |= (u64)si->ext_lfb_base << 32;
- 	if (!base || (u64)(resource_size_t)base != base) {
- 		printk(KERN_DEBUG "sysfb: inaccessible VRAM base\n");
--		return -EINVAL;
-+		return ERR_PTR(-EINVAL);
- 	}
- 
- 	/*
-@@ -93,7 +93,7 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
- 	length = mode->height * mode->stride;
- 	if (length > size) {
- 		printk(KERN_WARNING "sysfb: VRAM smaller than advertised\n");
--		return -EINVAL;
-+		return ERR_PTR(-EINVAL);
- 	}
- 	length = PAGE_ALIGN(length);
- 
-@@ -104,11 +104,11 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
- 	res.start = base;
- 	res.end = res.start + length - 1;
- 	if (res.end <= res.start)
--		return -EINVAL;
-+		return ERR_PTR(-EINVAL);
- 
- 	pd = platform_device_alloc("simple-framebuffer", 0);
- 	if (!pd)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	sysfb_apply_efi_quirks(pd);
- 
-@@ -124,10 +124,10 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
- 	if (ret)
- 		goto err_put_device;
- 
--	return 0;
-+	return pd;
- 
- err_put_device:
- 	platform_device_put(pd);
- 
--	return ret;
-+	return ERR_PTR(ret);
- }
-diff --git a/include/linux/sysfb.h b/include/linux/sysfb.h
-index b0dcfa26d07b..708152e9037b 100644
---- a/include/linux/sysfb.h
-+++ b/include/linux/sysfb.h
-@@ -72,8 +72,8 @@ static inline void sysfb_apply_efi_quirks(struct platform_device *pd)
- 
- bool sysfb_parse_mode(const struct screen_info *si,
- 		      struct simplefb_platform_data *mode);
--int sysfb_create_simplefb(const struct screen_info *si,
--			  const struct simplefb_platform_data *mode);
-+struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
-+					      const struct simplefb_platform_data *mode);
- 
- #else /* CONFIG_SYSFB_SIMPLE */
- 
-@@ -83,10 +83,10 @@ static inline bool sysfb_parse_mode(const struct screen_info *si,
- 	return false;
- }
- 
--static inline int sysfb_create_simplefb(const struct screen_info *si,
--					 const struct simplefb_platform_data *mode)
-+static inline struct platform_device *sysfb_create_simplefb(const struct screen_info *si,
-+							    const struct simplefb_platform_data *mode)
- {
--	return -EINVAL;
-+	return ERR_PTR(-EINVAL);
- }
- 
- #endif /* CONFIG_SYSFB_SIMPLE */
--- 
-2.35.1
+>                 mut_p = pri;
+>                 pthread_mutex_init(mut_p, &mat_p);
+>
+>                 // With lock order s, p parent gets timeout
+>                 // With lock order p, s parent gets owner died
+>                 pthread_mutex_lock(mut_s);
+>                 pthread_mutex_lock(mut_p);
+>                 // Remove unmap and lock order does not matter
+>                 munmap(pri, sizeof(n));
+>                 pthread_barrier_wait(b);
+>                 printf("child gone\n");
+>         } else {
+>                 pthread_barrier_wait(b);
+>                 printf("parent lock\n");
+>                 clock_gettime(CLOCK_REALTIME, &to);
+>                 to.tv_sec += 1;
+>                 r = pthread_mutex_timedlock(mut_s, &to);
+>                 printf("parent lock returned: %s\n", strerror(r));
+>         }
+>         return 0;
+> }
+>
 
