@@ -2,328 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14252C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C02DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:16:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237450AbiDHPQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
+        id S237452AbiDHPSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 11:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235817AbiDHPQs (ORCPT
+        with ESMTP id S232613AbiDHPS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 11:16:48 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2098.outbound.protection.outlook.com [40.107.255.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 672B33337A;
-        Fri,  8 Apr 2022 08:14:43 -0700 (PDT)
+        Fri, 8 Apr 2022 11:18:28 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021026.outbound.protection.outlook.com [52.101.62.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD3410242B;
+        Fri,  8 Apr 2022 08:16:21 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I0mzkoRv5JLQNU7v3J88TeMznuDv88/eriyUtxqf0Zbgue8DbEq68lnTi6e2rUoMixl/YAdBqFyois6Isv+miLrc2sWsFyXW9dXXetkuMPM9HxLMWiaTdDIXIPzc6pbuv2XoBM5vowMgENLXEAExJUz/Cy9RyhFwMy0NMRZwR5CXoQiK/6dGeKwqssxvfase7V05/2hrQYJIy6SMHJy9HM2Y0BtMBo/FzylEpvSGRlyRM1hGngAK0DUG7uHjje9ZgvWs85wxE5wgA3IHPVMXxnqTb9bZRCLemRfmJ8roANZgfkI47d2l3xVC0ZIaOc5qcwJEjDO6KAMEmqpXh9ziLw==
+ b=VqQK+RvFbPx3JTQgR/qxmkTFks+FG+S1Tr9y3EbXXkVCzacd6jrb+RmQurMjJYWTUcncOykIqgb7oCCc4nFAioO1ym3ABDmOe66aQmcFfp2Sk0KkY+PK0I7yugGeCwuq+q572N56Tdmu6b7KbLVXwRKOEoPdYuUCFEKCmIX6D3HTO36RrUb3Y/y8fjf/brR6rMQsOh518bU9GEm9QASAyxFT95QKWNz+KVEaiEOF2tSyeTVDIAfm9ectICP/AKObhnLnH+rgctismUEq4usoVQund+IahaHbKsyHnnXamB+Z4GQhkxAPA+kfu06ZJd3jJLQSyA04sp/jTLIx9AXBIA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KO0vsaL1Px62xwkT4nMwWYDwR9pjanj/mhbDsUPPhHk=;
- b=LLuszv0eWy3/eXdJXYl+QbCTnWX91UfazKQecWNjDybvK2LvQrq6/28UC7PE7Sn7EZceKzn/Uo6ivB8SqR1j4kPcw09YewYfBkq8pymdof6OxUspoHReThysU4tfvAcDnldNoRX5i2uUtYPCxRFOCye8iSrFlCe/HVg+AeCPicJoN+1p2wzw9xfaisVplOP4VTnOUtiGifrRo+MgjtKWoDlNy2iuIBcKnImiYwyBFPP/y5WRqLcPUQoACCOspTo+pNHPTTtFIt/6nexEedRNivimYtf8RIAqbxNAZXOZAo6ZNrCFO2fza5eQb58XELxAwNlayX4XFdPUvkW2T1qHPA==
+ bh=ouv4pLjnqW+wiQvyWUJaVZEgOJPSLeprtwkM4EivtDM=;
+ b=d3+DKSSl43kUS7U5i41WMuwnoIhZw7MwINYOoE8y1SX/8G1Yvo4UOCr5bBpzx68rIbZsAhJtjnsBWy81jMUJ2C4DjVTR4P1xajpRBDGYqPdksD5HJyuWVgKVZikZCnpxeqtiVT795wwgmDctEzv9fTkOrJBYpQ3thJTKQKkAYKrYi6i4YUfbZShRhc8MW4Vz+wAyIgFG42Au8CJfx/Tt5NA9zHX6qJWHVb97wqxwygynz8kEVJT5RU4bmhaPexckU9hLrXF77f0V8+WNkF3ggveS4CAdvkM2XHRpkXAXD6mVDQqnXgVAGSHvVgJGhG5pz3nZgzzwBv5ufgBjAMmZ8w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KO0vsaL1Px62xwkT4nMwWYDwR9pjanj/mhbDsUPPhHk=;
- b=N3jsoFUcYYaaUO4ufz5F9gjzIX3QG1S+ZjHnX1kRlQZyBHMFYsLI5Vjx/9vzimh36+7hG83Ofk+jGBgirPcKgPX0N+VYZZdE34LE2QgiOgPgR/M7y7b0geKZc504xTIhxriFD/17KSTTS8f1qRQb/6ZeXUNlUovIW37YWF+WSGE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
- PS2PR06MB2904.apcprd06.prod.outlook.com (2603:1096:300:4c::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5144.22; Fri, 8 Apr 2022 15:14:39 +0000
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::74ea:8357:f542:4881]) by SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::74ea:8357:f542:4881%4]) with mapi id 15.20.5144.022; Fri, 8 Apr 2022
- 15:14:39 +0000
-From:   Wan Jiabing <wanjiabing@vivo.com>
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kael_w@yeah.net, Wan Jiabing <wanjiabing@vivo.com>
-Subject: [PATCH v3] rtla: Avoid record NULL pointer dereference
-Date:   Fri,  8 Apr 2022 23:13:32 +0800
-Message-Id: <20220408151406.34823-1-wanjiabing@vivo.com>
-X-Mailer: git-send-email 2.35.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR04CA0043.apcprd04.prod.outlook.com
- (2603:1096:202:14::11) To SG2PR06MB3367.apcprd06.prod.outlook.com
- (2603:1096:4:78::19)
+ bh=ouv4pLjnqW+wiQvyWUJaVZEgOJPSLeprtwkM4EivtDM=;
+ b=J16pS1wH4Qt3SV63gE+XIv6/kQUaKc6AdFFO3A2NtqEG2PC/xFN40fUZJ4Stl7v6RPFhZabBH8ABnF4ebE1CTqI8YdQymM+sxTzmYY2BsoBHGFAm4qTDJuTEF+TWq+72wDDQvDpA6gkGpE0rY1ZXA4EA/seTSgqRJYAVmQ9js5s=
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
+ by PH0PR21MB1341.namprd21.prod.outlook.com (2603:10b6:510:105::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.12; Fri, 8 Apr
+ 2022 15:16:19 +0000
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::ac09:6e1b:de72:2b2f]) by PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::ac09:6e1b:de72:2b2f%7]) with mapi id 15.20.5164.012; Fri, 8 Apr 2022
+ 15:16:19 +0000
+From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Wei Hu <weh@microsoft.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Wilczynski <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/6] Drivers: hv: vmbus: Fix handling of messages with
+ transaction ID of zero
+Thread-Topic: [PATCH 1/6] Drivers: hv: vmbus: Fix handling of messages with
+ transaction ID of zero
+Thread-Index: AQHYSjh0TwvmH/rmOEaspR/PqsF2bKzmImkw
+Date:   Fri, 8 Apr 2022 15:16:18 +0000
+Message-ID: <PH0PR21MB3025CB4163E2974E54C59935D7E99@PH0PR21MB3025.namprd21.prod.outlook.com>
+References: <20220407043028.379534-1-parri.andrea@gmail.com>
+ <20220407043028.379534-2-parri.andrea@gmail.com>
+In-Reply-To: <20220407043028.379534-2-parri.andrea@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=a8898754-3e92-4a0e-8e45-75338bdace00;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-04-08T15:15:05Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cb3acf1d-2e62-4f54-d4e3-08da1972bb94
+x-ms-traffictypediagnostic: PH0PR21MB1341:EE_
+x-ms-exchange-atpmessageproperties: SA|SL
+x-microsoft-antispam-prvs: <PH0PR21MB13411CCD6800DF013CBC06FDD7E99@PH0PR21MB1341.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uvXfW8pVlji03BtIed6eKvznpNAOWzcYc7E9JFV08471824RSFx2X01QJ1qBhzomV8xpIKiMCkG9bXZd59tdcJ7gpSlYHYAOmiROrfsjgYdTqLpRMnYOMr8jiaYQg4fffpTfQCrFrhl6PPw5SWSKoIRj7PpXnCL+LM2BirgjVGa9L5gnTjJPWW+Wre43v9W0BqIAl162xFP5zWNrlOHUK3CLDR0SV4ryL5QGUyd2b8XdLCmNagIxKvy7MNM2n+42QvPekw7+IsK2OK4wA/CHmZORe9CkvFmKs10UmP7EZhzcQvrSf/LBkKJSp522OBrWJSDyyfzX4rYpzlJSu3PKHQL0GgwzepkynQwKbcbpRggSR/v51k+4Q3o86sKxWj3TKvgmMQhdfLcLRQYI3kR3engTaCj3QC7XtX0CVbJwuh1kpeDSzPabzn7QJGe4fQYHgTCQo7xRSw9ZWYPaXSfGzuCwOgxfx2WX5DGwmERwsb5pK1kc7VXEJPaF0dgdUEBp0i9NeLU38Fk2w1gloA7rbNBAlC5k0nRUEP2/7k12FIUZ+aireaOlDhTDD5Z6PmSwYJRzJE0f4l4rgBVq2h2be1XdFCsqteKr/k9FMXso17I0yzyo38ttWyBzVsNyqOVA1UFOTPDvwLCCPxVsY/zMh2qnWS/holeNu1XL3g7bmQaQOf4mP842PrIuF24ujMUsdsguG/irq3iXLhlZY6JLSAMz/V0Ss2iu3fSNbeZzC4ez7bx0c+f9ynEX79L9oApmq/TAdxTwZAJGjNoCFAmvCA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR21MB3025.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(9686003)(10290500003)(7696005)(6506007)(316002)(66476007)(71200400001)(82960400001)(86362001)(15650500001)(921005)(8990500004)(8936002)(38070700005)(82950400001)(76116006)(66446008)(2906002)(33656002)(38100700002)(66556008)(110136005)(5660300002)(55016003)(122000001)(8676002)(64756008)(4326008)(508600001)(186003)(83380400001)(26005)(66946007)(54906003)(52536014);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?zdq2mN0JwMZaXLsx4VDTgOjFoxEZgc3MMkzpBHGWvR2vfHtKhBSUv0fOY6O5?=
+ =?us-ascii?Q?EmB7YFHv78R7hLSI8F2cIHrnvsj47H4xhTPCqPc2kfxFyGOhhyYbBJZX8M6x?=
+ =?us-ascii?Q?NyR/XtkBrR15jnKmWWnN/UKsmyuCm/A9AeoWdnNFfaZgwCF69jJ4f02kcpod?=
+ =?us-ascii?Q?ThIaikc5Ya9fyB5DPNH5YJwoGtsLSgTA7f1pTzNKcPDLqZmHYLLiYq7zqyi3?=
+ =?us-ascii?Q?iWHeyM1GPv2sKjyY12PHjUBO5aJSBnTIzm1fVuys56L/8zXsuoNfwGgegdsX?=
+ =?us-ascii?Q?fXaQFjKnBq+vI9MKPp8HUs4CxGNwhPoG7CAabevbJJhB5CNBGRfkRVihBSxY?=
+ =?us-ascii?Q?1pA5AnAaSlKoKLRsJ+e8f0e73VlcYP32zIRXrfgqfo/WtwLq74zvcTaBMhh0?=
+ =?us-ascii?Q?yiuyoaYuRZCecV5QJGtmYVFIcV9SAlztTtF9nlkE4FzSn6VK1Us7CGkXFIzu?=
+ =?us-ascii?Q?3s0/rvtqrWmIw34qgGy8IXh8ugGSxN8jNTSUYb4gKZeJJYPX+yOpqR6lMcw/?=
+ =?us-ascii?Q?trUhBvt1hwZQZBfhRwtGeFodCKhiQCO9115dsAQKvBpmzuaRCqM4CPd7+fGJ?=
+ =?us-ascii?Q?E+Smw77g7MtekT+RU3B0LU8hyaxjeAH2ICfdfbAc8cfNfAyyT9VnaQlMbwxd?=
+ =?us-ascii?Q?i/jQe/86K7r2fNkO1EHbvWOgWQhgVWJAoFolBmSxUUGbDln7gF7OqR8geDpG?=
+ =?us-ascii?Q?HQ/ksC8QA14CHNpHPQ3jC9Hq5Xb+OFwViEJfu5rIaJiZwlMOIuieObqgGRAS?=
+ =?us-ascii?Q?555Cl3pTr5hrH4ryzh2mqV/5miLZQjqIC6vtqVGB6ti+CDGzRuzr8h36Nf4r?=
+ =?us-ascii?Q?3QGmDftKe0tYVRWXHuKZGHeRdc4KbKAWqKiRflvzlReAecscRhVBm+JfF73O?=
+ =?us-ascii?Q?iWpuaXo8Hrutx9y+xEuSIuKC23S8c/QeiamoeneQCOmPGtRmZ02gxfQTjOyw?=
+ =?us-ascii?Q?KcTSTSQpZr1F+hWBQy8Rp5NRO6plm/GVJ0BBWp97kuBrwjfmtweaT/Q6PNyp?=
+ =?us-ascii?Q?4SICNPi3+mdcKTeIGNqUjfCs+QA5FpeJxiSwKjiToxWiWCF/RAKwb9+9dx/n?=
+ =?us-ascii?Q?F6NIBCMhvnenmZf9PowhkPOO1Q6aHMb4fe+EAYCcq+Vh0WizzesmDUlFG1FD?=
+ =?us-ascii?Q?FqSCbcL8BhQNCyLuZ0ky54H1XLC4V5jMqKE0h9wvlI7V06/d0VbieNNvTvtw?=
+ =?us-ascii?Q?J97MwMYgcKrHVm3qi1cg59yMLfRFE8dIFZYERcYjAloZdCaXlE5sE2tEvnpG?=
+ =?us-ascii?Q?7NcI6ImZaaNFyM4b/XyegMKslVPKVtBRZ47rLFnD1Cdu4OVwoX/J1CxC5mvI?=
+ =?us-ascii?Q?x8sIyVaRwIYMKdQmlewYNM4FvktoqbiFk0juqk1xwV8aY5Yd2wOvUT3l7MfZ?=
+ =?us-ascii?Q?ckjJtQe9uc1ZRsUluU+Vk5UXK7tjlD1LYmaAbSBE0UkjwiYmmnpEA5XSeM9W?=
+ =?us-ascii?Q?Y0OHbaKjzxfrrb8HBiT82oCY0SKOHOsZrveximW5nKVobKcY/cEq7ezspxJu?=
+ =?us-ascii?Q?m//SE7hkG/o/j6O2j6J9mY80fxZEoRx6Ud6x4Sdnj6xBwO5jVx9Brl52Tr7X?=
+ =?us-ascii?Q?1x8/FmOwuvf4vRCvnbXQizCurX25mSj3s1zolP8ByUTAt/HIxfRxBbepUjip?=
+ =?us-ascii?Q?3k9oTsUHtqWgNXT/OBJfOAZa0jE7xupD/yElL7LCw6V2Qq4HYBsxi/AULWK2?=
+ =?us-ascii?Q?mE3qaazFHbTm+8LVKIhAb8FafkXd+pCFQ9Iv1JMIFx4mEDvIRuTk0sOh21bq?=
+ =?us-ascii?Q?C9r/g53DLSImZd8bc4M2EaETUnmPzv0=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4ee1f083-fe50-4981-9696-08da19727fd4
-X-MS-TrafficTypeDiagnostic: PS2PR06MB2904:EE_
-X-Microsoft-Antispam-PRVS: <PS2PR06MB2904C1996932B50D68697824ABE99@PS2PR06MB2904.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bx73NKy79ytLpHsd2WRkRtcf07Cwk4CNFPsHJMt0sOhXmvH66UibmFS7BhUOJKsEcJZaoQ1TnAFZe18PbFbrELV7pHymG4XaAvZ0HmCTz+O7d7WDZNf7FQsB1+6nZqKv/H2CW66McBrFzUv/ROB/g3bHVmw+/OajvOLDryMYjzNLqne5Bt17iVdBJe+3BgbNWRqN9Aunz99SwDbdrDgHXTh5mh4bWvgUhBduvh/n8X6iSjnp2SB7fzeodCRFuoyju3FeZJtCFPztA08kDQrbEGXi7xvmqYtzUAfdemCVPqLWoLZaOLIoTMyJ/01DV0eeT/xruxYbEq3gq1Z20FFqAR9DeqDghFFZ0eP3NW+zogV3MWEY6OXXWiF8kcfHxpJtJeYKje18aQw3222ukyHJPn5hpmjJWuxBbrv0df9NKz9akCwqj/VdEzFR1Kf2bLLyQrsAwQN7Wca6u5CpXEzndJTSO79WQIjvAucTnbFHS9pr42zEY3Uy5clpu0v+rk8QinyrW+ZY/j2BfulVmbtvYEinKrEk4TFY4h+wYMeBkVc229GysGqqaseq4QxxadzKjxF4d2HktH2WpLlu5Rr6e6DOgSpeG5AQnFIAEP12bPqhfdfqXRAdXMSlOUy5JVIPe7YLgwtsVk4+3VyO854tV5xq5H5RVLEnue4XVu75ekaUgiWw+v0KvF4J+RF5lnOAC4dMB3nosfaN3OJibero4w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(2616005)(1076003)(186003)(36756003)(6512007)(26005)(83380400001)(107886003)(8676002)(66476007)(4326008)(66946007)(66556008)(52116002)(5660300002)(6666004)(8936002)(2906002)(6506007)(110136005)(508600001)(6486002)(38100700002)(38350700002)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0ukEFd9fUygjYjZOxa2hC4psLI/gvb872MeJC/mX2BgjM7uf4iYA43qkgqsw?=
- =?us-ascii?Q?O/NneP7qAuzfFAPkadxeuHr5d581nigYm7O2MdcAwVeEGW9ygL6eQZzKPYlt?=
- =?us-ascii?Q?+zFhs5ke04cq6CnSWy76v/XOf4+z/CWdHcN2me25YMSw/iDBEtAMfcphmQ1U?=
- =?us-ascii?Q?pqdf5A5dOuGVd36fvYPVcpYSyHlh/37gj+8gevcRB/fSt/wCdLE1rdMq9HUF?=
- =?us-ascii?Q?thGc29gSTqVGdFNk9c2IV4NeWunRc3Y1/CYugA3ZdxXTx4HqlpD5CZXgouj3?=
- =?us-ascii?Q?qbhKe6W4pVKyPzLivZVl6K/Wi6sr9Vh/iQ99OQg0HCnIyMecjAzAGID11F0E?=
- =?us-ascii?Q?mWG5pFk5ShGSBxkfc+2N3pZBQMw7Emklr4VJAD2QnElNX7mrx/yjuy+2oq6N?=
- =?us-ascii?Q?8QghlgVLoO9OZFc/VWWKegj+FoiCT0NzRMkXz/lATxpm9ebFwFahiQ2I+j1J?=
- =?us-ascii?Q?2JEIk3C8zo+Ruyd0F27YxRkqBnJd5oVQ04QNozCvngmen6a9JaBCv8G1uJDY?=
- =?us-ascii?Q?ik6zrNUCNEGaWx8C28jkmULE/Na0ujXDfEA3jMOema5o/8J035ZvwpBxbRtq?=
- =?us-ascii?Q?G/Ai8G4IG5eEmHnvJktfRofHtZnOxmax1y9LMIgE3tuIAZVjVKu1EumOfcwP?=
- =?us-ascii?Q?wbwkKn8kTvnl4tFKCOEuQrNC5mWBiHqjboVfE/bOP97dTpV7FFprlR6h3WPo?=
- =?us-ascii?Q?TKNJp2l0t6eZOGG+X9e95L7bBW8NjSvWrStyz2nJiHbu7vQ1aTrWzeb4oGSa?=
- =?us-ascii?Q?1/qqhQp8OIRA96QBktF/0jOYzs44EJhzMvLQqV7uVgCj61+IWahPi5dsH2Dv?=
- =?us-ascii?Q?M8OWncne7PnEspUoD5Dl82p8XvyHOKig5+pfE9cAxZbe4pemqnHel7dpYvXA?=
- =?us-ascii?Q?GYlpeOE2A8LY35G6czZlOlb7f704VSq22zXzUznyhNPBjQOlhHQ2ftZiYPXq?=
- =?us-ascii?Q?zjX4Q5OUoTwP1adAu/kBErBB33i74RNGZbwX5VMwNmowulOqS7fDE12kZbrL?=
- =?us-ascii?Q?jARKkDi94C39bJy7HwhiXbitrMmFhUntnx+7UVu0VKHyboEhJaGC94BnbBMh?=
- =?us-ascii?Q?ZDM4jydd4JNvUObBmVeWktbw/Tl6cfrCi0S6PspSMqqeerb02mF5bS8RhQSx?=
- =?us-ascii?Q?iy6xIseZLweXEe03DiaMyLtzU3a95yBRVRzOPfK+/oCwXDNuzi0/ZmzLIkjF?=
- =?us-ascii?Q?nEMlxxRamKXFDO3f5NsfWumGK2q9AMI0Z+l9QUd13YLgf3o3XmXVb9OtfJWb?=
- =?us-ascii?Q?WSSohd5knQa9Klj3nwoXw3z91oyGUgTTUDDv5dHhHIeIRJZ5igT3nKFm9dLk?=
- =?us-ascii?Q?sFiyFiHjnLI7nRE8NrLdHd9cgF0HePUGczFWM1ETCZJh1l3nSz9glWCDF22V?=
- =?us-ascii?Q?z9pQVExw1TrZZBVaV1v5h29nnC03GBlppFcvP0L4XvgEx4qNF8BHBFjufTqw?=
- =?us-ascii?Q?JpZUa0YmGtSfdpouxSao+b4VqYVKhw7iW9G3uUYJThMo7R3bIcHaEpByOdaT?=
- =?us-ascii?Q?U/ekK/hHmYhzcHrIRvs1ToO5p7Uf95HzXUaWy6Daak7xvp07vlePlTQNqXp3?=
- =?us-ascii?Q?QEzlDle/QXH5XmUAYAzLkQsIpxOZhQl0GGYPYpwKJDJLCHi4gA8leziJimiS?=
- =?us-ascii?Q?mE+fQ0iJCjN35Xe/fdWGX5aPMdE1NSK/twRA4Jpcasvys2X85LRxlgvG/hZd?=
- =?us-ascii?Q?fsVNpLvOZ7ExlcJS4yscdQ0eXEUDyokIxCagA4+5Vt0dFEDM2U8ayFpY4QwT?=
- =?us-ascii?Q?ubtmVnPnig=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4ee1f083-fe50-4981-9696-08da19727fd4
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2022 15:14:39.0763
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR21MB3025.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cb3acf1d-2e62-4f54-d4e3-08da1972bb94
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Apr 2022 15:16:18.8755
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eZuZTTuWVH+EkZ2iQcxeE7rbc0tSsCdZo+5u6KIRkCEY3Jljdjx3AJCCpv1sJgWJcPicJJ9EsdP/PppvZXC+5Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS2PR06MB2904
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 72c0Dbl+yh3vArTWFgmHksunW9jzNvEsiAZ+wtQM+Gxjcu/EaZTbqDO4VvPpQRxnK5vQUUgOH9yh4BJ6PTkisCYVnjiZn8UJVEW38K+8DRg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR21MB1341
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following null/deref_null.cocci errors:
-./tools/tracing/rtla/src/osnoise_hist.c:870:31-36: ERROR: record is NULL but dereferenced.
-./tools/tracing/rtla/src/osnoise_top.c:650:31-36: ERROR: record is NULL but dereferenced.
-./tools/tracing/rtla/src/timerlat_hist.c:905:31-36: ERROR: record is NULL but dereferenced.
-./tools/tracing/rtla/src/timerlat_top.c:700:31-36: ERROR: record is NULL but dereferenced.
+From: Andrea Parri (Microsoft) <parri.andrea@gmail.com> Sent: Wednesday, Ap=
+ril 6, 2022 9:30 PM
+>=20
+> vmbus_request_addr() returns 0 (zero) if the transaction ID passed
+> to as argument is 0.  This is unfortunate for two reasons: first,
+> netvsc_send_completion() does not check for a NULL cmd_rqst (before
+> dereferencing the corresponding NVSP message); second, 0 is a *valid*
+> value of cmd_rqst in netvsc_send_tx_complete(), cf. the call of
+> vmbus_sendpacket() in netvsc_send_pkt().
+>=20
+> vmbus_request_addr() has included the code in question since its
+> introduction with commit e8b7db38449ac ("Drivers: hv: vmbus: Add
+> vmbus_requestor data structure for VMBus hardening"); such code was
+> motivated by the early use of vmbus_requestor by hv_storvsc.  Since
+> hv_storvsc moved to a tag-based mechanism to generate and retrieve
+> transaction IDs with commit bf5fd8cae3c8f ("scsi: storvsc: Use
+> blk_mq_unique_tag() to generate requestIDs"), vmbus_request_addr()
+> can be modified to return VMBUS_RQST_ERROR if the ID is 0.  This
+> change solves the issues in hv_netvsc (and makes the handling of
+> messages with transaction ID of 0 consistent with the semantics
+> "the ID is not contained in the requestor/invalid ID").
+>=20
+> vmbus_next_request_id(), vmbus_request_addr() should still reserve
+> the ID of 0 for Hyper-V, because Hyper-V will "ignore" (not respond
+> to) VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED packets/requests with
+> transaction ID of 0 from the guest.
+>=20
+> Fixes: bf5fd8cae3c8f ("scsi: storvsc: Use blk_mq_unique_tag() to generate=
+ requestIDs")
+> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> ---
+> The above hv_netvsc issues precede bf5fd8cae3c8f; however, these
+> changes should not be backported to earlier commits since such a
+> back-port would 'break' hv_storvsc.
+>=20
+>  drivers/hv/channel.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
+> index dc5c35210c16a..20fc8d50a0398 100644
+> --- a/drivers/hv/channel.c
+> +++ b/drivers/hv/channel.c
+> @@ -1245,7 +1245,9 @@ u64 vmbus_next_request_id(struct vmbus_channel
+> *channel, u64 rqst_addr)
+>=20
+>  	/*
+>  	 * Cannot return an ID of 0, which is reserved for an unsolicited
+> -	 * message from Hyper-V.
+> +	 * message from Hyper-V; Hyper-V does not acknowledge (respond to)
+> +	 * VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED requests with ID of
+> +	 * 0 sent by the guest.
+>  	 */
+>  	return current_id + 1;
+>  }
+> @@ -1270,7 +1272,7 @@ u64 vmbus_request_addr(struct vmbus_channel *channe=
+l,
+> u64 trans_id)
+>=20
+>  	/* Hyper-V can send an unsolicited message with ID of 0 */
+>  	if (!trans_id)
+> -		return trans_id;
+> +		return VMBUS_RQST_ERROR;
+>=20
+>  	spin_lock_irqsave(&rqstor->req_lock, flags);
+>=20
+> --
+> 2.25.1
 
-"record" is NULL before calling osnoise_init_trace_tool.
-Add a tag "out_free" to avoid dereferring a NULL pointer.
-
-Fixes: 51d64c3a1819 ("rtla: Add -e/--event support")
-Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
----
-Changelog:
-v2:
-- Add the fix for timerlat.
-v3:
-- Make the subject clear.
----
- tools/tracing/rtla/src/osnoise_hist.c  |  5 +++--
- tools/tracing/rtla/src/osnoise_top.c   |  9 +++++----
- tools/tracing/rtla/src/timerlat_hist.c | 11 ++++++-----
- tools/tracing/rtla/src/timerlat_top.c  | 11 ++++++-----
- 4 files changed, 20 insertions(+), 16 deletions(-)
-
-diff --git a/tools/tracing/rtla/src/osnoise_hist.c b/tools/tracing/rtla/src/osnoise_hist.c
-index b4380d45cacd..5d7ea479ac89 100644
---- a/tools/tracing/rtla/src/osnoise_hist.c
-+++ b/tools/tracing/rtla/src/osnoise_hist.c
-@@ -809,7 +809,7 @@ int osnoise_hist_main(int argc, char *argv[])
- 		retval = set_comm_sched_attr("osnoise/", &params->sched_param);
- 		if (retval) {
- 			err_msg("Failed to set sched parameters\n");
--			goto out_hist;
-+			goto out_free;
- 		}
- 	}
- 
-@@ -819,7 +819,7 @@ int osnoise_hist_main(int argc, char *argv[])
- 		record = osnoise_init_trace_tool("osnoise");
- 		if (!record) {
- 			err_msg("Failed to enable the trace instance\n");
--			goto out_hist;
-+			goto out_free;
- 		}
- 
- 		if (params->events) {
-@@ -869,6 +869,7 @@ int osnoise_hist_main(int argc, char *argv[])
- out_hist:
- 	trace_events_destroy(&record->trace, params->events);
- 	params->events = NULL;
-+out_free:
- 	osnoise_free_histogram(tool->data);
- out_destroy:
- 	osnoise_destroy_tool(record);
-diff --git a/tools/tracing/rtla/src/osnoise_top.c b/tools/tracing/rtla/src/osnoise_top.c
-index 72c2fd6ce005..76479bfb2922 100644
---- a/tools/tracing/rtla/src/osnoise_top.c
-+++ b/tools/tracing/rtla/src/osnoise_top.c
-@@ -572,7 +572,7 @@ int osnoise_top_main(int argc, char **argv)
- 	retval = osnoise_top_apply_config(tool, params);
- 	if (retval) {
- 		err_msg("Could not apply config\n");
--		goto out_top;
-+		goto out_free;
- 	}
- 
- 	trace = &tool->trace;
-@@ -580,14 +580,14 @@ int osnoise_top_main(int argc, char **argv)
- 	retval = enable_osnoise(trace);
- 	if (retval) {
- 		err_msg("Failed to enable osnoise tracer\n");
--		goto out_top;
-+		goto out_free;
- 	}
- 
- 	if (params->set_sched) {
- 		retval = set_comm_sched_attr("osnoise/", &params->sched_param);
- 		if (retval) {
- 			err_msg("Failed to set sched parameters\n");
--			goto out_top;
-+			goto out_free;
- 		}
- 	}
- 
-@@ -597,7 +597,7 @@ int osnoise_top_main(int argc, char **argv)
- 		record = osnoise_init_trace_tool("osnoise");
- 		if (!record) {
- 			err_msg("Failed to enable the trace instance\n");
--			goto out_top;
-+			goto out_free;
- 		}
- 
- 		if (params->events) {
-@@ -649,6 +649,7 @@ int osnoise_top_main(int argc, char **argv)
- out_top:
- 	trace_events_destroy(&record->trace, params->events);
- 	params->events = NULL;
-+out_free:
- 	osnoise_free_top(tool->data);
- 	osnoise_destroy_tool(record);
- 	osnoise_destroy_tool(tool);
-diff --git a/tools/tracing/rtla/src/timerlat_hist.c b/tools/tracing/rtla/src/timerlat_hist.c
-index dc908126c610..f3ec628f5e51 100644
---- a/tools/tracing/rtla/src/timerlat_hist.c
-+++ b/tools/tracing/rtla/src/timerlat_hist.c
-@@ -821,7 +821,7 @@ int timerlat_hist_main(int argc, char *argv[])
- 	retval = timerlat_hist_apply_config(tool, params);
- 	if (retval) {
- 		err_msg("Could not apply config\n");
--		goto out_hist;
-+		goto out_free;
- 	}
- 
- 	trace = &tool->trace;
-@@ -829,14 +829,14 @@ int timerlat_hist_main(int argc, char *argv[])
- 	retval = enable_timerlat(trace);
- 	if (retval) {
- 		err_msg("Failed to enable timerlat tracer\n");
--		goto out_hist;
-+		goto out_free;
- 	}
- 
- 	if (params->set_sched) {
- 		retval = set_comm_sched_attr("timerlat/", &params->sched_param);
- 		if (retval) {
- 			err_msg("Failed to set sched parameters\n");
--			goto out_hist;
-+			goto out_free;
- 		}
- 	}
- 
-@@ -844,7 +844,7 @@ int timerlat_hist_main(int argc, char *argv[])
- 		dma_latency_fd = set_cpu_dma_latency(params->dma_latency);
- 		if (dma_latency_fd < 0) {
- 			err_msg("Could not set /dev/cpu_dma_latency.\n");
--			goto out_hist;
-+			goto out_free;
- 		}
- 	}
- 
-@@ -854,7 +854,7 @@ int timerlat_hist_main(int argc, char *argv[])
- 		record = osnoise_init_trace_tool("timerlat");
- 		if (!record) {
- 			err_msg("Failed to enable the trace instance\n");
--			goto out_hist;
-+			goto out_free;
- 		}
- 
- 		if (params->events) {
-@@ -904,6 +904,7 @@ int timerlat_hist_main(int argc, char *argv[])
- 		close(dma_latency_fd);
- 	trace_events_destroy(&record->trace, params->events);
- 	params->events = NULL;
-+out_free:
- 	timerlat_free_histogram(tool->data);
- 	osnoise_destroy_tool(record);
- 	osnoise_destroy_tool(tool);
-diff --git a/tools/tracing/rtla/src/timerlat_top.c b/tools/tracing/rtla/src/timerlat_top.c
-index 1f754c3df53f..35452a1d45e9 100644
---- a/tools/tracing/rtla/src/timerlat_top.c
-+++ b/tools/tracing/rtla/src/timerlat_top.c
-@@ -612,7 +612,7 @@ int timerlat_top_main(int argc, char *argv[])
- 	retval = timerlat_top_apply_config(top, params);
- 	if (retval) {
- 		err_msg("Could not apply config\n");
--		goto out_top;
-+		goto out_free;
- 	}
- 
- 	trace = &top->trace;
-@@ -620,14 +620,14 @@ int timerlat_top_main(int argc, char *argv[])
- 	retval = enable_timerlat(trace);
- 	if (retval) {
- 		err_msg("Failed to enable timerlat tracer\n");
--		goto out_top;
-+		goto out_free;
- 	}
- 
- 	if (params->set_sched) {
- 		retval = set_comm_sched_attr("timerlat/", &params->sched_param);
- 		if (retval) {
- 			err_msg("Failed to set sched parameters\n");
--			goto out_top;
-+			goto out_free;
- 		}
- 	}
- 
-@@ -635,7 +635,7 @@ int timerlat_top_main(int argc, char *argv[])
- 		dma_latency_fd = set_cpu_dma_latency(params->dma_latency);
- 		if (dma_latency_fd < 0) {
- 			err_msg("Could not set /dev/cpu_dma_latency.\n");
--			goto out_top;
-+			goto out_free;
- 		}
- 	}
- 
-@@ -645,7 +645,7 @@ int timerlat_top_main(int argc, char *argv[])
- 		record = osnoise_init_trace_tool("timerlat");
- 		if (!record) {
- 			err_msg("Failed to enable the trace instance\n");
--			goto out_top;
-+			goto out_free;
- 		}
- 
- 		if (params->events) {
-@@ -699,6 +699,7 @@ int timerlat_top_main(int argc, char *argv[])
- 		close(dma_latency_fd);
- 	trace_events_destroy(&record->trace, params->events);
- 	params->events = NULL;
-+out_free:
- 	timerlat_free_top(top->data);
- 	osnoise_destroy_tool(record);
- 	osnoise_destroy_tool(top);
--- 
-2.35.1
-
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
