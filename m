@@ -2,135 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98146C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 20:07:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C619BC43219
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 20:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239384AbiDHUJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 16:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42078 "EHLO
+        id S239413AbiDHULT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 16:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232479AbiDHUJA (ORCPT
+        with ESMTP id S239405AbiDHULO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 16:09:00 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF45353AAA
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 13:06:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=j9g5EHdwCeCGiDH+OptcbmwwyDPvJqZc+LesmTwslqM=; b=l7nnbBb2JXVJWhFHQb+EsAebGP
-        x47Ze152fGhFOpyWK4R5wqh8jhw0hHFtRGIWwUcO4il6F7S+6O+9KdyGrlQ+MH0qUQ+1aGTMB8R7/
-        5l9rnIsilGJTCn37OedWb1vPTs3WQ6Axn4BcNnHe7N437jh9nTFlKItKUapqNI8BhDYLN40HesuwU
-        9IIT0hrshy605QKPJ22XfUxprlkRGMDVIJkQ4Fq7xoqZHdnGgCfZBqdiWlZf76QuQCdndE+VsHq/g
-        koGtGFvOwcu3vitJM4HfLFWAGso32D+v9lTGK2URm++MgDxuJs2rKPGFueXPW4xQyxHw6dfKPHi4k
-        klkzmFwA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ncusL-00333H-81; Fri, 08 Apr 2022 20:06:33 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A8BA23000E6;
-        Fri,  8 Apr 2022 22:06:30 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 61A1D3223116A; Fri,  8 Apr 2022 22:06:30 +0200 (CEST)
-Date:   Fri, 8 Apr 2022 22:06:30 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Oleg Nesterov <oleg@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: Re: [PATCH v2] ptrace: fix ptrace vs tasklist_lock race on
- PREEMPT_RT.
-Message-ID: <YlCVxlTVL1pyBF08@hirez.programming.kicks-ass.net>
-References: <YjBO8yzxdmjTGNiy@linutronix.de>
- <20220315142944.GA22670@redhat.com>
- <YkW55u6u2fo5QmV7@linutronix.de>
- <20220405101026.GB34954@worktop.programming.kicks-ass.net>
- <20220405102849.GA2708@redhat.com>
- <Ykwn0MpcrZ/N+LOG@hirez.programming.kicks-ass.net>
- <20220407121340.GA2762@worktop.programming.kicks-ass.net>
- <87v8vk8q4g.fsf@email.froward.int.ebiederm.org>
- <20220408090908.GO2731@worktop.programming.kicks-ass.net>
- <874k332wjp.fsf@email.froward.int.ebiederm.org>
+        Fri, 8 Apr 2022 16:11:14 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345FC1A777B
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 13:09:01 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id c15so12837381ljr.9
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 13:09:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/UM0a9Ip3D6RdnaIa3xh2eGdIk2IGdD4yqLErApCSxM=;
+        b=CI/CYvGTarILQMchP5s65Nb1hnUDQsMrJh6w+c+dkUl2F0BUOL2kuCeFcTeCQbJYjI
+         yGMOzFWpjq2/2dCurKDzl4jWsQWHpb2kim/he4cP+VpQJ0ZUStRZGBNXrdgeYq6+Tfcu
+         HjaA3//xCR8FdmJPvzvsB8Ewe4ysqg6aLbknQWkkmP6TJjHR3vNr+HzAxJJOsvVYFhqe
+         DmwZKjCy0D1h/BU8V9rycAcdezkBXyYJ37skY+HbruIkrt7zeynpUygEOMwl2hyy8C0g
+         wByJvNnOaCJ+Uita54VhBO6KQ5POwGmjgBjBNZO9b95Q/C+Pm4W3XcqpBs23OKtumbWW
+         UFXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/UM0a9Ip3D6RdnaIa3xh2eGdIk2IGdD4yqLErApCSxM=;
+        b=CnjC3tQFLUgjDAOpYgM6uLOoFcVG4366juIskf9fC0YM04zb6Ph+qhlNUAwZQoj6Go
+         Q1L9sXtCijmBv+sYJppTjWpZ2QP1c6fMVTwWK2+VVQ5dP2CeuSxpBK6OjONylE9bCUNB
+         JVNaYeH67V4iLjAjo/eTWicGV+xUgffLZudB/mGO+7xdWNdeEJeD4HsCSc+2bR6ZYV/k
+         E9EjYjqQXxAARNxjf9IH1eOYz75pklY+op2ulw5J2zpH76WKCgsFyUlw+Tg0xmvzpeiO
+         QEMk1ekYZiH0rGVnUzZ60Iire4Hvas7a0nZTox/8oY0nmU+79iVl/+LVp0fdrC4VLkLN
+         oXFw==
+X-Gm-Message-State: AOAM5336KSkyfKZlX2SwIbwRA+MtthIa70OIM+vCoKgAn2KzoSB7dul8
+        r0W8IeAUOpusSRwq88DLsQUB21WQvtytyxH1yTBdeA==
+X-Google-Smtp-Source: ABdhPJxn/j+3hhBgpW18trIa+1ld5yDFBq4oZ1pt7YDIhvl7m7bWgtTber0s7bQ9iWmBxG7ZeR/kNzR+h6Y+rAp8XlM=
+X-Received: by 2002:a05:651c:555:b0:24b:15b7:74ad with SMTP id
+ q21-20020a05651c055500b0024b15b774admr12406043ljp.239.1649448539126; Fri, 08
+ Apr 2022 13:08:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <874k332wjp.fsf@email.froward.int.ebiederm.org>
+References: <7fad83ecde03540e65677959034315f8fbb3755e.1649434832.git.jpoimboe@redhat.com>
+ <CAK7LNARvFcQgEB1b0L6giwx0vD7wU9L-OZ5jvm1c5+StLjeOYQ@mail.gmail.com> <YlCJm8iQBPSOWIT5@hirez.programming.kicks-ass.net>
+In-Reply-To: <YlCJm8iQBPSOWIT5@hirez.programming.kicks-ass.net>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Fri, 8 Apr 2022 13:08:47 -0700
+Message-ID: <CAKwvOd=2xeZOg+0HosLPgCegKZxe7F-Cprw0MjOiWf2q=AbNDQ@mail.gmail.com>
+Subject: Re: [PATCH] kbuild: Remove CONFIG_DEBUG_SECTION_MISMATCH
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Michal Marek <michal.lkml@markovi.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>, X86 ML <x86@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Changbin Du <changbin.du@gmail.com>,
+        linux-toolchains@vger.kernel.org,
+        clang-built-linux <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 02:40:42PM -0500, Eric W. Biederman wrote:
-> Peter Zijlstra <peterz@infradead.org> writes:
-> 
-> > On Thu, Apr 07, 2022 at 05:50:39PM -0500, Eric W. Biederman wrote:
-> 
-> >> Given that fundamentally TASK_WAKEKILL must be added in ptrace_stop and
-> >> removed in ptrace_attach I don't see your proposed usage of jobctl helps
-> >> anything fundamental.
-> >> 
-> >> I suspect somewhere there is a deep trade-off between complicating
-> >> the scheduler to have a very special case for what is now
-> >> TASK_RTLOCK_WAIT, and complicating the rest of the code with having
-> >> TASK_RTLOCK_WAIT in __state and the values that should be in state
-> >> stored somewhere else.
-> >
-> > The thing is; ptrace is a special case. I feel very strongly we should
-> > not complicate the scheduler/wakeup path for something that 'never'
-> > happens.
-> 
-> I was going to comment that I could not understand how the saved_state
-> mechanism under PREEMPT_RT works.  Then I realized that wake_up_process
-> and wake_up_state call try_to_wake_up which calls ttwu_state_match which
-> modifies saved_state.
+Lore thread start for newly cc'ed ML readers:
+https://lore.kernel.org/lkml/7fad83ecde03540e65677959034315f8fbb3755e.1649434832.git.jpoimboe@redhat.com/
 
-Correct.
+On Fri, Apr 8, 2022 at 12:14 PM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Sat, Apr 09, 2022 at 03:29:21AM +0900, Masahiro Yamada wrote:
+> > Is [2] caused by dead code that was not optimized out
+> > due to the unusual inlining decisions by the compiler ?
+>
+> The complaint is due to SMAP validation; objtool will scream if there's
+> a CALL in between STAC/CLAC. The thinking is that since they open a
+> security window, we want tight code between them. We also very much
+> don't want tracing and other funnies to happen there. As such, any CALL
+> is dis-allowed.
 
-> The options appear to be that either ptrace_freeze_traced modifies
-> __state/state to remove TASK_KILLABLE.  Or that something clever happens
-> in ptrace_freeze_traced that guarantees the task does not wake
-> up.  Something living in kernel/sched/* like wait_task_inactive.
+Just indirect calls, which might be manipulated, or static calls, too?
 
-The code I posted in the parent will attempt to strip (and re-instate)
-WAKEKILL from __state and then saved_state, all under pi_lock.
+>
+> This weird option is having us upgrade quite a few 'inline' to
+> '__always_inline'.
 
-I think that preserves the current constraints.
+As is, the assumption that __init functions only call other __init
+functions or __always_inline is a brittle house of cards that leads to
+a "what color is your function" [0] scenario, and leads to code that
+happens to not emit warnings for compiler X (or compiler X version Y).
+There's also curious exceptions in modpost that look like memory leaks
+to me.
 
-> I can imagine adding add a loop around freezable_schedule in
-> ptrace_stop.  That does something like:
-> 
-> 	do {
->         	freezable_schedule();
->         } while (current->jobctl & JOBCTL_PTRACE_FREEZE);
+We already have such toolchain portability issues for different
+toolchains and different configs; warnings from section mismatches,
+and objtool STAC/CLAC checks.  I feel that Josh's patch would sweep
+more of those under the rug, so I'm not in favor of it, but could be
+convinced otherwise.
 
-I'm not entirely sure where you're headin with this; but my goal is to
-get rid of freezable_*() everything.
+TBH, I kind of think that we could use a C extension to permit
+__attribute__((always_inline)) to additionally be a statement
+attribute, rather than just a function attribute because of cases like
+this; we need the flexibility to make one call site __always_inline
+without necessarily forcing ALL callsites to be __always_inline'd.
 
-I'll ponder if wait_task_inactive() can simplify things..
+void y (void);
+void x (void) { __attribute__((always_inline)) y(); };
 
-> What ptrace_freeze_traced and ptrace_unfreeze_traced fundamentally need
-> is that the process to not do anything interesting, so that the tracer
-> process can modify the process and it's task_struct.
+(This is already expressable in LLVM IR; not (yet) in C. I'm not sure
+yet _why_ this was added to LLVM; whether a different language front
+end can express this, if C can and I'm mistaken, or whether it's only
+used for optimizations).
 
-Agreed, I understand this need. I think I've done this, but I'll
-centrainly look hard at it again Monday -- the weekend hopefully
-clearing my brain of preconceptions enough so that I can see my own code
-a-fresh.
+I think that would give developers maximal flexibility to defer as
+much to the compiler's inlining decisions when they don't care, and
+express precisely what they need when they do [care].
 
-Anyway, my current set lives here:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/log/?h=sched/wip.freezer
-
-I meant to post earlier today, but stuff got in between and I've not
-even done build-tests yet :/
+[0] https://journal.stuffwithstuff.com/2015/02/01/what-color-is-your-function/
+-- 
+Thanks,
+~Nick Desaulniers
