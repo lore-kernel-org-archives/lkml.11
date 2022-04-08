@@ -2,95 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E03A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 799BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235601AbiDHMZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35592 "EHLO
+        id S235622AbiDHM0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234673AbiDHMZC (ORCPT
+        with ESMTP id S235602AbiDHMZ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:25:02 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD085044D;
-        Fri,  8 Apr 2022 05:22:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649420579; x=1680956579;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/RplksVmRXLomtAsgB8+45tl/KicGkQUKXTegbelxEQ=;
-  b=W8i/okeZnqPcIP8zaNjSbM+kF1bqLgjAK4fHcgl21LTnumQmtiMRHbdE
-   I0n3BSw3zFYGEGvbMdbSqEoQunOMR/2C9je2x0cGgaLoXqbQ0nYbcs5M2
-   HPyd4BqRbk7lRvwbT8iqpOhXP2omH1pxpZzAhkbxfoSz4UhEdF9lpZobG
-   5lAKYnJRNiEPmYCA5IAcVWrVYnPzkpzdHtlpKkZ8s+9VhtrkNwaJT+WOe
-   ajfiaABFPDOC09lJDOQUkzA4ydRov0feenrpIAYx2I3woRc/a0+5/PY7p
-   7FQE4KSi36DJ6xJTrUW+RcpPZ+1zGtvEji7OOYRFiNVA9EQY5gxVTY/gz
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="324742473"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="324742473"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:22:46 -0700
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="550484807"
-Received: from lixia19x-mobl3.ccr.corp.intel.com (HELO [10.254.209.148]) ([10.254.209.148])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:22:37 -0700
-Message-ID: <1033ebe4-fa92-c9bd-a04b-8b28b21e25ea@linux.intel.com>
-Date:   Fri, 8 Apr 2022 20:22:35 +0800
+        Fri, 8 Apr 2022 08:25:57 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027A25FD7;
+        Fri,  8 Apr 2022 05:23:52 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 4C02221602;
+        Fri,  8 Apr 2022 12:23:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649420631; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uVUpaREMsqSl4vlaMoOMUHcCZsb/nYkNS050tsr5h/M=;
+        b=hRLmEUUKwmqeHOAJ7sPrZZE0DAA7RuiXmolBN1YA4t3HjT+nYOsFndqB3ZqKLUXsBO0XUI
+        RjbY2u1/yXMjxR4ZYLTynH/hKns1eAY0K31hlFJmfgmHS60qmQKbU+P/zUviosXfa7ILQz
+        7QH42GdiJwQYtp0uGYm1V0oQBnaI5eA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649420631;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uVUpaREMsqSl4vlaMoOMUHcCZsb/nYkNS050tsr5h/M=;
+        b=+teq62O8z1TBTVIYmFBH64RzHuCUsF41fVoS4jFt4GR+qXMQC66FxWwj18gZsbu1Ithokj
+        /+KBbhv3ImoCzgAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EFB6A132B9;
+        Fri,  8 Apr 2022 12:23:50 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 5kxvLVYpUGLuEAAAMHmgww
+        (envelope-from <rgoldwyn@suse.de>); Fri, 08 Apr 2022 12:23:50 +0000
+Date:   Fri, 8 Apr 2022 07:23:48 -0500
+From:   Goldwyn Rodrigues <rgoldwyn@suse.de>
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     song@kernel.org, guoqing.jiang@linux.dev,
+        linux-raid@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v3] md: fix an incorrect NULL check in
+ does_sb_need_changing
+Message-ID: <20220408122348.bt7lkaumwhv36a2q@fiona>
+References: <20220408083728.25701-1-xiam0nd.tong@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Cc:     baolu.lu@linux.intel.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
-Content-Language: en-US
-To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>
-References: <20220308054421.847385-1-baolu.lu@linux.intel.com>
- <20220315002125.GU11336@nvidia.com> <Yk/q1BGN8pC5HVZp@8bytes.org>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <Yk/q1BGN8pC5HVZp@8bytes.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220408083728.25701-1-xiam0nd.tong@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Joerg,
-
-On 2022/4/8 15:57, Joerg Roedel wrote:
-> On Mon, Mar 14, 2022 at 09:21:25PM -0300, Jason Gunthorpe wrote:
->> Joerg, are we good for the coming v5.18 merge window now? There are
->> several things backed up behind this series.
+On 16:37 08/04, Xiaomeng Tong wrote:
+> The bug is here:
+> 	if (!rdev)
 > 
-> I usually don't apply bigger changes like this after -rc7, so it didn't
-> make it. Please re-send after -rc3 is out and I will consider it.
+> The list iterator value 'rdev' will *always* be set and non-NULL
+> by rdev_for_each(), so it is incorrect to assume that the iterator
+> value will be NULL if the list is empty or no element found.
+> Otherwise it will bypass the NULL check and lead to invalid memory
+> access passing the check.
+> 
+> To fix the bug, use a new variable 'iter' as the list iterator,
+> while using the original variable 'rdev' as a dedicated pointer to
+> point to the found element.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 2aa82191ac36 ("md-cluster: Perform a lazy update")
+> Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-Sure. I will do.
+Also safeguards from reading sb from a faulty device if all devices are
+faulty.
 
-Best regards,
-baolu
+Acked-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+
+> v2:https://lore.kernel.org/lkml/20220328081127.26148-1-xiam0nd.tong@gmail.com/
+> v1:https://lore.kernel.org/lkml/20220327080002.11923-1-xiam0nd.tong@gmail.com/
+> 
+> ---
+>  drivers/md/md.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/md/md.c b/drivers/md/md.c
+> index 4d38bd7dadd6..7476fc204172 100644
+> --- a/drivers/md/md.c
+> +++ b/drivers/md/md.c
+> @@ -2629,14 +2629,16 @@ static void sync_sbs(struct mddev *mddev, int nospares)
+>  
+>  static bool does_sb_need_changing(struct mddev *mddev)
+>  {
+> -	struct md_rdev *rdev;
+> +	struct md_rdev *rdev = NULL, *iter;
+>  	struct mdp_superblock_1 *sb;
+>  	int role;
+>  
+>  	/* Find a good rdev */
+> -	rdev_for_each(rdev, mddev)
+> -		if ((rdev->raid_disk >= 0) && !test_bit(Faulty, &rdev->flags))
+> +	rdev_for_each(iter, mddev)
+> +		if ((iter->raid_disk >= 0) && !test_bit(Faulty, &iter->flags)) {
+> +			rdev = iter;
+>  			break;
+> +		}
+>  
+>  	/* No good device found. */
+>  	if (!rdev)
+> -- 
+> 2.17.1
+> 
+
+-- 
+Goldwyn
