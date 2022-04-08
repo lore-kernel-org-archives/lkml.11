@@ -2,77 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDF8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236649AbiDHOBE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 10:01:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44528 "EHLO
+        id S236655AbiDHOBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 10:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231945AbiDHOA7 (ORCPT
+        with ESMTP id S236621AbiDHOBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 10:00:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B9BD6C905;
+        Fri, 8 Apr 2022 10:01:00 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FA536B6D;
         Fri,  8 Apr 2022 06:58:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B061A61AE1;
-        Fri,  8 Apr 2022 13:58:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8110C385AA;
-        Fri,  8 Apr 2022 13:58:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649426335;
-        bh=bDBwdys85RCakFFbygvOdphtQTA9miuiqFibn2MIMFE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OeA26bBevVgo6sbJzPJXamDO8E3ns/pz20ZNfr/4yRgmVpFBvscC184viL/LX11hU
-         CD7+aJE00Kjo9bk1ElwXNi+skHXiJ+iskOUp+OMkltZaxXxTTbfQFqxbL/k7/OSSZN
-         N+uMGu37NDp/7VhbOex7Iyhc36pjZYZEjVMsnR23nQy3HLdYE1lLONI3vTtBMweeWI
-         PAs2Y0Y+9ghBS7PrZtAc7B5mZRRvCAw8bIi9He0MU67mtZQulVPCrja/esFrjYYuvA
-         yrsaXkDTlAvZy+wqrxspiwEm/OT1rSxyL0bGt88Psnktz2ujzjTVPFTrnohVgMCCrD
-         6KdtWv3cu8fLQ==
-From:   Will Deacon <will@kernel.org>
-To:     gregkh@linuxfoundation.org, guoren@kernel.org, arnd@arndb.de
-Cc:     catalin.marinas@arm.com, kernel-team@android.com,
-        Will Deacon <will@kernel.org>, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arch@vger.kernel.org, linux-xtensa@linux-xtensa.org,
-        Guo Ren <guoren@linux.alibaba.com>, linux-csky@vger.kernel.org
-Subject: Re: [PATCH V4 0/4] arch: patch_text: Fixup last cpu should be master
-Date:   Fri,  8 Apr 2022 14:58:45 +0100
-Message-Id: <164941462755.3967238.7784714539452982763.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220407073323.743224-1-guoren@kernel.org>
-References: <20220407073323.743224-1-guoren@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649426336; x=1680962336;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=6BtLWIQ6HuBMCGyioka43iSSXH1vNEmJNzU6an6OpK4=;
+  b=MUy6c8elqHtJU50LU0Pe58FhovHVw3LEjd2H2w0LWoyCbJjieYepBTSz
+   bCxvxlH/PiEFd1xgW6kuTskptc3y0xMkaIBf1k1r+jVg8JOsuKub7rKWr
+   9oIy7/Ar/unsPr/x7YPe7vI1l7pABdsVhwPBpv8CzMicDxbPYtJBBemGu
+   hfy6Acw/xhlIm2TSUsrLLt+pRwq18dYz1GTZMp4TVjo8U3BAJ3Vw2l24U
+   4tGHsfA9lfEQClAcrnnHPykATAEnpOPHskps4X4tHytAAIofpOXYT8xOp
+   r5QmdeN3ysfce3rN+6Ijb+OmF/Rhh2zDmlhQWm7ecTxNM5L0Cp1fyWweW
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="324758505"
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="324758505"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 06:58:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="698190122"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by fmsmga001.fm.intel.com with ESMTP; 08 Apr 2022 06:58:48 -0700
+Date:   Fri, 8 Apr 2022 21:58:37 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: Re: [PATCH v5 06/13] KVM: Use kvm_userspace_memory_region_ext
+Message-ID: <20220408135837.GE57095@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-7-chao.p.peng@linux.intel.com>
+ <YkI2Lyv9SJaGPDz+@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YkI2Lyv9SJaGPDz+@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 7 Apr 2022 15:33:19 +0800, guoren@kernel.org wrote:
-> From: Guo Ren <guoren@linux.alibaba.com>
+On Mon, Mar 28, 2022 at 10:26:55PM +0000, Sean Christopherson wrote:
+> On Thu, Mar 10, 2022, Chao Peng wrote:
+> > @@ -4476,14 +4477,23 @@ static long kvm_vm_ioctl(struct file *filp,
+> >  		break;
+> >  	}
+> >  	case KVM_SET_USER_MEMORY_REGION: {
+> > -		struct kvm_userspace_memory_region kvm_userspace_mem;
+> > +		struct kvm_userspace_memory_region_ext region_ext;
 > 
-> These patch_text implementations are using stop_machine_cpuslocked
-> infrastructure with atomic cpu_count. The original idea: When the
-> master CPU patch_text, the others should wait for it. But current
-> implementation is using the first CPU as master, which couldn't
-> guarantee the remaining CPUs are waiting. This patch changes the
-> last CPU as the master to solve the potential risk.
+> It's probably a good idea to zero initialize the full region to avoid consuming
+> garbage stack data if there's a bug and an _ext field is accessed without first
+> checking KVM_MEM_PRIVATE.  I'm usually opposed to unnecessary initialization, but
+> this seems like something we could screw up quite easily.
 > 
-> [...]
+> >  		r = -EFAULT;
+> > -		if (copy_from_user(&kvm_userspace_mem, argp,
+> > -						sizeof(kvm_userspace_mem)))
+> > +		if (copy_from_user(&region_ext, argp,
+> > +				sizeof(struct kvm_userspace_memory_region)))
+> >  			goto out;
+> > +		if (region_ext.region.flags & KVM_MEM_PRIVATE) {
+> > +			int offset = offsetof(
+> > +				struct kvm_userspace_memory_region_ext,
+> > +				private_offset);
+> > +			if (copy_from_user(&region_ext.private_offset,
+> > +					   argp + offset,
+> > +					   sizeof(region_ext) - offset))
+> 
+> In this patch, KVM_MEM_PRIVATE should result in an -EINVAL as it's not yet
+> supported.  Copying the _ext on KVM_MEM_PRIVATE belongs in the "Expose KVM_MEM_PRIVATE"
+> patch.
 
-Applied first patch only to arm64 (for-next/fixes), thanks!
+Agreed.
 
-[1/4] arm64: patch_text: Fixup last cpu should be master
-      https://git.kernel.org/arm64/c/31a099dbd91e
+> 
+> Mechnically, what about first reading flags via get_user(), and then doing a single
+> copy_from_user()?  It's technically more work in the common case, and requires an
+> extra check to guard against TOCTOU attacks, but this isn't a fast path by any means
+> and IMO the end result makes it easier to understand the relationship between
+> KVM_MEM_PRIVATE and the two different structs.
 
-Cheers,
--- 
-Will
+Will use this code, thanks for typing.
 
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+Chao
+> 
+> E.g.
+> 
+> 	case KVM_SET_USER_MEMORY_REGION: {
+> 		struct kvm_user_mem_region region;
+> 		unsigned long size;
+> 		u32 flags;
+> 
+> 		memset(&region, 0, sizeof(region));
+> 
+> 		r = -EFAULT;
+> 		if (get_user(flags, (u32 __user *)(argp + offsetof(typeof(region), flags))))
+> 			goto out;
+> 
+> 		if (flags & KVM_MEM_PRIVATE)
+> 			size = sizeof(struct kvm_userspace_memory_region_ext);
+> 		else
+> 			size = sizeof(struct kvm_userspace_memory_region);
+> 		if (copy_from_user(&region, argp, size))
+> 			goto out;
+> 
+> 		r = -EINVAL;
+> 		if ((flags ^ region.flags) & KVM_MEM_PRIVATE)
+> 			goto out;
+> 
+> 		r = kvm_vm_ioctl_set_memory_region(kvm, &region);
+> 		break;
+> 	}
+> 
+> > +				goto out;
+> > +		}
+> >  
+> > -		r = kvm_vm_ioctl_set_memory_region(kvm, &kvm_userspace_mem);
+> > +		r = kvm_vm_ioctl_set_memory_region(kvm, &region_ext);
+> >  		break;
+> >  	}
+> >  	case KVM_GET_DIRTY_LOG: {
+> > -- 
+> > 2.17.1
+> > 
