@@ -2,143 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AE78C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 05:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23311C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 05:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234719AbiDHFZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 01:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42870 "EHLO
+        id S234699AbiDHFZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 01:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234703AbiDHFZS (ORCPT
+        with ESMTP id S234710AbiDHFZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 01:25:18 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D95121095;
-        Thu,  7 Apr 2022 22:23:12 -0700 (PDT)
-X-UUID: 3f3ac99e33e446789797ede4e8c1b001-20220408
-X-UUID: 3f3ac99e33e446789797ede4e8c1b001-20220408
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1108855838; Fri, 08 Apr 2022 13:23:07 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 8 Apr 2022 13:23:05 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 8 Apr
- 2022 13:23:05 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 8 Apr 2022 13:23:05 +0800
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     <cw00.choi@samsung.com>, <krzk+dt@kernel.org>,
-        <robh+dt@kernel.org>, <kyungmin.park@samsung.com>
-CC:     <khilman@kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <jia-wei.chang@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Johnson Wang <johnson.wang@mediatek.com>
-Subject: [PATCH v2 1/2] dt-bindings: devfreq: mediatek: Add mtk cci devfreq dt-bindings
-Date:   Fri, 8 Apr 2022 13:21:49 +0800
-Message-ID: <20220408052150.22536-2-johnson.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220408052150.22536-1-johnson.wang@mediatek.com>
-References: <20220408052150.22536-1-johnson.wang@mediatek.com>
+        Fri, 8 Apr 2022 01:25:43 -0400
+Received: from hust.edu.cn (mail.hust.edu.cn [202.114.0.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9567B14FBB5
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 22:23:31 -0700 (PDT)
+Received: from localhost.localdomain ([222.20.126.44])
+        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
+        by mx1.hust.edu.cn  with ESMTP id 2385ME7N017799-2385ME7Q017799
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Fri, 8 Apr 2022 13:22:20 +0800
+From:   Dongliang Mu <dzm91@hust.edu.cn>
+To:     Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] fs: f2fs: remove WARN_ON in f2fs_is_valid_blkaddr
+Date:   Fri,  8 Apr 2022 13:22:06 +0800
+Message-Id: <20220408052207.209856-1-dzm91@hust.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-FEAS-AUTH-USER: dzm91@hust.edu.cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devicetree binding of mtk cci devfreq on MediaTek SoC.
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
-Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+In f2fs_is_valid_blkaddr, if type is DATA_GENERIC_ENHANCE or
+DATA_GENERIC_ENHANCE_READ, it invokes WARN_ON(1) not matter
+blkaddr is in the range or not.
+
+Fix this by removing WARN_ON.
+
+Note that, syzbot patch testing does not incur any further issues
+
+Reported-by: syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
 ---
- .../devicetree/bindings/devfreq/mtk-cci.yaml  | 72 +++++++++++++++++++
- 1 file changed, 72 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/devfreq/mtk-cci.yaml
+ fs/f2fs/checkpoint.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/devfreq/mtk-cci.yaml b/Documentation/devicetree/bindings/devfreq/mtk-cci.yaml
-new file mode 100644
-index 000000000000..ef4ea951025c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/devfreq/mtk-cci.yaml
-@@ -0,0 +1,72 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/devfreq/mtk-cci.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek Cache Coherent Interconnect (CCI) frequency and voltage scaling
-+
-+maintainers:
-+  - Jia-Wei Chang <jia-wei.chang@mediatek.com>
-+
-+description: |
-+  MediaTek Cache Coherent Interconnect (CCI) uses the software devfreq module
-+  to scale the clock frequency and adjust the voltage. MediaTek CCI shares
-+  the same power supplies with CPU, so the scheduling involves with CPUfreq.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - mediatek,mt8183-cci
-+      - mediatek,mt8186-cci
-+
-+  clocks:
-+    items:
-+      - description:
-+          The multiplexer for clock input of CPU cluster.
-+      - description:
-+          A parent of "cpu" clock which is used as an intermediate clock source
-+          when the original CPU is under transition and not stable yet.
-+
-+  clock-names:
-+    items:
-+      - const: cci
-+      - const: intermediate
-+
-+  operating-points-v2:
-+    description:
-+      For details, please refer to
-+      Documentation/devicetree/bindings/opp/opp-v2.yaml
-+
-+  proc-supply:
-+    description:
-+      Phandle of the regulator for CCI that provides the supply voltage.
-+
-+  sram-supply:
-+    description:
-+      Phandle of the regulator for sram of CCI that provides the supply
-+      voltage. When it presents, the cci devfreq driver needs to do
-+      "voltage tracking" to step by step scale up/down Vproc and Vsram to fit
-+      SoC specific needs. When absent, the voltage scaling flow is handled by
-+      hardware, hence no software "voltage tracking" is needed.
-+
-+required:
-+  - compatible
-+  - clocks
-+  - clock-names
-+  - operating-points-v2
-+  - proc-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/mt8183-clk.h>
-+    cci: cci {
-+      compatible = "mediatek,mt8183-cci";
-+      clocks = <&mcucfg CLK_MCU_BUS_SEL>,
-+               <&topckgen CLK_TOP_ARMPLL_DIV_PLL1>;
-+      clock-names = "cci", "intermediate";
-+      operating-points-v2 = <&cci_opp>;
-+      proc-supply = <&mt6358_vproc12_reg>;
-+    };
+diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
+index f5366feea82d..521498b2dd8c 100644
+--- a/fs/f2fs/checkpoint.c
++++ b/fs/f2fs/checkpoint.c
+@@ -158,7 +158,6 @@ static bool __is_bitmap_valid(struct f2fs_sb_info *sbi, block_t blkaddr,
+ 		f2fs_err(sbi, "Inconsistent error blkaddr:%u, sit bitmap:%d",
+ 			 blkaddr, exist);
+ 		set_sbi_flag(sbi, SBI_NEED_FSCK);
+-		WARN_ON(1);
+ 	}
+ 	return exist;
+ }
+@@ -196,7 +195,6 @@ bool f2fs_is_valid_blkaddr(struct f2fs_sb_info *sbi,
+ 			f2fs_warn(sbi, "access invalid blkaddr:%u",
+ 				  blkaddr);
+ 			set_sbi_flag(sbi, SBI_NEED_FSCK);
+-			WARN_ON(1);
+ 			return false;
+ 		} else {
+ 			return __is_bitmap_valid(sbi, blkaddr, type);
 -- 
-2.18.0
+2.25.1
 
