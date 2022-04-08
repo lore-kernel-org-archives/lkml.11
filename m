@@ -2,107 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 213D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:49:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EAFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237208AbiDHOv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 10:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36630 "EHLO
+        id S237322AbiDHOxu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 10:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237201AbiDHOvy (ORCPT
+        with ESMTP id S230376AbiDHOxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 10:51:54 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CBD210077E
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 07:49:50 -0700 (PDT)
-Received: from mail-wr1-f53.google.com ([209.85.221.53]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MT7ip-1nY7Wd1dzL-00UYdI; Fri, 08 Apr 2022 16:49:48 +0200
-Received: by mail-wr1-f53.google.com with SMTP id d3so13210960wrb.7;
-        Fri, 08 Apr 2022 07:49:48 -0700 (PDT)
-X-Gm-Message-State: AOAM5314q0WqgwudkYj1VSsf0mFE1X2Cqg4IBsQyi1m8/hEIRhSljyrQ
-        MqjfG1vUu0u9eI+thrcSA/Fx7La61uyd5BxOaKw=
-X-Google-Smtp-Source: ABdhPJwVNzAUvp4q5y9Xv8Pl9NcevPGw56Av/8fDlBAo0sYujt7tAUw/HOtRrfZixqKYu184m37g27gifqdWtdVR4Vc=
-X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id
- e12-20020a056000178c00b002040648b4c4mr14628640wrg.219.1649429387994; Fri, 08
- Apr 2022 07:49:47 -0700 (PDT)
+        Fri, 8 Apr 2022 10:53:47 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE1910DA73
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 07:51:43 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id e8-20020a17090a118800b001cb13402ea2so5426305pja.0
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 07:51:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oKpHuTCTVX/9mlJ3fOMLkg+SOJ3B85mD/CGTLhqUYcY=;
+        b=IRlMOocycUdo2ggd59+k/x0mi14OomgysGOMJMR0BXqq9t+rkqur9z6Fm3wtr/nQ1h
+         UJGYtVaU5HtC6Hnr/bQvw8KCOJYNkLEb9wuZ+F9dURfGH7nTatt44rzV3sz2ydGDQboY
+         7csWkDkyZ1RHkYa1vSy1WrAOdBYgArlPOfSFIWy3EItX6vCGFcQckni5n8yqA/lDrvJj
+         QZfsH19T9beBeIjf250Iry5yuLygxD80YH6Qmg8w8Zp2LuPKe4qFxvNUGCNAUEEhYAE/
+         sHuPXER3Jn+RbPRFan5nnWHce+ZcgbBbTjCZYW96a1YIKzML+y2dfBbNCyUhlcuvxVsY
+         plXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oKpHuTCTVX/9mlJ3fOMLkg+SOJ3B85mD/CGTLhqUYcY=;
+        b=iwtQHBA7zUck9bCusHfa/CYreXzsdJw8tGujvi3BVRbxXC/eIiJTB207eDC7uq8GC8
+         ghjzIkV5xe38QwgcDWJ3h1Ojn/q9eFB9O7xRn+feGBCsqGnFeaKvsRLQIK2Eze9jPr/K
+         njY38UCGRNfG40xFMDEQXoji1ELM2BzAVxNE2mjz1Ux8obSLc/xpPyplIrxCf/uBYUU6
+         ySBs9QMjZn5DltbaH11TP68M/tcs8NME/NaoS7PJ/36bv5NmCQc7jqS260Xh1aCIontP
+         WDQDCqkqyiINrBGUEHvUv3OdXHJQa/t2OzGUF2+XGat+IWYkuhv7OpMewqhnRJ1p1EVR
+         CzGA==
+X-Gm-Message-State: AOAM53116upevcCjKYM7dlv0ChUhYTxxr/ZPmrX0XvWmsqoKt3RQsyiX
+        t/9YnZaxSKkLP20sRR0b6PIdUw==
+X-Google-Smtp-Source: ABdhPJwK5E91BkazzZhqdilh1wfA2ctl2VJDZBvxKXgErNvw3ypqz09c901AZEW9sa1HYrXRoCPYbg==
+X-Received: by 2002:a17:902:d507:b0:157:1e3b:ee76 with SMTP id b7-20020a170902d50700b001571e3bee76mr5302286plg.67.1649429503155;
+        Fri, 08 Apr 2022 07:51:43 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id h20-20020a056a001a5400b004fb1b4b010asm26840043pfv.162.2022.04.08.07.51.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 07:51:42 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 14:51:39 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Isaku Yamahata <isaku.yamahata@gmail.com>,
+        isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        erdemaktas@google.com, Connor Kuehl <ckuehl@redhat.com>
+Subject: Re: [RFC PATCH v5 092/104] KVM: TDX: Handle TDX PV HLT hypercall
+Message-ID: <YlBL+0mDzuTMYGV9@google.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <6da55adb2ddb6f287ebd46aad02cfaaac2088415.1646422845.git.isaku.yamahata@intel.com>
+ <282d4cd1-d1f7-663c-a965-af587f77ee5a@redhat.com>
+ <Yk79A4EdiZoVQMsV@google.com>
+ <8e0280ab-c7aa-5d01-a36f-93d0d0d79e25@redhat.com>
+ <20220408045842.GI2864606@ls.amr.corp.intel.com>
+ <27a59f1a-ea74-2d75-0739-5521e7638c68@redhat.com>
 MIME-Version: 1.0
-References: <20220331092235.3000787-1-hasegawa-hitomi@fujitsu.com>
- <20220331092235.3000787-2-hasegawa-hitomi@fujitsu.com> <YkWVTEG5oFO82GPL@kroah.com>
- <CAK8P3a0jnzse4sG58taO5+Yd5vCgh1uddqbtAuim_z9r15Q3BA@mail.gmail.com>
- <20220408133246.fyw5554lgli4olvg@maple.lan> <CAK8P3a0u2xa9BFmakG+f4kyLsqNZQbE6KQ6jz2356Fyen=1EHw@mail.gmail.com>
- <YlBE6hZHmLo9/wrU@kroah.com>
-In-Reply-To: <YlBE6hZHmLo9/wrU@kroah.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 8 Apr 2022 16:49:31 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3v4+AO5avGoxeZSyNTOWqk8YS95xQLWSBZ=yV_3DKggg@mail.gmail.com>
-Message-ID: <CAK8P3a3v4+AO5avGoxeZSyNTOWqk8YS95xQLWSBZ=yV_3DKggg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] soc: fujitsu: Add A64FX diagnostic interrupt driver
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Hitomi Hasegawa <hasegawa-hitomi@fujitsu.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Olof Johansson <olof@lixom.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jason Wessel <jason.wessel@windriver.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kgdb-bugreport@lists.sourceforge.net,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mike Travis <mike.travis@hpe.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:yacM5vXlZ9M/b5opAPcDYsI9bcnrr5azz1UO9ROET8AV68QYf76
- GDDX5aJpyXCn52nPH4I7bT78OWiwreWlfHYGDjHS4SXXeFXBVxA/7Qeb/ZgL+srBYo9n4Jl
- 7TXkWuKDyZ+6ENe3ZbsKCp1asyYtn01gIDf68HhdLuRSCMOHmrmk9ehEefRgFpWxp9lv4NC
- jgjjus0mN7qR9cifrY0KQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:M4Mzo/znBWo=:HC9J1XHoLde9DdKvDCUTEA
- vgPi89E76clvefrEP4NTt4Zp1Ea7+0UOiNsJjRt096kgbanNS5dDePv2HAd8uNYZaEjBLdRKf
- FhR2bkTMNZAtQNithR2TuaT8z+sEFarvDrFwheeowESpW+7O+nXqRCBkWWVTDBrbd0/9tvox1
- v4xXFsJ2cwKKpYgAGc1lPDNZI2+YbgS4MxHDdT3jM9AR5y8ysyIMKvAG/VyskJcTRwPbRIbkd
- PW8QG4EubOJxjWL5zrzlZXy/4da3mL4AP+2McVEJ3GRsdAZtlgpo8/uvCkIMd9FLR3ZP+40kv
- dK5M94PhW9CC1Kn6j828w8vsOWNcbpgtuQyzNdU0e85Hop7VB+2bZinN7NBMpfap4JlQibcSd
- HXOD0VnHStt9ZZd4AjTL5y1jYzHXPcKHx9/qbJcjvx7FiW2u5u6U6U8WsvTWw2YALhnElIX/C
- E5lvHdLzk1IF5CdNDTF4u/8Bf7VNJFZ7V0AFiZKxKzEAxsmUtigL7Muh8WjZbBpts8PwoW/oX
- dqdkp9RMJ7FwsQnRZPKJTak2WlbEdP1aYchpcFsNU950s63OaM5ysxGecg2Un4aDwtNpt1eph
- jCRtNWc9WMqe1BA75uFIDIAtHGFpgrIcwyfP+EmWN5DGUZnQPNGY1HrxICEeeocbZmRGHg7wB
- aNJkP6Fw3GCoIpZ31QYYQvGciWCj/csRoYw/Z+J0LC/RVCR3XefF6s9u7ohv/Q0bA8BPwP5fH
- 7Zsne6WvfDz2Kyc6Nj1UqVLbe2+2wjcLhf8q4+Ju1r31XOcFmT6n5soa+4jjU+TvCuc1Dpd7I
- xhqjzC80CK9bIwf043ihyh3FnHMOv0gEC7+EDSZZ1iChXD9e3E=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <27a59f1a-ea74-2d75-0739-5521e7638c68@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 4:21 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Fri, Apr 08, 2022 at 04:17:16PM +0200, Arnd Bergmann wrote:
-> > On Fri, Apr 8, 2022 at 3:32 PM Daniel Thompson
-> > <daniel.thompson@linaro.org> wrote:
-> > > On Thu, Mar 31, 2022 at 05:44:55PM +0200, Arnd Bergmann wrote:
-> > >
-> > > There is some prior art for this sort of feature. AFAICT SGI UV has a
-> > > similar mechanism that can send an NMI-with-no-side-channel to the
-> > > kernel. The corresponding driver offers a range of actions using a
-> > > module parameter:
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/platform/uv/uv_nmi.c#n180
-> > >
-> > > I don't think a hardcoded 'c' makes any sense. With a hardcoded argument
-> > > it is just obfuscation. However it is certainly seems attractive to be
-> > > able to reuse handle_sysrq() to provide a more powerful set of actions.
-> >
-> > How about a module parameter that allows picking a sysrq character then?
->
-> Module parameters are so 1990, as this is a platform device, why not get
-> it from DT?
+On Fri, Apr 08, 2022, Paolo Bonzini wrote:
+> On 4/8/22 06:58, Isaku Yamahata wrote:
+> > On Thu, Apr 07, 2022 at 05:56:05PM +0200,
+> > Paolo Bonzini <pbonzini@redhat.com> wrote:
+> > 
+> > > You didn't answer the other question, which is "Where is R12 documented for
+> > > TDG.VP.VMCALL<Instruction.HLT>?" though...  Should I be worried? :)
+> > 
+> > It's publicly documented.
+> > 
+> > Guest-Host-Communication Interface(GHCI) spec, 344426-003US Feburary 2022.
+> > 3.8 TDG.VP.VMCALL<Instruction.HLT>
+> > R12 Interrupt Blocked Flag.
+> >      The TD is expected to clear this flag iff RFLAGS.IF == 1 or the TDCALL instruction
+> >      (that invoked TDG.VP.TDVMCALL(Instruction.HLT)) immediately follows an STI
+> >      instruction, otherwise this flag should be set.
+> 
+> Oh, Google doesn't know about this version of the spec...  It can be
+> downloaded from https://www.intel.com/content/www/us/en/developer/articles/technical/intel-trust-domain-extensions.html
+> though.
+> 
+> I also found VCPU_STATE_DETAILS in https://www.intel.com/content/dam/develop/external/us/en/documents/tdx-module-1.0-public-spec-v0.931.pdf:
+> 
+>   Bit 0: VMXIP, indicates that a virtual interrupt is pending
+>   delivery, i.e. VMCS.RVI[7:4] > TDVPS.VAPIC.VPPR[7:4]
+> 
+> It also documents how it has to be used.  So this looks more or less okay,
+> just rename "vmxip" to "interrupt_pending_delivery".
 
-This machine doesn't use DT. I suppose the same could be done with an EFI
-variable, but with a module parameter you get the added benefit of having both
-a boot time kernel command line argument, and the option to override it at
-run time.
-
-         Arnd
+If we're keeping the call back into SEAM, then this belongs in the path of
+apic_has_interrupt_for_ppr(), not in the HLT-exit path.  To avoid multiple SEAMCALLS
+in a single exit, VCPU_EXREG_RVI can be added.
