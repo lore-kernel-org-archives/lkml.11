@@ -2,128 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46ED5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4634EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:38:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233330AbiDHQk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 12:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
+        id S233376AbiDHQkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 12:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233234AbiDHQkZ (ORCPT
+        with ESMTP id S232714AbiDHQkj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 12:40:25 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B823212220F
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 09:38:20 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2CAD21042;
-        Fri,  8 Apr 2022 09:38:20 -0700 (PDT)
-Received: from [10.1.196.218] (eglon.cambridge.arm.com [10.1.196.218])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2E8AC3F73B;
-        Fri,  8 Apr 2022 09:38:19 -0700 (PDT)
-Subject: Re: arm64 spectre-bhb backports break boot on stable kernels <= v5.4
-To:     Will Deacon <will@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        gregkh@linuxfoundation.org, maz@kernel.org,
-        catalin.marinas@arm.com, mark.rutland@arm.com
-References: <20220408120041.GB27685@willie-the-truck>
- <1a44f42c-0391-7428-ac85-1e27aaf0be14@arm.com>
- <20220408162139.GB28108@willie-the-truck>
-From:   James Morse <james.morse@arm.com>
-Message-ID: <d3d1c89e-82d7-6894-5bc0-3a0bbf367b8f@arm.com>
-Date:   Fri, 8 Apr 2022 17:38:13 +0100
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        Fri, 8 Apr 2022 12:40:39 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1480125293
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 09:38:34 -0700 (PDT)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id AAA483F6C5
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 16:38:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1649435911;
+        bh=nXDQ4+U1y/1X02pstYtY+T5JvuMLQteVX86AoZ8nbyo=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=Ea5rKWqeJYuQlrS9SPPOxKNaFTkTIbK9zEk3YrgPouP4HBHoU/CvhxogNQ6Fk9Cfy
+         EIar2E/rPfMaJLBhhqNYjBtnVsZepFT/+F9hoqEFNxttnnifS/AKkaaTC9fxj6nN8G
+         eaizLTLbbjwhLXcMieqaKKrayR4CSj/bnFrEmwIfxcq+Kg4GsB32r8JPmiEAf1XtUq
+         9n2AJxzFjv6TjP/ZmmW/Vv7z5IOBh7zSPE/lUvKx1C8AK/f2WDrOxtoXX56MFMjGPh
+         aabkAo/9Xepqy44FMNos8u49/h47lDE0MuUnnE5wN7TuEced4gFlQnSLZgTNBumk34
+         KYRXfVNKKqJFA==
+Received: by mail-ej1-f71.google.com with SMTP id qw30-20020a1709066a1e00b006e7f3de1be3so5148128ejc.11
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 09:38:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nXDQ4+U1y/1X02pstYtY+T5JvuMLQteVX86AoZ8nbyo=;
+        b=FRr44MGD5/wNfMfi9YeSCPIROferr3ul1joFgL3FNh0ZJ2hMl1+TsX6gZJOtBCrkxu
+         CcNnchAryDeg5/wfpdpXvUfxZstdutJpI6EK3m2O2Y1p00RydA2uGNrY7gmBhVF94wAP
+         9piNnnrRs8v7fax/d3fBNnL7+62M5zd/F5wRNvfkmurFJw6vjj9vSVvQcE3bAiCyik+l
+         oH9GyUxhJ0QF3zuzfsTKmhOKSQslynKOu3iHfV38yTPIntUxDHKVveu015aOOM9RtRi9
+         uY3AZq+fS91X0raYDWOLWXVK5Scwn4umoBSXGe8ymTZY47ERVgrzRy8CFjHYG5qVcg3/
+         o1ZA==
+X-Gm-Message-State: AOAM533z7w0oqL5nh+sLm6eBRlyRg7vza22AYM9qOM8TWhpKmpi/EqLe
+        BkOAV6R3djLJYUipGenpJOxwM9TZ7ni6qVfPyUQ5qX0jMIeKZwGI2b9X66u56TLE6yaBJfZ2d7x
+        gREWMqhLOgmME0L+EETpQEOgt/weeqN+Tm4+zSzt3Sw==
+X-Received: by 2002:aa7:d0cc:0:b0:41c:b59c:c461 with SMTP id u12-20020aa7d0cc000000b0041cb59cc461mr20537331edo.285.1649435911336;
+        Fri, 08 Apr 2022 09:38:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwAVaEvhpVIrCHh76h8+cLSClNVU5W13TGQsrrGkmSI818f1L0PAMUi5goJ9tKQiVf9unxrsw==
+X-Received: by 2002:aa7:d0cc:0:b0:41c:b59c:c461 with SMTP id u12-20020aa7d0cc000000b0041cb59cc461mr20537306edo.285.1649435911072;
+        Fri, 08 Apr 2022 09:38:31 -0700 (PDT)
+Received: from [192.168.123.67] (ip-088-152-144-107.um26.pools.vodafone-ip.de. [88.152.144.107])
+        by smtp.gmail.com with ESMTPSA id gk15-20020a17090790cf00b006e843ce7996sm1215659ejb.153.2022.04.08.09.38.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 09:38:30 -0700 (PDT)
+Message-ID: <b907f6c8-968b-7e1e-bc83-1d54c7e0b448@canonical.com>
+Date:   Fri, 8 Apr 2022 18:38:28 +0200
 MIME-Version: 1.0
-In-Reply-To: <20220408162139.GB28108@willie-the-truck>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2] RISC-V: Increase range and default value of NR_CPUS
+Content-Language: en-US
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
+References: <mhng-9cbb2a46-8bcb-4bfe-b927-0ed469dbd3a6@palmer-mbp2014>
+ <cd8d6641-4a29-7deb-49ae-a80baab0344f@canonical.com>
+ <CAK9=C2Xh_DQ3ybj7nAE-LNrSc9sPy0H8jq_FU09io+wE_yypRg@mail.gmail.com>
+From:   Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+In-Reply-To: <CAK9=C2Xh_DQ3ybj7nAE-LNrSc9sPy0H8jq_FU09io+wE_yypRg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Will,
+On 4/6/22 12:10, Anup Patel wrote:
+> On Wed, Apr 6, 2022 at 3:25 PM Heinrich Schuchardt
+> <heinrich.schuchardt@canonical.com> wrote:
+>>
+>> On 3/31/22 21:42, Palmer Dabbelt wrote:
+>>> On Sat, 19 Mar 2022 05:12:06 PDT (-0700), apatel@ventanamicro.com wrote:
+>>>> Currently, the range and default value of NR_CPUS is too restrictive
+>>>> for high-end RISC-V systems with large number of HARTs. The latest
+>>>> QEMU virt machine supports upto 512 CPUs so the current NR_CPUS is
+>>>> restrictive for QEMU as well. Other major architectures (such as
+>>>> ARM64, x86_64, MIPS, etc) have a much higher range and default
+>>>> value of NR_CPUS.
+>>>>
+>>>> This patch increases NR_CPUS range to 2-512 and default value to
+>>>> XLEN (i.e. 32 for RV32 and 64 for RV64).
+>>>>
+>>>> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+>>>> ---
+>>>> Changes since v1:
+>>>>   - Updated NR_CPUS range to 2-512 which reflects maximum number of
+>>>>     CPUs supported by QEMU virt machine.
+>>>> ---
+>>>>   arch/riscv/Kconfig | 7 ++++---
+>>>>   1 file changed, 4 insertions(+), 3 deletions(-)
+>>>>
+>>>> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+>>>> index 5adcbd9b5e88..423ac17f598c 100644
+>>>> --- a/arch/riscv/Kconfig
+>>>> +++ b/arch/riscv/Kconfig
+>>>> @@ -274,10 +274,11 @@ config SMP
+>>>>         If you don't know what to do here, say N.
+>>>>
+>>>>   config NR_CPUS
+>>>> -    int "Maximum number of CPUs (2-32)"
+>>>> -    range 2 32
+>>>> +    int "Maximum number of CPUs (2-512)"
+>>>> +    range 2 512
+>>
+>> For SBI_V01=y there seems to be a hard constraint to XLEN bits.
+>> See __sbi_v01_cpumask_to_hartmask() in rch/riscv/kernel/sbi.c.
+>>
+>> So shouldn't this be something like:
+>>
+>> range 2 512 !SBI_V01
+>> range 2 32 SBI_V01 && 32BIT
+>> range 2 64 SBI_V01 && 64BIT
+> 
+> This is just making it unnecessarily complicated for supporting
+> SBI v0.1
+> 
+> How about removing SBI v0.1 support and the spin-wait CPU
+> operations from arch/riscv ?
 
-On 08/04/2022 17:21, Will Deacon wrote:
-> On Fri, Apr 08, 2022 at 05:08:00PM +0100, James Morse wrote:
->> On 08/04/2022 13:00, Will Deacon wrote:
->>> Booting stable kernels <= v5.4 on arm64 with CONFIG_HARDEN_BRANCH_PREDICTOR=n
->>> results in a NULL pointer dereference during boot due to kvm_get_hyp_vector()
->>> dereferencing a NULL pointer from arm64_get_bp_hardening_data():
+The SBI v0.1 specification was only a draft. Only the v1.0 version has 
+ever been ratified.
+
+It would be good to remove this legacy code from Linux and U-Boot.
+
+By the way, why does upstream OpenSBI claim to be conformant to SBI v0.3 
+and not to v1.0?
+
+include/sbi/sbi_ecall.h:16:
+
+#define SBI_ECALL_VERSION_MAJOR 0
+#define SBI_ECALL_VERSION_MINOR 3
+
+Best regards
+
+Heinrich
+
+> 
+>>
+>>>>       depends on SMP
+>>>> -    default "8"
+>>>> +    default "32" if 32BIT
+>>>> +    default "64" if 64BIT
+>>>>
+>>>>   config HOTPLUG_CPU
+>>>>       bool "Support for hot-pluggable CPUs"
 >>>
->>> [    2.384444] Internal error: Oops: 96000004 [#1] PREEMPT SMP
->>> [    2.384461] pstate: 20400085 (nzCv daIf +PAN -UAO)
->>> [    2.384472] pc : cpu_hyp_reinit+0x114/0x30c
->>> [    2.384476] lr : cpu_hyp_reinit+0x80/0x30c
-
->>> [    2.385171] Kernel panic - not syncing: Fatal exception in interrupt
+>>> I'm getting all sorts of boot issues with more than 32 CPUs, even on the
+>>> latest QEMU master.  I'm not opposed to increasing the CPU count in
+>>> theory, but if we're going to have a setting that goes up to a huge
+>>> number it needs to at least boot.  I've got 64 host threads, so it
+>>> shouldn't just be a scheduling thing.
 >>
->> Yikes!
+>> Currently high performing hardware for RISC-V is missing. So it makes
+>> sense to build software via QEMU on x86_64 or arm64 with as many
+>> hardware threads as available (128 is not uncommon).
 >>
->> Interesting to know that stuff behind CONFIG_EXPERT has someone who cares about it.
->> (I was going to propose dropping the Kconfig option after a while).
-
-> Yup! FWIW, the hardening options are enabled in Android (GKI), but this was
-> reported to us externally by somebody using a custom config.
-
->>> I can bodge this as below (untested), but it's pretty grotty.
->>
->> I wanted to keep the detection code even if the feature is disabled so the sysfs reporting
->> is always correct.
+>> OpenSBI currently is limited to 128 threads:
+>> include/sbi/sbi_hartmask.h:22:
+>> #define SBI_HARTMASK_MAX_BITS 128
+>> This is just an arbitrary value we can be modified.
 > 
-> Makes sense. Another option is to check for ARM64_HARDEN_BRANCH_PREDICTOR in
-> spectre_bhb_enable_mitigation(), but then I think the KVM code would need
-> to query the mitigation state rather than just the cap.
-
-It already does, but as you say KVM is only using the cap here.
-
-
->>> Please can you take a look?
->>
->> Ugh, arm64_get_bp_hardening_data() returns NULL with that Kconfig setup.
->>
->>
->> For v5.4, this fixes it for me:
->> --------------------%<--------------------
->> diff --git a/arch/arm64/include/asm/kvm_mmu.h b/arch/arm64/include/asm/kvm_mmu.h
->> index 78d110667c0c..ffe0aad96b17 100644
->> --- a/arch/arm64/include/asm/kvm_mmu.h
->> +++ b/arch/arm64/include/asm/kvm_mmu.h
->> @@ -479,7 +479,8 @@ static inline void *kvm_get_hyp_vector(void)
->>         int slot = -1;
->>
->>         if ((cpus_have_const_cap(ARM64_HARDEN_BRANCH_PREDICTOR) ||
->> -            cpus_have_const_cap(ARM64_SPECTRE_BHB)) && data->template_start) {
->> +            cpus_have_const_cap(ARM64_SPECTRE_BHB)) &&
->> +           data && data->template_start) {
->>                 vect = kern_hyp_va(kvm_ksym_ref(__bp_harden_hyp_vecs_start));
->>                 slot = data->hyp_vectors_slot;
->>         }
+> Yes, this limit will be gradually increased with some improvements
+> to optimize runtime memory used by OpenSBI.
 > 
-> That'll work, but will sysfs report that BHB is mitigated even if
-> !ARM64_HARDEN_BRANCH_PREDICTOR?
-
-The (!IS_ENABLED(CONFIG_HARDEN_BRANCH_PREDICTOR) in check_branch_predictor() will set
-__hardenbp_enab to false, which get_spectre_v2_workaround_state() picks up and causes
-spectre_bhb_enable_mitigation() to skip all the mitigations, leaving state =
-SPECTRE_VULNERABLE.
-
-(The interactions with the other Spectre mitigations across the stable kernels
-were/continue-to-be a pain in the neck)
-
-
->> --------------------%<--------------------
 >>
->> I'll check the other versions and post patches to the stable list. Earlier stable
->> backports grew a dependency between these features as it wasn't possible to unpick the
->> dependencies.
+>> U-Boot v2022.04 qemu-riscv64_smode_defconfig has a value of
+>> CONFIG_SYS_MALLOC_F_LEN that is to low. This leads to a boot failure for
+>> more than 16 harts. A patch to correct this is pending:
+>> [PATCH v2 1/1] riscv: alloc space exhausted
+>> https://lore.kernel.org/u-boot/CAN5B=eKt=tFLZ2z3aNHJqsnJzpdA0oikcrC2i1_=ZDD=f+M0jA@mail.gmail.com/T/#t
+>>
+>> With QEMU 7.0 and the U-Boot fix booting into a 5.17 defconfig kernel
+>> with 64 virtual cores worked fine for me.
 > 
-> Cheers. I know 4.19 is busted too, but I didn't check 4.14.
-
-Yup, I've just reproduced that one. I suspect v4.14 is where I added the Kconfig dependency.
-
-
-Thanks,
-
-James
+> Thanks for trying this patch.
+> 
+> Regards,
+> Anup
+> 
+>>
+>> Best regards
+>>
+>> Heinrich
+>>
+>>>
+>>> If there was some hardware that actually boots on these I'd be happy to
+>>> take it, but given that it's just QEMU I'd prefer to sort out the bugs
+>>> first.  It's probably just latent bugs somewhere, but allowing users to
+>>> turn on configs we know don't work just seems like the wrong way to go.
+>>>
