@@ -2,120 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 274ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 03:09:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7470C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 03:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233890AbiDHDLf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 23:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47254 "EHLO
+        id S233876AbiDHDO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 23:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233915AbiDHDLZ (ORCPT
+        with ESMTP id S232253AbiDHDOz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 23:11:25 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E3711177D2A;
-        Thu,  7 Apr 2022 20:09:12 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app2 (Coremail) with SMTP id by_KCgB3H0xRp09ighhTAQ--.27376S2;
-        Fri, 08 Apr 2022 11:09:08 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-rdma@vger.kernel.org, jgg@ziepe.ca, shiraz.saleem@intel.com,
-        mustafa.ismail@intel.com, dan.carpenter@oracle.com,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH V4 09/11] drivers: infiniband: hw: Fix deadlock in irdma_cleanup_cm_core()
-Date:   Fri,  8 Apr 2022 11:09:04 +0800
-Message-Id: <20220408030904.34145-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: by_KCgB3H0xRp09ighhTAQ--.27376S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxCw13Zr1Duw4kAF1ruF45KFg_yoW5Grykpr
-        WDW3yakryq9r47Ka18Z3WkXF9xXwn5JFWjvrykt395AFs7XryjyF13AwnIqFZrJF9Fgrs3
-        uF4Fvry5CF9Iyr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUk21xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2
-        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
-        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
-        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
-        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv
-        6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGw
-        C20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48J
-        MIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMI
-        IF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E
-        87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgYOAVZdtZFWjwAIs1
+        Thu, 7 Apr 2022 23:14:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF16E12C265
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 20:12:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A02C61D8E
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:12:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C4FBC385A0;
+        Fri,  8 Apr 2022 03:12:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1649387571;
+        bh=VR4GkFsdiJLCU9pHSAAHShct/B5o5RMhDlBrwSXdtwQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mDD5pR9abkTBdJqkGcNdPvkCM8JN4ND5jFNg895JITDmTXCElYReflCJ1r23y0UlR
+         +vSorZvGdpAwSquuE7CzgJqXShlXeVaGII92UZQV+eA2ppgXwDyXz4zdwlLtt+yhq4
+         i0weznBnRWPXRJJYK9prGoyqh5AKjpLcD1QZ+Gqc=
+Date:   Thu, 7 Apr 2022 20:12:50 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Nico Pache <npache@redhat.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Christoph von Recklinghausen <crecklin@redhat.com>,
+        Don Dutile <ddutile@redhat.com>,
+        "Herton R . Krzesinski" <herton@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Joel Savitz <jsavitz@redhat.com>,
+        Darren Hart <dvhart@infradead.org>, stable@kernel.org
+Subject: Re: [PATCH v7] oom_kill.c: futex: Don't OOM reap the VMA containing
+ the robust_list_head
+Message-Id: <20220407201250.b4ebaae0cb327cad7b2eb3cf@linux-foundation.org>
+In-Reply-To: <20220408030137.3693195-1-npache@redhat.com>
+References: <20220408030137.3693195-1-npache@redhat.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a deadlock in irdma_cleanup_cm_core(), which is shown
-below:
+On Thu,  7 Apr 2022 23:01:37 -0400 Nico Pache <npache@redhat.com> wrote:
 
-   (Thread 1)              |      (Thread 2)
-                           | irdma_schedule_cm_timer()
-irdma_cleanup_cm_core()    |  add_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | irdma_cm_timer_tick()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+> The pthread struct is allocated on PRIVATE|ANONYMOUS memory [1] which can
+> be targeted by the oom reaper. This mapping is used to store the futex
+> robust list head; the kernel does not keep a copy of the robust list and
+> instead references a userspace address to maintain the robustness during
+> a process death. A race can occur between exit_mm and the oom reaper that
+> allows the oom reaper to free the memory of the futex robust list before
+> the exit path has handled the futex death:
+> 
+>     CPU1                               CPU2
+> ------------------------------------------------------------------------
+>     page_fault
+>     do_exit "signal"
+>     wake_oom_reaper
+>                                         oom_reaper
+>                                         oom_reap_task_mm (invalidates mm)
+>     exit_mm
+>     exit_mm_release
+>     futex_exit_release
+>     futex_cleanup
+>     exit_robust_list
+>     get_user (EFAULT- can't access memory)
+> 
+> If the get_user EFAULT's, the kernel will be unable to recover the
+> waiters on the robust_list, leaving userspace mutexes hung indefinitely.
+> 
+> Use the robust_list address stored in the kernel to skip the VMA that holds
+> it, allowing a successful futex_cleanup.
+> 
+> Theoretically a failure can still occur if there are locks mapped as
+> PRIVATE|ANON; however, the robust futexes are a best-effort approach.
+> This patch only strengthens that best-effort.
+> 
+> The following case can still fail:
+> robust head (skipped) -> private lock (reaped) -> shared lock (skipped)
+> 
+> Reproducer: https://gitlab.com/jsavitz/oom_futex_reproducer
+> 
+> [1] https://elixir.bootlin.com/glibc/latest/source/nptl/allocatestack.c#L370
+> 
+> ...
+>
+> --- a/include/linux/oom.h
+> +++ b/include/linux/oom.h
+> @@ -106,7 +106,7 @@ static inline vm_fault_t check_stable_address_space(struct mm_struct *mm)
+>  	return 0;
+>  }
+>  
+> -bool __oom_reap_task_mm(struct mm_struct *mm);
+> +bool __oom_reap_task_mm(struct mm_struct *mm, void *robust_list);
+>  
+>  long oom_badness(struct task_struct *p,
+>  		unsigned long totalpages);
+> diff --git a/mm/mmap.c b/mm/mmap.c
+> index 3aa839f81e63..d5af1b83cbb2 100644
+> --- a/mm/mmap.c
+> +++ b/mm/mmap.c
+> @@ -3109,6 +3109,11 @@ void exit_mmap(struct mm_struct *mm)
+>  	struct mmu_gather tlb;
+>  	struct vm_area_struct *vma;
+>  	unsigned long nr_accounted = 0;
+> +	void *robust_list;
+> +
+> +#ifdef CONFIG_FUTEX
+> +	robust_list = current->robust_list;
+> +#endif
+>  
+>  	/* mm's last user has gone, and its about to be pulled down */
+>  	mmu_notifier_release(mm);
+> @@ -3126,7 +3131,8 @@ void exit_mmap(struct mm_struct *mm)
+>  		 * to mmu_notifier_release(mm) ensures mmu notifier callbacks in
+>  		 * __oom_reap_task_mm() will not block.
+>  		 */
+> -		(void)__oom_reap_task_mm(mm);
+> +		(void)__oom_reap_task_mm(mm, robust_list);
 
-We hold cm_core->ht_lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need cm_core->ht_lock in position (2) of thread 2.
-As a result, irdma_cleanup_cm_core() will block forever.
+uninitialized var warning when CONFIG_FUTEX=n?
 
-This patch removes the check of timer_pending() in
-irdma_cleanup_cm_core(), because the del_timer_sync()
-function will just return directly if there isn't a
-pending timer. As a result, the lock is redundant,
-because there is no resource it could protect.
+> +
+>  		set_bit(MMF_OOM_SKIP, &mm->flags);
+>  	}
+>  
+> --- a/mm/oom_kill.c
+> +++ b/mm/oom_kill.c
+> @@ -509,9 +509,10 @@ static DECLARE_WAIT_QUEUE_HEAD(oom_reaper_wait);
+>  static struct task_struct *oom_reaper_list;
+>  static DEFINE_SPINLOCK(oom_reaper_lock);
+>  
+> -bool __oom_reap_task_mm(struct mm_struct *mm)
+> +bool __oom_reap_task_mm(struct mm_struct *mm, void *robust_list)
 
-What`s more, we add mod_timer() in order to guarantee the timer
-in irdma_schedule_cm_timer() and irdma_cm_timer_tick() could
-be executed.
+Well, this is no longer necessarily a robust_list*.  It's just an
+address to skip and the name should reflect that?
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in V4:
-  - Add mod_timer() in order to guarantee the timer could be executed.
+>  {
+>  	struct vm_area_struct *vma;
+> +	unsigned long skip_vma = (unsigned long) robust_list;
+>  	bool ret = true;
+>  
+>  	/*
+> @@ -526,6 +527,20 @@ bool __oom_reap_task_mm(struct mm_struct *mm)
+>  		if (vma->vm_flags & (VM_HUGETLB|VM_PFNMAP))
+>  			continue;
+>  
+> +#ifdef CONFIG_FUTEX
+> +		/*
+> +		 * The OOM reaper runs concurrently with do_exit.
+> +		 * The robust_list_head is stored in userspace and is required
+> +		 * by the exit path to recover the robust futex waiters.
+> +		 * Skip the VMA that contains the robust_list to allow for
+> +		 * proper cleanup.
+> +		 */
+> +		if (vma->vm_start <= skip_vma && vma->vm_end > skip_vma) {
+> +			pr_info("oom_reaper: skipping vma, contains robust_list");
+> +			continue;
+> +		}
+> +#endif
+> +
+>  		/*
+>  		 * Only anonymous pages have a good chance to be dropped
+>  		 * without additional steps which we cannot afford as we
+> @@ -567,6 +582,7 @@ bool __oom_reap_task_mm(struct mm_struct *mm)
+>  static bool oom_reap_task_mm(struct task_struct *tsk, struct mm_struct *mm)
+>  {
+>  	bool ret = true;
+> +	void *robust_list;
+>  
+>  	if (!mmap_read_trylock(mm)) {
+>  		trace_skip_task_reaping(tsk->pid);
+> @@ -586,8 +602,11 @@ static bool oom_reap_task_mm(struct task_struct *tsk, struct mm_struct *mm)
+>  
+>  	trace_start_task_reaping(tsk->pid);
+>  
+> +#ifdef CONFIG_FUTEX
+> +	robust_list = tsk->robust_list;
+> +#endif
+>  	/* failed to reap part of the address space. Try again later */
+> -	ret = __oom_reap_task_mm(mm);
+> +	ret = __oom_reap_task_mm(mm, robust_list);
 
- drivers/infiniband/hw/irdma/cm.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+unintialized var when CONFIG_FUTEX=n?
 
-diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
-index dedb3b7edd8..e4117b978bf 100644
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -1184,6 +1184,8 @@ int irdma_schedule_cm_timer(struct irdma_cm_node *cm_node,
- 	if (!was_timer_set) {
- 		cm_core->tcp_timer.expires = new_send->timetosend;
- 		add_timer(&cm_core->tcp_timer);
-+	} else {
-+		mod_timer(&cm_core->tcp_timer, new_send->timetosend);
- 	}
- 	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
- 
-@@ -1367,6 +1369,8 @@ static void irdma_cm_timer_tick(struct timer_list *t)
- 		if (!timer_pending(&cm_core->tcp_timer)) {
- 			cm_core->tcp_timer.expires = nexttimeout;
- 			add_timer(&cm_core->tcp_timer);
-+		} else {
-+			mod_timer(&cm_core->tcp_timer, nexttimeout);
- 		}
- 		spin_unlock_irqrestore(&cm_core->ht_lock, flags);
- 	}
-@@ -3251,10 +3255,7 @@ void irdma_cleanup_cm_core(struct irdma_cm_core *cm_core)
- 	if (!cm_core)
- 		return;
- 
--	spin_lock_irqsave(&cm_core->ht_lock, flags);
--	if (timer_pending(&cm_core->tcp_timer))
--		del_timer_sync(&cm_core->tcp_timer);
--	spin_unlock_irqrestore(&cm_core->ht_lock, flags);
-+	del_timer_sync(&cm_core->tcp_timer);
- 
- 	destroy_workqueue(cm_core->event_wq);
- 	cm_core->dev->ws_reset(&cm_core->iwdev->vsi);
--- 
-2.17.1
+>  	if (!ret)
+>  		goto out_finish;
+>  
+> @@ -1149,6 +1168,7 @@ SYSCALL_DEFINE2(process_mrelease, int, pidfd, unsigned int, flags)
+>  	unsigned int f_flags;
+>  	bool reap = false;
+>  	long ret = 0;
+> +	void *robust_list;
+>  
+>  	if (flags)
+>  		return -EINVAL;
+> @@ -1186,11 +1206,16 @@ SYSCALL_DEFINE2(process_mrelease, int, pidfd, unsigned int, flags)
+>  		ret = -EINTR;
+>  		goto drop_mm;
+>  	}
+> +
+> +#ifdef CONFIG_FUTEX
+> +	robust_list = p->robust_list;
+> +#endif
+>  	/*
+>  	 * Check MMF_OOM_SKIP again under mmap_read_lock protection to ensure
+>  	 * possible change in exit_mmap is seen
+>  	 */
+> -	if (!test_bit(MMF_OOM_SKIP, &mm->flags) && !__oom_reap_task_mm(mm))
+> +	if (!test_bit(MMF_OOM_SKIP, &mm->flags) &&
+> +			!__oom_reap_task_mm(mm, robust_list))
+
+again
+
+>  		ret = -EAGAIN;
+>  	mmap_read_unlock(mm);
 
