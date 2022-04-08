@@ -2,373 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB6F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3EF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235406AbiDHMaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56302 "EHLO
+        id S235736AbiDHMaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:30:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232535AbiDHMaH (ORCPT
+        with ESMTP id S234809AbiDHMaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:30:07 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9841E33DCA7;
-        Fri,  8 Apr 2022 05:28:03 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 238CIqi2020806;
-        Fri, 8 Apr 2022 12:27:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : reply-to : references : mime-version : content-type
- : in-reply-to; s=pp1; bh=HU+8+zh9GUF93NeGHHtWuqd7tZIaGNgNVe0X/9nToYc=;
- b=UdAcjE4cIXBxmZz5ArcUuTEExs8f0VESYqFw3nJ/QzEo1zHaexHsb/7AihUG+Njh1T89
- 0J9HgDxTfYMkcwfMYQY8PuIO8J8I+LfUm+ns6IWJ6O9C9YcfWIHMYAj13DdM/0ccn1Xy
- XRVi2HLqGT0Qw4GS10fBDn246cCNIq09JDNE5IzMotgM+y9WLfhr+59ZV8T3Vx8KjKn8
- U8Im/MwlFVcLzzlppkMPSofk9GVEkawaYav4JPgPF4fp3Xes0YvdTp3eS0b7QOn1ylZW
- EcrELozeCuLUyYcb3xSsNMDg7wEjqgfXQVYaSxoUBmMx/j2gyHKK15wS2jwKqyBdhuyY LQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3faeqq7d6n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 08 Apr 2022 12:27:54 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 238Bks2M034821;
-        Fri, 8 Apr 2022 12:27:53 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3faeqq7d65-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 08 Apr 2022 12:27:53 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 238CDZ8t003675;
-        Fri, 8 Apr 2022 12:27:51 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3f6e493req-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 08 Apr 2022 12:27:51 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 238CRuDo46989570
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 8 Apr 2022 12:27:56 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D043BAE051;
-        Fri,  8 Apr 2022 12:27:48 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CD28EAE045;
-        Fri,  8 Apr 2022 12:27:46 +0000 (GMT)
-Received: from linux.vnet.ibm.com (unknown [9.40.195.195])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Fri,  8 Apr 2022 12:27:46 +0000 (GMT)
-Date:   Fri, 8 Apr 2022 17:57:46 +0530
-From:   Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-To:     Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-Cc:     acme@kernel.org, jolsa@kernel.org, disgoel@linux.vnet.ibm.com,
-        mpe@ellerman.id.au, linux-perf-users@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, maddy@linux.vnet.ibm.com,
-        rnsastry@linux.ibm.com, kjain@linux.ibm.com,
-        linux-kernel@vger.kernel.org, irogers@google.com
-Subject: Re: [PATCH v2 1/4] tools/perf: Fix perf bench futex to correct usage
- of affinity for machines with #CPUs > 1K
-Message-ID: <20220408122746.GF568950@linux.vnet.ibm.com>
-Reply-To: Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-References: <20220406175113.87881-1-atrajeev@linux.vnet.ibm.com>
- <20220406175113.87881-2-atrajeev@linux.vnet.ibm.com>
+        Fri, 8 Apr 2022 08:30:17 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B9A33E584
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 05:28:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=OxTl/Bo6O7TBtxt/bi9rJuC9dJm2oXselnLd5pOzHHI=; b=TJrQfNWERGBDiYrnJ9nYbulzkb
+        5LBSx+OvEuQlwdN3M5taRMU6nkMCV7kKZ6HWe0di/Uvq0PsA4kbKQw8s881DrYufRVY//mz4JCGtp
+        Unr0U7iULcDanW8ORUDT+5Fai28j+b99mPyQnCXUkTxVnlgR1hTPkFSCUF4aSFv9V8rCywipL61wR
+        Ksq9pXcESwIKG0PdQfko2tML8/2F0V6HIgKK2e6wkqgsHI8QIvAcAlFXvF9sV9jEl74ejYvVOySYG
+        +2V+ZqFOxfwcJbZezI4CxmjPa0HDBdiUz7URIrfHabH+Fnm4xPxlmDn8f/49ErGAEbf/AcxfwMnqQ
+        6BUxW9Rg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ncnic-009oMg-64; Fri, 08 Apr 2022 12:28:02 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 530839861A4; Fri,  8 Apr 2022 14:28:00 +0200 (CEST)
+Date:   Fri, 8 Apr 2022 14:28:00 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com
+Subject: Re: [PATCH v2 1/2] sched/fair: Fix cfs_rq_clock_pelt() for throttled
+ cfs_rq
+Message-ID: <20220408122800.GQ2731@worktop.programming.kicks-ass.net>
+References: <20220408115309.81603-1-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220406175113.87881-2-atrajeev@linux.vnet.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 5hrw8F5CNYz9fR6rIWH7nJ3V0hdhlQCp
-X-Proofpoint-ORIG-GUID: oM7ZKeYnD71NvGL7PjesL8HrBrBKKXES
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-08_04,2022-04-08_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 adultscore=0 spamscore=0 bulkscore=0
- impostorscore=0 mlxlogscore=999 priorityscore=1501 phishscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204080062
+In-Reply-To: <20220408115309.81603-1-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Athira Rajeev <atrajeev@linux.vnet.ibm.com> [2022-04-06 23:21:10]:
+On Fri, Apr 08, 2022 at 07:53:08PM +0800, Chengming Zhou wrote:
+> Since commit 23127296889f ("sched/fair: Update scale invariance of PELT")
+> change to use rq_clock_pelt() instead of rq_clock_task(), we should also
+> use rq_clock_pelt() for throttled_clock_task_time and throttled_clock_task
+> accounting to get correct cfs_rq_clock_pelt() of throttled cfs_rq. And
+> rename throttled_clock_task(_time) to be clock_pelt rather than clock_task.
+> 
+> Fixes: 23127296889f ("sched/fair: Update scale invariance of PELT")
+> Reviewed-by: Ben Segall <bsegall@google.com>
+> Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 
-> perf bench futex testcase fails on systems with CPU's
-> more than 1K.
-> 
-> Testcase: perf bench futex all
-> Failure snippet:
-> <<>>Running futex/hash benchmark...
-> 
-> perf: pthread_create: No such file or directory
-> <<>>
-> 
-> All the futex benchmarks ( ie hash, lock-api, requeue, wake,
-> wake-parallel ), pthread_create is invoked in respective bench_futex_*
-> function. Though the logs shows direct failure from pthread_create,
-> strace logs showed that actual failure is from  "sched_setaffinity"
-> returning EINVAL (invalid argument). This happens because the default
-> mask size in glibc is 1024. To overcome this 1024 CPUs mask size
-> limitation of cpu_set_t, change the mask size using the CPU_*_S macros.
-> 
-> Patch addresses this by fixing all the futex benchmarks to use
-> CPU_ALLOC to allocate cpumask, CPU_ALLOC_SIZE for size, and
-> CPU_SET_S to set the mask.
-> 
-> Tested-by: Disha Goel <disgoel@linux.vnet.ibm.com>
-> Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
-> Reported-by: Disha Goel <disgoel@linux.vnet.ibm.com>
-
-Looks good to me
-Reviewed-by: Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-
-
-> ---
->  tools/perf/bench/futex-hash.c          | 26 +++++++++++++++++++-------
->  tools/perf/bench/futex-lock-pi.c       | 21 ++++++++++++++++-----
->  tools/perf/bench/futex-requeue.c       | 21 ++++++++++++++++-----
->  tools/perf/bench/futex-wake-parallel.c | 21 ++++++++++++++++-----
->  tools/perf/bench/futex-wake.c          | 22 ++++++++++++++++------
->  5 files changed, 83 insertions(+), 28 deletions(-)
-> 
-> diff --git a/tools/perf/bench/futex-hash.c b/tools/perf/bench/futex-hash.c
-> index 9627b6ab8670..dfce64e551e2 100644
-> --- a/tools/perf/bench/futex-hash.c
-> +++ b/tools/perf/bench/futex-hash.c
-> @@ -122,12 +122,14 @@ static void print_summary(void)
->  int bench_futex_hash(int argc, const char **argv)
->  {
->  	int ret = 0;
-> -	cpu_set_t cpuset;
-> +	cpu_set_t *cpuset;
->  	struct sigaction act;
->  	unsigned int i;
->  	pthread_attr_t thread_attr;
->  	struct worker *worker = NULL;
->  	struct perf_cpu_map *cpu;
-> +	int nrcpus;
-> +	size_t size;
-> 
->  	argc = parse_options(argc, argv, options, bench_futex_hash_usage, 0);
->  	if (argc) {
-> @@ -170,25 +172,35 @@ int bench_futex_hash(int argc, const char **argv)
->  	threads_starting = params.nthreads;
->  	pthread_attr_init(&thread_attr);
->  	gettimeofday(&bench__start, NULL);
-> +
-> +	nrcpus = perf_cpu_map__nr(cpu);
-> +	cpuset = CPU_ALLOC(nrcpus);
-> +	BUG_ON(!cpuset);
-> +	size = CPU_ALLOC_SIZE(nrcpus);
-> +
->  	for (i = 0; i < params.nthreads; i++) {
->  		worker[i].tid = i;
->  		worker[i].futex = calloc(params.nfutexes, sizeof(*worker[i].futex));
->  		if (!worker[i].futex)
->  			goto errmem;
-> 
-> -		CPU_ZERO(&cpuset);
-> -		CPU_SET(perf_cpu_map__cpu(cpu, i % perf_cpu_map__nr(cpu)).cpu, &cpuset);
-> +		CPU_ZERO_S(size, cpuset);
-> 
-> -		ret = pthread_attr_setaffinity_np(&thread_attr, sizeof(cpu_set_t), &cpuset);
-> -		if (ret)
-> +		CPU_SET_S(perf_cpu_map__cpu(cpu, i % perf_cpu_map__nr(cpu)).cpu, size, cpuset);
-> +		ret = pthread_attr_setaffinity_np(&thread_attr, size, cpuset);
-> +		if (ret) {
-> +			CPU_FREE(cpuset);
->  			err(EXIT_FAILURE, "pthread_attr_setaffinity_np");
-> -
-> +		}
->  		ret = pthread_create(&worker[i].thread, &thread_attr, workerfn,
->  				     (void *)(struct worker *) &worker[i]);
-> -		if (ret)
-> +		if (ret) {
-> +			CPU_FREE(cpuset);
->  			err(EXIT_FAILURE, "pthread_create");
-> +		}
-> 
->  	}
-> +	CPU_FREE(cpuset);
->  	pthread_attr_destroy(&thread_attr);
-> 
->  	pthread_mutex_lock(&thread_lock);
-> diff --git a/tools/perf/bench/futex-lock-pi.c b/tools/perf/bench/futex-lock-pi.c
-> index a512a320df74..61c3bb80d4cf 100644
-> --- a/tools/perf/bench/futex-lock-pi.c
-> +++ b/tools/perf/bench/futex-lock-pi.c
-> @@ -120,11 +120,17 @@ static void *workerfn(void *arg)
->  static void create_threads(struct worker *w, pthread_attr_t thread_attr,
->  			   struct perf_cpu_map *cpu)
->  {
-> -	cpu_set_t cpuset;
-> +	cpu_set_t *cpuset;
->  	unsigned int i;
-> +	int nrcpus =  perf_cpu_map__nr(cpu);
-> +	size_t size;
-> 
->  	threads_starting = params.nthreads;
-> 
-> +	cpuset = CPU_ALLOC(nrcpus);
-> +	BUG_ON(!cpuset);
-> +	size = CPU_ALLOC_SIZE(nrcpus);
-> +
->  	for (i = 0; i < params.nthreads; i++) {
->  		worker[i].tid = i;
-> 
-> @@ -135,15 +141,20 @@ static void create_threads(struct worker *w, pthread_attr_t thread_attr,
->  		} else
->  			worker[i].futex = &global_futex;
-> 
-> -		CPU_ZERO(&cpuset);
-> -		CPU_SET(perf_cpu_map__cpu(cpu, i % perf_cpu_map__nr(cpu)).cpu, &cpuset);
-> +		CPU_ZERO_S(size, cpuset);
-> +		CPU_SET_S(perf_cpu_map__cpu(cpu, i % perf_cpu_map__nr(cpu)).cpu, size, cpuset);
-> 
-> -		if (pthread_attr_setaffinity_np(&thread_attr, sizeof(cpu_set_t), &cpuset))
-> +		if (pthread_attr_setaffinity_np(&thread_attr, size, cpuset)) {
-> +			CPU_FREE(cpuset);
->  			err(EXIT_FAILURE, "pthread_attr_setaffinity_np");
-> +		}
-> 
-> -		if (pthread_create(&w[i].thread, &thread_attr, workerfn, &worker[i]))
-> +		if (pthread_create(&w[i].thread, &thread_attr, workerfn, &worker[i])) {
-> +			CPU_FREE(cpuset);
->  			err(EXIT_FAILURE, "pthread_create");
-> +		}
->  	}
-> +	CPU_FREE(cpuset);
->  }
-> 
->  int bench_futex_lock_pi(int argc, const char **argv)
-> diff --git a/tools/perf/bench/futex-requeue.c b/tools/perf/bench/futex-requeue.c
-> index aca47ce8b1e7..2cb013f7ffe5 100644
-> --- a/tools/perf/bench/futex-requeue.c
-> +++ b/tools/perf/bench/futex-requeue.c
-> @@ -123,22 +123,33 @@ static void *workerfn(void *arg __maybe_unused)
->  static void block_threads(pthread_t *w,
->  			  pthread_attr_t thread_attr, struct perf_cpu_map *cpu)
->  {
-> -	cpu_set_t cpuset;
-> +	cpu_set_t *cpuset;
->  	unsigned int i;
-> +	int nrcpus = perf_cpu_map__nr(cpu);
-> +	size_t size;
-> 
->  	threads_starting = params.nthreads;
-> 
-> +	cpuset = CPU_ALLOC(nrcpus);
-> +	BUG_ON(!cpuset);
-> +	size = CPU_ALLOC_SIZE(nrcpus);
-> +
->  	/* create and block all threads */
->  	for (i = 0; i < params.nthreads; i++) {
-> -		CPU_ZERO(&cpuset);
-> -		CPU_SET(perf_cpu_map__cpu(cpu, i % perf_cpu_map__nr(cpu)).cpu, &cpuset);
-> +		CPU_ZERO_S(size, cpuset);
-> +		CPU_SET_S(perf_cpu_map__cpu(cpu, i % perf_cpu_map__nr(cpu)).cpu, size, cpuset);
-> 
-> -		if (pthread_attr_setaffinity_np(&thread_attr, sizeof(cpu_set_t), &cpuset))
-> +		if (pthread_attr_setaffinity_np(&thread_attr, size, cpuset)) {
-> +			CPU_FREE(cpuset);
->  			err(EXIT_FAILURE, "pthread_attr_setaffinity_np");
-> +		}
-> 
-> -		if (pthread_create(&w[i], &thread_attr, workerfn, NULL))
-> +		if (pthread_create(&w[i], &thread_attr, workerfn, NULL)) {
-> +			CPU_FREE(cpuset);
->  			err(EXIT_FAILURE, "pthread_create");
-> +		}
->  	}
-> +	CPU_FREE(cpuset);
->  }
-> 
->  static void toggle_done(int sig __maybe_unused,
-> diff --git a/tools/perf/bench/futex-wake-parallel.c b/tools/perf/bench/futex-wake-parallel.c
-> index 888ee6037945..efa5070a5eb3 100644
-> --- a/tools/perf/bench/futex-wake-parallel.c
-> +++ b/tools/perf/bench/futex-wake-parallel.c
-> @@ -144,22 +144,33 @@ static void *blocked_workerfn(void *arg __maybe_unused)
->  static void block_threads(pthread_t *w, pthread_attr_t thread_attr,
->  			  struct perf_cpu_map *cpu)
->  {
-> -	cpu_set_t cpuset;
-> +	cpu_set_t *cpuset;
->  	unsigned int i;
-> +	int nrcpus = perf_cpu_map__nr(cpu);
-> +	size_t size;
-> 
->  	threads_starting = params.nthreads;
-> 
-> +	cpuset = CPU_ALLOC(nrcpus);
-> +	BUG_ON(!cpuset);
-> +	size = CPU_ALLOC_SIZE(nrcpus);
-> +
->  	/* create and block all threads */
->  	for (i = 0; i < params.nthreads; i++) {
-> -		CPU_ZERO(&cpuset);
-> -		CPU_SET(perf_cpu_map__cpu(cpu, i % perf_cpu_map__nr(cpu)).cpu, &cpuset);
-> +		CPU_ZERO_S(size, cpuset);
-> +		CPU_SET_S(perf_cpu_map__cpu(cpu, i % perf_cpu_map__nr(cpu)).cpu, size, cpuset);
-> 
-> -		if (pthread_attr_setaffinity_np(&thread_attr, sizeof(cpu_set_t), &cpuset))
-> +		if (pthread_attr_setaffinity_np(&thread_attr, size, cpuset)) {
-> +			CPU_FREE(cpuset);
->  			err(EXIT_FAILURE, "pthread_attr_setaffinity_np");
-> +		}
-> 
-> -		if (pthread_create(&w[i], &thread_attr, blocked_workerfn, NULL))
-> +		if (pthread_create(&w[i], &thread_attr, blocked_workerfn, NULL)) {
-> +			CPU_FREE(cpuset);
->  			err(EXIT_FAILURE, "pthread_create");
-> +		}
->  	}
-> +	CPU_FREE(cpuset);
->  }
-> 
->  static void print_run(struct thread_data *waking_worker, unsigned int run_num)
-> diff --git a/tools/perf/bench/futex-wake.c b/tools/perf/bench/futex-wake.c
-> index aa82db51c0ab..3a10f54900c1 100644
-> --- a/tools/perf/bench/futex-wake.c
-> +++ b/tools/perf/bench/futex-wake.c
-> @@ -97,22 +97,32 @@ static void print_summary(void)
->  static void block_threads(pthread_t *w,
->  			  pthread_attr_t thread_attr, struct perf_cpu_map *cpu)
->  {
-> -	cpu_set_t cpuset;
-> +	cpu_set_t *cpuset;
->  	unsigned int i;
-> -
-> +	size_t size;
-> +	int nrcpus = perf_cpu_map__nr(cpu);
->  	threads_starting = params.nthreads;
-> 
-> +	cpuset = CPU_ALLOC(nrcpus);
-> +	BUG_ON(!cpuset);
-> +	size = CPU_ALLOC_SIZE(nrcpus);
-> +
->  	/* create and block all threads */
->  	for (i = 0; i < params.nthreads; i++) {
-> -		CPU_ZERO(&cpuset);
-> -		CPU_SET(perf_cpu_map__cpu(cpu, i % perf_cpu_map__nr(cpu)).cpu, &cpuset);
-> +		CPU_ZERO_S(size, cpuset);
-> +		CPU_SET_S(perf_cpu_map__cpu(cpu, i % perf_cpu_map__nr(cpu)).cpu, size, cpuset);
-> 
-> -		if (pthread_attr_setaffinity_np(&thread_attr, sizeof(cpu_set_t), &cpuset))
-> +		if (pthread_attr_setaffinity_np(&thread_attr, size, cpuset)) {
-> +			CPU_FREE(cpuset);
->  			err(EXIT_FAILURE, "pthread_attr_setaffinity_np");
-> +		}
-> 
-> -		if (pthread_create(&w[i], &thread_attr, workerfn, NULL))
-> +		if (pthread_create(&w[i], &thread_attr, workerfn, NULL)) {
-> +			CPU_FREE(cpuset);
->  			err(EXIT_FAILURE, "pthread_create");
-> +		}
->  	}
-> +	CPU_FREE(cpuset);
->  }
-> 
->  static void toggle_done(int sig __maybe_unused,
-> -- 
-> 2.35.1
-> 
+Thanks! (for all 3 patches)
