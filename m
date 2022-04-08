@@ -2,344 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E012C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:41:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1896CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234974AbiDHLnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 07:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
+        id S234968AbiDHLnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 07:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234928AbiDHLm1 (ORCPT
+        with ESMTP id S234928AbiDHLn2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 07:42:27 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DB1194AB5;
-        Fri,  8 Apr 2022 04:40:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649418018; x=1680954018;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0qnEtMw3cfpbPvD9YFzHU6BadCx0pK4SNEpO9FfyJMk=;
-  b=Ntj/VlFOLs5494kBI/9xf4z3IKAi1GtgG07F372K4AhO3CoK/PxI57IN
-   SnfFg+0MUeYossg5f3/WKdK0hAucMJgrJV9qT8JGP3ugUn2f2Ju2IKHX6
-   CvhuL4lVycgq76o37oSJAmW8YqGsaED7UKCy881WDZzbwW4sWN72q8waP
-   XWiiUOVr+wJOg3kZ/nEE1kfPS7yKiUJ28ItKKf4BM34unPcfAHfnHDHFF
-   RoOWpO4GFpcqxjvVmh8vFOHvUl/jOASAZmRTn5yg0ObPgxYnB9imBmYwW
-   Hon78+Cm28d3K2rUVIqBYCnD+aIYpXOHihSqj90LX+o5TYg2n4DS7M2JA
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="261749139"
-X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
-   d="scan'208";a="261749139"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 04:40:18 -0700
-X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
-   d="scan'208";a="571462681"
-Received: from aecajiao-mobl.amr.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.252.48.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 04:40:16 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v2 3/3] tty: Implement lookahead to process XON/XOFF timely
-Date:   Fri,  8 Apr 2022 14:39:54 +0300
-Message-Id: <20220408113954.9749-4-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220408113954.9749-1-ilpo.jarvinen@linux.intel.com>
-References: <20220408113954.9749-1-ilpo.jarvinen@linux.intel.com>
+        Fri, 8 Apr 2022 07:43:28 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482C6194AB5;
+        Fri,  8 Apr 2022 04:41:25 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id n6so16680124ejc.13;
+        Fri, 08 Apr 2022 04:41:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oOLkJ7c4AnZzlwaZhpGpMRHcIgXhaokY4dCFfnVK8ik=;
+        b=AJg0uFFwQge4JGuOOuXx8CRkZnu1ZXDnzVzYyDLWHmvIU38NMZoqu0q4pVe158Dkgn
+         /eBGcEWGk1BeH46V8704WX2v2KXvFfp8vmK2QWBZU86JD8zqVMh6WPg5JLEG+MOHz132
+         joX/LTo9GNjQ/PHxRdkig9FP8sCB1PK8s/CVdG9aD27OA02ni/wYOQv2VKyManpb4r2V
+         l+NyhY4mu+ntHubH7dA6jGBBg6Rw6LlWbypc/PJx+kXrgjcCC5HTa5lEjYMn4vqquVmu
+         OjghRQ+Tl9pBKfNcLM6JX8eao7netCFmQK+me98hABNrns/o3jeMpBRevLlGuLTg9CDP
+         8pvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oOLkJ7c4AnZzlwaZhpGpMRHcIgXhaokY4dCFfnVK8ik=;
+        b=CWTUXkKCNjmXCfKQmIvAHVeFE4P4HDo+u0dJjnU8LG89pms8uU1B1TDL4zm1eBI0YC
+         1rGZ6K2rh5ejLCxr8DJFY1qmsTyQthuXS9XNwsAz6VCkxEhyHe28eXTFju6NE2uAB8SO
+         vKprCw+sRk/GFuLgEAQjvpzka5u42o3NfUbZBPD6ZgEtn3pPh+EIJk1rQYzRWry2fRlE
+         giEJXf1t6bNO0vXdZmpl4kxzQd3hkIzdZbSTEspRThCU2G4sNNZuF3OwJRmGfnrM/SAL
+         GXp9rBCqE1XECxFDhTh8CpX/oRbXor6bcJYPO2/hZJgF3uxn6VZzrwMZ6daDzQJrUyD5
+         z23w==
+X-Gm-Message-State: AOAM531ifMCMAWvGYqNelZRiSuCHvhWcnJ2YhChrI2qHpb6cizBQGRLV
+        HqKoRtrQiA/oQ/wsyM2/X/s=
+X-Google-Smtp-Source: ABdhPJxeGaH+7ttKQKVamBraqnau+HZGtwku7UJ842hOx0+3i3iRgWvMoiWyLlCCBLIqlNq60ltPnQ==
+X-Received: by 2002:a17:907:2d92:b0:6e8:4b2a:e41f with SMTP id gt18-20020a1709072d9200b006e84b2ae41fmr3203383ejc.124.1649418083561;
+        Fri, 08 Apr 2022 04:41:23 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id e11-20020a50becb000000b0041b64129200sm10750300edk.50.2022.04.08.04.41.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 04:41:23 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 14:41:20 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakob Koschel <jakobkoschel@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Michael Walle <michael@walle.cc>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: Re: [PATCH net-next 02/15] net: dsa: sja1105: Remove usage of
+ iterator for list_add() after loop
+Message-ID: <20220408114120.tvf2lxvhfqbnrlml@skbuf>
+References: <20220407102900.3086255-1-jakobkoschel@gmail.com>
+ <20220407102900.3086255-3-jakobkoschel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220407102900.3086255-3-jakobkoschel@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When tty is not read from, XON/XOFF may get stuck into an
-intermediate buffer. As those characters are there to do software
-flow-control, it is not very useful. In the case where neither end
-reads from ttys, the receiving ends might not be able receive the
-XOFF characters and just keep sending more data to the opposite
-direction. This problem is almost guaranteed to occur with DMA
-which sends data in large chunks.
+Hello Jakob,
 
-If TTY is slow to process characters, that is, eats less than given
-amount in receive_buf, invoke lookahead for the rest of the chars
-to process potential XON/XOFF characters.
+On Thu, Apr 07, 2022 at 12:28:47PM +0200, Jakob Koschel wrote:
+> In preparation to limit the scope of a list iterator to the list
+> traversal loop, use a dedicated pointer to point to the found element [1].
+> 
+> Before, the code implicitly used the head when no element was found
+> when using &pos->list. Since the new variable is only set if an
+> element was found, the list_add() is performed within the loop
+> and only done after the loop if it is done on the list head directly.
+> 
+> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+> ---
+>  drivers/net/dsa/sja1105/sja1105_vl.c | 14 +++++++++-----
+>  1 file changed, 9 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
+> index b7e95d60a6e4..cfcae4d19eef 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_vl.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+> @@ -27,20 +27,24 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+>  	if (list_empty(&gating_cfg->entries)) {
+>  		list_add(&e->list, &gating_cfg->entries);
+>  	} else {
+> -		struct sja1105_gate_entry *p;
+> +		struct sja1105_gate_entry *p = NULL, *iter;
+>  
+> -		list_for_each_entry(p, &gating_cfg->entries, list) {
+> -			if (p->interval == e->interval) {
+> +		list_for_each_entry(iter, &gating_cfg->entries, list) {
+> +			if (iter->interval == e->interval) {
+>  				NL_SET_ERR_MSG_MOD(extack,
+>  						   "Gate conflict");
+>  				rc = -EBUSY;
+>  				goto err;
+>  			}
+>  
+> -			if (e->interval < p->interval)
+> +			if (e->interval < iter->interval) {
+> +				p = iter;
+> +				list_add(&e->list, iter->list.prev);
+>  				break;
+> +			}
+>  		}
+> -		list_add(&e->list, p->list.prev);
+> +		if (!p)
+> +			list_add(&e->list, gating_cfg->entries.prev);
+>  	}
+>  
+>  	gating_cfg->num_entries++;
+> -- 
+> 2.25.1
+> 
 
-The guards necessary for ensuring the XON/XOFF character are
-processed only once were added by the previous patch. All this patch
-needs to do on that front is to pass the lookahead count (that can
-now be non-zero) into port->client_ops->receive_buf().
+I apologize in advance if I've misinterpreted the end goal of your patch.
+I do have a vague suspicion I understand what you're trying to achieve,
+and in that case, would you mind using this patch instead of yours?
+I think it still preserves the intention of the code in a clean manner.
 
-Reported-by: Gilles Buloz <gilles.buloz@kontron.com>
-Tested-by: Gilles Buloz <gilles.buloz@kontron.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+-----------------------------[ cut here ]-----------------------------
+From 7aed740750d1bc3bff6e85fd33298f5905bb4e01 Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date: Fri, 8 Apr 2022 13:55:14 +0300
+Subject: [PATCH] net: dsa: sja1105: avoid use of type-confused pointer in
+ sja1105_insert_gate_entry()
+
+It appears that list_for_each_entry() leaks a type-confused pointer when
+the iteration loop ends with no early break, since "*p" will no longer
+point to a "struct sja1105_gate_entry", but rather to some memory in
+front of "gating_cfg->entries".
+
+This isn't actually a problem here, because if the element we insert has
+the highest interval, therefore we never exit the loop early, "p->list"
+(which is all that we use outside the loop) will in fact point to
+"gating_cfg->entries" even though "p" itself is invalid.
+
+Nonetheless, there are preparations to increase the safety of
+list_for_each_entry() by making it impossible to use the encapsulating
+structure of the iterator element outside the loop. So something needs
+to change here before those preparations go in, even though this
+constitutes legitimate use.
+
+Make it clear that we are not dereferencing members of the encapsulating
+"struct sja1105_gate_entry" outside the loop, by using the regular
+list_for_each() iterator, and dereferencing the struct sja1105_gate_entry
+only within the loop.
+
+With list_for_each(), the iterator element at the end of the loop does
+have a sane value in all cases, and we can just use that as the "head"
+argument of list_add().
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/tty/n_tty.c        | 18 +++++++++++
- drivers/tty/tty_buffer.c   | 61 +++++++++++++++++++++++++++++++-------
- drivers/tty/tty_port.c     | 21 +++++++++++++
- include/linux/tty_buffer.h |  1 +
- include/linux/tty_ldisc.h  | 11 +++++++
- include/linux/tty_port.h   |  2 ++
- 6 files changed, 104 insertions(+), 10 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_vl.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index cbea02c662d1..a9d20fcc6595 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1463,6 +1463,23 @@ n_tty_receive_char_lnext(struct tty_struct *tty, unsigned char c, char flag)
- 		n_tty_receive_char_flagged(tty, c, flag);
- }
- 
-+static void n_tty_lookahead_flow_ctrl(struct tty_struct *tty, const unsigned char *cp,
-+				      const unsigned char *fp, unsigned int count)
-+{
-+	unsigned char flag = TTY_NORMAL;
+diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
+index c0e45b393fde..fe93c80fe5ef 100644
+--- a/drivers/net/dsa/sja1105/sja1105_vl.c
++++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+@@ -27,9 +27,15 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+ 	if (list_empty(&gating_cfg->entries)) {
+ 		list_add(&e->list, &gating_cfg->entries);
+ 	} else {
+-		struct sja1105_gate_entry *p;
++		struct list_head *pos;
 +
-+	if (!I_IXON(tty))
-+		return;
-+
-+	while (count--) {
-+		if (fp)
-+			flag = *fp++;
-+		if (likely(flag == TTY_NORMAL))
-+			n_tty_receive_char_flow_ctrl(tty, *cp, false);
-+		cp++;
-+	}
-+}
-+
- static void
- n_tty_receive_buf_real_raw(struct tty_struct *tty, const unsigned char *cp,
- 			   const char *fp, int count)
-@@ -2418,6 +2435,7 @@ static struct tty_ldisc_ops n_tty_ops = {
- 	.receive_buf     = n_tty_receive_buf,
- 	.write_wakeup    = n_tty_write_wakeup,
- 	.receive_buf2	 = n_tty_receive_buf2,
-+	.lookahead_buf	 = n_tty_lookahead_flow_ctrl,
- };
- 
- /**
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index c561110c7d4d..48600bbd40e3 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -5,6 +5,7 @@
- 
- #include <linux/types.h>
- #include <linux/errno.h>
-+#include <linux/minmax.h>
- #include <linux/tty.h>
- #include <linux/tty_driver.h>
- #include <linux/tty_flip.h>
-@@ -104,6 +105,7 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
- 	p->size = size;
- 	p->next = NULL;
- 	p->commit = 0;
-+	p->lookahead = 0;
- 	p->read = 0;
- 	p->flags = 0;
- }
-@@ -233,6 +235,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
- 		buf->head = next;
- 	}
- 	buf->head->read = buf->head->commit;
-+	buf->head->lookahead = buf->head->read;
- 
- 	if (ld && ld->ops->flush_buffer)
- 		ld->ops->flush_buffer(tty);
-@@ -275,13 +278,15 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
- 		if (n != NULL) {
- 			n->flags = flags;
- 			buf->tail = n;
--			/* paired w/ acquire in flush_to_ldisc(); ensures
--			 * flush_to_ldisc() sees buffer data.
-+			/*
-+			 * Paired w/ acquire in flush_to_ldisc() and lookahead_bufs()
-+			 * ensures they see all buffer data.
- 			 */
- 			smp_store_release(&b->commit, b->used);
--			/* paired w/ acquire in flush_to_ldisc(); ensures the
--			 * latest commit value can be read before the head is
--			 * advanced to the next buffer
-+			/*
-+			 * Paired w/ acquire in flush_to_ldisc() and lookahead_bufs()
-+			 * ensures the latest commit value can be read before the head
-+			 * is advanced to the next buffer.
- 			 */
- 			smp_store_release(&b->next, n);
- 		} else if (change)
-@@ -458,6 +463,40 @@ int tty_ldisc_receive_buf(struct tty_ldisc *ld, const unsigned char *p,
- }
- EXPORT_SYMBOL_GPL(tty_ldisc_receive_buf);
- 
-+static void lookahead_bufs(struct tty_port *port, struct tty_buffer *head)
-+{
-+	head->lookahead = max(head->lookahead, head->read);
-+
-+	while (head) {
-+		struct tty_buffer *next;
-+		unsigned char *p, *f = NULL;
-+		unsigned int count;
-+
-+		/*
-+		 * Paired w/ release in __tty_buffer_request_room();
-+		 * ensures commit value read is not stale if the head
-+		 * is advancing to the next buffer.
++		/* We cannot safely use list_for_each_entry()
++		 * because we dereference "pos" after the loop
 +		 */
-+		next = smp_load_acquire(&head->next);
-+		/*
-+		 * Paired w/ release in __tty_buffer_request_room() or in
-+		 * tty_buffer_flush(); ensures we see the committed buffer data.
-+		 */
-+		count = smp_load_acquire(&head->commit) - head->lookahead;
-+		if (!count) {
-+			head = next;
-+			continue;
-+		}
-+
-+		p = char_buf_ptr(head, head->lookahead);
-+		if (~head->flags & TTYB_NORMAL)
-+			f = flag_buf_ptr(head, head->lookahead);
-+
-+		port->client_ops->lookahead_buf(port, p, f, count);
-+		head->lookahead += count;
-+	}
-+}
-+
- static int
- receive_buf(struct tty_port *port, struct tty_buffer *head, int count)
- {
-@@ -468,7 +507,7 @@ receive_buf(struct tty_port *port, struct tty_buffer *head, int count)
- 	if (~head->flags & TTYB_NORMAL)
- 		f = flag_buf_ptr(head, head->read);
++		list_for_each(pos, &gating_cfg->entries) {
++			struct sja1105_gate_entry *p;
  
--	n = port->client_ops->receive_buf(port, p, f, count, 0);
-+	n = port->client_ops->receive_buf(port, p, f, count, max(head->lookahead - head->read, 0));
- 	if (n > 0)
- 		memset(p, 0, n);
- 	return n;
-@@ -495,7 +534,7 @@ static void flush_to_ldisc(struct work_struct *work)
- 	while (1) {
- 		struct tty_buffer *head = buf->head;
- 		struct tty_buffer *next;
--		int count;
-+		int count, rcvd;
- 
- 		/* Ldisc or user is trying to gain exclusive access */
- 		if (atomic_read(&buf->priority))
-@@ -518,10 +557,12 @@ static void flush_to_ldisc(struct work_struct *work)
- 			continue;
+-		list_for_each_entry(p, &gating_cfg->entries, list) {
++			p = list_entry(pos, struct sja1105_gate_entry, list);
+ 			if (p->interval == e->interval) {
+ 				NL_SET_ERR_MSG_MOD(extack,
+ 						   "Gate conflict");
+@@ -40,7 +46,7 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+ 			if (e->interval < p->interval)
+ 				break;
  		}
+-		list_add(&e->list, p->list.prev);
++		list_add(&e->list, pos->prev);
+ 	}
  
--		count = receive_buf(port, head, count);
--		if (!count)
-+		rcvd = receive_buf(port, head, count);
-+		head->read += rcvd;
-+		if (rcvd < count)
-+			lookahead_bufs(port, head);
-+		if (!rcvd)
- 			break;
--		head->read += count;
- 
- 		if (need_resched())
- 			cond_resched();
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 45cbbf338f24..47fb8088612a 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -44,6 +44,26 @@ static int tty_port_default_receive_buf(struct tty_port *port,
- 	return ret;
- }
- 
-+static void tty_port_default_lookahead_buf(struct tty_port *port, const unsigned char *p,
-+					   const unsigned char *f, unsigned int count)
-+{
-+	struct tty_struct *tty;
-+	struct tty_ldisc *disc;
-+
-+	tty = READ_ONCE(port->itty);
-+	if (!tty)
-+		return;
-+
-+	disc = tty_ldisc_ref(tty);
-+	if (!disc)
-+		return;
-+
-+	if (disc->ops->lookahead_buf)
-+		disc->ops->lookahead_buf(disc->tty, p, f, count);
-+
-+	tty_ldisc_deref(disc);
-+}
-+
- static void tty_port_default_wakeup(struct tty_port *port)
- {
- 	struct tty_struct *tty = tty_port_tty_get(port);
-@@ -56,6 +76,7 @@ static void tty_port_default_wakeup(struct tty_port *port)
- 
- const struct tty_port_client_operations tty_port_default_client_ops = {
- 	.receive_buf = tty_port_default_receive_buf,
-+	.lookahead_buf = tty_port_default_lookahead_buf,
- 	.write_wakeup = tty_port_default_wakeup,
- };
- EXPORT_SYMBOL_GPL(tty_port_default_client_ops);
-diff --git a/include/linux/tty_buffer.h b/include/linux/tty_buffer.h
-index 3b9d77604291..1796648c2907 100644
---- a/include/linux/tty_buffer.h
-+++ b/include/linux/tty_buffer.h
-@@ -15,6 +15,7 @@ struct tty_buffer {
- 	int used;
- 	int size;
- 	int commit;
-+	int lookahead;		/* Lazy update on recv, can become less than "read" */
- 	int read;
- 	int flags;
- 	/* Data points here */
-diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
-index d81a39cff9e2..1b181a8cfd95 100644
---- a/include/linux/tty_ldisc.h
-+++ b/include/linux/tty_ldisc.h
-@@ -192,6 +192,15 @@ int ldsem_down_write_nested(struct ld_semaphore *sem, int subclass,
-  *	performed with @lookahead_count. If assigned, prefer this function for
-  *	automatic flow control.
-  *
-+ * @lookahead_buf: [DRV] ``void ()(struct tty_struct *tty,
-+ *			const unsigned char *cp, const char *fp, int count)
-+ *
-+ *	This function is called by the low-level tty driver for characters
-+ *	not eaten by receive_buf or receive_buf2. It is useful for processing
-+ *	high-priority characters such as software flow-control characters that
-+ *	could otherwise get stuck into the intermediate buffer until tty has
-+ *	room to receive them.
-+ *
-  * @owner: module containting this ldisc (for reference counting)
-  *
-  * This structure defines the interface between the tty line discipline
-@@ -235,6 +244,8 @@ struct tty_ldisc_ops {
- 	void	(*dcd_change)(struct tty_struct *tty, unsigned int status);
- 	int	(*receive_buf2)(struct tty_struct *tty, const unsigned char *cp,
- 				const char *fp, int count, unsigned int lookahead_count);
-+	void	(*lookahead_buf)(struct tty_struct *tty, const unsigned char *cp,
-+				 const unsigned char *fp, unsigned int count);
- 
- 	struct  module *owner;
- };
-diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-index 402470962d23..7a27cb949c4e 100644
---- a/include/linux/tty_port.h
-+++ b/include/linux/tty_port.h
-@@ -41,6 +41,8 @@ struct tty_port_operations {
- struct tty_port_client_operations {
- 	int (*receive_buf)(struct tty_port *port, const unsigned char *,
- 			   const unsigned char *, size_t, unsigned int lookahead_count);
-+	void (*lookahead_buf)(struct tty_port *port, const unsigned char *cp,
-+			      const unsigned char *fp, unsigned int count);
- 	void (*write_wakeup)(struct tty_port *port);
- };
- 
--- 
-2.30.2
-
+ 	gating_cfg->num_entries++;
+-----------------------------[ cut here ]-----------------------------
