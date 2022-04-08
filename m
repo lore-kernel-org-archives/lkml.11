@@ -2,128 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE65C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D800C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230085AbiDHH2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 03:28:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59176 "EHLO
+        id S230153AbiDHH2t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 03:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230497AbiDHH1r (ORCPT
+        with ESMTP id S230003AbiDHH1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 03:27:47 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0EAB36FB71
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 00:25:43 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KZVC83NfLz9sSl;
-        Fri,  8 Apr 2022 09:25:24 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 7q_QCmr-WIUr; Fri,  8 Apr 2022 09:25:24 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KZVC41htkz9sSg;
-        Fri,  8 Apr 2022 09:25:20 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1A6A68B792;
-        Fri,  8 Apr 2022 09:25:20 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id YlLnsYJdqYcf; Fri,  8 Apr 2022 09:25:20 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.203.13])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9D3A38B765;
-        Fri,  8 Apr 2022 09:25:19 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2387PCdD637067
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 8 Apr 2022 09:25:12 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2387PCNX637066;
-        Fri, 8 Apr 2022 09:25:12 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linuxppc-dev@lists.ozlabs.org, Steve Capper <steve.capper@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH v9 3/4] mm: Add len and flags parameters to arch_get_mmap_end()
-Date:   Fri,  8 Apr 2022 09:25:01 +0200
-Message-Id: <f95464d3354057c6d40b92d902710eefc2bcb05c.1649401201.git.christophe.leroy@csgroup.eu>
+        Fri, 8 Apr 2022 03:27:10 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBCC36C719;
+        Fri,  8 Apr 2022 00:24:54 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2385QbLS011064;
+        Fri, 8 Apr 2022 07:24:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=lJdUtViZ+9WYK9MNV/wF5jy+0uPy4byFiA3RxmH2wm0=;
+ b=K+VOtmnawi47OdFf+Qt8yn4/LWR4Y0m47nb+RNdHebRJh0J/jcj2TWpp6gsGX+sr/zlf
+ uZLJwANDoAaUK8JXOpoJkyOJjbRvgg1JeeGeDR2nB+IfTaybXomlT1QRIxB6CPzbk1zL
+ UbgbPKAt1Vv+kLUmokAbwwBWaY6DtPfo2gwOxk0+M7ekdhdaNW/EM83V8AQuJKxN1NW6
+ IKBuASuq4mSAH0OxKbAsRrtouHGt2Bp511Uhi63zzpyOijePRr70B5lC7foQEv4nk2bO
+ ymZ+G+BDuTmTfNxBkYPHG4QkaiTr9d3W6r5KGCow9DZk6z3yE/CXokdwFGSTiL7Wg4sK LA== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3faewhsxhj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 08 Apr 2022 07:24:44 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2387CsSo024440;
+        Fri, 8 Apr 2022 07:24:41 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03ams.nl.ibm.com with ESMTP id 3f6e49395m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 08 Apr 2022 07:24:41 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2387Odjp39453024
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 8 Apr 2022 07:24:39 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7C9445204F;
+        Fri,  8 Apr 2022 07:24:39 +0000 (GMT)
+Received: from localhost.localdomain (unknown [9.211.146.176])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id EB6EF52051;
+        Fri,  8 Apr 2022 07:24:33 +0000 (GMT)
+From:   Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+To:     shuah@kernel.org, linux-kselftest@vger.kernel.org,
+        disgoel@linux.vnet.ibm.com
+Cc:     acme@kernel.org, jolsa@kernel.org, mpe@ellerman.id.au,
+        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, maddy@linux.vnet.ibm.com,
+        kjain@linux.ibm.com, srikar@linux.vnet.ibm.com
+Subject: [PATCH V3] testing/selftests/mqueue: Fix mq_perf_tests to free the allocated cpu set
+Date:   Fri,  8 Apr 2022 12:54:31 +0530
+Message-Id: <20220408072431.94947-1-atrajeev@linux.vnet.ibm.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649401201.git.christophe.leroy@csgroup.eu>
-References: <cover.1649401201.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1649402687; l=2390; s=20211009; h=from:subject:message-id; bh=7CnSGmYwu5de/tnoCsoi/wJWczeTAc4nYg5B5vQynko=; b=T6DuHh1k8UF7/NG7IOu1Vkhz9tCJfFDPbguAGNlDOIpZEJ1tWhkuTdqHEVhCQJQfFWhJRqXoKqQY ysYfhgUsAbiswCfoaIob91FInfdItyWBImYbBhQ7p0K/UWD92G10
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: oFSK29UBfSCeQZpUe-fbcXjKIGm8eMPU
+X-Proofpoint-GUID: oFSK29UBfSCeQZpUe-fbcXjKIGm8eMPU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-08_02,2022-04-07_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ bulkscore=0 spamscore=0 clxscore=1015 mlxlogscore=999 priorityscore=1501
+ impostorscore=0 lowpriorityscore=0 malwarescore=0 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204080038
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Powerpc needs flags and len to make decision on arch_get_mmap_end().
+The selftest "mqueue/mq_perf_tests.c" use CPU_ALLOC to allocate
+CPU set. This cpu set is used further in pthread_attr_setaffinity_np
+and by pthread_create in the code. But in current code, allocated
+cpu set is not freed.
 
-So add them as parameters to arch_get_mmap_end().
+Fix this issue by adding CPU_FREE in the "shutdown" function which
+is called in most of the error/exit path for the cleanup. There are
+few error paths which exit without using shutdown. Add a common goto
+error path with CPU_FREE for these cases.
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: Steve Capper <steve.capper@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Fixes: 7820b0715b6f ("tools/selftests: add mq_perf_tests")
+Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
 ---
- arch/arm64/include/asm/processor.h | 4 ++--
- mm/mmap.c                          | 6 +++---
- 2 files changed, 5 insertions(+), 5 deletions(-)
+Changelog:
+ From v2 -> v3:
+  Addressed review comment from Shuah Khan to add
+  common "goto" error path with CPU_FREE for few exit
+  cases.
+ From v1 -> v2:
+  Addressed review comment from Shuah Khan to add
+  CPU_FREE in other exit paths where it is needed
 
-diff --git a/arch/arm64/include/asm/processor.h b/arch/arm64/include/asm/processor.h
-index 73e38d9a540c..bd22d94e844d 100644
---- a/arch/arm64/include/asm/processor.h
-+++ b/arch/arm64/include/asm/processor.h
-@@ -92,8 +92,8 @@
- #endif /* CONFIG_COMPAT */
+ .../testing/selftests/mqueue/mq_perf_tests.c  | 25 +++++++++++++------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
+
+diff --git a/tools/testing/selftests/mqueue/mq_perf_tests.c b/tools/testing/selftests/mqueue/mq_perf_tests.c
+index b019e0b8221c..84fda3b49073 100644
+--- a/tools/testing/selftests/mqueue/mq_perf_tests.c
++++ b/tools/testing/selftests/mqueue/mq_perf_tests.c
+@@ -180,6 +180,9 @@ void shutdown(int exit_val, char *err_cause, int line_no)
+ 	if (in_shutdown++)
+ 		return;
  
- #ifndef CONFIG_ARM64_FORCE_52BIT
--#define arch_get_mmap_end(addr) ((addr > DEFAULT_MAP_WINDOW) ? TASK_SIZE :\
--				DEFAULT_MAP_WINDOW)
-+#define arch_get_mmap_end(addr, len, flags) \
-+		(((addr) > DEFAULT_MAP_WINDOW) ? TASK_SIZE : DEFAULT_MAP_WINDOW)
++	/* Free the cpu_set allocated using CPU_ALLOC in main function */
++	CPU_FREE(cpu_set);
++
+ 	for (i = 0; i < num_cpus_to_pin; i++)
+ 		if (cpu_threads[i]) {
+ 			pthread_kill(cpu_threads[i], SIGUSR1);
+@@ -551,6 +554,12 @@ int main(int argc, char *argv[])
+ 		perror("sysconf(_SC_NPROCESSORS_ONLN)");
+ 		exit(1);
+ 	}
++
++	if (getuid() != 0)
++		ksft_exit_skip("Not running as root, but almost all tests "
++			"require root in order to modify\nsystem settings.  "
++			"Exiting.\n");
++
+ 	cpus_online = min(MAX_CPUS, sysconf(_SC_NPROCESSORS_ONLN));
+ 	cpu_set = CPU_ALLOC(cpus_online);
+ 	if (cpu_set == NULL) {
+@@ -589,7 +598,7 @@ int main(int argc, char *argv[])
+ 						cpu_set)) {
+ 					fprintf(stderr, "Any given CPU may "
+ 						"only be given once.\n");
+-					exit(1);
++					goto err_code;
+ 				} else
+ 					CPU_SET_S(cpus_to_pin[cpu],
+ 						  cpu_set_size, cpu_set);
+@@ -607,7 +616,7 @@ int main(int argc, char *argv[])
+ 				queue_path = malloc(strlen(option) + 2);
+ 				if (!queue_path) {
+ 					perror("malloc()");
+-					exit(1);
++					goto err_code;
+ 				}
+ 				queue_path[0] = '/';
+ 				queue_path[1] = 0;
+@@ -622,17 +631,12 @@ int main(int argc, char *argv[])
+ 		fprintf(stderr, "Must pass at least one CPU to continuous "
+ 			"mode.\n");
+ 		poptPrintUsage(popt_context, stderr, 0);
+-		exit(1);
++		goto err_code;
+ 	} else if (!continuous_mode) {
+ 		num_cpus_to_pin = 1;
+ 		cpus_to_pin[0] = cpus_online - 1;
+ 	}
  
- #define arch_get_mmap_base(addr, base) ((addr > DEFAULT_MAP_WINDOW) ? \
- 					base + TASK_SIZE - DEFAULT_MAP_WINDOW :\
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 08b40a9715ee..4d63e1cb3b52 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2118,7 +2118,7 @@ unsigned long vm_unmapped_area(struct vm_unmapped_area_info *info)
+-	if (getuid() != 0)
+-		ksft_exit_skip("Not running as root, but almost all tests "
+-			"require root in order to modify\nsystem settings.  "
+-			"Exiting.\n");
+-
+ 	max_msgs = fopen(MAX_MSGS, "r+");
+ 	max_msgsize = fopen(MAX_MSGSIZE, "r+");
+ 	if (!max_msgs)
+@@ -740,4 +744,9 @@ int main(int argc, char *argv[])
+ 			sleep(1);
+ 	}
+ 	shutdown(0, "", 0);
++
++err_code:
++	CPU_FREE(cpu_set);
++	exit(1);
++
  }
- 
- #ifndef arch_get_mmap_end
--#define arch_get_mmap_end(addr)	(TASK_SIZE)
-+#define arch_get_mmap_end(addr, len, flags)	(TASK_SIZE)
- #endif
- 
- #ifndef arch_get_mmap_base
-@@ -2144,7 +2144,7 @@ generic_get_unmapped_area(struct file *filp, unsigned long addr,
- 	struct mm_struct *mm = current->mm;
- 	struct vm_area_struct *vma, *prev;
- 	struct vm_unmapped_area_info info;
--	const unsigned long mmap_end = arch_get_mmap_end(addr);
-+	const unsigned long mmap_end = arch_get_mmap_end(addr, len, flags);
- 
- 	if (len > mmap_end - mmap_min_addr)
- 		return -ENOMEM;
-@@ -2192,7 +2192,7 @@ generic_get_unmapped_area_topdown(struct file *filp, unsigned long addr,
- 	struct vm_area_struct *vma, *prev;
- 	struct mm_struct *mm = current->mm;
- 	struct vm_unmapped_area_info info;
--	const unsigned long mmap_end = arch_get_mmap_end(addr);
-+	const unsigned long mmap_end = arch_get_mmap_end(addr, len, flags);
- 
- 	/* requested length too big for entire address space */
- 	if (len > mmap_end - mmap_min_addr)
 -- 
 2.35.1
 
