@@ -2,107 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58DCDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:45:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A4F2C43219
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235844AbiDHMrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42044 "EHLO
+        id S235854AbiDHMrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235119AbiDHMrU (ORCPT
+        with ESMTP id S235938AbiDHMrp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:47:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A677EBAE9
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 05:45:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649421916;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=khBPZtzPFEMx9dKIM9CWO7Q/Lm+eAtWPqukaOGv/i8A=;
-        b=YLtnpIsC0V7winnbPDIk8ihc1bA6iZGyvRj9ARC3Px6IupPR31DrGO1wJvQ37eQxfkUHHW
-        pdU1brJZHsIjdqPWtFJl3TsIX8uPMC77CL1FaYl7weSAgIAJv1GKpcBy1UIe/GopodhpcN
-        r+p1QFE2oLFswtseQaHaobOI3YKJRLQ=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-310-F8bNETrINdy56VvTPNPvdg-1; Fri, 08 Apr 2022 08:45:15 -0400
-X-MC-Unique: F8bNETrINdy56VvTPNPvdg-1
-Received: by mail-lf1-f69.google.com with SMTP id t14-20020ac243ae000000b0046b81f8ac2cso1144362lfl.19
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 05:45:14 -0700 (PDT)
+        Fri, 8 Apr 2022 08:47:45 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC37ED9D0
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 05:45:41 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id bk12so4644452qkb.7
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 05:45:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=n0Q03Y/eZmvD4gdqyNKPm3EQwhmNG2mz8mwozYTQaEw=;
+        b=DXGaRsNTjOlC6moq6bFtHJK+OFb8JayyOqjhIFqjLBKYh4H+KjBdyxlXTRttGVUdpj
+         IV6yeFaThuOFW0HyqpTWHnWlDDQsOoKz1LHeMESPiD+Zu0MHKqBtZ55OkzkEvbSLDkHr
+         M6CBRhi5F38L6gyljRT4uBWN11BYsYNs2lGwMx5tnt8HkVZw7NUq9ExN2NHYUVofshZF
+         Fzm9kYhfCYhQuFW1ZhvpCUNu2SqEPEuvuD1jsnbzcnDqJyVa3kqyFqsuXrkbKL+ZoK7k
+         iOuQD/wbU8th/0iKaxOSKq92AQgkYZX9Re3WStH2yCGmAjeKj3tabBD0j/IntMcguZgX
+         FxJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=khBPZtzPFEMx9dKIM9CWO7Q/Lm+eAtWPqukaOGv/i8A=;
-        b=LRfso/wEcV156nfegNhFAPueKGEl/cRq6nUNkiqgH0nlUVgrOnXwvpRd2CPxx/dLja
-         Ah1C3+6sBpMQbsW7Sfu8tCBtpDBa7SQpa0sTC1vAZUqrvFO2BTbojUd/KMvCa0VNkGjX
-         Kg6tlrOcncoGh/IEsAFPoJ9ro/54THx0wHHVrz1AbT0816qbhOG2ELWTHww7WOTLeMNz
-         5r0R0kWP5jGQOrrHGNVkmkhH2QbC7PV6kC/iPJB012vZeftC9PeS5RkAgOz58VysJW0s
-         u2OsbYu6pyu5GklRmylqQO7wpPEKj2RoQKbtH/LhOBbpbEdiQ1yJdXEhm7JHC4xUxepF
-         nIAQ==
-X-Gm-Message-State: AOAM533ELch248WtVMjyD4R5aSRDvDuYsnX7c6Nb24AweKM7YwzQN2bf
-        KpyA6hcPdnhEXyRA7TgJ28ASH/bXAmpBINLBrtCHSuv4QsLvEl3Aq3zJH69YUUpokQT/Rr+1Cbz
-        kH58qK2WEcSTUnbGtNtXCt45K67qgQK/waZFh6zZ4
-X-Received: by 2002:a05:6512:158d:b0:44a:6522:f98f with SMTP id bp13-20020a056512158d00b0044a6522f98fmr12476801lfb.608.1649421913224;
-        Fri, 08 Apr 2022 05:45:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxifoUmW3lR7s6bWQ1QaUPysHRDA51bV3Mjmn5J1/ODHj+CUYXo/iK2FzHxX3hDX/jFtBf6eHMKV1gEJAu6iCE=
-X-Received: by 2002:a05:6512:158d:b0:44a:6522:f98f with SMTP id
- bp13-20020a056512158d00b0044a6522f98fmr12476781lfb.608.1649421912940; Fri, 08
- Apr 2022 05:45:12 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=n0Q03Y/eZmvD4gdqyNKPm3EQwhmNG2mz8mwozYTQaEw=;
+        b=dVU+YtKkPh4/Enhmxwv6lWC4LVVYSbYpIDBXNHGRbZdfQOXNmaGsixe8rskqzgWQG4
+         Nxk90xxPDlDN+gSf5/WzM9UWJAkk6rNHtjJH/zAnfE4JvCFlSEwT5cs9EVi4nEmAL+qB
+         uU3pW6TSb1YJug+4d0H+nVaSfEnjXpUF3J1lMha9NnRvhbY2FBGvirrS4pXi+gUcFZ8f
+         PXU404vzSVo+1oYifVtKib7DmtEyyIa3fbah2nSr3AhKKkjvmEscBl/1/LNc2FltYs5/
+         PYR+lWsdmlsaEvPHWRdM4LJUJuXYy4cPcMSMl2AV9+oiN4huFD0kuYuluO9zFys1D2sm
+         58Fw==
+X-Gm-Message-State: AOAM53081OJOalHWtMZIkMy9lFZSVg8ztH3gHzzXz1I7D9ak+3ZSkjnO
+        qtZW0QiIyF5OvDhLVE4makXzVw==
+X-Google-Smtp-Source: ABdhPJxoiUP1tZ7KeNBPWAx2H5m7E3mW/0pyOPTv0wkEGMWe6jMBimeBnZDbkH6Rv5j9d7LBGVtYTw==
+X-Received: by 2002:a05:620a:2681:b0:67e:933e:54b6 with SMTP id c1-20020a05620a268100b0067e933e54b6mr12895867qkp.428.1649421940184;
+        Fri, 08 Apr 2022 05:45:40 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id c70-20020a379a49000000b0069bdce177e2sm979729qke.55.2022.04.08.05.45.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 05:45:37 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1ncnzc-00Eyq7-W4; Fri, 08 Apr 2022 09:45:37 -0300
+Date:   Fri, 8 Apr 2022 09:45:36 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Matthew Rosato <mjrosato@linux.ibm.com>
+Cc:     linux-s390@vger.kernel.org, alex.williamson@redhat.com,
+        cohuck@redhat.com, schnelle@linux.ibm.com, farman@linux.ibm.com,
+        pmorel@linux.ibm.com, borntraeger@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com, frankja@linux.ibm.com,
+        david@redhat.com, imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH v5 16/21] KVM: vfio: add s390x hook to register KVM guest
+ designation
+Message-ID: <20220408124536.GX64706@ziepe.ca>
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+ <20220404174349.58530-17-mjrosato@linux.ibm.com>
 MIME-Version: 1.0
-References: <CA+QYu4qTtXgVegAd7S5bjJQye+kmtPaFau4dg3YPU2tH9faBjg@mail.gmail.com>
- <175195a9b7840e883677c6f351ee186089ab2b6d.camel@HansenPartnership.com>
-In-Reply-To: <175195a9b7840e883677c6f351ee186089ab2b6d.camel@HansenPartnership.com>
-From:   Bruno Goncalves <bgoncalv@redhat.com>
-Date:   Fri, 8 Apr 2022 14:45:01 +0200
-Message-ID: <CA+QYu4oKwOwKYJB0_SezXWaMWa9Obp2=nLd-2_bKx-jSAu1TDw@mail.gmail.com>
-Subject: Re: RIP: 0010:ahd_init.cold+0x96/0x98 [aic79xx] - 5.17.0
-To:     James Bottomley <James.Bottomley@hansenpartnership.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, linux-scsi@vger.kernel.org,
-        CKI Project <cki-project@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220404174349.58530-17-mjrosato@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 5:33 PM James Bottomley
-<James.Bottomley@hansenpartnership.com> wrote:
->
-> On Tue, 2022-04-05 at 09:14 +0200, Bruno Goncalves wrote:
-> > Hello,
-> >
-> > We've been hitting the panic below when testing mainline kernel. More
-> > logs can be found on [1] and CKI tracker [2].
->
-> When was the last time this driver passed the test?  I'm asking because
-> nothing significant has changed in this driver for a while and the
-> trivial changes all seem to check out.
+On Mon, Apr 04, 2022 at 01:43:44PM -0400, Matthew Rosato wrote:
+> At the time a KVM is associated with a vfio group, s390x zPCI devices
+> must register a special guest indication (GISA designation) to allow
+> for the use of interpretive execution facilities.  This indication is
+> used to ensure that only the specified KVM can interact with the device.
+> Similarly, the indication must be removed once the KVM is no longer
+> associated with the device.
+> 
+> This patch adds an s390-specific hook to invoke a KVM registration routine
+> for each device associated with the iommu group; in reality, it will be a
+> NOP for all but zPCI devices on s390x.
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>  virt/kvm/vfio.c | 35 ++++++++++++++++++++++++++++++++++-
+>  1 file changed, 34 insertions(+), 1 deletion(-)
 
-Hi James,
+I wonder if this should be done in the vfio_pci side from the existing
+kvm notifier
 
-Sorry for the delay in replying to you. Do you think it could be some
-patch from d51b1b33c51d147b757f042b4d336603b699f362 or
-23d1dea55520c5cf89849279cd25de4da8392687 ?
-
-I was able to reproduce it using the CKI kernel from d51b1b33, but not
-from commit 2fce7ea0.
-
-We don't have a kernel build for 23d1dea5, but if you want I can try
-it next week.
-
-Also, it seems I can only reproduce it on kernel build that adds some
-debug flags when we build with selftests enabled.
-
-kernel build: https://s3.us-east-1.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2022/03/23/499569088/build_x86_64_redhat:2242251830/kernel-mainline.kernel.org-x86_64-d51b1b33c51d147b757f042b4d336603b699f362.tar.gz
-kernel config: https://s3.us-east-1.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2022/03/23/499569088/build_x86_64_redhat:2242251830/kernel-mainline.kernel.org-x86_64-d51b1b33c51d147b757f042b4d336603b699f362.config
-
-Bruno
-
-
->
-> James
->
->
-
+Jason
