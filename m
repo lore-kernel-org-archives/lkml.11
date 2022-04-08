@@ -2,123 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25264C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 01:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69237C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 01:22:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233376AbiDHBWI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 21:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40660 "EHLO
+        id S233431AbiDHBYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 21:24:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233320AbiDHBWG (ORCPT
+        with ESMTP id S233385AbiDHBYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 21:22:06 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590CD14F137
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 18:20:04 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id r13so14343046ejd.5
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 18:20:04 -0700 (PDT)
+        Thu, 7 Apr 2022 21:24:17 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5426445
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 18:22:15 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id i10-20020a17090a2aca00b001ca56c9ab16so7244154pjg.1
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 18:22:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CpBl2AGd626FECD+GIqEV6PBhceN/t8eGFzx+f7coUk=;
-        b=3cPiceV6hD/ZvOf4gFgz+/Zbbb1qxTfbkNm4XV6V5+xHRZD/OwWXS0rT8rsxbHD5AA
-         IXmkMGgR23uopQ7vhW5gxFcqnpbiYaxhY71cDh75hcRDbB3kJ98qpB6i+HBgSHyaFoAw
-         poQe6uB/Nk6A7T1dk7kws1/GpzkcuhWzby3KtcTalLTu92PLzXSIfw+wihYnHcDRomq3
-         XiVAzl5h9QxfyyG9nyGkjDICoKwRhiOjGRjpGaQPn70KJgqmpq99q4226V6jiemKN9kt
-         Tc+H08w49VdTo/MxPl0R+CwjOzZO2Y/ATnGJGomCoLfbdpSKA6lue/maVB9gdrRAnUCm
-         U7cg==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=A6OclNo6fSItQpTxQTpaUCER7lHP82G03LIl77so8jw=;
+        b=zSb4agSs6+sEx1Gos/tvaPy9cnZsjfM6UBsveMu1xbXuLiS2sYW5lZu5i5fVIaC2Uc
+         TnBbYZzHnB6Lfdx4TY/UdQbAZQm0p/8+FUrOEYttBaMsqVgEBTaUxbv+MIbOmKf1hN88
+         1y4BpCaILLtwuVHG+12DtsYjcMbWUaz489ALsW7l/a5CmmDrI9GkoUMUsMAHHsHqgUIR
+         cUhDqIqhiUxL0nDHDJZH1iJxSzUbp8LKnCIWFtXLBPm4+qRPAFgIPzoYgLs9WNl8bhb/
+         DmpmuQnOVqtw5NH7a1ZqG/NN+gIQwyGPCj3MT0Tfd3rP2jBe0g2HTC+b4Y0LjmweN30a
+         Agvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CpBl2AGd626FECD+GIqEV6PBhceN/t8eGFzx+f7coUk=;
-        b=WjHW7PNUq1mYOTZQNlINa6XG7Yp5I2/OntEwbfN4fzu0fDcPA85D6IgFWlZP9HXj2U
-         GbJrS2kx8dzhXkBwX1CT/Pex7lWIujlr8dAKy9vVjC5ctFLvI0rOqQZUmXvqcECiYlZO
-         lOG4j0AB/t5BGdtLZZcvyWZsV2M58/VwqmuXCPSL2eo9lPInGXyTGQPAw6sb1vPm2bGV
-         PkNJSOZq5OrG56hcXyXNgB8GL+FUSkGCdy+aLlU4FE75GqZs3f99KeEaAGQRiYDg6/+P
-         /NLzSLfNUVtA7zcIOpN6bE/Na3/I0JkmAw5fvtGLqx/wbLVHurfgC2JJkBZm9EvfSNRv
-         dipQ==
-X-Gm-Message-State: AOAM533jK4a+NKWsz2maUkJ/09tED47jLdLq1g0vvzqZnCwI9GeCD1dL
-        R7hIpVgXXvRskIdLVd9epHEOGavx4dedLLumXtAJ
-X-Google-Smtp-Source: ABdhPJwNkET74mR679RYTNFG2h05EKTSAGXbm9p/d1NNz5+zhishf2TSABELSlkCZxkK0XW+Qj9Ih8VcPHPiYGE0eec=
-X-Received: by 2002:a17:907:9803:b0:6db:ab21:738e with SMTP id
- ji3-20020a170907980300b006dbab21738emr15515948ejc.112.1649380802771; Thu, 07
- Apr 2022 18:20:02 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=A6OclNo6fSItQpTxQTpaUCER7lHP82G03LIl77so8jw=;
+        b=MSnbrUhX9XrjObesaMxUk/bckFktVMV8Kh/5SPwrWa83re90OVd2kMP6WQGtVVVzLz
+         Qbp2VZ8FPlfw9CpPKs3N+SILhguhZLYuKG0/ZM4QwX5T2KnQvuCyG6hleeBYh24Rbj0K
+         Ox1winFm+xY8c0zg6P4Kxqv4BndZgHPXPA6ZjpMSfOEofzcFQXXyvJAQjUHrlEZSTXf/
+         pZyn4SrfsCmNj1KbyKlSjWpuxQxBlZcITI3YBRzD5oJnap6q9vY8cZqf/RveY+4Fv1nh
+         cIuikObARay9wY1dpT0S6ur9SS8881NggPCqnNwMNfT8JIzTFVg7HOfb3E7URskFRvPB
+         GMRQ==
+X-Gm-Message-State: AOAM532xvrOORw5KKGDbawurehYX6jefBb+LAismpI3XeiwJA1kFMCjS
+        jciijdBiYmAI0TN0QTt5oRlHwg==
+X-Google-Smtp-Source: ABdhPJwhsbSFMkUvU8wzdDL8blnk++f7WzgqCYdkmeqpKagtwMsEnmQtneoW8sDRmpOVWWTI40PeuA==
+X-Received: by 2002:a17:90a:bf12:b0:1ca:69bd:9a10 with SMTP id c18-20020a17090abf1200b001ca69bd9a10mr18877946pjs.92.1649380934743;
+        Thu, 07 Apr 2022 18:22:14 -0700 (PDT)
+Received: from [10.76.15.169] ([61.120.150.76])
+        by smtp.gmail.com with ESMTPSA id q28-20020a656a9c000000b00372f7ecfcecsm21038355pgu.37.2022.04.07.18.20.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 18:21:10 -0700 (PDT)
+Message-ID: <e77ae1d9-49f3-97e8-f88f-a8518ff0573b@bytedance.com>
+Date:   Fri, 8 Apr 2022 09:17:10 +0800
 MIME-Version: 1.0
-References: <20220329125117.1393824-1-mic@digikod.net> <20220329125117.1393824-7-mic@digikod.net>
-In-Reply-To: <20220329125117.1393824-7-mic@digikod.net>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 7 Apr 2022 21:19:51 -0400
-Message-ID: <CAHC9VhQg0R5ddC_aLSAFyyf9OPs6wSyj3tqh1hwoN=RPpoDFuQ@mail.gmail.com>
-Subject: Re: [PATCH v2 06/12] LSM: Remove double path_rename hook calls for RENAME_EXCHANGE
-To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
-Cc:     James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jann Horn <jannh@google.com>,
-        John Johansen <john.johansen@canonical.com>,
-        Kees Cook <keescook@chromium.org>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@linux.microsoft.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: Re: [PATCH] mm: fix kernel NULL pointer dereference in
+ page_vma_mapped_walk
+Content-Language: en-US
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Mike Kravetz <mike.kravetz@oracle.com>, akpm@linux-foundation.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220407064008.71869-1-pizhenwei@bytedance.com>
+ <Yk7tIi4UKjiqQyoF@casper.infradead.org>
+ <Yk7yd5ho2a7jWNfS@casper.infradead.org>
+From:   zhenwei pi <pizhenwei@bytedance.com>
+In-Reply-To: <Yk7yd5ho2a7jWNfS@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 8:51 AM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> =
-wrote:
->
-> From: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
->
-> In order to be able to identify a file exchange with renameat2(2) and
-> RENAME_EXCHANGE, which will be useful for Landlock [1], propagate the
-> rename flags to LSMs.  This may also improve performance because of the
-> switch from two set of LSM hook calls to only one, and because LSMs
-> using this hook may optimize the double check (e.g. only one lock,
-> reduce the number of path walks).
->
-> AppArmor, Landlock and Tomoyo are updated to leverage this change.  This
-> should not change the current behavior (same check order), except
-> (different level of) speed boosts.
->
-> [1] https://lore.kernel.org/r/20220221212522.320243-1-mic@digikod.net
->
-> Cc: James Morris <jmorris@namei.org>
-> Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
-> Cc: Paul Moore <paul@paul-moore.com>
-> Cc: Serge E. Hallyn <serge@hallyn.com>
-> Acked-by: John Johansen <john.johansen@canonical.com>
-> Acked-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Signed-off-by: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
-> Link: https://lore.kernel.org/r/20220329125117.1393824-7-mic@digikod.net
-> ---
->
-> Changes since v1:
-> * Import patch from
->   https://lore.kernel.org/r/20220222175332.384545-1-mic@digikod.net
-> * Add Acked-by: Tetsuo Handa.
-> * Add Acked-by: John Johansen.
-> ---
->  include/linux/lsm_hook_defs.h |  2 +-
->  include/linux/lsm_hooks.h     |  1 +
->  security/apparmor/lsm.c       | 30 +++++++++++++++++++++++++-----
->  security/landlock/fs.c        | 12 ++++++++++--
->  security/security.c           |  9 +--------
->  security/tomoyo/tomoyo.c      | 11 ++++++++++-
->  6 files changed, 48 insertions(+), 17 deletions(-)
-
-Seems like a nice improvement to me, and while I'm not an AppArmor,
-Tomoyo, or Landlock expert the changes looked pretty straightforward.
-
-Reviewed-by: Paul Moore <paul@paul-moore.com>
-
---=20
-paul-moore.com
+On 4/7/22 22:17, Matthew Wilcox wrote:
+> On Thu, Apr 07, 2022 at 02:54:42PM +0100, Matthew Wilcox wrote:
+>> On Thu, Apr 07, 2022 at 02:40:08PM +0800, zhenwei pi wrote:
+>>> size_to_hstate(4K) returns NULL pointer, this leads kernel BUG in
+>>> function page_vma_mapped_walk.
+>>
+>> Yes, I think this is the right fix.  It's not immediately obvious from
+>> the bug and the patch, but what's going on is:
+>>
+>> page_mapped_in_vma() sets nr_pages to 1.  This is correct because we
+>> usually only want to know about the precise page, and not about the
+>> folio containing it.  But hugetlbfs is special (... in so many ways ...)
+>> and actually wants to work on the entire folio.  We could set nr_pages
+>> specially for hugetlb pages, but it's better to ignore it in
+>> page_vma_mapped_walk() for the hugetlb case.
+>>
+>> I'll fix up the changelog and add it to my pile of fixes that I'm
+>> sending tomorrow.
+>> https://git.infradead.org/users/willy/pagecache.git/shortlog/refs/heads/for-next
+> 
+> I looked over the patch in context, and realised we now don't need to
+> call size_to_hstate since we're getting the hstate from the VMA.
+> 
+> https://git.infradead.org/users/willy/pagecache.git/commitdiff/98ea02597b9967c0817d29fee2f96d21b9e59ca5
+> 
+Thanks!
+-- 
+zhenwei pi
