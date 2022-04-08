@@ -2,74 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D977C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B71EC43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:15:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237960AbiDHQQm convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 12:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38142 "EHLO
+        id S233130AbiDHQRI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 12:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237821AbiDHQQC (ORCPT
+        with ESMTP id S238051AbiDHQRA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 12:16:02 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5528BE09E
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 09:13:52 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1ncrEz-0004it-3M; Fri, 08 Apr 2022 18:13:41 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
-        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, wefu@redhat.com,
-        liush@allwinnertech.com, guoren@kernel.org, atishp@atishpatra.org,
-        anup@brainfault.org, drew@beagleboard.org, hch@lst.de,
-        arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
-        gfavor@ventanamicro.com, andrea.mondelli@huawei.com,
-        behrensj@mit.edu, xinhaoqu@huawei.com, mick@ics.forth.gr,
-        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
-        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
-        philipp.tomsich@vrull.eu
-Subject: Re: [PATCH v8 10/14] riscv: add cpufeature handling via alternatives
-Date:   Fri, 08 Apr 2022 18:13:39 +0200
-Message-ID: <5557228.DvuYhMxLoT@diego>
-In-Reply-To: <20220331100139.GG23422@lst.de>
-References: <20220324000710.575331-1-heiko@sntech.de> <20220324000710.575331-11-heiko@sntech.de> <20220331100139.GG23422@lst.de>
+        Fri, 8 Apr 2022 12:17:00 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08EE357734
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 09:14:55 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id j9so7821677lfe.9
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 09:14:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/SWSieq/x4paIxvEX4XMyhkbxR8UMVfWRh7r/9jR+Cc=;
+        b=moYf/PvSTIAmgGtZ+zmxrAouvxxE7YzhW3XrtHMUlrC6jl8mjoFVA8NVKnxUAWV6Ic
+         xmG0mdHpBPdfE0wve8IIrNUNIcBeIVsB4AQKsYJg4qMovdmIh+iyrKC2sJvPITqHzWFo
+         mfeOXwe4sGQlMymEKFeyAeBnwv+7Ivv+36QDjwFCxJs6V8KBLbxLHmOBdN5Wnt3d5+k4
+         09CUrE8g69fwD4szHruGk5hYv5pkkAJlrmvru7YYzka0hDNzY30yksYjmCcZks4bm7nD
+         I3gHb1fqk+aByJnM1JzQ6mpAOQ0fyywFDuekhO+27hHHyrd6nwOpwrfTHNv7EWdhdtfK
+         80ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/SWSieq/x4paIxvEX4XMyhkbxR8UMVfWRh7r/9jR+Cc=;
+        b=seOU8mLcYbDb1Sssb/mYis955aCixpZDcOXxyNnTA7lI1GvJBfV5g8e7V6/mL+xJVw
+         LuswHkAnx+ez5UEfyy73Oxp/jM6QEU8aqtkbDct9QBsJ9OKM5mVUwHtfuP/KgQOl046t
+         hJy5+2ZPcTLXN5tGRlZZI5Rn5adRNnV/2pQ+AFGpzR1R5zn/4lzZuYKrqJmcFbKQazwW
+         17ve2CCFOFg1cyreD2pBt3f1bfy1myd095ZA9unYaVYhnpfWl7y6x4Av9OybQ0fTcj4T
+         9H2EGMa/6l4akHWGiMojvq8irXU3YmpteTWS9nnT8n5Y8nydlQLcgAs8LoSGGH5zTozV
+         jZ+w==
+X-Gm-Message-State: AOAM531+L8mYjAAJY78PD0HuS/lTX/AnP8QsrEE1aj1SY7IRSl83vICX
+        mbZPQA4bdwbJEMl6bqBaK9LVnQ==
+X-Google-Smtp-Source: ABdhPJzwJcWy7YoPs+RM0xo8q4ohRQtmoCIFwBex9mQ/bLJoDJNhH9ND1g6yAXGxb79Kdi7PxaQnbA==
+X-Received: by 2002:ac2:5448:0:b0:46b:877e:9c1e with SMTP id d8-20020ac25448000000b0046b877e9c1emr2028009lfn.326.1649434494149;
+        Fri, 08 Apr 2022 09:14:54 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id q22-20020a194316000000b0044a93059aa9sm2492444lfa.260.2022.04.08.09.14.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 09:14:53 -0700 (PDT)
+Message-ID: <94da2c97-2ad2-4575-bd73-d66ad989e17b@linaro.org>
+Date:   Fri, 8 Apr 2022 19:14:52 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v6 5/8] drm/msm/dp: prevent multiple votes for dp
+ resources
+Content-Language: en-GB
+To:     Doug Anderson <dianders@chromium.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        quic_aravindh@quicinc.com
+References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1648656179-10347-6-git-send-email-quic_sbillaka@quicinc.com>
+ <CAD=FV=Wn-XypjRcw-D0VtBHZbuTz=RHiMq6RCHCa=CWmZM42nQ@mail.gmail.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <CAD=FV=Wn-XypjRcw-D0VtBHZbuTz=RHiMq6RCHCa=CWmZM42nQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christoph,
-
-Am Donnerstag, 31. März 2022, 12:01:39 CEST schrieb Christoph Hellwig:
-> Can you please fold the somewhat confusingly named vendor patching
-> into this instead of keeping that magic standalone function pointer
-> mess?
-
-I'm not sure it's what you meant, but I did merge patches 10+11
-(cpufeatures + svpbmt), as having them separate created build 
-warnings / errors, when a bisected build happens (aka up to patch10
-but without patch11)
-
-The vendor-patch-func got an overhaul in patch13
-"riscv: don't use global static vars to store alternative data"
-
-
-> > +static const struct cpufeature_info __initdata_or_module cpufeature_list[CPUFEATURE_NUMBER] = {
-> > +};
+On 01/04/2022 02:23, Doug Anderson wrote:
+> Hi,
 > 
-> Overly lone line.
+> On Wed, Mar 30, 2022 at 9:04 AM Sankeerth Billakanti
+> <quic_sbillaka@quicinc.com> wrote:
+>>
+>> The aux_bus support with the dp_display driver will enable the dp
+>> resources during msm_dp_modeset_init. The host_init has to return early
+>> if the core is already initialized to prevent putting an additional vote
+>> for the dp controller resources.
+>>
+>> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+>> ---
+>>   drivers/gpu/drm/msm/dp/dp_display.c | 10 ++++++++++
+>>   1 file changed, 10 insertions(+)
+> 
+> I'm not a huge fan of this but I'll leave it up to Dmitry. In general
+> it feels like there should be _a_ place that enables these resources.
+> Checks like this make it feel like we just scattershot enabling
+> resources in a bunch of random places instead of coming up with the
+> design for enabling them in the right place.
 
-ok, I'll wrap that line
+I'd prefer to see a check for eDP in dp_display_config_hpd(). Or even 
+better to see that this function isn't called for eDP at all.
+
+> 
+> In any case, if we do end up landing this patch, it sure feels like it
+> needs to move earlier in the patch series, right? This patch shouldn't
+> hurt even without the other patches in the series but if you apply the
+> earlier patches in the series without this one then you'll have a bug,
+> right? That means this needs to come earlier.
+> 
+> -Doug
 
 
-Heiko
-
-
+-- 
+With best wishes
+Dmitry
