@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E580C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 980A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229725AbiDHHUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 03:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58412 "EHLO
+        id S229761AbiDHHUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 03:20:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiDHHU1 (ORCPT
+        with ESMTP id S229454AbiDHHU2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 03:20:27 -0400
+        Fri, 8 Apr 2022 03:20:28 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C076D21FC62;
-        Fri,  8 Apr 2022 00:18:24 -0700 (PDT)
-Received: from kwepemi500009.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZV110VXTzgY8K;
-        Fri,  8 Apr 2022 15:16:37 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1662421FF50;
+        Fri,  8 Apr 2022 00:18:25 -0700 (PDT)
+Received: from kwepemi500005.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZV2V04KlzdZm7;
+        Fri,  8 Apr 2022 15:17:53 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500009.china.huawei.com (7.221.188.199) with Microsoft SMTP Server
+ kwepemi500005.china.huawei.com (7.221.188.179) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Apr 2022 15:18:22 +0800
+ 15.1.2375.24; Fri, 8 Apr 2022 15:18:23 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 8 Apr 2022 15:18:21 +0800
+ 15.1.2308.21; Fri, 8 Apr 2022 15:18:22 +0800
 From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
         <mkubecek@suse.cz>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>, <wangjie125@huawei.com>
-Subject: [PATCH net-next 0/3] net: ethool: add support to get/set tx push by ethtool -G/g
-Date:   Fri, 8 Apr 2022 15:12:42 +0800
-Message-ID: <20220408071245.40554-1-huangguangbin2@huawei.com>
+Subject: [PATCH net-next 2/3] net: ethtool: move checks before rtnl_lock() in ethnl_set_rings
+Date:   Fri, 8 Apr 2022 15:12:44 +0800
+Message-ID: <20220408071245.40554-3-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220408071245.40554-1-huangguangbin2@huawei.com>
+References: <20220408071245.40554-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -49,46 +51,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jie Wang <wangjie125@huawei.com>
 
-These three patches add tx push in ring params and adapt the set and get APIs
-of ring params.
+Currently these two checks in ethnl_set_rings are added after rtnl_lock()
+which will do useless works if the request is invalid.
 
-ChangeLog:
+So this patch moves these checks before the rtnl_lock() to avoid these
+costs.
 
-RFC V4->V1
-1.Add detailed description about the tx push mode
-2.Modify the patch subject title
-link: https://lore.kernel.org/netdev/20220331084342.27043-1-wangjie125@huawei.com/
+Signed-off-by: Jie Wang <wangjie125@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ net/ethtool/rings.c | 38 ++++++++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 18 deletions(-)
 
-RFC V3->RFC V4
-1.Put three request checks before rtnl_lock() in ethnl_set_rings
-2.Add tx push feature description in Documentation/networking/ethtool-netlink.rst
-3.Use netdev_dbg to track changes in hns3_set_tx_push
-link: https://lore.kernel.org/netdev/20220329091913.17869-1-wangjie125@huawei.com/
-
-RFC V2->RFC V3
-1.Add tx push documentation in Documentation/networking/ethtool-netlink.rst
-2.Use u8 to store tx push in struct kernel_ethtool_ringparam
-3.Add ETHTOOL_RING_USE_TX_PUSH to reject setting for unsupported driver
-4.Use NLA_POLICY_MAX(NLA_U8, 1) to limit the tx push value
-link: https://lore.kernel.org/netdev/20220326085102.14111-1-wangjie125@huawei.com/
-
-RFC V1->RFC V2
-1.Extend tx push param in ringparam, suggested by Jakub Kicinski.
-link: https://lore.kernel.org/netdev/20220315032108.57228-1-wangjie125@huawei.com/
-
-Jie Wang (3):
-  net: ethtool: extend ringparam set/get APIs for tx_push
-  net: ethtool: move checks before rtnl_lock() in ethnl_set_rings
-  net: hns3: add tx push support in hns3 ring param process
-
- Documentation/networking/ethtool-netlink.rst  |  8 +++
- .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 33 ++++++++++-
- include/linux/ethtool.h                       |  3 +
- include/uapi/linux/ethtool_netlink.h          |  1 +
- net/ethtool/netlink.h                         |  2 +-
- net/ethtool/rings.c                           | 56 ++++++++++++-------
- 6 files changed, 81 insertions(+), 22 deletions(-)
-
+diff --git a/net/ethtool/rings.c b/net/ethtool/rings.c
+index 9ed60c507d97..46415d8fc256 100644
+--- a/net/ethtool/rings.c
++++ b/net/ethtool/rings.c
+@@ -152,6 +152,26 @@ int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
+ 	if (!ops->get_ringparam || !ops->set_ringparam)
+ 		goto out_dev;
+ 
++	if (tb[ETHTOOL_A_RINGS_RX_BUF_LEN] &&
++	    nla_get_u32(tb[ETHTOOL_A_RINGS_RX_BUF_LEN]) != 0 &&
++	    !(ops->supported_ring_params & ETHTOOL_RING_USE_RX_BUF_LEN)) {
++		ret = -EOPNOTSUPP;
++		NL_SET_ERR_MSG_ATTR(info->extack,
++				    tb[ETHTOOL_A_RINGS_RX_BUF_LEN],
++				    "setting rx buf len not supported");
++		goto out_dev;
++	}
++
++	if (tb[ETHTOOL_A_RINGS_CQE_SIZE] &&
++	    nla_get_u32(tb[ETHTOOL_A_RINGS_CQE_SIZE]) &&
++	    !(ops->supported_ring_params & ETHTOOL_RING_USE_CQE_SIZE)) {
++		ret = -EOPNOTSUPP;
++		NL_SET_ERR_MSG_ATTR(info->extack,
++				    tb[ETHTOOL_A_RINGS_CQE_SIZE],
++				    "setting cqe size not supported");
++		goto out_dev;
++	}
++
+ 	if (tb[ETHTOOL_A_RINGS_TX_PUSH] &&
+ 	    !(ops->supported_ring_params & ETHTOOL_RING_USE_TX_PUSH)) {
+ 		ret = -EOPNOTSUPP;
+@@ -201,24 +221,6 @@ int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
+ 		goto out_ops;
+ 	}
+ 
+-	if (kernel_ringparam.rx_buf_len != 0 &&
+-	    !(ops->supported_ring_params & ETHTOOL_RING_USE_RX_BUF_LEN)) {
+-		ret = -EOPNOTSUPP;
+-		NL_SET_ERR_MSG_ATTR(info->extack,
+-				    tb[ETHTOOL_A_RINGS_RX_BUF_LEN],
+-				    "setting rx buf len not supported");
+-		goto out_ops;
+-	}
+-
+-	if (kernel_ringparam.cqe_size &&
+-	    !(ops->supported_ring_params & ETHTOOL_RING_USE_CQE_SIZE)) {
+-		ret = -EOPNOTSUPP;
+-		NL_SET_ERR_MSG_ATTR(info->extack,
+-				    tb[ETHTOOL_A_RINGS_CQE_SIZE],
+-				    "setting cqe size not supported");
+-		goto out_ops;
+-	}
+-
+ 	ret = dev->ethtool_ops->set_ringparam(dev, &ringparam,
+ 					      &kernel_ringparam, info->extack);
+ 	if (ret < 0)
 -- 
 2.33.0
 
