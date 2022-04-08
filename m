@@ -2,126 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD30C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EABCC43219
 	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 09:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233940AbiDHJRw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 05:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42680 "EHLO
+        id S234083AbiDHJR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 05:17:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233095AbiDHJMG (ORCPT
+        with ESMTP id S233072AbiDHJME (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 05:12:06 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FC61F7607;
-        Fri,  8 Apr 2022 02:09:14 -0700 (PDT)
-Date:   Fri, 08 Apr 2022 09:09:12 -0000
+        Fri, 8 Apr 2022 05:12:04 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B3C11F7B0;
+        Fri,  8 Apr 2022 02:09:10 -0700 (PDT)
+Date:   Fri, 08 Apr 2022 09:09:08 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649408953;
+        s=2020; t=1649408949;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Zi5H0FmeD0rF/p1EdJXf8XquvVXnKcXj0MqXRf6skfY=;
-        b=Mpu9JsJyt8y7vbMZMwCo4e+X1AkVhhvSR3XtwkJVc3XcarYeEcd9YQ3mHbj6igVvj9x+Pt
-        Nneo4Y84izVv4ILd6yj3q3dUFaoH01HLFfmLmpp4hGI3f/rKhtxf23hGb6tWTokLKanJht
-        FmwVGbJZh+NCi5PnaBwl8qI0KwqzyeQT5C7zIsT8H6hY9EtBBNQe8cUjFtJ6UPqBlBvir/
-        u8Nh35kxt5byfPjtNjlSQhv55jRwfSIfIE1jETv4L60bLLsqaz48AXshXJGykqSCx9i+ES
-        6IwhbH+N3w5YyvnCYRPLBlmAjK7z1Vjn72NI4JpPXjxC/PjnYsu2xM0eHsQFCg==
+        bh=Evvz/PXDJGJDoyiWegg09d/VEn3ghqS3QJIybSX0JeA=;
+        b=w2Sl4JOrwx82OpEkk3kJeV5+rT5ITfUVMZ05mWVEnB8MyMs4XjkwoC2OUdnkB2Q1KFFaH7
+        BduPvPsKn+n7a7JTSxfCk8gVnMTcuEgr39t4TJyuMGq129RPho4iE180Fo3klafcbJ8LmA
+        gu0J4JDsTvFzYdno4gtMJHF6RUvcRfYOROD7TunJPYorqTomp/jVYFwijCirG9sBhqCEHT
+        PzWJBFMFyBznhZloO+FAll6Cc9lwled6LxwPnaKKQ638eTm1ojPk5Jzgf/GqmYa+9MLOEc
+        IOIeb++P6erCPl3hLC55GWoUvBScLa1vrRcCCqctufOKXCDzKvo3Y0Rb1gytkQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649408953;
+        s=2020e; t=1649408949;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Zi5H0FmeD0rF/p1EdJXf8XquvVXnKcXj0MqXRf6skfY=;
-        b=rmf6TOZXU5mxZ/FTWq8SNAq6hWhqgPQiB1t2LAIT4GO0XgQMXTO2M12wgoDE40O4eRGgiC
-        icGrE+U4shGalCDg==
-From:   "tip-bot2 for Michael Roth" <tip-bot2@linutronix.de>
+        bh=Evvz/PXDJGJDoyiWegg09d/VEn3ghqS3QJIybSX0JeA=;
+        b=MDbB+4ey4sNoKpqzTBr/crZIQ5rvcwGowAeNkNV928SLGWjT+XFSgRVorEXRDbcev6g3Rk
+        qG07Jqs13uiAGIBA==
+From:   "tip-bot2 for Brijesh Singh" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/sev] x86/sev: Detect/setup SEV/SME features earlier in boot
-Cc:     Michael Roth <michael.roth@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
+Subject: [tip: x86/sev] x86/sev: Add a helper for the PVALIDATE instruction
+Cc:     Brijesh Singh <brijesh.singh@amd.com>,
         Borislav Petkov <bp@suse.de>,
         Venu Busireddy <venu.busireddy@oracle.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220307213356.2797205-9-brijesh.singh@amd.com>
-References: <20220307213356.2797205-9-brijesh.singh@amd.com>
+In-Reply-To: <20220307213356.2797205-14-brijesh.singh@amd.com>
+References: <20220307213356.2797205-14-brijesh.singh@amd.com>
 MIME-Version: 1.0
-Message-ID: <164940895248.389.16682272531971510638.tip-bot2@tip-bot2>
+Message-ID: <164940894813.389.3850536396114238497.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/sev branch of tip:
 
-Commit-ID:     bcce829083339bf862d66df602cbb111943da8fb
-Gitweb:        https://git.kernel.org/tip/bcce829083339bf862d66df602cbb111943da8fb
-Author:        Michael Roth <michael.roth@amd.com>
-AuthorDate:    Wed, 09 Feb 2022 12:10:02 -06:00
+Commit-ID:     0bd6f1e526070271dbe0f626b123b4f6b01dc79c
+Gitweb:        https://git.kernel.org/tip/0bd6f1e526070271dbe0f626b123b4f6b01=
+dc79c
+Author:        Brijesh Singh <brijesh.singh@amd.com>
+AuthorDate:    Wed, 09 Feb 2022 12:10:07 -06:00
 Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Wed, 06 Apr 2022 13:02:26 +02:00
+CommitterDate: Wed, 06 Apr 2022 13:10:30 +02:00
 
-x86/sev: Detect/setup SEV/SME features earlier in boot
+x86/sev: Add a helper for the PVALIDATE instruction
 
-sme_enable() handles feature detection for both SEV and SME. Future
-patches will also use it for SEV-SNP feature detection/setup, which
-will need to be done immediately after the first #VC handler is set up.
-Move it now in preparation.
+An SNP-active guest uses the PVALIDATE instruction to validate or
+rescind the validation of a guest page=E2=80=99s RMP entry. Upon completion, a
+return code is stored in EAX and rFLAGS bits are set based on the return
+code. If the instruction completed successfully, the carry flag (CF)
+indicates if the content of the RMP were changed or not.
 
-Signed-off-by: Michael Roth <michael.roth@amd.com>
+See AMD APM Volume 3 for additional details.
+
 Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Venu Busireddy <venu.busireddy@oracle.com>
-Link: https://lore.kernel.org/r/20220307213356.2797205-9-brijesh.singh@amd.com
+Link: https://lore.kernel.org/r/20220307213356.2797205-14-brijesh.singh@amd.c=
+om
 ---
- arch/x86/kernel/head64.c  |  3 ---
- arch/x86/kernel/head_64.S | 13 +++++++++++++
- 2 files changed, 13 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/sev.h | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
-index 4f5ecbb..cbc285d 100644
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -192,9 +192,6 @@ unsigned long __head __startup_64(unsigned long physaddr,
- 	if (load_delta & ~PMD_PAGE_MASK)
- 		for (;;);
- 
--	/* Activate Secure Memory Encryption (SME) if supported and enabled */
--	sme_enable(bp);
--
- 	/* Include the SME encryption mask in the fixup value */
- 	load_delta += sme_get_me_mask();
- 
-diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index b8e3019..6bf340c 100644
---- a/arch/x86/kernel/head_64.S
-+++ b/arch/x86/kernel/head_64.S
-@@ -69,6 +69,19 @@ SYM_CODE_START_NOALIGN(startup_64)
- 	call	startup_64_setup_env
- 	popq	%rsi
- 
-+#ifdef CONFIG_AMD_MEM_ENCRYPT
-+	/*
-+	 * Activate SEV/SME memory encryption if supported/enabled. This needs to
-+	 * be done now, since this also includes setup of the SEV-SNP CPUID table,
-+	 * which needs to be done before any CPUID instructions are executed in
-+	 * subsequent code.
-+	 */
-+	movq	%rsi, %rdi
-+	pushq	%rsi
-+	call	sme_enable
-+	popq	%rsi
-+#endif
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index 17b75f6..4ee9897 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -60,6 +60,9 @@ extern void vc_no_ghcb(void);
+ extern void vc_boot_ghcb(void);
+ extern bool handle_vc_boot_ghcb(struct pt_regs *regs);
+=20
++/* Software defined (when rFlags.CF =3D 1) */
++#define PVALIDATE_FAIL_NOUPDATE		255
 +
- 	/* Now switch to __KERNEL_CS so IRET works reliably */
- 	pushq	$__KERNEL_CS
- 	leaq	.Lon_kernel_cs(%rip), %rax
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+ extern struct static_key_false sev_es_enable_key;
+ extern void __sev_es_ist_enter(struct pt_regs *regs);
+@@ -87,12 +90,30 @@ extern enum es_result sev_es_ghcb_hv_call(struct ghcb *gh=
+cb,
+ 					  struct es_em_ctxt *ctxt,
+ 					  u64 exit_code, u64 exit_info_1,
+ 					  u64 exit_info_2);
++static inline int pvalidate(unsigned long vaddr, bool rmp_psize, bool valida=
+te)
++{
++	bool no_rmpupdate;
++	int rc;
++
++	/* "pvalidate" mnemonic support in binutils 2.36 and newer */
++	asm volatile(".byte 0xF2, 0x0F, 0x01, 0xFF\n\t"
++		     CC_SET(c)
++		     : CC_OUT(c) (no_rmpupdate), "=3Da"(rc)
++		     : "a"(vaddr), "c"(rmp_psize), "d"(validate)
++		     : "memory", "cc");
++
++	if (no_rmpupdate)
++		return PVALIDATE_FAIL_NOUPDATE;
++
++	return rc;
++}
+ #else
+ static inline void sev_es_ist_enter(struct pt_regs *regs) { }
+ static inline void sev_es_ist_exit(void) { }
+ static inline int sev_es_setup_ap_jump_table(struct real_mode_header *rmh) {=
+ return 0; }
+ static inline void sev_es_nmi_complete(void) { }
+ static inline int sev_es_efi_map_ghcbs(pgd_t *pgd) { return 0; }
++static inline int pvalidate(unsigned long vaddr, bool rmp_psize, bool valida=
+te) { return 0; }
+ #endif
+=20
+ #endif
