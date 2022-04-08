@@ -2,93 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03531C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 03:49:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B20C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 03:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233987AbiDHDvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 23:51:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60816 "EHLO
+        id S233979AbiDHDwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 23:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233984AbiDHDu7 (ORCPT
+        with ESMTP id S233967AbiDHDwP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 23:50:59 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F707B717A
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 20:48:57 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id om8-20020a17090b3a8800b001c68e7ccd5fso6949082pjb.9
-        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 20:48:57 -0700 (PDT)
+        Thu, 7 Apr 2022 23:52:15 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0CB2AF1
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 20:50:12 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id d15so6800422pll.10
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 20:50:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=FMxGJmiB5e6OzoXdsa0gQOrUzVf6+RM/u+nhhwmi1kk=;
-        b=hm19arxpl/SU0iKf7/rYndp6fQcuitlvV+EWEfUK+SO7h84og7K6BK6obvHjeOO0UZ
-         zkiR3a7LbnhQ4jOVd6TphIiV9u9GgO2vQzsLLqeWOlXd1+4BoVQ9fCbBiT5nqRytv/3y
-         2Fzd5hvsY2aus3IZ1n1anlEKwfCNU//7TkvCPM5wNbdOJAhj9T3mYlLLAtktIoqNTvie
-         MqxeVYL+BYInfOwYCLL6drgeHiCz5Sw2Mg4+Po9yBAaj9Egd+/tnkyxQBkVQMxfDOpVD
-         urZXvT5dJiDjzaDNz4UQOmq7oci7CDnPekqCfN8JP77Z+QmRnY9+pGMfSAMtTSQymygg
-         GX5w==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Yri1+dD9YTtfEYoo0sek4XbFS6BxTvyBbf5TNk3U90o=;
+        b=WODuTTNn47Q2SBC5Dxw0wpqxb9ydKvbKEXjfJrxlphLYM5jZo75Ao+s4Rp4Jnct4Ri
+         JKRnje18SncYap4SF6hKm1LHj/Jg8MJU2H+lusXwU77kDdI+f6PP+/qsm6kYd1tjKoZC
+         H6lAmkjBN/Mx3Jj9Y3t3HJVdJIkH/ZWSAqJf/IafIxNN8g4yntO9wmPOh2S1tjCwFQN9
+         bRpodm0/QpjyG4eHxDjVOKLWfn6FQK56DkJi51tdUVDkJIbxIC9+4hjDWa8oE2IgOKQY
+         OazY8XwIprG+ry6nOk4zX4e8QQBd+yU45fnp5+3ynOyC9+mKx6WGq78m/5whGjA4JMIY
+         TLeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=FMxGJmiB5e6OzoXdsa0gQOrUzVf6+RM/u+nhhwmi1kk=;
-        b=UC3/W6OWweFrGcLbwRc9p+ve9+IOYAbAow8Qqsegjn4llJNxIOWkfttcULlk2DQLq5
-         u/AvKesAgBIXQA5x2BQy9+BuEvZT+6aXDcOzdnpaeBfs1NKb2afssNIuR9G9dgg0IDJJ
-         IKY2toZzAnakicCT2I3DX2NDCJzPyDhSixqmEIaHpTw8ESKPlp8U4zHFyxBoMMo/2LR1
-         JP01Dj5SxzUtjOlHrtkVo0hCR53cX7yvB14cp2mzidafSL0EgWDK3itJpQUpJQg5VhnT
-         lSUNewmqSAbe1E4ry3oxar56Sgq+4WogcXkLoGt6RwggTjjN3mvYcyrqlMOZVeUzlu4a
-         GTpQ==
-X-Gm-Message-State: AOAM531Ylow9neQ7l56lnGzhVSuo2kLC3BNVkeKqOs4nsjYB2d0hxfk0
-        xpYL7bA0Q0eWdt2RIkLoRRD4Nm2n62APFg==
-X-Google-Smtp-Source: ABdhPJx40q7xJ1d2dxEvQY/q+dodN34WiwwswNFTlP4A3FL8EJTbTurik/oaDhbNqE4hAIxdP9Y2/0ie2tMIiw==
-X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
- (user=davidgow job=sendgmr) by 2002:a05:6a00:3406:b0:505:7a1c:c553 with SMTP
- id cn6-20020a056a00340600b005057a1cc553mr1878476pfb.2.1649389736628; Thu, 07
- Apr 2022 20:48:56 -0700 (PDT)
-Date:   Fri,  8 Apr 2022 11:48:48 +0800
-In-Reply-To: <20220407223019.2066361-1-dlatypov@google.com>
-Message-Id: <20220408034848.2081355-1-davidgow@google.com>
-Mime-Version: 1.0
-References: <20220407223019.2066361-1-dlatypov@google.com>
-X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH] kunit: tool: Print a total count of tests.
-From:   David Gow <davidgow@google.com>
-To:     Daniel Latypov <dlatypov@google.com>, brendanhiggins@google.com,
-        skhan@linuxfoundation.org
-Cc:     David Gow <davidgow@google.com>, linux-kernel@vger.kernel.org,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Yri1+dD9YTtfEYoo0sek4XbFS6BxTvyBbf5TNk3U90o=;
+        b=TVjsgNbUffSdgdLyqnBPDEgwmOdQ9x5UOzfmME0w/abxnY44lPuRg7SnXAJFcKRnP/
+         gAnr3TwUnYsYljOYpilwuW5YElNKvRcZqG/cxjTr5/zAqlm0YxWpCwdMffs/14k82zDt
+         Bm15Ermj0bg4nF5gExdCwzkGYzurDIsLCLcG8c4aTtUQXsOp+F4oZvXGpxrfjlFN1lqE
+         pH49TzSSLhwrK6327Qyyi6bbwfxPJF/9nxcPi3ZapwpoxtXVlNIbtGG2qYNeKao6gKUT
+         66kOAdlbgdrftNdZQCKe/cIwiqqi8V3TucI+Nf9D39A6gPzwZrz8ThZJ/4yFn+AFMCh1
+         sKtA==
+X-Gm-Message-State: AOAM530k+RvDbSybnOTObUqxN5q5noJU1uX3Uk3zbW5MybENl0m3c6XI
+        z0zyz9cWyHFlVXkp0oOXl5RuNg==
+X-Google-Smtp-Source: ABdhPJxJhrpv+/5wGqS06IUZyOqAj6WaVRKhTM/L7ukRNxpkiNA7K2w4rulR6PU9LDEe/khCqVIi2w==
+X-Received: by 2002:a17:90a:6389:b0:1c9:ee11:6c2c with SMTP id f9-20020a17090a638900b001c9ee116c2cmr19697230pjj.107.1649389812176;
+        Thu, 07 Apr 2022 20:50:12 -0700 (PDT)
+Received: from [10.255.182.146] ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id s31-20020a056a001c5f00b00504e93e536bsm4201026pfw.97.2022.04.07.20.50.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 20:50:11 -0700 (PDT)
+Message-ID: <cffbad48-db3b-e99b-11b3-7956ed460fb2@bytedance.com>
+Date:   Fri, 8 Apr 2022 11:50:05 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [PATCH] percpu_ref: call wake_up_all() after percpu_ref_put()
+ completes
+Content-Language: en-US
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     dennis@kernel.org, tj@kernel.org, cl@linux.com,
+        akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, zhouchengming@bytedance.com
+References: <20220407103335.36885-1-zhengqi.arch@bytedance.com>
+ <Yk+kAUwxZx1JhxIu@FVFYT0MHHV2J.usts.net>
+From:   Qi Zheng <zhengqi.arch@bytedance.com>
+In-Reply-To: <Yk+kAUwxZx1JhxIu@FVFYT0MHHV2J.usts.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a count of the total number of tests run (including skipped tests,
-which do run a little bit until they decide to skip themselves) to the
-summary line.
 
-Signed-off-by: David Gow <davidgow@google.com>
----
 
-This patch depends on:
-https://lore.kernel.org/linux-kselftest/20220407223019.2066361-1-dlatypov@google.com/
+On 2022/4/8 10:54 AM, Muchun Song wrote:
+> On Thu, Apr 07, 2022 at 06:33:35PM +0800, Qi Zheng wrote:
+>> In the percpu_ref_call_confirm_rcu(), we call the wake_up_all()
+>> before calling percpu_ref_put(), which will cause the value of
+>> percpu_ref to be unstable when percpu_ref_switch_to_atomic_sync()
+>> returns.
+>>
+>> 	CPU0				CPU1
+>>
+>> percpu_ref_switch_to_atomic_sync(&ref)
+>> --> percpu_ref_switch_to_atomic(&ref)
+>>      --> percpu_ref_get(ref);	/* put after confirmation */
+>> 	call_rcu(&ref->data->rcu, percpu_ref_switch_to_atomic_rcu);
+>>
+>> 					percpu_ref_switch_to_atomic_rcu
+>> 					--> percpu_ref_call_confirm_rcu
+>> 					    --> data->confirm_switch = NULL;
+>> 						wake_up_all(&percpu_ref_switch_waitq);
+>>
+>>      /* here waiting to wake up */
+>>      wait_event(percpu_ref_switch_waitq, !ref->data->confirm_switch);
+>> 						(A)percpu_ref_put(ref);
+>> /* The value of &ref is unstable! */
+>> percpu_ref_is_zero(&ref)
+>> 						(B)percpu_ref_put(ref);
+>>
+>> As shown above, assuming that the counts on each cpu add up to 0 before
+>> calling percpu_ref_switch_to_atomic_sync(), we expect that after switching
+>> to atomic mode, percpu_ref_is_zero() can return true. But actually it will
+>> return different values in the two cases of A and B, which is not what
+>> we expected.
+>>
+>> Maybe the original purpose of percpu_ref_switch_to_atomic_sync() is
+>> just to ensure that the conversion to atomic mode is completed, but it
+>> should not return with an extra reference count.
+>>
+>> Calling wake_up_all() after percpu_ref_put() ensures that the value of
+>> percpu_ref is stable after percpu_ref_switch_to_atomic_sync() returns.
+>> So just do it.
+>>
+>> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+> 
+> Are any users affected by this?  If so, I think a Fixes tag
+> is necessary.
 
- tools/testing/kunit/kunit_parser.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Looks all current users(blk_pre_runtime_suspend() and set_in_sync()) are
+affected by this.
 
-diff --git a/tools/testing/kunit/kunit_parser.py b/tools/testing/kunit/kunit_parser.py
-index 957907105429..da01998d29b1 100644
---- a/tools/testing/kunit/kunit_parser.py
-+++ b/tools/testing/kunit/kunit_parser.py
-@@ -96,7 +96,7 @@ class TestCounts:
- 		"""
- 		statuses = [('Passed', self.passed), ('Failed', self.failed),
- 			('Crashed', self.crashed), ('Skipped', self.skipped),
--			('Errors', self.errors)]
-+			('Errors', self.errors), ('Total', self.total())]
- 		return ', '.join('{}: {}'.format(s, n) for s, n in statuses if n > 0)
- 
- 	def total(self) -> int:
+I see that this patch has been merged into the mm tree, can Andrew help
+me add the following Fixes tag?
+
+Fixes: 490c79a65708 ("percpu_ref: decouple switching to atomic mode and 
+killing")
+
+Thanks,
+Qi
+
+> 
+> The fix LGTM.
+> 
+> Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+> 
+> Thanks.
+> 
+
 -- 
-2.35.1.1178.g4f1659d476-goog
-
+Thanks,
+Qi
