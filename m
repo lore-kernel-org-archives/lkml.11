@@ -2,77 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B576C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B501C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239835AbiDHVQ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 17:16:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43506 "EHLO
+        id S234677AbiDHVUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 17:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234497AbiDHVQX (ORCPT
+        with ESMTP id S232085AbiDHVUR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 17:16:23 -0400
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C186B1F1A33;
-        Fri,  8 Apr 2022 14:14:17 -0700 (PDT)
-Received: by mail-oi1-f175.google.com with SMTP id e189so10088566oia.8;
-        Fri, 08 Apr 2022 14:14:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9Tc3XXM6T26cLJDRJT1w68etcxZftwSAgCt/NjXltQo=;
-        b=EjzgUWzG2yU+98dr1fotRjkqnK6qtev/fM9JXWEyO9kWs1yR5rEy0qPjyjqq36oniQ
-         991vHMKRUSsppthdJN7KbAiKe6Q04XWG6UKzdPoVT8cL8mgHdP5Ro31C3n2EJ5Cdo4Rs
-         emh9eJwph7EakR4CufiAtjC0eRVnOzJSJTIVooQtTu+5CZ/J9rZkfe/cflQp48ifvvA9
-         Ux4oaXGEFT0T8FxOaKdjIGQ3vb2eGIoPy2EIm+xl9WFCC/Cq+OFyPBhmnBYe9N8IFLXJ
-         KEgRMNaf2GY0wZNRCEx1Q6rwJppFcVcLbA07KaEW0s3AItmnVZ/qh2keBBPdo1Q0fHek
-         GbLQ==
-X-Gm-Message-State: AOAM530VwZPHLgPE6lDZ90JZ6ZUdMKV9o2h4ws/074QyUtRG6JVbQ3Qr
-        NPwlGmE4WMi0+aXZBCcVJg==
-X-Google-Smtp-Source: ABdhPJwK4Y7u4p0AFkL1EdbT9D61xaGyiGUvCy1FpfxUCO8XI1IhG3AqBLfxL2vh32v7tLkUDlBO+Q==
-X-Received: by 2002:a05:6808:3ad:b0:2d9:fc59:ef0e with SMTP id n13-20020a05680803ad00b002d9fc59ef0emr794994oie.266.1649452457107;
-        Fri, 08 Apr 2022 14:14:17 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o2-20020a05687072c200b000d9ae3e1fabsm9182221oak.12.2022.04.08.14.14.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 14:14:16 -0700 (PDT)
-Received: (nullmailer pid 4077853 invoked by uid 1000);
-        Fri, 08 Apr 2022 21:14:16 -0000
-Date:   Fri, 8 Apr 2022 16:14:16 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@st.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 13/14] dt-bindings: reset: st,sti-powerdown: Convert to
- yaml
-Message-ID: <YlClqPWJpqypRmnL@robh.at.kernel.org>
-References: <20220407154338.4190674-1-p.zabel@pengutronix.de>
- <20220407154338.4190674-13-p.zabel@pengutronix.de>
+        Fri, 8 Apr 2022 17:20:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939821C1E73
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 14:18:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 046A561FAD
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 21:18:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFF43C385A5;
+        Fri,  8 Apr 2022 21:18:10 +0000 (UTC)
+Date:   Fri, 8 Apr 2022 17:18:08 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Jeff Xie <xiehuan09@gmail.com>
+Cc:     mingo@redhat.com, mhiramat@kernel.org, zanussi@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] tracing: make tp_printk work on syscall tracepoints
+Message-ID: <20220408171808.762c5c8b@gandalf.local.home>
+In-Reply-To: <20220329163931.710555-4-xiehuan09@gmail.com>
+References: <20220329163931.710555-1-xiehuan09@gmail.com>
+        <20220329163931.710555-4-xiehuan09@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407154338.4190674-13-p.zabel@pengutronix.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 07 Apr 2022 17:43:37 +0200, Philipp Zabel wrote:
-> Convert the device tree bindings for the STMicroelectronics STi
-> Peripheral Powerdown reset controller to YAML schema to allow
-> participating in DT validation.
-> 
-> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-> Cc: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-> ---
->  .../bindings/reset/st,sti-powerdown.txt       | 45 -----------------
->  .../bindings/reset/st,stih407-powerdown.yaml  | 49 +++++++++++++++++++
->  2 files changed, 49 insertions(+), 45 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/reset/st,sti-powerdown.txt
->  create mode 100644 Documentation/devicetree/bindings/reset/st,stih407-powerdown.yaml
-> 
+On Wed, 30 Mar 2022 00:39:31 +0800
+Jeff Xie <xiehuan09@gmail.com> wrote:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+First, patch 1 and 2 can be folded into this patch. Making something
+"available for future use" is not a reason to break up patches. It will not
+help in bisecting, and its not something to be backported.
+
+Next, the tracing subsystem follows the "Capitalize first letter" for
+subjects:
+
+ "tracing: Make tp_printk work on syscall tracepoints"
+
+> Adding printk for syscall tracepoints for the tp_printk work.
+
+Need to add much more content to the above. Your cover letter would work.
+
+    Currently the tp_printk option has no effect on syscall tracepoint.
+    When adding the kernel option parameter tp_printk, then:
+
+    echo 1 > /sys/kernel/debug/tracing/events/syscalls/enable
+
+    When running any application, no trace information is printed on the
+    terminal.
+
+    Now added printk for syscall tracepoints.
+
+As commit logs should be self explanatory per commit. The cover letter was,
+but this patch was lacking.
+
+
+> 
+> Signed-off-by: Jeff Xie <xiehuan09@gmail.com>
+> ---
+>  kernel/trace/trace_syscalls.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+> 
+> diff --git a/kernel/trace/trace_syscalls.c b/kernel/trace/trace_syscalls.c
+> index f755bde42fd0..9798122166d3 100644
+> --- a/kernel/trace/trace_syscalls.c
+> +++ b/kernel/trace/trace_syscalls.c
+> @@ -290,6 +290,25 @@ static int __init syscall_enter_define_fields(struct trace_event_call *call)
+>  	return ret;
+>  }
+>  
+> +static void syscall_output_printk(struct trace_entry *ent,
+> +		struct trace_event_file *trace_file, struct trace_array *tr)
+> +{
+> +	unsigned long flags;
+> +	struct trace_iterator *iter = tracepoint_print_iter;
+> +	struct trace_event *event = &trace_file->event_call->event;
+> +
+> +	spin_lock_irqsave(&tracepoint_iter_lock, flags);
+> +
+> +	trace_seq_init(&iter->seq);
+> +	iter->ent = ent;
+> +	iter->tr = tr;
+> +	event->funcs->trace(iter, 0, event);
+> +	trace_seq_putc(&iter->seq, 0);
+> +	pr_info("%s", iter->seq.buffer);
+> +
+> +	spin_unlock_irqrestore(&tracepoint_iter_lock, flags);
+> +}
+> +
+>  static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
+>  {
+>  	struct trace_array *tr = data;
+> @@ -333,6 +352,9 @@ static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
+>  	syscall_get_arguments(current, regs, args);
+>  	memcpy(entry->args, args, sizeof(unsigned long) * sys_data->nb_args);
+>  
+> +	if (static_key_false(&tracepoint_printk_key.key))
+> +		syscall_output_printk(&entry->ent, trace_file, tr);
+> +
+>  	event_trigger_unlock_commit(trace_file, buffer, event, entry,
+>  				    trace_ctx);
+
+
+>  }
+> @@ -376,6 +398,9 @@ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
+>  	entry->nr = syscall_nr;
+>  	entry->ret = syscall_get_return_value(current, regs);
+>  
+> +	if (static_key_false(&tracepoint_printk_key.key))
+> +		syscall_output_printk(&entry->ent, trace_file, tr);
+> +
+
+Instead of reimplementing the logic, just convert the syscall code to use,
+trace_event_buffer_reserve() and trace_event_buffer_commit(), and then you
+not only get tp_printk() for syscalls, but also other features as well.
+
+-- Steve
+
+
+>  	event_trigger_unlock_commit(trace_file, buffer, event, entry,
+>  				    trace_ctx);
+>  }
+
