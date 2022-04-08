@@ -2,130 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE557C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08855C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229804AbiDHHUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 03:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58440 "EHLO
+        id S229783AbiDHHU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 03:20:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbiDHHU2 (ORCPT
+        with ESMTP id S229671AbiDHHU2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 8 Apr 2022 03:20:28 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636FA21FF6B;
-        Fri,  8 Apr 2022 00:18:25 -0700 (PDT)
-Received: from kwepemi500004.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZV2V2tf8zdZm3;
-        Fri,  8 Apr 2022 15:17:54 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500004.china.huawei.com (7.221.188.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Apr 2022 15:18:23 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 8 Apr 2022 15:18:23 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <mkubecek@suse.cz>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>, <wangjie125@huawei.com>
-Subject: [PATCH net-next 3/3] net: hns3: add tx push support in hns3 ring param process
-Date:   Fri, 8 Apr 2022 15:12:45 +0800
-Message-ID: <20220408071245.40554-4-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220408071245.40554-1-huangguangbin2@huawei.com>
-References: <20220408071245.40554-1-huangguangbin2@huawei.com>
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8798A21FF74
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 00:18:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649402306; x=1680938306;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=9LTlvbPaoYNE/G17yBNjMXG8Hs/vK2YIpRMxwYxU/94=;
+  b=UwJyBDfllJ/guEATzpVsp9dD53s8TnvPK804MkBHfXTPYOl4IfaaGC3x
+   ufuNI404Oksk2r1+AePZys8fjQOqnNnbXQU9IyQKRjnVa7+V5QopsAmA9
+   Jexc7RyrSNLDsTwW7ox6GlXwnRsXGXoaUtPlTTUDv4GrfpOG+IaM0R3xc
+   pVX7cFk99opYBv6RW/I2JYjL8qGH3rPXUW0AbssQ/4YGmV9KFlQqc9DuF
+   BGP0+M6u31syBHaWjXAyylHs5Pq1stHYM9pGMl0CbC9AHnB5QxfIbcHgz
+   W1ABIjdsICLF720kgIIE7rPH2VJ8cp/WsJXPkbbOx5cZqm5aZOnKunEpo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="286521193"
+X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
+   d="scan'208";a="286521193"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 00:18:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
+   d="scan'208";a="621540337"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 08 Apr 2022 00:18:25 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ncisy-00069t-HV;
+        Fri, 08 Apr 2022 07:18:24 +0000
+Date:   Fri, 8 Apr 2022 15:17:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dave Stevenson <dave.stevenson@raspberrypi.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Dom Cobley <popcornmix@gmail.com>
+Subject: [l1k:smsc95xx_5.17 281/887]
+ drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:1465:17: error: unknown type
+ name 'compat_uptr_t'
+Message-ID: <202204081500.XmYHs9n7-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jie Wang <wangjie125@huawei.com>
+tree:   https://github.com/l1k/linux smsc95xx_5.17
+head:   05d68ced287b30f62f18f95b5476135ef669804a
+commit: 56d0cd616fe11877854ad1b0768b3be67bb30349 [281/887] staging: vc04_services: Add new vc-sm-cma driver
+config: sparc-randconfig-r012-20220408 (https://download.01.org/0day-ci/archive/20220408/202204081500.XmYHs9n7-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/l1k/linux/commit/56d0cd616fe11877854ad1b0768b3be67bb30349
+        git remote add l1k https://github.com/l1k/linux
+        git fetch --no-tags l1k smsc95xx_5.17
+        git checkout 56d0cd616fe11877854ad1b0768b3be67bb30349
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash drivers/staging/vc04_services/vc-sm-cma/
 
-This patch adds tx push param to hns3 ring param and adapts the set and get
-API of ring params. So users can set it by cmd ethtool -G and get it by cmd
-ethtool -g.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Jie Wang <wangjie125@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 33 ++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
+All errors (new ones prefixed by >>):
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index f4da77452126..9f4111fd2986 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -664,6 +664,8 @@ static void hns3_get_ringparam(struct net_device *netdev,
- 	param->tx_pending = priv->ring[0].desc_num;
- 	param->rx_pending = priv->ring[rx_queue_index].desc_num;
- 	kernel_param->rx_buf_len = priv->ring[rx_queue_index].buf_size;
-+	kernel_param->tx_push = test_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE,
-+					 &priv->state);
- }
- 
- static void hns3_get_pauseparam(struct net_device *netdev,
-@@ -1120,6 +1122,30 @@ static int hns3_change_rx_buf_len(struct net_device *ndev, u32 rx_buf_len)
- 	return 0;
- }
- 
-+static int hns3_set_tx_push(struct net_device *netdev, u32 tx_push)
-+{
-+	struct hns3_nic_priv *priv = netdev_priv(netdev);
-+	struct hnae3_handle *h = hns3_get_handle(netdev);
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(h->pdev);
-+	u32 old_state = test_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
-+
-+	if (!test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps) && tx_push)
-+		return -EOPNOTSUPP;
-+
-+	if (tx_push == old_state)
-+		return 0;
-+
-+	netdev_dbg(netdev, "Changing tx push from %s to %s\n",
-+		   old_state ? "on" : "off", tx_push ? "on" : "off");
-+
-+	if (tx_push)
-+		set_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
-+	else
-+		clear_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
-+
-+	return 0;
-+}
-+
- static int hns3_set_ringparam(struct net_device *ndev,
- 			      struct ethtool_ringparam *param,
- 			      struct kernel_ethtool_ringparam *kernel_param,
-@@ -1139,6 +1165,10 @@ static int hns3_set_ringparam(struct net_device *ndev,
- 	if (ret)
- 		return ret;
- 
-+	ret = hns3_set_tx_push(ndev, kernel_param->tx_push);
-+	if (ret)
-+		return ret;
-+
- 	/* Hardware requires that its descriptors must be multiple of eight */
- 	new_tx_desc_num = ALIGN(param->tx_pending, HNS3_RING_BD_MULTIPLE);
- 	new_rx_desc_num = ALIGN(param->rx_pending, HNS3_RING_BD_MULTIPLE);
-@@ -1858,7 +1888,8 @@ static int hns3_set_tunable(struct net_device *netdev,
- 				 ETHTOOL_COALESCE_MAX_FRAMES |		\
- 				 ETHTOOL_COALESCE_USE_CQE)
- 
--#define HNS3_ETHTOOL_RING	ETHTOOL_RING_USE_RX_BUF_LEN
-+#define HNS3_ETHTOOL_RING	(ETHTOOL_RING_USE_RX_BUF_LEN |		\
-+				 ETHTOOL_RING_USE_TX_PUSH)
- 
- static int hns3_get_ts_info(struct net_device *netdev,
- 			    struct ethtool_ts_info *info)
+   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:731:1: warning: no previous prototype for 'vc_sm_cma_import_dmabuf_internal' [-Wmissing-prototypes]
+     731 | vc_sm_cma_import_dmabuf_internal(struct vc_sm_privdata_t *private,
+         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:1114:5: warning: no previous prototype for 'vc_sm_cma_ioctl_alloc' [-Wmissing-prototypes]
+    1114 | int vc_sm_cma_ioctl_alloc(struct vc_sm_privdata_t *private,
+         |     ^~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c: In function 'cache_op_to_func':
+   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:1267:24: error: 'dmac_flush_range' undeclared (first use in this function)
+    1267 |                 return dmac_flush_range;
+         |                        ^~~~~~~~~~~~~~~~
+   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:1267:24: note: each undeclared identifier is reported only once for each function it appears in
+   drivers/staging/vc04_services/vc-sm-cma/vc_sm.c: At top level:
+>> drivers/staging/vc04_services/vc-sm-cma/vc_sm.c:1465:17: error: unknown type name 'compat_uptr_t'
+    1465 |                 compat_uptr_t start_address;
+         |                 ^~~~~~~~~~~~~
+
+
+vim +/compat_uptr_t +1465 drivers/staging/vc04_services/vc-sm-cma/vc_sm.c
+
+  1458	
+  1459	#ifdef CONFIG_COMPAT
+  1460	struct vc_sm_cma_ioctl_clean_invalid2_32 {
+  1461		u32 op_count;
+  1462		struct vc_sm_cma_ioctl_clean_invalid_block_32 {
+  1463			u16 invalidate_mode;
+  1464			u16 block_count;
+> 1465			compat_uptr_t start_address;
+  1466			u32 block_size;
+  1467			u32 inter_block_stride;
+  1468		} s[0];
+  1469	};
+  1470	
+
 -- 
-2.33.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
