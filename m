@@ -2,65 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B620C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8999CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:18:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236077AbiDHNQC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 09:16:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42824 "EHLO
+        id S236174AbiDHNUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 09:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232740AbiDHNQA (ORCPT
+        with ESMTP id S232740AbiDHNUb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 09:16:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1A7EA356;
-        Fri,  8 Apr 2022 06:13:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69CFC60FA7;
-        Fri,  8 Apr 2022 13:13:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2550C385A3;
-        Fri,  8 Apr 2022 13:13:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649423635;
-        bh=I/sH4Z0xGBHI7ug7PEjQLDL6PwxzNs+O40t2lamCdAg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=paAnEef7FXGw6SkN1DeZazjXUrTrWnlbuIJA94cEwMqCo1IXh+54ziV2wF9jVRxkh
-         2rtH68RCh5WkgigE98L/t4ZJkq84YuezuRojX3GjZzmehMFAcbTmN2mdVhKZwF9Os9
-         NI2WOlC5G0TEEzbflWsHJTOUqXReVfLCHZAzrmSwBzdpiQP4d72gD+3phSXPOnRjfU
-         HrbYWXk/ZxNoD1MyIuRfJztA5O9b5uijKt4qrLAb1Q5AiGEvy/CAiE021Xd5D6+tva
-         gZqPI2C763XA9HDx7EqiIlFTD0nReUXKhM7znAtF9MyX/BAxZajj5cmDGBPoBiNuJ2
-         9pJ1Pl73QIyzw==
-Date:   Fri, 8 Apr 2022 18:43:51 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Zong Li <zong.li@sifive.com>
-Cc:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
-        conor.dooley@microchip.com, geert@linux-m68k.org,
-        bin.meng@windriver.com, green.wan@sifive.com,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v8 0/4] Determine the number of DMA channels by
- 'dma-channels' property
-Message-ID: <YlA1DwdIMoQ1dXZS@matsya>
-References: <cover.1648461096.git.zong.li@sifive.com>
+        Fri, 8 Apr 2022 09:20:31 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998DDC90E1
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 06:18:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649423907; x=1680959907;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=OlQ3mNetqWRw1aMb9LjUn6/UrLVxFJEr3k5naF0v43A=;
+  b=NivKZjd0OgHl/B/+bRHpQRAff+E6Kk0r3PyNtxulUiN+lm6QUa47bhgc
+   c1UXQUi1o5ER+4GNolPt2+OF2QpJw1VhYG5XRO2sKo0kn3OtNqpCFxs8Q
+   ievI/f2LmDQxQCLXn96pKO2u3YcUhseRTnbfI1yh5pDqzuKu1cRD8bDZ/
+   yuI0xqjEaZQjNNamlFpP3MWrKIxb4Drfla9UBhiH7wDO5DMT7HGDCzJCe
+   0vvxGZwyiFq/M41krvUqY7irNk95XGtg38iA9jtn+kPfkBJh2kppy6LNj
+   Y99QxGbk4itjni5bC0LR9h3ZX3Ec9arJv8WFesH7PJiIXIH7w7Kf7vJaY
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="259188300"
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="259188300"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 06:18:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="723384474"
+Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 08 Apr 2022 06:18:25 -0700
+Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ncoVM-0000Hf-Vi;
+        Fri, 08 Apr 2022 13:18:25 +0000
+Date:   Fri, 8 Apr 2022 21:17:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Phil Elwell <phil@raspberrypi.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Dom Cobley <popcornmix@gmail.com>
+Subject: [l1k:smsc95xx_5.17 209/887] drivers/dma/bcm2835-dma.c:1104:5:
+ warning: no previous prototype for 'bcm2711_dma40_memcpy_init'
+Message-ID: <202204082125.AHZubaGl-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1648461096.git.zong.li@sifive.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28-03-22, 17:52, Zong Li wrote:
-> The PDMA driver currently assumes there are four channels by default, it
-> might cause the error if there is actually less than four channels.
-> Change that by getting number of channel dynamically from device tree.
-> For backwards-compatible, it uses the default value (i.e. 4) when there
-> is no 'dma-channels' information in dts.
+tree:   https://github.com/l1k/linux smsc95xx_5.17
+head:   05d68ced287b30f62f18f95b5476135ef669804a
+commit: 92eab2543e8b86cf7660e0cc70d5aee4313cbe58 [209/887] bcm2835-dma: Add proper 40-bit DMA support
+config: arm-multi_v7_defconfig (https://download.01.org/0day-ci/archive/20220408/202204082125.AHZubaGl-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/l1k/linux/commit/92eab2543e8b86cf7660e0cc70d5aee4313cbe58
+        git remote add l1k https://github.com/l1k/linux
+        git fetch --no-tags l1k smsc95xx_5.17
+        git checkout 92eab2543e8b86cf7660e0cc70d5aee4313cbe58
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash drivers/dma/
 
-Applied patch 1 & 4 to dmaengine-next, thanks
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/dma/bcm2835-dma.c:1104:5: warning: no previous prototype for 'bcm2711_dma40_memcpy_init' [-Wmissing-prototypes]
+    1104 | int bcm2711_dma40_memcpy_init(void)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/dma/bcm2835-dma.c:1119:6: warning: no previous prototype for 'bcm2711_dma40_memcpy' [-Wmissing-prototypes]
+    1119 | void bcm2711_dma40_memcpy(dma_addr_t dst, dma_addr_t src, size_t size)
+         |      ^~~~~~~~~~~~~~~~~~~~
+
+
+vim +/bcm2711_dma40_memcpy_init +1104 drivers/dma/bcm2835-dma.c
+
+  1103	
+> 1104	int bcm2711_dma40_memcpy_init(void)
+  1105	{
+  1106		if (!memcpy_parent)
+  1107			return -EPROBE_DEFER;
+  1108	
+  1109		if (!memcpy_chan)
+  1110			return -EINVAL;
+  1111	
+  1112		if (!memcpy_scb)
+  1113			return -ENOMEM;
+  1114	
+  1115		return 0;
+  1116	}
+  1117	EXPORT_SYMBOL(bcm2711_dma40_memcpy_init);
+  1118	
+> 1119	void bcm2711_dma40_memcpy(dma_addr_t dst, dma_addr_t src, size_t size)
+  1120	{
+  1121		struct bcm2711_dma40_scb *scb = memcpy_scb;
+  1122		unsigned long flags;
+  1123	
+  1124		if (!scb) {
+  1125			pr_err("bcm2711_dma40_memcpy not initialised!\n");
+  1126			return;
+  1127		}
+  1128	
+  1129		spin_lock_irqsave(&memcpy_lock, flags);
+  1130	
+  1131		scb->ti = 0;
+  1132		scb->src = lower_32_bits(src);
+  1133		scb->srci = upper_32_bits(src) | BCM2711_DMA40_MEMCPY_XFER_INFO;
+  1134		scb->dst = lower_32_bits(dst);
+  1135		scb->dsti = upper_32_bits(dst) | BCM2711_DMA40_MEMCPY_XFER_INFO;
+  1136		scb->len = size;
+  1137		scb->next_cb = 0;
+  1138	
+  1139		writel((u32)(memcpy_scb_dma >> 5), memcpy_chan + BCM2711_DMA40_CB);
+  1140		writel(BCM2711_DMA40_MEMCPY_FLAGS + BCM2711_DMA40_ACTIVE,
+  1141		       memcpy_chan + BCM2711_DMA40_CS);
+  1142	
+  1143		/* Poll for completion */
+  1144		while (!(readl(memcpy_chan + BCM2711_DMA40_CS) & BCM2711_DMA40_END))
+  1145			cpu_relax();
+  1146	
+  1147		writel(BCM2711_DMA40_END, memcpy_chan + BCM2711_DMA40_CS);
+  1148	
+  1149		spin_unlock_irqrestore(&memcpy_lock, flags);
+  1150	}
+  1151	EXPORT_SYMBOL(bcm2711_dma40_memcpy);
+  1152	
 
 -- 
-~Vinod
+0-DAY CI Kernel Test Service
+https://01.org/lkp
