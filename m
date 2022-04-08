@@ -2,150 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C77BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F90FC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234883AbiDHLln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 07:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56220 "EHLO
+        id S234899AbiDHLlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 07:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230312AbiDHLlj (ORCPT
+        with ESMTP id S234889AbiDHLlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 07:41:39 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578D631900;
-        Fri,  8 Apr 2022 04:39:36 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id r13so16778019ejd.5;
-        Fri, 08 Apr 2022 04:39:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=18wquxzAz+n1ScgoEWY4/IKvflx8A2Z+AYoS3QqfJ8Q=;
-        b=VEQC5+bvls2vZOkiJIYl1IXx7Thh7i+nLcFJJZwKWxidPwY8EbyKVR/mOthKGWGe80
-         jFMYCChnOfbFTpejdBW83KuqPnKFZvKeJWAkbcooEJQO4I7IHnD96PA5thg7oV+j3lW1
-         zd54tBmUVKPot/mup6F9Ct9yjhHmzzexQPpIEkgI24xK6E14j63g8tdk1lrg9nVN99FG
-         cHt1wCk6iqvcdSmDnYcDBFzMz/U919wDrm7AMw0VIQXEpaEoeWbxTd1HIt/+vQXtgwMq
-         c1uyvfez63x9v1YV6jXX0jMW1DcXN6QK7oz/8pv5A/4qbbnupiAvxQ42YLAJ9zvzYIVh
-         mGSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=18wquxzAz+n1ScgoEWY4/IKvflx8A2Z+AYoS3QqfJ8Q=;
-        b=ePNMih11DzExwjhqvFrCOpnRYTC4MIUteDJ/fU69PQlHqhqqvT/MheJCXhqg/GRn0R
-         nQb4YFlWIwKE+qdkKjyI5DT7esryUoY3ZkXKDh+BZ8H/CsvQBVe7AP6D7x3luHN2DGRM
-         jYEzGFPSFK20wa/RCITZrdRvh5vSQ2PpxeSdcDdGJVI9bOwQ6oIxz+SDgx17tZqitLw8
-         lLR+4t7JQZaBc8yvWksQ4MOc6Rk6fASIaul0G75ZmXMVRY6jOP7d+8O4zvGCRmTfby/d
-         GqQLswuKkk7VpWgWzVBtdHtNEAOllGrM5het9P/QxKSZDbqI7SHiVoFgfX9PYV9YPqhi
-         qkLg==
-X-Gm-Message-State: AOAM530/Yh73IaT+D2i7KGPqNIJ6f/mV0cGaPs/Hyrg42pCyVd77qdpz
-        7Ch5hi/4pJhGiSFu/eUl7O/hjVPf8dPUM1ry+ng=
-X-Google-Smtp-Source: ABdhPJyx4Hwm0L/rT6G2qrVhVrJfK29yddhRF03FHn7KTlBGfpFZBD/fguFHm5wVg0Jk1STV60qEKREpFAs0jgVsJjY=
-X-Received: by 2002:a17:907:968e:b0:6db:aed5:43c8 with SMTP id
- hd14-20020a170907968e00b006dbaed543c8mr17992154ejc.636.1649417974738; Fri, 08
- Apr 2022 04:39:34 -0700 (PDT)
+        Fri, 8 Apr 2022 07:41:45 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63AC39B80;
+        Fri,  8 Apr 2022 04:39:38 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 238Bd93v9021654, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 238Bd93v9021654
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 8 Apr 2022 19:39:09 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Fri, 8 Apr 2022 19:39:09 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Fri, 8 Apr 2022 19:39:05 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
+ RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
+ 15.01.2308.021; Fri, 8 Apr 2022 19:39:05 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "kvalo@kernel.org" <kvalo@kernel.org>,
+        "cgel.zte@gmail.com" <cgel.zte@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "zealci@zte.com.cn" <zealci@zte.com.cn>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "lv.ruyi@zte.com.cn" <lv.ruyi@zte.com.cn>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] realtek: rtlwifi: Fix spelling mistake "cacluated" -> "calculated"
+Thread-Topic: [PATCH] realtek: rtlwifi: Fix spelling mistake "cacluated" ->
+ "calculated"
+Thread-Index: AQHYSy8qwaRiOksxDkaBMSpto1BJm6zlXf6A
+Date:   Fri, 8 Apr 2022 11:39:05 +0000
+Message-ID: <5f42f648f74a826d7f177122ee46e93584df17ae.camel@realtek.com>
+References: <20220408095803.2495336-1-lv.ruyi@zte.com.cn>
+In-Reply-To: <20220408095803.2495336-1-lv.ruyi@zte.com.cn>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [125.224.82.63]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzQvOCDkuIrljYggMDk6NDU6MDA=?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <03C4668D7ACE8B4B90D374F6A816785B@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220405135444.199295-1-maz@kernel.org>
-In-Reply-To: <20220405135444.199295-1-maz@kernel.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 8 Apr 2022 14:35:20 +0300
-Message-ID: <CAHp75VfxBWw307nxz8mpZHrvD6dFis8XPD0qO0gzWq5q_dL7hg@mail.gmail.com>
-Subject: Re: [PATCH v2 00/10] gpiolib: Handle immutable irq_chip structures
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Android Kernel Team <kernel-team@android.com>
-Content-Type: text/plain; charset="UTF-8"
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 2:06 PM Marc Zyngier <maz@kernel.org> wrote:
->
-> This is a followup from [1].
->
-> I recently realised that the gpiolib play ugly tricks on the
-> unsuspecting irq_chip structures by patching the callbacks.
->
-> Not only this breaks when an irq_chip structure is made const (which
-> really should be the default case), but it also forces this structure
-> to be copied at nauseam for each instance of the GPIO block, which is
-> a waste of memory.
->
-> My current approach is to add a new irq_chip flag (IRQCHIP_IMMUTABLE)
-> which does what it says on the tin: don't you dare writing to them.
-> Gpiolib is further updated not to install its own callbacks, and it
-> becomes the responsibility of the driver to call into the gpiolib when
-> required. This is similar to what we do for other subsystems such as
-> PCI-MSI.
->
-> 5 drivers are updated to this new model: M1, QC, Tegra, pl061 and AMD
-> (as I actively use them) keeping a single irq_chip structure, marking
-> it const, and exposing the new flag.
->
-> Nothing breaks, the volume of change is small, the memory usage goes
-> down and we have fewer callbacks that can be used as attack vectors.
-> What's not to love?
-
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-for the patches 1-3,9 and 10 after clarifying one example case.
-
-> * From v1 [1]:
->   - pl061 and AMD drivers converted
->   - New helpers to keep the changes small
->   - New warning for non-converted drivers
->   - Documentation and TODO updates
->
-> [1] https://lore.kernel.org/r/20220223154405.54912-1-maz@kernel.org
->
-> Marc Zyngier (10):
->   gpio: Don't fiddle with irqchips marked as immutable
->   gpio: Expose the gpiochip_irq_re[ql]res helpers
->   gpio: Add helpers to ease the transition towards immutable irq_chip
->   gpio: tegra186: Make the irqchip immutable
->   gpio: pl061: Make the irqchip immutable
->   pinctrl: apple-gpio: Make the irqchip immutable
->   pinctrl: msmgpio: Make the irqchip immutable
->   pinctrl: amd: Make the irqchip immutable
->   gpio: Update TODO to mention immutable irq_chip structures
->   Documentation: Update the recommended pattern for GPIO irqchips
->
->  Documentation/driver-api/gpio/driver.rst | 175 ++++++++++++++++++-----
->  drivers/gpio/TODO                        |  19 +++
->  drivers/gpio/gpio-pl061.c                |  32 +++--
->  drivers/gpio/gpio-tegra186.c             |  32 +++--
->  drivers/gpio/gpiolib.c                   |  13 +-
->  drivers/pinctrl/pinctrl-amd.c            |  11 +-
->  drivers/pinctrl/pinctrl-apple-gpio.c     |  29 ++--
->  drivers/pinctrl/qcom/pinctrl-msm.c       |  53 ++++---
->  include/linux/gpio/driver.h              |  16 +++
->  include/linux/irq.h                      |   2 +
->  kernel/irq/debugfs.c                     |   1 +
->  11 files changed, 293 insertions(+), 90 deletions(-)
->
-> --
-> 2.34.1
->
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+T24gRnJpLCAyMDIyLTA0LTA4IGF0IDA5OjU4ICswMDAwLCBjZ2VsLnp0ZUBnbWFpbC5jb20gd3Jv
+dGU6DQo+IEZyb206IEx2IFJ1eWkgPGx2LnJ1eWlAenRlLmNvbS5jbj4NCj4gDQo+IFRoZXJlIGFy
+ZSBzb21lIHNwZWxsaW5nIG1pc3Rha2VzIGluIHRoZSBjb21tZW50cy4gRml4IGl0Lg0KPiANCj4g
+UmVwb3J0ZWQtYnk6IFplYWwgUm9ib3QgPHplYWxjaUB6dGUuY29tLmNuPg0KPiBTaWduZWQtb2Zm
+LWJ5OiBMdiBSdXlpIDxsdi5ydXlpQHp0ZS5jb20uY24+DQoNCg0KQWNrZWQtYnk6IFBpbmctS2Ug
+U2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPg0KDQpbLi4uXQ0KDQo=
