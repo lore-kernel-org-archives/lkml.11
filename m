@@ -2,75 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39CA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B88C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:08:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239631AbiDHVJc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 17:09:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42802 "EHLO
+        id S239654AbiDHVKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 17:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239645AbiDHVJa (ORCPT
+        with ESMTP id S238798AbiDHVKo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 17:09:30 -0400
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E85165ABE;
-        Fri,  8 Apr 2022 14:07:25 -0700 (PDT)
-Received: by mail-oi1-f174.google.com with SMTP id e189so10073424oia.8;
-        Fri, 08 Apr 2022 14:07:25 -0700 (PDT)
+        Fri, 8 Apr 2022 17:10:44 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A03B814D795
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 14:08:37 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id q142so8752683pgq.9
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 14:08:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=HoLWT/EythxVH1YT+vEjLN2TXDPwfF5xPPqMajsg97o=;
+        b=6DqRW4gK+PKLqJfJdAd0TGTO95Ya7KDB3mBZJjKMlL0nxZLtgxfpl+75BDL9PpUtD/
+         D8sxCCmecY9A1jNHsGn59jfaYAYVcw0MXiJZsMdhW9Hgaj2eegEWYZqhsHZZ8RViFFh8
+         g/mUJ5pRz/mDzFZbqiAMFiy2sA1QwSdm7uJ+N0EWGsnS9ZjEVfmjTnqFmuhMnW10Edv7
+         uODRBJwh1af7cUiTZDMOJnhCYENwjfab4lz7/KYYJOcswfmpJxqrQ5/bp0tB9mIV7ZMt
+         Kceie9MXCbkN4vkioRj3xK49n2u3J7v+iyzNlDM+Hsx6W8Dz7u6YcGhollnP1Te9u94x
+         iUtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pYrMZV8IjCW8iYNoKDQBPlJEM2DsRfccLQtP6lTmZ+E=;
-        b=RnNWOTvYDB6rKNZLc32W2dkm6O4YJt4caUr8tMNR1k1uANhCLuRpERkysK16grNfBE
-         KqBnPjR0uBrfasFkRFsv9WyGzIKwCyVnXKRqe/E1VWaIdOG8IhO5kiQgNiGnJZc2Kdxd
-         Anh6VocnlSULdHu5CGlXzcxggmF7uFs2daNNV+uTiXViT1IMoQrx/62WzPlgutr46xc6
-         oaL8lAcB2kE3I15cufSbc7L6fR1RQgVWMLCRF+EzAhI4IcKz4PG6ELUY+dMtgg7bqZdb
-         cATaZvqDZJ+WEAq55mYrtWmPY8OICNU9gWUrYXDvqLgfsf5FvV64FBrteWPTexRuUiPh
-         o1fg==
-X-Gm-Message-State: AOAM530vcIByHmFwhk8Yj/FoHxoK7mb3wsp+FxwqBbKExKSY27WQhFGx
-        OrMyV75k+gsKWExiHOI5KQ==
-X-Google-Smtp-Source: ABdhPJwWTpgR9nwArxEDDPxXD6GGCtIyRk9dQCxH/2JfmFaUUrC5PDmCLr6vKJ/kDuhQQXT9PXQRLw==
-X-Received: by 2002:a05:6808:2189:b0:2da:b59:3acb with SMTP id be9-20020a056808218900b002da0b593acbmr824624oib.112.1649452044989;
-        Fri, 08 Apr 2022 14:07:24 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 17-20020a056870121100b000e296227c9bsm793744oan.9.2022.04.08.14.07.24
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=HoLWT/EythxVH1YT+vEjLN2TXDPwfF5xPPqMajsg97o=;
+        b=mv/36JgYyMM+tISbjkleyB55KpQZYLlk6S4s0t2FVmM5oAtQsKUcilZdEa0B16s4xq
+         tA7Lm9vKRhfA07JxfmlaLLqwdfv5P5wl5f2MTle+kxCZm1LONovkrgtnBUGH0fpHDyBw
+         ZHn3IDzShENrq8tAt+L2C1htEgU+p7+ZdtkOQcKnHDXhgTx6gfVJFj0aaQkXqDYwsiE0
+         cxtig6llf7RMmbpDzV8miNa4T9jlqOjBXQyKb/Qz5EpedtsZz6Ufu6mq4G/+rbMkwgZm
+         veHdYqp6TMD8SnfQa5yazPQsKfDCLGTP+kiy55WUW9RQGwiZ4hkDKLqRCzd82zUobwiF
+         hd6w==
+X-Gm-Message-State: AOAM531jfYHhmOpiKFIKtxdfS62JUS2JYT3D/WdEqD7CjE1npVw2o0L6
+        VL9bnCuQqOrBTi6Gz8Z3CpTtFQ==
+X-Google-Smtp-Source: ABdhPJyvhkTmr6m8xOSTjNCBilnTlNxx+TZTy+ro007JGG5u+GpijdOFdlxjLZjwIoz7WZTYTZhnOg==
+X-Received: by 2002:a63:c015:0:b0:385:fe06:eb86 with SMTP id h21-20020a63c015000000b00385fe06eb86mr16908387pgg.132.1649452117075;
+        Fri, 08 Apr 2022 14:08:37 -0700 (PDT)
+Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
+        by smtp.gmail.com with ESMTPSA id s10-20020a63924a000000b00399571b2f99sm12120792pgn.57.2022.04.08.14.08.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 14:07:24 -0700 (PDT)
-Received: (nullmailer pid 4067486 invoked by uid 1000);
-        Fri, 08 Apr 2022 21:07:24 -0000
-Date:   Fri, 8 Apr 2022 16:07:24 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Subject: Re: [PATCH 05/14] dt-bindings: reset: lantiq,reset: Convert to yaml
-Message-ID: <YlCkDJAUJx/w65HJ@robh.at.kernel.org>
-References: <20220407154338.4190674-1-p.zabel@pengutronix.de>
- <20220407154338.4190674-5-p.zabel@pengutronix.de>
+        Fri, 08 Apr 2022 14:08:36 -0700 (PDT)
+From:   Kevin Hilman <khilman@baylibre.com>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
+        viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     matthias.bgg@gmail.com, jia-wei.chang@mediatek.com,
+        roger.lu@mediatek.com, hsinyi@google.com, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH V2 11/15] cpufreq: mediatek: Update logic of
+ voltage_tracking()
+In-Reply-To: <20220408045908.21671-12-rex-bc.chen@mediatek.com>
+References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
+ <20220408045908.21671-12-rex-bc.chen@mediatek.com>
+Date:   Fri, 08 Apr 2022 14:08:36 -0700
+Message-ID: <7hczhr5lm3.fsf@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407154338.4190674-5-p.zabel@pengutronix.de>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 07 Apr 2022 17:43:29 +0200, Philipp Zabel wrote:
-> Convert the device tree bindings for the Lantiq XWAY SoC RCU reset
-> controller to YAML schema to allow participating in DT validation.
-> 
-> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-> Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> ---
->  .../bindings/reset/lantiq,reset.txt           | 30 ------------
->  .../bindings/reset/lantiq,reset.yaml          | 49 +++++++++++++++++++
->  2 files changed, 49 insertions(+), 30 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/reset/lantiq,reset.txt
->  create mode 100644 Documentation/devicetree/bindings/reset/lantiq,reset.yaml
-> 
+Rex-BC Chen <rex-bc.chen@mediatek.com> writes:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+> From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+>
+> - Remove VOLT_TOL because CCI may share the same sram and vproc
+>   regulators with CPU. Therefore, set the max voltage in
+>   regulator_set_voltage() to the proc{sram}_max_volt.
+
+This could you a bit more detailed explanation.  Why does VOLT_TOL get
+in the way when regulators are shared between CPU & CCI?
+
+> - Move comparison of new and old voltages to
+>   mtk_cpufreq_voltage_tracking().
+
+Why?  And how is this related to the above change?  Seems to me that it
+belongs in a separate patch.
+
+Kevin
