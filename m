@@ -2,118 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9811C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:13:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237512AbiDHPPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237473AbiDHPPO (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
+        id S237480AbiDHPPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
         Fri, 8 Apr 2022 11:15:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD7B1017D0;
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35584 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237437AbiDHPOx (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 8 Apr 2022 11:14:53 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7601510242B;
         Fri,  8 Apr 2022 08:12:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0227061F40;
-        Fri,  8 Apr 2022 15:12:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62316C385C1;
-        Fri,  8 Apr 2022 15:12:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649430766;
-        bh=Vb9ZJRhyCFckFYpPHjtuunbxhp174/M4q/M7Vp10tWU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=sIa9ENYGM+gzmBtzAW5EYaDOBPLLH7d1PzrZ/x+d1jMG3IGmpvpVLkpFZ/Qd+Fk3U
-         FWE3pLZbQRHkELHgKkULRcm8Euxxc9pmrhVr8zuajRltNwDPPoiUlKNFXkG/Eiw154
-         87fsgvKu3euj2wO5+D47MGxZlJu1tvelBPzuymUr/uPdUe3d+M1/VAxEKeNKU6HDuc
-         4Y5i0/AK788TPhSS9T4DE93YvygrKXQdOnbkWJdxgVL16olmzAFAhrew+Qi4zijJHN
-         udXqltsx1fVIzsGoooDtImHWnXAZD+Cx923lCYY3zI7hCLykSpGo6GZbzKALmNZNFT
-         blaa7DPl7g9kA==
-Received: by mail-wr1-f42.google.com with SMTP id w21so13388295wra.2;
+Received: by mail-qk1-x736.google.com with SMTP id 75so2197473qkk.8;
+        Fri, 08 Apr 2022 08:12:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=OHIHH7LBjO7n3w0TkyTvZ+CHhZPHMYRUZ96K/VbT0E0=;
+        b=MMMg/MMY5cbKMYBNeQ+Fkz+rHwKfKIaAdKf+u/3iJedRJdm+2+1Y2/eIatpIU5jSpO
+         yFY33ZFWVtvkFiIHZbCtBhakZXh9JVNEwcBWEJ9R/MUrqgKe8HMMcQHfoFPhoMzrcF5W
+         wSPCdZ0Ia95qDsVnWzNn1nWZ+wfI5iCZbOMIRag/vacyytKiioYxsmodBfdMXfpF85aL
+         N2RiwEVwdFjQxUn/q8R8ToAt4Uet4AfobcdWwx0qEVdjrm1sAeXFg/gLFE1K/oh71MNq
+         MyQtne9Bw8jrJxkfCcF8SkUwpWLQdnsvhK/ZA9FWh9BMcRPta1P22DrV6yMG5TufN5MZ
+         c3vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=OHIHH7LBjO7n3w0TkyTvZ+CHhZPHMYRUZ96K/VbT0E0=;
+        b=UzE1nDmCPf0pTz7xkm+hPj9pnW4ZeAzW9kWeyMFPFbwDGtNmTY7+1oHJBoTEOxuqdx
+         nuntti5gb3ZeXVQu2z0FL6hNaGJiDYobejGG+C2sGrdfyAdceBRQgzW+v4jn7mlRsgun
+         6kl/o8kiW2cD9SGpI9jE+v7yFkxxR83cf9PLcodh9cNd4iyMoHGx/hx0YyYTk5viz35s
+         kkUnYxiub+fqIDK1mHUzC9fvt5e0U1bt7p3YAbuPFnGThv9zdgnOFspE6QenDGNmbJ+S
+         maiouIMoLBoo4TTsb8SPGRpixH4bitxwVxQbneuchozEcpjMUtc2NRJZK6coJ7G3v6K+
+         bn4Q==
+X-Gm-Message-State: AOAM532T1Szy6A90AhW9Ewo9NIb11Hyqp5FQrkj63ZwftlScEoHUC9oP
+        weDlnGCfyv4h9vHA5uf3qgwig7j9fTTiqb6a
+X-Google-Smtp-Source: ABdhPJxTudTqPR/+KoxaJhqcjN0s/VoySgsi3tEWDwUorfhaM8rB6bSIoVnz/XkHzepwTkSL6CzaFg==
+X-Received: by 2002:a37:67c5:0:b0:69b:ed21:e345 with SMTP id b188-20020a3767c5000000b0069bed21e345mr1074947qkc.732.1649430766325;
         Fri, 08 Apr 2022 08:12:46 -0700 (PDT)
-X-Gm-Message-State: AOAM5303dlMDTzZI2RqBWBUYDzenAxVHVG04tEcQLQFTZBw3zYPKGvif
-        1awom0xAYVM4vbwcVoXQaIHUZbPhWUqh5nnfxeI=
-X-Google-Smtp-Source: ABdhPJyFw2dT2aWjYaAvHF77JNUxndIajbOPX4lldS3CPnCvoH9+Y+2vwBOU81XHAOhivBVHGIxOtJQ5LlXm43fQALY=
-X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id
- e12-20020a056000178c00b002040648b4c4mr14707557wrg.219.1649430764377; Fri, 08
- Apr 2022 08:12:44 -0700 (PDT)
+Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
+        by smtp.gmail.com with ESMTPSA id 191-20020a3707c8000000b0069a13545fcfsm2266052qkh.123.2022.04.08.08.12.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 08:12:46 -0700 (PDT)
+From:   Peter Geis <pgwipeout@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc:     linux-rockchip@lists.infradead.org,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 5/5] arm64: dts: rockchip: add usb3 support to rk3568-evb1-v10
+Date:   Fri,  8 Apr 2022 11:12:37 -0400
+Message-Id: <20220408151237.3165046-6-pgwipeout@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220408151237.3165046-1-pgwipeout@gmail.com>
+References: <20220408151237.3165046-1-pgwipeout@gmail.com>
 MIME-Version: 1.0
-References: <20220405091750.3076973-1-arnd@kernel.org> <CACRpkdbVHOyq_dt7dtr8htzQqJ0BbL2K4_p1HX97miJJ4qnUnQ@mail.gmail.com>
-In-Reply-To: <CACRpkdbVHOyq_dt7dtr8htzQqJ0BbL2K4_p1HX97miJJ4qnUnQ@mail.gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Fri, 8 Apr 2022 17:12:28 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1UObWkbOZzN0BLSgjJXBj94Hw85dEoH_VNWGG=bDNjkQ@mail.gmail.com>
-Message-ID: <CAK8P3a1UObWkbOZzN0BLSgjJXBj94Hw85dEoH_VNWGG=bDNjkQ@mail.gmail.com>
-Subject: Re: [PATCH 00/12] ARM: ARMv5 multiplatform conversions
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Hartley Sweeten <hsweeten@visionengravers.com>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Hubert Feurstein <hubert.feurstein@contec.at>,
-        Lukasz Majewski <lukma@denx.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Imre Kaloz <kaloz@openwrt.org>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Simtec Linux Team <linux@simtec.co.uk>,
-        Liviu Dudau <Liviu.Dudau@arm.com>,
-        Sudeep Holla <Sudeep.Holla@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>, patches@opensource.cirrus.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 10:42 PM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> On Tue, Apr 5, 2022 at 11:18 AM Arnd Bergmann <arnd@kernel.org> wrote:
->
-> These two:
->
-> > Arnd Bergmann (12):
-> >   ARM: rework endianess selection
-> >   ARM: ixp4xx: enable multiplatform support
->
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Tested-by: Linus Walleij <linus.walleij@linaro.org>
->
-> I booted on the Gateway GW-2348 which has some ethernet,
-> PCI and compact flash, LED and a button, so I could test a
-> whole lot of stuff.
+From: Michael Riesch <michael.riesch@wolfvision.net>
 
-Perfect, thanks!
+The Rockchip RK3568 EVB1 features one USB 3.0 device-only
+(USB 2.0 OTG) port and one USB 3.0 host-only port.
+Activate the USB 3.0 controller nodes and phy nodes in the
+device tree.
 
-> However when switching over to multiplatform I needed to severely
-> overhaul the ixp4xx_defconfig for it to bring the same drivers in as
-> before, I will send my patch for that which I think need to go in in
-> tandem with this rework for a smooth transition.
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
+---
+ .../boot/dts/rockchip/rk3568-evb1-v10.dts     | 46 +++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
-Ah right, I was planning to go through the patches again to make
-sure I get them all. I did the change for some platforms but at least
-missed this one. I folded in this change and will make sure I do the
-same for the others as well:
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
+index a794a0ea5c70..622be8be9813 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
+@@ -103,6 +103,18 @@ vcc5v0_usb_host: vcc5v0-usb-host {
+ 		vin-supply = <&vcc5v0_usb>;
+ 	};
+ 
++	vcc5v0_usb_otg: vcc5v0-usb-otg {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc5v0_usb_otg_en>;
++		regulator-name = "vcc5v0_usb_otg";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc5v0_usb>;
++	};
++
+ 	vcc3v3_lcd0_n: vcc3v3-lcd0-n {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc3v3_lcd0_n";
+@@ -136,6 +148,14 @@ regulator-state-mem {
+ 	};
+ };
+ 
++&combphy0 {
++	status = "okay";
++};
++
++&combphy1 {
++	status = "okay";
++};
++
+ &cpu0 {
+ 	cpu-supply = <&vdd_cpu>;
+ };
+@@ -507,6 +527,9 @@ usb {
+ 		vcc5v0_usb_host_en: vcc5v0_usb_host_en {
+ 			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
++		vcc5v0_usb_otg_en: vcc5v0_usb_otg_en {
++			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
+ 	};
+ };
+ 
+@@ -568,6 +591,11 @@ &usb_host0_ohci {
+ 	status = "okay";
+ };
+ 
++&usb_host0_xhci {
++	extcon = <&usb2phy0>;
++	status = "okay";
++};
++
+ &usb_host1_ehci {
+ 	status = "okay";
+ };
+@@ -576,6 +604,24 @@ &usb_host1_ohci {
+ 	status = "okay";
+ };
+ 
++&usb_host1_xhci {
++	status = "okay";
++};
++
++&usb2phy0 {
++	status = "okay";
++};
++
++&usb2phy0_host {
++	phy-supply = <&vcc5v0_usb_host>;
++	status = "okay";
++};
++
++&usb2phy0_otg {
++	vbus-supply = <&vcc5v0_usb_otg>;
++	status = "okay";
++};
++
+ &usb2phy1 {
+ 	status = "okay";
+ };
+-- 
+2.25.1
 
---- a/arch/arm/configs/ixp4xx_defconfig
-+++ b/arch/arm/configs/ixp4xx_defconfig
-@@ -6,6 +6,7 @@ CONFIG_EXPERT=y
- CONFIG_MODULES=y
- CONFIG_MODVERSIONS=y
- # CONFIG_BLK_DEV_BSG is not set
-+# CONFIG_ARCH_MULTI_V7 is not set
- CONFIG_ARCH_IXP4XX=y
- CONFIG_MACH_NSLU2=y
- CONFIG_MACH_AVILA=y
