@@ -2,81 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F697C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D1FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbiDHLCU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 07:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54064 "EHLO
+        id S229689AbiDHLDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 07:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbiDHLCQ (ORCPT
+        with ESMTP id S229472AbiDHLDh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 07:02:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3E8F844A;
-        Fri,  8 Apr 2022 04:00:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Fri, 8 Apr 2022 07:03:37 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5A212AA8
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 04:01:33 -0700 (PDT)
+Received: from zn.tnic (p200300ea971561a9329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9715:61a9:329c:23ff:fea6:a903])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37E1461F7B;
-        Fri,  8 Apr 2022 11:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7A487C385A5;
-        Fri,  8 Apr 2022 11:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649415612;
-        bh=5V2H/avkRnqCfDyYcArGASEXAebwxezA5cdgwAkbkHI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rDkl40MVK8pe0VFWRR+6nkvzyT8uxD7gqyNEq6nLX7cNyonuS6XKIZQ9+Sdw9q1oi
-         2gkhd7ZuLjbvHS+FlNl5/Mna5HY0xAgX4gMIhkVStolfeoaZuwPSji0RVoK620422q
-         bB4i+JbOL4SZ4y/hmQ7bBz1cOHWH5b6WZPMnx/ATdi6fGK85PlhV0iJjizgeanZGcD
-         PSfHWSUPl030QriC+JMppr/QJ0zEtzdzW9NCJcobJTUCItdexnCa+M9MfIns5sw+PS
-         /APGeG0sGjmSIeJUM0ZVieKu+LnZDR5blGorGSpr4qHKyGNOFn88oOadakj3Fx2CCd
-         AZwiOM55NIAgA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5B765E85BCB;
-        Fri,  8 Apr 2022 11:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 14D4F1EC0528;
+        Fri,  8 Apr 2022 13:01:32 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649415692;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=0twYPvAbU3EQQV90bdC9MeTmssNOjIsgXlwghQ9IMhQ=;
+        b=mXXZTEsCZzRzxCwwF0vFXTgAC8GGvwYQSaJig1C/LGy1TtVAo/cz6WcN1ft8cHvq/eZxD7
+        jMv4DT0DxnOPqHngvGa0ioCqWn3uG6W9I093fLQ/k3Gx+UYaKVnDCvAdZ9bUXT814J5FBv
+        q4nFc6ZjSoqb8JB1HVaVGaRfjSLkFHw=
+Date:   Fri, 8 Apr 2022 13:01:31 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Will Deacon <will@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>, Frank Li <Frank.li@nxp.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 09/11] perf/imx_ddr: Fix undefined behavior due to shift
+ overflowing the constant
+Message-ID: <YlAWC+kzv2kpCUsq@zn.tnic>
+References: <20220405151517.29753-1-bp@alien8.de>
+ <20220405151517.29753-10-bp@alien8.de>
+ <20220408104739.GA27564@willie-the-truck>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 0/2] dt-bindings: net: Fix ave descriptions
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164941561236.15361.17486184547256592773.git-patchwork-notify@kernel.org>
-Date:   Fri, 08 Apr 2022 11:00:12 +0000
-References: <1649145181-30001-1-git-send-email-hayashi.kunihiko@socionext.com>
-In-Reply-To: <1649145181-30001-1-git-send-email-hayashi.kunihiko@socionext.com>
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzk+dt@kernel.org, mhiramat@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220408104739.GA27564@willie-the-truck>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Fri, Apr 08, 2022 at 11:47:40AM +0100, Will Deacon wrote:
+> (let me know if you'd prefer for me to queue this directly)
 
-This series was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Yes please.
 
-On Tue,  5 Apr 2022 16:52:59 +0900 you wrote:
-> This series fixes dt-schema descriptions for ave4 controller.
-> 
-> Kunihiko Hayashi (2):
->   dt-bindings: net: ave: Clean up clocks, resets, and their names using
->     compatible string
->   dt-bindings: net: ave: Use unevaluatedProperties
-> 
-> [...]
+Thx.
 
-Here is the summary with links:
-  - [1/2] dt-bindings: net: ave: Clean up clocks, resets, and their names using compatible string
-    https://git.kernel.org/netdev/net/c/2610bd72efe4
-  - [2/2] dt-bindings: net: ave: Use unevaluatedProperties
-    https://git.kernel.org/netdev/net/c/5a80059d8804
-
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Regards/Gruss,
+    Boris.
 
-
+https://people.kernel.org/tglx/notes-about-netiquette
