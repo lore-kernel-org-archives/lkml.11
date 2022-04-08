@@ -2,182 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A908AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 02:15:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D006BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 02:15:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233683AbiDHCRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 22:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
+        id S233718AbiDHCR3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 22:17:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231215AbiDHCRM (ORCPT
+        with ESMTP id S233698AbiDHCR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 22:17:12 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB94C268986;
-        Thu,  7 Apr 2022 19:15:09 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id n18so6676802plg.5;
-        Thu, 07 Apr 2022 19:15:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eaTn1UD2941ACHdvLV5KXK7aQnz8AqsgTtEV29TgNb4=;
-        b=gfVls0S5RExmb2wfxxa8AxWIfLg/2ToNLqQRGizg8/ZyQK4LRK7mx/JJKPuowsjWPt
-         zaOCkoq69qZP5TyzLA57gha0z5qlcuqFL45g8sfVrpVcbDgtQOuF1pfiPr3rCmgKMb6H
-         6i8jngKHecSmLOP6j8REwui4ESfGri2JM0FuYE8CftXEJkT58iqZir4ubApNV6TVsIOa
-         pDaevCb934NI17jxM0fdyyHzquVIN8EQEeL1cu7vP5PBn0njbDcWHZm0O6b+N9myoKlN
-         wcriA5kv3wLIC+wPNlAp8Yee80m/u7vp+VCDXZ5AYGsGAn2/jq7jik0en+HC54uiTMil
-         eTRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eaTn1UD2941ACHdvLV5KXK7aQnz8AqsgTtEV29TgNb4=;
-        b=myqcazGgBPcKCt2rK+AGq/jQeU2oP1Nyz8TEck2+PiwVrfKpP5DxOZJ3xLuMlb6+He
-         ZYVbjaq3YX4J7R6lCls5hX7bcAMiSp4syXnG+FsFBgYzrc1vDcZtI/49fkZFpn6onciC
-         5lRJhoEaFyvyokTNYWcKAu4m0R3eXDqcgDGKLQ7ocf63d5ryVU0DHtThp75iiOfwlurO
-         78tsHikQmp8JM9nM1TSlHOkDPXaIR4hky9YkJkr75P+JwbVA4+Ex5zCcUMWu1p1wiaYC
-         Bp6zUGUsTQr84Hcy37R/b2zCCtyXa40xqyJbL369oq6G9JqICpESotC6EkCSuNjdyhRS
-         uxhA==
-X-Gm-Message-State: AOAM532iUghcmi7hVGBJt/DVY2XdIJHgVCpiiWGCufQbis0AjwoqyXUr
-        ifUM/EATpF4fYdGRvIVBT3k=
-X-Google-Smtp-Source: ABdhPJwhDNKvqQnN8Er5QxbqbkFYHfAdgsWhosx8jFAdhg85i/qHK6nlIdPaPCzTm5rd9fRcujpPfw==
-X-Received: by 2002:a17:902:6acc:b0:149:8f60:a526 with SMTP id i12-20020a1709026acc00b001498f60a526mr16980935plt.25.1649384109413;
-        Thu, 07 Apr 2022 19:15:09 -0700 (PDT)
-Received: from CHENGDONGLI-MB0.localdomain ([203.205.141.113])
-        by smtp.gmail.com with ESMTPSA id s10-20020a056a00178a00b004fda49fb25dsm24069652pfg.9.2022.04.07.19.15.08
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 07 Apr 2022 19:15:08 -0700 (PDT)
-From:   Chengdong Li <brytonlee01@gmail.com>
-X-Google-Original-From: Chengdong Li <chengdongli@tencent.com>
-Received: by CHENGDONGLI-MB0.localdomain (Postfix, from userid 501)
-        id 8E1836D5C455; Fri,  8 Apr 2022 10:15:05 +0800 (CST)
-To:     adrian.hunter@intel.com, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, peterz@infradead.org,
-        mingo@redhat.com, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
-        namhyung@kernel.org
-Cc:     ak@linux.intel.com, likexu@tencent.com, chengdongli@tencent.com
-Subject: [PATCH v3] perf test tsc: Fix error message report when not supported.
-Date:   Fri,  8 Apr 2022 10:14:28 +0800
-Message-Id: <20220408021428.18009-1-chengdongli@tencent.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <676075ca-4d5d-7388-61ac-42a0b9f1ed50@intel.com>
-References: <676075ca-4d5d-7388-61ac-42a0b9f1ed50@intel.com>
+        Thu, 7 Apr 2022 22:17:27 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC86C273378
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 19:15:23 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 585305C013B;
+        Thu,  7 Apr 2022 22:15:21 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 07 Apr 2022 22:15:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sakamocchi.jp;
+         h=cc:cc:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm1; bh=nvkFaMbev4/kVyqnJNPqVSo+frUbKl
+        NHC+DpOIWGrBw=; b=Png8i7qUPf5HmJFJ58DmULMRRGYoAmB73A3ZOYEqFUm1fU
+        43PFXFKD9iepd1G5yZsz9+lMRJAQS+DLN/POwV1J7BJcjFkwz59ZIw9mRnGUwlZf
+        Ctmdp0B0Mlqd+9uY+KT/Tyo2fQstOHWVit5j3YtALZkV35WE9UFuUFLCQxj3FZyz
+        K6CAF8zwT+X7sLrJIUXQnsl9qILn2iBGw0VHpdRKJC1Gz0qtaCQgra4rauaBPeWN
+        RHnLssQtAL378A+ibP0ZN1Hb1LTsKjEVApYDLUggi6QxyFkvw+q59/c37vStoKf1
+        pnyPBufUAUHiDOTySi/VebnjcCrd/hiXROBSZnOw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=nvkFaMbev4/kVyqnJ
+        NPqVSo+frUbKlNHC+DpOIWGrBw=; b=DKeAQHx6rcKdL75fyOgCawkzYIYKN2p7X
+        10oUueW8uqnBWhrF8gXHfytM87wfwhpkeFUtGtnyb5e+TC9Hu8YyaXi3fvT3mcMG
+        PmGAS52g2HN5SXbpqfujsnWEk/Cqb9RY6ekbGCUdxtj2VmQTt+T82wp1b3PpD7u8
+        0BhFuD9x3xOuwBICffODz7F4IeiqBsc3EaJpbFleXZSH3Uv5Xvr+2Q7jh5WTtwzc
+        xJ3xq/Cabyat4SD0cFcnZlNVjKorCobwz/tU4XP3I8pGD5xCb2GL5HjpqMsCmn8G
+        8uF2Log6rcbW5V6kUKC9Zhdp7pZXEIbOGwGYstIUaNDN7qfia2kcw==
+X-ME-Sender: <xms:uJpPYh8IWikMqZyG5HWZtkDitNp0CcOBambTyoc2IfoLIh51tZFDvQ>
+    <xme:uJpPYltrKyW_iaTQLV6ED03-o7gDHimQJp_2sEQqVqiJOqDTojJOM3PUvUBsrMVK5
+    lvEavz7BkcxHnU_uMo>
+X-ME-Received: <xmr:uJpPYvDPNK87LZse2QcaukTasHMe3vzByBwzctUwzUux3SAUDeP8qFvTMlraX1dd3O2Xqk0NUoTuPSnHoRwTGmhC0-2rjuX0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudejledghedvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefvrghkrghs
+    hhhiucfurghkrghmohhtohcuoehoqdhtrghkrghshhhisehsrghkrghmohgttghhihdrjh
+    hpqeenucggtffrrghtthgvrhhnpeejgeeifeeuveeufeeigeegjeelvdfgjeegffejgfdv
+    keelhefgtdefteejleekjeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluh
+    hsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepohdqthgrkhgrshhh
+    ihesshgrkhgrmhhotggthhhirdhjph
+X-ME-Proxy: <xmx:uJpPYleVcSI-JrzdC8B_p9WH-4t8mOl-WHN8W6f8_D-INaZlG6mLmQ>
+    <xmx:uJpPYmOEABEsKmR-ozhl4WgiKx0aY4VDcuBkuDB6c_XzwHTJ-GjVhw>
+    <xmx:uJpPYnnsUxqgkqg5OoZr_nU0HWUhokxzXEiET0sakS6f-VyjGlyjKg>
+    <xmx:uZpPYjoI1r7BEHTKCRp2wfHZeTfX9d3uhXAHL7rZSUsdqmo8xAuLtQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 7 Apr 2022 22:15:19 -0400 (EDT)
+Date:   Fri, 8 Apr 2022 11:15:16 +0900
+From:   Takashi Sakamoto <o-takashi@sakamocchi.jp>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     clemens@ladisch.de, alsa-devel@alsa-project.org,
+        linux1394-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] firewire: assist unit driver to compute packet
+ time stamp
+Message-ID: <Yk+atHM5c9EI3584@workstation>
+Mail-Followup-To: Takashi Iwai <tiwai@suse.de>, clemens@ladisch.de,
+        alsa-devel@alsa-project.org, linux1394-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+References: <20220405072221.226217-1-o-takashi@sakamocchi.jp>
+ <s5hczhv5wjc.wl-tiwai@suse.de>
+ <Yk4r7VcotHz0iMOU@workstation>
+ <s5htub52zz1.wl-tiwai@suse.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <s5htub52zz1.wl-tiwai@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-By default `perf test tsc` does not return the error message
-when the child process detected kernel does not support. Instead,
-the child process print error message to stderr, unfortunately
-the stderr is redirected to /dev/null when verbose <= 0.
+On Thu, Apr 07, 2022 at 08:02:10AM +0200, Takashi Iwai wrote:
+> On Thu, 07 Apr 2022 02:10:21 +0200,
+> Takashi Sakamoto wrote:
+> > 
+> > On Tue, Apr 05, 2022 at 06:23:35PM +0200, Takashi Iwai wrote:
+> > > On Tue, 05 Apr 2022 09:22:18 +0200,
+> > > Takashi Sakamoto wrote:
+> > > > 
+> > > > Hi,
+> > > > 
+> > > > Current implementation of Linux FireWire subsystem doesn't allow unit
+> > > > driver to operate content of packet in IR context according to
+> > > > time stamp. Additionally it doesn't allow unit driver to read current value
+> > > > of CYCLE_TIME register in OHCI 1394 controller. It brings disadvantages to
+> > > > drivers in Linux sound subsystem in regards of handling time for sampled
+> > > > data such as PCM frames and MIDI messages.
+> > > > 
+> > > > This rerolled patchset is first step to improve the situation.
+> > > > 
+> > > > Changes in v3:
+> > > >  * Rebase v2 patchset to v5.18-rc1
+> > > > Changes in v2:
+> > > >  * Rebase v1 patchset to v5.16 release
+> > > >  * https://lore.kernel.org/lkml/20220212022131.199855-1-o-takashi@sakamocchi.jp/
+> > > > V1:
+> > > >  * https://lore.kernel.org/lkml/20211202113457.24011-1-o-takashi@sakamocchi.jp/
+> > > > 
+> > > > Hector Martin (1):
+> > > >   firewire: Add dummy read_csr/write_csr functions
+> > > > 
+> > > > Takashi Sakamoto (2):
+> > > >   firewire: add kernel API to access CYCLE_TIME register
+> > > >   firewire: add kernel API to access packet structure in request
+> > > >     structure for AR context
+> > > 
+> > > Thanks, applied all three patches now to for-next branch.
+> > 
+> > Although thanks for your applying them into your tree, I apologize to
+> > trouble you if you overlook that the included changes is just for Linux
+> > FireWire subsystem. It's my fault to send them only to Linux sound
+> > subsystem, but the changes are required to my work in sound drivers... 
+> > 
+> > If you are willing to include patches to Linux FireWire subsystem for
+> > your pull-request to Linus, I can prepare respined patches for it since
+> > I have the list of patches posted to LKML as bug fixes for Linux FireWire
+> > subsystem.
+> > 
+> > I need any help to solve current situation of Linux FireWire subsystem
+> > that bug fixes and new changes are hardly merged. Of course, IEEE 1394 bus
+> > is already outdated and legacy, but I know that some users still work
+> > with it. If your path is available for it, it's the easiest and the most
+> > convenient way for upstreaming, I think.
+> 
+> Ah OK, it's fine for me in either way.  I can keep up those changes in
+> my tree, or go through others.  I leave the decision Firewire
+> subsystem people.  Just let me know.
 
-This patch did three things:
-- returns TEST_SKIP to the parent process instead of TEST_OK when
-  perf_read_tsc_conversion() is not supported.
-- add a new subtest of testing if TSC is supported on current
-  architecture by moving exist code to a separate function.
-  It avoids two places in test__perf_time_to_tsc() that return
-  TEST_SKIP by doing this.
-- extended test suite definition to contain above two subtests.
-  Current test_suite and test_case structs do not support printing
-  skip reason when the number of subtest less than 1. To print skip
-  reason, it is necessary to extend current test suite definition.
+That's great. I think we can see few objections.
 
-Changes since v2:
-- refine error message format.
-- refine commit log message according to Adrian's review comments.
+In this weekend, I'll send two respined patchset. One is for bug fixes for
+your for-linus and living stables. Another is for your linux-next.
 
-Changes since v1 (thanks for the feedback from Adrian Hunter):
-- rebase commit to current source.
+Thanks for your kindness.
 
-Signed-off-by: Chengdong Li <chengdongli@tencent.com>
----
- tools/perf/tests/perf-time-to-tsc.c | 36 +++++++++++++++++++++--------
- 1 file changed, 27 insertions(+), 9 deletions(-)
 
-diff --git a/tools/perf/tests/perf-time-to-tsc.c b/tools/perf/tests/perf-time-to-tsc.c
-index d12d0ad81801..cc6df49a65a1 100644
---- a/tools/perf/tests/perf-time-to-tsc.c
-+++ b/tools/perf/tests/perf-time-to-tsc.c
-@@ -47,6 +47,17 @@
- 	}					\
- }
- 
-+static int test__tsc_is_supported(struct test_suite *test __maybe_unused,
-+				  int subtest __maybe_unused)
-+{
-+	if (!TSC_IS_SUPPORTED) {
-+		pr_debug("Test not supported on this architecture\n");
-+		return TEST_SKIP;
-+	}
-+
-+	return TEST_OK;
-+}
-+
- /**
-  * test__perf_time_to_tsc - test converting perf time to TSC.
-  *
-@@ -70,7 +81,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	struct perf_cpu_map *cpus = NULL;
- 	struct evlist *evlist = NULL;
- 	struct evsel *evsel = NULL;
--	int err = -1, ret, i;
-+	int err = TEST_FAIL, ret, i;
- 	const char *comm1, *comm2;
- 	struct perf_tsc_conversion tc;
- 	struct perf_event_mmap_page *pc;
-@@ -79,10 +90,6 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	u64 test_time, comm1_time = 0, comm2_time = 0;
- 	struct mmap *md;
- 
--	if (!TSC_IS_SUPPORTED) {
--		pr_debug("Test not supported on this architecture");
--		return TEST_SKIP;
--	}
- 
- 	threads = thread_map__new(-1, getpid(), UINT_MAX);
- 	CHECK_NOT_NULL__(threads);
-@@ -124,8 +131,8 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	ret = perf_read_tsc_conversion(pc, &tc);
- 	if (ret) {
- 		if (ret == -EOPNOTSUPP) {
--			fprintf(stderr, " (not supported)");
--			return 0;
-+			pr_debug("perf_read_tsc_conversion is not supported in current kernel\n");
-+			err = TEST_SKIP;
- 		}
- 		goto out_err;
- 	}
-@@ -191,7 +198,7 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	    test_tsc >= comm2_tsc)
- 		goto out_err;
- 
--	err = 0;
-+	err = TEST_OK;
- 
- out_err:
- 	evlist__delete(evlist);
-@@ -200,4 +207,15 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
- 	return err;
- }
- 
--DEFINE_SUITE("Convert perf time to TSC", perf_time_to_tsc);
-+static struct test_case time_to_tsc_tests[] = {
-+	TEST_CASE_REASON("TSC support", tsc_is_supported,
-+			 "This architecture does not support"),
-+	TEST_CASE_REASON("Perf time to TSC", perf_time_to_tsc,
-+			 "perf_read_tsc_conversion is not supported"),
-+	{ .name = NULL, }
-+};
-+
-+struct test_suite suite__perf_time_to_tsc = {
-+	.desc = "Convert perf time to TSC",
-+	.test_cases = time_to_tsc_tests,
-+};
--- 
-2.27.0
-
+Takashi Sakamoto
