@@ -2,109 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30838C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB862C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236458AbiDHNqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 09:46:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42884 "EHLO
+        id S236476AbiDHNql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 09:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236456AbiDHNqB (ORCPT
+        with ESMTP id S229911AbiDHNqi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 09:46:01 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9173066CBE;
-        Fri,  8 Apr 2022 06:43:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=U3X29t3+VLz2WJJhQemUxxtklWikOyMxuqcodamWqYc=; b=WVV+3pnhzr+qRY8PinZ3kgCl8A
-        L2NS6NDs0RVQapzxIBSFRHEwCZ8Rl7MgJflCcTj8c9QGennVYL5NxvvWo40KpmvWCNZzYdVLJwO6W
-        CSKnYny73Hve66dvz0w3keewkRrefPg274P7xpJPfy3ReqbUnu1Z0QB8iZgXLag/2CA8OperiAbfj
-        tRFBBXoc5mX8RbGpHC/t6CSP6tUAn61uH+pwi9NjX5ww6J0w5Lhyk2kzgZ+repbquFUkD6C8TMalN
-        C2gZ+xJZP4+GNrFNqZ6oiMBl3y7F7QKODMFPLQL3lmrAbZLydS6eKMbQ5zFTL7zv6fQUUaR8CzcrM
-        ySqEMQow==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ncotf-002vyl-HT; Fri, 08 Apr 2022 13:43:33 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id F05963001D0;
-        Fri,  8 Apr 2022 15:43:28 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id C60BC201C63B3; Fri,  8 Apr 2022 15:43:28 +0200 (CEST)
-Date:   Fri, 8 Apr 2022 15:43:28 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     "brookxu.cn" <brookxu.cn@gmail.com>, corbet@lwn.net,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-Subject: Re: [PATCH] docs/scheduler: Change unit of cpu_time and rq_time to
- nanoseconds
-Message-ID: <YlA8AEfqK6eRnAPO@hirez.programming.kicks-ass.net>
-References: <1649410266-32360-1-git-send-email-brookxu.cn@gmail.com>
- <YlAub2NXBPeNcyAS@casper.infradead.org>
+        Fri, 8 Apr 2022 09:46:38 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A15F60CEF;
+        Fri,  8 Apr 2022 06:44:33 -0700 (PDT)
+Received: from zn.tnic (p200300ea971561a9329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9715:61a9:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BAA7B1EC01E0;
+        Fri,  8 Apr 2022 15:44:27 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649425467;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=mOnW2RJRODQeSBjSgnryRxY14AdVYsRQ+7sJhUa4YEU=;
+        b=CdxTjfp4gAObW08TYs2ei2/MeVIJaSFerojf2AZ7txQYGu/1YyzeFTlIpDNVrbliDoowZr
+        NgqFsTloOO/nKq6L714vO8e8qjNc4rXvY3XJPK7ZWCFR1doW/3BDZ9F24dmDF2FP1IsVBr
+        OroCLYc4/TJD3g5txjemUxwBlbXlm2g=
+Date:   Fri, 8 Apr 2022 15:44:26 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Vasant Karasulli <vkarasulli@suse.de>
+Cc:     linux-kernel@vger.kernel.org, jroedel@suse.de, kvm@vger.kernel.org,
+        x86@kernel.org, thomas.lendacky@amd.com, varad.gautam@suse.com
+Subject: Re: [PATCH v6 1/4] x86/tests: Add tests for AMD SEV-ES #VC handling
+Message-ID: <YlA8OiFKGT8wP2dZ@zn.tnic>
+References: <20220318104646.8313-1-vkarasulli@suse.de>
+ <20220318104646.8313-2-vkarasulli@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YlAub2NXBPeNcyAS@casper.infradead.org>
+In-Reply-To: <20220318104646.8313-2-vkarasulli@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 01:45:35PM +0100, Matthew Wilcox wrote:
-> On Fri, Apr 08, 2022 at 05:31:06PM +0800, brookxu.cn wrote:
-> > From: Chunguang Xu <brookxu@tencent.com>
-> > 
-> > In the current implementation, cpu_time and rq_time should be
-> > in nanoseconds, so this document needs to be modified.
+> Subject: Re: [PATCH v6 1/4] x86/tests: Add tests for AMD SEV-ES #VC handling
+
+Your subject need to summarize each patch and not be the same for each
+patch.
+
+On Fri, Mar 18, 2022 at 11:46:43AM +0100, Vasant Karasulli wrote:
+>  Add Kconfig options for testing AMD SEV
+>  related features.
 > 
-> I agree that this is wrong, but we shouldn't be changing the units
-> of measurement reported to userspace without changing the schedstats
-> version.  I suspect this was an inadvertent change, and we should be
-> converting from sched_clock() time (~= ns) to jiffies in show_schedstat().
-> Adding scheduler experts.
+> Signed-off-by: Vasant Karasulli <vkarasulli@suse.de>
+> ---
+>  arch/x86/Kbuild          |  2 ++
+>  arch/x86/Kconfig.debug   | 16 ++++++++++++++++
+>  arch/x86/kernel/Makefile |  7 +++++++
+>  arch/x86/tests/Makefile  |  1 +
+>  4 files changed, 26 insertions(+)
+>  create mode 100644 arch/x86/tests/Makefile
+> 
+> diff --git a/arch/x86/Kbuild b/arch/x86/Kbuild
+> index f384cb1a4f7a..90470c76866a 100644
+> --- a/arch/x86/Kbuild
+> +++ b/arch/x86/Kbuild
+> @@ -26,5 +26,7 @@ obj-y += net/
+> 
+>  obj-$(CONFIG_KEXEC_FILE) += purgatory/
+> 
+> +obj-y += tests/
+> +
+>  # for cleaning
+>  subdir- += boot tools
+> diff --git a/arch/x86/Kconfig.debug b/arch/x86/Kconfig.debug
+> index d3a6f74a94bd..e4f61af66816 100644
+> --- a/arch/x86/Kconfig.debug
+> +++ b/arch/x86/Kconfig.debug
+> @@ -279,3 +279,19 @@ endchoice
+>  config FRAME_POINTER
+>  	depends on !UNWINDER_ORC && !UNWINDER_GUESS
+>  	bool
+> +
+> +config X86_TESTS
+> +	bool "Tests for x86"
 
-Seems to have happend at 425e0968a25f ("sched: move code into
-kernel/sched_stats.h").
+"x86 unit tests"
 
-Before that we have:
+or so.
 
--static inline void
--rq_sched_info_depart(struct rq *rq, unsigned long delta_jiffies)
--{
--       if (rq)
--               rq->rq_sched_info.cpu_time += delta_jiffies;
--}
+> +	help
+> +	    This enables building the tests under arch/x86/tests.
 
--static inline void sched_info_depart(struct task_struct *t)
--{
--       unsigned long delta_jiffies = jiffies - t->sched_info.last_arrival;
--
--       t->sched_info.cpu_time += delta_jiffies;
--       rq_sched_info_depart(task_rq(t), delta_jiffies);
--}
+This needs to explain more what "the tests" are and how people should
+run them or at least there should be a pointer to a doc how. Running
+tests should be trivial to mount so that everyone can run them. You want
+as many people testing stuff as possible so the testing infra needs to
+be easy to use.
 
-afterwards we have:
+For example, I have no clue how to run those tests.
 
-+static inline void sched_info_depart(struct task_struct *t)
-+{
-+       unsigned long long delta = sched_clock() - t->sched_info.last_arrival;
-+
-+       t->sched_info.cpu_time += delta;
-+       rq_sched_info_depart(task_rq(t), delta);
-+}
+Also, I have no clue why those tests are in arch/x86/tests/ and not
+somewhere in tools/testing/selftests/x86/ or so.
 
-And that's 15 years and at least one SCHEDSTAT_VERSION ago (although
-this change itself didn't bump the version).
+All this stuff needs to be explained in the commit message.
 
-So I'm thinking we can update the documentation and forget about this.
+Also, you should read
+
+Documentation/process/submitting-patches.rst
+
+first as there it is explained at length how a patch should look like.
+
+> +
+> +if X86_TESTS
+> +config AMD_SEV_TEST_VC
+> +	bool "Test for AMD SEV VC exception handling"
+> +	depends on AMD_MEM_ENCRYPT
+> +	select FUNCTION_TRACER
+> +	select KPROBES
+> +	select KUNIT
+> +	help
+> +	  Enable KUnit-based testing for AMD SEV #VC exception handling.
+> +endif # X86_TESTS
+> diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+> index 6aef9ee28a39..69472a576909 100644
+> --- a/arch/x86/kernel/Makefile
+> +++ b/arch/x86/kernel/Makefile
+> @@ -24,6 +24,13 @@ CFLAGS_REMOVE_sev.o = -pg
+>  CFLAGS_REMOVE_cc_platform.o = -pg
+>  endif
+> 
+> +# AMD_SEV_TEST_VC registers a kprobe by function name. IPA-SRA creates
+> +# function copies and renames them to have an .isra suffix, which breaks kprobes'
+> +# lookup. Build with -fno-ipa-sra for the test.
+> +ifdef CONFIG_AMD_SEV_TEST_VC
+
+Why ifdef?
+
+I think you want this to be enabled unconditionally since the VC tests
+select KRPOBES.
+
+> +CFLAGS_sev.o	+= -fno-ipa-sra
+> +endif
+> +
+>  KASAN_SANITIZE_head$(BITS).o				:= n
+>  KASAN_SANITIZE_dumpstack.o				:= n
+>  KASAN_SANITIZE_dumpstack_$(BITS).o			:= n
+> diff --git a/arch/x86/tests/Makefile b/arch/x86/tests/Makefile
+> new file mode 100644
+> index 000000000000..f66554cd5c45
+> --- /dev/null
+> +++ b/arch/x86/tests/Makefile
+> @@ -0,0 +1 @@
+> +# SPDX-License-Identifier: GPL-2.0
+
+Add that file with the next patch - this hunk is just silly as it is.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
