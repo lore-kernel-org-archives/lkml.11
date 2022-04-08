@@ -2,181 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E29EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 00:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE1CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 00:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233256AbiDHAxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 20:53:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
+        id S233284AbiDHAxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 20:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232560AbiDHAxJ (ORCPT
+        with ESMTP id S233266AbiDHAxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 20:53:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD61108550;
-        Thu,  7 Apr 2022 17:51:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76E06618D9;
-        Fri,  8 Apr 2022 00:51:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92372C385A9;
-        Fri,  8 Apr 2022 00:51:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649379066;
-        bh=qU7NQO8a/GNTqpF3kK+hxQlG2bDuw47+HzlGrFENsk0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GOQSPJ8bHkuyeDVLE6PnkAGeUamFLQFl8cos02fJ8bIyktW4ZeXboUeddgG/NMIa2
-         CaNnuHS++W12Ut17ouCCXqwYJ+xzcmWBztMK5sTWcpSG2jxXAhAPiqn3n3qyVGs5RI
-         DEX5EtMR9GxZz4fdnpitv3nanTaZj3/2+A6vWsYXPUWdbqzEHpBZmqz6Zntz34tHA7
-         C5LMwWG4dgQH311WFakZVAhou+Sh0SvqdPRsCt6Y3c6wmsRt18XcHRxwCox1tw8pDO
-         criUsaXqR8aM7fK2H+qWAIoPJsfFGnFNwrCMX4p5DabHPNtmE4VZMAFZZAQqElfIOi
-         92WbAySEbNahQ==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Shubham Bansal <illusionist.neo@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, bpf@vger.kernel.org,
-        kernel-team@fb.com, Jiri Olsa <jolsa@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH bpf v2 2/4] rethook,fprobe,kprobes: Check a failure in the rethook_hook()
-Date:   Fri,  8 Apr 2022 09:51:00 +0900
-Message-Id: <164937905999.1272679.6572597960911139308.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164937903547.1272679.7244379141135199176.stgit@devnote2>
-References: <164937903547.1272679.7244379141135199176.stgit@devnote2>
-User-Agent: StGit/0.19
+        Thu, 7 Apr 2022 20:53:19 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AC4158DAC;
+        Thu,  7 Apr 2022 17:51:18 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id s14-20020a17090a880e00b001caaf6d3dd1so10484941pjn.3;
+        Thu, 07 Apr 2022 17:51:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dodW1fVEcct0O/JyTL9zJf6rBjh5DGa2iEPmEpDwu9E=;
+        b=iGn315jREigICcuAlexjNs/dQW2YimHhkdZ6DFgrcVuZ5toRN1Q5rj2y9rBYzaGnNl
+         wpaS21Gs9jPXTC4O/oE5jGfHUtOcHBoTB1Ld4Zj+FFLUvbEbYvhDXzktSETJ4gVy+xQq
+         ptJneqDeE5zUFualS3xAcOSvLJ2bstW2ahzeUMO66oCKx5QyFoaauXrtKjrb8S19osBT
+         mNcC4SuvCtFI00dC7+d341B6LLsNmzeZYqjhYBx37zjkKzRviwMhkGoEfvJxlHQU0417
+         40Sbqjq6ksgVUqEI25ZAQhMn3bfqEmedthlaXeCexvuqSQcNw3zozAQOnUfJ+ACmHzCK
+         RbDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dodW1fVEcct0O/JyTL9zJf6rBjh5DGa2iEPmEpDwu9E=;
+        b=eIr33VScwj5iVGsdDoxkjRWPV3l/vv4k5tFFlfQt6eZRJzLXfly582qHjGL5jKy9UL
+         nbt8XlKkJPt8BCu4elDBhPl0Uf7d5syiAuRdrJ/B6KdA+iWJPNwnYdKFdLE2pX9hnQk4
+         m6wyniLIMDswkTFDoELaqGwOQqAcXHpvp/+Ea2kQR/yXAFhZQ0f6ZOo0e1310PkUxoBN
+         rvsbq2z1ZEYzEwhkNNuVcgJniO3pviu0JMibbK52isb33Ys2rQrsPi6jIy4hZ6HUDf/8
+         rvT0NP+FLliCU1BiVhsclbOuCFU5v9IJauWHTv7GLcda8wR9RF1WzkN0S3QTeR6vndfo
+         n3CA==
+X-Gm-Message-State: AOAM533cIYSA4Qosmjs/2Qr/mTAmsZ434dkOf0aLVZ02DoPeRRBoEMZy
+        YTRB5OmYGvfJa0+K1MItbeM=
+X-Google-Smtp-Source: ABdhPJwOamlk6v0ZvDEDupwF3OT7hM5UbMEJcNWFFTXRHfhYhIgd0smW1kjGDTL4Y6IoQgs0sLOaNw==
+X-Received: by 2002:a17:903:240c:b0:153:c452:f282 with SMTP id e12-20020a170903240c00b00153c452f282mr16186894plo.88.1649379077566;
+        Thu, 07 Apr 2022 17:51:17 -0700 (PDT)
+Received: from localhost ([192.55.54.52])
+        by smtp.gmail.com with ESMTPSA id q17-20020aa79831000000b0050566040330sm4245426pfl.126.2022.04.07.17.51.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 17:51:17 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 17:51:16 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
+        Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [RFC PATCH v5 024/104] KVM: TDX: create/destroy VM structure
+Message-ID: <20220408005116.GB2864606@ls.amr.corp.intel.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <36805b6b6b668669d5205183c338a4020df584dd.1646422845.git.isaku.yamahata@intel.com>
+ <aa6afd32-8892-dc8d-3804-3d85dcb0b867@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <aa6afd32-8892-dc8d-3804-3d85dcb0b867@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since there are possible to fail to hook the function return (depends on
-archtecutre implememtation), rethook_hook() should return the error
-in that case and caller must check it.
+On Tue, Apr 05, 2022 at 02:44:04PM +0200,
+Paolo Bonzini <pbonzini@redhat.com> wrote:
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- arch/x86/kernel/rethook.c |    4 +++-
- include/linux/rethook.h   |    4 ++--
- kernel/kprobes.c          |    8 +++++---
- kernel/trace/fprobe.c     |    5 ++++-
- kernel/trace/rethook.c    |   12 ++++++++++--
- 5 files changed, 24 insertions(+), 9 deletions(-)
+> > diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
+> > index 6111c6485d8e..5c3a904a30e8 100644
+> > --- a/arch/x86/kvm/vmx/main.c
+> > +++ b/arch/x86/kvm/vmx/main.c
+> > @@ -39,12 +39,24 @@ static int vt_vm_init(struct kvm *kvm)
+> >   		ret = tdx_module_setup();
+> >   		if (ret)
+> >   			return ret;
+> > -		return -EOPNOTSUPP;	/* Not ready to create guest TD yet. */
+> > +		return tdx_vm_init(kvm);
+> >   	}
+> >   	return vmx_vm_init(kvm);
+> >   }
+> > +static void vt_mmu_prezap(struct kvm *kvm)
+> > +{
+> > +	if (is_td(kvm))
+> > +		return tdx_mmu_prezap(kvm);
+> > +}
+> 
+> Please rename the function to explain what it does, for example
+> tdx_mmu_release_hkid.
 
-diff --git a/arch/x86/kernel/rethook.c b/arch/x86/kernel/rethook.c
-index 8a1c0111ae79..c92b4875e3b9 100644
---- a/arch/x86/kernel/rethook.c
-+++ b/arch/x86/kernel/rethook.c
-@@ -114,7 +114,7 @@ void arch_rethook_fixup_return(struct pt_regs *regs,
- }
- NOKPROBE_SYMBOL(arch_rethook_fixup_return);
- 
--void arch_rethook_prepare(struct rethook_node *rh, struct pt_regs *regs, bool mcount)
-+int arch_rethook_prepare(struct rethook_node *rh, struct pt_regs *regs, bool mcount)
- {
- 	unsigned long *stack = (unsigned long *)regs->sp;
- 
-@@ -123,5 +123,7 @@ void arch_rethook_prepare(struct rethook_node *rh, struct pt_regs *regs, bool mc
- 
- 	/* Replace the return addr with trampoline addr */
- 	stack[0] = (unsigned long) arch_rethook_trampoline;
-+
-+	return 0;
- }
- NOKPROBE_SYMBOL(arch_rethook_prepare);
-diff --git a/include/linux/rethook.h b/include/linux/rethook.h
-index c8ac1e5afcd1..07b9c6663b8e 100644
---- a/include/linux/rethook.h
-+++ b/include/linux/rethook.h
-@@ -63,12 +63,12 @@ void rethook_free(struct rethook *rh);
- void rethook_add_node(struct rethook *rh, struct rethook_node *node);
- struct rethook_node *rethook_try_get(struct rethook *rh);
- void rethook_recycle(struct rethook_node *node);
--void rethook_hook(struct rethook_node *node, struct pt_regs *regs, bool mcount);
-+int rethook_hook(struct rethook_node *node, struct pt_regs *regs, bool mcount);
- unsigned long rethook_find_ret_addr(struct task_struct *tsk, unsigned long frame,
- 				    struct llist_node **cur);
- 
- /* Arch dependent code must implement arch_* and trampoline code */
--void arch_rethook_prepare(struct rethook_node *node, struct pt_regs *regs, bool mcount);
-+int arch_rethook_prepare(struct rethook_node *node, struct pt_regs *regs, bool mcount);
- void arch_rethook_trampoline(void);
- 
- /**
-diff --git a/kernel/kprobes.c b/kernel/kprobes.c
-index dbe57df2e199..7fd7f1195bde 100644
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -2109,10 +2109,12 @@ static int pre_handler_kretprobe(struct kprobe *p, struct pt_regs *regs)
- 
- 	ri = container_of(rhn, struct kretprobe_instance, node);
- 
--	if (rp->entry_handler && rp->entry_handler(ri, regs))
-+	if (rp->entry_handler && rp->entry_handler(ri, regs)) {
- 		rethook_recycle(rhn);
--	else
--		rethook_hook(rhn, regs, kprobe_ftrace(p));
-+	} else if (rethook_hook(rhn, regs, kprobe_ftrace(p)) < 0) {
-+		rethook_recycle(rhn);
-+		rp->nmissed++;
-+	}
- 
- 	return 0;
- }
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-index 89d9f994ebb0..d3b13294d545 100644
---- a/kernel/trace/fprobe.c
-+++ b/kernel/trace/fprobe.c
-@@ -48,7 +48,10 @@ static void fprobe_handler(unsigned long ip, unsigned long parent_ip,
- 		}
- 		fpr = container_of(rh, struct fprobe_rethook_node, node);
- 		fpr->entry_ip = ip;
--		rethook_hook(rh, ftrace_get_regs(fregs), true);
-+		if (rethook_hook(rh, ftrace_get_regs(fregs), true) < 0) {
-+			rethook_recycle(rh);
-+			fp->nmissed++;
-+		}
- 	}
- 
- out:
-diff --git a/kernel/trace/rethook.c b/kernel/trace/rethook.c
-index b56833700d23..e7db83438e45 100644
---- a/kernel/trace/rethook.c
-+++ b/kernel/trace/rethook.c
-@@ -174,11 +174,19 @@ NOKPROBE_SYMBOL(rethook_try_get);
-  * from ftrace (mcount) callback, @mcount must be set true. If this is called
-  * from the real function entry (e.g. kprobes) @mcount must be set false.
-  * This is because the way to hook the function return depends on the context.
-+ * This returns 0 if succeeded to hook the function return, or -errno if
-+ * failed.
-  */
--void rethook_hook(struct rethook_node *node, struct pt_regs *regs, bool mcount)
-+int rethook_hook(struct rethook_node *node, struct pt_regs *regs, bool mcount)
- {
--	arch_rethook_prepare(node, regs, mcount);
-+	int ret;
-+
-+	ret = arch_rethook_prepare(node, regs, mcount);
-+	if (ret < 0)
-+		return ret;
-+
- 	__llist_add(&node->llist, &current->rethooks);
-+	return 0;
- }
- NOKPROBE_SYMBOL(rethook_hook);
- 
-
+In the patch 021/104,  you suggested flush_shadow_all_private().
+Which do you prefer? flush_shadow_all_private or tdx_mmu_release_hkid.
+-- 
+Isaku Yamahata <isaku.yamahata@gmail.com>
