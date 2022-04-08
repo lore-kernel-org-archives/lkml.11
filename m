@@ -2,117 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D75C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D15C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239012AbiDHSnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 14:43:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54316 "EHLO
+        id S239001AbiDHSnw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 14:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239160AbiDHSn2 (ORCPT
+        with ESMTP id S239175AbiDHSnr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 14:43:28 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1ED190B77;
-        Fri,  8 Apr 2022 11:41:24 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id p15so16517524lfk.8;
-        Fri, 08 Apr 2022 11:41:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hss05uUSr3Uc3Gs0kDe2glyZ50kr35XM4twyAZx/Q7g=;
-        b=BiLeBiNJ4IU0JKxxJwQ/+tsSbDO8w926u868ywMqvgqSx1ECrq4SQRpVmiNHU8xInz
-         I08n30WH55Fgmj3kKdizeFitibHvWRfJ+NsJTlIyX3sdgo/gRX0ApYXQGo25hnxeJH0o
-         IchXYwrlNxr6YCxsOjzty/dlQUst72RcEKFB94cZQmdku2lU5NqQ0A/pCZ174EZIuQ/G
-         NDJjCwqsKNMQ+C1AgoYTSwvcopDsdbP1FuCdqKlEJCIwmJSmCRO9iZsF0b0rdGJ9aEN6
-         0EQEV3Si86ME/BVSZL7hEeg+9PTpDY5FO2NxDfT6C98SSDTFdo8hVrj9SYMbeD4Q8oZU
-         GSAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hss05uUSr3Uc3Gs0kDe2glyZ50kr35XM4twyAZx/Q7g=;
-        b=3GN4UqsGcXE1so6MDu2e+4FtEXttIJ+xKHl3EY0R0TRSFXLNh8+1RR9KKZjQzi/OrO
-         iumRqZBEPUL8Tz2lSzJkvgUMzQhEsOnAE/YeMyoRiN4sL4dFv5W6nxeRsUjs3W3E5Lq2
-         fk6R0OHgLZ/bEd/KmoD4XjlsJephSB5cMo1qwTCOPsSnFmCLtl5mS+hWp+6ciHN6cTuA
-         PZqkUfBEQYLC9ONsuQ6qPRU/JjGUoueWSTg3jf8eFgRewA7/NC8UprFDY1ijRDoVB8AH
-         n4KR9TTOqSdEWGCFU97UP1J6yX0q7Ijsa1vWxiCAHZMZy+9lChhuBrwkf1KhTeYPyC3u
-         E2KQ==
-X-Gm-Message-State: AOAM533zNLFCqD/ix8ua+Fi2eTiocbWirwyyhm8l6J7zUro0geiynjKk
-        ob4WdwLV/xEt5/+iMBiVel14pQ+0XS8=
-X-Google-Smtp-Source: ABdhPJy/Vqtt6+tWHlLIytsK6143rCKFf7AKlW6x1FLCTH0jDJY7ZEmgYaHrNxzFJSHIFIY2fBqhtQ==
-X-Received: by 2002:ac2:5619:0:b0:464:f76b:cace with SMTP id v25-20020ac25619000000b00464f76bcacemr5412057lfd.437.1649443282346;
-        Fri, 08 Apr 2022 11:41:22 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id v17-20020a2e9f51000000b0024b006037eesm2301201ljk.139.2022.04.08.11.41.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 11:41:21 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v6 2/2] leds: ktd2692: Make aux-gpios optional
-Date:   Fri,  8 Apr 2022 21:40:55 +0300
-Message-Id: <20220408184104.13665-3-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220408184104.13665-1-markuss.broks@gmail.com>
-References: <20220408184104.13665-1-markuss.broks@gmail.com>
+        Fri, 8 Apr 2022 14:43:47 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 221AF1C7BB7;
+        Fri,  8 Apr 2022 11:41:38 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 6F8BF21602;
+        Fri,  8 Apr 2022 18:41:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649443297;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iaTTqD9aZUtboVELKSbI3z4DsVuFax6sbvMw2Vl1jzk=;
+        b=zoKdisOrhI+T9DmqblVP1a5mV5GlaCa97QaymbCbk0SxOUtBkkZkgbQNTZvoAn5REHH0zR
+        sVMSvpNjNG7YZ+SHWyV27kFZxWslckB8u7U0vY2nvU/tTg6+d34lpuEQSLvzxJgKrXP2wO
+        D4fpVHbAnxos4R3RWymmEV9jroAdHwg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649443297;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iaTTqD9aZUtboVELKSbI3z4DsVuFax6sbvMw2Vl1jzk=;
+        b=Ai73YkpRKt9BkmpXSthGZNAfFpTUvUu4/ymvjQGmegsBCMHWKJbboWfjLSC9FehgzuYjPn
+        asLjwY329KVC+FAA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 373F1A3B96;
+        Fri,  8 Apr 2022 18:41:37 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 366ADDA832; Fri,  8 Apr 2022 20:37:34 +0200 (CEST)
+Date:   Fri, 8 Apr 2022 20:37:33 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, kernel-team@fb.com,
+        Omar Sandoval <osandov@osandov.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>
+Subject: Re: [PATCH] btrfs: restore inode creation before xattr setting
+Message-ID: <20220408183733.GA15609@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, kernel-team@fb.com,
+        Omar Sandoval <osandov@osandov.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>
+References: <8a60e54c02d8951cf5650cc8452ae583c130bbf7.1649437335.git.sweettea-kernel@dorminy.me>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8a60e54c02d8951cf5650cc8452ae583c130bbf7.1649437335.git.sweettea-kernel@dorminy.me>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make the AUX pin optional, since it isn't a core part of functionality,
-and the device is designed to be operational with only one CTRL pin.
+On Fri, Apr 08, 2022 at 01:15:07PM -0400, Sweet Tea Dorminy wrote:
+> According to the tree checker, "all xattrs with a given objectid follow
+> the inode with that objectid in the tree" is an invariant. This was
+> broken by the recent change "btrfs: move common inode creation code into
+> btrfs_create_new_inode()", which moved acl creation and property
+> inheritance (stored in xattrs) to before inode insertion into the tree.
+> As a result, under certain timings, the xattrs could be written to the
+> tree before the inode, causing the tree checker to report violation of
+> the invariant.
+> 
+> Move property inheritance and acl creation back to their old ordering
+> after the inode insertion.
+> 
+> Suggested-by: Omar Sandoval <osandov@osandov.com>
+> Reported-by: Naohiro Aota <naohiro.aota@wdc.com>
+> Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+> ---
+> This should apply on top of osandov's patch at
+>  https://lore.kernel.org/linux-btrfs/da6cfa1b8e42db5c8954680cac1ca322d463b880.1647306546.git.osandov@fb.com/
+> 
+> It's survived a good dose of fstests, and several iterations of specific
+> tests that were failing, e.g. generic/650.
 
-Also pick up maintenance for the LED driver and the yaml bindings.
+Thanks.
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- MAINTAINERS                       | 6 ++++++
- drivers/leds/flash/leds-ktd2692.c | 6 +++---
- 2 files changed, 9 insertions(+), 3 deletions(-)
+> David: I don't know if you'd rather roll this into osandov's original
+> patch, or whether you'd like me or osandov to resend the patch linked
+> above with this addition rolled into it, or whether you'd like to apply
+> it separately.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2db49ea7ae55..8ef5667a1d98 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10479,6 +10479,12 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/leds/backlight/kinetic,ktd253.yaml
- F:	drivers/video/backlight/ktd253-backlight.c
- 
-+KTD2692 FLASH LED DRIVER
-+M:	Markuss Broks <markuss.broks@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/leds/backlight/kinetic,ktd2692.yaml
-+F:	drivers/leds/flash/leds-ktd2692.yaml
-+
- KTEST
- M:	Steven Rostedt <rostedt@goodmis.org>
- M:	John Hawley <warthog9@eaglescrag.net>
-diff --git a/drivers/leds/flash/leds-ktd2692.c b/drivers/leds/flash/leds-ktd2692.c
-index f341da1503a4..01ceea83af67 100644
---- a/drivers/leds/flash/leds-ktd2692.c
-+++ b/drivers/leds/flash/leds-ktd2692.c
-@@ -284,9 +284,9 @@ static int ktd2692_parse_dt(struct ktd2692_context *led, struct device *dev,
- 		return ret;
- 	}
- 
--	led->aux_gpio = devm_gpiod_get(dev, "aux", GPIOD_ASIS);
--	ret = PTR_ERR_OR_ZERO(led->aux_gpio);
--	if (ret) {
-+	led->aux_gpio = devm_gpiod_get_optional(dev, "aux", GPIOD_ASIS);
-+	if (IS_ERR(led->aux_gpio)) {
-+		ret = PTR_ERR(led->aux_gpio);
- 		dev_err(dev, "cannot get aux-gpios %d\n", ret);
- 		return ret;
- 	}
--- 
-2.35.1
+For simple fixups sent as replies I can apply it manually but sometimes
+it's better for me to do the review instead of trying to figure out what
+was the real intention.
 
+So patch applied cleanly and now pushed to misc-next, thanks.
