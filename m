@@ -2,123 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 05:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E572DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 05:35:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234736AbiDHF22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 01:28:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53564 "EHLO
+        id S234717AbiDHFhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 01:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234735AbiDHF20 (ORCPT
+        with ESMTP id S229933AbiDHFhC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 01:28:26 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F9211FE09
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 22:26:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649395583; x=1680931583;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=iQzLOJQM3kIsvkHG8F3r8zJt/G/5UYHiHT0sa+/ifME=;
-  b=jeGyVSRIy2Ey+8jxssenPO8QaSrhP03rdT2Zw8iPj9i8SMvcCgwOpvoi
-   aRj0odP1YNcWMnAK/10OkyI5VHm9HqPvu4R/96UgbdfQ2hzOE6Nt1z88b
-   Hp4iRRhSf6OogLZsunxrT6t+Vqlzdb767sNruP+OKKyaIi1Zh2dESPrma
-   6aIALFQr6dXNg1kSgULgU6lkaiZa7nt6jU+xq/9Y2D6t9q2p0hAL5zwyy
-   A75HMHRRMFEzqLSrQKyCHCePXlAgjgwH/hIvOJTVidPJrs5tet3cUzne9
-   aQAtTNKgzJgFz7sXMpvk2jr42GzTnceyWyei3gW23KQHdbBhU3ygcyBNO
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="259111858"
-X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
-   d="scan'208";a="259111858"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 22:26:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
-   d="scan'208";a="589098903"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 07 Apr 2022 22:26:21 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nch8X-00065h-7E;
-        Fri, 08 Apr 2022 05:26:21 +0000
-Date:   Fri, 8 Apr 2022 13:25:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>
-Subject: [l1k:smsc95xx_5.17 191/199]
- drivers/char/tpm/tpm_tis_spi_slb9670.c:24:5: warning: no previous prototype
- for 'slb9670_spi_unset_reset'
-Message-ID: <202204081357.8SfjQosI-lkp@intel.com>
+        Fri, 8 Apr 2022 01:37:02 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D956E13D64;
+        Thu,  7 Apr 2022 22:35:00 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id y8so2326824pfw.0;
+        Thu, 07 Apr 2022 22:35:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=M9GeHxOMMEsAW0gA0HYTOdLUoDAu3ektn3I3+ONaQ78=;
+        b=iuN+YiAnhi4v1/0R0HOX4xh70eB3YiaK4mxf9D7VrRedSnKBVG1bPI7e4hBhLMyn6I
+         EP3EQVc/c5XXRpoPZtxAE2grPFYBMXYm7VW9IRGucH2ZOw05Fjx80ms4gqWQ8Xc26/0s
+         fQZB77ggqAr09i7Wp9zGWuKbn4kOkwahgb60gOXZyJ/XBilId/BGRSM1zycYTKbSbwTr
+         qD1V4F5S3rTVl7krq0UmV0+3GZwKggtIYpUfJZfjrh6Xl/ySynO2lhELXWTIsXdpS315
+         EVw2et4gxvLGuHtWUQjO53grE4n9TMzO0jefdg/9oT477pbO6U95H57vJNKRzo+z9qgj
+         bCpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=M9GeHxOMMEsAW0gA0HYTOdLUoDAu3ektn3I3+ONaQ78=;
+        b=1ewk4cbqiYgq+cHV0C8xTIx1bU6lSYUugLd2J4cjT6nJNhoDCvUo465sLFUZRqc0p/
+         DQMyJuuVePiiS+cxCZHvTsI8UX8yOb6St2QSPYDQwoSFzWiNTVsQdo3JoqmVY3hB2R9Q
+         GKAV12DC2bi+cZz5gI4tgQSdHX2WhLkgsFH7naD/NYSIinATOaNzYacHdrePFIpkWXa4
+         eTPFCx9pnUUyz0gWB5U0mZsEf6tB4BXkk1w9li0Xxgxv+10WMyDQ2Ye/Y04LPRnqnNpJ
+         jkK+/hsybQXWZw6p9lxyI/iTqXn01FYwi/6daFW9h8ZfZWIt3gexnLHvMsVFlQtpC/7o
+         yEfg==
+X-Gm-Message-State: AOAM5301ZYkSCQkwinWwcsXHm0s6SgudrRR1gnqifzh4bG/pnnHRuI6I
+        mKAM1jL1i6jAnMOD/5eJuyyzIewA1JA=
+X-Google-Smtp-Source: ABdhPJx/XECfC8Kwv7ypEIy3LDZeAQh4csiALroh2Vt6IrSaBqHpDu5jRjodhb64ZQWN1o2k2cYPKQ==
+X-Received: by 2002:a62:1e03:0:b0:505:64c1:3e19 with SMTP id e3-20020a621e03000000b0050564c13e19mr7824024pfe.32.1649396100336;
+        Thu, 07 Apr 2022 22:35:00 -0700 (PDT)
+Received: from localhost ([192.55.54.52])
+        by smtp.gmail.com with ESMTPSA id mn18-20020a17090b189200b001cac1781bb4sm10718776pjb.35.2022.04.07.22.34.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 22:34:59 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 22:34:57 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sagi Shahar <sagis@google.com>,
+        "Yamahata, Isaku" <isaku.yamahata@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Jim Mattson <jmattson@google.com>,
+        Erdem Aktas <erdemaktas@google.com>,
+        Connor Kuehl <ckuehl@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [RFC PATCH v5 083/104] KVM: x86: Split core of hypercall
+ emulation to helper function
+Message-ID: <20220408053457.GA857847@ls.amr.corp.intel.com>
+References: <cover.1646422845.git.isaku.yamahata@intel.com>
+ <f3293bd872a916bf33165a2ec0d6fc50533b817f.1646422845.git.isaku.yamahata@intel.com>
+ <CAAhR5DFPsmxYXXXZ9WNW=MDWRRz5jrntPvsnKw7VTrRh5CbohQ@mail.gmail.com>
+ <1eac9040-f75f-8838-bd75-521cb666c61a@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1eac9040-f75f-8838-bd75-521cb666c61a@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/l1k/linux smsc95xx_5.17
-head:   b194077da9627d066b5fa96b0aa1515b3b982d15
-commit: 0c5db7c8f524b10886d73cf60256665e5f6df603 [191/199] tpm: tpm_tis_spi_slb_9670: implement set_reset and unset_reset functions
-config: h8300-randconfig-r035-20220408 (https://download.01.org/0day-ci/archive/20220408/202204081357.8SfjQosI-lkp@intel.com/config)
-compiler: h8300-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/l1k/linux/commit/0c5db7c8f524b10886d73cf60256665e5f6df603
-        git remote add l1k https://github.com/l1k/linux
-        git fetch --no-tags l1k smsc95xx_5.17
-        git checkout 0c5db7c8f524b10886d73cf60256665e5f6df603
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=h8300 SHELL=/bin/bash drivers/char/tpm/
+On Thu, Apr 07, 2022 at 03:12:57PM +0200,
+Paolo Bonzini <pbonzini@redhat.com> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> > > +       if (static_call(kvm_x86_get_cpl)(vcpu) != 0) {
+> > > +               ret = -KVM_EPERM;
+> > > +               goto out;
+> > > +       }
+> 
+> Is this guaranteed by TDG.VP.VMCALL?
 
-All warnings (new ones prefixed by >>):
+Yes. TDCALL instruction in TD results in #GP(0) if CPL > 0.
+It's documented in trust domain CPU architectural extensions spec.
+https://www.intel.com/content/dam/develop/external/us/en/documents-tps/intel-tdx-cpu-architectural-specification.pdf
 
->> drivers/char/tpm/tpm_tis_spi_slb9670.c:24:5: warning: no previous prototype for 'slb9670_spi_unset_reset' [-Wmissing-prototypes]
-      24 | int slb9670_spi_unset_reset(struct tpm_tis_data *data)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~
->> drivers/char/tpm/tpm_tis_spi_slb9670.c:46:5: warning: no previous prototype for 'slb9670_spi_set_reset' [-Wmissing-prototypes]
-      46 | int slb9670_spi_set_reset(struct tpm_tis_data *data)
-         |     ^~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/slb9670_spi_unset_reset +24 drivers/char/tpm/tpm_tis_spi_slb9670.c
-
-    23	
-  > 24	int slb9670_spi_unset_reset(struct tpm_tis_data *data)
-    25	{
-    26		/*
-    27		 * Perform the reset sequence: we have to deassert and assert the reset
-    28		 * line two times and wait the respective time intervals.
-    29		 * After a last wait interval of RSTIN the chip is ready to receive the
-    30		 * first command.
-    31		 */
-    32		gpiod_set_value(data->reset_gpio, 0);
-    33		msleep(SLB9670_TIME_RSTIN);
-    34		gpiod_set_value(data->reset_gpio, 1);
-    35		udelay(SLB9670_TIME_WRST);
-    36		gpiod_set_value(data->reset_gpio, 0);
-    37		msleep(SLB9670_TIME_RSTIN);
-    38		gpiod_set_value(data->reset_gpio, 1);
-    39		udelay(SLB9670_TIME_WRST);
-    40		gpiod_set_value(data->reset_gpio, 0);
-    41		msleep(SLB9670_TIME_RSTIN);
-    42	
-    43		return 0;
-    44	}
-    45	
-  > 46	int slb9670_spi_set_reset(struct tpm_tis_data *data)
-    47	{
-    48		gpiod_set_value(data->reset_gpio, 1);
-    49		return 0;
-    50	}
-    51	
-
+Anyway VMM can't know TD guest CPL (or other CPU state).
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Isaku Yamahata <isaku.yamahata@gmail.com>
