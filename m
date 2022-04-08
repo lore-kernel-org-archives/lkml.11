@@ -2,170 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE46AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B865C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233724AbiDHLZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 07:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
+        id S233933AbiDHL02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 07:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231779AbiDHLZp (ORCPT
+        with ESMTP id S233324AbiDHL0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 07:25:45 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B25179B21;
-        Fri,  8 Apr 2022 04:23:32 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id r13so16698019ejd.5;
-        Fri, 08 Apr 2022 04:23:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cRoyXCmCEfHW6FbxD2a5gAxg2fHOPCI7K6xvLP7LBlY=;
-        b=OLcF3ugvB6AlRI055J9tJP1EjOYQdBpBT+XkuD7zndoJU11AGacmBG0mk67F36A7sV
-         /hFA2veApJ1HXhiYh86006TKDvYD4t+E2QlFKC9lCt7JnwjqYOKX1AeY57SseQhW8FA2
-         h/vVYNGtyuU++PyL6Mpo8/tsqUQx845T+UDGFMZifewrDlXr1ltR6c2pYS4KjTGVRnny
-         GqRV2E7BWxjpx8Y9KBKYV7zPxSRxGXZTcrfQADOJzyfKbY/Z2dIxNA+E54a+1qOhTQUp
-         F1dCghAsXSy1BL3OswS8qj7zWCPpRIBqHp5HhU/cnibFj0k7iK6cwSXitz9skmpzPL3m
-         KMqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cRoyXCmCEfHW6FbxD2a5gAxg2fHOPCI7K6xvLP7LBlY=;
-        b=Jz2fqYZ6Q5esfrkQb/yGRoBfw9S+kb5qfHrvnF9OqAii7L6Tv22OxljSIYDcNoL2YE
-         4hwIQ/zyDJ8Bs0P1lO+lb+dHaZNhmh5kd2a1+yl465UQlzEMUf+n1B7q+igk0IQrvbC2
-         BWW179u53taiVexR3gbkZR3lJ+LYW6kLU4IiTWZFR7qyx8wrJ3SM2F3HJRF89pBTx6zP
-         caRKmYxeg+8SHE/BYnKlf4K9MzUQyIU5+rAdaQkD5g1lscjmN9Voa6TJ3qlPKbHrnvFW
-         XJf5zkQhWg0u19VWUKLhlG24IRkvQwKNJORFFlEjbhYZ5/J+VGeDoSGTW6qyX5QzbrrH
-         L2Rg==
-X-Gm-Message-State: AOAM532+Zmc/B5HPmD4aFX3Te2bgIXb+VgaVE4gYh2b6KtEddutORG4R
-        vrZN1aYnEzV68yiRUesNoV8/4o3WLNTutine4hU=
-X-Google-Smtp-Source: ABdhPJykQNqDc7FaAjGw5x9RJlN7Ipzg84vVW8ik/7vJMM2bSnf0UwzV3g7qHKQy7+iLJ6yUnwC5p+UHpZTxxck2Pfw=
-X-Received: by 2002:a17:907:968e:b0:6db:aed5:43c8 with SMTP id
- hd14-20020a170907968e00b006dbaed543c8mr17927638ejc.636.1649417010579; Fri, 08
- Apr 2022 04:23:30 -0700 (PDT)
+        Fri, 8 Apr 2022 07:26:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12862E0AD
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 04:24:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EAF0B82A16
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 11:24:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BB0AC385A3;
+        Fri,  8 Apr 2022 11:24:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649417057;
+        bh=lWoMPg39uyTP/hr0yF/yCGHxTt9syuOEe++UUP9kO2Q=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=l92riz3AuGpmwoYbqUhTX6nRH1rXoz0p/H708Lsgm0Cl1Ie5BO1AJtuVGAQ+2eYsx
+         LPRxdLnnEOtvFdBlxGDzNx55rgv2bbm4oeL/zlnmnuHCC2xIe9r7eR8GMnl//RyEDu
+         cb3Lrhw9AuKlr24uy2t1up8pC32MqC3QUR2ehWGJjA7tcNpXv3p9kjKcZOalmns6NR
+         Wo9sZp+DHUqlg4OMU/zU0myu/gVdqqvnExYwtOS6f4JC3bz7doBvDFCsTY29iltYrq
+         fd2qPvheOXW13ACGhRG6PqX4/E15QCCVQf9EVMQg8RXaPcWT36dB10xmmP2db6mu+3
+         24oAKPbvDnAdw==
+From:   Mark Brown <broonie@kernel.org>
+To:     perex@perex.cz, zheyuma97@gmail.com, tiwai@suse.com,
+        lgirdwood@gmail.com
+Cc:     patches@opensource.cirrus.com, linux-kernel@vger.kernel.org,
+        alsa-devel@alsa-project.org
+In-Reply-To: <20220405121038.4094051-1-zheyuma97@gmail.com>
+References: <20220405121038.4094051-1-zheyuma97@gmail.com>
+Subject: Re: [PATCH] ASoC: wm8731: Disable the regulator when probing fails
+Message-Id: <164941705528.1295287.5270437045199279011.b4-ty@kernel.org>
+Date:   Fri, 08 Apr 2022 12:24:15 +0100
 MIME-Version: 1.0
-References: <20220407183941.36555-1-eajames@linux.ibm.com> <20220407183941.36555-3-eajames@linux.ibm.com>
-In-Reply-To: <20220407183941.36555-3-eajames@linux.ibm.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 8 Apr 2022 14:19:15 +0300
-Message-ID: <CAHp75VfcmhGitd6_6mDVG6_eE02sX2B3_iqZxeiX3iFDkmPShg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] leds: pca955x: Add HW blink support
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Joel Stanley <joel@jms.id.au>, patrick@stwcx.xyz
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 10:43 PM Eddie James <eajames@linux.ibm.com> wrote:
->
-> Support blinking using the PCA955x chip. Use PWM0 for blinking
-> instead of LED_HALF brightness. Since there is only one frequency
-> and brightness register for any blinking LED, track the blink state
-> of each LED and only support one HW blinking frequency. If another
-> frequency is requested, fallback to software blinking.
+On Tue, 5 Apr 2022 20:10:38 +0800, Zheyu Ma wrote:
+> When the driver fails during probing, the driver should disable the
+> regulator, not just handle it in wm8731_hw_init().
+> 
+> The following log reveals it:
+> 
+> [   17.812483] WARNING: CPU: 1 PID: 364 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+> [   17.815958] RIP: 0010:_regulator_put+0x3ec/0x4e0
+> [   17.824467] Call Trace:
+> [   17.824774]  <TASK>
+> [   17.825040]  regulator_bulk_free+0x82/0xe0
+> [   17.825514]  devres_release_group+0x319/0x3d0
+> [   17.825882]  i2c_device_probe+0x766/0x940
+> [   17.829198]  i2c_register_driver+0xb5/0x130
+> 
+> [...]
 
-...
+Applied to
 
-> +#define PCA955X_BLINK_DEFAULT  1000
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-What's the unit of this number?
+Thanks!
 
-...
+[1/1] ASoC: wm8731: Disable the regulator when probing fails
+      commit: 92ccbf17eeacf510cf1eed9c252d9332ca24f02d
 
->   * Write to frequency prescaler register, used to program the
-> - * period of the PWM output.  period = (PSCx + 1) / 38
-> + * period of the PWM output.  period = (PSCx + 1) / <38 or 44, chip dependent>
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-Using <> in  formulas a bit confusing, what about
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
- * period of the PWM output.  period = (PSCx + 1) / coeff
- * where for ... chips coeff = 38, for ... chips coeff = 44.
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
-?
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
-...
-
-> +               dev_err(&pca955x->client->dev, "%s: reg 0x%x, err %d\n",
-> +                       __func__, n, ret);
-
-Can be indented better. But I would rather see regmap, where this kind
-of debugging is for free and already present in the regmap core/.
-
-...
-
-> +static u8 pca955x_period_to_psc(struct pca955x *pca955x, unsigned long p)
-> +{
-> +       p *= (unsigned long)pca955x->chipdef->blink_div;
-
-Why casting?
-
-> +       p /= 1000;
-
-Does this 1000 have a meaning? (see units.h and other headers with
-time / frequency multiplier definitions).
-
-> +       p -= 1;
-
-> +       return (u8)p;
-
-Redundant casting.
-
-> +}
-
-> +static unsigned long pca955x_psc_to_period(struct pca955x *pca955x, u8 psc)
-> +{
-> +       unsigned long p = (unsigned long)psc;
-> +
-> +       p += 1;
-> +       p *= 1000;
-> +       p /= (unsigned long)pca955x->chipdef->blink_div;
-> +
-> +       return p;
-
-Similar questions here.
-
-> +}
-
-...
-
-> +       if (!p) {
-
-Why not use a positive conditional?
-
-> +               p = pca955x->active_blink ? pca955x->blink_period :
-> +                       PCA955X_BLINK_DEFAULT;
-> +       } else {
-> +               if (*delay_on != *delay_off) {
-> +                       ret = -EINVAL;
-> +                       goto out;
-> +               }
-> +
-> +               if (p < pca955x_psc_to_period(pca955x, 0) ||
-> +                   p > pca955x_psc_to_period(pca955x, 0xff)) {
-> +                       ret = -EINVAL;
-> +                       goto out;
-> +               }
-> +       }
-
-...
-
-> +       if (!keep_psc0) {
-
-Ditto.
-
-> +               psc0 = pca955x_period_to_psc(pca955x, pca955x->blink_period);
-> +               err = pca955x_write_psc(pca955x, 0, psc0);
-> +       } else {
-> +               err = pca955x_read_psc(pca955x, 0, &psc0);
->         }
-
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
+Mark
