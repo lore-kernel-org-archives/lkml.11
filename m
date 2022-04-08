@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC19FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BBB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238941AbiDHSlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 14:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
+        id S238935AbiDHSlr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 14:41:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238811AbiDHSkZ (ORCPT
+        with ESMTP id S238808AbiDHSkZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 8 Apr 2022 14:40:25 -0400
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD55140A3;
-        Fri,  8 Apr 2022 11:38:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649443083;
+Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [85.215.255.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A50AE0CD;
+        Fri,  8 Apr 2022 11:38:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649443087;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=zOv4vpytn9gP/3c5V0tH+m+bUz7dSLAbrW0h70y0Rf0=;
-    b=a1HEuaOu8t2Cis2xGvlS1ROAR1N6A3vQmiDo3rLsHpkUU++RtKI/31ZCiPpk/U2cwN
-    EZQ46FSMLPDczNiAlYLi9tPcnBcK71qjfSk3YLXaiEcsYYk4hVkWNmpLq8lYuf2HHZeG
-    Gr93XD0wVlxVcWhvSoDZ/a2S6vkOvh8kIBmOkRtkWqjTD5CW1l45A53Z8cei5wgps3CG
-    sGL95NDjS2Xa2Huax/d8ZOxY4QZTdXezZvCJjrxVG7yKViWcH1X5lO5Y2UniA9y5nrLb
-    vbdl2JHDM8RQRfEYPD3Vt9pFmxRLwqfRYRarvoQtqaHvzpwnWN1GXpN0hesQlbxQrjfK
-    /xnw==
+    bh=U6xUZX3rABONFQNmgTS5OWTtzD/QUaflv4arT+HMnbE=;
+    b=q0SwJSfo8lEk5kY3urcin5nc4lrE9vXbZ/w4sW+2Yd/bD6UvKmSw4PPQTxBEUCKdVY
+    Fre+U6n0kVVYE6W1nEjeGQDNqK/CbNpwelxbAj4DTA/r75OK4fHKMG7N2FJwTOb2yry0
+    PNJn1KodvtDVK49O0b4SM6CRfMJodT4mazUMwkmfKmqz8Xq6SY0eebx19TCKAVrhEW4W
+    zUWxzL2to/nnwfJqQiOWfheqhuKYHaffXThmRuqnDwqreAW9Pzcq+Ufl08kH0rSnL2lP
+    Qtp2Yjgs1nUglwcf7hjkqspsjybBz10y2o6rABASmwu2GMa8VqlmYjhUBy9dzANYgLMd
+    GV0Q==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbgdr/a"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy38Ic3snt
+    with ESMTPSA id k708cfy38Ic7so9
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Fri, 8 Apr 2022 20:38:03 +0200 (CEST)
+    Fri, 8 Apr 2022 20:38:07 +0200 (CEST)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Krzysztof Kozlowski <krzk@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -44,9 +44,9 @@ To:     Krzysztof Kozlowski <krzk@kernel.org>,
 Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-mips@vger.kernel.org, letux-kernel@openphoenux.org,
         "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH 02/18] MIPS: DTS: jz4780: fix cgu as reported by dtbscheck
-Date:   Fri,  8 Apr 2022 20:37:45 +0200
-Message-Id: <6665d5059c840a240721f9ea6ae4abc8536d0400.1649443080.git.hns@goldelico.com>
+Subject: [PATCH 18/18] MIPS: DTS: CI20: fix bluetooth as reported by dtbscheck
+Date:   Fri,  8 Apr 2022 20:38:01 +0200
+Message-Id: <32a2afa1a8f1f675a199d1aa9b4469bed2391069.1649443080.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1649443080.git.hns@goldelico.com>
 References: <cover.1649443080.git.hns@goldelico.com>
@@ -56,27 +56,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arch/mips/boot/dts/ingenic/ci20.dtb: jz4780-cgu@10000000: $nodename:0: 'jz4780-cgu@10000000' does not match '^clock-controller@[0-9a-f]+$'
-	From schema: Documentation/devicetree/bindings/clock/ingenic,cgu.yaml
+arch/mips/boot/dts/ingenic/ci20.dtb: bluetooth: vcc-supply does not match any of the regexes: pinctrl-[0-9]+
+	From schema: Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
+ arch/mips/boot/dts/ingenic/ci20.dts | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/mips/boot/dts/ingenic/jz4780.dtsi b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-index 710605df40ed3..6fb6229c3186b 100644
---- a/arch/mips/boot/dts/ingenic/jz4780.dtsi
-+++ b/arch/mips/boot/dts/ingenic/jz4780.dtsi
-@@ -58,7 +58,7 @@ rtc: rtc {
- 		clock-frequency = <32768>;
- 	};
- 
--	cgu: jz4780-cgu@10000000 {
-+	cgu: clock-controller@10000000 {
- 		compatible = "ingenic,jz4780-cgu", "simple-mfd";
- 		reg = <0x10000000 0x100>;
- 		#address-cells = <1>;
+diff --git a/arch/mips/boot/dts/ingenic/ci20.dts b/arch/mips/boot/dts/ingenic/ci20.dts
+index dc587b4b36009..8a120f9374331 100644
+--- a/arch/mips/boot/dts/ingenic/ci20.dts
++++ b/arch/mips/boot/dts/ingenic/ci20.dts
+@@ -207,7 +207,7 @@ &uart2 {
+ 	bluetooth {
+ 		compatible = "brcm,bcm4330-bt";
+ 		reset-gpios = <&gpf 8 GPIO_ACTIVE_HIGH>;
+-		vcc-supply = <&wlan0_power>;
++		vbat-supply = <&wlan0_power>;
+ 		device-wakeup-gpios = <&gpf 5 GPIO_ACTIVE_HIGH>;
+ 		host-wakeup-gpios = <&gpf 6 GPIO_ACTIVE_HIGH>;
+ 		shutdown-gpios = <&gpf 4 GPIO_ACTIVE_LOW>;
 -- 
 2.33.0
 
