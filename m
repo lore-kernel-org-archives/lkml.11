@@ -2,86 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC710C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:10:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86734C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:10:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236754AbiDHOMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 10:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
+        id S236729AbiDHOM7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 10:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236782AbiDHOMn (ORCPT
+        with ESMTP id S233821AbiDHOMz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 10:12:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DBFD339FF1
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 07:10:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649427039;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2qPRVhB9AVe6YB9JUrETqOb6ci3qytc3rllum+fD0JE=;
-        b=iAYjqHMeby8d0AjbF2+i1Q89V5ofiK59Nucdws+pg4jTmom4EWTb0Edx5+u9ow+DTZYkVL
-        Zz/IFamSsAU8DUMIGad3Jd7J/oRyVuvZp5pTcr3pPLYau+UgY5T0t0QFT1J8R58Mpfqm9k
-        aRLJpjlGgXHfljQzXClM1bQZCMnTk1k=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-251-YfSM5KFUOiSlWGV6uSZ3oQ-1; Fri, 08 Apr 2022 10:10:38 -0400
-X-MC-Unique: YfSM5KFUOiSlWGV6uSZ3oQ-1
-Received: by mail-qt1-f197.google.com with SMTP id d18-20020ac81192000000b002ebdd6ef307so2415696qtj.20
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 07:10:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2qPRVhB9AVe6YB9JUrETqOb6ci3qytc3rllum+fD0JE=;
-        b=jOgQuV5dkqCFqMNGQjEnTF0cxGpXhEc4PYFwY7YzMkW+MRG7Sb0tQj7HS1Uz5t6zSM
-         Mck52OOQ9tIlLhxliP10MOELemYs7OrtXRtc+ITf3j9XsJkXE/3VskMK/GdgqSfktpib
-         YJ32mdQW+56POfepX2CZe3cc1UKsnN92EFl3rwzUA7cnI4uCmD6+OzZfXh7avK+RmcPM
-         +WzHWHcCudO1pTUt+2sYLamCaTuuF1TU8SPvlkmG9yRHTx7C0AoaTGOJlga93Y2w7B5a
-         X2R8q7zXxhBMNEm6J16ZwJK4JGm5+5PtOHv/r7Ahx0GZgBqov6DF5czEBBO7LzpB7VTh
-         1G9Q==
-X-Gm-Message-State: AOAM533hSLM7Vgnh+vQGzk6Oo0742Cl35Yf3Rfl4JWaILj6OZ3PxzZWk
-        c7k0VDE8SyJ8qwfbN0dt5ToX97F0ji9Xnu3rs2sLcm48TfxcO/o3w5huHVQSGXVVh7sucSMfvXP
-        ovxD1qDn2BCZ264TeG4OHmH/R
-X-Received: by 2002:a37:694:0:b0:69b:e728:3e8a with SMTP id 142-20020a370694000000b0069be7283e8amr1138451qkg.583.1649427037523;
-        Fri, 08 Apr 2022 07:10:37 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxr0PoVNuadzIE0cbpzGvukXZlb4TRsIEGW7PM8cZCdDlYqjlDoRt/rchhKf/FcCJn4ObrBFg==
-X-Received: by 2002:a37:694:0:b0:69b:e728:3e8a with SMTP id 142-20020a370694000000b0069be7283e8amr1138424qkg.583.1649427037259;
-        Fri, 08 Apr 2022 07:10:37 -0700 (PDT)
-Received: from treble ([2600:1700:6e32:6c00::15])
-        by smtp.gmail.com with ESMTPSA id n13-20020a37a40d000000b0069bdff39d1bsm892281qke.36.2022.04.08.07.10.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 07:10:36 -0700 (PDT)
-Date:   Fri, 8 Apr 2022 07:10:34 -0700
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        rick.p.edgecombe@intel.com
-Subject: Re: [PATCH 0/4] objtool: Fixes
-Message-ID: <20220408141034.nof6d6l2e3dowlbn@treble>
-References: <20220408094552.432447640@infradead.org>
+        Fri, 8 Apr 2022 10:12:55 -0400
+X-Greylist: delayed 419 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 08 Apr 2022 07:10:52 PDT
+Received: from smtpservice.6wind.com (unknown [185.13.181.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65A85345477
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 07:10:52 -0700 (PDT)
+Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
+        by smtpservice.6wind.com (Postfix) with ESMTPS id 7D7E0600DD;
+        Fri,  8 Apr 2022 16:03:52 +0200 (CEST)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1ncpDM-00051l-De; Fri, 08 Apr 2022 16:03:52 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        kongweibin <kongweibin2@huawei.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, rose.chen@huawei.com,
+        liaichun@huawei.com, Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        stable@vger.kernel.org
+Subject: [PATCH net] ipv6: fix panic when forwarding a pkt with no in6 dev
+Date:   Fri,  8 Apr 2022 16:03:42 +0200
+Message-Id: <20220408140342.19311-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <59150cd5-9950-2479-a992-94dcdaa5e63c@6wind.com>
+References: <59150cd5-9950-2479-a992-94dcdaa5e63c@6wind.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220408094552.432447640@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 11:45:52AM +0200, Peter Zijlstra wrote:
-> Fix various objtool whinges:
-> 
->   lib/strnlen_user.o: warning: objtool: strnlen_user()+0x33: call to do_strnlen_user() with UACCESS enabled
->   lib/strncpy_from_user.o: warning: objtool: strncpy_from_user()+0x33: call to do_strncpy_from_user() with UACCESS enabled
-> 
->   vmlinux.o: warning: objtool: pvh_start_xen()+0x0: unreachable
->   vmlinux.o: warning: objtool: start_secondary()+0x10e: unreachable
->   vmlinux.o: warning: objtool: asm_exc_xen_unknown_trap()+0x16: unreachable instruction
+kongweibin reported a kernel panic in ip6_forward() when input interface
+has no in6 dev associated.
 
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+The following tc commands were used to reproduce this panic:
+tc qdisc del dev vxlan100 root
+tc qdisc add dev vxlan100 root netem corrupt 5%
 
+CC: stable@vger.kernel.org
+Fixes: ccd27f05ae7b ("ipv6: fix 'disable_policy' for fwd packets")
+Reported-by: kongweibin <kongweibin2@huawei.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
+
+kongweibin, could you test this patch with your setup?
+
+Thanks,
+Nicolas
+
+ net/ipv6/ip6_output.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index e23f058166af..fa63ef2bd99c 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -485,7 +485,7 @@ int ip6_forward(struct sk_buff *skb)
+ 		goto drop;
+ 
+ 	if (!net->ipv6.devconf_all->disable_policy &&
+-	    !idev->cnf.disable_policy &&
++	    (!idev || !idev->cnf.disable_policy) &&
+ 	    !xfrm6_policy_check(NULL, XFRM_POLICY_FWD, skb)) {
+ 		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
+ 		goto drop;
 -- 
-Josh
+2.33.0
 
