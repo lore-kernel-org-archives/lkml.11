@@ -2,201 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FDC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2349EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231586AbiDHLGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 07:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40958 "EHLO
+        id S231153AbiDHLI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 07:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231148AbiDHLGc (ORCPT
+        with ESMTP id S229487AbiDHLIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 07:06:32 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1A72409F
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 04:04:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649415868; x=1680951868;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=6LmFnn6GBwceRgO+4iPukRTEx/1rE48CtjuE0oERN9c=;
-  b=iYvyhBsyx6PxtR63sIRJ75lYw84KaQ8XfbCRMxep4lAXmDOrQkYEy8rs
-   nxlFA45nhNugFd2oP7NVPWbxSdsK4JdRkLruq/ptDJnCM67OgSHlSnxih
-   2PNa9yk4Pn+bP1BRAPdLXEq1w0BPFF9SzhzqC/BsFt8lYpckxPue1bXRW
-   vdVkm7ENarpyVl1U04OcNKWWl3u5+O7sa2Ho5Fr6dvvdmqXU/r9C3/Bni
-   R6A8vW1skU6vVxIo/qWmtLThn4Wt90ktWvVJuI8onYRXLUV8XS57l+hb3
-   8AjCpaWGtIoIpFwFkdbG5D9uUQoc1KTTS8Z6XGmVFVm6o4HvB22w8EcJs
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="261743942"
-X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
-   d="scan'208";a="261743942"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 04:04:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
-   d="scan'208";a="524741049"
-Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 08 Apr 2022 04:04:21 -0700
-Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ncmPc-0000BT-8p;
-        Fri, 08 Apr 2022 11:04:20 +0000
-Date:   Fri, 8 Apr 2022 19:04:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dave Stevenson <dave.stevenson@raspberrypi.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dom Cobley <popcornmix@gmail.com>
-Subject: [l1k:smsc95xx_5.17 423/887]
- drivers/regulator/rpi-panel-attiny-regulator.c:357:19: error: 'struct
- gpio_chip' has no member named 'of_node'; did you mean 'fwnode'?
-Message-ID: <202204081927.dKaWQo5k-lkp@intel.com>
+        Fri, 8 Apr 2022 07:08:54 -0400
+Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34ABB9B;
+        Fri,  8 Apr 2022 04:06:49 -0700 (PDT)
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172]) (authenticated)
+        by conssluserg-05.nifty.com with ESMTP id 238B6C4Q002886;
+        Fri, 8 Apr 2022 20:06:13 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 238B6C4Q002886
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1649415973;
+        bh=s9zrZypxx4qKAoT9NogtuydqAP7a1u09MP+68beU6so=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=QuvN0NleKiel2dGU5Dj7jHHvecijHG9FV2ZP9Y9uG0BEdO7kqKh1OC+XGF48L1Mmm
+         r1eIi5+KDPfO7v6O1BrGeIv2Iz821R5Aq2G9IghhjJyJ//j4ITDAbPqNvo4DZKAY3X
+         waJLY6/lewvx0TLD1kvaXFOnR/Nu2AxYjfSE70Fg3db/Qr2KE1feiDd47+k/6ODvna
+         PAT7oB9CxUTyvYV9tuLd7L39tuWV+967mYDi7lBkilcwyWJIhooqCFFIpNeKVIseo5
+         Y084bO6jRP+4oMFySyuwVrZ1B2gLJBePtx9fublRvQfnJ0Z9+ZKW5jOCI1HZ5kPd5x
+         C0X4zSgi9iA+g==
+X-Nifty-SrcIP: [209.85.214.172]
+Received: by mail-pl1-f172.google.com with SMTP id f10so7562177plr.6;
+        Fri, 08 Apr 2022 04:06:13 -0700 (PDT)
+X-Gm-Message-State: AOAM532P/btEYFWdvR8JSJ9ROsqlDainssjVIjRzwBZAf+92qGs/cM0M
+        7Y4lySNIFXodUCn8K0tFVnEwaT8pyxZoUh3WCqc=
+X-Google-Smtp-Source: ABdhPJxP8QeYtkk/qwK0C/lOHHOdc/P9d4RHR3AGaH4jF8wnNT1livbHCp5/gHaXP+JQJyQVAosuJUloMWH3Oz9W3h4=
+X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
+ s7-20020a170902988700b001516e1c7082mr18283886plp.162.1649415972037; Fri, 08
+ Apr 2022 04:06:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <1422803720-14723-1-git-send-email-ydroneaud@opteya.com> <20220408084607.106468-1-ydroneaud@opteya.com>
+In-Reply-To: <20220408084607.106468-1-ydroneaud@opteya.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 8 Apr 2022 20:05:20 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQZLt_OecOogOQiSu5snW+sffsMoFgVcjPTx_idj_=_tQ@mail.gmail.com>
+Message-ID: <CAK7LNAQZLt_OecOogOQiSu5snW+sffsMoFgVcjPTx_idj_=_tQ@mail.gmail.com>
+Subject: Re: [PATCHv1] kbuild: support W=e to make build abort in case of warning
+To:     Yann Droneaud <ydroneaud@opteya.com>
+Cc:     Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/l1k/linux smsc95xx_5.17
-head:   05d68ced287b30f62f18f95b5476135ef669804a
-commit: ac3d51b0c8cae7b7dacbf817eb7e6b96c1a1ccf2 [423/887] regulator: rpi-panel: Add GPIO control for panel and touch resets
-config: m68k-randconfig-r005-20220408 (https://download.01.org/0day-ci/archive/20220408/202204081927.dKaWQo5k-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/l1k/linux/commit/ac3d51b0c8cae7b7dacbf817eb7e6b96c1a1ccf2
-        git remote add l1k https://github.com/l1k/linux
-        git fetch --no-tags l1k smsc95xx_5.17
-        git checkout ac3d51b0c8cae7b7dacbf817eb7e6b96c1a1ccf2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash drivers/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/regulator/rpi-panel-attiny-regulator.c: In function 'attiny_i2c_probe':
->> drivers/regulator/rpi-panel-attiny-regulator.c:357:19: error: 'struct gpio_chip' has no member named 'of_node'; did you mean 'fwnode'?
-     357 |         state->gc.of_node = i2c->dev.of_node;
-         |                   ^~~~~~~
-         |                   fwnode
-   At top level:
-   drivers/regulator/rpi-panel-attiny-regulator.c:388:34: warning: 'attiny_dt_ids' defined but not used [-Wunused-const-variable=]
-     388 | static const struct of_device_id attiny_dt_ids[] = {
-         |                                  ^~~~~~~~~~~~~
+On Fri, Apr 8, 2022 at 5:46 PM Yann Droneaud <ydroneaud@opteya.com> wrote:
+>
+> When developing new code/feature, CONFIG_WERROR is most
+> often turned off, especially for people using make W=12 to
+> get more warnings.
+>
+> In such case, turning on -Werror temporarily would require
+> switching on CONFIG_WERROR in the configuration, building,
+> then switching off CONFIG_WERROR.
+>
+> For this use case, this patch introduces a new 'e' modifier
+> to W= as a short hand for KCFLAGS+=-Werror" so that -Werror
+> got added to the kernel (built-in) and modules' CFLAGS.
+>
+> Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
+> ---
+>  Makefile                   |  1 +
+>  scripts/Makefile.extrawarn | 13 +++++++++++--
+>  2 files changed, 12 insertions(+), 2 deletions(-)
+>
+> Changes since v0[0]:
+>
+>  - rebase on top of commit 64a91907c896 ("kbuild: refactor scripts/Makefile.extrawarn")
+>  - document use case after commit 3fe617ccafd6 ("Enable '-Werror' by default for all kernel builds")
+>
+> [0] https://lore.kernel.org/all/1422803720-14723-1-git-send-email-ydroneaud@opteya.com/
 
 
-vim +357 drivers/regulator/rpi-panel-attiny-regulator.c
+I remembered the previous submission, I liked it, but I had lost it.
 
-   275	
-   276	/*
-   277	 * I2C driver interface functions
-   278	 */
-   279	static int attiny_i2c_probe(struct i2c_client *i2c,
-   280			const struct i2c_device_id *id)
-   281	{
-   282		struct backlight_properties props = { };
-   283		struct regulator_config config = { };
-   284		struct backlight_device *bl;
-   285		struct regulator_dev *rdev;
-   286		struct attiny_lcd *state;
-   287		struct regmap *regmap;
-   288		unsigned int data;
-   289		int ret;
-   290	
-   291		state = devm_kzalloc(&i2c->dev, sizeof(*state), GFP_KERNEL);
-   292		if (!state)
-   293			return -ENOMEM;
-   294	
-   295		mutex_init(&state->lock);
-   296		i2c_set_clientdata(i2c, state);
-   297	
-   298		regmap = devm_regmap_init_i2c(i2c, &attiny_regmap_config);
-   299		if (IS_ERR(regmap)) {
-   300			ret = PTR_ERR(regmap);
-   301			dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
-   302				ret);
-   303			goto error;
-   304		}
-   305	
-   306		ret = regmap_read(regmap, REG_ID, &data);
-   307		if (ret < 0) {
-   308			dev_err(&i2c->dev, "Failed to read REG_ID reg: %d\n", ret);
-   309			goto error;
-   310		}
-   311	
-   312		switch (data) {
-   313		case 0xde: /* ver 1 */
-   314		case 0xc3: /* ver 2 */
-   315			break;
-   316		default:
-   317			dev_err(&i2c->dev, "Unknown Atmel firmware revision: 0x%02x\n", data);
-   318			ret = -ENODEV;
-   319			goto error;
-   320		}
-   321	
-   322		regmap_write(regmap, REG_POWERON, 0);
-   323		msleep(30);
-   324		regmap_write(regmap, REG_PWM, 0);
-   325	
-   326		config.dev = &i2c->dev;
-   327		config.regmap = regmap;
-   328		config.of_node = i2c->dev.of_node;
-   329		config.init_data = &attiny_regulator_default;
-   330		config.driver_data = state;
-   331	
-   332		rdev = devm_regulator_register(&i2c->dev, &attiny_regulator, &config);
-   333		if (IS_ERR(rdev)) {
-   334			dev_err(&i2c->dev, "Failed to register ATTINY regulator\n");
-   335			ret = PTR_ERR(rdev);
-   336			goto error;
-   337		}
-   338	
-   339		props.type = BACKLIGHT_RAW;
-   340		props.max_brightness = 0xff;
-   341	
-   342		state->regmap = regmap;
-   343	
-   344		bl = devm_backlight_device_register(&i2c->dev, dev_name(&i2c->dev),
-   345						    &i2c->dev, state, &attiny_bl,
-   346						    &props);
-   347		if (IS_ERR(bl)) {
-   348			ret = PTR_ERR(bl);
-   349			goto error;
-   350		}
-   351	
-   352		bl->props.brightness = 0xff;
-   353	
-   354		state->gc.parent = &i2c->dev;
-   355		state->gc.label = i2c->name;
-   356		state->gc.owner = THIS_MODULE;
- > 357		state->gc.of_node = i2c->dev.of_node;
-   358		state->gc.base = -1;
-   359		state->gc.ngpio = NUM_GPIO;
-   360	
-   361		state->gc.set = attiny_gpio_set;
-   362		state->gc.get_direction = attiny_gpio_get_direction;
-   363		state->gc.can_sleep = true;
-   364	
-   365		ret = devm_gpiochip_add_data(&i2c->dev, &state->gc, state);
-   366		if (ret) {
-   367			dev_err(&i2c->dev, "Failed to create gpiochip: %d\n", ret);
-   368			goto error;
-   369		}
-   370	
-   371		return 0;
-   372	
-   373	error:
-   374		mutex_destroy(&state->lock);
-   375	
-   376		return ret;
-   377	}
-   378	
+It seems already 7 years ago, (before I became the Kbuild maintainer).
+Thanks for coming back to this.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+
+I like this, but I will wait some time for review comments.
+
+
+
+
+
+
+
+
+
+> diff --git a/Makefile b/Makefile
+> index 8c7de9a72ea2..6dc621af18d1 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -1649,6 +1649,7 @@ help:
+>         @echo  '                1: warnings which may be relevant and do not occur too often'
+>         @echo  '                2: warnings which occur quite often but may still be relevant'
+>         @echo  '                3: more obscure warnings, can most likely be ignored'
+> +       @echo  '                e: warnings are being treated as errors'
+>         @echo  '                Multiple levels can be combined with W=12 or W=123'
+>         @echo  ''
+>         @echo  'Execute "make" or "make all" to build all targets marked with [*] '
+> diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
+> index 650d0b8ceec3..f5f0d6f09053 100644
+> --- a/scripts/Makefile.extrawarn
+> +++ b/scripts/Makefile.extrawarn
+> @@ -2,8 +2,8 @@
+>  # ==========================================================================
+>  # make W=... settings
+>  #
+> -# There are three warning groups enabled by W=1, W=2, W=3.
+> -# They are independent, and can be combined like W=12 or W=123.
+> +# There are four warning groups enabled by W=1, W=2, W=3, and W=e
+> +# They are independent, and can be combined like W=12 or W=123e.
+>  # ==========================================================================
+>
+>  KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned)
+> @@ -94,3 +94,12 @@ KBUILD_CFLAGS += $(call cc-option, -Wpacked-bitfield-compat)
+>  KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN3
+>
+>  endif
+> +
+> +#
+> +# W=e - error out on warnings
+> +#
+> +ifneq ($(findstring e, $(KBUILD_EXTRA_WARN)),)
+> +
+> +KBUILD_CFLAGS += -Werror
+> +
+> +endif
+> --
+> 2.32.0
+>
+
+
+--
+Best Regards
+Masahiro Yamada
