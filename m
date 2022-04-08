@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8330BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B69B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238317AbiDHRsc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 13:48:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46848 "EHLO
+        id S230346AbiDHRsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 13:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238330AbiDHRs0 (ORCPT
+        with ESMTP id S238342AbiDHRs2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 13:48:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107173917C;
-        Fri,  8 Apr 2022 10:46:23 -0700 (PDT)
+        Fri, 8 Apr 2022 13:48:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6FCBF947
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 10:46:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92E29621CA;
-        Fri,  8 Apr 2022 17:46:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 027B8C385AA;
-        Fri,  8 Apr 2022 17:46:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649439982;
-        bh=XLyYWeSHLe/lJ7GQX9owwOYEeLFNU2Jc/5lhqOKrgws=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Lv9zC1AIiTgJrfcIY1TgLr+CWzlkoL6DqP95CPAJ5V0na2jV1ADGed/nYSK7UUlG7
-         93Hf2L4gg1Hw0ggJ6Py/1dYw4ffG+cdgEBHAtUuY7fkqIli0i3ECoVxYVXIn5vdcY1
-         CFXEIyFkV92eowxWAKSvvuEeXMzJ1z/NUG/VybltMD9AgiugEfdOyesAyCtuC//Wbq
-         sgtmXZjFRKCYGPU4FxdtoeWnJkAqTUMRb84ISgelakZRayWeCb9Y7n++eCovhsBvYK
-         sZprQV4Tx7ZMRmNoZQxDGOT2fxU+C1QF0juUXUGzqlBbAtdRZOD1cwcPGZLcNsPXjX
-         2jaxW7D+szbhQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E3064E85B76;
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3517B82C8B
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 17:46:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9A4C4C385A6;
         Fri,  8 Apr 2022 17:46:21 +0000 (UTC)
-Subject: Re: [GIT PULL] Please pull NFS client changes
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649439981;
+        bh=iiyfl2Yysk4HWBoxes4BD4K9Uh4RXDRGVdi1hqgLl5A=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=cxzXpW1KPgbZCW/OXB9o0eMbry/F/5z72xmFF4QhGbHjidKwckGFNr+23FgkVNamj
+         eU9PRQmeg+m1ytm8j5WRoUGj9RVoOtgzRHCaXFKVwDsJauP5v85yXBjdVVEWrGy2mi
+         MmicS/Vi8PTr/OX9GJ66MgvrjwfjK+kBgXYxH00+V3W/Idy6ThzVl8DN720k48+dlK
+         jn40jVioR4HG3zasXzX39IFzMZeWx9pZ9qqn8bwu6iFYlRMwGu/vpsi957IECmJ/3g
+         G5xfIodw+PPlQvUzU2b8tQknB5otuwIfDgC90m9p4+L0SzTKy5oAFQZykN4m0/Bhzr
+         Ts3yDmYtBfD5A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 888AAE85BCB;
+        Fri,  8 Apr 2022 17:46:21 +0000 (UTC)
+Subject: Re: [GIT PULL] Folio fixes for 5.18-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <9c98642c7b088e4e5a628b1aa144df8eafa25cfa.camel@hammerspace.com>
-References: <9c98642c7b088e4e5a628b1aa144df8eafa25cfa.camel@hammerspace.com>
-X-PR-Tracked-List-Id: <linux-nfs.vger.kernel.org>
-X-PR-Tracked-Message-Id: <9c98642c7b088e4e5a628b1aa144df8eafa25cfa.camel@hammerspace.com>
-X-PR-Tracked-Remote: git://git.linux-nfs.org/projects/trondmy/linux-nfs.git tags/nfs-for-5.18-2
-X-PR-Tracked-Commit-Id: ff053dbbaffec45c85e5bfe43306d26694a6433f
+In-Reply-To: <YlBYcG5bm03dhqHI@casper.infradead.org>
+References: <YlBYcG5bm03dhqHI@casper.infradead.org>
+X-PR-Tracked-List-Id: <linux-mm.kvack.org>
+X-PR-Tracked-Message-Id: <YlBYcG5bm03dhqHI@casper.infradead.org>
+X-PR-Tracked-Remote: git://git.infradead.org/users/willy/pagecache.git tags/folio-5.18e
+X-PR-Tracked-Commit-Id: 98ea02597b9967c0817d29fee2f96d21b9e59ca5
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 1a3b1bba7c7a5eb8a11513cf88427cb9d77bc60a
-Message-Id: <164943998192.23047.6308034752294656205.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: d66b6985b164b368657333c4a700bf4108893612
+Message-Id: <164943998155.23047.8859359528773664297.pr-tracker-bot@kernel.org>
 Date:   Fri, 08 Apr 2022 17:46:21 +0000
-To:     Trond Myklebust <trondmy@hammerspace.com>
-Cc:     "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 8 Apr 2022 17:30:43 +0000:
+The pull request you sent on Fri, 8 Apr 2022 16:44:48 +0100:
 
-> git://git.linux-nfs.org/projects/trondmy/linux-nfs.git tags/nfs-for-5.18-2
+> git://git.infradead.org/users/willy/pagecache.git tags/folio-5.18e
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/1a3b1bba7c7a5eb8a11513cf88427cb9d77bc60a
+https://git.kernel.org/torvalds/c/d66b6985b164b368657333c4a700bf4108893612
 
 Thank you!
 
