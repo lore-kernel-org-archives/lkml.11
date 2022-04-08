@@ -2,384 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6147BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:22:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE46AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233182AbiDHLY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 07:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50538 "EHLO
+        id S233724AbiDHLZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 07:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbiDHLY4 (ORCPT
+        with ESMTP id S231779AbiDHLZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 07:24:56 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1B9B3C;
-        Fri,  8 Apr 2022 04:22:52 -0700 (PDT)
+        Fri, 8 Apr 2022 07:25:45 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B25179B21;
+        Fri,  8 Apr 2022 04:23:32 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id r13so16698019ejd.5;
+        Fri, 08 Apr 2022 04:23:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649416972; x=1680952972;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yHvRCTjV46r4/jJSQonnhwXHcpjOyqvqCJZNy0a4flQ=;
-  b=C+b2QYWK5l7vlxU59ktJs77FID6r4DWwEv0C2fOJE9MDvpBqYNdacNRO
-   b38FHweBkNeESFBDw9mRLPaZIKn8JttcdLkbt6BVMg7nc7Vwypl/+WNrg
-   yV0NDZ6y+zVCeOreiEugUTvBA6T9l6MNXTyLiUyx2vO0ug0NfMzYt0sVg
-   s=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 08 Apr 2022 04:22:52 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 04:22:52 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 8 Apr 2022 04:22:51 -0700
-Received: from [10.50.30.163] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 8 Apr 2022
- 04:22:49 -0700
-Message-ID: <d965d7cf-76b6-8cdb-e8b4-76fe2eb2c2ae@quicinc.com>
-Date:   Fri, 8 Apr 2022 16:52:35 +0530
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cRoyXCmCEfHW6FbxD2a5gAxg2fHOPCI7K6xvLP7LBlY=;
+        b=OLcF3ugvB6AlRI055J9tJP1EjOYQdBpBT+XkuD7zndoJU11AGacmBG0mk67F36A7sV
+         /hFA2veApJ1HXhiYh86006TKDvYD4t+E2QlFKC9lCt7JnwjqYOKX1AeY57SseQhW8FA2
+         h/vVYNGtyuU++PyL6Mpo8/tsqUQx845T+UDGFMZifewrDlXr1ltR6c2pYS4KjTGVRnny
+         GqRV2E7BWxjpx8Y9KBKYV7zPxSRxGXZTcrfQADOJzyfKbY/Z2dIxNA+E54a+1qOhTQUp
+         F1dCghAsXSy1BL3OswS8qj7zWCPpRIBqHp5HhU/cnibFj0k7iK6cwSXitz9skmpzPL3m
+         KMqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cRoyXCmCEfHW6FbxD2a5gAxg2fHOPCI7K6xvLP7LBlY=;
+        b=Jz2fqYZ6Q5esfrkQb/yGRoBfw9S+kb5qfHrvnF9OqAii7L6Tv22OxljSIYDcNoL2YE
+         4hwIQ/zyDJ8Bs0P1lO+lb+dHaZNhmh5kd2a1+yl465UQlzEMUf+n1B7q+igk0IQrvbC2
+         BWW179u53taiVexR3gbkZR3lJ+LYW6kLU4IiTWZFR7qyx8wrJ3SM2F3HJRF89pBTx6zP
+         caRKmYxeg+8SHE/BYnKlf4K9MzUQyIU5+rAdaQkD5g1lscjmN9Voa6TJ3qlPKbHrnvFW
+         XJf5zkQhWg0u19VWUKLhlG24IRkvQwKNJORFFlEjbhYZ5/J+VGeDoSGTW6qyX5QzbrrH
+         L2Rg==
+X-Gm-Message-State: AOAM532+Zmc/B5HPmD4aFX3Te2bgIXb+VgaVE4gYh2b6KtEddutORG4R
+        vrZN1aYnEzV68yiRUesNoV8/4o3WLNTutine4hU=
+X-Google-Smtp-Source: ABdhPJykQNqDc7FaAjGw5x9RJlN7Ipzg84vVW8ik/7vJMM2bSnf0UwzV3g7qHKQy7+iLJ6yUnwC5p+UHpZTxxck2Pfw=
+X-Received: by 2002:a17:907:968e:b0:6db:aed5:43c8 with SMTP id
+ hd14-20020a170907968e00b006dbaed543c8mr17927638ejc.636.1649417010579; Fri, 08
+ Apr 2022 04:23:30 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCHv6] tty: hvc: dcc: Bind driver to CPU core0 for reads and
- writes
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Jiri Slaby <jirislaby@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>
-References: <20220310032636.7286-1-quic_saipraka@quicinc.com>
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-In-Reply-To: <20220310032636.7286-1-quic_saipraka@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220407183941.36555-1-eajames@linux.ibm.com> <20220407183941.36555-3-eajames@linux.ibm.com>
+In-Reply-To: <20220407183941.36555-3-eajames@linux.ibm.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 8 Apr 2022 14:19:15 +0300
+Message-ID: <CAHp75VfcmhGitd6_6mDVG6_eE02sX2B3_iqZxeiX3iFDkmPShg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] leds: pca955x: Add HW blink support
+To:     Eddie James <eajames@linux.ibm.com>
+Cc:     Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Joel Stanley <joel@jms.id.au>, patrick@stwcx.xyz
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Apr 7, 2022 at 10:43 PM Eddie James <eajames@linux.ibm.com> wrote:
+>
+> Support blinking using the PCA955x chip. Use PWM0 for blinking
+> instead of LED_HALF brightness. Since there is only one frequency
+> and brightness register for any blinking LED, track the blink state
+> of each LED and only support one HW blinking frequency. If another
+> frequency is requested, fallback to software blinking.
 
-On 3/10/2022 8:56 AM, Sai Prakash Ranjan wrote:
-> From: Shanker Donthineni <shankerd@codeaurora.org>
->
-> Some debuggers, such as Trace32 from Lauterbach GmbH, do not handle
-> reads/writes from/to DCC on secondary cores. Each core has its
-> own DCC device registers, so when a core reads or writes from/to DCC,
-> it only accesses its own DCC device. Since kernel code can run on
-> any core, every time the kernel wants to write to the console, it
-> might write to a different DCC.
->
-> In SMP mode, Trace32 creates multiple windows, and each window shows
-> the DCC output only from that core's DCC. The result is that console
-> output is either lost or scattered across windows.
->
-> Selecting this option will enable code that serializes all console
-> input and output to core 0. The DCC driver will create input and
-> output FIFOs that all cores will use. Reads and writes from/to DCC
-> are handled by a workqueue that runs only core 0.
->
-> Signed-off-by: Shanker Donthineni <shankerd@codeaurora.org>
-> Acked-by: Adam Wallis <awallis@codeaurora.org>
-> Signed-off-by: Timur Tabi <timur@codeaurora.org>
-> Signed-off-by: Elliot Berman <eberman@codeaurora.org>
-> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-> ---
->
-> Changes in v6:
->   * Disable CPU hotplug when CONFIG_HVC_DCC_SERIALIZE_SMP=y.
->
-> Changes in v5:
->   * Use get_cpu() and put_cpu() for CPU id check in preemptible context.
->   * Revert back to build time Kconfig.
->   * Remove unnecessary hotplug locks, they result in sleeping in atomic context bugs.
->   * Add a comment for the spinlock.
->
-> Changes in v4:
->   * Use module parameter for runtime choice of enabling this feature.
->   * Use hotplug locks to avoid race between cpu online check and work schedule.
->   * Remove ifdefs and move to common ops.
->   * Remove unnecessary check for this configuration.
->   * Use macros for buf size instead of magic numbers.
->   * v3 - https://lore.kernel.org/lkml/20211213141013.21464-1-quic_saipraka@quicinc.com/
->
-> Changes in v3:
->   * Handle case where core0 is not online.
->
-> Changes in v2:
->   * Checkpatch warning fixes.
->   * Use of IS_ENABLED macros instead of ifdefs.
->
-> ---
->   drivers/tty/hvc/Kconfig   |  20 +++++
->   drivers/tty/hvc/hvc_dcc.c | 175 +++++++++++++++++++++++++++++++++++++-
->   2 files changed, 192 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
-> index 8d60e0ff67b4..62560cd0c04d 100644
-> --- a/drivers/tty/hvc/Kconfig
-> +++ b/drivers/tty/hvc/Kconfig
-> @@ -87,6 +87,26 @@ config HVC_DCC
->   	  driver. This console is used through a JTAG only on ARM. If you don't have
->   	  a JTAG then you probably don't want this option.
->   
-> +config HVC_DCC_SERIALIZE_SMP
-> +	bool "Use DCC only on CPU core 0"
-> +	depends on SMP && HVC_DCC
-> +	help
-> +	  Some debuggers, such as Trace32 from Lauterbach GmbH, do not handle
-> +	  reads/writes from/to DCC on more than one CPU core. Each core has its
-> +	  own DCC device registers, so when a CPU core reads or writes from/to
-> +	  DCC, it only accesses its own DCC device. Since kernel code can run on
-> +	  any CPU core, every time the kernel wants to write to the console, it
-> +	  might write to a different DCC.
-> +
-> +	  In SMP mode, Trace32 creates multiple windows, and each window shows
-> +	  the DCC output only from that core's DCC. The result is that console
-> +	  output is either lost or scattered across windows.
-> +
-> +	  Selecting this option will enable code that serializes all console
-> +	  input and output to CPU core 0. The DCC driver will create input and
-> +	  output FIFOs that all cores will use. Reads and writes from/to DCC
-> +	  are handled by a workqueue that runs only CPU core 0.
-> +
->   config HVC_RISCV_SBI
->   	bool "RISC-V SBI console support"
->   	depends on RISCV_SBI_V01
-> diff --git a/drivers/tty/hvc/hvc_dcc.c b/drivers/tty/hvc/hvc_dcc.c
-> index 8e0edb7d93fd..e87b82e873d7 100644
-> --- a/drivers/tty/hvc/hvc_dcc.c
-> +++ b/drivers/tty/hvc/hvc_dcc.c
-> @@ -2,9 +2,14 @@
->   /* Copyright (c) 2010, 2014 The Linux Foundation. All rights reserved.  */
->   
->   #include <linux/console.h>
-> +#include <linux/cpu.h>
-> +#include <linux/cpumask.h>
->   #include <linux/init.h>
-> +#include <linux/kfifo.h>
->   #include <linux/serial.h>
->   #include <linux/serial_core.h>
-> +#include <linux/smp.h>
-> +#include <linux/spinlock.h>
->   
->   #include <asm/dcc.h>
->   #include <asm/processor.h>
-> @@ -15,6 +20,15 @@
->   #define DCC_STATUS_RX		(1 << 30)
->   #define DCC_STATUS_TX		(1 << 29)
->   
-> +#define DCC_INBUF_SIZE		128
-> +#define DCC_OUTBUF_SIZE		1024
-> +
-> +/* Lock to serialize access to DCC fifo */
-> +static DEFINE_SPINLOCK(dcc_lock);
-> +
-> +static DEFINE_KFIFO(inbuf, unsigned char, DCC_INBUF_SIZE);
-> +static DEFINE_KFIFO(outbuf, unsigned char, DCC_OUTBUF_SIZE);
-> +
->   static void dcc_uart_console_putchar(struct uart_port *port, int ch)
->   {
->   	while (__dcc_getstatus() & DCC_STATUS_TX)
-> @@ -67,24 +81,176 @@ static int hvc_dcc_get_chars(uint32_t vt, char *buf, int count)
->   	return i;
->   }
->   
-> +/*
-> + * Check if the DCC is enabled. If CONFIG_HVC_DCC_SERIALIZE_SMP is enabled,
-> + * then we assume then this function will be called first on core0. That way,
-> + * dcc_core0_available will be true only if it's available on core0.
-> + */
->   static bool hvc_dcc_check(void)
->   {
->   	unsigned long time = jiffies + (HZ / 10);
-> +	static bool dcc_core0_available;
-> +
-> +	/*
-> +	 * If we're not on core 0, but we previously confirmed that DCC is
-> +	 * active, then just return true.
-> +	 */
-> +	int cpu = get_cpu();
-> +
-> +	if (IS_ENABLED(CONFIG_HVC_DCC_SERIALIZE_SMP) && cpu && dcc_core0_available) {
-> +		put_cpu();
-> +		return true;
-> +	}
-> +
-> +	put_cpu();
->   
->   	/* Write a test character to check if it is handled */
->   	__dcc_putchar('\n');
->   
->   	while (time_is_after_jiffies(time)) {
-> -		if (!(__dcc_getstatus() & DCC_STATUS_TX))
-> +		if (!(__dcc_getstatus() & DCC_STATUS_TX)) {
-> +			dcc_core0_available = true;
->   			return true;
-> +		}
->   	}
->   
->   	return false;
->   }
->   
-> +/*
-> + * Workqueue function that writes the output FIFO to the DCC on core 0.
-> + */
-> +static void dcc_put_work(struct work_struct *work)
-> +{
-> +	unsigned char ch;
-> +	unsigned long irqflags;
-> +
-> +	spin_lock_irqsave(&dcc_lock, irqflags);
-> +
-> +	/* While there's data in the output FIFO, write it to the DCC */
-> +	while (kfifo_get(&outbuf, &ch))
-> +		hvc_dcc_put_chars(0, &ch, 1);
-> +
-> +	/* While we're at it, check for any input characters */
-> +	while (!kfifo_is_full(&inbuf)) {
-> +		if (!hvc_dcc_get_chars(0, &ch, 1))
-> +			break;
-> +		kfifo_put(&inbuf, ch);
-> +	}
-> +
-> +	spin_unlock_irqrestore(&dcc_lock, irqflags);
-> +}
-> +
-> +static DECLARE_WORK(dcc_pwork, dcc_put_work);
-> +
-> +/*
-> + * Workqueue function that reads characters from DCC and puts them into the
-> + * input FIFO.
-> + */
-> +static void dcc_get_work(struct work_struct *work)
-> +{
-> +	unsigned char ch;
-> +	unsigned long irqflags;
-> +
-> +	/*
-> +	 * Read characters from DCC and put them into the input FIFO, as
-> +	 * long as there is room and we have characters to read.
-> +	 */
-> +	spin_lock_irqsave(&dcc_lock, irqflags);
-> +
-> +	while (!kfifo_is_full(&inbuf)) {
-> +		if (!hvc_dcc_get_chars(0, &ch, 1))
-> +			break;
-> +		kfifo_put(&inbuf, ch);
-> +	}
-> +	spin_unlock_irqrestore(&dcc_lock, irqflags);
-> +}
-> +
-> +static DECLARE_WORK(dcc_gwork, dcc_get_work);
-> +
-> +/*
-> + * Write characters directly to the DCC if we're on core 0 and the FIFO
-> + * is empty, or write them to the FIFO if we're not.
-> + */
-> +static int hvc_dcc0_put_chars(u32 vt, const char *buf, int count)
-> +{
-> +	int len;
-> +	unsigned long irqflags;
-> +
-> +	if (!IS_ENABLED(CONFIG_HVC_DCC_SERIALIZE_SMP))
-> +		return hvc_dcc_put_chars(vt, buf, count);
-> +
-> +	spin_lock_irqsave(&dcc_lock, irqflags);
-> +	if (smp_processor_id() || (!kfifo_is_empty(&outbuf))) {
-> +		len = kfifo_in(&outbuf, buf, count);
-> +		spin_unlock_irqrestore(&dcc_lock, irqflags);
-> +
-> +		/*
-> +		 * We just push data to the output FIFO, so schedule the
-> +		 * workqueue that will actually write that data to DCC.
-> +		 * CPU hotplug is disabled so CPU0 cannot be offlined
-> +		 * after the cpu online check.
-> +		 */
-> +		if (cpu_online(0))
-> +			schedule_work_on(0, &dcc_pwork);
-> +
-> +		return len;
-> +	}
-> +
-> +	/*
-> +	 * If we're already on core 0, and the FIFO is empty, then just
-> +	 * write the data to DCC.
-> +	 */
-> +	len = hvc_dcc_put_chars(vt, buf, count);
-> +	spin_unlock_irqrestore(&dcc_lock, irqflags);
-> +
-> +	return len;
-> +}
-> +
-> +/*
-> + * Read characters directly from the DCC if we're on core 0 and the FIFO
-> + * is empty, or read them from the FIFO if we're not.
-> + */
-> +static int hvc_dcc0_get_chars(u32 vt, char *buf, int count)
-> +{
-> +	int len;
-> +	unsigned long irqflags;
-> +
-> +	if (!IS_ENABLED(CONFIG_HVC_DCC_SERIALIZE_SMP))
-> +		return hvc_dcc_get_chars(vt, buf, count);
-> +
-> +	spin_lock_irqsave(&dcc_lock, irqflags);
-> +
-> +	if (smp_processor_id() || (!kfifo_is_empty(&inbuf))) {
-> +		len = kfifo_out(&inbuf, buf, count);
-> +		spin_unlock_irqrestore(&dcc_lock, irqflags);
-> +
-> +		/*
-> +		 * If the FIFO was empty, there may be characters in the DCC
-> +		 * that we haven't read yet.  Schedule a workqueue to fill
-> +		 * the input FIFO, so that the next time this function is
-> +		 * called, we'll have data. CPU hotplug is disabled so CPU0
-> +		 * cannot be offlined after the cpu online check.
-> +		 */
-> +		if (!len && cpu_online(0))
-> +			schedule_work_on(0, &dcc_gwork);
-> +
-> +		return len;
-> +	}
-> +
-> +	/*
-> +	 * If we're already on core 0, and the FIFO is empty, then just
-> +	 * read the data from DCC.
-> +	 */
-> +	len = hvc_dcc_get_chars(vt, buf, count);
-> +	spin_unlock_irqrestore(&dcc_lock, irqflags);
-> +
-> +	return len;
-> +}
-> +
->   static const struct hv_ops hvc_dcc_get_put_ops = {
-> -	.get_chars = hvc_dcc_get_chars,
-> -	.put_chars = hvc_dcc_put_chars,
-> +	.get_chars = hvc_dcc0_get_chars,
-> +	.put_chars = hvc_dcc0_put_chars,
->   };
->   
->   static int __init hvc_dcc_console_init(void)
-> @@ -108,6 +274,9 @@ static int __init hvc_dcc_init(void)
->   	if (!hvc_dcc_check())
->   		return -ENODEV;
->   
-> +	if (IS_ENABLED(CONFIG_HVC_DCC_SERIALIZE_SMP))
-> +		cpu_hotplug_disable();
-> +
->   	p = hvc_alloc(0, 0, &hvc_dcc_get_put_ops, 128);
->   
->   	return PTR_ERR_OR_ZERO(p);
->
-> base-commit: 6705cd745adbbeac6b13002c7a30060f7b2568a5
+...
 
-Gentle ping to take a look at this version.
+> +#define PCA955X_BLINK_DEFAULT  1000
 
-Thanks,
-Sai
+What's the unit of this number?
+
+...
+
+>   * Write to frequency prescaler register, used to program the
+> - * period of the PWM output.  period = (PSCx + 1) / 38
+> + * period of the PWM output.  period = (PSCx + 1) / <38 or 44, chip dependent>
+
+Using <> in  formulas a bit confusing, what about
+
+ * period of the PWM output.  period = (PSCx + 1) / coeff
+ * where for ... chips coeff = 38, for ... chips coeff = 44.
+
+?
+
+...
+
+> +               dev_err(&pca955x->client->dev, "%s: reg 0x%x, err %d\n",
+> +                       __func__, n, ret);
+
+Can be indented better. But I would rather see regmap, where this kind
+of debugging is for free and already present in the regmap core/.
+
+...
+
+> +static u8 pca955x_period_to_psc(struct pca955x *pca955x, unsigned long p)
+> +{
+> +       p *= (unsigned long)pca955x->chipdef->blink_div;
+
+Why casting?
+
+> +       p /= 1000;
+
+Does this 1000 have a meaning? (see units.h and other headers with
+time / frequency multiplier definitions).
+
+> +       p -= 1;
+
+> +       return (u8)p;
+
+Redundant casting.
+
+> +}
+
+> +static unsigned long pca955x_psc_to_period(struct pca955x *pca955x, u8 psc)
+> +{
+> +       unsigned long p = (unsigned long)psc;
+> +
+> +       p += 1;
+> +       p *= 1000;
+> +       p /= (unsigned long)pca955x->chipdef->blink_div;
+> +
+> +       return p;
+
+Similar questions here.
+
+> +}
+
+...
+
+> +       if (!p) {
+
+Why not use a positive conditional?
+
+> +               p = pca955x->active_blink ? pca955x->blink_period :
+> +                       PCA955X_BLINK_DEFAULT;
+> +       } else {
+> +               if (*delay_on != *delay_off) {
+> +                       ret = -EINVAL;
+> +                       goto out;
+> +               }
+> +
+> +               if (p < pca955x_psc_to_period(pca955x, 0) ||
+> +                   p > pca955x_psc_to_period(pca955x, 0xff)) {
+> +                       ret = -EINVAL;
+> +                       goto out;
+> +               }
+> +       }
+
+...
+
+> +       if (!keep_psc0) {
+
+Ditto.
+
+> +               psc0 = pca955x_period_to_psc(pca955x, pca955x->blink_period);
+> +               err = pca955x_write_psc(pca955x, 0, psc0);
+> +       } else {
+> +               err = pca955x_read_psc(pca955x, 0, &psc0);
+>         }
+
+-- 
+With Best Regards,
+Andy Shevchenko
