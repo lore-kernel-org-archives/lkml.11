@@ -2,98 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A40C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235673AbiDHMtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
+        id S235903AbiDHMtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232781AbiDHMtN (ORCPT
+        with ESMTP id S232606AbiDHMtv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:49:13 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FA65EE4F5
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 05:47:09 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id g11so3568942qke.1
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 05:47:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+UmN5QSTipDoR1+pYRn+OgM9VMV5Y7wV2SBZNW6iL7g=;
-        b=jHVh3ANqL2a6T4nybvptnE0F3Sig3panFK4YWvNgJz4zwQrzhPDlLLhgAKrynQiRR8
-         gmqACBQ2pmNM8PT0W2SBZtDqbhfCG7WWFiYhzCcdDI8orOe2PqGQjvA7bB1rVHonod25
-         q8aEV0bDQ0HzLhMf761vHFGX/1hyiHzDr9UEhLto5ghBmXfa/EtxwXh+9l6o6RjD4hIP
-         odsuuiwotsWptQrSJbxA4v/arN9R9D3VOZosoVuMATv42fG8L5divKIWLdYPtOn8+nQW
-         BgWjATPrLHlmCGCXABGIkxbsbssZVamhU/1rA3KELRJzFWcsZhVq5uJNVjEGjbrflIpb
-         vh0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+UmN5QSTipDoR1+pYRn+OgM9VMV5Y7wV2SBZNW6iL7g=;
-        b=onXLl4ijUxTz9ySMty4uWwGLSu6eTCSi4pugXot1ChD/3e+4EjwUUhMBSCKnpmX826
-         jvtGmtmMHVtvikmFUMaPbc4yWHyVFeJ2RQe5GgN4g0jagctQltMBvjiR0pqP7xNVqYty
-         7XKrLUHQLbz7xlcMTYANU/o3tT6qhSh+KBeAy84M0vV/oCHOlhxwAWaCvfgARMLPedPM
-         2yjqVRfuceblAVulY3nS0nQU2p2UYc34zessg6BF7KRTKdTiAvQcHqqLhXA1Sfi0EXb0
-         M7jmB5ZYL6oQ37Pe9heu5xjNyGLj0Zc1oi+n+GXEkP12tSBPFqUBl2CTWv9deqTEoR/h
-         mf9g==
-X-Gm-Message-State: AOAM5303eTWIlx0//K4hdhjfNn+NSGmRukfFszTZVtC69X3jQ4fpvZTs
-        ZVl6H1D0iwk9eqbNYV3dXzfF+g==
-X-Google-Smtp-Source: ABdhPJx/GJQNiKv7ryzTKSFjMbwJ7feOzen3jxe65bgwDtz5b587MDR3U9C5Oj0pyfQuQf653ex6Cw==
-X-Received: by 2002:a37:68d4:0:b0:67b:113f:c10e with SMTP id d203-20020a3768d4000000b0067b113fc10emr12780255qkc.350.1649422028848;
-        Fri, 08 Apr 2022 05:47:08 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id w22-20020ac87e96000000b002eb8e71950csm17419162qtj.71.2022.04.08.05.47.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 05:47:08 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1nco15-00EysA-KU; Fri, 08 Apr 2022 09:47:07 -0300
-Date:   Fri, 8 Apr 2022 09:47:07 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Matthew Rosato <mjrosato@linux.ibm.com>
-Cc:     linux-s390@vger.kernel.org, alex.williamson@redhat.com,
-        cohuck@redhat.com, schnelle@linux.ibm.com, farman@linux.ibm.com,
-        pmorel@linux.ibm.com, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, frankja@linux.ibm.com,
-        david@redhat.com, imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH v5 15/21] KVM: s390: pci: add routines to start/stop
- interpretive execution
-Message-ID: <20220408124707.GY64706@ziepe.ca>
-References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
- <20220404174349.58530-16-mjrosato@linux.ibm.com>
+        Fri, 8 Apr 2022 08:49:51 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E5B2EE4F5;
+        Fri,  8 Apr 2022 05:47:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649422068; x=1680958068;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=GieTI1WB4H2GA1M0xA2lOtUkaNXzhrdcKPpmxIylHsc=;
+  b=iOkPcVNZmtIITC2baZk5TmkHUabZrFr+kd84u5Xir98KB8oHlJhmWGnF
+   jDMpa7ZhrPnUFj+PhmaaSq2Yu5P7flQBcN7LywS/hv4EUgcKoh/U5SKHx
+   chh3qbZVtmgIdsShhCPlAZeC4paomStfa4c52eH5FgNeXuX2f9BNwwYcD
+   bhzYd+53vSkGDCBaEFKlJMSBtuKeHBetMeuETu0ySFBlkrmxBU5j70esu
+   yh+PLBGUvUMlX8SEc6VPsiVE1DY6P2kTIbGag4/sYws0ULPQGhsLmFfFl
+   XJTbeGywshSpF0cgVIIbsWHAVVKu7VhHNhDnFX6wiVTwMQRegKqfsQKQp
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="260418310"
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="260418310"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:47:48 -0700
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="525364161"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:47:45 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ncny7-000Hsh-SI;
+        Fri, 08 Apr 2022 15:44:03 +0300
+Date:   Fri, 8 Apr 2022 15:44:03 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Subject: Re: [PATCH v5 1/4] device property: Allow error pointer to be passed
+ to fwnode APIs
+Message-ID: <YlAuEzW0fUuuXTN6@smile.fi.intel.com>
+References: <20220406130552.30930-1-andriy.shevchenko@linux.intel.com>
+ <df3a78036864716fbeecf3cd94dbcbbe@walle.cc>
+ <Yk66wHWlMg3QLy6u@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220404174349.58530-16-mjrosato@linux.ibm.com>
+In-Reply-To: <Yk66wHWlMg3QLy6u@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 01:43:43PM -0400, Matthew Rosato wrote:
-> +int kvm_s390_pci_register_kvm(struct device *dev, void *data)
-> +{
-> +	struct zpci_dev *zdev = NULL;
-> +	struct kvm *kvm = data;
-> +
-> +	/* Only proceed for zPCI devices, quietly ignore others */
-> +	if (dev_is_pci(dev))
-> +		zdev = to_zpci_dev(dev);
-> +	if (!zdev)
-> +		return 0;
+On Thu, Apr 07, 2022 at 01:19:44PM +0300, Andy Shevchenko wrote:
+> On Wed, Apr 06, 2022 at 08:05:23PM +0200, Michael Walle wrote:
 
-Especially since this only works if we have zpci device
+...
 
-So having the zpci code hook the kvm notifier and then call the arch
-code from the zpci area seems pretty OK
+> > > +	if (IS_ERR_OR_NULL(fwnode))
+> > > +		return -ENOENT;
+> > > +
+> > >  	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
+> > >  				 nargs, index, args);
+> > > +	if (ret == 0)
+> > > +		return ret;
+> > > 
+> > > -	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
+> > > -	    !IS_ERR_OR_NULL(fwnode->secondary))
+> > > -		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
+> > > -					 prop, nargs_prop, nargs, index, args);
+> > > +	if (IS_ERR_OR_NULL(fwnode->secondary))
+> > > +		return -ENOENT;
+> > 
+> > Doesn't this mean you overwrite any return code != 0 with -ENOENT?
+> > Is this intended?
+> 
+> Indeed, it would shadow the error code.
 
-Also why is a struct kvm * being passed as a void *?
+I was thinking more on this and am not sure about the best approach here.
+On one hand in the original code this returns the actual error code from
+the call against primary fwnode. But it can be at least -ENOENT or -EINVAL.
 
-Jason
+But when we check the secondary fwnode we want to have understanding that it's
+secondary fwnode which has not been found, but this requires to have a good
+distinguishing between error codes from the callback.
+
+That said, the error codes convention of ->get_reference_args() simply
+sucks. Sakari, do you have it on your TODO to fix this mess out, if it's
+even feasible?
+
+To be on safest side, I will change as suggested in previous mail (see below)
+so it won't have impact on -EINVAL case.
+
+> So, it should go with
+> 
+> 	if (IS_ERR_OR_NULL(fwnode->secondary))
+> 		return ret;
+> 
+> then.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
