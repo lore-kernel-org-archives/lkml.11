@@ -2,87 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 267ACC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:44:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F72DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237759AbiDHPqJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38098 "EHLO
+        id S237770AbiDHPqU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 11:46:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234655AbiDHPqF (ORCPT
+        with ESMTP id S237751AbiDHPqI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 11:46:05 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16279939D4;
+        Fri, 8 Apr 2022 11:46:08 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CCF939DF;
         Fri,  8 Apr 2022 08:44:02 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id y3-20020a056830070300b005cd9c4d03feso6364056ots.3;
-        Fri, 08 Apr 2022 08:44:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZmDnR4P0jms8okdjduyqjSplf8RRrDLwebVyvapStdM=;
-        b=q04HLZ0LDH775/jL4wmsYosOew3eVyA130Ebf0Hjemgd1xc+/U9TEgVLcxnSj+ezGT
-         RO27hWfcPYerNF1cbbls8Sr9SAh+TxGsBB5vzQtgJzwgPY3/6bbDTXS/390mSOa376IL
-         D1fOnKZMFzAhy/G/TNlC65f0Er83SPQyuq9WJEkrd4TX5oE1QO1HT1IqsAjLdsIeD+81
-         tg9py5fSdk0FNoNl3T1IwxaoFKPkindCLVPjrPXS/zXO/IHCfRjamSo01YOBGKvsgz7V
-         lnNK8C+O9nPZZBkM9TbDrJk1i9TaEEeKfJ5/iIOq0pAQq3DiUezlVTb6zyNJPZdR+65f
-         lLaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=ZmDnR4P0jms8okdjduyqjSplf8RRrDLwebVyvapStdM=;
-        b=XB1EHPbDgSWqL3mKSQvsEBQUf3BHe6xsvNlBENTeonHWbl2u1OnxvxJdbqd0QjMgLG
-         XqhJsRZGW1ewXbRJyPbtypPPpCHG961G8Hg1K+PdqpC5P9LDuMyXMI1G7ToJlhauy59C
-         BCwp7+BB4GdvLm8gBvcPX2Nf0T6on6gIzBULkeImSLZ+yzUsvLxLofvjDbPGR+R/BxmV
-         7yAFFn28nrd65oo9xZsFZu3h2omlXlll6mAS6NKTt5kxqk5mQWRLqutKpVIy8clS3Dqz
-         8DYT2Ma6Ivi+iGzSyU8U4rQxm2whluUX7+kZuESX53WXpX65LCu7i4j3aQY1o3rFlzyj
-         7Hhw==
-X-Gm-Message-State: AOAM533zrefyqUOTjwtltzqSBBIKpuLPShJPARNZLGdge1lftdCCVubV
-        eeHvm+Ba8lNLsrwqIs45Ab4=
-X-Google-Smtp-Source: ABdhPJwAhyxaAiIKxBPRZFRdw0ZKo8GeUCAUQI4jHqQfPoMxYJvlz3V23XIq5jt8T0X3tIrVa11CWA==
-X-Received: by 2002:a9d:75cc:0:b0:5cd:9f3a:6ee6 with SMTP id c12-20020a9d75cc000000b005cd9f3a6ee6mr6791592otl.10.1649432641469;
-        Fri, 08 Apr 2022 08:44:01 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id v12-20020a05687105cc00b000e215a2e957sm5074156oan.17.2022.04.08.08.43.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 08:43:47 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Fri, 8 Apr 2022 08:43:43 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
-        Jean Delvare <jdelvare@suse.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        David Laight <David.Laight@ACULAB.COM>
-Subject: Re: [PATCH v4 2/2] hwmon: intel-m10-bmc-hwmon: use
- devm_hwmon_sanitize_name()
-Message-ID: <20220408154343.GA105850@roeck-us.net>
-References: <20220405092452.4033674-1-michael@walle.cc>
- <20220405092452.4033674-3-michael@walle.cc>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649432643; x=1680968643;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gcJtOPIX2/0B3YxiUGz/EyzDxp0SAsqb/v7kxf3M3BU=;
+  b=YIlwpyceiHV/M2vrggkScgP/UKLnGgX4BOlZCRHXsY94hevyknTt0V+F
+   W4tGLSACYa5ddnCJtgehG86r8Fw4X6+M4ordmitHeV1GeoQPzSt+fFvP2
+   EL6IQKBWeVhjawwd1UGPcQkfPKw02Ev2XQXkywbKSQl6AZ2g164mfsAwf
+   74PE0+6bFJquoP0IneXW6qdWQY/eec5Diaaz8q9L4xRyWsUndLUE0BeC3
+   +ejLVXqSJHwQ95Fnl4jb33fZ2Kv21BoMFyKxpGULirjSWcrVz6dzUKIJ7
+   F1kcuvgyvQomHEVjVf1wrp0fOdn8sbEmxXDktcFCpKc+ZSnznDDjjwJRl
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="259218709"
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="259218709"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 08:43:44 -0700
+X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
+   d="scan'208";a="589257568"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 08:43:36 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ncqiH-000Lsk-PD;
+        Fri, 08 Apr 2022 18:39:53 +0300
+Date:   Fri, 8 Apr 2022 18:39:53 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Qianggui Song <qianggui.song@amlogic.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marc Zyngier <maz@kernel.org>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        openbmc@lists.ozlabs.org, linux-renesas-soc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH v4 05/13] pinctrl: samsung: Switch to use
+ for_each_gpiochip_node() helper
+Message-ID: <YlBXSVyj88CqjGj4@smile.fi.intel.com>
+References: <20220401103604.8705-1-andriy.shevchenko@linux.intel.com>
+ <20220401103604.8705-6-andriy.shevchenko@linux.intel.com>
+ <d1f873c6-150f-5f4d-7aa8-7bb15823d991@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220405092452.4033674-3-michael@walle.cc>
+In-Reply-To: <d1f873c6-150f-5f4d-7aa8-7bb15823d991@linaro.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 11:24:52AM +0200, Michael Walle wrote:
-> Instead of open-coding the bad characters replacement in the hwmon name,
-> use the new devm_hwmon_sanitize_name().
+On Fri, Apr 08, 2022 at 05:22:21PM +0200, Krzysztof Kozlowski wrote:
+> On 01/04/2022 12:35, Andy Shevchenko wrote:
+> > Switch the code to use for_each_gpiochip_node() helper.
+
+(...)
+
+> >  /*
+> >   * Iterate over all driver pin banks to find one matching the name of node,
+> >   * skipping optional "-gpio" node suffix. When found, assign node to the bank.
+> >   */
+> > -static void samsung_banks_of_node_get(struct device *dev,
+> > -				      struct samsung_pinctrl_drv_data *d,
+> > -				      struct device_node *node)
+> > +static void samsung_banks_node_get(struct device *dev, struct samsung_pinctrl_drv_data *d)
 > 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> Acked-by: Xu Yilun <yilun.xu@intel.com>
-> Reviewed-by: Tom Rix <trix@redhat.com>
+> This is worth simplification anyway, so please split it to separate patch.
 
-Applied.
+Not sure what to do and why it worth an additional churn.
 
-Thanks,
-Guenter
+> >  {
+> >  	const char *suffix = "-gpio-bank";
+> >  	struct samsung_pin_bank *bank;
+> > -	struct device_node *child;
+> > +	struct fwnode_handle *child;
+> >  	/* Pin bank names are up to 4 characters */
+> >  	char node_name[20];
+> >  	unsigned int i;
+> > @@ -1038,17 +1037,17 @@ static void samsung_banks_of_node_get(struct device *dev,
+> >  			continue;
+> >  		}
+> >  
+> > -		for_each_child_of_node(node, child) {
+> > -			if (!of_find_property(child, "gpio-controller", NULL))
+> > -				continue;
+> 
+> This does not look equivalent. There are nodes without this property.
+
+Not sure I understand why not. The macro checks for the property and
+iterates over nodes that have this property.
+
+Can you elaborate, please?
+
+> > -			if (of_node_name_eq(child, node_name))
+> > +		for_each_gpiochip_node(dev, child) {
+> > +			struct device_node *np = to_of_node(child);
+> > +
+> > +			if (of_node_name_eq(np, node_name))
+> >  				break;
+> > -			else if (of_node_name_eq(child, bank->name))
+> > +			if (of_node_name_eq(np, bank->name))
+> >  				break;
+> >  		}
+> 
+> This patch has to wait till someone provides you a tested-by. I might do
+> it around next week.
+
+Fine with me, I will drop it from my repo for now.
+
+Thanks for review!
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
