@@ -2,109 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ECF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238538AbiDHSWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 14:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60194 "EHLO
+        id S238549AbiDHSX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 14:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238516AbiDHSWO (ORCPT
+        with ESMTP id S230348AbiDHSXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 14:22:14 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4A72102B2;
-        Fri,  8 Apr 2022 11:20:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649442010; x=1680978010;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=oJ9p5GHDWzM6iy52ee+bzgw7OnlJv9U22b2PdWRRIVk=;
-  b=UFgGC2h7IF0XQGlUnUbWXihMjx2rU/sHOJr+PM/z1UZC+0a68kyjrBE9
-   ox3nkTlXsxeFzav86N48Lv8UPwC6VkuTkYw+giz1gb7xmO5TMyUPku2gs
-   dAhRw6fnVxKaCz+exB0Ckx3G/MA9mCbOwW/EFUG/duKeyuZXO8J1bUJ/y
-   d3fZAMonPmTIYPLu0KYxuoJMLCSLnG5jQRSRIZNVHGetty67nsx+TZzv3
-   lmGob156jpvF7PdNTdNVsHkvxqMXMsRI5ZRlojmhvTU6WtinNANueqAvH
-   +aAN2Ygl5XwJKdEk47GvgOQAHbP9emvduIDgPlUf2gEzX6iBZ1Ccwb3NM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="322350061"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="322350061"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 11:19:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="795772791"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 08 Apr 2022 11:19:43 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3478E3D5; Fri,  8 Apr 2022 21:18:56 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v2 4/5] gpiolib: Extract gpio_chip_get_value() wrapper
-Date:   Fri,  8 Apr 2022 21:18:53 +0300
-Message-Id: <20220408181854.73528-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220408181854.73528-1-andriy.shevchenko@linux.intel.com>
-References: <20220408181854.73528-1-andriy.shevchenko@linux.intel.com>
+        Fri, 8 Apr 2022 14:23:21 -0400
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC82360437;
+        Fri,  8 Apr 2022 11:21:17 -0700 (PDT)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2ebdf6ebd29so34699217b3.2;
+        Fri, 08 Apr 2022 11:21:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lCVpHEZAuFYpT8MoYL/wQ4fDYm6F2aWVl7tmD78GJ5A=;
+        b=yTdG7iM0rTMFQvDClGza8PQw9GrLpjlYWIfN5vMUi1SM8GpH225/CF+n5bSVpLBfNS
+         FiGq7bveFnVFvAV+jVbFI2LUrXnVymDYRRaOKu7a9NEz96xbyGf8qmer/fuaTr/W5zDH
+         m5KoVRvnVICOxRmElz2Wuti+6p++rnJSRaIempnXJ/sGNV/J92vuOgMjDFJPkn8aB4Kg
+         mLu/7H67XqpDTXmEGnHxIQrdEfIRhdczD8/GOoNv9XyVPevbrZC6TltPxtFUHS8n5WhK
+         yEz6ONbxAkG+aX5meV1dzQMVWEHFlLxmhkjyAaylqO1Oc4oBjK88Cnib/kUBS1B31KWh
+         +Dvg==
+X-Gm-Message-State: AOAM530ApCRRZxBkUGFDNTnSpHs/oyA6snI5ytx4LmYLDVldpJpgKMKY
+        YRt1cuGR1uzHZPgmGBvmoMi/nuORPQ103xi64bGMrMjv
+X-Google-Smtp-Source: ABdhPJzGh+iKXmN5NP9Y/+KpdVxbwKsYfj7oFxaxISg2qW8gZjldXVGjXW/suZ2XAiJyRtuNMMgiDnTN939LblH5yaw=
+X-Received: by 2002:a81:7c45:0:b0:2eb:4759:cc32 with SMTP id
+ x66-20020a817c45000000b002eb4759cc32mr17293086ywc.515.1649442076610; Fri, 08
+ Apr 2022 11:21:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <4412361.LvFx2qVVIh@kreacher> <20220407154901.GA239301@bhelgaas>
+In-Reply-To: <20220407154901.GA239301@bhelgaas>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 8 Apr 2022 20:21:05 +0200
+Message-ID: <CAJZ5v0hC1Z6TrRtG8nkDJ4uk=qg=PQ1m6k4W_ho6G2YR2iZ0LQ@mail.gmail.com>
+Subject: Re: [PATCH v1] PCI: PM: Power up all devices during runtime resume
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In couple of cases we are using the same code to wrap ->get() callback.
-Extract that code into a helper for the sake of better maintenance.
+On Thu, Apr 7, 2022 at 5:49 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Wed, Apr 06, 2022 at 09:00:52PM +0200, Rafael J. Wysocki wrote:
+> > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> >
+> > Currently, endpoint devices may not be powered up entirely during
+> > runtime resume that follows a D3hot -> D0 transition of the parent
+> > bridge.
+> >
+> > Namely, even if the power state of an endpoint device, as indicated
+> > by its PCI_PM_CTRL register, is D0 after powering up its parent
+> > bridge, it may be still necessary to bring its ACPI companion into
+> > D0 and that should be done before accessing it.  However, the current
+> > code assumes that reading the PCI_PM_CTRL register is sufficient to
+> > establish the endpoint device's power state, which may lead to
+> > problems.
+> >
+> > Address that by forcing a power-up of all PCI devices, including the
+> > platform firmware part of it, during runtime resume.
+> >
+> > Link: https://lore.kernel.org/linux-pm/11967527.O9o76ZdvQC@kreacher
+> > Fixes: 5775b843a619 ("PCI: Restore config space on runtime resume despite being unbound")
+> > Reported-by: Abhishek Sahu <abhsahu@nvidia.com>
+> > Tested-by: Abhishek Sahu <abhsahu@nvidia.com>
+> > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>
+> Applied with Mika's reviewed-by to pci/pm for v5.19, thanks!
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: new patch
- drivers/gpio/gpiolib.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+This doesn't compile when CONFIG_PM_SLEEP in uset, sorry about this.
 
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index 43b0cae69bcd..f537597838bb 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -2532,6 +2532,11 @@ void gpiod_toggle_active_low(struct gpio_desc *desc)
- }
- EXPORT_SYMBOL_GPL(gpiod_toggle_active_low);
- 
-+static int gpio_chip_get_value(struct gpio_chip *gc, const struct gpio_desc *desc)
-+{
-+	return gc->get ? gc->get(gc, gpio_chip_hwgpio(desc)) : -EIO;
-+}
-+
- /* I/O calls are only valid after configuration completed; the relevant
-  * "is this a valid GPIO" error checks should already have been done.
-  *
-@@ -2557,12 +2562,10 @@ EXPORT_SYMBOL_GPL(gpiod_toggle_active_low);
- static int gpiod_get_raw_value_commit(const struct gpio_desc *desc)
- {
- 	struct gpio_chip	*gc;
--	int offset;
- 	int value;
- 
- 	gc = desc->gdev->chip;
--	offset = gpio_chip_hwgpio(desc);
--	value = gc->get ? gc->get(gc, offset) : -EIO;
-+	value = gpio_chip_get_value(gc, desc);
- 	value = value < 0 ? value : !!value;
- 	trace_gpio_value(desc_to_gpio(desc), 1, value);
- 	return value;
-@@ -4406,7 +4409,7 @@ static void gpiolib_dbg_show(struct seq_file *s, struct gpio_device *gdev)
- 		if (test_bit(FLAG_REQUESTED, &desc->flags)) {
- 			gpiod_get_direction(desc);
- 			is_out = test_bit(FLAG_IS_OUT, &desc->flags);
--			value = gc->get ? gc->get(gc, gpio_chip_hwgpio(desc)) : -EIO;
-+			value = gpio_chip_get_value(gc, desc);
- 			is_irq = test_bit(FLAG_USED_AS_IRQ, &desc->flags);
- 			active_low = test_bit(FLAG_ACTIVE_LOW, &desc->flags);
- 			seq_printf(s, " gpio-%-3d (%-20.20s|%-20.20s) %s %s %s%s\n",
--- 
-2.35.1
+I'll send a v2, but if you prefer an incremental fix, please let me know.
 
+>
+> > ---
+> >  drivers/pci/pci-driver.c |    2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > Index: linux-pm/drivers/pci/pci-driver.c
+> > ===================================================================
+> > --- linux-pm.orig/drivers/pci/pci-driver.c
+> > +++ linux-pm/drivers/pci/pci-driver.c
+> > @@ -1312,7 +1312,7 @@ static int pci_pm_runtime_resume(struct
+> >        * to a driver because although we left it in D0, it may have gone to
+> >        * D3cold when the bridge above it runtime suspended.
+> >        */
+> > -     pci_restore_standard_config(pci_dev);
+> > +     pci_pm_default_resume_early(pci_dev);
+> >
+> >       if (!pci_dev->driver)
+> >               return 0;
+> >
+> >
+> >
