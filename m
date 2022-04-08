@@ -2,100 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB51C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98988C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231386AbiDHIQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 04:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
+        id S231489AbiDHISa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 04:18:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231345AbiDHIQm (ORCPT
+        with ESMTP id S230245AbiDHISY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 04:16:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6960360D87;
-        Fri,  8 Apr 2022 01:14:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 054B3615A7;
-        Fri,  8 Apr 2022 08:14:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31BDFC385A1;
-        Fri,  8 Apr 2022 08:14:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649405678;
-        bh=DXntX2Jz7Nztnd1dMcRMCaGMy0UPIH0WJlp5HA4774s=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=Qu+tD/xH27JIeXTaUKCquAn5fQayD4kxRqf9nIEs5/Z/nJRRkNrYMgZhuJZXKt8Al
-         NkLhsVjHZOQo7GV7TnXxgY/OhKOkJU3Osmzr9x7wxOTEUJqNBpdfoz4FPDWMUGX/64
-         u5jSI6cp8wrTBzl12n2nao2HO36tXUvV7ocDKe08fD9PBw+bB24wUGrlfy8Po3axfC
-         48EribHBfxK/csfTD4gSi23AoDNCMmpAeki/n+TADylKpJEf3htCMIfhNEuUqVJq8e
-         vepktCqnHgHTjfdLOMttvcbqtGvHV3pvfSY79LhuYzJ1SgqriOd3dpsluPlBAmvsnT
-         YOSlmsHLEDPGA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     linux-mmc@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-Subject: Re: [PATCH 1/3] mmc: core: improve API to make clear mmc_hw_reset is for cards
-References: <20220408080045.6497-1-wsa+renesas@sang-engineering.com>
-        <20220408080045.6497-2-wsa+renesas@sang-engineering.com>
-Date:   Fri, 08 Apr 2022 11:14:31 +0300
-In-Reply-To: <20220408080045.6497-2-wsa+renesas@sang-engineering.com> (Wolfram
-        Sang's message of "Fri, 8 Apr 2022 10:00:42 +0200")
-Message-ID: <87bkxcouu0.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Fri, 8 Apr 2022 04:18:24 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA28657A0
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 01:16:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=9waK1GE6Xo1fRvL2g920wRma1kjG5tt3UIqXpis3+Gg=; b=lUGzIaWdoZwMt2kUyFEN2QSwYH
+        7Yyi5jmaN7iUzK0vnVvs+sltz+iF5E6vpTGjt9skfyJbOKYxnC9FekrYfsGYAfoDPHFBX4cJgNskk
+        UX4oL+V/9oe+00qlR+L0ython3kkTMO19+FbJZGZjhiqvFll1axcPhH8FRYBNjalBai1+rpYJN99f
+        N09hlKKQ6zpu67MtCqT+g7mBC1jLmc/ApUx0oWLp7ntAS0E9uffmUTc4Hq2d0n4KO63uxr45RbLLG
+        yZw0blKpD1jj8PcWU4Exs0/8bcdjrsKbcrpZ9ZDcTP6dgEIM9ZSJSAslvPpjIZwgBx/wns8KWS53X
+        MuWjj+rA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ncjmZ-009dKd-NG; Fri, 08 Apr 2022 08:15:51 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id ACBDF9862CF; Fri,  8 Apr 2022 10:15:49 +0200 (CEST)
+Date:   Fri, 8 Apr 2022 10:15:49 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Nico Pache <npache@redhat.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Christoph von Recklinghausen <crecklin@redhat.com>,
+        Don Dutile <ddutile@redhat.com>,
+        "Herton R . Krzesinski" <herton@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Joel Savitz <jsavitz@redhat.com>,
+        Darren Hart <dvhart@infradead.org>, stable@kernel.org
+Subject: Re: [PATCH v8] oom_kill.c: futex: Don't OOM reap the VMA containing
+ the robust_list_head
+Message-ID: <20220408081549.GM2731@worktop.programming.kicks-ass.net>
+References: <20220408032809.3696798-1-npache@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220408032809.3696798-1-npache@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wolfram Sang <wsa+renesas@sang-engineering.com> writes:
+On Thu, Apr 07, 2022 at 11:28:09PM -0400, Nico Pache wrote:
+> The pthread struct is allocated on PRIVATE|ANONYMOUS memory [1] which can
+> be targeted by the oom reaper. This mapping is used to store the futex
+> robust list head; the kernel does not keep a copy of the robust list and
+> instead references a userspace address to maintain the robustness during
+> a process death. A race can occur between exit_mm and the oom reaper that
+> allows the oom reaper to free the memory of the futex robust list before
+> the exit path has handled the futex death:
+> 
+>     CPU1                               CPU2
+> ------------------------------------------------------------------------
+>     page_fault
+>     do_exit "signal"
+>     wake_oom_reaper
+>                                         oom_reaper
+>                                         oom_reap_task_mm (invalidates mm)
+>     exit_mm
+>     exit_mm_release
+>     futex_exit_release
+>     futex_cleanup
+>     exit_robust_list
+>     get_user (EFAULT- can't access memory)
+> 
+> If the get_user EFAULT's, the kernel will be unable to recover the
+> waiters on the robust_list, leaving userspace mutexes hung indefinitely.
+> 
+> Use the robust_list address stored in the kernel to skip the VMA that holds
+> it, allowing a successful futex_cleanup.
+> 
+> Theoretically a failure can still occur if there are locks mapped as
+> PRIVATE|ANON; however, the robust futexes are a best-effort approach.
+> This patch only strengthens that best-effort.
+> 
+> The following case can still fail:
+> robust head (skipped) -> private lock (reaped) -> shared lock (skipped)
 
-> To make it unambiguous that mmc_hw_reset() is for cards and not for
-> controllers, we make the function argument mmc_card instead of mmc_host.
-> Also, all users are converted.
->
-> Suggested-by: Ulf Hansson <ulf.hansson@linaro.org>
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
->
-> Ulf prefers one cross-subsystem patch to have all users converted. So,
-> we are looking for ACKs from the maintainers of the wireless drivers.
-> Thank you!
->
-> Changes since RFC:
-> * don't rename the function but only change the argument type
-> * remove fallback and convert all users in one go
-> * remove comment as suggested by Ulf
->
->  drivers/mmc/core/block.c                                | 2 +-
->  drivers/mmc/core/core.c                                 | 5 +++--
->  drivers/mmc/core/mmc_test.c                             | 3 +--
->  drivers/net/wireless/ath/ath10k/sdio.c                  | 2 +-
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 +-
->  drivers/net/wireless/marvell/mwifiex/sdio.c             | 2 +-
->  drivers/net/wireless/ti/wlcore/sdio.c                   | 2 +-
+This is still all sorts of confused.. it's a list head, the entries can
+be in any random other VMA. You must not remove *any* user memory before
+doing the robust thing. Not removing the VMA that contains the head is
+pointless in the extreme.
 
-For wireless:
-
-Acked-by: Kalle Valo <kvalo@kernel.org>
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Did you not read the previous discussion?
