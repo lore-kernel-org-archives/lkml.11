@@ -2,128 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DC8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6358AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238553AbiDHSYR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 14:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
+        id S238554AbiDHSYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 14:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229969AbiDHSYN (ORCPT
+        with ESMTP id S238550AbiDHSYQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 14:24:13 -0400
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DFD36DD9E;
-        Fri,  8 Apr 2022 11:22:08 -0700 (PDT)
-Received: by mail-ot1-f42.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso6635164otf.12;
-        Fri, 08 Apr 2022 11:22:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Lf2HIDOgcxd3N/SJmrm+i3BU0QKkjgIH52w0l9HZULg=;
-        b=EqzXutcN6XQcvHV0Lyf70TjAnCMJVdNvbZpDJAk+l2d16apb+brgxkf91hYThQx1V8
-         kxr+E+pysmSEpHCMTqjpBxvdhXruwdHZXPqln9EgMoNDWpmVYRzlpmxIdaP2I3Z6N6YC
-         yUc/UaQ0fdjxK/NAebS9XLh3WjVmtf2aVtb6H3bkBI43SQ2t0EKrAbG/IO4J9EQBUsG1
-         HJ4kDQji5gg8dc4VoqvMKArAlrfaZ9qtZEK14a7WHnCXbZWE/UpQiCcE5cpHblZ+WORP
-         uulri5klj+DrPAbxSAy9YGASK37alaDRnXUQ+b8gw7gnAs4RbCVm2WaOBblPH12h/d0d
-         IYbg==
-X-Gm-Message-State: AOAM533M7hmHhZEsat/RmTqE+KKdVkjAR6fHw0iZbj/twx/GkMJMHYTV
-        tConhtg14Xx3xmakarGzb9W/obrPOQ==
-X-Google-Smtp-Source: ABdhPJy91m7vj0F/F1zyS9qB+nTfpd/raBdG+Fj65mRFlO9Vv/D+Ezuacy99dHSUu24EJa4eacDzpg==
-X-Received: by 2002:a9d:4798:0:b0:5b2:3791:beb7 with SMTP id b24-20020a9d4798000000b005b23791beb7mr7026104otf.123.1649442127768;
-        Fri, 08 Apr 2022 11:22:07 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id z3-20020a056870d68300b000e2a0a74f9fsm394717oap.37.2022.04.08.11.22.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 11:22:07 -0700 (PDT)
-Received: (nullmailer pid 3810091 invoked by uid 1000);
-        Fri, 08 Apr 2022 18:22:06 -0000
-Date:   Fri, 8 Apr 2022 13:22:06 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Chen-Yu Tsai <wens@kernel.org>,
+        Fri, 8 Apr 2022 14:24:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1428B36FB48;
+        Fri,  8 Apr 2022 11:22:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E43CB6220B;
+        Fri,  8 Apr 2022 18:22:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1447C385A3;
+        Fri,  8 Apr 2022 18:22:06 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="dfKB5qQm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1649442124;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZAwWpf2mSTFfhh0jtk2ioJcnGUl1ovRW108xPWCiP1A=;
+        b=dfKB5qQmsNNVKpwxv9Cbr2s7qEWtNQzkgJC2RD/cQl+Kg5yaPqQUUxVrp4hQsx7Gr34f8r
+        QDaPPI2uQBsYvxEeqkoO1FDW72vygWpLLLY0z7DPDI7fQP2fMh2qAq13X+NIGhh5UufkXE
+        UHg7p8K+xKHRdLFGuG+/VvaayEztZPI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4b54fd79 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 8 Apr 2022 18:22:04 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        arnd@arndb.de
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
         Geert Uytterhoeven <geert@linux-m68k.org>,
-        Mark Brown <broonie@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/5] dt-bindings: display: ssd1307fb: Deprecate fbdev
- compatible strings
-Message-ID: <YlB9TsbhoQblo1H8@robh.at.kernel.org>
-References: <20220407200205.28838-1-javierm@redhat.com>
- <20220407200205.28838-2-javierm@redhat.com>
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
+        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, x86@kernel.org,
+        linux-xtensa@linux-xtensa.org
+Subject: [PATCH RFC v1 00/10] archs/random: fallback to using sched_clock() if no cycle counter
+Date:   Fri,  8 Apr 2022 20:21:35 +0200
+Message-Id: <20220408182145.142506-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407200205.28838-2-javierm@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 10:02:00PM +0200, Javier Martinez Canillas wrote:
-> The current compatible strings for SSD130x I2C controllers contain an -fb
-> suffix, this seems to indicate that are for a fbdev driver. But the DT is
-> supposed to describe the hardware and not Linux implementation details.
+Hi folks,
 
-True, but compatible is just an identifier. There's no reason to 
-deprecate unless the binding as a whole needs to be redone.
+The RNG uses a function called random_get_entropy() basically anytime
+that it needs to timestamp an event. For example, an interrupt comes in,
+and we mix a random_get_entropy() into the entropy pool somehow.
+Somebody mashes their keyboard or moves their mouse around? We mix a
+random_get_entropy() into the entropy pool. It's one of the main
+varieties of input.
 
-I imagine you also want 2 compatibles for 2 drivers. That's saying you 
-should change your firmware to switch drivers. The fact that we have 2 
-drivers for the same h/w is a kernel problem. Don't bring DT into it.
+Unfortunately, it's always 0 on a few platforms. The RNG has accumulated
+various hacks to deal with this, but in general it's not great. Surely
+we can do better than 0. In fact, *anything* that's not the same exact
+value all the time would be better than 0. Even a counter that
+increments once per hour would be better than 0! I think you get the
+idea.
 
-> Let's deprecate those compatible strings and add a new enum that contains
-> compatible strings that don't have a -fb suffix. These will be matched by
-> the ssd130x-i2c DRM driver.
-> 
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-> ---
-> 
->  .../bindings/display/solomon,ssd1307fb.yaml   | 36 ++++++++++++-------
->  1 file changed, 24 insertions(+), 12 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> index ade61d502edd..46207f2c12b8 100644
-> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> @@ -12,12 +12,24 @@ maintainers:
->  
->  properties:
->    compatible:
-> -    enum:
-> -      - sinowealth,sh1106-i2c
-> -      - solomon,ssd1305fb-i2c
-> -      - solomon,ssd1306fb-i2c
-> -      - solomon,ssd1307fb-i2c
-> -      - solomon,ssd1309fb-i2c
-> +    oneOf:
-> +      # Deprecated compatible strings
-> +      - items:
-> +          - enum:
-> +              - solomon,ssd1305fb-i2c
-> +              - solomon,ssd1306fb-i2c
-> +              - solomon,ssd1307fb-i2c
-> +              - solomon,ssd1309fb-i2c
-> +        deprecated: true
-> +
-> +      # SSD130x I2C controllers
-> +      - items:
-> +          - enum:
-> +              - sinowealth,sh1106-i2c
-> +              - solomon,ssd1305-i2c
-> +              - solomon,ssd1306-i2c
-> +              - solomon,ssd1307-i2c
-> +              - solomon,ssd1309-i2c
+On most platforms, random_get_entropy() is aliased to get_cycles(),
+which makes sense for platforms where get_cycles() is defined. RDTSC,
+for example, has all the characteristics we care about for this
+function: it's fast to acquire (i.e. acceptable in an irq handler),
+pretty high precision, available, forms a 2-monotone distribution, etc.
+But for platforms without that, what is the next best thing?
 
-There's also no reason to put the bus interface into the compatible as 
-the same compatible will work on different buses. But since you want to 
-add SPI, just using the 'i2c' one will confuse people. For that reason 
-you could add 'solomon,ssd1305', etc. for both SPI support and I2C DRM. 
-(You should also support the 'fb-i2c' variant in DRM IMO, but doubtful 
-that I'll review that.)
+Sometimes the next best thing is architecture-defined. For example,
+really old MIPS has the CP0 random register, which isn't a cycle
+counter, but is at least something. However, some platforms don't even
+have an architecture-defined fallback. In that case, what are we left
+with?
 
-Rob
+By my first guess, we have ktime_get_boottime_ns(), jiffies, and
+sched_clock(). It seems like sched_clock() has already done a lot of
+work in being always available with some incrementing value, falling
+back to jiffies as necessary. So this series goes with that as a
+fallback, for when the architecture doesn't define random_get_entropy in
+its own way and when there's no working cycle counter.
+
+Another option would be falling back to different things on different
+platforms. For example, Arnd mentioned to me that on m68k,
+ktime_get_ns() might be better than sched_clock(), because it doesn't
+use CONFIG_GENERIC_SCHED_CLOCK and therefore is only as good as jiffies.
+Maybe there are other considerations there as well.
+
+This is a bit involved with plumbing asm/ headers, which is why this is
+an RFC. There are a few ways of skinning that cat. The patchset also
+tries to fill in the various cases where an arch only sometimes has a
+cycle counter and sometimes doesn't. When possible, it tries to make the
+decisions at compile time, but sometimes runtime decisions are
+necessary.
+
+Please let me know if you think this is sane. And if you have a
+different candidate than sched_clock(), I'd be interested to learn about
+that. In particular, I'd value input here from Thomas or somebody else
+who has looked at timekeeping across less common platforms.
+
+Finally, note that this series isn't about "jitter entropy" or other
+ways of initializing the RNG. That's a different topic for a different
+thread. Please don't let this discussion veer off into that. Here, I'm
+just trying to find a good fallback counter/timer for platforms without
+get_cycles(), a question with limited scope.
+
+Thanks,
+Jason
+
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Albert Ou <aou@eecs.berkeley.edu>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Chris Zankel <chris@zankel.net>
+Cc: Max Filippov <jcmvbkbc@gmail.com>
+Cc: John Stultz <john.stultz@linaro.org>
+Cc: Stephen Boyd <sboyd@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: linux-mips@vger.kernel.org
+Cc: linux-riscv@lists.infradead.org
+Cc: sparclinux@vger.kernel.org
+Cc: linux-um@lists.infradead.org
+Cc: x86@kernel.org
+Cc: linux-xtensa@linux-xtensa.org
+
+Jason A. Donenfeld (10):
+  random: use sched_clock() for random_get_entropy() if no get_cycles()
+  m68k: use sched_clock() for random_get_entropy() instead of zero
+  riscv: use sched_clock() for random_get_entropy() instead of zero
+  mips: use sched_clock() for random_get_entropy() instead of zero
+  arm: use sched_clock() for random_get_entropy() instead of zero
+  x86: use sched_clock() for random_get_entropy() instead of zero
+  arm64: use sched_clock() for random_get_entropy() instead of zero
+  um: use sched_clock() for random_get_entropy() instead of zero
+  sparc: use sched_clock() for random_get_entropy() instead of zero
+  xtensa: use sched_clock() for random_get_entropy() instead of zero
+
+ arch/arm/include/asm/timex.h      | 11 +++++++++++
+ arch/arm64/include/asm/timex.h    |  9 +++++++++
+ arch/m68k/include/asm/timex.h     |  4 +++-
+ arch/mips/include/asm/timex.h     |  3 ++-
+ arch/riscv/include/asm/timex.h    |  3 ++-
+ arch/sparc/include/asm/timex_32.h |  4 +---
+ arch/um/include/asm/timex.h       |  9 ++-------
+ arch/x86/include/asm/tsc.h        | 11 +++++++++++
+ arch/xtensa/include/asm/timex.h   |  6 ++----
+ include/linux/timex.h             |  6 ++++++
+ 10 files changed, 49 insertions(+), 17 deletions(-)
+
+-- 
+2.35.1
+
