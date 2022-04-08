@@ -2,205 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A16C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:16:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E50B0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:17:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231553AbiDHISc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 04:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35214 "EHLO
+        id S231448AbiDHITf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 04:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230142AbiDHISY (ORCPT
+        with ESMTP id S231382AbiDHITd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 04:18:24 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 89A1C65826;
-        Fri,  8 Apr 2022 01:16:16 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.188:55768.2144374162
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.39 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id E28752800BE;
-        Fri,  8 Apr 2022 16:15:43 +0800 (CST)
-X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id 131277eff98e44e7bbacc98d5e805070 for rafael@kernel.org;
-        Fri, 08 Apr 2022 16:16:07 CST
-X-Transaction-ID: 131277eff98e44e7bbacc98d5e805070
-X-Real-From: liuxp11@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
-X-MEDUSA-Status: 0
-Sender: liuxp11@chinatelecom.cn
-From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
-To:     rafael@kernel.org, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, keescook@chromium.org, anton@enomsg.org,
-        ccross@android.com, robert.moore@intel.com, tony.luck@intel.com,
-        lenb@kernel.org, james.morse@arm.com, bp@alien8.de,
-        tglx@linutronix.de, mingo@redhat.com, ying.huang@intel.com,
-        gong.chen@linux.intel.com, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Cc:     Liu Xinpeng <liuxp11@chinatelecom.cn>
-Subject: [PATCH v3] ACPI: APEI: fix missing erst record id
-Date:   Fri,  8 Apr 2022 16:15:23 +0800
-Message-Id: <1649405723-9178-1-git-send-email-liuxp11@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
+        Fri, 8 Apr 2022 04:19:33 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA6625C9
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 01:17:29 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id k2so9158058edj.9
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 01:17:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=yuQFl788i69gkuHZnfVhALt8fZsIexOSaYwO7DsFL54=;
+        b=gx8vkxt3S763Ala7vzwT1kODYsT4g6h9F/zXUPb23Kp7SxBqah2MLv/qepESsLFEk6
+         I0ssg1XGAfLpTdDwbWD4XOyGCf1OaXP7MTUwFge2EkjWfCqDuI9cbnBKQghpKTSNb+FZ
+         qQiXqB5C+6GD7/kuW52bYq8t0iaiLUOwEH2Gy5BwrGYXzXXkp7NTwGQcZ2MpnvUUOoRE
+         8UllVY1p3GkIjUo9lvPFKOrk+3+oTIFWk3jYgmGy2leoAdfs+MGwaRimWw+KYJ0Gamjn
+         j+cp3u90dmMQdHjdkVO7f2J+JL8VKRUppRdrEM545wEFGS7/HXzUyxt2c1TjJNQuTQQ1
+         yHtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yuQFl788i69gkuHZnfVhALt8fZsIexOSaYwO7DsFL54=;
+        b=rGsJkcifl5Y1W9q0iZKMwSrN0At5Yc3WRF3gEQIukKh31g0VMzo2H+07MtDhVFpWf+
+         fZgAUpLo/GzHYSyc/7BcT0WhP8ww7pNujIJVGT6Hq3l6FqweB44+VUH8pt5p03SorPbf
+         EtFBwouohoLGmKAB+bYi7oxvm2ENvmymiWyp+VIaBbTXAXhq88s2KnfnQrW0hUy3qU4I
+         vDDlq9A6Xq12A/VIluC0iX1ZVAwJPIuCfoCe1Ou0A78MG/sHMFGfpLLUE5Wht5oG96Hi
+         JIvKYq9olkocYNMsrsrtTR7jZYVrQ8YClrCY8J4sCnHwgujBni7Qsl5jat4ymPQg8lbD
+         wkNw==
+X-Gm-Message-State: AOAM533PM6wRkv0TmwAgSwr+tOEC6gzA2MCyQnPpUKlAmgBh9f/oJ1A3
+        u9pYVn+KDtRt96PwbI509Hcovw==
+X-Google-Smtp-Source: ABdhPJx+VdDdTFo570Fvyfw4GeKW7zvLGZVHe5kAq6tSIeQZxQjNGhr1a2UD5tZKmhXqwhMA9rkmDA==
+X-Received: by 2002:aa7:d287:0:b0:41d:79:73ca with SMTP id w7-20020aa7d287000000b0041d007973camr8932500edq.142.1649405848011;
+        Fri, 08 Apr 2022 01:17:28 -0700 (PDT)
+Received: from [192.168.0.187] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id h26-20020a170906111a00b006e778bd4fc8sm6167691eja.38.2022.04.08.01.17.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 01:17:27 -0700 (PDT)
+Message-ID: <855d7daa-45d1-d6d8-32bd-51778cf58392@linaro.org>
+Date:   Fri, 8 Apr 2022 10:17:26 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: devfreq: mediatek: Add mtk cci
+ devfreq dt-bindings
+Content-Language: en-US
+To:     Johnson Wang <johnson.wang@mediatek.com>, cw00.choi@samsung.com,
+        krzk+dt@kernel.org, robh+dt@kernel.org, kyungmin.park@samsung.com
+Cc:     khilman@kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, jia-wei.chang@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220408052150.22536-1-johnson.wang@mediatek.com>
+ <20220408052150.22536-2-johnson.wang@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220408052150.22536-2-johnson.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Read a record is cleared by others, but the deleted record cache entry is
-still created by erst_get_record_id_next. When next enumerate the records,
-get the cached deleted record, then erst_read return -ENOENT and try to
-get next record, loop back to first ID will return 0 in function
-__erst_record_id_cache_add_one and then set record_id as
-APEI_ERST_INVALID_RECORD_ID, finished this time read operation.
-It will result in read the records just in the cache hereafter.
+On 08/04/2022 07:21, Johnson Wang wrote:
+> Add devicetree binding of mtk cci devfreq on MediaTek SoC.
+> 
 
-This patch cleared the deleted record cache, fix the issue that
-"./erst-inject -p" shows record counts not equal to "./erst-inject -n".
+Thank you for your patch. There is something to discuss/improve.
 
-A reproducer of the problem(retry many times):
+> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> ---
+>  .../devicetree/bindings/devfreq/mtk-cci.yaml  | 72 +++++++++++++++++++
+>  1 file changed, 72 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/devfreq/mtk-cci.yaml
 
-[root@localhost erst-inject]# ./erst-inject -c 0xaaaaa00011
-[root@localhost erst-inject]# ./erst-inject -p
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00012
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00013
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00014
-[root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000006
-[root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000007
-[root@localhost erst-inject]# ./erst-inject -i 0xaaaaa000008
-[root@localhost erst-inject]# ./erst-inject -p
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00012
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00013
-rc: 273
-rcd sig: CPER
-rcd id: 0xaaaaa00014
-[root@localhost erst-inject]# ./erst-inject -n
-total error record count: 6
+Filename with vendor prefix, so something like:
 
-v1->v2  fix style problems
-v2->v3  fix apei_read_mce called erst_get_record_id_next and modify
-the commit message.
+mediatek,cci.yaml
 
-Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
----
- arch/x86/kernel/cpu/mce/apei.c |  5 +++--
- drivers/acpi/apei/erst-dbg.c   |  4 +++-
- drivers/acpi/apei/erst.c       | 34 +++++++++++++++++++++++++++++++---
- include/acpi/apei.h            |  1 +
- 4 files changed, 38 insertions(+), 6 deletions(-)
+Also please put it in the "interconnect" directory.
 
-diff --git a/arch/x86/kernel/cpu/mce/apei.c b/arch/x86/kernel/cpu/mce/apei.c
-index 0e3ae64d3b76..d37d38715231 100644
---- a/arch/x86/kernel/cpu/mce/apei.c
-+++ b/arch/x86/kernel/cpu/mce/apei.c
-@@ -179,9 +179,10 @@ ssize_t apei_read_mce(struct mce *m, u64 *record_id)
- 		goto out;
- 	rc = erst_read(*record_id, &rcd.hdr, sizeof(rcd));
- 	/* someone else has cleared the record, try next one */
--	if (rc == -ENOENT)
-+	if (rc == -ENOENT) {
-+		erst_clear_cache(*record_id);
- 		goto retry;
--	else if (rc < 0)
-+	} else if (rc < 0)
- 		goto out;
- 	/* try to skip other type records in storage */
- 	else if (rc != sizeof(rcd) ||
-diff --git a/drivers/acpi/apei/erst-dbg.c b/drivers/acpi/apei/erst-dbg.c
-index c740f0faad39..5b8164280a17 100644
---- a/drivers/acpi/apei/erst-dbg.c
-+++ b/drivers/acpi/apei/erst-dbg.c
-@@ -113,8 +113,10 @@ static ssize_t erst_dbg_read(struct file *filp, char __user *ubuf,
- retry:
- 	rc = len = erst_read(id, erst_dbg_buf, erst_dbg_buf_len);
- 	/* The record may be cleared by others, try read next record */
--	if (rc == -ENOENT)
-+	if (rc == -ENOENT) {
-+		erst_clear_cache(id);
- 		goto retry_next;
-+	}
- 	if (rc < 0)
- 		goto out;
- 	if (len > ERST_DBG_RECORD_LEN_MAX) {
-diff --git a/drivers/acpi/apei/erst.c b/drivers/acpi/apei/erst.c
-index 698d67cee052..07d69dc7fd62 100644
---- a/drivers/acpi/apei/erst.c
-+++ b/drivers/acpi/apei/erst.c
-@@ -856,6 +856,31 @@ ssize_t erst_read(u64 record_id, struct cper_record_header *record,
- }
- EXPORT_SYMBOL_GPL(erst_read);
- 
-+int erst_clear_cache(u64 record_id)
-+{
-+	int rc, i;
-+	u64 *entries;
-+
-+	if (erst_disable)
-+		return -ENODEV;
-+
-+	rc = mutex_lock_interruptible(&erst_record_id_cache.lock);
-+	if (rc)
-+		return rc;
-+
-+	entries = erst_record_id_cache.entries;
-+	for (i = 0; i < erst_record_id_cache.len; i++) {
-+		if (entries[i] == record_id)
-+			entries[i] = APEI_ERST_INVALID_RECORD_ID;
-+	}
-+	__erst_record_id_cache_compact();
-+
-+	mutex_unlock(&erst_record_id_cache.lock);
-+
-+	return rc;
-+}
-+EXPORT_SYMBOL_GPL(erst_clear_cache);
-+
- int erst_clear(u64 record_id)
- {
- 	int rc, i;
-@@ -998,14 +1023,17 @@ static ssize_t erst_reader(struct pstore_record *record)
- 
- 	len = erst_read(record_id, &rcd->hdr, rcd_len);
- 	/* The record may be cleared by others, try read next record */
--	if (len == -ENOENT)
-+	if (len == -ENOENT) {
-+		erst_clear_cache(record_id);
- 		goto skip;
--	else if (len < 0 || len < sizeof(*rcd)) {
-+	} else if (len < 0 || len < sizeof(*rcd)) {
- 		rc = -EIO;
- 		goto out;
- 	}
--	if (!guid_equal(&rcd->hdr.creator_id, &CPER_CREATOR_PSTORE))
-+	if (!guid_equal(&rcd->hdr.creator_id, &CPER_CREATOR_PSTORE)) {
-+		erst_clear_cache(record_id);
- 		goto skip;
-+	}
- 
- 	record->buf = kmalloc(len, GFP_KERNEL);
- 	if (record->buf == NULL) {
-diff --git a/include/acpi/apei.h b/include/acpi/apei.h
-index afaca3a075e8..f8c11ff4115a 100644
---- a/include/acpi/apei.h
-+++ b/include/acpi/apei.h
-@@ -47,6 +47,7 @@ void erst_get_record_id_end(void);
- ssize_t erst_read(u64 record_id, struct cper_record_header *record,
- 		  size_t buflen);
- int erst_clear(u64 record_id);
-+int erst_clear_cache(u64 record_id);
- 
- int arch_apei_enable_cmcff(struct acpi_hest_header *hest_hdr, void *data);
- void arch_apei_report_mem_error(int sev, struct cper_sec_mem_err *mem_err);
--- 
-2.23.0
+> 
+> diff --git a/Documentation/devicetree/bindings/devfreq/mtk-cci.yaml b/Documentation/devicetree/bindings/devfreq/mtk-cci.yaml
+> new file mode 100644
+> index 000000000000..ef4ea951025c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/devfreq/mtk-cci.yaml
+> @@ -0,0 +1,72 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/devfreq/mtk-cci.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek Cache Coherent Interconnect (CCI) frequency and voltage scaling
+> +
+> +maintainers:
+> +  - Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> +
+> +description: |
+> +  MediaTek Cache Coherent Interconnect (CCI) uses the software devfreq module
 
+Do not reference software implementation (devfreq).
+
+> +  to scale the clock frequency and adjust the voltage. MediaTek CCI shares
+> +  the same power supplies with CPU, so the scheduling involves with CPUfreq.
+
+The same - cpufreq.
+
+Instead, focus on the hardware, what do you describe here?
+
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - mediatek,mt8183-cci
+> +      - mediatek,mt8186-cci
+> +
+> +  clocks:
+> +    items:
+> +      - description:
+> +          The multiplexer for clock input of CPU cluster.
+> +      - description:
+> +          A parent of "cpu" clock which is used as an intermediate clock source
+> +          when the original CPU is under transition and not stable yet.
+> +
+> +  clock-names:
+> +    items:
+> +      - const: cci
+> +      - const: intermediate
+> +
+> +  operating-points-v2:
+> +    description:
+> +      For details, please refer to
+> +      Documentation/devicetree/bindings/opp/opp-v2.yaml
+
+No need for description. Just "operating-points-v2: true".
+
+"opp-table:true" could stay. My previous comment about its removal was a
+wrong advice, because opp-table is used for a table being a children of
+this device node.
+
+Best regards,
+Krzysztof
