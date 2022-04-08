@@ -2,145 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B76C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B9A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236587AbiDHN40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 09:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54928 "EHLO
+        id S236599AbiDHN4g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 09:56:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231990AbiDHN4X (ORCPT
+        with ESMTP id S236306AbiDHN4c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 09:56:23 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B27B7C46
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 06:54:17 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 1DB1032022DC;
-        Fri,  8 Apr 2022 09:54:16 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Fri, 08 Apr 2022 09:54:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; bh=8+GWNPlu+xtHevq89dUyEvFQikVJFhZl72wH8k
-        /wFqI=; b=XVBCU/18JAJw3KeTXOMYhe0DMRBrktc+jhuNaHW86/kTqa41qoYw9m
-        Esx8w8G1Sj7L0ymeEK2seWPJcSKzGOfzHj0kAIOOZ/Y+ejE6zDTuWxQC+6sOyuXF
-        M2FOhbBwu3UMfZuIvDHptJSUAvDhcWserDuVOwhBSL3vznXdQywmgRqRM70DJ28t
-        XhdmgYAUJUabA5xKFcBffhqRL243b5AfzplOixSFIc9fNdYCHZmXD5gJRTJbVxBs
-        Y0Ber6rflN+XZt5cAgU0SNe/Bxr9+s9SJrxhUtnWYxdRkyod/HNPHY2NRjFojX4i
-        KOEyxEYVdOXSPoQZ1cqz2oc7QyONfhLw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=8+GWNPlu+xtHevq89
-        dUyEvFQikVJFhZl72wH8k/wFqI=; b=Dsdq3J9TZefrOZPuCbSyxE9JCkZEEAN3V
-        hGpcq3ShN1HjDV5h9XYKcWCyJ8QzGEQYZD0V26Z3KtgvYygfVGlHfgolJrtc23Ys
-        5pz+U59I2yY1rFBrSU99lC8YL06Yk6ishDJwPMrwtvgzGBxyKGl4uquzeS3M5B3M
-        JUSY/JXRKUrZuwm1imgx9kRtOV5yfadQwUuCOa/9y70ozlVLUw1AtHR85FkVe4JR
-        V2kPvLdEb2gMxw2SUV+zHuW/yV/aBUarsa+HzcYIjzFn/Kos8h4A9h1JkrRvnaj3
-        PBCpMTp40qgreQ3hVS6HBcPP8TvajDEWQKn+xt+aPCl0p/DOtc6aQ==
-X-ME-Sender: <xms:hz5QYt3tV5_thf3ZYdFRm0UHeJxbAQVtt_qvvmnbI4rwgRa1b-5JTA>
-    <xme:hz5QYkHx1g1OG39Kjge9IGWVzUKXxTVGgENGkyECXGhe3McnYR1Dkp8UpDvx0lyy6
-    y5GD93ASEz63kBcY-g>
-X-ME-Received: <xmr:hz5QYt52kb51oJNuEedM3AKYvM0muxrXp2KDKZvvuGQFw0Ozu7Elo1JjKsxiv6eX5_-JP8i1rAMwqcXMdXkEXADX_gy2BDJkW3fQYvg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudektddgieekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepjeduvdfhkeekhfdtgeeihfeluddtvedthfektdelfeejgfeludfhteduveej
-    hefhnecuffhomhgrihhnpehfrhgvvgguvghskhhtohhprdhorhhgnecuvehluhhsthgvrh
-    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhho
-    rdhtvggthh
-X-ME-Proxy: <xmx:hz5QYq18RjKAOJNo1Vgdi-o6szEuSYumPNiQ1cYFzCwr8Rdox2ILlw>
-    <xmx:hz5QYgFIxu2XwBbCtPnmvurz5Xv5sG-kNfM2QTWmVb3Vz1DqnoFDmw>
-    <xmx:hz5QYr8q8CGRyjEqb232wXmnA5mE5yrlyZFcPq45ZU8iCNxq3Qfr0Q>
-    <xmx:hz5QYubSI9qfZXwe4Mp5pwsDpUaITnD_DakBat6oumNZ3AgvVrtCNQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 8 Apr 2022 09:54:14 -0400 (EDT)
-Date:   Fri, 8 Apr 2022 15:54:13 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/5] drm: Fix monochrome conversion for sdd130x
-Message-ID: <20220408135413.2vwp4oyzdlu7iczs@houat>
-References: <20220317081830.1211400-1-geert@linux-m68k.org>
- <f94c0f44-36f1-e1a9-5963-5da0bafb8c90@redhat.com>
- <YjSMWDFxTeJZZ/CB@smile.fi.intel.com>
- <20220318142145.kwq46bf6exgce6wu@houat>
- <YjSYL5oPaDuCXOJQ@smile.fi.intel.com>
+        Fri, 8 Apr 2022 09:56:32 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9496110241B
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 06:54:28 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649426066;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=G+kiGYFsPtc+olLWpLKsQjt4OwVjq7Vizjez6bSpAk8=;
+        b=RBLOT5OG4p7NYsM9dNROuyxfEHNEE3mn3WNgdPdVgyv6vjE/xrGOZw4UWwwWTSQYZDiZXM
+        5M0wcFjsv1X+ipAcFQxxnkA1GdUnVoQq5rKccY96Y1ByTBVX7JOJgxONJWPYJFfO4Ym8DZ
+        0le6gjGxjCJ7OgWe5gxk965V/A45DVkraEmrCno4vrz6Sq5UeD0TvYqYpMCPpwqPd3aP6C
+        07LJCaNXcFvd18eJGwPmfCmOO6QV1CjIqaAh3wMhfRJ6/55YXB57wPQ6V4POIQhWWQ2ddw
+        KF3xKQGQt9KHq+oq6vTPwGY3qwYuZ9PBM1BYoXeMiMEFylmzXBLsGqbBEI1vHg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649426066;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=G+kiGYFsPtc+olLWpLKsQjt4OwVjq7Vizjez6bSpAk8=;
+        b=nA1/WsFN4QQzqLseatdRzX59vbePCAD7ulKVEJauimUNMR7WEhQfkSpDQw4AHcipeY+QIj
+        Rdc2mUeAwF0iJkBQ==
+To:     Nico Pache <npache@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Rafael Aquini <aquini@redhat.com>,
+        Waiman Long <longman@redhat.com>, Baoquan He <bhe@redhat.com>,
+        Christoph von Recklinghausen <crecklin@redhat.com>,
+        Don Dutile <ddutile@redhat.com>,
+        "Herton R . Krzesinski" <herton@redhat.com>,
+        David Rientjes <rientjes@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Joel Savitz <jsavitz@redhat.com>,
+        Darren Hart <dvhart@infradead.org>, stable@kernel.org
+Subject: Re: [PATCH v8] oom_kill.c: futex: Don't OOM reap the VMA containing
+ the robust_list_head
+In-Reply-To: <ee07a31c-c514-4a88-599f-14a30e93f32e@redhat.com>
+References: <20220408032809.3696798-1-npache@redhat.com>
+ <20220408081549.GM2731@worktop.programming.kicks-ass.net>
+ <ee07a31c-c514-4a88-599f-14a30e93f32e@redhat.com>
+Date:   Fri, 08 Apr 2022 15:54:26 +0200
+Message-ID: <87k0bzk7e5.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="fpokwbkqxdym2r3r"
-Content-Disposition: inline
-In-Reply-To: <YjSYL5oPaDuCXOJQ@smile.fi.intel.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Apr 08 2022 at 04:41, Nico Pache wrote:
+> On 4/8/22 04:15, Peter Zijlstra wrote:
+>>>
+>>> The following case can still fail:
+>>> robust head (skipped) -> private lock (reaped) -> shared lock (skipped)
+>> 
+>> This is still all sorts of confused.. it's a list head, the entries can
+>> be in any random other VMA. You must not remove *any* user memory before
+>> doing the robust thing. Not removing the VMA that contains the head is
+>> pointless in the extreme.
+> Not sure how its pointless if it fixes all the different reproducers we've
+> written for it. As for the private lock case we stated here, we havent been able
+> to reproduce it, but I could see how it can be a potential issue (which is why
+> its noted).
 
---fpokwbkqxdym2r3r
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The below reproduces the problem nicely, i.e. the lock() in the parent
+times out. So why would the OOM killer fail to cause the same problem
+when it reaps the private anon mapping where the private futex sits?
 
-On Fri, Mar 18, 2022 at 04:33:19PM +0200, Andy Shevchenko wrote:
-> On Fri, Mar 18, 2022 at 03:21:45PM +0100, Maxime Ripard wrote:
-> > On Fri, Mar 18, 2022 at 03:42:48PM +0200, Andy Shevchenko wrote:
-> > > On Thu, Mar 17, 2022 at 12:39:57PM +0100, Javier Martinez Canillas wr=
-ote:
-> > > > On 3/17/22 09:18, Geert Uytterhoeven wrote:
-> > >=20
-> > > > By the way, you should probably request commit access to the drm-mi=
-sc tree:
-> > > >=20
-> > > > https://drm.pages.freedesktop.org/maintainer-tools/commit-access.ht=
-ml
-> > >=20
-> > > Does it really work? I tried and no one replied to request.
-> > > Keeping silent is a bad service. If people don't want a person
-> > > to have such access it should be well communicated.
-> >=20
-> > I don't see any issue on Gitlab to request commit access, so I'm not
-> > sure what you did exactly but it's not surprising you didn't get any
-> > answer.
->=20
-> https://gitlab.freedesktop.org/freedesktop/freedesktop/-/issues/311
+If you revert the lock order in the child the robust muck works.
 
-Indeed, I wasn't expecting it to be that old.
+Thanks,
 
-I'm not sure why it fell through the cracks, sorry for that.
+        tglx
+---
+#include <errno.h>
+#include <fcntl.h>
+#include <pthread.h>
+#include <time.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
-That being said, the criteria for requesting drm-misc commit access are
-listed here:
-https://drm.pages.freedesktop.org/maintainer-tools/commit-access.html#drm-m=
-isc
+#include <sys/types.h>
+#include <sys/mman.h>
 
-And looking at your commit history so far, I'm not sure you qualifies
-yet for the first criteria. All your patches to drivers/gpu/drm, while
-definitely useful, only seem to be conversions to helpers and general
-best practices changes, which could be classified as trivial.
+static char n[4096];
 
-Maxime
+int main(void)
+{
+	pthread_mutexattr_t mat_s, mat_p;
+	pthread_mutex_t *mut_s, *mut_p;
+	pthread_barrierattr_t ba;
+	pthread_barrier_t *b;
+	struct timespec to;
+	void *pri, *shr;
+	int r;
 
---fpokwbkqxdym2r3r
-Content-Type: application/pgp-signature; name="signature.asc"
+	shr = mmap(NULL, sizeof(n), PROT_READ | PROT_WRITE,
+		   MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
------BEGIN PGP SIGNATURE-----
+	pthread_mutexattr_init(&mat_s);
+	pthread_mutexattr_setrobust(&mat_s, PTHREAD_MUTEX_ROBUST);
+	mut_s = shr;
+	pthread_mutex_init(mut_s, &mat_s);
 
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYlA+hQAKCRDj7w1vZxhR
-xQvdAQDsOhYAmhiCB4lkgsiPHP0a5xUK6B4s8GfY8/JUQqUTwAD+IzpK4e2WvPe1
-uTbv8hsn0TYWT/tJwgrscSRWOMsCVwI=
-=0hrM
------END PGP SIGNATURE-----
+	pthread_barrierattr_init(&ba);
+	pthread_barrierattr_setpshared(&ba, PTHREAD_PROCESS_SHARED);
+	b = shr + 1024;
+	pthread_barrier_init(b, &ba, 2);
 
---fpokwbkqxdym2r3r--
+	if (!fork()) {
+		pri = mmap(NULL, 1<<20, PROT_READ | PROT_WRITE,
+			   MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		pthread_mutexattr_init(&mat_p);
+		pthread_mutexattr_setpshared(&mat_p, PTHREAD_PROCESS_PRIVATE);
+		pthread_mutexattr_setrobust(&mat_p, PTHREAD_MUTEX_ROBUST);
+		mut_p = pri;
+		pthread_mutex_init(mut_p, &mat_p);
+
+		// With lock order s, p parent gets timeout
+		// With lock order p, s parent gets owner died
+		pthread_mutex_lock(mut_s);
+		pthread_mutex_lock(mut_p);
+		// Remove unmap and lock order does not matter
+		munmap(pri, sizeof(n));
+		pthread_barrier_wait(b);
+		printf("child gone\n");
+	} else {
+		pthread_barrier_wait(b);
+		printf("parent lock\n");
+		clock_gettime(CLOCK_REALTIME, &to);
+		to.tv_sec += 1;
+		r = pthread_mutex_timedlock(mut_s, &to);
+		printf("parent lock returned: %s\n", strerror(r));
+	}
+	return 0;
+}
