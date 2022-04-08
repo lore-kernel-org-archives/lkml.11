@@ -2,97 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9268AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:18:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 11:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232650AbiDHLUV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 07:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
+        id S233068AbiDHLVS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 07:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiDHLUS (ORCPT
+        with ESMTP id S229452AbiDHLVP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 07:20:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB50E3A37A0
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 04:18:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53983B82A51
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 11:18:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE5B1C385A3;
-        Fri,  8 Apr 2022 11:18:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649416692;
-        bh=/m0sOMkIY+YH/xMizj3AEsdT5/nMANVS7C4zn00Dcoc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IUfg3W95tcHxKLDG6N0ysbpPiIz+skActS1vj4iycbyIagilzHpBXbQOC3rKJ/Ly/
-         hDo9o6/SouLzvC2CWO43syU8n87BIyPd7Rkxy8EXYOX5fIZ52ZUEynkZ5BH+znJnrC
-         S62qrTks/jec/1uxiKywIohunzOGdt841Jg3xM3STgO7qc4zsAiuv67y5yXUXgEhOU
-         k+1O5QX5XU/WP16f1zKD9Ph72cU1LF5qiMb0ODLYMyUSe+LFQJ3Batc5CfsAXpjtzq
-         oCenxiCprcaXXoj7GxNrgwnZPbW1SQPmvTPKDWY9DjY1w6MGflVdwYveIWuh1sXI56
-         WqEQS3s3BiFxA==
-Date:   Fri, 8 Apr 2022 12:18:06 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Chen-Yu Tsai <wens@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Chen-Yu Tsai <wens@csie.org>, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Maxime Ripard <maxime@cerno.tech>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [PATCH 5/5] drm/solomon: Add SSD130x OLED displays SPI support
-Message-ID: <YlAZ7gl7aHjIrYn9@sirena.org.uk>
-References: <20220407200205.28838-1-javierm@redhat.com>
- <20220407200205.28838-6-javierm@redhat.com>
+        Fri, 8 Apr 2022 07:21:15 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 146DA255C1F;
+        Fri,  8 Apr 2022 04:19:13 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CF61911FB;
+        Fri,  8 Apr 2022 04:19:12 -0700 (PDT)
+Received: from [10.163.33.132] (unknown [10.163.33.132])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2237A3F73B;
+        Fri,  8 Apr 2022 04:19:06 -0700 (PDT)
+Message-ID: <dcd6ffe0-9ee2-a862-4ed7-5d04505e6144@arm.com>
+Date:   Fri, 8 Apr 2022 16:49:36 +0530
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="g1yK6P6SAt6g6CTu"
-Content-Disposition: inline
-In-Reply-To: <20220407200205.28838-6-javierm@redhat.com>
-X-Cookie: Look ere ye leap.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH V4 3/7] arm64/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Content-Language: en-US
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        Christoph Hellwig <hch@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Will Deacon <will@kernel.org>
+References: <20220407103251.1209606-1-anshuman.khandual@arm.com>
+ <20220407103251.1209606-4-anshuman.khandual@arm.com>
+ <YlAOO2H/Ay/y9HOv@arm.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <YlAOO2H/Ay/y9HOv@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---g1yK6P6SAt6g6CTu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 07, 2022 at 10:02:04PM +0200, Javier Martinez Canillas wrote:
-> The ssd130x driver only provides the core support for these devices but it
-> does not have any bus transport logic. Add a driver to interface over SPI.
->=20
-> There is a difference in the communication protocol when using 4-wire SPI
-> instead of I2C. For the latter, a control byte that contains a D/C# field
-> has to be sent. This field tells the controller whether the data has to be
-> written to the command register or to the graphics display data memory.
->=20
-> But for 4-wire SPI that control byte is not used, instead a real D/C# line
-> must be pulled HIGH for commands data and LOW for graphics display data.
->=20
-> For this reason the standard SPI regmap can't be used and a custom .write
-> bus handler is needed.
+On 4/8/22 15:58, Catalin Marinas wrote:
+> On Thu, Apr 07, 2022 at 04:02:47PM +0530, Anshuman Khandual wrote:
+>> diff --git a/arch/arm64/mm/mmap.c b/arch/arm64/mm/mmap.c
+>> index 77ada00280d9..307534fcec00 100644
+>> --- a/arch/arm64/mm/mmap.c
+>> +++ b/arch/arm64/mm/mmap.c
+>> @@ -55,3 +55,36 @@ static int __init adjust_protection_map(void)
+>>  	return 0;
+>>  }
+>>  arch_initcall(adjust_protection_map);
+>> +
+>> +static pgprot_t arm64_arch_vm_get_page_prot(unsigned long vm_flags)
+>> +{
+>> +	pteval_t prot = 0;
+>> +
+>> +	if (vm_flags & VM_ARM64_BTI)
+>> +		prot |= PTE_GP;
+>> +
+>> +	/*
+>> +	 * There are two conditions required for returning a Normal Tagged
+>> +	 * memory type: (1) the user requested it via PROT_MTE passed to
+>> +	 * mmap() or mprotect() and (2) the corresponding vma supports MTE. We
+>> +	 * register (1) as VM_MTE in the vma->vm_flags and (2) as
+>> +	 * VM_MTE_ALLOWED. Note that the latter can only be set during the
+>> +	 * mmap() call since mprotect() does not accept MAP_* flags.
+>> +	 * Checking for VM_MTE only is sufficient since arch_validate_flags()
+>> +	 * does not permit (VM_MTE & !VM_MTE_ALLOWED).
+>> +	 */
+>> +	if (vm_flags & VM_MTE)
+>> +		prot |= PTE_ATTRINDX(MT_NORMAL_TAGGED);
+>> +
+>> +	return __pgprot(prot);
+>> +}
+>> +
+>> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
+>> +{
+>> +	pgprot_t ret = __pgprot(pgprot_val(protection_map[vm_flags &
+>> +				(VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]) |
+>> +				pgprot_val(arm64_arch_vm_get_page_prot(vm_flags)));
+>> +
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL(vm_get_page_prot);
+> 
+> Could you write all this in a single function? I think I mentioned it in
+> a previous series (untested):
 
-Acked-by: Mark Brown <broonie@kernel.org>
+Right, missed that.
 
---g1yK6P6SAt6g6CTu
-Content-Type: application/pgp-signature; name="signature.asc"
+> 
+> pgprot_t vm_get_page_prot(unsigned long vm_flags)
+> {
+> 	pteval_t prot = pgprot_val(protection_map[vm_flags &
+> 				   (VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]);
+> 
+> 	if (vm_flags & VM_ARM64_BTI)
+> 		prot |= PTE_GP;
+> 
+> 	/*
+> 	 * There are two conditions required for returning a Normal Tagged
+> 	 * memory type: (1) the user requested it via PROT_MTE passed to
+> 	 * mmap() or mprotect() and (2) the corresponding vma supports MTE. We
+> 	 * register (1) as VM_MTE in the vma->vm_flags and (2) as
+> 	 * VM_MTE_ALLOWED. Note that the latter can only be set during the
+> 	 * mmap() call since mprotect() does not accept MAP_* flags.
+> 	 * Checking for VM_MTE only is sufficient since arch_validate_flags()
+> 	 * does not permit (VM_MTE & !VM_MTE_ALLOWED).
+> 	 */
+> 	if (vm_flags & VM_MTE)
+> 		prot |= PTE_ATTRINDX(MT_NORMAL_TAGGED);
+> 
+> 	return __pgprot(prot);
+> }
+> EXPORT_SYMBOL(vm_get_page_prot);
+> 
+> With that:
 
------BEGIN PGP SIGNATURE-----
+Sure, will change them into a single function.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJQGe0ACgkQJNaLcl1U
-h9AIOQf/WM+DQ3uZHPaIQ5Aa2QPhp1jUAe6hJOZPDcPKGVkxfwwWLN0Dv0AS6MNv
-RrM5wv7Yvqp1vvAQ1srOtZJgLWYpVyzWQEpr2i2CUvX5rIiX6d8iAspK5HbcbMon
-RSWXcItCHZjj/CacdEkjZp1ZHCwmxLmPJ6BajKoZCdnDWu/1/+Y5V6C3kHUbPgl7
-46wTkUzXoPBS25rHOyAQmhcsEgvP9mL9mQ7JwSfEI6gsBAy61fxrgZiPcxJWef0Y
-P8jnTv65wR5m7KNc09i0m9MaMubatw9laXRYRc3UHjlVX44vAte1lzvBJdem4+YV
-s8o2HpkntpTn+bn87ONIk+eb5Y8DeA==
-=rvVz
------END PGP SIGNATURE-----
-
---g1yK6P6SAt6g6CTu--
+> 
+> Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+> 
