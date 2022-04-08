@@ -2,108 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA57C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 21:03:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239601AbiDHVD6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 17:03:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49790 "EHLO
+        id S239609AbiDHVFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 17:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239595AbiDHVD4 (ORCPT
+        with ESMTP id S229659AbiDHVFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 17:03:56 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BD5659E
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 14:01:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649451711; x=1680987711;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=l4NZ4R7wBHfajnCnxrZa1gH4v0k3KRCTBgPhSu39a3s=;
-  b=NFEvjhctZDj5cpy7I5KBdsXWVXnsdsegWPG7SSPP4Z2oEKq0jCU1KPJa
-   2U1HiBdg3IZzbJngmd54uZiesX3fPn173B56Edu54k09wZPjEcC8p6m5n
-   YoRfMb3XRFLRkkDciAzXAuGoiV5WZ1hwnXQoZREC2KCp5H6W9aA2R9eCO
-   S+yiWHDS/Uvg4GZyW+D1F4svTQR8wb+JtWybf6LYo1MG6+pZvcfH1Q0TB
-   ufgNCQ+szhR7/mLUButjCQ7IRMSC+IFIlLm4GEqUXRIpAP/IkGPtKWvA+
-   jPdGZHmzp0CUdXI0OoHKfp9lqMnqMZnhzUkPQY9chu5HMvobgt2fPyKN6
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="243816114"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="243816114"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 14:01:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,246,1643702400"; 
-   d="scan'208";a="852210744"
-Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 08 Apr 2022 14:01:48 -0700
-Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ncvjn-0000dd-OR;
-        Fri, 08 Apr 2022 21:01:47 +0000
-Date:   Sat, 9 Apr 2022 05:01:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Michael Zoran <mzoran@crowfest.net>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dom Cobley <popcornmix@gmail.com>
-Subject: [l1k:smsc95xx_5.17 83/888] drivers/irqchip/irq-bcm2836.c:92:6:
- warning: no previous prototype for 'bcm2836_arm_irqchip_spin_gpu_irq'
-Message-ID: <202204090415.1tshazr8-lkp@intel.com>
+        Fri, 8 Apr 2022 17:05:17 -0400
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7F9109A58;
+        Fri,  8 Apr 2022 14:03:13 -0700 (PDT)
+Received: by mail-oi1-f176.google.com with SMTP id j83so10077228oih.6;
+        Fri, 08 Apr 2022 14:03:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/yIsNSUc8qGAbaMnYX8cxLVaWd5OnscpW0Cx4j0421g=;
+        b=mHuqj3z2up4HbrBjshGcdAM+Aj0amOSPvaX3wrjx6XKPvDRv0l7uTkV4myjIqQKrmX
+         fYhZoJ+X/bPrESxoXJmgcSyDff62kiSHLu/XACCMYuGhNuqXygU/HReDyow1fnVh9sed
+         vaC2RxV2rtXNHYIeGHmCyvzofMU3612zrN7ISoR31f8b9gZWNBT+xQsXLBx89IL589rP
+         jsFVBze/OE20UUP3V4zA8JKh4Da5wGtVEn2yIIyng0XXgx6ffGcF5f7sPDnRGptpbEIi
+         pNS1OkoqVbRFWIgb+ClmYjc67T8K54zpQOgws5oYIoq7VpFegJmSHETYRIavnzLFxDsA
+         JFsA==
+X-Gm-Message-State: AOAM531HynSEgvb1ApYRE/JSVwKkY6/XnNLa0LEfRFmA7ZIT/t7CU+dD
+        3zxzfJU72qRmrD/1e7ZK6w==
+X-Google-Smtp-Source: ABdhPJzHJJglqCz7IrBXWl75C79VK8BDZdirWTXRHQ/BvIN/fJ0PI4XSx76ZHA4FFpG/CsI3x3NtCg==
+X-Received: by 2002:aca:6548:0:b0:2d9:ce64:bead with SMTP id j8-20020aca6548000000b002d9ce64beadmr770226oiw.109.1649451792804;
+        Fri, 08 Apr 2022 14:03:12 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id y3-20020a056870e50300b000d9be6436f1sm9101097oag.29.2022.04.08.14.03.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 14:03:12 -0700 (PDT)
+Received: (nullmailer pid 4061106 invoked by uid 1000);
+        Fri, 08 Apr 2022 21:03:11 -0000
+Date:   Fri, 8 Apr 2022 16:03:11 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 01/14] dt-bindings: reset: amlogic,meson-axg-audio-arb:
+ Convert to yaml
+Message-ID: <YlCjDzZdOsHuzvuH@robh.at.kernel.org>
+References: <20220407154338.4190674-1-p.zabel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220407154338.4190674-1-p.zabel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/l1k/linux smsc95xx_5.17
-head:   240f56c27361c195cd502d95aba51c6b8e5b808c
-commit: d9c90edc942c69dc18b6818f69ba36024d1446fa [83/888] ARM64: Round-Robin dispatch IRQs between CPUs.
-config: arm64-defconfig (https://download.01.org/0day-ci/archive/20220409/202204090415.1tshazr8-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/l1k/linux/commit/d9c90edc942c69dc18b6818f69ba36024d1446fa
-        git remote add l1k https://github.com/l1k/linux
-        git fetch --no-tags l1k smsc95xx_5.17
-        git checkout d9c90edc942c69dc18b6818f69ba36024d1446fa
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
+On Thu, 07 Apr 2022 17:43:25 +0200, Philipp Zabel wrote:
+> Convert the device tree bindings for the Amlogic audio memory arbiter
+> controller to YAML schema to allow participating in DT validation.
+> 
+> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+> Cc: Kevin Hilman <khilman@baylibre.com>
+> Cc: Jerome Brunet <jbrunet@baylibre.com>
+> Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+>  .../reset/amlogic,meson-axg-audio-arb.txt     | 22 --------
+>  .../reset/amlogic,meson-axg-audio-arb.yaml    | 56 +++++++++++++++++++
+>  2 files changed, 56 insertions(+), 22 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/reset/amlogic,meson-axg-audio-arb.txt
+>  create mode 100644 Documentation/devicetree/bindings/reset/amlogic,meson-axg-audio-arb.yaml
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/irqchip/irq-bcm2836.c:92:6: warning: no previous prototype for 'bcm2836_arm_irqchip_spin_gpu_irq' [-Wmissing-prototypes]
-      92 | void bcm2836_arm_irqchip_spin_gpu_irq(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/bcm2836_arm_irqchip_spin_gpu_irq +92 drivers/irqchip/irq-bcm2836.c
-
-    91	
-  > 92	void bcm2836_arm_irqchip_spin_gpu_irq(void)
-    93	{
-    94		u32 i;
-    95		void __iomem *gpurouting = (intc.base + LOCAL_GPU_ROUTING);
-    96		u32 routing_val = readl(gpurouting);
-    97	
-    98		for (i = 1; i <= 3; i++) {
-    99			u32 new_routing_val = (routing_val + i) & 3;
-   100	
-   101			if (cpu_active(new_routing_val)) {
-   102				writel(new_routing_val, gpurouting);
-   103				return;
-   104			}
-   105		}
-   106	}
-   107	EXPORT_SYMBOL(bcm2836_arm_irqchip_spin_gpu_irq);
-   108	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Reviewed-by: Rob Herring <robh@kernel.org>
