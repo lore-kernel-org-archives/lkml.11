@@ -2,128 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 392FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C50D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236420AbiDHNpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 09:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
+        id S236443AbiDHNpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 09:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231500AbiDHNpK (ORCPT
+        with ESMTP id S236078AbiDHNpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 09:45:10 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC656007D;
-        Fri,  8 Apr 2022 06:43:06 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id b19so4779777qkk.12;
-        Fri, 08 Apr 2022 06:43:06 -0700 (PDT)
+        Fri, 8 Apr 2022 09:45:51 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80E946160
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 06:43:47 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id a6so17565282ejk.0
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 06:43:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=usXuRJ1HBdyqGrxJX6MSUUEje7zULhcW0WK5TkC07EU=;
-        b=JGvLuYecJdMvhSnQQgFQpCHMrAZp1psXgvW4Wojv80bQnyUjpdPY1Yz/DqdVdmQgQQ
-         pvWKNO78nmCZgnU3ADHDBABagTnxyahI46DtiJxJVRQzlYeEHap+MwA2HpwzyoyDOo9p
-         kmL77mgh5l4qdNdp3yFw/CVxBixxaPsKrJz6zmW5qinIGKYIxt3tpa0T1d6zGUcnDuDf
-         rclg+AatTczypAJ6SxUXFQ689CwdUCeGdii7LVrDr3UM5zg0YEvRQXzKqcFcqI4FvkRi
-         JQRMmH2pHZwahBOkt8ec4MIdUijj1lZt0bTK5ua3Zs9CXs+qRvwlaBGjVXNpT8jhrpkA
-         K/sQ==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1ZpanQL7fJ5Imrl94t4mOv+0fifiSCixQTFhocGBbW4=;
+        b=ocU4WzdvqVtDrF+QNMkeIFKSbQDrw614kxrKDCXUNEPj0TcZTn2VF33O7pzWeuQcUi
+         /kpIefrRb+tIPM7KdnbR0CjVrj0C7uFD+iwBJMThlUaqxYgu/HgyrOL3xZXxjwikkwPM
+         /w5y4+LqxJFClA/AFhhdE9da2MRmrUgMM0sYM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=usXuRJ1HBdyqGrxJX6MSUUEje7zULhcW0WK5TkC07EU=;
-        b=XdNEJoZ9cmuTnd4EAg6U6om7zO8uclruN5gJVYG1NH8F2paaXY9PrJKHKACxH1BDPS
-         aAbiBHudlwwJYyCUL5llLFl5KE/eMoLsUyRptiBzmLmDKbVZtLGt4FCxSULqT1C3RneP
-         t/Z4OfuvRybg78kMj6wonzUzKpVaNnhuX6CeFy2ZAK053FMMHHPIz38TzBcC1xwdbRuu
-         /auUMJy877+qXDo9pGdWhn4ppiPIgLz2QhFRUPanixTmCcbTNsiel6NSGMYHr1KjRmdL
-         ZqtZ3n6pFuuoTY58ZhsgXRlTX5YKTp3OfovrZ5mMiQPK+hxDuwVbh8PSG8sSDdTYABdI
-         buWg==
-X-Gm-Message-State: AOAM530gEYUXb8Zdzrsx9PgsUKg2Ls/8AfUtnsSWsCRiKlfdB/TuzE3E
-        8JBlGcbcEBjakcUgqOfuWyBclBLKA1Ehlg==
-X-Google-Smtp-Source: ABdhPJwKb3j8nwLRTzxpkMdgP+ZKR36kQhmnucIRB4JxEvmQk5W70XZ9K3BjtfNj/y/WPSYCOCCD2g==
-X-Received: by 2002:a37:92c1:0:b0:699:a3e5:f74 with SMTP id u184-20020a3792c1000000b00699a3e50f74mr12768518qkd.141.1649425385772;
-        Fri, 08 Apr 2022 06:43:05 -0700 (PDT)
-Received: from dschatzberg-fedora-PC0Y6AEN.dhcp.thefacebook.com ([2620:10d:c091:500::2:77ef])
-        by smtp.gmail.com with ESMTPSA id v12-20020a05622a130c00b002e1b3ccd9adsm17660596qtk.79.2022.04.08.06.43.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 06:43:05 -0700 (PDT)
-Date:   Fri, 8 Apr 2022 09:43:03 -0400
-From:   Dan Schatzberg <schatzberg.dan@gmail.com>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, Yu Zhao <yuzhao@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Chen Wandun <chenwandun@huawei.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>, cgroups@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
-        Michal Hocko <mhocko@suse.com>
-Subject: Re: [PATCH v3 1/4] memcg: introduce per-memcg reclaim interface
-Message-ID: <YlA754XNFAmWQcm6@dschatzberg-fedora-PC0Y6AEN.dhcp.thefacebook.com>
-References: <20220408045743.1432968-1-yosryahmed@google.com>
- <20220408045743.1432968-2-yosryahmed@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1ZpanQL7fJ5Imrl94t4mOv+0fifiSCixQTFhocGBbW4=;
+        b=jDqp+tqbrOxV1Fu5DVVEzK88aIGbxsSoueU1hJMkSObbiyK0B5AZj38VUmB3Bpdp3i
+         /KQocng4p8Ru85MtdtFHtFljyMuFR79TJyBUGgfwfTKf9SpoDlTl3fX9Pi7qhh34cDby
+         A/0PAEt5Vba+s5VylF8FItiE3cfZTj3aW0T7oj0rGrIO3IlnRLfCNeuRQVFyjylWUXjO
+         4hDnykNyLTj2kXN9JqfKImVDFZ7qOLf9Cu1vfRuyqaKqLvLo/qUVLU7gxwC7WXVl4JU2
+         X7DWz5xU1bMvMGSQpbiTyk1dnovxXtmfLj6EeNVMX4sQC0CnnVaVvaDbpmv1iyv2Q6JY
+         Uhtw==
+X-Gm-Message-State: AOAM531WD89KQ6dqR3toAF/90QWuYYoDYSOIYiMLtwexzsEdMOj4EA0d
+        zeIfRURbbiOzl6Z2bQRaupN0ngWYbsRskBRLnzg=
+X-Google-Smtp-Source: ABdhPJy0A+UTIJcK1ouJHwj7lq6tJm2V0B+CZ1ZzlNMfxByNgYd0BcilTL+aS5NidWPAFX/G1pjAvQ==
+X-Received: by 2002:a17:907:1b08:b0:6da:b62a:762a with SMTP id mp8-20020a1709071b0800b006dab62a762amr17768197ejc.60.1649425426112;
+        Fri, 08 Apr 2022 06:43:46 -0700 (PDT)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
+        by smtp.gmail.com with ESMTPSA id h14-20020a056402280e00b0041957289726sm11508836ede.79.2022.04.08.06.43.42
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 06:43:44 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id w21so12948871wra.2
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 06:43:42 -0700 (PDT)
+X-Received: by 2002:adf:e591:0:b0:206:1202:214 with SMTP id
+ l17-20020adfe591000000b0020612020214mr14896572wrm.342.1649425421934; Fri, 08
+ Apr 2022 06:43:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220408045743.1432968-2-yosryahmed@google.com>
+References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1648656179-10347-2-git-send-email-quic_sbillaka@quicinc.com>
+ <CAD=FV=X+QvjwoT2zGP82KW4kD0oMUY6ZgCizSikNX_Uj8dNDqA@mail.gmail.com>
+ <392b933f-760c-3c81-1040-c514045df3da@linaro.org> <CAD=FV=W4PYK-t607yjRbfjDjjEZX0KdgHDRukw_vSH8E8EDH6w@mail.gmail.com>
+ <CAA8EJppt9XONbgtKfmHmN+==QNqiVJeb8GKJFdZm=yyY-tgmHQ@mail.gmail.com>
+ <CAD=FV=U5-sTDLYdkeJWLAOG-0wgxR49VxtwUyUO7z2PuibLGsg@mail.gmail.com>
+ <CAA8EJppgfYgQjG8A4LsR-1wmBj3Ku3eO8cKfAYhxjWXL7e3eHg@mail.gmail.com>
+ <CAD=FV=V=a1CnT8fqTJR40WoS3BaDQ3xZ=HnHVHqZh=MEmVUZBA@mail.gmail.com>
+ <3e5fa57f-d636-879a-b98f-77323d07c156@linaro.org> <CAD=FV=Uibu-kZyix7K4_WVc-+C8xpzTqU4WFy7O=6sukMZrX5g@mail.gmail.com>
+ <MW4PR02MB7186245772DAC3E04FA8D1C0E1E69@MW4PR02MB7186.namprd02.prod.outlook.com>
+ <CAD=FV=Wk3U7_bVdiCPp8iQ4bcCA_Botemu4pwHeRtgBa3Xk6KQ@mail.gmail.com>
+ <c4f086ce-c56f-f7c9-4092-7f2432330d50@quicinc.com> <CAD=FV=UmU_BVUaL_X75yOEvQPtGUBTR5-jiVWBHq7uSRt6HM4Q@mail.gmail.com>
+ <225d2c0a-42ec-28ad-688c-e7e9e2035ee1@quicinc.com> <CAD=FV=W=WjSACHvRDFBnkLUp-LU2c4XMu3=FTzTx=zexNF5PAw@mail.gmail.com>
+ <CAA8EJpqLZ9up4euGEbhf5QyBqm4tJuLcHi7D+0Si7ak9Jej52w@mail.gmail.com>
+ <CAD=FV=XwOzsRf7RnvyBjr5TtedMhC0LJFKoK9tp-kw1eEyuJmQ@mail.gmail.com> <CAA8EJprb5UF24WRNvGaY_hSqW--NPd=9=8AaPYWSMbUumNn+dQ@mail.gmail.com>
+In-Reply-To: <CAA8EJprb5UF24WRNvGaY_hSqW--NPd=9=8AaPYWSMbUumNn+dQ@mail.gmail.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 8 Apr 2022 06:43:28 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UG7k4A+hMXxwju-0mLddD1oJdGngXMkMA-dO3AxOx0rQ@mail.gmail.com>
+Message-ID: <CAD=FV=UG7k4A+hMXxwju-0mLddD1oJdGngXMkMA-dO3AxOx0rQ@mail.gmail.com>
+Subject: Re: [PATCH v6 1/8] drm/msm/dp: Add eDP support via aux_bus
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Sean Paul <sean@poorly.run>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 04:57:40AM +0000, Yosry Ahmed wrote:
-> +static ssize_t memory_reclaim(struct kernfs_open_file *of, char *buf,
-> +			      size_t nbytes, loff_t off)
-> +{
-> +	struct mem_cgroup *memcg = mem_cgroup_from_css(of_css(of));
-> +	unsigned int nr_retries = MAX_RECLAIM_RETRIES;
-> +	unsigned long nr_to_reclaim, nr_reclaimed = 0;
-> +	int err;
-> +
-> +	buf = strstrip(buf);
-> +	err = page_counter_memparse(buf, "", &nr_to_reclaim);
+Hi,
 
-Is there a reason not to support "max"? Empty string seems odd to me
-here.
+On Fri, Apr 8, 2022 at 5:20 AM Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
+>
+> > I guess my thought was that in DP you could still create the AUX bus
+> > at probe time. Then for DP you just return an instant "transfer
+> > failed" from the AUX bus if HPD isn't asserted. For eDP (as discussed
+> > elsewhere) when we try to do an AUX transfer then we delay until HPD
+> > is there.
+>
+> I think panel-edp would already handle the delay, so we do not need to
+> have this logic in the DP driver.
 
-> +	if (err)
-> +		return err;
-> +
-> +	while (nr_reclaimed < nr_to_reclaim) {
-> +		unsigned long reclaimed;
-> +
-> +		if (signal_pending(current))
-> +			break;
+There's a whole discussion about this between Stephen and me in patch
+#5 ("drm/msm/dp: wait for hpd high before any sink interaction").
+Basically:
 
-I think this should be `return -EINTR;`
+* If panel HPD is hooked up to the dedicated HPD pin on the eDP
+controller then the panel driver doesn't have a way to read it.
 
-> +
-> +		reclaimed = try_to_free_mem_cgroup_pages(memcg,
-> +						nr_to_reclaim - nr_reclaimed,
-> +						GFP_KERNEL, true);
-> +
-> +		if (!reclaimed && !nr_retries--)
-> +			break;
+* We can't leverage the existing "HPD" query functions in DRM because
+those indicate whether a panel is _physically_ connected. For eDP, it
+always is.
 
-Here you can just `return -EAGAIN;`
+For now the rule is that the AUX transfer function is in charge of
+waiting for HPD for eDP if the dedicated HPD pin is used. If we want
+to re-invent this we could, but that system works, isn't _too_ ugly,
+and we're already making big enough changes in this series.
 
-> +
-> +		nr_reclaimed += reclaimed;
-> +	}
-> +
-> +	return nr_reclaimed < nr_to_reclaim ? -EAGAIN : nbytes;
 
-Then this can just be `return nbytes;`
+> > So we can still acquire resources (clocks, PHY, io maps, etc) at probe
+> > time for DP and create the AUX bus, right? It will just return
+> > "-ENODEV" if HPD isn't asserted and you're DP?
+>
+> Yes, please. I still suppose that we'd need a separate case to
+> power_on eDP's PHY during the probe time. Maybe I'm mistaken here.
 
-I'm very much in favor of this new interface. Thanks for working on
-it!
+I think the ideal way is to do it like Kieran's proposal for sn65dsi86:
+
+https://lore.kernel.org/r/20220317131250.1481275-4-kieran.bingham+renesas@ideasonboard.com/
+
+* When enabling HPD (physical hot plug detect) in the hpd_enable()
+callback you do a pm_runtime_get(). You do the
+pm_runtime_put_autosuspend() when disabling. This is only used for DP
+since we only provide DRM_BRIDGE_OP_HPD for DP, not for eDP.
+
+* We do a pm_runtime_get() / pm_runtime_put_autosuspend() in the AUX
+transfer routine. While holding the pm_runtime reference we check HPD.
+For DP we return immediately if HPD isn't asserted. For eDP, we delay.
+
+* We do the pm_runtime_get() in pre_enable and the pm_runtime_put() in
+post_disable. For DP this will add a 2nd refcount (since we probably
+were holding the reference for HPD). For eDP this will cause us to
+power on.
+
+* If there's any other time we need to read HW registers, and we
+aren't guaranteed to already have a pm_runtime reference (like during
+probe), we can do a temporary pm_runtime_get() /
+pm_runtime_put_autosuspend().
