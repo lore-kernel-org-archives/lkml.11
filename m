@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2646FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:10:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B824C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:10:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234453AbiDHKMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 06:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58006 "EHLO
+        id S233799AbiDHKMp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 06:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233738AbiDHKMM (ORCPT
+        with ESMTP id S232944AbiDHKMN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 06:12:12 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9C2A58E6D
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:10:08 -0700 (PDT)
-Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KZYmK4QSrzBsCF;
-        Fri,  8 Apr 2022 18:05:53 +0800 (CST)
+        Fri, 8 Apr 2022 06:12:13 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DB4AAB49
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:10:10 -0700 (PDT)
+Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZYrf4MJYzdZnh;
+        Fri,  8 Apr 2022 18:09:38 +0800 (CST)
 Received: from huawei.com (10.67.174.157) by kwepemi500014.china.huawei.com
  (7.221.188.232) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 8 Apr
- 2022 18:10:05 +0800
+ 2022 18:10:07 +0800
 From:   Li Zhengyu <lizhengyu3@huawei.com>
 To:     <palmer@dabbelt.com>, <liaochang1@huawei.com>
 CC:     <alex@ghiti.fr>, <aou@eecs.berkeley.edu>, <bjorn.topel@gmail.com>,
@@ -31,9 +31,9 @@ CC:     <alex@ghiti.fr>, <aou@eecs.berkeley.edu>, <bjorn.topel@gmail.com>,
         <mick@ics.forth.gr>, <paul.walmsley@sifive.com>,
         <penberg@kernel.org>, <sunnanyong@huawei.com>,
         <wangkefeng.wang@huawei.com>
-Subject: [PATCH v3 -next 1/6] kexec_file: Fix kexec_file.c build error for riscv platform
-Date:   Fri, 8 Apr 2022 18:09:09 +0800
-Message-ID: <20220408100914.150110-2-lizhengyu3@huawei.com>
+Subject: [PATCH v3 -next 4/6] RISC-V: Support for kexec_file on panic
+Date:   Fri, 8 Apr 2022 18:09:12 +0800
+Message-ID: <20220408100914.150110-5-lizhengyu3@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220408100914.150110-1-lizhengyu3@huawei.com>
 References: <20220408100914.150110-1-lizhengyu3@huawei.com>
@@ -47,75 +47,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liao Chang <liaochang1@huawei.com>
+This patch adds support for loading a kexec on panic (kdump) kernel.
+It has been tested with vmcore-dmesg on riscv64 QEMU on both an smp
+and a non-smp system.
 
-When CONFIG_KEXEC_FILE is set for riscv platform, the compilation of
-kernel/kexec_file.c generate build error:
-
-kernel/kexec_file.c: In function 'crash_prepare_elf64_headers':
-./arch/riscv/include/asm/page.h:110:71: error: request for member 'virt_addr' in something not a structure or union
-  110 |  ((x) >= PAGE_OFFSET && (!IS_ENABLED(CONFIG_64BIT) || (x) < kernel_map.virt_addr))
-      |                                                                       ^
-./arch/riscv/include/asm/page.h:131:2: note: in expansion of macro 'is_linear_mapping'
-  131 |  is_linear_mapping(_x) ?       \
-      |  ^~~~~~~~~~~~~~~~~
-./arch/riscv/include/asm/page.h:140:31: note: in expansion of macro '__va_to_pa_nodebug'
-  140 | #define __phys_addr_symbol(x) __va_to_pa_nodebug(x)
-      |                               ^~~~~~~~~~~~~~~~~~
-./arch/riscv/include/asm/page.h:143:24: note: in expansion of macro '__phys_addr_symbol'
-  143 | #define __pa_symbol(x) __phys_addr_symbol(RELOC_HIDE((unsigned long)(x), 0))
-      |                        ^~~~~~~~~~~~~~~~~~
-kernel/kexec_file.c:1327:36: note: in expansion of macro '__pa_symbol'
- 1327 |   phdr->p_offset = phdr->p_paddr = __pa_symbol(_text);
-
-This occurs is because the "kernel_map" referenced in macro
-is_linear_mapping()  is suppose to be the one of struct kernel_mapping
-defined in arch/riscv/mm/init.c, but the 2nd argument of
-crash_prepare_elf64_header() has same symbol name, in expansion of macro
-is_linear_mapping in function crash_prepare_elf64_header(), "kernel_map"
-actually is the local variable.
-
-Signed-off-by: Liao Chang <liaochang1@huawei.com>
+Signed-off-by: Li Zhengyu <lizhengyu3@huawei.com>
 ---
- include/linux/kexec.h | 2 +-
- kernel/kexec_file.c   | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ arch/riscv/kernel/elf_kexec.c | 119 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 118 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/kexec.h b/include/linux/kexec.h
-index 58d1b58a971e..ebb1bffbf068 100644
---- a/include/linux/kexec.h
-+++ b/include/linux/kexec.h
-@@ -227,7 +227,7 @@ struct crash_mem {
- extern int crash_exclude_mem_range(struct crash_mem *mem,
- 				   unsigned long long mstart,
- 				   unsigned long long mend);
--extern int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
-+extern int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_map,
- 				       void **addr, unsigned long *sz);
- #endif /* CONFIG_KEXEC_FILE */
+diff --git a/arch/riscv/kernel/elf_kexec.c b/arch/riscv/kernel/elf_kexec.c
+index 2d442a849871..911d65d5a123 100644
+--- a/arch/riscv/kernel/elf_kexec.c
++++ b/arch/riscv/kernel/elf_kexec.c
+@@ -18,6 +18,8 @@
+ #include <linux/of.h>
+ #include <linux/libfdt.h>
+ #include <linux/types.h>
++#include <linux/memblock.h>
++#include <asm/setup.h>
  
-diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
-index 8347fc158d2b..331a4f0f10f5 100644
---- a/kernel/kexec_file.c
-+++ b/kernel/kexec_file.c
-@@ -1260,7 +1260,7 @@ int crash_exclude_mem_range(struct crash_mem *mem,
- 	return 0;
+ static int riscv_kexec_elf_load(struct kimage *image, struct elfhdr *ehdr,
+ 				struct kexec_elf_info *elf_info, unsigned long old_pbase,
+@@ -97,6 +99,79 @@ static int elf_find_pbase(struct kimage *image, unsigned long kernel_len,
+ 	return ret;
  }
  
--int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
-+int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_map,
- 			  void **addr, unsigned long *sz)
- {
- 	Elf64_Ehdr *ehdr;
-@@ -1324,7 +1324,7 @@ int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
- 	phdr++;
++static int get_nr_ram_ranges_callback(struct resource *res, void *arg)
++{
++	unsigned int *nr_ranges = arg;
++
++	(*nr_ranges)++;
++	return 0;
++}
++
++static int prepare_elf64_ram_headers_callback(struct resource *res, void *arg)
++{
++	struct crash_mem *cmem = arg;
++
++	cmem->ranges[cmem->nr_ranges].start = res->start;
++	cmem->ranges[cmem->nr_ranges].end = res->end;
++	cmem->nr_ranges++;
++
++	return 0;
++}
++
++static int prepare_elf_headers(void **addr, unsigned long *sz)
++{
++	struct crash_mem *cmem;
++	unsigned int nr_ranges;
++	int ret;
++
++	nr_ranges = 1; /* For exclusion of crashkernel region */
++	walk_system_ram_res(0, -1, &nr_ranges, get_nr_ram_ranges_callback);
++
++	cmem = kmalloc(struct_size(cmem, ranges, nr_ranges), GFP_KERNEL);
++	if (!cmem)
++		return -ENOMEM;
++
++	cmem->max_nr_ranges = nr_ranges;
++	cmem->nr_ranges = 0;
++	ret = walk_system_ram_res(0, -1, cmem, prepare_elf64_ram_headers_callback);
++	if (ret)
++		goto out;
++
++	/* Exclude crashkernel region */
++	ret = crash_exclude_mem_range(cmem, crashk_res.start, crashk_res.end);
++	if (!ret)
++		ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
++
++out:
++	kfree(cmem);
++	return ret;
++}
++
++static char *setup_kdump_cmdline(struct kimage *image, char *cmdline,
++				 unsigned long cmdline_len)
++{
++	int elfcorehdr_strlen;
++	char *cmdline_ptr;
++
++	cmdline_ptr = kzalloc(COMMAND_LINE_SIZE, GFP_KERNEL);
++	if (!cmdline_ptr)
++		return NULL;
++
++	elfcorehdr_strlen = sprintf(cmdline_ptr, "elfcorehdr=0x%lx ",
++		image->elf_load_addr);
++
++	if (elfcorehdr_strlen + cmdline_len > COMMAND_LINE_SIZE) {
++		pr_err("Appending elfcorehdr=<addr> exceeds cmdline size\n");
++		kfree(cmdline_ptr);
++		return NULL;
++	}
++
++	memcpy(cmdline_ptr + elfcorehdr_strlen, cmdline, cmdline_len);
++	/* Ensure it's nul terminated */
++	cmdline_ptr[COMMAND_LINE_SIZE - 1] = '\0';
++	return cmdline_ptr;
++}
++
+ static void *elf_kexec_load(struct kimage *image, char *kernel_buf,
+ 			    unsigned long kernel_len, char *initrd,
+ 			    unsigned long initrd_len, char *cmdline,
+@@ -106,10 +181,12 @@ static void *elf_kexec_load(struct kimage *image, char *kernel_buf,
+ 	unsigned long old_kernel_pbase = ULONG_MAX;
+ 	unsigned long new_kernel_pbase = 0UL;
+ 	unsigned long initrd_pbase = 0UL;
+-	void *fdt;
++	unsigned long headers_sz;
++	void *fdt, *headers;
+ 	struct elfhdr ehdr;
+ 	struct kexec_buf kbuf;
+ 	struct kexec_elf_info elf_info;
++	char *modified_cmdline = NULL;
  
- 	/* Prepare PT_LOAD type program header for kernel text region */
--	if (kernel_map) {
-+	if (need_kernel_map) {
- 		phdr->p_type = PT_LOAD;
- 		phdr->p_flags = PF_R|PF_W|PF_X;
- 		phdr->p_vaddr = (unsigned long) _text;
+ 	ret = kexec_build_elf_info(kernel_buf, kernel_len, &ehdr, &elf_info);
+ 	if (ret)
+@@ -130,6 +207,45 @@ static void *elf_kexec_load(struct kimage *image, char *kernel_buf,
+ 	kbuf.image = image;
+ 	kbuf.buf_min = new_kernel_pbase + kernel_len;
+ 	kbuf.buf_max = ULONG_MAX;
++
++	/* Add elfcorehdr */
++	if (image->type == KEXEC_TYPE_CRASH) {
++		ret = prepare_elf_headers(&headers, &headers_sz);
++		if (ret) {
++			pr_err("Preparing elf core header failed\n");
++			goto out;
++		}
++
++		kbuf.buffer = headers;
++		kbuf.bufsz = headers_sz;
++		kbuf.mem = KEXEC_BUF_MEM_UNKNOWN;
++		kbuf.memsz = headers_sz;
++		kbuf.buf_align = ELF_CORE_HEADER_ALIGN;
++		kbuf.top_down = true;
++
++		ret = kexec_add_buffer(&kbuf);
++		if (ret) {
++			vfree(headers);
++			goto out;
++		}
++		image->elf_headers = headers;
++		image->elf_load_addr = kbuf.mem;
++		image->elf_headers_sz = headers_sz;
++
++		pr_debug("Loaded elf core header at 0x%lx bufsz=0x%lx memsz=0x%lx\n",
++			 image->elf_load_addr, kbuf.bufsz, kbuf.memsz);
++
++		/* Setup cmdline for kdump kernel case */
++		modified_cmdline = setup_kdump_cmdline(image, cmdline,
++						       cmdline_len);
++		if (!modified_cmdline) {
++			pr_err("Setting up cmdline for kdump kernel failed\n");
++			ret = -EINVAL;
++			goto out;
++		}
++		cmdline = modified_cmdline;
++	}
++
+ 	/* Add the initrd to the image */
+ 	if (initrd != NULL) {
+ 		kbuf.buffer = initrd;
+@@ -170,6 +286,7 @@ static void *elf_kexec_load(struct kimage *image, char *kernel_buf,
+ out_free_fdt:
+ 	kvfree(fdt);
+ out:
++	kfree(modified_cmdline);
+ 	kexec_free_elf_info(&elf_info);
+ 	return ret ? ERR_PTR(ret) : NULL;
+ }
 -- 
 2.17.1
 
