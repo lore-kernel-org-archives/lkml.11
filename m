@@ -2,122 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A007C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BADC4167B
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 18:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235920AbiDHSbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 14:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37244 "EHLO
+        id S238731AbiDHSdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 14:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229691AbiDHSbK (ORCPT
+        with ESMTP id S238719AbiDHSca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 14:31:10 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332AA97BB4;
-        Fri,  8 Apr 2022 11:29:04 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 90bc16d103d9c465; Fri, 8 Apr 2022 20:29:02 +0200
-Received: from kreacher.localnet (unknown [213.134.187.56])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id 2ACED66BDA1;
-        Fri,  8 Apr 2022 20:29:02 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux PCI <linux-pci@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>
-Subject: [PATCH v2] PCI: PM: Power up all devices during runtime resume
-Date:   Fri, 08 Apr 2022 20:29:01 +0200
-Message-ID: <2652115.mvXUDI8C0e@kreacher>
-In-Reply-To: <4412361.LvFx2qVVIh@kreacher>
-References: <4412361.LvFx2qVVIh@kreacher>
+        Fri, 8 Apr 2022 14:32:30 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0DC6D399B
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 11:30:25 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id e22so11604605ioe.11
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 11:30:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8c4w2SqV3Zwtk6hjN9XQDs1ojn8rP0mcUHvQvhzuNaU=;
+        b=YpRUx5naQgJOrPJtNsmh78aDsmIIkswFS8lXDrNYheqXIeJEK2ARoLdZkPcn+nfw5T
+         oYiFN+5ZvBke8G2w+I4t1ThEG9QAMUoMMfn3SprosOFXtLJQ9uLglI+1t3LYKARK0RE9
+         fZFK0+HB8gFFQwUCeNj0/qHoPWD0MoYjgz6Nw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=8c4w2SqV3Zwtk6hjN9XQDs1ojn8rP0mcUHvQvhzuNaU=;
+        b=H+qvz/XD0FMvUFJDxqwackn0dlrJfj87zAtrFv+8wOzqBoOchjOdYIIyt9gVr6SUGv
+         yBWzzgQjE1Gd0QWKodyX/YrLkdyObaaNgWb9nYD3J2LmRf7fS/nweyPqF5Tj92UOttAL
+         kLtfpt5cWpMofMikqQz11aTyRbNyWVuZwLWUzeencsnpy+0Ar7cr99oWWqeTAQzUdR6i
+         SL4Vy48ThCSZzlXROxxdbeJ3XMNbVUjAEkA+3m3MWQmdJUWlCNTllYh0tdRrackivuj2
+         H7ydGv0lXEa1zmeFV/GGYUcMXkEZP8m+zQFMW/rOzaBrLV2NO3/TOGOFAcfOv7B01gAn
+         aqAw==
+X-Gm-Message-State: AOAM531vzfmhc0DlmXiU8Jqr1KN/Hq6sCfHprPAlnsf9S1npbc5hixCD
+        RmXa3v9FwMl3wXG1+oA6yXyEMg==
+X-Google-Smtp-Source: ABdhPJz0knJI2EvKgFMOby7OjCoRi/HEQHXa7piPfbIdw92oEo/ocHWDiLbO7mI1s1H7DgX30ZuY4g==
+X-Received: by 2002:a05:6638:2643:b0:323:c3e3:fcec with SMTP id n3-20020a056638264300b00323c3e3fcecmr10003722jat.289.1649442625269;
+        Fri, 08 Apr 2022 11:30:25 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id y6-20020a056e02174600b002c7f247b3a7sm14985188ill.54.2022.04.08.11.30.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 11:30:24 -0700 (PDT)
+Subject: Re: [PATCH V3] testing/selftests/mqueue: Fix mq_perf_tests to free
+ the allocated cpu set
+To:     Athira Rajeev <atrajeev@linux.vnet.ibm.com>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org, disgoel@linux.vnet.ibm.com
+Cc:     acme@kernel.org, jolsa@kernel.org, mpe@ellerman.id.au,
+        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, maddy@linux.vnet.ibm.com,
+        kjain@linux.ibm.com, srikar@linux.vnet.ibm.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220408072431.94947-1-atrajeev@linux.vnet.ibm.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <1a1d119a-e68e-a590-a518-cfb3c78ed888@linuxfoundation.org>
+Date:   Fri, 8 Apr 2022 12:30:23 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.187.56
-X-CLIENT-HOSTNAME: 213.134.187.56
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudektddguddvfecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepteeggfelteegudehueegieekveduleeuledvueefjeefffegfeejudfgteefhefhnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkphepvddufedrudefgedrudekjedrheeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudekjedrheeipdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeeipdhrtghpthhtoheplhhinhhugidqphgtihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehhvghlghgrrghssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghr
- rdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehmihhkrgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-DCC--Metrics: v370.home.net.pl 1024; Body=6 Fuz1=6 Fuz2=6
+In-Reply-To: <20220408072431.94947-1-atrajeev@linux.vnet.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Subject: [PATCH] PCI: PM: Power up all devices during runtime resume
+On 4/8/22 1:24 AM, Athira Rajeev wrote:
+> The selftest "mqueue/mq_perf_tests.c" use CPU_ALLOC to allocate
+> CPU set. This cpu set is used further in pthread_attr_setaffinity_np
+> and by pthread_create in the code. But in current code, allocated
+> cpu set is not freed.
+> 
+> Fix this issue by adding CPU_FREE in the "shutdown" function which
+> is called in most of the error/exit path for the cleanup. There are
+> few error paths which exit without using shutdown. Add a common goto
+> error path with CPU_FREE for these cases.
+> 
+> Fixes: 7820b0715b6f ("tools/selftests: add mq_perf_tests")
+> Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+> ---
+> Changelog:
+>   From v2 -> v3:
+>    Addressed review comment from Shuah Khan to add
+>    common "goto" error path with CPU_FREE for few exit
+>    cases.
+>   From v1 -> v2:
+>    Addressed review comment from Shuah Khan to add
+>    CPU_FREE in other exit paths where it is needed
+> 
 
-Currently, endpoint devices may not be powered up entirely during
-runtime resume that follows a D3hot -> D0 transition of the parent
-bridge.
+Thank you. I will queue this up for Linux 5.18-rc3
 
-Namely, even if the power state of an endpoint device, as indicated
-by its PCI_PM_CTRL register, is D0 after powering up its parent
-bridge, it may be still necessary to bring its ACPI companion into
-D0 and that should be done before accessing it.  However, the current
-code assumes that reading the PCI_PM_CTRL register is sufficient to
-establish the endpoint device's power state, which may lead to
-problems.
-
-Address that by forcing a power-up of all PCI devices, including the
-platform firmware part of it, during runtime resume.
-
-Link: https://lore.kernel.org/linux-pm/11967527.O9o76ZdvQC@kreacher
-Fixes: 5775b843a619 ("PCI: Restore config space on runtime resume despite being unbound")
-Reported-by: Abhishek Sahu <abhsahu@nvidia.com>
-Tested-by: Abhishek Sahu <abhsahu@nvidia.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
-
-v1 -> v2:
-   * Move pci_pm_default_resume_early() away from #ifdef CONFIG_PM_SLEEP.
-   * Add R-by from Mika.
-
----
- drivers/pci/pci-driver.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-Index: linux-pm/drivers/pci/pci-driver.c
-===================================================================
---- linux-pm.orig/drivers/pci/pci-driver.c
-+++ linux-pm/drivers/pci/pci-driver.c
-@@ -551,10 +551,6 @@ static void pci_pm_default_resume(struct
- 	pci_enable_wake(pci_dev, PCI_D0, false);
- }
- 
--#endif
--
--#ifdef CONFIG_PM_SLEEP
--
- static void pci_pm_default_resume_early(struct pci_dev *pci_dev)
- {
- 	pci_power_up(pci_dev);
-@@ -563,6 +559,10 @@ static void pci_pm_default_resume_early(
- 	pci_pme_restore(pci_dev);
- }
- 
-+#endif
-+
-+#ifdef CONFIG_PM_SLEEP
-+
- /*
-  * Default "suspend" method for devices that have no driver provided suspend,
-  * or not even a driver at all (second part).
-@@ -1312,7 +1312,7 @@ static int pci_pm_runtime_resume(struct
- 	 * to a driver because although we left it in D0, it may have gone to
- 	 * D3cold when the bridge above it runtime suspended.
- 	 */
--	pci_restore_standard_config(pci_dev);
-+	pci_pm_default_resume_early(pci_dev);
- 
- 	if (!pci_dev->driver)
- 		return 0;
-
-
-
+thanks,
+-- Shuah
