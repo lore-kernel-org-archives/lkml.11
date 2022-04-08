@@ -2,77 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23311C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 05:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 05:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234699AbiDHFZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 01:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43606 "EHLO
+        id S234752AbiDHF2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 01:28:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234710AbiDHFZn (ORCPT
+        with ESMTP id S234726AbiDHF15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 01:25:43 -0400
-Received: from hust.edu.cn (mail.hust.edu.cn [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9567B14FBB5
-        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 22:23:31 -0700 (PDT)
-Received: from localhost.localdomain ([222.20.126.44])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 2385ME7N017799-2385ME7Q017799
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Fri, 8 Apr 2022 13:22:20 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] fs: f2fs: remove WARN_ON in f2fs_is_valid_blkaddr
-Date:   Fri,  8 Apr 2022 13:22:06 +0800
-Message-Id: <20220408052207.209856-1-dzm91@hust.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 8 Apr 2022 01:27:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C8B59394;
+        Thu,  7 Apr 2022 22:25:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E26961E6B;
+        Fri,  8 Apr 2022 05:25:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B753C385A1;
+        Fri,  8 Apr 2022 05:25:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649395553;
+        bh=QeG7e3it6xxlS97YcIp53LJohPxHBHQayoT1m2dcYRs=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=uy1+Efjrm8Psbhx5lRdKfFCeV5bDzw4z8FUthEHDYEPTP1vA6AcCzoEB3IZgheWBJ
+         fS/TUaZ1Af/ru/ySHzYP5ECpM58OSUfBUDNvhCL8A/6CNuRfJbiwb/Fv+VJkPiD5ij
+         gItwanegZG9lorKJzLvZpE4U+t1bxf4OpfcM+g3kZcxqGCNHQnXnPMGd/NES2rlKx+
+         j2BnAGyq/yRGLRvv2v3Ze5aRYn+J6DhrHYANCg4z/DdS4V3a616p/G9QUWbXNcQkMU
+         VgNRSpoGyuB5tPm6YzHUZyLSj8XO0/5tLJ61d48VFBsuGvphrHXSiI7SGUTu8wQs/F
+         ZHu0na+eYUn1g==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Zong-Zhe Yang <kevin_yang@realtek.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Ping-Ke Shih <pkshih@realtek.com>,
+        linux-wireless@vger.kernel.org
+Subject: Re: [ammarfaizi2-block:kvalo/ath/pending 9/45] drivers/net/wireless/realtek/rtw89/ser.c:319:2: warning: unannotated fall-through between switch labels
+References: <202204071343.R89skHKl-lkp@intel.com>
+Date:   Fri, 08 Apr 2022 08:25:48 +0300
+In-Reply-To: <202204071343.R89skHKl-lkp@intel.com> (kernel test robot's
+        message of "Thu, 7 Apr 2022 13:29:53 +0800")
+Message-ID: <87k0c0p2n7.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+kernel test robot <lkp@intel.com> writes:
 
-In f2fs_is_valid_blkaddr, if type is DATA_GENERIC_ENHANCE or
-DATA_GENERIC_ENHANCE_READ, it invokes WARN_ON(1) not matter
-blkaddr is in the range or not.
+> tree:   https://github.com/ammarfaizi2/linux-block kvalo/ath/pending
+> head:   e1bd1e32fab0c91cf7a87e96fee9270e98e79351
+> commit: 14f9f4790048f684c2b151c899895feae0b5731a [9/45] rtw89: ser: control hci interrupts on/off by state
+> config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220407/202204071343.R89skHKl-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6b306233f78876a1d197ed6e1f05785505de7c63)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install arm64 cross compiling tool for clang build
+>         # apt-get install binutils-aarch64-linux-gnu
+>         # https://github.com/ammarfaizi2/linux-block/commit/14f9f4790048f684c2b151c899895feae0b5731a
+>         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+>         git fetch --no-tags ammarfaizi2-block kvalo/ath/pending
+>         git checkout 14f9f4790048f684c2b151c899895feae0b5731a
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/net/wireless/realtek/rtw89/
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All warnings (new ones prefixed by >>):
+>
+>>> drivers/net/wireless/realtek/rtw89/ser.c:319:2: warning: unannotated fall-through between switch labels [-Wimplicit-fallthrough]
+>            default:
+>            ^
+>    drivers/net/wireless/realtek/rtw89/ser.c:319:2: note: insert 'break;' to avoid fall-through
+>            default:
+>            ^
+>            break; 
+>    1 warning generated.
 
-Fix this by removing WARN_ON.
+This should fix the warning:
 
-Note that, syzbot patch testing does not incur any further issues
+https://patchwork.kernel.org/project/linux-wireless/patch/20220408001353.17188-2-pkshih@realtek.com/
 
-Reported-by: syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- fs/f2fs/checkpoint.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
-index f5366feea82d..521498b2dd8c 100644
---- a/fs/f2fs/checkpoint.c
-+++ b/fs/f2fs/checkpoint.c
-@@ -158,7 +158,6 @@ static bool __is_bitmap_valid(struct f2fs_sb_info *sbi, block_t blkaddr,
- 		f2fs_err(sbi, "Inconsistent error blkaddr:%u, sit bitmap:%d",
- 			 blkaddr, exist);
- 		set_sbi_flag(sbi, SBI_NEED_FSCK);
--		WARN_ON(1);
- 	}
- 	return exist;
- }
-@@ -196,7 +195,6 @@ bool f2fs_is_valid_blkaddr(struct f2fs_sb_info *sbi,
- 			f2fs_warn(sbi, "access invalid blkaddr:%u",
- 				  blkaddr);
- 			set_sbi_flag(sbi, SBI_NEED_FSCK);
--			WARN_ON(1);
- 			return false;
- 		} else {
- 			return __is_bitmap_valid(sbi, blkaddr, type);
 -- 
-2.25.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
