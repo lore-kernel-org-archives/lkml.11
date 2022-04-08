@@ -2,60 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD819C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 06:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 592B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 06:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235118AbiDHGIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 02:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43488 "EHLO
+        id S235121AbiDHGIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 02:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235102AbiDHGIG (ORCPT
+        with ESMTP id S235079AbiDHGIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 8 Apr 2022 02:08:06 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328648BE0F;
-        Thu,  7 Apr 2022 23:06:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=A6b+cX8hCB8oB11lm2BdzaQ+eWpWdm8tA3u4Ttvi6EI=; b=lr3uug1E9ClqhmRQnJUM6m4zvu
-        H+QXpYVrltMP/5D4gXQTqD3G1Z076X+3471FD4Q1s6yc2pfwcSG51hiBuSrey1sUZP0iSCVEKH0Fl
-        lsNknnudbq+Ga6SkkBuJ/d5hW9A1cQhtNUs2LKsyCymwKPczcAUhDzWvNMBmeO4CCBoW+MyQ6MNrJ
-        3iFN4lRmkm8q0zv7eU+kH9R0XII2PasECvlKNYoBbRfHnLzDrl5RvMz2GrSQJemjR09kJpetHDJSh
-        nzjCyWMVizGvs3kHid/EhnRxerV9emGCvMb073htfeYGzKnRT7LmWsvVvV1EG9pTNpMgkw3N3z9Xz
-        tqDr+eVA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nchkw-00FEDs-QY; Fri, 08 Apr 2022 06:06:02 +0000
-Date:   Thu, 7 Apr 2022 23:06:02 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Logan Gunthorpe <logang@deltatee.com>
-Cc:     linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org,
-        Song Liu <song@kernel.org>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>
-Subject: Re: [PATCH v1 1/7] md/raid5: Cleanup setup_conf() error returns
-Message-ID: <Yk/Qyo/tAb0Q9xur@infradead.org>
-References: <20220407165713.9243-1-logang@deltatee.com>
- <20220407165713.9243-2-logang@deltatee.com>
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8057522D;
+        Thu,  7 Apr 2022 23:05:59 -0700 (PDT)
+X-UUID: 0bf2b9a3ab0944e3b5f4daafc4e73dd5-20220408
+X-UUID: 0bf2b9a3ab0944e3b5f4daafc4e73dd5-20220408
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 143315572; Fri, 08 Apr 2022 14:05:56 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 8 Apr 2022 14:05:54 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 8 Apr 2022 14:05:53 +0800
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <nfraprado@collabora.com>, <tzungbi@google.com>
+CC:     <angelogioacchino.delregno@collabora.com>, <aaronyu@google.com>,
+        <matthias.bgg@gmail.com>, <trevor.wu@mediatek.com>,
+        <linmq006@gmail.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Jiaxin Yu <jiaxin.yu@mediatek.com>
+Subject: [v10 0/4] ASoC: mediatek: mt8192: support rt1015p_rt5682s
+Date:   Fri, 8 Apr 2022 14:05:48 +0800
+Message-ID: <20220408060552.26607-1-jiaxin.yu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407165713.9243-2-logang@deltatee.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 10:57:07AM -0600, Logan Gunthorpe wrote:
-> Be more careful about the error returns. Most errors in this function
-> are actually ENOMEM, but it forcibly returns EIO if conf has been
-> allocated.
-> 
-> Instead return ret and ensure it is set appropriately before each goto
-> abort.
-> 
-> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+The series reuses mt8192-mt6359-rt1015-rt5682.c for supporting machine
+driver with rt1015p speaker amplifier and rt5682s headset codec.
 
-Looks good:
+Changes from v9:
+  - Modify the commit messages to make them more clear.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Changes from v8:
+  - fix typos.
+
+Changes from v7:
+  - "mediatek,hdmi-codec" is an optional property, the code and the
+    binding document should match.
+
+Changes from v6:
+  - "speaker-codec" changes to "speaker-codecs" due to there may be two
+    speaker codec.
+
+Changes from v5:
+  - "mediatek,headset-codec" and "mediatek,speaker-codec" drop prefix
+    and move to properties from patternProperties.
+
+Changes form v4:
+  - split a large patch into three small patches for easy reviewing
+  - correct coding style
+
+Changes from v3:
+  - fix build error: too many arguments for format
+    [-Werror-format-extra-args]
+
+Changes from v2:
+  - fix build warnings such as "data argument not used by format string"
+
+Changes from v1:
+  - uses the snd_soc_of_get_dai_link_codecs to complete the
+  configuration of dai_link's codecs
+  - uses definitions to simplifies card name and compatible name
+
+Jiaxin Yu (4):
+  ASoC: dt-bindings: mt8192-mt6359: add new compatible and new
+    properties
+  ASoC: mediatek: mt8192: refactor for I2S3 DAI link of speaker
+  ASoC: mediatek: mt8192: refactor for I2S8/I2S9 DAI links of headset
+  ASoC: mediatek: mt8192: support rt1015p_rt5682s
+
+ .../sound/mt8192-mt6359-rt1015-rt5682.yaml    |  32 +++
+ sound/soc/mediatek/Kconfig                    |   1 +
+ .../mt8192/mt8192-mt6359-rt1015-rt5682.c      | 199 +++++++++++-------
+ 3 files changed, 153 insertions(+), 79 deletions(-)
+
+-- 
+2.25.1
+
