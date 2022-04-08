@@ -2,96 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF5E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31989C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:14:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbiDHIPX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 04:15:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
+        id S231326AbiDHIQG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 04:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231351AbiDHIPO (ORCPT
+        with ESMTP id S230159AbiDHIQF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 04:15:14 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF8F5EBE3
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 01:13:08 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1ncjjg-0007iG-8O; Fri, 08 Apr 2022 10:12:52 +0200
-Message-ID: <4f8f93c51fedc84d94534e962bc7c68c4a4e5616.camel@pengutronix.de>
-Subject: Re: [PATCH v2 0/7] Add the iMX8MP PCIe support
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Hongxing Zhu <hongxing.zhu@nxp.com>,
-        "tharvey@gateworks.com" <tharvey@gateworks.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
-        Device Tree Mailing List <devicetree@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        dl-linux-imx <linux-imx@nxp.com>
-Date:   Fri, 08 Apr 2022 10:12:49 +0200
-In-Reply-To: <AS8PR04MB86766041887E97E22B0AC8C48CE99@AS8PR04MB8676.eurprd04.prod.outlook.com>
-References: <1646644054-24421-1-git-send-email-hongxing.zhu@nxp.com>
-         <CAJ+vNU0McZxj_74DC0wCUyHq-NaT14URnvUP+kvudz7YLQq7fg@mail.gmail.com>
-         <AS8PR04MB86766041887E97E22B0AC8C48CE99@AS8PR04MB8676.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Fri, 8 Apr 2022 04:16:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DCA5AEC1
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 01:14:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 570C061272
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 08:14:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FB26C385A1;
+        Fri,  8 Apr 2022 08:14:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649405641;
+        bh=XDlebbqKT3weA3tUvZioQrpxHAe1YfgeHmh4ZAqmS7s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=X771eGmwW1BYwZByt5brTrTHkhtD3qJ95KfehH5uHrE3yUNFpnqJK8Zr24reL1Qjs
+         TFYkmQBveyH5adrH3iv6ejpW3bjUpDjUBOmV1zrIzgdHSREyH1YySuAwPgSgYmApcJ
+         AXMDaKpwy3bzNPwNJ/mxH/wgLCEqCb+qUb/VX5cw=
+Date:   Fri, 8 Apr 2022 10:13:58 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Artur Bujdoso <artur.bujdoso@gmail.com>
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: octeon-usb: remove unnecessary parentheses
+Message-ID: <Yk/uxoi4VUaR9OpO@kroah.com>
+References: <Yk/knRtaujd/PzK7@crux>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yk/knRtaujd/PzK7@crux>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Freitag, dem 08.04.2022 um 03:14 +0000 schrieb Hongxing Zhu:
-> > 
-[...]
-> > Richard,
-> > 
-> > Thanks for working on this!
-> > 
-> > Do you plan on submitting another version soon? I've tried to test this with an
-> > imx8mp board I'm bringing up and while the host controller enumerates I fail
-> > to get a link to a device. It's very likely I am missing something as this series
-> > depends on the IMX8MP blk-ctrl and gpc series which I also can't cleanly apply.
-> > Lucas just submitted a 'consolidated i.MX8MP HSIO/MEDIA/HDMI blk-ctrl
-> > series' [1] yet I can't find a repo/branch that applies to either.
-> > 
-> > Perhaps you have a git repo somewhere I can look at while we wait for
-> > imx8mp blk-ctl/gpc to settle and you to submit a v3?
-> Hi Tim:
-> Thanks for your kindly help to do the tests.
-> I had listed the dependencies in the cover-letter log.
-> Alexander and I used to test this series commits based on the V5.17 kernel.
+On Fri, Apr 08, 2022 at 09:30:37AM +0200, Artur Bujdoso wrote:
+> Adhere to Linux kernel coding style.
 > 
-> Lucas had provided some review comments and suggestions about the PLL bits
->  manipulations of HSIOMIX in i.MX8MP PCIe PHY driver #3 of this series.
-> And he suggested to let the HSIOMIX blk-ctrl make this PLL as a real clock,
->  and used by i.MX8MP PCIe PHY driver later.
+> Reported by checkpatch:
 > 
-> Although I have some confusions, it's better let's wating for the blk-ctrl
-> settle down and get clear discussion with Lucas later.
-> How do you think about that?
+> CHECK:UNNECESSARY_PARENTHESES: Unnecessary parentheses
+> 
+> Signed-off-by: Artur Bujdoso <artur.bujdoso@gmail.com>
+> ---
+>  drivers/staging/octeon-usb/octeon-hcd.c | 62 ++++++++++++-------------
+>  1 file changed, 31 insertions(+), 31 deletions(-)
+> 
+> diff --git a/drivers/staging/octeon-usb/octeon-hcd.c b/drivers/staging/octeon-usb/octeon-hcd.c
+> index a1cd81d4a114..32bcd6c582f5 100644
+> --- a/drivers/staging/octeon-usb/octeon-hcd.c
+> +++ b/drivers/staging/octeon-usb/octeon-hcd.c
+> @@ -1101,9 +1101,9 @@ static struct cvmx_usb_pipe *cvmx_usb_open_pipe(struct octeon_hcd *usb,
+>  	pipe = kzalloc(sizeof(*pipe), GFP_ATOMIC);
+>  	if (!pipe)
+>  		return NULL;
+> -	if ((device_speed == CVMX_USB_SPEED_HIGH) &&
+> -	    (transfer_dir == CVMX_USB_DIRECTION_OUT) &&
+> -	    (transfer_type == CVMX_USB_TRANSFER_BULK))
+> +	if (device_speed == CVMX_USB_SPEED_HIGH &&
+> +	    transfer_dir == CVMX_USB_DIRECTION_OUT &&
+> +	    transfer_type == CVMX_USB_TRANSFER_BULK)
+>  		pipe->flags |= CVMX_USB_PIPE_FLAGS_NEED_PING;
 
-Just to let you know my plans: I was quite busy with getting the
-i.MX8MP HDMI part to work. Now that this is at least in a state where
-it can collect some feedback from upstream I have some time to circle
-back to this topic. I can't commit to do it immediately, but I'll get
-around to looking at the PCIe series a bit more in-depth and apply my
-HSIO PLL suggestion to the blk-ctrl driver during the next week.
+Nah, the original is fine, no need to change this.
 
-Regards,
-Lucas
+Unless, do you have this hardware?  If so, getting this out of staging
+would be nice to have happen one day.
 
+thanks,
+
+greg k-h
