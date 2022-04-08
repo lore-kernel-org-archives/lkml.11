@@ -2,98 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A939C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB483C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 07:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229569AbiDHHTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 03:19:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55386 "EHLO
+        id S229572AbiDHHUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 03:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiDHHTr (ORCPT
+        with ESMTP id S229454AbiDHHUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 03:19:47 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0460021DF22
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 00:17:43 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id r13so15518586ejd.5
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 00:17:43 -0700 (PDT)
+        Fri, 8 Apr 2022 03:20:04 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D93E21F746
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 00:18:02 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2ebebe631ccso1762537b3.4
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 00:18:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0n61blmIAkKQaBF3fgsPecQx9lDeya+dROG3fR+36zM=;
-        b=rDO9wCF+y70cv/4I1pJUnF98waE70HN2mn7xOtAJ9/6tJr21SWhOZql1eQ2iIIAceV
-         SouBBS6HQQvDLfzFgnyLqOzIVFl74VSfOqOqLJcXsV/b5g3OJxI6OSGuxKFVvxboDHuU
-         dfcG7kxNFAm5pcNpnO+IOiXjDVjG73fGtM9xmBqIFuuPVrhbHvI7AQm8L0ota6qOyL3x
-         /3tWERQE7Ufrx//4MJWfnvyL49HaAS3AHb9RPVKBBLG8uBkomK6Ky0gFcm8h8w6I6CK4
-         l+cO5AMMgSgJhqe8hB6QpRdhcHJ/zsDOfoSawHbFzY8fLYM2K/+TyRlRhoTe6sVTxkYB
-         Gg9g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=e1eAc+/ZTYosIlDGpvTMl5b2fSKIdNvBP3h/M7XqTbM=;
+        b=Ir9TzH9EwGidF3qd4S3sWxRXlCY8hHDid3Xkww9Q4bSw+ofszVekY/3BS6Gd6eHF/M
+         nCKvNwNFpazqtIavhHX4+BHZ/n9t2e0k2/f8iPQIkTvhkKVgiYlcuKWqw5Ae9vaDqrPB
+         2Jvwq6xOgQYCJ02SUBcQd5w9i9+XRmjPRQeWPGYU6kDqxK2saC8Vn7JXESwa+coF+oqD
+         +/MHQAIXvmptSHEq/PIkCRfpyVBeveDIixO7rBakqb+IIkCFqX+mI+wDOYqxyIWBsWHr
+         3ntvCeGf0t6q+SBKRRCwIp1beMO67oLZghNmYsOfutOQB9m9pzDaN08j+lWJN/EKKcKk
+         n/sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0n61blmIAkKQaBF3fgsPecQx9lDeya+dROG3fR+36zM=;
-        b=k0UBZmeCI9dXnZQVTEVkRiHrJJHuq0ZeQ+l+z9K4JsqpKtUqQRID2uSUh0JjbShmPx
-         7/DAb2GlfXXq4ujS9HnT+T9tQNr0BR8Byxh4miiixiaAyUVdM1rQs+d9GjBNGZdzS0IX
-         oXTm5t+mgzaZovEzWIJgiORU40KUAly6JJcXphSWDFZ8FYB85Q06m6/GWdoMxb2ulMTp
-         FKPb4avyubGLosSvnQ2fpBLRlHTmEH9lA6zeAYdXRdEIz68M3z56IPy0kq9mURFp1Ips
-         HMAVn6P3NhE+1cB7DmzSePzvbeTxtZdsYhFU0KOlHgD+ddFLC0+WDs3R0DzBJXmyZ/lF
-         2czw==
-X-Gm-Message-State: AOAM530umyyHRIqbGqqhwWcOdj0VRZ2DtAVZrgyhhLEZ9R4gsDcMRBj/
-        cezTI1coz5+I037RlTKA7fQrRg==
-X-Google-Smtp-Source: ABdhPJxnIy7zF7uE8xRHZ/boIh9E4X89WLB9SMQMnABLEB9K24hPdos6iUbx2cmBnQl1AWhRIsKFYA==
-X-Received: by 2002:a17:906:434e:b0:6d0:ed9c:68bc with SMTP id z14-20020a170906434e00b006d0ed9c68bcmr16390976ejm.70.1649402262518;
-        Fri, 08 Apr 2022 00:17:42 -0700 (PDT)
-Received: from [192.168.0.187] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id bl24-20020a170906c25800b006e809b6bf89sm3720393ejb.221.2022.04.08.00.17.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Apr 2022 00:17:42 -0700 (PDT)
-Message-ID: <9d6ba801-6ad1-80aa-a92a-bfc06c1cf1df@linaro.org>
-Date:   Fri, 8 Apr 2022 09:17:41 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e1eAc+/ZTYosIlDGpvTMl5b2fSKIdNvBP3h/M7XqTbM=;
+        b=0r8YFEqFZvTP3jawXFo8uAY0p/VB47sqsbraL7aD34IFOCpCZybmxQ9f9+M9AnweG3
+         XQl/2hYIY/0sJ6iN6yT7k45HaZ7jzKZFv7vpTD61GQM2u7XWrVdkBZPb6u7RcZx7ZYPP
+         OemMV+zVpf8pm5no7xYrdClrNznrrDhMA6/b0tBlBQaHyGt+lz1sL4eQjtM+svNttTx1
+         9oI8pklLNuO1+WCYV5WBpoxBwCs/bGvvv0SvWgw+1KR3UZmvx91OWWKxxk6k/vnOmy2G
+         K40f3wWwIINIrUHiQC1vwuzue3tkK7lS2CfH0GiQsnxG1e2FTjayPEX0mjQowXpvcbxn
+         qTLg==
+X-Gm-Message-State: AOAM530R5paZHAyfOcjbf/7o/L5EmN/pyKXthefdlT7ZpE93NH/4guvn
+        1xY/LIFIl2YSt/DeAwOsoxl0EPZ7+BF4HZgEIyntqA==
+X-Google-Smtp-Source: ABdhPJw6ynzTGftsrf/Xfed6r3eZH/mqtNaepkmKZxdABE0Ve2pztP5M9pS84NPguk9D1Mg5cjTDeIvI9mgNmrmh+/A=
+X-Received: by 2002:a81:59d7:0:b0:2eb:7156:40bc with SMTP id
+ n206-20020a8159d7000000b002eb715640bcmr14774847ywb.67.1649402281380; Fri, 08
+ Apr 2022 00:18:01 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 2/4] clocksource/drivers/exynos_mct: Support frc-shared
- property
-Content-Language: en-US
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        tglx@linutronix.de, daniel.lezcano@linaro.org
-Cc:     kernel@axis.com, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, alim.akhtar@samsung.com,
-        devicetree@vger.kernel.org, robh+dt@kernel.org
-References: <20220407074432.424578-1-vincent.whitchurch@axis.com>
- <20220407074432.424578-3-vincent.whitchurch@axis.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220407074432.424578-3-vincent.whitchurch@axis.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220407021729.16655-1-zhouchengming@bytedance.com>
+In-Reply-To: <20220407021729.16655-1-zhouchengming@bytedance.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Fri, 8 Apr 2022 09:17:50 +0200
+Message-ID: <CAKfTPtCNNJsT8fqG2eT0AZVFvNdxkyMzy8SdXajsHFqSH-PZ-Q@mail.gmail.com>
+Subject: Re: [PATCH 1/2] sched/fair: Fix cfs_rq_clock_pelt() for throttled cfs_rq
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/04/2022 09:44, Vincent Whitchurch wrote:
-> When the FRC is shared with another main processor, the other processor
-> is assumed to have started it and this processor should not write to the
-> global registers.
-> 
-> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+On Thu, 7 Apr 2022 at 04:17, Chengming Zhou <zhouchengming@bytedance.com> wrote:
+>
+> Since commit 23127296889f ("sched/fair: Update scale invariance of PELT")
+> change to use rq_clock_pelt() instead of rq_clock_task(), we should also
+> use rq_clock_pelt() for throttled_clock_task_time and throttled_clock_task
+> accounting.
+>
+> Fixes: 23127296889f ("sched/fair: Update scale invariance of PELT")
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+
 > ---
-> 
-> Notes:
->     v3:
->     - Split FRC sharing handling from local timer indices handling
->     - Remove addition of global variable.
-> 
->  drivers/clocksource/exynos_mct.c | 21 ++++++++++++++++++---
->  1 file changed, 18 insertions(+), 3 deletions(-)
-> 
-
-Looks correct and I hope it works correct. :) I did not test it though.
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
-Best regards,
-Krzysztof
+>  kernel/sched/fair.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> index d4bd299d67ab..e6fa5d1141b4 100644
+> --- a/kernel/sched/fair.c
+> +++ b/kernel/sched/fair.c
+> @@ -4846,7 +4846,7 @@ static int tg_unthrottle_up(struct task_group *tg, void *data)
+>
+>         cfs_rq->throttle_count--;
+>         if (!cfs_rq->throttle_count) {
+> -               cfs_rq->throttled_clock_task_time += rq_clock_task(rq) -
+> +               cfs_rq->throttled_clock_task_time += rq_clock_pelt(rq) -
+>                                              cfs_rq->throttled_clock_task;
+>
+>                 /* Add cfs_rq with load or one or more already running entities to the list */
+> @@ -4864,7 +4864,7 @@ static int tg_throttle_down(struct task_group *tg, void *data)
+>
+>         /* group is entering throttled state, stop time */
+>         if (!cfs_rq->throttle_count) {
+> -               cfs_rq->throttled_clock_task = rq_clock_task(rq);
+> +               cfs_rq->throttled_clock_task = rq_clock_pelt(rq);
+>                 list_del_leaf_cfs_rq(cfs_rq);
+>         }
+>         cfs_rq->throttle_count++;
+> @@ -5308,7 +5308,7 @@ static void sync_throttle(struct task_group *tg, int cpu)
+>         pcfs_rq = tg->parent->cfs_rq[cpu];
+>
+>         cfs_rq->throttle_count = pcfs_rq->throttle_count;
+> -       cfs_rq->throttled_clock_task = rq_clock_task(cpu_rq(cpu));
+> +       cfs_rq->throttled_clock_task = rq_clock_pelt(cpu_rq(cpu));
+>  }
+>
+>  /* conditionally throttle active cfs_rq's from put_prev_entity() */
+> --
+> 2.35.1
+>
