@@ -2,166 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B27C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2843C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 14:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236788AbiDHOT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 10:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
+        id S235431AbiDHOUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 10:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236483AbiDHOTy (ORCPT
+        with ESMTP id S236795AbiDHOUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 10:19:54 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2081.outbound.protection.outlook.com [40.107.243.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2B426AF7;
-        Fri,  8 Apr 2022 07:17:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XXxV1DbSVIaFmeZSVihZwyrV6bmK2PLLUEGyJ/XmlLI9kZD7kUuESEn2I9obmEHcUu6y0skZxBk7Ly0uPmBGZWxI17JZMDIc09uZDS+Fc4zGg5Bf4/qPKTw7vsNxFKgK0iLvM+aRBosRdZzCrrcnVzJsp7QOhLdffxxXnIqQm/9ytUVjn9S/zm+r6WXMtbufs2nd7nOQl0XYaNfTFomBDDIFAthR/7Fvy/YNr5kFS2f+Aqj7//ON8XPQChlFsJjxaaOdlwjvxWQxsdt0nxewhWUtZQ8Eht5kYzX1Xf3W2oltcliR698+CGq0B04VtEB8gNipBgpSE7QTpTAel1qKfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GqmP3gR22CpK7iW+X2ACYogrw+uPngEmaNVp2m3NglQ=;
- b=h7AiLJui07r+wlQJZTlw4Kc7s7nR97LQ3Qwx8T7Jqqq1ktC0f9JiHCIIJSmX2As13Ln0bIq0znzF/WMCN4nL53YC1Iky22kW83ae5GFFLYDoQbH/xNQ7SyFwDRpS4uYn4HHOsz/2uxnFFlNSqEgNIOw9U+BY7bpkrrsC33qETvX4OsUdVUlA8wZFGil0B60XYr8ZXZokiN3y5XHfyh3oQKnD+3ADnnFXQ76b+4WmQ8TT0VdqG/SVBR1N5eJ3m7CxQOsGv3dcVJGRorp75mdcf+dphCkOohS2Qmhp/uQA4xQnnGrGYIg/0oM1+xqS89MlLlYYf086A406k60bP8mV7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GqmP3gR22CpK7iW+X2ACYogrw+uPngEmaNVp2m3NglQ=;
- b=EeO5HnChYBIUpOX225HMIOfuNwPLS48C+69A9+0Ke45owVCZyUNO8dHRWBNrPF2u1YRgBoVRkcGoejXbK5YA9zO4knNyV9fpO1b7018P/JAY5nteQfzwz5XeBW5GUFcJzQS+ljpAo0qhxH1kBbOdeYo7pNjYkOQ1feaYYIukzovDT0d1bcYkHc2V/jTjytOL0EKzSoCppwvCm7IdtkyA9dGmDVJ/5L9DAWWdfEwpnSJkCwGYfs/vKZ8UOfdkA4cDh64oiRqjMEzdl89nK9lrNY/eQSMnFZR6vdmPXaMInvKnICt2JXzDKrXLV+RRWlg1T5Jzli8+smGq7xMlglU5NQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MN2PR12MB3360.namprd12.prod.outlook.com (2603:10b6:208:c7::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.26; Fri, 8 Apr
- 2022 14:17:49 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.026; Fri, 8 Apr 2022
- 14:17:49 +0000
-Date:   Fri, 8 Apr 2022 11:17:47 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Joerg Roedel <joro@8bytes.org>
-Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
-Message-ID: <20220408141747.GZ2120790@nvidia.com>
-References: <20220308054421.847385-1-baolu.lu@linux.intel.com>
- <20220315002125.GU11336@nvidia.com>
- <Yk/q1BGN8pC5HVZp@8bytes.org>
- <1033ebe4-fa92-c9bd-a04b-8b28b21e25ea@linux.intel.com>
- <20220408122352.GW2120790@nvidia.com>
- <YlA//+zdOqgaFkUc@8bytes.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YlA//+zdOqgaFkUc@8bytes.org>
-X-ClientProxiedBy: BL1PR13CA0313.namprd13.prod.outlook.com
- (2603:10b6:208:2c1::18) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Fri, 8 Apr 2022 10:20:02 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C102D1B255C
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 07:17:56 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id b15so10261533edn.4
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 07:17:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=z2JJx5IiDtTwR6XIUL714OcPUvnCKRiD1BViuooLypE=;
+        b=CGpI14i0IwPVUyQqUyjByEDEtvkduDKUP7QuMKRoP5X6taKf8CuagqxSKl0sUVwrJ6
+         XlNiwJVxLEaaLeESNo1108Ey5YpNqQwtI1MMVoK33xpMfv+ntnywV4+AdxcBtxaqUtiB
+         v42lwnS+0NBcuvOdUFBFjSBaaG8u4SGkaHFNJzd5yma1QbRjddoJECDuLr1ByP2jTcRO
+         WUjiD6sVRM3XnHllzbQq21jnwdhNxTkp3IOe5AU8DEF8UtwpVbRkA2j5PR5A1E6FIetC
+         ts/n6gziaQp7LcOyY+UuRl8qpSkmwjXuA5N4JjHJxcnPbeTQiwLbCN3+1JsTSwqTidt9
+         P5jA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z2JJx5IiDtTwR6XIUL714OcPUvnCKRiD1BViuooLypE=;
+        b=rWIekbXczLsMARgbxo6dnxYDo0aknAJSnqQQUx9n5FE+GHmc5HltxOcA5y3hrYvi+D
+         03oFIfvTaftr3MCjx9Yr5k4CnObzW9uJ5wfeFYCMSldEmnVEufxyrfYLRkLYJ88ROjyq
+         +q6bHDGmYYbsFiUHQaYRuk5OFd8SjjLJmSQZIGJBtsSf2FKh+TAodFLVcp68jG9c99FL
+         aiQ/ZRPcY7lqHyDVSZdb7cYMO6J9aqgpygcc65sGd6peDXgajSF//vph1YzyL5r4PbJQ
+         AbsBdYoeFspYq67a+4YUHi1WprH69pVRPHbh23ZvYMTj+XLFRKviBO7inc40zqAeDzzB
+         3ldw==
+X-Gm-Message-State: AOAM530uOV/DCWhkr9DaKbtl7weaKGPXI5aRZw/Ht5QX6zE1UjoP1Lte
+        9QFqF7XloL5LZRn5FHNb8Lz7y9XE9GiIovdRHwMM1lFnUhk=
+X-Google-Smtp-Source: ABdhPJwthrucugVECJPFqMMkPdoQSMiDpbnsnpjUekEkrPs3/zxUp6NmoUpnfog0HvMvVa9IrZ6w7Hyd3rCSGbzbmeA=
+X-Received: by 2002:a05:6402:1804:b0:41d:5883:2f70 with SMTP id
+ g4-20020a056402180400b0041d58832f70mr1242754edy.150.1649427475320; Fri, 08
+ Apr 2022 07:17:55 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 85a4cbe2-4043-4dd8-ffb8-08da196a8f74
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3360:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB3360BF0BDFC2EE47D5AB3C8AC2E99@MN2PR12MB3360.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9MN1Iam9JMOMHE2tI8Oyd4FX3DzOsVm1Gk0ubPP23JBCyKq13k1Omk3mLlSFPV9lYbva1T1idcJCq0DdlLBBj8buWfo55plHei1DXvMP7jd8XcpvSFJUCYWBvdgQzI8OdgnsyW50OjMzQLPhoHlvq3qj61/vN5llKUAPBlihMB60ixUeTItmBj6EKwqcU+5i3ufetTB8scWIk9CpneVD2DKtAA91eNB7lD1kY/CsZL0Gh2XWNbRp3Du9xbf1jfGMvbl5vD78uQIP0dE15E7kxVLmA6lCXK4M7H+t9IBYXOHkSxP8cSIV1Nw8dpA7M9zTaRunR3fA6iZXgyVLX583Z4dq8NcmYXenn1k61QW4xiIYN+6onq8fQmMM0KRj1DahT2Kc+FWyf9fAqOrvsjofXBbhrQ3uEdiUfMtkZaMWcRPynos/BTnyJGB9StRz2rft/fuk97Z0nb6G2CYV5qiyVvzDzBqP7YpcCcg/JKT6ag2yjB6CMTS7rokHyycG6O3Mh6duXi6ONv2nztTcv1kS0mOqphPWWQifcZ7SWdtRj+sHhN4eXZoUmsPONY12MfYN3iqF3bcZOX8cHICqGJsjX23l49fuczIQDMZTZ9IH5JLysUqPXyXldiJpNls9ooyFSlG2BtitWQyrpa8GPZYiIw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(33656002)(4326008)(1076003)(86362001)(2616005)(26005)(66946007)(66476007)(66556008)(316002)(6916009)(54906003)(8676002)(186003)(508600001)(5660300002)(7416002)(6506007)(6512007)(6486002)(8936002)(36756003)(2906002)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FDMGY3urnd74cH5oe/WPI4tPhbHrtObf61ucfkSskEL7UA3JgKUswm792gUO?=
- =?us-ascii?Q?BtSqb5n8qKAGiquXKcQO3CcneiHfmR5Q6wKHvdCT84LUit+UWEcrltF+GaL6?=
- =?us-ascii?Q?8Xe/tRFP88LGuQA0+CvOL4K2KS/46SwnfMH4m1Zyp5W9RDN4gRs99LtMCsUr?=
- =?us-ascii?Q?wODi+eEv2K8Wx6iJRvNl2io5HcHh3hcGFSqd+Jv8aZJkwcbFafmYimomJvVj?=
- =?us-ascii?Q?FauWXHuNf/N9GkZNOW9Pno2T6lyW9BwO0DHw+5dOUEVu60dETQPKb91u0w0S?=
- =?us-ascii?Q?VBTs/M6LVGLOUxkm9L+letc+HuEmQCpEYeq4w1Q2jb0nOonGG/0FoZmhjwU3?=
- =?us-ascii?Q?AP6M3lmNDzqEEFOoY5dynxuBwceSBmsunP2zsNpcA35le01GM9AQovsoH7a7?=
- =?us-ascii?Q?ilQ8MffEcfv0KYLen/9e19yCSENp1kMj99rQtMQYbd1KPjTVzatklxZqsYH6?=
- =?us-ascii?Q?1QpkwTKxRc0vM9Fyg92jy/wuD9/3/AbpV3gM5e6qMTv+OJAo30qeF8i42M3q?=
- =?us-ascii?Q?bPq98QvgJTCcjs4IDUjQBH9BRGRHMXmSXPdt8l6B6fG85J1KTVZlczZlnQU8?=
- =?us-ascii?Q?yDVT7CU8/vTk6zSLXOyjGM++8EBMesp5vknCR0TcJUPmMs2gBsl6H6SooJGB?=
- =?us-ascii?Q?8G6P9LWZlDBCZ/Uw/RDF3YTUqQQlVYknlxPm4NKTMSEtU/vwp33UtKLAm3mM?=
- =?us-ascii?Q?Hph2vLTOS5LxuVyHq3HQa3IgdHnmcMdfUSMEpkUpGEkfCRGXNq1eEz/QwrS0?=
- =?us-ascii?Q?c9J7uClfDr81WTpZyGVxudmd+iOSsG9YgEfiZqYcT24Jw/1dmU0JDbagls4s?=
- =?us-ascii?Q?78WBmOC5t/9VRrXPG87Klnl5HKILHTJ0WR8KNDyoAlYoc8E4qQlpXxuTffqP?=
- =?us-ascii?Q?3qRxLEA88SE8aVmIyw4zXzWSrGMflslsxt2LjpIYR9316yfA36Le6bFDxpxp?=
- =?us-ascii?Q?H0O70x8aE2IszpgPD40vxKIRFU78GpSLca5N7J05PvHqocHn8eIjCCPtAkt2?=
- =?us-ascii?Q?iiQYkmILH3EIjmnJFhuToeaiBsbVgKbI2n+8vtqDwzW57zSnGL29WWpe7iXY?=
- =?us-ascii?Q?eWzzT4mtXKljFA3KgcBH1LpCMSFMwBpFy2YEW/jO3oKeO9RZuPQ+4d4BGkdu?=
- =?us-ascii?Q?+cftN28ejywfvLBBytFcgIV/yrqXrG8BHMmmnl3I6Mqn527nSWuLghH3r4Zq?=
- =?us-ascii?Q?MAwp+pY/f64Cb9n79itC5iInocFG2EzAohltNgBQyh0nHlGlYha8+7tPn5GB?=
- =?us-ascii?Q?3MywS6iEiikKDVukgTUNQl4F33frY2zcUwoyt8HorIdHD5m06kNd34rBgBmi?=
- =?us-ascii?Q?1tIcVP9rhzIuRs0ap2Aiw20I6nV+7SQK54YZmCidL+Z5h9y65U6YL9CCINF0?=
- =?us-ascii?Q?QDOK7B1l/t1XkaWLEhWWpH7sWcG1ZlshyXITwA4iS2yiO0mfkWIcJUL+hyiY?=
- =?us-ascii?Q?IxUwWHU9DEADEbWjaD/y+gVU6Jpj1E5Veu3ikfDPohx7wda1BjkZGUTstzna?=
- =?us-ascii?Q?ncWFSjjNo4x+kP0MPWfVefh5onrOKBfknaZwBLc+k65TemTG6mjXo7L/v1vF?=
- =?us-ascii?Q?mENS8unFA8sx+PmPGv6AhNqlzRPYTz+aBOGLAVKCK8w10uKNlHKe7OTvTpis?=
- =?us-ascii?Q?b5WImhvSTQhwgeU8561J236+qow30y3NQ5F1ZMmQ0AG99UL5/TcfWSDkE/Lp?=
- =?us-ascii?Q?Tt2ST6pozZ/4QfM/YAoq/SgPd86iFKpVGc2PnSy8BfPonUdnQggZbvQoHx9R?=
- =?us-ascii?Q?Vr4aRHSkIg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 85a4cbe2-4043-4dd8-ffb8-08da196a8f74
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2022 14:17:49.2258
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BBiNmdcBkQIvlLynOJwEfTwCizzg2pmuI9CdDkSZOU9c8JJ9ke68tG9wTX9F6m+6
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3360
+References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1648656179-10347-2-git-send-email-quic_sbillaka@quicinc.com>
+ <CAD=FV=X+QvjwoT2zGP82KW4kD0oMUY6ZgCizSikNX_Uj8dNDqA@mail.gmail.com>
+ <392b933f-760c-3c81-1040-c514045df3da@linaro.org> <CAD=FV=W4PYK-t607yjRbfjDjjEZX0KdgHDRukw_vSH8E8EDH6w@mail.gmail.com>
+ <CAA8EJppt9XONbgtKfmHmN+==QNqiVJeb8GKJFdZm=yyY-tgmHQ@mail.gmail.com>
+ <CAD=FV=U5-sTDLYdkeJWLAOG-0wgxR49VxtwUyUO7z2PuibLGsg@mail.gmail.com>
+ <CAA8EJppgfYgQjG8A4LsR-1wmBj3Ku3eO8cKfAYhxjWXL7e3eHg@mail.gmail.com>
+ <CAD=FV=V=a1CnT8fqTJR40WoS3BaDQ3xZ=HnHVHqZh=MEmVUZBA@mail.gmail.com>
+ <3e5fa57f-d636-879a-b98f-77323d07c156@linaro.org> <CAD=FV=Uibu-kZyix7K4_WVc-+C8xpzTqU4WFy7O=6sukMZrX5g@mail.gmail.com>
+ <MW4PR02MB7186245772DAC3E04FA8D1C0E1E69@MW4PR02MB7186.namprd02.prod.outlook.com>
+ <CAD=FV=Wk3U7_bVdiCPp8iQ4bcCA_Botemu4pwHeRtgBa3Xk6KQ@mail.gmail.com>
+ <c4f086ce-c56f-f7c9-4092-7f2432330d50@quicinc.com> <CAA8EJprdV64jOexEF-XqbkwsNDWBNRRndOAas-QqMHaL=zp9rw@mail.gmail.com>
+ <CAD=FV=XdRKWFQnJx9AKYmB2p26sXmhjqxLzz+LYyCt7rg+zF6w@mail.gmail.com>
+ <CAA8EJprvSy1PuYCXMr-TxBF1XwcAZaErSmzH2Tw5-NAovxHY7A@mail.gmail.com> <CAD=FV=XS8h8GwL11CmJou31hTbf=mS77-j1y66uY+2YuGAUpzQ@mail.gmail.com>
+In-Reply-To: <CAD=FV=XS8h8GwL11CmJou31hTbf=mS77-j1y66uY+2YuGAUpzQ@mail.gmail.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Fri, 8 Apr 2022 17:17:43 +0300
+Message-ID: <CAA8EJpr5ezSLB1FQwzbmEfjKd5YB77h+NaWB4GJ2akJcF1nwGw@mail.gmail.com>
+Subject: Re: [PATCH v6 1/8] drm/msm/dp: Add eDP support via aux_bus
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Sean Paul <sean@poorly.run>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 04:00:31PM +0200, Joerg Roedel wrote:
-> On Fri, Apr 08, 2022 at 09:23:52AM -0300, Jason Gunthorpe wrote:
-> > Why rc3? It has been 4 weeks now with no futher comments.
+On Fri, 8 Apr 2022 at 16:56, Doug Anderson <dianders@chromium.org> wrote:
 >
-> Because I start applying new code to branches based on -rc3. In the past
-> I used different -rc's for the topic branches (usually the latest -rc
-> available when I started applying to that branch), but that caused silly
-> merge conflicts from time to time. So I am now basing every topic branch
-> on the same -rc, which is usually -rc3. Rationale is that by -rc3 time
-> the kernel should have reasonably stabilized after the merge window.
+> Hi,
+>
+> On Fri, Apr 8, 2022 at 5:13 AM Dmitry Baryshkov
+> <dmitry.baryshkov@linaro.org> wrote:
+> >
+> > On Fri, 8 Apr 2022 at 03:28, Doug Anderson <dianders@chromium.org> wrote:
+> > >
+> > > Hi,
+> > >
+> > > On Thu, Apr 7, 2022 at 4:36 PM Dmitry Baryshkov
+> > > <dmitry.baryshkov@linaro.org> wrote:
+> > > >
+> > > > The ps8640 driver looks 'working by coincidence'. It calls
+> > > > dp_aux_populate, then immediately after the function returns it checks
+> > > > for the panel. If panel-edp is built as a module, the probe might fail
+> > > > easily.
+> > > > The anx7625 driver has the same kind of issue. The DP AUX bus is
+> > > > populated from the probe() and after some additional work the panel is
+> > > > being checked.
+> > > > This design is fragile and from my quick glance it can break (or be
+> > > > broken) too easy. It reminds me of our drm msm 'probe' loops
+> > > > preventing the device to boot completely if the dsi bridge/panel could
+> > > > not be probed in time.
+> > >
+> > > I did spend some time thinking about this, at least for ps8640. I
+> > > believe that as long as the panel's probe isn't asynchronous.
+> >
+> > By panel probe (as a probe of any device) is potentially asynchronous.
+> > As in your example, the PWM might not be present, the regulator probe
+> > might have been delayed, the panel-edp might be built as a module,
+> > which is not present for some reason.
+>
+> Well, in those cases it's not exactly asynchronous, or at least not in
+> the way I was thinking about. Either it will work now, or we should
+> try again later when more drivers have probed. The case I was worried
+> about was:
+>
+> 1. We call devm_of_dp_aux_populate_ep_devices()
+>
+> 2. devm_of_dp_aux_populate_ep_devices() kicks off a probe to the panel
+> in the background
+>
+> 3. devm_of_dp_aux_populate_ep_devices() returns to us without waiting
+> for the panel's probe to finish.
+>
+> I think that's possible if the panel driver sets PROBE_PREFER_ASYNCHRONOUS.
 
-You might consider using a linear tree instead of the topic branches,
-topics are tricky and I'm not sure it helps a small subsystem so much.
-Conflicts between topics are a PITA for everyone, and it makes
-handling conflicts with rc much harder than it needs to be.
+That would be a separate story, yes. However the general case is still
+valid: one can not guarantee that the panel device is available
+immediately after aux bus population.
+So ps8640 works at this moment and in the particular configuration.
 
-At least I haven't felt a need for topics while running larger trees,
-and would find it stressful to try and squeeze the entire patch flow
-into only 3 weeks out of the 7 week cycle.
+>
+> I was less worried about the resources missing since I thought that
+> would be handled by the normal probe deferral case. IIRC the "infinite
+> loop" that we used to end up with MSM's probe was because something
+> about the way the MSM DRM driver worked would cause the deferral
+> mechanisms to retry instantly each time we deferred. I don't remember
+> exactly what triggered it, but I don't _think_ that's true for ps8640?
 
-In any event, I'd like this on a branch so Alex can pull it too, I
-guess it means Alex has to merge rc3 to VFIO as well?
+I'm not sure either. If you have a system with that bridge, it can be
+easily tried by returning -EPROBE_DEFER from the panel driver's
+probe().
 
-Thanks for explaining
+For the msm driver it was the following sequence of events:
+- mdss probes
+- mdss creates subdevices including dsi host
+- subdevices are probed
+- mdss drivers tries to perform component binding
+- dsi host determines that the next item is not available
+- it returns -EPROBE_DEFER to the component bind
+- mdss reverts registration of subdevices, returning probe defer.
 
-Jason
+However as there were devices added to the device list, the deferral
+list was retried immediately. Thus we faced the probe loop.
+
+I think this looks close to the ps8640, but I wouldn't bet on that.
+
+> > > Basically if the panel isn't ready then ps8640 should return and we'll
+> > > retry later. I do remember the probe loops that we used to have with
+> > > msm and I don't _think_ this would trigger it.
+> >
+> > I don't have proof here. But as I wrote, this thing might break at some point.
+> >
+> > > That being said, if we need to separate out the AUX bus into a
+> > > sub-device like we did in sn65dsi86 we certainly could.
+> >
+> > Ideally we should separate the "bridge" subdevice, like it was done in
+> > sn65dsi86.
+> > So that the aux host probes, registers the EP device, then the bridge
+> > device can not be probed (and thus the drm_bridge is not created)
+> > until the next  bridge becomes available.
+>
+> You're definitely right, that's best. I was hesitant to force the
+> issue during review of the ps8640 because it adds a bunch of
+> complexity and didn't _seem_ to be needed. Maybe it makes sense to
+> just code it up, though...
+
+As I wrote, the test is easy. If the system boots fine, there is no
+need to fix that immediately.
+However I think in general we should stop depending on the panel being
+available right after populating the aux bus.
+
+--
+With best wishes
+Dmitry
