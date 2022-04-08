@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AEC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4865CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:05:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236137AbiDHNHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 09:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37846 "EHLO
+        id S236163AbiDHNHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 09:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236108AbiDHNGl (ORCPT
+        with ESMTP id S236077AbiDHNGt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 09:06:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6B73441A2;
-        Fri,  8 Apr 2022 06:04:29 -0700 (PDT)
+        Fri, 8 Apr 2022 09:06:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27EDD2C64E;
+        Fri,  8 Apr 2022 06:04:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8328CB82AD2;
-        Fri,  8 Apr 2022 13:04:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DDD2C385A3;
-        Fri,  8 Apr 2022 13:04:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68AA4B82B2F;
+        Fri,  8 Apr 2022 13:04:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A8E0C385A9;
+        Fri,  8 Apr 2022 13:04:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649423066;
-        bh=I6FKEg1F2WdCerintIwYbgK9XbahqeCnD3xLWtQkzIs=;
+        s=korg; t=1649423082;
+        bh=T1HoYIRCOHnSGH9nT+O1IIjzEE8rIMMEuwkCYIFHrMQ=;
         h=From:To:Cc:Subject:Date:From;
-        b=P50QNHzLZ0gGNOnhUYcJ1K7vhMTXgatxu4HYy2xGRC06bACfWK/JRjyfv7/cdIWeH
-         T8THwP2bJhFkGu0z12Uy8gFytQlTXtIBlOb8QMj1AUAwOFc5DcxbNdnp2cLtxiupKk
-         7GNWBFTUfHrg9vM9ddKDcTjc4DpipvhbFrvks8ro=
+        b=aB7tzYXSkPuAbOcBjMVQYO663MyzmDKVJCMdTf82BmszDGPi9Zh/wUeKlsRCGHs5O
+         MwU+7ieWKTkJspCkUNPS4N4VEoWSLB16WQDvD25C8Vgu3+xA8XMWjtZ7oSvMWjGwOh
+         7pPrKW2XFeCtOrHfZt4Giy8Y8d+zSVlUF4NUVwVU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 5.16.19
-Date:   Fri,  8 Apr 2022 15:04:05 +0200
-Message-Id: <16494230466218@kroah.com>
+Subject: Linux 5.17.2
+Date:   Fri,  8 Apr 2022 15:04:12 +0200
+Message-Id: <1649423052169175@kroah.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,12 +45,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 5.16.19 kernel.
+I'm announcing the release of the 5.17.2 kernel.
 
-All users of the 5.16 kernel series must upgrade.
+All users of the 5.17 kernel series must upgrade.
 
-The updated 5.16.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.16.y
+The updated 5.17.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.17.y
 and can be browsed at the normal kernel.org git web browser:
 	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
@@ -63,14 +63,17 @@ greg k-h
  Documentation/ABI/testing/sysfs-fs-f2fs                                       |    1 
  Documentation/admin-guide/kernel-parameters.txt                               |    3 
  Documentation/admin-guide/sysctl/kernel.rst                                   |    1 
+ Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml                |    8 
  Documentation/devicetree/bindings/media/i2c/hynix,hi846.yaml                  |    6 
  Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml |   28 
  Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml   |   16 
  Documentation/devicetree/bindings/mtd/nand-controller.yaml                    |    4 
  Documentation/devicetree/bindings/pinctrl/microchip,sparx5-sgpio.yaml         |    2 
+ Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml                 |   30 
  Documentation/devicetree/bindings/spi/nvidia,tegra210-quad.yaml               |    2 
  Documentation/devicetree/bindings/spi/spi-mxic.txt                            |    4 
  Documentation/devicetree/bindings/usb/usb-hcd.yaml                            |    2 
+ Documentation/driver-api/cxl/memory-devices.rst                               |    4 
  Documentation/process/stable-kernel-rules.rst                                 |   11 
  Documentation/security/SCTP.rst                                               |   26 
  Documentation/sound/hd-audio/models.rst                                       |    4 
@@ -98,13 +101,17 @@ greg k-h
  arch/arm/boot/dts/openbmc-flash-layout.dtsi                                   |    2 
  arch/arm/boot/dts/qcom-ipq4019.dtsi                                           |    3 
  arch/arm/boot/dts/qcom-msm8960.dtsi                                           |    8 
+ arch/arm/boot/dts/qcom-sdx55.dtsi                                             |    2 
  arch/arm/boot/dts/sama5d2.dtsi                                                |    2 
  arch/arm/boot/dts/sama7g5.dtsi                                                |    6 
  arch/arm/boot/dts/spear1340.dtsi                                              |    6 
  arch/arm/boot/dts/spear13xx.dtsi                                              |    6 
  arch/arm/boot/dts/stm32mp15-pinctrl.dtsi                                      |    2 
  arch/arm/boot/dts/sun8i-v3s.dtsi                                              |   22 
+ arch/arm/boot/dts/tegra20-asus-tf101.dts                                      |    2 
  arch/arm/boot/dts/tegra20-tamonten.dtsi                                       |    6 
+ arch/arm/boot/dts/tegra30-asus-transformer-common.dtsi                        |    2 
+ arch/arm/boot/dts/tegra30-pegatron-chagall.dts                                |    2 
  arch/arm/configs/multi_v5_defconfig                                           |    2 
  arch/arm/crypto/Kconfig                                                       |    2 
  arch/arm/kernel/entry-ftrace.S                                                |   51 
@@ -115,7 +122,6 @@ greg k-h
  arch/arm/mach-iop32x/irq.c                                                    |    6 
  arch/arm/mach-iop32x/irqs.h                                                   |   60 
  arch/arm/mach-mmp/sram.c                                                      |   22 
- arch/arm/mach-mstar/Kconfig                                                   |    1 
  arch/arm/mach-s3c/mach-jive.c                                                 |    6 
  arch/arm64/Kconfig                                                            |    1 
  arch/arm64/boot/dts/broadcom/bcm4908/bcm4908.dtsi                             |    8 
@@ -124,12 +130,14 @@ greg k-h
  arch/arm64/boot/dts/freescale/fsl-ls1043a.dtsi                                |    6 
  arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi                                |    6 
  arch/arm64/boot/dts/qcom/ipq6018.dtsi                                         |    2 
+ arch/arm64/boot/dts/qcom/msm8916-samsung-j5.dts                               |    2 
  arch/arm64/boot/dts/qcom/msm8994.dtsi                                         |    3 
  arch/arm64/boot/dts/qcom/sc7280.dtsi                                          |    2 
  arch/arm64/boot/dts/qcom/sdm845.dtsi                                          |    8 
  arch/arm64/boot/dts/qcom/sm8150.dtsi                                          |    6 
  arch/arm64/boot/dts/qcom/sm8250.dtsi                                          |   16 
  arch/arm64/boot/dts/qcom/sm8350.dtsi                                          |    2 
+ arch/arm64/boot/dts/qcom/sm8450.dtsi                                          |   28 
  arch/arm64/boot/dts/rockchip/rk3399-firefly.dts                               |    4 
  arch/arm64/boot/dts/ti/k3-am64-main.dtsi                                      |    5 
  arch/arm64/boot/dts/ti/k3-am64.dtsi                                           |    1 
@@ -139,6 +147,9 @@ greg k-h
  arch/arm64/boot/dts/ti/k3-j7200.dtsi                                          |    1 
  arch/arm64/boot/dts/ti/k3-j721e-main.dtsi                                     |    5 
  arch/arm64/boot/dts/ti/k3-j721e.dtsi                                          |    1 
+ arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi                                    |    5 
+ arch/arm64/boot/dts/ti/k3-j721s2-mcu-wakeup.dtsi                              |    4 
+ arch/arm64/boot/dts/ti/k3-j721s2.dtsi                                         |    1 
  arch/arm64/configs/defconfig                                                  |    2 
  arch/arm64/include/asm/module.lds.h                                           |    6 
  arch/arm64/include/asm/spectre.h                                              |    3 
@@ -151,6 +162,9 @@ greg k-h
  arch/csky/kernel/signal.c                                                     |    2 
  arch/m68k/coldfire/device.c                                                   |    6 
  arch/microblaze/include/asm/uaccess.h                                         |   18 
+ arch/mips/Kconfig                                                             |    1 
+ arch/mips/Makefile                                                            |    4 
+ arch/mips/boot/compressed/Makefile                                            |    1 
  arch/mips/crypto/crc32-mips.c                                                 |   46 
  arch/mips/dec/int-handler.S                                                   |    6 
  arch/mips/dec/prom/Makefile                                                   |    2 
@@ -159,6 +173,7 @@ greg k-h
  arch/mips/include/asm/pgalloc.h                                               |    6 
  arch/mips/mm/tlbex.c                                                          |   23 
  arch/mips/rb532/devices.c                                                     |    6 
+ arch/mips/vdso/Makefile                                                       |    3 
  arch/nios2/include/asm/uaccess.h                                              |   26 
  arch/nios2/kernel/signal.c                                                    |   20 
  arch/parisc/include/asm/traps.h                                               |    1 
@@ -171,6 +186,8 @@ greg k-h
  arch/powerpc/include/asm/io.h                                                 |   40 
  arch/powerpc/include/asm/set_memory.h                                         |   12 
  arch/powerpc/include/asm/uaccess.h                                            |    3 
+ arch/powerpc/kernel/time.c                                                    |    5 
+ arch/powerpc/kernel/tm.S                                                      |   25 
  arch/powerpc/kvm/book3s_hv.c                                                  |    5 
  arch/powerpc/kvm/powerpc.c                                                    |    4 
  arch/powerpc/lib/sstep.c                                                      |   12 
@@ -184,27 +201,36 @@ greg k-h
  arch/powerpc/platforms/powernv/rng.c                                          |    6 
  arch/powerpc/platforms/pseries/pci_dlpar.c                                    |    4 
  arch/powerpc/sysdev/fsl_gtm.c                                                 |    4 
+ arch/powerpc/sysdev/xive/common.c                                             |    6 
  arch/riscv/boot/dts/canaan/sipeed_maix_bit.dts                                |    2 
  arch/riscv/boot/dts/canaan/sipeed_maix_dock.dts                               |    2 
  arch/riscv/boot/dts/canaan/sipeed_maix_go.dts                                 |    2 
  arch/riscv/boot/dts/canaan/sipeed_maixduino.dts                               |    2 
  arch/riscv/include/asm/module.lds.h                                           |    6 
  arch/riscv/include/asm/thread_info.h                                          |   10 
+ arch/riscv/kernel/cpu_ops_sbi.c                                               |    2 
  arch/riscv/kernel/perf_callchain.c                                            |    6 
+ arch/s390/kvm/kvm-s390.c                                                      |   19 
+ arch/s390/kvm/kvm-s390.h                                                      |    4 
+ arch/s390/kvm/priv.c                                                          |   15 
  arch/sparc/kernel/signal_32.c                                                 |    2 
  arch/um/drivers/mconsole_kern.c                                               |    3 
+ arch/x86/crypto/poly1305-x86_64-cryptogams.pl                                 |   38 
  arch/x86/events/intel/pt.c                                                    |    2 
+ arch/x86/include/asm/svm.h                                                    |   10 
+ arch/x86/kernel/fpu/xstate.c                                                  |    2 
  arch/x86/kernel/kvm.c                                                         |    2 
  arch/x86/kvm/emulate.c                                                        |   14 
  arch/x86/kvm/hyperv.c                                                         |   96 
  arch/x86/kvm/lapic.c                                                          |    9 
  arch/x86/kvm/mmu.h                                                            |    1 
- arch/x86/kvm/mmu/paging_tmpl.h                                                |   77 
+ arch/x86/kvm/mmu/paging_tmpl.h                                                |   74 
  arch/x86/kvm/mmu/tdp_mmu.c                                                    |   61 
  arch/x86/kvm/mmu/tdp_mmu.h                                                    |    3 
- arch/x86/kvm/svm/avic.c                                                       |   10 
+ arch/x86/kvm/svm/avic.c                                                       |   17 
  arch/x86/kvm/svm/sev.c                                                        |   36 
  arch/x86/kvm/x86.c                                                            |    3 
+ arch/x86/lib/iomem.c                                                          |   65 
  arch/x86/xen/pmu.c                                                            |   10 
  arch/x86/xen/pmu.h                                                            |    3 
  arch/x86/xen/smp_pv.c                                                         |    2 
@@ -218,15 +244,17 @@ greg k-h
  block/bfq-wf2q.c                                                              |    2 
  block/bio.c                                                                   |    3 
  block/blk-cgroup.c                                                            |   10 
+ block/blk-ioc.c                                                               |    3 
  block/blk-iolatency.c                                                         |    2 
- block/blk-merge.c                                                             |   36 
+ block/blk-merge.c                                                             |   33 
  block/blk-mq-sched.c                                                          |    9 
- block/blk-mq.c                                                                |   60 
+ block/blk-mq.c                                                                |   59 
  block/blk-rq-qos.h                                                            |   20 
  block/blk-sysfs.c                                                             |    8 
  block/blk-throttle.c                                                          |   10 
  block/blk-throttle.h                                                          |    2 
- block/genhd.c                                                                 |    2 
+ block/genhd.c                                                                 |   16 
+ crypto/Kconfig                                                                |    1 
  crypto/asymmetric_keys/pkcs7_verify.c                                         |    6 
  crypto/asymmetric_keys/public_key.c                                           |  126 
  crypto/asymmetric_keys/x509_public_key.c                                      |    6 
@@ -240,6 +268,7 @@ greg k-h
  drivers/acpi/bus.c                                                            |   27 
  drivers/acpi/cppc_acpi.c                                                      |    5 
  drivers/acpi/property.c                                                       |    2 
+ drivers/acpi/x86/utils.c                                                      |   21 
  drivers/base/dd.c                                                             |    2 
  drivers/base/memory.c                                                         |    8 
  drivers/base/power/domain.c                                                   |    2 
@@ -249,26 +278,21 @@ greg k-h
  drivers/block/n64cart.c                                                       |    2 
  drivers/bluetooth/btintel.c                                                   |   11 
  drivers/bluetooth/btintel.h                                                   |    1 
- drivers/bluetooth/btmtksdio.c                                                 |    4 
+ drivers/bluetooth/btmtksdio.c                                                 |  157 
  drivers/bluetooth/btusb.c                                                     |    6 
  drivers/bluetooth/hci_h5.c                                                    |    8 
  drivers/bluetooth/hci_serdev.c                                                |    3 
  drivers/bus/mhi/core/debugfs.c                                                |   26 
- drivers/bus/mhi/core/init.c                                                   |   36 
- drivers/bus/mhi/core/internal.h                                               |  119 
+ drivers/bus/mhi/core/init.c                                                   |   46 
+ drivers/bus/mhi/core/internal.h                                               |  121 
  drivers/bus/mhi/core/main.c                                                   |   22 
  drivers/bus/mhi/core/pm.c                                                     |    4 
  drivers/bus/mhi/pci_generic.c                                                 |    1 
  drivers/bus/mips_cdmm.c                                                       |    1 
  drivers/char/hw_random/Kconfig                                                |    2 
  drivers/char/hw_random/atmel-rng.c                                            |    1 
- drivers/char/hw_random/cavium-rng-vf.c                                        |  194 
- drivers/char/hw_random/cavium-rng.c                                           |   11 
+ drivers/char/hw_random/cavium-rng-vf.c                                        |    2 
  drivers/char/hw_random/nomadik-rng.c                                          |    4 
- drivers/char/tpm/tpm-chip.c                                                   |   46 
- drivers/char/tpm/tpm.h                                                        |    2 
- drivers/char/tpm/tpm2-space.c                                                 |   65 
- drivers/char/virtio_console.c                                                 |    7 
  drivers/clk/actions/owl-s700.c                                                |    1 
  drivers/clk/actions/owl-s900.c                                                |    2 
  drivers/clk/at91/sama7g5.c                                                    |    8 
@@ -281,12 +305,17 @@ greg k-h
  drivers/clk/qcom/clk-rcg2.c                                                   |   14 
  drivers/clk/qcom/gcc-ipq8074.c                                                |   21 
  drivers/clk/qcom/gcc-msm8994.c                                                |    1 
+ drivers/clk/renesas/r8a779f0-cpg-mssr.c                                       |    2 
  drivers/clk/renesas/r9a07g044-cpg.c                                           |    4 
  drivers/clk/rockchip/clk.c                                                    |    3 
+ drivers/clk/starfive/clk-starfive-jh7100.c                                    |   82 
  drivers/clk/tegra/clk-tegra124-emc.c                                          |    1 
  drivers/clk/uniphier/clk-uniphier-fixed-rate.c                                |    1 
+ drivers/clk/visconti/clkc-tmpv770x.c                                          |    2 
+ drivers/clk/visconti/clkc.c                                                   |    2 
+ drivers/clk/visconti/clkc.h                                                   |    3 
  drivers/clocksource/acpi_pm.c                                                 |    6 
- drivers/clocksource/exynos_mct.c                                              |   60 
+ drivers/clocksource/exynos_mct.c                                              |   10 
  drivers/clocksource/timer-microchip-pit64b.c                                  |    2 
  drivers/clocksource/timer-of.c                                                |    6 
  drivers/clocksource/timer-ti-dm-systimer.c                                    |    4 
@@ -306,20 +335,23 @@ greg k-h
  drivers/crypto/hisilicon/qm.c                                                 |    2 
  drivers/crypto/hisilicon/sec2/sec_crypto.c                                    |   16 
  drivers/crypto/hisilicon/sec2/sec_main.c                                      |    8 
+ drivers/crypto/marvell/Kconfig                                                |    1 
+ drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c                           |   43 
  drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c                            |   17 
  drivers/crypto/mxs-dcp.c                                                      |    2 
+ drivers/crypto/qat/qat_4xxx/adf_4xxx_hw_data.c                                |    2 
+ drivers/crypto/qat/qat_common/adf_gen4_pfvf.c                                 |   42 
+ drivers/crypto/qat/qat_common/adf_pfvf_vf_msg.c                               |    4 
  drivers/crypto/rockchip/rk3288_crypto_skcipher.c                              |    1 
  drivers/crypto/vmx/Kconfig                                                    |    4 
- drivers/cxl/core/bus.c                                                        |    4 
+ drivers/cxl/core/Makefile                                                     |    2 
+ drivers/cxl/core/bus.c                                                        |  675 ---
+ drivers/cxl/core/port.c                                                       |  679 +++
  drivers/cxl/core/regs.c                                                       |    6 
  drivers/dax/super.c                                                           |    1 
  drivers/dma-buf/udmabuf.c                                                     |    4 
  drivers/dma/hisi_dma.c                                                        |    2 
- drivers/dma/idxd/device.c                                                     |   34 
- drivers/dma/idxd/idxd.h                                                       |   12 
- drivers/dma/idxd/init.c                                                       |    6 
- drivers/dma/idxd/registers.h                                                  |   14 
- drivers/dma/idxd/sysfs.c                                                      |   42 
+ drivers/dma/idxd/device.c                                                     |    9 
  drivers/firmware/efi/efi-pstore.c                                             |    2 
  drivers/firmware/google/Kconfig                                               |    2 
  drivers/firmware/qcom_scm.c                                                   |    6 
@@ -329,8 +361,11 @@ greg k-h
  drivers/fsi/fsi-scom.c                                                        |   45 
  drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c                                |    2 
  drivers/gpu/drm/amd/amdgpu/amdgpu_device.c                                    |   15 
+ drivers/gpu/drm/amd/amdgpu/amdgpu_fru_eeprom.c                                |   13 
  drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c                                       |   11 
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c                             |   10 
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c                             |   19 
+ drivers/gpu/drm/amd/display/dc/core/dc_link_enc_cfg.c                         |    8 
+ drivers/gpu/drm/amd/display/dc/inc/link_enc_cfg.h                             |    5 
  drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c                  |   14 
  drivers/gpu/drm/amd/pm/amdgpu_pm.c                                            |    4 
  drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c                                     |    2 
@@ -338,10 +373,13 @@ greg k-h
  drivers/gpu/drm/bridge/adv7511/adv7511_drv.c                                  |   29 
  drivers/gpu/drm/bridge/analogix/anx7625.c                                     |    3 
  drivers/gpu/drm/bridge/cdns-dsi.c                                             |    1 
+ drivers/gpu/drm/bridge/lontium-lt9611.c                                       |    6 
  drivers/gpu/drm/bridge/nwl-dsi.c                                              |    1 
  drivers/gpu/drm/bridge/sil-sii8620.c                                          |    2 
  drivers/gpu/drm/bridge/synopsys/dw-hdmi.c                                     |    5 
  drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c                                 |    1 
+ drivers/gpu/drm/bridge/ti-sn65dsi83.c                                         |   32 
+ drivers/gpu/drm/drm_dp_helper.c                                               |   10 
  drivers/gpu/drm/drm_edid.c                                                    |   18 
  drivers/gpu/drm/drm_fb_helper.c                                               |    9 
  drivers/gpu/drm/drm_syncobj.c                                                 |   61 
@@ -353,20 +391,19 @@ greg k-h
  drivers/gpu/drm/i915/display/intel_pps.h                                      |    2 
  drivers/gpu/drm/i915/display/intel_psr.c                                      |    4 
  drivers/gpu/drm/i915/gem/i915_gem_mman.c                                      |    2 
+ drivers/gpu/drm/i915/i915_drv.h                                               |    2 
  drivers/gpu/drm/i915/intel_pm.c                                               |   10 
- drivers/gpu/drm/meson/Makefile                                                |    1 
- drivers/gpu/drm/meson/meson_drv.c                                             |   28 
- drivers/gpu/drm/meson/meson_dw_hdmi.c                                         |  341 -
- drivers/gpu/drm/meson/meson_encoder_hdmi.c                                    |  370 +
- drivers/gpu/drm/meson/meson_encoder_hdmi.h                                    |   12 
+ drivers/gpu/drm/meson/meson_drv.c                                             |   25 
  drivers/gpu/drm/meson/meson_osd_afbcd.c                                       |   41 
  drivers/gpu/drm/meson/meson_osd_afbcd.h                                       |    1 
  drivers/gpu/drm/mgag200/mgag200_mode.c                                        |    5 
  drivers/gpu/drm/msm/adreno/a6xx_gpu.c                                         |   12 
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c                                   |    2 
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c                                   |    7 
  drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c                                        |    8 
- drivers/gpu/drm/msm/dp/dp_ctrl.c                                              |    3 
- drivers/gpu/drm/msm/dp/dp_display.c                                           |    5 
+ drivers/gpu/drm/msm/dp/dp_ctrl.c                                              |   83 
+ drivers/gpu/drm/msm/dp/dp_ctrl.h                                              |    8 
+ drivers/gpu/drm/msm/dp/dp_display.c                                           |  116 
+ drivers/gpu/drm/msm/dp/dp_drm.c                                               |   21 
  drivers/gpu/drm/msm/dp/dp_panel.c                                             |    5 
  drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c                                    |    4 
  drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c                                    |    4 
@@ -378,13 +415,12 @@ greg k-h
  drivers/gpu/drm/panfrost/panfrost_gpu.c                                       |    5 
  drivers/gpu/drm/radeon/radeon_connectors.c                                    |    2 
  drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c                            |    4 
+ drivers/gpu/drm/tegra/dp.c                                                    |   11 
  drivers/gpu/drm/tegra/dsi.c                                                   |    4 
  drivers/gpu/drm/tiny/simpledrm.c                                              |    3 
  drivers/gpu/drm/v3d/v3d_drv.c                                                 |    8 
- drivers/gpu/host1x/dev.c                                                      |    1 
+ drivers/gpu/host1x/dev.c                                                      |    8 
  drivers/greybus/svc.c                                                         |    8 
- drivers/hid/hid-logitech-dj.c                                                 |    1 
- drivers/hid/hid-thrustmaster.c                                                |    2 
  drivers/hid/i2c-hid/i2c-hid-core.c                                            |   32 
  drivers/hid/intel-ish-hid/ishtp-fw-loader.c                                   |   29 
  drivers/hv/hv_balloon.c                                                       |    2 
@@ -393,16 +429,18 @@ greg k-h
  drivers/hwmon/sch56xx-common.c                                                |    2 
  drivers/hwtracing/coresight/coresight-etm4x-sysfs.c                           |    8 
  drivers/hwtracing/coresight/coresight-syscfg.c                                |    2 
- drivers/i2c/busses/i2c-bcm2835.c                                              |   26 
+ drivers/i2c/busses/i2c-bcm2835.c                                              |   21 
  drivers/i2c/busses/i2c-meson.c                                                |   12 
  drivers/i2c/busses/i2c-pasemi-core.c                                          |    1 
  drivers/i2c/busses/i2c-pasemi-pci.c                                           |    1 
  drivers/i2c/busses/i2c-xiic.c                                                 |    3 
  drivers/i2c/muxes/i2c-demux-pinctrl.c                                         |    5 
- drivers/iio/accel/mma8452.c                                                   |   29 
+ drivers/iio/accel/mma8452.c                                                   |   33 
  drivers/iio/adc/aspeed_adc.c                                                  |    4 
  drivers/iio/adc/twl6030-gpadc.c                                               |    2 
+ drivers/iio/adc/xilinx-ams.c                                                  |   15 
  drivers/iio/afe/iio-rescale.c                                                 |    8 
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c                                  |    4 
  drivers/iio/inkern.c                                                          |   40 
  drivers/infiniband/core/cma.c                                                 |    2 
  drivers/infiniband/core/nldev.c                                               |    3 
@@ -423,7 +461,6 @@ greg k-h
  drivers/infiniband/sw/rxe/rxe_req.c                                           |   63 
  drivers/infiniband/sw/rxe/rxe_resp.c                                          |   12 
  drivers/input/input.c                                                         |    6 
- drivers/input/touchscreen/zinitix.c                                           |   44 
  drivers/iommu/iova.c                                                          |    5 
  drivers/iommu/ipmmu-vmsa.c                                                    |    4 
  drivers/iommu/mtk_iommu.c                                                     |   32 
@@ -443,9 +480,11 @@ greg k-h
  drivers/media/i2c/adv7511-v4l2.c                                              |    2 
  drivers/media/i2c/adv7604.c                                                   |    2 
  drivers/media/i2c/adv7842.c                                                   |    2 
+ drivers/media/i2c/ov2740.c                                                    |    8 
  drivers/media/i2c/ov5640.c                                                    |   14 
  drivers/media/i2c/ov5648.c                                                    |   12 
  drivers/media/i2c/ov6650.c                                                    |  115 
+ drivers/media/i2c/ov8865.c                                                    |    4 
  drivers/media/pci/bt8xx/bttv-driver.c                                         |    4 
  drivers/media/pci/cx88/cx88-mpeg.c                                            |    3 
  drivers/media/pci/ivtv/ivtv-driver.h                                          |    1 
@@ -477,7 +516,7 @@ greg k-h
  drivers/media/usb/stk1160/stk1160-core.c                                      |    2 
  drivers/media/usb/stk1160/stk1160-v4l.c                                       |   10 
  drivers/media/usb/stk1160/stk1160.h                                           |    2 
- drivers/media/v4l2-core/v4l2-ctrls-core.c                                     |   10 
+ drivers/media/v4l2-core/v4l2-ctrls-core.c                                     |   18 
  drivers/media/v4l2-core/v4l2-ioctl.c                                          |   12 
  drivers/media/v4l2-core/v4l2-mem2mem.c                                        |   53 
  drivers/memory/emif.c                                                         |    8 
@@ -509,6 +548,7 @@ greg k-h
  drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c                                    |    3 
  drivers/mtd/nand/raw/nand_base.c                                              |   44 
  drivers/mtd/nand/raw/pl35x-nand-controller.c                                  |    2 
+ drivers/mtd/spi-nor/core.c                                                    |    3 
  drivers/mtd/ubi/build.c                                                       |    9 
  drivers/mtd/ubi/fastmap.c                                                     |   28 
  drivers/mtd/ubi/vmt.c                                                         |    8 
@@ -522,8 +562,6 @@ greg k-h
  drivers/net/dsa/Kconfig                                                       |   12 
  drivers/net/dsa/Makefile                                                      |    3 
  drivers/net/dsa/bcm_sf2_cfp.c                                                 |    6 
- drivers/net/dsa/microchip/ksz8795_spi.c                                       |   11 
- drivers/net/dsa/microchip/ksz9477_spi.c                                       |   12 
  drivers/net/dsa/mv88e6xxx/chip.c                                              |    1 
  drivers/net/dsa/realtek-smi-core.c                                            |  523 --
  drivers/net/dsa/realtek-smi-core.h                                            |  145 
@@ -531,25 +569,26 @@ greg k-h
  drivers/net/dsa/realtek/Makefile                                              |    3 
  drivers/net/dsa/realtek/realtek-smi-core.c                                    |  523 ++
  drivers/net/dsa/realtek/realtek-smi-core.h                                    |  145 
- drivers/net/dsa/realtek/rtl8365mb.c                                           | 1986 ++++++++++
+ drivers/net/dsa/realtek/rtl8365mb.c                                           | 1987 ++++++++++
  drivers/net/dsa/realtek/rtl8366.c                                             |  448 ++
- drivers/net/dsa/realtek/rtl8366rb.c                                           | 1815 +++++++++
- drivers/net/dsa/rtl8365mb.c                                                   | 1986 ----------
+ drivers/net/dsa/realtek/rtl8366rb.c                                           | 1816 +++++++++
+ drivers/net/dsa/rtl8365mb.c                                                   | 1987 ----------
  drivers/net/dsa/rtl8366.c                                                     |  448 --
- drivers/net/dsa/rtl8366rb.c                                                   | 1813 ---------
- drivers/net/ethernet/8390/mcf8390.c                                           |   10 
+ drivers/net/dsa/rtl8366rb.c                                                   | 1814 ---------
  drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c                                 |    6 
  drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h                                 |    2 
  drivers/net/ethernet/broadcom/genet/bcmgenet.c                                |    4 
  drivers/net/ethernet/freescale/enetc/enetc_ethtool.c                          |    5 
  drivers/net/ethernet/freescale/enetc/enetc_qos.c                              |  128 
- drivers/net/ethernet/hisilicon/hns3/hnae3.h                                   |   18 
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h                                   |    4 
  drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c                            |   15 
  drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.h                            |    1 
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c                               |   47 
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c                       |  234 -
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c                               |   44 
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c                            |   23 
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c                       |  179 
  drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h                       |    4 
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c                     |   12 
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c                       |    4 
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c                     |    5 
  drivers/net/ethernet/ibm/ibmvnic.c                                            |   63 
  drivers/net/ethernet/ibm/ibmvnic.h                                            |    7 
  drivers/net/ethernet/intel/i40e/i40e_xsk.c                                    |   19 
@@ -571,12 +610,13 @@ greg k-h
  drivers/net/ethernet/qlogic/qed/qed_sriov.c                                   |   29 
  drivers/net/ethernet/qlogic/qed/qed_sriov.h                                   |    1 
  drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h                               |   10 
- drivers/net/ethernet/sun/sunhme.c                                             |    6 
+ drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.c                       |    7 
  drivers/net/ethernet/ti/cpsw_ethtool.c                                        |    6 
  drivers/net/ethernet/xilinx/xilinx_axienet_main.c                             |   72 
+ drivers/net/hyperv/netvsc.c                                                   |   24 
  drivers/net/phy/at803x.c                                                      |   40 
  drivers/net/phy/broadcom.c                                                    |   21 
- drivers/net/phy/micrel.c                                                      |   32 
+ drivers/net/phy/micrel.c                                                      |   30 
  drivers/net/usb/asix.h                                                        |    4 
  drivers/net/usb/asix_common.c                                                 |   19 
  drivers/net/usb/asix_devices.c                                                |   21 
@@ -584,8 +624,11 @@ greg k-h
  drivers/net/wireguard/socket.c                                                |    5 
  drivers/net/wireless/ath/ath10k/snoc.c                                        |    2 
  drivers/net/wireless/ath/ath10k/wow.c                                         |    7 
- drivers/net/wireless/ath/ath11k/dp_rx.c                                       |   72 
- drivers/net/wireless/ath/ath11k/mac.c                                         |    3 
+ drivers/net/wireless/ath/ath11k/dp_rx.c                                       |    2 
+ drivers/net/wireless/ath/ath11k/dp_tx.c                                       |    2 
+ drivers/net/wireless/ath/ath11k/mac.c                                         |   34 
+ drivers/net/wireless/ath/ath11k/mhi.c                                         |    1 
+ drivers/net/wireless/ath/ath11k/qmi.c                                         |    3 
  drivers/net/wireless/ath/ath9k/htc_hst.c                                      |    5 
  drivers/net/wireless/ath/carl9170/main.c                                      |    2 
  drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c                   |    2 
@@ -598,20 +641,24 @@ greg k-h
  drivers/net/wireless/intel/iwlwifi/mvm/d3.c                                   |    4 
  drivers/net/wireless/intel/iwlwifi/mvm/fw.c                                   |    4 
  drivers/net/wireless/intel/iwlwifi/mvm/ops.c                                  |    3 
+ drivers/net/wireless/intel/iwlwifi/mvm/rx.c                                   |    2 
  drivers/net/wireless/intel/iwlwifi/mvm/tx.c                                   |    5 
  drivers/net/wireless/intel/iwlwifi/pcie/trans.c                               |    2 
+ drivers/net/wireless/mediatek/mt76/mt76.h                                     |    2 
  drivers/net/wireless/mediatek/mt76/mt7603/main.c                              |    3 
- drivers/net/wireless/mediatek/mt76/mt7615/mac.c                               |    8 
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c                               |   56 
  drivers/net/wireless/mediatek/mt76/mt7615/main.c                              |    3 
  drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c                          |    2 
  drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h                          |    3 
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c                               |    1 
+ drivers/net/wireless/mediatek/mt76/mt7915/init.c                              |    2 
+ drivers/net/wireless/mediatek/mt76/mt7915/mac.c                               |   50 
  drivers/net/wireless/mediatek/mt76/mt7915/mcu.c                               |   67 
+ drivers/net/wireless/mediatek/mt76/mt7915/mt7915.h                            |    8 
  drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c                           |   16 
  drivers/net/wireless/mediatek/mt76/mt7921/dma.c                               |  119 
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c                               |   21 
+ drivers/net/wireless/mediatek/mt76/mt7921/mac.c                               |   68 
  drivers/net/wireless/mediatek/mt76/mt7921/mac.h                               |    3 
- drivers/net/wireless/mediatek/mt76/mt7921/mcu.c                               |   49 
+ drivers/net/wireless/mediatek/mt76/mt7921/mcu.c                               |   57 
  drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h                            |    1 
  drivers/net/wireless/mediatek/mt76/mt7921/pci.c                               |  124 
  drivers/net/wireless/mediatek/mt76/mt7921/pci_mcu.c                           |   18 
@@ -619,18 +666,25 @@ greg k-h
  drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c                          |   38 
  drivers/net/wireless/mediatek/mt76/sdio.h                                     |    2 
  drivers/net/wireless/ray_cs.c                                                 |    6 
+ drivers/net/wireless/realtek/rtw88/fw.c                                       |   42 
+ drivers/net/wireless/realtek/rtw88/mac80211.c                                 |    5 
+ drivers/net/wireless/realtek/rtw88/main.c                                     |   16 
+ drivers/net/wireless/realtek/rtw88/main.h                                     |    4 
+ drivers/net/wwan/qcom_bam_dmux.c                                              |    2 
  drivers/nvdimm/region_devs.c                                                  |    3 
  drivers/nvme/host/core.c                                                      |   48 
  drivers/nvme/host/multipath.c                                                 |    7 
  drivers/nvme/host/nvme.h                                                      |   19 
  drivers/nvme/host/tcp.c                                                       |   40 
  drivers/pci/access.c                                                          |    9 
- drivers/pci/controller/dwc/pci-imx6.c                                         |   10 
+ drivers/pci/controller/dwc/pci-imx6.c                                         |   15 
  drivers/pci/controller/dwc/pcie-fu740.c                                       |   51 
  drivers/pci/controller/pci-aardvark.c                                         |   13 
  drivers/pci/controller/pci-xgene.c                                            |   35 
  drivers/pci/hotplug/pciehp_hpc.c                                              |    2 
  drivers/pci/quirks.c                                                          |   12 
+ drivers/perf/Kconfig                                                          |    2 
+ drivers/perf/arm-cmn.c                                                        |   21 
  drivers/phy/broadcom/phy-brcm-usb-init.c                                      |   36 
  drivers/phy/broadcom/phy-brcm-usb-init.h                                      |    1 
  drivers/phy/broadcom/phy-brcm-usb.c                                           |   11 
@@ -642,6 +696,7 @@ greg k-h
  drivers/pinctrl/pinconf-generic.c                                             |    6 
  drivers/pinctrl/pinctrl-ingenic.c                                             |   46 
  drivers/pinctrl/pinctrl-microchip-sgpio.c                                     |   15 
+ drivers/pinctrl/pinctrl-ocelot.c                                              |    7 
  drivers/pinctrl/pinctrl-rockchip.c                                            |    2 
  drivers/pinctrl/renesas/core.c                                                |    5 
  drivers/pinctrl/renesas/pfc-r8a77470.c                                        |    4 
@@ -652,10 +707,12 @@ greg k-h
  drivers/platform/chrome/cros_ec_sensorhub_trace.h                             |  123 
  drivers/platform/chrome/cros_ec_trace.h                                       |   95 
  drivers/platform/chrome/cros_ec_typec.c                                       |    6 
+ drivers/platform/x86/asus-wmi.c                                               |    2 
  drivers/platform/x86/huawei-wmi.c                                             |   13 
  drivers/power/reset/gemini-poweroff.c                                         |    4 
- drivers/power/supply/ab8500_chargalg.c                                        |    4 
- drivers/power/supply/ab8500_fg.c                                              |    4 
+ drivers/power/supply/ab8500_bmdata.c                                          |    8 
+ drivers/power/supply/ab8500_chargalg.c                                        |    6 
+ drivers/power/supply/ab8500_fg.c                                              |   12 
  drivers/power/supply/bq24190_charger.c                                        |    7 
  drivers/power/supply/sbs-charger.c                                            |   18 
  drivers/power/supply/wm8350_power.c                                           |   97 
@@ -670,9 +727,10 @@ greg k-h
  drivers/remoteproc/qcom_wcnss.c                                               |    1 
  drivers/remoteproc/remoteproc_debugfs.c                                       |    2 
  drivers/rtc/interface.c                                                       |    7 
+ drivers/rtc/rtc-gamecube.c                                                    |    1 
  drivers/rtc/rtc-mc146818-lib.c                                                |    6 
  drivers/rtc/rtc-pl031.c                                                       |    6 
- drivers/scsi/fnic/fnic_scsi.c                                                 |   15 
+ drivers/scsi/fnic/fnic_scsi.c                                                 |    2 
  drivers/scsi/hisi_sas/hisi_sas_v3_hw.c                                        |    2 
  drivers/scsi/libsas/sas_ata.c                                                 |    2 
  drivers/scsi/mpt3sas/mpt3sas_base.c                                           |   25 
@@ -715,13 +773,13 @@ greg k-h
  drivers/spi/spi-tegra20-slink.c                                               |    8 
  drivers/spi/spi-tegra210-quad.c                                               |    2 
  drivers/spi/spi-zynqmp-gqspi.c                                                |    5 
- drivers/spi/spi.c                                                             |    4 
  drivers/staging/iio/adc/ad7280a.c                                             |    4 
  drivers/staging/media/atomisp/pci/atomisp_acc.c                               |   28 
  drivers/staging/media/atomisp/pci/atomisp_gmin_platform.c                     |   18 
  drivers/staging/media/atomisp/pci/hmm/hmm.c                                   |    7 
  drivers/staging/media/hantro/hantro_h1_jpeg_enc.c                             |    2 
  drivers/staging/media/hantro/hantro_h1_regs.h                                 |    2 
+ drivers/staging/media/hantro/sunxi_vpu_hw.c                                   |    4 
  drivers/staging/media/imx/imx7-mipi-csis.c                                    |    6 
  drivers/staging/media/imx/imx8mq-mipi-csi2.c                                  |   74 
  drivers/staging/media/meson/vdec/esparser.c                                   |    7 
@@ -738,7 +796,7 @@ greg k-h
  drivers/staging/mt7621-dts/mt7621.dtsi                                        |   26 
  drivers/staging/qlge/qlge_main.c                                              |   11 
  drivers/staging/r8188eu/core/rtw_recv.c                                       |    3 
- drivers/staging/r8188eu/hal/rtl8188e_hal_init.c                               |    4 
+ drivers/staging/r8188eu/hal/rtl8188e_hal_init.c                               |    2 
  drivers/thermal/intel/int340x_thermal/int3400_thermal.c                       |    7 
  drivers/tty/hvc/hvc_iucv.c                                                    |    4 
  drivers/tty/mxser.c                                                           |   15 
@@ -761,7 +819,7 @@ greg k-h
  drivers/usb/storage/realtek_cr.c                                              |    2 
  drivers/usb/typec/tipd/core.c                                                 |    5 
  drivers/usb/typec/tipd/tps6598x.h                                             |    1 
- drivers/vdpa/mlx5/net/mlx5_vnet.c                                             |   25 
+ drivers/vdpa/mlx5/net/mlx5_vnet.c                                             |    7 
  drivers/vfio/pci/vfio_pci_core.c                                              |   61 
  drivers/vhost/iotlb.c                                                         |    6 
  drivers/video/fbdev/atafb.c                                                   |   12 
@@ -800,17 +858,25 @@ greg k-h
  fs/btrfs/space-info.c                                                         |    3 
  fs/btrfs/volumes.c                                                            |   48 
  fs/buffer.c                                                                   |    8 
+ fs/cifs/cifs_swn.c                                                            |    6 
  fs/cifs/cifsfs.c                                                              |   14 
- fs/cifs/connect.c                                                             |   14 
+ fs/cifs/cifsproto.h                                                           |    3 
+ fs/cifs/connect.c                                                             |   56 
+ fs/cifs/dfs_cache.c                                                           |    2 
  fs/cifs/file.c                                                                |   10 
- fs/cifs/smb2ops.c                                                             |  130 
+ fs/cifs/smb1ops.c                                                             |    2 
+ fs/cifs/smb2ops.c                                                             |  148 
+ fs/cifs/smb2pdu.c                                                             |    6 
+ fs/cifs/transport.c                                                           |    2 
  fs/coredump.c                                                                 |   86 
+ fs/erofs/sysfs.c                                                              |    8 
  fs/exec.c                                                                     |   26 
  fs/ext2/super.c                                                               |    6 
  fs/ext4/inline.c                                                              |    9 
  fs/ext4/inode.c                                                               |   25 
  fs/ext4/mballoc.c                                                             |  128 
  fs/ext4/namei.c                                                               |   10 
+ fs/ext4/super.c                                                               |   53 
  fs/f2fs/checkpoint.c                                                          |    8 
  fs/f2fs/compress.c                                                            |    5 
  fs/f2fs/data.c                                                                |    8 
@@ -830,7 +896,8 @@ greg k-h
  fs/gfs2/rgrp.c                                                                |   10 
  fs/gfs2/rgrp.h                                                                |    2 
  fs/gfs2/super.c                                                               |    2 
- fs/io_uring.c                                                                 |   18 
+ fs/io_uring.c                                                                 |   21 
+ fs/iomap/buffered-io.c                                                        |    3 
  fs/jffs2/build.c                                                              |    4 
  fs/jffs2/fs.c                                                                 |    2 
  fs/jffs2/scan.c                                                               |    6 
@@ -860,7 +927,7 @@ greg k-h
  fs/ubifs/ioctl.c                                                              |    2 
  fs/ubifs/journal.c                                                            |   52 
  include/drm/drm_connector.h                                                   |   12 
- include/drm/drm_dp_helper.h                                                   |    2 
+ include/drm/drm_dp_helper.h                                                   |    4 
  include/drm/drm_modeset_lock.h                                                |    1 
  include/linux/atomic/atomic-arch-fallback.h                                   |   38 
  include/linux/binfmts.h                                                       |    3 
@@ -870,7 +937,7 @@ greg k-h
  include/linux/fb.h                                                            |    1 
  include/linux/lsm_hook_defs.h                                                 |    2 
  include/linux/lsm_hooks.h                                                     |    5 
- include/linux/mm.h                                                            |   14 
+ include/linux/migrate.h                                                       |    8 
  include/linux/mtd/rawnand.h                                                   |    2 
  include/linux/netfilter_netdev.h                                              |    2 
  include/linux/nvme.h                                                          |    1 
@@ -886,9 +953,11 @@ greg k-h
  include/linux/sunrpc/xdr.h                                                    |    2 
  include/linux/sunrpc/xprt.h                                                   |    3 
  include/linux/sunrpc/xprtsock.h                                               |    2 
+ include/linux/xarray.h                                                        |    1 
  include/net/netfilter/nf_conntrack_helper.h                                   |    1 
  include/net/netfilter/nf_flow_table.h                                         |   18 
  include/scsi/scsi_device.h                                                    |    1 
+ include/sound/intel-nhlt.h                                                    |   22 
  include/sound/pcm.h                                                           |    1 
  include/trace/events/ext4.h                                                   |   78 
  include/trace/events/rxrpc.h                                                  |    8 
@@ -921,11 +990,12 @@ greg k-h
  kernel/rseq.c                                                                 |    8 
  kernel/sched/core.c                                                           |    1 
  kernel/sched/cpuacct.c                                                        |    3 
- kernel/sched/cpufreq_schedutil.c                                              |    1 
+ kernel/sched/cpufreq_schedutil.c                                              |   11 
  kernel/sched/deadline.c                                                       |   12 
  kernel/sched/debug.c                                                          |   10 
  kernel/sched/fair.c                                                           |   18 
  kernel/sched/rt.c                                                             |   32 
+ kernel/sched/sched.h                                                          |  181 
  kernel/trace/trace.c                                                          |    9 
  kernel/trace/trace_events.c                                                   |   88 
  kernel/watch_queue.c                                                          |    4 
@@ -940,44 +1010,49 @@ greg k-h
  mm/kmemleak.c                                                                 |    9 
  mm/madvise.c                                                                  |    3 
  mm/memcontrol.c                                                               |    2 
- mm/memory.c                                                                   |   65 
+ mm/memory.c                                                                   |   57 
  mm/mempolicy.c                                                                |    8 
+ mm/migrate.c                                                                  |   47 
  mm/mlock.c                                                                    |    7 
  mm/mmap.c                                                                     |    2 
  mm/page_alloc.c                                                               |    9 
  mm/slab.c                                                                     |    1 
  mm/usercopy.c                                                                 |    5 
+ mm/vmstat.c                                                                   |   13 
+ net/ax25/af_ax25.c                                                            |   18 
+ net/ax25/ax25_subr.c                                                          |   20 
+ net/bluetooth/eir.h                                                           |    5 
  net/bluetooth/hci_conn.c                                                      |    2 
+ net/bluetooth/hci_event.c                                                     |   13 
+ net/bluetooth/hci_sync.c                                                      |    2 
+ net/bluetooth/mgmt.c                                                          |   18 
  net/can/isotp.c                                                               |   69 
  net/core/skbuff.c                                                             |   51 
  net/core/skmsg.c                                                              |   17 
  net/dsa/dsa2.c                                                                |    5 
+ net/dsa/switch.c                                                              |   40 
  net/ipv4/route.c                                                              |   18 
  net/ipv4/tcp_bpf.c                                                            |   14 
  net/ipv4/tcp_output.c                                                         |    5 
- net/ipv6/xfrm6_output.c                                                       |   16 
- net/key/af_key.c                                                              |    2 
  net/mac80211/ieee80211_i.h                                                    |    2 
- net/mac80211/main.c                                                           |   13 
  net/mac80211/mesh.c                                                           |    2 
- net/mac80211/mlme.c                                                           |   15 
+ net/mac80211/mlme.c                                                           |   11 
  net/mac80211/util.c                                                           |   27 
  net/mptcp/protocol.c                                                          |    1 
- net/netfilter/nf_conntrack_core.c                                             |    4 
  net/netfilter/nf_conntrack_helper.c                                           |    6 
  net/netfilter/nf_conntrack_proto_tcp.c                                        |   17 
  net/netfilter/nf_flow_table_inet.c                                            |   17 
  net/netfilter/nf_flow_table_ip.c                                              |   18 
  net/netfilter/nft_ct.c                                                        |    3 
  net/netlink/af_netlink.c                                                      |    2 
- net/openvswitch/conntrack.c                                                   |  132 
+ net/openvswitch/conntrack.c                                                   |  118 
  net/openvswitch/flow_netlink.c                                                |    4 
  net/rfkill/core.c                                                             |   48 
  net/rxrpc/ar-internal.h                                                       |   15 
  net/rxrpc/call_event.c                                                        |    2 
  net/rxrpc/call_object.c                                                       |   40 
  net/rxrpc/server_key.c                                                        |    7 
- net/sched/act_ct.c                                                            |   19 
+ net/sched/act_ct.c                                                            |   15 
  net/sctp/sm_statefuns.c                                                       |    8 
  net/sunrpc/clnt.c                                                             |    6 
  net/sunrpc/sched.c                                                            |   22 
@@ -991,8 +1066,7 @@ greg k-h
  net/x25/af_x25.c                                                              |   11 
  net/xdp/xsk.c                                                                 |   69 
  net/xdp/xsk_buff_pool.c                                                       |    8 
- net/xfrm/xfrm_interface.c                                                     |    5 
- samples/bpf/xdpsock_user.c                                                    |    5 
+ samples/bpf/xdpsock_user.c                                                    |    6 
  samples/landlock/sandboxer.c                                                  |    1 
  scripts/atomic/fallbacks/read_acquire                                         |   11 
  scripts/atomic/fallbacks/set_release                                          |    7 
@@ -1016,6 +1090,8 @@ greg k-h
  sound/core/pcm_lib.c                                                          |    9 
  sound/core/pcm_native.c                                                       |   39 
  sound/firewire/fcp.c                                                          |    4 
+ sound/hda/intel-dsp-config.c                                                  |   36 
+ sound/hda/intel-nhlt.c                                                        |   22 
  sound/isa/cs423x/cs4236.c                                                     |    8 
  sound/pci/hda/hda_intel.c                                                     |   10 
  sound/pci/hda/patch_hdmi.c                                                    |    8 
@@ -1056,9 +1132,9 @@ greg k-h
  sound/soc/intel/common/soc-acpi-intel-glk-match.c                             |    7 
  sound/soc/intel/common/soc-acpi-intel-jsl-match.c                             |    7 
  sound/soc/intel/common/soc-acpi-intel-tgl-match.c                             |    7 
- sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c                            |    7 
- sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c                    |    7 
- sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c                       |   23 
+ sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c                            |   23 
+ sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c                       |   18 
+ sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c                       |    4 
  sound/soc/mxs/mxs-saif.c                                                      |    5 
  sound/soc/mxs/mxs-sgtl5000.c                                                  |    3 
  sound/soc/rockchip/rockchip_i2s.c                                             |   15 
@@ -1069,26 +1145,32 @@ greg k-h
  sound/soc/soc-core.c                                                          |    2 
  sound/soc/soc-generic-dmaengine-pcm.c                                         |    6 
  sound/soc/soc-topology.c                                                      |    3 
+ sound/soc/sof/debug.c                                                         |    2 
  sound/soc/sof/imx/imx8m.c                                                     |    1 
  sound/soc/sof/intel/Kconfig                                                   |    1 
+ sound/soc/sof/intel/hda-dai.c                                                 |   13 
  sound/soc/sof/intel/hda-loader.c                                              |   11 
  sound/soc/sof/intel/hda-pcm.c                                                 |    1 
- sound/soc/sof/intel/hda.c                                                     |   15 
+ sound/soc/sof/intel/hda.c                                                     |   61 
  sound/soc/ti/davinci-i2s.c                                                    |    5 
  sound/soc/xilinx/xlnx_formatter_pcm.c                                         |   25 
  sound/spi/at73c213.c                                                          |   27 
  tools/bpf/bpftool/btf.c                                                       |    2 
  tools/bpf/bpftool/gen.c                                                       |    2 
  tools/bpf/bpftool/link.c                                                      |    3 
- tools/bpf/bpftool/map.c                                                       |   15 
+ tools/bpf/bpftool/map.c                                                       |   42 
  tools/bpf/bpftool/pids.c                                                      |    3 
  tools/bpf/bpftool/prog.c                                                      |    2 
  tools/include/uapi/linux/bpf.h                                                |    4 
+ tools/lib/bpf/bpf_tracing.h                                                   |    4 
  tools/lib/bpf/btf.h                                                           |   22 
  tools/lib/bpf/btf_dump.c                                                      |   11 
- tools/lib/bpf/libbpf.c                                                        |    3 
+ tools/lib/bpf/libbpf.c                                                        |   47 
+ tools/lib/bpf/libbpf.map                                                      |    2 
  tools/lib/bpf/netlink.c                                                       |   63 
  tools/lib/bpf/xsk.c                                                           |   11 
+ tools/lib/perf/tests/test-evlist.c                                            |    8 
+ tools/perf/arch/x86/util/evlist.c                                             |   18 
  tools/perf/builtin-stat.c                                                     |    2 
  tools/perf/pmu-events/arch/x86/skylakex/cache.json                            |  111 
  tools/perf/pmu-events/arch/x86/skylakex/floating-point.json                   |   24 
@@ -1097,6 +1179,8 @@ greg k-h
  tools/perf/pmu-events/arch/x86/skylakex/pipeline.json                         |   11 
  tools/perf/pmu-events/arch/x86/skylakex/skx-metrics.json                      |  461 ++
  tools/perf/pmu-events/arch/x86/skylakex/uncore-other.json                     |   23 
+ tools/perf/tests/shell/test_arm_callgraph_fp.sh                               |   68 
+ tools/testing/cxl/Kbuild                                                      |    2 
  tools/testing/cxl/test/cxl.c                                                  |    2 
  tools/testing/selftests/bpf/prog_tests/bind_perm.c                            |   20 
  tools/testing/selftests/bpf/progs/bpf_misc.h                                  |   19 
@@ -1114,12 +1198,16 @@ greg k-h
  tools/testing/selftests/net/tls.c                                             |    6 
  tools/testing/selftests/rcutorture/bin/torture.sh                             |    4 
  tools/testing/selftests/sgx/Makefile                                          |    2 
- tools/testing/selftests/vm/Makefile                                           |   12 
+ tools/testing/selftests/sgx/load.c                                            |    9 
+ tools/testing/selftests/sgx/main.c                                            |    5 
+ tools/testing/selftests/vm/Makefile                                           |    6 
+ tools/testing/selftests/vm/userfaultfd.c                                      |    3 
  tools/testing/selftests/x86/Makefile                                          |    6 
  tools/testing/selftests/x86/check_cc.sh                                       |    2 
- tools/virtio/virtio_test.c                                                    |    1 
+ tools/tracing/rtla/src/osnoise_hist.c                                         |    2 
  virt/kvm/kvm_main.c                                                           |   13 
- 1059 files changed, 16202 insertions(+), 10810 deletions(-)
+ virt/kvm/pfncache.c                                                           |    1 
+ 1147 files changed, 17392 insertions(+), 11716 deletions(-)
 
 Aaron Conole (1):
       openvswitch: always update flow key after nat
@@ -1227,8 +1315,9 @@ Andreas Rammhold (1):
 Andrew Price (1):
       gfs2: Make sure FITRIM minlen is rounded up to fs block size
 
-Andrii Nakryiko (2):
+Andrii Nakryiko (3):
       libbpf: Fix compilation warning due to mismatched printf format
+      libbpf: Fix libbpf.map inheritance chain for LIBBPF_0.7.0
       libbpf: Fix memleak in libbpf_netlink_recv()
 
 Andy Shevchenko (4):
@@ -1284,6 +1373,9 @@ Aswath Govindraju (1):
 Athira Rajeev (1):
       powerpc/perf: Don't use perf_hw_context for trace IMC PMU
 
+Atish Patra (1):
+      RISC-V: Declare per cpu boot data as static
+
 Bagas Sanjaya (2):
       Documentation: add link to stable release candidate tree
       Documentation: update stable tree link
@@ -1301,9 +1393,6 @@ Bard Liao (1):
 Bart Van Assche (1):
       scsi: fnic: Fix a tracing statement
 
-Bartosz Golaszewski (1):
-      Revert "gpio: Revert regression in sysfs-gpio (gpiolib.c)"
-
 Baruch Siach (1):
       arm64: dts: qcom: ipq6018: fix usb reference period
 
@@ -1313,18 +1402,23 @@ Ben Dooks (1):
 Bharata B Rao (1):
       sched/debug: Remove mpol_get/put and task_lock/unlock from sched_show_numa
 
-Biju Das (2):
-      spi: Fix invalid sgs value
-      spi: Fix erroneous sgs value with min_t()
-
 Bikash Hazarika (1):
       scsi: qla2xxx: Fix wrong FDMI data for 64G adapter
 
 Billy Tsai (1):
       iio: adc: aspeed: Add divider flag to fix incorrect voltage reading.
 
+Bingbu Cao (1):
+      media: ov2740: identify module after subdev initialisation
+
+Bjorn Andersson (1):
+      net: stmmac: dwmac-qcom-ethqos: Enable RGMII functional clock on resume
+
 Bjorn Helgaas (1):
       PCI: Avoid broken MSI on SB600 USB devices
+
+Bo Jiao (1):
+      mt76: mt7915: enlarge wcid size to 544
 
 Bob Pearson (1):
       RDMA/rxe: Fix ref error in rxe_av.c
@@ -1365,7 +1459,7 @@ Charles Keepax (1):
 Chen Jingwen (1):
       powerpc/kasan: Fix early region not updated correctly
 
-Chen-Yu Tsai (7):
+Chen-Yu Tsai (8):
       media: v4l2-mem2mem: Apply DST_QUEUE_OFF_BASE on MMAP buffers across ioctls
       media: hantro: Fix overfill bottom register field name
       pinctrl: mediatek: paris: Fix PIN_CONFIG_BIAS_* readback
@@ -1373,6 +1467,7 @@ Chen-Yu Tsai (7):
       pinctrl: mediatek: paris: Fix pingroup pin config state readback
       pinctrl: mediatek: paris: Skip custom extra pin config dump for virtual GPIOs
       pinctrl: pinconf-generic: Print arguments for bias-pull-*
+      dt-bindings: pinctrl: mt8195: fix bias-pull-{up,down} checks
 
 Chengguang Xu (1):
       RDMA/rxe: Change variable and function argument to proper type
@@ -1399,10 +1494,13 @@ Christoph Hellwig (3):
       nvme: fix the check for duplicate unique identifiers
       memstick/mspro_block: fix handling of read-only devices
 
-Christophe JAILLET (7):
+Christophe JAILLET (10):
       firmware: ti_sci: Fix compilation failure when CONFIG_TI_SCI_PROTOCOL is not defined
+      drm/bridge: sn65dsi83: Fix an error handling path in sn65dsi83_probe()
+      drm/bridge: lt9611: Fix an error handling path in lt9611_probe()
       i2c: bcm2835: Fix the error handling in 'bcm2835_i2c_probe()'
       power: supply: sbs-charger: Don't cancel work that is not initialized
+      gpu: host1x: Fix an error handling path in 'host1x_probe()'
       gpu: host1x: Fix a memory leak in 'host1x_remove()'
       fsi: Aspeed: Fix a potential double free
       misc: alcor_pci: Fix an error handling path
@@ -1419,8 +1517,10 @@ Chuck Lever (1):
 Chun-Jie Chen (1):
       soc: mediatek: pm-domains: Add wakeup capacity support in power domain
 
-Claudiu Beznea (3):
-      net: dsa: microchip: add spi_device_id tables
+Claudio Imbrenda (1):
+      KVM: s390x: fix SCK locking
+
+Claudiu Beznea (2):
       hwrng: atmel - disable trng on failure path
       clocksource/drivers/timer-microchip-pit64b: Use notrace
 
@@ -1467,26 +1567,36 @@ Damien Le Moal (12):
       scsi: pm8001: Fix NCQ NON DATA command completion handling
       scsi: pm8001: Fix abort all task initialization
 
-Dan Carpenter (13):
+Dan Carpenter (19):
       greybus: svc: fix an error handling bug in gb_svc_hello()
       NFSD: prevent underflow in nfssvc_decode_writeargs()
       NFSD: prevent integer overflow on 32 bit systems
+      crypto: qat - fix a signedness bug in get_service_enabled()
       video: fbdev: atmel_lcdfb: fix an error code in atmel_lcdfb_probe()
       video: fbdev: fbcvt.c: fix printing in fb_cvt_print_name()
       media: usb: go7007: s2250-board: fix leak in probe()
+      Bluetooth: hci_sync: unlock on error in hci_inquiry_result_with_rssi_evt()
+      ath11k: fix error code in ath11k_qmi_assign_target_mem_chunk()
       libbpf: Fix signedness bug in btf_dump_array_data()
+      rtw88: fix use after free in rtw_hw_scan_update_probe_req()
+      iwlwifi: mvm: fix off by one in iwl_mvm_stat_iterator_all_macs()
       iwlwifi: mvm: Fix an error code in iwl_mvm_up()
       RDMA/irdma: Prevent some integer underflows
       USB: storage: ums-realtek: fix error code in rts51x_read_mem()
       RDMA/nldev: Prevent underflow in nldev_stat_set_counter_dynamic_doit()
       clk: imx: off by one in imx_lpcg_parse_clks_from_dt()
+      clk: visconti: prevent array overflow in visconti_clk_register_gates()
       lib/test: use after free in register_test_dev_kmod()
 
-Dan Williams (4):
+Dan Williams (5):
       cxl/core: Fix cxl_probe_component_regs() error message
       tools/testing/cxl: Fix root port to host bridge assignment
+      cxl/core/port: Rename bus.c to port.c
       cxl/port: Hold port reference until decoder release
       nvdimm/region: Fix default alignment for small regions
+
+Daniel Bristot de Oliveira (1):
+      rtla/osnoise: Fix osnoise hist stop tracing message
 
 Daniel González Cabanelas (1):
       media: cx88-mpeg: clear interrupt status register before streaming video
@@ -1497,8 +1607,8 @@ Daniel Henrique Barboza (1):
 Daniel Lezcano (1):
       powercap/dtpm_cpu: Reset per_cpu variable in the release function
 
-Daniel Palmer (1):
-      ARM: mstar: Select HAVE_ARM_ARCH_TIMER
+Daniel Scally (1):
+      media: i2c: Fix pixel array positions in ov8865
 
 Daniel Thompson (2):
       soc: qcom: aoss: remove spurious IRQF_ONESHOT flags
@@ -1513,8 +1623,7 @@ Dario Binacchi (1):
 Darren Hart (1):
       ACPI/APEI: Limit printable size of BERT table data
 
-Dave Jiang (2):
-      dmaengine: idxd: change bandwidth token to read buffers
+Dave Jiang (1):
       dmaengine: idxd: restore traffic class defaults after wq reset
 
 Dave Kleikamp (1):
@@ -1541,17 +1650,15 @@ David Howells (3):
       watch_queue: Actually free the watch
       rxrpc: Fix call timer start racing with call destruction
 
-David Jeffery (1):
-      scsi: fnic: Finish scsi_cmnd before dropping the spinlock
-
 David Matlack (1):
       KVM: Prevent module exit until all VMs are freed
 
 David Rhodes (1):
       ASoC: cs35l41: Fix GPIO2 configuration
 
-David Woodhouse (1):
+David Woodhouse (2):
       rcu: Kill rnp->ofl_seq and use only rcu_state.ofl_lock for exclusion
+      KVM: avoid double put_page with gfn-to-pfn cache
 
 Derek Fang (1):
       ASoC: rt5682s: Fix the wrong jack type detected
@@ -1568,11 +1675,13 @@ Dirk Müller (1):
 Divya Koppera (1):
       net: phy: micrel: Fix concurrent register access
 
-Dmitry Baryshkov (5):
+Dmitry Baryshkov (7):
       arm64: dts: qcom: sm8250: fix PCIe bindings to follow schema
       drm/msm/dsi/phy: fix 7nm v4.0 settings for C-PHY mode
       drm/msm/dpu: add DSPP blocks teardown
       drm/msm/dpu: fix dp audio condition
+      drm/msm/dpu: remove msm_dp cached in dpu_encoder_virt
+      drm/msm/dp: fix panel bridge attachment
       PM: core: keep irq flags in device_pm_check_callbacks()
 
 Dmitry Osipenko (1):
@@ -1584,7 +1693,8 @@ Dmitry Torokhov (1):
 Dmitry Vyukov (1):
       riscv: Increase stack size under KASAN
 
-Dongliang Mu (3):
+Dongliang Mu (4):
+      fs: erofs: add sanity check for kobject in erofs_unregister_sysfs
       media: em28xx: initialize refcount before kref_get
       ntfs: add sanity check on allocation size
       media: hdpvr: initialize dev->worker at hdpvr_register_videodev
@@ -1595,8 +1705,11 @@ Douglas Anderson (1):
 Drew Fustini (1):
       clocksource/drivers/timer-ti-dm: Fix regression from errata i940 fix
 
-Duoming Zhou (1):
+Duoming Zhou (4):
+      ax25: Fix refcount leaks caused by ax25_cb_del()
+      ax25: Fix NULL pointer dereferences in ax25 timers
       net/x25: Fix null-ptr-deref caused by x25_disconnect
+      ax25: fix UAF bug in ax25_send_control()
 
 Dāvis Mosāns (1):
       crypto: ccp - ccp_dmaengine_unregister release dma channels
@@ -1607,6 +1720,10 @@ Eddie James (2):
 
 Eli Cohen (1):
       vdpa/mlx5: Avoid processing works if workqueue was destroyed
+
+Emil Renner Berthing (2):
+      clk: starfive: jh7100: Don't round divisor up twice
+      clk: starfive: jh7100: Handle audio_div clock properly
 
 Eric Biggers (8):
       KEYS: fix length validation in keyctl_pkey_params_get_2()
@@ -1660,17 +1777,16 @@ Filipe Manana (1):
 Florian Fainelli (1):
       net: phy: broadcom: Fix brcm_fet_config_init()
 
-Florian Westphal (1):
-      net: prefer nf_ct_put instead of nf_conntrack_put
-
 Frank Wunderlich (1):
       arm64: dts: broadcom: Fix sata nodename
 
 GONG, Ruiqi (1):
       selinux: access superblock_security_struct in LSM blob way
 
-Geert Uytterhoeven (3):
+Geert Uytterhoeven (5):
       hwrng: cavium - HW_RANDOM_CAVIUM should depend on ARCH_THUNDER
+      perf: MARVELL_CN10K_TAD_PMU should depend on ARCH_THUNDER
+      clk: renesas: r8a779f0: Fix RSW2 clock divider
       pinctrl: renesas: r8a77470: Reduce size for narrow VIN1 channel
       pinctrl: renesas: checker: Fix miscalculation of number of states
 
@@ -1683,13 +1799,22 @@ George Kennedy (1):
 Gerhard Engleder (1):
       selftests/net: timestamping: Fix bind_phc check
 
+German Gomez (1):
+      perf test arm64: Test unwinding using fame-pointer (fp) mode
+
 Gilad Ben-Yossef (1):
       crypto: ccree - don't attempt 0 len DMA mappings
 
-Greg Kroah-Hartman (1):
-      Linux 5.16.19
+Giovanni Cabiddu (3):
+      crypto: qat - fix access to PFVF interrupt registers for GEN4
+      crypto: qat - fix initialization of pfvf cap_msg structures
+      crypto: qat - fix initialization of pfvf rts_map_msg structures
 
-Guangbin Huang (1):
+Greg Kroah-Hartman (1):
+      Linux 5.17.2
+
+Guangbin Huang (2):
+      net: hns3: fix phy can not link up when autoneg off and reset
       net: hns3: fix software vlan talbe of vlan 0 inconsistent with hardware
 
 Guilherme G. Piccoli (1):
@@ -1711,8 +1836,9 @@ Gwendal Grignou (2):
       HID: intel-ish-hid: Use dma_alloc_coherent for firmware update
       platform: chrome: Split trace include file
 
-Haimin Zhang (1):
-      af_key: add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
+Haibo Chen (2):
+      iio: accel: mma8452: use the correct logic to get mma8452_data
+      iio: imu: st_lsm6dsx: use dev_to_iio_dev() to get iio_dev struct
 
 Hangbin Liu (3):
       selftests/bpf/test_xdp_redirect_multi: use temp netns for testing
@@ -1730,12 +1856,21 @@ Hans Verkuil (2):
       ivtv: fix incorrect device_caps for ivtvfb
       media: staging: media: zoran: fix various V4L2 compliance errors
 
-Hans de Goede (5):
+Hans de Goede (8):
       drm/simpledrm: Add "panel orientation" property on non-upright mounted LCD panels
       power: supply: bq24190_charger: Fix bq24190_vbus_is_enabled() wrong false return
       iio: mma8452: Fix probe failing when an i2c_device_id is used
+      ACPI / x86: Add skip i2c clients quirk for Nextbook Ares 8
+      ACPI / x86: Add skip i2c clients quirk for Lenovo Yoga Tablet 1050F/L
       media: atomisp_gmin_platform: Add DMI quirk to not turn AXP ELDO2 regulator off on some boards
       media: i2c: ov5648: Fix lockdep error
+      platform/x86: asus-wmi: Fix regression when probing for fan curve control
+
+Hao Chen (4):
+      net: hns3: fix ethtool tx copybreak buf size indicating not aligned issue
+      net: hns3: add max order judgement for tx spare buffer
+      net: hns3: add netdev reset check for hns3_set_tunable()
+      net: hns3: add NULL pointer check for hns3_set/get_ringparam()
 
 Hector Martin (5):
       brcmfmac: firmware: Allocate space for default boardrev in nvram
@@ -1753,7 +1888,8 @@ Hengqi Chen (1):
 Henry Lin (1):
       xhci: fix runtime PM imbalance in USB2 resume
 
-Herbert Xu (3):
+Herbert Xu (4):
+      crypto: kdf - Select hmac in addition to sha256
       crypto: authenc - Fix sleep in atomic context in decrypt_tail
       crypto: xts - Add softdep on ecb
       crypto: arm/aes-neonbs-cbc - Select generic cbc and aes
@@ -1761,7 +1897,8 @@ Herbert Xu (3):
 Hoang Le (1):
       tipc: fix the timer expires after interval 100ms
 
-Horatiu Vultur (1):
+Horatiu Vultur (2):
+      pinctrl: ocelot: Fix interrupt parsing
       dt-bindings: pinctrl: pinctrl-microchip-sgpio: Fix example
 
 Hou Tao (2):
@@ -1777,17 +1914,18 @@ Hugh Dickins (1):
 Håkon Bugge (1):
       IB/cma: Allow XRC INI QPs to set their local ACK timeout
 
-Ian Rogers (1):
+Ian Rogers (2):
+      perf parse-events: Move slots only with topdown
       perf vendor events: Update metrics for SkyLake Server
 
 Ido Schimmel (1):
       selftests: test_vxlan_under_vrf: Fix broken test case
 
-Ilan Peer (1):
-      mac80211: Remove a couple of obsolete TODO
-
 Ilpo Järvinen (1):
       serial: 8250: fix XOFF/XON sending when DMA is used
+
+Ilya Leoshkevich (1):
+      libbpf: Fix riscv register names
 
 Jackie Liu (1):
       n64cart: convert bi_disk to bi_bdev->bd_disk fix build
@@ -1842,20 +1980,23 @@ Jason Wang (2):
       Revert "virtio-pci: harden INTX interrupts"
       Revert "virtio_pci: harden MSI-X interrupts"
 
-Jens Axboe (6):
-      block: ensure plug merging checks the correct queue at least once
+Jens Axboe (8):
       block: flush plug based on hardware and software queue order
+      block: ensure plug merging checks the correct queue at least once
       io_uring: ensure that fsnotify is always called
       io_uring: don't check unrelated req->open.how in accept request
       io_uring: terminate manual loop iterator loop correctly for non-vecs
+      io_uring: remove poll entry from list when canceling all
+      io_uring: bump poll refs to full 31-bits
       Revert "nbd: fix possible overflow on 'first_minor' in nbd_dev_add()"
 
 Jeremy Linton (1):
       net: bcmgenet: Use stronger register read/writes to assure ordering
 
-Jernej Skrabec (2):
+Jernej Skrabec (3):
       media: cedrus: H265: Fix neighbour info buffer size
       media: cedrus: h264: Fix neighbour info buffer size
+      media: hantro: sunxi: Fix VP9 steps
 
 Jia-Ju Bai (4):
       ASoC: rt5663: check the return value of devm_kzalloc() in rt5663_parse_dp()
@@ -1916,8 +2057,12 @@ Jing Yao (3):
       video: fbdev: omapfb: panel-tpo-td043mtea1: Use sysfs_emit() instead of snprintf()
       video: fbdev: udlfb: replace snprintf in show functions with sysfs_emit
 
-Jiri Slaby (1):
+Jiri Olsa (1):
+      bpftool: Fix pretty print dump for maps without BTF loaded
+
+Jiri Slaby (2):
       mxser: fix xmit_buf leak in activate when LSR == 0xff
+      block: restore the old set_task_ioprio() behaviour wrt PF_EXITING
 
 Jocelyn Falempe (1):
       mgag200 fix memmapsl configuration in GCTL6 register
@@ -1930,6 +2075,9 @@ Joe Carnuccio (3):
 Joel Stanley (2):
       fsi: scom: Fix error handling
       fsi: scom: Remove retries in indirect scoms
+
+Joerg Roedel (1):
+      x86/sev: Unroll string mmio with CC_ATTR_GUEST_UNROLL_STRING_IO
 
 Johan Hovold (6):
       USB: serial: pl2303: fix GS type detection
@@ -2006,9 +2154,13 @@ Kai-Heng Feng (3):
       mmc: rtsx: Use pm_runtime_{get,put}() to handle runtime PM
       mmc: rtsx: Let MMC core handle runtime PM
 
-Kees Cook (4):
+Keerthy (1):
+      arm64: dts: ti: k3-j721s2-mcu-wakeup: Fix the interrupt-parent for wkup_gpioX instances
+
+Kees Cook (5):
       exec: Force single empty string when argv is empty
       media: omap3isp: Use struct_group() for memcpy() region
+      drm/dp: Fix OOB read when handling Post Cursor2 register
       gcc-plugins/stackleak: Exactly match strings instead of prefixes
       drm/dp: Fix off-by-one in register cache size
 
@@ -2049,14 +2201,14 @@ Kuniyuki Iwashima (2):
       af_unix: Fix some data-races around unix_sk(sk)->oob_skb.
       af_unix: Support POLLPRI for OOB.
 
-Kuogee Hsieh (3):
+Kuogee Hsieh (4):
+      drm/msm/dp: do not initialize phy until plugin interrupt received
       drm/msm/dp: populate connector of struct dp_panel
       drm/msm/dp: stop link training after link training 2 failed
       drm/msm/dp: always add fail-safe mode into connector mode list
 
-Lad Prabhakar (4):
+Lad Prabhakar (3):
       ASoC: sh: rz-ssi: Drop calling rz_ssi_pio_recv() recursively
-      i2c: bcm2835: Use platform_get_irq() to get the interrupt
       clk: renesas: r9a07g044: Update multiplier and divider values for PLL2/3
       ASoC: sh: rz-ssi: Make the data structures available before registering the handlers
 
@@ -2090,12 +2242,6 @@ Libin Yang (1):
 Liguang Zhang (1):
       PCI: pciehp: Clear cmd_busy bit in polling mode
 
-Lina Wang (1):
-      xfrm: fix tunnel model fragmentation behavior
-
-Lino Sanfilippo (1):
-      tpm: fix reference counting for struct tpm_chip
-
 Linus Torvalds (4):
       Revert "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
       fs: fd tables have to be multiples of BITS_PER_LONG
@@ -2103,13 +2249,13 @@ Linus Torvalds (4):
       Reinstate some of "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
 
 Linus Walleij (2):
-      Input: zinitix - do not report shadow fingers
+      power: supply: ab8500: Swap max and overvoltage
       power: ab8500_chargalg: Use CLOCK_MONOTONIC
 
 Liu Ying (1):
       phy: dphy: Correct lpx parameter and its derivatives(ta_{get,go,sure})
 
-Lorenzo Bianconi (10):
+Lorenzo Bianconi (13):
       mt76: connac: fix sta_rec_wtbl tag len
       mt76: mt7915: use proper aid value in mt7915_mcu_wtbl_generic_tlv in sta mode
       mt76: mt7915: use proper aid value in mt7915_mcu_sta_basic_tlv
@@ -2119,7 +2265,13 @@ Lorenzo Bianconi (10):
       mt76: mt7603: check sta_rates pointer in mt7603_sta_rate_tbl_update
       mt76: mt7615: check sta_rates pointer in mt7615_sta_rate_tbl_update
       mt76: mt7915: fix possible memory leak in mt7915_mcu_add_sta
+      mt76: mt7921s: fix a possible memory leak in mt7921_load_patch
+      mt76: do not always copy ethhdr in reverse_frag0_hdr_trans
+      mt76: fix endianness errors in reverse_frag0_hdr_trans
       mt76: mt7921: fix mt7921_queues_acq implementation
+
+Luben Tuikov (1):
+      drm/amdgpu: Don't offset by 2 in FRU EEPROM
 
 Luca Coelho (1):
       iwlwifi: mvm: don't iterate unadded vifs when handling FW SMPS req
@@ -2127,16 +2279,22 @@ Luca Coelho (1):
 Luca Weiss (1):
       cpufreq: qcom-cpufreq-nvmem: fix reading of PVS Valid fuse
 
+Lucas De Marchi (1):
+      drm/i915: Fix renamed struct field
+
 Lucas Tanure (2):
       ASoC: cs35l41: Fix max number of TX channels
       i2c: meson: Fix wrong speed use from probe
 
-Lucas Zampieri (1):
-      HID: logitech-dj: add new lightspeed receiver id
-
 Luiz Angelo Daros de Luca (2):
       net: dsa: realtek-smi: fix kdoc warnings
       net: dsa: realtek-smi: move to subdirectory
+
+Luiz Augusto von Dentz (1):
+      Bluetooth: hci_event: Fix HCI_EV_VENDOR max_len
+
+Lukas Czerner (1):
+      ext4: fix remount with 'abort' option
 
 Lv Ruyi (1):
       proc: bootconfig: Add null pointer check
@@ -2164,8 +2322,9 @@ Manish Chopra (2):
 Manish Rangankar (1):
       scsi: qla2xxx: Use correct feature type field during RFF_ID processing
 
-Manivannan Sadhasivam (1):
+Manivannan Sadhasivam (2):
       arm64: dts: qcom: sm8250: Fix MSI IRQ for PCIe1 and PCIe2
+      ARM: dts: qcom: sdx55: Fix the address used for PCIe EP local addr space
 
 Maor Gottlieb (1):
       RDMA/core: Set MR type in ib_reg_user_mr
@@ -2174,10 +2333,10 @@ Marc Kleine-Budde (1):
       can: m_can: m_can_tx_handler(): fix use after free of skb
 
 Marc Zyngier (4):
+      PCI: xgene: Revert "PCI: xgene: Use inbound resources for setup"
       PCI: xgene: Revert "PCI: xgene: Fix IB window setup"
       pinctrl: npcm: Fix broken references to chip->parent_device
       irqchip/qcom-pdc: Fix broken locking
-      PCI: xgene: Revert "PCI: xgene: Use inbound resources for setup"
 
 Marcel Ziswiler (1):
       arm64: defconfig: build imx-sdma as a module
@@ -2185,14 +2344,8 @@ Marcel Ziswiler (1):
 Marcelo Ricardo Leitner (1):
       net/sched: act_ct: fix ref leak when switching zones
 
-Marcelo Roberto Jimenez (1):
-      gpio: Revert regression in sysfs-gpio (gpiolib.c)
-
 Marco Elver (1):
       stack: Constrain and fix stack offset randomization with Clang builds
-
-Marek Szyprowski (1):
-      clocksource/drivers/exynos_mct: Refactor resources allocation
 
 Marek Vasut (1):
       ARM: dts: imx: Add missing LVDS decoder on M53Menlo
@@ -2205,6 +2358,12 @@ Mark Brown (3):
       mtd: mchp23k256: Add SPI ID table
       mtd: mchp48l640: Add SPI ID table
       KVM: arm64: Enable Cortex-A510 erratum 2077057 by default
+
+Mark Chen (4):
+      Bluetooth: mt7921s: fix firmware coredump retrieve
+      Bluetooth: mt7921s: fix bus hang with wrong privilege
+      Bluetooth: btmtksdio: refactor btmtksdio_runtime_[suspend|resume]()
+      Bluetooth: mt7921s: fix btmtksdio_[drv|fw]_pmctrl()
 
 Mark Rutland (2):
       arm64: prevent instrumentation of bp hardening callbacks
@@ -2250,13 +2409,16 @@ Mathieu Desnoyers (1):
 Matt Kramer (1):
       ALSA: hda/realtek: Add alc256-samsung-headphone fixup
 
-Matthew Wilcox (Oracle) (2):
+Matthew Wilcox (Oracle) (4):
+      iomap: Fix iomap_invalidatepage tracepoint
       XArray: Fix xas_create_range() when multi-order entry present
+      XArray: Include bitmap.h from xarray.h
       XArray: Update the LRU list in xas_split()
 
-Maulik Shah (2):
+Maulik Shah (3):
       arm64: dts: qcom: sm8150: Correct TCS configuration for apps rsc
       arm64: dts: qcom: sm8350: Correct TCS configuration for apps rsc
+      arm64: dts: qcom: sm8450: Update cpuidle states parameters
 
 Mauricio Vásquez (1):
       bpftool: Fix error check when calling hashmap__new()
@@ -2273,6 +2435,9 @@ Max Filippov (4):
 
 Maxim Kiselev (1):
       powerpc: dts: t1040rdb: fix ports names for Seville Ethernet switch
+
+Maxim Levitsky (1):
+      KVM: x86: SVM: fix avic spec based definitions again
 
 Maxime Ripard (5):
       drm/edid: Don't clear formats if using deep color
@@ -2299,7 +2464,7 @@ Miaohe Lin (2):
       mm/mlock: fix two bugs in user_shm_lock()
       kernel/resource: fix kfree() of bootmem memory again
 
-Miaoqian Lin (37):
+Miaoqian Lin (40):
       coresight: syscfg: Fix memleak on registration failure in cscfg_create_device
       spi: tegra114: Add missing IRQ check in tegra_spi_probe
       spi: tegra210-quad: Fix missin IRQ check in tegra_qspi_probe
@@ -2319,6 +2484,7 @@ Miaoqian Lin (37):
       ASoC: msm8916-wcd-digital: Fix missing clk_disable_unprepare() in msm8916_wcd_digital_probe
       ASoC: atmel: Fix error handling in sam9x5_wm8731_driver_probe
       ASoC: msm8916-wcd-analog: Fix error handling in pm8916_wcd_analog_spmi_probe
+      ASoC: mediatek: mt8195: Fix error handling in mt8195_mt6359_rt1019_rt5682_dev_probe
       ASoC: codecs: wcd934x: Add missing of_node_put() in wcd934x_codec_parse_data
       drm/bridge: Fix free wrong object in sii8620_init_rcp_input_dev
       drm/bridge: Add missing pm_runtime_disable() in __dw_mipi_dsi_probe
@@ -2336,6 +2502,8 @@ Miaoqian Lin (37):
       pinctrl: mediatek: Fix missing of_node_put() in mtk_pctrl_init
       pinctrl: nomadik: Add missing of_node_put() in nmk_pinctrl_probe
       pinctrl/rockchip: Add missing of_node_put() in rockchip_pinctrl_probe
+      ASoC: mediatek: Fix error handling in mt8183_da7219_max98357_dev_probe
+      rtc: gamecube: Fix refcount leak in gamecube_rtc_read_offset_from_sram
       watchdog: rti-wdt: Add missing pm_runtime_disable() in probe function
 
 Michael Ellerman (3):
@@ -2343,19 +2511,15 @@ Michael Ellerman (3):
       powerpc/64s: Don't use DSISR for SLB faults
       powerpc/pseries: Fix use after free in remove_phb_dynamic()
 
-Michael Hübner (1):
-      HID: Add support for open wheel and no attachment to T300
-
-Michael S. Tsirkin (1):
-      virtio_console: break out of buf poll on remove
-
 Michael Schmitz (1):
       video: fbdev: atari: Atari 2 bpp (STe) palette bugfix
 
 Michael Straube (1):
       staging: r8188eu: release_firmware is not called if allocation fails
 
-Michael Walle (1):
+Michael Walle (3):
+      pinctrl: ocelot: fix confops resource index
+      pinctrl: ocelot: fix duplicate debugfs entry
       pinctrl: microchip-sgpio: lock RMW access
 
 Mike Marciniszyn (1):
@@ -2381,9 +2545,6 @@ Ming Qian (1):
 Minghao Chi (1):
       spi: tegra20: Use of_device_get_match_data()
 
-Minghao Chi (CGEL ZTE) (1):
-      net:mcf8390: Use platform_get_irq() to get the interrupt
-
 Mingzhe Zou (1):
       bcache: fixup multiple threads crash
 
@@ -2406,10 +2567,12 @@ Mohan Kumar (1):
 Muchun Song (1):
       mm: kfence: fix missing objcg housekeeping for SLAB
 
-Muhammad Usama Anjum (3):
+Muhammad Usama Anjum (5):
       selftests/x86: Add validity check and allow field splitting
       selftests/sgx: Treat CC as one argument
+      selftests: vm: remove dependecy from internal kernel macros
       selftests/lkdtm: Add UBSAN config
+      rtw88: check for validity before using a pointer
 
 Mukesh Sisodiya (1):
       iwlwifi: yoyo: Avoid using dram data if allocation failed
@@ -2428,15 +2591,26 @@ Naohiro Aota (1):
 Naveen N. Rao (1):
       selftests/bpf: Use "__se_" prefix on architectures without syscall wrapper
 
-Neil Armstrong (3):
+Neil Armstrong (2):
       media: mexon-ge2d: fixup frames size in registers
-      drm/meson: split out encoder from meson_dw_hdmi
       drm/bridge: dw-hdmi: use safe format when first in bridge chain
 
 NeilBrown (3):
       SUNRPC: avoid race between mod_timer() and del_timer_sync()
       SUNRPC/call_alloc: async tasks mustn't block waiting for memory
       SUNRPC: improve 'swap' handling: scheduling and PF_MEMALLOC
+
+Nemanja Rakovic (2):
+      mips: Enable KCSAN
+      mips: Enable KCSAN - take 2
+
+Nicholas Kazlauskas (2):
+      drm/amd/display: Call dc_stream_release for remove link enc assignment
+      drm/amd/display: Fix double free during GPU reset on DC streams
+
+Nicholas Piggin (2):
+      powerpc/time: Fix KVM host re-arming a timer beyond decrementer range
+      powerpc/tm: Fix more userspace r13 corruption
 
 Nicolas Dufresne (1):
       media: v4l2-core: Initialize h264 scaling matrix
@@ -2460,14 +2634,16 @@ Nikolay Borisov (1):
 Nilesh Javali (1):
       scsi: qla2xxx: Fix warning for missing error code
 
-Nishanth Menon (5):
+Nishanth Menon (6):
       arm64: dts: ti: k3-am65: Fix gic-v3 compatible regs
       arm64: dts: ti: k3-j721e: Fix gic-v3 compatible regs
       arm64: dts: ti: k3-j7200: Fix gic-v3 compatible regs
       arm64: dts: ti: k3-am64: Fix gic-v3 compatible regs
+      arm64: dts: ti: k3-j721s2: Fix gic-v3 compatible regs
       drm/bridge: cdns-dsi: Make sure to to create proper aliases for dt
 
-Ojaswin Mujoo (1):
+Ojaswin Mujoo (2):
+      ext4: make mb_optimize_scan option work with set/unset mount cmd
       ext4: make mb_optimize_scan performance mount option work with extents
 
 Olga Kornievskaia (2):
@@ -2491,8 +2667,8 @@ Ondrej Mosnacek (2):
 Ondrej Zary (1):
       media: bttv: fix WARNING regression on tunerless devices
 
-P Praneesh (1):
-      ath11k: avoid active pdev check for each msdu
+Oscar Salvador (1):
+      mm: only re-generate demotion targets when a numa node changes its N_CPU state
 
 Pablo Neira Ayuso (2):
       netfilter: flowtable: Fix QinQ and pppoe support for inet table
@@ -2515,10 +2691,12 @@ Paolo Valente (1):
 Patrick Rudolph (1):
       hwmon: (pmbus) Add mutex to regulator ops
 
-Paul Cercueil (1):
+Paul Cercueil (2):
+      mips: Always permit to build u-boot images
       MIPS: crypto: Fix CRC32 code
 
-Paul Davey (1):
+Paul Davey (2):
+      bus: mhi: Fix pm_state conversion to string
       bus: mhi: Fix MHI DMA structure endianness
 
 Paul E. McKenney (2):
@@ -2578,22 +2756,28 @@ Peter Rosin (1):
 Peter Xu (1):
       mm: don't skip swap entry even if zap_details specified
 
+Peter Zijlstra (1):
+      crypto: x86/poly1305 - Fixup SLS
+
 Petr Machata (1):
       af_netlink: Fix shift out of bounds in group mask calculation
 
-Petr Vorel (2):
+Petr Vorel (3):
       crypto: vmx - add missing dependencies
+      arm64: dts: qcom: msm8916-j5: Fix typo
       arm64: dts: qcom: msm8994: Provide missing "xo_board" and "sleep_clk" to GCC
 
 Phil Sutter (2):
       netfilter: conntrack: Add and use nf_ct_set_auto_assign_helper_warned()
       netfilter: egress: Report interface as outgoing
 
-Phillip Potter (1):
-      staging: r8188eu: convert DBG_88E_LEVEL call in hal/rtl8188e_hal_init.c
-
-Pierre-Louis Bossart (3):
+Pierre-Louis Bossart (8):
+      ASoC: SOF: debug: clarify operator precedence
+      ASoC: SOF: Intel: hda: retrieve DMIC number for I2S boards
+      ALSA: intel-nhlt: add helper to detect SSP link mask
+      ALSA: intel-dsp-config: add more ACPI HIDs for ES83x6 devices
       ASoC: Intel: soc-acpi: add more ACPI HIDs for ES83x6 devices
+      ALSA: intel-dspconfig: add ES8336 support for CNL
       ASoC: Intel: Revert "ASoC: Intel: sof_es8336: add quirk for Huawei D15 2021"
       ASoC: Intel: sof_es8336: log all quirks
 
@@ -2603,11 +2787,16 @@ Pin-Yen Lin (1):
 Po Liu (1):
       net:enetc: allocate CBD ring data memory using DMA coherent methods
 
+Po-Hao Huang (2):
+      rtw88: fix idle mode flow for hw scan
+      rtw88: fix memory overrun and memory leak during hw_scan
+
 Prashant Malani (1):
       platform/chrome: cros_ec_typec: Check for EC device
 
-Qais Yousef (2):
+Qais Yousef (3):
       sched/core: Export pelt_thermal_tp
+      sched/sugov: Ignore 'busy' filter when rq is capped by uclamp_max
       sched/uclamp: Fix iowait boost escaping uclamp restriction
 
 Qu Wenruo (1):
@@ -2630,6 +2819,9 @@ Quinn Tran (12):
       scsi: qla2xxx: Fix stuck session of PRLI reject
       scsi: qla2xxx: Reduce false trigger to login
 
+Radoslaw Biernacki (1):
+      Bluetooth: Fix skb allocation in mgmt_remote_name() & mgmt_device_connected()
+
 Rafael J. Wysocki (3):
       Revert "ACPI: Pass the same capabilities to the _OSC regardless of the query flag"
       ACPICA: Avoid walking the ACPI Namespace if it is not there
@@ -2642,7 +2834,7 @@ Rafał Miłecki (2):
 Rameshkumar Sundaram (1):
       ath11k: Invalidate cached reo ring entry before accessing it
 
-Randy Dunlap (22):
+Randy Dunlap (23):
       EVM: fix the evm= __setup handler return value
       PM: hibernate: fix __setup handler error handling
       PM: suspend: fix return value of __setup handler
@@ -2654,6 +2846,7 @@ Randy Dunlap (22):
       TOMOYO: fix __setup handlers return values
       mips: DEC: honor CONFIG_MIPS_FP_SUPPORT=n
       MIPS: RB532: fix return value of __setup handler
+      powerpc/xive: fix return value of __setup handler
       dma-debug: fix return value of __setup handlers
       tty: hvc: fix return value of __setup handler
       kgdboc: fix return value of __setup handler
@@ -2665,6 +2858,14 @@ Randy Dunlap (22):
       ARM: 9187/1: JIVE: fix return value of __setup handler
       mm/memcontrol: return 1 from cgroup.memory __setup() handler
       mm/usercopy: return 1 from hardened_usercopy __setup() handler
+
+Ranjani Sridharan (1):
+      ASoC: SOF: Intel: hda: Remove link assignment limitation
+
+Reinette Chatre (3):
+      selftests/sgx: Fix NULL-pointer-dereference upon early test failure
+      selftests/sgx: Do not attempt enclave build without valid enclave
+      selftests/sgx: Ensure enclave data available during debug print
 
 Richard Fitzgerald (1):
       ASoC: cs42l42: Report full jack status when plug is detected
@@ -2682,6 +2883,10 @@ Richard Schleich (2):
       ARM: dts: bcm2837: Add the missing L1/L2 cache information
       ARM: dts: bcm2711: Add the missing L1/L2 cache information
 
+Richard Zhu (2):
+      PCI: imx6: Invoke the PHY exit function after PHY power off
+      PCI: imx6: Assert i.MX8MM CLKREQ# even if no device present
+
 Rik van Riel (2):
       mm: invalidate hwpoison page cache page in fault path
       mm,hwpoison: unmap poisoned page before invalidation
@@ -2697,7 +2902,11 @@ Rob Clark (1):
 Rob Herring (1):
       arm64: dts: rockchip: Fix SDIO regulator supply properties on rk3399-firefly
 
-Robert Hancock (6):
+Robert Hancock (10):
+      dt-bindings: iio: adc: zynqmp_ams: Add clock entry
+      iio: adc: xilinx-ams: Fix single channel switching sequence
+      iio: adc: xilinx-ams: Fixed missing PS channels
+      iio: adc: xilinx-ams: Fixed wrong sequencer register settings
       ASoC: xilinx: xlnx_formatter_pcm: Handle sysclk setting
       ASoC: simple-card-utils: Set sysclk on all components
       net: phy: at803x: move page selection fix to config_init
@@ -2712,8 +2921,10 @@ Robin Gong (2):
       mailbox: imx: fix crash in resume on i.mx8ulp
       mailbox: imx: fix wakeup failure from freeze mode
 
-Robin Murphy (1):
+Robin Murphy (3):
       iommu/iova: Improve 32-bit free space estimate
+      perf/arm-cmn: Hide XP PUB events for CMN-600
+      perf/arm-cmn: Update watchpoint format
 
 Rohith Surabattula (1):
       Adjust cifssb maximum read size
@@ -2721,7 +2932,8 @@ Rohith Surabattula (1):
 Roman Li (1):
       drm/amd/display: Add affected crtcs to atomic state for dsc mst unplug
 
-Ronnie Sahlberg (2):
+Ronnie Sahlberg (3):
+      cifs: truncate the inode and mapping when we simulate fcollapse
       cifs: fix handlecache and multiuser
       cifs: we do not need a spinlock around the tree access during umount
 
@@ -2754,7 +2966,8 @@ Sean Christopherson (5):
 Sean Nyekjaer (1):
       mtd: rawnand: protect access to rawnand devices while in suspend
 
-Sean Wang (3):
+Sean Wang (4):
+      Bluetooth: btmtksdio: mask out interrupt status
       mt76: mt76_connac: fix MCU_CE_CMD_SET_ROC definition error
       mt76: mt7921: set EDCA parameters with the MCU CE command
       mt76: mt7921e: fix possible probe failure after reboot
@@ -2777,14 +2990,18 @@ Shengjiu Wang (2):
       ASoC: fsl_spdif: Disable TX clock when stop
       ASoC: soc-core: skip zero num_dai component in searching dai name
 
-Shijith Thotton (1):
+Shijith Thotton (2):
+      crypto: octeontx2 - select CONFIG_NET_DEVLINK
       crypto: octeontx2 - remove CONFIG_DM_CRYPT check
 
 Shin'ichiro Kawasaki (1):
       block: limit request dispatch loop duration
 
-Si-Wei Liu (1):
-      vdpa/mlx5: should verify CTRL_VQ feature exists for MQ
+Shunsuke Nakamura (1):
+      libperf tests: Fix typo in perf_evlist__open() failure error messages
+
+Shyam Prasad N (1):
+      cifs: use a different reconnect helper for non-cifsd threads
 
 Sondhauß, Jan (1):
       drivers: ethernet: cpsw: fix panic when interrupt coaleceing is set via ethtool
@@ -2807,12 +3024,14 @@ Srinivas Kandagatla (7):
 Srinivas Pandruvada (1):
       thermal: int340x: Increase bitmap size
 
+Srujana Challa (1):
+      crypto: octeontx2 - CN10K CPT to RNM workaround
+
 Stanimir Varbanov (2):
       media: venus: hfi_cmds: List HDR10 property as unsupported for v1 and v3
       media: venus: venc: Fix h264 8x8 transform control
 
-Stefano Garzarella (5):
-      tools/virtio: fix virtio_test execution
+Stefano Garzarella (4):
       vsock/virtio: initialize vdev->priv before using VQs
       vsock/virtio: read the negotiated features before using VQs
       vsock/virtio: enable VQs early on probe
@@ -2826,17 +3045,23 @@ Steven Rostedt (Google) (3):
       tracing: Have TRACE_DEFINE_ENUM affect trace event types as well
       tracing: Have type enum modifications copy the strings
 
+Stijn Tintel (1):
+      libbpf: Fix BPF_MAP_TYPE_PERF_EVENT_ARRAY auto-pinning
+
 Sukadev Bhattiprolu (1):
       ibmvnic: fix race between xmit and reset
 
 Sungup Moon (1):
       nvme: allow duplicate NSIDs for private namespaces
 
-Sunil Goutham (1):
-      hwrng: cavium - Check health status while reading random data
+Suravee Suthikulpanit (1):
+      KVM: SVM: Allow AVIC support on system w/ physical APIC ID > 255
 
 Sven Peter (1):
       usb: typec: tipd: Forward plug orientation to typec subsystem
+
+Svyatoslav Ryhel (1):
+      ARM: tegra: transformer: Drop reg-shift for Tegra HS UART
 
 Takashi Iwai (3):
       ALSA: pcm: Fix potential AB/BA lock with buffer_mutex and mmap_lock
@@ -2870,20 +3095,26 @@ Thomas Zimmermann (2):
       fbdev: Hot-unplug firmware fb devices on forced removal
       drm/fb-helper: Mark screen buffers in system memory with FBINFO_VIRTFB
 
+Tianyu Lan (1):
+      Netvsc: Call hv_unmap_memory() in the netvsc_device_remove()
+
 Tim Gardner (1):
       video: fbdev: nvidiafb: Use strscpy() to prevent buffer overflow
 
-Tobias Waldekranz (1):
+Tobias Waldekranz (3):
+      net: dsa: Move VLAN filtering syncing out of dsa_switch_bridge_leave
+      net: dsa: Avoid cross-chip syncing of VLAN filtering
       net: dsa: mv88e6xxx: Enable port policy support on 6097
 
 Toke Høiland-Jørgensen (2):
       libbpf: Use dynamically allocated buffer when receiving netlink messages
       libbpf: Define BTF_KIND_* constants in btf.h to avoid compilation errors
 
-Tom Rix (7):
+Tom Rix (8):
       samples/landlock: Fix path_list memory leak
       media: video/hdmi: handle short reads of hdmi info frame.
       drm/amd/pm: return -ENOTSUPP if there is no get_dpm_ultimate_freq function
+      Bluetooth: hci_sync: fix undefined return of hci_disconnect_all_sync()
       qlcnic: dcb: default to returning -EOPNOTSUPP
       octeontx2-af: initialize action variable
       can: mcp251xfd: mcp251xfd_register_get_dev_id(): fix return of error value
@@ -2907,12 +3138,10 @@ Trond Myklebust (7):
 Tsuchiya Yuto (1):
       media: atomisp: fix dummy_ptr check to avoid duplicate active_bo
 
-Tudor Ambarus (2):
+Tudor Ambarus (3):
+      mtd: spi-nor: Skip erase logic when SPI_NOR_NO_ERASE is set
       ARM: dts: at91: sama7g5: Remove unused properties in i2c nodes
       ARM: dts: at91: sama5d2: Fix PMERRLOC resource size
-
-Tzung-Bi Shih (1):
-      ASoC: mediatek: use of_device_get_match_data()
 
 Ulf Hansson (2):
       mmc: host: Return an error when ->enable_sdio_irq() ops is missing
@@ -2956,7 +3185,8 @@ Waiman Long (2):
       locking/lockdep: Avoid potential access of invalid memory in lock_class
       locking/lockdep: Iterate lock_classes directly when reading lockdep files
 
-Wan Jiabing (1):
+Wan Jiabing (2):
+      hwrng: cavium - fix NULL but dereferenced coccicheck error
       docs: fix 'make htmldocs' warning in SCTP.rst
 
 Wang Hai (2):
@@ -2975,9 +3205,11 @@ Wang Yufen (4):
 Wei Fu (1):
       bpftool: Only set obj->skeleton on complete success
 
-Wen Gong (2):
+Wen Gong (4):
       ath10k: fix memory overwrite of the WoWLAN wakeup packet pattern
+      ath11k: free peer for station when disconnect from AP for QCA6390/WCN6855
       ath11k: set WMI_PEER_40MHZ while peer assoc for 6 GHz
+      ath11k: fix uninitialized rate_idx in ath11k_dp_tx_update_txcompl()
 
 Will Deacon (1):
       arm64: mm: Drop 'const' from conditional arm64_dma_phys_limit definition
@@ -2992,7 +3224,8 @@ Xiaolong Huang (2):
       virt: acrn: fix a memory leak in acrn_dev_ioctl()
       rxrpc: fix some null-ptr-deref bugs in server_key.c
 
-Xiaomeng Tong (2):
+Xiaomeng Tong (3):
+      cifs: fix incorrect use of list iterator after the loop
       ALSA: cs4236: fix an incorrect NULL check on list iterator
       net: dsa: bcm_sf2_cfp: fix an incorrect NULL check on list iterator
 
@@ -3020,6 +3253,13 @@ Yaliang Wang (1):
 
 Yang Guang (1):
       video: fbdev: omapfb: acx565akm: replace snprintf with sysfs_emit
+
+Yang Yingliang (2):
+      ath11k: add missing of_node_put() to avoid leak
+      net: wwan: qcom_bam_dmux: fix wrong pointer passed to IS_ERR()
+
+Yang Zhong (1):
+      x86/fpu/xstate: Fix the ARCH_REQ_XCOMP_PERM implementation
 
 Ye Bin (1):
       ext4: fix fs corruption when tring to remove a non-empty directory with IO error
@@ -3056,18 +3296,17 @@ Yonglong Li (1):
 Yongzhi Liu (1):
       RDMA/mlx5: Fix memory leak in error flow for subscribe event routine
 
-Yosry Ahmed (1):
-      selftests: vm: fix clang build error multiple output files
-
 Yu Kuai (1):
       block, bfq: don't move oom_bfqq
 
 YueHaibing (1):
       video: fbdev: controlfb: Fix COMPILE_TEST build
 
-Yufeng Mo (2):
-      net: hns3: format the output of the MAC address
+Yufeng Mo (1):
       net: hns3: fix the concurrency between functions reading debugfs
+
+Yunfei Dong (1):
+      media: uapi: Init VP9 stateless decode params
 
 Z. Liu (1):
       video: fbdev: matroxfb: set maxvram of vbG200eW to the same as vbG200 to avoid black screen
@@ -3076,7 +3315,8 @@ Zev Weiss (2):
       ARM: dts: Fix OpenBMC flash layout label addresses
       serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port type
 
-Zhang Wensheng (2):
+Zhang Wensheng (3):
+      block: update io_ticks when io hang
       bfq: fix use-after-free in bfq_dispatch_request
       nbd: fix possible overflow on 'first_minor' in nbd_dev_add()
 
@@ -3092,8 +3332,7 @@ Zheng Yongjun (1):
 Zhenzhong Duan (1):
       KVM: x86: Fix emulation in writing cr8
 
-Zheyu Ma (2):
-      ethernet: sun: Free the coherent when failing in probing
+Zheyu Ma (1):
       video: fbdev: sm712fb: Fix crash in smtcfb_write()
 
 Zhihao Cheng (10):
