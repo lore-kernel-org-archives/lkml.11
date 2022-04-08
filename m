@@ -2,220 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F21C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:08:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 887D8C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237401AbiDHPK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48382 "EHLO
+        id S237420AbiDHPOr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 11:14:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233605AbiDHPK0 (ORCPT
+        with ESMTP id S235257AbiDHPOq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 11:10:26 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70712167D6
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 08:08:21 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id u19so2264026ljd.11
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 08:08:21 -0700 (PDT)
+        Fri, 8 Apr 2022 11:14:46 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D837FC8A5;
+        Fri,  8 Apr 2022 08:12:42 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id j6so5023886qkp.9;
+        Fri, 08 Apr 2022 08:12:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XUTKl/IaJCwrxr2khPWm7F441fPDzuP0bn51KMo02uE=;
-        b=LwKcKItaVj506SbKhpxTEJLegJ7vxBPkSMYOBoTAw5zD3zRG011lCJGgQp/iMROOLV
-         rkpIxxYVFg5jGurHfNEhdUFSAqumasv7PScMzOwzQ/vW2+xv18Nf9+T/KiU/jI40q/+n
-         /+IOc5J0R/RNx3ZUJmcfghFmtotsRaMrt23FrB0Z3XvpDmiX7Bg423ovFjzS5+zqdrx5
-         /zqtPiw8XIoeet06K1K2mFq7Lx+Ot22dg15AmyFbQnhnt5wKnXDQJKgWoiUvAquu2hTu
-         wSXT1CKtGbsjkVmNIBtN/NgT49/TRHHbVJOBKKsOizmAuHoQTZujVKzIuwTizgEN9KU3
-         vQYQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ChSEY7h2sRW/2ExANChMlGLpgvQbTjAzXwSGw78syU4=;
+        b=VL1Y942y0CjJChV2tq2vsSLGf9pTuJOFpVmdTPyNruzKwny/pl92SPdwDE7JjJqrC7
+         sPQ3fqggNInkGYeBcIH1fiyaPuU4wvysUlDRIkRuRC3Wqb3Bbhvc3ym473gBDVOGKQk4
+         mv7YZUmqITDZ2Etk09PrfFLmxD3Ki6eRYtXWKKCloAtUE2FjDY8TfQQH7mBktUkR+LN1
+         2kBJZHf1ktDPuQxcejrWCIngAVNBKuFZJRRmXCKCn0VUQrha0K1exXCzIg6xq5v1Ag5A
+         EL6mehVqJWqU4dbcne64OMdSdvKp1KXxcr8Ti6xKJUdhKPiRGp5aMIIJd8mb/2XEC11r
+         fvQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XUTKl/IaJCwrxr2khPWm7F441fPDzuP0bn51KMo02uE=;
-        b=CpR8yvnyYn4TY2+qNHUElOV42eeqdeuaLCu8OsPrtkGThLkI/AmILBd59Mqqxe45b7
-         NRXU9rsBoFxucVRB/Ae60wnWI3z49EJpKDaVfsRp9QMI98qB7/IPZ2YnAlnyi7T50t0e
-         O8QQrqv/s+809V9FT0326R4wB3rrIqs20GmgPk3X0DWJd1vTpCgWU9oas6b0KU/KWxFe
-         JvqiF3DXKajU+FV92Ggse3N7hBAUW8JDc4EWy/e5IFBxTn3DB64lnlhJlL7pyIALKq49
-         6n60qPY0DgGHom8u+g1uBRqTdMiw/FaZpUEzDzGmCSPNP5+xnUrFwzXmNkkADevgA5Yt
-         t8Vw==
-X-Gm-Message-State: AOAM5331JStYhXArT5eAN8CmtlpolDt/JlDvY5f9uCOrHCA9AnYTSkjR
-        08H2wbYmgvWH8LPWJVxgaQFx1KK9m7STMPSx7bcYYw==
-X-Google-Smtp-Source: ABdhPJzc5vUnMdnamgw4DGiOOGnvYUWnvrofIV54z4/jLe0Q8nWJgM0/eNXNojAsy/QsowaEFGtfyoMMutqxYi9v3kQ=
-X-Received: by 2002:a2e:bd09:0:b0:24b:9e3:30c6 with SMTP id
- n9-20020a2ebd09000000b0024b09e330c6mr11355360ljq.282.1649430499181; Fri, 08
- Apr 2022 08:08:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ChSEY7h2sRW/2ExANChMlGLpgvQbTjAzXwSGw78syU4=;
+        b=B4fMJrK+Xcy+q8dMb+jDKSeCLXu1/BXtzIF7wx6NjytrmRzR/+XnJpCZJLp4cMc9Z+
+         RHESNk6e99aJp01l974HGQvAeWv8s87Wa8zadxusQqw5PugGkcnJ6QhztcMtbqokvnCB
+         /S4xO7+99DA5A0AGh10QhIZOcJjP97NWg9h7yJ9HaVELqVNUpP8j8DPpDX887irkD/nk
+         zM0sc7UtSlGytW7l5yF+CQv9giOm7pv9JsblyHzdDLn9FwhXqMBmTKldJrZUqAc3Hnup
+         aClNfQxmK/GwHXjw/IOibsMkcrXTlLiqJ37cekQrzDM0KGvKPRPbp35MSacD813MbRUc
+         r9JA==
+X-Gm-Message-State: AOAM531qMrTaCUMyldbyZfV0iLv1vyazplBb4keYtdPRRVjVZcCo2sjx
+        3iEj7tErk10woXLQVu7S/Lw=
+X-Google-Smtp-Source: ABdhPJwyTFG9s1eZqDpr0it5uK6x7Wfc6bXkHoffjYadfbrQpn/oFApdowm3ocx0VSpB92zWbYg23A==
+X-Received: by 2002:a05:620a:460b:b0:67d:1cd4:527e with SMTP id br11-20020a05620a460b00b0067d1cd4527emr12838615qkb.277.1649430761326;
+        Fri, 08 Apr 2022 08:12:41 -0700 (PDT)
+Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
+        by smtp.gmail.com with ESMTPSA id 191-20020a3707c8000000b0069a13545fcfsm2266052qkh.123.2022.04.08.08.12.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 08:12:41 -0700 (PDT)
+From:   Peter Geis <pgwipeout@gmail.com>
+Cc:     linux-rockchip@lists.infradead.org, heiko@sntech.de,
+        Peter Geis <pgwipeout@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Felipe Balbi <balbi@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH v5 0/5] enable usb support on rk356x
+Date:   Fri,  8 Apr 2022 11:12:32 -0400
+Message-Id: <20220408151237.3165046-1-pgwipeout@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220407195908.633003-1-pgonda@google.com> <CAFNjLiXC0AdOw5f8Ovu47D==ex7F0=WN_Ocirymz4xL=mWvC5A@mail.gmail.com>
-In-Reply-To: <CAFNjLiXC0AdOw5f8Ovu47D==ex7F0=WN_Ocirymz4xL=mWvC5A@mail.gmail.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Fri, 8 Apr 2022 09:08:07 -0600
-Message-ID: <CAMkAt6r-Mc_YN-gVHuCpTj4E1EmcvyYpP9jhtHo5HRHnoNJAdA@mail.gmail.com>
-Subject: Re: [PATCH v3] KVM: SEV: Mark nested locking of vcpu->lock
-To:     John Sperbeck <jsperbeck@google.com>
-Cc:     kvm list <kvm@vger.kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 7, 2022 at 3:17 PM John Sperbeck <jsperbeck@google.com> wrote:
->
-> On Thu, Apr 7, 2022 at 12:59 PM Peter Gonda <pgonda@google.com> wrote:
-> >
-> > svm_vm_migrate_from() uses sev_lock_vcpus_for_migration() to lock all
-> > source and target vcpu->locks. Mark the nested subclasses to avoid false
-> > positives from lockdep.
+Good Morning,
 
-Nope. Good catch, I didn't realize there was a limit 8 subclasses:
+This is my patch series that I have maintained out of tree until the
+combophy driver landed.
 
-[  509.093776] BUG: looking up invalid subclass: 8
-[  509.098314] turning off the locking correctness validator.
-[  509.103800] CPU: 185 PID: 28570 Comm: sev_migrate_tes Tainted: G
-       O      5.17.0-dbg-DEV #24
-[  509.112925] Hardware name: Google, Inc.
-                          Arcadia_IT_80/Arcadia_IT_80, BIOS
-30.6.12-gce 09/27/2021
-[  509.126386] Call Trace:
-[  509.128835]  <TASK>
-[  509.130939]  dump_stack_lvl+0x6c/0x9a
-[  509.134609]  dump_stack+0x10/0x12
-[  509.137925]  look_up_lock_class+0xf1/0x130
-[  509.142027]  register_lock_class+0x54/0x730
-[  509.146214]  __lock_acquire+0x85/0xf00
-[  509.149964]  ? lock_is_held_type+0xff/0x170
-[  509.154154]  lock_acquire+0xca/0x210
-[  509.157730]  ? sev_lock_vcpus_for_migration+0x82/0x150
-[  509.162872]  __mutex_lock_common+0xe4/0xe30
-[  509.167054]  ? sev_lock_vcpus_for_migration+0x82/0x150
-[  509.172194]  ? sev_lock_vcpus_for_migration+0x82/0x150
-[  509.177335]  ? rcu_lock_release+0x17/0x20
-[  509.181348]  mutex_lock_killable_nested+0x20/0x30
-[  509.186053]  sev_lock_vcpus_for_migration+0x82/0x150
-[  509.191019]  sev_vm_move_enc_context_from+0x190/0x750
-[  509.196072]  ? lock_release+0x20e/0x290
-[  509.199912]  kvm_vm_ioctl_enable_cap+0x29d/0x320
-[  509.204531]  kvm_vm_ioctl+0xc58/0x1060
-[  509.208285]  ? __this_cpu_preempt_check+0x13/0x20
-[  509.212989]  __se_sys_ioctl+0x77/0xc0
-[  509.216656]  __x64_sys_ioctl+0x1d/0x20
-[  509.220408]  do_syscall_64+0x44/0xa0
-[  509.223987]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  509.229041] RIP: 0033:0x7f91b8531347
-[  509.232618] Code: 5d c3 cc 48 8b 05 f9 2f 07 00 64 c7 00 26 00 00
-00 48 c7 c0 ff ff ff ff c3 cc cc cc cc cc cc cc cc cc cc b8 10 00 00
-00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d c9 2f 07 00 f7 d8 64 89
-01 48
-[  509.251371] RSP: 002b:00007ffef7feb778 EFLAGS: 00000246 ORIG_RAX:
-0000000000000010
-[  509.258940] RAX: ffffffffffffffda RBX: 0000000000af6210 RCX: 00007f91b8531347
-[  509.266073] RDX: 00007ffef7feb790 RSI: 000000004068aea3 RDI: 0000000000000018
-[  509.273207] RBP: 00007ffef7feba10 R08: 000000000020331b R09: 000000000000000f
-[  509.280338] R10: 0000000000000001 R11: 0000000000000246 R12: 0000000000af8df0
-[  509.287470] R13: 0000000000afa3e0 R14: 0000000000000000 R15: 0000000000af7800
-[  509.294607]  </TASK>
+This has been rebased on v5.18-rc1, several patches in the previous
+series already landed and have been dropped.
 
+Patch 1 adds the dt bindings for the grf changes necessary.
+Patch 2 adds support to the grf driver to set the rk3566 otg clock
+source.
+Patch 3 adds the dwc3 nodes to the rk356x device tree includes.
+Patch 4 enables the dwc3 nodes on the Quartz64 Model A.
+Patch 5 enables the dwc3 nodes on the rk3568-evb.
 
+Please review and apply.
 
-> >
-> > Warning example:
-> > ============================================
-> > WARNING: possible recursive locking detected
-> > 5.17.0-dbg-DEV #15 Tainted: G           O
-> > --------------------------------------------
-> > sev_migrate_tes/18859 is trying to acquire lock:
-> > ffff8d672d484238 (&vcpu->mutex){+.+.}-{3:3}, at: sev_lock_vcpus_for_migration+0x7e/0x150
-> > but task is already holding lock:
-> > ffff8d67703f81f8 (&vcpu->mutex){+.+.}-{3:3}, at: sev_lock_vcpus_for_migration+0x7e/0x150
-> > other info that might help us debug this:
-> >  Possible unsafe locking scenario:
-> >        CPU0
-> >        ----
-> >   lock(&vcpu->mutex);
-> >   lock(&vcpu->mutex);
-> >  *** DEADLOCK ***
-> >  May be due to missing lock nesting notation
-> > 3 locks held by sev_migrate_tes/18859:
-> >  #0: ffff9302f91323b8 (&kvm->lock){+.+.}-{3:3}, at: sev_vm_move_enc_context_from+0x96/0x740
-> >  #1: ffff9302f906a3b8 (&kvm->lock/1){+.+.}-{3:3}, at: sev_vm_move_enc_context_from+0xae/0x740
-> >  #2: ffff8d67703f81f8 (&vcpu->mutex){+.+.}-{3:3}, at: sev_lock_vcpus_for_migration+0x7e/0x150
-> >
-> > Fixes: b56639318bb2b ("KVM: SEV: Add support for SEV intra host migration")
-> > Reported-by: John Sperbeck<jsperbeck@google.com>
-> > Suggested-by: David Rientjes <rientjes@google.com>
-> > Suggested-by: Sean Christopherson <seanjc@google.com>
-> > Cc: Paolo Bonzini <pbonzini@redhat.com>
-> > Cc: kvm@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > Signed-off-by: Peter Gonda <pgonda@google.com>
-> >
-> > ---
-> >
-> > V3
-> >  * Updated signature to enum to self-document argument.
-> >  * Updated comment as Seanjc@ suggested.
-> >
-> > Tested by running sev_migrate_tests with lockdep enabled. Before we see
-> > a warning from sev_lock_vcpus_for_migration(). After we get no warnings.
-> >
-> > ---
-> >  arch/x86/kvm/svm/sev.c | 22 +++++++++++++++++-----
-> >  1 file changed, 17 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-> > index 75fa6dd268f0..f66550ec8eaf 100644
-> > --- a/arch/x86/kvm/svm/sev.c
-> > +++ b/arch/x86/kvm/svm/sev.c
-> > @@ -1591,14 +1591,26 @@ static void sev_unlock_two_vms(struct kvm *dst_kvm, struct kvm *src_kvm)
-> >         atomic_set_release(&src_sev->migration_in_progress, 0);
-> >  }
-> >
-> > +/*
-> > + * To suppress lockdep false positives, subclass all vCPU mutex locks by
-> > + * assigning even numbers to the source vCPUs and odd numbers to destination
-> > + * vCPUs based on the vCPU's index.
-> > + */
-> > +enum sev_migration_role {
-> > +       SEV_MIGRATION_SOURCE = 0,
-> > +       SEV_MIGRATION_TARGET,
-> > +       SEV_NR_MIGRATION_ROLES,
-> > +};
-> >
-> > -static int sev_lock_vcpus_for_migration(struct kvm *kvm)
-> > +static int sev_lock_vcpus_for_migration(struct kvm *kvm,
-> > +                                       enum sev_migration_role role)
-> >  {
-> >         struct kvm_vcpu *vcpu;
-> >         unsigned long i, j;
-> >
-> > -       kvm_for_each_vcpu(i, vcpu, kvm) {
-> > -               if (mutex_lock_killable(&vcpu->mutex))
-> > +       kvm_for_each_vcpu(i, vcpu, kvm) {
-> > +               if (mutex_lock_killable_nested(
-> > +                           &vcpu->mutex, i * SEV_NR_MIGRATION_ROLES + role))
-> >                         goto out_unlock;
-> >         }
-> >
-> > @@ -1745,10 +1757,10 @@ int sev_vm_move_enc_context_from(struct kvm *kvm, unsigned int source_fd)
-> >                 charged = true;
-> >         }
-> >
-> > -       ret = sev_lock_vcpus_for_migration(kvm);
-> > +       ret = sev_lock_vcpus_for_migration(kvm, SEV_MIGRATION_SOURCE);
-> >         if (ret)
-> >                 goto out_dst_cgroup;
-> > -       ret = sev_lock_vcpus_for_migration(source_kvm);
-> > +       ret = sev_lock_vcpus_for_migration(source_kvm, SEV_MIGRATION_TARGET);
-> >         if (ret)
-> >                 goto out_dst_vcpu;
-> >
-> > --
-> > 2.35.1.1178.g4f1659d476-goog
-> >
->
-> Does sev_migrate_tests survive lockdep checking if
-> NR_MIGRATE_TEST_VCPUS is changed to 16?
+Very Respectfully,
+Peter Geis
+
+Changelog:
+v5:
+- Rebase on v5.18-rc1
+- Drop patches already merged
+- Collect acks and tested-by
+
+v4:
+- Add SoC specific binding, fall back to core.
+ 
+v3:
+- Drop the dwc-of-simple method in favor of using dwc core.
+- Drop all quirks except snps,dis_u2_susphy_quirk, which is necessary to
+  prevent device detection failures in some states.
+- Drop the reset-names.
+
+v2:
+- Add a dt-bindings fix for grf.yaml
+- Unify the reset names.
+- Constrain the force usb2 clock dwc3 patch to only supported variants of
+the ip.
+- Change dwc3-of-simple to support of-match-data.
+- Drop the PCLK-PIPE clk.
+- Rename the usb nodes to be more friendly.
+- Add the rk3568-evb enable patch.
+
+Michael Riesch (1):
+  arm64: dts: rockchip: add usb3 support to rk3568-evb1-v10
+
+Peter Geis (4):
+  dt-bindings: soc: grf: add rk3566-pipe-grf compatible
+  soc: rockchip: set dwc3 clock for rk3566
+  arm64: dts: rockchip: add rk356x dwc3 usb3 nodes
+  arm64: dts: rockchip: enable dwc3 on quartz64-a
+
+ .../devicetree/bindings/soc/rockchip/grf.yaml |  1 +
+ .../boot/dts/rockchip/rk3566-quartz64-a.dts   | 37 +++++++++++++++
+ arch/arm64/boot/dts/rockchip/rk3566.dtsi      | 11 +++++
+ .../boot/dts/rockchip/rk3568-evb1-v10.dts     | 46 +++++++++++++++++++
+ arch/arm64/boot/dts/rockchip/rk3568.dtsi      |  9 ++++
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi      | 35 +++++++++++++-
+ drivers/soc/rockchip/grf.c                    | 17 +++++++
+ 7 files changed, 155 insertions(+), 1 deletion(-)
+
+-- 
+2.25.1
+
