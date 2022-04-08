@@ -2,96 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49400C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9E2C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233443AbiDHMEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 08:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37926 "EHLO
+        id S235367AbiDHMEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 08:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235349AbiDHMEk (ORCPT
+        with ESMTP id S235364AbiDHMEo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 08:04:40 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285BD38D86;
-        Fri,  8 Apr 2022 05:02:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649419357; x=1680955357;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=sCFFIRundsiEG0F87Pt8A6xGTYeOaxx52Lkkg4+BAsM=;
-  b=TePv2hPqYJeST5BTdG1IspynPezj4pjnObkXvHREvJmbDOuOYHL2NKLQ
-   37+4RwAcqInqKGD45zgNUtavOs2HLNyyPG40OW4+bxPrvRIBmBUnWtMIM
-   ehjL0dFoWTa0pz7DrF5ikopzqku1uXYYoV7KaqqE0TZbjXZaIEEP8Zow2
-   GKq9elNxKINf246xXgt2yyCa0iA4uThfRC3QS4FGxLC7Q0jcGJ00KBvh+
-   wvW2nsAn2Cy2zMpN0Q7XJsZCgNzY90hzRo8kTEwas1S+3xZzEVYdmV6kC
-   4Yk4vgFhaGGFx1ibe831yTQWnsa51HmSmFBs0DVc35wdnKgn8DrU+89CK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="261570346"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="261570346"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:02:36 -0700
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="609731615"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 05:02:34 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ncnGP-000HBY-3f;
-        Fri, 08 Apr 2022 14:58:53 +0300
-Date:   Fri, 8 Apr 2022 14:58:52 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v2 2/3] tty: Add lookahead param to receive_buf
-Message-ID: <YlAjfAab+Oh3HcCR@smile.fi.intel.com>
-References: <20220408113954.9749-1-ilpo.jarvinen@linux.intel.com>
- <20220408113954.9749-3-ilpo.jarvinen@linux.intel.com>
+        Fri, 8 Apr 2022 08:04:44 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CEA48E1B1
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 05:02:38 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 238C2PMO129047;
+        Fri, 8 Apr 2022 07:02:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649419345;
+        bh=hDLNodDdpi6TZWA1AbU7VZjdLOyyX1KQ7LxqGnZ4BvI=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=RnzC8HD8GegY0rJpt24BgykwZQ1r5Nqp/7+uKuORKNN9VF/xbyU1mGKXJf0e5At1y
+         NADJxx9G3Oj4brYGKt17KZziTVoyuCSDpxy0d8X4HSNciHUaZG6kg7O3OvXBX1z4Gw
+         BPCSe+pruCO1rcwTu3REQXt02vwHJG8a8xroBcjs=
+Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 238C2Prt009926
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 8 Apr 2022 07:02:25 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 8
+ Apr 2022 07:02:24 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 8 Apr 2022 07:02:23 -0500
+Received: from [128.247.81.242] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 238C2Nmq061776;
+        Fri, 8 Apr 2022 07:02:23 -0500
+Message-ID: <0e0c98d9-d6a9-cd02-a67d-53492614e8ae@ti.com>
+Date:   Fri, 8 Apr 2022 07:02:23 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220408113954.9749-3-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] soc: ti: pruss: using pm_runtime_resume_and_get instead
+ of pm_runtime_get_sync
+Content-Language: en-US
+To:     <cgel.zte@gmail.com>, <nm@ti.com>
+CC:     <ssantosh@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220408080853.2494292-1-chi.minghao@zte.com.cn>
+From:   Dave Gerlach <d-gerlach@ti.com>
+In-Reply-To: <20220408080853.2494292-1-chi.minghao@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 02:39:53PM +0300, Ilpo Järvinen wrote:
-> After lookahead for XON/XOFF characters is added by the next
-> patch, the receive side needs to ensure the flow-control
-> actions are not retaken later on when those same characters
-> get read by TTY.
+
+
+On 4/8/22 03:08, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
 > 
-> Thus, pass lookahead count to receive_buf and skip
-> flow-control character actions if already taken for the
-> character in question. Lookahead count will become live after
-> the next patch.
+> Using pm_runtime_resume_and_get is more appropriate
+> for simplifing code
+> 
 
-...
+Looks good to me.
 
-> +		if (c == STOP_CHAR(tty)) {
-> +			if (!lookahead_done)
+Reviewed-by: Dave Gerlach <d-gerlach@ti.com>
 
-But now it can be as below
-
-		if (c == STOP_CHAR(tty) && !lookahead_done)
-
-> +				stop_tty(tty);
-> +		} else if ((c == START_CHAR(tty) && !lookahead_done) ||
->  			 (tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
->  			  c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
->  			  c != SUSP_CHAR(tty))) {
-
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> ---
+>  drivers/soc/ti/pruss.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
+> index b36779309e49..0e4ba0f89533 100644
+> --- a/drivers/soc/ti/pruss.c
+> +++ b/drivers/soc/ti/pruss.c
+> @@ -279,10 +279,9 @@ static int pruss_probe(struct platform_device *pdev)
+>  	platform_set_drvdata(pdev, pruss);
+>  
+>  	pm_runtime_enable(dev);
+> -	ret = pm_runtime_get_sync(dev);
+> +	ret = pm_runtime_resume_and_get(dev);
+>  	if (ret < 0) {
+>  		dev_err(dev, "couldn't enable module\n");
+> -		pm_runtime_put_noidle(dev);
+>  		goto rpm_disable;
+>  	}
+>  
