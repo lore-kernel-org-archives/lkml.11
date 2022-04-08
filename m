@@ -2,148 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC52C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 00:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 00:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233007AbiDHAlC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 20:41:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55926 "EHLO
+        id S233013AbiDHAlt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 20:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232174AbiDHAk5 (ORCPT
+        with ESMTP id S232174AbiDHAls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 20:40:57 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C0A173366;
-        Thu,  7 Apr 2022 17:38:55 -0700 (PDT)
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 2380cT7T020101;
-        Fri, 8 Apr 2022 09:38:29 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 2380cT7T020101
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649378309;
-        bh=cNjeDzN9weH69RQ1VnbqR1X2JYg4D1jJ+YXitrVGUX0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=cg42i28bG+Ep5ujIFOo+HQxtafDM12rF0Hl0eDCFDbaadSlcSUvjDdGlRsDXtecGP
-         zPieKsxZdn2ZWOs7k8cbK1tW9SubohjUJIkOHpdgZegAs4XEAl2Ww2ArW8/mgcyIVw
-         3r3E8x2kNx8sxMvqMgRjcD8woYLReg86i+IAOn0akOzIOIqWg8t49iUFRVbDf37cuZ
-         BrL5rAd/l48P4VIFh1ts0rZGyi3ySwNO5UqOxP409gizRxtzeB7MfslhYubIeayrD6
-         dCmQUicolzwXlgXX+0987LGxquV1uU28Ng8uctqBO6nut8hI2DMY5/uht7NjzIIsqq
-         JqPu4iFsqqOxQ==
-X-Nifty-SrcIP: [209.85.216.45]
-Received: by mail-pj1-f45.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so8097598pjk.4;
-        Thu, 07 Apr 2022 17:38:29 -0700 (PDT)
-X-Gm-Message-State: AOAM530G33byvCygNBqTmoVw18TpJYKZ2y2puqkp90MQnG0iWvra3Pr3
-        +BC9WRFlS3ejud7NlHn4dJW/14Wqz6gMkvcEMkw=
-X-Google-Smtp-Source: ABdhPJw6lsS62tcWGGnhg03UEj21K0wbz57Z3DNmjww+2jiFGcHutlaNy92LYhxGd5kYikUskHoUuCIkgyBAGn3lzxM=
-X-Received: by 2002:a17:902:b183:b0:14f:c266:20d5 with SMTP id
- s3-20020a170902b18300b0014fc26620d5mr16718530plr.136.1649378308545; Thu, 07
- Apr 2022 17:38:28 -0700 (PDT)
+        Thu, 7 Apr 2022 20:41:48 -0400
+Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13002200
+        for <linux-kernel@vger.kernel.org>; Thu,  7 Apr 2022 17:39:47 -0700 (PDT)
+Received: by mail-pg1-f178.google.com with SMTP id 125so6374464pgc.11
+        for <linux-kernel@vger.kernel.org>; Thu, 07 Apr 2022 17:39:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0Xk1+fs4EReZHznvydunkPsq1TyAFPHWXf8m9Tth19E=;
+        b=fI5tUm7ynALpjJ8wDQj5vFRDAYLzHnU5gAS4asSzYXKeN+XyPXfKmi0RYelE/q26jB
+         EkU4Y/N0mLVwh80d7bDmgjTPdfkCB6q55thNrgVNZYe/ubEKN9eBDHUZMwNGQgvhx5eu
+         0UG2Dy4QaAqaFvqlBjKnppf2blRCdWXSdMZY8MLQPQzEKTLpdzg5EKZ/N8L+Y9oncsp4
+         rqogK0z8jTcHm6dwUhecbFJ5wHUvhizjH0Di0Ru/hg4/RtTSYBIYiE9IUtobsAbiq1NW
+         5gXORgUybpWIntDpO3ArreFtf/aylajof6TO1Zla5t0WTgNSOkxTKU1XYhCk4z7iAUNA
+         teCw==
+X-Gm-Message-State: AOAM5314Kfd+gpY0j07BgpnAtjaE3BxfP4rtVD+O0H34/hMQ/vouDQgB
+        qJKKMt45d8OE28gffKsC9Ys=
+X-Google-Smtp-Source: ABdhPJztJZ7L+/5PHv3zgM7cX3sQyQR4/FykBiwQshDvB8dL1MiwJOzEg2s1fSMTGpxDxXJwpGGhvg==
+X-Received: by 2002:a05:6a00:3018:b0:4fa:d533:45e5 with SMTP id ay24-20020a056a00301800b004fad53345e5mr16703828pfb.13.1649378386475;
+        Thu, 07 Apr 2022 17:39:46 -0700 (PDT)
+Received: from fedora (136-24-99-118.cab.webpass.net. [136.24.99.118])
+        by smtp.gmail.com with ESMTPSA id k11-20020a056a00168b00b004f7e1555538sm23597254pfc.190.2022.04.07.17.39.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 17:39:46 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 17:39:43 -0700
+From:   Dennis Zhou <dennis@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Qi Zheng <zhengqi.arch@bytedance.com>, tj@kernel.org, cl@linux.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        zhouchengming@bytedance.com, songmuchun@bytedance.com,
+        Ming Lei <ming.lei@redhat.com>
+Subject: Re: [PATCH] percpu_ref: call wake_up_all() after percpu_ref_put()
+ completes
+Message-ID: <Yk+ETwQ2aQmCgrfk@fedora>
+References: <20220407103335.36885-1-zhengqi.arch@bytedance.com>
+ <20220407155752.769632b737f79b038cf83742@linux-foundation.org>
 MIME-Version: 1.0
-References: <20220406153023.500847-1-masahiroy@kernel.org> <20220406153023.500847-7-masahiroy@kernel.org>
- <CAKwvOdm7NBPj43sRw-_dtjzgpHeOHnQ9uB3rSg3rYhUu0_PN7A@mail.gmail.com> <eedd7486cd484c359be90e6138b0b2be@AcuMS.aculab.com>
-In-Reply-To: <eedd7486cd484c359be90e6138b0b2be@AcuMS.aculab.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 8 Apr 2022 09:37:37 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASJKMqfaifGA9r_cYqgkVgL6OPCfjFZCGN4mZwxW_rZvw@mail.gmail.com>
-Message-ID: <CAK7LNASJKMqfaifGA9r_cYqgkVgL6OPCfjFZCGN4mZwxW_rZvw@mail.gmail.com>
-Subject: Re: [PATCH 6/7] kbuild: make *.mod not depend on *.o
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220407155752.769632b737f79b038cf83742@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 6:39 AM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Nick Desaulniers
-> > Sent: 07 April 2022 18:59
-> >
-> > On Wed, Apr 6, 2022 at 8:31 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> > >
-> > > The dependency
-> > >
-> > >     $(obj)/%.mod: $(obj)/%$(mod-prelink-ext).o
-> > >
-> > > ... exists because *.mod files previously contained undefined symbols,
-> > > which are computed from *.o files when CONFIG_TRIM_UNUSED_KSYMS=y.
-> > >
-> > > Now that the undefined symbols are put into separate *.usyms files,
-> > > there is no reason to make *.mod depend on *.o files.
-> > >
-> > > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > > ---
-> > >
-> > >  Makefile               | 3 ++-
-> > >  scripts/Makefile.build | 5 ++---
-> > >  2 files changed, 4 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/Makefile b/Makefile
-> > > index 82ee893909e9..e915aacd02b0 100644
-> > > --- a/Makefile
-> > > +++ b/Makefile
-> > > @@ -1792,7 +1792,8 @@ ifdef single-build
-> > >
-> > >  # .ko is special because modpost is needed
-> > >  single-ko := $(sort $(filter %.ko, $(MAKECMDGOALS)))
-> > > -single-no-ko := $(sort $(patsubst %.ko,%.mod, $(MAKECMDGOALS)))
-> > > +single-no-ko := $(filter-out $(single-ko), $(MAKECMDGOALS)) \
-> > > +               $(foreach x, o mod, $(patsubst %.ko, %.$x, $(single-ko)))
-> >
-> > I'm on board with this patch, and the overall goal with the series. My
-> > brain is having a hard time parsing `o mod` though. Can you walk me
-> > through that? Are those targets for .o and .mod files, respectively?
+Hello,
 
+On Thu, Apr 07, 2022 at 03:57:52PM -0700, Andrew Morton wrote:
+> (cc Ming Lei)
+> 
+> On Thu,  7 Apr 2022 18:33:35 +0800 Qi Zheng <zhengqi.arch@bytedance.com> wrote:
+> 
+> > In the percpu_ref_call_confirm_rcu(), we call the wake_up_all()
+> > before calling percpu_ref_put(), which will cause the value of
+> > percpu_ref to be unstable when percpu_ref_switch_to_atomic_sync()
+> > returns.
+> > 
+> > 	CPU0				CPU1
+> > 
+> > percpu_ref_switch_to_atomic_sync(&ref)
+> > --> percpu_ref_switch_to_atomic(&ref)
+> >     --> percpu_ref_get(ref);	/* put after confirmation */
+> > 	call_rcu(&ref->data->rcu, percpu_ref_switch_to_atomic_rcu);
+> > 
+> > 					percpu_ref_switch_to_atomic_rcu
+> > 					--> percpu_ref_call_confirm_rcu
+> > 					    --> data->confirm_switch = NULL;
+> > 						wake_up_all(&percpu_ref_switch_waitq);
+> > 
+> >     /* here waiting to wake up */
+> >     wait_event(percpu_ref_switch_waitq, !ref->data->confirm_switch);
+> > 						(A)percpu_ref_put(ref);
+> > /* The value of &ref is unstable! */
+> > percpu_ref_is_zero(&ref)
+> > 						(B)percpu_ref_put(ref);
+> > 
+> > As shown above, assuming that the counts on each cpu add up to 0 before
+> > calling percpu_ref_switch_to_atomic_sync(), we expect that after switching
+> > to atomic mode, percpu_ref_is_zero() can return true. But actually it will
+> > return different values in the two cases of A and B, which is not what
+> > we expected.
+> > 
+> > Maybe the original purpose of percpu_ref_switch_to_atomic_sync() is
+> > just to ensure that the conversion to atomic mode is completed, but it
+> > should not return with an extra reference count.
+> > 
+> > Calling wake_up_all() after percpu_ref_put() ensures that the value of
+> > percpu_ref is stable after percpu_ref_switch_to_atomic_sync() returns.
+> > So just do it.
+> 
+> Thanks.  I'll grab this, but shall await input from others before doing
+> anything else with it.
+> 
 
-Yes.
+Seems right to me. The percpu_ref protects the __percpu_ref_exit(), not
+the waiters.
 
-Kbuild can build a module individually.
+Acked-by: Dennis Zhou <dennis@kernel.org>
 
-    make  foo/bar/baz.ko
+Thanks,
+Dennis
 
-(but modpost check does not work well)
-
-To do this, Kbuild needs to descend to
-the directory and generate
-foo/bar/baz.o  and  foo/bar/baz.mod.
-
-Previously, foo/bar/baz.o was generated as a
-prerequisite of foo/bar/baz.mod, but now we
-need to request Kbuild to generate both of them.
-
-
-
-
-
-> I think I'd do:
-> single-no-ko := $(filter-out $(single-ko), $(MAKECMDGOALS))
-> single-no-ko += $(patsubst %.ko, %.o, $(single-ko))
-> single-no-ko += $(patsubst %.ko, %.mod, $(single-ko))
->
-> Although you can use the simpler SYSV make suffix substitution syntax:
-> single-no-ko += $(single-ko:.ko=.o) $(single-ko:.ko=.mod)
-
-
-Right.   I tend to use $(patsubst ), but
-in some places, shorter SYSV syntax is used.
-I admit inconsistency.
-
-
-
-
-
->
->         David
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+> > Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+> > +++ b/lib/percpu-refcount.c
+> > @@ -154,13 +154,14 @@ static void percpu_ref_call_confirm_rcu(struct rcu_head *rcu)
+> >  
+> >  	data->confirm_switch(ref);
+> >  	data->confirm_switch = NULL;
+> > -	wake_up_all(&percpu_ref_switch_waitq);
+> >  
+> >  	if (!data->allow_reinit)
+> >  		__percpu_ref_exit(ref);
+> >  
+> >  	/* drop ref from percpu_ref_switch_to_atomic() */
+> >  	percpu_ref_put(ref);
+> > +
+> > +	wake_up_all(&percpu_ref_switch_waitq);
+> >  }
+> >  
+> >  static void percpu_ref_switch_to_atomic_rcu(struct rcu_head *rcu)
+> 
