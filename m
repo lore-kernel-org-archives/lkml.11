@@ -2,139 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EABCC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C26C4332F
 	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 09:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234083AbiDHJR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 05:17:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
+        id S233854AbiDHJRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 05:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233072AbiDHJME (ORCPT
+        with ESMTP id S233210AbiDHJMd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 05:12:04 -0400
+        Fri, 8 Apr 2022 05:12:33 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B3C11F7B0;
-        Fri,  8 Apr 2022 02:09:10 -0700 (PDT)
-Date:   Fri, 08 Apr 2022 09:09:08 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9373224CED5;
+        Fri,  8 Apr 2022 02:09:21 -0700 (PDT)
+Date:   Fri, 08 Apr 2022 09:09:18 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649408949;
+        s=2020; t=1649408959;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Evvz/PXDJGJDoyiWegg09d/VEn3ghqS3QJIybSX0JeA=;
-        b=w2Sl4JOrwx82OpEkk3kJeV5+rT5ITfUVMZ05mWVEnB8MyMs4XjkwoC2OUdnkB2Q1KFFaH7
-        BduPvPsKn+n7a7JTSxfCk8gVnMTcuEgr39t4TJyuMGq129RPho4iE180Fo3klafcbJ8LmA
-        gu0J4JDsTvFzYdno4gtMJHF6RUvcRfYOROD7TunJPYorqTomp/jVYFwijCirG9sBhqCEHT
-        PzWJBFMFyBznhZloO+FAll6Cc9lwled6LxwPnaKKQ638eTm1ojPk5Jzgf/GqmYa+9MLOEc
-        IOIeb++P6erCPl3hLC55GWoUvBScLa1vrRcCCqctufOKXCDzKvo3Y0Rb1gytkQ==
+        bh=0oKqHiLnMom7KHZmkSWx6feYRwXfc7vGRty8GGglGvg=;
+        b=JhNmRiTFD781Agkk91aVKYy2b8EloJL6ik/SdszItgzRhYBfFC5JU6hRxTzW3a0z/GlwbU
+        l54bIxqPORFhxmNt+7JeDDB8RssmtxXJd91F05GiHl3AmqjZEY82q0CSVt82W2TLl6Lg/A
+        yPv8Yv7Ri5dnSaUVhs1sQrtStEIqbvbi9pQX9ay0lXY69VHRzGrZOMwiZmGth6QGBZEbvQ
+        HAkMBZjzssvTmTv3OWCODXySlHvkn8pIT4q1U94QKEon9l/TjZwqtCpONItZ8sAoBuHMsr
+        Z4/rhb/dI9YCkIm9D9+ZdWhXeKq81E7DvqIV6BmhQ0Gwb9LOfxKSyzIlMdxpAA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649408949;
+        s=2020e; t=1649408959;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Evvz/PXDJGJDoyiWegg09d/VEn3ghqS3QJIybSX0JeA=;
-        b=MDbB+4ey4sNoKpqzTBr/crZIQ5rvcwGowAeNkNV928SLGWjT+XFSgRVorEXRDbcev6g3Rk
-        qG07Jqs13uiAGIBA==
+        bh=0oKqHiLnMom7KHZmkSWx6feYRwXfc7vGRty8GGglGvg=;
+        b=ttvozkTJ8TLa9AuteV3UFkILePIxhBEGsdtkQ/zw5oUQ45Rc6eU38O05FbapiTQljlQaET
+        f7XPsX3UBcfsddBQ==
 From:   "tip-bot2 for Brijesh Singh" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/sev] x86/sev: Add a helper for the PVALIDATE instruction
+Subject: [tip: x86/sev] KVM: SVM: Define sev_features and VMPL field in the VMSA
 Cc:     Brijesh Singh <brijesh.singh@amd.com>,
         Borislav Petkov <bp@suse.de>,
         Venu Busireddy <venu.busireddy@oracle.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220307213356.2797205-14-brijesh.singh@amd.com>
-References: <20220307213356.2797205-14-brijesh.singh@amd.com>
+In-Reply-To: <20220307213356.2797205-2-brijesh.singh@amd.com>
+References: <20220307213356.2797205-2-brijesh.singh@amd.com>
 MIME-Version: 1.0
-Message-ID: <164940894813.389.3850536396114238497.tip-bot2@tip-bot2>
+Message-ID: <164940895872.389.9988227433375119855.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/sev branch of tip:
 
-Commit-ID:     0bd6f1e526070271dbe0f626b123b4f6b01dc79c
-Gitweb:        https://git.kernel.org/tip/0bd6f1e526070271dbe0f626b123b4f6b01=
-dc79c
+Commit-ID:     046f773be106ec8eb92b13414c90f8e279deffe0
+Gitweb:        https://git.kernel.org/tip/046f773be106ec8eb92b13414c90f8e279deffe0
 Author:        Brijesh Singh <brijesh.singh@amd.com>
-AuthorDate:    Wed, 09 Feb 2022 12:10:07 -06:00
+AuthorDate:    Mon, 07 Mar 2022 15:33:11 -06:00
 Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Wed, 06 Apr 2022 13:10:30 +02:00
+CommitterDate: Tue, 05 Apr 2022 19:09:27 +02:00
 
-x86/sev: Add a helper for the PVALIDATE instruction
+KVM: SVM: Define sev_features and VMPL field in the VMSA
 
-An SNP-active guest uses the PVALIDATE instruction to validate or
-rescind the validation of a guest page=E2=80=99s RMP entry. Upon completion, a
-return code is stored in EAX and rFLAGS bits are set based on the return
-code. If the instruction completed successfully, the carry flag (CF)
-indicates if the content of the RMP were changed or not.
+The hypervisor uses the sev_features field (offset 3B0h) in the Save State
+Area to control the SEV-SNP guest features such as SNPActive, vTOM,
+ReflectVC etc. An SEV-SNP guest can read the sev_features field through
+the SEV_STATUS MSR.
 
-See AMD APM Volume 3 for additional details.
+While at it, update dump_vmcb() to log the VMPL level.
+
+See APM2 Table 15-34 and B-4 for more details.
 
 Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Venu Busireddy <venu.busireddy@oracle.com>
-Link: https://lore.kernel.org/r/20220307213356.2797205-14-brijesh.singh@amd.c=
-om
+Link: https://lore.kernel.org/r/20220307213356.2797205-2-brijesh.singh@amd.com
 ---
- arch/x86/include/asm/sev.h | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ arch/x86/include/asm/svm.h | 6 ++++--
+ arch/x86/kvm/svm/svm.c     | 4 ++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
-index 17b75f6..4ee9897 100644
---- a/arch/x86/include/asm/sev.h
-+++ b/arch/x86/include/asm/sev.h
-@@ -60,6 +60,9 @@ extern void vc_no_ghcb(void);
- extern void vc_boot_ghcb(void);
- extern bool handle_vc_boot_ghcb(struct pt_regs *regs);
-=20
-+/* Software defined (when rFlags.CF =3D 1) */
-+#define PVALIDATE_FAIL_NOUPDATE		255
-+
- #ifdef CONFIG_AMD_MEM_ENCRYPT
- extern struct static_key_false sev_es_enable_key;
- extern void __sev_es_ist_enter(struct pt_regs *regs);
-@@ -87,12 +90,30 @@ extern enum es_result sev_es_ghcb_hv_call(struct ghcb *gh=
-cb,
- 					  struct es_em_ctxt *ctxt,
- 					  u64 exit_code, u64 exit_info_1,
- 					  u64 exit_info_2);
-+static inline int pvalidate(unsigned long vaddr, bool rmp_psize, bool valida=
-te)
-+{
-+	bool no_rmpupdate;
-+	int rc;
-+
-+	/* "pvalidate" mnemonic support in binutils 2.36 and newer */
-+	asm volatile(".byte 0xF2, 0x0F, 0x01, 0xFF\n\t"
-+		     CC_SET(c)
-+		     : CC_OUT(c) (no_rmpupdate), "=3Da"(rc)
-+		     : "a"(vaddr), "c"(rmp_psize), "d"(validate)
-+		     : "memory", "cc");
-+
-+	if (no_rmpupdate)
-+		return PVALIDATE_FAIL_NOUPDATE;
-+
-+	return rc;
-+}
- #else
- static inline void sev_es_ist_enter(struct pt_regs *regs) { }
- static inline void sev_es_ist_exit(void) { }
- static inline int sev_es_setup_ap_jump_table(struct real_mode_header *rmh) {=
- return 0; }
- static inline void sev_es_nmi_complete(void) { }
- static inline int sev_es_efi_map_ghcbs(pgd_t *pgd) { return 0; }
-+static inline int pvalidate(unsigned long vaddr, bool rmp_psize, bool valida=
-te) { return 0; }
- #endif
-=20
- #endif
+diff --git a/arch/x86/include/asm/svm.h b/arch/x86/include/asm/svm.h
+index f70a510..f2d01f3 100644
+--- a/arch/x86/include/asm/svm.h
++++ b/arch/x86/include/asm/svm.h
+@@ -282,7 +282,8 @@ struct vmcb_save_area {
+ 	struct vmcb_seg ldtr;
+ 	struct vmcb_seg idtr;
+ 	struct vmcb_seg tr;
+-	u8 reserved_1[43];
++	u8 reserved_1[42];
++	u8 vmpl;
+ 	u8 cpl;
+ 	u8 reserved_2[4];
+ 	u64 efer;
+@@ -347,7 +348,8 @@ struct vmcb_save_area {
+ 	u64 sw_exit_info_1;
+ 	u64 sw_exit_info_2;
+ 	u64 sw_scratch;
+-	u8 reserved_11[56];
++	u64 sev_features;
++	u8 reserved_11[48];
+ 	u64 xcr0;
+ 	u8 valid_bitmap[16];
+ 	u64 x87_state_gpa;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index bd4c64b..81cb518 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3117,8 +3117,8 @@ static void dump_vmcb(struct kvm_vcpu *vcpu)
+ 	       "tr:",
+ 	       save01->tr.selector, save01->tr.attrib,
+ 	       save01->tr.limit, save01->tr.base);
+-	pr_err("cpl:            %d                efer:         %016llx\n",
+-		save->cpl, save->efer);
++	pr_err("vmpl: %d   cpl:  %d               efer:          %016llx\n",
++	       save->vmpl, save->cpl, save->efer);
+ 	pr_err("%-15s %016llx %-13s %016llx\n",
+ 	       "cr0:", save->cr0, "cr2:", save->cr2);
+ 	pr_err("%-15s %016llx %-13s %016llx\n",
