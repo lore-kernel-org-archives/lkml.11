@@ -2,155 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F72DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 15:44:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237770AbiDHPqU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 11:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
+        id S237754AbiDHPq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 11:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237751AbiDHPqI (ORCPT
+        with ESMTP id S231142AbiDHPq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 11:46:08 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CCF939DF;
-        Fri,  8 Apr 2022 08:44:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649432643; x=1680968643;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gcJtOPIX2/0B3YxiUGz/EyzDxp0SAsqb/v7kxf3M3BU=;
-  b=YIlwpyceiHV/M2vrggkScgP/UKLnGgX4BOlZCRHXsY94hevyknTt0V+F
-   W4tGLSACYa5ddnCJtgehG86r8Fw4X6+M4ordmitHeV1GeoQPzSt+fFvP2
-   EL6IQKBWeVhjawwd1UGPcQkfPKw02Ev2XQXkywbKSQl6AZ2g164mfsAwf
-   74PE0+6bFJquoP0IneXW6qdWQY/eec5Diaaz8q9L4xRyWsUndLUE0BeC3
-   +ejLVXqSJHwQ95Fnl4jb33fZ2Kv21BoMFyKxpGULirjSWcrVz6dzUKIJ7
-   F1kcuvgyvQomHEVjVf1wrp0fOdn8sbEmxXDktcFCpKc+ZSnznDDjjwJRl
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="259218709"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="259218709"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 08:43:44 -0700
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="589257568"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 08:43:36 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ncqiH-000Lsk-PD;
-        Fri, 08 Apr 2022 18:39:53 +0300
-Date:   Fri, 8 Apr 2022 18:39:53 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Qianggui Song <qianggui.song@amlogic.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marc Zyngier <maz@kernel.org>,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        openbmc@lists.ozlabs.org, linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH v4 05/13] pinctrl: samsung: Switch to use
- for_each_gpiochip_node() helper
-Message-ID: <YlBXSVyj88CqjGj4@smile.fi.intel.com>
-References: <20220401103604.8705-1-andriy.shevchenko@linux.intel.com>
- <20220401103604.8705-6-andriy.shevchenko@linux.intel.com>
- <d1f873c6-150f-5f4d-7aa8-7bb15823d991@linaro.org>
+        Fri, 8 Apr 2022 11:46:57 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534C7A7767
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 08:44:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=XVrmVkxbZFeUzPkrlxP1pQ2QZfiyERI64e73B6PlUOc=; b=sWAqtlNPk3PGf03p3TMbmgC1xH
+        bsKSGgaw1sxTQA9mevK0NXrgXDAaZK4olcHFJxwof3Ny+xuM2dQMb8FtC+fMyrUy3fZjQmLmMKiwv
+        QhvuhAi/MH6IP2E6db8RaR/kIGimmb255F3dQKEgNeAEQe7GjlJQuXAbM7bZeWQBtomWO4xvpWgyo
+        G79hDb1DDJVR5rzEixPIMpjr22wIcvI+KtQe/iqblOVG93ejdjcS07WrDmrk0DTTF1/iCU1xRPlUD
+        woKvDCsrxpEOmmur9R68BSXOzWtkhx9zcYvErvepoy3flXA3aB4b44VQ4KEAZ9GultFZ9mEuj1QfE
+        2ZvVc8HQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ncqn2-009war-Vp; Fri, 08 Apr 2022 15:44:49 +0000
+Date:   Fri, 8 Apr 2022 16:44:48 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Folio fixes for 5.18-rc1
+Message-ID: <YlBYcG5bm03dhqHI@casper.infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d1f873c6-150f-5f4d-7aa8-7bb15823d991@linaro.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 05:22:21PM +0200, Krzysztof Kozlowski wrote:
-> On 01/04/2022 12:35, Andy Shevchenko wrote:
-> > Switch the code to use for_each_gpiochip_node() helper.
+Fewer bug reports than I was expecting from enabling large folios.
+One that doesn't show up on x86 but does on arm64, one that shows up
+with hugetlbfs memory failure testing and one that shows up with page
+migration, which it turns out I wasn't testing because my last NUMA
+machine died.  Need to set up a qemu fake NUMA machine so I don't skip
+testing that in future.
 
-(...)
+The following changes since commit 3e732ebf7316ac83e8562db7e64cc68aec390a18:
 
-> >  /*
-> >   * Iterate over all driver pin banks to find one matching the name of node,
-> >   * skipping optional "-gpio" node suffix. When found, assign node to the bank.
-> >   */
-> > -static void samsung_banks_of_node_get(struct device *dev,
-> > -				      struct samsung_pinctrl_drv_data *d,
-> > -				      struct device_node *node)
-> > +static void samsung_banks_node_get(struct device *dev, struct samsung_pinctrl_drv_data *d)
-> 
-> This is worth simplification anyway, so please split it to separate patch.
+  Merge tag 'for_linus' of git://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost (2022-04-05 10:40:52 -0700)
 
-Not sure what to do and why it worth an additional churn.
+are available in the Git repository at:
 
-> >  {
-> >  	const char *suffix = "-gpio-bank";
-> >  	struct samsung_pin_bank *bank;
-> > -	struct device_node *child;
-> > +	struct fwnode_handle *child;
-> >  	/* Pin bank names are up to 4 characters */
-> >  	char node_name[20];
-> >  	unsigned int i;
-> > @@ -1038,17 +1037,17 @@ static void samsung_banks_of_node_get(struct device *dev,
-> >  			continue;
-> >  		}
-> >  
-> > -		for_each_child_of_node(node, child) {
-> > -			if (!of_find_property(child, "gpio-controller", NULL))
-> > -				continue;
-> 
-> This does not look equivalent. There are nodes without this property.
+  git://git.infradead.org/users/willy/pagecache.git tags/folio-5.18e
 
-Not sure I understand why not. The macro checks for the property and
-iterates over nodes that have this property.
+for you to fetch changes up to 98ea02597b9967c0817d29fee2f96d21b9e59ca5:
 
-Can you elaborate, please?
+  mm/rmap: Fix handling of hugetlbfs pages in page_vma_mapped_walk (2022-04-07 10:11:20 -0400)
 
-> > -			if (of_node_name_eq(child, node_name))
-> > +		for_each_gpiochip_node(dev, child) {
-> > +			struct device_node *np = to_of_node(child);
-> > +
-> > +			if (of_node_name_eq(np, node_name))
-> >  				break;
-> > -			else if (of_node_name_eq(child, bank->name))
-> > +			if (of_node_name_eq(np, bank->name))
-> >  				break;
-> >  		}
-> 
-> This patch has to wait till someone provides you a tested-by. I might do
-> it around next week.
+----------------------------------------------------------------
+Three folio-related fixes for 5.18:
 
-Fine with me, I will drop it from my repo for now.
+ - Remove the migration code's assumptions about large pages being PMD sized
 
-Thanks for review!
+ - Don't call pmd_page() on a non-leaf PMD
 
--- 
-With Best Regards,
-Andy Shevchenko
+ - Fix handling of hugetlbfs pages in page_vma_mapped_walk
 
+----------------------------------------------------------------
+Matthew Wilcox (Oracle) (5):
+      mm/huge_memory: Avoid calling pmd_page() on a non-leaf PMD
+      mm/migrate: Use a folio in alloc_migration_target()
+      mm/migrate: Use a folio in migrate_misplaced_transhuge_page()
+      mm: Add vma_alloc_folio()
+      mm/mempolicy: Use vma_alloc_folio() in new_page()
+
+zhenwei pi (1):
+      mm/rmap: Fix handling of hugetlbfs pages in page_vma_mapped_walk
+
+ include/linux/gfp.h  |  8 ++++--
+ mm/huge_memory.c     | 11 ++++----
+ mm/mempolicy.c       | 38 ++++++++++++++++---------
+ mm/migrate.c         | 80 +++++++++++++++++-----------------------------------
+ mm/page_vma_mapped.c |  6 ++--
+ 5 files changed, 64 insertions(+), 79 deletions(-)
 
