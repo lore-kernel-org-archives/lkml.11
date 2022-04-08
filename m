@@ -2,133 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B95E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 02:38:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C85C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 02:41:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233751AbiDHCkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 7 Apr 2022 22:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49270 "EHLO
+        id S233777AbiDHCnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 7 Apr 2022 22:43:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232018AbiDHCkp (ORCPT
+        with ESMTP id S233758AbiDHCnR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 7 Apr 2022 22:40:45 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE9010428D;
-        Thu,  7 Apr 2022 19:38:43 -0700 (PDT)
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 2382cNSR030218;
-        Fri, 8 Apr 2022 11:38:23 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 2382cNSR030218
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1649385503;
-        bh=k+X8BU90L87wqwuBges12O8eXkSA1qgxyJVoI11kDT4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=S+YuyhjGMpP4/Ievn4zIry/9tr5HeyKZLtClkKDxXNLQa92Uov9Hie0tqq6hgKnKA
-         2x0NvYMu+guk/bKOiRmaweoakRuFMkeLSIU1Y1nq2QmDD5q282nyT5BGD5cciEIRkz
-         mdmXkbBiCygZAQnKKdeazQR2vyNIfYkpc0ppBkSyNJsb50DqWYHz638F8utrWgXY22
-         1lX/4aj9CNf1YhU21G4G2lVAQrX22vj+YH3d3/EZKk/zyJ7MzRwA31hc3ypJbKH3xM
-         yggUOGC5OYJwML9FNnOX6JFBzn8qsP+hwhLqwq4kPqboAZ9GWItQahCdEMV6EtYljR
-         6Y3/YQ3HIs/Qg==
-X-Nifty-SrcIP: [209.85.210.182]
-Received: by mail-pf1-f182.google.com with SMTP id a42so676587pfx.7;
-        Thu, 07 Apr 2022 19:38:23 -0700 (PDT)
-X-Gm-Message-State: AOAM533r/VpFKkh4o9QaXXEz1q8WQMmdqmmgpJNCm4m1p3PDKX0BVkyJ
-        ndrFA5vmQqmPFO1GVif8/IgihMIGmxUTomb8vbs=
-X-Google-Smtp-Source: ABdhPJyXwwwejEV82RROrL/bzaqhrV767EkI27pBBBGDTCSllAv8VuvxumVanMN0lR9SxfDvPPfJmj+u3/cc/6wdHe0=
-X-Received: by 2002:a05:6a02:182:b0:374:5a57:cbf9 with SMTP id
- bj2-20020a056a02018200b003745a57cbf9mr13509050pgb.616.1649385502334; Thu, 07
- Apr 2022 19:38:22 -0700 (PDT)
+        Thu, 7 Apr 2022 22:43:17 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7D2CCB7EF;
+        Thu,  7 Apr 2022 19:41:15 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 23C5811FB;
+        Thu,  7 Apr 2022 19:41:15 -0700 (PDT)
+Received: from [192.168.0.8] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 51A463F718;
+        Thu,  7 Apr 2022 19:41:12 -0700 (PDT)
+Message-ID: <a84bdc2a-2656-0474-4a14-5532c29f9043@arm.com>
+Date:   Fri, 8 Apr 2022 08:11:38 +0530
 MIME-Version: 1.0
-References: <20220406153023.500847-1-masahiroy@kernel.org> <20220406153023.500847-7-masahiroy@kernel.org>
- <CAKwvOdm7NBPj43sRw-_dtjzgpHeOHnQ9uB3rSg3rYhUu0_PN7A@mail.gmail.com>
- <eedd7486cd484c359be90e6138b0b2be@AcuMS.aculab.com> <CAK7LNASJKMqfaifGA9r_cYqgkVgL6OPCfjFZCGN4mZwxW_rZvw@mail.gmail.com>
-In-Reply-To: <CAK7LNASJKMqfaifGA9r_cYqgkVgL6OPCfjFZCGN4mZwxW_rZvw@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 8 Apr 2022 11:37:31 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAR68JsGK4uqwJEKi8g9-rfjFLt3RX-0PjqcCTTuwCR8ZQ@mail.gmail.com>
-Message-ID: <CAK7LNAR68JsGK4uqwJEKi8g9-rfjFLt3RX-0PjqcCTTuwCR8ZQ@mail.gmail.com>
-Subject: Re: [PATCH 6/7] kbuild: make *.mod not depend on *.o
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH V4 0/7] mm/mmap: Drop arch_vm_get_page_prot() and
+ arch_filter_pgprot()
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, Christoph Hellwig <hch@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220407103251.1209606-1-anshuman.khandual@arm.com>
+ <20220407162024.7747ee14092d04082f13aa9d@linux-foundation.org>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <20220407162024.7747ee14092d04082f13aa9d@linux-foundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 9:37 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Fri, Apr 8, 2022 at 6:39 AM David Laight <David.Laight@aculab.com> wrote:
-> >
-> > From: Nick Desaulniers
-> > > Sent: 07 April 2022 18:59
-> > >
-> > > On Wed, Apr 6, 2022 at 8:31 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> > > >
-> > > > The dependency
-> > > >
-> > > >     $(obj)/%.mod: $(obj)/%$(mod-prelink-ext).o
-> > > >
-> > > > ... exists because *.mod files previously contained undefined symbols,
-> > > > which are computed from *.o files when CONFIG_TRIM_UNUSED_KSYMS=y.
-> > > >
-> > > > Now that the undefined symbols are put into separate *.usyms files,
-> > > > there is no reason to make *.mod depend on *.o files.
-> > > >
-> > > > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > > > ---
-> > > >
-> > > >  Makefile               | 3 ++-
-> > > >  scripts/Makefile.build | 5 ++---
-> > > >  2 files changed, 4 insertions(+), 4 deletions(-)
-> > > >
-> > > > diff --git a/Makefile b/Makefile
-> > > > index 82ee893909e9..e915aacd02b0 100644
-> > > > --- a/Makefile
-> > > > +++ b/Makefile
-> > > > @@ -1792,7 +1792,8 @@ ifdef single-build
-> > > >
-> > > >  # .ko is special because modpost is needed
-> > > >  single-ko := $(sort $(filter %.ko, $(MAKECMDGOALS)))
-> > > > -single-no-ko := $(sort $(patsubst %.ko,%.mod, $(MAKECMDGOALS)))
-> > > > +single-no-ko := $(filter-out $(single-ko), $(MAKECMDGOALS)) \
-> > > > +               $(foreach x, o mod, $(patsubst %.ko, %.$x, $(single-ko)))
-> > >
-> > > I'm on board with this patch, and the overall goal with the series. My
-> > > brain is having a hard time parsing `o mod` though. Can you walk me
-> > > through that? Are those targets for .o and .mod files, respectively?
->
->
-> Yes.
->
-> Kbuild can build a module individually.
->
->     make  foo/bar/baz.ko
->
-> (but modpost check does not work well)
->
-> To do this, Kbuild needs to descend to
-> the directory and generate
-> foo/bar/baz.o  and  foo/bar/baz.mod.
->
-> Previously, foo/bar/baz.o was generated as a
-> prerequisite of foo/bar/baz.mod, but now we
-> need to request Kbuild to generate both of them.
->
 
 
-BTW, this feature is broken for CONFIG_LTO_CLANG=y
-because the ELF object is not foo/bar/baz.o
-but foo/bar/baz.prelink.o
-(which was renamed from foo/bar/baz.lto.o).
+On 4/8/22 04:50, Andrew Morton wrote:
+> On Thu,  7 Apr 2022 16:02:44 +0530 Anshuman Khandual <anshuman.khandual@arm.com> wrote:
+> 
+>> protection_map[] is an array based construct that translates given vm_flags
+>> combination. This array contains page protection map, which is populated by
+>> the platform via [__S000 .. __S111] and [__P000 .. __P111] exported macros.
+>> Primary usage for protection_map[] is for vm_get_page_prot(), which is used
+>> to determine page protection value for a given vm_flags. vm_get_page_prot()
+>> implementation, could again call platform overrides arch_vm_get_page_prot()
+>> and arch_filter_pgprot(). Some platforms override protection_map[] that was
+>> originally built with __SXXX/__PXXX with different runtime values.
+>>
+>> Currently there are multiple layers of abstraction i.e __SXXX/__PXXX macros
+>> , protection_map[], arch_vm_get_page_prot() and arch_filter_pgprot() built
+>> between the platform and generic MM, finally defining vm_get_page_prot().
+>>
+>> Hence this series proposes to drop later two abstraction levels and instead
+>> just move the responsibility of defining vm_get_page_prot() to the platform
+>> (still utilizing generic protection_map[] array) itself making it clean and
+>> simple.
+>>
+>> This first introduces ARCH_HAS_VM_GET_PAGE_PROT which enables the platforms
+>> to define custom vm_get_page_prot(). This starts converting platforms that
+>> define the overrides arch_filter_pgprot() or arch_vm_get_page_prot() which
+>> enables for those constructs to be dropped off completely.
+>>
+>> The series has been inspired from an earlier discuss with Christoph Hellwig
+>>
+>> https://lore.kernel.org/all/1632712920-8171-1-git-send-email-anshuman.khandual@arm.com/
+>>
+>> This series applies on 5.18-rc1 after the following patch.
+>>
+>> https://lore.kernel.org/all/1643004823-16441-1-git-send-email-anshuman.khandual@arm.com/
+> 
+> Confusing.  That patch is already in 5.18-rc1.
+Ahh, my bad, forgot to delete these lines here in the cover letter.
+This series just applies cleanly on 5.18-rc1 without dependency.
 
-I will not fix it, though.
+> But the version which was merged (24e988c7fd1ee701e) lacked the change
+> to arch/arm64/Kconfig.  I seem to recall that this patch went through a
+> few issues and perhaps the arm64 change was dropped.  Can you please
+> check?
 
+ARCH_HAS_FILTER_PGPROT on arm64 got dropped off via another commit i.e
+6e2edd6371a4 ("arm64: Ensure execute-only permissions are not allowed
+without EPAN").
 
-
-
--- 
-Best Regards
-Masahiro Yamada
+> 
+> (It would be easier for me to track all this down if the original patch
+> had had cc:linux-mm.  Please cc linux-mm!
+Sure, will do. Please do let me know if there is anything else that needs
+to be taken care.
