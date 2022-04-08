@@ -2,78 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE1B1C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B6DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 12:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236022AbiDHNAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 09:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40322 "EHLO
+        id S236042AbiDHNAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 09:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232841AbiDHNAE (ORCPT
+        with ESMTP id S236027AbiDHNAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 09:00:04 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC6A10E8;
-        Fri,  8 Apr 2022 05:57:59 -0700 (PDT)
-Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KZdXh08ymz67kSQ;
-        Fri,  8 Apr 2022 20:56:04 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 8 Apr 2022 14:57:56 +0200
-Received: from [10.47.91.39] (10.47.91.39) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+        Fri, 8 Apr 2022 09:00:11 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2056.outbound.protection.outlook.com [40.107.244.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784D010E8;
+        Fri,  8 Apr 2022 05:58:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CfWdGGxKkibHows+OObpcdt2AT3POb+e9MsPMTtsSrID6D1F9hmWdoNqo69aFy26hAtRcaupGkKEDhwPXPaienVt4mAyKo4L43+bPR1G6vMvL76g5a4C8SVp3XiGKFuJURN1P+1QvKuEvVwupa8gJi9YNLL7+Li0gE+IW6C8fMJkl542r4zzCJ/18hj6rRqa4q3TeOm2AcpvtxLo/I2OA+eKdu5PBEX4i2q0KH9IV8ZbzQjYNEaqM1fgaIhC+IE7ZcVE9TDYdZR9PFOdtpxSdTa0hMfe9zpjl6yrTkraCAFhdWEx8+ivBBHD0Y7S67tDmiVcobnCnf9nNxGSlt4zGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DZCL8Mqtzmb1k1dA8bAd8IZrnchykILZD0XL0mJHJtw=;
+ b=Np136gKq/M23wqa3widldqPnQB4qh2dzWWGtU1dqhZn8nZQngeWs3Fjfn9cxKhPfG3srPSHYbZ5i+qUxVj/rfmI5i4ew1BzIWy+GrQTD+5zBAEl5/xHF5QmGBE+QrQcSFMpYSE3R4PGSPMmPiesFkeVv6R0BFlVCAp400n0+Y0yeeemXECpfGZXcY8qmE+cVLi+LKstmRAOn4oeX7Zrg4IRvK3pCC2KkdKQJlRnufoUaQHmqLTnsM3NNFvNaZgdSEVXKxPoBQGb+IQlhAKe1/qXCl4cfsl4kwShJpAJKIugpCpAvuRx7Y+OY3lh05e4f8qfQgygi5YjoMl0nSJt7GQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DZCL8Mqtzmb1k1dA8bAd8IZrnchykILZD0XL0mJHJtw=;
+ b=p9zelp5hEyquH66HooRNVoEwy5U6vbfi+8HHip7sNL+/sxdWpqw9loc5RaN+gIlBnOPfFYSSshe45rDSLOBvQzdNqgKlnlqB+zLNKcaswZe/kSjMiUipTLIRapT1QYhWQDcigEi/BXUhtk8AJ/BRm3h9oKvwpIJss7/dvB7iPqo=
+Received: from MW4PR04CA0069.namprd04.prod.outlook.com (2603:10b6:303:6b::14)
+ by DM5PR12MB1643.namprd12.prod.outlook.com (2603:10b6:4:11::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5144.26; Fri, 8 Apr 2022 12:58:05 +0000
+Received: from CO1NAM11FT009.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:6b:cafe::41) by MW4PR04CA0069.outlook.office365.com
+ (2603:10b6:303:6b::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.25 via Frontend
+ Transport; Fri, 8 Apr 2022 12:58:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT009.mail.protection.outlook.com (10.13.175.61) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5144.20 via Frontend Transport; Fri, 8 Apr 2022 12:58:04 +0000
+Received: from ethanolx5673host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 8 Apr
- 2022 13:57:55 +0100
-Message-ID: <7b3885e3-dbae-ff0b-21dc-c28d635d950b@huawei.com>
-Date:   Fri, 8 Apr 2022 13:57:52 +0100
+ 2022 07:58:02 -0500
+From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
+CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
+        <jon.grimm@amd.com>, <brijesh.singh@amd.com>,
+        <thomas.lendacky@amd.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH v2] KVM: SVM: Do not activate AVIC for SEV-enabled guest
+Date:   Fri, 8 Apr 2022 08:37:10 -0500
+Message-ID: <20220408133710.54275-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 1/4] scsi: core: constify pointer to scsi_host_template
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        "Avri Altman" <avri.altman@wdc.com>,
-        Doug Gilbert <dgilbert@interlog.com>,
-        <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20220408103027.311624-1-krzysztof.kozlowski@linaro.org>
- <2a88a992-641a-b3ff-fe39-7a61fff87cb6@huawei.com>
- <4c3be5b6-50ef-9e9a-6cee-9642df943342@linaro.org>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <4c3be5b6-50ef-9e9a-6cee-9642df943342@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.91.39]
-X-ClientProxiedBy: lhreml718-chm.china.huawei.com (10.201.108.69) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 29973427-8219-4383-eda6-08da195f6bd8
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1643:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1643BBFC402E99423BDB4B02F3E99@DM5PR12MB1643.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JMHgVtCzR/y557fLPQffwqX8s+Cc0CsgszsO03bix2krjR+yK0rqZaX87GUsfyrcFkOs/Qb4YrvT+JSK+xsAxIdsPYl5k8PLzZW4HaH9ap/D49Ed2CT49WKbluVMlTOvy3FKT3lwNRjI+cNHy1dX6Fthr9y9tesnyvFTOJ3fwCjD44Dkjyzr3uas1Wcbn9MJFjO8WPl8dJh6JznuiyfISDZxwseR1Zrsl5OPQM+8fLRBe1qbIiw1K4v2Rie8noEQnePgKaJJWScYdIYtCS+Hz9/4Vewb7EUw+WFnaDjgw4uFRrxFAiaDXx1YEgHDF8Nb2LXhxpOpmnU6oBKXKXa19ggiISZitqzqw1c20JVuIN1HfStP9+NWRBXu7rSqyGNNXsuAIj3qL6/iIjqXaLbgK8FdGomPyVgGu+x2f2xqQI5iW/qT/zeCk0GysoXZll/+pZ4RNiZ7wV6mTHXOTNU1I/+bbQARyzP6pr/RVEXge2l+OfBGj4/yq5q7Zd9mi+9DYHFfEmhP0RLyShuqgi2/abYINW1V8DzcAIgTIgeS0N39HrXn08gzzTXcWN4WRvgS227r285ZcWYpXQXeg1PMrQcQvqK8xIJXRl9D66Qyalv5FRy5sMpLYBCPDqm0oB9z8vHe1sfAw+dMSnvURr35dJAuyxi/8sx6Gt81CMqWf1DUwCXcs/af1C0KrmXNcr5sosN6JKZICfj8901g4E25CQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(70586007)(70206006)(4326008)(8676002)(2616005)(82310400005)(36756003)(7696005)(1076003)(316002)(81166007)(110136005)(54906003)(16526019)(26005)(186003)(36860700001)(44832011)(8936002)(83380400001)(336012)(6666004)(426003)(356005)(86362001)(5660300002)(40460700003)(508600001)(2906002)(47076005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2022 12:58:04.6281
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 29973427-8219-4383-eda6-08da195f6bd8
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT009.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1643
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/04/2022 13:32, Krzysztof Kozlowski wrote:
-> On 08/04/2022 14:14, John Garry wrote:
->> On 08/04/2022 11:30, Krzysztof Kozlowski wrote:
->>> Several pointers to 'struct scsi_host_template' do not modify it, so
->>> made them const for safety.
->>>
->> Is this standard practice? What is so special here?
-> This is standard practice and there is nothing special here. Pointers to
-> const are preferred because:
-> 1. They add safety if data is actually const. This is not yet the case,
-> but scsi_host_template allocation could be made const with some effort.
+Since current AVIC implementation cannot support encrypted memory,
+inhibit AVIC for SEV-enabled guest.
 
-To me this seems better, but I think that some drivers might modify 
-their scsi_host_template (so not possible)
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ arch/x86/include/asm/kvm_host.h | 1 +
+ arch/x86/kvm/svm/avic.c         | 3 ++-
+ arch/x86/kvm/svm/sev.c          | 2 ++
+ 3 files changed, 5 insertions(+), 1 deletion(-)
 
-> 2. The more const variables, the easier function contents and its impact
-> is to understand. This is actually the biggest benefit when dealing with
-> code touching different structures.
-> 
-> In general, constifying is a common practice everywhere in the kernel.
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index d23e80a56eb8..ee5b0589d2b3 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1052,6 +1052,7 @@ enum kvm_apicv_inhibit {
+ 	APICV_INHIBIT_REASON_X2APIC,
+ 	APICV_INHIBIT_REASON_BLOCKIRQ,
+ 	APICV_INHIBIT_REASON_ABSENT,
++	APICV_INHIBIT_REASON_SEV,
+ };
+ 
+ struct kvm_arch {
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index a1cf9c31273b..421619540ff9 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -837,7 +837,8 @@ bool avic_check_apicv_inhibit_reasons(enum kvm_apicv_inhibit reason)
+ 			  BIT(APICV_INHIBIT_REASON_IRQWIN) |
+ 			  BIT(APICV_INHIBIT_REASON_PIT_REINJ) |
+ 			  BIT(APICV_INHIBIT_REASON_X2APIC) |
+-			  BIT(APICV_INHIBIT_REASON_BLOCKIRQ);
++			  BIT(APICV_INHIBIT_REASON_BLOCKIRQ) |
++			  BIT(APICV_INHIBIT_REASON_SEV);
+ 
+ 	return supported & BIT(reason);
+ }
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 75fa6dd268f0..6524409f8e07 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -260,6 +260,8 @@ static int sev_guest_init(struct kvm *kvm, struct kvm_sev_cmd *argp)
+ 	INIT_LIST_HEAD(&sev->regions_list);
+ 	INIT_LIST_HEAD(&sev->mirror_vms);
+ 
++	kvm_set_apicv_inhibit(kvm, APICV_INHIBIT_REASON_SEV);
++
+ 	return 0;
+ 
+ e_free:
+-- 
+2.17.1
 
-Thanks,
-John
