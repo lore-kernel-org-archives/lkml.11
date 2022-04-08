@@ -2,118 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EBBFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:18:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45588C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 13:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236190AbiDHNUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 09:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59878 "EHLO
+        id S236203AbiDHNWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 09:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236149AbiDHNUc (ORCPT
+        with ESMTP id S236201AbiDHNW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 09:20:32 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5855ECC5E;
-        Fri,  8 Apr 2022 06:18:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649423908; x=1680959908;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=v11wVOUBXjF91c7/a49xOWZxnE+WntSYIN4gsgCmFPE=;
-  b=SahQEznnpXn7SU6+7w5Gl25KsiyCrJSaNLPpch0lbrD1gcXH0I9Y5rTN
-   rWzYIesX0S/nHAuSCQ6bCgTV+nl22zFP/rpzPHq2+S9E7KSoqBl/F3o6T
-   ttdYrmaubql3eyubVMTfZFVtCGqUmOoV2j+xHiIp9ZOoUXhllN6AKvyh0
-   tOWZxMyLsZ2kx2OqGjaYqQDDsTPqxaDmWzwu0gJO12Pp0x60Zj0zsLRGW
-   Pc2S4yOUJeARXp1tCOYf3r7d6VAOtIlmJ5Ky/qLmE+jJwt4Y9a3fc9W9T
-   k6fTz5V89oVySBwB70G+zWNuoWNYyHb4MiPmXV+p5HtXV3MqmQGbshjfI
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="286578786"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="286578786"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 06:18:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="795089080"
-Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 08 Apr 2022 06:18:25 -0700
-Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ncoVN-0000Hk-2Q;
-        Fri, 08 Apr 2022 13:18:25 +0000
-Date:   Fri, 8 Apr 2022 21:17:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Baoquan He <bhe@redhat.com>, akpm@linux-foundation.org,
-        willy@infradead.org
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        kexec@lists.infradead.org, hch@lst.de, yangtiezhu@loongson.cn,
-        amit.kachhap@arm.com, linux-fsdevel@vger.kernel.org,
-        viro@zeniv.linux.org.uk, bhe@redhat.com
-Subject: Re: [PATCH v5 RESEND 1/3] vmcore: Convert copy_oldmem_page() to take
- an iov_iter
-Message-ID: <202204082128.JKXXDGpa-lkp@intel.com>
-References: <20220408090636.560886-2-bhe@redhat.com>
+        Fri, 8 Apr 2022 09:22:27 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CC16275;
+        Fri,  8 Apr 2022 06:20:21 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1ncoXB-0002lO-KS; Fri, 08 Apr 2022 15:20:17 +0200
+Message-ID: <9af2d249-91e7-4871-59c8-704823118e48@leemhuis.info>
+Date:   Fri, 8 Apr 2022 15:20:14 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220408090636.560886-2-bhe@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Nico Schottelius <nico-bugzilla.kernel.org@schottelius.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Regression: Mouse gets sluggish after suspend/resume and power usage
+ significant higher after resume
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1649424023;a304c49a;
+X-HE-SMSGID: 1ncoXB-0002lO-KS
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Baoquan,
+Hi, this is your Linux kernel regression tracker.
 
-Thank you for the patch! Perhaps something to improve:
+I noticed a regression report in bugzilla.kernel.org that afaics nobody
+acted upon since it was reported about a week ago, that's why I decided
+to forward it to the lists and all people that seemed to be relevant
+here. To quote from https://bugzilla.kernel.org/show_bug.cgi?id=215747 :
 
-[auto build test WARNING on powerpc/next]
-[also build test WARNING on s390/features linus/master v5.18-rc1 next-20220408]
-[cannot apply to tip/x86/core hnaz-mm/master arm64/for-next/core]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+>  Nico Schottelius 2022-03-26 19:27:06 UTC
+> 
+> Created attachment 300619 [details]
+> dmesg
+> 
+> TL;DR:
+> 
+> Suspending and resume makes the ELAN0670:00 trackpad sluggish (very hard to move the pointer) and the energy usage of the notebook is about 3 times higher than before suspend.
+> 
+> Background:
+> 
+> 
+> On a Lenovo X1 Nano the trackpad works fine until suspend/resume.The estimated battery runtime PRIOR to suspend/resume is 8h 43m. After suspend resume it drops to 2h 20m instantly.
+> 
+> There seems to be a firmware error in the iwlwifi card show in the attached dmesg, but I am not sure whether "that's enough" to cause both symptoms.
+> 
+> Kernel is from Alpine Linux, which is basically stock upstream afaics.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Baoquan-He/Convert-vmcore-to-use-an-iov_iter/20220408-170846
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git next
-config: sh-randconfig-s032-20220408 (https://download.01.org/0day-ci/archive/20220408/202204082128.JKXXDGpa-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/a5e42962f5c0bea73aa382a2415094b4bd6c6c73
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Baoquan-He/Convert-vmcore-to-use-an-iov_iter/20220408-170846
-        git checkout a5e42962f5c0bea73aa382a2415094b4bd6c6c73
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sh SHELL=/bin/bash arch/sh/kernel/
+See later comments for more details. In one of them the reporter states
+he's pretty sure that it didn't happen with 5.13.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Not sure if this is input, PM, bluetooth, or something else. But sounds
+like a problem in the input code to me (you have to start somewhere...).
 
+Could somebody take a look into this? Or was this discussed somewhere
+else already? Or even fixed?
 
-sparse warnings: (new ones prefixed by >>)
->> arch/sh/kernel/crash_dump.c:23:36: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const *addr @@     got void [noderef] __iomem * @@
-   arch/sh/kernel/crash_dump.c:23:36: sparse:     expected void const *addr
-   arch/sh/kernel/crash_dump.c:23:36: sparse:     got void [noderef] __iomem *
+Anyway, to get this tracked:
 
-vim +23 arch/sh/kernel/crash_dump.c
+#regzbot introduced: v5.13..v5.15.31	
+#regzbot from: Nico Schottelius  <nico-bugzilla.kernel.org@schottelius.org>
+#regzbot title: input: Mouse gets sluggish after suspend/resume and
+power usage significant higher after resume
+#regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215747
 
-    13	
-    14	ssize_t copy_oldmem_page(struct iov_iter *iter, unsigned long pfn,
-    15				 size_t csize, unsigned long offset)
-    16	{
-    17		void  __iomem *vaddr;
-    18	
-    19		if (!csize)
-    20			return 0;
-    21	
-    22		vaddr = ioremap(pfn << PAGE_SHIFT, PAGE_SIZE);
-  > 23		csize = copy_to_iter(vaddr + offset, csize, iter);
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Additional information about regzbot:
+
+If you want to know more about regzbot, check out its web-interface, the
+getting start guide, and the references documentation:
+
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for reporters: when reporting a regression it's in your interest to
+CC the regression list and tell regzbot about the issue, as that ensures
+the regression makes it onto the radar of the Linux kernel's regression
+tracker -- that's in your interest, as it ensures your report won't fall
+through the cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot once
+it's involved. Fix the issue as you normally would, just remember to
+include 'Link:' tag in the patch descriptions pointing to all reports
+about the issue. This has been expected from developers even before
+regzbot showed up for reasons explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'.
