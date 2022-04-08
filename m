@@ -2,212 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C094BC43219
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:23:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD9E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:25:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238146AbiDHRZf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 13:25:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
+        id S237700AbiDHR1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 13:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234331AbiDHRZd (ORCPT
+        with ESMTP id S230268AbiDHR1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 13:25:33 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD7E15FC6;
-        Fri,  8 Apr 2022 10:23:29 -0700 (PDT)
+        Fri, 8 Apr 2022 13:27:42 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA7B11DD1D
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 10:25:33 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id a5so8023688qvx.1
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 10:25:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649438609; x=1680974609;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=aa5sCfirQTu8in8E9d3/He4tgrCReFZ3CgCEUVvEwHo=;
-  b=Zom5E9ESdRO37HNAzAxF/vwo4nxl+JOtYmBQXKTe/vd2h+Qdeki6nQjD
-   2yNhOhYbzpH4MIosszYtpDFa9/snTmmhTSXw8M+BjO7WJdJt8YdkB8hgK
-   KIJ4awuTJRyJhApAqiQp8VWEPPjcxwDV+ZSl0NVV6lLBA9w4zr/4siezJ
-   M=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 Apr 2022 10:23:29 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 10:23:28 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 8 Apr 2022 10:23:28 -0700
-Received: from [10.111.161.146] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 8 Apr 2022
- 10:23:24 -0700
-Message-ID: <e91f4f18-020b-7919-0a82-0b733cdc2de2@quicinc.com>
-Date:   Fri, 8 Apr 2022 10:23:22 -0700
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=lU0csIEsZDzE41MwkALBCybhlERErvcPF+sfVBonqHs=;
+        b=NM88+nbc35Zqm447HFRboPxAt50UQeRlmnPlgfN20A29ljQsY9vkOMUn+VGqIdiWmY
+         Dcn8FOGQwYIcz83pr07P1FQYr6vwSF168HwNftLKO4abFG8/IwPYns3EvDN/fcJxbIbY
+         w7vIf4RBx1g4q3Ri2kXbLAXvpdEwJy1duKfUJOEWtvx9rfX3Exe/iecmR4HWTjR04Ani
+         /Smkf5jNYD6+B+EzB8Q1X9JR50QuruKTnTU6dno+QdtD2FxdZem31j8NxXnJ3scSE4kw
+         B43o+ngT5M6F8XdvPxgHNI7EdJSlPinoNv2vkzs7G4rHMYRsy1eIXoGixwbv95JVebLQ
+         Wi4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lU0csIEsZDzE41MwkALBCybhlERErvcPF+sfVBonqHs=;
+        b=m49jQ+aag8orUB5tMBgckG0IWxTKHXYjFyJaRtObUbPAvo64cGumV/+EYzz3G/diJd
+         pmneK2xxAD/DZasodKVZNpnF1ea7mIg4AlZ0htE0jYkfwtCDcsOPJ0YmbtGL4liGwO0F
+         vkZ8TDyKOi0VxJFTDbnYyeQIM7xeRYqemRxGbaySAK+ALw1yLKbTJPEJpRrwsqi12D/1
+         dhAIyy1nziePAuwmp/qgs2ECBhlLr9etLRpLftkHiOFF5oo7PdM4SxjQrISFfezdg1O8
+         1FKzG7oRPfe7Fmzj/1DiA8uDxoZcjtzjuijYj7QL8+sylmPO9ScBINbmQJv4Tf0hALGg
+         NfOw==
+X-Gm-Message-State: AOAM531+S7++k5VtLCiX6QBuZM80yYhYZWJhySQk3LFmT69qDi7XnDlm
+        QgVeh0ngVbyMKsNZlvDCb3nf/eYKy9XXp/4qbdU=
+X-Google-Smtp-Source: ABdhPJwsC8qGfq7jporc/xc6KftTZwUAsHdQsV0w1jvXD4QNmiObbUO6QV0MUeae7mZ/1a1STd2v+f/xOoq03oWzOuA=
+X-Received: by 2002:a05:6214:20a6:b0:443:5818:ade2 with SMTP id
+ 6-20020a05621420a600b004435818ade2mr17297303qvd.84.1649438732926; Fri, 08 Apr
+ 2022 10:25:32 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v6 1/8] drm/msm/dp: Add eDP support via aux_bus
-Content-Language: en-US
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Doug Anderson <dianders@chromium.org>
-CC:     "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Sean Paul <sean@poorly.run>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <1648656179-10347-1-git-send-email-quic_sbillaka@quicinc.com>
- <CAD=FV=V=a1CnT8fqTJR40WoS3BaDQ3xZ=HnHVHqZh=MEmVUZBA@mail.gmail.com>
- <3e5fa57f-d636-879a-b98f-77323d07c156@linaro.org>
- <CAD=FV=Uibu-kZyix7K4_WVc-+C8xpzTqU4WFy7O=6sukMZrX5g@mail.gmail.com>
- <MW4PR02MB7186245772DAC3E04FA8D1C0E1E69@MW4PR02MB7186.namprd02.prod.outlook.com>
- <CAD=FV=Wk3U7_bVdiCPp8iQ4bcCA_Botemu4pwHeRtgBa3Xk6KQ@mail.gmail.com>
- <c4f086ce-c56f-f7c9-4092-7f2432330d50@quicinc.com>
- <CAD=FV=UmU_BVUaL_X75yOEvQPtGUBTR5-jiVWBHq7uSRt6HM4Q@mail.gmail.com>
- <225d2c0a-42ec-28ad-688c-e7e9e2035ee1@quicinc.com>
- <CAD=FV=W=WjSACHvRDFBnkLUp-LU2c4XMu3=FTzTx=zexNF5PAw@mail.gmail.com>
- <CAA8EJpqLZ9up4euGEbhf5QyBqm4tJuLcHi7D+0Si7ak9Jej52w@mail.gmail.com>
- <CAD=FV=XwOzsRf7RnvyBjr5TtedMhC0LJFKoK9tp-kw1eEyuJmQ@mail.gmail.com>
- <CAA8EJprb5UF24WRNvGaY_hSqW--NPd=9=8AaPYWSMbUumNn+dQ@mail.gmail.com>
- <CAD=FV=UG7k4A+hMXxwju-0mLddD1oJdGngXMkMA-dO3AxOx0rQ@mail.gmail.com>
- <CAA8EJprLRiWrkqLG09UG1arDmo1fuq917ztfxts66p+AaYcYbA@mail.gmail.com>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <CAA8EJprLRiWrkqLG09UG1arDmo1fuq917ztfxts66p+AaYcYbA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <CABXGCsNVp=R5zC9B3PXWJ5nddtt3gkRzDsAsRKvhXq7exGjSAg@mail.gmail.com>
+ <f3bc34e1-0eaf-84ef-486e-b7759e60b792@amd.com> <CABXGCsOD+tDdFcM37NP_1nS9eLym7qC=jUQy3iqYkc1m2iQgxw@mail.gmail.com>
+ <0d5f66d8-9852-b6a9-0e27-9eb9e736d698@amd.com> <CABXGCsPi68Lyvg+6UjTK2aJm6PVBs83YJuP6x68mcrzAQgpuZg@mail.gmail.com>
+ <eef04fc4-741d-606c-c2c6-f054e4e3fffd@amd.com>
+In-Reply-To: <eef04fc4-741d-606c-c2c6-f054e4e3fffd@amd.com>
+From:   Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Date:   Fri, 8 Apr 2022 22:25:22 +0500
+Message-ID: <CABXGCsNNwEjo_dvWJL7GLULBPy+RmwsC9ObpowR_M1nQ3fKt3g@mail.gmail.com>
+Subject: Re: [Bug][5.18-rc0] Between commits ed4643521e6a and 34af78c4e616,
+ appears warning "WARNING: CPU: 31 PID: 51848 at drivers/dma-buf/dma-fence-array.c:191
+ dma_fence_array_create+0x101/0x120" and some games stopped working.
+To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc:     Ken.Xue@amd.com, "Deucher, Alexander" <alexander.deucher@amd.com>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        thomas.hellstrom@linux.intel.com,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Doug and Dmitry
+On Fri, 8 Apr 2022 at 19:27, Christian K=C3=B6nig <christian.koenig@amd.com=
+> wrote:
+>
+> Please test the attached patch, it just re-introduce the lock without
+> doing much else.
+>
+> And does your branch contain the following patch:
+>
+> commit d18b8eadd83e3d8d63a45f9479478640dbcfca02
+> Author: Christian K=C3=B6nig <christian.koenig@amd.com>
+> Date:   Wed Feb 23 14:35:31 2022 +0100
+>
+>      drm/amdgpu: install ctx entities with cmpxchg
+>
+>      Since we removed the context lock we need to make sure that not two
+> threads
+>      are trying to install an entity at the same time.
+>
+>      Signed-off-by: Christian K=C3=B6nig <christian.koenig@amd.com>
+>      Fixes: 461fa7b0ac565e ("drm/amdgpu: remove ctx->lock")
+>      Reviewed-by: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
+>      Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 
-On 4/8/2022 7:58 AM, Dmitry Baryshkov wrote:
-> On Fri, 8 Apr 2022 at 16:43, Doug Anderson <dianders@chromium.org> wrote:
->>
->> Hi,
->>
->> On Fri, Apr 8, 2022 at 5:20 AM Dmitry Baryshkov
->> <dmitry.baryshkov@linaro.org> wrote:
->>>
->>>> I guess my thought was that in DP you could still create the AUX bus
->>>> at probe time. Then for DP you just return an instant "transfer
->>>> failed" from the AUX bus if HPD isn't asserted. For eDP (as discussed
->>>> elsewhere) when we try to do an AUX transfer then we delay until HPD
->>>> is there.
->>>
->>> I think panel-edp would already handle the delay, so we do not need to
->>> have this logic in the DP driver.
->>
->> There's a whole discussion about this between Stephen and me in patch
->> #5 ("drm/msm/dp: wait for hpd high before any sink interaction").
->> Basically:
->>
->> * If panel HPD is hooked up to the dedicated HPD pin on the eDP
->> controller then the panel driver doesn't have a way to read it.
-> 
-> I refreshed that dialog. I must admit, I have missed the fact that the
-> HPD pin might not be visible as the GPIO pin.
-> 
->> * We can't leverage the existing "HPD" query functions in DRM because
->> those indicate whether a panel is _physically_ connected. For eDP, it
->> always is.
-> 
-> Yes, I was thinking about (mis)using the
-> drm_bridge_connector_hpd_notify() for generic HPD-related
-> notifications (to tell eDP that it should check the current state). I
-> have abandoned that idea.
-> 
->> For now the rule is that the AUX transfer function is in charge of
->> waiting for HPD for eDP if the dedicated HPD pin is used. If we want
->> to re-invent this we could, but that system works, isn't _too_ ugly,
->> and we're already making big enough changes in this series.
-> 
-> The is_hpd_asserted() looks like a good callback for the aux bus.
-> It will allow the panel driver to check if the panel is powered up (in
-> the absence of the GPIO pin).
-> 
->>>> So we can still acquire resources (clocks, PHY, io maps, etc) at probe
->>>> time for DP and create the AUX bus, right? It will just return
->>>> "-ENODEV" if HPD isn't asserted and you're DP?
->>>
->>> Yes, please. I still suppose that we'd need a separate case to
->>> power_on eDP's PHY during the probe time. Maybe I'm mistaken here.
->>
->> I think the ideal way is to do it like Kieran's proposal for sn65dsi86:
->>
->> https://lore.kernel.org/r/20220317131250.1481275-4-kieran.bingham+renesas@ideasonboard.com/
->>
->> * When enabling HPD (physical hot plug detect) in the hpd_enable()
->> callback you do a pm_runtime_get(). You do the
->> pm_runtime_put_autosuspend() when disabling. This is only used for DP
->> since we only provide DRM_BRIDGE_OP_HPD for DP, not for eDP.
->>
->> * We do a pm_runtime_get() / pm_runtime_put_autosuspend() in the AUX
->> transfer routine. While holding the pm_runtime reference we check HPD.
->> For DP we return immediately if HPD isn't asserted. For eDP, we delay.
->>
->> * We do the pm_runtime_get() in pre_enable and the pm_runtime_put() in
->> post_disable. For DP this will add a 2nd refcount (since we probably
->> were holding the reference for HPD). For eDP this will cause us to
->> power on.
->>
->> * If there's any other time we need to read HW registers, and we
->> aren't guaranteed to already have a pm_runtime reference (like during
->> probe), we can do a temporary pm_runtime_get() /
->> pm_runtime_put_autosuspend().
-> 
-> This looks good. I'd be more than welcome to review such series.
-> 
-> Note: I think this would require using
-> drm_bridge_connector_enable_hpd() in the DP code.
-> Hopefully at some point we would be able to move all
-> drm_bridge_connector calls to the core msm layer.
-> --
-> With best wishes
-> Dmitry
+The all listed games are now working with an attached patch.
+Also flood messages "WARNING: CPU: 31 PID: 51848 at
+drivers/dma-buf/dma-fence-array.c:191
+dma_fence_array_create+0x101/0x120" has gone.
 
+Thanks.
 
-Thanks for the proposals.
+Tested-by: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
 
-In general I would break up this task as follows:
-
-1) Re-factoring dp/edp parsing code to move it to probe ( its currently
-done in bind ). So not sure what dependencies we will uncover there.
-Nonetheless, lets assume for now it can be done.
-
-2) Then bind all the power resources needed for AUX in pm_runtime_ops
-
-3) Handle EPROBE_DEFER cases of the panel-eDP aux device
-
-4) Probably the biggest from our point of view --- makes sure none of 
-this breaks DP/eDP
-
-Since QC will be taking ownership of all of this, I would still suggest 
-land this series first so that basic display functionality on sc7280
-chromebooks works, unblocks more developers and this program and we can
-internally evaluate all of this and post the changes as-and-when ready
-for review.
-
-So, I suggest/request acking this current one after
-fixing the other comments (unrelated to this re-factor) which have been 
-given so far ofcourse, as we all agree this is not breaking and seems 
-pretty reasonable short term.
-
-Doug, you can track this re-factor with a different bug so that all this 
-discussion remains intact.
-
-Thanks
-
-Abhinav
-
-
+--=20
+Best Regards,
+Mike Gavrilov.
