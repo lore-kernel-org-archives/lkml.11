@@ -2,191 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12168C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B475C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 17:15:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238050AbiDHRQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 13:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
+        id S238060AbiDHRRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 13:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234995AbiDHRQx (ORCPT
+        with ESMTP id S234995AbiDHRRU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 13:16:53 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B673C737
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 10:14:48 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id k25so11368576iok.8
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 10:14:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7R4f+94qI2K6ExVGY0p3omvs96ezNwS+NBDPlgD2fHw=;
-        b=x7VZ4v6GavJUvP98gYT0IO36JWQHaZDKGngI52NebyKbuqK1pSLvcTw9VmD10ofbT2
-         UUqEY7AwTmD5wYhvsg1tBmxANERQwy4l2DC4yKxpmdgLiYK6e7hUGs/bKF/j3zuFEJnX
-         hNbki2Le1C2/sceqwksGM2w1gCbZ0sbRHsdNU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7R4f+94qI2K6ExVGY0p3omvs96ezNwS+NBDPlgD2fHw=;
-        b=A9OIYEBXBDn47xLDMb6DwXl08si6NbpRbjTuJ/87Q+HnXBX2VUajSqUpfjiCmOYRnW
-         m2re9OxDaI6jhnrNMmaWcg2xTmG3p8pBlyB2KJUZJhc7WwEke4R2sYPlaW32Q3XGhzxs
-         uBWfdRCwmcNlVjIRJVangg2XogiaWPoJetv2RqUqMP0EosCGfjYLQjtW2k/eA/7/WNOT
-         b9N8a3K5cZzn5+4OSOFp1mStKkW3PD8aVExEp0W32O5XaYNjCXPrD2TliW+YYCVLQKX/
-         Zi7VHeII1usqnh2xCajq0H5x25KrErg/Fu+jkR9fdRO2r9q1JX0wX9qCfuH/ODJOX8jP
-         yKHQ==
-X-Gm-Message-State: AOAM533mtwgLIOTmXTPgBAzc6fmwAckqwYoYyS2cAaOSr9vOxvqhvbMP
-        T0w+B3lmdGbzJDFpKR/G8VQ0iKxLnomXd09sWnQ12g==
-X-Google-Smtp-Source: ABdhPJwodPR0Ms5rL/IPObV1MciwN2GKTSLms5DXA4ge0kHspY7LbH6tZPyh4NeU9b7ai5sRsjAiGZP96oCCaiFyuGA=
-X-Received: by 2002:a05:6638:737:b0:317:d5e0:2b3a with SMTP id
- j23-20020a056638073700b00317d5e02b3amr9614023jad.52.1649438087384; Fri, 08
- Apr 2022 10:14:47 -0700 (PDT)
+        Fri, 8 Apr 2022 13:17:20 -0400
+Received: from box.fidei.email (box.fidei.email [71.19.144.250])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E841D2E09D;
+        Fri,  8 Apr 2022 10:15:13 -0700 (PDT)
+Received: from authenticated-user (box.fidei.email [71.19.144.250])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by box.fidei.email (Postfix) with ESMTPSA id 81FB9802B5;
+        Fri,  8 Apr 2022 13:15:09 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dorminy.me; s=mail;
+        t=1649438113; bh=sOloqC9Hoe8taMsC7pqq6QLu8pc1+Df4rG4vqV3DLrw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fxrh/L3ufFOfYrGQPpb0KQstKoL//AmfeXWxAMOIl/g5DHKPldJ8JvLMuDqumYVjd
+         j1/AgFnENR+NoBT2PYTSSEZyup0WwOBYNHNI9eUEqrFKwm1yWBR8nFHisQ2Loy9fWg
+         WW3W92dkShwmkEeLUhthmeAykogwPhQDhnH6XlCK0ltxiEt2pgnX6oBtqi0e/nEhCj
+         gCCehCQBmfnKIVgGtoQhoamxs198RApm32uZ4aQ8ZtIFgtpxFHU4/TgNFWOcT91Tx3
+         HRDUK+upeqvsRrWH6b5LNbv1HcCkasQbTGzdDvUBcInkElX17ER7XIMgHH2dlOZtXG
+         HPoJRJuOaiAUQ==
+From:   Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+To:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, kernel-team@fb.com
+Cc:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Omar Sandoval <osandov@osandov.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>
+Subject: [PATCH] btrfs: restore inode creation before xattr setting
+Date:   Fri,  8 Apr 2022 13:15:07 -0400
+Message-Id: <8a60e54c02d8951cf5650cc8452ae583c130bbf7.1649437335.git.sweettea-kernel@dorminy.me>
 MIME-Version: 1.0
-References: <20220408045734.1158817-1-kaleshsingh@google.com>
- <CAEXW_YQ6_VpneJnBfhTOMr6DwJhNmvMAKDRMnpr8LxB9Gtt=Xg@mail.gmail.com>
- <20220408143444.GC4285@paulmck-ThinkPad-P17-Gen-1> <CAEXW_YSrGKXh5DiJyrNvmbssSXbWBkA-XUjGRdS8HtGvW1r6hw@mail.gmail.com>
- <20220408153447.GE4285@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20220408153447.GE4285@paulmck-ThinkPad-P17-Gen-1>
-From:   Joel Fernandes <joel@joelfernandes.org>
-Date:   Fri, 8 Apr 2022 13:14:35 -0400
-Message-ID: <CAEXW_YT-vJmXgWPQ_1J34iTb+ZhrAgN7c-HPz7kW17HmvKzJ3A@mail.gmail.com>
-Subject: Re: [PATCH v2] EXP rcu: Move expedited grace period (GP) work to RT kthread_worker
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Kalesh Singh <kaleshsingh@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        kernel-team <kernel-team@android.com>, Tejun Heo <tj@kernel.org>,
-        Tim Murray <timmurray@google.com>, Wei Wang <wvw@google.com>,
-        Kyle Lin <kylelin@google.com>,
-        Chunwei Lu <chunweilu@google.com>,
-        Lulu Wang <luluw@google.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 8, 2022 at 11:34 AM Paul E. McKenney <paulmck@kernel.org> wrote:
->
-> On Fri, Apr 08, 2022 at 10:41:26AM -0400, Joel Fernandes wrote:
-> > On Fri, Apr 8, 2022 at 10:34 AM Paul E. McKenney <paulmck@kernel.org> wrote:
-> > >
-> > > On Fri, Apr 08, 2022 at 06:42:42AM -0400, Joel Fernandes wrote:
-> > > > On Fri, Apr 8, 2022 at 12:57 AM Kalesh Singh <kaleshsingh@google.com> wrote:
-> > > > >
-> > > > [...]
-> > > > > @@ -334,15 +334,13 @@ static bool exp_funnel_lock(unsigned long s)
-> > > > >   * Select the CPUs within the specified rcu_node that the upcoming
-> > > > >   * expedited grace period needs to wait for.
-> > > > >   */
-> > > > > -static void sync_rcu_exp_select_node_cpus(struct work_struct *wp)
-> > > > > +static void __sync_rcu_exp_select_node_cpus(struct rcu_exp_work *rewp)
-> > > > >  {
-> > > > >         int cpu;
-> > > > >         unsigned long flags;
-> > > > >         unsigned long mask_ofl_test;
-> > > > >         unsigned long mask_ofl_ipi;
-> > > > >         int ret;
-> > > > > -       struct rcu_exp_work *rewp =
-> > > > > -               container_of(wp, struct rcu_exp_work, rew_work);
-> > > > >         struct rcu_node *rnp = container_of(rewp, struct rcu_node, rew);
-> > > > >
-> > > > >         raw_spin_lock_irqsave_rcu_node(rnp, flags);
-> > > > > @@ -417,13 +415,119 @@ static void sync_rcu_exp_select_node_cpus(struct work_struct *wp)
-> > > > >                 rcu_report_exp_cpu_mult(rnp, mask_ofl_test, false);
-> > > > >  }
-> > > > >
-> > > > > +static void rcu_exp_sel_wait_wake(unsigned long s);
-> > > > > +
-> > > > > +#ifdef CONFIG_RCU_EXP_KTHREAD
-> > > >
-> > > > Just my 2c:
-> > > >
-> > > > Honestly, I am not sure if the benefits of duplicating the code to use
-> > > > normal workqueues outweighs the drawbacks (namely code complexity,
-> > > > code duplication - which can in turn cause more bugs and maintenance
-> > > > headaches down the line). The code is harder to read and adding more
-> > > > 30 character function names does not help.
-> > > >
-> > > > For something as important as expedited GPs, I can't imagine a
-> > > > scenario where an RT kthread worker would cause "issues". If it does
-> > > > cause issues, that's what the -rc cycles and the stable releases are
-> > > > for. I prefer to trust the process than take a one-foot-in-the-door
-> > > > approach.
-> > > >
-> > > > So please, can we just keep it simple?
-> > >
-> > > Yes and no.
-> > >
-> > > This is a bug fix, but only for those systems that are expecting real-time
-> > > response from synchronize_rcu_expedited().  As far as I know, this is only
-> > > Android.  The rest of the systems are just fine with the current behavior.
-> >
-> > As far as you know, but are you sure?
->
-> None of us are sure.  We are balancing risks and potential benefits.
+According to the tree checker, "all xattrs with a given objectid follow
+the inode with that objectid in the tree" is an invariant. This was
+broken by the recent change "btrfs: move common inode creation code into
+btrfs_create_new_inode()", which moved acl creation and property
+inheritance (stored in xattrs) to before inode insertion into the tree.
+As a result, under certain timings, the xattrs could be written to the
+tree before the inode, causing the tree checker to report violation of
+the invariant.
 
-Right.
+Move property inheritance and acl creation back to their old ordering
+after the inode insertion.
 
-> > > In addition, this bug fix introduces significant risks, especially in
-> > > terms of performance for throughput-oriented workloads.
-> >
-> > Could you explain what the risk is? That's the part I did not follow.
-> > How can making synchronize_rcu_expedited() work getting priority
-> > introduce throughput issues?
->
-> Status quo has synchronize_rcu_expedited() workqueues running as
-> SCHED_OTHER.
+Suggested-by: Omar Sandoval <osandov@osandov.com>
+Reported-by: Naohiro Aota <naohiro.aota@wdc.com>
+Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+---
+This should apply on top of osandov's patch at
+ https://lore.kernel.org/linux-btrfs/da6cfa1b8e42db5c8954680cac1ca322d463b880.1647306546.git.osandov@fb.com/
 
-Yeah, so if we go by this, you are saying RCU_BOOST likely does not
-work correctly on status quo right? I do not see what in the commit
-message indicates that this is an Android-only issue, let me know what
-I am missing.
+It's survived a good dose of fstests, and several iterations of specific
+tests that were failing, e.g. generic/650.
 
-The users affected by this will instead have these running
-> as SCHED_FIFO.  That changes scheduling.  For users not explicitly
-> needing low-latency synchronize_rcu_expedited(), this change is very
-> unlikely to be for the better.  And historically, unnecessarily running
-> portions of RCU at real-time priorities has been a change for the worse.
-> As in greatly increased context-switch rates and consequently degraded
-> performance.  Please note that this is not a theoretical statement:  Real
-> users have really been burned by too much SCHED_FIFO in RCU kthreads in
-> the past.
+David: I don't know if you'd rather roll this into osandov's original
+patch, or whether you'd like me or osandov to resend the patch linked
+above with this addition rolled into it, or whether you'd like to apply
+it separately. 
 
-Android also has suffered from too much SCHED_FIFO in the past. I
-remember the display thread called 'surfaceflinger' had to be dropped
-from RT privilege at one point.
+---
+ fs/btrfs/inode.c | 74 ++++++++++++++++++++++++------------------------
+ 1 file changed, 37 insertions(+), 37 deletions(-)
 
-> > > So yes, let's do this bug fix (with appropriate adjustment), but let's
-> > > also avoid exposing the non-Android workloads to risks from the inevitable
-> > > unintended consequences.  ;-)
-> >
-> > I would argue the risk is also adding code complexity and more bugs
-> > without clear rationale for why it is being done. There's always risk
-> > with any change, but that's the -rc cycles and stable kernels help
-> > catch those. I think we should not add more code complexity if it is a
-> > theoretical concern.
-> >
-> > There's also another possible risk - there is a possible hidden
-> > problem here that probably the non-Android folks haven't noticed or
-> > been able to debug. I would rather just do the right thing.
-> >
-> > Just my 2c,
->
-> Sorry, but my answer is still "no".
->
-> Your suggested change risks visiting unacceptable performance
-> degradation on a very large number of innocent users for whom current
-> synchronize_rcu_expedited() latency is plenty good enough.
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 2f4935649555..213e7048d911 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -6213,43 +6213,6 @@ int btrfs_create_new_inode(struct btrfs_trans_handle *trans,
+ 		goto out;
+ 	}
+ 
+-	if (args->subvol) {
+-		struct inode *parent;
+-
+-		/*
+-		 * Subvolumes inherit properties from their parent subvolume,
+-		 * not the directory they were created in.
+-		 */
+-		parent = btrfs_iget(fs_info->sb, BTRFS_FIRST_FREE_OBJECTID,
+-				    BTRFS_I(dir)->root);
+-		if (IS_ERR(parent)) {
+-			ret = PTR_ERR(parent);
+-		} else {
+-			ret = btrfs_inode_inherit_props(trans, inode, parent);
+-			iput(parent);
+-		}
+-	} else {
+-		ret = btrfs_inode_inherit_props(trans, inode, dir);
+-	}
+-	if (ret) {
+-		btrfs_err(fs_info,
+-			  "error inheriting props for ino %llu (root %llu): %d",
+-			  btrfs_ino(BTRFS_I(inode)), root->root_key.objectid,
+-			  ret);
+-	}
+-
+-	/*
+-	 * Subvolumes don't inherit ACLs or get passed to the LSM. This is
+-	 * probably a bug.
+-	 */
+-	if (!args->subvol) {
+-		ret = btrfs_init_inode_security(trans, args);
+-		if (ret) {
+-			btrfs_abort_transaction(trans, ret);
+-			goto discard;
+-		}
+-	}
+-
+ 	/*
+ 	 * We could have gotten an inode number from somebody who was fsynced
+ 	 * and then removed in this same transaction, so let's just set full
+@@ -6327,6 +6290,43 @@ int btrfs_create_new_inode(struct btrfs_trans_handle *trans,
+ 	btrfs_mark_buffer_dirty(path->nodes[0]);
+ 	btrfs_release_path(path);
+ 
++	if (args->subvol) {
++		struct inode *parent;
++
++		/*
++		 * Subvolumes inherit properties from their parent subvolume,
++		 * not the directory they were created in.
++		 */
++		parent = btrfs_iget(fs_info->sb, BTRFS_FIRST_FREE_OBJECTID,
++				    BTRFS_I(dir)->root);
++		if (IS_ERR(parent)) {
++			ret = PTR_ERR(parent);
++		} else {
++			ret = btrfs_inode_inherit_props(trans, inode, parent);
++			iput(parent);
++		}
++	} else {
++		ret = btrfs_inode_inherit_props(trans, inode, dir);
++	}
++	if (ret) {
++		btrfs_err(fs_info,
++			  "error inheriting props for ino %llu (root %llu): %d",
++			  btrfs_ino(BTRFS_I(inode)), root->root_key.objectid,
++			  ret);
++	}
++
++	/*
++	 * Subvolumes don't inherit ACLs or get passed to the LSM. This is
++	 * probably a bug.
++	 */
++	if (!args->subvol) {
++		ret = btrfs_init_inode_security(trans, args);
++		if (ret) {
++			btrfs_abort_transaction(trans, ret);
++			goto discard;
++		}
++	}
++
+ 	inode_tree_add(inode);
+ 
+ 	trace_btrfs_inode_new(inode);
+-- 
+2.35.1
 
-I believe the process will catch any such risk, but it is your call! ;-)
-
-Thanks,
-
-- Joel
