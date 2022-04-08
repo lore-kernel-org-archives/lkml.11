@@ -2,139 +2,314 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1AA6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:41:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE47EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 10:43:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234722AbiDHKnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 06:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41634 "EHLO
+        id S234734AbiDHKpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 06:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234694AbiDHKng (ORCPT
+        with ESMTP id S232316AbiDHKo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 06:43:36 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A6452E5F;
-        Fri,  8 Apr 2022 03:41:32 -0700 (PDT)
-X-UUID: c6543a3d98814bb8857469b515f8697d-20220408
-X-UUID: c6543a3d98814bb8857469b515f8697d-20220408
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1933144503; Fri, 08 Apr 2022 18:41:28 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 8 Apr 2022 18:41:27 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 8 Apr
- 2022 18:41:27 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 8 Apr 2022 18:41:27 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        "Chen-Yu Tsai" <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>,
-        Hui Liu <hui.liu@mediatek.com>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH 1/1] arm64: dts: mt8192: Add vcodec lat and core nodes
-Date:   Fri, 8 Apr 2022 18:41:24 +0800
-Message-ID: <20220408104124.31395-2-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220408104124.31395-1-allen-kh.cheng@mediatek.com>
-References: <20220408104124.31395-1-allen-kh.cheng@mediatek.com>
+        Fri, 8 Apr 2022 06:44:57 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D09A31E1D1
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 03:42:54 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id z7so10144487iom.1
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 03:42:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DhNxgwmlQMTZU5E2GrSx+tXlenr728RRVvPqUWfxhg8=;
+        b=pa8ypfFvLgt/BgUgDylEye1oeYxyhPff8naQbtSDpue+UeyLftsVDhvBY0UqIxjzKT
+         phPkNmM/JM4GM0Z5B7QNzXjhhKu2JLzl1am0K1mkBNIltWJzUp7xEtynRJXuNCKAf0rI
+         DsyW+NlKhE2i6XYZLcnuTFgp2ySb+fTU7C/tM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DhNxgwmlQMTZU5E2GrSx+tXlenr728RRVvPqUWfxhg8=;
+        b=ajJYOflJfYUhQ8wf+MFB5Aq2asXUdy6jv9Xxc+RGqeUuqJQaRF8riDL8mGgjU0ybEm
+         qmqlazDfAjgjzixvNBYyVMWqyOTtgnivcSV+72kK3PR7QrO4+uimwNfLOXKyZ4zKW1y3
+         DBJn1kCI+x0r6ccEkVMMR2zxTo+tkQyP9FI01OmNYUu5qrBs+WXicNtd6niuh1w1Jugg
+         y3UNH4WMsNj4+kAE0PMbOK34lTQ56Uf9mih2axfHrRvm5oGgzBjYZuuzy1PPdEcFHEwW
+         g5OsT+wL1fE9cD3Kfl19NAIAiXMyN6mOF4k2kOp1Kj31fDhwGliXeSR4+cosfpbnHyUh
+         Y5LA==
+X-Gm-Message-State: AOAM533R4Oh69XOckbt6lLdqMldcWl7YbA/V8vLTQiGHF1ss9v0AJ9Gb
+        6e0hA/bmgnCOhwRL1bOK3X97yINyLHkNbiUJbFklRQ==
+X-Google-Smtp-Source: ABdhPJw4Cxq8voB+jIPVILROfT2WEn8sJAjhpLpjK0cG9fdENbRHtzhMU1X9Ux+C4JpmzGIlUccwzxOSBTx8Hh5fIZI=
+X-Received: by 2002:a02:95ab:0:b0:324:293b:8d83 with SMTP id
+ b40-20020a0295ab000000b00324293b8d83mr2948602jai.304.1649414573392; Fri, 08
+ Apr 2022 03:42:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20220408045734.1158817-1-kaleshsingh@google.com>
+In-Reply-To: <20220408045734.1158817-1-kaleshsingh@google.com>
+From:   Joel Fernandes <joel@joelfernandes.org>
+Date:   Fri, 8 Apr 2022 06:42:42 -0400
+Message-ID: <CAEXW_YQ6_VpneJnBfhTOMr6DwJhNmvMAKDRMnpr8LxB9Gtt=Xg@mail.gmail.com>
+Subject: Re: [PATCH v2] EXP rcu: Move expedited grace period (GP) work to RT kthread_worker
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     Suren Baghdasaryan <surenb@google.com>,
+        kernel-team <kernel-team@android.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Tim Murray <timmurray@google.com>, Wei Wang <wvw@google.com>,
+        Kyle Lin <kylelin@google.com>,
+        Chunwei Lu <chunweilu@google.com>,
+        Lulu Wang <luluw@google.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        rcu <rcu@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add vcodec lat and core nodes for mt8192 SoC.
+On Fri, Apr 8, 2022 at 12:57 AM Kalesh Singh <kaleshsingh@google.com> wrote:
+>
+[...]
+> @@ -334,15 +334,13 @@ static bool exp_funnel_lock(unsigned long s)
+>   * Select the CPUs within the specified rcu_node that the upcoming
+>   * expedited grace period needs to wait for.
+>   */
+> -static void sync_rcu_exp_select_node_cpus(struct work_struct *wp)
+> +static void __sync_rcu_exp_select_node_cpus(struct rcu_exp_work *rewp)
+>  {
+>         int cpu;
+>         unsigned long flags;
+>         unsigned long mask_ofl_test;
+>         unsigned long mask_ofl_ipi;
+>         int ret;
+> -       struct rcu_exp_work *rewp =
+> -               container_of(wp, struct rcu_exp_work, rew_work);
+>         struct rcu_node *rnp = container_of(rewp, struct rcu_node, rew);
+>
+>         raw_spin_lock_irqsave_rcu_node(rnp, flags);
+> @@ -417,13 +415,119 @@ static void sync_rcu_exp_select_node_cpus(struct work_struct *wp)
+>                 rcu_report_exp_cpu_mult(rnp, mask_ofl_test, false);
+>  }
+>
+> +static void rcu_exp_sel_wait_wake(unsigned long s);
+> +
+> +#ifdef CONFIG_RCU_EXP_KTHREAD
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 60 ++++++++++++++++++++++++
- 1 file changed, 60 insertions(+)
+Just my 2c:
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 18a58239d6f1..c7f4b2fbb315 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -1120,6 +1120,66 @@
- 			power-domains = <&spm MT8192_POWER_DOMAIN_ISP2>;
- 		};
- 
-+		vcodec_dec: vcodec-dec@16000000 {
-+			compatible = "mediatek,mt8192-vcodec-dec";
-+			reg = <0 0x16000000 0 0x1000>;
-+			mediatek,scp = <&scp>;
-+			iommus = <&iommu0 M4U_PORT_L4_VDEC_MC_EXT>;
-+			dma-ranges = <0x1 0x0 0x0 0x40000000 0x0 0xfff00000>;
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			ranges = <0 0 0 0x16000000 0 0x26000>;
-+
-+			vcodec_lat: vcodec-lat@10000 {
-+				compatible = "mediatek,mtk-vcodec-lat";
-+				reg = <0x0 0x10000 0 0x800>;
-+				interrupts = <GIC_SPI 426 IRQ_TYPE_LEVEL_HIGH 0>;
-+				iommus = <&iommu0 M4U_PORT_L5_VDEC_LAT0_VLD_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_VLD2_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_AVC_MV_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_PRED_RD_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_TILE_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_WDMA_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_LAT0_RG_CTRL_DMA_EXT>,
-+					 <&iommu0 M4U_PORT_L5_VDEC_UFO_ENC_EXT>;
-+				clocks = <&topckgen CLK_TOP_VDEC_SEL>,
-+					 <&vdecsys_soc CLK_VDEC_SOC_VDEC>,
-+					 <&vdecsys_soc CLK_VDEC_SOC_LAT>,
-+					 <&vdecsys_soc CLK_VDEC_SOC_LARB1>,
-+					 <&topckgen CLK_TOP_MAINPLL_D4>;
-+				clock-names = "sel", "soc-vdec", "soc-lat", "vdec", "top";
-+				assigned-clocks = <&topckgen CLK_TOP_VDEC_SEL>;
-+				assigned-clock-parents = <&topckgen CLK_TOP_MAINPLL_D4>;
-+				power-domains = <&spm MT8192_POWER_DOMAIN_VDEC>;
-+			};
-+
-+			vcodec_core: vcodec-core@25000 {
-+				compatible = "mediatek,mtk-vcodec-core";
-+				reg = <0 0x25000 0 0x1000>;
-+				interrupts = <GIC_SPI 425 IRQ_TYPE_LEVEL_HIGH 0>;
-+				iommus = <&iommu0 M4U_PORT_L4_VDEC_MC_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_UFO_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_PP_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_PRED_RD_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_PRED_WR_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_PPWRAP_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_TILE_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_VLD_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_VLD2_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_AVC_MV_EXT>,
-+					 <&iommu0 M4U_PORT_L4_VDEC_RG_CTRL_DMA_EXT>;
-+				clocks = <&topckgen CLK_TOP_VDEC_SEL>,
-+					 <&vdecsys CLK_VDEC_VDEC>,
-+					 <&vdecsys CLK_VDEC_LAT>,
-+					 <&vdecsys CLK_VDEC_LARB1>,
-+					 <&topckgen CLK_TOP_MAINPLL_D4>;
-+				clock-names = "sel", "soc-vdec", "soc-lat", "vdec", "top";
-+				assigned-clocks = <&topckgen CLK_TOP_VDEC_SEL>;
-+				assigned-clock-parents = <&topckgen CLK_TOP_MAINPLL_D4>;
-+				power-domains = <&spm MT8192_POWER_DOMAIN_VDEC2>;
-+			};
-+		};
-+
- 		larb5: larb@1600d000 {
- 			compatible = "mediatek,mt8192-smi-larb";
- 			reg = <0 0x1600d000 0 0x1000>;
--- 
-2.18.0
+Honestly, I am not sure if the benefits of duplicating the code to use
+normal workqueues outweighs the drawbacks (namely code complexity,
+code duplication - which can in turn cause more bugs and maintenance
+headaches down the line). The code is harder to read and adding more
+30 character function names does not help.
 
+For something as important as expedited GPs, I can't imagine a
+scenario where an RT kthread worker would cause "issues". If it does
+cause issues, that's what the -rc cycles and the stable releases are
+for. I prefer to trust the process than take a one-foot-in-the-door
+approach.
+
+So please, can we just keep it simple?
+
+Thanks,
+
+ - Joel
+
+
+> +static void sync_rcu_exp_select_node_cpus(struct kthread_work *wp)
+> +{
+> +       struct rcu_exp_work *rewp =
+> +               container_of(wp, struct rcu_exp_work, rew_work);
+> +
+> +       __sync_rcu_exp_select_node_cpus(rewp);
+> +}
+> +
+> +static inline bool rcu_gp_par_worker_started(void)
+> +{
+> +       return !!READ_ONCE(rcu_exp_par_gp_kworker);
+> +}
+> +
+> +static inline void sync_rcu_exp_select_cpus_queue_work(struct rcu_node *rnp)
+> +{
+> +       kthread_init_work(&rnp->rew.rew_work, sync_rcu_exp_select_node_cpus);
+> +       /*
+> +        * Use rcu_exp_par_gp_kworker, because flushing a work item from
+> +        * another work item on the same kthread worker can result in
+> +        * deadlock.
+> +        */
+> +       kthread_queue_work(rcu_exp_par_gp_kworker, &rnp->rew.rew_work);
+> +}
+> +
+> +static inline void sync_rcu_exp_select_cpus_flush_work(struct rcu_node *rnp)
+> +{
+> +       kthread_flush_work(&rnp->rew.rew_work);
+> +}
+> +
+> +/*
+> + * Work-queue handler to drive an expedited grace period forward.
+> + */
+> +static void wait_rcu_exp_gp(struct kthread_work *wp)
+> +{
+> +       struct rcu_exp_work *rewp;
+> +
+> +       rewp = container_of(wp, struct rcu_exp_work, rew_work);
+> +       rcu_exp_sel_wait_wake(rewp->rew_s);
+> +}
+> +
+> +static inline void synchronize_rcu_expedited_queue_work(struct rcu_exp_work *rew)
+> +{
+> +       kthread_init_work(&rew->rew_work, wait_rcu_exp_gp);
+> +       kthread_queue_work(rcu_exp_gp_kworker, &rew->rew_work);
+> +}
+> +
+> +static inline void synchronize_rcu_expedited_destroy_work(struct rcu_exp_work *rew)
+> +{
+> +}
+> +#else /* !CONFIG_RCU_EXP_KTHREAD */
+> +static void sync_rcu_exp_select_node_cpus(struct work_struct *wp)
+> +{
+> +       struct rcu_exp_work *rewp =
+> +               container_of(wp, struct rcu_exp_work, rew_work);
+> +
+> +       __sync_rcu_exp_select_node_cpus(rewp);
+> +}
+> +
+> +static inline bool rcu_gp_par_worker_started(void)
+> +{
+> +       return !!READ_ONCE(rcu_par_gp_wq);
+> +}
+> +
+> +static inline void sync_rcu_exp_select_cpus_queue_work(struct rcu_node *rnp)
+> +{
+> +       int cpu = find_next_bit(&rnp->ffmask, BITS_PER_LONG, -1);
+> +
+> +       INIT_WORK(&rnp->rew.rew_work, sync_rcu_exp_select_node_cpus);
+> +       /* If all offline, queue the work on an unbound CPU. */
+> +       if (unlikely(cpu > rnp->grphi - rnp->grplo))
+> +               cpu = WORK_CPU_UNBOUND;
+> +       else
+> +               cpu += rnp->grplo;
+> +       queue_work_on(cpu, rcu_par_gp_wq, &rnp->rew.rew_work);
+> +}
+> +
+> +static inline void sync_rcu_exp_select_cpus_flush_work(struct rcu_node *rnp)
+> +{
+> +       flush_work(&rnp->rew.rew_work);
+> +}
+> +
+> +/*
+> + * Work-queue handler to drive an expedited grace period forward.
+> + */
+> +static void wait_rcu_exp_gp(struct work_struct *wp)
+> +{
+> +       struct rcu_exp_work *rewp;
+> +
+> +       rewp = container_of(wp, struct rcu_exp_work, rew_work);
+> +       rcu_exp_sel_wait_wake(rewp->rew_s);
+> +}
+> +
+> +static inline void synchronize_rcu_expedited_queue_work(struct rcu_exp_work *rew)
+> +{
+> +       INIT_WORK_ONSTACK(&rew->rew_work, wait_rcu_exp_gp);
+> +       queue_work(rcu_gp_wq, &rew->rew_work);
+> +}
+> +
+> +static inline void synchronize_rcu_expedited_destroy_work(struct rcu_exp_work *rew)
+> +{
+> +       destroy_work_on_stack(&rew->rew_work);
+> +}
+> +#endif /* CONFIG_RCU_EXP_KTHREAD */
+> +
+>  /*
+>   * Select the nodes that the upcoming expedited grace period needs
+>   * to wait for.
+>   */
+>  static void sync_rcu_exp_select_cpus(void)
+>  {
+> -       int cpu;
+>         struct rcu_node *rnp;
+>
+>         trace_rcu_exp_grace_period(rcu_state.name, rcu_exp_gp_seq_endval(), TPS("reset"));
+> @@ -435,28 +539,21 @@ static void sync_rcu_exp_select_cpus(void)
+>                 rnp->exp_need_flush = false;
+>                 if (!READ_ONCE(rnp->expmask))
+>                         continue; /* Avoid early boot non-existent wq. */
+> -               if (!READ_ONCE(rcu_par_gp_wq) ||
+> +               if (!rcu_gp_par_worker_started() ||
+>                     rcu_scheduler_active != RCU_SCHEDULER_RUNNING ||
+>                     rcu_is_last_leaf_node(rnp)) {
+> -                       /* No workqueues yet or last leaf, do direct call. */
+> +                       /* No worker started yet or last leaf, do direct call. */
+>                         sync_rcu_exp_select_node_cpus(&rnp->rew.rew_work);
+>                         continue;
+>                 }
+> -               INIT_WORK(&rnp->rew.rew_work, sync_rcu_exp_select_node_cpus);
+> -               cpu = find_next_bit(&rnp->ffmask, BITS_PER_LONG, -1);
+> -               /* If all offline, queue the work on an unbound CPU. */
+> -               if (unlikely(cpu > rnp->grphi - rnp->grplo))
+> -                       cpu = WORK_CPU_UNBOUND;
+> -               else
+> -                       cpu += rnp->grplo;
+> -               queue_work_on(cpu, rcu_par_gp_wq, &rnp->rew.rew_work);
+> +               sync_rcu_exp_select_cpus_queue_work(rnp);
+>                 rnp->exp_need_flush = true;
+>         }
+>
+> -       /* Wait for workqueue jobs (if any) to complete. */
+> +       /* Wait for jobs (if any) to complete. */
+>         rcu_for_each_leaf_node(rnp)
+>                 if (rnp->exp_need_flush)
+> -                       flush_work(&rnp->rew.rew_work);
+> +                       sync_rcu_exp_select_cpus_flush_work(rnp);
+>  }
+>
+>  /*
+> @@ -622,17 +719,6 @@ static void rcu_exp_sel_wait_wake(unsigned long s)
+>         rcu_exp_wait_wake(s);
+>  }
+>
+> -/*
+> - * Work-queue handler to drive an expedited grace period forward.
+> - */
+> -static void wait_rcu_exp_gp(struct work_struct *wp)
+> -{
+> -       struct rcu_exp_work *rewp;
+> -
+> -       rewp = container_of(wp, struct rcu_exp_work, rew_work);
+> -       rcu_exp_sel_wait_wake(rewp->rew_s);
+> -}
+> -
+>  #ifdef CONFIG_PREEMPT_RCU
+>
+>  /*
+> @@ -848,20 +934,19 @@ void synchronize_rcu_expedited(void)
+>         } else {
+>                 /* Marshall arguments & schedule the expedited grace period. */
+>                 rew.rew_s = s;
+> -               INIT_WORK_ONSTACK(&rew.rew_work, wait_rcu_exp_gp);
+> -               queue_work(rcu_gp_wq, &rew.rew_work);
+> +               synchronize_rcu_expedited_queue_work(&rew);
+>         }
+>
+>         /* Wait for expedited grace period to complete. */
+>         rnp = rcu_get_root();
+>         wait_event(rnp->exp_wq[rcu_seq_ctr(s) & 0x3],
+>                    sync_exp_work_done(s));
+> -       smp_mb(); /* Workqueue actions happen before return. */
+> +       smp_mb(); /* Work actions happen before return. */
+>
+>         /* Let the next expedited grace period start. */
+>         mutex_unlock(&rcu_state.exp_mutex);
+>
+>         if (likely(!boottime))
+> -               destroy_work_on_stack(&rew.rew_work);
+> +               synchronize_rcu_expedited_destroy_work(&rew);
+>  }
+>  EXPORT_SYMBOL_GPL(synchronize_rcu_expedited);
+>
+> base-commit: 42e7a03d3badebd4e70aea5362d6914dfc7c220b
+> --
+> 2.35.1.1178.g4f1659d476-goog
+>
