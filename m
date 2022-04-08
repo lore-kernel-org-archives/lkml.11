@@ -2,133 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F40AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:31:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 16:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231783AbiDHQdj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 12:33:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47032 "EHLO
+        id S231979AbiDHQfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 12:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231689AbiDHQdh (ORCPT
+        with ESMTP id S231303AbiDHQfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 12:33:37 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2054.outbound.protection.outlook.com [40.107.100.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905741DEC0A;
-        Fri,  8 Apr 2022 09:31:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WfVHXqeSF2GFIxM/d+PyxCCrcIY8BudShVAW4uZFOAfPDsmNOfvRXrJuGybUO8LRjWN9Rwgf2bwzlY8JyLeJGL9jgS04qnakejmpOGBqZ9iNdewrbOJPeesvT+OtcGNLoNc0rRorHuHEF7wci79sC+1RxTruWVaLsiBr82YORXxQLq69yah0Lu+U4noIhnBMVY0jz/8QBPr6Oo26PlJYVOW4UV8gohnHLzyxJNgZcx4X/N8PFn0rcqJOmmDM+k/QvzSowJ1jg8CavClafziK2fktWiwGdeEfhhIovj01hXiNYQbcpOgrBZMY7KUDTa/sqQufEGtFxGdNNa9leFBgQw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=H57VerlsJscYWoksEzSWMWx3rPmbSRzu+IDZKBL9Di8=;
- b=PZ1DKLqgZZ6YvXTIhPh31m+bxloIpjtliJNOdvVd4pWDQaWhPBy3WO7Qz82H17ri/xvLd2a2eRvdzrI2Y/aU3PNC47uYT9VvVYwuFq4up706Nkv1+Wp1iB2E3m6ldm6Fg7T8VmIEKajpb1aoHDhbjz3R1+k89hXf2J/BnIje9aWdkq7zHYbmvTZw5d+bqRP8aMDL3QsnNDvUdE6/ynWPvc8wb4KZUV9QxcQ7djp2FNrD2OZkGqbxPka+TmiNTH4hA2uP69Fjph1jG+hUsn15OF2Znt0JItt2R1uYbdnwu1bPYZ79pfGceWGqvqpaf4n4CPXXJvey9qn08nxJhvryKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H57VerlsJscYWoksEzSWMWx3rPmbSRzu+IDZKBL9Di8=;
- b=qeIo5rwmjKf0AVdbgSN+7j1xlibQ/JuUjxTbEyGHUJBbz81YcxcCmWgmNic4X3VAN1ODkTMfvvxSfUvHGtrcIbvFtx91C0jtUpizAIdIAP/mEg8K22kGg3PCdffXbyPWOcIIdenRj/I0v5Y3QRyeq5pVsgki5PUBZhonludfUokhU3rDt992QxkcN5LHA3gYTaarfHdTbSES7CNqZARWZCyMqisA+4j+p503ENAn0bZVlpYE2w6Z2UkKfO3HOzbHrdHFHSVgoRwRm6u0oyBE8ks58reL0T0FWBerFEn1+Nly9RKK5ftPks4FVfil2yVFOOlqDWjKsjRllbaTt3h3Fg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BN9PR12MB5355.namprd12.prod.outlook.com (2603:10b6:408:104::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.26; Fri, 8 Apr
- 2022 16:31:31 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.026; Fri, 8 Apr 2022
- 16:31:31 +0000
-Date:   Fri, 8 Apr 2022 13:31:30 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Niels Dossche <dossche.niels@gmail.com>
-Cc:     linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
-Subject: Re: [PATCH] IB/rdmavt: add missing locks in rvt_ruc_loopback
-Message-ID: <20220408163130.GA3612543@nvidia.com>
-References: <20220228195144.71946-1-dossche.niels@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220228195144.71946-1-dossche.niels@gmail.com>
-X-ClientProxiedBy: MN2PR08CA0026.namprd08.prod.outlook.com
- (2603:10b6:208:239::31) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Fri, 8 Apr 2022 12:35:46 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8905D65C9;
+        Fri,  8 Apr 2022 09:33:42 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nicolas)
+        with ESMTPSA id CCA771F472F7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649435620;
+        bh=/tbQC/9J2hf57DwJAeFvsuSkxP9cojOW7/Vitx+0DRc=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=kFCddj/7WhsLUGeDoxNvsCJWGmgYoMZVEFWH4gti4wECBFfvu0xvDcVJK++EQr8x9
+         TdRePj0wTS24e6Z+I3VW7OM+YENce42o3jmUssrwRWk0QkSfqXpLGvGGLPQjZa/SQ4
+         /SS15K6Hf31vIrRhVn935ZhafdEYHGtogv+h622eHRSS4Nhp71nd/xtzuvlDVZakcV
+         wsRIfhoKNVeqh1pKakIL+L3Igv4dkEC6TUY3i5mU1JlRhq9x5W0jBIrvn3tWlfk9Mv
+         wNAe4MWkw4yTBpD+9peYs3j/ckqNdoWV9qn/ps2JL6TprzzS9DJxsLjrkpgwHRQ8TV
+         7nHlvVd62nj3Q==
+Message-ID: <34f586efdd6401b509cf11fba75039d5494c4eff.camel@collabora.com>
+Subject: Re: [PATCH v5 06/17] media: uapi: HEVC: Change pic_order_cnt
+ definition in v4l2_hevc_dpb_entry
+From:   Nicolas Dufresne <nicolas.dufresne@collabora.com>
+To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        mchehab@kernel.org, hverkuil@xs4all.nl,
+        ezequiel@vanguardiasur.com.ar, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, mripard@kernel.org,
+        paul.kocialkowski@bootlin.com, wens@csie.org,
+        jernej.skrabec@gmail.com, samuel@sholland.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        sebastian.fricke@collabora.com
+Date:   Fri, 08 Apr 2022 12:33:28 -0400
+In-Reply-To: <20220407152940.738159-7-benjamin.gaignard@collabora.com>
+References: <20220407152940.738159-1-benjamin.gaignard@collabora.com>
+         <20220407152940.738159-7-benjamin.gaignard@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3cad2559-9b74-4c8e-8541-08da197d3d51
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5355:EE_
-X-Microsoft-Antispam-PRVS: <BN9PR12MB53559271B982A9F7AF961ED0C2E99@BN9PR12MB5355.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 52Qi99LbZfDUlzZvtwyz/GcsfM3DWzEaEtbjyFfAiEL2fTmU0PN42EBaTN0inDtVNfx8LaTvIQdXGmqxyx7PEEUFkDJ2qn0Dsf+brIzF5hsUk0UqJPtUV0ZPKKhmYGqX/I4x0YK/iPMZXexGIR0D3q2D8kdOUU7ayWQxZVOIq26bjR1ZWPmd5ScZRrg+E4CBy1lVT0YF6byLhTOS8xFyn91FSOLAKRgRrnD0jr8I1hfwcFEz1fFZ7j+9GtojanJIkXn6BDMB1xSGeRaKtQUBht23GWatCiGSbEPmpTfSBFZEPW60IpRkFSXTln/JISNqq2L4NwDJ5NtNhQgzQzgAPiw6xYCuvfNZdIBAxtEZme6qH+KilSrCLG5dSi791+8pTHPxbhdS8expTVtntbrhJNurW7zN9EOy3C37FBvKMIANVjT8rEweqj89gwD8I6vj45sC7jxR4cSSqHGUMK4WsWh4lNBB0TgFa7pE89HWTs8efqvBQX+dTsFGiXUp3f1msSq/PffMiP5xpdc34YzrDYaRhDiKeg2GPPe14xgZd1giyAIzz/HV/3rda1TZzpRj8KV+iXblbU29z3DSH+PTAKNJy7wDb09l6is99RNkHd2/uA7oic51p9uxvU1cxRJ8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(1076003)(38100700002)(26005)(2616005)(186003)(8936002)(36756003)(4744005)(33656002)(5660300002)(316002)(2906002)(6506007)(4326008)(66946007)(66556008)(66476007)(508600001)(6512007)(8676002)(6916009)(86362001)(6486002)(54906003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oRs9r19hLuCOUF+tkTO9V5aTSOywk9ka+37NFwK27jwWcwJNftWKk8y8XICQ?=
- =?us-ascii?Q?OaVb+lTeooeyriwWy/gl6ltyBFNPzItZkv5szmqV8FMa6Tdwk9evTYjV9njx?=
- =?us-ascii?Q?YuWodkNMRJY43Rrx93KFxzMU3/zY/bELduUV9usseSNZlxDvf+/1H/7rejFH?=
- =?us-ascii?Q?YOU5/VYMZJYh+CUXImGDAT+SrKKMvWf/ixmUbefrjvxQ8+mRu2umAoW+JSM4?=
- =?us-ascii?Q?NQKF6afnOjNCKY0Xgi/SCcL9xp8t+Py3W3U0f7HK0itE2CegG2w4a2ZHQJw4?=
- =?us-ascii?Q?gqHTwXk1i7LLu1/yWbH+A443zy3T22ssp9zVbSudoggIo08jXCV5qWcfnJ1T?=
- =?us-ascii?Q?tDMCEOyrbsiItTAU1LmIvwJnaOMB38JFubiRkES9ZtxB8QCRATNd7QNp8bGD?=
- =?us-ascii?Q?PEP/AVB5vxJrrO/Eiyo3hncBw3fKOhggyK85kAvKyKo5wGdeegoZaDU+Ad7K?=
- =?us-ascii?Q?T4MYIOgJYuh9bJ0TP3GAa70naJ6OLEqJJuhS5TMRoQ0GjrECfoSKdWuk1xv2?=
- =?us-ascii?Q?70bcGWYT16UddHbPIFOn7ukrUlJLbYrRpi5fpgrqov51tflt9cEpp32D5rt7?=
- =?us-ascii?Q?j1Ubl8IxRrOM2U5f4OXaMa8TbWyorSo8vmzBHXLcZlTm2aXaVhT9GXOkSjaq?=
- =?us-ascii?Q?J41fXcfHj8VXgWZVnjQZfvsTjRa/Chg02nOqjRij3Jp7WiV+mwV1aflgXF6k?=
- =?us-ascii?Q?7UYqZE5ds62xw1isiyo8X5o8zwdTzX/C4t2UwbpX/gp3x/VxW8oX046AAIww?=
- =?us-ascii?Q?KgG/CL2AlQ4HM8surBNlbhWHztLtu5na64BAxHDJQI1yXtzD9/N/pRwX6xCk?=
- =?us-ascii?Q?RY9g/xKfx1T++VSV7F1peyI9n1sXzA/FblWsGqNM4/KCQmxs53A8Zy9MyC5D?=
- =?us-ascii?Q?JlhuLD25FPwfBIL5F0JKgttUi7jdx4NFLd5mRMsdFlrzeVznj0lRRZEoiTG1?=
- =?us-ascii?Q?+k3jqG4lFDz6I1B/WMjiTvF1D7AtJoLRIt0k/9FjEBAvxaLTh/5LFG/Whk/3?=
- =?us-ascii?Q?ch1PreIDGvGhC4KlfL4NJpHJni2SGOHk2VwfKAJw7CKjygXzRM3lE/RpQpen?=
- =?us-ascii?Q?flsLFVR3XnduCBVeyLXKl5q3CY2v7Pz0+N73C+RH3pH7VkKNpbcFOH+FtfIS?=
- =?us-ascii?Q?KJH9Dif9ctKDg4feKqW8KokDLau5UkmULqSVfNCY9uZbKcZQoNeFMHtD6DxL?=
- =?us-ascii?Q?nUx+9on4YT44jv4aRABWFJtEI/WwPP3zX3leeSeTGaL09rsALLh9hi0k6Dcp?=
- =?us-ascii?Q?tx+50h8gv/ynmUd7sVjc92ARXpnkd5wf4nuVovjOqAHrotyueaMETQ3L16wF?=
- =?us-ascii?Q?8AtrwbJMqRHCVHrkLjsER0MBTvx/DEjW7n/fKFP0Mxc45p3KPJnqdDXGXJY1?=
- =?us-ascii?Q?yKN6Q3iJ1r6iPIy2xW0DrUGQrUM02KGaZiKHlLrY+FxvzK0FYUkRjr91CM18?=
- =?us-ascii?Q?vWvCWbfIcP2bY1Yqf5jjhGr2cl2W/WOVXR8XJP4ZqyQGvpiMVznBkXy3JLCh?=
- =?us-ascii?Q?FlsuoTaS0ZVpysDFuC4eKVWSiS9Y+dYtzPagKTGiA1b3JZ6gzNtCHgqptkUB?=
- =?us-ascii?Q?Gz6CWi2L9373Tw0T93TjdzUuiQj9035I5R3vuuIGcM+3/l4CExqvfAXvF9hp?=
- =?us-ascii?Q?edsVelC4aoIeCFrFbUOsUgrkyPtXFb6mNIDj7mmaHnPXQF8WocxtbAi4lW9e?=
- =?us-ascii?Q?BGakMPcjcnR6kJPIvkll0v2unXAmtLhfKs5jpQIf45MZsVwN7o+mJl0Lsudi?=
- =?us-ascii?Q?5zub8hnUPg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3cad2559-9b74-4c8e-8541-08da197d3d51
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2022 16:31:31.8424
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HiZwP1OLUAnbKVYcZiBjSTPSiDLfkvdlTD1gPi17R3Oyjq1KTOBZYrjHjy7WYPDW
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5355
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 08:51:44PM +0100, Niels Dossche wrote:
-> The documentation of the function rvt_error_qp says both r_lock and
-> s_lock need to be held when calling that function.
-> It also asserts using lockdep that both of those locks are held.
-> rvt_error_qp is called form rvt_send_cq, which is called from
-> rvt_qp_complete_swqe, which is called from rvt_send_complete, which is
-> called from rvt_ruc_loopback in two places. Both of these places do not
-> hold r_lock. Fix this by acquiring a spin_lock of r_lock in both of
-> these places.
-> The r_lock acquiring cannot be added in rvt_qp_complete_swqe because
-> some of its other callers already have r_lock acquired.
-> 
-> Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Le jeudi 07 avril 2022 =C3=A0 17:29 +0200, Benjamin Gaignard a =C3=A9crit=
+=C2=A0:
+> HEVC specifications say that:
+> "PicOrderCntVal is derived as follows:
+> PicOrderCntVal =3D PicOrderCntMsb + slice_pic_order_cnt_lsb
+> The value of PicOrderCntVal shall be in the range of =E2=88=92231 to 231 =
+=E2=88=92 1, inclusive."
+>=20
+> To match with these definitions change __u16 pic_order_cnt[2]
+> into __s32 pic_order_cnt_val.
+
+You forgot to update the slice_params->slice_pic_order_count.
+
+Nicolas
+
+>=20
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 > ---
->  drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
+> version 5:
+> - change __u16 pic_order_cnt[2] into __s32 pic_order_cnt_val
+>  drivers/staging/media/hantro/hantro_g2_hevc_dec.c | 4 ++--
+>  drivers/staging/media/hantro/hantro_hevc.c        | 2 +-
+>  drivers/staging/media/hantro/hantro_hw.h          | 4 ++--
+>  drivers/staging/media/sunxi/cedrus/cedrus_h265.c  | 4 ++--
+>  include/media/hevc-ctrls.h                        | 2 +-
+>  5 files changed, 8 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c b/drivers/=
+staging/media/hantro/hantro_g2_hevc_dec.c
+> index c524af41baf5..6f3c774aa3d9 100644
+> --- a/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+> +++ b/drivers/staging/media/hantro/hantro_g2_hevc_dec.c
+> @@ -386,7 +386,7 @@ static int set_ref(struct hantro_ctx *ctx)
+>  	 * pic_order_cnt[0] and ignore pic_order_cnt[1] used in field-coding.
+>  	 */
+>  	for (i =3D 0; i < decode_params->num_active_dpb_entries && i < ARRAY_SI=
+ZE(cur_poc); i++) {
+> -		char poc_diff =3D decode_params->pic_order_cnt_val - dpb[i].pic_order_=
+cnt[0];
+> +		char poc_diff =3D decode_params->pic_order_cnt_val - dpb[i].pic_order_=
+cnt_val;
+> =20
+>  		hantro_reg_write(vpu, &cur_poc[i], poc_diff);
+>  	}
+> @@ -413,7 +413,7 @@ static int set_ref(struct hantro_ctx *ctx)
+>  	dpb_longterm_e =3D 0;
+>  	for (i =3D 0; i < decode_params->num_active_dpb_entries &&
+>  	     i < (V4L2_HEVC_DPB_ENTRIES_NUM_MAX - 1); i++) {
+> -		luma_addr =3D hantro_hevc_get_ref_buf(ctx, dpb[i].pic_order_cnt[0]);
+> +		luma_addr =3D hantro_hevc_get_ref_buf(ctx, dpb[i].pic_order_cnt_val);
+>  		if (!luma_addr)
+>  			return -ENOMEM;
+> =20
+> diff --git a/drivers/staging/media/hantro/hantro_hevc.c b/drivers/staging=
+/media/hantro/hantro_hevc.c
+> index b6ec86d03d91..fadd40768579 100644
+> --- a/drivers/staging/media/hantro/hantro_hevc.c
+> +++ b/drivers/staging/media/hantro/hantro_hevc.c
+> @@ -54,7 +54,7 @@ static void hantro_hevc_ref_init(struct hantro_ctx *ctx=
+)
+>  }
+> =20
+>  dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx,
+> -				   int poc)
+> +				   s32 poc)
+>  {
+>  	struct hantro_hevc_dec_hw_ctx *hevc_dec =3D &ctx->hevc_dec;
+>  	int i;
+> diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging/m=
+edia/hantro/hantro_hw.h
+> index ed018e293ba0..a648c529662b 100644
+> --- a/drivers/staging/media/hantro/hantro_hw.h
+> +++ b/drivers/staging/media/hantro/hantro_hw.h
+> @@ -131,7 +131,7 @@ struct hantro_hevc_dec_hw_ctx {
+>  	struct hantro_aux_buf tile_bsd;
+>  	struct hantro_aux_buf ref_bufs[NUM_REF_PICTURES];
+>  	struct hantro_aux_buf scaling_lists;
+> -	int ref_bufs_poc[NUM_REF_PICTURES];
+> +	s32 ref_bufs_poc[NUM_REF_PICTURES];
+>  	u32 ref_bufs_used;
+>  	struct hantro_hevc_dec_ctrls ctrls;
+>  	unsigned int num_tile_cols_allocated;
+> @@ -337,7 +337,7 @@ int hantro_hevc_dec_init(struct hantro_ctx *ctx);
+>  void hantro_hevc_dec_exit(struct hantro_ctx *ctx);
+>  int hantro_g2_hevc_dec_run(struct hantro_ctx *ctx);
+>  int hantro_hevc_dec_prepare_run(struct hantro_ctx *ctx);
+> -dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, int poc);
+> +dma_addr_t hantro_hevc_get_ref_buf(struct hantro_ctx *ctx, s32 poc);
+>  int hantro_hevc_add_ref_buf(struct hantro_ctx *ctx, int poc, dma_addr_t =
+addr);
+>  void hantro_hevc_ref_remove_unused(struct hantro_ctx *ctx);
+>  size_t hantro_hevc_chroma_offset(const struct v4l2_ctrl_hevc_sps *sps);
+> diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c b/drivers/s=
+taging/media/sunxi/cedrus/cedrus_h265.c
+> index 44f385be9f6c..d04521ffd920 100644
+> --- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+> +++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+> @@ -143,8 +143,8 @@ static void cedrus_h265_frame_info_write_dpb(struct c=
+edrus_ctx *ctx,
+>  	for (i =3D 0; i < num_active_dpb_entries; i++) {
+>  		int buffer_index =3D vb2_find_timestamp(vq, dpb[i].timestamp, 0);
+>  		u32 pic_order_cnt[2] =3D {
+> -			dpb[i].pic_order_cnt[0],
+> -			dpb[i].pic_order_cnt[1]
+> +			dpb[i].pic_order_cnt_val & 0xffff,
+> +			(dpb[i].pic_order_cnt_val >> 16) & 0xffff
+>  		};
+> =20
+>  		cedrus_h265_frame_info_write_single(ctx, i, dpb[i].field_pic,
+> diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
+> index b3540167df9e..2812778b41f4 100644
+> --- a/include/media/hevc-ctrls.h
+> +++ b/include/media/hevc-ctrls.h
+> @@ -138,7 +138,7 @@ struct v4l2_hevc_dpb_entry {
+>  	__u64	timestamp;
+>  	__u8	flags;
+>  	__u8	field_pic;
+> -	__u16	pic_order_cnt[2];
+> +	__s32	pic_order_cnt_val;
+>  	__u8	padding[2];
+>  };
+> =20
 
-Applied to for-next, thanks
-
-Jason
