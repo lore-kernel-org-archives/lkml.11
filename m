@@ -2,106 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0031C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A64A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  8 Apr 2022 08:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232228AbiDHIsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 04:48:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
+        id S232261AbiDHIte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 04:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231408AbiDHIs3 (ORCPT
+        with ESMTP id S232255AbiDHIt0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 04:48:29 -0400
-Received: from smtp1-g21.free.fr (smtp1-g21.free.fr [212.27.42.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A1F31C0A0;
-        Fri,  8 Apr 2022 01:46:25 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2a01:e35:39f2:1220:bf15:70c6:368e:e3ba])
-        by smtp1-g21.free.fr (Postfix) with ESMTPS id E9B6FB004B6;
-        Fri,  8 Apr 2022 10:46:17 +0200 (CEST)
-From:   Yann Droneaud <ydroneaud@opteya.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Yann Droneaud <ydroneaud@opteya.com>
-Subject: [PATCHv1] kbuild: support W=e to make build abort in case of warning
-Date:   Fri,  8 Apr 2022 10:46:07 +0200
-Message-Id: <20220408084607.106468-1-ydroneaud@opteya.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <1422803720-14723-1-git-send-email-ydroneaud@opteya.com>
-References: <1422803720-14723-1-git-send-email-ydroneaud@opteya.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 8 Apr 2022 04:49:26 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B29E32B716;
+        Fri,  8 Apr 2022 01:47:23 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id z16so7837704pfh.3;
+        Fri, 08 Apr 2022 01:47:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=d9l5xKaN+YV177tsuKpxyr8ohblnrBNtN4kwgsorTCI=;
+        b=hT6fWVZQ4QHrs/G5kzOK8ctjiy/SO6JVcyyDISqiXwG3ZJLp9VqE6ddmvOuDR/0wDU
+         E5DmaI68tJW57R63aQmLxTG5MeRvYYhquibJ3GFXyWVp6dldmv/1Vlgeti2NY0FSYRQy
+         Mfq3x+BZmWbnsy9aD3S7VVqXDweIryJz0xatVtAFpxRTeLC/GE1bn2D8cngtzuAoEfpJ
+         +PN6tkcJ95S18VcOOPPV7LO+w3wNwcNAGDWv8nX4TFadXMrL77doA9OMgq3/Q1Yz7kPa
+         /v3Fd3lLRUA5xCEoKfMk9oAZwebyT+OnvH6Ziwm83DozGQ0tN07RXD5poCMVbedbsxSc
+         4XRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=d9l5xKaN+YV177tsuKpxyr8ohblnrBNtN4kwgsorTCI=;
+        b=wKD04DwsdbvfVznjR13OGZ0TVdWYRXb2/uuEmz9vteLSMXlUBpRNAfhXEFEtsLK8aZ
+         fAn4XjeBQJUKwx59S91+1wcg12LisuxWJ6ALhf86q+xoghRv/nrE+BOeiNU2DfD/GD3w
+         0QEl0Xdm6HEyeBB8i+Rt56WHpPH0siT5uJQyd+J0QzT7vu3h0wnl+kk8z7e5VwQyeiJ1
+         W4bJxZaxvzOA76MrV14SPhVVy/Sjn7IZNAj3XyBcEj/ITrATZnfioU7sfmqWC0Fwa437
+         xBgIriK0Se8aamPCkqRiKWMUNQzsSGqIFFmaqHabB0KKVTWH77q02zCT4JrggBf4zF+U
+         B3mw==
+X-Gm-Message-State: AOAM533yK6x2h9NFfx8h4Z3Axi4gHVXhyitTJkbzJ8HLsHMbxkhyVTt0
+        fYAPA0x/hQwPb1xc4yR77tc=
+X-Google-Smtp-Source: ABdhPJylB7FbYV53AoLAJpfIe+ZAg+aSaDxQaKBgF0H0ikVXkvCQXWwg8OikSUp8BUaGlQK7jvKZCQ==
+X-Received: by 2002:a65:46c2:0:b0:385:fb1c:f0c4 with SMTP id n2-20020a6546c2000000b00385fb1cf0c4mr14464825pgr.405.1649407642733;
+        Fri, 08 Apr 2022 01:47:22 -0700 (PDT)
+Received: from localhost.localdomain ([119.3.119.18])
+        by smtp.gmail.com with ESMTPSA id f12-20020a056a001acc00b004fb37ecc6b2sm25002506pfv.29.2022.04.08.01.47.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 01:47:22 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     song@kernel.org
+Cc:     rgoldwyn@suse.com, guoqing.jiang@linux.dev,
+        linux-raid@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Subject: [PATCH v3] md: fix an incorrect NULL check in md_reload_sb
+Date:   Fri,  8 Apr 2022 16:47:15 +0800
+Message-Id: <20220408084715.26097-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When developing new code/feature, CONFIG_WERROR is most
-often turned off, especially for people using make W=12 to
-get more warnings.
+The bug is here:
+	if (!rdev || rdev->desc_nr != nr) {
 
-In such case, turning on -Werror temporarily would require
-switching on CONFIG_WERROR in the configuration, building,
-then switching off CONFIG_WERROR.
+The list iterator value 'rdev' will *always* be set and non-NULL
+by rdev_for_each_rcu(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty or no element
+found (In fact, it will be a bogus pointer to an invalid struct
+object containing the HEAD). Otherwise it will bypass the check
+and lead to invalid memory access passing the check.
 
-For this use case, this patch introduces a new 'e' modifier
-to W= as a short hand for KCFLAGS+=-Werror" so that -Werror
-got added to the kernel (built-in) and modules' CFLAGS.
+To fix the bug, use a new variable 'iter' as the list iterator,
+while using the original variable 'pdev' as a dedicated pointer to
+point to the found element.
 
-Signed-off-by: Yann Droneaud <ydroneaud@opteya.com>
+Cc: stable@vger.kernel.org
+Fixes: 70bcecdb1534 ("md-cluster: Improve md_reload_sb to be less error prone")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 ---
- Makefile                   |  1 +
- scripts/Makefile.extrawarn | 13 +++++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
 
-Changes since v0[0]:
+changes from v2:
+ - fix typo (Song Liu)
 
- - rebase on top of commit 64a91907c896 ("kbuild: refactor scripts/Makefile.extrawarn")
- - document use case after commit 3fe617ccafd6 ("Enable '-Werror' by default for all kernel builds")
+changes from v1:
+ - rephrase the subject (Guoqing Jiang)
 
-[0] https://lore.kernel.org/all/1422803720-14723-1-git-send-email-ydroneaud@opteya.com/
+v2:https://lore.kernel.org/lkml/20220328080559.25984-1-xiam0nd.tong@gmail.com/
+v1:https://lore.kernel.org/lkml/20220327080111.12028-1-xiam0nd.tong@gmail.com/
 
-diff --git a/Makefile b/Makefile
-index 8c7de9a72ea2..6dc621af18d1 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1649,6 +1649,7 @@ help:
- 	@echo  '		1: warnings which may be relevant and do not occur too often'
- 	@echo  '		2: warnings which occur quite often but may still be relevant'
- 	@echo  '		3: more obscure warnings, can most likely be ignored'
-+	@echo  '		e: warnings are being treated as errors'
- 	@echo  '		Multiple levels can be combined with W=12 or W=123'
- 	@echo  ''
- 	@echo  'Execute "make" or "make all" to build all targets marked with [*] '
-diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
-index 650d0b8ceec3..f5f0d6f09053 100644
---- a/scripts/Makefile.extrawarn
-+++ b/scripts/Makefile.extrawarn
-@@ -2,8 +2,8 @@
- # ==========================================================================
- # make W=... settings
- #
--# There are three warning groups enabled by W=1, W=2, W=3.
--# They are independent, and can be combined like W=12 or W=123.
-+# There are four warning groups enabled by W=1, W=2, W=3, and W=e
-+# They are independent, and can be combined like W=12 or W=123e.
- # ==========================================================================
+---
+ drivers/md/md.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 7476fc204172..f156678c08bc 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -9794,16 +9794,18 @@ static int read_rdev(struct mddev *mddev, struct md_rdev *rdev)
  
- KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned)
-@@ -94,3 +94,12 @@ KBUILD_CFLAGS += $(call cc-option, -Wpacked-bitfield-compat)
- KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN3
+ void md_reload_sb(struct mddev *mddev, int nr)
+ {
+-	struct md_rdev *rdev;
++	struct md_rdev *rdev = NULL, *iter;
+ 	int err;
  
- endif
-+
-+#
-+# W=e - error out on warnings
-+#
-+ifneq ($(findstring e, $(KBUILD_EXTRA_WARN)),)
-+
-+KBUILD_CFLAGS += -Werror
-+
-+endif
+ 	/* Find the rdev */
+-	rdev_for_each_rcu(rdev, mddev) {
+-		if (rdev->desc_nr == nr)
++	rdev_for_each_rcu(iter, mddev) {
++		if (iter->desc_nr == nr) {
++			rdev = iter;
+ 			break;
++		}
+ 	}
+ 
+-	if (!rdev || rdev->desc_nr != nr) {
++	if (!rdev) {
+ 		pr_warn("%s: %d Could not find rdev with nr %d\n", __func__, __LINE__, nr);
+ 		return;
+ 	}
 -- 
-2.32.0
+2.17.1
 
