@@ -2,82 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA37BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 02:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E098C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 02:09:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240556AbiDICLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 22:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
+        id S240565AbiDICMD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 22:12:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229953AbiDICK7 (ORCPT
+        with ESMTP id S240557AbiDICMB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 22:10:59 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4402DA88
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 19:08:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649470134; x=1681006134;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=j2HUrVzzHCI51aWpm7y8S2TT7YyUAIa0ZHDObI+VlMk=;
-  b=m2Ukdh5wIDzfnpCfcYZW6YncSD61K8/p5wR9rejJ2Axt1voCdiEcQaEF
-   0TNwPDhhqwxYHvyNJRjHddbBmr77E/YG+wbUhi+AfY3hfbYI+Qh3wQzKP
-   heVcKNfGy3c1uqvZEqXFJLfdwAlGr6wkEi9QEgw3R5S8sg0xgutk2sNYg
-   JRY7JeFY7Dhsd3dr8ESnbXb4whaD18FJcV+GIrupWCME7fWjNdJp0cs1p
-   lbsl8GxyBc4h1FlA6xyZaASAeJUUF32AfbOXxumi4xL3/ctGdHJArWzkN
-   zNLxAb1KWASc5241r9N1HlkAXjms/VKQ37gBglEldKjD9NzJagOyTrfO2
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="259341726"
-X-IronPort-AV: E=Sophos;i="5.90,246,1643702400"; 
-   d="scan'208";a="259341726"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 19:08:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,246,1643702400"; 
-   d="scan'208";a="558035283"
-Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 08 Apr 2022 19:08:53 -0700
-Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nd0Wy-0000o1-QV;
-        Sat, 09 Apr 2022 02:08:52 +0000
-Date:   Sat, 9 Apr 2022 10:07:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [peterz-queue:x86/urgent 3/4] arch/x86/kernel/smpboot.o: warning:
- objtool: start_secondary() falls through to next function
- arch_scale_freq_tick()
-Message-ID: <202204091020.5tTNxHao-lkp@intel.com>
+        Fri, 8 Apr 2022 22:12:01 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A755BE71;
+        Fri,  8 Apr 2022 19:09:56 -0700 (PDT)
+Received: from kwepemi500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KZz835C7yzdZLf;
+        Sat,  9 Apr 2022 10:09:23 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500002.china.huawei.com (7.221.188.171) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 9 Apr 2022 10:09:53 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 9 Apr 2022 10:09:53 +0800
+Subject: Re: [PATCH -next RFC v2 2/8] blk-mq: call 'bt_wait_ptr()' later in
+ blk_mq_get_tag()
+To:     Bart Van Assche <bvanassche@acm.org>, <axboe@kernel.dk>,
+        <andriy.shevchenko@linux.intel.com>, <john.garry@huawei.com>,
+        <ming.lei@redhat.com>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yi.zhang@huawei.com>
+References: <20220408073916.1428590-1-yukuai3@huawei.com>
+ <20220408073916.1428590-3-yukuai3@huawei.com>
+ <f6bcc53d-1419-7190-fd9a-8c5fa7178fe1@acm.org>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <fbe5565e-4dbe-bb71-e3c4-c33eb470a8d2@huawei.com>
+Date:   Sat, 9 Apr 2022 10:09:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <f6bcc53d-1419-7190-fd9a-8c5fa7178fe1@acm.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/urgent
-head:   e3842332d80517488a5253940d10ae4bef4811b7
-commit: 19aa14169fc9f44c709615a1e340393d5122419f [3/4] x86,objtool: Mark cpu_startup_entry() __noreturn
-config: x86_64-randconfig-a004 (https://download.01.org/0day-ci/archive/20220409/202204091020.5tTNxHao-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=19aa14169fc9f44c709615a1e340393d5122419f
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue x86/urgent
-        git checkout 19aa14169fc9f44c709615a1e340393d5122419f
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+在 2022/04/08 22:20, Bart Van Assche 写道:
+> On 4/8/22 00:39, Yu Kuai wrote:
+>> bt_wait_ptr() will increase 'wait_index', however, if blk_mq_get_tag()
+>> get a tag successfully after bt_wait_ptr() is called and before
+>> sbitmap_prepare_to_wait() is called, then the 'ws' is skipped. This
+>> behavior might cause 8 waitqueues to be unbalanced.
+>>
+>> Move bt_wait_ptr() later should reduce the problem when the disk is
+>> under high io preesure.
+>>
+>> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+>> ---
+>>   block/blk-mq-tag.c | 4 +---
+>>   1 file changed, 1 insertion(+), 3 deletions(-)
+>>
+>> diff --git a/block/blk-mq-tag.c b/block/blk-mq-tag.c
+>> index 68ac23d0b640..228a0001694f 100644
+>> --- a/block/blk-mq-tag.c
+>> +++ b/block/blk-mq-tag.c
+>> @@ -155,7 +155,6 @@ unsigned int blk_mq_get_tag(struct 
+>> blk_mq_alloc_data *data)
+>>       if (data->flags & BLK_MQ_REQ_NOWAIT)
+>>           return BLK_MQ_NO_TAG;
+>> -    ws = bt_wait_ptr(bt, data->hctx);
+>>       do {
+>>           struct sbitmap_queue *bt_prev;
+>> @@ -174,6 +173,7 @@ unsigned int blk_mq_get_tag(struct 
+>> blk_mq_alloc_data *data)
+>>           if (tag != BLK_MQ_NO_TAG)
+>>               break;
+>> +        ws = bt_wait_ptr(bt, data->hctx);
+>>           sbitmap_prepare_to_wait(bt, ws, &wait, TASK_UNINTERRUPTIBLE);
+>>           tag = __blk_mq_get_tag(data, bt);
+>> @@ -201,8 +201,6 @@ unsigned int blk_mq_get_tag(struct 
+>> blk_mq_alloc_data *data)
+>>            */
+>>           if (bt != bt_prev)
+>>               sbitmap_queue_wake_up(bt_prev);
+>> -
+>> -        ws = bt_wait_ptr(bt, data->hctx);
+>>       } while (1);
+> 
+> Is it necessary to call bt_wait_ptr() during every loop iteration or 
+> only if bt != bt_prev? Would calling bt_wait_ptr() only if bt != bt_prev 
+> help to reduce unfairness further?
+Hi,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+You are right, that sounds reasonable.
 
-All warnings (new ones prefixed by >>):
-
->> arch/x86/kernel/smpboot.o: warning: objtool: start_secondary() falls through to next function arch_scale_freq_tick()
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Kuai
+> 
+> Thanks,
+> 
+> Bart.
+> .
+> 
