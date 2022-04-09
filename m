@@ -2,238 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64BDCC43217
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 18:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F6DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 18:49:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243137AbiDISoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 14:44:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52830 "EHLO
+        id S239946AbiDISvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 14:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243116AbiDISoA (ORCPT
+        with ESMTP id S231682AbiDISvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 14:44:00 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143981EA282;
-        Sat,  9 Apr 2022 11:41:47 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id bx5so11495401pjb.3;
-        Sat, 09 Apr 2022 11:41:47 -0700 (PDT)
+        Sat, 9 Apr 2022 14:51:21 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DC558811;
+        Sat,  9 Apr 2022 11:49:12 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id u18so2918356eda.3;
+        Sat, 09 Apr 2022 11:49:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nr/u+ZwKEd/3qo8bgunaAebE8NIooSpd7ML7VX6zww8=;
-        b=ORpVOFSr646Ql7vJ1+XFDYPaH7B//S/QTQFt2peAcDjG8NTWuujcwc1XQh/ZJyHCKz
-         EUJRYfrNFf6tHJmfDfjZL3jv/5U49PsmpvVMe5nrtETSRks4zvmTV/95yk2ULrSWCmkd
-         K7nd/Fs46vk6zjdJ100C3ebD++EdHwGhcryCGEG4BB1TNSjv9owxDPBYrKkoqKZ3mBVZ
-         +9td/QosqwkFE/TiPULqnyhgD413YYaae9eqgaK3a3KoPqeyk3xJUP7HGC/WgEMeORHp
-         42YGws9DymTA2NJfNFHbp62fqPy/8ASoeEvllCoZAYmKxJPbk5MMaa+MAmwVGEhQL+LJ
-         iCGw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ByRdUYwsUrRmXZCxQJJZezHsqvrPoLpkrEGfURfn69A=;
+        b=G1zqJXHzmARcE8RwkpRebw9HiuiJnk+wy1TeLiFH/oymM4GpsheLe93aOhZzPnGyuA
+         rYJaDdf0P+wa/JgrYcRkvwkS+W+vkHx9d/KowIe+4Jd1rlR/a09qIKLvzusGWjLoUL/d
+         FcXGq3fqW5hraeucZaucbHVaj0jNhtViQI/urOCDcQcdyjnIuSKt4Ae4Y2RAuZK4ZBbR
+         hQjUdP0o+07bw0755waLD80g8ZzpPouIFWsi0tHyyDSnZsVxG8vR6LVoXVSqgo3XeQ0C
+         dZongh3GMC6iOBu+dnYhblN35JazJzzy6FDDEt6UJLiNFi6ifuyaOsixVB9L1g+2tO4h
+         Djcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nr/u+ZwKEd/3qo8bgunaAebE8NIooSpd7ML7VX6zww8=;
-        b=aEPjvV5S62/OBCB5pdNrZr1fQjjlHUD0clLuruA6kn5MycJMkw6Hq4rRPOst6CAjAO
-         OpBkIuQqrUy5Hp2zjoD5QcAHfM6m9TMyAhYAfZWTSeZcXNCE6UDRrTC71DOUNWSOu0Th
-         AjRdAixXccQ8nT15LPwwNbekSPAEXZBWSFm3OyT/Aqpt4OLjFaAs0v0BGfZ4L2OVwK3i
-         ivOmNbJSW7DHocWRoK21gIGdkmwbPGdO2AzFUW9Xf2lqqnkkpSc79Oby8yFMC+0fVTgi
-         SzJOb9yKo8u8pqx82YolJbODkfOfV90Lu0Ju2YDSjEZDOPbRrU79p5wKM+qv+CsBaNo1
-         oKjw==
-X-Gm-Message-State: AOAM531QFAn5pksilvkcthP+X5TQNHw+3oQflxXOjmvQgk7B7LHRoPpV
-        78OYntHSz9bJ8aAl/HZPRnVeTEDMvqk=
-X-Google-Smtp-Source: ABdhPJzja9LrsRzXqXNp8RFic/Yugyg703WRs0+shieU7z82s7cnwbYCZ+zAH6Ag6ZFgtTHNmgz4vQ==
-X-Received: by 2002:a17:90b:1b4d:b0:1c6:bd9e:a63d with SMTP id nv13-20020a17090b1b4d00b001c6bd9ea63dmr28264713pjb.56.1649529706232;
-        Sat, 09 Apr 2022 11:41:46 -0700 (PDT)
-Received: from localhost.localdomain ([122.161.51.18])
-        by smtp.gmail.com with ESMTPSA id g3-20020a63ad03000000b003821d0f0ef4sm25813933pgf.71.2022.04.09.11.41.42
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ByRdUYwsUrRmXZCxQJJZezHsqvrPoLpkrEGfURfn69A=;
+        b=wv7zoeWLGyXBsp7LIUBCGV4096+pUOUHHGpu9dASyMbC7OBUXM8DQs1g+zQ6bRhqlV
+         H+XTgIDRCbRT6uTAKvEo74Ykj8efh/s4q95R63ZxyIVuaWgomhxBQln9pBtc+LyJSQnO
+         OzT4CzgRkep7RXf26mBKfwfnu1AdOHTph/bs7DATuzW+XS9phfS9c16MGBhFNRHx6KIo
+         6mmMSVdmj8FvmOfosam7Vavzv3PKbjYMFT2eafeCg0m8fHePnUA5UchMXrLVpu1zx6YB
+         aZnEhmJlSAUC3HB68mL7wxriVRREJZ9YQVjBC2zg1tcbZ6Q5HXqNGXuPlyWA9gO2+eah
+         KgIw==
+X-Gm-Message-State: AOAM531QCO5t84ucznRPFUZN/vUT2e4EMIg83wttVY5zeqEGruRkh1gQ
+        Ha/WPd2CrsDpro+4AHOC6bs=
+X-Google-Smtp-Source: ABdhPJy/tO1kNj6LvFIPnvkC51mI4M2wbDTrdobm/Dh1giwOXIALwck13enZlTBNtkD4HH8vQPTEJQ==
+X-Received: by 2002:a05:6402:3554:b0:419:402f:f632 with SMTP id f20-20020a056402355400b00419402ff632mr24866670edd.1.1649530151322;
+        Sat, 09 Apr 2022 11:49:11 -0700 (PDT)
+Received: from localhost.localdomain (host-87-4-4-217.retail.telecomitalia.it. [87.4.4.217])
+        by smtp.gmail.com with ESMTPSA id u6-20020a17090626c600b006e74ef7f092sm8143843ejc.176.2022.04.09.11.49.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Apr 2022 11:41:45 -0700 (PDT)
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        linux-arm-msm@vger.kernel.org, dmaengine@vger.kernel.org
-Subject: [PATCH 6/6] dt-bindings: dma: Convert Qualcomm BAM DMA binding to json format
-Date:   Sun, 10 Apr 2022 00:11:15 +0530
-Message-Id: <20220409184115.15612-7-singh.kuldeep87k@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220409184115.15612-1-singh.kuldeep87k@gmail.com>
-References: <20220409184115.15612-1-singh.kuldeep87k@gmail.com>
+        Sat, 09 Apr 2022 11:49:09 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Subject: [PATCH] Documentation/vm: Extend "Temporary Virtual Mappings" in highmem.rst
+Date:   Sat,  9 Apr 2022 20:49:07 +0200
+Message-Id: <20220409184907.25122-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert Qualcomm BAM DMA controller binding to DT schema format using
-json schema.
+Extend and rework the "Temporary Virtual Mappings" section of the highmem.rst
+documentation. Do a partial rework of the paragraph related to kmap() and
+add a new paragraph in order to document the set of kmap_local_*() functions.
+Despite the local kmaps were introduced by Thomas Gleixner in October 2020,
+documentation was still missing information about them. These additions rely
+largely on Gleixner's patches, Jonathan Corbet's LWN articles and in-code
+comments from ./include/linux/highmem.h.
 
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ira Weiny <ira.weiny@intel.com>
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 ---
- .../devicetree/bindings/dma/qcom,bam-dma.yaml | 90 +++++++++++++++++++
- .../devicetree/bindings/dma/qcom_bam_dma.txt  | 52 -----------
- 2 files changed, 90 insertions(+), 52 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/dma/qcom,bam-dma.yaml
- delete mode 100644 Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
+ Documentation/vm/highmem.rst | 68 ++++++++++++++++++++++++++++--------
+ 1 file changed, 54 insertions(+), 14 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/dma/qcom,bam-dma.yaml b/Documentation/devicetree/bindings/dma/qcom,bam-dma.yaml
-new file mode 100644
-index 000000000000..606c19f83db3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/dma/qcom,bam-dma.yaml
-@@ -0,0 +1,90 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/dma/qcom,bam-dma.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/Documentation/vm/highmem.rst b/Documentation/vm/highmem.rst
+index 0f69a9fec34d..d9ec26d921c8 100644
+--- a/Documentation/vm/highmem.rst
++++ b/Documentation/vm/highmem.rst
+@@ -52,25 +52,65 @@ Temporary Virtual Mappings
+ 
+ The kernel contains several ways of creating temporary mappings:
+ 
+-* vmap().  This can be used to make a long duration mapping of multiple
+-  physical pages into a contiguous virtual space.  It needs global
+-  synchronization to unmap.
++* vmap().  This can be used to make a long duration mapping of multiple physical
++  pages into a contiguous virtual space. It needs global synchronization to unmap.
+ 
+-* kmap().  This permits a short duration mapping of a single page.  It needs
+-  global synchronization, but is amortized somewhat.  It is also prone to
+-  deadlocks when using in a nested fashion, and so it is not recommended for
+-  new code.
++* kmap().  This can be used to make long duration mapping of a single page with
++  no restrictions on preemption or migration. It comes with an overhead as mapping
++  space is restricted and protected by a global lock for synchronization. When
++  mapping is no more needed, page must be released with kunmap().
+ 
+-* kmap_atomic().  This permits a very short duration mapping of a single
+-  page.  Since the mapping is restricted to the CPU that issued it, it
+-  performs well, but the issuing task is therefore required to stay on that
+-  CPU until it has finished, lest some other task displace its mappings.
++  Mapping changes must be propagated across all the CPUs. kmap() also requires
++  global TLB invalidation when the kmap's pool wraps and it might block when the
++  mapping space is fully utilized until a slot becomes available. Therefore,
++  kmap() is only callable from preemptible context.
+ 
+-  kmap_atomic() may also be used by interrupt contexts, since it is does not
+-  sleep and the caller may not sleep until after kunmap_atomic() is called.
++  All the above work is necessary if a mapping must last for a relatively long
++  time but the bulk of high-memory mappings in the kernel are short-lived and
++  only used in one place.
 +
-+title: Qualcomm Technologies Inc BAM DMA controller
++  This means that the cost of kmap() is mostly wasted in such cases; therefore,
++  newer code is discouraged from using kmap().
+ 
+-  It may be assumed that k[un]map_atomic() won't fail.
++* kmap_atomic().  This permits a very short duration mapping of a single page.
++  Since the mapping is restricted to the CPU that issued it, it performs well,
++  but the issuing task is therefore required to stay on that CPU until it has
++  finished, lest some other task displace its mappings.
+ 
++  kmap_atomic() may also be used by interrupt contexts, since it is does not
++  sleep and the caller too can not sleep until after kunmap_atomic() is called.
++  Each call of kmap_atomic() in the kernel creates a non-preemptible section and
++  disable pagefaults.
 +
-+maintainers:
-+  - Andy Gross <agross@kernel.org>
-+  - Bjorn Andersson <bjorn.andersson@linaro.org>
++  This could be a source of unwanted latency, so it should be only used if it is
++  absolutely required, otherwise the corresponding kmap_local_*() variant should
++  be used if it is feasible (see below).
 +
-+allOf:
-+  - $ref: dma-controller.yaml#
++  On 64-bit systems, calls to kmap() and kmap_atomic() have no real work to do
++  because a 64-bit address space is more than sufficient to address all the
++  physical memory, so all of physical memory appears in the direct mapping.
 +
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,bam-v1.3.0
-+      - qcom,bam-v1.4.0
-+      - qcom,bam-v1.7.0
++  It is assumed that k[un]map_atomic() won't fail.
 +
-+  clocks:
-+    maxItems: 1
++* kmap_local_*().  These provide a set of functions similar to kmap_atomic() and
++  are used to require short term mappings. They can be invoked from any context
++  (including interrupts).
 +
-+  clock-names:
-+    items:
-+      - const: bam_clk
++  The mapping can only be used in the context which acquired it, it is per thread,
++  CPU local (i.e., migration from one CPU to another is disabled - this is why
++  they are called "local"), but they don't disable preemption. It's valid to take
++  pagefaults in a local kmap region, unless the context in which the local mapping
++  is acquired does not allow it for other reasons.
 +
-+  interrupts:
-+    maxItems: 1
++  If a task holding local kmaps is preempted, the maps are removed on context
++  switch and restored when the task comes back on the CPU. As the maps are strictly
++  CPU local, it is guaranteed that the task stays on the CPU and that the CPU
++  cannot be unplugged until the local kmaps are released.
 +
-+  iommus:
-+    minItems: 1
-+    maxItems: 4
-+
-+  num-channels:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Indicates supported number of DMA channels in a remotely controlled bam.
-+
-+  qcom,controlled-remotely:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      Indicates that the bam is controlled by remote proccessor i.e. execution
-+      environment.
-+
-+  qcom,ee:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Indicates the active Execution Environment identifier (0-7) used in the
-+      secure world.
-+
-+  qcom,num-ees:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Indicates supported number of Execution Environments in a remotely
-+      controlled bam.
-+
-+  qcom,powered-remotely:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      Indicates that the bam is powered up by a remote processor but must be
-+      initialized by the local processor.
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - interrupts
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/qcom,gcc-msm8974.h>
-+
-+    dma-controller@f9944000 {
-+        compatible = "qcom,bam-v1.4.0";
-+        reg = <0xf9944000 0x15000>;
-+        interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&gcc GCC_BLSP2_AHB_CLK>;
-+        clock-names = "bam_clk";
-+        #dma-cells = <1>;
-+        qcom,ee = <0>;
-+    };
-+...
-diff --git a/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt b/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
-deleted file mode 100644
-index 6e9a5497b3f2..000000000000
---- a/Documentation/devicetree/bindings/dma/qcom_bam_dma.txt
-+++ /dev/null
-@@ -1,52 +0,0 @@
--QCOM BAM DMA controller
--
--Required properties:
--- compatible: must be one of the following:
-- * "qcom,bam-v1.4.0" for MSM8974, APQ8074 and APQ8084
-- * "qcom,bam-v1.3.0" for APQ8064, IPQ8064 and MSM8960
-- * "qcom,bam-v1.7.0" for MSM8916
--- reg: Address range for DMA registers
--- interrupts: Should contain the one interrupt shared by all channels
--- #dma-cells: must be <1>, the cell in the dmas property of the client device
--  represents the channel number
--- clocks: required clock
--- clock-names: must contain "bam_clk" entry
--- qcom,ee : indicates the active Execution Environment identifier (0-7) used in
--  the secure world.
--- qcom,controlled-remotely : optional, indicates that the bam is controlled by
--  remote proccessor i.e. execution environment.
--- qcom,powered-remotely : optional, indicates that the bam is powered up by
--  a remote processor but must be initialized by the local processor.
--- num-channels : optional, indicates supported number of DMA channels in a
--  remotely controlled bam.
--- qcom,num-ees : optional, indicates supported number of Execution Environments
--  in a remotely controlled bam.
--
--Example:
--
--	uart-bam: dma@f9984000 = {
--		compatible = "qcom,bam-v1.4.0";
--		reg = <0xf9984000 0x15000>;
--		interrupts = <0 94 0>;
--		clocks = <&gcc GCC_BAM_DMA_AHB_CLK>;
--		clock-names = "bam_clk";
--		#dma-cells = <1>;
--		qcom,ee = <0>;
--	};
--
--DMA clients must use the format described in the dma.txt file, using a two cell
--specifier for each channel.
--
--Example:
--	serial@f991e000 {
--		compatible = "qcom,msm-uart";
--		reg = <0xf991e000 0x1000>
--			<0xf9944000 0x19000>;
--		interrupts = <0 108 0>;
--		clocks = <&gcc GCC_BLSP1_UART2_APPS_CLK>,
--			<&gcc GCC_BLSP1_AHB_CLK>;
--		clock-names = "core", "iface";
--
--		dmas = <&uart-bam 0>, <&uart-bam 1>;
--		dma-names = "rx", "tx";
--	};
++  Nesting kmap_local.*() and kmap_atomic.*() mappings is allowed to a certain
++  extent (up to KMAP_TYPE_NR). Nested kmap_local.*() and kunmap_local.*()
++  invocations have to be strictly ordered because the map implementation is stack
++  based.
+ 
+ Using kmap_atomic
+ =================
 -- 
-2.25.1
+2.34.1
 
