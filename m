@@ -2,102 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B081CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 07:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E21EAC4332F
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 08:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240356AbiDIH4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 03:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
+        id S239332AbiDIILV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 04:11:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236506AbiDIH4A (ORCPT
+        with ESMTP id S233344AbiDIILS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 03:56:00 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A03065823;
-        Sat,  9 Apr 2022 00:53:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=RdaGnqMln3670/kDQ7mKAMFJwaZLOEULPAbgvLVVG7U=; b=biNBw+AmPhGVWsLvNIg7LdLyPE
-        Wc63D/ma3GbzIZqb0n5ZnVGBFo1bdg4BwXlt2nEq4GWfm0+AH0bdQ+OLovrDo/yizqEkE0eMZ28Qd
-        W7hGJlAA5dknkANJSCSzuO+p1Hf3i+RGfBKpgCnRuF3RSgKJjA+P1xdMwSdX+8Al6+iRLqPFff4Oh
-        ybI8THGQLShPPXH+pBPD1jVUqkAawRrDup/5UCYrv1Y1VIzm3zdvEg0KfYMDUdAh8oF63XK3/+XYU
-        Dxr6c7fUYTuUGG6++JPc6AsXhv06dDmC/lEdj+yhgsaaznUHHOcaQDIKWYnMPXjhjelqWfGEXPPFr
-        SRMu22OQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nd5uC-00AXsS-IM; Sat, 09 Apr 2022 07:53:12 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5DAE8300299;
-        Sat,  9 Apr 2022 09:53:09 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 1C2B820C50BE8; Sat,  9 Apr 2022 09:53:09 +0200 (CEST)
-Date:   Sat, 9 Apr 2022 09:53:09 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     cgel.zte@gmail.com
-Cc:     akpm@linux-foundation.org, david@redhat.com, corbet@lwn.net,
-        bsingharora@gmail.com, mike.kravetz@oracle.com,
-        yang.yang29@zte.com.cn, wang.yong12@zte.com.cn,
-        ran.xiaokai@zte.com.cn, jiang.xuexin@zte.com.cn,
-        thomas.orgis@uni-hamburg.de, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        sfr@canb.auug.org.au
-Subject: Re: [PATCH v2] delayacct: track delays from write-protect copy
-Message-ID: <YlE7ZVMfAhs4Ba27@hirez.programming.kicks-ass.net>
-References: <20220409014342.2505532-1-yang.yang29@zte.com.cn>
+        Sat, 9 Apr 2022 04:11:18 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A043B2B262;
+        Sat,  9 Apr 2022 01:09:11 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Kb72J2nwbzBs58;
+        Sat,  9 Apr 2022 16:04:56 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 9 Apr 2022 16:09:10 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 9 Apr
+ 2022 16:09:09 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>,
+        <liulongfang@huawei.com>
+Subject: [PATCH 05/11] Documentation: update debugfs doc for Hisilicon HPRE
+Date:   Sat, 9 Apr 2022 16:03:22 +0800
+Message-ID: <20220409080328.15783-6-yekai13@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220409080328.15783-1-yekai13@huawei.com>
+References: <20220409080328.15783-1-yekai13@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220409014342.2505532-1-yang.yang29@zte.com.cn>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 01:43:44AM +0000, cgel.zte@gmail.com wrote:
-> From: Yang Yang <yang.yang29@zte.com.cn>
-> 
-> Delay accounting does not track the delay of write-protect copy. When
-> tasks trigger many write-protect copys(include COW and unsharing of
-> anonymous pages[1]), it may spend a amount of time waiting for them.
-> To get the delay of tasks in write-protect copy, could help users to
-> evaluate the impact of using KSM or fork() or GUP.
-> 
-> Also update tools/accounting/getdelays.c:
-> 
->     / # ./getdelays -dl -p 231
->     print delayacct stats ON
->     listen forever
->     PID     231
-> 
->     CPU             count     real total  virtual total    delay total  delay average
->                      6247     1859000000     2154070021     1674255063          0.268ms
->     IO              count    delay total  delay average
->                         0              0              0ms
->     SWAP            count    delay total  delay average
->                         0              0              0ms
->     RECLAIM         count    delay total  delay average
->                         0              0              0ms
->     THRASHING       count    delay total  delay average
->                         0              0              0ms
->     COMPACT         count    delay total  delay average
->                         3          72758              0ms
->     WPCOPY          count    delay total  delay average
->                      3635      271567604              0ms
-> 
-> [1] commit 31cc5bc4af70("mm: support GUP-triggered unsharing of anonymous pages")
-> 
-> Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
-> Reviewed-by: David Hildenbrand <david@redhat.com>
-> Reviewed-by: Jiang Xuexin <jiang.xuexin@zte.com.cn>
-> Reviewed-by: Ran Xiaokai <ran.xiaokai@zte.com.cn>
-> Reviewed-by: wangyong <wang.yong12@zte.com.cn>
+Update documentation describing DebugFS that could help
+to check the change of register values.
 
-As per always; I refuse to take patches from cgel.zte@gmail.com. Because
-yet again From and Sender don't match.
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+---
+ Documentation/ABI/testing/debugfs-hisi-hpre | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-If you want me to consider your email, please send from the email
-address you've listed in your SoB.
+diff --git a/Documentation/ABI/testing/debugfs-hisi-hpre b/Documentation/ABI/testing/debugfs-hisi-hpre
+index 396de7bc735d..82abf92df429 100644
+--- a/Documentation/ABI/testing/debugfs-hisi-hpre
++++ b/Documentation/ABI/testing/debugfs-hisi-hpre
+@@ -104,6 +104,20 @@ Description:	Dump the status of the QM.
+ 		Four states: initiated, started, stopped and closed.
+ 		Available for both PF and VF, and take no other effect on HPRE.
+ 
++What:		/sys/kernel/debug/hisi_hpre/<bdf>/qm/diff_regs
++Date:		Mar 2022
++Contact:	linux-crypto@vger.kernel.org
++Description:	QM debug registers(regs) read hardware register value. This
++		node is used to show the change of the qm register values. This
++		node can be help users to check the change of register values.
++
++What:		/sys/kernel/debug/hisi_hpre/<bdf>/hpre_dfx/diff_regs
++Date:		Mar 2022
++Contact:	linux-crypto@vger.kernel.org
++Description:	HPRE debug registers(regs) read hardware register value. This
++		node is used to show the change of the register values. This
++		node can be help users to check the change of register values.
++
+ What:		/sys/kernel/debug/hisi_hpre/<bdf>/hpre_dfx/send_cnt
+ Date:		Apr 2020
+ Contact:	linux-crypto@vger.kernel.org
+-- 
+2.33.0
+
