@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEAEC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 16:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81364C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 16:33:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242695AbiDIQfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 12:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60438 "EHLO
+        id S242689AbiDIQf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 12:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242626AbiDIQeh (ORCPT
+        with ESMTP id S242624AbiDIQef (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 12:34:37 -0400
+        Sat, 9 Apr 2022 12:34:35 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5490823EC77
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 09:32:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695A823F386
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 09:32:28 -0700 (PDT)
 Received: from ipservice-092-217-091-111.092.217.pools.vodafone-ip.de ([92.217.91.111] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1ndE0f-0006Rg-Oy; Sat, 09 Apr 2022 18:32:25 +0200
+        id 1ndE0d-0006Rg-SG; Sat, 09 Apr 2022 18:32:23 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -27,9 +27,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 09/10] staging: r8188eu: improve timeout handling in efuse_read_phymap_from_txpktbuf
-Date:   Sat,  9 Apr 2022 18:32:11 +0200
-Message-Id: <20220409163212.241122-10-martin@kaiser.cx>
+Subject: [PATCH 07/10] staging: r8188eu: improve timeout handling in LPS_RF_ON_check
+Date:   Sat,  9 Apr 2022 18:32:09 +0200
+Message-Id: <20220409163212.241122-8-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220409163212.241122-1-martin@kaiser.cx>
 References: <20220409163212.241122-1-martin@kaiser.cx>
@@ -40,39 +40,38 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Use the standard kernel functions to define and check the timeout in
-efuse_read_phymap_from_txpktbuf.
+LPS_RF_ON_check.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/staging/r8188eu/core/rtw_pwrctrl.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-index efdadfb61905..e17375a74f17 100644
---- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-@@ -186,8 +186,8 @@ static void efuse_read_phymap_from_txpktbuf(
- 	u16 *size	/* for efuse content: the max byte to read. will update to byte read */
- 	)
+diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
+index ffafeb7f9c47..1aebf9400f12 100644
+--- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
++++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
+@@ -239,10 +239,9 @@ static bool lps_rf_on(struct adapter *adapter)
+  */
+ static s32 LPS_RF_ON_check(struct adapter *padapter, u32 delay_ms)
  {
-+	unsigned long timeout;
- 	u16 dbg_addr = 0;
--	u32 start  = 0, passing_time = 0;
- 	__le32 lo32 = 0, hi32 = 0;
- 	u16 len = 0, count = 0;
- 	int i = 0;
-@@ -206,9 +206,8 @@ static void efuse_read_phymap_from_txpktbuf(
- 		rtw_write16(adapter, REG_PKTBUF_DBG_ADDR, dbg_addr + i);
+-	u32 start_time;
++	unsigned long timeout = jiffies + msecs_to_jiffies(delay_ms);
+ 	s32 err = 0;
  
- 		rtw_write8(adapter, REG_TXPKTBUF_DBG, 0);
--		start = jiffies;
--		while (!rtw_read8(adapter, REG_TXPKTBUF_DBG) &&
--		       (passing_time = rtw_get_passing_time_ms(start)) < 1000)
-+		timeout = jiffies + msecs_to_jiffies(1000);
-+		while (!rtw_read8(adapter, REG_TXPKTBUF_DBG) && time_before(jiffies, timeout))
- 			rtw_usleep_os(100);
+-	start_time = jiffies;
+ 	while (1) {
+ 		if (lps_rf_on(padapter))
+ 			break;
+@@ -252,7 +251,7 @@ static s32 LPS_RF_ON_check(struct adapter *padapter, u32 delay_ms)
+ 			break;
+ 		}
  
- 		/* data from EEPROM needs to be in LE */
+-		if (rtw_get_passing_time_ms(start_time) > delay_ms) {
++		if (time_after(jiffies, timeout)) {
+ 			err = -1;
+ 			break;
+ 		}
 -- 
 2.30.2
 
