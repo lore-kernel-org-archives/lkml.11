@@ -2,93 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A52AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 05:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F13C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 05:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239483AbiDIFZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 01:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
+        id S238590AbiDIFfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 01:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232034AbiDIFZt (ORCPT
+        with ESMTP id S229550AbiDIFfH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 01:25:49 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF08126544;
-        Fri,  8 Apr 2022 22:23:38 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kb3S41h1Zz4xR1;
-        Sat,  9 Apr 2022 15:23:32 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1649481814;
-        bh=XobdU+KeJLZu1qvT7Shd/7p/QSg0qDaTgRMNjR5XoMU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=KRRiTcTE/7nWNj5+DEE4q1Jk2rwZkKwnhePa5KtDgsonSbB1uiUgJhPc23Qwxx+6A
-         s8kv1MA1KbCOiIO3Ovf8rAW0p1cIHLVHhJzXUQ6EL8ZTYtCYwJBr8gQfkOwXcWz8km
-         VDbjEdz68UAtA1GoI8sTZEmy0rug5Oao/fo6v31MK2iYGIXktgvJyz/eqK4oP5XVCv
-         2ddX//Eaiax1Nys555nud/3Uf400gwDOyLDWQVGdZuaoncJ8dLPa7qTwSIzKf0T3Ob
-         Pm4jqZ66WH3CVnQTjh2aA/dHu9d/v14yEXbresCEoPZyO8m+zgUhhYJYmBxhbRuit6
-         vTFTr52uQp+nw==
-Date:   Sat, 9 Apr 2022 15:23:30 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Reto Buerki <reet@codelabs.ch>,
-        Adrian-Ken Rueegsegger <ken@codelabs.ch>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the tip tree
-Message-ID: <20220409152330.6dad275f@canb.auug.org.au>
+        Sat, 9 Apr 2022 01:35:07 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D399E1EC5F
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 22:32:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649482378; x=1681018378;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=gSZGrWvtL+Wz3crmHQOvxroGfbsxwsUHkARCKgPfTz4=;
+  b=agbpM1KCAelHVy/huF8UNxi4x1zKt9Xtlw2H3T59889dK8im5RhuIs6P
+   gTKAfvHWnCdn7m/edmMQZ1a1hdFKbR9e75uvgxG6prX+U4LT0fGWHYpmj
+   6daODxdCUoErcPTuWaX1VvHGve0oWoAZbXAQgWGf3fCqz9ropYcidEAHx
+   VF6zxm5/LZmd7xeUtMwa4CAEvY+gpevZS/tJmz0K4efkE51cVcJGDfjo2
+   0AEpNJa2/qT0Fk2KKh9dOiiH3xRVjznNHBmCnG3GVF2ofaMUAsPa5onbp
+   KcmlmmdVXzz47U4phCM/pr+Gn5Qm+uyPLsNV4eCUQJkiaI4HTeoJXxxoz
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="261942117"
+X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; 
+   d="scan'208";a="261942117"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 22:32:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; 
+   d="scan'208";a="653601731"
+Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
+  by fmsmga002.fm.intel.com with ESMTP; 08 Apr 2022 22:32:57 -0700
+Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nd3iS-0000uV-Lw;
+        Sat, 09 Apr 2022 05:32:56 +0000
+Date:   Sat, 9 Apr 2022 13:32:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     James Morse <james.morse@arm.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [morse:mpam/snapshot/v5.17 60/137] WARNING: modpost:
+ vmlinux.o(.text+0x1e0027): Section mismatch in reference from the function
+ resctrl_init() to the function .init.text:thread_throttle_mode_init()
+Message-ID: <202204091306.bwxNJVQN-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/+G/Ml90U_EcHFfMG+TGy7mX";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/+G/Ml90U_EcHFfMG+TGy7mX
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/snapshot/v5.17
+head:   fb7499c2de17b6b98e0e3ac5b7b023bfc5a6f3a4
+commit: 0c3df0028a436752977109f708781e42e5dad5d1 [60/137] x86/resctrl: Drop __init/__exit on assorted symbols
+config: x86_64-randconfig-a014 (https://download.01.org/0day-ci/archive/20220409/202204091306.bwxNJVQN-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c29a51b3a257908aebc01cd7c4655665db317d66)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git/commit/?id=0c3df0028a436752977109f708781e42e5dad5d1
+        git remote add morse https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git
+        git fetch --no-tags morse mpam/snapshot/v5.17
+        git checkout 0c3df0028a436752977109f708781e42e5dad5d1
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Hi all,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-In commit
+All warnings (new ones prefixed by >>, old ones prefixed by <<):
 
-  59b18a1e65b7 ("x86/msi: Fix msi message data shadow struct")
+>> WARNING: modpost: vmlinux.o(.text+0x1e0027): Section mismatch in reference from the function resctrl_init() to the function .init.text:thread_throttle_mode_init()
+The function resctrl_init() references
+the function __init thread_throttle_mode_init().
+This is often because resctrl_init lacks a __init
+annotation or the annotation of thread_throttle_mode_init is wrong.
 
-Fixes tag
-
-  Fixes: 6285aa50736 ("x86/msi: Provide msi message shadow structs")
-
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-    This can be fixed for the future by setting core.abbrev to 12 (or
-    more) or (for git v2.11 or later) just making sure it is not set
-    (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/+G/Ml90U_EcHFfMG+TGy7mX
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJRGFIACgkQAVBC80lX
-0Gw0mQf9EiXvxWlXgxNd8AlgARzntrVtoKuMclUuX5kLfsJ4dGLKqqaAQB5I59o3
-ORDmIP3Lu68t6sF+qrdU6Hgyg/kDwc7bR3UpeXn/d/F2bF0UgTKs6I2OsVUu48Xb
-M+M7B8MFP/cIy+U+xEhDQ9gJuNeDbG6bV2jyPh4RMr5C7trTuct/WJegKdWo7wiB
-oOj9zyXkTbJa+JVDhBA5Mk4SmsTrp2Wdo1urUtwCx8RBuFjjABjHzhAZ1PvlH5bW
-REqqSv2iOUtUfF2d2aouEY2QldoMXff8DlK5kzPV0zUX7G8MiMyf2tX9kGyE43y3
-fjzDL008p07H4J+9VfKL/+dH6W1+vw==
-=Wi0U
------END PGP SIGNATURE-----
-
---Sig_/+G/Ml90U_EcHFfMG+TGy7mX--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
