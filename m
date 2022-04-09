@@ -2,119 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B280BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 01:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D38FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 01:44:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240375AbiDIBgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 21:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41462 "EHLO
+        id S237951AbiDIBq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 21:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233257AbiDIBgh (ORCPT
+        with ESMTP id S229621AbiDIBqz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 21:36:37 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E950632C223
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 18:34:30 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id x24so6881274edl.2
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 18:34:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zpo56anepGh1996ZVn2ynpiLSftI9+RsEzRBaVj4yg4=;
-        b=INLGEH+vbKT+ECgiAZQ8C9Fwbb4Ob99aqXQUVcVZlQBciKqXZJiwwAQUePzVEghVm/
-         tWvN94mruy6ucYM0CMQwryR8hvCHbFupHJjot82QO8BkCiK5Ka9PRxkE7HS2KBycVdEs
-         OZKCiUK97EdIfnxWTjQ6gN9wLXadLkrpAm/SIa5t5D/OQ7TkPvlA0NbjV2gldv5qeIcu
-         /ahC2E2aUxUs4fojmEvvksy78BvNiAZbXRq8N6MCMU/BnhuziZN9iUMa11Ec5NZL2qTT
-         48mk7hbS5ANaPL0fajF1tSjPYeezVsNQXmgqq4vgJk9GABhlGpp8HkdmONg3hz7cFsh4
-         jjpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zpo56anepGh1996ZVn2ynpiLSftI9+RsEzRBaVj4yg4=;
-        b=i5u58vy2QDRlMFMhDVjbYrspuviNNFDIwBQ5LheeLcixGhZVDJpMTFKHtXtLHdgIZA
-         zhGiGBlmgTxStyjeo1Ocv2qy5sM/ZmhyA6nvwyDNlIMyejHzazWHM3kP7pVvDUywodxc
-         OeZWS65TGiYN6JoybMlKrusnBAperrTb6FIbTj94cO/XHd38mXJtayiI1u/tmR6aqRKC
-         CRGBKo7Czhf+xYyYOV/vefqmrDKhR4fgHH/Ztb3WDQn84izR0sXiM5USACHQya6vb2Ad
-         CWBW2emrbY0YLBxFxBUK0McANIyH6V3UF+GKcMlhd+SGxCHPKWql7tatxWqwxom6QEHu
-         oFmQ==
-X-Gm-Message-State: AOAM5309yMIKvPDcSQ4G19TeI7z8pQJFdOUoDc166lWpbHG2pp52WSnG
-        hUOLZRjYHz+T0Xzfe0PFlHfng9xgU8pQ6roLr2U=
-X-Google-Smtp-Source: ABdhPJwsQzL7e5sUmjWOrWUQj/zvgUrqSodIKWDDRl2LEEuDh6ugBZhU7XQ7ASrJ3S9LsSJ8eI/TPh4VcvBbTJ2uIvw=
-X-Received: by 2002:a05:6402:2945:b0:41d:aad:c824 with SMTP id
- ed5-20020a056402294500b0041d0aadc824mr10293856edb.364.1649468069444; Fri, 08
- Apr 2022 18:34:29 -0700 (PDT)
+        Fri, 8 Apr 2022 21:46:55 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF3BE10;
+        Fri,  8 Apr 2022 18:44:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=OgLQ9aa2Ll1qzof8jP14x/YA/bXhQ5LusxQEfz4RR7o=; b=jRF0GBhcKeXEgZP7anRr2kF8AM
+        iZFXR4zMjLIRIivbW06XLbEBp3NsDMVVZ7jINiVksrOIClwIU8fZ6pS6bv3+47+GemzGcoyDoMnwW
+        zjjuqML5IE2pwXoZOqvpDXBPgcYsVtRr/zAMmK3431l825FhftMkgBr3Dym3TD/jG4BEyTGCUkzY3
+        LSPzSpsJfyMH1xjerXMSwK3Om4+15Q0mlYTj95RKwlAzTkcKf5iTSDlAPceF00Q+SaLooxHeFw8qK
+        i3cGY0JrCcLhVrHbEUhACITB3MF+u9LDnT1/qT5WPgJ2Jp2ykRdepYN7Lvnp/ZXCPNg0xKX7liKoa
+        hEgux/7w==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nd09V-00AL1l-TW; Sat, 09 Apr 2022 01:44:37 +0000
+Date:   Sat, 9 Apr 2022 02:44:37 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     kernel test robot <lkp@intel.com>, akpm@linux-foundation.org,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        kexec@lists.infradead.org, hch@lst.de, yangtiezhu@loongson.cn,
+        amit.kachhap@arm.com, linux-fsdevel@vger.kernel.org,
+        viro@zeniv.linux.org.uk
+Subject: Re: [PATCH v5 RESEND 1/3] vmcore: Convert copy_oldmem_page() to take
+ an iov_iter
+Message-ID: <YlDlBQYr9ldLWpFz@casper.infradead.org>
+References: <20220408090636.560886-2-bhe@redhat.com>
+ <202204082128.JKXXDGpa-lkp@intel.com>
+ <YlDbJSy4AI3/cODr@MiWiFi-R3L-srv>
 MIME-Version: 1.0
-References: <20220408052207.209856-1-dzm91@hust.edu.cn> <f125ece9-872e-39d9-48a5-15b85508f6b6@kernel.org>
-In-Reply-To: <f125ece9-872e-39d9-48a5-15b85508f6b6@kernel.org>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Sat, 9 Apr 2022 09:34:02 +0800
-Message-ID: <CAD-N9QV7RUfBreaVOmC0JUwVfieM3kOYigOav8=vpAoak6Uc6A@mail.gmail.com>
-Subject: Re: [PATCH] fs: f2fs: remove WARN_ON in f2fs_is_valid_blkaddr
-To:     Chao Yu <chao@kernel.org>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>, Jaegeuk Kim <jaegeuk@kernel.org>,
-        syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlDbJSy4AI3/cODr@MiWiFi-R3L-srv>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 9, 2022 at 8:27 AM Chao Yu <chao@kernel.org> wrote:
->
-> On 2022/4/8 13:22, Dongliang Mu wrote:
-> > From: Dongliang Mu <mudongliangabcd@gmail.com>
-> >
-> > In f2fs_is_valid_blkaddr, if type is DATA_GENERIC_ENHANCE or
-> > DATA_GENERIC_ENHANCE_READ, it invokes WARN_ON(1) not matter
-> > blkaddr is in the range or not.
->
-> If we run into the path where we invoke WARN_ON(1) in f2fs_is_valid_blkaddr(),
-> It means f2fs image may be broken, or there is a bug in f2fs.
->
-> So, do you suffer any related issue in your environment?
+On Sat, Apr 09, 2022 at 09:02:29AM +0800, Baoquan He wrote:
+> I tried on x86_64 system, for the 1st step, I got this:
+> 
+> [ ~]# wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> /root/bin/make.cross: No such file or directory
 
-related issue? Can you explain a little?
+... I don't think we need to reproduce it to see the problem.
 
-If you mean if this warning occurs, any other issues or crash
-behaviors are generated? I tested on the syzbot. After removing the
-WARN_ON, there is no abnormal issue or crash behaviors followed with
-the corresponding reproducer.
+> > sparse warnings: (new ones prefixed by >>)
+> > >> arch/sh/kernel/crash_dump.c:23:36: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const *addr @@     got void [noderef] __iomem * @@
+> >    arch/sh/kernel/crash_dump.c:23:36: sparse:     expected void const *addr
+> >    arch/sh/kernel/crash_dump.c:23:36: sparse:     got void [noderef] __iomem *
+> > 
+> > vim +23 arch/sh/kernel/crash_dump.c
+> > 
+> >     13	
+> >     14	ssize_t copy_oldmem_page(struct iov_iter *iter, unsigned long pfn,
+> >     15				 size_t csize, unsigned long offset)
+> >     16	{
+> >     17		void  __iomem *vaddr;
+> >     18	
+> >     19		if (!csize)
+> >     20			return 0;
+> >     21	
+> >     22		vaddr = ioremap(pfn << PAGE_SHIFT, PAGE_SIZE);
+> >   > 23		csize = copy_to_iter(vaddr + offset, csize, iter);
 
+Unlike other architectures, sh4 does this by calling ioremap().
+That gives us an __iomem qualified pointer, which it then warns about
+passing to copy_to_iter().
 
->
-> Thanks,
->
-> >
-> > Fix this by removing WARN_ON.
-> >
-> > Note that, syzbot patch testing does not incur any further issues
-> >
-> > Reported-by: syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com
-> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > ---
-> >   fs/f2fs/checkpoint.c | 2 --
-> >   1 file changed, 2 deletions(-)
-> >
-> > diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
-> > index f5366feea82d..521498b2dd8c 100644
-> > --- a/fs/f2fs/checkpoint.c
-> > +++ b/fs/f2fs/checkpoint.c
-> > @@ -158,7 +158,6 @@ static bool __is_bitmap_valid(struct f2fs_sb_info *sbi, block_t blkaddr,
-> >               f2fs_err(sbi, "Inconsistent error blkaddr:%u, sit bitmap:%d",
-> >                        blkaddr, exist);
-> >               set_sbi_flag(sbi, SBI_NEED_FSCK);
-> > -             WARN_ON(1);
-> >       }
-> >       return exist;
-> >   }
-> > @@ -196,7 +195,6 @@ bool f2fs_is_valid_blkaddr(struct f2fs_sb_info *sbi,
-> >                       f2fs_warn(sbi, "access invalid blkaddr:%u",
-> >                                 blkaddr);
-> >                       set_sbi_flag(sbi, SBI_NEED_FSCK);
-> > -                     WARN_ON(1);
-> >                       return false;
-> >               } else {
-> >                       return __is_bitmap_valid(sbi, blkaddr, type);
+There are a bunch of hacky things we could do to fix it, but for such an
+unmaintained arch as sh, I'm inclined to do nothing.  We're more likely
+to break something while fixing the warning.  Someone who knows the arch
+can figure out what to do properly.
