@@ -2,196 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83B27C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 12:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 058E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 12:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241684AbiDIMqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 08:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51622 "EHLO
+        id S239813AbiDIMr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 08:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237709AbiDIMqP (ORCPT
+        with ESMTP id S232848AbiDIMrw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 08:46:15 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476C41E1123
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 05:44:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649508246; x=1681044246;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=BEmosva6/JPOAQ+B3/z10tUfAiquglXBN4RK3qAAr70=;
-  b=Ok5hSRABN4sKQEXx1wZLy6mOuEcdQGY4j7m/CoZpenqyfMNqYg42O75u
-   anXr5C8Y/ZrYq+YACeRxtwjIQM3ioao3Ikc3cv6YtvDiXY/vtJSgZEzDb
-   +naGTsOczmlLHmu5yn8qNuLBuHRGzO30MgZh7D8C5f3h+CTWMj8CgBM9e
-   rANd7PybcPW48IJ9v3KJgMDkNc/t/rj9ucglrHSJG5iIFb/17PfQcaQm4
-   PvOSeVU1oISPPBofNMut0sgAwYXITqMf5tJhPC41Wi6DWkSyH1tdDoMFJ
-   PqoRLhdbVLrN5BhFLDjxk5p3PJMFEpm96zkVcGgSLFcexnB++//AD7ktE
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="242392001"
-X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; 
-   d="scan'208";a="242392001"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2022 05:44:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; 
-   d="scan'208";a="852546628"
-Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 09 Apr 2022 05:44:04 -0700
-Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ndARf-00019X-Sj;
-        Sat, 09 Apr 2022 12:44:03 +0000
-Date:   Sat, 09 Apr 2022 20:43:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.04.03c] BUILD SUCCESS
- 59eee46c88762acab3021927babb6be77fc23967
-Message-ID: <62517f81.xY6La0JiMgreVDGG%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Sat, 9 Apr 2022 08:47:52 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B991825B463
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 05:45:44 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KbFGC70JLz4xXS;
+        Sat,  9 Apr 2022 22:45:39 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1649508340;
+        bh=dzSSI05vJdRsELqLVcyOWZYjZ1aa5BhxOpYnMRaD7sw=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=Vwvh/UKDZl/zxJK8ITlEY2gh1W8gFhv+/Ql0lAnG2Hq+6GtgCGM0SFN4v0/KayFoW
+         Bobo1s+iAtJ916Z/aNDJsH86GM7vKuHi1CK+Su1ymzQP1Q40XGJF65XgTVnDBvtsKp
+         CW5RTOsPkZOS9tgUnv14IWSoN9bpxC/q94tM8S86vdtt4spBPOCDNRdFaOYvGRTMxy
+         SbMV82F8NoA4JjmZmobDYMUq0qRBbKBmGclZ52ApHZr2NvFhbsxNDbWzWQu/u8XdmZ
+         V622UhqtAvsYFW0CdYwY7RygVCVZ2Rg7ZjmgD0DD2qiMWJHZHT2ZqTzNKc+ksf9kmD
+         Ygun8PVjefMsA==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH v9 0/4] mm: Enable conversion of powerpc to default
+ topdown mmap layout
+In-Reply-To: <8f1f194f-6b54-a382-b46e-5221cb82c80f@csgroup.eu>
+References: <cover.1649401201.git.christophe.leroy@csgroup.eu>
+ <20220408202516.254e22a8293a57324650bd3f@linux-foundation.org>
+ <8f1f194f-6b54-a382-b46e-5221cb82c80f@csgroup.eu>
+Date:   Sat, 09 Apr 2022 22:45:35 +1000
+Message-ID: <87h77277dc.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.04.03c
-branch HEAD: 59eee46c88762acab3021927babb6be77fc23967  rcu-tasks: Handle sparse cpu_possible_mask in rcu_tasks_invoke_cbs()
+Christophe Leroy <christophe.leroy@csgroup.eu> writes:
+> Le 09/04/2022 =C3=A0 05:25, Andrew Morton a =C3=A9crit=C2=A0:
+>> On Fri,  8 Apr 2022 09:24:58 +0200 Christophe Leroy <christophe.leroy@cs=
+group.eu> wrote:
+>>=20
+>>> Rebased on top of Linux 5.18-rc1
+>>>
+>>> This is the mm part of the series that converts powerpc to default
+>>> topdown mmap layout, for merge into v5.18
+>>=20
+>> We're at 5.18-rc1.  The 5.18 merge window has closed and we're in
+>> fixes-only mode.
+>
+> Umm ... There must have been a misunderstanding then.
 
-elapsed time: 1111m
+That's probably my fault for not getting back to Andrew.
 
-configs tested: 117
-configs skipped: 3
+> Le 11/03/2022 =C3=A0 05:26, Michael Ellerman a =C3=A9crit :
+>  >
+>  > Yeah I didn't pick it up because the mm changes don't have many acks a=
+nd
+>  > I'm always nervous about carrying generic mm changes.
+>  >
+>  > It would be my preference if Andrew could take 2-5 through mm for v5.1=
+8,
+>  > but it is quite late, so I'm not sure how he will feel about that.
+>  >
+>  > Arguably 2, 3, 4 do very little. It's only patch 5 that has much effec=
+t,
+>  > and it has a reviewed-by from Catalin at least.
+>
+> Michael, is it now ok for you to merge it via powerpc tree with Andrew's=
+=20
+> Ack ?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Yes.
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-s390                                defconfig
-mips                      loongson3_defconfig
-arm                       aspeed_g5_defconfig
-mips                 decstation_r4k_defconfig
-mips                  maltasmvp_eva_defconfig
-m68k                             allyesconfig
-microblaze                      mmu_defconfig
-powerpc                    sam440ep_defconfig
-xtensa                              defconfig
-m68k                        m5407c3_defconfig
-h8300                            alldefconfig
-sh                        edosk7760_defconfig
-sh                           se7722_defconfig
-arc                          axs103_defconfig
-powerpc                    adder875_defconfig
-sh                           se7206_defconfig
-arm64                            alldefconfig
-nios2                         10m50_defconfig
-sh                            migor_defconfig
-mips                    maltaup_xpa_defconfig
-s390                       zfcpdump_defconfig
-arm                          exynos_defconfig
-alpha                            allyesconfig
-powerpc64                           defconfig
-ia64                          tiger_defconfig
-powerpc                 mpc8540_ads_defconfig
-arm                          gemini_defconfig
-ia64                             allmodconfig
-xtensa                generic_kc705_defconfig
-h8300                       h8s-sim_defconfig
-parisc                generic-32bit_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220408
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allmodconfig
-m68k                                defconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-sparc                               defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220408
-s390                 randconfig-r044-20220408
-riscv                randconfig-r042-20220408
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+>> Also, [4/4] has a cc:stable.  This is a bit odd because -stable
+>> candidates should be standalone patches, staged ahead of all
+>> for-next-merge-window material, so we can get them merged up quickly.
+>>=20
+>> More oddly, [4/4]'s changelog provides no explanation for why the patch
+>> should be considered for backporting.
+=20
+Yeah it's just a bit too politely worded :)
 
-clang tested configs:
-x86_64                        randconfig-c007
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220408
-riscv                randconfig-c006-20220408
-mips                 randconfig-c004-20220408
-arm                  randconfig-c002-20220408
-s390                 randconfig-c005-20220408
-powerpc                   bluestone_defconfig
-powerpc                      obs600_defconfig
-mips                        qi_lb60_defconfig
-mips                     cu1000-neo_defconfig
-riscv                             allnoconfig
-mips                   sb1250_swarm_defconfig
-mips                     loongson1c_defconfig
-powerpc                       ebony_defconfig
-powerpc                     mpc5200_defconfig
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-hexagon              randconfig-r045-20220408
-hexagon              randconfig-r041-20220408
+It says it's "a complement of f6795053dac8", but it's actually a fix for
+a bug in that commit, that commit should have updated hugetlb behaviour.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> That was a request from Catalin from ARM64:
+>
+> Le 04/01/2022 =C3=A0 17:21, Catalin Marinas a =C3=A9crit :
+>  > I wonder whether we should add a fixes tag (or at least the cc stable):
+>  >
+>  > Fixes: f6795053dac8 ("mm: mmap: Allow for "high" userspace addresses")
+>  > Cc: <stable@vger.kernel.org> # 5.0.x
+>  >
+>  > I think the original commit should have changed
+>  > hugetlb_get_unmapped_area() to have the same behaviour as
+>  > arch_get_unmapped_area(). Steve, any thoughts?
+>  >
+>  > FWIW,
+>  >
+>  > Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+>
+>  From=20
+> https://patchwork.ozlabs.org/project/linuxppc-dev/patch/db238c1ca2d46e33c=
+57328f8d450f2563e92f8c2.1639736449.git.christophe.leroy@csgroup.eu/
+>
+> I can try and see whether this can be moved in front of the other patches.
+
+Thanks, that would be preferable.
+
+cheers
