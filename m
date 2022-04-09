@@ -2,82 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 15:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C284C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 15:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242228AbiDIPS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 11:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39432 "EHLO
+        id S242429AbiDIPTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 11:19:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242429AbiDIPSU (ORCPT
+        with ESMTP id S242433AbiDIPSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 9 Apr 2022 11:18:20 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2499D2632;
-        Sat,  9 Apr 2022 08:16:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=DWJgIpccgAwiD7TVhNFpkZOWqtVX9h8FRKAluJQvIhU=; b=2GCyGWBHoZwI1xTAyiCq4XPl0x
-        omnN5J0sdbTSBIVxm207lFJBJ7pWbWs3HAIG1e9jzvELgpJfFHRa39UASiRTRTyP7UAYxk1TUbjut
-        /mjz+U2qbbJlwv04Yvuob96ouAT1exFqTYhMZ7WjWVFYaW4Hu3GevtEmk2ClMuQBddXygY0fB23lU
-        gjq4gb7jpW0mjGQBFWKAKBh90EJV294iCLv7mHfNKmr7cxHTcvWCkLpLn/m3lsGZJtsQumGCR0uiK
-        yZSo4zJpM5wEoFNYuMsARpjsf24+HxNYXkCk5evL6wdvvPgvadyxaihVQW9wBv9asWfU50IFA6tPO
-        Bndolyiw==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ndCos-003O0g-NJ; Sat, 09 Apr 2022 15:16:10 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sam Ravnborg <sam@ravnborg.org>, sparclinux@vger.kernel.org
-Subject: [PATCH v2] sparc: cacheflush_32.h needs struct page
-Date:   Sat,  9 Apr 2022 08:16:09 -0700
-Message-Id: <20220409151609.3715-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.34.1
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89ADC167FC
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 08:16:13 -0700 (PDT)
+Received: from ipservice-092-217-091-111.092.217.pools.vodafone-ip.de ([92.217.91.111] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1ndCor-0005k2-Pm; Sat, 09 Apr 2022 17:16:09 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 8/8] staging: r8188eu: remove the bInSuspend loop
+Date:   Sat,  9 Apr 2022 17:15:57 +0200
+Message-Id: <20220409151557.207980-9-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220409151557.207980-1-martin@kaiser.cx>
+References: <20220409151557.207980-1-martin@kaiser.cx>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a struct page forward declaration to cacheflush_32.h.
-Fixes this build warning:
+Remove the loop in rtw_pwr_wakeup that waits while the system is
+suspended.
 
-  CC      drivers/crypto/xilinx/zynqmp-sha.o
-In file included from ../arch/sparc/include/asm/cacheflush.h:11,
-                 from ../include/linux/cacheflush.h:5,
-                 from ../drivers/crypto/xilinx/zynqmp-sha.c:6:
-../arch/sparc/include/asm/cacheflush_32.h:38:37: warning: 'struct page' declared inside parameter list will not be visible outside of this definition or declaration
-   38 | void sparc_flush_page_to_ram(struct page *page);
+pwrpriv->bInSuspend is set in rtw_suspend and cleared in rtw_resume. These
+functions are the .suspend and .resume functions of the struct usb_driver
+for r8188eu.
 
-Exposed by commit 0e03b8fd2936
-("crypto: xilinx - Turn SHA into a tristate and allow COMPILE_TEST")
-but not Fixes: that commit.
+A usb_driver's suspend and resume functions are called when the entire
+system goes into suspend or runtime suspend.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: sparclinux@vger.kernel.org
+All of the code paths for rtw_pwr_wakeup start at ioctl handlers.
+
+We can remove the loop that checks bInSuspend. It's not possible to call
+an ioctl while the entire system is suspended.
+
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
-v2: use forward declaration instead of adding <linux/mm.h> (Sam)
 
- arch/sparc/include/asm/cacheflush_32.h |    1 +
- 1 file changed, 1 insertion(+)
+I tried to track down who calls suspend and resume of an usb_driver. My
+understanding is that all of these calls come from the pm layer and that
+the suspend and resume affects the whole system, not just the usb device.
 
---- a/arch/sparc/include/asm/cacheflush_32.h
-+++ b/arch/sparc/include/asm/cacheflush_32.h
-@@ -35,6 +35,7 @@
- #define flush_page_for_dma(addr) \
- 	sparc32_cachetlb_ops->page_for_dma(addr)
+ drivers/staging/r8188eu/core/rtw_pwrctrl.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
+index 717a9bb26c19..093794414d67 100644
+--- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
++++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
+@@ -369,10 +369,6 @@ int rtw_pwr_wakeup(struct adapter *padapter)
+ 	while (pwrpriv->ps_processing && time_before(jiffies, timeout))
+ 		msleep(10);
  
-+struct page;
- void sparc_flush_page_to_ram(struct page *page);
- 
- #define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 1
+-	/* System suspend is not allowed to wakeup */
+-	while (pwrpriv->bInSuspend && time_before(jiffies, timeout))
+-		msleep(10);
+-
+ 	/* I think this should be check in IPS, LPS, autosuspend functions... */
+ 	if (check_fwstate(pmlmepriv, _FW_LINKED))
+ 		goto exit;
+-- 
+2.30.2
+
