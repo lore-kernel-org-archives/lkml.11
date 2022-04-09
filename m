@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A49C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 15:16:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5F37C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 15:16:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242436AbiDIPSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 11:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39406 "EHLO
+        id S242452AbiDIPSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 11:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242428AbiDIPSR (ORCPT
+        with ESMTP id S242430AbiDIPSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 9 Apr 2022 11:18:17 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D92655F
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 08:16:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC76F1AF11
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 08:16:07 -0700 (PDT)
 Received: from ipservice-092-217-091-111.092.217.pools.vodafone-ip.de ([92.217.91.111] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1ndCon-0005k2-9r; Sat, 09 Apr 2022 17:16:05 +0200
+        id 1ndCol-0005k2-40; Sat, 09 Apr 2022 17:16:03 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -27,42 +27,35 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 2/8] staging: r8188eu: don't set _SUCCESS again
-Date:   Sat,  9 Apr 2022 17:15:51 +0200
-Message-Id: <20220409151557.207980-3-martin@kaiser.cx>
+Subject: [PATCH 0/8] staging: r8188eu: clean up rtw_pwr_wakeup
+Date:   Sat,  9 Apr 2022 17:15:49 +0200
+Message-Id: <20220409151557.207980-1-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220409151557.207980-1-martin@kaiser.cx>
-References: <20220409151557.207980-1-martin@kaiser.cx>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ret is initialized to _SUCCESS, there's no need to set it again.
+Clean up the rtw_pwr_wakeup function. Use in-kernel routines for
+handling timeouts.
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
- drivers/staging/r8188eu/core/rtw_pwrctrl.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Martin Kaiser (8):
+  staging: r8188eu: simplify delay conditions in rtw_pwr_wakeup
+  staging: r8188eu: don't set _SUCCESS again
+  staging: r8188eu: make return values consistent
+  staging: r8188eu: simplify the ps_processing check
+  staging: r8188eu: summarize two if statements
+  staging: r8188eu: use kernel functions for timeout handling
+  staging: r8188eu: clean up the code to set ips_deny_time
+  staging: r8188eu: remove the bInSuspend loop
 
-diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-index 7c1e79808087..c43759500ef9 100644
---- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-+++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-@@ -382,10 +382,9 @@ int rtw_pwr_wakeup(struct adapter *padapter)
- 		msleep(10);
- 
- 	/* I think this should be check in IPS, LPS, autosuspend functions... */
--	if (check_fwstate(pmlmepriv, _FW_LINKED)) {
--		ret = _SUCCESS;
-+	if (check_fwstate(pmlmepriv, _FW_LINKED))
- 		goto exit;
--	}
-+
- 	if (rf_off == pwrpriv->rf_pwrstate) {
- 		if (_FAIL ==  ips_leave(padapter)) {
- 			ret = _FAIL;
+ drivers/staging/r8188eu/core/rtw_pwrctrl.c    | 48 ++++++-------------
+ .../staging/r8188eu/include/osdep_service.h   |  1 -
+ drivers/staging/r8188eu/include/rtw_pwrctrl.h |  2 +-
+ .../staging/r8188eu/os_dep/osdep_service.c    |  5 --
+ 4 files changed, 15 insertions(+), 41 deletions(-)
+
 -- 
 2.30.2
 
