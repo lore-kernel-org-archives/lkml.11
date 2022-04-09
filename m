@@ -2,77 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD01DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 11:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 934BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 11:26:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241637AbiDILYw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 07:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36886 "EHLO
+        id S240420AbiDIL2k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 07:28:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236135AbiDILYp (ORCPT
+        with ESMTP id S229553AbiDIL2g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 07:24:45 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111F72D8C28;
-        Sat,  9 Apr 2022 04:22:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=LbzHadhH/DtBXgPRRQM3ojAn+8JRNa/F/dn71QaSpzc=; b=ml64Ik3eYsRGrNQ5LUoQkIqZEB
-        DLwmWoH8CrTLneNBbwmtkQmAnM7/bd2mv6N5f+hj4VTvOz+6PQuNIXYCQc8N9RW+t29nzBsTiNape
-        I9zoQDHOepVvUVLJ+TPcCx3etDoajV4w+iB6QEe6Mj8dYh9UJKYzwmORJOjzMkf6rZdq2TjMLEqNI
-        DSm8lXLhLqknt1zjXsdOF0J5gwda+oWBlgn2SWXb7O9yTGCTKTDA18qCD65a+4O3wY1gDMGXi7aBo
-        AUoiWF/SzNN4dHT2wEm5EH5pktY3p4av/ByuNPbTfl6jBDQlM21lmnq+hWUOJnV3fqq/CDlupqaoj
-        C899HO+Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58180)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nd9Ab-00071R-8D; Sat, 09 Apr 2022 12:22:21 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nd9AY-0007uv-97; Sat, 09 Apr 2022 12:22:18 +0100
-Date:   Sat, 9 Apr 2022 12:22:18 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        vladimir.oltean@nxp.com, s-vadapalli@ti.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] net: ethernet: ti: am65-cpsw: Fix build error
- without PHYLINK
-Message-ID: <YlFsauXYPB2QzUjc@shell.armlinux.org.uk>
-References: <20220409105931.9080-1-yuehaibing@huawei.com>
+        Sat, 9 Apr 2022 07:28:36 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A209A2CCB37
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 04:26:28 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id g20so12725799edw.6
+        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 04:26:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uIniKHNq8JZpBtiVtTYbsG4CSucAQy7J49l7XkGedJQ=;
+        b=syeAl4mFwn7Jlf6Z67Bj7MRA0g1s6XL6W+iUCPVh9bRj0JKzwA/frdhS50xI6s3hgY
+         IKRj2nALPfJwi9YtRVwicdOlBhC4b3H2KmL5NN6yLZr3YAY4UlZymVZpRN9ghJUEcBi4
+         Hr71QPr/0f1I5/yyCu8YSGM5fs9WdIrZQ9me7tT8IEPVVZ5dFj04D/OBb2XuO33EWkhF
+         uW+ELDc2H2YWVP9FguWuSvqThhqmziX75ZjeHIdoAtrVgRED2PdTQCVtpU1ju3w4c3CW
+         PKRzPaLLkQbd/IFnjkyP2xQrI1945TDC1tI3izSL2pmybvsQv9i1DoayS9PgtYhVgGLW
+         6i+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uIniKHNq8JZpBtiVtTYbsG4CSucAQy7J49l7XkGedJQ=;
+        b=dxEhe8UDEYSm49BVW0F5eExxr+IZFCYDcu8cSJcUPD5gQjf5oeeAI0ufq6hqNoMjlh
+         MqIYyvdsDI/Z47ytVlYzwcInU3SX28lq3J16xwwcwZbsnsI+cqrzgGCv2/0UDCGG9VY8
+         nsWkWqTa+f3YHE11okVwOqDyjLJ2+92grt3H+TZ0fCyyR1Lcees2K4uH4nqMELNTvZEN
+         AsGe71uVZHTVAuxtqlVebQg62kMhEpf6eQ0UDln4LjmEIRvSN5jLK6JHRSu3ADj6nv3w
+         TK3Dvfz4r3/SPooFMxpcgKfRwPymXlgDL2U6ZJb3mESrCqa5xkj7KeMwCPRLePEheawH
+         Vjqg==
+X-Gm-Message-State: AOAM5331Tle/myiYYtknuCmrpCPkcG9xLnP1momjDWXznIu+FlqI5/Mk
+        ZLsQbTn7SlnK5nMg9xVMbzQFXg==
+X-Google-Smtp-Source: ABdhPJykVOfbfFlyQPpCMCFTFcG34OHVH9wUEbVWiFWDIxmCK8sV9ej4osJTkQAsEBTVah10qvGJ3Q==
+X-Received: by 2002:a05:6402:150d:b0:41d:5ef9:e241 with SMTP id f13-20020a056402150d00b0041d5ef9e241mr4500392edw.353.1649503587221;
+        Sat, 09 Apr 2022 04:26:27 -0700 (PDT)
+Received: from [192.168.0.188] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id p9-20020a50c949000000b0041d180b8beesm2314883edh.48.2022.04.09.04.26.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 Apr 2022 04:26:26 -0700 (PDT)
+Message-ID: <036b66b2-c221-6e9e-6a56-510e7a0d20d3@linaro.org>
+Date:   Sat, 9 Apr 2022 13:26:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220409105931.9080-1-yuehaibing@huawei.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 13/18] dt-bindings: fix jz4780-nemc issue as reported by
+ dtbscheck
+Content-Language: en-US
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, letux-kernel@openphoenux.org
+References: <cover.1649443080.git.hns@goldelico.com>
+ <84adfe6237cd4cfd52cb9723416f69926e556e55.1649443080.git.hns@goldelico.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <84adfe6237cd4cfd52cb9723416f69926e556e55.1649443080.git.hns@goldelico.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 06:59:31PM +0800, YueHaibing wrote:
-> If PHYLINK is n, build fails:
+On 08/04/2022 20:37, H. Nikolaus Schaller wrote:
+> jz4780-nemc needs to be compatible to simple-mfd as well or we get
 > 
-> drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_set_link_ksettings':
-> am65-cpsw-ethtool.c:(.text+0x118): undefined reference to `phylink_ethtool_ksettings_set'
-> drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_get_link_ksettings':
-> am65-cpsw-ethtool.c:(.text+0x138): undefined reference to `phylink_ethtool_ksettings_get'
-> drivers/net/ethernet/ti/am65-cpsw-ethtool.o: In function `am65_cpsw_set_eee':
-> am65-cpsw-ethtool.c:(.text+0x158): undefined reference to `phylink_ethtool_set_eee'
+> arch/mips/boot/dts/ingenic/ci20.dtb: memory-controller@13410000: compatible: 'oneOf' conditional failed, one must be fixed:
+> 	['ingenic,jz4780-nemc', 'simple-mfd'] is too long
+> 	'ingenic,jz4725b-nemc' was expected
+> 	'ingenic,jz4740-nemc' was expected
+> 	From schema: Documentation/devicetree/bindings/memory-controllers/ingenic,nemc.yaml
 > 
-> Select PHYLINK for TI_K3_AM65_CPSW_NUSS to fix this.
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> ---
+>  .../devicetree/bindings/memory-controllers/ingenic,nemc.yaml    | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Fixes: e8609e69470f ("net: ethernet: ti: am65-cpsw: Convert to PHYLINK")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/ingenic,nemc.yaml b/Documentation/devicetree/bindings/memory-controllers/ingenic,nemc.yaml
+> index 24f9e19820282..3b1116588de3d 100644
+> --- a/Documentation/devicetree/bindings/memory-controllers/ingenic,nemc.yaml
+> +++ b/Documentation/devicetree/bindings/memory-controllers/ingenic,nemc.yaml
+> @@ -17,7 +17,7 @@ properties:
+>      oneOf:
+>        - enum:
+>            - ingenic,jz4740-nemc
+> -          - ingenic,jz4780-nemc
+> +          - [ ingenic,jz4780-nemc, simple-mfd ]
 
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+This is not correct representation. If you really need simple-mfd, then
+this should be a separate item below oneOf.
 
-Thanks.
+The true question is whether you need simple-mfd. Isn't the binding (and
+the driver) expected to instantiate its children?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+>        - items:
+>            - const: ingenic,jz4725b-nemc
+>            - const: ingenic,jz4740-nemc
+
+
+Best regards,
+Krzysztof
