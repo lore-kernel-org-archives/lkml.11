@@ -2,134 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43255C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 00:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13736C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 00:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232609AbiDIAVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 20:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47604 "EHLO
+        id S240150AbiDIAWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 20:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230295AbiDIAVw (ORCPT
+        with ESMTP id S238224AbiDIAWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 20:21:52 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A064DE911
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 17:19:46 -0700 (PDT)
-Received: from [192.168.0.2] (ip5f5ae917.dynamic.kabel-deutschland.de [95.90.233.23])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 5F95861E6478B;
-        Sat,  9 Apr 2022 02:19:43 +0200 (CEST)
-Message-ID: <44354d78-b340-fbc4-fd6c-060d7ad3404e@molgen.mpg.de>
-Date:   Sat, 9 Apr 2022 02:19:43 +0200
+        Fri, 8 Apr 2022 20:22:20 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79912DE911
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 17:20:14 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id t21so10414661oie.11
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 17:20:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=landley-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=kku2i+uKWNnFd73jChiOeIEKCfjIgc7cEViNkZfQ8l0=;
+        b=MvmX4LKI4DyQDgAaqj6D5BFwEshu/LnG+BxDPDDz7Qeqpx5yulnQb0cgGdCjkR9q36
+         VpaPcgCUj3yaOiquaSfgEX4IdXJwB8lNNAtJixiKalOPG8IS2v7x1kbXjIxsFVr+IpDH
+         2Mk4wxROIpeQzkoWtnHQzZd/qwCsaaE2lOuS+0lsC0gpWLI8Tv/e6/QWMrf74Q0KZ1jC
+         3QlmXnTkrUpepdAe0RQZHwbtqfSsFVN6YNfuTxXtvuiHZ61SuiyOHGYBcG4eoXYJXOCQ
+         sATmsP+kQl2mRatJE+nSXCnEagEoc6G6ci0p1uOhU3T5aOwSiYys6MaO7qWhJNngpGSk
+         PtHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kku2i+uKWNnFd73jChiOeIEKCfjIgc7cEViNkZfQ8l0=;
+        b=4yOrPtbXdptXqIU0pJQsIa3kTLejHxSlhJ50uIvL2i5BBsQmdh9evSVBwDSyQIc4oP
+         oQAmn0DG3MfuaynZZN1CQjCeHfhe8bG9eZyG8ESZIkYfOepfr1AGyqjypsjHlAFcI2yn
+         yhtcwuFYfPGjV1a4yoHAzrwhEdNoqYSV4wen9brgmAEnH8H0tOK9qIcjdOLBJyzpcQvh
+         Pu+jmOJzHeTONtkJ9E+PXvkb7meeqrsbHTFwUKQ+/gfk8a3DEvXQmShCd4NOWY+++xbP
+         4E0bBMqVNEczAAkQ6D5z3GjByubozVyxKib6SiUuQyh8Dys/WcfYbkGV4+6X2cPfUHJg
+         snXQ==
+X-Gm-Message-State: AOAM532kE0LLhRukPnyPUM8d/bD8ox07/6TX6gk5TcsQP+bjLrnXvC5y
+        No0UgedCY2TRTgbPsE9I+O/27w==
+X-Google-Smtp-Source: ABdhPJzZe++rWaqfq9aV2dHyOIwxVl53YuTt+2x8aiaE6fJ5qXUhiElHKi0cEmeQsIJ8z1Fpr0L9uA==
+X-Received: by 2002:a05:6808:616:b0:2ef:3773:44d5 with SMTP id y22-20020a056808061600b002ef377344d5mr989393oih.156.1649463613856;
+        Fri, 08 Apr 2022 17:20:13 -0700 (PDT)
+Received: from [192.168.86.187] ([136.62.4.88])
+        by smtp.gmail.com with ESMTPSA id b25-20020a0568301df900b005cf87029ee8sm9164623otj.67.2022.04.08.17.20.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 17:20:12 -0700 (PDT)
+Message-ID: <8f9be869-7244-d92a-4683-f9c53da97755@landley.net>
+Date:   Fri, 8 Apr 2022 19:24:17 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCHv2] drm/amdgpu: disable ASPM on Intel AlderLake based
- systems
+ Thunderbird/91.6.2
+Subject: Re: [RFC PULL] remove arch/h8300
 Content-Language: en-US
-To:     Richard Gong <richard.gong@amd.com>
-Cc:     mario.limonciello@amd.com, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        alexander.deucher@amd.com, christian.koenig@amd.com,
-        xinhui.pan@amd.com, airlied@linux.ie, daniel@ffwll.ch
-References: <20220408190502.4103670-1-richard.gong@amd.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220408190502.4103670-1-richard.gong@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Greg Ungerer <gerg@linux-m68k.org>, Daniel Palmer <daniel@0x0f.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Christoph Hellwig <hch@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "moderated list:H8/300 ARCHITECTURE" 
+        <uclinux-h8-devel@lists.sourceforge.jp>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, Max Filippov <jcmvbkbc@gmail.com>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+References: <Yib9F5SqKda/nH9c@infradead.org>
+ <CAK8P3a1dUVsZzhAe81usLSkvH29zHgiV9fhEkWdq7_W+nQBWbg@mail.gmail.com>
+ <YkmWh2tss8nXKqc5@infradead.org>
+ <CAK8P3a0QdFOJbM72geYTWOKumeKPSCVD8Nje5pBpZWazX0GEnQ@mail.gmail.com>
+ <6a38e8b8-7ccc-afba-6826-cb6e4f92af83@linux-m68k.org>
+ <CAFr9PXkk=8HOxPwVvFRzqHZteRREWxSOOcdjrcOPe0d=9AW2yQ@mail.gmail.com>
+ <5b7687d4-8ba5-ad79-8a74-33fc2496a3db@linux-m68k.org>
+From:   Rob Landley <rob@landley.net>
+In-Reply-To: <5b7687d4-8ba5-ad79-8a74-33fc2496a3db@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Richard,
-
-
-Thank you for your patch.
-
-Am 08.04.22 um 21:05 schrieb Richard Gong:
-> Active State Power Management (ASPM) feature is enabled since kernel 5.14.
-> There are some AMD GFX cards (such as WX3200 and RX640) that cannot be
-> used with Intel AlderLake based systems to enable ASPM. Using these GFX
-
-Alder Lake
-
-> cards as video/display output, Intel Alder Lake based systems will hang
-> during suspend/resume.
-
-Please reflow for 75 characters per line.
-
-Also please mention the exact system you had problems with (also 
-firmware versions).
-
+On 4/5/22 08:07, Greg Ungerer wrote:
+> Hi Daniel,
 > 
-> Add extra check to disable ASPM on Intel AlderLake based systems.
+> On 5/4/22 13:23, Daniel Palmer wrote:
+>> On Mon, 4 Apr 2022 at 22:42, Greg Ungerer <gerg@linux-m68k.org> wrote:
+>>> But we could consider the Dragonball support for removal. I keep it compiling,
+>>> but I don't use it and can't test that it actually works. Not sure that it
+>>> has been used for a very long time now. And I didn't even realize but its
+>>> serial driver (68328serial.c) was removed in 2015. No one seems too have
+>>> noticed and complained.
+>> 
+>> I noticed this and I am working on fixing it up for a new Dragonball
+>> homebrew machine.
+>> I'm trying to add a 68000 machine to QEMU to make the development
+>> easier because I'm currently waiting an hour or more for a kernel to
+>> load over serial.
+>> It might be a few months.
 
-Is that a problem with Intel Alder Lake or the Dell system? Shouldn’t 
-ASPM just be disabled for the problematic cards for the Dell system. You 
-write newer cards worked fine.
+I've been booting Linux on qemu-system-m68k -M q800 for a couple years now? (The
+CROSS=m68k target of mkroot in toybox?)
 
-> Fixes: 0064b0ce85bb ("drm/amd/pm: enable ASPM by default")
-> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
-> Signed-off-by: Richard Gong <richard.gong@amd.com>
-> ---
-> v2: correct commit description
->      move the check from chip family to problematic platform
-> ---
->   drivers/gpu/drm/amd/amdgpu/vi.c | 17 ++++++++++++++++-
->   1 file changed, 16 insertions(+), 1 deletion(-)
+# cat /proc/cpuinfo
+CPU:		68040
+MMU:		68040
+FPU:		68040
+Clocking:	1261.9MHz
+BogoMips:	841.31
+Calibration:	4206592 loops
+
+It certainly THINKS it's got m68000...
+
+$ qemu-system-m68k -cpu ?
+cfv4e
+m5206
+m5208
+m68000
+m68010
+m68020
+m68030
+m68040
+m68060
+any
+
+(I'd love to get an m68k nommu system working but never sat down and worked out
+a kernel .config qemu agreed to run, plus compiler and libc. Musl added m68k
+support but I dunno if that includes coldfire?)
+
+>> It looked like 68328serial.c was removed because someone tried to
+>> clean it up and it was decided that no one was using it and it was
+>> best to delete it.
+>> My plan was to at some point send a series to fix up the issues with
+>> the Dragonball support, revert removing the serial driver and adding
+>> the patch that cleaned it up.
 > 
-> diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c b/drivers/gpu/drm/amd/amdgpu/vi.c
-> index 039b90cdc3bc..8b4eaf54b23e 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/vi.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/vi.c
-> @@ -81,6 +81,10 @@
->   #include "mxgpu_vi.h"
->   #include "amdgpu_dm.h"
->   
-> +#if IS_ENABLED(CONFIG_X86_64)
-> +#include <asm/intel-family.h>
-> +#endif
-> +
->   #define ixPCIE_LC_L1_PM_SUBSTATE	0x100100C6
->   #define PCIE_LC_L1_PM_SUBSTATE__LC_L1_SUBSTATES_OVERRIDE_EN_MASK	0x00000001L
->   #define PCIE_LC_L1_PM_SUBSTATE__LC_PCI_PM_L1_2_OVERRIDE_MASK	0x00000002L
-> @@ -1134,13 +1138,24 @@ static void vi_enable_aspm(struct amdgpu_device *adev)
->   		WREG32_PCIE(ixPCIE_LC_CNTL, data);
->   }
->   
-> +static bool intel_core_apsm_chk(void)
+> Nice. I will leave all the 68000/68328 code alone for now then.
 
-aspm
+The q800 config uses CONFIG_SERIAL_PMACZILOG. Seems to work fine?
 
-> +{
-> +#if IS_ENABLED(CONFIG_X86_64)
-> +	struct cpuinfo_x86 *c = &cpu_data(0);
-> +
-> +	return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ALDERLAKE);
-> +#else
-> +	return false;
-> +#endif
+> Regards
+> Greg
 
-Please do the check in C code and not the preprocessor.
-
-> +}
-> +
->   static void vi_program_aspm(struct amdgpu_device *adev)
->   {
->   	u32 data, data1, orig;
->   	bool bL1SS = false;
->   	bool bClkReqSupport = true;
->   
-> -	if (!amdgpu_device_should_use_aspm(adev))
-> +	if (!amdgpu_device_should_use_aspm(adev) || intel_core_apsm_chk())
->   		return;
->   
->   	if (adev->flags & AMD_IS_APU ||
-
-
-Kind regards,
-
-Paul
+Rob
