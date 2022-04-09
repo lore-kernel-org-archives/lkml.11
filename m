@@ -2,142 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50048C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 13:27:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF76C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 13:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242025AbiDIN3M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 09:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40426 "EHLO
+        id S242048AbiDIN3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 09:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242031AbiDIN0a (ORCPT
+        with ESMTP id S242218AbiDIN2C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 09:26:30 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5671C1CA6;
-        Sat,  9 Apr 2022 06:24:08 -0700 (PDT)
-X-UUID: 73704c264fdd4ea7a7597aaa0df1f2b2-20220409
-X-UUID: 73704c264fdd4ea7a7597aaa0df1f2b2-20220409
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <chun-jie.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1000773465; Sat, 09 Apr 2022 21:24:05 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Sat, 9 Apr 2022 21:24:04 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 9 Apr 2022 21:24:04 +0800
-From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <srv_heupstream@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>
-Subject: [PATCH v5 15/15] clk: mediatek: Add MT8186 ipesys clock support
-Date:   Sat, 9 Apr 2022 21:22:51 +0800
-Message-ID: <20220409132251.31725-16-chun-jie.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220409132251.31725-1-chun-jie.chen@mediatek.com>
-References: <20220409132251.31725-1-chun-jie.chen@mediatek.com>
+        Sat, 9 Apr 2022 09:28:02 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9159BBF95A
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 06:24:52 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id u18so2283769eda.3
+        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 06:24:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fDcvYkIEVq0f5BjuAYxIIri1A/cHLRrOx9YyUXqMPAI=;
+        b=UawB3WzU+FxwrZ0kFUke+Bm5I2fHVYUC0ogGFxCbj94TVJljWRaz0NDT5A7zTtAUZP
+         fw8JHjOxm0qDf1SFRI97P2JQv88wFOu2m9eUaHnYpkfvpZ25Rvb4FAMqI14CNSdAjI0q
+         MchM+RmS9n5ye2oDsJq58sV+qzk6fsAb7jzr2e4SvyCyBgoCRj4qEEcZZJWfJkv24jHM
+         RLCIy70bXWocIqk0Ww1n3bzsMfnl5U3iEJa6RmO6EmtvJN+P+HdPPAewAKhfBkB9OdPi
+         ypoMSsTJBzRCut4Tt2V/nUtglORaWD2g+yPw4BTVrKPG/Ir3Rfaxnpm309KIsB8iHEza
+         yEDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fDcvYkIEVq0f5BjuAYxIIri1A/cHLRrOx9YyUXqMPAI=;
+        b=UKNI6miGfZl8t6B7uUYnGQDgq+RN24csidzw3WzD9eXP1otCkzN/EFgt9nu55isrsc
+         7jsXlVdwsB/M3YdsuGIKHlRHd9BgxvWwCQutoq+aeP33uAjZkWT2QV2x/CMLH1Sd4JtK
+         XbTioi2O+tGCTIVknGThzSW7F3O271d63zVg++sqfUNu5jpVbXRncWL/OjrhFOXU/vBw
+         QoJdoCFeFS7sbVwhA36PZS2vfyoMkQbMkFCxgHd2laiP6aL5/5umlXOsshIdiZGoHQti
+         ZCLnN+kn0//aYIuZCFOrwigxZ1PM3XliWrnDYo2sAVsUTmDpKy8AKt5dHTLDCFZs07xP
+         oebg==
+X-Gm-Message-State: AOAM531KUY3JfqRSvTApsuC/V0CTjb0GCQNYRwjn35Fmf8V04RHGKpXB
+        RntZx+k+oZodvrOEKVTwax7R3w==
+X-Google-Smtp-Source: ABdhPJw6YN/NpLXgV8emVgfWbE/XMoacETKHzCEKKobJ+5XMQwN9fvrsU3zZ93bJ71gUMnzQUAZ8xg==
+X-Received: by 2002:a50:8d09:0:b0:41c:b898:19a6 with SMTP id s9-20020a508d09000000b0041cb89819a6mr24551282eds.30.1649510690712;
+        Sat, 09 Apr 2022 06:24:50 -0700 (PDT)
+Received: from [192.168.0.188] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id m20-20020a170906235400b006e718d8b849sm7846661eja.45.2022.04.09.06.24.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 Apr 2022 06:24:50 -0700 (PDT)
+Message-ID: <f40e1a00-be4d-11c7-6a7c-6b50635a2960@linaro.org>
+Date:   Sat, 9 Apr 2022 15:24:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 05/18] MIPS: DTS: jz4780: fix pinctrl as reported by
+ dtbscheck
+Content-Language: en-US
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, letux-kernel@openphoenux.org
+References: <cover.1649443080.git.hns@goldelico.com>
+ <1941bc4ed553b27f399ad00ea61ff2b0237d14e3.1649443080.git.hns@goldelico.com>
+ <e905896e-335d-a88a-1961-d17b92e46585@linaro.org>
+ <530E0F7F-FC03-45DD-BF87-D049D3108AD3@goldelico.com>
+ <c84b5ec0-0193-ab62-1985-25bc2baa9f05@linaro.org>
+ <B5EB5983-DA9F-4631-B737-2B1417CF9054@goldelico.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <B5EB5983-DA9F-4631-B737-2B1417CF9054@goldelico.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add MT8186 ipesys clock controller which provides clock gate
-control for Image Process Engine.
+On 09/04/2022 15:22, H. Nikolaus Schaller wrote:
+>>
+>> What does that mean? One cannot create multiple patches and apply them?
+> 
+> This patch set was created by some automatic scripts. And they produce one patch
+> per group of warnings.
+> 
+> But here you ask me to merge 4 unrelated topics into a single one.
+> 
+> Or do you mean something else?
 
-Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
----
- drivers/clk/mediatek/Makefile         |  2 +-
- drivers/clk/mediatek/clk-mt8186-ipe.c | 55 +++++++++++++++++++++++++++
- 2 files changed, 56 insertions(+), 1 deletion(-)
- create mode 100644 drivers/clk/mediatek/clk-mt8186-ipe.c
+You can edit a commit, right? git commit --amend? So where is the problem?
 
-diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
-index 6902da61e150..caf2ce93d666 100644
---- a/drivers/clk/mediatek/Makefile
-+++ b/drivers/clk/mediatek/Makefile
-@@ -75,7 +75,7 @@ obj-$(CONFIG_COMMON_CLK_MT8186) += clk-mt8186-mcu.o clk-mt8186-topckgen.o clk-mt
- 				   clk-mt8186-apmixedsys.o clk-mt8186-imp_iic_wrap.o \
- 				   clk-mt8186-mfg.o clk-mt8186-mm.o clk-mt8186-wpe.o \
- 				   clk-mt8186-img.o clk-mt8186-vdec.o clk-mt8186-venc.o \
--				   clk-mt8186-cam.o clk-mt8186-mdp.o
-+				   clk-mt8186-cam.o clk-mt8186-mdp.o clk-mt8186-ipe.o
- obj-$(CONFIG_COMMON_CLK_MT8192) += clk-mt8192.o
- obj-$(CONFIG_COMMON_CLK_MT8192_AUDSYS) += clk-mt8192-aud.o
- obj-$(CONFIG_COMMON_CLK_MT8192_CAMSYS) += clk-mt8192-cam.o
-diff --git a/drivers/clk/mediatek/clk-mt8186-ipe.c b/drivers/clk/mediatek/clk-mt8186-ipe.c
-new file mode 100644
-index 000000000000..8fca148effa6
---- /dev/null
-+++ b/drivers/clk/mediatek/clk-mt8186-ipe.c
-@@ -0,0 +1,55 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+//
-+// Copyright (c) 2022 MediaTek Inc.
-+// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-+
-+#include <linux/clk-provider.h>
-+#include <linux/platform_device.h>
-+#include <dt-bindings/clock/mt8186-clk.h>
-+
-+#include "clk-gate.h"
-+#include "clk-mtk.h"
-+
-+static const struct mtk_gate_regs ipe_cg_regs = {
-+	.set_ofs = 0x4,
-+	.clr_ofs = 0x8,
-+	.sta_ofs = 0x0,
-+};
-+
-+#define GATE_IPE(_id, _name, _parent, _shift)			\
-+	GATE_MTK(_id, _name, _parent, &ipe_cg_regs, _shift, &mtk_clk_gate_ops_setclr)
-+
-+static const struct mtk_gate ipe_clks[] = {
-+	GATE_IPE(CLK_IPE_LARB19, "ipe_larb19", "top_ipe", 0),
-+	GATE_IPE(CLK_IPE_LARB20, "ipe_larb20", "top_ipe", 1),
-+	GATE_IPE(CLK_IPE_SMI_SUBCOM, "ipe_smi_subcom", "top_ipe", 2),
-+	GATE_IPE(CLK_IPE_FD, "ipe_fd", "top_ipe", 3),
-+	GATE_IPE(CLK_IPE_FE, "ipe_fe", "top_ipe", 4),
-+	GATE_IPE(CLK_IPE_RSC, "ipe_rsc", "top_ipe", 5),
-+	GATE_IPE(CLK_IPE_DPE, "ipe_dpe", "top_ipe", 6),
-+	GATE_IPE(CLK_IPE_GALS_IPE, "ipe_gals_ipe", "top_img1", 8),
-+};
-+
-+static const struct mtk_clk_desc ipe_desc = {
-+	.clks = ipe_clks,
-+	.num_clks = ARRAY_SIZE(ipe_clks),
-+};
-+
-+static const struct of_device_id of_match_clk_mt8186_ipe[] = {
-+	{
-+		.compatible = "mediatek,mt8186-ipesys",
-+		.data = &ipe_desc,
-+	}, {
-+		/* sentinel */
-+	}
-+};
-+
-+static struct platform_driver clk_mt8186_ipe_drv = {
-+	.probe = mtk_clk_simple_probe,
-+	.remove = mtk_clk_simple_remove,
-+	.driver = {
-+		.name = "clk-mt8186-ipe",
-+		.of_match_table = of_match_clk_mt8186_ipe,
-+	},
-+};
-+builtin_platform_driver(clk_mt8186_ipe_drv);
--- 
-2.18.0
+> 
+>>
+>>> And they are not related. Every one is based on a different .yaml
+>>> schema file.
+>>
+>> Which does not matter, because the name of the node does not matter. We
+>> enforce it in schema to makes things organized and easier in testing.
+>> This does not fix any real problem, just the problem we created by
+>> ourselves with schema.
+>>
+>>>
+>>> That in all cases the result looks similar comes from similar
+>>> requirements by the schemata and has no inherent connection.
+>>
+>> All schemas will require it, won't they? The same for arm...
+> 
+> We may be talking about different things here.
+> 
+> My understanding:
+> you ask me to merge 5/18, 8/18, 9/18, 12/18 because they contain "controller" in the node-name.
+> 
+> Right? If not then we must clarify that first.
 
+No. I ask you to fix all pin-controller cases, for entire MIPS, not just
+one.
+
+And in one month one more. And then again one more.
+
+
+Best regards,
+Krzysztof
