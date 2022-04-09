@@ -2,100 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA97C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 11:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 335EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 11:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241517AbiDILLS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 07:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40968 "EHLO
+        id S241506AbiDILOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 07:14:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231354AbiDILLP (ORCPT
+        with ESMTP id S237497AbiDILOA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 07:11:15 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9FC23CFF6;
-        Sat,  9 Apr 2022 04:09:08 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id h63so13381011iof.12;
-        Sat, 09 Apr 2022 04:09:08 -0700 (PDT)
+        Sat, 9 Apr 2022 07:14:00 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD42B2B1A6
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 04:11:50 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso9215493wma.0
+        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 04:11:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mXOsPOedrWh9JPnGJrDbvXsPmuz7lk7F3CL0nw828sw=;
-        b=m2A7ZRg72dgIz2UJq8zLcB7VoF7QMuODyG1+HBaIOvauTFlbyi2qMpic9j414OaSqq
-         l0da5dQ/6dzIz4qBihIVT/q06S/Z6vUgJOm8RbRA1jApzaTLAShm1ClXHrabBRa77pBK
-         T9ss6qJ+01+7LYQyeev7QBA6S6w8vDAX9REGCejPL/0kmbPbQiawi78wnlyScM4sMGxM
-         5jo3Ctm0UeJ+YUlrnk7YixcrMobzbf1LAHyHO+/wMtF9gf8AggEKWlrKVfIKApWICZJD
-         L5db3ItCqChBzmhrNzgv2LKDqjT87kvzLRS4DEWX3bKd3aBFX0Wz4rxT8PYo32Hp9Yao
-         bfZQ==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=NocFHobML3Kvh5HOcMiUsxLrqgkYwa3jJ1l2qWZxl+w=;
+        b=qQQ3tKkqupKa5NQHgS2hjs3OTENlvIJ6iqth4AnY/qIB9RJv52mixVOudFeLtTGERm
+         lKqZkkoOV90nTTsyik8B/bnE2mVECBACPDOly60SiqqrvDX3wp/owHBlE1O94J1kkhup
+         aYjtl5v/fQsgwhHd7CFUtz/qkw4CSv0kFjDwE4qtdoyQxtrk6/MkBT56bQFWaA1IeV7g
+         UdwnO/bt+788P/WPUT7WH1y9lDbWAw9bwGv4EO/yRJUJPmCvFlPcUqvtIHoO0A27trLO
+         P+2NZcKr67PDXdLFO+AZN/kxDthOZEdEY6SfNa8cLcNiyZquzlvpupTckKAxnAYw0kfE
+         wtwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mXOsPOedrWh9JPnGJrDbvXsPmuz7lk7F3CL0nw828sw=;
-        b=OK3MFx9vUILGDB80ylP9enc8LB40rOGPjwdgTluIItTKY7jwweHLnkxmG2uPlOJPh8
-         eJT3IaMwloaACcQs0u6UDCqdnsdvqGO8U2OlTO+W5YvtWUU2M2ukKFc+JwCSFRE0mEbL
-         mDnbkezWXxFdv6pP70cpFbt/W0wSiXt6RSsAEatntQl4i2yIFLwnh2UEZSX6lkIo9eNj
-         VuvEDBr8SLkpBj8ggXFyfIYLNYQ0CefkUIONaN3eM1b1FzP/0GLrhybZ2fJYJSMZMHCN
-         jutMG4UwBQpId0iOBG3y+O3KEUUh/0t9MCSsr5EGZoR2BXcFp3BoBmPoFHtGfIGt0jwe
-         Gknw==
-X-Gm-Message-State: AOAM531MztbNSmH1VC7Yv6aOx0LR/Vop82E80Q2k1WxuOxELPnvwA9IO
-        0f4CbTsvK5ipifLHVUqBvL41PMetwCTGkTkHbQo=
-X-Google-Smtp-Source: ABdhPJxaa0UopXfyxt0OHpLxN+9t8AjQXM2kRDcQzKG1MDoxOn+mEm/HNLg+P44PI8GuE2tZuhFkwUz4vdqaMPODdP0=
-X-Received: by 2002:a02:8585:0:b0:321:440c:5e11 with SMTP id
- d5-20020a028585000000b00321440c5e11mr4532439jai.35.1649502548216; Sat, 09 Apr
- 2022 04:09:08 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NocFHobML3Kvh5HOcMiUsxLrqgkYwa3jJ1l2qWZxl+w=;
+        b=qpFJJ+kltYXzHpMshAbLEprHIX8e9QiTYX4sdJyy1Q/aro16cs7zFwfq9Hp5D4+q3r
+         ZXS9x9oQjt8/d83BroJS+Jb70w7fQCVI1uCQrLadpe4R51Q2uK14C5lP/bcHB8KQEwHF
+         6gwEPWDeBNqDh4WbClgk1sCp/h9YkjBoUsw7NcVuwDsp3r8aeLhS3Gg1h7DBM8C8/ZR+
+         4tDdO2e3AXeFi/mr2gpj9KQpx4mzbz7/Bi7BkgzkULqKYG19rul8Y7l1R7vHd2r8LOVe
+         0wpgL3LmTxw6zcsP0AIPSTg81sdiHomHwVQUqP2jmTdLRTPLaky0c4C9NTd5XdOvcL0K
+         +jEQ==
+X-Gm-Message-State: AOAM533vu+NU7AmW5ImcGsEVpIGX9QatgnTEL5CtskGl5mgcqEASOPCc
+        QMMTjFIProteoBBJ6AZqvj29bg==
+X-Google-Smtp-Source: ABdhPJxOLl2akea0SmpdY6ZEeQP0QpcKVyBk++z0/lrrDaC15FuXJNXKubzj1eDzIIVoYS2qIsemcg==
+X-Received: by 2002:a1c:6a01:0:b0:37f:1b18:6b17 with SMTP id f1-20020a1c6a01000000b0037f1b186b17mr20505096wmc.146.1649502709334;
+        Sat, 09 Apr 2022 04:11:49 -0700 (PDT)
+Received: from [192.168.0.188] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id bg8-20020a05600c3c8800b0038e4c5967besm12893174wmb.3.2022.04.09.04.11.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 Apr 2022 04:11:48 -0700 (PDT)
+Message-ID: <e5ea96d8-f8c9-b925-04ee-81e80e30a5d0@linaro.org>
+Date:   Sat, 9 Apr 2022 13:11:48 +0200
 MIME-Version: 1.0
-References: <20220407150652.21885-1-gch981213@gmail.com> <20220407150652.21885-2-gch981213@gmail.com>
- <20220408083214.1473e88a@xps13> <YlAqSQ5w3y39aOy+@sirena.org.uk>
-In-Reply-To: <YlAqSQ5w3y39aOy+@sirena.org.uk>
-From:   Chuanhong Guo <gch981213@gmail.com>
-Date:   Sat, 9 Apr 2022 19:08:57 +0800
-Message-ID: <CAJsYDV+SkL0yCroidGz4yzKbdj5Yx37a0DW9RLftKsceSFGnnw@mail.gmail.com>
-Subject: Re: [PATCH v4 1/5] mtd: nand: make mtk_ecc.c a separated module
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-spi@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 03/18] MIPS: DTS: jz4780: fix tcu timer as reported by
+ dtbscheck
+Content-Language: en-US
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Paul Cercueil <paul@crapouillou.net>,
-        Pratyush Yadav <p.yadav@ti.com>, Yu Kuai <yukuai3@huawei.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:NAND FLASH SUBSYSTEM" <linux-mtd@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, letux-kernel@openphoenux.org
+References: <cover.1649443080.git.hns@goldelico.com>
+ <c48277625f0ab5afc86d89deb1b87537e9c592f6.1649443080.git.hns@goldelico.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <c48277625f0ab5afc86d89deb1b87537e9c592f6.1649443080.git.hns@goldelico.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark!
+On 08/04/2022 20:37, H. Nikolaus Schaller wrote:
+> arch/mips/boot/dts/ingenic/ci20.dtb: timer@10002000: compatible: 'oneOf' conditional failed, one must be fixed:
+> 	['ingenic,jz4780-tcu', 'ingenic,jz4770-tcu', 'simple-mfd'] is too long
+> 	'ingenic,jz4780-tcu' is not one of ['ingenic,jz4740-tcu', 'ingenic,jz4725b-tcu', 'ingenic,jz4760-tcu', 'ingenic,x1000-tcu']
+> 	'simple-mfd' was expected
+> 	'ingenic,jz4760-tcu' was expected
 
-On Fri, Apr 8, 2022 at 8:28 PM Mark Brown <broonie@kernel.org> wrote:
->
-> On Fri, Apr 08, 2022 at 08:32:14AM +0200, Miquel Raynal wrote:
->
-> > Otherwise on the MTD side the series looks good (besides the two
-> > comments you already received).
->
-> What's the plan for merging then?
+Trim it a bit...
 
-I just tested this driver on a different chip and found out it's buggy
-there. I'm still debugging.
-Please wait for v5 of this series. Sorry.
+> 	From schema: Documentation/devicetree/bindings/timer/ingenic,tcu.yaml
 
--- 
-Regards,
-Chuanhong Guo
+You need to explain this. You're changing the effective compatible of
+the device and doing so based only on schema warning does not look
+enough. Please write real reason instead of this fat warning, e.g. that
+both devices are actually compatible and this has no real effect except
+schema checks.
+
+Best regards,
+Krzysztof
