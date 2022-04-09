@@ -2,97 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0978AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 18:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B99CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 18:41:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243034AbiDISli (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 14:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42004 "EHLO
+        id S243057AbiDISnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 14:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243029AbiDISlT (ORCPT
+        with ESMTP id S243044AbiDISnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 14:41:19 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85C829F59A;
-        Sat,  9 Apr 2022 11:39:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649529545; x=1681065545;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YsP1IVNf55NG73OXKQeumu+QVgE0A14MitZqXw4kQzA=;
-  b=pljZFkIMz7IGZC2WmzrAdaXnGolsMlFpnUBeizCc6/VVAyEtr7qL9QHu
-   TSZy4rxlLwylt8TgcYLnmY7U+qax68jf+pzdwHc4wlsSiKARbyCE3VfS+
-   j9PXQEg91e0yA5owm0eMg+MGMPaKpABRkxJ2bgJr0j0xrXoSgxpiKmfZn
-   bvVSO2SilBDzLaarR0nImT0Ty2CXvzeq5OjEaPjc8JIfNNxfaTaoWZ5jL
-   WCXXxaiO+7REU8bYGaw76IxcCiimLJrxugIYSyFLbTfo5IeZRe7OidNHe
-   BEcXmL7wNm87ELbENu0Q1uAjVHBzzgXtfgdyyOFV9tEW6XLNxpsqlsiEQ
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,248,1643698800"; 
-   d="scan'208";a="169060535"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Apr 2022 11:39:05 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Sat, 9 Apr 2022 11:39:05 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Sat, 9 Apr 2022 11:39:03 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net 4/4] net: lan966x: Stop processing the MAC entry is port is wrong.
-Date:   Sat, 9 Apr 2022 20:41:43 +0200
-Message-ID: <20220409184143.1204786-5-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220409184143.1204786-1-horatiu.vultur@microchip.com>
-References: <20220409184143.1204786-1-horatiu.vultur@microchip.com>
+        Sat, 9 Apr 2022 14:43:22 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A45BCB48
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 11:41:12 -0700 (PDT)
+Received: from localhost.localdomain ([37.4.249.94]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis)
+ id 1MSckp-1nWM8T0dib-00SzaR; Sat, 09 Apr 2022 20:41:00 +0200
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>
+Cc:     bcm-kernel-feedback-list@broadcom.com,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        "Ivan T . Ivanov" <iivanov@suse.de>, linux-kernel@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [PATCH] MAINTAINERS: add raspberrypi to BCM2835 architecture
+Date:   Sat,  9 Apr 2022 20:40:17 +0200
+Message-Id: <20220409184017.114804-1-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-Provags-ID: V03:K1:zsmJB+KgfxpZtVlTRSiOUnBIJIV/4ohcGWFhE4ewp5+bVBltY7m
+ yPHie505sRlclaRu23HDTefPWnDkybE8VNPJady689Lu17yUJilKRhzjADpbQodjqF6FjGT
+ +fkNwHd5RXzpoYQ+Rpf0qYWE0Vwdj5Lh65TXRmCELgQlrK/GcsCeNJZ3ygictTUZgZH85s7
+ xbF1+3j7qpUD7XVM/T98A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:CeU5Jc4fvGk=:MheYd2Ib56eB2zOm+lQHQT
+ mO61AgSuQGtsdEfRmvlm+7plZSo2NqltA+YVuTUsgJkFTk1FpRwY5QQEbeEEgLQrdXPMS3+sn
+ PGg7qLsLUmNHiyyJY1AMkaSikQXoMCH4mXLfLb/QtUntHZo33RZQbiWpD7zWmMa92MFc+w4R2
+ +qaI1pvsucoOKD7oMRMNuCLfe3Sa+lMoEWEgLhq9q90Smx4SxZVXAq6in4FrjQV+qFDf2dXQ8
+ LQLcB0b5I9pLltSf761HpBxrUN0o9fFOKYrUk0dn9p9411iFUFE2LhAz2K7OCm4Jy5+ySkObK
+ xBeC9TinhNHRN5RAW/oX4gjJHWcWhAPjKoIbcEtLWHxfpGjLrMIKlE9rdqJccyxJX9rfoPR6h
+ oLoqW8LfLfjEZa71Xlev/3d6xbpsi/DadzkzdJxCWAKFem5fMo6ccuYv5QaUOFw8EAzPmeEZZ
+ DrqpL0nBhD4RAwX+RaMj5xHB0buDDsFFk5aKBq4+ylY0KDTeuOl9GQAdkmHHunyAOuFkyBae5
+ q75KU6vZaQLXZ2W67wKcuLCBRDpGQW6JUbVZFz+mQHgzJceYREZA9SlGrVYRajwrAb+0D0DYM
+ woXyMVUv1++OV6RV0xg1wYMvxeFWclX64zGqdTGi3cJaYZASTI9ukxbAk/hm7dUl2UwUCLEJ4
+ S2LevD4zyRMyIbAagqdkJQYsHhm7XfBCH3b6Z25TqhsePbKbrlOuTIeS+AEQ0CtEaWrkvsr5d
+ oUDuMN6HhcukWpsu
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently when getting a new MAC is learn, the HW generates an
-interrupt. So then the SW will check the new entry and checks if it
-arrived on a correct port. If it didn't just generate a warning.
-But this could still crash the system. Therefore stop processing that
-entry when an issue is seen.
+Recent changes to the firmware clock driver have not be send
+to the architecture maintainers. So fix this by adding the
+matching pattern.
 
-Fixes: 5ccd66e01cbef8 ("net: lan966x: add support for interrupts from analyzer")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_mac.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-index ce5970bdcc6a..2679111ef669 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-@@ -346,7 +346,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fd768d43e048..1432bd345d22 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3752,6 +3752,7 @@ F:	drivers/pci/controller/pcie-brcmstb.c
+ F:	drivers/staging/vc04_services
+ N:	bcm2711
+ N:	bcm283*
++N:	raspberrypi
  
- 			lan966x_mac_process_raw_entry(&raw_entries[column],
- 						      mac, &vid, &dest_idx);
--			WARN_ON(dest_idx > lan966x->num_phys_ports);
-+			if (WARN_ON(dest_idx > lan966x->num_phys_ports))
-+				continue;
- 
- 			/* If the entry in SW is found, then there is nothing
- 			 * to do
-@@ -392,7 +393,8 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
- 
- 		lan966x_mac_process_raw_entry(&raw_entries[column],
- 					      mac, &vid, &dest_idx);
--		WARN_ON(dest_idx > lan966x->num_phys_ports);
-+		if (WARN_ON(dest_idx > lan966x->num_phys_ports))
-+			continue;
- 
- 		mac_entry = lan966x_mac_alloc_entry(mac, vid, dest_idx);
- 		if (!mac_entry)
+ BROADCOM BCM281XX/BCM11XXX/BCM216XX ARM ARCHITECTURE
+ M:	Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.33.0
+2.25.1
 
