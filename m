@@ -2,145 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB11C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 20:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5248C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 20:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231424AbiDIUYr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 16:24:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50546 "EHLO
+        id S231612AbiDIUYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 16:24:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231276AbiDIUYk (ORCPT
+        with ESMTP id S231328AbiDIUYn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 16:24:40 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 6D24B2BCE
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 13:22:30 -0700 (PDT)
-Received: (qmail 293258 invoked by uid 1000); 9 Apr 2022 16:22:29 -0400
-Date:   Sat, 9 Apr 2022 16:22:29 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Maxim Devaev <mdevaev@gmail.com>
-Cc:     linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Cai Huoqing <caihuoqing@baidu.com>,
+        Sat, 9 Apr 2022 16:24:43 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF37263ED;
+        Sat,  9 Apr 2022 13:22:34 -0700 (PDT)
+Date:   Sat, 09 Apr 2022 20:22:32 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649535753;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wTzvCHEYDUlqnK+ZbcSe8Sk4SDcgMjxKlr8pEKOKhy8=;
+        b=RgkxMX49qLQkhC4Ie8L6RezwXtOLmo5Fh3K8fCoir1TwlGc3z5prmB5dB4hVBd1xfbHySd
+        hD2317GMT8hNy5PU7IFg5HSKsVQ300FraRU3zPl1qYVolnxuaVZC1YxYJ86Jh6VoSmIDL6
+        giRqk5aw8NCObFUtll1hqHQi3q2dJoaW+aAuuTxzeCKeGnwD/spQFTK4x/4t4XM6+IICyj
+        mm80qbkPPLpxmY5NlmtuT5ypF1oElyanp3HLic+1d6vN+rjewDmuiGsZY8412Z8LA0onZZ
+        wDCpvLTIMZR/igc/bqFUfXrVeFVVTSS55zMQWdo6WI8pWFa8MOtBnYP3Zzx2Ug==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649535753;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wTzvCHEYDUlqnK+ZbcSe8Sk4SDcgMjxKlr8pEKOKhy8=;
+        b=YSdAjyFHXO73s10cQKfW+g7H36AC57wSstLSdeoH28mXeUB9nGgzXKwZzm+XE7E5Ma1rD2
+        LTnPTVsm2VMLdHBw==
+From:   "tip-bot2 for Anna-Maria Behnsen" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: timers/core] timers: Initialize base::next_expiry_recalc in
+ timers_prepare_cpu()
+Cc:     "Anna-Maria Behnsen" <anna-maria@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frederic Weisbecker <frederic@kernel.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] usb: gadget: f_mass_storage: break IO operations via
- configfs
-Message-ID: <YlHrBdYkBSR0L6FL@rowland.harvard.edu>
-References: <Yk2wvhSTMKTLFK6c@rowland.harvard.edu>
- <20220406195234.4f63cb4a@reki>
- <Yk3TLPKyaQDsnuD4@rowland.harvard.edu>
- <20220406213634.104cae45@reki>
- <Yk8L6b9wEWTjWOg4@rowland.harvard.edu>
- <20220407204553.35cead72@reki>
- <YlBN4Zcn9NYw0PLA@rowland.harvard.edu>
- <20220409115756.4f9b015d@reki>
- <YlGOOJ9SwkD7WVmX@rowland.harvard.edu>
- <20220409170837.02f0853f@reki>
+In-Reply-To: <20220405191732.7438-2-anna-maria@linutronix.de>
+References: <20220405191732.7438-2-anna-maria@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220409170837.02f0853f@reki>
+Message-ID: <164953575207.4207.15972758061168040795.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 05:08:37PM +0300, Maxim Devaev wrote:
-> В Sat, 9 Apr 2022 09:46:32 -0400
-> Alan Stern <stern@rowland.harvard.edu> wrote:
-> 
-> > On Sat, Apr 09, 2022 at 11:57:56AM +0300, Maxim Devaev wrote:
-> > > В Fri, 8 Apr 2022 10:59:45 -0400
-> > > Alan Stern <stern@rowland.harvard.edu> wrote:  
-> > > > > At least there is one situation where the behavior of f_mass_storage differs
-> > > > > from the behavior of a real drive. What happens when you click on the physical
-> > > > > "eject" button?    
-> > > > 
-> > > > If the host has prevented ejection, nothing happens.  Otherwise the disc 
-> > > > gets ejected.
-> > > >   
-> > > > > Yes, the OS can block this, but the problem is that we don't have
-> > > > > an "eject" here.    
-> > > > 
-> > > > What do you mean?  Writing an empty string to the sysfs "file" attribute 
-> > > > is the virtual analog of pressing the eject button.  
-> > > 
-> > > But I can't eject the disc event it's not mounted on Linux host. It seems to me
-> > > it differs from the real drive behavior.  
-> > 
-> > It sounds like either there's a bug or else you're not doing the right 
-> > thing.  Tell me exactly what you do when this fails.
-> 
-> I'm using Raspberry Pi with DWC2. So:
-> - Connect RPi-based gadget to the Linux host.
-> - Set image in the "file" attribute.
+The following commit has been merged into the timers/core branch of tip:
 
-Exactly what is the full pathname you're using for the "file" attribute?
+Commit-ID:     2731aa7d65dbb31c6dad14347c37d522bb3bc7c6
+Gitweb:        https://git.kernel.org/tip/2731aa7d65dbb31c6dad14347c37d522bb3bc7c6
+Author:        Anna-Maria Behnsen <anna-maria@linutronix.de>
+AuthorDate:    Tue, 05 Apr 2022 21:17:31 +02:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Sat, 09 Apr 2022 22:19:39 +02:00
 
-> - Mount gadget's drive on the Linux host.
-> - Umount it.
-> - Try to eject using emptying the "file" attribute.
-> - Get EBUSY error.
+timers: Initialize base::next_expiry_recalc in timers_prepare_cpu()
 
-This must mean that some program on the host is keeping the device file 
-open, even though it isn't mounted.  (I tried running a similar test on 
-my system and it worked perfectly, with no other programs accessing the 
-device).  You might be able to identify which program is accessing the 
-device by running lsof on the host and searching the output for the 
-device name.
+When base::next_expiry_recalc is not initialized to false during cpu
+bringup in HOTPLUG_CPU and is accidently true and no timer is queued in the
+meantime, the loop through the wheel to find __next_timer_interrupt() might
+be done for nothing.
 
-I also tried sending a USR1 signal to the driver's kernel thread while 
-an image was mounted and being accessed.  It did clear the prevent_allow 
-flag, so I could eject the image.  But it also caused a 30-second delay 
-on the host, as predicted.  Now, maybe you don't care about such delays 
-when you're going to eject the media anyway, but it still seems like a 
-bad thing to do.
+Therefore initialize base::next_expiry_recalc to false in
+timers_prepare_cpu().
 
-> > > I have reflected on the rest of your arguments and changed my mind.
-> > > I think that "forced_eject" for a specific lun without interrupting operations would
-> > > really be the best solution. I wrote a simple patch and tested it, everything seems
-> > > to work. What do you think about something like this?
-> > > 
-> > > 
-> > > static ssize_t fsg_lun_opts_forced_eject_store(struct config_item *item,
-> > >                                                const char *page, size_t len)
-> > > {
-> > >         struct fsg_lun_opts *opts = to_fsg_lun_opts(item);
-> > >         struct fsg_opts *fsg_opts = to_fsg_opts(opts->group.cg_item.ci_parent);
-> > >         int ret;
-> > > 
-> > >         opts->lun->prevent_medium_removal = 0;
-> > >         ret = fsg_store_file(opts->lun, &fsg_opts->common->filesem, "", 0);
-> > >         return ret < 0 ? ret : len;
-> > > }
-> > > 
-> > > CONFIGFS_ATTR_WO(fsg_lun_opts_, forced_eject);  
-> > 
-> > The basic idea is right.  But this should not be a CONFIGFS option; it 
-> > should be an ordinary LUN attribute.  For an example, see the definition of 
-> > file_store() in f_mass_storage.c; your routine should look very similar.
-> 
-> Okay, but where this attribute is located in sysfs? How can I use it?
+Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20220405191732.7438-2-anna-maria@linutronix.de
 
-Well, it's going to be in different places depending on what UDC driver 
-your gadget uses.  On my system I'm using the dummy_udc driver, so the 
-sysfs "file" attribute is located at:
+---
+ kernel/time/timer.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-	/sys/devices/platform/dummy_ucd.0/gadget/lun0/file
-
-If instead you're looking at
-
-	/sys/module/g_mass_storage/parameters/file
-
-or in some configfs directory, that's the wrong place.  You can eject 
-the media simply by doing (as root):
-
-	echo >/sys/devices/.../gadget/lun0/file
-
-(fill in the "..." appropriately for your system).
-
-> Sorry for the stupid question.
-
-Not at all.
-
-Alan Stern
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 9dd2a39..204d6cd 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1953,6 +1953,7 @@ int timers_prepare_cpu(unsigned int cpu)
+ 		base = per_cpu_ptr(&timer_bases[b], cpu);
+ 		base->clk = jiffies;
+ 		base->next_expiry = base->clk + NEXT_TIMER_MAX_DELTA;
++		base->next_expiry_recalc = false;
+ 		base->timers_pending = false;
+ 		base->is_idle = false;
+ 	}
