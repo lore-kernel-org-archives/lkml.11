@@ -2,152 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 11:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00BE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 11:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241657AbiDILlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 07:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47022 "EHLO
+        id S241664AbiDILtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 07:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238441AbiDILlP (ORCPT
+        with ESMTP id S229938AbiDILtO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 07:41:15 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BEAD6565
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 04:39:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649504348; x=1681040348;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=f4JJrb0SZ08czHL0/SY43nKxcE+oJ/SvBU95M3SBJ4k=;
-  b=oAthf0AZZ5T8QT/aa2ArhOzP5J/VRxnt82WY4kZLX02igvOVbLwgTfBf
-   kqMeTDaEFNLNC3A52mTCU1KJKNmqG3tRN+DKbTkV5G/Up0YxiJtwm+RfP
-   Wv5lC22WRbfRCh5Ys+/fhYa8sBFh2NyYi7i1Xr4ALbMN4kNTFkGWXeEq1
-   OOj4UtYHwO2LZsJEOzhYfKNmOdSOPVGQ4KJr86vCujgQXTHusUqSYyXsG
-   CVBDfeJDGszEHNzXCO28Y09FM9LjqaOkJZCeLQROWbbaQ0vbltrTMc9MP
-   MebaWP8wZHSLjAJla/jDqWKe3RO1QNcqLJe2xaNH3sPY8CTnz39csi+mk
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="260636922"
-X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; 
-   d="scan'208";a="260636922"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2022 04:39:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; 
-   d="scan'208";a="653707027"
-Received: from lkp-server02.sh.intel.com (HELO 7e80bc2a00a0) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 09 Apr 2022 04:39:03 -0700
-Received: from kbuild by 7e80bc2a00a0 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nd9Ql-00017t-2O;
-        Sat, 09 Apr 2022 11:39:03 +0000
-Date:   Sat, 9 Apr 2022 19:38:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     kbuild-all@lists.01.org, mike.kravetz@oracle.com,
-        shy828301@gmail.com, willy@infradead.org, ying.huang@intel.com,
-        ziy@nvidia.com, minchan@kernel.org, apopple@nvidia.com,
-        dave.hansen@linux.intel.com, o451686892@gmail.com,
-        jhubbard@nvidia.com, peterx@redhat.com, naoya.horiguchi@nec.com,
-        mhocko@suse.com, riel@redhat.com, osalvador@suse.de,
-        david@redhat.com, sfr@canb.auug.org.au, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, linmiaohe@huawei.com
-Subject: Re: [PATCH 4/4] mm/migration: fix potential pte_unmap on an not
- mapped pte
-Message-ID: <202204091914.psVO4TrI-lkp@intel.com>
-References: <20220409073846.22286-5-linmiaohe@huawei.com>
+        Sat, 9 Apr 2022 07:49:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 296F06151
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 04:47:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649504826;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kANSNeeGkYUwvJRcfY0adJcFfGrYgDXHkzIykiPCPSc=;
+        b=OpCPNb6Cj+m4Kud3K/b8sMYMj/7AFECdfPqSZobEHB18zbRsVkMu98scayhr4bIUx0R4WJ
+        BKXbWpjr+PfIFho2tX5x51LWL6+KWffYmMtHkdwx+zJtAmiMN2i1UISynZnaxUXXGvdMh1
+        /yV/gJmjRsSww3MsJbOiza30XoZ0/ew=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-561-mD8NfHuCNsWIkr7O2LXJ-Q-1; Sat, 09 Apr 2022 07:47:04 -0400
+X-MC-Unique: mD8NfHuCNsWIkr7O2LXJ-Q-1
+Received: by mail-qt1-f198.google.com with SMTP id h16-20020ac85850000000b002ebdd31dca9so4333745qth.13
+        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 04:47:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=kANSNeeGkYUwvJRcfY0adJcFfGrYgDXHkzIykiPCPSc=;
+        b=P15JUi8dmqduTN3cJKWxp9SkScnut7q+nlUwkBkNvbnCRTgRZlSxRsMQ0hka+v4fOn
+         54LB6n/fIo+M1qxoZ0ydr5lResONTT9uDvEURpL8Sk9OVueFt5GJU3z1F1F+On9lX/dc
+         kEP9y/ZizdfsJxKMn4U1iQalDNRHEH7SG6VrQQnM8OK9uzwVO1DDBmJnM70/V1MFn9/3
+         EfZ/ijgWi9m9az1crGhN2zX958ijJJQhnrKuf9Vkuw99V+6lvYbRy+EzekVzMM6gPdYQ
+         3fNsrYizvO7WG3MMDWTeydIhcTnoS0iWw55t8RmGe8K9H2B+q+piCLmfXvmILMLkNKiN
+         Lzzw==
+X-Gm-Message-State: AOAM5315ArBrCvLrUVoWodGuSVvr3SDbSuoEfhXNmTecgSEOZ6tOQn77
+        0od8OgHErNEh9w+dU9E2Gu6xfH2BKJ48nNH8VrpXFeh8G422vENa8GBPD+oa2tpQENvsV7/bSbt
+        06cm0bH5CeVQRysU8SmT8DBai
+X-Received: by 2002:a05:620a:2585:b0:680:f1f5:23ac with SMTP id x5-20020a05620a258500b00680f1f523acmr15620534qko.656.1649504824306;
+        Sat, 09 Apr 2022 04:47:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzb4G+hNqZXEQrbF8SrxSFNhUARjC+5OVfwD5R6TULFJCq0gmkP0FgRnHG3hCOb+grIDHV9kQ==
+X-Received: by 2002:a05:620a:2585:b0:680:f1f5:23ac with SMTP id x5-20020a05620a258500b00680f1f523acmr15620523qko.656.1649504824066;
+        Sat, 09 Apr 2022 04:47:04 -0700 (PDT)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id t1-20020a05620a0b0100b0067d3ac00982sm14470312qkg.57.2022.04.09.04.47.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 Apr 2022 04:47:03 -0700 (PDT)
+Subject: Re: [PATCH] ipc/sem: Remove redundant assignments
+To:     Michal Orzel <michalorzel.eng@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+References: <20220409101933.207157-1-michalorzel.eng@gmail.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <30aa1413-de9c-ffb9-223f-b091b7990a85@redhat.com>
+Date:   Sat, 9 Apr 2022 04:47:00 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220409073846.22286-5-linmiaohe@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220409101933.207157-1-michalorzel.eng@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Miaohe,
 
-Thank you for the patch! Yet something to improve:
+On 4/9/22 3:19 AM, Michal Orzel wrote:
+> Get rid of redundant assignments which end up in values not being
+> read either because they are overwritten or the function ends.
+>
+> Reported by clang-tidy [deadcode.DeadStores]
+>
+> Signed-off-by: Michal Orzel <michalorzel.eng@gmail.com>
+Reviewed-by: Tom Rix <trix@redhat.com>
+> ---
+>   ipc/sem.c | 2 --
+>   1 file changed, 2 deletions(-)
+>
+> diff --git a/ipc/sem.c b/ipc/sem.c
+> index 0dbdb98fdf2d..38ef91a63edd 100644
+> --- a/ipc/sem.c
+> +++ b/ipc/sem.c
+> @@ -766,7 +766,6 @@ static int perform_atomic_semop(struct sem_array *sma, struct sem_queue *q)
+>   	for (sop = sops; sop < sops + nsops; sop++) {
+>   		curr = &sma->sems[sop->sem_num];
+>   		sem_op = sop->sem_op;
+> -		result = curr->semval;
+>   
+>   		if (sop->sem_flg & SEM_UNDO) {
+>   			int undo = un->semadj[sop->sem_num] - sem_op;
+> @@ -1430,7 +1429,6 @@ static int semctl_main(struct ipc_namespace *ns, int semid, int semnum,
+>   	if (err)
+>   		goto out_rcu_wakeup;
+>   
+> -	err = -EACCES;
+>   	switch (cmd) {
+>   	case GETALL:
+>   	{
 
-[auto build test ERROR on hnaz-mm/master]
-[also build test ERROR on linus/master v5.18-rc1 next-20220408]
-[cannot apply to linux/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Miaohe-Lin/A-few-cleanup-and-fixup-patches-for-migration/20220409-154028
-base:   https://github.com/hnaz/linux-mm master
-config: powerpc64-randconfig-r015-20220408 (https://download.01.org/0day-ci/archive/20220409/202204091914.psVO4TrI-lkp@intel.com/config)
-compiler: powerpc64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/73a982570cc62313c55cc5cbc2dd7acf40601474
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Miaohe-Lin/A-few-cleanup-and-fixup-patches-for-migration/20220409-154028
-        git checkout 73a982570cc62313c55cc5cbc2dd7acf40601474
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/mm/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arch/powerpc/mm/hugetlbpage.c: In function 'follow_huge_pd':
->> arch/powerpc/mm/hugetlbpage.c:537:25: error: too few arguments to function '__migration_entry_wait'
-     537 |                         __migration_entry_wait(mm, ptep, ptl);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~
-   In file included from arch/powerpc/mm/hugetlbpage.c:20:
-   include/linux/swapops.h:233:13: note: declared here
-     233 | extern void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
-         |             ^~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/__migration_entry_wait +537 arch/powerpc/mm/hugetlbpage.c
-
-^1da177e4c3f41 arch/ppc64/mm/hugetlbpage.c   Linus Torvalds   2005-04-16  507  
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  508  struct page *follow_huge_pd(struct vm_area_struct *vma,
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  509  			    unsigned long address, hugepd_t hpd,
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  510  			    int flags, int pdshift)
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  511  {
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  512  	pte_t *ptep;
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  513  	spinlock_t *ptl;
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  514  	struct page *page = NULL;
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  515  	unsigned long mask;
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  516  	int shift = hugepd_shift(hpd);
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  517  	struct mm_struct *mm = vma->vm_mm;
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  518  
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  519  retry:
-ed515b6898c367 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2018-06-01  520  	/*
-ed515b6898c367 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2018-06-01  521  	 * hugepage directory entries are protected by mm->page_table_lock
-ed515b6898c367 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2018-06-01  522  	 * Use this instead of huge_pte_lockptr
-ed515b6898c367 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2018-06-01  523  	 */
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  524  	ptl = &mm->page_table_lock;
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  525  	spin_lock(ptl);
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  526  
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  527  	ptep = hugepte_offset(hpd, address, pdshift);
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  528  	if (pte_present(*ptep)) {
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  529  		mask = (1UL << shift) - 1;
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  530  		page = pte_page(*ptep);
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  531  		page += ((address & mask) >> PAGE_SHIFT);
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  532  		if (flags & FOLL_GET)
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  533  			get_page(page);
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  534  	} else {
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  535  		if (is_hugetlb_entry_migration(*ptep)) {
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  536  			spin_unlock(ptl);
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06 @537  			__migration_entry_wait(mm, ptep, ptl);
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  538  			goto retry;
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  539  		}
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  540  	}
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  541  	spin_unlock(ptl);
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  542  	return page;
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  543  }
-50791e6de0b5f2 arch/powerpc/mm/hugetlbpage.c Aneesh Kumar K.V 2017-07-06  544  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
