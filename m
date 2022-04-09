@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 09:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4674FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 09:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241180AbiDIJQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 05:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60036 "EHLO
+        id S241277AbiDIJQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 05:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241022AbiDIJPs (ORCPT
+        with ESMTP id S241036AbiDIJPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 05:15:48 -0400
+        Sat, 9 Apr 2022 05:15:49 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFF7EB0A9;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC17EEF0A7;
         Sat,  9 Apr 2022 02:13:42 -0700 (PDT)
 Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.16.1.2) with ESMTP id 239919ov003576;
-        Sat, 9 Apr 2022 04:13:23 -0500
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.16.1.2) with ESMTP id 239919ou003576;
+        Sat, 9 Apr 2022 04:13:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=pvLoPUP+zOIjxi5uLkLGyB32oVCSgHxrfK1CCMsoqYA=;
- b=F5C1M4j1DxkcJkQRwNeTvFrX5jLUU1+4mVuK6/lTE/bftdZ1sc9fW75yDOTYY9Vdr6eC
- e3VguWZJ0ox0fljjwzM9z1gnK8H3UFyUrBCcdLYy79Rh/qqmL6iTDF8+NiyMO7CoZ+nr
- kp2ndM7wbMfZktVl/Iub00RQp0VSyz3JsOfPavS1KwHK+BklBm2HRWtEzzHA0cK1lj9f
- gZkKYBsdSRX87wEH5hhDSOLjinmb3ZN9Iv5WCVweKFlAhgk8iw9rhQpMfBaItKcdoqj0
- hR89pLyXd1s5HNV24VPhYBbUxQX/tCUsQzBIAAZETc+ehWg8FI+8DQUqCHqR+Z4UOOHs mQ== 
+ bh=ywH4uvwDWdVJqzTUsp5wR4R1KwoCSnX2piA1HLbaG9Q=;
+ b=OvDawrZsv2cSoUPUW4p3SHC3haNpnfzJLDDyoYB+K8q22+kMEK4akq5trvAJaYit4ifs
+ Xnw9+n2NiWFzllxm48P+Vlc+3Vjx3ZbOP74+F77D3028gyqB/oCFU5RyOdoHhn4hyvy6
+ blzH3pHYSKUdW1nXk8D7ypuCAaw9i6UfAMyqQJ/VDqji99fkOnzBE97wEcGeSa8/BKj1
+ rEu/XvDF2qW+XY39Rx5oQ+GAXTfYo77d1kfzQCv7p7KDWGi3gmbxSepsiVA+3JF6uW1s
+ RUM69AsE/c//XFQyJoPHfbcCqkvNCb/O5blhJiRc913BkFOyzI0Woig0HSyppAgfsp+F TQ== 
 Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fb6py80wr-6
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fb6py80wr-5
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Sat, 09 Apr 2022 04:13:22 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 9 Apr
- 2022 10:13:19 +0100
+ 2022 10:13:18 +0100
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Sat, 9 Apr 2022 10:13:19 +0100
+ Transport; Sat, 9 Apr 2022 10:13:18 +0100
 Received: from aryzen.ad.cirrus.com (unknown [198.61.64.156])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 9C18846C;
-        Sat,  9 Apr 2022 09:13:19 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 9D446B16;
+        Sat,  9 Apr 2022 09:13:18 +0000 (UTC)
 From:   Lucas Tanure <tanureal@opensource.cirrus.com>
 To:     Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
@@ -50,62 +50,72 @@ To:     Liam Girdwood <lgirdwood@gmail.com>,
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Lucas Tanure <tanureal@opensource.cirrus.com>
-Subject: [PATCH v6 08/16] ALSA: hda: cs35l41: Mute the device before shutdown
-Date:   Sat, 9 Apr 2022 10:13:07 +0100
-Message-ID: <20220409091315.1663410-9-tanureal@opensource.cirrus.com>
+Subject: [PATCH v6 05/16] ALSA: hda: cs35l41: Always configure the DAI
+Date:   Sat, 9 Apr 2022 10:13:04 +0100
+Message-ID: <20220409091315.1663410-6-tanureal@opensource.cirrus.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220409091315.1663410-1-tanureal@opensource.cirrus.com>
 References: <20220409091315.1663410-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: E39D9FTgbmLfn2y3FpzMNsNqBqbPiUUj
-X-Proofpoint-GUID: E39D9FTgbmLfn2y3FpzMNsNqBqbPiUUj
+X-Proofpoint-ORIG-GUID: P8paf5WegxHENUzP4dl7FqDKq8iA_yv0
+X-Proofpoint-GUID: P8paf5WegxHENUzP4dl7FqDKq8iA_yv0
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mute the device before shutdown to avoid pops and clicks for all types
-of boost.
+The dai configuration is always the same and should always configured
+during the opening the stream.
 
 Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
 ---
- sound/pci/hda/cs35l41_hda.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ sound/pci/hda/cs35l41_hda.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
 diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index 46e920ec3000..0709d09f4e13 100644
+index d2addae8c085..f853530eb385 100644
 --- a/sound/pci/hda/cs35l41_hda.c
 +++ b/sound/pci/hda/cs35l41_hda.c
-@@ -28,6 +28,11 @@ static const struct reg_sequence cs35l41_hda_config[] = {
- 	{ CS35L41_PWR_CTRL2,		0x00000001 }, // AMP_EN = 1
+@@ -111,8 +111,6 @@ static const struct reg_sequence cs35l41_reset_to_safe[] = {
+ static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_no_bst = {
+ 	.probe		= cs35l41_reset_to_safe,
+ 	.num_probe	= ARRAY_SIZE(cs35l41_reset_to_safe),
+-	.open		= cs35l41_hda_config,
+-	.num_open	= ARRAY_SIZE(cs35l41_hda_config),
+ 	.prepare	= cs35l41_safe_to_active,
+ 	.num_prepare	= ARRAY_SIZE(cs35l41_safe_to_active),
+ 	.cleanup	= cs35l41_active_to_safe,
+@@ -120,8 +118,6 @@ static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_no_bst = {
  };
  
-+static const struct reg_sequence cs35l41_hda_mute[] = {
-+	{ CS35L41_AMP_GAIN_CTRL,	0x00000000 }, // AMP_GAIN_PCM 0.5 dB
-+	{ CS35L41_AMP_DIG_VOL_CTRL,	0x0000A678 }, // AMP_VOL_PCM Mute
-+};
-+
- static const struct reg_sequence cs35l41_hda_start_bst[] = {
- 	{ CS35L41_PWR_CTRL2,		0x00000021 }, // BST_EN = 10, AMP_EN = 1
- 	{ CS35L41_PWR_CTRL1,		0x00000001, 3000}, // set GLOBAL_EN = 1
-@@ -89,7 +94,6 @@ static const struct reg_sequence cs35l41_active_to_safe[] = {
- 	{ 0x00000040,			0x00000055 },
- 	{ 0x00000040,			0x000000AA },
- 	{ 0x00007438,			0x00585941 },
--	{ CS35L41_AMP_DIG_VOL_CTRL,	0x0000A678 }, // AMP_VOL_PCM Mute
- 	{ CS35L41_PWR_CTRL2,		0x00000000 }, // AMP_EN = 0
- 	{ CS35L41_PWR_CTRL1,		0x00000000 },
- 	{ 0x0000742C,			0x00000009, 2000 },
-@@ -146,6 +150,7 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
- 			ret = regmap_multi_reg_write(reg, reg_seq->prepare, reg_seq->num_prepare);
+ static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_ext_bst = {
+-	.open		= cs35l41_hda_config,
+-	.num_open	= ARRAY_SIZE(cs35l41_hda_config),
+ 	.prepare	= cs35l41_start_ext_vspk,
+ 	.num_prepare	= ARRAY_SIZE(cs35l41_start_ext_vspk),
+ 	.cleanup	= cs35l41_stop_ext_vspk,
+@@ -129,8 +125,6 @@ static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_ext_bst = {
+ };
+ 
+ static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_int_bst = {
+-	.open		= cs35l41_hda_config,
+-	.num_open	= ARRAY_SIZE(cs35l41_hda_config),
+ 	.prepare	= cs35l41_hda_start_bst,
+ 	.num_prepare	= ARRAY_SIZE(cs35l41_hda_start_bst),
+ 	.cleanup	= cs35l41_hda_stop_bst,
+@@ -146,8 +140,8 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
+ 
+ 	switch (action) {
+ 	case HDA_GEN_PCM_ACT_OPEN:
+-		if (reg_seq->open)
+-			ret = regmap_multi_reg_write(reg, reg_seq->open, reg_seq->num_open);
++		ret = regmap_multi_reg_write(reg, cs35l41_hda_config,
++					     ARRAY_SIZE(cs35l41_hda_config));
  		break;
- 	case HDA_GEN_PCM_ACT_CLEANUP:
-+		regmap_multi_reg_write(reg, cs35l41_hda_mute, ARRAY_SIZE(cs35l41_hda_mute));
- 		if (reg_seq->cleanup)
- 			ret = regmap_multi_reg_write(reg, reg_seq->cleanup, reg_seq->num_cleanup);
- 		break;
+ 	case HDA_GEN_PCM_ACT_PREPARE:
+ 		if (reg_seq->prepare)
 -- 
 2.35.1
 
