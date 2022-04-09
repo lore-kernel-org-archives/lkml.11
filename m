@@ -2,106 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38545C43217
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 10:40:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3FA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 10:43:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236455AbiDIKmN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 06:42:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
+        id S241371AbiDIKpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 06:45:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231733AbiDIKmL (ORCPT
+        with ESMTP id S230356AbiDIKpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 06:42:11 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4907E15809
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 03:40:03 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id r3so3095477edi.8
-        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 03:40:03 -0700 (PDT)
+        Sat, 9 Apr 2022 06:45:03 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1426DFB5
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 03:42:56 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id lc2so1239722ejb.12
+        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 03:42:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=IH+smdr6HwLu60QJ4rEGM3k3Dwd3Lj1hSShNkYwWADk=;
-        b=rty0p7mqU35z9SiXjeEgTFu8FRbCxhvexcOsUrlIt2BwWJXSFqETpUfh2SurdgIZHw
-         Cxf0QKOMKHkPNrhcH+CV/QQI0ne3PxKaMbZa9I+apWEeb3EmZRb9Xm9DsSqN3fd/y5YS
-         pujlC6id7v5BvTbGc3HuJ3meNyErqCDv1e1p9GFTGXZe48ilLPuKzwrjFVesKoG0u3Rd
-         WRhs2UyS+RLKF8stOLNdwGkLc1oThzFAxJLrYbxYz1oBgY5hIwVZIBQVuyp2DfS8r7Kt
-         NJXmg74A/HlxVPmM6HPI+ZNCN1XkvSzC8vGEn11aQYEYh6aNEXbVNeickzbYxvhJcYfz
-         SGAA==
+        bh=ijd95dt6s3s+0p47bWaAfIjaq9k8EmWtzflrGL7OleU=;
+        b=bNqB0Yq5OxBBujdEXQlvbmX/xmYst+e1wdlTr2Zro8lZuJVwjpWo+yg8iVON4py8m/
+         n9CgTSVWcDV/sxMYeWVQ2Oxh8HAycdA+7S4O6OvdW4cpqCQkCPM5LdaQukZA66PXMdQG
+         ti4rlsFJToPO9K3SblU5U3PDCA80GSreZ1fXb3cjwaAsoCek8DrH1YjNFzTsh5GGnUAk
+         svOCRqepr5jvXZbvgHaOFasF4CWgX+M4VAIuXuKSR+XBXqxLWXxRXxVn/GA77DPEgT+9
+         Bm7YsqCOVxDBo/t+fCO0dopGhBq1eluEo4dJ+p1w9ZNaAU/wopEwhMi1Lj2LFNH07+W+
+         BjHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=IH+smdr6HwLu60QJ4rEGM3k3Dwd3Lj1hSShNkYwWADk=;
-        b=cXGo4eE5ntGBeQzEIgYH1z9lhCAgU3UyFWtcEjLK1CpM8XHSKxD+NgtUehSzsfbZ3V
-         jg0ZucJUUlrEFrVHv0bVD4KRBvuBwWQXpnPZ63dGjkfPCvfNXsgQgLxV1pbIdvrcYCNl
-         Z1HHDhxeGwCAxH+m2+P3+WSgPCilRo35I4txPSrjXCWSiXi4jkXjmek7lbce4wz1UVRd
-         scq35tOURqH48EyhmcqjtEM+/iwfX2+oqUzmMMpl68MdzghAC4x82+nOzjM5nQf0QwvB
-         hV/e+JRokSC+XdBvdchH3C+ci6c2Aj24uf/st5/7YQyNMMpYpLMM4lNTXH9r140HWel0
-         YJ5g==
-X-Gm-Message-State: AOAM533EJrv8WHp/7xNBD+aro0sPZkdthtxJiVUB+3kR5f/jxB80cCON
-        OL7hRPbF1VixwvwiRu5bEHqeeQ==
-X-Google-Smtp-Source: ABdhPJyKA/1xZ2gv355sS2o5W8tQkWswcamJ0HPKtJp41RHmX4J+r9pD8t6bnrZaAwz6XaMcPo2fow==
-X-Received: by 2002:aa7:c58d:0:b0:41d:6d1:6f43 with SMTP id g13-20020aa7c58d000000b0041d06d16f43mr12679263edq.125.1649500801722;
-        Sat, 09 Apr 2022 03:40:01 -0700 (PDT)
+        bh=ijd95dt6s3s+0p47bWaAfIjaq9k8EmWtzflrGL7OleU=;
+        b=hYN73OMEZPSa+zgJOMiUObZgb1xxohalAY6lTzg3OJbmkyT99HSaptc+d01LtUHK0S
+         Ohcb2+3u3meAgjBn9ybVz7K69rEU4l4zDToOICd3lP8j6zPdpTaYiUfFFKvZK5z/3OUB
+         w1eke7B8ytV8eW5n2FF8k/tjjIYPrSAi8AYF2Vt+0doOsBrtm0mylqg9m/687nQscX6N
+         pZqyg2Is8lR8NcNQZNzb8AU+7wIb6yJWrGQu0LxoFF8tPO9lhmVnB/Tg1N0kDescSPxu
+         D6/mvT0mE8m8KuemxA2Ngk5rkm6CbHkBxOorGz8HJVmX2DlHoiYL89CfDocAeD0Bqlbj
+         NNkA==
+X-Gm-Message-State: AOAM533nhBV1fKk67jQ0m2lYgdzOwHkUqbu9fK2+JcuS3UlBq0+U4y6L
+        AsB6uU/0j9HNmAdy3GL2hz0k/g==
+X-Google-Smtp-Source: ABdhPJzY3jtlSetQ7/sUPkfs0zTjBlNU8oXNLY/DXJ81h7kOq3SYJzZLL/J3TsjJxNWgk8GT1Thdgw==
+X-Received: by 2002:a17:907:2d27:b0:6e8:3ea6:7645 with SMTP id gs39-20020a1709072d2700b006e83ea67645mr11175076ejc.727.1649500975309;
+        Sat, 09 Apr 2022 03:42:55 -0700 (PDT)
 Received: from [192.168.0.188] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id e12-20020a170906c00c00b006e66eff7584sm8204774ejz.102.2022.04.09.03.40.00
+        by smtp.gmail.com with ESMTPSA id r11-20020a1709064d0b00b006e87938318dsm158946eju.39.2022.04.09.03.42.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 Apr 2022 03:40:01 -0700 (PDT)
-Message-ID: <49c1d200-8c07-b306-a400-86ee6a637bb4@linaro.org>
-Date:   Sat, 9 Apr 2022 12:39:59 +0200
+        Sat, 09 Apr 2022 03:42:54 -0700 (PDT)
+Message-ID: <7dc8b66d-0569-183a-554c-4a0d273bbf0b@linaro.org>
+Date:   Sat, 9 Apr 2022 12:42:53 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH 01/11] dt-bindings: arm: add Pensando boards
+Subject: Re: [PATCH 2/2] arm64: dts: imx: Add i.MX8M Plus Gateworks gw7400 dts
+ support
 Content-Language: en-US
-To:     Brad Larson <brad@pensando.io>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Olof Johansson <olof@lixom.net>,
-        David Clear <dac2@pensando.io>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220406233648.21644-1-brad@pensando.io>
- <20220406233648.21644-2-brad@pensando.io>
- <05febd3f-bfdb-13c2-8cce-b9dc422c5eae@linaro.org>
- <CAK9rFnyRrS_LvoZ_j66cKDHgecqcqzJN5krSxdCquBanViKyHg@mail.gmail.com>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     Device Tree Mailing List <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+References: <20220407210411.8167-1-tharvey@gateworks.com>
+ <20220407210411.8167-2-tharvey@gateworks.com>
+ <be7fd7be-c65a-215c-df96-5a6eed52b5e7@linaro.org>
+ <CAJ+vNU1D5GowKH97mpS+zT97XTavbKfijt6P8KEHN8-DD+gtYA@mail.gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAK9rFnyRrS_LvoZ_j66cKDHgecqcqzJN5krSxdCquBanViKyHg@mail.gmail.com>
+In-Reply-To: <CAJ+vNU1D5GowKH97mpS+zT97XTavbKfijt6P8KEHN8-DD+gtYA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/04/2022 04:19, Brad Larson wrote:
-> On Thu, Apr 7, 2022 at 11:45 AM Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>> Change from V3:
->>> - Add description and board compatible
+On 08/04/2022 17:52, Tim Harvey wrote:
+>>> +     pps {
+>>> +             compatible = "pps-gpio";
+>>> +             pinctrl-names = "default";
+>>> +             pinctrl-0 = <&pinctrl_pps>;
+>>> +             gpios = <&gpio1 12 GPIO_ACTIVE_HIGH>;
+>>> +             status = "okay";
 >>
->> That's a bit confusing... the subject is for v1.
+>> No need for status.
 > 
-> Goal was to identify in the cover letter patch the key changes from
-> the V3 patchset to this V4 patchset.  Then in each patch that had a
-> material change highlight that in the patch itself.  Will try and make
-> it more clear.
+> ok. What is the best way to know if a binding uses status or not?
+> 
+> Documentation/devicetree/bindings/net/fsl,fec.yaml for example does
+> not mention it uses status, yet it does.
 
-This is fine, I am talking about the subject - it is marked as a v1, so
-it's confusing to see a changelog.
-
-One way to achieve this is: "git format-patch -v4 -11 ..."
+status is not part of binding at all. All nodes have by default
+status=okay, just the DTSI disables many of them. Therefore you need to
+add status=okay only to these which are explicitly disabled.
 
 Best regards,
 Krzysztof
