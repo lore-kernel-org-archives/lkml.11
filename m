@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4674FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 09:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9964CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 09:14:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241277AbiDIJQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 05:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
+        id S241305AbiDIJQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 05:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241036AbiDIJPt (ORCPT
+        with ESMTP id S241045AbiDIJPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 9 Apr 2022 05:15:49 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC17EEF0A7;
-        Sat,  9 Apr 2022 02:13:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2241FEFFA8;
+        Sat,  9 Apr 2022 02:13:43 -0700 (PDT)
 Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.16.1.2) with ESMTP id 239919ou003576;
-        Sat, 9 Apr 2022 04:13:22 -0500
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.16.1.2) with ESMTP id 239919oq003576;
+        Sat, 9 Apr 2022 04:13:19 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=ywH4uvwDWdVJqzTUsp5wR4R1KwoCSnX2piA1HLbaG9Q=;
- b=OvDawrZsv2cSoUPUW4p3SHC3haNpnfzJLDDyoYB+K8q22+kMEK4akq5trvAJaYit4ifs
- Xnw9+n2NiWFzllxm48P+Vlc+3Vjx3ZbOP74+F77D3028gyqB/oCFU5RyOdoHhn4hyvy6
- blzH3pHYSKUdW1nXk8D7ypuCAaw9i6UfAMyqQJ/VDqji99fkOnzBE97wEcGeSa8/BKj1
- rEu/XvDF2qW+XY39Rx5oQ+GAXTfYo77d1kfzQCv7p7KDWGi3gmbxSepsiVA+3JF6uW1s
- RUM69AsE/c//XFQyJoPHfbcCqkvNCb/O5blhJiRc913BkFOyzI0Woig0HSyppAgfsp+F TQ== 
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=PODMain02222019;
+ bh=2zrPeVnQaFOXlm/jv03XU7bKCTdOrm2Yr3ZzYzeZkb8=;
+ b=Kn5OSOggyPOAA8MMr8m4r6zDm1Eo+RQaecBEtpeVI9SsgxbIYS3328gmMv7jBYXTrnjM
+ Adhknkkoxht1sAPnUgmONzW3Sz33SxkM2sJ79NN8IBoh9mcERs6yJbSTJIG3scuL8PMk
+ O1ya1qYTcdhw3SgdyqQettQDDumvE7mKuBO0giFybtdXR9Nz47vCs1oudeJutNL0Y7ZT
+ ceeQj2XNjiHOQOTQlLCl42/ps7R+QGU4cyJNoXQqbTk23Gk8Xg2eSgfPGnxmDPJ61iFY
+ vlnlWPu9bSmnwj+9Sgl6Nda7DkDoYPVTjZBrnv9/p+pBgIXuYLYUb5yvHVnv2JnJvvpM Jg== 
 Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fb6py80wr-5
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fb6py80wr-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sat, 09 Apr 2022 04:13:22 -0500
+        Sat, 09 Apr 2022 04:13:19 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 9 Apr
- 2022 10:13:18 +0100
+ 2022 10:13:17 +0100
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Sat, 9 Apr 2022 10:13:18 +0100
+ Transport; Sat, 9 Apr 2022 10:13:17 +0100
 Received: from aryzen.ad.cirrus.com (unknown [198.61.64.156])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 9D446B16;
-        Sat,  9 Apr 2022 09:13:18 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id C57CE46C;
+        Sat,  9 Apr 2022 09:13:16 +0000 (UTC)
 From:   Lucas Tanure <tanureal@opensource.cirrus.com>
 To:     Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
@@ -50,72 +50,89 @@ To:     Liam Girdwood <lgirdwood@gmail.com>,
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Lucas Tanure <tanureal@opensource.cirrus.com>
-Subject: [PATCH v6 05/16] ALSA: hda: cs35l41: Always configure the DAI
-Date:   Sat, 9 Apr 2022 10:13:04 +0100
-Message-ID: <20220409091315.1663410-6-tanureal@opensource.cirrus.com>
+Subject: [PATCH v6 00/16] Support external boost at CS35l41 ASoC driver
+Date:   Sat, 9 Apr 2022 10:12:59 +0100
+Message-ID: <20220409091315.1663410-1-tanureal@opensource.cirrus.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220409091315.1663410-1-tanureal@opensource.cirrus.com>
-References: <20220409091315.1663410-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: P8paf5WegxHENUzP4dl7FqDKq8iA_yv0
-X-Proofpoint-GUID: P8paf5WegxHENUzP4dl7FqDKq8iA_yv0
+X-Proofpoint-ORIG-GUID: B0mRQ6hi-hPJfcd3N6eq01RL185Zovp7
+X-Proofpoint-GUID: B0mRQ6hi-hPJfcd3N6eq01RL185Zovp7
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dai configuration is always the same and should always configured
-during the opening the stream.
+Move the support for CS35L41 external boost to its shared library
+for ASoC use.
+This move resulted in cs35l41_hda_reg_sequence being removed,
+and its steps were broken down into regmap writes or functions
+from the library. And hardware configuration struct was unified
+for its use in the shared lib.
+While at it, some minor bugs were found and fixed it.
 
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
----
- sound/pci/hda/cs35l41_hda.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+v6 changelog:
+ - Rebased on top of Linux Next with community patches for CS35L41
+ - Document patch acked by Charles Keepax
 
-diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index d2addae8c085..f853530eb385 100644
---- a/sound/pci/hda/cs35l41_hda.c
-+++ b/sound/pci/hda/cs35l41_hda.c
-@@ -111,8 +111,6 @@ static const struct reg_sequence cs35l41_reset_to_safe[] = {
- static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_no_bst = {
- 	.probe		= cs35l41_reset_to_safe,
- 	.num_probe	= ARRAY_SIZE(cs35l41_reset_to_safe),
--	.open		= cs35l41_hda_config,
--	.num_open	= ARRAY_SIZE(cs35l41_hda_config),
- 	.prepare	= cs35l41_safe_to_active,
- 	.num_prepare	= ARRAY_SIZE(cs35l41_safe_to_active),
- 	.cleanup	= cs35l41_active_to_safe,
-@@ -120,8 +118,6 @@ static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_no_bst = {
- };
- 
- static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_ext_bst = {
--	.open		= cs35l41_hda_config,
--	.num_open	= ARRAY_SIZE(cs35l41_hda_config),
- 	.prepare	= cs35l41_start_ext_vspk,
- 	.num_prepare	= ARRAY_SIZE(cs35l41_start_ext_vspk),
- 	.cleanup	= cs35l41_stop_ext_vspk,
-@@ -129,8 +125,6 @@ static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_ext_bst = {
- };
- 
- static const struct cs35l41_hda_reg_sequence cs35l41_hda_reg_seq_int_bst = {
--	.open		= cs35l41_hda_config,
--	.num_open	= ARRAY_SIZE(cs35l41_hda_config),
- 	.prepare	= cs35l41_hda_start_bst,
- 	.num_prepare	= ARRAY_SIZE(cs35l41_hda_start_bst),
- 	.cleanup	= cs35l41_hda_stop_bst,
-@@ -146,8 +140,8 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
- 
- 	switch (action) {
- 	case HDA_GEN_PCM_ACT_OPEN:
--		if (reg_seq->open)
--			ret = regmap_multi_reg_write(reg, reg_seq->open, reg_seq->num_open);
-+		ret = regmap_multi_reg_write(reg, cs35l41_hda_config,
-+					     ARRAY_SIZE(cs35l41_hda_config));
- 		break;
- 	case HDA_GEN_PCM_ACT_PREPARE:
- 		if (reg_seq->prepare)
+v5 changelog:
+ - Fixed wrong indentation at Documentation patch
+ - Use of consistent prefix
+
+v4 changelog:
+ - Separated GPIO 1 and 2 function enums
+
+v3 changelog:
+ - Remove patches already accepted
+ - Improved logic in documentation patch
+ - Documentation patch goes before its code
+ - Fixed missing Signed-off-by
+ - Fixed subject for HDA patches
+
+v2 changelog:
+ - Instead of removing the log, playback actions will log the last regmap access.
+ - Documentation patch with the correct subject line and fixed bug reported by Rob Herring on the
+ provided example.
+
+Previous versions:
+ v1: https://lkml.org/lkml/2022/3/3/759
+ v2: https://lkml.org/lkml/2022/3/4/743
+ v3: https://lkml.org/lkml/2022/3/8/975
+ v4: https://lkml.org/lkml/2022/3/17/267
+ v5: https://lkml.org/lkml/2022/3/22/696
+
+David Rhodes (1):
+  ASoC: cs35l41: Document CS35l41 External Boost
+
+Lucas Tanure (15):
+  ALSA: cs35l41: Unify hardware configuration
+  ALSA: cs35l41: Check hw_config before using it
+  ALSA: cs35l41: Move cs35l41_gpio_config to shared lib
+  ALSA: hda: cs35l41: Fix I2S params comments
+  ALSA: hda: cs35l41: Always configure the DAI
+  ALSA: hda: cs35l41: Add Boost type flag
+  ALSA: hda: cs35l41: Put the device into safe mode for external boost
+  ALSA: hda: cs35l41: Mute the device before shutdown
+  ALSA: cs35l41: Enable Internal Boost in shared lib
+  ALSA: hda: cs35l41: Move boost config to initialization code
+  ALSA: hda: cs35l41: Remove cs35l41_hda_reg_sequence struct
+  ALSA: hda: cs35l41: Reorganize log for playback actions
+  ALSA: hda: cs35l41: Handle all external boost setups the same way
+  ALSA: hda: cs35l41: Move external boost handling to lib for ASoC use
+  ASoC: cs35l41: Support external boost
+
+ .../bindings/sound/cirrus,cs35l41.yaml        |  44 ++-
+ include/sound/cs35l41.h                       |  59 +++-
+ sound/pci/hda/cs35l41_hda.c                   | 295 ++++++------------
+ sound/pci/hda/cs35l41_hda.h                   |  27 +-
+ sound/soc/codecs/cs35l41-i2c.c                |   4 +-
+ sound/soc/codecs/cs35l41-lib.c                | 190 ++++++++++-
+ sound/soc/codecs/cs35l41-spi.c                |   4 +-
+ sound/soc/codecs/cs35l41.c                    | 166 +++++-----
+ sound/soc/codecs/cs35l41.h                    |   5 +-
+ 9 files changed, 443 insertions(+), 351 deletions(-)
+
 -- 
 2.35.1
 
