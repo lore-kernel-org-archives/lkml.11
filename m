@@ -2,101 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 01:27:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD486C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 01:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240242AbiDIB3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 21:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39854 "EHLO
+        id S240256AbiDIB3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 21:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237791AbiDIB3M (ORCPT
+        with ESMTP id S237791AbiDIB30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 21:29:12 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03817E7282
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 18:27:00 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id bq8so20391579ejb.10
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 18:27:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=V20ogy15QSuxdpuKVHUkoJksm5vVNKi7GT1C1mjhHXY=;
-        b=PMKYe/MXNHQ+p5OXztmFPRWaEC1Yh/8Z7y/lFaauLXrJHr0SJsxzwqHu53EnbrQdEN
-         pHP535YndBGM5B+L/tv/Sd58GLIZCxRx1a946l3Xf2hKP6MAf9g5zZ65C4pLkp2UFDGo
-         J/SEV7vPj/lOggS4oKQd+Z3iTdn/jd0JyMWogLMw/LsaJ9zt3DF620uKA6C4W10cLMfA
-         bpd3PH8Cv5sdALTQIRoS1GDhVZJwYzAGzbVzTzRU3yoZnMqDYvUT9bVEKrOhaTud3iKt
-         Pc2WV/vxhE8E9ac2HFtuVR+FBsxuL2Xxq+Ifv9EgdhlefQLznkKQZ2A0CU1oPkJBT0WL
-         Xgxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=V20ogy15QSuxdpuKVHUkoJksm5vVNKi7GT1C1mjhHXY=;
-        b=1mhgM7CI+1ylLWDNLpUGIHE+mIdZrNrlAadpd8HvtF3C/kWjUhl+gqdox3/fGCZ76A
-         fc2C/V7X7AHaO1mEG9nlkr6yaCknNA+RBgrgfCbf6Q0Hlilv/7RbZfzyuiOPWTEmswZO
-         KHunNJXF2V1dUH+5lKpsTSCWACcpYIQn9LjTiYPaV2t7PqsadBi5LVEqhiAxqYsHpwLe
-         tzBXhATco9j8oHGo2mj8H3x8x7nNx4w2nqAvaK5qU7j0OlJxo8PR0ncHmOkOq3zTz1Xm
-         ZfkfiscBwdmO0osFw9DoseJVCUegJgkh6LXgVhX2gjFgSqwtyHyrn+/X4HMUXh5JSUqG
-         6q/Q==
-X-Gm-Message-State: AOAM532HrxCrZedBXXuw/DKCxLCTieBMhYey52kqhBxspXW0jMBa5dQ6
-        KahNVLxRrti3sMku0Rka30k=
-X-Google-Smtp-Source: ABdhPJzsD4wz47pVoeaUipKgKPbfrsRcc0CT1jwMVHwGIO0R9c+9JHElm5k88QKuJ26PxFEhx0l7Rw==
-X-Received: by 2002:a17:907:6093:b0:6e0:dabf:1a9f with SMTP id ht19-20020a170907609300b006e0dabf1a9fmr21001267ejc.424.1649467619145;
-        Fri, 08 Apr 2022 18:26:59 -0700 (PDT)
-Received: from localhost.localdomain (host-87-4-4-217.retail.telecomitalia.it. [87.4.4.217])
-        by smtp.gmail.com with ESMTPSA id hr38-20020a1709073fa600b006e0280f3bbdsm9265487ejc.110.2022.04.08.18.26.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 18:26:57 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Mark Brown <broonie@kernel.org>, alsa-devel@alsa-project.org,
+        Fri, 8 Apr 2022 21:29:26 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C799101F0B;
+        Fri,  8 Apr 2022 18:27:21 -0700 (PDT)
+Date:   Sat, 09 Apr 2022 01:27:18 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649467640;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TDRE3JIcr2hY/DHw9IOdrcLFKUf37UqkwqHPl09hq0Q=;
+        b=ST2whTrRPmaJ8SYEZocSOTvu98KXLlXvdOPHeMgtka48R/rkB6LRXSMAI0f2Jo9rzHw7iO
+        yXads78h7dRzjAE+YqLm1siDC7Y4Y30it33yPBVx71hCgN8dbKvYUyCxvjBHeddDK2pmgF
+        r7HaV4ntzQ6I+7en3l6GhEDH5g3nqQIW32SmVQfTK9L5W8O95VvEPH4lJURjHArpTx/joR
+        Cfr4MP0JoSHUaeirrIShI2l7bkltre8z1ALgzUwnQE5pWVjTgVc/j3u9qy30ewn9vEKx0B
+        6a3GlMeAFguhOmMvqd4U1gKdancrwBws1KMVykLb4OKMhDDS8xKTf1SsXlvUGg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649467640;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TDRE3JIcr2hY/DHw9IOdrcLFKUf37UqkwqHPl09hq0Q=;
+        b=brF7Pbjr/zLF4bazd4xiUqbYkjUlhwVbBxLIvW5MrbkW/YlDQiw/2oJICsC5CgmphYPr1O
+        i2VPl07+H0uf8wBQ==
+From:   "tip-bot2 for Kirill A. Shutemov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/tdx] ACPICA: Avoid cache flush inside virtual machines
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
-Subject: [PATCH] ALSA: pcm: Test for "silence" field in struct "pcm_format_data"
-Date:   Sat,  9 Apr 2022 03:26:55 +0200
-Message-Id: <20220409012655.9399-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220405232939.73860-30-kirill.shutemov@linux.intel.com>
+References: <20220405232939.73860-30-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <164946763897.4207.11572808641505094885.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot reports "KASAN: null-ptr-deref Write in
-snd_pcm_format_set_silence".[1]
+The following commit has been merged into the x86/tdx branch of tip:
 
-It is due to missing validation of the "silence" field of struct
-"pcm_format_data" in "pcm_formats" array.
+Commit-ID:     e2efb6359e620521d1e13f69b2257de8ceaa9475
+Gitweb:        https://git.kernel.org/tip/e2efb6359e620521d1e13f69b2257de8ceaa9475
+Author:        Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+AuthorDate:    Wed, 06 Apr 2022 02:29:38 +03:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Thu, 07 Apr 2022 08:27:54 -07:00
 
-Add a test for valid "pat" and, if it is not so, return -EINVAL.
+ACPICA: Avoid cache flush inside virtual machines
 
-[1] https://lore.kernel.org/lkml/000000000000d188ef05dc2c7279@google.com/
+While running inside virtual machine, the kernel can bypass cache
+flushing. Changing sleep state in a virtual machine doesn't affect the
+host system sleep state and cannot lead to data loss.
 
-Reported-and-tested-by: syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+Before entering sleep states, the ACPI code flushes caches to prevent
+data loss using the WBINVD instruction.  This mechanism is required on
+bare metal.
+
+But, any use WBINVD inside of a guest is worthless.  Changing sleep
+state in a virtual machine doesn't affect the host system sleep state
+and cannot lead to data loss, so most hypervisors simply ignore it.
+Despite this, the ACPI code calls WBINVD unconditionally anyway.
+It's useless, but also normally harmless.
+
+In TDX guests, though, WBINVD stops being harmless; it triggers a
+virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
+were left in place, TDX guests would need handling to recover from
+the exception.
+
+Avoid using WBINVD whenever running under a hypervisor.  This both
+removes the useless WBINVDs and saves TDX from implementing WBINVD
+handling.
+
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20220405232939.73860-30-kirill.shutemov@linux.intel.com
 ---
+ arch/x86/include/asm/acenv.h | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-I wasn't able to figure out the commit for the "Fixes:" tag. If this patch
-is good, can someone please help with providing this missing information?
-
- sound/core/pcm_misc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/sound/core/pcm_misc.c b/sound/core/pcm_misc.c
-index 4866aed97aac..5588b6a1ee8b 100644
---- a/sound/core/pcm_misc.c
-+++ b/sound/core/pcm_misc.c
-@@ -433,7 +433,7 @@ int snd_pcm_format_set_silence(snd_pcm_format_t format, void *data, unsigned int
- 		return 0;
- 	width = pcm_formats[(INT)format].phys; /* physical width */
- 	pat = pcm_formats[(INT)format].silence;
--	if (! width)
-+	if (!width || !pat)
- 		return -EINVAL;
- 	/* signed or 1 byte data */
- 	if (pcm_formats[(INT)format].signd == 1 || width <= 8) {
--- 
-2.34.1
-
+diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
+index 9aff97f..d937c55 100644
+--- a/arch/x86/include/asm/acenv.h
++++ b/arch/x86/include/asm/acenv.h
+@@ -13,7 +13,19 @@
+ 
+ /* Asm macros */
+ 
+-#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
++/*
++ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
++ * It is required to prevent data loss.
++ *
++ * While running inside virtual machine, the kernel can bypass cache flushing.
++ * Changing sleep state in a virtual machine doesn't affect the host system
++ * sleep state and cannot lead to data loss.
++ */
++#define ACPI_FLUSH_CPU_CACHE()					\
++do {								\
++	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
++		wbinvd();					\
++} while (0)
+ 
+ int __acpi_acquire_global_lock(unsigned int *lock);
+ int __acpi_release_global_lock(unsigned int *lock);
