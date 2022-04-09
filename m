@@ -2,54 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3EE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 20:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6932C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 20:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233130AbiDIUY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 16:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50758 "EHLO
+        id S240554AbiDIUZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 16:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231330AbiDIUYo (ORCPT
+        with ESMTP id S231347AbiDIUYo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 9 Apr 2022 16:24:44 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2BE2BCE;
-        Sat,  9 Apr 2022 13:22:34 -0700 (PDT)
-Date:   Sat, 09 Apr 2022 20:22:31 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F67814023;
+        Sat,  9 Apr 2022 13:22:35 -0700 (PDT)
+Date:   Sat, 09 Apr 2022 20:22:32 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1649535752;
+        s=2020; t=1649535754;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=8zaOcmLacimZqKKgJ63XfnGyUqu5Teh+3oLuqT1XOXc=;
-        b=10RPt3/QkNPy1Q6lI1vM1kB0GqlGn8ye3vu+/4RbBeHFIHRMA+uO1i6Vgguvd9SDXp4QwO
-        Egy33v8bPwmf71plab1c14WZMtth9rCTNVfP0tJpKoaMiDSnUWGsHB3W5STycLGfeBIIMv
-        NtUKHNG7NJtL0oTvLZEZ2XE5zo5GFlqmaWdVKDH8f22i3M8pU6tdd/Kgl7fI9hNQEjaAvF
-        iJ7YaNvzSt7yQcdHWkOQB9icb2ntyDXf3vZBUEhitsxVfcYn47TWde5pXE072M2LTT6zOE
-        EbzvvbWc0Mu3oGpQs0lckdl2ylfzN9o9cDKRjZWaUY2bgHBEbkmnL5AnRDcMOQ==
+        bh=flmJT8g3LkPf5OFtHiIqbiCsqW93S7VEn9FZTSp2FNs=;
+        b=HHrFZRwepn6Z8zLuwababzH3L73AgF95BfVXPNLtdDjC+uKWNZZelJhk8GHW7TR6ov+S8M
+        WszoWZl91loxRyCLvvmXO3akJXw7q+UnOP9rzh3gny2Sa9rJO8dgE0G5Nd9oU1Q3SJwZ8j
+        OXNRrlyf3g9REnkjOfRF82Mzoa5UjVaK80GA6HvA0NiA6gfTcrtGKb+sMslRWi+Ibv9guw
+        wcXxQo7aHxBKRPqsmNI3s7Wz9NNm4/PGsDHQ9vYWzQ6QsvijXuhaxH+gRUrQvGlpQwgNRf
+        8oCkEsavrUtC1rlEYO7rYXsFU8WnOkebmcbP+g4ndI01fUuSmaaIqGQzEQtv6Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1649535752;
+        s=2020e; t=1649535754;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=8zaOcmLacimZqKKgJ63XfnGyUqu5Teh+3oLuqT1XOXc=;
-        b=GDVrwfohIS5ekAag54Ki7/L048J1H20Hm41fBGfjdcVuRUbFnnk9JDqvKF9zC7AdyGGY58
-        FLA8szonjkLYfDCw==
-From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
+        bh=flmJT8g3LkPf5OFtHiIqbiCsqW93S7VEn9FZTSp2FNs=;
+        b=14Sz1roVOUAcxj4ffYhAjQ/EDeD3x0A4HoUyKV6Dea6cAKweVXDS3TIIV75WeIx6ijOZJ0
+        jEmaSClh7QpSsFDQ==
+From:   "tip-bot2 for Anna-Maria Behnsen" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] timers: Simplify calc_index()
-Cc:     Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+Subject: [tip: timers/core] timers: Fix warning condition in __run_timers()
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "Anna-Maria Behnsen" <anna-maria@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Frederic Weisbecker <frederic@kernel.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <87h778j46c.ffs@tglx>
-References: <87h778j46c.ffs@tglx>
+In-Reply-To: <20220405191732.7438-3-anna-maria@linutronix.de>
+References: <20220405191732.7438-3-anna-maria@linutronix.de>
 MIME-Version: 1.0
-Message-ID: <164953575112.4207.4558393487753239676.tip-bot2@tip-bot2>
+Message-ID: <164953575293.4207.16304445982254847122.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -60,45 +63,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the timers/core branch of tip:
 
-Commit-ID:     a2026e44eff5d74a83d7ffee6325a007bef85385
-Gitweb:        https://git.kernel.org/tip/a2026e44eff5d74a83d7ffee6325a007bef85385
-Author:        Thomas Gleixner <tglx@linutronix.de>
-AuthorDate:    Mon, 04 Apr 2022 16:47:55 +02:00
+Commit-ID:     c54bc0fc84214b203f7a0ebfd1bd308ce2abe920
+Gitweb:        https://git.kernel.org/tip/c54bc0fc84214b203f7a0ebfd1bd308ce2abe920
+Author:        Anna-Maria Behnsen <anna-maria@linutronix.de>
+AuthorDate:    Tue, 05 Apr 2022 21:17:32 +02:00
 Committer:     Thomas Gleixner <tglx@linutronix.de>
-CommitterDate: Sat, 09 Apr 2022 22:19:39 +02:00
+CommitterDate: Sat, 09 Apr 2022 22:17:47 +02:00
 
-timers: Simplify calc_index()
+timers: Fix warning condition in __run_timers()
 
-The level granularity round up of calc_index() does:
+When the timer base is empty, base::next_expiry is set to base::clk +
+NEXT_TIMER_MAX_DELTA and base::next_expiry_recalc is false. When no timer
+is queued until jiffies reaches base::next_expiry value, the warning for
+not finding any expired timer and base::next_expiry_recalc is false in
+__run_timers() triggers.
 
-   (x + (1 << n)) >> n
+To prevent triggering the warning in this valid scenario
+base::timers_pending needs to be added to the warning condition.
 
-which is obviously equivalent to
-
-   (x >> n) + 1
-
-but compilers can't figure that out despite the fact that the input range
-is known to not cause an overflow. It's neither intuitive to read.
-
-Just write out the obvious.
-
+Fixes: 31cd0e119d50 ("timers: Recalculate next timer interrupt only when necessary")
+Reported-by: Johannes Berg <johannes@sipsolutions.net>
+Signed-off-by: Anna-Maria Behnsen <anna-maria@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lore.kernel.org/r/87h778j46c.ffs@tglx
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20220405191732.7438-3-anna-maria@linutronix.de
 
 ---
- kernel/time/timer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/time/timer.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 204d6cd..60aebf2 100644
+index 85f1021..9dd2a39 100644
 --- a/kernel/time/timer.c
 +++ b/kernel/time/timer.c
-@@ -502,7 +502,7 @@ static inline unsigned calc_index(unsigned long expires, unsigned lvl,
- 	 *
- 	 * Round up with level granularity to prevent this.
- 	 */
--	expires = (expires + LVL_GRAN(lvl)) >> LVL_SHIFT(lvl);
-+	expires = (expires >> LVL_SHIFT(lvl)) + 1;
- 	*bucket_expiry = expires << LVL_SHIFT(lvl);
- 	return LVL_OFFS(lvl) + (expires & LVL_MASK);
- }
+@@ -1722,11 +1722,14 @@ static inline void __run_timers(struct timer_base *base)
+ 	       time_after_eq(jiffies, base->next_expiry)) {
+ 		levels = collect_expired_timers(base, heads);
+ 		/*
+-		 * The only possible reason for not finding any expired
+-		 * timer at this clk is that all matching timers have been
+-		 * dequeued.
++		 * The two possible reasons for not finding any expired
++		 * timer at this clk are that all matching timers have been
++		 * dequeued or no timer has been queued since
++		 * base::next_expiry was set to base::clk +
++		 * NEXT_TIMER_MAX_DELTA.
+ 		 */
+-		WARN_ON_ONCE(!levels && !base->next_expiry_recalc);
++		WARN_ON_ONCE(!levels && !base->next_expiry_recalc
++			     && base->timers_pending);
+ 		base->clk++;
+ 		base->next_expiry = __next_timer_interrupt(base);
+ 
