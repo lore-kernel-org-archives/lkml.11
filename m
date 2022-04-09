@@ -2,87 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B2E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 01:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B280BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 01:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240434AbiDIBfe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 21:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37482 "EHLO
+        id S240375AbiDIBgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 21:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240375AbiDIBf3 (ORCPT
+        with ESMTP id S233257AbiDIBgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 21:35:29 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5599432C223;
-        Fri,  8 Apr 2022 18:33:24 -0700 (PDT)
-Date:   Fri, 8 Apr 2022 18:33:14 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1649468002;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3iwAnic9ZaGk3gFDQP/Vj3cKdzxhwN/VVb3lVGd9RF0=;
-        b=xtOHEkxMqZl4HOoB3ggEH7wb9JOUSzuKUEFWhvfRm8vvZUtmAR1tH9Q835aO1sIbjQknne
-        3ZHK6azomPxS45CT7A26DaKWdQhMnBeskt/GdBIVzO82XMqe0jiyPB8UjDhcIK5eUlCDOK
-        eHGWMNHjS37/F+aBBI4Ek8+/qIwLHO8=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, Yu Zhao <yuzhao@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Chen Wandun <chenwandun@huawei.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>, cgroups@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v3 2/4] selftests: cgroup: return the errno of write() in
- cg_write() on failure
-Message-ID: <YlDiWvL9fo0OU4Ep@carbon.dhcp.thefacebook.com>
-References: <20220408045743.1432968-1-yosryahmed@google.com>
- <20220408045743.1432968-3-yosryahmed@google.com>
+        Fri, 8 Apr 2022 21:36:37 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E950632C223
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 18:34:30 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id x24so6881274edl.2
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 18:34:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zpo56anepGh1996ZVn2ynpiLSftI9+RsEzRBaVj4yg4=;
+        b=INLGEH+vbKT+ECgiAZQ8C9Fwbb4Ob99aqXQUVcVZlQBciKqXZJiwwAQUePzVEghVm/
+         tWvN94mruy6ucYM0CMQwryR8hvCHbFupHJjot82QO8BkCiK5Ka9PRxkE7HS2KBycVdEs
+         OZKCiUK97EdIfnxWTjQ6gN9wLXadLkrpAm/SIa5t5D/OQ7TkPvlA0NbjV2gldv5qeIcu
+         /ahC2E2aUxUs4fojmEvvksy78BvNiAZbXRq8N6MCMU/BnhuziZN9iUMa11Ec5NZL2qTT
+         48mk7hbS5ANaPL0fajF1tSjPYeezVsNQXmgqq4vgJk9GABhlGpp8HkdmONg3hz7cFsh4
+         jjpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zpo56anepGh1996ZVn2ynpiLSftI9+RsEzRBaVj4yg4=;
+        b=i5u58vy2QDRlMFMhDVjbYrspuviNNFDIwBQ5LheeLcixGhZVDJpMTFKHtXtLHdgIZA
+         zhGiGBlmgTxStyjeo1Ocv2qy5sM/ZmhyA6nvwyDNlIMyejHzazWHM3kP7pVvDUywodxc
+         OeZWS65TGiYN6JoybMlKrusnBAperrTb6FIbTj94cO/XHd38mXJtayiI1u/tmR6aqRKC
+         CRGBKo7Czhf+xYyYOV/vefqmrDKhR4fgHH/Ztb3WDQn84izR0sXiM5USACHQya6vb2Ad
+         CWBW2emrbY0YLBxFxBUK0McANIyH6V3UF+GKcMlhd+SGxCHPKWql7tatxWqwxom6QEHu
+         oFmQ==
+X-Gm-Message-State: AOAM5309yMIKvPDcSQ4G19TeI7z8pQJFdOUoDc166lWpbHG2pp52WSnG
+        hUOLZRjYHz+T0Xzfe0PFlHfng9xgU8pQ6roLr2U=
+X-Google-Smtp-Source: ABdhPJwsQzL7e5sUmjWOrWUQj/zvgUrqSodIKWDDRl2LEEuDh6ugBZhU7XQ7ASrJ3S9LsSJ8eI/TPh4VcvBbTJ2uIvw=
+X-Received: by 2002:a05:6402:2945:b0:41d:aad:c824 with SMTP id
+ ed5-20020a056402294500b0041d0aadc824mr10293856edb.364.1649468069444; Fri, 08
+ Apr 2022 18:34:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220408045743.1432968-3-yosryahmed@google.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+References: <20220408052207.209856-1-dzm91@hust.edu.cn> <f125ece9-872e-39d9-48a5-15b85508f6b6@kernel.org>
+In-Reply-To: <f125ece9-872e-39d9-48a5-15b85508f6b6@kernel.org>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Sat, 9 Apr 2022 09:34:02 +0800
+Message-ID: <CAD-N9QV7RUfBreaVOmC0JUwVfieM3kOYigOav8=vpAoak6Uc6A@mail.gmail.com>
+Subject: Re: [PATCH] fs: f2fs: remove WARN_ON in f2fs_is_valid_blkaddr
+To:     Chao Yu <chao@kernel.org>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>, Jaegeuk Kim <jaegeuk@kernel.org>,
+        syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 04:57:41AM +0000, Yosry Ahmed wrote:
-> Currently, cg_write() returns 0 on success and -1 on failure. Modify it
-> to return the errno of write() syscall when write() fails.
-> 
-> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> ---
->  tools/testing/selftests/cgroup/cgroup_util.c | 32 +++++++++++---------
->  1 file changed, 17 insertions(+), 15 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/cgroup/cgroup_util.c b/tools/testing/selftests/cgroup/cgroup_util.c
-> index dbaa7aabbb4a..3b6bb09985fa 100644
-> --- a/tools/testing/selftests/cgroup/cgroup_util.c
-> +++ b/tools/testing/selftests/cgroup/cgroup_util.c
-> @@ -38,23 +38,23 @@ static ssize_t read_text(const char *path, char *buf, size_t max_len)
->  	return len;
->  }
->  
-> -static ssize_t write_text(const char *path, char *buf, ssize_t len)
-> +/*
-> + * Returns:
-> + *	success -> 0
-> + *	open() failure -> -1
+On Sat, Apr 9, 2022 at 8:27 AM Chao Yu <chao@kernel.org> wrote:
+>
+> On 2022/4/8 13:22, Dongliang Mu wrote:
+> > From: Dongliang Mu <mudongliangabcd@gmail.com>
+> >
+> > In f2fs_is_valid_blkaddr, if type is DATA_GENERIC_ENHANCE or
+> > DATA_GENERIC_ENHANCE_READ, it invokes WARN_ON(1) not matter
+> > blkaddr is in the range or not.
+>
+> If we run into the path where we invoke WARN_ON(1) in f2fs_is_valid_blkaddr(),
+> It means f2fs image may be broken, or there is a bug in f2fs.
+>
+> So, do you suffer any related issue in your environment?
 
-Is there a reason why we can't return errno in this case as well?
-It would be more straightforward.
+related issue? Can you explain a little?
 
-Otherwise the change looks good to me.
+If you mean if this warning occurs, any other issues or crash
+behaviors are generated? I tested on the syzbot. After removing the
+WARN_ON, there is no abnormal issue or crash behaviors followed with
+the corresponding reproducer.
+
+
+>
+> Thanks,
+>
+> >
+> > Fix this by removing WARN_ON.
+> >
+> > Note that, syzbot patch testing does not incur any further issues
+> >
+> > Reported-by: syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com
+> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > ---
+> >   fs/f2fs/checkpoint.c | 2 --
+> >   1 file changed, 2 deletions(-)
+> >
+> > diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
+> > index f5366feea82d..521498b2dd8c 100644
+> > --- a/fs/f2fs/checkpoint.c
+> > +++ b/fs/f2fs/checkpoint.c
+> > @@ -158,7 +158,6 @@ static bool __is_bitmap_valid(struct f2fs_sb_info *sbi, block_t blkaddr,
+> >               f2fs_err(sbi, "Inconsistent error blkaddr:%u, sit bitmap:%d",
+> >                        blkaddr, exist);
+> >               set_sbi_flag(sbi, SBI_NEED_FSCK);
+> > -             WARN_ON(1);
+> >       }
+> >       return exist;
+> >   }
+> > @@ -196,7 +195,6 @@ bool f2fs_is_valid_blkaddr(struct f2fs_sb_info *sbi,
+> >                       f2fs_warn(sbi, "access invalid blkaddr:%u",
+> >                                 blkaddr);
+> >                       set_sbi_flag(sbi, SBI_NEED_FSCK);
+> > -                     WARN_ON(1);
+> >                       return false;
+> >               } else {
+> >                       return __is_bitmap_valid(sbi, blkaddr, type);
