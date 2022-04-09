@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57415C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 08:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C71C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 08:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238791AbiDIIMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 04:12:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
+        id S240955AbiDIIML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 04:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236970AbiDIILT (ORCPT
+        with ESMTP id S237546AbiDIILT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 9 Apr 2022 04:11:19 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20373AA76;
-        Sat,  9 Apr 2022 01:09:12 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kb7582HmrzgYCr;
-        Sat,  9 Apr 2022 16:07:24 +0800 (CST)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A055533E16;
+        Sat,  9 Apr 2022 01:09:11 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kb7574d8hzgYPB;
+        Sat,  9 Apr 2022 16:07:23 +0800 (CST)
 Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 9 Apr 2022 16:09:10 +0800
+ 15.1.2308.21; Sat, 9 Apr 2022 16:09:09 +0800
 Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
  (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 9 Apr
- 2022 16:09:10 +0800
+ 2022 16:09:09 +0800
 From:   Kai Ye <yekai13@huawei.com>
 To:     <herbert@gondor.apana.org.au>
 CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <wangzhou1@hisilicon.com>, <yekai13@huawei.com>,
         <liulongfang@huawei.com>
-Subject: [PATCH 10/11] crypto: hisilicon/hpre - support last word dumping
-Date:   Sat, 9 Apr 2022 16:03:27 +0800
-Message-ID: <20220409080328.15783-11-yekai13@huawei.com>
+Subject: [PATCH 03/11] crypto: hisilicon/sec - support register checking
+Date:   Sat, 9 Apr 2022 16:03:20 +0800
+Message-ID: <20220409080328.15783-4-yekai13@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220409080328.15783-1-yekai13@huawei.com>
 References: <20220409080328.15783-1-yekai13@huawei.com>
@@ -48,202 +48,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-1. Add some debugging registers.
-2. Add last word dumping function during hpre engine controller reset.
+The value of the register is changed after the task running. A debugfs
+file node is added to help users to check the change of register values.
 
+Signed-off-by: Longfang Liu <liulongfang@huawei.com>
 Signed-off-by: Kai Ye <yekai13@huawei.com>
 ---
- drivers/crypto/hisilicon/hpre/hpre_main.c | 132 ++++++++++++++++++----
- 1 file changed, 112 insertions(+), 20 deletions(-)
+ drivers/crypto/hisilicon/sec2/sec_main.c | 53 ++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
-diff --git a/drivers/crypto/hisilicon/hpre/hpre_main.c b/drivers/crypto/hisilicon/hpre/hpre_main.c
-index d3f73e38709a..9d529df0eab9 100644
---- a/drivers/crypto/hisilicon/hpre/hpre_main.c
-+++ b/drivers/crypto/hisilicon/hpre/hpre_main.c
-@@ -36,6 +36,12 @@
- #define HPRE_DATA_WUSER_CFG		0x301040
- #define HPRE_INT_MASK			0x301400
- #define HPRE_INT_STATUS			0x301800
-+#define HPRE_HAC_INT_MSK		0x301400
-+#define HPRE_HAC_RAS_CE_ENB		0x301410
-+#define HPRE_HAC_RAS_NFE_ENB		0x301414
-+#define HPRE_HAC_RAS_FE_ENB		0x301418
-+#define HPRE_HAC_INT_SET		0x301500
-+#define HPRE_RNG_TIMEOUT_NUM		0x301A34
- #define HPRE_CORE_INT_ENABLE		0
- #define HPRE_CORE_INT_DISABLE		GENMASK(21, 0)
- #define HPRE_RDCHN_INI_ST		0x301a00
-@@ -201,28 +207,32 @@ static const u64 hpre_cluster_offsets[] = {
+diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
+index 92fae706bdb2..93ef0e3b5b16 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_main.c
++++ b/drivers/crypto/hisilicon/sec2/sec_main.c
+@@ -110,6 +110,15 @@
+ #define SEC_SQE_MASK_LEN		48
+ #define SEC_SHAPER_TYPE_RATE		400
+ 
++#define SEC_DFX_BASE		0x301000
++#define SEC_DFX_CORE		0x302100
++#define SEC_DFX_COMMON1		0x301600
++#define SEC_DFX_COMMON2		0x301C00
++#define SEC_DFX_BASE_LEN		0x9D
++#define SEC_DFX_CORE_LEN		0x32B
++#define SEC_DFX_COMMON1_LEN		0x45
++#define SEC_DFX_COMMON2_LEN		0xBA
++
+ struct sec_hw_error {
+ 	u32 int_msk;
+ 	const char *msg;
+@@ -226,6 +235,34 @@ static const struct debugfs_reg32 sec_dfx_regs[] = {
+ 	{"SEC_BD_SAA8                   ",  0x301C40},
  };
  
- static const struct debugfs_reg32 hpre_cluster_dfx_regs[] = {
--	{"CORES_EN_STATUS          ",  HPRE_CORE_EN_OFFSET},
--	{"CORES_INI_CFG              ",  HPRE_CORE_INI_CFG_OFFSET},
--	{"CORES_INI_STATUS         ",  HPRE_CORE_INI_STATUS_OFFSET},
--	{"CORES_HTBT_WARN         ",  HPRE_CORE_HTBT_WARN_OFFSET},
--	{"CORES_IS_SCHD               ",  HPRE_CORE_IS_SCHD_OFFSET},
-+	{"CORES_EN_STATUS     ",  HPRE_CORE_EN_OFFSET},
-+	{"CORES_INI_CFG       ",  HPRE_CORE_INI_CFG_OFFSET},
-+	{"CORES_INI_STATUS    ",  HPRE_CORE_INI_STATUS_OFFSET},
-+	{"CORES_HTBT_WARN     ",  HPRE_CORE_HTBT_WARN_OFFSET},
-+	{"CORES_IS_SCHD       ",  HPRE_CORE_IS_SCHD_OFFSET},
- };
- 
- static const struct debugfs_reg32 hpre_com_dfx_regs[] = {
--	{"READ_CLR_EN          ",  HPRE_CTRL_CNT_CLR_CE},
--	{"AXQOS                   ",  HPRE_VFG_AXQOS},
--	{"AWUSR_CFG              ",  HPRE_AWUSR_FP_CFG},
--	{"QM_ARUSR_MCFG1           ",  QM_ARUSER_M_CFG_1},
--	{"QM_AWUSR_MCFG1           ",  QM_AWUSER_M_CFG_1},
--	{"BD_ENDIAN               ",  HPRE_BD_ENDIAN},
--	{"ECC_CHECK_CTRL       ",  HPRE_ECC_BYPASS},
--	{"RAS_INT_WIDTH       ",  HPRE_RAS_WIDTH_CFG},
--	{"POISON_BYPASS       ",  HPRE_POISON_BYPASS},
--	{"BD_ARUSER               ",  HPRE_BD_ARUSR_CFG},
--	{"BD_AWUSER               ",  HPRE_BD_AWUSR_CFG},
--	{"DATA_ARUSER            ",  HPRE_DATA_RUSER_CFG},
--	{"DATA_AWUSER           ",  HPRE_DATA_WUSER_CFG},
--	{"INT_STATUS               ",  HPRE_INT_STATUS},
-+	{"READ_CLR_EN     ",  HPRE_CTRL_CNT_CLR_CE},
-+	{"AXQOS           ",  HPRE_VFG_AXQOS},
-+	{"AWUSR_CFG       ",  HPRE_AWUSR_FP_CFG},
-+	{"BD_ENDIAN       ",  HPRE_BD_ENDIAN},
-+	{"ECC_CHECK_CTRL  ",  HPRE_ECC_BYPASS},
-+	{"RAS_INT_WIDTH   ",  HPRE_RAS_WIDTH_CFG},
-+	{"POISON_BYPASS   ",  HPRE_POISON_BYPASS},
-+	{"BD_ARUSER       ",  HPRE_BD_ARUSR_CFG},
-+	{"BD_AWUSER       ",  HPRE_BD_AWUSR_CFG},
-+	{"DATA_ARUSER     ",  HPRE_DATA_RUSER_CFG},
-+	{"DATA_AWUSER     ",  HPRE_DATA_WUSER_CFG},
-+	{"INT_STATUS      ",  HPRE_INT_STATUS},
-+	{"INT_MASK        ",  HPRE_HAC_INT_MSK},
-+	{"RAS_CE_ENB      ",  HPRE_HAC_RAS_CE_ENB},
-+	{"RAS_NFE_ENB     ",  HPRE_HAC_RAS_NFE_ENB},
-+	{"RAS_FE_ENB      ",  HPRE_HAC_RAS_FE_ENB},
-+	{"INT_SET         ",  HPRE_HAC_INT_SET},
-+	{"RNG_TIMEOUT_NUM ",  HPRE_RNG_TIMEOUT_NUM},
- };
- 
- static const char *hpre_dfx_files[HPRE_DFX_FILE_NUM] = {
-@@ -1023,6 +1033,82 @@ static int hpre_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
- 	return hisi_qm_init(qm);
- }
- 
-+static int hpre_show_last_regs_init(struct hisi_qm *qm)
++/* define the SEC's dfx regs region and region length */
++static struct dfx_diff_registers sec_diff_regs[] = {
++	{
++		.reg_offset = SEC_DFX_BASE,
++		.reg_len = SEC_DFX_BASE_LEN,
++	}, {
++		.reg_offset = SEC_DFX_COMMON1,
++		.reg_len = SEC_DFX_COMMON1_LEN,
++	}, {
++		.reg_offset = SEC_DFX_COMMON2,
++		.reg_len = SEC_DFX_COMMON2_LEN,
++	}, {
++		.reg_offset = SEC_DFX_CORE,
++		.reg_len = SEC_DFX_CORE_LEN,
++	},
++};
++
++static int sec_diff_regs_show(struct seq_file *s, void *unused)
 +{
-+	int cluster_dfx_regs_num =  ARRAY_SIZE(hpre_cluster_dfx_regs);
-+	int com_dfx_regs_num = ARRAY_SIZE(hpre_com_dfx_regs);
-+	u8 clusters_num = hpre_cluster_num(qm);
-+	struct qm_debug *debug = &qm->debug;
-+	void __iomem *io_base;
-+	int i, j, idx;
++	struct hisi_qm *qm = s->private;
 +
-+	debug->last_words = kcalloc(cluster_dfx_regs_num * clusters_num +
-+			com_dfx_regs_num, sizeof(unsigned int), GFP_KERNEL);
-+	if (!debug->last_words)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < com_dfx_regs_num; i++)
-+		debug->last_words[i] = readl_relaxed(qm->io_base +
-+						hpre_com_dfx_regs[i].offset);
-+
-+	for (i = 0; i < clusters_num; i++) {
-+		io_base = qm->io_base + hpre_cluster_offsets[i];
-+		for (j = 0; j < cluster_dfx_regs_num; j++) {
-+			idx = com_dfx_regs_num + i * cluster_dfx_regs_num + j;
-+			debug->last_words[idx] = readl_relaxed(
-+				io_base + hpre_cluster_dfx_regs[j].offset);
-+		}
-+	}
++	hisi_qm_acc_diff_regs_dump(qm, s, qm->debug.acc_diff_regs,
++					ARRAY_SIZE(sec_diff_regs));
 +
 +	return 0;
 +}
++DEFINE_SHOW_ATTRIBUTE(sec_diff_regs);
 +
-+static void hpre_show_last_regs_uninit(struct hisi_qm *qm)
-+{
-+	struct qm_debug *debug = &qm->debug;
-+
-+	if (qm->fun_type == QM_HW_VF || !debug->last_words)
-+		return;
-+
-+	kfree(debug->last_words);
-+	debug->last_words = NULL;
-+}
-+
-+static void hpre_show_last_dfx_regs(struct hisi_qm *qm)
-+{
-+	int cluster_dfx_regs_num =  ARRAY_SIZE(hpre_cluster_dfx_regs);
-+	int com_dfx_regs_num = ARRAY_SIZE(hpre_com_dfx_regs);
-+	u8 clusters_num = hpre_cluster_num(qm);
-+	struct qm_debug *debug = &qm->debug;
-+	struct pci_dev *pdev = qm->pdev;
-+	void __iomem *io_base;
-+	int i, j, idx;
-+	u32 val;
-+
-+	if (qm->fun_type == QM_HW_VF || !debug->last_words)
-+		return;
-+
-+	/* dumps last word of the debugging registers during controller reset */
-+	for (i = 0; i < com_dfx_regs_num; i++) {
-+		val = readl_relaxed(qm->io_base + hpre_com_dfx_regs[i].offset);
-+		if (debug->last_words[i] != val)
-+			pci_info(pdev, "Common_core:%s \t= 0x%08x => 0x%08x\n",
-+			  hpre_com_dfx_regs[i].name, debug->last_words[i], val);
-+	}
-+
-+	for (i = 0; i < clusters_num; i++) {
-+		io_base = qm->io_base + hpre_cluster_offsets[i];
-+		for (j = 0; j <  cluster_dfx_regs_num; j++) {
-+			val = readl_relaxed(io_base +
-+					     hpre_cluster_dfx_regs[j].offset);
-+			idx = com_dfx_regs_num + i * cluster_dfx_regs_num + j;
-+			if (debug->last_words[idx] != val)
-+				pci_info(pdev, "cluster-%d:%s \t= 0x%08x => 0x%08x\n",
-+				i, hpre_cluster_dfx_regs[j].name, debug->last_words[idx], val);
-+		}
-+	}
-+}
-+
- static void hpre_log_hw_error(struct hisi_qm *qm, u32 err_sts)
+ static int sec_pf_q_num_set(const char *val, const struct kernel_param *kp)
  {
- 	const struct hpre_hw_error *err = hpre_hw_errors;
-@@ -1081,6 +1167,7 @@ static const struct hisi_qm_err_ini hpre_err_ini = {
- 	.open_axi_master_ooo	= hpre_open_axi_master_ooo,
- 	.open_sva_prefetch	= hpre_open_sva_prefetch,
- 	.close_sva_prefetch	= hpre_close_sva_prefetch,
-+	.show_last_dfx_regs	= hpre_show_last_dfx_regs,
- 	.err_info_init		= hpre_err_info_init,
- };
+ 	return q_num_set(val, kp, PCI_DEVICE_ID_HUAWEI_SEC_PF);
+@@ -729,6 +766,7 @@ DEFINE_SHOW_ATTRIBUTE(sec_regs);
  
-@@ -1098,8 +1185,11 @@ static int hpre_pf_probe_init(struct hpre *hpre)
- 	qm->err_ini = &hpre_err_ini;
- 	qm->err_ini->err_info_init(qm);
- 	hisi_qm_dev_err_init(qm);
-+	ret = hpre_show_last_regs_init(qm);
-+	if (ret)
-+		pci_err(qm->pdev, "Failed to init last word regs!\n");
+ static int sec_core_debug_init(struct hisi_qm *qm)
+ {
++	struct dfx_diff_registers *sec_regs = qm->debug.acc_diff_regs;
+ 	struct sec_dev *sec = container_of(qm, struct sec_dev, qm);
+ 	struct device *dev = &qm->pdev->dev;
+ 	struct sec_dfx *dfx = &sec->debug.dfx;
+@@ -749,6 +787,9 @@ static int sec_core_debug_init(struct hisi_qm *qm)
  
--	return 0;
-+	return ret;
+ 	if (qm->pdev->device == PCI_DEVICE_ID_HUAWEI_SEC_PF)
+ 		debugfs_create_file("regs", 0444, tmp_d, regset, &sec_regs_fops);
++	if (qm->fun_type == QM_HW_PF && sec_regs)
++		debugfs_create_file("diff_regs", 0444, tmp_d,
++				      qm, &sec_diff_regs_fops);
+ 
+ 	for (i = 0; i < ARRAY_SIZE(sec_dfx_labels); i++) {
+ 		atomic64_t *data = (atomic64_t *)((uintptr_t)dfx +
+@@ -790,6 +831,14 @@ static int sec_debugfs_init(struct hisi_qm *qm)
+ 						  sec_debugfs_root);
+ 	qm->debug.sqe_mask_offset = SEC_SQE_MASK_OFFSET;
+ 	qm->debug.sqe_mask_len = SEC_SQE_MASK_LEN;
++
++	ret = hisi_qm_diff_regs_init(qm, sec_diff_regs,
++				ARRAY_SIZE(sec_diff_regs));
++	if (ret) {
++		dev_warn(dev, "Failed to init SEC diff regs!\n");
++		goto debugfs_remove;
++	}
++
+ 	hisi_qm_debug_init(qm);
+ 
+ 	ret = sec_debug_init(qm);
+@@ -799,12 +848,16 @@ static int sec_debugfs_init(struct hisi_qm *qm)
+ 	return 0;
+ 
+ failed_to_create:
++	hisi_qm_diff_regs_uninit(qm, ARRAY_SIZE(sec_diff_regs));
++debugfs_remove:
+ 	debugfs_remove_recursive(sec_debugfs_root);
+ 	return ret;
  }
  
- static int hpre_probe_init(struct hpre *hpre)
-@@ -1185,6 +1275,7 @@ static int hpre_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	hisi_qm_stop(qm, QM_NORMAL);
- 
- err_with_err_init:
-+	hpre_show_last_regs_uninit(qm);
- 	hisi_qm_dev_err_uninit(qm);
- 
- err_with_qm_init:
-@@ -1215,6 +1306,7 @@ static void hpre_remove(struct pci_dev *pdev)
- 	if (qm->fun_type == QM_HW_PF) {
- 		hpre_cnt_regs_clear(qm);
- 		qm->debug.curr_qm_qp_num = 0;
-+		hpre_show_last_regs_uninit(qm);
- 		hisi_qm_dev_err_uninit(qm);
- 	}
+ static void sec_debugfs_exit(struct hisi_qm *qm)
+ {
++	hisi_qm_diff_regs_uninit(qm, ARRAY_SIZE(sec_diff_regs));
++
+ 	debugfs_remove_recursive(qm->debug.debug_root);
+ }
  
 -- 
 2.33.0
