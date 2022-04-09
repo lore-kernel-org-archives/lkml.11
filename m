@@ -2,89 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB599C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 11:07:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4FB8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 11:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241496AbiDILKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 07:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
+        id S241503AbiDILLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 07:11:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236963AbiDILJ5 (ORCPT
+        with ESMTP id S231354AbiDILLM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 07:09:57 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C93B193B4B
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 04:07:50 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id n6so21789429ejc.13
-        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 04:07:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=isEupPNmUSBqHlPH1NCK5ao1OuidLb/sUUxLrv9MHTI=;
-        b=Yg+Tfif591vtx/4cWHFwXnGE9qsdYtHxKVBG04wEAU/7PGQCPmBczTr9gnt7IMVdxW
-         0/JXfI2y0Nc+qBv7VCgPJ5e+iIKCVz+Mn8iL+e4+dF4MQ55Fndn8t8X+lLnHW3VF9PIa
-         FwNcxFkTKXbsSII2Slcu/oCVEDswTBrUtL3QtGYMmWdfY5vQ/2AgIHwDFbb4ZrOmxvMD
-         GTl4dGQ7ba9bGir5ZkS1QqlstXjitjwjeM6bgKuviEm+wsIUJHgPbL/LbjdywNwOSeP2
-         i5S7N/fRM0YTHH+ynLDxia0/Q0e5SCWrTP18LARONwNtkYojPCfRcdwz4TraS+jtsQtm
-         /S5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=isEupPNmUSBqHlPH1NCK5ao1OuidLb/sUUxLrv9MHTI=;
-        b=ifvhWiOwEGTOMTk09QLV0HbkXP1rPSk10P+4j52+hjO3H0pBvnyDg8sGVHf94w1tLM
-         j3bO9r01IfhHrASJ7XVYwIwQy0IVC2kLTJ6fDeQiGQ3IppaO1VJUDUdd3HQHIBGGAS3v
-         fGllLHymXQgLdh9QCQaI1Rfj4te3ffHu3YlvSYSSCJWCV88fLT5BagijaraXvatvOv2k
-         yMFinrN94IOsqTwxzSFJEUAkhp4Va8vd0r/3rwVq8Sxa/TcQAXmgo6N8XjJNDzAzpKdz
-         K/pcrtWelaNSfas2AHm/cObvNBVYxLs4fCcysHEoG3TeIEcOMt0DjzcM3z3wBE+VscE7
-         GlZg==
-X-Gm-Message-State: AOAM5328WxlWb7ZAPpYrF0cGQ/2UHKo8RLsOW+kfwfbvyf3gECCnQ7BQ
-        AUcpiPQr2oJRRQ6QUqOCO6fwKA==
-X-Google-Smtp-Source: ABdhPJz4lvDSMC+HRkp4gZ5wgA42u0MWihkT3xc5m2x0/t5mTiNwpj8pQy+egfUrQfW2Q3oRoU8iLA==
-X-Received: by 2002:a17:907:1b10:b0:6e4:dae9:b8e5 with SMTP id mp16-20020a1709071b1000b006e4dae9b8e5mr22365650ejc.470.1649502468846;
-        Sat, 09 Apr 2022 04:07:48 -0700 (PDT)
-Received: from [192.168.0.188] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id rk14-20020a170907214e00b006e803954400sm5248432ejb.203.2022.04.09.04.07.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 Apr 2022 04:07:48 -0700 (PDT)
-Message-ID: <24def34c-99c7-1496-127c-6c4865a5faee@linaro.org>
-Date:   Sat, 9 Apr 2022 13:07:47 +0200
+        Sat, 9 Apr 2022 07:11:12 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9A43CFF1
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 04:09:05 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nd8xj-0006HJ-S9; Sat, 09 Apr 2022 13:09:04 +0200
+Message-ID: <a76467c3-77af-f1ea-37a0-5e96256a495c@leemhuis.info>
+Date:   Sat, 9 Apr 2022 13:08:59 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH 02/18] MIPS: DTS: jz4780: fix cgu as reported by dtbscheck
+Subject: Re: [regression]: xps13 9310 system freeze with kernel 5.17/5.18-rc1
 Content-Language: en-US
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mips@vger.kernel.org, letux-kernel@openphoenux.org
-References: <cover.1649443080.git.hns@goldelico.com>
- <6665d5059c840a240721f9ea6ae4abc8536d0400.1649443080.git.hns@goldelico.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <6665d5059c840a240721f9ea6ae4abc8536d0400.1649443080.git.hns@goldelico.com>
+To:     =?UTF-8?Q?Dominik_F=c3=b6rderer?= 
+        <dominik.foerderer@windeck-gymnasium.de>,
+        ath11k <ath11k@lists.infradead.org>
+References: <f02808cda5adcf34db79f75cf57b44a2780cd644.camel@windeck-gymnasium.de>
+Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        LKML <linux-kernel@vger.kernel.org>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <f02808cda5adcf34db79f75cf57b44a2780cd644.camel@windeck-gymnasium.de>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1649502545;659f9b23;
+X-HE-SMSGID: 1nd8xj-0006HJ-S9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/04/2022 20:37, H. Nikolaus Schaller wrote:
-> arch/mips/boot/dts/ingenic/ci20.dtb: jz4780-cgu@10000000: $nodename:0: 'jz4780-cgu@10000000' does not match '^clock-controller@[0-9a-f]+$'
-> 	From schema: Documentation/devicetree/bindings/clock/ingenic,cgu.yaml
+[TLDR: I'm adding the regression report below to regzbot, the Linux
+kernel regression tracking bot; all text you find below is compiled from
+a few templates paragraphs you might have encountered already already
+from similar mails.]
+
+Hi, this is your Linux kernel regression tracker.
+
+On 08.04.22 09:26, Dominik Förderer wrote:
+> After switching from kernel 5.16 to 5.17/%.18-rc1 my system (dell xps13 9310)
+> allways freezes short after boot with a cpu-soft lock.
 > 
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  arch/mips/boot/dts/ingenic/jz4780.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> A git bisect shows, that the Problem is caused by commit 9dcf6808b253 ath11k:
+> add 11d scan offload support. Reverting this commit makes the problem going
+> away.
 > 
+> There is also a bug report with further descriptions here: 
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=215777
 
+Thanks for the report.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CCing the regression mailing list, as it should be in the loop for all
+regressions, as explained here:
+https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
 
+To be sure below issue doesn't fall through the cracks unnoticed, I'm
+adding it to regzbot, my Linux kernel regression tracking bot:
 
-Best regards,
-Krzysztof
+#regzbot ^introduced 9dcf6808b253
+#regzbot title net: wireless: ath11k: xps13 9310 freezes
+#regzbot ignore-activity
+
+If it turns out this isn't a regression, free free to remove it from the
+tracking by sending a reply to this thread containing a paragraph like
+"#regzbot invalid: reason why this is invalid" (without the quotes).
+
+Reminder for developers: when fixing the issue, please add a 'Link:'
+tags pointing to the report (the mail quoted above) using
+lore.kernel.org/r/, as explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'. Regzbot needs them to
+automatically connect reports with fixes, but they are useful in
+general, too.
+
+I'm sending this to everyone that got the initial report, to make
+everyone aware of the tracking. I also hope that messages like this
+motivate people to directly get at least the regression mailing list and
+ideally even regzbot involved when dealing with regressions, as messages
+like this wouldn't be needed then. And don't worry, if I need to send
+other mails regarding this regression only relevant for regzbot I'll
+send them to the regressions lists only (with a tag in the subject so
+people can filter them away). With a bit of luck no such messages will
+be needed anyway.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
+
+-- 
+Additional information about regzbot:
+
+If you want to know more about regzbot, check out its web-interface, the
+getting start guide, and the references documentation:
+
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for reporters: when reporting a regression it's in your interest to
+CC the regression list and tell regzbot about the issue, as that ensures
+the regression makes it onto the radar of the Linux kernel's regression
+tracker -- that's in your interest, as it ensures your report won't fall
+through the cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot once
+it's involved. Fix the issue as you normally would, just remember to
+include 'Link:' tag in the patch descriptions pointing to all reports
+about the issue. This has been expected from developers even before
+regzbot showed up for reasons explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'.
