@@ -2,128 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D123AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 13:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 13:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241882AbiDINXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 09:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56634 "EHLO
+        id S238665AbiDINYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 09:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241781AbiDINXS (ORCPT
+        with ESMTP id S241854AbiDINYO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 09:23:18 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938F011C1D;
-        Sat,  9 Apr 2022 06:21:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649510470; x=1681046470;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vfC+nRqScmWArguoYMf/e1ASOBmxDV4xlBHdGwcPDiE=;
-  b=i08DAC8o8GBUOoKhGtcLNxJQe5PEcssKB3VuNCkuScbkRmqaiaAmXLRc
-   KGCjn49LOGezsBn6HT6y+uX/vU7Kr4sU9Xtvt3L9i9mn4tvEwM8OO4+Jz
-   hScWrgVGyEcRd563g8LA9pVFfVCLcq+0qU4KBoq1LgnXGKxekoAYGYWAp
-   HMMDRdmcdr0NOdswNhhoCYlOK4De1TPJ94sSUM8aZ4Y86R4dTumwdpg7t
-   IdCLiEye7MSMwfLWig38HlGtd8qOA+LQaKm1T9dQ4dIIJ/a8rGyiJSuyf
-   MoFFKr7zCF49w5in/O0wanabeodcsybq7m5bhHulRHWkKEZyEGQf9+bf2
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="259398775"
-X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; 
-   d="scan'208";a="259398775"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2022 06:21:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; 
-   d="scan'208";a="622153364"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 09 Apr 2022 06:21:04 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ndB1T-00002H-Ef;
-        Sat, 09 Apr 2022 13:21:03 +0000
-Date:   Sat, 9 Apr 2022 21:19:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Hans Verkuil <hverkuil@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-Cc:     kbuild-all@lists.01.org, linux-media@vger.kernel.org,
-        Irui Wang <irui.wang@mediatek.com>,
-        George Sun <george.sun@mediatek.com>,
-        Steve Cho <stevecho@chromium.org>, srv_heupstream@mediatek.com,
-        devicetree@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-kernel@vger.kernel.org,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        linux-mediatek@lists.infradead.org,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v9, 16/17] media: mediatek: vcodec: support stateless VP9
- decoding
-Message-ID: <202204092137.3RrpN4Hr-lkp@intel.com>
-References: <20220408120240.29571-17-yunfei.dong@mediatek.com>
+        Sat, 9 Apr 2022 09:24:14 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA1E98F51
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 06:22:06 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id bg10so22332437ejb.4
+        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 06:22:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=P6um4RkZU+3YK1ClK/l8evJQFx9Q56DgMAMk+g3BYMo=;
+        b=OGgu5KZXQS2d0rYOkLEhFI1xIXcHBtZhLcjG4a4EnL54togwh5ElZW9Xvzm1H9cszr
+         6nQhFjfyysNcmwVgnR0I63238xdS83deIgu0TqwAURV3OFF6brWNbJhoZfmRlA+gvRKC
+         +CWbYjnceqndMmyC6JZsdjfaC+EHZxHRjFtCj9plIh1qlQxEqJN4g5aho2gy8TNJt8XZ
+         d7RKo9ts52GdKFX+eyKIkFBYmrMoBqCHxxpjFEDregB1lpnkwvKIqpWn7r3LnJzWadSs
+         6SdadbEM4KBwz9LBl/qbmbsO5U5tiL3lhmVyhWb//jKBEpNKg8oeqw28yhmqDrlQDTua
+         SVxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=P6um4RkZU+3YK1ClK/l8evJQFx9Q56DgMAMk+g3BYMo=;
+        b=RrkDbl6Kv0BJ9WFPD+6SnqvFm/7MukrnPntaUU76zo+pdVr86XLJfaLORW8NxzinL8
+         ii2sjeqjEj0egCRemZvy1acDEyO7vjjfChvEIwXraAhCsiluxyk8RJhZXYWaRPBjgXx3
+         gydB6guDy4FcUUMeMcmeo5NXMl8sw7rVfkQ2HoG14DceG+pvrgqRjbCRhfZ1/Z5Mi3SF
+         uMKMmnB8+pprNpQFR3FJMOxegZpAZ4EoWZSDoVh1o81UdCikxSFpPs/AeXeQXyM5unjT
+         TxBNUnT1Kg5rsNakWNh3DscmVDrIgtaL0/I9oKYRbRxvccUbRAfXOwo/qrPt3Qfn+F0s
+         hBDA==
+X-Gm-Message-State: AOAM5308M1Hnl7MSEs2nUhM6jJv/POgeNz0cu4mKRb44071Emm/AhB8z
+        0cPT03DvyAFgjDFVfVLPIA+/iA==
+X-Google-Smtp-Source: ABdhPJz28Jp1rgzh1wNFzMt+TUSzLUlO8hYZl1h7iOxZAQ577C3+gK+6Nr8PgjyGdkwCZcPkGN7QoA==
+X-Received: by 2002:a17:907:7da8:b0:6e0:5b94:5ed8 with SMTP id oz40-20020a1709077da800b006e05b945ed8mr21641512ejc.312.1649510524958;
+        Sat, 09 Apr 2022 06:22:04 -0700 (PDT)
+Received: from [192.168.0.188] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id wn20-20020a170907069400b006e7f3d0c90esm6360589ejb.137.2022.04.09.06.22.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 Apr 2022 06:22:04 -0700 (PDT)
+Message-ID: <2729b85b-1c54-d446-baf4-2c41bb04b3b2@linaro.org>
+Date:   Sat, 9 Apr 2022 15:22:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220408120240.29571-17-yunfei.dong@mediatek.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 03/18] MIPS: DTS: jz4780: fix tcu timer as reported by
+ dtbscheck
+Content-Language: en-US
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, letux-kernel@openphoenux.org
+References: <cover.1649443080.git.hns@goldelico.com>
+ <c48277625f0ab5afc86d89deb1b87537e9c592f6.1649443080.git.hns@goldelico.com>
+ <e5ea96d8-f8c9-b925-04ee-81e80e30a5d0@linaro.org>
+ <A023438A-B8A8-4F91-BA25-7BE9A76C6730@goldelico.com>
+ <ef1674e5-2347-fbb4-52c8-5170faa84690@linaro.org>
+ <9BE666F8-123E-4062-88F8-D266CCCAC43B@goldelico.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <9BE666F8-123E-4062-88F8-D266CCCAC43B@goldelico.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yunfei,
+On 09/04/2022 15:18, H. Nikolaus Schaller wrote:
+> 
+> Well, again, my assumption is that bindings and .yaml files formally describe the actual
+> hardware components. And they have been reviewed.
 
-Thank you for the patch! Yet something to improve:
+The bindings try to describe it. They are pretty often incomplete or
+might have mistakes. The true reason of doing a change is not that some
+tool tells you "do like this". The true reason is because the change
+properly describes hardware.
 
-[auto build test ERROR on media-tree/master]
-[also build test ERROR on v5.18-rc1 next-20220408]
-[cannot apply to remoteproc/rproc-next drm-tip/drm-tip]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> 
+> So they have a higher level of authority than any current driver or .dts implementation.
+> Unless there is evidence that the bindings are wrong.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Yunfei-Dong/media-mediatek-vcodec-Add-vdec-enable-disable-hardware-helpers/20220408-210244
-base:   git://linuxtv.org/media_tree.git master
-config: arm64-randconfig-r015-20220408 (https://download.01.org/0day-ci/archive/20220409/202204092137.3RrpN4Hr-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/251c7c77f6690881357df39867a32a03eb7db3b7
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Yunfei-Dong/media-mediatek-vcodec-Add-vdec-enable-disable-hardware-helpers/20220408-210244
-        git checkout 251c7c77f6690881357df39867a32a03eb7db3b7
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
+This is just a tool, not an authority.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> I.e. if the bindings feel right why is there a need to argue for that?
 
-All errors (new ones prefixed by >>):
+Because doing things "just because bindings told me" hides the true
+explanation and makes the code review, code management more difficult.
+Later person will look at this and wonder why this was done like this.
+If you write "because some tool me" this is not a good help. But if you
+write "because hardware is like this exactly" this is proper comment.
 
-   aarch64-linux-ld: drivers/media/platform/mediatek/vcodec/vdec/vdec_vp9_req_lat_if.o: in function `vdec_vp9_slice_update_prob.isra.0':
->> vdec_vp9_req_lat_if.c:(.text+0x2654): undefined reference to `v4l2_vp9_adapt_noncoef_probs'
-   vdec_vp9_req_lat_if.c:(.text+0x2654): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `v4l2_vp9_adapt_noncoef_probs'
->> aarch64-linux-ld: vdec_vp9_req_lat_if.c:(.text+0x26c0): undefined reference to `v4l2_vp9_adapt_coef_probs'
-   vdec_vp9_req_lat_if.c:(.text+0x26c0): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `v4l2_vp9_adapt_coef_probs'
-   aarch64-linux-ld: vdec_vp9_req_lat_if.c:(.text+0x26d8): undefined reference to `v4l2_vp9_adapt_coef_probs'
-   vdec_vp9_req_lat_if.c:(.text+0x26d8): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `v4l2_vp9_adapt_coef_probs'
-   aarch64-linux-ld: vdec_vp9_req_lat_if.c:(.text+0x26f0): undefined reference to `v4l2_vp9_adapt_coef_probs'
-   vdec_vp9_req_lat_if.c:(.text+0x26f0): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `v4l2_vp9_adapt_coef_probs'
+> 
+> It is like test-driven development model. There you have to write code that passes
+> the tests. Not argue against the tests.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Again, don't focus on the tool... Tool is just a tool...
+
+Best regards,
+Krzysztof
