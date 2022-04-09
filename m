@@ -2,227 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C252DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 05:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 05:14:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238015AbiDIFOD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 01:14:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
+        id S237037AbiDIFQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 01:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229701AbiDIFNz (ORCPT
+        with ESMTP id S229701AbiDIFQZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 01:13:55 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B93DF5E;
-        Fri,  8 Apr 2022 22:11:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649481110; x=1681017110;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2uEEnJaBm8W3hYNznIdKioT/aZO4ljgRCwHcLaiU/lc=;
-  b=erQdJ5618afcriUXVQxl8l1BGHzotIsKyxUV4ttObG8VRtdDBbC2trXD
-   fPJe189DQI35KWU69mTQ4r6Kb+MyQ84PRGY+8O3hxvrVTmEwrSTMRaJsL
-   HyybidxO1eAAY+ba7lwHN0Kwf6QuhJs8Qx0iX514AHays2b7KGj6tdQ2H
-   awoUfDCIQIdhz8Fy1fWIczkw5pPeODtUIPpdmkSEUZQaGUG0du9lOpAHt
-   mWhMWN+QEpUeWL44AmFlVOZHPcSjP3AhlrF7tDMq7FmdWU3ttwTpzYfhC
-   MQi0MTJwL3z2WpYNI9y4vUXXMw5/ZdMfi57znF8X/DaPpvgsXQKmgdnAv
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="259358125"
-X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; 
-   d="scan'208";a="259358125"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 22:11:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; 
-   d="scan'208";a="698498511"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by fmsmga001.fm.intel.com with ESMTP; 08 Apr 2022 22:11:47 -0700
-Date:   Sat, 9 Apr 2022 13:04:23 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        conor.dooley@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, system@metrotek.ru,
-        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v9 1/3] fpga: fpga-mgr: support bitstream offset in image
- buffer
-Message-ID: <20220409050423.GA265355@yilunxu-OptiPlex-7050>
-References: <20220407133658.15699-1-i.bornyakov@metrotek.ru>
- <20220407133658.15699-2-i.bornyakov@metrotek.ru>
+        Sat, 9 Apr 2022 01:16:25 -0400
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E160369D5
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 22:14:19 -0700 (PDT)
+Received: by mail-il1-x12c.google.com with SMTP id d4so7175719iln.6
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 22:14:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=Jm5k1O0ZeZqd8MeZ2OXXiUTadUaS2iqPnz3zX1P9dJ0=;
+        b=VdumWYMSMHXHPzqhKgM2QguXKGHpjCspmt9ZajAMKYWkR7qaIhoZYOOoZt3LpT1t0t
+         od0W2wY9wJXXfl9j3B3r43mJ6nUWEPP/kxqsSU5u8cb2wVlZUJbVyY0LUKJdaVWLkDdw
+         W5N8n0rtZVfkVXcYNpoSxUwuR7liE9sKGylDpATugD0v+n5XV20oU4zEPVA+rxPcDigC
+         V8RpLnp6I9CDOKWpYYmsUwI5CrHPY48YARRzoaH2qpslMNN96NvM3XiAkSkOKCeeIXla
+         OX4kqBSG7/DWzWi/F5gTUcCrBJVMcf/zA+IVcnzefALZs/Qrj5kRUAOGhooR5GgcET38
+         ipcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=Jm5k1O0ZeZqd8MeZ2OXXiUTadUaS2iqPnz3zX1P9dJ0=;
+        b=jOCDSQEdhMV6pOECjiV6xQrdaVSIyrNaH82iZkw/T4oXK49Xh0tcyqGH3zyZY4nU01
+         4KdJCTj/NvinMOmCUzF/i+9Q/wW09L35Q4f8BKVsi3FX8noBMwTmXMsI2BNzLBdywWvR
+         flXQDzikSlJYaASE94V8PzbBm1yug2WZzrR+zViAgUEwxUdtbgU46pPhA5iMgtMoVV9R
+         qRTKOcheYPLAESqjH69GuduGJtX1RSfCVJaPfPE4MMqboaTwCIgTPOAJPVZZtXkdH5KW
+         5L176CWp4mI7IDD11voTy33z4FkdAzaNovKv9RDRcSGyep4BYEyuCBUpmmTp5mzpnHbw
+         DMmw==
+X-Gm-Message-State: AOAM533qI/ZWktKQO2Vf95yc3kEg4QOmGJgYU/3s0qGmwlMgHE+zeFuo
+        ILyXSgjsQs/YVOGq+HibBtg2hwVbM4l7pfCrXGQ=
+X-Google-Smtp-Source: ABdhPJxyb0VSxkPRCzucL6+7ah35z1gL825BphoporD9eRi1bwf/QqsOJDu9qqdiXe44nyqtrsFOIzZt8WVOQ0Fg+D8=
+X-Received: by 2002:a92:cda6:0:b0:2c8:8289:c31 with SMTP id
+ g6-20020a92cda6000000b002c882890c31mr9152461ild.245.1649481258794; Fri, 08
+ Apr 2022 22:14:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407133658.15699-2-i.bornyakov@metrotek.ru>
+References: <YktYX2OnLtyobRYD@kernel.org> <Ykto1FgmPMMCysbI@dev-arch.thelio-3990X>
+ <YkxWcYzph5pC1EK8@kernel.org> <CA+icZUVMtrqRA-a3k8N0fVcszm=Sn2Jb9nMfF8mXqvSTu2HUhw@mail.gmail.com>
+ <Ykyfzn6Z8Wkf1Ccl@kernel.org> <Yky4TjOLiVvOcLYN@kernel.org>
+ <YlBLh6Y0WWEVuN1F@kernel.org> <CA+icZUUnj-CjG3AsypSdJ3szx93mx49uD7MaBCeSbHqa50QYuw@mail.gmail.com>
+In-Reply-To: <CA+icZUUnj-CjG3AsypSdJ3szx93mx49uD7MaBCeSbHqa50QYuw@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Sat, 9 Apr 2022 07:13:42 +0200
+Message-ID: <CA+icZUVAAfwet87Du60EBode-byot4w9z52aeEGffXViqw8nzA@mail.gmail.com>
+Subject: Re: Build perf with clang, failure with libperf
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Fangrui Song <maskray@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
+        Michael Petlan <mpetlan@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 04:36:56PM +0300, Ivan Bornyakov wrote:
-> It is not always whole FPGA image buffer meant to be written to the
-> device.
+> P.S.: I requested to bump perl to version 5.34.1 (see [2]) plus diff from [3].
+>
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/log/?h=tmp.perf/urgent
+> [2] https://bugs.debian.org/1009170
+> [3] https://bugs.debian.org/1009149
 
-Thanks for improving the fpga core. Please see my comments inline.
+OK, new perl package shipping the fix.
 
-Maybe more description about the issue, i.e. in which case we don't
-write the whole buffer, what's the problem in current implementation.
+perl (5.34.0-4) unstable; urgency=medium
 
-> 
-> Add bitstream_start and bitstream_size to the fpga_image_info struct and
-> adjust fpga_mgr_write() callers with respect to them.
-> 
-> If initial_header_size is not known beforehand, pass whole buffer to low
-> level driver's write_init() so it could setup info->bitstream_start and
-> info->bitstream_size regardless.
-> 
-> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> ---
->  drivers/fpga/fpga-mgr.c       | 48 +++++++++++++++++++++++++++++------
->  include/linux/fpga/fpga-mgr.h |  5 ++++
->  2 files changed, 45 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
-> index d49a9ce34568..c64e60e23a71 100644
-> --- a/drivers/fpga/fpga-mgr.c
-> +++ b/drivers/fpga/fpga-mgr.c
-> @@ -139,7 +139,8 @@ EXPORT_SYMBOL_GPL(fpga_image_info_free);
->   * Call the low level driver's write_init function.  This will do the
->   * device-specific things to get the FPGA into the state where it is ready to
->   * receive an FPGA image. The low level driver only gets to see the first
-> - * initial_header_size bytes in the buffer.
-> + * initial_header_size bytes in the buffer, if initial_header_size is set.
-> + * Otherwise, the whole buffer will be passed.
->   */
->  static int fpga_mgr_write_init_buf(struct fpga_manager *mgr,
->  				   struct fpga_image_info *info,
-> @@ -148,12 +149,10 @@ static int fpga_mgr_write_init_buf(struct fpga_manager *mgr,
->  	int ret;
->  
->  	mgr->state = FPGA_MGR_STATE_WRITE_INIT;
-> -	if (!mgr->mops->initial_header_size)
-> -		ret = fpga_mgr_write_init(mgr, info, NULL, 0);
-> -	else
-> -		ret = fpga_mgr_write_init(
-> -		    mgr, info, buf, min(mgr->mops->initial_header_size, count));
-> +	if (mgr->mops->initial_header_size)
-> +		count = min(mgr->mops->initial_header_size, count);
->  
-> +	ret = fpga_mgr_write_init(mgr, info, buf, count);
+ * Refresh cross build support files for all architectures.
+ * Fix massively parallel builds by first making 'depend'.
+   (Closes: #996953)
+ * Backport upstream patch to perl.h fixing build warnings on clang.
+   (Closes: #1009149)
 
-Here we pass the whole buffer for write_init(). Maybe it works for mapped buf,
-but still doesn't work for sg buf.
+-- Niko Tyni <ntyni@debian.org>  Fri, 08 Apr 2022 20:12:38 +0300
 
-It is also inefficient if we change to map and copy all sg buffers just for
-write_init().
+- Sedat -
 
-We could discuss on the solution.
-
-My quick mind is we introduce an optional fpga_manager_ops.parse_header()
-callback, and a header_size (dynamic header size) field in
-fpga_image_info. FPGA core starts with mapping a buf of initial_header_size
-for parse_header(), let the drivers decide the dynamic header_size.
-
-The parse_header() could be called several times with updated dynamic
-header_size, if drivers doesn't get enough buffer for final decision and
-return -EAGAIN.
-
-Then write_init() be called with the final dynamic header size.
-
-For mapped buffer, just passing the whole buffer for write_init() is
-fine.
-
->  	if (ret) {
->  		dev_err(&mgr->dev, "Error preparing FPGA for writing\n");
->  		mgr->state = FPGA_MGR_STATE_WRITE_INIT_ERR;
-> @@ -235,13 +234,33 @@ static int fpga_mgr_buf_load_sg(struct fpga_manager *mgr,
->  	if (mgr->mops->write_sg) {
->  		ret = fpga_mgr_write_sg(mgr, sgt);
->  	} else {
-> +		size_t offset, count, length, bitstream_size;
->  		struct sg_mapping_iter miter;
->  
-> +		offset = info->bitstream_start;
-> +		bitstream_size = info->bitstream_size;
-> +		count = 0;
-> +
->  		sg_miter_start(&miter, sgt->sgl, sgt->nents, SG_MITER_FROM_SG);
->  		while (sg_miter_next(&miter)) {
-> -			ret = fpga_mgr_write(mgr, miter.addr, miter.length);
-> -			if (ret)
-> +			if (offset >= miter.length) {
-> +				offset -= miter.length;
-> +				continue;
-> +			}
-> +
-> +			if (bitstream_size)
-> +				length = min(miter.length - offset,
-> +					     bitstream_size - count);
-> +			else
-> +				length = miter.length - offset;
-> +
-> +			count += length;
-> +
-> +			ret = fpga_mgr_write(mgr, miter.addr + offset, length);
-> +			if (ret || count == bitstream_size)
->  				break;
-> +
-> +			offset = 0;
->  		}
->  		sg_miter_stop(&miter);
->  	}
-> @@ -265,6 +284,19 @@ static int fpga_mgr_buf_load_mapped(struct fpga_manager *mgr,
->  	if (ret)
->  		return ret;
->  
-> +	if (info->bitstream_start > count) {
-> +		dev_err(&mgr->dev,
-> +			"Bitstream start %zd outruns firmware image %zd\n",
-> +			info->bitstream_start, count);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (info->bitstream_size)
-> +		count = min(info->bitstream_start + info->bitstream_size, count);
-> +
-> +	buf += info->bitstream_start;
-> +	count -= info->bitstream_start;
-> +
->  	/*
->  	 * Write the FPGA image to the FPGA.
->  	 */
-> diff --git a/include/linux/fpga/fpga-mgr.h b/include/linux/fpga/fpga-mgr.h
-> index 0f9468771bb9..32464fd10cca 100644
-> --- a/include/linux/fpga/fpga-mgr.h
-> +++ b/include/linux/fpga/fpga-mgr.h
-> @@ -85,6 +85,9 @@ enum fpga_mgr_states {
->   * @sgt: scatter/gather table containing FPGA image
->   * @buf: contiguous buffer containing FPGA image
->   * @count: size of buf
-> + * @bitstream_start: offset in image buffer where bitstream data starts
-> + * @bitstream_size: size of bitstream.
-> + *	If 0, (count - bitstream_start) will be used.
->   * @region_id: id of target region
->   * @dev: device that owns this
->   * @overlay: Device Tree overlay
-> @@ -98,6 +101,8 @@ struct fpga_image_info {
->  	struct sg_table *sgt;
->  	const char *buf;
->  	size_t count;
-> +	size_t bitstream_start;
-
-How about we name it header_size?
-
-> +	size_t bitstream_size;
-
-And how about data_size?
-
-Thanks,
-Yilun
-
->  	int region_id;
->  	struct device *dev;
->  #ifdef CONFIG_OF
-> -- 
-> 2.25.1
-> 
+- Sedat -
