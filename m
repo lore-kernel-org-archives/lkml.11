@@ -2,95 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C9EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 09:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7F0CC43217
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 09:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238447AbiDIJOn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 05:14:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
+        id S241068AbiDIJPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 05:15:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239464AbiDIJO3 (ORCPT
+        with ESMTP id S238067AbiDIJPq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 05:14:29 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E231D71ED3;
-        Sat,  9 Apr 2022 02:12:22 -0700 (PDT)
-X-UUID: d81f67083d2d441d81968731497a065f-20220409
-X-UUID: d81f67083d2d441d81968731497a065f-20220409
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 277718479; Sat, 09 Apr 2022 17:12:18 +0800
-Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sat, 9 Apr 2022 17:12:16 +0800
-Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS34N1.mediatek.inc
- (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 9 Apr
- 2022 17:12:15 +0800
-Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
- MTKCAS32.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Sat, 9 Apr 2022 17:12:14 +0800
-From:   <xinlei.lee@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <rex-bc.chen@mediatek.com>,
-        <jitao.shi@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v4,3/3] drm/mediatek: Add mt8186 dsi compatible to mtk_dsi.c
-Date:   Sat, 9 Apr 2022 17:11:54 +0800
-Message-ID: <1649495514-25746-4-git-send-email-xinlei.lee@mediatek.com>
-X-Mailer: git-send-email 2.6.4
-In-Reply-To: <1649495514-25746-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1649495514-25746-1-git-send-email-xinlei.lee@mediatek.com>
+        Sat, 9 Apr 2022 05:15:46 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC6DEA75E;
+        Sat,  9 Apr 2022 02:13:39 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.16.1.2) with ESMTP id 2399CL51024715;
+        Sat, 9 Apr 2022 04:13:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=xxRGWV0GdBuYVwUw8paO+jr9OgLMwyNzezVazBUiXZE=;
+ b=LhTFWEeB1YELIXIBgQ7yg/p9wSePmVxkvjxo/qEX+zlI4cApVA1U/+m6/zxj8ZBzONhv
+ Bt4EF0Ez8+noqzckj/irNDuGA1zww0gIJrBdb4myUWMjNS1XDNFriMKsF8BzSEHsZTR8
+ KJ5SJcMqIHm2mvL1efuuBheu/INzpVzRtoVHuNzEAGgn9Pqi43oFhoUwMunquw9WTr20
+ t/UKiNxfRmfxIi+7ai4yVeSqG9sdM10waBGIF1xvxyUncanvsFqa4kqer6HjfJZjT0VZ
+ tg/ajGcE5nmx/fjHIVocMGIAAd8ghr7bVivBm9vL+UsaoNowTQxUBGaJ0XW6342xgb/z nQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3fb6py80ws-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sat, 09 Apr 2022 04:13:23 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 9 Apr
+ 2022 10:13:21 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
+ Transport; Sat, 9 Apr 2022 10:13:21 +0100
+Received: from aryzen.ad.cirrus.com (unknown [198.61.64.156])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 02851B16;
+        Sat,  9 Apr 2022 09:13:20 +0000 (UTC)
+From:   Lucas Tanure <tanureal@opensource.cirrus.com>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>
+Subject: [PATCH v6 12/16] ALSA: hda: cs35l41: Reorganize log for playback actions
+Date:   Sat, 9 Apr 2022 10:13:11 +0100
+Message-ID: <20220409091315.1663410-13-tanureal@opensource.cirrus.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220409091315.1663410-1-tanureal@opensource.cirrus.com>
+References: <20220409091315.1663410-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-MTK:  N
+X-Proofpoint-ORIG-GUID: z4v6Ar8YoHCwR93b_XNwiTF-96u-782x
+X-Proofpoint-GUID: z4v6Ar8YoHCwR93b_XNwiTF-96u-782x
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+For each case, only log the last regmap access, so it doesn't get
+overwritten, and as all regmap access should show the same issues
+logging the last one should be enough.
+Change to dev_err to log this error.
 
-Add the compatible because use different cmdq addresses in mt8186.
+Also, differentiate between a regmap access failure and invalid
+playback action.
 
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
 ---
- drivers/gpu/drm/mediatek/mtk_dsi.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ sound/pci/hda/cs35l41_hda.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index ccb0511b9cd5..b13fd0317e96 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -1155,6 +1155,12 @@ static const struct mtk_dsi_driver_data mt8183_dsi_driver_data = {
- 	.has_size_ctl = true,
- };
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index ece784662dbd..3294837ff606 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -144,10 +144,9 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
  
-+static const struct mtk_dsi_driver_data mt8186_dsi_driver_data = {
-+	.reg_cmdq_off = 0xd00,
-+	.has_shadow_ctl = true,
-+	.has_size_ctl = true,
-+};
-+
- static const struct of_device_id mtk_dsi_of_match[] = {
- 	{ .compatible = "mediatek,mt2701-dsi",
- 	  .data = &mt2701_dsi_driver_data },
-@@ -1162,6 +1168,8 @@ static const struct of_device_id mtk_dsi_of_match[] = {
- 	  .data = &mt8173_dsi_driver_data },
- 	{ .compatible = "mediatek,mt8183-dsi",
- 	  .data = &mt8183_dsi_driver_data },
-+	{ .compatible = "mediatek,mt8186-dsi",
-+	  .data = &mt8186_dsi_driver_data },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, mtk_dsi_of_match);
+ 	switch (action) {
+ 	case HDA_GEN_PCM_ACT_OPEN:
+-		ret = regmap_multi_reg_write(reg, cs35l41_hda_config,
+-					     ARRAY_SIZE(cs35l41_hda_config));
+-		regmap_update_bits(reg, CS35L41_PWR_CTRL2,
+-				   CS35L41_AMP_EN_MASK, 1 << CS35L41_AMP_EN_SHIFT);
++		regmap_multi_reg_write(reg, cs35l41_hda_config, ARRAY_SIZE(cs35l41_hda_config));
++		ret = regmap_update_bits(reg, CS35L41_PWR_CTRL2,
++					 CS35L41_AMP_EN_MASK, 1 << CS35L41_AMP_EN_SHIFT);
+ 		break;
+ 	case HDA_GEN_PCM_ACT_PREPARE:
+ 		ret = cs35l41_hda_global_enable(cs35l41, 1);
+@@ -157,16 +156,16 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
+ 		ret = cs35l41_hda_global_enable(cs35l41, 0);
+ 		break;
+ 	case HDA_GEN_PCM_ACT_CLOSE:
+-		regmap_update_bits(reg, CS35L41_PWR_CTRL2,
+-				   CS35L41_AMP_EN_MASK, 0 << CS35L41_AMP_EN_SHIFT);
++		ret = regmap_update_bits(reg, CS35L41_PWR_CTRL2,
++					 CS35L41_AMP_EN_MASK, 0 << CS35L41_AMP_EN_SHIFT);
+ 		break;
+ 	default:
+-		ret = -EINVAL;
++		dev_warn(cs35l41->dev, "Playback action not supported: %d\n", action);
+ 		break;
+ 	}
+ 
+ 	if (ret)
+-		dev_warn(cs35l41->dev, "Failed to apply multi reg write: %d\n", ret);
++		dev_err(cs35l41->dev, "Regmap access fail: %d\n", ret);
+ }
+ 
+ static int cs35l41_hda_channel_map(struct device *dev, unsigned int tx_num, unsigned int *tx_slot,
 -- 
-2.18.0
+2.35.1
 
