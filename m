@@ -2,120 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3E76C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 12:59:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD69C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 13:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241794AbiDINBb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 09:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55858 "EHLO
+        id S241810AbiDINCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 09:02:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229641AbiDINB2 (ORCPT
+        with ESMTP id S241840AbiDINCj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 09:01:28 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF9455BC;
-        Sat,  9 Apr 2022 05:59:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=MmsrU07PgLUD8XKlGAlPmaXdI+yyXvNNcYAukLrx62Y=;
-        b=CEI2hXzSPqnIcufESjduzwbYlCeHlDyPUTHL3FWC7B1OvItyXEclcgmIXLx9vpVt+N1DhLe2vbRWE
-         KPv2Cv2gWs58Uacjv8iDViXf9vtOgLwpHGBXnuF6OY2I2wZv91aU+5balZe5ZuLHBL3DBUJGdNBfwn
-         p4ltj6MAQDWVko0oCiW48L8cDvlPv5LMISSymSyt7OBxfmWnmLd9cZwVNstJ4Vc8U9bunmwHWU4MjN
-         L2e3KD5WdNE4kPdVNn4g9aPQoxT7MvLwwAXFDt18PMzYDn9niG9w35jF78hfQKrlai009Eo9n30lZY
-         WmRGeNmJrWKryzxvk9Rcd5g2uw4X54w==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.2.1410, Stamp: 3], Multi: [Enabled, t: (0.000008,0.008582)], BW: [Enabled, t: (0.000013,0.000001)], RTDA: [Enabled, t: (0.063684), Hit: No, Details: v2.34.0; Id: 15.52k78o.1g076fs5a.4ace; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from x260 ([178.70.66.234])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Sat, 9 Apr 2022 15:58:51 +0300
-Date:   Sat, 9 Apr 2022 15:38:51 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Xu Yilun <yilun.xu@intel.com>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        conor.dooley@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, system@metrotek.ru,
-        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v9 1/3] fpga: fpga-mgr: support bitstream offset in image
- buffer
-Message-ID: <20220409123851.tcjflctnuurag2yb@x260>
-References: <20220407133658.15699-1-i.bornyakov@metrotek.ru>
- <20220407133658.15699-2-i.bornyakov@metrotek.ru>
- <20220409050423.GA265355@yilunxu-OptiPlex-7050>
+        Sat, 9 Apr 2022 09:02:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 53D402AC6A
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 06:00:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649509229;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Pi4pYQTNYCuF2Y8MBQqcWvYBPADTg7R4hnusPThr2oY=;
+        b=GO+H/CWI9uhw7+FjTpGPxjjVkWbpc4uWrkIxE6vitCwM1oYVdwLkv4FjLosBUiTqDxJClP
+        3S20fqdVR0jMb5Y3TZAQ5ko37jUFXaVBgo0O/Ko+NBf8j4sD02WF0vRAoZw7E7oEpsbss7
+        eTMsmWqVaKtJuQYu6i3pPPHkv35xG3k=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-278--aYKHYxYNmeTAMcEJ0wepg-1; Sat, 09 Apr 2022 09:00:28 -0400
+X-MC-Unique: -aYKHYxYNmeTAMcEJ0wepg-1
+Received: by mail-qt1-f198.google.com with SMTP id b10-20020ac801ca000000b002e1cfb25db9so9793753qtg.1
+        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 06:00:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Pi4pYQTNYCuF2Y8MBQqcWvYBPADTg7R4hnusPThr2oY=;
+        b=OqeYj8qLpXPv1+VnsMbLTJEniFEqB6udR6RzZRjZmFXCDv+6syKGruirH6gQA4NqqW
+         u3+7JJz9vFQiTW4NYWbBFhtMgdv2YbAPGr2EIsxhwt6TqP8AiSVofSUyE3L1rXmJUN0p
+         fRQAHKQ5c7HfDJXkkUbKKFXRxwum51TkBfbltz6l73JV3xOYfLUfKNFJaNcvADsB023I
+         zZ+gVrYDsR4t8UgQJ58Za+lsioseVFRI7UCHhbew3HEP6BCXCWWCLpI0azjpv6h50e07
+         Wz7VaK3wxWAd5gn+N3uS9zrTVx2YzqTzIiRjBVTwByPzInY30ga20FYcma2dLaIBetdZ
+         nh5A==
+X-Gm-Message-State: AOAM530YqvDNTSBZcPuH6zQOmddK3Hj7SnSuSG/BEmnjg3PmMnfeEtwD
+        mv99KPSRA1cB1UWHSBXnpN5k8bsRh8Xo1cpGfrAQYSY8c7EazwfKg+qekX5p2E3P6RprMl8jU8h
+        A3fmA5+hMJ8qgjeeNR0tMF090
+X-Received: by 2002:a05:620a:f03:b0:67e:1e38:3a90 with SMTP id v3-20020a05620a0f0300b0067e1e383a90mr15707029qkl.442.1649509227400;
+        Sat, 09 Apr 2022 06:00:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyiWGKGegbZUryXgoDbOVNltQJuqFvoqURUtghXwG+4Ot6d+KTA+M614leRjmBRJgRVliPdwg==
+X-Received: by 2002:a05:620a:f03:b0:67e:1e38:3a90 with SMTP id v3-20020a05620a0f0300b0067e1e383a90mr15706985qkl.442.1649509226925;
+        Sat, 09 Apr 2022 06:00:26 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id c10-20020ac87dca000000b002e1db1b7b10sm20782197qte.25.2022.04.09.06.00.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 Apr 2022 06:00:25 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     heikki.krogerus@linux.intel.com, gregkh@linuxfoundation.org,
+        nathan@kernel.org, ndesaulniers@google.com, sven@svenpeter.dev,
+        alyssa@rosenzweig.io, marcan@marcan.st, martink@posteo.de,
+        saranya.gopal@intel.com
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
+Subject: [PATCH] usb: typec: tipd: improve handling of failures in interrupt handlers
+Date:   Sat,  9 Apr 2022 09:00:13 -0400
+Message-Id: <20220409130013.1474412-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220409050423.GA265355@yilunxu-OptiPlex-7050>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 01:04:23PM +0800, Xu Yilun wrote:
-> On Thu, Apr 07, 2022 at 04:36:56PM +0300, Ivan Bornyakov wrote:
-> > 
-> > ... snip ...
-> > 
-> > @@ -148,12 +149,10 @@ static int fpga_mgr_write_init_buf(struct fpga_manager *mgr,
-> >  	int ret;
-> >  
-> >  	mgr->state = FPGA_MGR_STATE_WRITE_INIT;
-> > -	if (!mgr->mops->initial_header_size)
-> > -		ret = fpga_mgr_write_init(mgr, info, NULL, 0);
-> > -	else
-> > -		ret = fpga_mgr_write_init(
-> > -		    mgr, info, buf, min(mgr->mops->initial_header_size, count));
-> > +	if (mgr->mops->initial_header_size)
-> > +		count = min(mgr->mops->initial_header_size, count);
-> >  
-> > +	ret = fpga_mgr_write_init(mgr, info, buf, count);
-> 
-> Here we pass the whole buffer for write_init(). Maybe it works for mapped buf,
-> but still doesn't work for sg buf.
-> 
-> It is also inefficient if we change to map and copy all sg buffers just for
-> write_init().
-> 
-> We could discuss on the solution.
-> 
-> My quick mind is we introduce an optional fpga_manager_ops.parse_header()
-> callback, and a header_size (dynamic header size) field in
-> fpga_image_info. FPGA core starts with mapping a buf of initial_header_size
-> for parse_header(), let the drivers decide the dynamic header_size.
-> 
-> The parse_header() could be called several times with updated dynamic
-> header_size, if drivers doesn't get enough buffer for final decision and
-> return -EAGAIN.
-> 
-> Then write_init() be called with the final dynamic header size.
-> 
-> For mapped buffer, just passing the whole buffer for write_init() is
-> fine.
-> 
+clang static analysis reports this representative issue
+core.c:516:6: warning: Branch condition evaluates
+  to a garbage value
+  if (event)
+      ^~~~~
 
-Ok, that's sounds reasonable. Should we pass PAGE_SIZE of a buffer to
-the parse_header() if initial_header_size is not set? The other option
-would be to make initial_header_size to be mandatory for usage of
-parse_header().
+In cd321x_interrupt(), a successful call to
+tps6598x_read64() is the only way event is set,
+and if a failure happens the irq should not be
+reported as handled.
 
-> > 
-> > ... snip ...
-> > 
-> > @@ -98,6 +101,8 @@ struct fpga_image_info {
-> >  	struct sg_table *sgt;
-> >  	const char *buf;
-> >  	size_t count;
-> > +	size_t bitstream_start;
-> 
-> How about we name it header_size?
-> 
-> > +	size_t bitstream_size;
-> 
-> And how about data_size?
-> 
+Instead of initializing event, rework the
+usage of ret by initializing it to IRQ_NONE
+and then setting it when event is known to
+be not zero.  This removes the if-statement
+before the return.
 
-Sure, I don't mind.
+tps6598x_interrupt() is similar.
+
+Fixes: 0a4c005bd171 ("usb: typec: driver for TI TPS6598x USB Power Delivery controllers")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/usb/typec/tipd/core.c | 24 +++++++++++-------------
+ 1 file changed, 11 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/usb/typec/tipd/core.c b/drivers/usb/typec/tipd/core.c
+index 16b4560216ba..88a20cc15da4 100644
+--- a/drivers/usb/typec/tipd/core.c
++++ b/drivers/usb/typec/tipd/core.c
+@@ -478,12 +478,11 @@ static irqreturn_t cd321x_interrupt(int irq, void *data)
+ 	struct tps6598x *tps = data;
+ 	u64 event;
+ 	u32 status;
+-	int ret;
++	int ret = IRQ_NONE;
+ 
+ 	mutex_lock(&tps->lock);
+ 
+-	ret = tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event);
+-	if (ret) {
++	if (tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event)) {
+ 		dev_err(tps->dev, "%s: failed to read events\n", __func__);
+ 		goto err_unlock;
+ 	}
+@@ -492,6 +491,8 @@ static irqreturn_t cd321x_interrupt(int irq, void *data)
+ 	if (!event)
+ 		goto err_unlock;
+ 
++	ret = IRQ_HANDLED;
++
+ 	if (!tps6598x_read_status(tps, &status))
+ 		goto err_clear_ints;
+ 
+@@ -513,9 +514,7 @@ static irqreturn_t cd321x_interrupt(int irq, void *data)
+ err_unlock:
+ 	mutex_unlock(&tps->lock);
+ 
+-	if (event)
+-		return IRQ_HANDLED;
+-	return IRQ_NONE;
++	return ret;
+ }
+ 
+ static irqreturn_t tps6598x_interrupt(int irq, void *data)
+@@ -524,13 +523,12 @@ static irqreturn_t tps6598x_interrupt(int irq, void *data)
+ 	u64 event1;
+ 	u64 event2;
+ 	u32 status;
+-	int ret;
++	int ret = IRQ_NONE;
+ 
+ 	mutex_lock(&tps->lock);
+ 
+-	ret = tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event1);
+-	ret |= tps6598x_read64(tps, TPS_REG_INT_EVENT2, &event2);
+-	if (ret) {
++	if (tps6598x_read64(tps, TPS_REG_INT_EVENT1, &event1) ||
++	    tps6598x_read64(tps, TPS_REG_INT_EVENT2, &event2)) {
+ 		dev_err(tps->dev, "%s: failed to read events\n", __func__);
+ 		goto err_unlock;
+ 	}
+@@ -539,6 +537,8 @@ static irqreturn_t tps6598x_interrupt(int irq, void *data)
+ 	if (!(event1 | event2))
+ 		goto err_unlock;
+ 
++	ret = IRQ_HANDLED;
++
+ 	if (!tps6598x_read_status(tps, &status))
+ 		goto err_clear_ints;
+ 
+@@ -561,9 +561,7 @@ static irqreturn_t tps6598x_interrupt(int irq, void *data)
+ err_unlock:
+ 	mutex_unlock(&tps->lock);
+ 
+-	if (event1 | event2)
+-		return IRQ_HANDLED;
+-	return IRQ_NONE;
++	return ret;
+ }
+ 
+ static int tps6598x_check_mode(struct tps6598x *tps)
+-- 
+2.27.0
 
