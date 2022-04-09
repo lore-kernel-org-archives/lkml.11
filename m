@@ -2,93 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D37C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 13:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D482C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 13:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242145AbiDINbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 09:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56608 "EHLO
+        id S242166AbiDINcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 09:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242114AbiDINbH (ORCPT
+        with ESMTP id S241119AbiDINcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 09:31:07 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB93FB0A77;
-        Sat,  9 Apr 2022 06:29:00 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 774345feafbd1fe9; Sat, 9 Apr 2022 15:28:59 +0200
-Received: from kreacher.localnet (89-77-51-84.dynamic.chello.pl [89.77.51.84])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id 7BE1266BCD0;
-        Sat,  9 Apr 2022 15:28:58 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux PCI <linux-pci@vger.kernel.org>
-Cc:     Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH v1 3/7] PCI/PM: Rearrange pci_update_current_state()
-Date:   Sat, 09 Apr 2022 15:08:39 +0200
-Message-ID: <3191989.aeNJFYEL58@kreacher>
-In-Reply-To: <4419002.LvFx2qVVIh@kreacher>
-References: <4419002.LvFx2qVVIh@kreacher>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 89.77.51.84
-X-CLIENT-HOSTNAME: 89-77-51-84.dynamic.chello.pl
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudekvddgfeelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpedvjeelgffhiedukedtleekkedvudfggefhgfegjefgueekjeelvefggfdvledutdenucfkphepkeelrdejjedrhedurdekgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpeekledrjeejrdehuddrkeegpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeehpdhrtghpthhtoheplhhinhhugidqphgtihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhpmhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehhvghlghgrrghssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehmihhkrgdrfigvshht
- vghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhm
-X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
+        Sat, 9 Apr 2022 09:32:20 -0400
+Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [85.215.255.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131BCBF977;
+        Sat,  9 Apr 2022 06:30:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649511007;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=oAzQjHGereel9cPw5YcrcnatGr4FxuPzR5R8fQE+Qsw=;
+    b=E0VaIi6HW92DX1zBa1ilMGgsFIrhHBybVs2B8dkjbXNufksopLFa4E5Fko9624RXNf
+    ubOPIpjB3CQ571PaR3de5sSfqwhVWQwVVr5BvmsQCRNTvtIl/sOJq8xQbi3vcIZa6mo+
+    wW6US+Fw+u3sdhHvmQ9q1Lkg38/rsCdkxHA6NXtMRpg/KB1ZHNTWFmb1uJlPt5xweMQU
+    NVjM5jj+JtA1PS/m863Utd/fbhyTCE+6rESWr69M3O0JC+3hCpoYFRrvnFm+Cm7fQ81e
+    3jaMWebBcn+LoAvobsDTWsr6CLXFi1Gd2099daDD7i0B3dS7UfqSwm3dYYfHQ7+IdvnR
+    M0Zw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7wpz8NIGH/jrwDepmg=="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+    by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
+    with ESMTPSA id k708cfy39DU7uWc
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Sat, 9 Apr 2022 15:30:07 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
+Subject: Re: [PATCH 03/18] MIPS: DTS: jz4780: fix tcu timer as reported by
+ dtbscheck
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <2729b85b-1c54-d446-baf4-2c41bb04b3b2@linaro.org>
+Date:   Sat, 9 Apr 2022 15:30:06 +0200
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, letux-kernel@openphoenux.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <47A20D89-9E6D-4121-A162-76C545904BE7@goldelico.com>
+References: <cover.1649443080.git.hns@goldelico.com>
+ <c48277625f0ab5afc86d89deb1b87537e9c592f6.1649443080.git.hns@goldelico.com>
+ <e5ea96d8-f8c9-b925-04ee-81e80e30a5d0@linaro.org>
+ <A023438A-B8A8-4F91-BA25-7BE9A76C6730@goldelico.com>
+ <ef1674e5-2347-fbb4-52c8-5170faa84690@linaro.org>
+ <9BE666F8-123E-4062-88F8-D266CCCAC43B@goldelico.com>
+ <2729b85b-1c54-d446-baf4-2c41bb04b3b2@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: Apple Mail (2.3445.104.21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-
-Save one config space access in pci_update_current_state() by
-testing the retireved PCI_PM_CTRL register value against
-PCI_POSSIBLE_ERROR() instead of invoking pci_device_is_present()
-separately.
-
-While at it, drop a pair of unnecessary parens.
-
-No expected functional impact.
-
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- drivers/pci/pci.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
-Index: linux-pm/drivers/pci/pci.c
-===================================================================
---- linux-pm.orig/drivers/pci/pci.c
-+++ linux-pm/drivers/pci/pci.c
-@@ -1201,14 +1201,17 @@ static int pci_raw_set_power_state(struc
-  */
- void pci_update_current_state(struct pci_dev *dev, pci_power_t state)
- {
--	if (platform_pci_get_power_state(dev) == PCI_D3cold ||
--	    !pci_device_is_present(dev)) {
-+	if (platform_pci_get_power_state(dev) == PCI_D3cold) {
- 		dev->current_state = PCI_D3cold;
- 	} else if (dev->pm_cap) {
- 		u16 pmcsr;
- 
- 		pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
--		dev->current_state = (pmcsr & PCI_PM_CTRL_STATE_MASK);
-+		if (PCI_POSSIBLE_ERROR(pmcsr)) {
-+			dev->current_state = PCI_D3cold;
-+			return;
-+		}
-+		dev->current_state = pmcsr & PCI_PM_CTRL_STATE_MASK;
- 	} else {
- 		dev->current_state = state;
- 	}
 
 
+> Am 09.04.2022 um 15:22 schrieb Krzysztof Kozlowski =
+<krzysztof.kozlowski@linaro.org>:
+>=20
+> On 09/04/2022 15:18, H. Nikolaus Schaller wrote:
+>>=20
+>> Well, again, my assumption is that bindings and .yaml files formally =
+describe the actual
+>> hardware components. And they have been reviewed.
+>=20
+> The bindings try to describe it. They are pretty often incomplete or
+> might have mistakes.
+
+Indeed they have. But what If I have found that they are right. Why =
+should I comment on that?
+It should at least be the default assumption.
+
+> The true reason of doing a change is not that some
+> tool tells you "do like this". The true reason is because the change
+> properly describes hardware.
+>=20
+>>=20
+>> So they have a higher level of authority than any current driver or =
+.dts implementation.
+>> Unless there is evidence that the bindings are wrong.
+>=20
+> This is just a tool, not an authority.
+>=20
+>> I.e. if the bindings feel right why is there a need to argue for =
+that?
+>=20
+> Because doing things "just because bindings told me" hides the true
+> explanation and makes the code review, code management more difficult.
+
+Well, I always wonder why schemas were done that way they were done
+since their introduction. If I would write down commetns every time =
+nobody
+would be happy...
+
+> Later person will look at this and wonder why this was done like this.
+> If you write "because some tool me" this is not a good help. But if =
+you
+> write "because hardware is like this exactly" this is proper comment.
+>=20
+>>=20
+>> It is like test-driven development model. There you have to write =
+code that passes
+>> the tests. Not argue against the tests.
+>=20
+> Again, don't focus on the tool... Tool is just a tool...
+
+A tool I can't ignore because Rob's robot tells me it is "the truth"...
+
+BR and thanks,
+Nikolaus
 
