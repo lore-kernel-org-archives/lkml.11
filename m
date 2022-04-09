@@ -2,871 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C68F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 17:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 206BEC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 17:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242801AbiDIRN7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 13:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36206 "EHLO
+        id S242809AbiDIRU2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 13:20:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231668AbiDIRN6 (ORCPT
+        with ESMTP id S231668AbiDIRU0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 13:13:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 304B622294
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 10:11:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649524308;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=5bsKkC5x9otwYWHiVTHS7Nov4wTBET6XicNPwItE6hQ=;
-        b=Zr67rbt/9u1d7LI6kHJu5Hunmf9GPNV5cLtYjCUyuywY8Uj2Onrchp+915ezqu0dbPqZmx
-        reAtM9b/SzRnc0D53sqBd0IHTNDptEZc6gcaAMnlVKBWaflEAWYut0Ix4DWWanoAhy1tXH
-        LMXNXYBcCz1PNfLz2BKH62N2asP1qSw=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-424-TrXcFJqnOZOTam3fSija3g-1; Sat, 09 Apr 2022 13:11:45 -0400
-X-MC-Unique: TrXcFJqnOZOTam3fSija3g-1
-Received: by mail-qk1-f197.google.com with SMTP id h8-20020a05620a244800b00699fb28d5e4so5065676qkn.22
-        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 10:11:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5bsKkC5x9otwYWHiVTHS7Nov4wTBET6XicNPwItE6hQ=;
-        b=5m14tgRdYahQI1QUuqIL3mklWKRMERRW4KmlsgHAcw6EWuPs5SR1ZuiSUlcyemzEMV
-         RoChjjug1VpVlaAEeVxnJ9LovRLaVflo5C/BBxzbiyew/fpMPRhxfsy4W/wTQbYhkwnx
-         XwOVmaDL7JnfuhT51ZstvXXWYIJb1eeG7TFE3rD7Bvy0jsq5mIrcfD/Z2RZ3/0JS/YZH
-         CyLickKFr8lMYsJ5OXvPadbDchuGmwxi1HlEEqt5EH8pP3J+UE6PiQTPb9Fpo365Nin2
-         bBXK1qx8cpDuAIfbsdBd0gFfs2i6zeh7yOZ7oxq19ll5nDj5Qp0ruSpHKQCpCigpYgoE
-         9gAg==
-X-Gm-Message-State: AOAM532ei2ebQQjLrLQfXZRQGO/L+szckKpsADij2ow/CBBey7c5WVmD
-        Wr9tVve+BKzHAtbtuekPDuO8AvRWtYCfsijfe3jzUOVCO9ltawP/B4OMf/bkXJmEj4a3YsOO5j4
-        tw2qDvXYBtNh2O0WkuuWy0uUn
-X-Received: by 2002:a05:6214:e64:b0:441:7bd1:29ba with SMTP id jz4-20020a0562140e6400b004417bd129bamr20934392qvb.29.1649524304327;
-        Sat, 09 Apr 2022 10:11:44 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy2qy2V+CDW6JQxpiguOgesFoRSbkHzNxY+hub+gVlctOJMheIjlOwGVGcI9OvkrFKHpZuUBA==
-X-Received: by 2002:a05:6214:e64:b0:441:7bd1:29ba with SMTP id jz4-20020a0562140e6400b004417bd129bamr20934375qvb.29.1649524304017;
-        Sat, 09 Apr 2022 10:11:44 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id g21-20020ac85815000000b002e06e2623a7sm19927734qtg.0.2022.04.09.10.11.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Apr 2022 10:11:43 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     alexander.deucher@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch
-Cc:     linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] drm/radeon: remove r600_blit_shaders.[c|h]
-Date:   Sat,  9 Apr 2022 13:11:31 -0400
-Message-Id: <20220409171131.1599090-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Sat, 9 Apr 2022 13:20:26 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263531DB3EA
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 10:18:16 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KbMJl35DMz9sTV;
+        Sat,  9 Apr 2022 19:18:15 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id bwlwJaneBgAK; Sat,  9 Apr 2022 19:18:15 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KbMJl1rM1z9sT3;
+        Sat,  9 Apr 2022 19:18:15 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 26BCB8B7B0;
+        Sat,  9 Apr 2022 19:18:15 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id i3QvR5jOCzKU; Sat,  9 Apr 2022 19:18:15 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.203.53])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8BD5C8B765;
+        Sat,  9 Apr 2022 19:18:14 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 239HI81h833218
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Sat, 9 Apr 2022 19:18:08 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 239HI7bk833217;
+        Sat, 9 Apr 2022 19:18:07 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        akpm@linux-foundation.org
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-mm@kvack.org, Nicholas Piggin <npiggin@gmail.com>
+Subject: [PATCH v10 06/13] powerpc/mm: Make slice specific to book3s/64
+Date:   Sat,  9 Apr 2022 19:17:30 +0200
+Message-Id: <4a0d74ef1966a5902b5fd4ac4b513a760a6d675a.1649523076.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1649523076.git.christophe.leroy@csgroup.eu>
+References: <cover.1649523076.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1649524639; l=7647; s=20211009; h=from:subject:message-id; bh=j/j/xG7b+z/sfEpX5tyjExiFy1bhod9uj4UTTdJjUwk=; b=Ap8H4wrtMmIVzsTR2bz4mCNUuEn1AzQn8NLygFoytZK1bPVOn4cfEQ2vmm5E6nr5ybqT/upmHRdT 2BYzKcxRD5RxmEYIj0va0vXG/mU8yV3WowZ5tOQziHnG8oJiPc4o
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The only use of the global variables in r600_blit_shaders.c
-were in the old drivers/gpu/drm/radeon/r600_blit.c
-This file was removed in
-commit 8333f607a631 ("drm/radeon: remove UMS support")
+Since commit 555904d07eef ("powerpc/8xx: MM_SLICE is not needed
+anymore") only book3s/64 selects CONFIG_PPC_MM_SLICES.
 
-So remove the r600_blit_shaders.[c|h] files
+Move slice.c into mm/book3s64/
 
-Signed-off-by: Tom Rix <trix@redhat.com>
+Move necessary stuff in asm/book3s/64/slice.h and
+remove asm/slice.h
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
 ---
- drivers/gpu/drm/radeon/Makefile            |   2 +-
- drivers/gpu/drm/radeon/r600_blit_shaders.c | 719 ---------------------
- drivers/gpu/drm/radeon/r600_blit_shaders.h |  38 --
- 3 files changed, 1 insertion(+), 758 deletions(-)
- delete mode 100644 drivers/gpu/drm/radeon/r600_blit_shaders.c
- delete mode 100644 drivers/gpu/drm/radeon/r600_blit_shaders.h
+ arch/powerpc/include/asm/book3s/64/mmu-hash.h |  1 +
+ arch/powerpc/include/asm/book3s/64/slice.h    | 18 ++++++++
+ arch/powerpc/include/asm/page.h               |  1 -
+ arch/powerpc/include/asm/slice.h              | 46 -------------------
+ arch/powerpc/mm/Makefile                      |  1 -
+ arch/powerpc/mm/book3s64/Makefile             |  1 +
+ arch/powerpc/mm/{ => book3s64}/slice.c        |  2 -
+ arch/powerpc/mm/nohash/mmu_context.c          |  9 ----
+ arch/powerpc/mm/nohash/tlb.c                  |  4 --
+ 9 files changed, 20 insertions(+), 63 deletions(-)
+ delete mode 100644 arch/powerpc/include/asm/slice.h
+ rename arch/powerpc/mm/{ => book3s64}/slice.c (99%)
 
-diff --git a/drivers/gpu/drm/radeon/Makefile b/drivers/gpu/drm/radeon/Makefile
-index 2425a3612d6c..4deedaacd655 100644
---- a/drivers/gpu/drm/radeon/Makefile
-+++ b/drivers/gpu/drm/radeon/Makefile
-@@ -39,7 +39,7 @@ radeon-y += radeon_device.o radeon_asic.o radeon_kms.o \
- 	radeon_clocks.o radeon_fb.o radeon_gem.o radeon_ring.o radeon_irq_kms.o \
- 	radeon_cs.o radeon_bios.o radeon_benchmark.o r100.o r300.o r420.o \
- 	rs400.o rs600.o rs690.o rv515.o r520.o r600.o rv770.o radeon_test.o \
--	r200.o radeon_legacy_tv.o r600_cs.o r600_blit_shaders.o \
-+	r200.o radeon_legacy_tv.o r600_cs.o \
- 	radeon_pm.o atombios_dp.o r600_hdmi.o dce3_1_afmt.o \
- 	evergreen.o evergreen_cs.o evergreen_blit_shaders.o \
- 	evergreen_hdmi.o radeon_trace_points.o ni.o \
-diff --git a/drivers/gpu/drm/radeon/r600_blit_shaders.c b/drivers/gpu/drm/radeon/r600_blit_shaders.c
+diff --git a/arch/powerpc/include/asm/book3s/64/mmu-hash.h b/arch/powerpc/include/asm/book3s/64/mmu-hash.h
+index 21f780942911..1c4eebbc69c9 100644
+--- a/arch/powerpc/include/asm/book3s/64/mmu-hash.h
++++ b/arch/powerpc/include/asm/book3s/64/mmu-hash.h
+@@ -18,6 +18,7 @@
+  * complete pgtable.h but only a portion of it.
+  */
+ #include <asm/book3s/64/pgtable.h>
++#include <asm/book3s/64/slice.h>
+ #include <asm/task_size_64.h>
+ #include <asm/cpu_has_feature.h>
+ 
+diff --git a/arch/powerpc/include/asm/book3s/64/slice.h b/arch/powerpc/include/asm/book3s/64/slice.h
+index f0d3194ba41b..5b0f7105bc8b 100644
+--- a/arch/powerpc/include/asm/book3s/64/slice.h
++++ b/arch/powerpc/include/asm/book3s/64/slice.h
+@@ -2,6 +2,8 @@
+ #ifndef _ASM_POWERPC_BOOK3S_64_SLICE_H
+ #define _ASM_POWERPC_BOOK3S_64_SLICE_H
+ 
++#ifndef __ASSEMBLY__
++
+ #define SLICE_LOW_SHIFT		28
+ #define SLICE_LOW_TOP		(0x100000000ul)
+ #define SLICE_NUM_LOW		(SLICE_LOW_TOP >> SLICE_LOW_SHIFT)
+@@ -13,4 +15,20 @@
+ 
+ #define SLB_ADDR_LIMIT_DEFAULT	DEFAULT_MAP_WINDOW_USER64
+ 
++struct mm_struct;
++
++unsigned long slice_get_unmapped_area(unsigned long addr, unsigned long len,
++				      unsigned long flags, unsigned int psize,
++				      int topdown);
++
++unsigned int get_slice_psize(struct mm_struct *mm, unsigned long addr);
++
++void slice_set_range_psize(struct mm_struct *mm, unsigned long start,
++			   unsigned long len, unsigned int psize);
++
++void slice_init_new_context_exec(struct mm_struct *mm);
++void slice_setup_new_exec(void);
++
++#endif /* __ASSEMBLY__ */
++
+ #endif /* _ASM_POWERPC_BOOK3S_64_SLICE_H */
+diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/page.h
+index 254687258f42..62e0c6f12869 100644
+--- a/arch/powerpc/include/asm/page.h
++++ b/arch/powerpc/include/asm/page.h
+@@ -329,6 +329,5 @@ static inline unsigned long kaslr_offset(void)
+ 
+ #include <asm-generic/memory_model.h>
+ #endif /* __ASSEMBLY__ */
+-#include <asm/slice.h>
+ 
+ #endif /* _ASM_POWERPC_PAGE_H */
+diff --git a/arch/powerpc/include/asm/slice.h b/arch/powerpc/include/asm/slice.h
 deleted file mode 100644
-index 443cbe59b274..000000000000
---- a/drivers/gpu/drm/radeon/r600_blit_shaders.c
+index 0bdd9c62eca0..000000000000
+--- a/arch/powerpc/include/asm/slice.h
 +++ /dev/null
-@@ -1,719 +0,0 @@
--/*
-- * Copyright 2009 Advanced Micro Devices, Inc.
-- *
-- * Permission is hereby granted, free of charge, to any person obtaining a
-- * copy of this software and associated documentation files (the "Software"),
-- * to deal in the Software without restriction, including without limitation
-- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
-- * and/or sell copies of the Software, and to permit persons to whom the
-- * Software is furnished to do so, subject to the following conditions:
-- *
-- * The above copyright notice and this permission notice (including the next
-- * paragraph) shall be included in all copies or substantial portions of the
-- * Software.
-- *
-- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-- * THE COPYRIGHT HOLDER(S) AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-- * DEALINGS IN THE SOFTWARE.
-- *
-- * Authors:
-- *     Alex Deucher <alexander.deucher@amd.com>
-- */
--
--#include <linux/bug.h>
--#include <linux/types.h>
--#include <linux/kernel.h>
--
--/*
-- * R6xx+ cards need to use the 3D engine to blit data which requires
-- * quite a bit of hw state setup.  Rather than pull the whole 3D driver
-- * (which normally generates the 3D state) into the DRM, we opt to use
-- * statically generated state tables.  The register state and shaders
-- * were hand generated to support blitting functionality.  See the 3D
-- * driver or documentation for descriptions of the registers and
-- * shader instructions.
-- */
--
--const u32 r6xx_default_state[] =
--{
--	0xc0002400, /* START_3D_CMDBUF */
--	0x00000000,
--
--	0xc0012800, /* CONTEXT_CONTROL */
--	0x80000000,
--	0x80000000,
--
--	0xc0016800,
--	0x00000010,
--	0x00008000, /* WAIT_UNTIL */
--
--	0xc0016800,
--	0x00000542,
--	0x07000003, /* TA_CNTL_AUX */
--
--	0xc0016800,
--	0x000005c5,
--	0x00000000, /* VC_ENHANCE */
--
--	0xc0016800,
--	0x00000363,
--	0x00000000, /* SQ_DYN_GPR_CNTL_PS_FLUSH_REQ */
--
--	0xc0016800,
--	0x0000060c,
--	0x82000000, /* DB_DEBUG */
--
--	0xc0016800,
--	0x0000060e,
--	0x01020204, /* DB_WATERMARKS */
--
--	0xc0026f00,
--	0x00000000,
--	0x00000000, /* SQ_VTX_BASE_VTX_LOC */
--	0x00000000, /* SQ_VTX_START_INST_LOC */
--
--	0xc0096900,
--	0x0000022a,
--	0x00000000, /* SQ_ESGS_RING_ITEMSIZE */
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--
--	0xc0016900,
--	0x00000004,
--	0x00000000, /* DB_DEPTH_INFO */
--
--	0xc0026900,
--	0x0000000a,
--	0x00000000, /* DB_STENCIL_CLEAR */
--	0x00000000, /* DB_DEPTH_CLEAR */
--
--	0xc0016900,
--	0x00000200,
--	0x00000000, /* DB_DEPTH_CONTROL */
--
--	0xc0026900,
--	0x00000343,
--	0x00000060, /* DB_RENDER_CONTROL */
--	0x00000040, /* DB_RENDER_OVERRIDE */
--
--	0xc0016900,
--	0x00000351,
--	0x0000aa00, /* DB_ALPHA_TO_MASK */
--
--	0xc00f6900,
--	0x00000100,
--	0x00000800, /* VGT_MAX_VTX_INDX */
--	0x00000000, /* VGT_MIN_VTX_INDX */
--	0x00000000, /* VGT_INDX_OFFSET */
--	0x00000000, /* VGT_MULTI_PRIM_IB_RESET_INDX */
--	0x00000000, /* SX_ALPHA_TEST_CONTROL */
--	0x00000000, /* CB_BLEND_RED */
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000, /* CB_FOG_RED */
--	0x00000000,
--	0x00000000,
--	0x00000000, /* DB_STENCILREFMASK */
--	0x00000000, /* DB_STENCILREFMASK_BF */
--	0x00000000, /* SX_ALPHA_REF */
--
--	0xc0046900,
--	0x0000030c,
--	0x01000000, /* CB_CLRCMP_CNTL */
--	0x00000000,
--	0x00000000,
--	0x00000000,
--
--	0xc0046900,
--	0x00000048,
--	0x3f800000, /* CB_CLEAR_RED */
--	0x00000000,
--	0x3f800000,
--	0x3f800000,
--
--	0xc0016900,
--	0x00000080,
--	0x00000000, /* PA_SC_WINDOW_OFFSET */
--
--	0xc00a6900,
--	0x00000083,
--	0x0000ffff, /* PA_SC_CLIP_RECT_RULE */
--	0x00000000, /* PA_SC_CLIPRECT_0_TL */
--	0x20002000,
--	0x00000000,
--	0x20002000,
--	0x00000000,
--	0x20002000,
--	0x00000000,
--	0x20002000,
--	0x00000000, /* PA_SC_EDGERULE */
--
--	0xc0406900,
--	0x00000094,
--	0x80000000, /* PA_SC_VPORT_SCISSOR_0_TL */
--	0x20002000, /* PA_SC_VPORT_SCISSOR_0_BR */
--	0x80000000, /* PA_SC_VPORT_SCISSOR_1_TL */
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x00000000, /* PA_SC_VPORT_ZMIN_0 */
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--
--	0xc0026900,
--	0x00000292,
--	0x00000000, /* PA_SC_MPASS_PS_CNTL */
--	0x00004010, /* PA_SC_MODE_CNTL */
--
--	0xc0096900,
--	0x00000300,
--	0x00000000, /* PA_SC_LINE_CNTL */
--	0x00000000, /* PA_SC_AA_CONFIG */
--	0x0000002d, /* PA_SU_VTX_CNTL */
--	0x3f800000, /* PA_CL_GB_VERT_CLIP_ADJ */
--	0x3f800000,
--	0x3f800000,
--	0x3f800000,
--	0x00000000, /* PA_SC_SAMPLE_LOCS_MCTX */
--	0x00000000,
--
--	0xc0016900,
--	0x00000312,
--	0xffffffff, /* PA_SC_AA_MASK */
--
--	0xc0066900,
--	0x0000037e,
--	0x00000000, /* PA_SU_POLY_OFFSET_DB_FMT_CNTL */
--	0x00000000, /* PA_SU_POLY_OFFSET_CLAMP */
--	0x00000000, /* PA_SU_POLY_OFFSET_FRONT_SCALE */
--	0x00000000, /* PA_SU_POLY_OFFSET_FRONT_OFFSET */
--	0x00000000, /* PA_SU_POLY_OFFSET_BACK_SCALE */
--	0x00000000, /* PA_SU_POLY_OFFSET_BACK_OFFSET */
--
--	0xc0046900,
--	0x000001b6,
--	0x00000000, /* SPI_INPUT_Z */
--	0x00000000, /* SPI_FOG_CNTL */
--	0x00000000, /* SPI_FOG_FUNC_SCALE */
--	0x00000000, /* SPI_FOG_FUNC_BIAS */
--
--	0xc0016900,
--	0x00000225,
--	0x00000000, /* SQ_PGM_START_FS */
--
--	0xc0016900,
--	0x00000229,
--	0x00000000, /* SQ_PGM_RESOURCES_FS */
--
--	0xc0016900,
--	0x00000237,
--	0x00000000, /* SQ_PGM_CF_OFFSET_FS */
--
--	0xc0026900,
--	0x000002a8,
--	0x00000000, /* VGT_INSTANCE_STEP_RATE_0 */
--	0x00000000, /* VGT_INSTANCE_STEP_RATE_1 */
--
--	0xc0116900,
--	0x00000280,
--	0x00000000, /* PA_SU_POINT_SIZE */
--	0x00000000, /* PA_SU_POINT_MINMAX */
--	0x00000008, /* PA_SU_LINE_CNTL */
--	0x00000000, /* PA_SC_LINE_STIPPLE */
--	0x00000000, /* VGT_OUTPUT_PATH_CNTL */
--	0x00000000, /* VGT_HOS_CNTL */
--	0x00000000, /* VGT_HOS_MAX_TESS_LEVEL */
--	0x00000000, /* VGT_HOS_MIN_TESS_LEVEL */
--	0x00000000, /* VGT_HOS_REUSE_DEPTH */
--	0x00000000, /* VGT_GROUP_PRIM_TYPE */
--	0x00000000, /* VGT_GROUP_FIRST_DECR */
--	0x00000000, /* VGT_GROUP_DECR */
--	0x00000000, /* VGT_GROUP_VECT_0_CNTL */
--	0x00000000, /* VGT_GROUP_VECT_1_CNTL */
--	0x00000000, /* VGT_GROUP_VECT_0_FMT_CNTL */
--	0x00000000, /* VGT_GROUP_VECT_1_FMT_CNTL */
--	0x00000000, /* VGT_GS_MODE */
--
--	0xc0016900,
--	0x000002a1,
--	0x00000000, /* VGT_PRIMITIVEID_EN */
--
--	0xc0016900,
--	0x000002a5,
--	0x00000000, /* VGT_MULTI_PRIM_ID_RESET_EN */
--
--	0xc0036900,
--	0x000002ac,
--	0x00000000, /* VGT_STRMOUT_EN */
--	0x00000000, /* VGT_REUSE_OFF */
--	0x00000000, /* VGT_VTX_CNT_EN */
--
--	0xc0016900,
--	0x000000d4,
--	0x00000000, /* SX_MISC */
--
--	0xc0016900,
--	0x000002c8,
--	0x00000000, /* VGT_STRMOUT_BUFFER_EN */
--
--	0xc0076900,
--	0x00000202,
--	0x00cc0000, /* CB_COLOR_CONTROL */
--	0x00000210, /* DB_SHADER_CNTL */
--	0x00010000, /* PA_CL_CLIP_CNTL */
--	0x00000244, /* PA_SU_SC_MODE_CNTL */
--	0x00000100, /* PA_CL_VTE_CNTL */
--	0x00000000, /* PA_CL_VS_OUT_CNTL */
--	0x00000000, /* PA_CL_NANINF_CNTL */
--
--	0xc0026900,
--	0x0000008e,
--	0x0000000f, /* CB_TARGET_MASK */
--	0x0000000f, /* CB_SHADER_MASK */
--
--	0xc0016900,
--	0x000001e8,
--	0x00000001, /* CB_SHADER_CONTROL */
--
--	0xc0016900,
--	0x00000185,
--	0x00000000, /* SPI_VS_OUT_ID_0 */
--
--	0xc0016900,
--	0x00000191,
--	0x00000b00, /* SPI_PS_INPUT_CNTL_0 */
--
--	0xc0056900,
--	0x000001b1,
--	0x00000000, /* SPI_VS_OUT_CONFIG */
--	0x00000000, /* SPI_THREAD_GROUPING */
--	0x00000001, /* SPI_PS_IN_CONTROL_0 */
--	0x00000000, /* SPI_PS_IN_CONTROL_1 */
--	0x00000000, /* SPI_INTERP_CONTROL_0 */
--
--	0xc0036e00, /* SET_SAMPLER */
--	0x00000000,
--	0x00000012,
--	0x00000000,
--	0x00000000,
--};
--
--const u32 r7xx_default_state[] =
--{
--	0xc0012800, /* CONTEXT_CONTROL */
--	0x80000000,
--	0x80000000,
--
--	0xc0016800,
--	0x00000010,
--	0x00008000, /* WAIT_UNTIL */
--
--	0xc0016800,
--	0x00000542,
--	0x07000002, /* TA_CNTL_AUX */
--
--	0xc0016800,
--	0x000005c5,
--	0x00000000, /* VC_ENHANCE */
--
--	0xc0016800,
--	0x00000363,
--	0x00004000, /* SQ_DYN_GPR_CNTL_PS_FLUSH_REQ */
--
--	0xc0016800,
--	0x0000060c,
--	0x00000000, /* DB_DEBUG */
--
--	0xc0016800,
--	0x0000060e,
--	0x00420204, /* DB_WATERMARKS */
--
--	0xc0026f00,
--	0x00000000,
--	0x00000000, /* SQ_VTX_BASE_VTX_LOC */
--	0x00000000, /* SQ_VTX_START_INST_LOC */
--
--	0xc0096900,
--	0x0000022a,
--	0x00000000, /* SQ_ESGS_RING_ITEMSIZE */
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--
--	0xc0016900,
--	0x00000004,
--	0x00000000, /* DB_DEPTH_INFO */
--
--	0xc0026900,
--	0x0000000a,
--	0x00000000, /* DB_STENCIL_CLEAR */
--	0x00000000, /* DB_DEPTH_CLEAR */
--
--	0xc0016900,
--	0x00000200,
--	0x00000000, /* DB_DEPTH_CONTROL */
--
--	0xc0026900,
--	0x00000343,
--	0x00000060, /* DB_RENDER_CONTROL */
--	0x00000000, /* DB_RENDER_OVERRIDE */
--
--	0xc0016900,
--	0x00000351,
--	0x0000aa00, /* DB_ALPHA_TO_MASK */
--
--	0xc0096900,
--	0x00000100,
--	0x00000800, /* VGT_MAX_VTX_INDX */
--	0x00000000, /* VGT_MIN_VTX_INDX */
--	0x00000000, /* VGT_INDX_OFFSET */
--	0x00000000, /* VGT_MULTI_PRIM_IB_RESET_INDX */
--	0x00000000, /* SX_ALPHA_TEST_CONTROL */
--	0x00000000, /* CB_BLEND_RED */
--	0x00000000,
--	0x00000000,
--	0x00000000,
--
--	0xc0036900,
--	0x0000010c,
--	0x00000000, /* DB_STENCILREFMASK */
--	0x00000000, /* DB_STENCILREFMASK_BF */
--	0x00000000, /* SX_ALPHA_REF */
--
--	0xc0046900,
--	0x0000030c, /* CB_CLRCMP_CNTL */
--	0x01000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--
--	0xc0016900,
--	0x00000080,
--	0x00000000, /* PA_SC_WINDOW_OFFSET */
--
--	0xc00a6900,
--	0x00000083,
--	0x0000ffff, /* PA_SC_CLIP_RECT_RULE */
--	0x00000000, /* PA_SC_CLIPRECT_0_TL */
--	0x20002000,
--	0x00000000,
--	0x20002000,
--	0x00000000,
--	0x20002000,
--	0x00000000,
--	0x20002000,
--	0xaaaaaaaa, /* PA_SC_EDGERULE */
--
--	0xc0406900,
--	0x00000094,
--	0x80000000, /* PA_SC_VPORT_SCISSOR_0_TL */
--	0x20002000, /* PA_SC_VPORT_SCISSOR_0_BR */
--	0x80000000, /* PA_SC_VPORT_SCISSOR_1_TL */
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x80000000,
--	0x20002000,
--	0x00000000, /* PA_SC_VPORT_ZMIN_0 */
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--	0x00000000,
--	0x3f800000,
--
--	0xc0026900,
--	0x00000292,
--	0x00000000, /* PA_SC_MPASS_PS_CNTL */
--	0x00514000, /* PA_SC_MODE_CNTL */
--
--	0xc0096900,
--	0x00000300,
--	0x00000000, /* PA_SC_LINE_CNTL */
--	0x00000000, /* PA_SC_AA_CONFIG */
--	0x0000002d, /* PA_SU_VTX_CNTL */
--	0x3f800000, /* PA_CL_GB_VERT_CLIP_ADJ */
--	0x3f800000,
--	0x3f800000,
--	0x3f800000,
--	0x00000000, /* PA_SC_SAMPLE_LOCS_MCTX */
--	0x00000000,
--
--	0xc0016900,
--	0x00000312,
--	0xffffffff, /* PA_SC_AA_MASK */
--
--	0xc0066900,
--	0x0000037e,
--	0x00000000, /* PA_SU_POLY_OFFSET_DB_FMT_CNTL */
--	0x00000000, /* PA_SU_POLY_OFFSET_CLAMP */
--	0x00000000, /* PA_SU_POLY_OFFSET_FRONT_SCALE */
--	0x00000000, /* PA_SU_POLY_OFFSET_FRONT_OFFSET */
--	0x00000000, /* PA_SU_POLY_OFFSET_BACK_SCALE */
--	0x00000000, /* PA_SU_POLY_OFFSET_BACK_OFFSET */
--
--	0xc0046900,
--	0x000001b6,
--	0x00000000, /* SPI_INPUT_Z */
--	0x00000000, /* SPI_FOG_CNTL */
--	0x00000000, /* SPI_FOG_FUNC_SCALE */
--	0x00000000, /* SPI_FOG_FUNC_BIAS */
--
--	0xc0016900,
--	0x00000225,
--	0x00000000, /* SQ_PGM_START_FS */
--
--	0xc0016900,
--	0x00000229,
--	0x00000000, /* SQ_PGM_RESOURCES_FS */
--
--	0xc0016900,
--	0x00000237,
--	0x00000000, /* SQ_PGM_CF_OFFSET_FS */
--
--	0xc0026900,
--	0x000002a8,
--	0x00000000, /* VGT_INSTANCE_STEP_RATE_0 */
--	0x00000000, /* VGT_INSTANCE_STEP_RATE_1 */
--
--	0xc0116900,
--	0x00000280,
--	0x00000000, /* PA_SU_POINT_SIZE */
--	0x00000000, /* PA_SU_POINT_MINMAX */
--	0x00000008, /* PA_SU_LINE_CNTL */
--	0x00000000, /* PA_SC_LINE_STIPPLE */
--	0x00000000, /* VGT_OUTPUT_PATH_CNTL */
--	0x00000000, /* VGT_HOS_CNTL */
--	0x00000000, /* VGT_HOS_MAX_TESS_LEVEL */
--	0x00000000, /* VGT_HOS_MIN_TESS_LEVEL */
--	0x00000000, /* VGT_HOS_REUSE_DEPTH */
--	0x00000000, /* VGT_GROUP_PRIM_TYPE */
--	0x00000000, /* VGT_GROUP_FIRST_DECR */
--	0x00000000, /* VGT_GROUP_DECR */
--	0x00000000, /* VGT_GROUP_VECT_0_CNTL */
--	0x00000000, /* VGT_GROUP_VECT_1_CNTL */
--	0x00000000, /* VGT_GROUP_VECT_0_FMT_CNTL */
--	0x00000000, /* VGT_GROUP_VECT_1_FMT_CNTL */
--	0x00000000, /* VGT_GS_MODE */
--
--	0xc0016900,
--	0x000002a1,
--	0x00000000, /* VGT_PRIMITIVEID_EN */
--
--	0xc0016900,
--	0x000002a5,
--	0x00000000, /* VGT_MULTI_PRIM_ID_RESET_EN */
--
--	0xc0036900,
--	0x000002ac,
--	0x00000000, /* VGT_STRMOUT_EN */
--	0x00000000, /* VGT_REUSE_OFF */
--	0x00000000, /* VGT_VTX_CNT_EN */
--
--	0xc0016900,
--	0x000000d4,
--	0x00000000, /* SX_MISC */
--
--	0xc0016900,
--	0x000002c8,
--	0x00000000, /* VGT_STRMOUT_BUFFER_EN */
--
--	0xc0076900,
--	0x00000202,
--	0x00cc0000, /* CB_COLOR_CONTROL */
--	0x00000210, /* DB_SHADER_CNTL */
--	0x00010000, /* PA_CL_CLIP_CNTL */
--	0x00000244, /* PA_SU_SC_MODE_CNTL */
--	0x00000100, /* PA_CL_VTE_CNTL */
--	0x00000000, /* PA_CL_VS_OUT_CNTL */
--	0x00000000, /* PA_CL_NANINF_CNTL */
--
--	0xc0026900,
--	0x0000008e,
--	0x0000000f, /* CB_TARGET_MASK */
--	0x0000000f, /* CB_SHADER_MASK */
--
--	0xc0016900,
--	0x000001e8,
--	0x00000001, /* CB_SHADER_CONTROL */
--
--	0xc0016900,
--	0x00000185,
--	0x00000000, /* SPI_VS_OUT_ID_0 */
--
--	0xc0016900,
--	0x00000191,
--	0x00000b00, /* SPI_PS_INPUT_CNTL_0 */
--
--	0xc0056900,
--	0x000001b1,
--	0x00000000, /* SPI_VS_OUT_CONFIG */
--	0x00000001, /* SPI_THREAD_GROUPING */
--	0x00000001, /* SPI_PS_IN_CONTROL_0 */
--	0x00000000, /* SPI_PS_IN_CONTROL_1 */
--	0x00000000, /* SPI_INTERP_CONTROL_0 */
--
--	0xc0036e00, /* SET_SAMPLER */
--	0x00000000,
--	0x00000012,
--	0x00000000,
--	0x00000000,
--};
--
--/* same for r6xx/r7xx */
--const u32 r6xx_vs[] =
--{
--	0x00000004,
--	0x81000000,
--	0x0000203c,
--	0x94000b08,
--	0x00004000,
--	0x14200b1a,
--	0x00000000,
--	0x00000000,
--	0x3c000000,
--	0x68cd1000,
--#ifdef __BIG_ENDIAN
--	0x000a0000,
--#else
--	0x00080000,
+@@ -1,46 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef _ASM_POWERPC_SLICE_H
+-#define _ASM_POWERPC_SLICE_H
+-
+-#ifdef CONFIG_PPC_BOOK3S_64
+-#include <asm/book3s/64/slice.h>
 -#endif
--	0x00000000,
--};
 -
--const u32 r6xx_ps[] =
--{
--	0x00000002,
--	0x80800000,
--	0x00000000,
--	0x94200688,
--	0x00000010,
--	0x000d1000,
--	0xb0800000,
--	0x00000000,
--};
+-#ifndef __ASSEMBLY__
 -
--const u32 r6xx_ps_size = ARRAY_SIZE(r6xx_ps);
--const u32 r6xx_vs_size = ARRAY_SIZE(r6xx_vs);
--const u32 r6xx_default_size = ARRAY_SIZE(r6xx_default_state);
--const u32 r7xx_default_size = ARRAY_SIZE(r7xx_default_state);
-diff --git a/drivers/gpu/drm/radeon/r600_blit_shaders.h b/drivers/gpu/drm/radeon/r600_blit_shaders.h
-deleted file mode 100644
-index f437d36dd98c..000000000000
---- a/drivers/gpu/drm/radeon/r600_blit_shaders.h
-+++ /dev/null
-@@ -1,38 +0,0 @@
--/*
-- * Copyright 2009 Advanced Micro Devices, Inc.
-- * Copyright 2009 Red Hat Inc.
-- *
-- * Permission is hereby granted, free of charge, to any person obtaining a
-- * copy of this software and associated documentation files (the "Software"),
-- * to deal in the Software without restriction, including without limitation
-- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
-- * and/or sell copies of the Software, and to permit persons to whom the
-- * Software is furnished to do so, subject to the following conditions:
-- *
-- * The above copyright notice and this permission notice (including the next
-- * paragraph) shall be included in all copies or substantial portions of the
-- * Software.
-- *
-- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-- * THE COPYRIGHT HOLDER(S) AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-- * DEALINGS IN THE SOFTWARE.
-- *
-- */
+-struct mm_struct;
 -
--#ifndef R600_BLIT_SHADERS_H
--#define R600_BLIT_SHADERS_H
+-#ifdef CONFIG_PPC_MM_SLICES
 -
--extern const u32 r6xx_ps[];
--extern const u32 r6xx_vs[];
--extern const u32 r7xx_default_state[];
--extern const u32 r6xx_default_state[];
--
--
--extern const u32 r6xx_ps_size, r6xx_vs_size;
--extern const u32 r6xx_default_size, r7xx_default_size;
--
+-#ifdef CONFIG_HUGETLB_PAGE
+-#define HAVE_ARCH_HUGETLB_UNMAPPED_AREA
 -#endif
+-#define HAVE_ARCH_UNMAPPED_AREA
+-#define HAVE_ARCH_UNMAPPED_AREA_TOPDOWN
+-
+-unsigned long slice_get_unmapped_area(unsigned long addr, unsigned long len,
+-				      unsigned long flags, unsigned int psize,
+-				      int topdown);
+-
+-unsigned int get_slice_psize(struct mm_struct *mm, unsigned long addr);
+-
+-void slice_set_range_psize(struct mm_struct *mm, unsigned long start,
+-			   unsigned long len, unsigned int psize);
+-
+-void slice_init_new_context_exec(struct mm_struct *mm);
+-void slice_setup_new_exec(void);
+-
+-#else /* CONFIG_PPC_MM_SLICES */
+-
+-static inline void slice_init_new_context_exec(struct mm_struct *mm) {}
+-
+-static inline unsigned int get_slice_psize(struct mm_struct *mm, unsigned long addr)
+-{
+-	return 0;
+-}
+-
+-#endif /* CONFIG_PPC_MM_SLICES */
+-
+-#endif /* __ASSEMBLY__ */
+-
+-#endif /* _ASM_POWERPC_SLICE_H */
+diff --git a/arch/powerpc/mm/Makefile b/arch/powerpc/mm/Makefile
+index df8172da2301..d4c20484dad9 100644
+--- a/arch/powerpc/mm/Makefile
++++ b/arch/powerpc/mm/Makefile
+@@ -14,7 +14,6 @@ obj-$(CONFIG_PPC_MMU_NOHASH)	+= nohash/
+ obj-$(CONFIG_PPC_BOOK3S_32)	+= book3s32/
+ obj-$(CONFIG_PPC_BOOK3S_64)	+= book3s64/
+ obj-$(CONFIG_NUMA) += numa.o
+-obj-$(CONFIG_PPC_MM_SLICES)	+= slice.o
+ obj-$(CONFIG_HUGETLB_PAGE)	+= hugetlbpage.o
+ obj-$(CONFIG_NOT_COHERENT_CACHE) += dma-noncoherent.o
+ obj-$(CONFIG_PPC_COPRO_BASE)	+= copro_fault.o
+diff --git a/arch/powerpc/mm/book3s64/Makefile b/arch/powerpc/mm/book3s64/Makefile
+index 2d50cac499c5..af2f3e75d458 100644
+--- a/arch/powerpc/mm/book3s64/Makefile
++++ b/arch/powerpc/mm/book3s64/Makefile
+@@ -21,6 +21,7 @@ obj-$(CONFIG_PPC_RADIX_MMU)	+= radix_hugetlbpage.o
+ endif
+ obj-$(CONFIG_SPAPR_TCE_IOMMU)	+= iommu_api.o
+ obj-$(CONFIG_PPC_PKEY)	+= pkeys.o
++obj-$(CONFIG_PPC_MM_SLICES)	+= slice.o
+ 
+ # Instrumenting the SLB fault path can lead to duplicate SLB entries
+ KCOV_INSTRUMENT_slb.o := n
+diff --git a/arch/powerpc/mm/slice.c b/arch/powerpc/mm/book3s64/slice.c
+similarity index 99%
+rename from arch/powerpc/mm/slice.c
+rename to arch/powerpc/mm/book3s64/slice.c
+index 8a3ac062b71e..e4382713746d 100644
+--- a/arch/powerpc/mm/slice.c
++++ b/arch/powerpc/mm/book3s64/slice.c
+@@ -692,7 +692,6 @@ void slice_init_new_context_exec(struct mm_struct *mm)
+ 		bitmap_fill(mask->high_slices, SLICE_NUM_HIGH);
+ }
+ 
+-#ifdef CONFIG_PPC_BOOK3S_64
+ void slice_setup_new_exec(void)
+ {
+ 	struct mm_struct *mm = current->mm;
+@@ -704,7 +703,6 @@ void slice_setup_new_exec(void)
+ 
+ 	mm_ctx_set_slb_addr_limit(&mm->context, DEFAULT_MAP_WINDOW);
+ }
+-#endif
+ 
+ void slice_set_range_psize(struct mm_struct *mm, unsigned long start,
+ 			   unsigned long len, unsigned int psize)
+diff --git a/arch/powerpc/mm/nohash/mmu_context.c b/arch/powerpc/mm/nohash/mmu_context.c
+index 85b048f04c56..ccd5819b1bd9 100644
+--- a/arch/powerpc/mm/nohash/mmu_context.c
++++ b/arch/powerpc/mm/nohash/mmu_context.c
+@@ -317,15 +317,6 @@ void switch_mmu_context(struct mm_struct *prev, struct mm_struct *next,
+  */
+ int init_new_context(struct task_struct *t, struct mm_struct *mm)
+ {
+-	/*
+-	 * We have MMU_NO_CONTEXT set to be ~0. Hence check
+-	 * explicitly against context.id == 0. This ensures that we properly
+-	 * initialize context slice details for newly allocated mm's (which will
+-	 * have id == 0) and don't alter context slice inherited via fork (which
+-	 * will have id != 0).
+-	 */
+-	if (mm->context.id == 0)
+-		slice_init_new_context_exec(mm);
+ 	mm->context.id = MMU_NO_CONTEXT;
+ 	mm->context.active = 0;
+ 	pte_frag_set(&mm->context, NULL);
+diff --git a/arch/powerpc/mm/nohash/tlb.c b/arch/powerpc/mm/nohash/tlb.c
+index fd2c77af5c55..7e1e7c3dc66a 100644
+--- a/arch/powerpc/mm/nohash/tlb.c
++++ b/arch/powerpc/mm/nohash/tlb.c
+@@ -773,9 +773,5 @@ void __init early_init_mmu(void)
+ #ifdef CONFIG_PPC_47x
+ 	early_init_mmu_47x();
+ #endif
+-
+-#ifdef CONFIG_PPC_MM_SLICES
+-	mm_ctx_set_slb_addr_limit(&init_mm.context, SLB_ADDR_LIMIT_DEFAULT);
+-#endif
+ }
+ #endif /* CONFIG_PPC64 */
 -- 
-2.27.0
+2.35.1
 
