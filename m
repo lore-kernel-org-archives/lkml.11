@@ -2,139 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D57C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 15:16:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 15:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232427AbiDIPSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 11:18:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
+        id S242228AbiDIPS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 11:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242424AbiDIPSU (ORCPT
+        with ESMTP id S242429AbiDIPSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 9 Apr 2022 11:18:20 -0400
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9B91AF11
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 08:16:12 -0700 (PDT)
-Received: from ipservice-092-217-091-111.092.217.pools.vodafone-ip.de ([92.217.91.111] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1ndCoq-0005k2-Vy; Sat, 09 Apr 2022 17:16:09 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 7/8] staging: r8188eu: clean up the code to set ips_deny_time
-Date:   Sat,  9 Apr 2022 17:15:56 +0200
-Message-Id: <20220409151557.207980-8-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220409151557.207980-1-martin@kaiser.cx>
-References: <20220409151557.207980-1-martin@kaiser.cx>
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2499D2632;
+        Sat,  9 Apr 2022 08:16:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=DWJgIpccgAwiD7TVhNFpkZOWqtVX9h8FRKAluJQvIhU=; b=2GCyGWBHoZwI1xTAyiCq4XPl0x
+        omnN5J0sdbTSBIVxm207lFJBJ7pWbWs3HAIG1e9jzvELgpJfFHRa39UASiRTRTyP7UAYxk1TUbjut
+        /mjz+U2qbbJlwv04Yvuob96ouAT1exFqTYhMZ7WjWVFYaW4Hu3GevtEmk2ClMuQBddXygY0fB23lU
+        gjq4gb7jpW0mjGQBFWKAKBh90EJV294iCLv7mHfNKmr7cxHTcvWCkLpLn/m3lsGZJtsQumGCR0uiK
+        yZSo4zJpM5wEoFNYuMsARpjsf24+HxNYXkCk5evL6wdvvPgvadyxaihVQW9wBv9asWfU50IFA6tPO
+        Bndolyiw==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ndCos-003O0g-NJ; Sat, 09 Apr 2022 15:16:10 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sam Ravnborg <sam@ravnborg.org>, sparclinux@vger.kernel.org
+Subject: [PATCH v2] sparc: cacheflush_32.h needs struct page
+Date:   Sat,  9 Apr 2022 08:16:09 -0700
+Message-Id: <20220409151609.3715-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean up the code in rtw_pwr_wakeup that sets pwrpriv->ips_deny_time.
+Add a struct page forward declaration to cacheflush_32.h.
+Fixes this build warning:
 
-Make ips_deny_time an unsigned long, this type is used by the kernel
-functions that process jiffies.
+  CC      drivers/crypto/xilinx/zynqmp-sha.o
+In file included from ../arch/sparc/include/asm/cacheflush.h:11,
+                 from ../include/linux/cacheflush.h:5,
+                 from ../drivers/crypto/xilinx/zynqmp-sha.c:6:
+../arch/sparc/include/asm/cacheflush_32.h:38:37: warning: 'struct page' declared inside parameter list will not be visible outside of this definition or declaration
+   38 | void sparc_flush_page_to_ram(struct page *page);
 
-Remove the temporary variable ips_deffer_ms and use
-RTW_PWR_STATE_CHK_INTERVAL directly.
+Exposed by commit 0e03b8fd2936
+("crypto: xilinx - Turn SHA into a tristate and allow COMPILE_TEST")
+but not Fixes: that commit.
 
-There's no need to set ips_deny_time twice, it's sufficient to set it at
-the end of rtw_pwr_wakeup.
-
-Use time_before to check if ips_deny_time should be updated.
-
-We can now remove rtw_ms_to_systime, this function is not used any more.
-
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: sparclinux@vger.kernel.org
 ---
- drivers/staging/r8188eu/core/rtw_pwrctrl.c      | 13 ++++---------
- drivers/staging/r8188eu/include/osdep_service.h |  1 -
- drivers/staging/r8188eu/include/rtw_pwrctrl.h   |  2 +-
- drivers/staging/r8188eu/os_dep/osdep_service.c  |  5 -----
- 4 files changed, 5 insertions(+), 16 deletions(-)
+v2: use forward declaration instead of adding <linux/mm.h> (Sam)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-index 1156a46b5de6..717a9bb26c19 100644
---- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-+++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-@@ -363,14 +363,8 @@ int rtw_pwr_wakeup(struct adapter *padapter)
- 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
- 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
- 	unsigned long timeout = jiffies + msecs_to_jiffies(3000);
-+	unsigned long deny_time;
- 	int ret = _SUCCESS;
--	u32 ips_deffer_ms;
--
--	/* the ms will prevent from falling into IPS after wakeup */
--	ips_deffer_ms = RTW_PWR_STATE_CHK_INTERVAL;
--
--	if (pwrpriv->ips_deny_time < jiffies + rtw_ms_to_systime(ips_deffer_ms))
--		pwrpriv->ips_deny_time = jiffies + rtw_ms_to_systime(ips_deffer_ms);
- 
- 	while (pwrpriv->ps_processing && time_before(jiffies, timeout))
- 		msleep(10);
-@@ -394,8 +388,9 @@ int rtw_pwr_wakeup(struct adapter *padapter)
- 	}
- 
- exit:
--	if (pwrpriv->ips_deny_time < jiffies + rtw_ms_to_systime(ips_deffer_ms))
--		pwrpriv->ips_deny_time = jiffies + rtw_ms_to_systime(ips_deffer_ms);
-+	deny_time = jiffies + msecs_to_jiffies(RTW_PWR_STATE_CHK_INTERVAL);
-+	if (time_before(pwrpriv->ips_deny_time, deny_time))
-+		pwrpriv->ips_deny_time = deny_time;
- 	return ret;
- }
- 
-diff --git a/drivers/staging/r8188eu/include/osdep_service.h b/drivers/staging/r8188eu/include/osdep_service.h
-index f1f3e3ba5377..1e55a8008acc 100644
---- a/drivers/staging/r8188eu/include/osdep_service.h
-+++ b/drivers/staging/r8188eu/include/osdep_service.h
-@@ -78,7 +78,6 @@ void *rtw_malloc2d(int h, int w, int size);
- 	} while (0)
- 
- u32  rtw_systime_to_ms(u32 systime);
--u32  rtw_ms_to_systime(u32 ms);
- s32  rtw_get_passing_time_ms(u32 start);
- 
- void rtw_usleep_os(int us);
-diff --git a/drivers/staging/r8188eu/include/rtw_pwrctrl.h b/drivers/staging/r8188eu/include/rtw_pwrctrl.h
-index 1d7dba853c40..a5bc2f276024 100644
---- a/drivers/staging/r8188eu/include/rtw_pwrctrl.h
-+++ b/drivers/staging/r8188eu/include/rtw_pwrctrl.h
-@@ -56,7 +56,7 @@ struct pwrctrl_priv {
- 	u8	ips_mode_req;	/*  used to accept the mode setting request,
- 				 *  will update to ipsmode later */
- 	uint bips_processing;
--	u32 ips_deny_time; /* will deny IPS when system time less than this */
-+	unsigned long ips_deny_time; /* will deny IPS when system time less than this */
- 	u8 ps_processing; /* temp used to mark whether in rtw_ps_processor */
- 
- 	u8	bLeisurePs;
-diff --git a/drivers/staging/r8188eu/os_dep/osdep_service.c b/drivers/staging/r8188eu/os_dep/osdep_service.c
-index 6824a6ab2e36..7b177d50eee2 100644
---- a/drivers/staging/r8188eu/os_dep/osdep_service.c
-+++ b/drivers/staging/r8188eu/os_dep/osdep_service.c
-@@ -47,11 +47,6 @@ inline u32 rtw_systime_to_ms(u32 systime)
- 	return systime * 1000 / HZ;
- }
- 
--inline u32 rtw_ms_to_systime(u32 ms)
--{
--	return ms * HZ / 1000;
--}
--
- /*  the input parameter start use the same unit as jiffies */
- inline s32 rtw_get_passing_time_ms(u32 start)
- {
--- 
-2.30.2
+ arch/sparc/include/asm/cacheflush_32.h |    1 +
+ 1 file changed, 1 insertion(+)
 
+--- a/arch/sparc/include/asm/cacheflush_32.h
++++ b/arch/sparc/include/asm/cacheflush_32.h
+@@ -35,6 +35,7 @@
+ #define flush_page_for_dma(addr) \
+ 	sparc32_cachetlb_ops->page_for_dma(addr)
+ 
++struct page;
+ void sparc_flush_page_to_ram(struct page *page);
+ 
+ #define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 1
