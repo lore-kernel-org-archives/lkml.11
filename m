@@ -2,93 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6854EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 18:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1814EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 18:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242994AbiDISic (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 14:38:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
+        id S243006AbiDISlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 14:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233793AbiDISi3 (ORCPT
+        with ESMTP id S233793AbiDISlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 14:38:29 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B82215FC6;
-        Sat,  9 Apr 2022 11:36:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649529381; x=1681065381;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=nwxYJAzF/LAA0DJM4O2jahEN8qOB5l2Eu97VtmdfefQ=;
-  b=OZcljuFEe6sc8a9N9kCfQCdnTO5hZjEIAHgBSUw4LG8Rz2uu9pBnx7Lw
-   sK01y+MhpeLNbmtOO1Et4TjBtadeDyZfM/ZOaNNFDQ2deD/89BJeTdcAP
-   9HAN6KpgK71Uh2a3kJ1pRqXDGuTnsYCj/8AXLNsk43YBZxTeKaEOsbOVX
-   jE1inMUfeUITIWvgm0bUtcGkAAvAA7VmKNFUrce7Gh+Rg1rd31Tu2QoMA
-   8yLw9F6zYKw0JIMuHDwsqly4Vq5pQHREG3yzxnXyorTqwubJ27NGOFZkN
-   pd2B0OwzXY8R5txKtvwSgvZipieT0rtHQTeZs9DGBokRrRf7h7L1EgZYU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10312"; a="260714533"
-X-IronPort-AV: E=Sophos;i="5.90,248,1643702400"; 
-   d="scan'208";a="260714533"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2022 11:36:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,248,1643702400"; 
-   d="scan'208";a="698755489"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
-  by fmsmga001.fm.intel.com with ESMTP; 09 Apr 2022 11:36:19 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+        Sat, 9 Apr 2022 14:41:06 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C7829B118;
+        Sat,  9 Apr 2022 11:38:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649529539; x=1681065539;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=iTpdkwqgLHup5YPtaYoOxFVyIRojkyKTjjTXGCM9ZWM=;
+  b=fKmXZR/3R2JEbq71wbDUMysnvC9Tm2X4S6QjOXgSTCRmJHpf+wp+/ELi
+   wOiDtXgjZWWBMApZSVmeD/8QazftJbTs9pniW06ZDQIK+giuHyAmCC2cE
+   n/ywZcdbJDbFUsdGbiS6Nj1QACJyi6tweBpc5MH5CjbXnGr3/ztw69RMr
+   aavtXNgrITbObuAnUfzRQCDgBxwzxt/tCwYSeRMPD0QpC8J2XBa6cCnk4
+   zA2eV+/RLizVUAEd6IXP+6YTmpew4NIeFuos5O2biQ3LKtScOZTvUMaEO
+   VbbhCfqicyJR/5Z4I1WjG9jOHev/kvVyEXbf6+HiX6OKEUYRgaw41uirR
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,248,1643698800"; 
+   d="scan'208";a="159534947"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Apr 2022 11:38:58 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Sat, 9 Apr 2022 11:36:19 -0700
-Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
- fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.027;
- Sat, 9 Apr 2022 11:36:19 -0700
-From:   "Luck, Tony" <tony.luck@intel.com>
-To:     "liuxp11@chinatelecom.cn" <liuxp11@chinatelecom.cn>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "anton@enomsg.org" <anton@enomsg.org>,
-        "ccross@android.com" <ccross@android.com>,
-        "Moore, Robert" <robert.moore@intel.com>,
-        "lenb@kernel.org" <lenb@kernel.org>,
-        "james.morse@arm.com" <james.morse@arm.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "Huang, Ying" <ying.huang@intel.com>,
-        "gong.chen@linux.intel.com" <gong.chen@linux.intel.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
-Subject: RE: [PATCH v5] ACPI: APEI: fix missing erst record id
-Thread-Topic: [PATCH v5] ACPI: APEI: fix missing erst record id
-Thread-Index: AQHYTAyQxdgmMBplYUmGBj6YE5b9Mazn6P5g
-Date:   Sat, 9 Apr 2022 18:36:17 +0000
-Message-ID: <43244db2842d441a8ba9e2f6bf8bf478@intel.com>
-References: <1649506891-27622-1-git-send-email-liuxp11@chinatelecom.cn>
-In-Reply-To: <1649506891-27622-1-git-send-email-liuxp11@chinatelecom.cn>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.401.20
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 15.1.2375.17; Sat, 9 Apr 2022 11:38:57 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Sat, 9 Apr 2022 11:38:54 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <pabeni@redhat.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net 0/4] net: lan966x: lan966x fixes
+Date:   Sat, 9 Apr 2022 20:41:39 +0200
+Message-ID: <20220409184143.1204786-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> v4->v5  implement a new function for looking for a specific record
-> type, suggested by Luck Tony
+This contains different fixes for lan966x in different areas like PTP, MAC,
+Switchdev and IGMP processing.
 
-Looks ok to me.
+Horatiu Vultur (4):
+  net: lan966x: Update lan966x_ptp_get_nominal_value
+  net: lan966x: Fix IGMP snooping when frames have vlan tag
+  net: lan966x: Fix when a port's upper is changed.
+  net: lan966x: Stop processing the MAC entry is port is wrong.
 
-Reviewed-by: Tony Luck <tony.luck@intel.com>
+ drivers/net/ethernet/microchip/lan966x/lan966x_mac.c      | 6 ++++--
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c     | 6 ++++++
+ drivers/net/ethernet/microchip/lan966x/lan966x_ptp.c      | 8 ++++----
+ .../net/ethernet/microchip/lan966x/lan966x_switchdev.c    | 3 +--
+ 4 files changed, 15 insertions(+), 8 deletions(-)
+
+-- 
+2.33.0
 
