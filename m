@@ -2,87 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77554C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 03:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92969C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 03:25:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238376AbiDIDOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 23:14:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52868 "EHLO
+        id S237075AbiDID1b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 23:27:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbiDIDOD (ORCPT
+        with ESMTP id S229549AbiDID1Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 23:14:03 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73570DF36
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 20:11:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=FX3cqX4S7epeuGCz1Fea2yx6H2ka0HMbbiNoPvzP1uA=; b=KgEVUdVWhsH5UoUVkVNZZM0qX/
-        Focy0Nv/2gIV8NL0fQi7EnQWLwE9qErAhBNRQ2LUZZ/kNuDpmFZH8/3aG/G7h+ci7kx4iKm7WUIC8
-        qmrxXx9oaobb95V8oCdkrdDUvifLIyimPQ0Fr3qZWTtRgz5U/AZ4131M11Ehzr0dIBs/EuzZ+tQmm
-        HQk3flXNiHSOp4pweU2RFUjfhZkH2zcYfcuNm5nDB2G7w/EhBnP3QRtImlQ1j4QQmmAK306k8Kz5D
-        YVnJpKHwrsLrjMKpUoQfLaCsYHn7hs6W0U7v0GMNbZK9s5x+xdpIHY02jaO2caP+CLiXIrb1IcihA
-        R4iQ0qMg==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nd1Vv-00AOJ1-Bo; Sat, 09 Apr 2022 03:11:51 +0000
-Message-ID: <95c21c24-7d60-45fa-0b28-b6ae7928a85c@infradead.org>
-Date:   Fri, 8 Apr 2022 20:11:46 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] drm/gma500: select framebuffer dependency
-Content-Language: en-US
-To:     James Hilliard <james.hilliard1@gmail.com>,
-        dri-devel@lists.freedesktop.org
-Cc:     Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org
-References: <20220409025948.3179636-1-james.hilliard1@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220409025948.3179636-1-james.hilliard1@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+        Fri, 8 Apr 2022 23:27:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D2BD16C0B6
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 20:25:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B405C62298
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 03:25:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED296C385A4;
+        Sat,  9 Apr 2022 03:25:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1649474717;
+        bh=QztxxwJbpCCCWMERmgAVm2Swrx1fqBXopvd4ffA8cw8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=xOlvG7rB7RRzvIkCUU5vTfg+1GYBSbt9aLhxymSUz6j82IvAUZyhUMvzaGHaHWrai
+         /30zp4sk0EJuLzTcNx1jeTyIQkrta0X3p3JUMHXmbqkzlICaKfXwDXA9ys7ce2rx0R
+         21w+T41QYox5acwiAGfZVpGfZiqcvn5HzUaTHR6g=
+Date:   Fri, 8 Apr 2022 20:25:16 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v9 0/4] mm: Enable conversion of powerpc to default
+ topdown mmap layout
+Message-Id: <20220408202516.254e22a8293a57324650bd3f@linux-foundation.org>
+In-Reply-To: <cover.1649401201.git.christophe.leroy@csgroup.eu>
+References: <cover.1649401201.git.christophe.leroy@csgroup.eu>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri,  8 Apr 2022 09:24:58 +0200 Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
 
-On 4/8/22 19:59, James Hilliard wrote:
-> This appears to be needed for video output to function correctly.
-
-More proof/justification?
-
-> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-> ---
->  drivers/gpu/drm/gma500/Kconfig | 2 ++
->  1 file changed, 2 insertions(+)
+> Rebased on top of Linux 5.18-rc1
 > 
-> diff --git a/drivers/gpu/drm/gma500/Kconfig b/drivers/gpu/drm/gma500/Kconfig
-> index 0cff20265f97..ff8c7b6e87f5 100644
-> --- a/drivers/gpu/drm/gma500/Kconfig
-> +++ b/drivers/gpu/drm/gma500/Kconfig
-> @@ -7,6 +7,8 @@ config DRM_GMA500
->  	select ACPI_VIDEO if ACPI
->  	select BACKLIGHT_CLASS_DEVICE if ACPI
->  	select INPUT if ACPI
-> +	select FB
+> This is the mm part of the series that converts powerpc to default
+> topdown mmap layout, for merge into v5.18
 
-Preferably
-	depends on FB
+We're at 5.18-rc1.  The 5.18 merge window has closed and we're in
+fixes-only mode.
 
-There are a few instances of an arch (or board) selecting FB,
-which makes some sense, but other drivers shouldn't be doing
-that IMO.
+If there's a case to be made that these patches are needed by 5.18
+users then please let's make that case.  Otherwise, this is 5.19-rc1 material.
 
-> +	select FB_EFI if EFI
->  	help
->  	  Say yes for an experimental 2D KMS framebuffer driver for the
->  	  Intel GMA500 (Poulsbo), Intel GMA600 (Moorestown/Oak Trail) and
+And if it is indeed all 5.19-rc1 material, then please carry all four
+in the powerpc tree with Acked-by: Andrew Morton
+<akpm@linux-foundation.org>.
 
-thanks.
--- 
-~Randy
+Also, [4/4] has a cc:stable.  This is a bit odd because -stable
+candidates should be standalone patches, staged ahead of all
+for-next-merge-window material, so we can get them merged up quickly.
+
+More oddly, [4/4]'s changelog provides no explanation for why the patch
+should be considered for backporting.
+
