@@ -2,161 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37FB7C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 00:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43255C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 00:19:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240138AbiDIAVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 20:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
+        id S232609AbiDIAVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 20:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240132AbiDIAVE (ORCPT
+        with ESMTP id S230295AbiDIAVw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 20:21:04 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083269D07E
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 17:18:59 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id f3so8710896qvz.10
-        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 17:18:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9LrNVvLpOj6dTmwk7aa8KUTu0jhCOqauaVgReZqBa7c=;
-        b=xE0tX7NtCkWLvBMwhqajK3qfCfoNEpWFKuP2acf2SlDT23Qqs0ecoD80HseySZgDsF
-         WKCXbRoEzgKZXIs+RWz7X5ab107GjaBlxA1ptNfo68jBnFEbdSt0OAxsqV5vWKZbdbVy
-         ExcYExo1BlK8zkkHupU0MlYVAQVBsW9LxraTaHQ94tdbP057gScytmZB/f2fDvXBI5y9
-         rKI7/OlSwwcmCMSe9L+IklhhYjR+N1b5HHDd7KkRmQnU3nlf4MnwgQmrx7tZBCgd58o6
-         HTb1hxQkkAcON4uoLJ9N4IgxzSnvvz/MB+tygzfFwbaDbjpvnxnOwiIChZd6mtxyL+WS
-         KGuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9LrNVvLpOj6dTmwk7aa8KUTu0jhCOqauaVgReZqBa7c=;
-        b=Z+DGmcVkJPfihCuWm1Y7fSsbelgO+/go1gu0r193A0/McKkTY6nu7g5kFMEWvOV0sq
-         7gdmI4JQwH8wiucPIKT8neRhlMLYCY7agODX2bz3fDrW3TX2CDa5Xrf8QlvRewbvFJwU
-         2fqjfGO7xe0IvdO0aNhHgMWWpgrk58yV6Ib7r/aztEFWVw4Zin5+2xy6TbqJX3OQsFP7
-         dSKrxp4e3BjpuMBiKH2831Txjij+4PVk3FU2k1z42c7d3tihIvMXDNKLXViFDhklZ4nX
-         ZCY7eKvtcE6SwWw8k2K2ugXu3VQO1e1zQd5BgqIHnGWTSZk6TNL0phtEEsp480TyZv/s
-         0Qiw==
-X-Gm-Message-State: AOAM5319S+zWMY9AoAUYG+8dGYDD+rtSs+z5UysUpDXk9kyz9ndfUcyc
-        PX4oaHiM171Za8cRawKU34VRcvtXoHFfub8aDbh6dw==
-X-Google-Smtp-Source: ABdhPJzyS2BKDeVIYsYws7rF8u0vK8mefrCUH0O7J9tqRAkVK9AS1lptIkXtSiP4qBJZJpVRd03iCrSudeAaaxy+1Ns=
-X-Received: by 2002:ad4:4eaf:0:b0:441:7ff6:f639 with SMTP id
- ed15-20020ad44eaf000000b004417ff6f639mr18482856qvb.73.1649463538218; Fri, 08
- Apr 2022 17:18:58 -0700 (PDT)
+        Fri, 8 Apr 2022 20:21:52 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A064DE911
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 17:19:46 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5ae917.dynamic.kabel-deutschland.de [95.90.233.23])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 5F95861E6478B;
+        Sat,  9 Apr 2022 02:19:43 +0200 (CEST)
+Message-ID: <44354d78-b340-fbc4-fd6c-060d7ad3404e@molgen.mpg.de>
+Date:   Sat, 9 Apr 2022 02:19:43 +0200
 MIME-Version: 1.0
-References: <20220408210813.581391-1-bjorn.andersson@linaro.org>
-In-Reply-To: <20220408210813.581391-1-bjorn.andersson@linaro.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Sat, 9 Apr 2022 03:18:47 +0300
-Message-ID: <CAA8EJprtAubOe==dND9ru2ws71cGXt=B4vB5Hm8ZcZuQ5h9qLA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] dt-bindings: display: msm: Add optional resets
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCHv2] drm/amdgpu: disable ASPM on Intel AlderLake based
+ systems
+Content-Language: en-US
+To:     Richard Gong <richard.gong@amd.com>
+Cc:     mario.limonciello@amd.com, dri-devel@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        alexander.deucher@amd.com, christian.koenig@amd.com,
+        xinhui.pan@amd.com, airlied@linux.ie, daniel@ffwll.ch
+References: <20220408190502.4103670-1-richard.gong@amd.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220408190502.4103670-1-richard.gong@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 9 Apr 2022 at 00:05, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
->
-> Add an optional reference to the MDSS_CORE reset, which when specified
-> can be used by the implementation to reset the hardware blocks.
->
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Dear Richard,
 
 
+Thank you for your patch.
+
+Am 08.04.22 um 21:05 schrieb Richard Gong:
+> Active State Power Management (ASPM) feature is enabled since kernel 5.14.
+> There are some AMD GFX cards (such as WX3200 and RX640) that cannot be
+> used with Intel AlderLake based systems to enable ASPM. Using these GFX
+
+Alder Lake
+
+> cards as video/display output, Intel Alder Lake based systems will hang
+> during suspend/resume.
+
+Please reflow for 75 characters per line.
+
+Also please mention the exact system you had problems with (also 
+firmware versions).
+
+> 
+> Add extra check to disable ASPM on Intel AlderLake based systems.
+
+Is that a problem with Intel Alder Lake or the Dell system? Shouldn’t 
+ASPM just be disabled for the problematic cards for the Dell system. You 
+write newer cards worked fine.
+
+> Fixes: 0064b0ce85bb ("drm/amd/pm: enable ASPM by default")
+> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
+> Signed-off-by: Richard Gong <richard.gong@amd.com>
 > ---
->
-> Resending these two patches again as I put "v2" in the subject, even though I
-> meant v3. Sorry about that.
->
-> Changes since v2:
-> - None
->
->  .../devicetree/bindings/display/msm/dpu-qcm2290.yaml          | 4 ++++
->  Documentation/devicetree/bindings/display/msm/dpu-sc7180.yaml | 4 ++++
->  Documentation/devicetree/bindings/display/msm/dpu-sc7280.yaml | 4 ++++
->  Documentation/devicetree/bindings/display/msm/dpu-sdm845.yaml | 4 ++++
->  4 files changed, 16 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/display/msm/dpu-qcm2290.yaml b/Documentation/devicetree/bindings/display/msm/dpu-qcm2290.yaml
-> index 6fb7e321f011..734d14de966d 100644
-> --- a/Documentation/devicetree/bindings/display/msm/dpu-qcm2290.yaml
-> +++ b/Documentation/devicetree/bindings/display/msm/dpu-qcm2290.yaml
-> @@ -66,6 +66,10 @@ properties:
->    interconnect-names:
->      const: mdp0-mem
->
-> +  resets:
-> +    items:
-> +      - description: MDSS_CORE reset
+> v2: correct commit description
+>      move the check from chip family to problematic platform
+> ---
+>   drivers/gpu/drm/amd/amdgpu/vi.c | 17 ++++++++++++++++-
+>   1 file changed, 16 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c b/drivers/gpu/drm/amd/amdgpu/vi.c
+> index 039b90cdc3bc..8b4eaf54b23e 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/vi.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/vi.c
+> @@ -81,6 +81,10 @@
+>   #include "mxgpu_vi.h"
+>   #include "amdgpu_dm.h"
+>   
+> +#if IS_ENABLED(CONFIG_X86_64)
+> +#include <asm/intel-family.h>
+> +#endif
 > +
->  patternProperties:
->    "^display-controller@[0-9a-f]+$":
->      type: object
-> diff --git a/Documentation/devicetree/bindings/display/msm/dpu-sc7180.yaml b/Documentation/devicetree/bindings/display/msm/dpu-sc7180.yaml
-> index 12a86b1ec1bc..b41991eaa454 100644
-> --- a/Documentation/devicetree/bindings/display/msm/dpu-sc7180.yaml
-> +++ b/Documentation/devicetree/bindings/display/msm/dpu-sc7180.yaml
-> @@ -65,6 +65,10 @@ properties:
->    interconnect-names:
->      const: mdp0-mem
->
-> +  resets:
-> +    items:
-> +      - description: MDSS_CORE reset
+>   #define ixPCIE_LC_L1_PM_SUBSTATE	0x100100C6
+>   #define PCIE_LC_L1_PM_SUBSTATE__LC_L1_SUBSTATES_OVERRIDE_EN_MASK	0x00000001L
+>   #define PCIE_LC_L1_PM_SUBSTATE__LC_PCI_PM_L1_2_OVERRIDE_MASK	0x00000002L
+> @@ -1134,13 +1138,24 @@ static void vi_enable_aspm(struct amdgpu_device *adev)
+>   		WREG32_PCIE(ixPCIE_LC_CNTL, data);
+>   }
+>   
+> +static bool intel_core_apsm_chk(void)
+
+aspm
+
+> +{
+> +#if IS_ENABLED(CONFIG_X86_64)
+> +	struct cpuinfo_x86 *c = &cpu_data(0);
 > +
->  patternProperties:
->    "^display-controller@[0-9a-f]+$":
->      type: object
-> diff --git a/Documentation/devicetree/bindings/display/msm/dpu-sc7280.yaml b/Documentation/devicetree/bindings/display/msm/dpu-sc7280.yaml
-> index fbeb931a026e..6e417d06fc79 100644
-> --- a/Documentation/devicetree/bindings/display/msm/dpu-sc7280.yaml
-> +++ b/Documentation/devicetree/bindings/display/msm/dpu-sc7280.yaml
-> @@ -64,6 +64,10 @@ properties:
->    interconnect-names:
->      const: mdp0-mem
->
-> +  resets:
-> +    items:
-> +      - description: MDSS_CORE reset
+> +	return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ALDERLAKE);
+> +#else
+> +	return false;
+> +#endif
+
+Please do the check in C code and not the preprocessor.
+
+> +}
 > +
->  patternProperties:
->    "^display-controller@[0-9a-f]+$":
->      type: object
-> diff --git a/Documentation/devicetree/bindings/display/msm/dpu-sdm845.yaml b/Documentation/devicetree/bindings/display/msm/dpu-sdm845.yaml
-> index 0dca4b3d66e4..1a42491efdbc 100644
-> --- a/Documentation/devicetree/bindings/display/msm/dpu-sdm845.yaml
-> +++ b/Documentation/devicetree/bindings/display/msm/dpu-sdm845.yaml
-> @@ -57,6 +57,10 @@ properties:
->
->    ranges: true
->
-> +  resets:
-> +    items:
-> +      - description: MDSS_CORE reset
-> +
->  patternProperties:
->    "^display-controller@[0-9a-f]+$":
->      type: object
-> --
-> 2.35.1
->
+>   static void vi_program_aspm(struct amdgpu_device *adev)
+>   {
+>   	u32 data, data1, orig;
+>   	bool bL1SS = false;
+>   	bool bClkReqSupport = true;
+>   
+> -	if (!amdgpu_device_should_use_aspm(adev))
+> +	if (!amdgpu_device_should_use_aspm(adev) || intel_core_apsm_chk())
+>   		return;
+>   
+>   	if (adev->flags & AMD_IS_APU ||
 
 
--- 
-With best wishes
-Dmitry
+Kind regards,
+
+Paul
