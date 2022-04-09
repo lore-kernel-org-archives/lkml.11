@@ -2,71 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21117C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 00:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5211DC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 00:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236772AbiDIAvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 8 Apr 2022 20:51:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44320 "EHLO
+        id S237226AbiDIAxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 8 Apr 2022 20:53:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiDIAve (ORCPT
+        with ESMTP id S229491AbiDIAxN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 8 Apr 2022 20:51:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD0873152F
-        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 17:49:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DC07621C7
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 00:49:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1539C385A5;
-        Sat,  9 Apr 2022 00:49:26 +0000 (UTC)
-Date:   Fri, 8 Apr 2022 20:49:25 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>, jstultz@google.com,
-        Stephen Boyd <sboyd@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [RFC][PATCH] timers: Add del_time_free() to be called before
- freeing timers
-Message-ID: <20220408204925.16361b44@rorschach.local.home>
-In-Reply-To: <CAHk-=wg3icnjr+6aU-Wyw+kBoSRBM28P4o4iTgimOWDuuUiStQ@mail.gmail.com>
-References: <20220407161745.7d6754b3@gandalf.local.home>
-        <87pmlrkgi3.ffs@tglx>
-        <CAHk-=whbsLXy85XpKRQmBXr=GqWbMoi+wVjFY_V22=BOE=dHog@mail.gmail.com>
-        <87v8vjiaih.ffs@tglx>
-        <20220408202230.0ea5388f@rorschach.local.home>
-        <CAHk-=wg3icnjr+6aU-Wyw+kBoSRBM28P4o4iTgimOWDuuUiStQ@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 8 Apr 2022 20:53:13 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD16B5FE2
+        for <linux-kernel@vger.kernel.org>; Fri,  8 Apr 2022 17:51:07 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id i19-20020a5d9353000000b006495ab76af6so6786087ioo.0
+        for <linux-kernel@vger.kernel.org>; Fri, 08 Apr 2022 17:51:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=p4tSdoEjjT6Vgz/3cnEspxzOcbZnhthfckc5hh0b6Hc=;
+        b=g7Z7madCFw0l0WgZmipKz1vY7CcTwbf5DgOb2aIwqfPDB1/vj8kDhODCBK2cmRQg8r
+         rPJR51QQyhLxaFOTcf0KqcPfnVyvA6sfR9vPuCYtrXHnqlh4WnyXYicAMCVxCEQvXEM+
+         kkb0o1I19bZohpa2G+hPBhzhnVp3yqNpMRb7XeNMmt0TXZZieqdUbhLTz2U2r3nywfAS
+         IZRD6pxrHx0DaBP8oGEjfXLMMWwQdeWVSoAxQwzTCfO5RS++TcMoDrtuab75268oAkux
+         QSqD0l+871clupeq4UOjOGcD+ley+EWv/y8FRwdKCC5k4Qn/5HAQZZ7Gc9aY/dwe658s
+         OzBA==
+X-Gm-Message-State: AOAM533Ym21HaezeyBgFaW7rcmKbkK4bYgZV/GLEkFmKtshchh49EuCU
+        +85wEXzp1UUWYLLCSLumEtTxeVxU2BSF0QJzMAE2mz4FwU7t
+X-Google-Smtp-Source: ABdhPJx08oINfFjBwA2dtIUwkZzRTuzr96IgUhEdMLKVuPWd3luAlN8gTq4QWs3UgOLw9oGD7vUyFyMaZQQlqejbX5bdGobM/kfo
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a92:cd84:0:b0:2ca:3bf1:fa08 with SMTP id
+ r4-20020a92cd84000000b002ca3bf1fa08mr10043708ilb.219.1649465467091; Fri, 08
+ Apr 2022 17:51:07 -0700 (PDT)
+Date:   Fri, 08 Apr 2022 17:51:07 -0700
+In-Reply-To: <4181875.ejJDZkT8p0@leap>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003c427705dc2e1b1d@google.com>
+Subject: Re: [syzbot] KASAN: null-ptr-deref Write in snd_pcm_format_set_silence
+From:   syzbot <syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com>
+To:     alsa-devel@alsa-project.org, fmdefrancesco@gmail.com,
+        linux-kernel@vger.kernel.org, perex@perex.cz,
+        syzkaller-bugs@googlegroups.com, tiwai@suse.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 8 Apr 2022 14:30:21 -1000
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
+Hello,
 
-> On Fri, Apr 8, 2022 at 2:22 PM Steven Rostedt <rostedt@goodmis.org> wrote:
-> >
-> > We could always use the LSB bit of the function as a "shutdown" flag, where:  
-> 
-> While we do that for data pointers, doing it for function pointers is dodgy.
-> 
-> Not all architectures necessarily align code pointers. In fact, I
-> think that "-Os" on x86 makes all code alignment go away, and so
-> function pointers have no alignment at all.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Hmm, well, I'm not sure it would work for all architectures, but what
-about the MSB?  Setting it to zero on "shutdown"?
+Reported-and-tested-by: syzbot+205eb15961852c2c5974@syzkaller.appspotmail.com
 
--- Steve
+Tested on:
+
+commit:         1a3b1bba Merge tag 'nfs-for-5.18-2' of git://git.linux..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=df0c3f2244c64190
+dashboard link: https://syzkaller.appspot.com/bug?extid=205eb15961852c2c5974
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=17fb5d30f00000
+
+Note: testing is done by a robot and is best-effort only.
