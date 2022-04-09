@@ -2,89 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36D43C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 15:16:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D57C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 15:16:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242401AbiDIPSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 11:18:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39406 "EHLO
+        id S232427AbiDIPSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 11:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242437AbiDIPST (ORCPT
+        with ESMTP id S242424AbiDIPSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 11:18:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F30BFB
+        Sat, 9 Apr 2022 11:18:20 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9B91AF11
         for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 08:16:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45F5DB807E5
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 15:16:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B75B2C385A0;
-        Sat,  9 Apr 2022 15:16:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649517369;
-        bh=lfcFAc+RhqZ1/cu2c6UePcSLmxOGoyzClv2kkRwyLNE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Nzub0L71StbPq58BmZC+BGa1div5LkIYJFBQSjcVZquUFVPlfEpwSsIIPcxORSsOy
-         VTJg4UXipWRM2o36uMvMRBDRr7H8WLb19YzilJuYoUuDMR1aO4c/LE5kpWi/tYW0+s
-         Y/mCZk9X+LaU26lbTvwxPMBW2QG71H1YsqS5bAXx/2diIpeMFNin55fyb+hezWzPAT
-         KGW+r7qp1W5iKmoaTaexH2M023arLZ/b4QAHIiFpni/lA84061m9GfqQanr6w93ghl
-         McMkKqQqdNmSXUIxMphWfY+86607ozvQiDzhrjxmBnPlYW4eBZ6eES8hPUAUeFcj2U
-         YIBCJxKy1SXMg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 68CFD40407; Sat,  9 Apr 2022 12:16:07 -0300 (-03)
-Date:   Sat, 9 Apr 2022 12:16:07 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] perf tools: Fix perf's libperf_print callback
-Message-ID: <YlGjN1YOKakAWSVx@kernel.org>
-References: <20220408132625.2451452-1-adrian.hunter@intel.com>
+Received: from ipservice-092-217-091-111.092.217.pools.vodafone-ip.de ([92.217.91.111] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1ndCoq-0005k2-Vy; Sat, 09 Apr 2022 17:16:09 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 7/8] staging: r8188eu: clean up the code to set ips_deny_time
+Date:   Sat,  9 Apr 2022 17:15:56 +0200
+Message-Id: <20220409151557.207980-8-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220409151557.207980-1-martin@kaiser.cx>
+References: <20220409151557.207980-1-martin@kaiser.cx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220408132625.2451452-1-adrian.hunter@intel.com>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Fri, Apr 08, 2022 at 04:26:25PM +0300, Adrian Hunter escreveu:
-> eprintf does not expect va_list as the 4th parameter.
-> Use veprintf because it does.
+Clean up the code in rtw_pwr_wakeup that sets pwrpriv->ips_deny_time.
 
-You forgot to add this:
+Make ips_deny_time an unsigned long, this type is used by the kernel
+functions that process jiffies.
 
-Fixes: 428dab813a56ce94 ("libperf: Merge libperf_set_print() into libperf_init()")
+Remove the temporary variable ips_deffer_ms and use
+RTW_PWR_STATE_CHK_INTERVAL directly.
 
-Please consider doing it next time.
+There's no need to set ips_deny_time twice, it's sufficient to set it at
+the end of rtw_pwr_wakeup.
 
-Thanks, applied.
+Use time_before to check if ips_deny_time should be updated.
 
-- Arnaldo
+We can now remove rtw_ms_to_systime, this function is not used any more.
+
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+---
+ drivers/staging/r8188eu/core/rtw_pwrctrl.c      | 13 ++++---------
+ drivers/staging/r8188eu/include/osdep_service.h |  1 -
+ drivers/staging/r8188eu/include/rtw_pwrctrl.h   |  2 +-
+ drivers/staging/r8188eu/os_dep/osdep_service.c  |  5 -----
+ 4 files changed, 5 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
+index 1156a46b5de6..717a9bb26c19 100644
+--- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
++++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
+@@ -363,14 +363,8 @@ int rtw_pwr_wakeup(struct adapter *padapter)
+ 	struct pwrctrl_priv *pwrpriv = &padapter->pwrctrlpriv;
+ 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+ 	unsigned long timeout = jiffies + msecs_to_jiffies(3000);
++	unsigned long deny_time;
+ 	int ret = _SUCCESS;
+-	u32 ips_deffer_ms;
+-
+-	/* the ms will prevent from falling into IPS after wakeup */
+-	ips_deffer_ms = RTW_PWR_STATE_CHK_INTERVAL;
+-
+-	if (pwrpriv->ips_deny_time < jiffies + rtw_ms_to_systime(ips_deffer_ms))
+-		pwrpriv->ips_deny_time = jiffies + rtw_ms_to_systime(ips_deffer_ms);
  
-> Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-> ---
->  tools/perf/perf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/perf/perf.c b/tools/perf/perf.c
-> index 2f6b67189b42..6aae7b6c376b 100644
-> --- a/tools/perf/perf.c
-> +++ b/tools/perf/perf.c
-> @@ -434,7 +434,7 @@ void pthread__unblock_sigwinch(void)
->  static int libperf_print(enum libperf_print_level level,
->  			 const char *fmt, va_list ap)
->  {
-> -	return eprintf(level, verbose, fmt, ap);
-> +	return veprintf(level, verbose, fmt, ap);
->  }
->  
->  int main(int argc, const char **argv)
-> -- 
-> 2.25.1
-
+ 	while (pwrpriv->ps_processing && time_before(jiffies, timeout))
+ 		msleep(10);
+@@ -394,8 +388,9 @@ int rtw_pwr_wakeup(struct adapter *padapter)
+ 	}
+ 
+ exit:
+-	if (pwrpriv->ips_deny_time < jiffies + rtw_ms_to_systime(ips_deffer_ms))
+-		pwrpriv->ips_deny_time = jiffies + rtw_ms_to_systime(ips_deffer_ms);
++	deny_time = jiffies + msecs_to_jiffies(RTW_PWR_STATE_CHK_INTERVAL);
++	if (time_before(pwrpriv->ips_deny_time, deny_time))
++		pwrpriv->ips_deny_time = deny_time;
+ 	return ret;
+ }
+ 
+diff --git a/drivers/staging/r8188eu/include/osdep_service.h b/drivers/staging/r8188eu/include/osdep_service.h
+index f1f3e3ba5377..1e55a8008acc 100644
+--- a/drivers/staging/r8188eu/include/osdep_service.h
++++ b/drivers/staging/r8188eu/include/osdep_service.h
+@@ -78,7 +78,6 @@ void *rtw_malloc2d(int h, int w, int size);
+ 	} while (0)
+ 
+ u32  rtw_systime_to_ms(u32 systime);
+-u32  rtw_ms_to_systime(u32 ms);
+ s32  rtw_get_passing_time_ms(u32 start);
+ 
+ void rtw_usleep_os(int us);
+diff --git a/drivers/staging/r8188eu/include/rtw_pwrctrl.h b/drivers/staging/r8188eu/include/rtw_pwrctrl.h
+index 1d7dba853c40..a5bc2f276024 100644
+--- a/drivers/staging/r8188eu/include/rtw_pwrctrl.h
++++ b/drivers/staging/r8188eu/include/rtw_pwrctrl.h
+@@ -56,7 +56,7 @@ struct pwrctrl_priv {
+ 	u8	ips_mode_req;	/*  used to accept the mode setting request,
+ 				 *  will update to ipsmode later */
+ 	uint bips_processing;
+-	u32 ips_deny_time; /* will deny IPS when system time less than this */
++	unsigned long ips_deny_time; /* will deny IPS when system time less than this */
+ 	u8 ps_processing; /* temp used to mark whether in rtw_ps_processor */
+ 
+ 	u8	bLeisurePs;
+diff --git a/drivers/staging/r8188eu/os_dep/osdep_service.c b/drivers/staging/r8188eu/os_dep/osdep_service.c
+index 6824a6ab2e36..7b177d50eee2 100644
+--- a/drivers/staging/r8188eu/os_dep/osdep_service.c
++++ b/drivers/staging/r8188eu/os_dep/osdep_service.c
+@@ -47,11 +47,6 @@ inline u32 rtw_systime_to_ms(u32 systime)
+ 	return systime * 1000 / HZ;
+ }
+ 
+-inline u32 rtw_ms_to_systime(u32 ms)
+-{
+-	return ms * HZ / 1000;
+-}
+-
+ /*  the input parameter start use the same unit as jiffies */
+ inline s32 rtw_get_passing_time_ms(u32 start)
+ {
 -- 
+2.30.2
 
-- Arnaldo
