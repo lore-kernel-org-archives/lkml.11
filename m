@@ -2,76 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81364C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 16:33:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ECE6C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 16:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242689AbiDIQf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 12:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60298 "EHLO
+        id S242708AbiDIQhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 12:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242624AbiDIQef (ORCPT
+        with ESMTP id S242715AbiDIQhl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 12:34:35 -0400
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695A823F386
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 09:32:28 -0700 (PDT)
-Received: from ipservice-092-217-091-111.092.217.pools.vodafone-ip.de ([92.217.91.111] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1ndE0d-0006Rg-SG; Sat, 09 Apr 2022 18:32:23 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 07/10] staging: r8188eu: improve timeout handling in LPS_RF_ON_check
-Date:   Sat,  9 Apr 2022 18:32:09 +0200
-Message-Id: <20220409163212.241122-8-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220409163212.241122-1-martin@kaiser.cx>
-References: <20220409163212.241122-1-martin@kaiser.cx>
+        Sat, 9 Apr 2022 12:37:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E08ADEE2;
+        Sat,  9 Apr 2022 09:35:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 22F37CE0B45;
+        Sat,  9 Apr 2022 16:35:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB270C385A4;
+        Sat,  9 Apr 2022 16:35:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649522130;
+        bh=UNmAi171eTNd0PPrvmtUJH8M0u3zpsWVYMVybZm/oiM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=GeWfrBjtLgc0BHtuan+OrjSI9uh9efXebpb9lBCSkapoYb6b72TajpTN4ICirxZrO
+         x3Z61CbxatI73IBSF1MXm+Y0zAYPeejrktuwbyviy2g2gfpvQLflJY0oOFzIn04jpF
+         Gn8qyFhtzXxo43Ee5ZaX5PxtFSEFzk183B0ZDVyzKVJGBcv8EiVY/PIOkHYFdYDCkE
+         itGDxpNWZdrNlbZtgqdtc0fAR/i8xU21epthi+DaUN6eDS3KVPqFuPebFvHR2nJ+Cy
+         MFtRW3O0UVkEJeJBhrCF7VT5NGCwhVqoHkghYk+BcYGALz9aVsYTRWDMFxKxe6xOV9
+         T//qKwCSVIeHg==
+Message-ID: <6c246d08-136d-13df-7228-354b049a66ea@kernel.org>
+Date:   Sat, 9 Apr 2022 18:35:23 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 1/2] dt-bindings: display: msm: Add optional resets
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220408210813.581391-1-bjorn.andersson@linaro.org>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220408210813.581391-1-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the standard kernel functions to define and check the timeout in
-LPS_RF_ON_check.
+On 08/04/2022 23:08, Bjorn Andersson wrote:
+> Add an optional reference to the MDSS_CORE reset, which when specified
+> can be used by the implementation to reset the hardware blocks.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+> 
+> Resending these two patches again as I put "v2" in the subject, even though I
+> meant v3. Sorry about that.
+> 
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
- drivers/staging/r8188eu/core/rtw_pwrctrl.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+I reviewed v2, so one here as well:
 
-diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-index ffafeb7f9c47..1aebf9400f12 100644
---- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-+++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-@@ -239,10 +239,9 @@ static bool lps_rf_on(struct adapter *adapter)
-  */
- static s32 LPS_RF_ON_check(struct adapter *padapter, u32 delay_ms)
- {
--	u32 start_time;
-+	unsigned long timeout = jiffies + msecs_to_jiffies(delay_ms);
- 	s32 err = 0;
- 
--	start_time = jiffies;
- 	while (1) {
- 		if (lps_rf_on(padapter))
- 			break;
-@@ -252,7 +251,7 @@ static s32 LPS_RF_ON_check(struct adapter *padapter, u32 delay_ms)
- 			break;
- 		}
- 
--		if (rtw_get_passing_time_ms(start_time) > delay_ms) {
-+		if (time_after(jiffies, timeout)) {
- 			err = -1;
- 			break;
- 		}
--- 
-2.30.2
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
