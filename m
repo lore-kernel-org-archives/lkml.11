@@ -2,118 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A5E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 12:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB97C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  9 Apr 2022 12:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241745AbiDIMkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 9 Apr 2022 08:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57570 "EHLO
+        id S240047AbiDIMqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 9 Apr 2022 08:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230205AbiDIMku (ORCPT
+        with ESMTP id S230205AbiDIMqG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 9 Apr 2022 08:40:50 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40A713F
-        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 05:38:42 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id bh17so22132687ejb.8
-        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 05:38:42 -0700 (PDT)
+        Sat, 9 Apr 2022 08:46:06 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0BA177D33
+        for <linux-kernel@vger.kernel.org>; Sat,  9 Apr 2022 05:43:58 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id p15so22167375ejc.7
+        for <linux-kernel@vger.kernel.org>; Sat, 09 Apr 2022 05:43:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=RpLyscpqKBQEV+cmacPi/7pfMk8oHHCQkm4XjyfCevc=;
-        b=RdCyKrtrX2Rcr0qXPucOkWoOPqrteWZ8e1231DTVEXDqieB9W/gDLDJKLBw4F+h+7e
-         qblKAIqF5cpaPgjJEcsA6h/SNBLKYmq+lzQhbuc+haicD80IIFipzBgPmwyivFaM1k4K
-         VuFLCB6lOCo5CYZEpk9gNVUfsCFzNgFgjzcJls3Uxn+JWf2ke6tJpSYg1TX1Th31QT9o
-         gT8oEUou3QzvIGveuZEdafwbaZ/Vto+BDGH/U3AxtwLMJCsMvlsFvjdnPmIV+KOU8fH2
-         rrpgPDDVZAUdLYVr2Mx5MvdIYEvT1kMhxuuKtLcH4bKHez1mrH8cF5xlHrBqIQVBk7ju
-         Hf4g==
+        bh=qFqeqNjaO9GxDFF6ku8GcKf8eCW7YzW8WlCYcuIhXtw=;
+        b=k7qgK3YBC2ZfwWfBq974Auw9JESCchzvmVpnSkvd2Wh/jNBRtf2QzUXjuM6QDOC9WM
+         MPpiekFZ4AAUK19lFab93vvPSScrJmv0YP9biKIdieYfTpNX6o8XQlOObgooo/n/zi/M
+         Y3xoONQc85T07imeYdn+5hF3rp17wTf91pj7Q0YnA+wCbthgDElRQKF4HlvLNMGBmPSI
+         EuyBB6bigXaIU+2XGPRL2IRoPpCw80QfF8g/Pf5lCM8CrVVt9vSrW3g/VFmwiimTbKRr
+         60cZtoPeTk/UD1k+YWNHEth0bfD5Ng8rbGhMK7LSYif8uQrFASWeiTokQkEQpZ4ODFhA
+         MXcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=RpLyscpqKBQEV+cmacPi/7pfMk8oHHCQkm4XjyfCevc=;
-        b=5jrnRA0R2O9a86u/VE/FJ91Br3sq7JIPAacmfLSO876KDixNnNS7nYHAjL56AL0fTE
-         OI2poKC7lzEnJ8ygmrIeTBxMpBd3JpXJdCXUQW15aDw7+NxoiojFhZf1Z2GoK41BFz50
-         4Rpr5BkDllvaduKVMjVGlz5igMDIUc1o6FIdsQkTNMse3lxnJIrigLjjDYVone6sddcG
-         e2ApgeXC5h8lw5SlA7stOkCJY1P52d2drzdjAv9G3gO8Z0Kqh6CDDqoaJTcg1PnhyOur
-         ErjynLtT6uaWztQFZQ+lCZ6xw00yC61v/9J5zy75QqWtYB/kHs78sVl5U3SyA3mnPs/p
-         MzlQ==
-X-Gm-Message-State: AOAM532UnhmOpShWQLVy+3OvPWC8h+SpvGnpXxOi8fTcxIaYuFle0ZJp
-        rzGOrNXcvmCQTZMtjjLnBHcZLA==
-X-Google-Smtp-Source: ABdhPJzY77DKPWSpLOfOBDiyAdMZSgLaeO04wDaxNJN64pBlaiA5gtbKwhFYaFWLNIZOU2Xlrgr92A==
-X-Received: by 2002:a17:906:6a15:b0:6e8:8b:bead with SMTP id qw21-20020a1709066a1500b006e8008bbeadmr23445325ejc.650.1649507921203;
-        Sat, 09 Apr 2022 05:38:41 -0700 (PDT)
+        bh=qFqeqNjaO9GxDFF6ku8GcKf8eCW7YzW8WlCYcuIhXtw=;
+        b=Kc42/U7Li4RG12rWMZwj7ndyQSL1hPH3kNKXxi7yhPsyNT7lQSwqv1VNcdKREmcuMp
+         OaCVJHS3g5KxnNvsKnlobxdg7hYRKwdPoXni8UndSu2iwLXr6+4h5p2eJfNTMQERMkgp
+         v4uci+LCCvVXIB7E10TvcPJ+PZv8dr2YGtI6v8EMxch9Z/Dpw3zM1fUIhcy3oNzsUG5Q
+         OaeTAwwQ3H382I4/UT2tVVMH1UA2cBIoFzktytNGe6pmX3ARh3Krqnbp+504QcNSW5dN
+         p8xnj8AwU2VXgK7Bpze1hXIJSS4KAgIqjvaejHALamzUgNK6JB4mQA2S/47ut+XzgiVJ
+         /5Bg==
+X-Gm-Message-State: AOAM5332aNYxCjFT/7H1sqFhsL9EyIxdnAK5HmX6Q0SlZmbdTSdq3FH/
+        5lrZCVwztgmhgEZJdnxb3b95Mh24Zq+nfNPO
+X-Google-Smtp-Source: ABdhPJwLYMPowNdTkLJ34QzaeN9tFdTwYfvdX4sZzVVl0Iw2FtIgFVDuXXt10tP1iVV/54OpJmp2hw==
+X-Received: by 2002:a17:906:469a:b0:6e8:76c2:1d58 with SMTP id a26-20020a170906469a00b006e876c21d58mr1213716ejr.371.1649508236783;
+        Sat, 09 Apr 2022 05:43:56 -0700 (PDT)
 Received: from [192.168.0.188] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id d1-20020a50fe81000000b004197f2ecdc2sm11671603edt.89.2022.04.09.05.38.39
+        by smtp.gmail.com with ESMTPSA id gv9-20020a170906f10900b006d7128b2e6fsm9749886ejb.162.2022.04.09.05.43.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 09 Apr 2022 05:38:40 -0700 (PDT)
-Message-ID: <a99d947d-418c-3f70-6b1a-a90d300604eb@linaro.org>
-Date:   Sat, 9 Apr 2022 14:38:39 +0200
+        Sat, 09 Apr 2022 05:43:56 -0700 (PDT)
+Message-ID: <29cfa017-bbaf-3aba-fe1d-06771957dbaa@linaro.org>
+Date:   Sat, 9 Apr 2022 14:43:55 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH 03/18] MIPS: DTS: jz4780: fix tcu timer as reported by
- dtbscheck
+Subject: Re: [PATCH v2 1/2] dt-bindings: mtd: partitions: Add binding for
+ Sercomm parser
 Content-Language: en-US
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+To:     Mikhail Zhilkin <csharper2005@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mips@vger.kernel.org, letux-kernel@openphoenux.org
-References: <cover.1649443080.git.hns@goldelico.com>
- <c48277625f0ab5afc86d89deb1b87537e9c592f6.1649443080.git.hns@goldelico.com>
- <e5ea96d8-f8c9-b925-04ee-81e80e30a5d0@linaro.org>
- <1TN2AR.Q91IJNXMNNNA1@crapouillou.net>
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc:     NOGUCHI Hiroshi <drvlabo@gmail.com>, Karim <Karimdplay@gmail.com>,
+        M <x1@disroot.org>, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220406195557.1956-1-csharper2005@gmail.com>
+ <20220406195946.2019-1-csharper2005@gmail.com>
+ <8d0d8b27-35ff-3693-cf80-897b80c26b4e@linaro.org>
+ <57bebf2f-af4c-b2d9-10e5-19e5104946fb@gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1TN2AR.Q91IJNXMNNNA1@crapouillou.net>
+In-Reply-To: <57bebf2f-af4c-b2d9-10e5-19e5104946fb@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/04/2022 14:24, Paul Cercueil wrote:
-> Hi Krzysztof,
+On 09/04/2022 14:26, Mikhail Zhilkin wrote:
+>>
+>> In any case this requires vendor prefix.
 > 
-> Le sam., avril 9 2022 at 13:11:48 +0200, Krzysztof Kozlowski 
-> <krzysztof.kozlowski@linaro.org> a écrit :
->> On 08/04/2022 20:37, H. Nikolaus Schaller wrote:
->>>  arch/mips/boot/dts/ingenic/ci20.dtb: timer@10002000: compatible: 
->>> 'oneOf' conditional failed, one must be fixed:
->>>  	['ingenic,jz4780-tcu', 'ingenic,jz4770-tcu', 'simple-mfd'] is too 
->>> long
->>>  	'ingenic,jz4780-tcu' is not one of ['ingenic,jz4740-tcu', 
->>> 'ingenic,jz4725b-tcu', 'ingenic,jz4760-tcu', 'ingenic,x1000-tcu']
->>>  	'simple-mfd' was expected
->>>  	'ingenic,jz4760-tcu' was expected
->>
->> Trim it a bit...
->>
->>>  	From schema: 
->>> Documentation/devicetree/bindings/timer/ingenic,tcu.yaml
->>
->> You need to explain this. You're changing the effective compatible of
->> the device and doing so based only on schema warning does not look
->> enough. Please write real reason instead of this fat warning, e.g. 
->> that
->> both devices are actually compatible and this has no real effect 
->> except
->> schema checks.
+> I'm not sure that "scpart-id" is necessary here. "sercomm,sc-partitions"
+> is necessary. I'm going to add vendor prefix in a separate patch. Is this
+> ok?
+
+Yes.
+
 > 
-> Well, if the schema says that it should use a particular fallback 
-> string, then that's what the DTS should use, right?
+> ---
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> index 01430973ecec..65ff22364fb3 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> @@ -1082,6 +1082,8 @@ patternProperties:
+>      description: Sensirion AG
+>    "^sensortek,.*":
+>      description: Sensortek Technology Corporation
+> +  "^sercomm,.*":
+> +    description: Sercomm (Suzhou) Corporation
+>    "^sff,.*":
+>      description: Small Form Factor Committee
+>    "^sgd,.*":
+> --
+> 
+>>> +
+>>> +required:
+>>> +  - compatible
+>> Missing reg.
+> 
+> reg isn't required. Parser can read partition offsets and sizes from
+> SC PART MAP table. Or do you mean something else?  All is ok
+> without reg definition in "Example" (except the warns that reg property
+> is missing).
 
-Or the schema is wrong. :)
+reg might not be required for current implementation but it is required
+by devicetree for every node with unit address. Do you expect here nodes
+without unit addresses?
 
-> If making the DTS schema-compliant causes breakages, then that means 
-> the schema is wrong and should be fixed.
+>> Are you sure that you tested your bindings? You miss here address/size
+>> cells and children, so you should have big fat warning.
+>>
+>> Plus your DTS example has error and does not compile...
+> 
+> Whole dts, for the real device (not for example), was tested many times.
 
-Exactly, so the commit needs a bit of explanation why one solution was
-chosen over the other. BTW, I am not saying that schema or DTS is wrong,
-just that commit is not explained enough.
+Yeah, I did not speak about whole DTS, but bindings and example in the
+bindings.
+
+> Thank you for your feedback! I checked the another examples and there
+> are no any warnings now. But I'm not yet sure that "properties" and
+> "required" are correct.
+> What do you think (or what else I have to read / check)?
+
+There is no way you tested the bindings. There are for sure warnings
+because it simply cannot be even compiled. The writing-schema.rst
+describes how to test it.
 
 Best regards,
 Krzysztof
