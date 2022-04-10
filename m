@@ -2,68 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FFC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 20:12:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7670EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 20:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243898AbiDJUOp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 16:14:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
+        id S243907AbiDJUOr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 16:14:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242784AbiDJUOf (ORCPT
+        with ESMTP id S243889AbiDJUOg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 16:14:35 -0400
+        Sun, 10 Apr 2022 16:14:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D794B1D0;
-        Sun, 10 Apr 2022 13:12:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3574B1CC
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 13:12:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59140B80E7A;
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECC83B80E7D
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 20:12:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 96911C385A4;
         Sun, 10 Apr 2022 20:12:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 21E25C385A1;
-        Sun, 10 Apr 2022 20:12:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649621541;
-        bh=8paowOEL0F6ps9/ZTGBg7dqxv6sITcl+JySDoAnKdeQ=;
+        s=k20201202; t=1649621542;
+        bh=lXzVYyKX9kMuwe87o/UiXITPzlGmt/cZtZ4IHhprIq0=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=C7izLsmvxOs43h8tyFfmCu1hbECZ4TBUjSjMxoy8nlWZyGW8MJzi+3yKa6COtMGfk
-         mbOKbi/8PI72HorPIj+oGBekMqkdCRAglAS5r8Z7t7gSyGWDl41iPlQaL+AvhmqRRZ
-         Xr3Nnex4z8ZRGGZRJTfyTFbvsFUu3sY8FRoCwyXCbLNscxgjxd4GkXYEFhPv3cwsgo
-         aIs74nEpOuZnMxYiP/sw6jVxjZ3Rsk/6pbERKVnTjTi5lJRsQTDz9UYKkSjp2yJw/g
-         LuGHh3NYVAwa8k9wRqCxsJYGk9vc77atjkpmk/IiXXfcLai8vdmL2sgJ+oIT0bubQf
-         OPQBiCqXtee2w==
+        b=KICWpaIRjthSiv+9yN3tOsyOPejXJ7zIF+4tqohaNMwFUs+WZtt1IiqEDEH7x0PYU
+         BHqbOP/qWRJ9SGJaiEvKA+j4oaTkmVH4aujcLAQYMkSnsUUTWPr6npTj/KnpzJJ3Yp
+         03xffgynchV/1IBIB/AKb/FNrf1cC+7WMFyzY0PDxrVSO0kcrT+EYXlwIQnjdjULLG
+         0rWcPutSknqGrh+9OTNGdu1OSHS6861Eelr1GcKvOYt9hlt+tctRw7Hj7MuXhAaMe8
+         OIefpATC/hbZIeXb6OD0cVsDXklDhZsDcUVuOYMJgl/2wxHb/TnsAcJTxE0G9aaFAB
+         cDDOlZ97A0v0w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0C71FE8DD5D;
-        Sun, 10 Apr 2022 20:12:20 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver fix for 5.18-rc2
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 847D1E8DD64;
+        Sun, 10 Apr 2022 20:12:22 +0000 (UTC)
+Subject: Re: [GIT PULL] Staging driver fix for 5.18-rc2
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YlLSyUv83naZO3Lz@kroah.com>
-References: <YlLSyUv83naZO3Lz@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YlLSyUv83naZO3Lz@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc2
-X-PR-Tracked-Commit-Id: dbf3f09322141b6f04a33949453b7626f62d9e0b
+In-Reply-To: <YlLRwmx7f+fdiDuu@kroah.com>
+References: <YlLRwmx7f+fdiDuu@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YlLRwmx7f+fdiDuu@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git tags/staging-5.18-rc2
+X-PR-Tracked-Commit-Id: 20314bacd2f9b1b8fc10895417e6db0dc85f8248
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 8b57b3046107b50ebecb65537a172ef3d6cec673
-Message-Id: <164962154004.385.10080255578914154729.pr-tracker-bot@kernel.org>
-Date:   Sun, 10 Apr 2022 20:12:20 +0000
+X-PR-Merge-Commit-Id: 95aa17c36dc89bf008753217ed27f8a8eb5faf79
+Message-Id: <164962154253.385.4073204117109499480.pr-tracker-bot@kernel.org>
+Date:   Sun, 10 Apr 2022 20:12:22 +0000
 To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
         Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 10 Apr 2022 14:51:21 +0200:
+The pull request you sent on Sun, 10 Apr 2022 14:46:58 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.18-rc2
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git tags/staging-5.18-rc2
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/8b57b3046107b50ebecb65537a172ef3d6cec673
+https://git.kernel.org/torvalds/c/95aa17c36dc89bf008753217ed27f8a8eb5faf79
 
 Thank you!
 
