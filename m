@@ -2,121 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77578C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 10:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86BD0C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 10:49:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237909AbiDJKuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 06:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42104 "EHLO
+        id S237618AbiDJKwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 06:52:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237190AbiDJKty (ORCPT
+        with ESMTP id S230073AbiDJKwA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 06:49:54 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2FE53718;
-        Sun, 10 Apr 2022 03:47:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1649587635;
-        bh=bcuHE5LYV9+TYYYh0ydrJw7GifQW+gzYXpAJjFrVMQk=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=lMxvV4i1Ks1xzYR/VWUoE2+ZOsd6jl0EDnc6VmK6Y8SGiscZalFKsnaKaeUwa4NOZ
-         CtaP1VasZJFVM1r9u8kdYAK97CboQr5vQhSnHAt54MfkgmgqE4xGeh/PyW0/GIGHng
-         Re6o7NEhpJiEnUjuj4kX85JcpB+dIyfWSWHjN2w0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([46.223.3.230]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N7QxL-1o2xMU2AST-017q8t; Sun, 10
- Apr 2022 12:47:15 +0200
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        u.kleine-koenig@pengutronix.de
-Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH v4 RESEND 1/9] serial: core: move RS485 configuration tasks from drivers into core
-Date:   Sun, 10 Apr 2022 12:46:34 +0200
-Message-Id: <20220410104642.32195-2-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220410104642.32195-1-LinoSanfilippo@gmx.de>
-References: <20220410104642.32195-1-LinoSanfilippo@gmx.de>
+        Sun, 10 Apr 2022 06:52:00 -0400
+Received: from IND01-BMX-obe.outbound.protection.outlook.com (mail-bmxind01olkn2109.outbound.protection.outlook.com [40.92.103.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1476652E4D;
+        Sun, 10 Apr 2022 03:49:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EL/jjQKXWGEg9WCgWwDwTqCOIOrKCHVFCkWjrupUhdKR3nZqYqqJUeL8MTh0/9DL8hkxCor+KDGNBIp9GCzYt599fhr87SRjgRiqumjkVFwppDWKQJZrAZkvJw66nF8chp4LZEKD9odY0Jx3QH/k4xojJBssvYy9+MDEcGghPXib+7DIsR94dcjj/Y24P0KEpqyI+dHJipqAtVeAPyTTT9mb6NmiUBR70mUvZw9fW/Z/cQtMsWiGLLD5ZJ9wR7TDZSEpGRWdZdHzfjFtmTaOETqjraBs3AFrEQtB6lYScaAcUG5zNHYAk8fExT0Ikgcpz7YMbdBkRXJZEBKy841OvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HRYT9HIVLI3JsGOF2U/SbYZObbuVI/T8O37W1Car8WE=;
+ b=fOBK8mGfaAVd2CmxnaAFAYY/YSbmGW6nuE+Ll49qWAIHRnHjxZc8NTUP7j+Wkx6eGXBOHtPYQtYoRMvjE/MRhVgsBpxbvUgvVilkNDKBoYDfGmFmR/FoLSgLJCdSGxnjXVBnOy9CTu6L5nEG3JUUtRj4kttph3yfsJS6237rJjAPRm7x4FssEqSmtnT46fwrPUZGRI+u0wXtHjvw65t8wcFxCCmmZNVnpuY0ZEiPeqNwvAzaPsNX/YbnfMYifcvLVwIjLkQx3ulSfABYCYjshsWluFSR69UGBVjJvPkM7sxwf1f8qalr3xFsnxxtMGOL0ucbYrhTRpZ2AqKYIb0xIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=live.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HRYT9HIVLI3JsGOF2U/SbYZObbuVI/T8O37W1Car8WE=;
+ b=Nq9co3KHin5PJ0GpCVJVUIcrfD559PS+EzHaIrp5d9DQtDAVj7clUDeFmZ5V9m1Y7075uXzb48c4fbBjnMqs26Q4NsW8w99a+c1a9q+HpDnaPKfsNNrzXZkgktbVv4YVG9pUmKa4FiIHbVQpQaOLgXhGAhTNUrtEqRSXVpFuKooZmrKQclY/90UuV023HyjdB5Cb3+NYDQ9fxEBeffikonEjNT1D0TF95K60puro2mhCicLP/0+1HEoTEDPuIdYS9dtPJzTTSHq9sFN3x+DhPGUAfTmYqqRoBHY8ez7Zb0wJ89rVypwa1CL8rX9R4ruAardWEP5rGCXDsRcGpWsG4A==
+Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:1b::13)
+ by PNXPR01MB6803.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:a4::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Sun, 10 Apr
+ 2022 10:49:40 +0000
+Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::dc4b:b757:214c:22cd]) by PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::dc4b:b757:214c:22cd%7]) with mapi id 15.20.5144.029; Sun, 10 Apr 2022
+ 10:49:40 +0000
+From:   Aditya Garg <gargaditya08@live.com>
+To:     "jarkko@kernel.org" <jarkko@kernel.org>,
+        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
+        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "serge@hallyn.com" <serge@hallyn.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+CC:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        "admin@kodeit.net" <admin@kodeit.net>
+Subject: [PATCH v3 RESEND] efi: Do not import certificates from UEFI Secure
+ Boot for T2 Macs
+Thread-Topic: [PATCH v3 RESEND] efi: Do not import certificates from UEFI
+ Secure Boot for T2 Macs
+Thread-Index: AQHYTMiu7fv9f4beLU+/MNIc0GPCKQ==
+Date:   Sun, 10 Apr 2022 10:49:40 +0000
+Message-ID: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-tmn:  [Dk+Bk30Vq8pr0Mf13vFncptVWdm2hXtW]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7a20533a-22d9-416d-ec26-08da1adfd0aa
+x-ms-traffictypediagnostic: PNXPR01MB6803:EE_
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mYd/zd2ozv+maSKzZYzunUD8kQHUF4ywu1rIOz7DuAMdtV8JGR2YiCfInTtNbH0m1ZESCJmL0n1FBNHR9jloe8KVZUiIgJIWjyWXBnFeRhxxftgFqUIVNQJO/pqt8U6jpUpGsC2UBZDxhqhvdBpygm5FH9DLvqNbA3H2uJg1rnnm0sWADDS+e/i+d217PBYlmkmQNH0jqGtVbfzs3Eb7ZgjYi7FNBPj3Pirdd+DNJSJctkVPy3Yj+3rNusVA2TmIKaN0nYh8LeGcL8hDntW1btetbJWYZnbTOAjKcR5LUWuBmyIhb9+GP+uhmdOiJZ59FBrpk/BLYlFcORehS8HLUpFCkXWh+EVDHumEXzinpnQU5AW76rj5Yz42FprW1cpa9TkdF1DqOKzJcVJPwMIjeEPd/fWTMlM0OVIhmCCOHqR6QE5obDmPHzmbFLd4x4yAM8wFCoF38B7xngGuR9gibtgVaVCk4rjb/3VinadJfSNdF1VDWkdimg3sylZgKrfiTjBt5VQvJR5M9Vf4ikUEQjlWC4HavoBdkWcxIFaATfTbAUlt2EwT1A438hYPwtJmZSv6NeYUwARKlQGDEwnhQA==
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?d/aGMdBH4KnXkB5maKcP/vhWRHmO+fxg/QzXTX3J2fl54sHWZhLcNKswh6lQ?=
+ =?us-ascii?Q?yNUgn6WIW/YSpc8GvIFOUcmdML41VwMnrk9gR90iCZUeQ+IknOWaZldMuHRh?=
+ =?us-ascii?Q?bqC/xSRlQbBsFxZdyEYxPIaTIazeBxe6cyOk/6HojGyFUvEFrSrymeU67RRD?=
+ =?us-ascii?Q?on8o+zyfsXK1Ce1vkGrH8aHnkIikcNaSUkTg4wTdFqlqktw7qNTTuwY1BpFg?=
+ =?us-ascii?Q?NCcjLHXHTsy95h6yZZKr+gfNtkBSWxKP+nQJ8AQxP8jshwAdfzWVB6cfHuVs?=
+ =?us-ascii?Q?rVLaJaDe7IX5b0SUamdqAaDlbip9W/APDpquVn7s+Rnyr4RByobnsYLZuJ3e?=
+ =?us-ascii?Q?gJg35sBGz2oEoXb3zesPwtFkpWN4kYnRzafsDYwTpkSFh+XmLJvq/qZp6V59?=
+ =?us-ascii?Q?Mrjhqk5ncxKa64/Yb2sMipioauHYqis7IojbEgU6VaaGBUnY8MC+e5RznWig?=
+ =?us-ascii?Q?1/rTew4sWhHYZ9dVpbCE5Q/KTKCeoLRWh27a5Z0ZavtEWYScev1qbB7Jc38K?=
+ =?us-ascii?Q?jmXmc0QlhlVk/FWdriB3AitkL4vdyahPqAJsxc94p/rA5qKFLPF5Kxm6A1uZ?=
+ =?us-ascii?Q?ZoqgmLM9Ldc+Fz8Rri36gs+D+D/hFhAUYFnk/+2MNUq5yHypG5H2hGEvH3Nm?=
+ =?us-ascii?Q?iYXbOCkf6rHT+6RAHhIsM6rc0Svn6NBdW2hD3COB49/5EOHpP5SzI2GaGa4v?=
+ =?us-ascii?Q?/ws93KpkMW6oa4QKvBeZv8MMHXjXqbh5HDKLCG5CzjSoj8npYXXKAvdEm3LK?=
+ =?us-ascii?Q?AUjYh69T7PKEec06qej6Lu7h3bFb2eU5RrkVtB+IcVJX9C/NmepZvIaOx1c0?=
+ =?us-ascii?Q?EiYK6Kkyr7CVHWAdK7CITLui6p3cGTcOmgd8Oygnug56WAbWdRNRyJtHV2m0?=
+ =?us-ascii?Q?KL5xAiWXLkpKWJznBhnbP+5PtR+Fh3v+fMNaa4KWYDVJFrnljzvOgRPEVa8b?=
+ =?us-ascii?Q?LomBorsH7Hok80gXRC8exJ3z0+ORhxXuiqGIuxsd+cK95xps/a71G2tRjKT5?=
+ =?us-ascii?Q?+p4rkqUhKPeOWBUrvnY14dlBhj9BOHsHxAF6hQpbFbnmQqA5NcMmtF6o0BeT?=
+ =?us-ascii?Q?7NxLhAFLWnOua2Sl1JVFii53kSZRkqahnVI8riaKTfudyiS3uOENqishM7dq?=
+ =?us-ascii?Q?Xbcr1mcCis5j6lV3pobve3fyQtFRQl00fxPdTjXz9fwU604ZilUXS/weLBhG?=
+ =?us-ascii?Q?GMEt6dBXo0iTp6ruYpLsZa7BFyJoNdlRR9YXEki7QVCxYiYLIA+jmeKIk27g?=
+ =?us-ascii?Q?Zl5rLMpRS8fp0XAhI7ir0tKRsqgXYpA4C+A2VtSc4bLioFwXaNFHOB5GV6NU?=
+ =?us-ascii?Q?2cOt8fqncBeW+eiQ/M0KLcLf5/VReTHjEmSUHXJTpu3GZ/U+9Bn10iUiFrlk?=
+ =?us-ascii?Q?/iAxgo06lSeGijsxW2F6773Dhi1Ibc8bnWEu1bVex8Pny0EOPDgVZ0BjlC4P?=
+ =?us-ascii?Q?VoJm/GspvjE=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <19A300E8C6374B4A9B52EF1D3E2EA82F@INDPRD01.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:Cbf0m5TvH0ivlHwoDqjuX1YEpNeDKfr+7WrIDoXnHJHL5oc9rwR
- RR0tSPb0vgFgGpPm+NbS5IewZHnWiWlo3WHhYEGogSv1pHWCU+XP7+YOQsda4ZD3VeG2bd0
- U3RjSQ4VrJ9LB0vL6rJoiCQRPu2F12OLni7KTkft35gwUboyxKiTuIAHh1Oc6TJEpjJ1lUe
- Pv7dj4ANcF7hApqa51lnQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:00Xfi7TDn+s=:jsge8c7jbl0RII1rtMh0sj
- YboDPgJwYzvC7ao5PHgFgeXSeofkdYBmYCvWSxtbhzEY4Li8Z7LybTJiyBVR8rov39QddSkGq
- B2tmg0HtKQx4S4B+uFr9kI69WV6X/ljpxzRZ3exdyE4/QcV4LvkImo1IoKDLhxCd1RRXSWovN
- ffxQBtABaIH+W+1AYG3VsT/VaGTNDNeyBOaS+e9zUFJTSlXn4D0+XJFJ4z20u7VeZFeOa0cm/
- XZ7qi3qQsOjbz9rJIaVphbDQgissBugsQNs+zQbjg1rmsKf6PTXdS8vu1qTHcRFUUZMqXs3Od
- Wje5OvLTMT5qUZvZzCicCfcVqPeWZqsJ1v23L61quFMfTHux3hEd3tWe/Na64uKtYMey8Owfd
- POygGRtbg0ZLyjCf/1IzhMxwDEpTPAXIOSGmbBK5NIfIg+2+vDW9UNC/aZG3cih1Lp9SevRfk
- 5URSvi3djPl3glsOJssJx8avsmaDrPQBPqOfFFLrzYKUxUfsdcaNNVwPhE2EfI+kHxYAWvpOQ
- eUSR6oQQJES8N2Aqj6xwCYe8RZx6aEmeoIm6YSRuyQ6Q/R91ust6EN630T4NNYR81ECi4JZki
- mTnueNiYrIdzDCn37DkY4R6OAR5xNB2y6lyXNHYLFaIYTNRwPoUuac77NELFjSqEYtTKiSGsh
- ijPIZNOHEXWUkZ6sU3pEXmxXgskPNFwOf5Dqm9JbowyCD+zIKuRdXhDk1GdaOWF6M5qd18/It
- Vw7hZ6kOoY4CEPqxMbLExM74RI8SN1RLYBGSBH9KZEuNzcf7nrFJ5D0+JDTngO/CwxSDnlc8q
- 3fTs7q0CIAmwUfi+5RV0SpLAZ9uDemz4Af87rKe6J5zagzLkinfq9Rm1GFdXaj3qBMudR3QlK
- LC4vXQBsrXrklC0j6j2JGtGHekNmL64eWdAi3jqtoJqJKN+LcG3ayi9GJzLNCPEWW1yrtkUkP
- 9NMm85Xr1uMQvIYGRO2otn6PQfEaBT/5szjjfS5ZzAEMpaQMc8aH3tDgVj+DR5ghhEQW0YkFa
- YVHkVFeq5axL29QilBQRMFo0YII5dPxgyqoHWWLPjMYi0uvXezu/AdrT4GKEwfsXKmpBh7R2u
- dlX7syztAov0lU=
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-42ed3.templateTenant
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7a20533a-22d9-416d-ec26-08da1adfd0aa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Apr 2022 10:49:40.6769
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PNXPR01MB6803
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-U2V2ZXJhbCBkcml2ZXJzIHRoYXQgc3VwcG9ydCBzZXR0aW5nIHRoZSBSUzQ4NSBjb25maWd1cmF0
-aW9uIHZpYSB1c2Vyc3BhY2UKaW1wbGVtZW50IG9uZSBvciBtb3JlIG9mIHRoZSBmb2xsb3dpbmcg
-dGFza3M6CgotIGluIGNhc2Ugb2YgYW4gaW52YWxpZCBSVFMgY29uZmlndXJhdGlvbiAoYm90aCBS
-VFMgYWZ0ZXIgc2VuZCBhbmQgUlRTIG9uCiAgc2VuZCBzZXQgb3IgYm90aCB1bnNldCkgZmFsbCBi
-YWNrIHRvIGVuYWJsZSBSVFMgb24gc2VuZCBhbmQgZGlzYWJsZSBSVFMKICBhZnRlciBzZW5kCgot
-IG51bGxpZnkgdGhlIHBhZGRpbmcgZmllbGQgb2YgdGhlIHJldHVybmVkIHNlcmlhbF9yczQ4NSBz
-dHJ1Y3QKCi0gY29weSB0aGUgY29uZmlndXJhdGlvbiBpbnRvIHRoZSB1YXJ0IHBvcnQgc3RydWN0
-CgotIGxpbWl0IFJUUyBkZWxheXMgdG8gMTAwIG1zCgpNb3ZlIHRoZXNlIHRhc2tzIGludG8gdGhl
-IHNlcmlhbCBjb3JlIHRvIG1ha2UgdGhlbSBnZW5lcmljIGFuZCB0byBwcm92aWRlCmEgY29uc2lz
-dGVudCBiZWhhdmlvdXIgYW1vbmcgYWxsIGRyaXZlcnMuCgpTaWduZWQtb2ZmLWJ5OiBMaW5vIFNh
-bmZpbGlwcG8gPExpbm9TYW5maWxpcHBvQGdteC5kZT4KLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwv
-c2VyaWFsX2NvcmUuYyB8IDMzICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCiAxIGZp
-bGUgY2hhbmdlZCwgMzMgaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3Nl
-cmlhbC9zZXJpYWxfY29yZS5jIGIvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMKaW5k
-ZXggNmE4OTYzY2FmOTU0Li4xMDhiMzg5ZTZlMTIgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3Nl
-cmlhbC9zZXJpYWxfY29yZS5jCisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWxfY29yZS5j
-CkBAIC00Miw2ICs0MiwxMSBAQCBzdGF0aWMgc3RydWN0IGxvY2tfY2xhc3Nfa2V5IHBvcnRfbG9j
-a19rZXk7CiAKICNkZWZpbmUgSElHSF9CSVRTX09GRlNFVAkoKHNpemVvZihsb25nKS1zaXplb2Yo
-aW50KSkqOCkKIAorLyoKKyAqIE1heCB0aW1lIHdpdGggYWN0aXZlIFJUUyBiZWZvcmUvYWZ0ZXIg
-ZGF0YSBpcyBzZW50LgorICovCisjZGVmaW5lIFJTNDg1X01BWF9SVFNfREVMQVkJMTAwIC8qIG1z
-ZWNzICovCisKIHN0YXRpYyB2b2lkIHVhcnRfY2hhbmdlX3NwZWVkKHN0cnVjdCB0dHlfc3RydWN0
-ICp0dHksIHN0cnVjdCB1YXJ0X3N0YXRlICpzdGF0ZSwKIAkJCQkJc3RydWN0IGt0ZXJtaW9zICpv
-bGRfdGVybWlvcyk7CiBzdGF0aWMgdm9pZCB1YXJ0X3dhaXRfdW50aWxfc2VudChzdHJ1Y3QgdHR5
-X3N0cnVjdCAqdHR5LCBpbnQgdGltZW91dCk7CkBAIC0xMjk2LDggKzEzMDEsMzYgQEAgc3RhdGlj
-IGludCB1YXJ0X3NldF9yczQ4NV9jb25maWcoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwKIAlpZiAo
-Y29weV9mcm9tX3VzZXIoJnJzNDg1LCByczQ4NV91c2VyLCBzaXplb2YoKnJzNDg1X3VzZXIpKSkK
-IAkJcmV0dXJuIC1FRkFVTFQ7CiAKKwkvKiBwaWNrIHNhbmUgc2V0dGluZ3MgaWYgdGhlIHVzZXIg
-aGFzbid0ICovCisJaWYgKCEocnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVfUlRTX09OX1NFTkQpID09
-CisJICAgICEocnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVfUlRTX0FGVEVSX1NFTkQpKSB7CisJCWRl
-dl93YXJuX3JhdGVsaW1pdGVkKHBvcnQtPmRldiwKKwkJCSIlcyAoJWQpOiBpbnZhbGlkIFJUUyBz
-ZXR0aW5nLCB1c2luZyBSVFNfT05fU0VORCBpbnN0ZWFkXG4iLAorCQkJcG9ydC0+bmFtZSwgcG9y
-dC0+bGluZSk7CisJCXJzNDg1LmZsYWdzIHw9IFNFUl9SUzQ4NV9SVFNfT05fU0VORDsKKwkJcnM0
-ODUuZmxhZ3MgJj0gflNFUl9SUzQ4NV9SVFNfQUZURVJfU0VORDsKKwl9CisKKwlpZiAocnM0ODUu
-ZGVsYXlfcnRzX2JlZm9yZV9zZW5kID4gUlM0ODVfTUFYX1JUU19ERUxBWSkgeworCQlyczQ4NS5k
-ZWxheV9ydHNfYmVmb3JlX3NlbmQgPSBSUzQ4NV9NQVhfUlRTX0RFTEFZOworCQlkZXZfd2Fybl9y
-YXRlbGltaXRlZChwb3J0LT5kZXYsCisJCQkiJXMgKCVkKTogUlRTIGRlbGF5IGJlZm9yZSBzZW5k
-aW5nIGNsYW1wZWQgdG8gJXUgbXNcbiIsCisJCQlwb3J0LT5uYW1lLCBwb3J0LT5saW5lLCByczQ4
-NS5kZWxheV9ydHNfYmVmb3JlX3NlbmQpOworCX0KKworCWlmIChyczQ4NS5kZWxheV9ydHNfYWZ0
-ZXJfc2VuZCA+IFJTNDg1X01BWF9SVFNfREVMQVkpIHsKKwkJcnM0ODUuZGVsYXlfcnRzX2FmdGVy
-X3NlbmQgPSBSUzQ4NV9NQVhfUlRTX0RFTEFZOworCQlkZXZfd2Fybl9yYXRlbGltaXRlZChwb3J0
-LT5kZXYsCisJCQkiJXMgKCVkKTogUlRTIGRlbGF5IGFmdGVyIHNlbmRpbmcgY2xhbXBlZCB0byAl
-dSBtc1xuIiwKKwkJCXBvcnQtPm5hbWUsIHBvcnQtPmxpbmUsIHJzNDg1LmRlbGF5X3J0c19hZnRl
-cl9zZW5kKTsKKwl9CisJLyogUmV0dXJuIGNsZWFuIHBhZGRpbmcgYXJlYSB0byB1c2Vyc3BhY2Ug
-Ki8KKwltZW1zZXQocnM0ODUucGFkZGluZywgMCwgc2l6ZW9mKHJzNDg1LnBhZGRpbmcpKTsKKwog
-CXNwaW5fbG9ja19pcnFzYXZlKCZwb3J0LT5sb2NrLCBmbGFncyk7CiAJcmV0ID0gcG9ydC0+cnM0
-ODVfY29uZmlnKHBvcnQsICZyczQ4NSk7CisJaWYgKCFyZXQpCisJCXBvcnQtPnJzNDg1ID0gcnM0
-ODU7CiAJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmcG9ydC0+bG9jaywgZmxhZ3MpOwogCWlmIChy
-ZXQpCiAJCXJldHVybiByZXQ7CgpiYXNlLWNvbW1pdDogMzEyMzEwOTI4NDE3NmIxNTMyODc0NTkx
-ZjdjODFmMzgzN2JiZGMxNwotLSAKMi4zNS4xCgo=
+From: Aditya Garg <gargaditya08@live.com>
+
+On T2 Macs, the secure boot is handled by the T2 Chip. If enabled, only
+macOS and Windows are allowed to boot on these machines. Thus we need to
+disable secure boot for Linux. If we boot into Linux after disabling
+secure boot, if CONFIG_LOAD_UEFI_KEYS is enabled, EFI Runtime services
+fail to start, with the following logs in dmesg
+
+Call Trace:
+ <TASK>
+ page_fault_oops+0x4f/0x2c0
+ ? search_bpf_extables+0x6b/0x80
+ ? search_module_extables+0x50/0x80
+ ? search_exception_tables+0x5b/0x60
+ kernelmode_fixup_or_oops+0x9e/0x110
+ __bad_area_nosemaphore+0x155/0x190
+ bad_area_nosemaphore+0x16/0x20
+ do_kern_addr_fault+0x8c/0xa0
+ exc_page_fault+0xd8/0x180
+ asm_exc_page_fault+0x1e/0x30
+(Removed some logs from here)
+ ? __efi_call+0x28/0x30
+ ? switch_mm+0x20/0x30
+ ? efi_call_rts+0x19a/0x8e0
+ ? process_one_work+0x222/0x3f0
+ ? worker_thread+0x4a/0x3d0
+ ? kthread+0x17a/0x1a0
+ ? process_one_work+0x3f0/0x3f0
+ ? set_kthread_struct+0x40/0x40
+ ? ret_from_fork+0x22/0x30
+ </TASK>
+---[ end trace 1f82023595a5927f ]---
+efi: Froze efi_rts_wq and disabled EFI Runtime Services
+integrity: Couldn't get size: 0x8000000000000015
+integrity: MODSIGN: Couldn't get UEFI db list
+efi: EFI Runtime Services are disabled!
+integrity: Couldn't get size: 0x8000000000000015
+integrity: Couldn't get UEFI dbx list
+integrity: Couldn't get size: 0x8000000000000015
+integrity: Couldn't get mokx list
+integrity: Couldn't get size: 0x80000000
+
+This patch prevents querying of these UEFI variables, since these Macs
+seem to use a non-standard EFI hardware
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Aditya Garg <gargaditya08@live.com>
+---
+v2 :- Reduce code size of the table.
+V3 :- Close the brackets which were left open by mistake.
+ .../platform_certs/keyring_handler.h          |  8 ++++
+ security/integrity/platform_certs/load_uefi.c | 48 +++++++++++++++++++
+ 2 files changed, 56 insertions(+)
+
+diff --git a/security/integrity/platform_certs/keyring_handler.h b/security=
+/integrity/platform_certs/keyring_handler.h
+index 2462bfa08..cd06bd607 100644
+--- a/security/integrity/platform_certs/keyring_handler.h
++++ b/security/integrity/platform_certs/keyring_handler.h
+@@ -30,3 +30,11 @@ efi_element_handler_t get_handler_for_db(const efi_guid_=
+t *sig_type);
+ efi_element_handler_t get_handler_for_dbx(const efi_guid_t *sig_type);
+=20
+ #endif
++
++#ifndef UEFI_QUIRK_SKIP_CERT
++#define UEFI_QUIRK_SKIP_CERT(vendor, product) \
++		 .matches =3D { \
++			DMI_MATCH(DMI_BOARD_VENDOR, vendor), \
++			DMI_MATCH(DMI_PRODUCT_NAME, product), \
++		},
++#endif
+diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integ=
+rity/platform_certs/load_uefi.c
+index 08b6d12f9..f246c8732 100644
+--- a/security/integrity/platform_certs/load_uefi.c
++++ b/security/integrity/platform_certs/load_uefi.c
+@@ -3,6 +3,7 @@
+ #include <linux/kernel.h>
+ #include <linux/sched.h>
+ #include <linux/cred.h>
++#include <linux/dmi.h>
+ #include <linux/err.h>
+ #include <linux/efi.h>
+ #include <linux/slab.h>
+@@ -12,6 +13,32 @@
+ #include "../integrity.h"
+ #include "keyring_handler.h"
+=20
++/* Apple Macs with T2 Security chip don't support these UEFI variables.
++ * The T2 chip manages the Secure Boot and does not allow Linux to boot
++ * if it is turned on. If turned off, an attempt to get certificates
++ * causes a crash, so we simply return 0 for them in each function.
++ */
++
++static const struct dmi_system_id uefi_skip_cert[] =3D {
++
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,3") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,4") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,3") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,4") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,2") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir9,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacMini8,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacPro7,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,1") },
++	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,2") },
++	{ }
++};
++
+ /*
+  * Look to see if a UEFI variable called MokIgnoreDB exists and return tru=
+e if
+  * it does.
+@@ -21,12 +48,18 @@
+  * is set, we should ignore the db variable also and the true return indic=
+ates
+  * this.
+  */
++
+ static __init bool uefi_check_ignore_db(void)
+ {
+ 	efi_status_t status;
+ 	unsigned int db =3D 0;
+ 	unsigned long size =3D sizeof(db);
+ 	efi_guid_t guid =3D EFI_SHIM_LOCK_GUID;
++	const struct dmi_system_id *dmi_id;
++
++	dmi_id =3D dmi_first_match(uefi_skip_cert);
++	if (dmi_id)
++		return 0;
+=20
+ 	status =3D efi.get_variable(L"MokIgnoreDB", &guid, NULL, &size, &db);
+ 	return status =3D=3D EFI_SUCCESS;
+@@ -41,6 +74,11 @@ static __init void *get_cert_list(efi_char16_t *name, ef=
+i_guid_t *guid,
+ 	unsigned long lsize =3D 4;
+ 	unsigned long tmpdb[4];
+ 	void *db;
++	const struct dmi_system_id *dmi_id;
++
++	dmi_id =3D dmi_first_match(uefi_skip_cert);
++	if (dmi_id)
++		return 0;
+=20
+ 	*status =3D efi.get_variable(name, guid, NULL, &lsize, &tmpdb);
+ 	if (*status =3D=3D EFI_NOT_FOUND)
+@@ -85,6 +123,11 @@ static int __init load_moklist_certs(void)
+ 	unsigned long moksize;
+ 	efi_status_t status;
+ 	int rc;
++	const struct dmi_system_id *dmi_id;
++
++	dmi_id =3D dmi_first_match(uefi_skip_cert);
++	if (dmi_id)
++		return 0;
+=20
+ 	/* First try to load certs from the EFI MOKvar config table.
+ 	 * It's not an error if the MOKvar config table doesn't exist
+@@ -138,6 +181,11 @@ static int __init load_uefi_certs(void)
+ 	unsigned long dbsize =3D 0, dbxsize =3D 0, mokxsize =3D 0;
+ 	efi_status_t status;
+ 	int rc =3D 0;
++	const struct dmi_system_id *dmi_id;
++
++	dmi_id =3D dmi_first_match(uefi_skip_cert);
++	if (dmi_id)
++		return 0;
+=20
+ 	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
+ 		return false;
+--=20
+2.25.1
+
+
