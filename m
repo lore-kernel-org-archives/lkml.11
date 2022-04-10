@@ -2,65 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C28BC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 17:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27825C43217
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 17:13:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243322AbiDJRNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 13:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55134 "EHLO
+        id S243707AbiDJRPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 13:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231439AbiDJRNi (ORCPT
+        with ESMTP id S231439AbiDJRPP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 13:13:38 -0400
-Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E3F22B3A;
-        Sun, 10 Apr 2022 10:11:25 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 34ADC30057E6C;
-        Sun, 10 Apr 2022 19:11:23 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 298284A855; Sun, 10 Apr 2022 19:11:23 +0200 (CEST)
-Date:   Sun, 10 Apr 2022 19:11:23 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Lino Sanfilippo <LinoSanfilippo@gmx.de>, peterhuewe@gmx.de,
-        jarkko@kernel.org, =robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stefanb@linux.ibm.com, p.rosenberger@kunbus.com
-Subject: Re: [PATCH 1/5] tpm: add functions to set and unset the tpm chips
- reset state
-Message-ID: <20220410171123.GA24453@wunner.de>
-References: <20220407111849.5676-1-LinoSanfilippo@gmx.de>
- <20220407111849.5676-2-LinoSanfilippo@gmx.de>
- <20220407142526.GW64706@ziepe.ca>
+        Sun, 10 Apr 2022 13:15:15 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E14434B80;
+        Sun, 10 Apr 2022 10:13:03 -0700 (PDT)
+Received: from p508fdda7.dip0.t-ipconnect.de ([80.143.221.167] helo=phil.fritz.box)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1ndb7S-0006hD-L1; Sun, 10 Apr 2022 19:12:58 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     Johan Jonker <jbx6244@gmail.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linus.walleij@linaro.org, linux-gpio@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, robh+dt@kernel.org,
+        krzk+dt@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: (subset) [PATCH v1 1/2] dt-bindings: pinctrl: add rockchip, rk3036-pinctrl compatible string
+Date:   Sun, 10 Apr 2022 19:12:53 +0200
+Message-Id: <164961074165.23152.1000043865716851789.b4-ty@sntech.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220330133952.1949-1-jbx6244@gmail.com>
+References: <20220330133952.1949-1-jbx6244@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407142526.GW64706@ziepe.ca>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 11:25:26AM -0300, Jason Gunthorpe wrote:
-> On Thu, Apr 07, 2022 at 01:18:45PM +0200, Lino Sanfilippo wrote:
-> > Currently it is not possible to set the tpm chips reset state from within
-> > the driver. This is problematic if the chip is still in reset after the
-> > system comes up. This may e.g. happen if the reset line is pulled into
-> > reset state by a pin configuration in the device tree.
-> 
-> This kind of system is badly misdesigned.
-> 
-> TPM PCRs fundementally cannot work if the TPM reset line is under
-> software control.
+On Wed, 30 Mar 2022 15:39:51 +0200, Johan Jonker wrote:
+> Add the compatible string "rockchip,rk3036-pinctrl" in already
+> in use in rk3036.dtsi to rockchip,pinctrl.yaml.
 
-Not every system which incorporates a TPM wants to use or is even capable
-of measuring software state of any kind or perform secure boot.
+Applied, thanks!
 
-Those systems may merely want to use the TPM to store key material.
+[2/2] ARM: dts: rockchip: rk3036: rename pcfg_pull_default node name
+      commit: e0badfe359ef4d01ca74261093e65f742f321da8
 
-Thanks,
-
-Lukas
+Best regards,
+-- 
+Heiko Stuebner <heiko@sntech.de>
