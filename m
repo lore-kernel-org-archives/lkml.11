@@ -2,156 +2,307 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB32C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 19:14:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 837D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 19:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241399AbiDJTQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 15:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35596 "EHLO
+        id S241454AbiDJTS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 15:18:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236808AbiDJTQQ (ORCPT
+        with ESMTP id S234850AbiDJTSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 15:16:16 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C251911C36;
-        Sun, 10 Apr 2022 12:14:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649618033;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=gCViX2U+X9NoN/17GFnwYW9Iv0vePQTk3Ibo8m3xQZE=;
-    b=TZBDrSRUNuDjxPFBRINq4i7WvkygdqKJfxF2OoolWxq/LvXD2dSWzmel4bJ9nHQzSL
-    w+icia3PSvxfOTYMF0UGhAVEFGD8N+iecnFNhHNVDfxdgSgmkPfKeh4vcicFR0oEnJnx
-    M7tU3FyDRNkKYCtGv7nYcEwL1kI+V+GM8r3VErPEnD6HtbytSAwRIYeHVSjV9cU+7tUy
-    gXV4quz/ZEVe8BlxlSac4jMnAuuYVpT3lu9YbayT1J6yGbcSleqhbCP2b0BqpqI+KjSv
-    IrBrYkQwTOl33Zr7n5tLtOeLwPDTt/lXutBcoy6D6eEQyPKnmLEV19+J5lyhbUa4Ulqj
-    IG3g==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7wpz8NIGH/jrwDWqdw=="
-X-RZG-CLASS-ID: mo00
-Received: from imac.fritz.box
-    by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
-    with ESMTPSA id k708cfy3AJDrx23
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Sun, 10 Apr 2022 21:13:53 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [PATCH 07/18] MIPS: DTS: jz4780: fix otg node as reported by
- dtbscheck
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <b6090a27-12b7-0c01-6d33-ae32b31b4b74@wanyeetech.com>
-Date:   Sun, 10 Apr 2022 21:13:52 +0200
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mips@vger.kernel.org, letux-kernel@openphoenux.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <8FA36CE4-CD39-4767-B49E-D112E4313036@goldelico.com>
-References: <cover.1649443080.git.hns@goldelico.com>
- <298162bfa2e7225ccc753865e1ffa39ce2722b2a.1649443080.git.hns@goldelico.com>
- <bd19b6eb-d53a-b665-749d-46c275c85ccc@linaro.org>
- <822182F3-5429-4731-9FA1-8F18C5D95DEC@goldelico.com>
- <535e3eab-a28e-46f3-2a7e-f1ffd1913470@linaro.org>
- <7B66AC66-EF73-4F75-A775-589A4F98BEFC@goldelico.com>
- <3e95f567-03f5-bf9c-1856-9fe602e9b025@linaro.org>
- <81BA49E3-AFDE-4DFD-BB77-2B03488C727B@goldelico.com>
- <b6090a27-12b7-0c01-6d33-ae32b31b4b74@wanyeetech.com>
-To:     Zhou Yanjie <zhouyanjie@wanyeetech.com>
-X-Mailer: Apple Mail (2.3445.104.21)
+        Sun, 10 Apr 2022 15:18:24 -0400
+X-Greylist: delayed 561 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 10 Apr 2022 12:16:09 PDT
+Received: from mail.dr-lotz.de (mail.dr-lotz.de [5.9.59.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C2136149;
+        Sun, 10 Apr 2022 12:16:09 -0700 (PDT)
+Received: from linus-pc.. (ipbcc0dc80.dynamic.kabel-deutschland.de [188.192.220.128])
+        by mail.dr-lotz.de (Postfix) with ESMTPSA id DA43A6CC2D;
+        Sun, 10 Apr 2022 21:06:45 +0200 (CEST)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=lotz.li; s=202112;
+        t=1649617606;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yvR5KIYx1siUjLyjZY1sVsdO1xVwMh3dAu4n9WZQ60U=;
+        b=6pwaIwUhy/ELWwmMHnDX9uVWES9K+D67W6Sdj6JloCPdR1YJYKswzjKQHhl/dL5i6tZDRr
+        ugFDl5aadWF2WbAQ==
+From:   Linus Karl <linus@lotz.li>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Linus Karl <linus@lotz.li>
+Subject: [PATCH v3] wireguard: add netlink mcast on endpoint change
+Date:   Sun, 10 Apr 2022 21:06:35 +0200
+Message-Id: <20220410190635.1171195-2-linus@lotz.li>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220410190635.1171195-1-linus@lotz.li>
+References: <20220410190635.1171195-1-linus@lotz.li>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: -----
+X-Rspamd-Queue-Id: DA43A6CC2D
+Authentication-Results: ORIGINATING;
+        auth=pass smtp.auth=linus smtp.mailfrom=linus@lotz.li
+X-Spamd-Result: default: False [-5.60 / 15.00];
+        REPLY(-4.00)[];
+        BAYES_HAM(-3.00)[100.00%];
+        MID_CONTAINS_FROM(1.00)[];
+        R_MISSING_CHARSET(0.50)[];
+        MIME_GOOD(-0.10)[text/plain];
+        RCVD_COUNT_ZERO(0.00)[0];
+        MIME_TRACE(0.00)[0:+];
+        FROM_EQ_ENVFROM(0.00)[];
+        RCPT_COUNT_SEVEN(0.00)[8];
+        DKIM_SIGNED(0.00)[lotz.li:s=202112];
+        TO_MATCH_ENVRCPT_ALL(0.00)[];
+        ASN(0.00)[asn:3209, ipnet:188.192.0.0/14, country:DE];
+        FROM_HAS_DN(0.00)[];
+        TO_DN_SOME(0.00)[];
+        ARC_NA(0.00)[]
+X-Rspamd-Server: mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+This commit adds a new multicast group "peers" to the netlink api for
+wireguard. The purpose of this multicast group is to notify userspace
+when the peers of an interface change. This is also triggered when
+root changes the endpoint manually.
 
-> Am 10.04.2022 um 18:32 schrieb Zhou Yanjie =
-<zhouyanjie@wanyeetech.com>:
->=20
-> Hi folks,
->=20
-> On 2022/4/9 =E4=B8=8B=E5=8D=889:53, H. Nikolaus Schaller wrote:
->>=20
->>> Am 09.04.2022 um 15:44 schrieb Krzysztof Kozlowski =
-<krzysztof.kozlowski@linaro.org>:
->>>=20
->>> On 09/04/2022 15:32, H. Nikolaus Schaller wrote:
->>>>=20
->>>>> Am 09.04.2022 um 15:15 schrieb Krzysztof Kozlowski =
-<krzysztof.kozlowski@linaro.org>:
->>>>>=20
->>>>> On 09/04/2022 15:05, H. Nikolaus Schaller wrote:
->>>>>>> This looks wrong, the block usually should have a specific =
-compatible.
->>>>>>> Please mention why it does not.
->>>>>> Well, I did not even have that idea that it could need an =
-explanation.
->>>>>>=20
->>>>>> There is no "ingenic,jz4780-otg" and none is needed here to make =
-it work.
->>>>> Make it work in what terms? We talk about hardware description, =
-right?
->>>> Yes.
->>>>=20
->>>>>> Therefore the generic "snps,dwc2" is sufficient.
->>>>> No, you are mixing now driver behavior (is sufficient) with =
-hardware
->>>>> description.
->>>> No. "snps,dwc2" is a hardware description for a licensed block.
->>>> Not a driver behavior.
->>> snps,dwc2 matches the original block, not necessarily this
->>> implementation. Unless you are sure?
->> I assume. Nobody has reported an issue without having any specific =
-jz4780 driver in place.
->> Well, that is only evidence, not bullet proof.
->>=20
->>>>> Most of licensed blocks require the specific compatible to
->>>>> differentiate it.
->>>> If there is a need to differentiate.
->>> No, regardless whether there is a need currently, most of them have
->>> specific compatibles, because there are some minor differences. Even =
-if
->>> difference is not visible from programming model or wiring, it might
->>> justify it's own specific compatible. For example because maybe once
->>> that tiny difference will require some changes.
->>>=20
->>> Someone added the ingenic compatible, so why do you assume that one =
-tool
->>> (bindings) is correct but other piece of code (using specific
->>> compatible) is not? You use the argument "bindings warning" which is =
-not
->>> enough. Argument that blocks are 100% same, is good enough, if you =
-are
->>> sure. Just use it in commit msg. But are you sure that these are the
->>> same? Same pins, same programming model (entire model, not used by =
-Linux)?
->> The compatible ingenic,jz4780-otg was introduced in =
-158c774d3c64859e84dd20e04d5fb18c8d3d318e.
->> Hence I have added Yanjie for clarification why he added it in the =
-.dts and not in the bindings.
->=20
->=20
-> It's my fault, last year I made an OTG driver for Ingenic SoCs and =
-sent it
-> to the mailing list, and then I received some revision comments, but =
-for
-> some personal reasons I didn't continue to improve it.
->=20
-> I'll finish these modifications as soon as possible and send them out.
-> Then after they merge into the mainline, this problem will be solved.
+This feature is enabled through setting a new WGDEVICE_A_MONITOR
+attribute to WGDEVICE_MONITOR_F_ENDPOINT.
 
-No need to apologize.
+An example for an consumer of this API would be a service that keeps
+track of all peer endpoints and sends this information to the peers.
+This would allow NAT-to-NAT connections without the need of using
+STUN on each client.
 
-If you agree I can add "ingenic,jz4780-otg" to the schema file and keep
-the .dts in the v2 of my series.
+Signed-off-by: Linus Karl <linus@lotz.li>
+---
+ drivers/net/wireguard/device.h  |  1 +
+ drivers/net/wireguard/netlink.c | 68 +++++++++++++++++++++++++++++++--
+ drivers/net/wireguard/netlink.h |  4 ++
+ drivers/net/wireguard/socket.c  |  5 +++
+ include/uapi/linux/wireguard.h  | 12 ++++++
+ 5 files changed, 87 insertions(+), 3 deletions(-)
 
-And I'll add you to the list of reviewers, so you can please comment v2
-if it is correct or if we are still missing something.
+diff --git a/drivers/net/wireguard/device.h b/drivers/net/wireguard/device.h
+index 43c7cebbf50b..74d9d772cc94 100644
+--- a/drivers/net/wireguard/device.h
++++ b/drivers/net/wireguard/device.h
+@@ -54,6 +54,7 @@ struct wg_device {
+ 	unsigned int num_peers, device_update_gen;
+ 	u32 fwmark;
+ 	u16 incoming_port;
++	bool endpoint_monitor;
+ };
+ 
+ int wg_device_init(void);
+diff --git a/drivers/net/wireguard/netlink.c b/drivers/net/wireguard/netlink.c
+index d0f3b6d7f408..5902910e015e 100644
+--- a/drivers/net/wireguard/netlink.c
++++ b/drivers/net/wireguard/netlink.c
+@@ -27,7 +27,8 @@ static const struct nla_policy device_policy[WGDEVICE_A_MAX + 1] = {
+ 	[WGDEVICE_A_FLAGS]		= { .type = NLA_U32 },
+ 	[WGDEVICE_A_LISTEN_PORT]	= { .type = NLA_U16 },
+ 	[WGDEVICE_A_FWMARK]		= { .type = NLA_U32 },
+-	[WGDEVICE_A_PEERS]		= { .type = NLA_NESTED }
++	[WGDEVICE_A_PEERS]		= { .type = NLA_NESTED },
++	[WGDEVICE_A_MONITOR]		= { .type = NLA_U8 }
+ };
+ 
+ static const struct nla_policy peer_policy[WGPEER_A_MAX + 1] = {
+@@ -233,7 +234,9 @@ static int wg_get_device_dump(struct sk_buff *skb, struct netlink_callback *cb)
+ 				wg->incoming_port) ||
+ 		    nla_put_u32(skb, WGDEVICE_A_FWMARK, wg->fwmark) ||
+ 		    nla_put_u32(skb, WGDEVICE_A_IFINDEX, wg->dev->ifindex) ||
+-		    nla_put_string(skb, WGDEVICE_A_IFNAME, wg->dev->name))
++		    nla_put_string(skb, WGDEVICE_A_IFNAME, wg->dev->name) ||
++		    nla_put_u8(skb, WGDEVICE_A_MONITOR,
++			       wg->endpoint_monitor ? WGDEVICE_MONITOR_F_ENDPOINT : 0))
+ 			goto out;
+ 
+ 		down_read(&wg->static_identity.lock);
+@@ -538,6 +541,15 @@ static int wg_set_device(struct sk_buff *skb, struct genl_info *info)
+ 			goto out;
+ 	}
+ 
++	if (info->attrs[WGDEVICE_A_MONITOR]) {
++		u8 monitor = nla_get_u8(info->attrs[WGDEVICE_A_MONITOR]);
++
++		if (monitor & ~__WGDEVICE_MONITOR_F_ALL)
++			goto out;
++		wg->endpoint_monitor =
++			(monitor & WGDEVICE_MONITOR_F_ENDPOINT) == WGDEVICE_MONITOR_F_ENDPOINT;
++	}
++
+ 	if (flags & WGDEVICE_F_REPLACE_PEERS)
+ 		wg_peer_remove_all(wg);
+ 
+@@ -618,6 +630,12 @@ static const struct genl_ops genl_ops[] = {
+ 	}
+ };
+ 
++static const struct genl_multicast_group wg_genl_mcgrps[] = {
++	{
++		.name = WG_MULTICAST_GROUP_PEERS
++	}
++};
++
+ static struct genl_family genl_family __ro_after_init = {
+ 	.ops = genl_ops,
+ 	.n_ops = ARRAY_SIZE(genl_ops),
+@@ -626,7 +644,9 @@ static struct genl_family genl_family __ro_after_init = {
+ 	.maxattr = WGDEVICE_A_MAX,
+ 	.module = THIS_MODULE,
+ 	.policy = device_policy,
+-	.netnsok = true
++	.netnsok = true,
++	.mcgrps = wg_genl_mcgrps,
++	.n_mcgrps = ARRAY_SIZE(wg_genl_mcgrps)
+ };
+ 
+ int __init wg_genetlink_init(void)
+@@ -638,3 +658,45 @@ void __exit wg_genetlink_uninit(void)
+ {
+ 	genl_unregister_family(&genl_family);
+ }
++
++int wg_genl_mcast_peer_endpoint_change(struct wg_peer *peer)
++{
++	struct sk_buff *skb;
++	void *hdr, *peer_nest, *peer_array_nest;
++	int fail = 0;
++
++	skb = genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
++	hdr = genlmsg_put(skb, 0, 0,
++			  &genl_family, 0, WG_CMD_CHANGED_PEER);
++
++	nla_put_u32(skb, WGDEVICE_A_IFINDEX, peer->device->dev->ifindex);
++	nla_put_string(skb, WGDEVICE_A_IFNAME, peer->device->dev->name);
++
++	peer_nest = nla_nest_start(skb, WGDEVICE_A_PEERS);
++	peer_array_nest = nla_nest_start(skb, 0);
++	down_read(&peer->handshake.lock);
++	nla_put(skb, WGPEER_A_PUBLIC_KEY, NOISE_PUBLIC_KEY_LEN,
++		peer->handshake.remote_static);
++	up_read(&peer->handshake.lock);
++
++	read_lock_bh(&peer->endpoint_lock);
++	if (peer->endpoint.addr.sa_family == AF_INET)
++		fail = nla_put(skb, WGPEER_A_ENDPOINT,
++			       sizeof(peer->endpoint.addr4),
++			       &peer->endpoint.addr4);
++	else if (peer->endpoint.addr.sa_family == AF_INET6)
++		fail = nla_put(skb, WGPEER_A_ENDPOINT,
++			       sizeof(peer->endpoint.addr6),
++			       &peer->endpoint.addr6);
++	read_unlock_bh(&peer->endpoint_lock);
++	if (fail)
++		return fail;
++
++	nla_nest_end(skb, peer_array_nest);
++	nla_nest_end(skb, peer_nest);
++	genlmsg_end(skb, hdr);
++
++	fail = genlmsg_multicast_netns(&genl_family, dev_net(peer->device->dev),
++				       skb, 0, 0, GFP_KERNEL);
++	return fail;
++}
+diff --git a/drivers/net/wireguard/netlink.h b/drivers/net/wireguard/netlink.h
+index 15100d92e2e3..74ecc72a79a6 100644
+--- a/drivers/net/wireguard/netlink.h
++++ b/drivers/net/wireguard/netlink.h
+@@ -6,6 +6,10 @@
+ #ifndef _WG_NETLINK_H
+ #define _WG_NETLINK_H
+ 
++#include "peer.h"
++
++int wg_genl_mcast_peer_endpoint_change(struct wg_peer *peer);
++
+ int wg_genetlink_init(void);
+ void wg_genetlink_uninit(void);
+ 
+diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
+index 0414d7a6ce74..33e4da2a37ee 100644
+--- a/drivers/net/wireguard/socket.c
++++ b/drivers/net/wireguard/socket.c
+@@ -8,6 +8,7 @@
+ #include "socket.h"
+ #include "queueing.h"
+ #include "messages.h"
++#include "netlink.h"
+ 
+ #include <linux/ctype.h>
+ #include <linux/net.h>
+@@ -294,6 +295,10 @@ void wg_socket_set_peer_endpoint(struct wg_peer *peer,
+ 	dst_cache_reset(&peer->endpoint_cache);
+ out:
+ 	write_unlock_bh(&peer->endpoint_lock);
++
++	if (peer->device->endpoint_monitor) {
++		wg_genl_mcast_peer_endpoint_change(peer);
++	}
+ }
+ 
+ void wg_socket_set_peer_endpoint_from_skb(struct wg_peer *peer,
+diff --git a/include/uapi/linux/wireguard.h b/include/uapi/linux/wireguard.h
+index ae88be14c947..cde044fb1124 100644
+--- a/include/uapi/linux/wireguard.h
++++ b/include/uapi/linux/wireguard.h
+@@ -29,6 +29,7 @@
+  *    WGDEVICE_A_PUBLIC_KEY: NLA_EXACT_LEN, len WG_KEY_LEN
+  *    WGDEVICE_A_LISTEN_PORT: NLA_U16
+  *    WGDEVICE_A_FWMARK: NLA_U32
++ *    WGDEVICE_A_MONITOR: NLA_U8
+  *    WGDEVICE_A_PEERS: NLA_NESTED
+  *        0: NLA_NESTED
+  *            WGPEER_A_PUBLIC_KEY: NLA_EXACT_LEN, len WG_KEY_LEN
+@@ -83,6 +84,9 @@
+  *    WGDEVICE_A_PRIVATE_KEY: len WG_KEY_LEN, all zeros to remove
+  *    WGDEVICE_A_LISTEN_PORT: NLA_U16, 0 to choose randomly
+  *    WGDEVICE_A_FWMARK: NLA_U32, 0 to disable
++ *    WGDEVICE_A_MONITOR: NLA_U8, set to a value of wgdevice_monitor_flag to
++ *                      enable monitoring of events using multicast messages
++ *                      over netlink
+  *    WGDEVICE_A_PEERS: NLA_NESTED
+  *        0: NLA_NESTED
+  *            WGPEER_A_PUBLIC_KEY: len WG_KEY_LEN
+@@ -136,9 +140,12 @@
+ 
+ #define WG_KEY_LEN 32
+ 
++#define WG_MULTICAST_GROUP_PEERS          "peers"
++
+ enum wg_cmd {
+ 	WG_CMD_GET_DEVICE,
+ 	WG_CMD_SET_DEVICE,
++	WG_CMD_CHANGED_PEER,
+ 	__WG_CMD_MAX
+ };
+ #define WG_CMD_MAX (__WG_CMD_MAX - 1)
+@@ -157,9 +164,14 @@ enum wgdevice_attribute {
+ 	WGDEVICE_A_LISTEN_PORT,
+ 	WGDEVICE_A_FWMARK,
+ 	WGDEVICE_A_PEERS,
++	WGDEVICE_A_MONITOR,
+ 	__WGDEVICE_A_LAST
+ };
+ #define WGDEVICE_A_MAX (__WGDEVICE_A_LAST - 1)
++enum wgdevice_monitor_flag {
++	WGDEVICE_MONITOR_F_ENDPOINT = 1U << 0,
++	__WGDEVICE_MONITOR_F_ALL = WGDEVICE_MONITOR_F_ENDPOINT
++};
+ 
+ enum wgpeer_flag {
+ 	WGPEER_F_REMOVE_ME = 1U << 0,
 
-Best regards and thanks,
-Nikolaus
+base-commit: 1862a69c917417142190bc18c8ce16680598664b
+-- 
+2.35.1
 
