@@ -2,279 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0618C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0919DC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243546AbiDJQOw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 12:14:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36116 "EHLO
+        id S243557AbiDJQPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 12:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240551AbiDJQOs (ORCPT
+        with ESMTP id S233330AbiDJQPO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 12:14:48 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC43506CF;
-        Sun, 10 Apr 2022 09:12:37 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id u15so7658139ejf.11;
-        Sun, 10 Apr 2022 09:12:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=n3XGAdzzz/+5bT8q+RENXVS4bI+kwN6cAFNKDEuZ0CM=;
-        b=fvJKrQJTDmhHz0iOM8fM0KwsGjkIykaNWD1jdY+C9TWjGFr+d6dYicINChuFgTeoAA
-         jNK+GFEKcCY3Rcjm2pYFIkGxSGF3LavBhM3mzAKr/4AvCAVoEleq/jbxVcgwXaPhkJfk
-         QHAnb2/pscghhG1kaQtwNiYqr7lLAEgwornR2G0tvnUHL/Ip0MUqElhw/RcK+LWpAJdu
-         wi9HMrUhzloQnkUoU21IW3cv0WTOGA27tnZmRFKJ+c654Hs5qAQbTEcThr8Mwb/AGHJ6
-         Udkv38Pgi04b1HXI1hjJJZzMyws9j45MDIntOEAgp2/wBQyBrw8ikvQbrmK6anfnCslv
-         Q2Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=n3XGAdzzz/+5bT8q+RENXVS4bI+kwN6cAFNKDEuZ0CM=;
-        b=hLi9/qmUPk7naNT84MFBgmDS57S+Ai9sWS9ThUksLSKLENaefx3D8NpFmpzlhGNwl2
-         CCidSLYOZD32xZoQwWtCCFhtbqlyFtpegFpBmArN/6Xyp7aROw8T2VIydl6kGRlvzNTU
-         vAXgjqcbZR5HkIk4o4ODWyzqXzghiQS05gRpoz+4e1Oah+8XdXG8DpWboIcE+DttFofN
-         /RPwgKEB2QRTrpRSrUViusnJ58/OS/z0rjOyif5vGF5Qmt8V4X9NY6+AX4AcrsS1qaXz
-         VYbBMuEg3jpqRLxQ4QOUwbq5zaZBctyDX8WtSGm/nEMlw2FUXXpBzBr74dKn/2hefADm
-         5cPw==
-X-Gm-Message-State: AOAM530dJz57Zfq0L+urBL/jekZXDU5Q6S7tupMBOy1LR0POHKFQgkQZ
-        1NtlIMFniUIsSxEFae/rF14=
-X-Google-Smtp-Source: ABdhPJxF7lFhqFw6a56Dsiepy+Qq5WHEgzFtdFF8g1vUVid2LANDepiYCz2afM8oYFSWNNgdXuQkYA==
-X-Received: by 2002:a17:907:7b86:b0:6e8:5116:f4f6 with SMTP id ne6-20020a1709077b8600b006e85116f4f6mr11001952ejc.392.1649607156304;
-        Sun, 10 Apr 2022 09:12:36 -0700 (PDT)
-Received: from [192.168.0.48] (ip-046-005-230-076.um12.pools.vodafone-ip.de. [46.5.230.76])
-        by smtp.gmail.com with ESMTPSA id bw3-20020a170906c1c300b006e88cdfbc32sm656132ejb.45.2022.04.10.09.12.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 10 Apr 2022 09:12:35 -0700 (PDT)
-From:   Edward Shishkin <edward.shishkin@gmail.com>
-Subject: Reiser5: Parallel scaling out on local hosts. Numbers!
-To:     ReiserFS development mailing list 
-        <reiserfs-devel@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     Andy Lavr <andy.lavr@gmail.com>
-Message-ID: <488ed272-d2ee-d311-aa0c-23eb212b21bf@gmail.com>
-Date:   Sun, 10 Apr 2022 18:12:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        Sun, 10 Apr 2022 12:15:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29485E76C;
+        Sun, 10 Apr 2022 09:13:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E2296104E;
+        Sun, 10 Apr 2022 16:13:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 316A2C385A4;
+        Sun, 10 Apr 2022 16:12:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649607181;
+        bh=jtJwcBcbIqdZZpkCbauCfaMXTxA3jnmG9MIcebsKJAg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JarvrELkFGX0DXRP5rWopewXBmTwBBLn9c7g1ziiQfujHRMHm+mgiGQtGZT/XqDc6
+         y+xjCnEAVNfCbnipfXng258rQreuKOnbmytng7FMGt0/5qFmHxWUZQEVgiA/gHpvV1
+         C9z3CJwXCi7T4osh0cu2DKJu6UNCwsZ8mKXmSFJio0TVawgTa5zgXDbsHEShpTA7E0
+         rHQ7XQsfIJ3BJ4jJcoEIx0AEMkda32qd0r8YNIXhIje/WHskx1O5an23cQ6CCE8w39
+         cNhFBHgrXiB8a7/YIzGh9X55ohGYadBBey2DgcxHFBuo9h4Xb2yXlTsnvM2+ACu0FT
+         UJw4OD2jrfNkA==
+Date:   Sun, 10 Apr 2022 17:20:51 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, orsonzhai@gmail.com,
+        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        yuming.zhu1@unisoc.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V3 4/7] iio: adc: refactor some functions for support
+ more PMiCs
+Message-ID: <20220410172051.4fdf8b85@jic23-huawei>
+In-Reply-To: <20220407082148.571442-5-gengcixi@gmail.com>
+References: <20220407082148.571442-1-gengcixi@gmail.com>
+        <20220407082148.571442-5-gengcixi@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+On Thu,  7 Apr 2022 16:21:45 +0800
+Cixi Geng <gengcixi@gmail.com> wrote:
+
+> From: Cixi Geng <cixi.geng1@unisoc.com>
+> 
+> refactor the common adc_nvmem_cell_calib_data,adc_to_volt and call
+> these in the origin sc27xx_adc_scale_calibration,sc27xx_adc_to_volt
+> 
+> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+One trivial comment inline.
+
+> ---
+>  drivers/iio/adc/sc27xx_adc.c | 57 ++++++++++++++++++++++++++----------
+>  1 file changed, 41 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+> index 28bd70c27420..60c0a6aa3f45 100644
+> --- a/drivers/iio/adc/sc27xx_adc.c
+> +++ b/drivers/iio/adc/sc27xx_adc.c
+> @@ -136,16 +136,41 @@ static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
+>  	return ((calib_data & 0xff) + calib_adc - 128) * 4;
+>  }
+>  
+> +/* get the adc nvmem cell calibration data */
+> +static int adc_nvmem_cell_calib_data(struct sc27xx_adc_data *data, const char *cell_name)
+> +{
+> +	struct nvmem_cell *cell;
+> +	void *buf;
+> +	u32 origin_calib_data = 0;
+> +	size_t len;
+> +
+> +	if (!data)
+> +		return -EINVAL;
+> +
+> +	cell = nvmem_cell_get(data->dev, cell_name);
+> +	if (IS_ERR(cell))
+> +		return PTR_ERR(cell);
+> +
+> +	buf = nvmem_cell_read(cell, &len);
+> +	if (IS_ERR(buf)) {
+> +		nvmem_cell_put(cell);
+> +		return PTR_ERR(buf);
+> +	}
+> +
+> +	memcpy(&origin_calib_data, buf, min(len, sizeof(u32)));
+> +
+> +	kfree(buf);
+> +	nvmem_cell_put(cell);
+> +	return origin_calib_data;
+> +}
+> +
+>  static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
+>  					bool big_scale)
+>  {
+>  	const struct sc27xx_adc_linear_graph *calib_graph;
+>  	struct sc27xx_adc_linear_graph *graph;
+> -	struct nvmem_cell *cell;
+>  	const char *cell_name;
+>  	u32 calib_data = 0;
+> -	void *buf;
+> -	size_t len;
+>  
+>  	if (big_scale) {
+>  		calib_graph = data->var_data->bscale_cal;
+> @@ -157,24 +182,13 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
+>  		cell_name = "small_scale_calib";
+>  	}
+>  
+> -	cell = nvmem_cell_get(data->dev, cell_name);
+> -	if (IS_ERR(cell))
+> -		return PTR_ERR(cell);
+> -
+> -	buf = nvmem_cell_read(cell, &len);
+> -	nvmem_cell_put(cell);
+> -
+> -	if (IS_ERR(buf))
+> -		return PTR_ERR(buf);
+> -
+> -	memcpy(&calib_data, buf, min(len, sizeof(u32)));
+> +	calib_data = adc_nvmem_cell_calib_data(data, cell_name);
+>  
+>  	/* Only need to calibrate the adc values in the linear graph. */
+>  	graph->adc0 = sc27xx_adc_get_calib_data(calib_data, calib_graph->adc0);
+>  	graph->adc1 = sc27xx_adc_get_calib_data(calib_data >> 8,
+>  						calib_graph->adc1);
+>  
+> -	kfree(buf);
+>  	return 0;
+>  }
+>  
+> @@ -285,6 +299,7 @@ static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
+>  disable_adc:
+>  	regmap_update_bits(data->regmap, data->base + SC27XX_ADC_CTL,
+>  			   SC27XX_ADC_EN, 0);
+> +
+
+Unrelated change that shouldn't be in this patch.
+
+>  unlock_adc:
+>  	hwspin_unlock_raw(data->hwlock);
+>  
+> @@ -305,7 +320,7 @@ static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data,
+>  	*div_denominator = ratio & SC27XX_RATIO_DENOMINATOR_MASK;
+>  }
+>  
+> -static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
+> +static int adc_to_volt(struct sc27xx_adc_linear_graph *graph,
+>  			      int raw_adc)
+>  {
+>  	int tmp;
+> @@ -314,6 +329,16 @@ static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
+>  	tmp /= (graph->adc0 - graph->adc1);
+>  	tmp += graph->volt1;
+>  
+> +	return tmp;
+> +}
+> +
+> +static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
+> +			      int raw_adc)
+> +{
+> +	int tmp;
+> +
+> +	tmp = adc_to_volt(graph, raw_adc);
+> +
+>  	return tmp < 0 ? 0 : tmp;
+>  }
+>  
 
-Earlier we announced a logical volume manager with parallel scaling out
-on local hosts, which is different from the traditional RAID arrays and
-is more like volume managers of networking file systems:
-https://reiser4.wiki.kernel.org/index.php/Logical_Volumes_Background
-
-Here we provide some numbers for the latest Reiser5 software release.
-
-Note that performance of volume operations have different topicality.
-E.g. performance of device removal is more topical than performance of
-adding a device. Indeed, user usually wants the deleted device to go to
-other needs immediately, whereas, when adding a device he gets more disk
-space immediately after issuing the command (there is no need to wait
-for rebalancing completion).
-
-
-
-Hardware:
-
-Dell OptiPlex 7050 6C2XR, Intel Core i7-7700, 16GB RAM
-(4 Cores / 8 Threads)
-
-Storage media:
-
-DEV1: Lite-On LCS-256M6S, SSD 256GB, SATAIII, 2.5"
-DEV2: Intenso 2.5" SSD TOP, 256G, SATAIII, 2.5"
-DEV3: Intenso 2.5" SSD TOP, 256G, SATAIII, 2.5"
-DEV4: Intenso M.2  SSD TOP, 256G, SATAIII, m.2 2280
-RAM0: Block device in RAM
-
-
-Software:
-
-Reiser4-for-5.16.patch (software release 5.1.3), download at:
-https://sourceforge.net/projects/reiser4/files/v5-unstable/kernel/reiser4-for-5.16.patch.gz/download
-
-
-Reiser4progs-2.0.5 (software release 5.1.3), download at:
-https://sourceforge.net/projects/reiser4/files/v5-unstable/progs/reiser4progs-2.0.5.tar.gz/download
-
-
-
-
-                Sequential RAW operations
-
-
-Data set: 10G at zero offset
-
-
-1. Read from RAW device
-
-Device     Speed, M/s
-
-   DEV1         470
-   DEV2         530
-
-
-2. Write to RAW device
-
-Device     Speed, M/s
-
-
-   DEV1        390
-   DEV2        420
-
-
-
-              Sequential file operations
-
-
-Stripe size: 128K
-Data set: one 10G file
-
-
-
-            1. Read/Write a large file, Speed (M/s)
-
-
-
-Nr of Disks in the Volume       Write               Read
-
-  1 (DEV1)                        380                 460
-  1 (DEV2)                        410                 518
-  2 (DEV1+DEV2)                   695                 744
-  3 (DEV1+DEV2+DEV3)              890                 970
-  4 (DEV1+DEV2+DEV3+DEV4)         950                1100
-
-
-
-             2. Copy data from/to formatted device
-
-
-
-  From device                  To device           Speed (M/s)
-
-      DEV1                        DEV2                260
-      DEV2                        DEV1                255
-
-
-                         Volume operations
-
-
-Stripe size: 128K
-Data set: one 10G file
-
-
-Speed of any volume operation is defined as D/T, where
-D - total amount of data stored on the volume
-T - operation time (including full data rebalancing/migration and sync)
-Caches are dropped before each operation.
-
-More details about logical volumes management can be found here:
-https://reiser4.wiki.kernel.org/index.php/Logical_Volumes_Administration
-
-
-
-              1. Adding a device to a logical volume
-
-
-
-      Volume             Device to add              Speed M/s
-
-  DEV1                        DEV2                     284
-  DEV1+DEV2                   DEV3                     457
-  DEV1+DEV2+DEV3              DEV4                     574
-
-
-               2. Removing a device from a logical volume
-
-
-
-     Volume              Device to remove           Speed M/s
-
-  DEV1+DEV2+DEV3+DEV4         DEV4                     890
-  DEV1+DEV2+DEV3              DEV3                     606
-  DEV1+DEV2                   DEV2                     336
-
-
-
-                    3. Flushing a proxy device
-
-
-
-More details about proxy device management can be found here:
-https://reiser4.wiki.kernel.org/index.php/Proxy_Device_Administration
-
-Before each operation all data of the logical volume are on the proxy
-device. After the operation all the data are on the permanent storage
-denoted as "Volume".
-
-
-     Volume                Proxy device             Speed M/s
-
-
-  DEV1                         DEV4                    228
-  DEV1+DEV2                    DEV4                    244
-  DEV1+DEV2+DEV3               DEV4                    290
-
-
-  DEV1                         RAM0                    283
-  DEV1+DEV2                    RAM0                    301
-  DEV1+DEV2+DEV3               RAM0                    374
-  DEV1+DEV2+DEV3+DEV4          RAM0                    427
-
-
-
-                     4. Migrating a file
-
-
-
-More details about file migration in Reiser5 volumes can be found here:
-https://reiser4.wiki.kernel.org/index.php/Transparent_File_Migration
-
-Before each operation all data of the file are fairly distributed among
-all devices-components of the logical Volume. After the operation all
-file's data are stored on the Target device.
-
-
-     Volume                Target Device            Speed M/s
-
-
-DEV1+DEV2+DEV3+DEV4           DEV1                     387
-DEV1+DEV2+DEV3                DEV1                     403
-DEV1+DEV2                     DEV1                     427
-
-
-Comment. With increasing number of components, the speed of file
-migration approaches (from top) the write speed to the formatted device
-DEV1 (380 M/s).
-
-
-
-                            Comments
-
-
-
-Parallel O(1)-defragmentor of compound Reiser5 volumes is in plans!
-Proxy devices are also a subject of defragmentation.
-
-All file and volume operations are a subject of further performance
-improvements. Currently IO requests against devices-components of a
-logical volume are submitted by the same thread. This serialization
-factor leads to performance drop. Once the software stability reaches
-beta level, the things should be parallelized. Also currently for
-simplicity _all_ data are read from the volume during its re-balancing.
-It would be more reasonable to read only those data which are a subject
-of migration.
-
-Theoretical limit for the speed of adding(removing) a second device is a
-double copy speed from DEV1 to DEV2 (respectively from DEV2 to DEV1).
-Currently we have respectively 1.1 and 1.3 of the copy speed.
