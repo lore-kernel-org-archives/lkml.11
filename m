@@ -2,126 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38094C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 19:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 184E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 19:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243687AbiDJTy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 15:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43684 "EHLO
+        id S243852AbiDJUBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 16:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241787AbiDJTy4 (ORCPT
+        with ESMTP id S229590AbiDJUBI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 15:54:56 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2E449F2F
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 12:52:45 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id k14so12423796pga.0
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 12:52:45 -0700 (PDT)
+        Sun, 10 Apr 2022 16:01:08 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF3F724BED
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 12:58:56 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id u19so3169448lff.4
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 12:58:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uXW0wU6sL+xTUffIXy2C7Ev5QLBh8RLDYuS2RioYZVw=;
-        b=FA9BfN7WVP72n6YbEgBrcwEbcdcbxrPgQ49kuHo1RUOXKHWgqEiwV1TbvWccxvIPQ2
-         yaaPFBH/SrkGDRJmYkugiD11gY6pWLVQIt9FiDNv98WX6iaEmW7vEePNnVCvMpQkDF7+
-         BH8RqmRZK4HIcxhnaticcFapCzIAoSg98PLugFXkyXdg+SCBcNZCkxnN4tvj/mZKldtr
-         70jONUbyUQdT/d6kxvbGaK6ARNE5gZsfsZeK7cncnxXRRLH9M6UCDeJN28ytfigcKpIx
-         4oNVWBP/i3RC1wZ58Kzh9RHsz9qFJnm+Nl5qbSVD4lf9SM+IJzjtX7axrhcs+s6q2Z5p
-         LUxw==
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i/oSg9CrxJRnQxeUPmlx0mpM+OCUDcuxMV4Hy9i5v8M=;
+        b=msO3gNXWzO1zO1DvK8KfVh+CKsuH7swYmYOgw9kzyO8qJa+4rHqQRFB0D7viyQiemH
+         2k38cUCQWXSgzpkelkzGSgOT2YDyCwhozUt5hpeQlHh7/ZvLpaNePEyqmxhkbhZKOVjg
+         LPT2GI/Js+asU6nC2//0lxbvP8cc7uQWMs8yWarGaNWuMt150FTCLya/UVeUoBT1mNdV
+         w0Xidbn+t3FjKGcfAsQX3MvFwrvB/AZkc8giW3COeH+SWGbXd6gKXW4U3w5w8n2t5vrJ
+         Zrym7h71MM6mEkfmsC4RRJOn1g6KhapTS2IypR1QdKWZW4rqq5lM1VNqvfYwTNvH9FRo
+         Jiig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uXW0wU6sL+xTUffIXy2C7Ev5QLBh8RLDYuS2RioYZVw=;
-        b=ZNi/5/6aaD55o2VPuGJdjMWRxiXu+wrQoY7L2KL/eVlk3U3of+RONPYhYDN7ZwemBV
-         wpkjzMpmR1L12LaxSGl1lE16BTkkdAGx0EGAcitvaKpfu9UvotXm3n+gxpQpaFnFkuWL
-         0cCyVj6HlpxDTMMvkgNB0v0MuB2RiWByTxMBz2paxl9QHmcCELXH/FqBn/RvviqCwWbA
-         eTw+pIvvIcyrZ2E8GycOKbBDKEU6yRBhjPKYwg+959mncgAXLh1yFTtG5L21UlKboTCm
-         CoMbqFVPtk/6XcF9WBLjNXnNO9jv326PT9ZIKkklICN8qU7NqZphQACCBxNuvFruw7Zi
-         /XBA==
-X-Gm-Message-State: AOAM532so86su+xMdQV6lMNd5FlTSVVEJRUxfQXzmwnQiqJhwvCUI7Q6
-        4kdkVhjRSuKL2nZ1hSMzvSZ+KxqkOlt3uz4fSws=
-X-Google-Smtp-Source: ABdhPJzBEeA12N7T+usRtAyQktRWwo1cbNQ6FobBLbugkem4fWgOJf7iPkSK2Grrf1UVniEG+fFlKVPzXcT9+OTGzNI=
-X-Received: by 2002:a63:4f46:0:b0:382:56b2:f8 with SMTP id p6-20020a634f46000000b0038256b200f8mr23829251pgl.90.1649620365218;
- Sun, 10 Apr 2022 12:52:45 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i/oSg9CrxJRnQxeUPmlx0mpM+OCUDcuxMV4Hy9i5v8M=;
+        b=YyIs6DldlVDVlt74xcZlpFuBNEJRnIpErnWDUB6BSuw72Xo4BYOv6s0wqxxRGvjsmr
+         OFX7/H687OzZQhy29v64r9Q1QX4YNbwtW0arwRqqUkwmtihjJ4x1nahQgEaw578O3Lwo
+         owAYz5eENcr+R7Z7/vVDKC5Z3tqq+j8MzyWE3slnQnRcgJL88AgrbepRNRAD7gJ/y7HH
+         pvVem+n3AswaFdr1iPA5gs4+/zlbC4eSIOkCL/sdUmGmeZEeHhDX0I23bGLB3O35s99G
+         d7BzR7x6a0FQtedDiHr4dBXpoHX5gvQYd8NrLJdc/BW+EbVCmDbHFznca925juJe70q2
+         VLMQ==
+X-Gm-Message-State: AOAM530oox16E4zFkx20iMzrXO3KZE8beoFX9l15rws+hf6Grg6VxahV
+        6Os3/uupRIFf0nabPJiM7bDLog==
+X-Google-Smtp-Source: ABdhPJzZpveH/oCPtSdDoCQpCrvmjQzSll2tE6efunLOHYSaUHR8grFJDKHFw3V51hSWc70/OsuZkQ==
+X-Received: by 2002:a19:9107:0:b0:46b:96e0:41c9 with SMTP id t7-20020a199107000000b0046b96e041c9mr4657386lfd.333.1649620735223;
+        Sun, 10 Apr 2022 12:58:55 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id b11-20020ac2410b000000b004457116a575sm3110709lfi.273.2022.04.10.12.58.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 Apr 2022 12:58:53 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id AD2D410446F; Sun, 10 Apr 2022 23:00:25 +0300 (+03)
+Date:   Sun, 10 Apr 2022 23:00:25 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv8 14/30] x86: Consolidate port I/O helpers
+Message-ID: <20220410200025.3stf4jjvwfe5oxew@box.shutemov.name>
+References: <20220405232939.73860-1-kirill.shutemov@linux.intel.com>
+ <20220405232939.73860-15-kirill.shutemov@linux.intel.com>
+ <YlK4SYXV6zbDa1Lq@zn.tnic>
 MIME-Version: 1.0
-References: <20220409042321.3184493-1-james.hilliard1@gmail.com>
- <CAMeQTsanEow=zq=MuZLjMqpzybdS=5S0=JrkxuCdT7d5MxpEWQ@mail.gmail.com> <CADvTj4rBKzGFch8iVzHu1s+6=P0PcLEwoFi74xd_ormEX+2rMA@mail.gmail.com>
-In-Reply-To: <CADvTj4rBKzGFch8iVzHu1s+6=P0PcLEwoFi74xd_ormEX+2rMA@mail.gmail.com>
-From:   Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-Date:   Sun, 10 Apr 2022 21:52:33 +0200
-Message-ID: <CAMeQTsaM363n5F=--xhSTayFqOMNvjTQjqz_aEhby6i-KRVBKQ@mail.gmail.com>
-Subject: Re: [PATCH v3] drm/gma500: depend on framebuffer
-To:     James Hilliard <james.hilliard1@gmail.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlK4SYXV6zbDa1Lq@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 10, 2022 at 9:40 PM James Hilliard
-<james.hilliard1@gmail.com> wrote:
->
-> On Sun, Apr 10, 2022 at 1:36 PM Patrik Jakobsson
-> <patrik.r.jakobsson@gmail.com> wrote:
-> >
-> > On Sat, Apr 9, 2022 at 6:23 AM James Hilliard <james.hilliard1@gmail.com> wrote:
-> > >
-> > > Select the efi framebuffer if efi is enabled.
-> > >
-> > > This appears to be needed for video output to function correctly.
-> > >
-> > > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-> >
-> > Hi James,
-> > EFI_FB is its own driver and not needed by gma500 to drive its
-> > hardware. What makes you think it's required?
->
-> I wasn't getting any HDMI video output without it enabled for some reason,
-> I assume it is doing some sort of initialization needed by gma500
-> during startup.
+On Sun, Apr 10, 2022 at 12:58:17PM +0200, Borislav Petkov wrote:
+> On Wed, Apr 06, 2022 at 02:29:23AM +0300, Kirill A. Shutemov wrote:
+> > There are two implementations of port I/O helpers: one in the kernel and
+> > one in the boot stub.
+> > 
+> > Move the helpers required for both to <asm/shared/io.h> and use the one
+> > implementation everywhere.
+> > 
+> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> > Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+> > ---
+> >  arch/x86/boot/boot.h             | 35 +-------------------------------
+> >  arch/x86/boot/compressed/misc.h  |  2 +-
+> >  arch/x86/include/asm/io.h        | 22 ++------------------
+> >  arch/x86/include/asm/shared/io.h | 34 +++++++++++++++++++++++++++++++
+> >  4 files changed, 38 insertions(+), 55 deletions(-)
+> >  create mode 100644 arch/x86/include/asm/shared/io.h
+> 
+> This complains with clang-13 here, config attached.
+> 
+> And yap, this is the damn include hell I keep talking about. That
+> lib/kalsr.c thing includes the kernel proper io.h header ...
 
-Then it sounds like you might just be using EFI_FB and not gma500. Can
-you provide the kernel log with drm.debug=0x1f set on kernel
-command-line.
+Right. <asm/shared/io.h> is enough for lib/kaslr.c.
 
-What machine is this? I've seen very few gma500 devices with UEFI.
+What about this:
 
->
-> >
-> > -Patrik
-> >
-> > > ---
-> > > Changes v2 -> v3:
-> > >   - select EFI_FB instead of depending on it
-> > > Changes v1 -> v2:
-> > >   - use depends instead of select
-> > > ---
-> > >  drivers/gpu/drm/gma500/Kconfig | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > >
-> > > diff --git a/drivers/gpu/drm/gma500/Kconfig b/drivers/gpu/drm/gma500/Kconfig
-> > > index 0cff20265f97..a422fa84d53b 100644
-> > > --- a/drivers/gpu/drm/gma500/Kconfig
-> > > +++ b/drivers/gpu/drm/gma500/Kconfig
-> > > @@ -2,11 +2,13 @@
-> > >  config DRM_GMA500
-> > >         tristate "Intel GMA500/600/3600/3650 KMS Framebuffer"
-> > >         depends on DRM && PCI && X86 && MMU
-> > > +       depends on FB
-> > >         select DRM_KMS_HELPER
-> > >         # GMA500 depends on ACPI_VIDEO when ACPI is enabled, just like i915
-> > >         select ACPI_VIDEO if ACPI
-> > >         select BACKLIGHT_CLASS_DEVICE if ACPI
-> > >         select INPUT if ACPI
-> > > +       select FB_EFI if EFI
-> > >         help
-> > >           Say yes for an experimental 2D KMS framebuffer driver for the
-> > >           Intel GMA500 (Poulsbo), Intel GMA600 (Moorestown/Oak Trail) and
-> > > --
-> > > 2.25.1
-> > >
+From 164de295599f8befa2ee1ff05dc03542c02b0800 Mon Sep 17 00:00:00 2001
+From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Date: Sun, 10 Apr 2022 22:49:28 +0300
+Subject: [PATCH] x86/kaslr: Fix build warning in KASLR code in boot stub
+
+lib/kaslr.c used by both the main kernel and the boot stub. It includes
+<asm/io.h> that intended to be used in the main kernel. It leads to
+build warnings like this:
+
+	warning: implicit declaration of function 'outl' is invalid in
+	C99 [-Wimplicit-function-declaration]
+
+Replace <asm/io.h> with <asm/shared/io.h> which is suitable for both
+cases.
+
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Fixes: 1e8f93e18379 ("x86: Consolidate port I/O helpers")
+---
+ arch/x86/lib/kaslr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/lib/kaslr.c b/arch/x86/lib/kaslr.c
+index 2b3eb8c948a3..a58f451a7dd3 100644
+--- a/arch/x86/lib/kaslr.c
++++ b/arch/x86/lib/kaslr.c
+@@ -11,7 +11,7 @@
+ #include <asm/msr.h>
+ #include <asm/archrandom.h>
+ #include <asm/e820/api.h>
+-#include <asm/io.h>
++#include <asm/shared/io.h>
+ 
+ /*
+  * When built for the regular kernel, several functions need to be stubbed out
+-- 
+ Kirill A. Shutemov
