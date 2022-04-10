@@ -2,120 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1949C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 10:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B618C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 10:52:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237664AbiDJKwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 06:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50452 "EHLO
+        id S237722AbiDJKyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 06:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbiDJKwV (ORCPT
+        with ESMTP id S230073AbiDJKya (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 06:52:21 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DCCB71
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 03:50:10 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 13882210E3;
-        Sun, 10 Apr 2022 10:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649587809; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=VRfHxrwnwrYylk6U6GGxnItg+KZ+RukzcsLi2NYVXeg=;
-        b=qMniKbuRlFAjI6Bv6+WzRuQ7ZB0LKnwjXn9bA9b/PDy9dH5sbK0fYDsp+jUc+NE7t+Rfxf
-        56cuyeSv3OPBgn0xP5m+mO5KWwA99dfZ96DpZpxU83G8uEpfFPsNo+v2faPtxD8etnMDMj
-        lkdZSdIs8Z6XkpyoeFmfnSUVjAp4K14=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649587809;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=VRfHxrwnwrYylk6U6GGxnItg+KZ+RukzcsLi2NYVXeg=;
-        b=JwGyWXpnyK+/NGlKte1vSpaORY4+RB6EnIa52oDt1NSpycGcuQeDm1en8IVTlC3QAk2ogR
-        p3IFs5d0z+fXgBDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 07A6D13A91;
-        Sun, 10 Apr 2022 10:50:09 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 5nauAWG2UmI+IwAAMHmgww
-        (envelope-from <bp@suse.de>); Sun, 10 Apr 2022 10:50:09 +0000
-Date:   Sun, 10 Apr 2022 12:50:07 +0200
-From:   Borislav Petkov <bp@suse.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] locking/urgent for v5.18-rc2
-Message-ID: <YlK2X+uJ8C4H+N8p@zn.tnic>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+        Sun, 10 Apr 2022 06:54:30 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD3D532DB;
+        Sun, 10 Apr 2022 03:52:19 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id w4so18933558wrg.12;
+        Sun, 10 Apr 2022 03:52:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=llW7B1Y8UIDWugQLg5yHg6HiFsiJYRF+SBU4WWXD+G8=;
+        b=G/dS4LyukZp8n9RVmx72lelpZ3SEp0b35k0GgH3ZdLBH7wXfS5mfd37PLtjwRmCdhf
+         ruo82X4Vl00/0jTd2sAdjQPQiD+/HMU6mBft13MpGr0afxLg6p6uhRFP1J5rNbzPs0zY
+         kvJ68y1JGTvw35K4a6nL7rKKfL0J/q1tlcmd2wYcO+NiKKKTrv3OJfJhWqjb9dGGQouK
+         +cmzPtFu5eXRKst12VgNUzRrgGfCApLh13zEzunDE1LMoi7i9Bk70vAUMQ8fZRaiLMcS
+         ay8IxA8HcyvWvi9qQhj8urd8/MoYFpKQ+eaPBS+GuFNZPpgatg1ved4xPcXogpPA/iER
+         bVfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=llW7B1Y8UIDWugQLg5yHg6HiFsiJYRF+SBU4WWXD+G8=;
+        b=iysxh9KIJttZ7K+SPrtDa/xawjqY+lZIvgQvMvhmMCSrfYtuAn+3TRlBteve7az3VD
+         D4CjK6gA8l3+oIKMIQmx6ggYN4mJbg0jvqWCfl5p/5kVbNtLpIYiV7Vt7q7BFrjy9YJx
+         lqmOgLBL8VndXqluJ1TwCUCFjdBmh5a05FmsnJqJbITPRlulIWyDE+wSvndlw/6lEKas
+         XN814jgs7uK/8b3VsZNGQ1RxjX9VP96Tkde+035bpUtdNaMqOvFK96HF0ccUqEjJdafu
+         cieTZDeJ9FSRg3W7IVIfHsXMciGTLVuFNsN4bCC4xHMR4TpQcP4Bp0g31ANid6Zp5TqZ
+         LGUA==
+X-Gm-Message-State: AOAM530KuJecup7Iy/s8OUtwh7viCB/nXB4xnwp4Wsg06z3jT2fnBJ6x
+        d+jSS17JNBAgCkii3MgYeYmh4CEpG68=
+X-Google-Smtp-Source: ABdhPJwOpNT65O6BbSHz3h2v6wRqe+hMG44eZU1wuU5+FPHLUbzesu1wSW5pQZnYSlOSlvHXJpni0Q==
+X-Received: by 2002:a5d:6607:0:b0:207:97e1:86a with SMTP id n7-20020a5d6607000000b0020797e1086amr8809286wru.603.1649587938073;
+        Sun, 10 Apr 2022 03:52:18 -0700 (PDT)
+Received: from Dev-shlomop.pliops.ent (bzq-219-32-62.isdn.bezeqint.net. [62.219.32.62])
+        by smtp.googlemail.com with ESMTPSA id j9-20020a5d4529000000b00207a5b7f613sm666740wra.69.2022.04.10.03.52.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 Apr 2022 03:52:16 -0700 (PDT)
+From:   Shlomo Pongratz <shlomopongratz@gmail.com>
+X-Google-Original-From: Shlomo Pongratz <shlomop@pliops.com>
+To:     linux-pci@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, andrew.maier@eideticom.com,
+        logang@deltatee.com, bhelgaas@google.com, jgg@nvidia.com,
+        helgaas@kernel.org, Shlomo Pongratz <shlomop@pliops.com>
+Subject: [PATCH V7 0/1] Intel Sky Lake-E host root ports check.
+Date:   Sun, 10 Apr 2022 13:52:12 +0300
+Message-Id: <20220410105213.690-1-shlomop@pliops.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Changes in v7:
 
-please pull a bunch of urgent locking fixes for 5.18-rc2.
+Apply Bjorn Helgaas suggestion to avoid negative logic.
 
-Thx.
+Changes in v6:
 
----
+Address Bjorn Helgaas comments, e.g. commit line length and using both
+"Sky Lake-E" and "SkyLake-E" in comments.
+The comments in the code now use Skylake.
+However the patch subject still refers to "Sky Lake-E" since
+Andrew Maier's original patch used that name.
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+Changes in v5:
 
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+Address Logan Gunthorpe, Jason Gunthorpe and Bjorn Helgaas comments.
+Fix indentation.
+Update comments.
 
-are available in the Git repository at:
+Changes in v4:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/locking_urgent_for_v5.18_rc2
+Address Bjorn Helgaas and Jason Gunthorpe comments.
+Replace the implementation of pci_is_root_port with a simple check
+pci_pcie_type(root) != PCI_EXP_TYPE_ROOT_PORT and remove the added
+IS_ROOT_PORT flag.
+Update patch text.
 
-for you to fetch changes up to 273ba85b5e8b971ed28eb5c17e1638543be9237d:
+Changes in v3:
 
-  Revert "mm/page_alloc: mark pagesets as __maybe_unused" (2022-04-05 09:59:39 +0200)
+Use Jason Gunthorpe suggestion, that is add a flag 'IS_ROOT_PORT'
+instead of 'port' and then just ignore the slot number entirely for root
+ports.
 
-----------------------------------------------------------------
-- Allow the compiler to optimize away unused percpu accesses and change
-the local_lock_* macros back to inline functions
+Changes in v2:
 
-- A couple of fixes to static call insn patching
+Change comment and description based on Logan Gunthorpe comments.
 
-----------------------------------------------------------------
-Christophe Leroy (3):
-      static_call: Don't make __static_call_return0 static
-      static_call: Properly initialise DEFINE_STATIC_CALL_RET0()
-      static_call: Remove __DEFINE_STATIC_CALL macro
+v1:
 
-Peter Zijlstra (1):
-      x86,static_call: Fix __static_call_return0 for i386
+In commit 7b94b53db34f ("PCI/P2PDMA: Add Intel Sky Lake-E Root Ports B, C,
+D to the whitelist")
+Andrew Maier added the Sky Lake-E additional devices
+2031, 2032 and 2033 root ports to the already existing 2030 device.
 
-Sebastian Andrzej Siewior (3):
-      x86/percpu: Remove volatile from arch_raw_cpu_ptr().
-      Revert "locking/local_lock: Make the empty local_lock_*() function a macro."
-      Revert "mm/page_alloc: mark pagesets as __maybe_unused"
+The Intel devices 2030, 2031, 2032 and 2033 which are root ports A, B, C
+and D, respectively and if all exist they will occupy slots 0 till 3 in
+that order.
 
- arch/powerpc/include/asm/static_call.h |   1 +
- arch/x86/include/asm/percpu.h          |   6 +-
- arch/x86/include/asm/static_call.h     |   2 +
- arch/x86/kernel/static_call.c          |   5 +-
- include/linux/local_lock_internal.h    |   6 +-
- include/linux/static_call.h            |  48 +--
- kernel/Makefile                        |   3 +-
- kernel/static_call.c                   | 541 --------------------------------
- kernel/static_call_inline.c            | 543 +++++++++++++++++++++++++++++++++
- mm/page_alloc.c                        |   2 +-
- 10 files changed, 585 insertions(+), 572 deletions(-)
- create mode 100644 kernel/static_call_inline.c
+The original code handled only the case where the devices in the whitelist
+are  host bridges and assumed that they will be found on slot 0.
+
+Since this assumption doesn't hold for root ports, add a test to cover this
+case.
+
+Shlomo Pongratz (1):
+  Intel Sky Lake-E host root ports check.
+
+ drivers/pci/p2pdma.c | 31 ++++++++++++++++++++++---------
+ 1 file changed, 22 insertions(+), 9 deletions(-)
 
 -- 
-Regards/Gruss,
-    Boris.
+2.17.1
 
-SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
