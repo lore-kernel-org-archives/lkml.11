@@ -2,91 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DE8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 23:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9ABC43217
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 23:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235764AbiDJX1B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 19:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38030 "EHLO
+        id S244093AbiDJXcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 19:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243437AbiDJX0z (ORCPT
+        with ESMTP id S244085AbiDJXbz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 19:26:55 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A23520192
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 16:24:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649633083; x=1681169083;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=vs+iY8oK0qHZfUcC9MHwcZsvx/hIx+dS5NECv9WowVw=;
-  b=kpCE7fE5lNrfXASXqGFQ1y4AqFSS+1BBv2NkhJyrn2sd94DAikYx2zFj
-   gGKCrVQY539AxaSO3rGV4v7SEp5mhUuOA3DrPCQT/GTyf99zn/RlvfS6x
-   x6FfBExHiquzE1FLoq+PmAz9VeNMY6utx1WIXo4OkjZh3ZDwo1748m2Fa
-   CJDAX5KB/33qZ5btPS4ejIeiK/H+rWeYUOrAeBhMI2FIXe0WDAEDhwEQ6
-   7x7mW9MqSZXjfdiHQCHYO6n+PIIbPk+McTpwQEfO56MdAwEQdJ1USaDeG
-   23qaLBeDO+c8zva6AA4yzd3EETp2H92eJa3dn7gOb/OjEYCnTGMd07UcF
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="242591179"
-X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
-   d="scan'208";a="242591179"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2022 16:24:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
-   d="scan'208";a="506886682"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 10 Apr 2022 16:24:41 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ndgvA-0001Bf-KI;
-        Sun, 10 Apr 2022 23:24:40 +0000
-Date:   Mon, 11 Apr 2022 07:24:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: or1k-linux-ld: drivers/net/dsa/realtek/realtek-smi.o:undefined
- reference to `rtl8366rb_variant'
-Message-ID: <202204110757.XIafvVnj-lkp@intel.com>
+        Sun, 10 Apr 2022 19:31:55 -0400
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BBE52BD6;
+        Sun, 10 Apr 2022 16:29:42 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id c24-20020a9d6c98000000b005e6b7c0a8a8so6746433otr.2;
+        Sun, 10 Apr 2022 16:29:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6tr6W2rgAx9VaAx9urZuPMOGGVt+QdZBgP3A9YL8kOA=;
+        b=qFhCAFcdIfOxfv+48JZf+xmC4zS6WlGbPAbzQMXt2EamL1KSPOpEBMIn+mUadzt0f3
+         n6q78g36XhWm53NuD4bF41ETESEI/ASNu6uacMXpcFUyf0BaD1Dy/DALvJWSock8EzAZ
+         icRiQcLiQ34EUEdcVZ2ktU4U9z1y1bKtJI699RYJj/AkkFf8BC3bWlt7cLhXXM5K1Tf2
+         PXScD3BSBB3IlUobw0HUgrqLVqH/C5Z9mpRCfJDSVCTk8z3kd0/STlTMS3d5PPL2SMqo
+         LZGYvV9ktQ+vH0HnVN5f6ppYdi8PL3+WDPT/UYCv3vTXbRcc2wvXycCvCJJiulFL0E32
+         Xmng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6tr6W2rgAx9VaAx9urZuPMOGGVt+QdZBgP3A9YL8kOA=;
+        b=PrXkA5aNjFjWBynUixti3W3scsfveK6cJDqP7caojtfN4YzZmhJkW8BHLTW6t2F79E
+         Rs2XpL+a/nyPq95iPBPiuZkhYxkDGcmzWnjEWhcJvS1aQkLwSuRMWTSO4HYq8mzfu5Vo
+         S0qejJhCSbAjRNkesf24groF+y6xadNsQ6/cZwyekJAH6JNK45FEJQ+pkzdyVokEpiik
+         0ESMCvs35M9Mbn5eXYnt0eX7Co1aSniFx5QOWgRLr1++71qk9wvkmqACPP4UFdxD+l84
+         gp2o9wbSe25UZjN7uW06ZuO30TqJBmzlmCzXgCkEGNBEVdwEx5kSMEYN5xTz5z3SgZYs
+         nvOQ==
+X-Gm-Message-State: AOAM533+Ltwvw9nD8sV1qglQDRyyOTEmQ9zaMtVNUG6sCaN+tod8Yv+8
+        vlI2h6cyWU784XEWOIAxEx+4aKtYjpw=
+X-Google-Smtp-Source: ABdhPJwC9tXw02KO9jVLel9VumsOi6P/pTcSBVZ+Jw+JDCxhQajWJCpXxrsTjEqG+9SAQgBgCG3RZg==
+X-Received: by 2002:a05:6830:1185:b0:5b2:4c85:5ee9 with SMTP id u5-20020a056830118500b005b24c855ee9mr10327696otq.335.1649633381795;
+        Sun, 10 Apr 2022 16:29:41 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id bc35-20020a05682016a300b00324e9bf46adsm5047539oob.41.2022.04.10.16.29.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 10 Apr 2022 16:29:41 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <ae9f718d-e65b-9216-f90b-0bc463189834@roeck-us.net>
+Date:   Sun, 10 Apr 2022 16:29:39 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] HWMON: Fixed comment error by checkpatch
+Content-Language: en-US
+To:     Ozgur <ozgur@linux.com>, Jean Delvare <jdelvare@suse.com>
+Cc:     "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <582321649631791@mail.yandex.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <582321649631791@mail.yandex.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Luiz,
+On 4/10/22 16:07, Ozgur wrote:
+>  From 3a50310ab617aecd5b86378f07d2500bc86935d4 Mon Sep 17 00:00:00 2001
+> From: Ozgur <ozgur@linux.com>
+> Date: Mon, 11 Apr 2022 02:55:47 +0400
+> Subject: [PATCH] HWMON: Fixed comment error by checkpatch
+> Fixed a coding style issue and checkpatch errors.
+> Signed-off-by: Ozgur <ozgur@linux.com>
 
-First bad commit (maybe != root cause):
+Please,
+- Do not send corrupted patches.
+- Follow patch submission guidelines when sending patches.
+- Do not send patches fixing cosmetic issues like this one
+   without making other relevant changes.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   4ea3c6425269d33da53c79d539ce9554117cf4d4
-commit: 765c39a4fafe6f7ea0d370aa5f30c811579cf8eb net: dsa: realtek: convert subdrivers into modules
-date:   2 months ago
-config: openrisc-buildonly-randconfig-r003-20220411 (https://download.01.org/0day-ci/archive/20220411/202204110757.XIafvVnj-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=765c39a4fafe6f7ea0d370aa5f30c811579cf8eb
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 765c39a4fafe6f7ea0d370aa5f30c811579cf8eb
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=openrisc SHELL=/bin/bash
+Guenter
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> ---
+>   drivers/hwmon/sch56xx-common.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+> diff --git a/drivers/hwmon/sch56xx-common.c b/drivers/hwmon/sch56xx-common.c
+> index 3ece53adabd6..6ed0908c6037 100644
+> --- a/drivers/hwmon/sch56xx-common.c
+> +++ b/drivers/hwmon/sch56xx-common.c
+> @@ -430,8 +430,9 @@ void sch56xx_watchdog_register(struct device *parent, u16 addr, u32 revision,
+>                  set_bit(WDOG_HW_RUNNING, &data->wddev.status);
+>          /* Since the watchdog uses a downcounter there is no register to read
+> -          the BIOS set timeout from (if any was set at all) ->
+> -          Choose a preset which will give us a 1 minute timeout */
+> +        * the BIOS set timeout from (if any was set at all) ->
+> +        * Choose a preset which will give us a 1 minute timeout
+> +        */
+>          if (control & SCH56XX_WDOG_TIME_BASE_SEC)
+>                  data->watchdog_preset = 60; /* seconds */
+>          else
+> --
+> 2.30.2
 
-All errors (new ones prefixed by >>):
-
->> or1k-linux-ld: drivers/net/dsa/realtek/realtek-smi.o:(.rodata+0x16c): undefined reference to `rtl8366rb_variant'
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
