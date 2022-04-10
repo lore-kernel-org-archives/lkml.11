@@ -2,70 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7670EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 20:12:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E199C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 20:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243907AbiDJUOr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 16:14:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50564 "EHLO
+        id S241981AbiDJUWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 16:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243889AbiDJUOg (ORCPT
+        with ESMTP id S242070AbiDJUWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 16:14:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3574B1CC
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 13:12:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECC83B80E7D
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 20:12:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 96911C385A4;
-        Sun, 10 Apr 2022 20:12:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649621542;
-        bh=lXzVYyKX9kMuwe87o/UiXITPzlGmt/cZtZ4IHhprIq0=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=KICWpaIRjthSiv+9yN3tOsyOPejXJ7zIF+4tqohaNMwFUs+WZtt1IiqEDEH7x0PYU
-         BHqbOP/qWRJ9SGJaiEvKA+j4oaTkmVH4aujcLAQYMkSnsUUTWPr6npTj/KnpzJJ3Yp
-         03xffgynchV/1IBIB/AKb/FNrf1cC+7WMFyzY0PDxrVSO0kcrT+EYXlwIQnjdjULLG
-         0rWcPutSknqGrh+9OTNGdu1OSHS6861Eelr1GcKvOYt9hlt+tctRw7Hj7MuXhAaMe8
-         OIefpATC/hbZIeXb6OD0cVsDXklDhZsDcUVuOYMJgl/2wxHb/TnsAcJTxE0G9aaFAB
-         cDDOlZ97A0v0w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 847D1E8DD64;
-        Sun, 10 Apr 2022 20:12:22 +0000 (UTC)
-Subject: Re: [GIT PULL] Staging driver fix for 5.18-rc2
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YlLRwmx7f+fdiDuu@kroah.com>
-References: <YlLRwmx7f+fdiDuu@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YlLRwmx7f+fdiDuu@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git tags/staging-5.18-rc2
-X-PR-Tracked-Commit-Id: 20314bacd2f9b1b8fc10895417e6db0dc85f8248
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 95aa17c36dc89bf008753217ed27f8a8eb5faf79
-Message-Id: <164962154253.385.4073204117109499480.pr-tracker-bot@kernel.org>
-Date:   Sun, 10 Apr 2022 20:12:22 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+        Sun, 10 Apr 2022 16:22:31 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19A8B0F;
+        Sun, 10 Apr 2022 13:20:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649622019; x=1681158019;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=UscGsrAGjlAv+f9uzKoiFn5jCFB2+hLMUS0kEAG2tv4=;
+  b=emzhzkohq7O8A6is5C32vp/3SZC+qmJjNbtPlGh06raDq5QGL1exn75+
+   TPz0Kdd4ePo1FB2z50mYqj15gk4ayu6hF5M3WI8a63dms4MwOGZnqz8Z8
+   SDNFvmr7ww6ETzq7R6WRTHEtO+oTFQ8+MUR2aXYB5cXuf70rWSKmwmNlx
+   xGOp6a+lGuy3C76fs3+M/lvhWiWp+f1yQ3bt84prp/F5Z3CEq3Kriieti
+   3670dIcLnE1/bmDgWjC+x8vGjVVSsbFFiz4Prw0Nv0Cqq7U13p/0gLT81
+   wvSoE9DJdEyMcCiMLeSna1Ac5265O5mHw0rnAwrV22Kh1x13Tmjvz3pR9
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="249273909"
+X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
+   d="scan'208";a="249273909"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2022 13:20:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
+   d="scan'208";a="699115255"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 10 Apr 2022 13:20:16 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nde2h-000159-MD;
+        Sun, 10 Apr 2022 20:20:15 +0000
+Date:   Mon, 11 Apr 2022 04:19:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, djwong@kernel.org,
+        dan.j.williams@intel.com, david@fromorbit.com, hch@infradead.org,
+        jane.chu@oracle.com, Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v12 2/7] mm: factor helpers for memory_failure_dev_pagemap
+Message-ID: <202204110420.O844CZYb-lkp@intel.com>
+References: <20220410160904.3758789-3-ruansy.fnst@fujitsu.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220410160904.3758789-3-ruansy.fnst@fujitsu.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 10 Apr 2022 14:46:58 +0200:
+Hi Shiyang,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git tags/staging-5.18-rc2
+Thank you for the patch! Perhaps something to improve:
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/95aa17c36dc89bf008753217ed27f8a8eb5faf79
+[auto build test WARNING on hnaz-mm/master]
+[also build test WARNING on next-20220408]
+[cannot apply to xfs-linux/for-next linus/master linux/master v5.18-rc1]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Thank you!
+url:    https://github.com/intel-lab-lkp/linux/commits/Shiyang-Ruan/fsdax-introduce-fs-query-to-support-reflink/20220411-001048
+base:   https://github.com/hnaz/linux-mm master
+config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220411/202204110420.O844CZYb-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/9ab00d3f6d4d9d3d2e4446480567af17c8726bd2
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Shiyang-Ruan/fsdax-introduce-fs-query-to-support-reflink/20220411-001048
+        git checkout 9ab00d3f6d4d9d3d2e4446480567af17c8726bd2
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   mm/memory-failure.c: In function 'mf_generic_kill_procs':
+>> mm/memory-failure.c:1533:13: warning: variable 'rc' set but not used [-Wunused-but-set-variable]
+    1533 |         int rc = 0;
+         |             ^~
+
+
+vim +/rc +1533 mm/memory-failure.c
+
+  1526	
+  1527	static int mf_generic_kill_procs(unsigned long long pfn, int flags,
+  1528			struct dev_pagemap *pgmap)
+  1529	{
+  1530		struct page *page = pfn_to_page(pfn);
+  1531		LIST_HEAD(to_kill);
+  1532		dax_entry_t cookie;
+> 1533		int rc = 0;
+  1534	
+  1535		/*
+  1536		 * Pages instantiated by device-dax (not filesystem-dax)
+  1537		 * may be compound pages.
+  1538		 */
+  1539		page = compound_head(page);
+  1540	
+  1541		/*
+  1542		 * Prevent the inode from being freed while we are interrogating
+  1543		 * the address_space, typically this would be handled by
+  1544		 * lock_page(), but dax pages do not use the page lock. This
+  1545		 * also prevents changes to the mapping of this pfn until
+  1546		 * poison signaling is complete.
+  1547		 */
+  1548		cookie = dax_lock_page(page);
+  1549		if (!cookie)
+  1550			return -EBUSY;
+  1551	
+  1552		if (hwpoison_filter(page)) {
+  1553			rc = -EOPNOTSUPP;
+  1554			goto unlock;
+  1555		}
+  1556	
+  1557		if (pgmap->type == MEMORY_DEVICE_PRIVATE) {
+  1558			/*
+  1559			 * TODO: Handle HMM pages which may need coordination
+  1560			 * with device-side memory.
+  1561			 */
+  1562			return -EBUSY;
+  1563		}
+  1564	
+  1565		/*
+  1566		 * Use this flag as an indication that the dax page has been
+  1567		 * remapped UC to prevent speculative consumption of poison.
+  1568		 */
+  1569		SetPageHWPoison(page);
+  1570	
+  1571		/*
+  1572		 * Unlike System-RAM there is no possibility to swap in a
+  1573		 * different physical page at a given virtual address, so all
+  1574		 * userspace consumption of ZONE_DEVICE memory necessitates
+  1575		 * SIGBUS (i.e. MF_MUST_KILL)
+  1576		 */
+  1577		flags |= MF_ACTION_REQUIRED | MF_MUST_KILL;
+  1578		collect_procs(page, &to_kill, true);
+  1579	
+  1580		unmap_and_kill(&to_kill, pfn, page->mapping, page->index, flags);
+  1581	unlock:
+  1582		dax_unlock_page(page, cookie);
+  1583		return 0;
+  1584	}
+  1585	
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+0-DAY CI Kernel Test Service
+https://01.org/lkp
