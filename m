@@ -2,391 +2,311 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 226FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 20:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 20:32:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243915AbiDJUct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 16:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47366 "EHLO
+        id S243924AbiDJUe3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 16:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230124AbiDJUcq (ORCPT
+        with ESMTP id S237018AbiDJUeZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 16:32:46 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF9D4B86B;
-        Sun, 10 Apr 2022 13:30:34 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id t11so98248eju.13;
-        Sun, 10 Apr 2022 13:30:34 -0700 (PDT)
+        Sun, 10 Apr 2022 16:34:25 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72CE112ACD;
+        Sun, 10 Apr 2022 13:32:12 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id c199so7505045qkg.4;
+        Sun, 10 Apr 2022 13:32:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=gUD5EhRwFvBmLktOS5nOEnCBK4Sai9l7XhsoofswNUc=;
-        b=KpjDZvDRxqER1EswlLgFSnxQANZugwBRxOtmC41gnd0Uryz4qSPC1na+niPwLITs1Q
-         f4VxtCFXnSfj2cMmXR3IYwc8sPbzRqzTYXap1f6r7Re1J5j9CziCtdlT0kapnBmURE5P
-         wRpuW+dsgOzAMA6gmMVJVIB/SXwusu1rEFuPQ/Hg3/wsHgkcYNY9jj/UldaVdVpJjitR
-         NsrX1/26OeynSGHT6oEvkGNJ0L+dNLhWL6mN7CSByFTJXUdZMmDo2SOHy4gK5Z8pf0Nb
-         FSGRJtc3dLJtcbAP7fFwm5k7ZSYOpzukA+YzlJDMPjGLZ2aSKbXsgpkrp8ZVoxuqz7Bf
-         bHvQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=huWJqoMceKY9utLcra3c7y8vTuIRshoTFpvffz76D/g=;
+        b=RDIBal9Z/TwlB7Lbv0yyxNt9bJ+KIuvgx9oUxYYPUPMq+25gHsyv++/J8VQL1KNFTT
+         RDYw8m5H5HAMRmzhVb25uJBdw7vRzlGzeafKKT2fPIG1ESL6qyAkjIVCuoixP4ylEcfF
+         stm6tErwFc8JVxS+Zt6wA1RfpB/w5eqalpFBjsHcZ+Hen7e62fmKUkxQMXjXsOJwtN8F
+         46VgWPjUr6BkmZHLebb4QyCW7a0CxFPZMeMCVP9p4fJZvFF0tXmJzlO6oUpS6Xn15AiR
+         Dh5QM+1QO9ScWU53soSFM+Sy/36c8tXYOIqoWvKtpQtf0sfXvntI5j393OSZwDgC+14U
+         Q2ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=gUD5EhRwFvBmLktOS5nOEnCBK4Sai9l7XhsoofswNUc=;
-        b=JuocEJtBwgIax+NqTQoeUk3ZibIX9EINtLOA5y8xfizqIpO3+drzo/0OQH69th30SA
-         uj/SxLCef5vYb/YNoHRe5M/5OrTDY+P0/IBSZeDHaQBaXXPEPFCeWDoYbz/hotSDk/8j
-         FOGNPE+O5BFSNIt4HPqdqu0Kav8xpL4Wa7u0Yjob2UCxn2NnPBaDxcK4f1BZTDPThGTk
-         oWYmMhYinJJcgd6akQ7I0jXpYEORe6fiU9hmVtJsQ/Efk12egrX9wzjbQGfTy1xoRB5l
-         bVNQjwE72d890ylouBlJqtexFD4KaaPidV0Y/v86UQu7r9YQi8ZZh8yHRyoEw+z9xerf
-         QN9g==
-X-Gm-Message-State: AOAM530iYfAEJ9S8BdR8cGHd7sfpQ/xJgXJUcxz5fhDxTgwaAsUHKDf0
-        FN4qUv3/IH6ppNnabDNfVG8=
-X-Google-Smtp-Source: ABdhPJwmrMKGUQSQ2qHn4JYa/+mcP5Wj0Rz4HzzH5ErMxaZRpVJ0h2eMDNZT9ne8FZ4BV1319aD2Cg==
-X-Received: by 2002:a17:907:7f9e:b0:6e0:d34b:7d98 with SMTP id qk30-20020a1709077f9e00b006e0d34b7d98mr26836972ejc.574.1649622633088;
-        Sun, 10 Apr 2022 13:30:33 -0700 (PDT)
-Received: from smtpclient.apple (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.gmail.com with ESMTPSA id l10-20020a170906938a00b006e88c811016sm910597ejx.145.2022.04.10.13.30.31
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 10 Apr 2022 13:30:32 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH net-next 02/15] net: dsa: sja1105: Remove usage of
- iterator for list_add() after loop
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-In-Reply-To: <20220410200235.6mtdkd2f73ijxknn@skbuf>
-Date:   Sun, 10 Apr 2022 22:30:31 +0200
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Michael Walle <michael@walle.cc>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <A8286EF1-4C38-4ACD-884A-6D1C64769DAE@gmail.com>
-References: <20220407102900.3086255-1-jakobkoschel@gmail.com>
- <20220407102900.3086255-3-jakobkoschel@gmail.com>
- <20220408114120.tvf2lxvhfqbnrlml@skbuf>
- <FA317E17-3B09-411B-9DF6-05BDD320D988@gmail.com>
- <C9081CE3-B008-48DA-A97C-76F51D4F189F@gmail.com>
- <20220410110508.em3r7z62ufqcbrfm@skbuf>
- <935062D0-C657-4C79-A0BE-70141D052EC0@gmail.com>
- <C88FE232-417C-4029-A79E-9A7E807D2FE7@gmail.com>
- <20220410200235.6mtdkd2f73ijxknn@skbuf>
-To:     Vladimir Oltean <olteanv@gmail.com>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=huWJqoMceKY9utLcra3c7y8vTuIRshoTFpvffz76D/g=;
+        b=QwS3U69oZlqjOeCGdV4LybpNusPW8ILBp+tAtdBXTw+UNrOwerS3NuYOR5QoGH3fQN
+         ublz26YbUneRA6sVkQd6ie368Jb3Wyxawd/v+Td6PEkRpYwCFbC/dZf7jDaHzqtrAPPm
+         sBSBc9MoncnhtOdMrBE1C/t2LOjF1L4memHAUrWSI92L641SiEu6yosBNy9Zo8vEHUW6
+         qoLa5Dp5dL7ypG8n68qhgPC7M49pYWgtUrueo4vM1qdI7eOVu2LgjSe6jkkpc99ldaLb
+         4cAK1GA6dXVFwMp2a/0zKaNQRZIjNteFZom2+WZlLMDyviKs2WMr2Ybi6BXl3aDkAMYv
+         BhHg==
+X-Gm-Message-State: AOAM532jvMDwj+QVnFbx8EnOXSUsbWhMW3zKA/7KXsoZq/a/zOj/b25q
+        5FSNQpwYltBGDn4L6ad2XuU=
+X-Google-Smtp-Source: ABdhPJwTIstBpo9II0fA1RQtvoW3eD0TuNtP0QU7jWHLb5hGRrF993pYod8z3vyPDL/4Y5l1iCFwhw==
+X-Received: by 2002:a37:bce:0:b0:69b:f818:3389 with SMTP id 197-20020a370bce000000b0069bf8183389mr5298326qkl.330.1649622731468;
+        Sun, 10 Apr 2022 13:32:11 -0700 (PDT)
+Received: from ?IPV6:2600:1700:2442:6db0:6c1b:d125:bcaa:58ab? ([2600:1700:2442:6db0:6c1b:d125:bcaa:58ab])
+        by smtp.gmail.com with ESMTPSA id i2-20020a05620a248200b00680f3c2f888sm20904993qkn.126.2022.04.10.13.32.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 10 Apr 2022 13:32:11 -0700 (PDT)
+Message-ID: <bddcda82-709a-e91f-ffb4-67af6cad7aa0@gmail.com>
+Date:   Sun, 10 Apr 2022 15:32:10 -0500
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/1] of: overlay: of_overlay_apply() kfree() errors
+Content-Language: en-US
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
+        Slawomir Stepien <slawomir.stepien@nokia.com>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Alan Tull <atull@kernel.org>
+References: <20220408172103.371637-1-frowand.list@gmail.com>
+ <CAL_JsqJC6pKxEmwMeirVLwJEbOH0WD+01VEfFXC257a+ZDRtsw@mail.gmail.com>
+From:   Frank Rowand <frowand.list@gmail.com>
+In-Reply-To: <CAL_JsqJC6pKxEmwMeirVLwJEbOH0WD+01VEfFXC257a+ZDRtsw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 4/8/22 12:34, Rob Herring wrote:
+> On Fri, Apr 8, 2022 at 12:21 PM <frowand.list@gmail.com> wrote:
+>>
+>> From: Frank Rowand <frank.rowand@sony.com>
+> 
+> The subject needs a verb.
+> 
+>>
+>> Fix various kfree() issues related to of_overlay_apply().
+>>   - Double kfree() of fdt and tree when init_overlay_changeset()
+>>     returns an error.
+>>   - free_overlay_changeset() free of the root of the unflattened
+>>     overlay (variable tree) instead of the memory that contains
+>>     the unflattened overlay.
+>>   - Move similar kfree()s from multiple error locations to a
+>>     common error path (err_free_tree_unlocked:).
+> 
+> What about my question/suggestion on the original patch from Slawomir?
 
+Thanks for pointing those out.  I have now replied in that email thread
+and v2 of my patch will be much better due to your comments there.
 
-> On 10. Apr 2022, at 22:02, Vladimir Oltean <olteanv@gmail.com> wrote:
->=20
-> On Sun, Apr 10, 2022 at 08:24:37PM +0200, Jakob Koschel wrote:
->> Btw, I just realized that the if (!pos) is not necessary. This should =
-simply do it:
->>=20
->> diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c =
-b/drivers/net/dsa/sja1105/sja1105_vl.c
->> index b7e95d60a6e4..2d59e75a9e3d 100644
->> --- a/drivers/net/dsa/sja1105/sja1105_vl.c
->> +++ b/drivers/net/dsa/sja1105/sja1105_vl.c
->> @@ -28,6 +28,7 @@ static int sja1105_insert_gate_entry(struct =
-sja1105_gating_config *gating_cfg,
->> 		list_add(&e->list, &gating_cfg->entries);
->> 	} else {
->> +		struct list_head *pos =3D &gating_cfg->entries;
->> 		struct sja1105_gate_entry *p;
->>=20
->> 		list_for_each_entry(p, &gating_cfg->entries, list) {
->> 			if (p->interval =3D=3D e->interval) {
->> @@ -37,10 +38,12 @@ static int sja1105_insert_gate_entry(struct =
-sja1105_gating_config *gating_cfg,
->> 				goto err;
->> 			}
->>=20
->> -			if (e->interval < p->interval)
->> +			if (e->interval < p->interval) {
->> +				pos =3D &p->list;
->> 				break;
->> +			}
->> 		}
->> -		list_add(&e->list, p->list.prev);
->> +		list_add(&e->list, pos->prev);
->> 	}
->>=20
->> 	gating_cfg->num_entries++;
->> --=20
->> 2.25.1
->=20
-> I think we can give this a turn that is actually beneficial for the =
-driver.
-> I've prepared and tested 3 patches on this function, see below.
-> Concrete improvements:
-> - that thing with list_for_each_entry() and list_for_each()
-> - no more special-casing of an empty list
-> - simplifying the error path
-> - that thing with list_add_tail()
->=20
-> What do you think about the changes below?
+-Frank
 
-Thanks for all the good cooperation and help. The changes look great.
-I'll include them in v2 unless you want to do that separately, then I'll
-just remove them from the patch series.
-
->=20
-> =46rom 5b952b75e239cbe96729cf78c17e8d9725c9617c Mon Sep 17 00:00:00 =
-2001
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Date: Sun, 10 Apr 2022 22:21:41 +0300
-> Subject: [PATCH 1/3] net: dsa: sja1105: remove use of iterator after
-> list_for_each_entry() loop
->=20
-> Jakob Koschel explains in the link below that there is a desire to
-> syntactically change list_for_each_entry() and list_for_each() such =
-that
-> it becomes impossible to use the iterator variable outside the scope =
-of
-> the loop.
->=20
-> Although sja1105_insert_gate_entry() makes legitimate use of the
-> iterator pointer when it breaks out, the pattern it uses may become
-> illegal, so it needs to change.
->=20
-> It is deemed acceptable to use a copy of the loop iterator, and
-> sja1105_insert_gate_entry() only needs to know the list_head element
-> before which the list insertion should be made. So let's profit from =
-the
-> occasion and refactor the list iteration to a dedicated function.
->=20
-> An additional benefit is given by the fact that with the helper =
-function
-> in place, we no longer need to special-case the empty list, since it =
-is
-> equivalent to not having found any gating entry larger than the
-> specified interval in the list. We just need to insert at the tail of
-> that list (list_add vs list_add_tail on an empty list does the same
-> thing).
->=20
-> Link: =
-https://patchwork.kernel.org/project/netdevbpf/patch/20220407102900.308625=
-5-3-jakobkoschel@gmail.com/#24810127
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> drivers/net/dsa/sja1105/sja1105_vl.c | 46 ++++++++++++++++++----------
-> 1 file changed, 29 insertions(+), 17 deletions(-)
->=20
-> diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c =
-b/drivers/net/dsa/sja1105/sja1105_vl.c
-> index b7e95d60a6e4..369be2ac3587 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_vl.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_vl.c
-> @@ -7,6 +7,27 @@
->=20
-> #define SJA1105_SIZE_VL_STATUS			8
->=20
-> +static struct list_head *
-> +sja1105_first_entry_longer_than(struct list_head *entries,
-> +				s64 interval,
-> +				struct netlink_ext_ack *extack)
-> +{
-> +	struct sja1105_gate_entry *p;
-> +
-> +	list_for_each_entry(p, entries, list) {
-> +		if (p->interval =3D=3D interval) {
-> +			NL_SET_ERR_MSG_MOD(extack, "Gate conflict");
-> +			return ERR_PTR(-EBUSY);
-> +		}
-> +
-> +		if (interval < p->interval)
-> +			return &p->list;
-> +	}
-> +
-> +	/* Empty list, or specified interval is largest within the list =
-*/
-> +	return entries;
-> +}
-> +
-> /* Insert into the global gate list, sorted by gate action time. */
-> static int sja1105_insert_gate_entry(struct sja1105_gating_config =
-*gating_cfg,
-> 				     struct sja1105_rule *rule,
-> @@ -14,6 +35,7 @@ static int sja1105_insert_gate_entry(struct =
-sja1105_gating_config *gating_cfg,
-> 				     struct netlink_ext_ack *extack)
-> {
-> 	struct sja1105_gate_entry *e;
-> +	struct list_head *pos;
-> 	int rc;
->=20
-> 	e =3D kzalloc(sizeof(*e), GFP_KERNEL);
-> @@ -24,25 +46,15 @@ static int sja1105_insert_gate_entry(struct =
-sja1105_gating_config *gating_cfg,
-> 	e->gate_state =3D gate_state;
-> 	e->interval =3D entry_time;
->=20
-> -	if (list_empty(&gating_cfg->entries)) {
-> -		list_add(&e->list, &gating_cfg->entries);
-> -	} else {
-> -		struct sja1105_gate_entry *p;
-> -
-> -		list_for_each_entry(p, &gating_cfg->entries, list) {
-> -			if (p->interval =3D=3D e->interval) {
-> -				NL_SET_ERR_MSG_MOD(extack,
-> -						   "Gate conflict");
-> -				rc =3D -EBUSY;
-> -				goto err;
-> -			}
-> -
-> -			if (e->interval < p->interval)
-> -				break;
-> -		}
-> -		list_add(&e->list, p->list.prev);
-> +	pos =3D sja1105_first_entry_longer_than(&gating_cfg->entries,
-> +					      e->interval, extack);
-> +	if (IS_ERR(pos)) {
-> +		rc =3D PTR_ERR(pos);
-> +		goto err;
-> 	}
->=20
-> +	list_add(&e->list, pos->prev);
-> +
-> 	gating_cfg->num_entries++;
->=20
-> 	return 0;
-> --=20
-> 2.25.1
->=20
-> =46rom b6385f62d730b69007ea218e885461542ca4c44c Mon Sep 17 00:00:00 =
-2001
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Date: Sun, 10 Apr 2022 22:34:35 +0300
-> Subject: [PATCH 2/3] net: dsa: sja1105: reorder
-> sja1105_first_entry_longer_than with memory allocation
->=20
-> sja1105_first_entry_longer_than() does not make use of the full struct
-> sja1105_gate_entry *e, just of e->interval which is set from the =
-passed
-> entry_time.
->=20
-> This means that if there is a gate conflict, we have allocated e for
-> nothing, just to free it later. Reorder the memory allocation and the
-> function call, to avoid that and simplify the error unwind path.
->=20
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> drivers/net/dsa/sja1105/sja1105_vl.c | 17 +++++------------
-> 1 file changed, 5 insertions(+), 12 deletions(-)
->=20
-> diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c =
-b/drivers/net/dsa/sja1105/sja1105_vl.c
-> index 369be2ac3587..e5ea8eb9ec4e 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_vl.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_vl.c
-> @@ -36,7 +36,11 @@ static int sja1105_insert_gate_entry(struct =
-sja1105_gating_config *gating_cfg,
-> {
-> 	struct sja1105_gate_entry *e;
-> 	struct list_head *pos;
-> -	int rc;
-> +
-> +	pos =3D sja1105_first_entry_longer_than(&gating_cfg->entries,
-> +					      entry_time, extack);
-> +	if (IS_ERR(pos))
-> +		return PTR_ERR(pos);
->=20
-> 	e =3D kzalloc(sizeof(*e), GFP_KERNEL);
-> 	if (!e)
-> @@ -45,22 +49,11 @@ static int sja1105_insert_gate_entry(struct =
-sja1105_gating_config *gating_cfg,
-> 	e->rule =3D rule;
-> 	e->gate_state =3D gate_state;
-> 	e->interval =3D entry_time;
-> -
-> -	pos =3D sja1105_first_entry_longer_than(&gating_cfg->entries,
-> -					      e->interval, extack);
-> -	if (IS_ERR(pos)) {
-> -		rc =3D PTR_ERR(pos);
-> -		goto err;
-> -	}
-> -
-> 	list_add(&e->list, pos->prev);
->=20
-> 	gating_cfg->num_entries++;
->=20
-> 	return 0;
-> -err:
-> -	kfree(e);
-> -	return rc;
-> }
->=20
-> /* The gate entries contain absolute times in their e->interval field. =
-Convert
-> --=20
-> 2.25.1
->=20
-> =46rom 8aa272b8a3f53aba7b80f181b275e040b9aaed8d Mon Sep 17 00:00:00 =
-2001
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Date: Sun, 10 Apr 2022 22:37:14 +0300
-> Subject: [PATCH 3/3] net: dsa: sja1105: use list_add_tail(pos) instead =
-of
-> list_add(pos->prev)
->=20
-> When passed a non-head list element, list_add_tail() actually adds the
-> new element to its left, which is what we want. Despite the slightly
-> confusing name, use the dedicated function which does the same thing =
-as
-> the open-coded list_add(pos->prev).
->=20
-> Suggested-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> drivers/net/dsa/sja1105/sja1105_vl.c | 2 +-
-> 1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c =
-b/drivers/net/dsa/sja1105/sja1105_vl.c
-> index e5ea8eb9ec4e..7fe9b18f1cbd 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_vl.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_vl.c
-> @@ -49,7 +49,7 @@ static int sja1105_insert_gate_entry(struct =
-sja1105_gating_config *gating_cfg,
-> 	e->rule =3D rule;
-> 	e->gate_state =3D gate_state;
-> 	e->interval =3D entry_time;
-> -	list_add(&e->list, pos->prev);
-> +	list_add_tail(&e->list, pos);
->=20
-> 	gating_cfg->num_entries++;
->=20
-> --=20
-> 2.25.1
->=20
+> 
+>>
+>> Double kfree()
+>> Reported-by: Slawomir Stepien <slawomir.stepien@nokia.com>
+>>
+>> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+>> ---
+>>  drivers/of/overlay.c | 64 ++++++++++++++++++++++++++++----------------
+>>  1 file changed, 41 insertions(+), 23 deletions(-)
+>>
+>> diff --git a/drivers/of/overlay.c b/drivers/of/overlay.c
+>> index d80160cf34bb..1b9a90d61496 100644
+>> --- a/drivers/of/overlay.c
+>> +++ b/drivers/of/overlay.c
+>> @@ -58,6 +58,7 @@ struct fragment {
+>>   * @id:                        changeset identifier
+>>   * @ovcs_list:         list on which we are located
+>>   * @fdt:               base of memory allocated to hold aligned FDT that was unflattened to create @overlay_tree
+>> + * @overlay_mem:       the memory chunk that contains @overlay_tree
+>>   * @overlay_tree:      expanded device tree that contains the fragment nodes
+>>   * @count:             count of fragment structures
+>>   * @fragments:         fragment nodes in the overlay expanded device tree
+>> @@ -68,6 +69,7 @@ struct overlay_changeset {
+>>         int id;
+>>         struct list_head ovcs_list;
+>>         const void *fdt;
+>> +       const void *overlay_mem;
+>>         struct device_node *overlay_tree;
+>>         int count;
+>>         struct fragment *fragments;
+>> @@ -720,6 +722,7 @@ static struct device_node *find_target(struct device_node *info_node)
+>>   * init_overlay_changeset() - initialize overlay changeset from overlay tree
+>>   * @ovcs:      Overlay changeset to build
+>>   * @fdt:       base of memory allocated to hold aligned FDT that was unflattened to create @tree
+>> + * @tree_mem:  Memory that contains @tree
+>>   * @tree:      Contains the overlay fragments and overlay fixup nodes
+>>   *
+>>   * Initialize @ovcs.  Populate @ovcs->fragments with node information from
+>> @@ -730,13 +733,23 @@ static struct device_node *find_target(struct device_node *info_node)
+>>   * detected in @tree, or -ENOSPC if idr_alloc() error.
+>>   */
+>>  static int init_overlay_changeset(struct overlay_changeset *ovcs,
+>> -               const void *fdt, struct device_node *tree)
+>> +               const void *fdt, const void *tree_mem, struct device_node *tree)
+>>  {
+>>         struct device_node *node, *overlay_node;
+>>         struct fragment *fragment;
+>>         struct fragment *fragments;
+>>         int cnt, id, ret;
+>>
+>> +       /*
+>> +        * Must set these fields before any error return. fdt and tree_mem
+>> +        * will be freed by free_overlay_changeset(), which is called if
+>> +        * init_overlay_changeset() returns an error.
+>> +        */
+>> +
+>> +       ovcs->fdt = fdt;
+>> +       ovcs->overlay_mem = tree_mem;
+>> +       ovcs->overlay_tree = tree;
+>> +
+>>         /*
+>>          * Warn for some issues.  Can not return -EINVAL for these until
+>>          * of_unittest_apply_overlay() is fixed to pass these checks.
+>> @@ -750,9 +763,6 @@ static int init_overlay_changeset(struct overlay_changeset *ovcs,
+>>         if (!of_node_is_root(tree))
+>>                 pr_debug("%s() tree is not root\n", __func__);
+>>
+>> -       ovcs->overlay_tree = tree;
+>> -       ovcs->fdt = fdt;
+>> -
+>>         INIT_LIST_HEAD(&ovcs->ovcs_list);
+>>
+>>         of_changeset_init(&ovcs->cset);
+>> @@ -865,7 +875,7 @@ static void free_overlay_changeset(struct overlay_changeset *ovcs)
+>>          * ovcs->fdt due to the policy that overlay notifiers are not allowed
+>>          * to retain pointers into the overlay devicetree.
+>>          */
+>> -       kfree(ovcs->overlay_tree);
+>> +       kfree(ovcs->overlay_mem);
+>>         kfree(ovcs->fdt);
+>>         kfree(ovcs);
+>>  }
+>> @@ -875,6 +885,7 @@ static void free_overlay_changeset(struct overlay_changeset *ovcs)
+>>   *
+>>   * of_overlay_apply() - Create and apply an overlay changeset
+>>   * @fdt:       base of memory allocated to hold the aligned FDT
+>> + * @tree_mem:  Memory that contains @tree
+>>   * @tree:      Expanded overlay device tree
+>>   * @ovcs_id:   Pointer to overlay changeset id
+>>   *
+>> @@ -913,31 +924,27 @@ static void free_overlay_changeset(struct overlay_changeset *ovcs)
+>>   * id is returned to *ovcs_id.
+>>   */
+>>
+>> -static int of_overlay_apply(const void *fdt, struct device_node *tree,
+>> -               int *ovcs_id)
+>> +static int of_overlay_apply(const void *fdt, void *tree_mem,
+>> +               struct device_node *tree, int *ovcs_id)
+>>  {
+>>         struct overlay_changeset *ovcs;
+>>         int ret = 0, ret_revert, ret_tmp;
+>>
+>>         /*
+>> -        * As of this point, fdt and tree belong to the overlay changeset.
+>> +        * As of this point, fdt and tree_mem belong to the overlay changeset.
+>>          * overlay changeset code is responsible for freeing them.
+>>          */
+>>
+>>         if (devicetree_corrupt()) {
+>>                 pr_err("devicetree state suspect, refuse to apply overlay\n");
+>> -               kfree(fdt);
+>> -               kfree(tree);
+>>                 ret = -EBUSY;
+>> -               goto out;
+>> +               goto err_free_tree_unlocked;
+>>         }
+>>
+>>         ovcs = kzalloc(sizeof(*ovcs), GFP_KERNEL);
+>>         if (!ovcs) {
+>> -               kfree(fdt);
+>> -               kfree(tree);
+>>                 ret = -ENOMEM;
+>> -               goto out;
+>> +               goto err_free_tree_unlocked;
+>>         }
+>>
+>>         of_overlay_mutex_lock();
+>> @@ -947,9 +954,14 @@ static int of_overlay_apply(const void *fdt, struct device_node *tree,
+>>         if (ret)
+>>                 goto err_free_tree;
+>>
+>> -       ret = init_overlay_changeset(ovcs, fdt, tree);
+>> +       /*
+>> +        * init_overlay_changeset() promises to add tree_mem and tree to ovcs
+>> +        * even in the case of an early error return, so they can be freed by
+>> +        * free_overlay_changeset().
+>> +        */
+>> +       ret = init_overlay_changeset(ovcs, fdt, tree_mem, tree);
+>>         if (ret)
+>> -               goto err_free_tree;
+>> +               goto err_free_overlay_changeset;
+>>
+>>         /*
+>>          * after overlay_notify(), ovcs->overlay_tree related pointers may have
+>> @@ -999,7 +1011,7 @@ static int of_overlay_apply(const void *fdt, struct device_node *tree,
+>>
+>>  err_free_tree:
+>>         kfree(fdt);
+>> -       kfree(tree);
+>> +       kfree(tree_mem);
+>>
+>>  err_free_overlay_changeset:
+>>         free_overlay_changeset(ovcs);
+>> @@ -1008,9 +1020,14 @@ static int of_overlay_apply(const void *fdt, struct device_node *tree,
+>>         mutex_unlock(&of_mutex);
+>>         of_overlay_mutex_unlock();
+>>
+>> -out:
+>>         pr_debug("%s() err=%d\n", __func__, ret);
+>>
+>> +       return ret;
+>> +
+>> +err_free_tree_unlocked:
+>> +       kfree(fdt);
+>> +       kfree(tree_mem);
+>> +
+>>         return ret;
+>>  }
+>>
+>> @@ -1019,6 +1036,7 @@ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
+>>  {
+>>         void *new_fdt;
+>>         void *new_fdt_align;
+>> +       void *overlay_mem;
+>>         int ret;
+>>         u32 size;
+>>         struct device_node *overlay_root = NULL;
+>> @@ -1046,18 +1064,17 @@ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
+>>         new_fdt_align = PTR_ALIGN(new_fdt, FDT_ALIGN_SIZE);
+>>         memcpy(new_fdt_align, overlay_fdt, size);
+>>
+>> -       of_fdt_unflatten_tree(new_fdt_align, NULL, &overlay_root);
+>> -       if (!overlay_root) {
+>> +       overlay_mem = of_fdt_unflatten_tree(new_fdt_align, NULL, &overlay_root);
+>> +       if (!overlay_mem) {
+>>                 pr_err("unable to unflatten overlay_fdt\n");
+>>                 ret = -EINVAL;
+>>                 goto out_free_new_fdt;
+>>         }
+>>
+>> -       ret = of_overlay_apply(new_fdt, overlay_root, ovcs_id);
+>> +       ret = of_overlay_apply(new_fdt, overlay_mem, overlay_root, ovcs_id);
+>>         if (ret < 0) {
+>>                 /*
+>> -                * new_fdt and overlay_root now belong to the overlay
+>> -                * changeset.
+>> +                * new_fdt and overlay_mem now belong to the overlay changeset.
+>>                  * overlay changeset code is responsible for freeing them.
+>>                  */
+>>                 goto out;
+>> @@ -1067,6 +1084,7 @@ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
+>>
+>>
+>>  out_free_new_fdt:
+>> +       kfree(overlay_mem);
+>>         kfree(new_fdt);
+>>
+>>  out:
+>> --
+>> Frank Rowand <frank.rowand@sony.com>
+>>
 
