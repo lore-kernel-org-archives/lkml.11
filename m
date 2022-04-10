@@ -2,129 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C0C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 15:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C66D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 15:46:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241602AbiDJPlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 11:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41340 "EHLO
+        id S240290AbiDJPsv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 11:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232155AbiDJPk5 (ORCPT
+        with ESMTP id S234532AbiDJPss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 11:40:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65DA8286E4
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 08:38:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649605125;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=tOw89Gf7WnffDCNYXGFd+Pu5U6hzz5IlC9y5yKDKg3A=;
-        b=Ohijw9g2Z3wY3KArRZTPHnXJrn0WBfeR+WRkw4RYSpwMPIkA5cBruKy+bg7ThDmsHJw89k
-        5BImXuzDjyCuqn3uxNMvsTOijXw/OzXvB+Bm671jbocGPu8eV4bJUHrlJJFVSpZaK1oAtf
-        w9+IwLo/0sxcdkP9JahRdtDqPTdcxdY=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-353-r_WJRcrhMC6LeGkFlpqv5g-1; Sun, 10 Apr 2022 11:38:44 -0400
-X-MC-Unique: r_WJRcrhMC6LeGkFlpqv5g-1
-Received: by mail-qt1-f198.google.com with SMTP id s17-20020a05622a1a9100b002ed3cb8acb3so1233712qtc.10
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 08:38:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tOw89Gf7WnffDCNYXGFd+Pu5U6hzz5IlC9y5yKDKg3A=;
-        b=dnFOOt6wAOVXieuRlaQ8E898fBi2i80kyQIeaVBRFh9oft09wr9/+OImvxnck4Weaz
-         JaLiQpqE1vadxNMbvb9cxDAWY9oBbvMiinuJQrvt8qB/CvHaQ8qEG3KS/8PcvrzW1RTa
-         voGERrBGtda0hcCtabZnsWDlzICB2FXUkO7A6BAedut6vDcd7att8to6yZe2MMY9nuDE
-         xlvxWM/c38eSFn7YILX92tkr065TF/KArE31p/kHQdhi1iK3gVaopzwlHyO+f7+fR8aZ
-         82sgj9yFVIiiPxjNDng62q7Tkb2FryeZs9X0tX5F7s856QVzaXNbBHAyGVjcVKhANxvd
-         gNKQ==
-X-Gm-Message-State: AOAM533B+yrLvkZyFQ66tD36txfJ/EeY1Xj6nfGgS/XQRwJkmnjqEhVY
-        ulKAl/jK0hr9GDwYUJNMZostc6UBUgQOAVtXBZvSR8gx2KFkko8uS+W6nAg76yOiQiTa53+bmd5
-        BXYBzMMOVdhlMQ5wT4ha81N7Q
-X-Received: by 2002:a05:6214:2301:b0:435:38af:2f87 with SMTP id gc1-20020a056214230100b0043538af2f87mr23642044qvb.83.1649605123857;
-        Sun, 10 Apr 2022 08:38:43 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzJ+5M962Hrne2KDB95B2oYdS8HFx62nGUxoPSUqW2CkNgqhYH79Cy0T0/06vEj3SUtI72w1w==
-X-Received: by 2002:a05:6214:2301:b0:435:38af:2f87 with SMTP id gc1-20020a056214230100b0043538af2f87mr23642039qvb.83.1649605123676;
-        Sun, 10 Apr 2022 08:38:43 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id k2-20020a37ba02000000b0067dc1b0104asm17024640qkf.124.2022.04.10.08.38.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 08:38:43 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     pbonzini@redhat.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] KVM: clean up comments
-Date:   Sun, 10 Apr 2022 11:38:40 -0400
-Message-Id: <20220410153840.55506-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Sun, 10 Apr 2022 11:48:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32994ECF1;
+        Sun, 10 Apr 2022 08:46:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 267E9B80D93;
+        Sun, 10 Apr 2022 15:46:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08611C385A4;
+        Sun, 10 Apr 2022 15:46:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649605594;
+        bh=oi3eBcfRm1TBC2kfSOu1MJ5ErNGN2JnBRXsGYrFkEtE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UVDuXpbe79zgEgAe4W2rVkoS9jR/iHWR2yJ6Gtg1tC9dTCcKWmOhFX/ncuqcZpJma
+         Fm80i3q2u86QW3um4y5oSemMJElOAKwiVq4wiQmTJhPMGw3u7T6sflVl4TIy5a17wN
+         JpW6iloIitc7o1pksiYabzGHVi2sDVKdVK9GS0Fx4b3OUS5/9rPJyLHkjnuVCsZCim
+         SZa2Bz5SJd0uZ3xkGj4P6vpCnGSUHgUvlWSUl2AppQrWTwGJcaeMYpC6l1NZDIYQJI
+         pVZOxm1a55ZACcBBdLtB0WKdGMzauhcD2wSK09rGdxQGPgX+7a+46kkNyQGfnRb41R
+         ofPSCL1sCT+Ww==
+Date:   Sun, 10 Apr 2022 16:54:25 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] iio: magnetometer: ak8974: Fix the error handling of
+ ak8974_probe()
+Message-ID: <20220410165425.6c2f60e7@jic23-huawei>
+In-Reply-To: <20220409034849.3717231-1-zheyuma97@gmail.com>
+References: <20220409034849.3717231-1-zheyuma97@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SPDX
-*.h use /* */ style comments
-*.c use // style comments
+On Sat,  9 Apr 2022 11:48:48 +0800
+Zheyu Ma <zheyuma97@gmail.com> wrote:
 
-Spelling replacements
-dimishing to diminishing
-memsot to memslot
+> When the driver fail at devm_regmap_init_i2c(), we will get the
+> following splat:
+> 
+> [  106.797388] WARNING: CPU: 4 PID: 413 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
+> [  106.802183] RIP: 0010:_regulator_put+0x3ec/0x4e0
+> [  106.811237] Call Trace:
+> [  106.811515]  <TASK>
+> [  106.811695]  regulator_bulk_free+0x82/0xe0
+> [  106.812032]  devres_release_group+0x319/0x3d0
+> [  106.812425]  i2c_device_probe+0x766/0x940
+> 
+> Fix this by disabling the regulators at the error path.
+> 
+> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
++ CC Linus W as it's his driver.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- virt/kvm/dirty_ring.c | 2 +-
- virt/kvm/kvm_main.c   | 4 ++--
- virt/kvm/kvm_mm.h     | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+Fix looks correct to me, though the handling of runtime pm in here is
+probably more complex than it needs to be (and hence this odd error
+handling for this one place in the probe).
 
-diff --git a/virt/kvm/dirty_ring.c b/virt/kvm/dirty_ring.c
-index 222ecc81d7df..f4c2a6eb1666 100644
---- a/virt/kvm/dirty_ring.c
-+++ b/virt/kvm/dirty_ring.c
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
-+// SPDX-License-Identifier: GPL-2.0-only
- /*
-  * KVM dirty ring implementation
-  *
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index b22f380e3347..90a2ccaa5b25 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -662,7 +662,7 @@ void kvm_inc_notifier_count(struct kvm *kvm, unsigned long start,
- 		kvm->mmu_notifier_range_end = end;
- 	} else {
- 		/*
--		 * Fully tracking multiple concurrent ranges has dimishing
-+		 * Fully tracking multiple concurrent ranges has diminishing
- 		 * returns. Keep things simple and just find the minimal range
- 		 * which includes the current and new ranges. As there won't be
- 		 * enough information to subtract a range after its invalidate
-@@ -1793,7 +1793,7 @@ static int kvm_set_memslot(struct kvm *kvm,
- 
- 	/*
- 	 * No need to refresh new->arch, changes after dropping slots_arch_lock
--	 * will directly hit the final, active memsot.  Architectures are
-+	 * will directly hit the final, active memslot.  Architectures are
- 	 * responsible for knowing that new->arch may be stale.
- 	 */
- 	kvm_commit_memory_region(kvm, old, new, change);
-diff --git a/virt/kvm/kvm_mm.h b/virt/kvm/kvm_mm.h
-index 34ca40823260..41da467d99c9 100644
---- a/virt/kvm/kvm_mm.h
-+++ b/virt/kvm/kvm_mm.h
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0-only
-+/* SPDX-License-Identifier: GPL-2.0-only */
- 
- #ifndef __KVM_MM_H__
- #define __KVM_MM_H__ 1
--- 
-2.27.0
+Jonathan
+
+> ---
+>  drivers/iio/magnetometer/ak8974.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+> index e54feacfb980..84bbf7ccc887 100644
+> --- a/drivers/iio/magnetometer/ak8974.c
+> +++ b/drivers/iio/magnetometer/ak8974.c
+> @@ -862,6 +862,7 @@ static int ak8974_probe(struct i2c_client *i2c,
+>  		dev_err(&i2c->dev, "failed to allocate register map\n");
+>  		pm_runtime_put_noidle(&i2c->dev);
+>  		pm_runtime_disable(&i2c->dev);
+> +		regulator_bulk_disable(ARRAY_SIZE(ak8974->regs), ak8974->regs);
+>  		return PTR_ERR(ak8974->map);
+>  	}
+>  
 
