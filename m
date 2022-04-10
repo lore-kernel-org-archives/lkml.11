@@ -2,182 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0919DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9482AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:13:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243557AbiDJQPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 12:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36662 "EHLO
+        id S243563AbiDJQPj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 12:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233330AbiDJQPO (ORCPT
+        with ESMTP id S233003AbiDJQPd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 12:15:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29485E76C;
-        Sun, 10 Apr 2022 09:13:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E2296104E;
-        Sun, 10 Apr 2022 16:13:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 316A2C385A4;
-        Sun, 10 Apr 2022 16:12:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649607181;
-        bh=jtJwcBcbIqdZZpkCbauCfaMXTxA3jnmG9MIcebsKJAg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JarvrELkFGX0DXRP5rWopewXBmTwBBLn9c7g1ziiQfujHRMHm+mgiGQtGZT/XqDc6
-         y+xjCnEAVNfCbnipfXng258rQreuKOnbmytng7FMGt0/5qFmHxWUZQEVgiA/gHpvV1
-         C9z3CJwXCi7T4osh0cu2DKJu6UNCwsZ8mKXmSFJio0TVawgTa5zgXDbsHEShpTA7E0
-         rHQ7XQsfIJ3BJ4jJcoEIx0AEMkda32qd0r8YNIXhIje/WHskx1O5an23cQ6CCE8w39
-         cNhFBHgrXiB8a7/YIzGh9X55ohGYadBBey2DgcxHFBuo9h4Xb2yXlTsnvM2+ACu0FT
-         UJw4OD2jrfNkA==
-Date:   Sun, 10 Apr 2022 17:20:51 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cixi Geng <gengcixi@gmail.com>
-Cc:     lars@metafoo.de, robh+dt@kernel.org, orsonzhai@gmail.com,
-        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
-        yuming.zhu1@unisoc.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V3 4/7] iio: adc: refactor some functions for support
- more PMiCs
-Message-ID: <20220410172051.4fdf8b85@jic23-huawei>
-In-Reply-To: <20220407082148.571442-5-gengcixi@gmail.com>
-References: <20220407082148.571442-1-gengcixi@gmail.com>
-        <20220407082148.571442-5-gengcixi@gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 10 Apr 2022 12:15:33 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AB45E77F
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 09:13:23 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so14282558pjk.4
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 09:13:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9QPhopgx/tgVvIztmP4VR/uXXXoVW1IfZx4Olt9pjko=;
+        b=LIEb0aa1C5AYGxvqnI4eGbxRFwdHsQXgihBa/z7HEdPflb2+iivTS/Zlm2VuZ6Ib6U
+         aqy7mVQy3o8Khe/ieIsgwbrjzF8CaSxZaVRQEcZ5Yc4jHgQQDCbDNkQTSLi7hnqOgegg
+         Zurdmqo7e8QXOyXAhZw53isHJuC9QtT1kXbTSzhXaL1zzZBLDJDuQf0dU73wT5b8yUq8
+         MNWQPpsD+4tRBhEEGQrgA0K4bRXxqpF4+QFPiqMLCGEumjYwhK0EagFi5WAG5FsopgTW
+         kdPi2ZImksJ400qth9VAYLO+ytJmnu+u8kE3JPdMxYwuwFYGvWvqNroyh7JzhOg5gb2w
+         4/HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9QPhopgx/tgVvIztmP4VR/uXXXoVW1IfZx4Olt9pjko=;
+        b=JTcbNMby5QkVKA4tTjD4fuZO0chIf1AiMM8Vfpe0Lojr5WcpJ7fPIdPuovDaPELiDh
+         UnU65CILiSarR88YUYJ4Wswnzr6O9NbU1KS2RAkn1rBzKjN6F5OllXq47kvplWDoSedL
+         UrS9jazTG7GPLh7q6m8yFUnnUUKcJsddYEKJaPTNyJ7vD1PTZg8pYcBzs9uB5USkXuj+
+         vgQdUeS+TOI+a/8wuE9Rtv6JCn7vTvHUbiTlORQYnCE0ADG257OFiphpTgdKImJyAgOl
+         56HwN+EXiTjvpCzx21Z6PDS/Fh0pkp39XRXPhFVDrEZTALlaYlFY2M4Et5nIQgA8gNQQ
+         iSpQ==
+X-Gm-Message-State: AOAM532Sg9c1gsWcGh4jT4YJLbRnX5BR6GRHRwbvr9nPm0bsJqhnFHaT
+        YU/myx3MDOZ+3wVW2SXy9byTwn09YrgQudXCfjU=
+X-Google-Smtp-Source: ABdhPJzD3gJbuLzZNIgI7Ru3HsLucGoYjKVnoSM9Eu/kkUVtUjPT68ZJHRo6V9ckdIv7BAa3ny8JuMiqB/U/CsGFsoc=
+X-Received: by 2002:a17:902:ce04:b0:156:3be:8a86 with SMTP id
+ k4-20020a170902ce0400b0015603be8a86mr29417688plg.152.1649607202565; Sun, 10
+ Apr 2022 09:13:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220409160224.611353-1-ohkwon1043@gmail.com> <YlKRVOgAFqdgtxDu@hyeyoo>
+In-Reply-To: <YlKRVOgAFqdgtxDu@hyeyoo>
+From:   Ohoon Kwon <ohkwon1043@gmail.com>
+Date:   Mon, 11 Apr 2022 01:13:11 +0900
+Message-ID: <CAE_YftXpxco35Z2GNq=-DCtwzoq8dq_z7qrp8vCdrs7ePY3gLw@mail.gmail.com>
+Subject: Re: [PATCH] mm/slub: check pfmemalloc_match in slab_alloc_node fastpath
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc:     Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        JaeSang Yoo <jsyoo5b@gmail.com>,
+        Wonhyuk Yang <vvghjk1234@gmail.com>,
+        Jiyoup Kim <lakroforce@gmail.com>,
+        Donghyeok Kim <dthex5d@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu,  7 Apr 2022 16:21:45 +0800
-Cixi Geng <gengcixi@gmail.com> wrote:
+Oh I was not aware of those histories.
+I checked the commits, and it seems it is better to leave it
+optimized(as it is now).
 
-> From: Cixi Geng <cixi.geng1@unisoc.com>
-> 
-> refactor the common adc_nvmem_cell_calib_data,adc_to_volt and call
-> these in the origin sc27xx_adc_scale_calibration,sc27xx_adc_to_volt
-> 
-> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-One trivial comment inline.
+Thanks for your help.
+Ohhoon Kwon.
 
-> ---
->  drivers/iio/adc/sc27xx_adc.c | 57 ++++++++++++++++++++++++++----------
->  1 file changed, 41 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-> index 28bd70c27420..60c0a6aa3f45 100644
-> --- a/drivers/iio/adc/sc27xx_adc.c
-> +++ b/drivers/iio/adc/sc27xx_adc.c
-> @@ -136,16 +136,41 @@ static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
->  	return ((calib_data & 0xff) + calib_adc - 128) * 4;
->  }
->  
-> +/* get the adc nvmem cell calibration data */
-> +static int adc_nvmem_cell_calib_data(struct sc27xx_adc_data *data, const char *cell_name)
-> +{
-> +	struct nvmem_cell *cell;
-> +	void *buf;
-> +	u32 origin_calib_data = 0;
-> +	size_t len;
-> +
-> +	if (!data)
-> +		return -EINVAL;
-> +
-> +	cell = nvmem_cell_get(data->dev, cell_name);
-> +	if (IS_ERR(cell))
-> +		return PTR_ERR(cell);
-> +
-> +	buf = nvmem_cell_read(cell, &len);
-> +	if (IS_ERR(buf)) {
-> +		nvmem_cell_put(cell);
-> +		return PTR_ERR(buf);
-> +	}
-> +
-> +	memcpy(&origin_calib_data, buf, min(len, sizeof(u32)));
-> +
-> +	kfree(buf);
-> +	nvmem_cell_put(cell);
-> +	return origin_calib_data;
-> +}
-> +
->  static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
->  					bool big_scale)
->  {
->  	const struct sc27xx_adc_linear_graph *calib_graph;
->  	struct sc27xx_adc_linear_graph *graph;
-> -	struct nvmem_cell *cell;
->  	const char *cell_name;
->  	u32 calib_data = 0;
-> -	void *buf;
-> -	size_t len;
->  
->  	if (big_scale) {
->  		calib_graph = data->var_data->bscale_cal;
-> @@ -157,24 +182,13 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
->  		cell_name = "small_scale_calib";
->  	}
->  
-> -	cell = nvmem_cell_get(data->dev, cell_name);
-> -	if (IS_ERR(cell))
-> -		return PTR_ERR(cell);
-> -
-> -	buf = nvmem_cell_read(cell, &len);
-> -	nvmem_cell_put(cell);
-> -
-> -	if (IS_ERR(buf))
-> -		return PTR_ERR(buf);
-> -
-> -	memcpy(&calib_data, buf, min(len, sizeof(u32)));
-> +	calib_data = adc_nvmem_cell_calib_data(data, cell_name);
->  
->  	/* Only need to calibrate the adc values in the linear graph. */
->  	graph->adc0 = sc27xx_adc_get_calib_data(calib_data, calib_graph->adc0);
->  	graph->adc1 = sc27xx_adc_get_calib_data(calib_data >> 8,
->  						calib_graph->adc1);
->  
-> -	kfree(buf);
->  	return 0;
->  }
->  
-> @@ -285,6 +299,7 @@ static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
->  disable_adc:
->  	regmap_update_bits(data->regmap, data->base + SC27XX_ADC_CTL,
->  			   SC27XX_ADC_EN, 0);
-> +
 
-Unrelated change that shouldn't be in this patch.
 
->  unlock_adc:
->  	hwspin_unlock_raw(data->hwlock);
->  
-> @@ -305,7 +320,7 @@ static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data,
->  	*div_denominator = ratio & SC27XX_RATIO_DENOMINATOR_MASK;
->  }
->  
-> -static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
-> +static int adc_to_volt(struct sc27xx_adc_linear_graph *graph,
->  			      int raw_adc)
->  {
->  	int tmp;
-> @@ -314,6 +329,16 @@ static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
->  	tmp /= (graph->adc0 - graph->adc1);
->  	tmp += graph->volt1;
->  
-> +	return tmp;
-> +}
-> +
-> +static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
-> +			      int raw_adc)
-> +{
-> +	int tmp;
-> +
-> +	tmp = adc_to_volt(graph, raw_adc);
-> +
->  	return tmp < 0 ? 0 : tmp;
->  }
->  
-
+On Sun, Apr 10, 2022 at 5:12 PM Hyeonggon Yoo <42.hyeyoo@gmail.com> wrote:
+>
+> On Sun, Apr 10, 2022 at 01:02:23AM +0900, Ohhoon Kwon wrote:
+> > If current alloc context does not have __GFP_MEMALLOC in its gfpflags,
+> > then slab objects that were previously created with __GFP_MEMALLOC
+> > should not be given.
+> >
+> > This criteria is well kept in slab alloc slowpath:
+> > When gfpflags does not contain __GFP_MEMALLOC but if per-cpu slab page
+> > was allocated with __GFP_MEMALLOC, then allocator first deactivates
+> > per-cpu slab page and then again allocates new slab page with the
+> > current context's gfpflags.
+> >
+> > However, this criteria is not checked in fastpath.
+> > It should also be checked in the fastpath, too.
+> >
+> > Signed-off-by: Ohhoon Kwon <ohkwon1043@gmail.com>
+> > ---
+> >  mm/slub.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/mm/slub.c b/mm/slub.c
+> > index 74d92aa4a3a2..c77cd548e106 100644
+> > --- a/mm/slub.c
+> > +++ b/mm/slub.c
+> > @@ -3179,7 +3179,8 @@ static __always_inline void *slab_alloc_node(struct kmem_cache *s, struct list_l
+> >        * there is a suitable cpu freelist.
+> >        */
+> >       if (IS_ENABLED(CONFIG_PREEMPT_RT) ||
+> > -         unlikely(!object || !slab || !node_match(slab, node))) {
+> > +         unlikely(!object || !slab || !node_match(slab, node) ||
+> > +                     !pfmemalloc_match(slab, gfpflags))) {
+> >               object = __slab_alloc(s, gfpflags, node, addr, c);
+> >       } else {
+> >               void *next_object = get_freepointer_safe(s, object);
+>
+> The missing pfmemalloc check in fastpath was intended.
+>
+> pfmemalloc check in fast did exist in Mel's commit 072bb0aa5e0629 ("mm:
+> sl[au]b: add knowledge of PFMEMALLOC reserve pages").
+>
+> But later removed by Christoph's commit 5091b74a95d4 ("mm: slub: optimise
+> the SLUB fast path to avoid pfmemalloc checks").
+>
+> Any thoughts?
+>
+> Thanks!
+>
+> --
+> Thanks,
+> Hyeonggon
