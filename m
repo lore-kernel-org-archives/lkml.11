@@ -2,140 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6640C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F9FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243665AbiDJQoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 12:44:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
+        id S243670AbiDJQuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 12:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236959AbiDJQoG (ORCPT
+        with ESMTP id S236433AbiDJQuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 12:44:06 -0400
-Received: from euporie.uberspace.de (euporie.uberspace.de [185.26.156.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6512C4B421
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 09:41:53 -0700 (PDT)
-Received: (qmail 23627 invoked by uid 989); 10 Apr 2022 16:41:50 -0000
-Authentication-Results: euporie.uberspace.de;
-        auth=pass (plain)
-Date:   Sun, 10 Apr 2022 18:41:36 +0200
-From:   Florian Fischer <florian.fischer@muhq.space>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Florian Schmaus <flow@cs.fau.de>
-Subject: Re: [PATCH v3 2/3] perf stat: add rusage utime and stime events
-Message-ID: <20220410164136.bxqtpbrmfbqxdx4n@pasture>
-References: <69656438-8b9a-000b-0702-02dc480639f9@linux.intel.com>
- <20220407085721.3289414-1-florian.fischer@muhq.space>
- <20220407085721.3289414-3-florian.fischer@muhq.space>
- <CAP-5=fWC5e9PTs9PVttVDdNbCzYQVeqyuf95q181Vkg4NqJxqg@mail.gmail.com>
+        Sun, 10 Apr 2022 12:50:37 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB414B840;
+        Sun, 10 Apr 2022 09:48:25 -0700 (PDT)
+Received: from p508fdda7.dip0.t-ipconnect.de ([80.143.221.167] helo=phil.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1ndajc-0006bM-FX; Sun, 10 Apr 2022 18:48:20 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     linux-rockchip@lists.infradead.org,
+        Frank Wunderlich <linux@fw-web.de>
+Cc:     Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: Re: [PATCH v1 0/2] Change Bananapi-R2-Pro board to match V1.0
+Date:   Sun, 10 Apr 2022 18:48:19 +0200
+Message-ID: <3163720.aeNJFYEL58@phil>
+In-Reply-To: <7EC83317-29EA-4464-9C24-27A78FB77911@fw-web.de>
+References: <20220402110045.104031-1-linux@fw-web.de> <164906273049.1398682.587469799631775473.b4-ty@sntech.de> <7EC83317-29EA-4464-9C24-27A78FB77911@fw-web.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAP-5=fWC5e9PTs9PVttVDdNbCzYQVeqyuf95q181Vkg4NqJxqg@mail.gmail.com>
-X-Rspamd-Bar: /
-X-Rspamd-Report: MIME_GOOD(-0.1) MID_RHS_NOT_FQDN(0.5) BAYES_HAM(-0.040238)
-X-Rspamd-Score: 0.359761
-Received: from unknown (HELO unkown) (::1)
-        by euporie.uberspace.de (Haraka/2.8.28) with ESMTPSA; Sun, 10 Apr 2022 18:41:48 +0200
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > This patch adds two new tool internal events 'rusage_user_time'
-> > and 'rusage_system_time' as well as their aliases 'ru_utime' and
-> > 'ru_stime', similarly to the already present 'duration_time' event.
+Hi Frank,
+
+Am Dienstag, 5. April 2022, 08:09:43 CEST schrieb Frank Wunderlich:
+> Am 4. April 2022 10:59:59 MESZ schrieb Heiko Stuebner <heiko@sntech.de>:
+> >On Sat, 2 Apr 2022 13:00:43 +0200, Frank Wunderlich wrote:
+> >> Mainline Devicetree was created for v00 prototype that was not in
+> >> public sale and only shipped to few developers. V1.0 of the board
+> >> has some changes in io-domain and gmacs are swapped.
+> >> 
+> >> Change mainline DTS to match the current hardware.
+> >> 
+> >> Frank Wunderlich (2):
+> >>   arm64: dts: rockchip: Change io-domains of bpi-r2-pro
+> >>   arm64: dts: rockchip: Add gmac1 and change network settings
+> >> 
+> >> [...]
 > >
-> > Both events use the already collected rusage information obtained by wait4
-> > and tracked in the global ru_stats.
+> >Applied, thanks!
 > >
-> > Examples presenting cache-misses and rusage information in both human and
-> > machine-readable form:
+> >[1/2] arm64: dts: rockchip: Change io-domains of bpi-r2-pro
+> >      commit: 34fc952867aa2a2e257bf2bcbbaac97ac91f8bd1
+> >[2/2] arm64: dts: rockchip: Add gmac1 and change network settings
+> >      commit: 5c8e82ed3a4a5c8023b2959d8f3292f7291e7227
 > >
-> > $ ./perf stat -e duration_time,ru_utime,ru_stime,cache-misses -- grep -q -r duration_time .
-> >
-> >  Performance counter stats for 'grep -q -r duration_time .':
-> >
-> >         67,422,542 ns   duration_time:u
-> >         50,517,000 ns   ru_utime:u
-> >         16,839,000 ns   ru_stime:u
-> >             30,937      cache-misses:u
-> >
-> >        0.067422542 seconds time elapsed
-> >
-> >        0.050517000 seconds user
-> >        0.016839000 seconds sys
-> >
-> > $ ./perf stat -x, -e duration_time,ru_utime,ru_stime,cache-misses -- grep -q -r duration_time .
-> > 72134524,ns,duration_time:u,72134524,100.00,,
-> > 65225000,ns,ru_utime:u,65225000,100.00,,
-> > 6865000,ns,ru_stime:u,6865000,100.00,,
-> > 38705,,cache-misses:u,71189328,100.00,,
+> >Best regards,
 > 
-> This is really nice. For metric code we currently handle duration_time
-> in a special way, for example:
-> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/util/metricgroup.c?h=perf/core#n745
-> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/util/metricgroup.c?h=perf/core#n1131
-> We will need to do something similar with these tool events, but I'm
-> happy that it can be follow-up work.
+> Hi Heiko,
 > 
-> I'm not a huge fan of the names ru_utime and ru_stime, two thoughts
-> here we could do duration_time:u and duration_time:k but I don't think
-> that really makes sense. My preference would be to just call ru_utime
-> user_time and ru_stime system_time.
+> Thanks for fast apply.
+> 
+> Can you treat it as fix (for 5.18). At least io-domain will damage board if someone use 5.18. Network will simply not work.
 
-I considered ru_{u,s}_time only as aliases because those are the field names in
-the rusage struct filled by wait4 and are probably known by perf users.
-The "official" names are currently rusage_{user,system}_time.
-I could change them to only {user,system}_time because those names are more in line
-with the already present duration_time and are independent of the rusage
-implementation detail.
+I've moved both over to fixes now.
 
-What do you think of?
+It's clear for the io-domain but also the second patch probably makes
+the 1.0 board actually work where it wasn't before I guess, so that
+also counts as a fix :-)
 
----
- tools/perf/util/parse-events.c | 4 ++--
- tools/perf/util/parse-events.l | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+Heiko
 
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index c232ab79d434..afcba6671748 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -160,11 +160,11 @@ struct event_symbol event_symbols_tool[PERF_TOOL_LAST] = {
- 		.alias  = "",
- 	},
- 	[PERF_TOOL_RU_UTIME] = {
--		.symbol = "rusage_user_time",
-+		.symbol = "user_time",
- 		.alias  = "ru_utime",
- 	},
- 	[PERF_TOOL_RU_STIME] = {
--		.symbol = "rusage_system_time",
-+		.symbol = "system_time",
- 		.alias  = "ru_stime",
- 	},
- };
-diff --git a/tools/perf/util/parse-events.l b/tools/perf/util/parse-events.l
-index 3c7227b8035c..7ee8613b6011 100644
---- a/tools/perf/util/parse-events.l
-+++ b/tools/perf/util/parse-events.l
-@@ -353,8 +353,8 @@ alignment-faults				{ return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_AL
- emulation-faults				{ return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_EMULATION_FAULTS); }
- dummy						{ return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_DUMMY); }
- duration_time					{ return tool(yyscanner, PERF_TOOL_DURATION_TIME); }
--rusage_user_time|ru_utime	{ return tool(yyscanner, PERF_TOOL_RU_UTIME); }
--rusage_system_time|ru_stime	{ return tool(yyscanner, PERF_TOOL_RU_STIME); }
-+user_time|ru_utime	{ return tool(yyscanner, PERF_TOOL_RU_UTIME); }
-+system_time|ru_stime	{ return tool(yyscanner, PERF_TOOL_RU_STIME); }
- bpf-output					{ return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_BPF_OUTPUT); }
- cgroup-switches					{ return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_CGROUP_SWITCHES); }
- 
--- 
-2.35.1
 
-Florian Fischer
