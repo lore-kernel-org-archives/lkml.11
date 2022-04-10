@@ -2,152 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C983C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:25:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD522C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243591AbiDJQ1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 12:27:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51360 "EHLO
+        id S243595AbiDJQ2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 12:28:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243582AbiDJQ1b (ORCPT
+        with ESMTP id S240608AbiDJQ2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 12:27:31 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D46B3703D
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 09:25:20 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id j17so11086948pfi.9
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 09:25:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vgYau9yYdCljtzTr6MtTaLrwj9ih04H5dgCFTrcTCP8=;
-        b=fX1sS2gnm4hZVr3Zi9jdGyuK9CNudj1DjNK9yC6AZfhipZ1VR/Bug89B/knheOPpDW
-         RpPj3tBxndzn+vXz4WYx/gkXCAFvaCv9u58Ze1f0r2QV+tnw4vPGfBNlA0OnKxUP+r2p
-         qFwaPxbnKy1+UNG20+h8M9a72TinACBrFadtamkkuKzko3d25F0pHaOWmWLOOqtR0mMG
-         +Am4TSO1a/pTJR9ODfxMZIwjPzmwWcZwHc7vP1lR/ALCAraOLYiu+UPOgItfaJxKl+K/
-         MlKcNEEzoQuann4OT8f+GffsS+KEqxyOK3AAWrl4QwNA408txVvrtt6kFNpZHstatv/i
-         x4Fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vgYau9yYdCljtzTr6MtTaLrwj9ih04H5dgCFTrcTCP8=;
-        b=pbnubqycT5vsbnvmImkCzfMlH4WyoaKJYmSSzbitn7kZFW8pZI/0iIQtzMSaJ0bm3k
-         cyIjkBHVL5+Lo3ojE8DFTP10coHuisnnWnmqoa1IzeGlQ2GLy9FLupVlw36QXks9R7ls
-         HT96eQKpMmIw+ZFnojB3ko+iJKr1d9ClH7ILgPgBksBsmv7EtTG/YLoYq+JRmLLYICQd
-         uEwZqsEqJ8DjMKZHXglJHJaUYSsf8C3q+GyKwLe9QMqJiEAwhlmqxB7QkCqL79qHruCq
-         gIOITYzLTNBmvMso6ZYu/O66hO1WPHuEI/S51tfz0j7Wz7KqnOLvC/TXNS07JZzQPCXB
-         GEYw==
-X-Gm-Message-State: AOAM5303NvJPrcDtDkiB1YTLlVjH7AdnIDqvZRyF+vLeYlQCisCfxEvy
-        jyP1g9qusUBpj2ViOTtr+KQ=
-X-Google-Smtp-Source: ABdhPJyGKIG19qwgzjrGkKmRYgZwFdkyBzYaBwHyyuWiqSh8PSL0BT4GZDXOrZ2ZaPPwmfMUtvYH5A==
-X-Received: by 2002:a63:2266:0:b0:39c:f643:ee69 with SMTP id t38-20020a632266000000b0039cf643ee69mr10466052pgm.288.1649607919633;
-        Sun, 10 Apr 2022 09:25:19 -0700 (PDT)
-Received: from localhost.localdomain ([210.100.217.177])
-        by smtp.gmail.com with ESMTPSA id n19-20020a62e513000000b005048eef5827sm13386553pff.142.2022.04.10.09.25.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 09:25:19 -0700 (PDT)
-From:   Ohhoon Kwon <ohkwon1043@gmail.com>
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Ohhoon Kwon <ohkwon1043@gmail.com>,
-        JaeSang Yoo <jsyoo5b@gmail.com>,
-        Wonhyuk Yang <vvghjk1234@gmail.com>,
-        Jiyoup Kim <lakroforce@gmail.com>,
-        Donghyeok Kim <dthex5d@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] mm/slab_common: move dma-kmalloc caches creation into new_kmalloc_cache()
-Date:   Mon, 11 Apr 2022 01:25:11 +0900
-Message-Id: <20220410162511.656541-1-ohkwon1043@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 10 Apr 2022 12:28:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642E05E74A;
+        Sun, 10 Apr 2022 09:25:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C582B80B00;
+        Sun, 10 Apr 2022 16:25:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A780C385A1;
+        Sun, 10 Apr 2022 16:25:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649607947;
+        bh=NGKU1NW31S2WhJRxze0FB2Ln7FKN0fJi8+bBdLHPWEg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uLdIA8rujL0YIz/V7rMMUrvCDJHL+plvWQ4n4O9ky0EcEdJ/Ay9MSl11cfvdTguTY
+         epbQVeK+DDzTaBm+2fEqcamujU6Wn7DDTAYNTbQeClIPn4dqIOafjpwwh/BvBbTmR4
+         RsyEKzVC0HeMIzBqOR7f0eAUfWZ8FOTZNAl8XOMWaMVS9+2q5bydRvew+pAwVXbZOO
+         Q/8exo3u9SYI5rvfwxrH5cytwJF1ZD2WrSak6kuvChs2+6VqlDnJEMf6FsSiQZzt28
+         bkv/AvyY81ei2uLH+H4IGXaFfifjF1SgBlHsoqKiyP69slB26lSxCa7I9BNUoq2KGg
+         8/A11WagbUaig==
+Date:   Sun, 10 Apr 2022 17:33:38 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, orsonzhai@gmail.com,
+        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        yuming.zhu1@unisoc.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V3 6/7] iio: adc: sc27xx: add support for PMIC sc2730
+Message-ID: <20220410173338.35061998@jic23-huawei>
+In-Reply-To: <20220407082148.571442-7-gengcixi@gmail.com>
+References: <20220407082148.571442-1-gengcixi@gmail.com>
+        <20220407082148.571442-7-gengcixi@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are four types of kmalloc_caches: KMALLOC_NORMAL, KMALLOC_CGROUP,
-KMALLOC_RECLAIM, and KMALLOC_DMA. While the first three types are
-created using new_kmalloc_cache(), KMALLOC_DMA caches are created in a
-separate logic. Let KMALLOC_DMA caches be also created using
-new_kmalloc_cache(), to enhance readability.
+On Thu,  7 Apr 2022 16:21:47 +0800
+Cixi Geng <gengcixi@gmail.com> wrote:
 
-Historically, there were only KMALLOC_NORMAL caches and KMALLOC_DMA
-caches in the first place, and they were initialized in two separate
-logics. However, when KMALLOC_RECLAIM was introduced in v4.20 via
-commit 1291523f2c1d ("mm, slab/slub: introduce kmalloc-reclaimable
-caches") and KMALLOC_CGROUP was introduced in v5.14 via
-commit 494c1dfe855e ("mm: memcg/slab: create a new set of kmalloc-cg-<n>
-caches"), their creations were merged with KMALLOC_NORMAL's only.
-KMALLOC_DMA creation logic should be merged with them, too.
+> From: Cixi Geng <cixi.geng1@unisoc.com>
+> 
+> sc2730 is the product of sc27xx series.
+> 
+> Co-developed-by: Yuming Zhu <yuming.zhu1@unisoc.com>
+> Signed-off-by: Yuming Zhu <yuming.zhu1@unisoc.com>
+> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
 
-By merging KMALLOC_DMA initialization with other types, the following
-two changes might occur:
-1. The order dma-kmalloc-<n> caches added in slab_cache list may be
-sorted by size. i.e. the order they appear in /proc/slabinfo may change
-as well.
-2. slab_state will be set to UP after KMALLOC_DMA is created.
-In case of slub, freelist randomization is dependent on slab_state>=UP,
-and therefore KMALLOC_DMA cache's freelist will not be randomized in
-creation, but will be deferred to init_freelist_randomization().
+One minor comment inline.
 
-Co-developed-by: JaeSang Yoo <jsyoo5b@gmail.com>
-Signed-off-by: JaeSang Yoo <jsyoo5b@gmail.com>
-Signed-off-by: Ohhoon Kwon <ohkwon1043@gmail.com>
----
- mm/slab_common.c | 18 +++---------------
- 1 file changed, 3 insertions(+), 15 deletions(-)
+Thanks,
 
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 6ee64d6208b3..a959d247c27b 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -849,6 +849,8 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
- 			return;
- 		}
- 		flags |= SLAB_ACCOUNT;
-+	} else if (IS_ENABLED(CONFIG_ZONE_DMA) && (type == KMALLOC_DMA)) {
-+		flags |= SLAB_CACHE_DMA;
- 	}
- 
- 	kmalloc_caches[type][idx] = create_kmalloc_cache(
-@@ -877,7 +879,7 @@ void __init create_kmalloc_caches(slab_flags_t flags)
- 	/*
- 	 * Including KMALLOC_CGROUP if CONFIG_MEMCG_KMEM defined
- 	 */
--	for (type = KMALLOC_NORMAL; type <= KMALLOC_RECLAIM; type++) {
-+	for (type = KMALLOC_NORMAL; type < NR_KMALLOC_TYPES; type++) {
- 		for (i = KMALLOC_SHIFT_LOW; i <= KMALLOC_SHIFT_HIGH; i++) {
- 			if (!kmalloc_caches[type][i])
- 				new_kmalloc_cache(i, type, flags);
-@@ -898,20 +900,6 @@ void __init create_kmalloc_caches(slab_flags_t flags)
- 
- 	/* Kmalloc array is now usable */
- 	slab_state = UP;
--
--#ifdef CONFIG_ZONE_DMA
--	for (i = 0; i <= KMALLOC_SHIFT_HIGH; i++) {
--		struct kmem_cache *s = kmalloc_caches[KMALLOC_NORMAL][i];
--
--		if (s) {
--			kmalloc_caches[KMALLOC_DMA][i] = create_kmalloc_cache(
--				kmalloc_info[i].name[KMALLOC_DMA],
--				kmalloc_info[i].size,
--				SLAB_CACHE_DMA | flags, 0,
--				kmalloc_info[i].size);
--		}
--	}
--#endif
- }
- #endif /* !CONFIG_SLOB */
- 
--- 
-2.25.1
+Jonathan
+
+> ---
+>  drivers/iio/adc/sc27xx_adc.c | 105 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 105 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+> index eb9e789dd8ee..43655a818d09 100644
+> --- a/drivers/iio/adc/sc27xx_adc.c
+> +++ b/drivers/iio/adc/sc27xx_adc.c
+> @@ -13,9 +13,11 @@
+>  #include <linux/slab.h>
+>  
+>  /* PMIC global registers definition */
+> +#define SC2730_MODULE_EN		0x1808
+>  #define SC2731_MODULE_EN		0xc08
+>  #define SC27XX_MODULE_ADC_EN		BIT(5)
+>  #define SC2721_ARM_CLK_EN		0xc0c
+> +#define SC2730_ARM_CLK_EN		0x180c
+>  #define SC2731_ARM_CLK_EN		0xc10
+>  #define SC27XX_CLK_ADC_EN		BIT(5)
+>  #define SC27XX_CLK_ADC_CLK_EN		BIT(6)
+> @@ -307,6 +309,80 @@ static int sc2721_adc_get_ratio(int channel, int scale)
+>  	return SC27XX_VOLT_RATIO(1, 1);
+>  }
+>  
+> +static int sc2730_adc_get_ratio(int channel, int scale)
+> +{
+> +	switch (channel) {
+> +	case 14:
+> +		switch (scale) {
+> +		case 0:
+> +			return SC27XX_VOLT_RATIO(68, 900);
+> +		case 1:
+> +			return SC27XX_VOLT_RATIO(68, 1760);
+> +		case 2:
+> +			return SC27XX_VOLT_RATIO(68, 2327);
+> +		case 3:
+> +			return SC27XX_VOLT_RATIO(68, 3654);
+> +		default:
+> +			return SC27XX_VOLT_RATIO(1, 1);
+> +		}
+> +	case 15:
+> +		switch (scale) {
+> +		case 0:
+> +			return SC27XX_VOLT_RATIO(1, 3);
+> +		case 1:
+> +			return SC27XX_VOLT_RATIO(1000, 5865);
+> +		case 2:
+> +			return SC27XX_VOLT_RATIO(500, 3879);
+> +		case 3:
+> +			return SC27XX_VOLT_RATIO(500, 6090);
+> +		default:
+> +			return SC27XX_VOLT_RATIO(1, 1);
+> +		}
+> +	case 16:
+> +		switch (scale) {
+> +		case 0:
+> +			return SC27XX_VOLT_RATIO(48, 100);
+> +		case 1:
+> +			return SC27XX_VOLT_RATIO(480, 1955);
+> +		case 2:
+> +			return SC27XX_VOLT_RATIO(480, 2586);
+> +		case 3:
+> +			return SC27XX_VOLT_RATIO(48, 406);
+> +		default:
+> +			return SC27XX_VOLT_RATIO(1, 1);
+> +		}
+> +	case 21:
+> +	case 22:
+> +	case 23:
+> +		switch (scale) {
+> +		case 0:
+> +			return SC27XX_VOLT_RATIO(3, 8);
+> +		case 1:
+> +			return SC27XX_VOLT_RATIO(375, 1955);
+> +		case 2:
+> +			return SC27XX_VOLT_RATIO(375, 2586);
+> +		case 3:
+> +			return SC27XX_VOLT_RATIO(300, 3248);
+> +		default:
+> +			return SC27XX_VOLT_RATIO(1, 1);
+> +		}
+> +	default:
+> +		switch (scale) {
+> +		case 0:
+> +			return SC27XX_VOLT_RATIO(1, 1);
+> +		case 1:
+> +			return SC27XX_VOLT_RATIO(1000, 1955);
+> +		case 2:
+> +			return SC27XX_VOLT_RATIO(1000, 2586);
+> +		case 3:
+> +			return SC27XX_VOLT_RATIO(1000, 4060);
+> +		default:
+> +			return SC27XX_VOLT_RATIO(1, 1);
+> +		}
+> +	}
+> +	return SC27XX_VOLT_RATIO(1, 1);
+> +}
+> +
+>  static int sc2731_adc_get_ratio(int channel, int scale)
+>  {
+>  	switch (channel) {
+> @@ -363,6 +439,22 @@ static void sc2720_adc_scale_init(struct sc27xx_adc_data *data)
+>  	}
+>  }
+>  
+> +static void sc2730_adc_scale_init(struct sc27xx_adc_data *data)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < SC27XX_ADC_CHANNEL_MAX; i++) {
+> +		if (i == 5 || i == 10 || i == 19 || i == 30 || i == 31)
+
+I'd keep this looking like the other instances (in the previous patch)
+and use a switch statement.  They are more lines, but easier to read.
+
+> +			data->channel_scale[i] = 3;
+> +		else if (i == 7 || i == 9)
+> +			data->channel_scale[i] = 2;
+> +		else if (i == 13)
+> +			data->channel_scale[i] = 1;
+> +		else
+> +			data->channel_scale[i] = 0;
+> +	}
+> +}
+> +
+>  static void sc2731_adc_scale_init(struct sc27xx_adc_data *data)
+>  {
+>  	int i;
+> @@ -720,6 +812,18 @@ static const struct sc27xx_adc_variant_data sc2731_data = {
+>  	.get_ratio = sc2731_adc_get_ratio,
+>  };
+>  
+> +static const struct sc27xx_adc_variant_data sc2730_data = {
+> +	.pmic_type = SC27XX_ADC,
+> +	.module_en = SC2730_MODULE_EN,
+> +	.clk_en = SC2730_ARM_CLK_EN,
+> +	.scale_shift = SC27XX_ADC_SCALE_SHIFT,
+> +	.scale_mask = SC27XX_ADC_SCALE_MASK,
+> +	.bscale_cal = &big_scale_graph_calib,
+> +	.sscale_cal = &small_scale_graph_calib,
+> +	.init_scale = sc2730_adc_scale_init,
+> +	.get_ratio = sc2730_adc_get_ratio,
+> +};
+> +
+>  static const struct sc27xx_adc_variant_data sc2721_data = {
+>  	.pmic_type = SC2721_ADC,
+>  	.module_en = SC2731_MODULE_EN,
+> @@ -834,6 +938,7 @@ static int sc27xx_adc_probe(struct platform_device *pdev)
+>  
+>  static const struct of_device_id sc27xx_adc_of_match[] = {
+>  	{ .compatible = "sprd,sc2731-adc", .data = &sc2731_data},
+> +	{ .compatible = "sprd,sc2730-adc", .data = &sc2730_data},
+>  	{ .compatible = "sprd,sc2721-adc", .data = &sc2721_data},
+>  	{ .compatible = "sprd,sc2720-adc", .data = &sc2720_data},
+>  	{ }
 
