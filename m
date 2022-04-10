@@ -2,108 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C0BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 10:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FCFEC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 10:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236297AbiDJKkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 06:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
+        id S236801AbiDJKtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 06:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233152AbiDJKj5 (ORCPT
+        with ESMTP id S232051AbiDJKtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 06:39:57 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E37C2F00C
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 03:37:46 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 1293821112;
-        Sun, 10 Apr 2022 10:37:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649587065; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=o06aH5Wwm/wBPkhKlY5uWIbR23iz0C2sKU3U9zZmu9A=;
-        b=swEx90bQ6B4wcKPwLHWTN+5yQ7469Xl9vvpzi6sFaDPcp8jkH5mw+3357AWi9IREzTjFiC
-        d/C/zp0phP1g7EO3pD3TET2zrkzTS1vnvS3QY13yDiI01BbhpBZQI8f5XaEr54zgoCGaq5
-        tyRtUZ8T99G+HKCAwFn+xgoEBchXhSU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649587065;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=o06aH5Wwm/wBPkhKlY5uWIbR23iz0C2sKU3U9zZmu9A=;
-        b=+S4niASwVrD8PZD9jAgjAISlUUtI0FDf2HPBmkxrKgp1Xaq0uxUxi2D/nwz+9sS3U/qewA
-        nhCuuvx9IPjplZBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 057A913A91;
-        Sun, 10 Apr 2022 10:37:45 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Z4hTAXmzUmJ8IAAAMHmgww
-        (envelope-from <bp@suse.de>); Sun, 10 Apr 2022 10:37:45 +0000
-Date:   Sun, 10 Apr 2022 12:37:42 +0200
-From:   Borislav Petkov <bp@suse.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] sched/urgent for v5.18-rc2
-Message-ID: <YlKzdjk+VtarQ5pr@zn.tnic>
+        Sun, 10 Apr 2022 06:49:16 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5426E52B0C;
+        Sun, 10 Apr 2022 03:47:06 -0700 (PDT)
+Date:   Sun, 10 Apr 2022 10:47:03 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649587624;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IVt12kz468OQdrqCs2Kyi7NJJl5/6htYUwCxOHxUqIs=;
+        b=oRK6BWuh0i2aLqYZ1oTqUGVKgQlF/oPmvRq++IDnIdQg7N6XOYJAa9ra01DTt4g+dCOiOA
+        BqgGyc9JwgtKmbgBdZzyAHN0sc6PLQNyDdsXi9hneYisAUunnajqvYUOk2Jdfpp4PD4LTN
+        tfwjoTeZgXFjiRgnxFWf32e24gsIj88SW7jSiPQcp1N4xvULSvi4qn7SHJq0l3OM3mcLhS
+        C4GDB0/B2E3j6+uqFYEdXd/ed9k1Jes/yKmeDa2A956YuT1H/+tEGMXhLGIYLN0WlK1UeH
+        iCvdS3/q/jXksj2lM/TmOSdoz/YWVHZzRLG2RdibQU84Zzwr4Q3GLUrAQpKT1Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649587624;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IVt12kz468OQdrqCs2Kyi7NJJl5/6htYUwCxOHxUqIs=;
+        b=YezGOUnpU/Ti/eHky2EbSnMO0mkYjcrObfBmSUyIAe5Ylxy8BHF/412ZLFLnVrpv40D24p
+        EGWxJiGEy1BK9QAA==
+From:   "tip-bot2 for tangmeng" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: timers/core] timers: Move timer sysctl into the timer code
+Cc:     tangmeng <tangmeng@uniontech.com>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220215065019.7520-1-tangmeng@uniontech.com>
+References: <20220215065019.7520-1-tangmeng@uniontech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Message-ID: <164958762332.4207.10820440905687416367.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+The following commit has been merged into the timers/core branch of tip:
 
-please pull a couple of urgent scheduler fixes for 5.18-rc2.
+Commit-ID:     efaa0227f6c6a5073951b20cf2f8c63c4155306c
+Gitweb:        https://git.kernel.org/tip/efaa0227f6c6a5073951b20cf2f8c63c4155306c
+Author:        tangmeng <tangmeng@uniontech.com>
+AuthorDate:    Tue, 15 Feb 2022 14:50:19 +08:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Sun, 10 Apr 2022 12:38:45 +02:00
 
-Thx.
+timers: Move timer sysctl into the timer code
+
+This is part of the effort to reduce kernel/sysctl.c to only contain the
+core logic.
+
+Signed-off-by: tangmeng <tangmeng@uniontech.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20220215065019.7520-1-tangmeng@uniontech.com
 
 ---
+ include/linux/timer.h |  8 +------
+ kernel/sysctl.c       | 11 +---------
+ kernel/time/timer.c   | 53 ++++++++++++++++++++++++++++++------------
+ 3 files changed, 38 insertions(+), 34 deletions(-)
 
-The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
-
-  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/sched_urgent_for_v5.18_rc2
-
-for you to fetch changes up to 0a70045ed8516dfcff4b5728557e1ef3fd017c53:
-
-  entry: Fix compile error in dynamic_irqentry_exit_cond_resched() (2022-04-05 09:59:36 +0200)
-
-----------------------------------------------------------------
-- Use the correct static key checking primitive on the IRQ exit path
-
-- Two fixes for the new forceidle balancer
-
-----------------------------------------------------------------
-Peter Zijlstra (1):
-      sched/core: Fix forceidle balancing
-
-Sebastian Andrzej Siewior (1):
-      sched: Teach the forced-newidle balancer about CPU affinity limitation.
-
-Sven Schnelle (1):
-      entry: Fix compile error in dynamic_irqentry_exit_cond_resched()
-
- kernel/entry/common.c |  2 +-
- kernel/sched/core.c   | 16 +++++++++++-----
- kernel/sched/idle.c   |  1 -
- kernel/sched/sched.h  |  6 ------
- 4 files changed, 12 insertions(+), 13 deletions(-)
-
--- 
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
+diff --git a/include/linux/timer.h b/include/linux/timer.h
+index fda13c9..648f001 100644
+--- a/include/linux/timer.h
++++ b/include/linux/timer.h
+@@ -196,14 +196,6 @@ extern void init_timers(void);
+ struct hrtimer;
+ extern enum hrtimer_restart it_real_fn(struct hrtimer *);
+ 
+-#if defined(CONFIG_SMP) && defined(CONFIG_NO_HZ_COMMON)
+-struct ctl_table;
+-
+-extern unsigned int sysctl_timer_migration;
+-int timer_migration_handler(struct ctl_table *table, int write,
+-			    void *buffer, size_t *lenp, loff_t *ppos);
+-#endif
+-
+ unsigned long __round_jiffies(unsigned long j, int cpu);
+ unsigned long __round_jiffies_relative(unsigned long j, int cpu);
+ unsigned long round_jiffies(unsigned long j);
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 830aaf8..5b7b1a8 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -2288,17 +2288,6 @@ static struct ctl_table kern_table[] = {
+ 		.extra1		= SYSCTL_ZERO,
+ 		.extra2		= SYSCTL_ONE,
+ 	},
+-#if defined(CONFIG_SMP) && defined(CONFIG_NO_HZ_COMMON)
+-	{
+-		.procname	= "timer_migration",
+-		.data		= &sysctl_timer_migration,
+-		.maxlen		= sizeof(unsigned int),
+-		.mode		= 0644,
+-		.proc_handler	= timer_migration_handler,
+-		.extra1		= SYSCTL_ZERO,
+-		.extra2		= SYSCTL_ONE,
+-	},
+-#endif
+ #ifdef CONFIG_BPF_SYSCALL
+ 	{
+ 		.procname	= "unprivileged_bpf_disabled",
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 60aebf2..ef082d4 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -44,6 +44,7 @@
+ #include <linux/slab.h>
+ #include <linux/compat.h>
+ #include <linux/random.h>
++#include <linux/sysctl.h>
+ 
+ #include <linux/uaccess.h>
+ #include <asm/unistd.h>
+@@ -223,7 +224,7 @@ static void timer_update_keys(struct work_struct *work);
+ static DECLARE_WORK(timer_update_work, timer_update_keys);
+ 
+ #ifdef CONFIG_SMP
+-unsigned int sysctl_timer_migration = 1;
++static unsigned int sysctl_timer_migration = 1;
+ 
+ DEFINE_STATIC_KEY_FALSE(timers_migration_enabled);
+ 
+@@ -234,7 +235,42 @@ static void timers_update_migration(void)
+ 	else
+ 		static_branch_disable(&timers_migration_enabled);
+ }
+-#else
++
++#ifdef CONFIG_SYSCTL
++static int timer_migration_handler(struct ctl_table *table, int write,
++			    void *buffer, size_t *lenp, loff_t *ppos)
++{
++	int ret;
++
++	mutex_lock(&timer_keys_mutex);
++	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
++	if (!ret && write)
++		timers_update_migration();
++	mutex_unlock(&timer_keys_mutex);
++	return ret;
++}
++
++static struct ctl_table timer_sysctl[] = {
++	{
++		.procname	= "timer_migration",
++		.data		= &sysctl_timer_migration,
++		.maxlen		= sizeof(unsigned int),
++		.mode		= 0644,
++		.proc_handler	= timer_migration_handler,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
++	{}
++};
++
++static int __init timer_sysctl_init(void)
++{
++	register_sysctl("kernel", timer_sysctl);
++	return 0;
++}
++device_initcall(timer_sysctl_init);
++#endif /* CONFIG_SYSCTL */
++#else /* CONFIG_SMP */
+ static inline void timers_update_migration(void) { }
+ #endif /* !CONFIG_SMP */
+ 
+@@ -251,19 +287,6 @@ void timers_update_nohz(void)
+ 	schedule_work(&timer_update_work);
+ }
+ 
+-int timer_migration_handler(struct ctl_table *table, int write,
+-			    void *buffer, size_t *lenp, loff_t *ppos)
+-{
+-	int ret;
+-
+-	mutex_lock(&timer_keys_mutex);
+-	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
+-	if (!ret && write)
+-		timers_update_migration();
+-	mutex_unlock(&timer_keys_mutex);
+-	return ret;
+-}
+-
+ static inline bool is_timers_nohz_active(void)
+ {
+ 	return static_branch_unlikely(&timers_nohz_active);
