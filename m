@@ -2,74 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1908DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:56:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5100EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 17:05:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243694AbiDJQ6a convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 12:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33808 "EHLO
+        id S240731AbiDJRHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 13:07:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239491AbiDJQ6Z (ORCPT
+        with ESMTP id S242571AbiDJRHa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 12:58:25 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDF53C72F;
-        Sun, 10 Apr 2022 09:56:12 -0700 (PDT)
-Received: from p508fdda7.dip0.t-ipconnect.de ([80.143.221.167] helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1ndar9-0006dP-LS; Sun, 10 Apr 2022 18:56:07 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     Johan Jonker <jbx6244@gmail.com>
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, linus.walleij@linaro.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] dt-bindings: pinctrl: add rockchip,rk3036-pinctrl compatible string
-Date:   Sun, 10 Apr 2022 18:56:06 +0200
-Message-ID: <1890974.PYKUYFuaPT@phil>
-In-Reply-To: <20220330133952.1949-1-jbx6244@gmail.com>
-References: <20220330133952.1949-1-jbx6244@gmail.com>
+        Sun, 10 Apr 2022 13:07:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AB3101CF;
+        Sun, 10 Apr 2022 10:05:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52F75B80E28;
+        Sun, 10 Apr 2022 17:05:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C674EC385A4;
+        Sun, 10 Apr 2022 17:05:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649610317;
+        bh=7quyUdm7Aq4txqWmhfJZl/DrSbjN8BfInAOcqAh00as=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=A6Pv/CVY9iPEZ3OxWr/blSZDtVbew9r5Q2ZvtxTeW8KmSL7V9Zp+zCbpecR6pGulj
+         3CjtK/b0gMI2uZtDmgyV3e1I9yWVkWHcwLnJtyQGQYqg4PypXWz07uoOO6w15oqUn4
+         MBUcwdmX04t1H+nlbaIxSWyzyHZVczKG+Lvn67gPmAzkXU6jALqui1Lz4wfeLAMpDo
+         24qSeNvZ2R6O86bFcTS4Q2n+/p7glYlAkxll816NJp8KR+Nrkr/ixnNHG0VVgHjpFe
+         JLkvd+5wF0dTKVMIQmY+tSnQEjTb5nGd1rcaHJ2/lRYmcP5KdBj3qWoamvQuh8XJ8R
+         SZfAAi2NNmO3A==
+Date:   Sun, 10 Apr 2022 18:13:06 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Puranjay Mohan <puranjay12@gmail.com>, gregkh@linuxfoundation.org,
+        rafael@kernel.org, heikki.krogerus@linux.intel.com,
+        kuba@kernel.org, saravanak@google.com,
+        linux-kernel@vger.kernel.org, lars@metafoo.de,
+        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: accel: adxl355: use fwnode_irq_get_byname()
+Message-ID: <20220410181306.23202f25@jic23-huawei>
+In-Reply-To: <20220227124134.4d4e4644@jic23-huawei>
+References: <20211109200840.135019-1-puranjay12@gmail.com>
+        <20211109200840.135019-3-puranjay12@gmail.com>
+        <YflfEpKj0ilHnQQm@smile.fi.intel.com>
+        <20220227124134.4d4e4644@jic23-huawei>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Mittwoch, 30. März 2022, 15:39:51 CEST schrieb Johan Jonker:
-> Add the compatible string "rockchip,rk3036-pinctrl" in already
-> in use in rk3036.dtsi to rockchip,pinctrl.yaml.
+On Sun, 27 Feb 2022 12:41:34 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
+
+> On Tue, 1 Feb 2022 18:25:54 +0200
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 > 
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-
-Linus, I guess this patch should go through the pinctrl tree :-)
-
-Thanks
-Heiko
-
-> ---
->  Documentation/devicetree/bindings/pinctrl/rockchip,pinctrl.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> > On Wed, Nov 10, 2021 at 01:38:40AM +0530, Puranjay Mohan wrote:  
+> > > Use the generic fwnode_irq_get_byname() in place of of_irq_get_byname()
+> > > to get the IRQ number from the interrupt pin.    
+> > 
+> > Heads up, the fwnode_irq_get_byname() is in I2C tree and if Jonathan wants to
+> > apply this one, the PR [1] can be used.
+> > 
+> > [1]: https://lore.kernel.org/linux-i2c/YfRiGR3AT8tzyweG@shikoro/T/#u
+> >   
 > 
-> diff --git a/Documentation/devicetree/bindings/pinctrl/rockchip,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/rockchip,pinctrl.yaml
-> index b0eae3a67..9e90faf9b 100644
-> --- a/Documentation/devicetree/bindings/pinctrl/rockchip,pinctrl.yaml
-> +++ b/Documentation/devicetree/bindings/pinctrl/rockchip,pinctrl.yaml
-> @@ -33,6 +33,7 @@ properties:
->      enum:
->        - rockchip,px30-pinctrl
->        - rockchip,rk2928-pinctrl
-> +      - rockchip,rk3036-pinctrl
->        - rockchip,rk3066a-pinctrl
->        - rockchip,rk3066b-pinctrl
->        - rockchip,rk3128-pinctrl
+> Thanks Andy. 
 > 
+> I'm going to let this go the slow way and pick up this patch after the
+> merge window when I can avoid pulling in that PR.
+> 
+> Basically I'm feeling lazy today :)
 
+Now applied to the togreg branch of iio.git and pushed out as testing to
+see if 0-day can find any problems.
 
+Thanks,
 
+Jonathan
+
+> 
+> Jonathan
 
