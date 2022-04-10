@@ -2,133 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08493C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F24C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:32:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243623AbiDJQeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 12:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46982 "EHLO
+        id S242321AbiDJQen (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 12:34:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243625AbiDJQeU (ORCPT
+        with ESMTP id S243639AbiDJQe3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 12:34:20 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7370165B1
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 09:32:09 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id s8so12536623pfk.12
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 09:32:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=H1U7ig0yIYDqqdZdu4wVkYgw4NSUR1m80doAifHbSXg=;
-        b=gVpK4lNxM7SmpfWWIq6ooT0wacd8j3RXrqoxFe8fhV0ureF9rZCnTWPLKZSKvZpiPO
-         rlg+OUiCIEDO/lJRs95bKzafvIH6lTy+S8WB9dZcykiZ0jrUCBDEitQ5AXEvXpPtZbWR
-         rZ7s3VH3O239WHcSmi5TOqN4U2J3ppVHi9LjYWkHPKBDCh4hJpQk8+/bOBP9lAPCwnK9
-         oh4lhM1wdxpryANakPH3swYUH6fI1n52GsXI6EEdHZ8Rcwn+wDgh1OzG72bkc5pYh336
-         a67AgupEomzdrRyBLksE6+DcyrssQQ8D6HqiJP4Vd3GfxEL4pe90Z3cbFJ+AEVcf4e5H
-         TMKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=H1U7ig0yIYDqqdZdu4wVkYgw4NSUR1m80doAifHbSXg=;
-        b=efUVN8xJK6GCLR8EC1cKivhuxj4VLm51ePqj3kgv6fQLdtSAjA9Oryo79WMn5bafyo
-         5R1Jb5PsGerWodz/aaJmFr8qB/FEIxBDE3qISFpOWh8WjLx+cvoInIyizOkqeObdTX+z
-         L52JiasqQUZOi6hWpckNpfOErl1/Z5NfWfh1c8kNW1k1ahelPFMpmho9CipQO+J8Bzk2
-         S3ShlxWVegh+vmPdmSgohZhN8dJ077f53NsXhqmvk6bmUPJZFFSX+QhcGRSHohK4ATWl
-         cZVrNsqpdcLGY1PzCGBGfDrcVAIAuUK3+HQ3Qv3bF1SH+nb5GOkN3BBoteK7VNXKxRlD
-         P5Qw==
-X-Gm-Message-State: AOAM530WG12gGiqsl6Ck5K7DhQlqi/s3CDY+/7t4oaAKNz5OGnE0Qnmv
-        knPErHFuxFSBAk8I488gUcw=
-X-Google-Smtp-Source: ABdhPJz4eUGNhq0nhWYowhDapkqRvXBafHMP7p7w4C4Eq0u7PXK4HDz8GAdi1GmOQe5VQmH2f69Sow==
-X-Received: by 2002:a05:6a00:238f:b0:4f6:b09a:4c63 with SMTP id f15-20020a056a00238f00b004f6b09a4c63mr29014047pfc.35.1649608329324;
-        Sun, 10 Apr 2022 09:32:09 -0700 (PDT)
-Received: from makvihas.localhost.com ([2405:201:202b:15:606b:10e4:2085:6825])
-        by smtp.gmail.com with ESMTPSA id f12-20020a056a001acc00b004fb37ecc6b2sm31940021pfv.29.2022.04.10.09.32.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 09:32:09 -0700 (PDT)
-From:   Vihas Makwana <makvihas@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH 6/6] staging: r8188eu: drop unnecessary wrapper rtw_free_mlme_priv
-Date:   Sun, 10 Apr 2022 22:01:17 +0530
-Message-Id: <20220410163117.3964-7-makvihas@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220410163117.3964-1-makvihas@gmail.com>
-References: <20220410163117.3964-1-makvihas@gmail.com>
+        Sun, 10 Apr 2022 12:34:29 -0400
+Received: from out28-50.mail.aliyun.com (out28-50.mail.aliyun.com [115.124.28.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E1E192B8;
+        Sun, 10 Apr 2022 09:32:13 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07502633|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.094111-0.000410477-0.905478;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047213;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=9;RT=9;SR=0;TI=SMTPD_---.NNs1TPY_1649608329;
+Received: from 192.168.30.128(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.NNs1TPY_1649608329)
+          by smtp.aliyun-inc.com(33.37.77.208);
+          Mon, 11 Apr 2022 00:32:10 +0800
+Subject: Re: [PATCH 07/18] MIPS: DTS: jz4780: fix otg node as reported by
+ dtbscheck
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, letux-kernel@openphoenux.org
+References: <cover.1649443080.git.hns@goldelico.com>
+ <298162bfa2e7225ccc753865e1ffa39ce2722b2a.1649443080.git.hns@goldelico.com>
+ <bd19b6eb-d53a-b665-749d-46c275c85ccc@linaro.org>
+ <822182F3-5429-4731-9FA1-8F18C5D95DEC@goldelico.com>
+ <535e3eab-a28e-46f3-2a7e-f1ffd1913470@linaro.org>
+ <7B66AC66-EF73-4F75-A775-589A4F98BEFC@goldelico.com>
+ <3e95f567-03f5-bf9c-1856-9fe602e9b025@linaro.org>
+ <81BA49E3-AFDE-4DFD-BB77-2B03488C727B@goldelico.com>
+From:   Zhou Yanjie <zhouyanjie@wanyeetech.com>
+Message-ID: <b6090a27-12b7-0c01-6d33-ae32b31b4b74@wanyeetech.com>
+Date:   Mon, 11 Apr 2022 00:32:08 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
+In-Reply-To: <81BA49E3-AFDE-4DFD-BB77-2B03488C727B@goldelico.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the unnecessary wrapper. Drop rtw_free_mlme_priv and use 
-_rtw_free_mlme_priv instead.
+Hi folks,
 
-Signed-off-by: Vihas Makwana <makvihas@gmail.com>
----
- drivers/staging/r8188eu/core/rtw_mlme.c    | 5 -----
- drivers/staging/r8188eu/include/rtw_mlme.h | 1 -
- drivers/staging/r8188eu/os_dep/os_intfs.c  | 4 ++--
- 3 files changed, 2 insertions(+), 8 deletions(-)
+On 2022/4/9 下午9:53, H. Nikolaus Schaller wrote:
+>
+>> Am 09.04.2022 um 15:44 schrieb Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>:
+>>
+>> On 09/04/2022 15:32, H. Nikolaus Schaller wrote:
+>>>
+>>>> Am 09.04.2022 um 15:15 schrieb Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>:
+>>>>
+>>>> On 09/04/2022 15:05, H. Nikolaus Schaller wrote:
+>>>>>> This looks wrong, the block usually should have a specific compatible.
+>>>>>> Please mention why it does not.
+>>>>> Well, I did not even have that idea that it could need an explanation.
+>>>>>
+>>>>> There is no "ingenic,jz4780-otg" and none is needed here to make it work.
+>>>> Make it work in what terms? We talk about hardware description, right?
+>>> Yes.
+>>>
+>>>>> Therefore the generic "snps,dwc2" is sufficient.
+>>>> No, you are mixing now driver behavior (is sufficient) with hardware
+>>>> description.
+>>> No. "snps,dwc2" is a hardware description for a licensed block.
+>>> Not a driver behavior.
+>> snps,dwc2 matches the original block, not necessarily this
+>> implementation. Unless you are sure?
+> I assume. Nobody has reported an issue without having any specific jz4780 driver in place.
+> Well, that is only evidence, not bullet proof.
+>
+>>>> Most of licensed blocks require the specific compatible to
+>>>> differentiate it.
+>>> If there is a need to differentiate.
+>> No, regardless whether there is a need currently, most of them have
+>> specific compatibles, because there are some minor differences. Even if
+>> difference is not visible from programming model or wiring, it might
+>> justify it's own specific compatible. For example because maybe once
+>> that tiny difference will require some changes.
+>>
+>> Someone added the ingenic compatible, so why do you assume that one tool
+>> (bindings) is correct but other piece of code (using specific
+>> compatible) is not? You use the argument "bindings warning" which is not
+>> enough. Argument that blocks are 100% same, is good enough, if you are
+>> sure. Just use it in commit msg. But are you sure that these are the
+>> same? Same pins, same programming model (entire model, not used by Linux)?
+> The compatible ingenic,jz4780-otg was introduced in 158c774d3c64859e84dd20e04d5fb18c8d3d318e.
+> Hence I have added Yanjie for clarification why he added it in the .dts and not in the bindings.
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index f2a61c162..c09a565b4 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -288,11 +288,6 @@ u8 *rtw_get_beacon_interval_from_ie(u8 *ie)
- 	return ie + 8;
- }
- 
--void rtw_free_mlme_priv(struct mlme_priv *pmlmepriv)
--{
--	_rtw_free_mlme_priv(pmlmepriv);
--}
--
- static struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv)
- {
- 	struct	wlan_network	*pnetwork;
-diff --git a/drivers/staging/r8188eu/include/rtw_mlme.h b/drivers/staging/r8188eu/include/rtw_mlme.h
-index b5b1a0e10..4055a15e2 100644
---- a/drivers/staging/r8188eu/include/rtw_mlme.h
-+++ b/drivers/staging/r8188eu/include/rtw_mlme.h
-@@ -439,7 +439,6 @@ void rtw_join_timeout_handler (struct timer_list *t);
- void _rtw_scan_timeout_handler (struct timer_list *t);
- void rtw_free_network_queue(struct adapter *adapter, u8 isfreeall);
- int _rtw_init_mlme_priv(struct adapter *adapter);
--void rtw_free_mlme_priv (struct mlme_priv *pmlmepriv);
- int rtw_select_and_join_from_scanned_queue(struct mlme_priv *pmlmepriv);
- int rtw_set_key(struct adapter *adapter, struct security_priv *psecuritypriv,
- 		int keyid, u8 set_tx);
-diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
-index 448ea9533..adfc1e763 100644
---- a/drivers/staging/r8188eu/os_dep/os_intfs.c
-+++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
-@@ -528,7 +528,7 @@ u8 rtw_init_drv_sw(struct adapter *padapter)
- free_mlme_ext:
- 	free_mlme_ext_priv(&padapter->mlmeextpriv);
- 
--	rtw_free_mlme_priv(&padapter->mlmepriv);
-+	_rtw_free_mlme_priv(&padapter->mlmepriv);
- 
- free_evt_priv:
- 	rtw_free_evt_priv(&padapter->evtpriv);
-@@ -576,7 +576,7 @@ u8 rtw_free_drv_sw(struct adapter *padapter)
- 
- 	rtw_free_evt_priv(&padapter->evtpriv);
- 
--	rtw_free_mlme_priv(&padapter->mlmepriv);
-+	_rtw_free_mlme_priv(&padapter->mlmepriv);
- 	_rtw_free_xmit_priv(&padapter->xmitpriv);
- 
- 	_rtw_free_sta_priv(&padapter->stapriv); /* will free bcmc_stainfo here */
--- 
-2.30.2
 
+It's my fault, last year I made an OTG driver for Ingenic SoCs and sent it
+to the mailing list, and then I received some revision comments, but for
+some personal reasons I didn't continue to improve it.
+
+I'll finish these modifications as soon as possible and send them out.
+Then after they merge into the mainline, this problem will be solved.
+
+
+Thanks and best regards!
+
+
+>
+> BR and thanks,
+> Nikolaus
+>
