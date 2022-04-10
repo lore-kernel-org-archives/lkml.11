@@ -2,120 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDDDBC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 20:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF16C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 20:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243946AbiDJUer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 16:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54658 "EHLO
+        id S239754AbiDJUg6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 16:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243925AbiDJUee (ORCPT
+        with ESMTP id S232662AbiDJUg4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 16:34:34 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70EB36339;
-        Sun, 10 Apr 2022 13:32:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1649622731; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=gIHrux1Qx6cY6Pyu4y77mzgZzBjZyceD7oDM7YFkR/mKow87bN1DefCaocxDQfjgqeimJ/WAQS33ic0N0V8cu0nJh9im/KZsru1pPLA4fbe2J8cUiF+mvZ4OXHqCrgIGoYDBDpV+xRr7HbHy0Ywdm1+so3iL+pSIdcJNCeQsqqA=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1649622731; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=/MOMK34Z6z6C4CqZb8rLYQ4jYbrhj9LEWEwpaErwP4o=; 
-        b=XLiSQj5h+xt2fR9KFl/aQJnOAIAJH+F8JK+SPP7MoDqFEYvcnPop1m2C1o3N2+iYxxJa2k1JbcAx74taP/ufzMq7A2Bra2HOJvj93VbKwxioUT/VtSP73P1OU63gWrcIExksd+Ibv3yY21/4BIDQLwSdR6ttmnHiYRJDBZzOnh4=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1649622731;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=/MOMK34Z6z6C4CqZb8rLYQ4jYbrhj9LEWEwpaErwP4o=;
-        b=IEqd05QgWct3oxoPxsxQmyqf/6IlDq+nbX7nej93sqGJqCJiJxW00t9S3XUwi+m+
-        K3ZWJHZfC3+l7SXb2VCkjmtO0+Zl/VcWAf91U+Tme95kJe+LFtoI23zC5yI3OMnjv21
-        6wo149RY6tWIXTSm7xg1V8aSycanXsH/CpHehsvg=
-Received: from arinc9-PC.localdomain (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1649622730691527.6330187658422; Sun, 10 Apr 2022 13:32:10 -0700 (PDT)
-From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-To:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH 3/3] mips: dts: mt7621: remove binding for defining gpio function for pin groups
-Date:   Sun, 10 Apr 2022 23:31:38 +0300
-Message-Id: <20220410203138.22513-3-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220410203138.22513-1-arinc.unal@arinc9.com>
-References: <20220410203138.22513-1-arinc.unal@arinc9.com>
+        Sun, 10 Apr 2022 16:36:56 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEA136B63;
+        Sun, 10 Apr 2022 13:34:45 -0700 (PDT)
+Date:   Sun, 10 Apr 2022 20:34:42 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649622883;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fE3AaMHHUkYLpCGGxU+v1SLmaDbhYiMGg3xpiZFFg3Y=;
+        b=mqN4Ow4YLW/TYhVon9R3o5Rn9vjiE0exTZ87Rp+jLvQdP/zzggIo0m6+Ubo2yIDHSRC7f/
+        6RIqtiS9M/Ne8LeHX9RhOsopneV+Sn8FMuQQ+N0EFlbvk0LYDtJK/rAfQcDS3JEE4gt9JZ
+        zmuEXYnXKMWN6zVwkzXKGzkxd8rCmR4ruB2bIHiLZvEYD1uU7z2Juv8EDHLqnd0bVVgOcY
+        IFVEDiPn7AdulbQqzVIxCgOkjhZhGgc++HjHAJfUCqowOwo3azRvSj+YQcIWtNkSqaSXad
+        ycVl7HPxmAiKWO3WDoqCIj2znOyrClqPQ5SPo0hdNCrUPiWn085pq1P1u8ZEVw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649622883;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fE3AaMHHUkYLpCGGxU+v1SLmaDbhYiMGg3xpiZFFg3Y=;
+        b=jLQ+7kMJmKHcbNoL8qaUP8pe+6idDRJYEwYppmZlLtCySlyrZa4Tqgna9AG2m9J8W3Crl8
+        lLYaZJmuKuzkLGCg==
+From:   "tip-bot2 for Yury Norov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: irq/core] irqchip/bmips: Replace cpumask_weight() with cpumask_empty()
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, maz@kernel.org
+In-Reply-To: <20220210224933.379149-21-yury.norov@gmail.com>
+References: <20220210224933.379149-21-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Message-ID: <164962288218.4207.15698777919924132121.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All pin groups function as gpio unless set otherwise. Therefore, remove
-this unnecessary binding.
+The following commit has been merged into the irq/core branch of tip:
 
-Tested on UniElec U7621-06-16M on OpenWrt.
+Commit-ID:     0de61d739c21003201a0adb1f5c403f89a7c2441
+Gitweb:        https://git.kernel.org/tip/0de61d739c21003201a0adb1f5c403f89a7c2441
+Author:        Yury Norov <yury.norov@gmail.com>
+AuthorDate:    Thu, 10 Feb 2022 14:49:04 -08:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Sun, 10 Apr 2022 22:28:28 +02:00
 
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+irqchip/bmips: Replace cpumask_weight() with cpumask_empty()
+
+bcm6345_l1_of_init() calls cpumask_weight() to check if any bit of a given
+cpumask is set.
+
+This can be done more efficiently with cpumask_empty() because
+cpumask_empty() stops traversing the cpumask as soon as it finds first set
+bit, while cpumask_weight() counts all bits unconditionally.
+
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220210224933.379149-21-yury.norov@gmail.com
+
 ---
- arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts | 12 ------------
- arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts | 12 ------------
- 2 files changed, 24 deletions(-)
+ drivers/irqchip/irq-bcm6345-l1.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts
-index 75f3b0425487..c307a0edb91f 100644
---- a/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts
-+++ b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts
-@@ -97,18 +97,6 @@ &pcie {
- 	status = "okay";
- };
+diff --git a/drivers/irqchip/irq-bcm6345-l1.c b/drivers/irqchip/irq-bcm6345-l1.c
+index fd07921..142a743 100644
+--- a/drivers/irqchip/irq-bcm6345-l1.c
++++ b/drivers/irqchip/irq-bcm6345-l1.c
+@@ -315,7 +315,7 @@ static int __init bcm6345_l1_of_init(struct device_node *dn,
+ 			cpumask_set_cpu(idx, &intc->cpumask);
+ 	}
  
--&pinctrl {
--	pinctrl-names = "default";
--	pinctrl-0 = <&state_default>;
--
--	state_default: state-default {
--		gpio-pinmux {
--			groups = "uart3", "wdt";
--			function = "gpio";
--		};
--	};
--};
--
- &gmac1 {
- 	status = "okay";
- 	phy-handle = <&ethphy4>;
-diff --git a/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts
-index b427ae9e081f..8268d738e74f 100644
---- a/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts
-+++ b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts
-@@ -81,18 +81,6 @@ &pcie {
- 	status = "okay";
- };
- 
--&pinctrl {
--	pinctrl-names = "default";
--	pinctrl-0 = <&state_default>;
--
--	state_default: state-default {
--		gpio-pinmux {
--			groups = "wdt";
--			function = "gpio";
--		};
--	};
--};
--
- &gmac1 {
- 	status = "okay";
- 	phy-handle = <&ethphy7>;
--- 
-2.25.1
-
+-	if (!cpumask_weight(&intc->cpumask)) {
++	if (cpumask_empty(&intc->cpumask)) {
+ 		ret = -ENODEV;
+ 		goto out_free;
+ 	}
