@@ -2,281 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C1B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A36EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 16:19:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243573AbiDJQQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 12:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39406 "EHLO
+        id S240570AbiDJQVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 12:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243559AbiDJQQy (ORCPT
+        with ESMTP id S236321AbiDJQVu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 12:16:54 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2175A590;
-        Sun, 10 Apr 2022 09:14:42 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id d40so15204316lfv.11;
-        Sun, 10 Apr 2022 09:14:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zVVugiGwANrqlBaA6ivaUKrahdkCr36k7VgezQFTpZQ=;
-        b=Es05VMwJuRhMYE20IqAA6CNRWB4re6xBykYAUBkSOJI4w+p8ypF/VxdxdOdnRJ3PZi
-         xHzA5z6xYN58e/conynDYlugekkQF0EuQ4asRV4OCeaYtyqVbGck3EUhBkokL8rg+DiV
-         O1BqsmyZ4KVS4sp14/XYiWyi1emVMSCMf1zsx7Qsp2QMRKb9MgkQmOhQlWbUJtk/G1Iy
-         RM8IN+FwfAEq4EYwhbkpYQ6xY9SfW0ks55uJ7xOCEjRXjybyH/Vv6GUHlRUAHpWtNZ5s
-         1SKxbHGvZfXAEDWTMDQkmqnseHbDuduCglNRUb2iXLjtRrOMFRv8eBsVxcEKFVlXWeh8
-         kOTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zVVugiGwANrqlBaA6ivaUKrahdkCr36k7VgezQFTpZQ=;
-        b=dkI5fnZB39V3vTFw+ckFSBFyoDiojP5Q1PcQrSIeR/5IhnnVtupfZ9r97JoaoJuOTl
-         WZz8Z41XiMwZH3UyEYALAyxlCWTdQMUowRuum6Ds67F7Z8DsdxK8sbn2qZlhcburLr6B
-         oGFFmkiTTcICpdcVvzq+huLzVkBEFtPqat+cFp53VzPDTsXUV6twHR0rxiXmuLOxbuiT
-         YLYzgBxKN/25TQrIuAIGoQAnPcdxIKsuzdPGYEn3GY9CEaGpp0nZIPFcByjiIPpbg0CL
-         UgjY7uer9gwFuEM3HCjDRnFqhcZRx9HImi48I9QZW8Bz/9poELEnC+gC0zSYNOaFJi2q
-         5RCg==
-X-Gm-Message-State: AOAM530jPr3QKkntsccTJkOaUNMPB21nNtkv49NToiB27UiO0dQu5eHZ
-        IIQLz4+7XdzDUquFyWhg2FizY+VRYBeJsPE/iFI=
-X-Google-Smtp-Source: ABdhPJyC6yA8kikoJFVLWbNfMexlcvKzVcU77BHAKHGRcPFllP1Ersm3tWNe6KFw0HzKbD5zbedIMg==
-X-Received: by 2002:ac2:4899:0:b0:464:f80b:a86d with SMTP id x25-20020ac24899000000b00464f80ba86dmr10762023lfc.65.1649607280241;
-        Sun, 10 Apr 2022 09:14:40 -0700 (PDT)
-Received: from reki (broadband-95-84-198-152.ip.moscow.rt.ru. [95.84.198.152])
-        by smtp.gmail.com with ESMTPSA id q2-20020a196e42000000b0046b95d33a57sm429896lfk.153.2022.04.10.09.14.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 09:14:39 -0700 (PDT)
-Date:   Sun, 10 Apr 2022 19:14:38 +0300
-From:   Maxim Devaev <mdevaev@gmail.com>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] usb: gadget: f_mass_storage: break IO operations via
- configfs
-Message-ID: <20220410191438.6dc1abf8@reki>
-In-Reply-To: <YlL164UHvCV0ti4U@rowland.harvard.edu>
-References: <Yk8L6b9wEWTjWOg4@rowland.harvard.edu>
-        <20220407204553.35cead72@reki>
-        <YlBN4Zcn9NYw0PLA@rowland.harvard.edu>
-        <20220409115756.4f9b015d@reki>
-        <YlGOOJ9SwkD7WVmX@rowland.harvard.edu>
-        <20220409170837.02f0853f@reki>
-        <YlHrBdYkBSR0L6FL@rowland.harvard.edu>
-        <20220410014228.117d9f66@reki>
-        <YlI5b1SNdsVnuo/v@rowland.harvard.edu>
-        <20220410051804.315fb0d9@reki>
-        <YlL164UHvCV0ti4U@rowland.harvard.edu>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 10 Apr 2022 12:21:50 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCAD4754D;
+        Sun, 10 Apr 2022 09:19:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=iXhxaxOJ7zcu/qjQPnyjomESbF8vvrLASyS5P7s+x3k=; b=jmLugh90t2msM6S5E0h/SNUMBJ
+        Jv6yqUTaFeAFbb7FYRdELoxxH0oWEHMbSwRjaKIKvQEbkPw5MwI9O0y+IkWMx2ARzMaeyKxVXiuoo
+        behJgtO3xLf5mVDLclw4bFjFQwNqfAV/c7pgYWnHfZqUyPEWKcVZDUC46t0tvBeCMtHHhQ1gyq5um
+        Sr7GOfuEE0OCvaYgG5dMli7kIWd0HlTlTKxJY6JD35a/hSo1DCHcZTGv5P8VGVH6p5k20m8mJZp71
+        pyxKDXTc0Vdd/67XGATa1+IexLIkZO8eKvreUVShnE2JVRsG4XcQN6spPPsR003BDdMsBIfqxwWyC
+        keHSHbGbYtWdH0Hv7tFc5WMwvNtG7XRY0Fwx+7MQ6ML2L2Unf7xZSGMYeoSv/bhxChyYRbmxUCKTq
+        FQplaaFeifWf7JXk1Mdy3kXJl1sArYGawiaD5CrvL8huHA9Yro+WYkU0yKNwgyIUoE+bh2dnRIJu2
+        SwqhS8oN/OWhKx9mMBMa9Kp1H/4x8uopsih9WyO+KIRKV7KCiNyFRhMhU2LD1fgi+f/W2HOMBzEiw
+        6PZ/1tcH2+ksytYHCNrG9E0XvrM5UWOvuNHu8PNhuMyOEhlMzcFGz9Eh5p5Wvyf8Qppb3U51NfJ+P
+        jnSF4gbokxB+HPZfHa8OjOg+xXy2OB33SqY5nyBDg=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     asmadeus@codewreck.org
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie detected)
+Date:   Sun, 10 Apr 2022 18:18:38 +0200
+Message-ID: <1966295.VQPMLLWD4E@silver>
+In-Reply-To: <9591612.lsmsJCMaJN@silver>
+References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+ <3791738.ukkqOL8KQD@silver> <9591612.lsmsJCMaJN@silver>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-=D0=92 Sun, 10 Apr 2022 11:21:15 -0400
-Alan Stern <stern@rowland.harvard.edu> wrote:
+On Samstag, 9. April 2022 13:16:11 CEST Christian Schoenebeck wrote:
+> On Mittwoch, 30. M=E4rz 2022 14:21:16 CEST Christian Schoenebeck wrote:
+> > I made some tests & benchmarks regarding the fs-cache issue of 9p, runn=
+ing
+> > different kernel versions and kernel configurations in comparison.
+> [...]
+> > Case  Linux kernel version           .config  msize    cache  duration =
+ host cpu  errors/warnings
+> >
+> > A)    5.17.0+[2] + msize patches[1]  debug    4186112  mmap   20m 40s  =
+ ~80%      none
+> > B)    5.17.0+[2] + msize patches[1]  debug    4186112  loose  31m 28s  =
+ ~35%      several errors (compilation completed)
+> > C)    5.17.0+[2] + msize patches[1]  debug    507904   mmap   20m 25s  =
+ ~84%      none
+> > D)    5.17.0+[2] + msize patches[1]  debug    507904   loose  31m 2s   =
+ ~33%      several errors (compilation completed)
+> > E)    5.17.0+[2]                     debug    512000   mmap   23m 45s  =
+ ~75%      none
+> > F)    5.17.0+[2]                     debug    512000   loose  32m 6s   =
+ ~31%      several errors (compilation completed)
+> > G)    5.17.0+[2]                     release  512000   mmap   23m 18s  =
+ ~76%      none
+> > H)    5.17.0+[2]                     release  512000   loose  32m 33s  =
+ ~31%      several errors (compilation completed)
+> > I)    5.17.0+[2] + msize patches[1]  release  4186112  mmap   20m 30s  =
+ ~83%      none
+> > J)    5.17.0+[2] + msize patches[1]  release  4186112  loose  31m 21s  =
+ ~31%      several errors (compilation completed)
+> > K)    5.10.84                        release  512000   mmap   39m 20s  =
+ ~80%      none
+> > L)    5.10.84                        release  512000   loose  13m 40s  =
+ ~55%      none
+> [...]
+> > About the errors: I actually already see errors with cache=3Dloose and =
+recent
+> > kernel version just when booting the guest OS. For these tests I chose =
+some
+> > sources which allowed me to complete the build to capture some benchmar=
+k as
+> > well, I got some "soft" errors with those, but the build completed at l=
+east.
+> > I had other sources OTOH which did not complete though and aborted with
+> > certain invalid file descriptor errors, which I obviously could not use=
+ for
+> > those benchmarks here.
+>=20
+> I used git-bisect to identify the commit that broke 9p behaviour, and it =
+is
+> indeed this one:
+>=20
+> commit eb497943fa215897f2f60fd28aa6fe52da27ca6c (HEAD, refs/bisect/bad)
+> Author: David Howells <dhowells@redhat.com>
+> Date:   Tue Nov 2 08:29:55 2021 +0000
+>=20
+>     9p: Convert to using the netfs helper lib to do reads and caching
+>    =20
+>     Convert the 9p filesystem to use the netfs helper lib to handle readp=
+age,
+>     readahead and write_begin, converting those into a common issue_op fo=
+r the
+>     filesystem itself to handle.  The netfs helper lib also handles readi=
+ng
+>     from fscache if a cache is available, and interleaving reads from both
+>     sources.
 
-> On Sun, Apr 10, 2022 at 05:18:04AM +0300, Maxim Devaev wrote:
-> > =D0=92 Sat, 9 Apr 2022 21:57:03 -0400
-> > Alan Stern <stern@rowland.harvard.edu> =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
-> >  =20
-> > > On Sun, Apr 10, 2022 at 01:42:28AM +0300, Maxim Devaev wrote: =20
-> > > > =D0=92 Sat, 9 Apr 2022 16:22:29 -0400
-> > > > Alan Stern <stern@rowland.harvard.edu> wrote:   =20
-> > > > > > I'm using Raspberry Pi with DWC2. So:
-> > > > > > - Connect RPi-based gadget to the Linux host.
-> > > > > > - Set image in the "file" attribute.     =20
-> > > > >=20
-> > > > > Exactly what is the full pathname you're using for the "file" att=
-ribute?   =20
-> > > >=20
-> > > > /sys/kernel/config/usb_gadget/kvmd/functions/mass_storage.usb0/lun.=
-0/file   =20
-> > >=20
-> > > Yeah, that doesn't seem right at all.
-> > >=20
-> > > You're doing this under KVM, right?  Is the gadget driver running in =
-the=20
-> > > host OS or the guest OS?  And the sysfs file accesses -- are they in =
-the=20
-> > > host's filesystem or in the guest's?
-> > >=20
-> > > What happens if you don't use KVM and just load the gadget driver on =
-the=20
-> > > physical machine? =20
-> >=20
-> > We really have a miscommunication :) Speaking of KVM, I mean KVM-over-I=
-P,
-> > a physical device that emulates Keyboard-Video-Mouse. It is made on the
-> > Raspberry Pi and is physically connected via USB to another host machine
-> > to emulate mass storage, among other things. So, we have two physical d=
-evices:
-> > with USB host and USB gadget. =20
->=20
-> Okay, I see where I misunderstood.  Oops.  :-)
->=20
-> > > > > I also tried sending a USR1 signal to the driver's kernel thread =
-while=20
-> > > > > an image was mounted and being accessed.  It did clear the preven=
-t_allow=20
-> > > > > flag, so I could eject the image.  But it also caused a 30-second=
- delay=20
-> > > > > on the host, as predicted.  Now, maybe you don't care about such =
-delays=20
-> > > > > when you're going to eject the media anyway, but it still seems l=
-ike a=20
-> > > > > bad thing to do.   =20
-> > > >=20
-> > > > It looks like the prevent_medium_removal flag switching really work=
-s better in this case.   =20
-> > >=20
-> > > I don't understand that comment.  In what case?  Works better than wh=
-at? =20
-> >=20
-> > Sorry, better than SIGUSR1. The patch that only sets the prevent_medium=
-_removal=3D0
-> > and makes the "file" empty. =20
->=20
-> Ah, yes, I agree.
->=20
-> > > > > > > > I have reflected on the rest of your arguments and changed =
-my mind.
-> > > > > > > > I think that "forced_eject" for a specific lun without inte=
-rrupting operations would
-> > > > > > > > really be the best solution. I wrote a simple patch and tes=
-ted it, everything seems
-> > > > > > > > to work. What do you think about something like this?
-> > > > > > > >=20
-> > > > > > > >=20
-> > > > > > > > static ssize_t fsg_lun_opts_forced_eject_store(struct confi=
-g_item *item,
-> > > > > > > >                                                const char *=
-page, size_t len)
-> > > > > > > > {
-> > > > > > > >         struct fsg_lun_opts *opts =3D to_fsg_lun_opts(item);
-> > > > > > > >         struct fsg_opts *fsg_opts =3D to_fsg_opts(opts->gro=
-up.cg_item.ci_parent);
-> > > > > > > >         int ret;
-> > > > > > > >=20
-> > > > > > > >         opts->lun->prevent_medium_removal =3D 0;
-> > > > > > > >         ret =3D fsg_store_file(opts->lun, &fsg_opts->common=
-->filesem, "", 0);
-> > > > > > > >         return ret < 0 ? ret : len;
-> > > > > > > > }
-> > > > > > > >=20
-> > > > > > > > CONFIGFS_ATTR_WO(fsg_lun_opts_, forced_eject);       =20
-> > > > > > >=20
-> > > > > > > The basic idea is right.  But this should not be a CONFIGFS o=
-ption; it=20
-> > > > > > > should be an ordinary LUN attribute.  For an example, see the=
- definition of=20
-> > > > > > > file_store() in f_mass_storage.c; your routine should look ve=
-ry similar.     =20
-> > > > > >=20
-> > > > > > Okay, but where this attribute is located in sysfs? How can I u=
-se it?     =20
-> > > > >=20
-> > > > > Well, it's going to be in different places depending on what UDC =
-driver=20
-> > > > > your gadget uses.  On my system I'm using the dummy_udc driver, s=
-o the=20
-> > > > > sysfs "file" attribute is located at:
-> > > > >=20
-> > > > > 	/sys/devices/platform/dummy_ucd.0/gadget/lun0/file
-> > > > >=20
-> > > > > If instead you're looking at
-> > > > >=20
-> > > > > 	/sys/module/g_mass_storage/parameters/file
-> > > > >=20
-> > > > > or in some configfs directory, that's the wrong place.  You can e=
-ject=20
-> > > > > the media simply by doing (as root):
-> > > > >=20
-> > > > > 	echo >/sys/devices/.../gadget/lun0/file
-> > > > >=20
-> > > > > (fill in the "..." appropriately for your system).
-> > > > >    =20
-> > > > > > Sorry for the stupid question.     =20
-> > > > >=20
-> > > > > Not at all.   =20
-> > > >=20
-> > > > Thanks! Unfortunately I'm using dwc2 driver and it doesn't have any=
- gadget parameters
-> > > > outside of the configfs:
-> > > >=20
-> > > > [root@pikvm ~]# find /sys -iname lun0
-> > > > [root@pikvm ~]# find /sys -iname lun.0
-> > > > /sys/kernel/config/usb_gadget/kvmd/functions/mass_storage.usb0/lun.0
-> > > > [root@pikvm ~]#
-> > > >=20
-> > > > So in my local case configfs is only way to place forced_eject :(  =
- =20
-> > >=20
-> > > That can't possibly be right.  Again, we may be miscommunicating beca=
-use=20
-> > > of the way you're using KVM.
-> > >=20
-> > > What happens if you set up the gadget using g-mass-storage instead of=
-=20
-> > > configfs?  For example:
-> > >=20
-> > > 	modprobe g-mass-storage cdrom=3Dy removable=3Dy ro=3Dy file=3D...
-> > > =20
-> > > > Could we add both device attrs and configfs file?   =20
-> > >=20
-> > > No.  Configfs files are for setting up the gadget in the first place,=
- or=20
-> > > changing its configuration while it isn't attached to a host.  Device=
-=20
-> > > attribute files are for modifying the gadget while it is running.
-> > >  =20
-> > I've tried and got this:
-> >=20
-> > [root@pikvm ~]# modprobe g-mass-storage cdrom=3Dy removable=3Dy ro=3Dy =
-file=3D/var/lib/kvmd/msd/images/dsl-4.11.rc1.iso
-> > [root@pikvm ~]# find /sys -iname lun.0
-> > [root@pikvm ~]# find /sys -iname lun0
-> > /sys/devices/platform/soc/fe980000.usb/gadget/lun0
-> > [root@pikvm ~]# ls /sys/devices/platform/soc/fe980000.usb/gadget/lun0
-> > power  file  nofua  ro  uevent
-> >=20
-> > But with libcomposite and configfs I don't have "/sys/devices/platform/=
-soc/fe980000.usb/gadget/lun0" at all:
-> >=20
-> > [root@pikvm ~]# ls /sys/devices/platform/soc/fe980000.usb/gadget/
-> > power  suspended  uevent
-> >=20
-> > So all this timed I used configfs to change parameters.
-> > I thought this was the way it was intended because the code for changin=
-g configfs
-> > and device attributes is almost identical and everything worked.
-> > If I don't have device attributes when using libcomposite, then how am =
-I supposed
-> > to change its settings in runtime, if not through configfs? =20
->=20
-> All right.  I've never used configfs before, so my understanding of it=20
-> was out of date.  After reading through the documentation and the code,=20
-> it's clear now that you're right and there should be both a device=20
-> attribute and a configfs file.
->=20
-> Unlike the fsg_lun_opts_forced_eject_store() example you wrote above,=20
-> but like the existing fsg_lun_opts_file_store() and file_store()=20
-> routines, both of your new routines should call a single=20
-> fsg_store_forced_eject() function in storage_common.c to do the real=20
-> work.  Namely, something like:
->=20
-> 	lun->prevent_medium_removal =3D 0;
-> 	return fsg_store_file(lun, filesem, "", 0);
->=20
-> That should accomplish what you're looking for, in all possible=20
-> configurations.
+I looked into the errors I get, and as far as I can see it, all misbehaviou=
+rs
+that I see, boil down to "Bad file descriptor" (EBADF) errors being the
+originating cause.
 
-Great! So, next I will test this patch locally and with my users and submit=
- the v2 version
-a little later. Thank you for your help!
+The easiest misbehaviours on the guest system I can look into, are errors
+with the git client. For instance 'git fetch origin' fails this way:
+
+=2E..
+write(3, "d16782889ee07005d1f57eb884f4a06b"..., 40) =3D 40
+write(3, "\n", 1)                       =3D 1
+close(3)                                =3D 0
+access(".git/hooks/reference-transaction", X_OK) =3D -1 ENOENT (No such fil=
+e or directory)
+openat(AT_FDCWD, ".git/logs/refs/remotes/origin/master", O_WRONLY|O_CREAT|O=
+_APPEND, 0666) =3D 3
+openat(AT_FDCWD, "/etc/localtime", O_RDONLY|O_CLOEXEC) =3D 7
+fstat(7, {st_mode=3DS_IFREG|0644, st_size=3D2326, ...}) =3D 0
+fstat(7, {st_mode=3DS_IFREG|0644, st_size=3D2326, ...}) =3D 0
+read(7, "TZif2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\t\0\0\0\t\0\0\0\0"..., 8=
+192) =3D 2326
+lseek(7, -1467, SEEK_CUR)               =3D 859
+read(7, "TZif2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\t\0\0\0\t\0\0\0\0"..., 8=
+192) =3D 1467
+close(7)                                =3D 0
+write(3, "d8a68c5027ef629d93b9d9519ff4da95"..., 168) =3D -1 EBADF (Bad file=
+ descriptor)
+=2E..
+error: cannot update the ref 'refs/remotes/origin/master': unable to append=
+ to '.git/logs/refs/remotes/origin/master': Bad file descriptor
+
+I tried to manually replicate those file access operations on that
+=2Egit/logs/refs/remotes/origin/master file in question, and it worked. But=
+ when
+I look at the strace output above, I see there is a close(3) call just befo=
+re
+the subsequent openat(".git/logs/refs/remotes/origin/master") call returnin=
+g 3,
+which makes me wonder, is this maybe a concurrency issue on file descriptor
+management?
+
+Ideas anyone?
+
+Best regards,
+Christian Schoenebeck
+
+
+
 
