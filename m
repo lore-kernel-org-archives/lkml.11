@@ -2,52 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 19:16:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 19:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241493AbiDJTSf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 15:18:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43812 "EHLO
+        id S241505AbiDJTUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 15:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234588AbiDJTSY (ORCPT
+        with ESMTP id S234588AbiDJTUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 15:18:24 -0400
-X-Greylist: delayed 562 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 10 Apr 2022 12:16:10 PDT
-Received: from mail.dr-lotz.de (mail.dr-lotz.de [IPv6:2a01:4f8:161:6ffe::5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D0D3614A;
-        Sun, 10 Apr 2022 12:16:09 -0700 (PDT)
-Received: from linus-pc.. (ipbcc0dc80.dynamic.kabel-deutschland.de [188.192.220.128])
-        by mail.dr-lotz.de (Postfix) with ESMTPSA id C24EC6CC2C;
-        Sun, 10 Apr 2022 21:06:43 +0200 (CEST)
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=lotz.li; s=202112;
-        t=1649617604;
+        Sun, 10 Apr 2022 15:20:09 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0218161A30
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 12:17:58 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649618276;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=oHGVSKjxLfGZ9kXsGPLVJ4mzKISbI8GOmRKzSRzUt0s=;
-        b=A/ZKGj0injh20M74Z3KxdU2m+7O07kre3ZLBw/sDtueWWUVQkzTycmU85sZa4UMfETcjJ6
-        A/ngVay/QRPV4gDA==
-From:   Linus Karl <linus@lotz.li>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     wireguard@lists.zx2c4.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: wireguard: add netlink mcast on endpoint change
-Date:   Sun, 10 Apr 2022 21:06:34 +0200
-Message-Id: <20220410190635.1171195-1-linus@lotz.li>
-X-Mailer: git-send-email 2.35.1
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KVVbvECq84k+jqXnHwi5XzSuH5e4qkbMSKft0RE4GAs=;
+        b=sBHsp7dIrRJtHsbmhYq4KjM55ns5nvf059BGbLajh34xnvsIbn+JIGOpUKRT0ZT1fBBTZx
+        AyrZbJTNRvnivBGlgVkyuxk2YSEtRj/I79fix9A8q8KHc+eAqm/nKzEQKGML7w5KFzG/yC
+        nse8ulc5tpkl1lYfdf8REMqke5auh+SYgzD3Fnu+gXHZiEmMhhCs3vREdxhg4vhmbEUZcg
+        CdL8GV6NTVgXbJ+Ko1K8fp43ZDaniUd9b2PVKVm3uivJnGjNArVSb71Ox4sm/1SB8biGxj
+        z6dw8K96KtcKA21vcyjYeZCfuY4ojWwM98X3Zo1ZAxzKE08nV0U4KS4m7Vra5A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649618276;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KVVbvECq84k+jqXnHwi5XzSuH5e4qkbMSKft0RE4GAs=;
+        b=NJoRGcweOM3xoSZkBlU2OS9/fr6pTF5ZS2W3Hk+Z148auMbm6lHeTIf9Fcxbk3P+uC47cZ
+        IGvnmOQsQEp9gnBw==
+To:     Paran Lee <p4ranlee@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Craig Gallek <kraig@google.com>,
+        Austin Kim <austindh.kim@gmail.com>
+Subject: Re: [PATCH] genirq: Refactor actions_show loop block using a common
+ macro to go through the actions list
+In-Reply-To: <20220408114153.GA1955@DESKTOP-S4LJL03.localdomain>
+References: <20220408114153.GA1955@DESKTOP-S4LJL03.localdomain>
+Date:   Sun, 10 Apr 2022 21:17:56 +0200
+Message-ID: <87fsmkhhnf.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the possibility to retrieve notifications of peer
-endpoint changes via netlink multicast messages. It has been a while
-since I posted v2, the main difference is that I've added an extra
-attribute to the netlink device attributes to allow enabling or
-disabling of this feature. It is per default disabled.
+Paran,
 
+On Fri, Apr 08 2022 at 20:41, Paran Lee wrote:
 
+thanks for providing this patch.
+
+> Hello, I am Paran Lee.
+>
+> Since we have a macro defined in our IRQ subsystem internal functions to
+> traverse the list of actions, how about refactoring this loop?
+>
+> - genirq: Use a common macro to go through the actions list
+> (f944b5a7aff05a244a6c8cac297819af09a199e4)
+>
+> have a good day!
+> Paran Lee.
+
+Neither 'Hello' nor 'have a good day' are part of the change log.
+
+Also please write the changelog in a factual way and not in form of a
+question. If you want to add a reference to a git commit, then please
+use the canonical form as described in Documentation/process, where you
+also find the general patch submission rules. There is also a tip tree
+specific chapter:
+
+https://www.kernel.org/doc/html/latest/process/maintainer-tip.html?highlight=x86#patch-submission-notes
+
+Following these rules makes everyones life simpler.
+
+> Signed-off-by: Paran Lee <p4ranlee@gmail.com>
+> ---
+>  kernel/irq/irqdesc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
+> index 939d21cd55c3..34a0cefff712 100644
+> --- a/kernel/irq/irqdesc.c
+> +++ b/kernel/irq/irqdesc.c
+> @@ -246,12 +246,12 @@ static ssize_t actions_show(struct kobject *kobj,
+>  			    struct kobj_attribute *attr, char *buf)
+>  {
+>  	struct irq_desc *desc = container_of(kobj, struct irq_desc, kobj);
+> -	struct irqaction *action;
+> +	struct irqaction *action = NULL;
+
+There is no NULL initialization required.
+
+Thanks,
+
+        tglx
