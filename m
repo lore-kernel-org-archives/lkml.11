@@ -2,263 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 573DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 22:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D66CBC4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 23:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232709AbiDJWzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 18:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38256 "EHLO
+        id S233749AbiDJXCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 19:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230129AbiDJWzr (ORCPT
+        with ESMTP id S233544AbiDJXCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 18:55:47 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA2D62C2
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 15:53:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649631214; x=1681167214;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=2FwjpQ8cfbqZC0gQ4OfrnYHX5nbA+VLZWLak64Z6qk4=;
-  b=Zbtm7Db/9QM5B88Mf4btCm+yLt36RIltR4MHM/nG3eqwEG0MGXRhMJWP
-   LEIzag2ApLELTvHvxorAxntKSLrt8HfOyewucScBmteD8jLgjD0np7ycp
-   GpXUnT2rCVnXVxd2/LjaWeXjfPmfpcWYCNWzjHJTzBxCknSMWs0A4Hyqu
-   JKbTaWGdLrAQP76EzV2DHgKDO6K0M30FFdAtQrtcPV1JeWy3Kj5sFKJps
-   Z24R3Jmy1udc07BJU/yn8zACXRde1wge8YR29G9R9BYm4mZRk7hk/s49v
-   Y87w+/A7Tgjr61NBTaBv3sy5QrJXdhuIlMHSaa4QombvdEDJZRU7T2wcZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="322444270"
-X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
-   d="scan'208";a="322444270"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2022 15:53:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
-   d="scan'208";a="525732302"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 10 Apr 2022 15:53:33 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ndgR2-0001AF-EJ;
-        Sun, 10 Apr 2022 22:53:32 +0000
-Date:   Mon, 11 Apr 2022 06:52:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:timers/urgent] BUILD SUCCESS
- 9c95bc25ad3b1a2240cd1f896569292a57d3ce85
-Message-ID: <62535fc1.YaNKXEe1LjxyJgQQ%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Sun, 10 Apr 2022 19:02:37 -0400
+Received: from hall.aurel32.net (hall.aurel32.net [IPv6:2001:bc8:30d7:100::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940EC18352;
+        Sun, 10 Apr 2022 16:00:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=aurel32.net
+        ; s=202004.hall; h=Content-Transfer-Encoding:MIME-Version:References:
+        In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Content-Type:From:Reply-To:
+        Subject:Content-ID:Content-Description:X-Debbugs-Cc;
+        bh=aJRncnFPGogcci9EJtlIRk6kkiE8YTvJb5FUaqmBsaQ=; b=UNqKglfVHf9nXXqEcm+xSyRD8Y
+        AI6nDI78xyR9QPIjT058FZpb01ltnweaPAA8+9sWpFAgR3EKxB6Tt5mr/E+3M8PXUSp+P40qSJsR+
+        T+zGFJ5DD88xUhb0/lZX/thFNOfdLUjwFvnjB30OmTQALV3Q0p6hiNpjpcRJgaopdfaGrDR95QjvT
+        IL84JJJ5t12Ei6Gqi2+CmVW4C9soHtsuVx0A7FSWJaSJhwg73B9GRaHi55RxK2cSVeNJBWeyiTM3W
+        ouW/mZ09YDuoZZWPkNMGX8en6Hr2vKCm7hnUdtr/oSyDhJ7aFqTO1Ak7BYQWP99gD46I4YULFRNtO
+        Rfto70gQ==;
+Received: from [2a01:e34:ec5d:a741:8a4c:7c4e:dc4c:1787] (helo=ohm.rr44.fr)
+        by hall.aurel32.net with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <aurelien@aurel32.net>)
+        id 1ndgXe-00BKd0-D1; Mon, 11 Apr 2022 01:00:22 +0200
+Received: from aurel32 by ohm.rr44.fr with local (Exim 4.95)
+        (envelope-from <aurelien@aurel32.net>)
+        id 1ndgXd-000ZMa-PF;
+        Mon, 11 Apr 2022 01:00:21 +0200
+From:   Aurelien Jarno <aurelien@aurel32.net>
+To:     linux-kernel@vger.kernel.org
+Cc:     Aurelien Jarno <aurelien@aurel32.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org, soc@kernel.org
+Subject: [PATCH 1/2] arm64: dts: broadcom: Enable device-tree overlay support for RPi devices
+Date:   Mon, 11 Apr 2022 00:59:39 +0200
+Message-Id: <20220410225940.135744-2-aurelien@aurel32.net>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220410225940.135744-1-aurelien@aurel32.net>
+References: <20220410225940.135744-1-aurelien@aurel32.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers/urgent
-branch HEAD: 9c95bc25ad3b1a2240cd1f896569292a57d3ce85  tick/sched: Fix non-kernel-doc comment
+Add the '-@' DTC option for the Raspberry Pi devices. This option
+populates the '__symbols__' node that contains all the necessary symbols
+for supporting device-tree overlays (for instance from the firmware or
+the bootloader) on these devices.
 
-elapsed time: 725m
+The Rasbperry Pi devices are well known for their GPIO header, that
+allow various "HATs" or other modules do be connected and this enables
+users to create out-of-tree device-tree overlays for these modules.
 
-configs tested: 184
-configs skipped: 3
+Please note that this change does increase the size of the resulting DTB
+by ~40%. For example, with v5.17 increase in size is as follows:
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+  bcm2711-rpi-400.dtb       26481 -> 36830 bytes
+  bcm2711-rpi-4-b.dtb       26537 -> 36886 bytes
+  bcm2711-rpi-cm4-io.dtb    26426 -> 36945 bytes
+  bcm2837-rpi-3-a-plus.dtb  14133 -> 19740 bytes
+  bcm2837-rpi-3-b.dtb       14310 -> 20006 bytes
+  bcm2837-rpi-3-b-plus.dtb  14670 -> 20474 bytes
+  bcm2837-rpi-cm3-io3.dtb   13680 -> 19266 bytes
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220410
-m68k                             allyesconfig
-sh                          landisk_defconfig
-sh                         ap325rxa_defconfig
-parisc                generic-32bit_defconfig
-powerpc                 canyonlands_defconfig
-sh                        sh7763rdp_defconfig
-powerpc                   currituck_defconfig
-xtensa                         virt_defconfig
-powerpc                     taishan_defconfig
-powerpc                 mpc8540_ads_defconfig
-nios2                            alldefconfig
-sh                           sh2007_defconfig
-ia64                         bigsur_defconfig
-mips                        vocore2_defconfig
-xtensa                  audio_kc705_defconfig
-m68k                         apollo_defconfig
-powerpc                    adder875_defconfig
-arm                           imxrt_defconfig
-powerpc                 mpc85xx_cds_defconfig
-powerpc                      chrp32_defconfig
-powerpc                      pasemi_defconfig
-powerpc                 mpc834x_mds_defconfig
-arc                     nsimosci_hs_defconfig
-arm                            zeus_defconfig
-alpha                            allyesconfig
-s390                                defconfig
-powerpc                   motionpro_defconfig
-arm                          badge4_defconfig
-sh                          r7780mp_defconfig
-sh                            migor_defconfig
-powerpc                      ppc40x_defconfig
-sparc                               defconfig
-powerpc                           allnoconfig
-powerpc                      tqm8xx_defconfig
-mips                             allmodconfig
-sparc                       sparc64_defconfig
-arm                        oxnas_v6_defconfig
-sh                   sh7724_generic_defconfig
-arm                           h3600_defconfig
-arm                       multi_v4t_defconfig
-arm                          pxa910_defconfig
-arc                    vdk_hs38_smp_defconfig
-mips                         tb0226_defconfig
-sh                          sdk7786_defconfig
-sparc64                          alldefconfig
-powerpc                     tqm8541_defconfig
-mips                       capcella_defconfig
-nios2                               defconfig
-m68k                        mvme16x_defconfig
-xtensa                          iss_defconfig
-mips                  maltasmvp_eva_defconfig
-h8300                            allyesconfig
-m68k                       m5275evb_defconfig
-powerpc                mpc7448_hpc2_defconfig
-xtensa                    smp_lx200_defconfig
-sh                           se7619_defconfig
-mips                             allyesconfig
-sh                            hp6xx_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220410
-arm                  randconfig-c002-20220411
-i386                 randconfig-c001-20220411
-x86_64               randconfig-c001-20220411
-ia64                                defconfig
-ia64                             allmodconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-arc                                 defconfig
-sh                               allmodconfig
-xtensa                           allyesconfig
-arc                              allyesconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-i386                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-powerpc                          allmodconfig
-powerpc                          allyesconfig
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-i386                 randconfig-a015-20220411
-i386                 randconfig-a011-20220411
-i386                 randconfig-a016-20220411
-i386                 randconfig-a012-20220411
-i386                 randconfig-a013-20220411
-i386                 randconfig-a014-20220411
-x86_64                        randconfig-a002
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-arc                  randconfig-r043-20220410
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+Signed-off-by: Aurelien Jarno <aurelien@aurel32.net>
+---
+ arch/arm64/boot/dts/broadcom/Makefile | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-clang tested configs:
-x86_64                        randconfig-c007
-powerpc              randconfig-c003-20220410
-arm                  randconfig-c002-20220410
-i386                          randconfig-c001
-riscv                randconfig-c006-20220410
-mips                 randconfig-c004-20220410
-powerpc                 mpc8313_rdb_defconfig
-powerpc                     kmeter1_defconfig
-powerpc                      acadia_defconfig
-arm                             mxs_defconfig
-mips                     loongson1c_defconfig
-mips                        qi_lb60_defconfig
-arm                          imote2_defconfig
-s390                             alldefconfig
-arm                       netwinder_defconfig
-arm                      pxa255-idp_defconfig
-mips                         tb0219_defconfig
-mips                      bmips_stb_defconfig
-arm                         bcm2835_defconfig
-powerpc                        icon_defconfig
-mips                         tb0287_defconfig
-powerpc                     mpc512x_defconfig
-mips                     cu1000-neo_defconfig
-arm                       imx_v4_v5_defconfig
-arm                          moxart_defconfig
-mips                   sb1250_swarm_defconfig
-mips                          malta_defconfig
-powerpc                 mpc8272_ads_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-i386                 randconfig-a004-20220411
-i386                 randconfig-a001-20220411
-i386                 randconfig-a003-20220411
-i386                 randconfig-a005-20220411
-i386                 randconfig-a006-20220411
-i386                 randconfig-a002-20220411
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-x86_64               randconfig-a003-20220411
-x86_64               randconfig-a004-20220411
-x86_64               randconfig-a006-20220411
-x86_64               randconfig-a001-20220411
-x86_64               randconfig-a002-20220411
-x86_64               randconfig-a005-20220411
-riscv                randconfig-r042-20220410
-hexagon              randconfig-r041-20220411
-hexagon              randconfig-r041-20220410
-hexagon              randconfig-r045-20220411
-hexagon              randconfig-r045-20220410
-s390                 randconfig-r044-20220410
-
+diff --git a/arch/arm64/boot/dts/broadcom/Makefile b/arch/arm64/boot/dts/broadcom/Makefile
+index 5082fcd1fea5..0aa8ee2afdd5 100644
+--- a/arch/arm64/boot/dts/broadcom/Makefile
++++ b/arch/arm64/boot/dts/broadcom/Makefile
+@@ -1,4 +1,15 @@
+ # SPDX-License-Identifier: GPL-2.0
++
++# Enables support for device-tree overlays
++DTC_FLAGS_bcm2711-rpi-400 := -@
++DTC_FLAGS_bcm2711-rpi-4-b := -@
++DTC_FLAGS_bcm2711-rpi-cm4-io := -@
++DTC_FLAGS_bcm2837-rpi-3-a-plus := -@
++DTC_FLAGS_bcm2837-rpi-3-b := -@
++DTC_FLAGS_bcm2837-rpi-3-b-plus := -@
++DTC_FLAGS_bcm2837-rpi-cm3-io3 := -@
++DTC_FLAGS_bcm2837-rpi-zero-2-w := -@
++
+ dtb-$(CONFIG_ARCH_BCM2835) += bcm2711-rpi-400.dtb \
+ 			      bcm2711-rpi-4-b.dtb \
+ 			      bcm2711-rpi-cm4-io.dtb \
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
