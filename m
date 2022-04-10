@@ -2,112 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA27C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 09:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E30ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 09:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236509AbiDJJsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 05:48:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50932 "EHLO
+        id S236552AbiDJJtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 05:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231849AbiDJJsg (ORCPT
+        with ESMTP id S236522AbiDJJs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 05:48:36 -0400
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67AD2AE27
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 02:46:25 -0700 (PDT)
-Received: by mail-qv1-f42.google.com with SMTP id e22so11034106qvf.9
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 02:46:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oq7wc2A3KeI5ACESVg++iWu6Z4DsIQaLdq/BQi3IsLI=;
-        b=l0vMMu/D1wkuqi13cVDCWQRz4QrWDvqVuaJodbhZ6g6mIIXp8wlzLzllRZpRVsfl36
-         C4LobcssN8/Wa48qxD2cOm0UXT1EQbKoZdAMVjbmHM9tnmUhPf+NIdc/ZfN0N0R8oYtQ
-         lAOo4acgzzcSrEpiGYa8/7DA25+jo+hH6jqymSgyL17Al0tY3iKL3nda0AUA0AHqvi4K
-         Zx+aXZ7mskTBSJf4sUbhDD7Drf7EZoXvYiVUYlzFPXwt5iAkNpMmvSzsVcjY1HU+5P4X
-         JV7q+BndouNn1UpJhwu6xLIP4LmlGR09NXyx59eLzVqIBWujJISFa7cfqKrASp3/j/DL
-         9j1A==
-X-Gm-Message-State: AOAM532DYMk2MQpV1/xYQjyMeW9WnbItbEibkKD4TzuQ1inAMzpC1O0b
-        6iGWB7oh85ADdQLZyQ5po6aUKe76+9TZfg==
-X-Google-Smtp-Source: ABdhPJwbdnEteFKB3xsqPsF15gmloD3fPUuLHp33+eAnNawna3eVY0CYvAMyP8+ghtgktTAWCLcDfg==
-X-Received: by 2002:a05:6214:2628:b0:444:1721:bde5 with SMTP id gv8-20020a056214262800b004441721bde5mr12197192qvb.127.1649583984083;
-        Sun, 10 Apr 2022 02:46:24 -0700 (PDT)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id h8-20020ac87d48000000b002e1c6faae9csm23021816qtb.28.2022.04.10.02.46.23
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Apr 2022 02:46:23 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2eba37104a2so137576797b3.0
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 02:46:23 -0700 (PDT)
-X-Received: by 2002:a0d:e743:0:b0:2eb:3106:9b32 with SMTP id
- q64-20020a0de743000000b002eb31069b32mr22781269ywe.512.1649583983145; Sun, 10
- Apr 2022 02:46:23 -0700 (PDT)
+        Sun, 10 Apr 2022 05:48:57 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF0902AE34;
+        Sun, 10 Apr 2022 02:46:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1649583974; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=IVcX0fVbhg5OMdbn7yaaahvzH6Jk2UFXb6S57wQE6mF64PN465M9ikQr9DQOJX4N9SUNymMsaAmH02J1bKWBcOgOaffuK8jJwtakMfILGMoSSQ3wDk2XQ24OtIA7B64sISbYhtDNziyJWdbduZiQCOHwtWurbwgbxn5DsNjY0TU=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1649583974; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=7poOT/rw9kdWGl9YXFYkvmc3/pYXbV5NbQ/hwxad42M=; 
+        b=KlPTgF95iaPYLBCkM8ali76274TsIaK2wS0PTd2d8gK+LRaZ89eRkKGr8rWdxl3dYJlT+Hu/pF4ZeuFJtDDXubg1+4U+iMBb5rI8okd3pLQy6meSgYSnG5WZqWu3mIHHDwWbtRQZkuDiYcwR3579wO+EH7WxiHVkSZojF3eXPAg=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1649583974;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=7poOT/rw9kdWGl9YXFYkvmc3/pYXbV5NbQ/hwxad42M=;
+        b=N9gfTA2+3liFeCJtn3lIw243pbKnDgkmCdHkETOQoZmaJ1DM1QsnQI+EBblwQ/Zn
+        8xCojxGwoSFXwsHMC0kVtPMrwcUcktXLA/cmqYXf5ZEr/plM6dPTT7DJA1w4X9s5svq
+        AA9Ydhhpm9wqljShTE5pMbV+5y+UAA4cqgBZ/Y/g=
+Received: from arinc9-PC.localdomain (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
+        with SMTPS id 1649583972146345.7919696113951; Sun, 10 Apr 2022 02:46:12 -0700 (PDT)
+From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH] ARM: dts: BCM5301X: Disable gmac0 and enable port@8 on Asus RT-AC88U
+Date:   Sun, 10 Apr 2022 12:44:55 +0300
+Message-Id: <20220410094454.2788-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20190617144725.6415-1-geert+renesas@glider.be>
- <20190617160011.GB3927@kernel.org> <CAMuHMdWPDMhz9YdEs-=iCLa6w--iS-Ug9SMUa=UG0bW2mMYyxA@mail.gmail.com>
- <CO1PR11MB4803640A785DF199D0496017E8E49@CO1PR11MB4803.namprd11.prod.outlook.com>
- <70411972-e31a-27a1-acbf-26f5ab471a6a@linux.intel.com>
-In-Reply-To: <70411972-e31a-27a1-acbf-26f5ab471a6a@linux.intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Sun, 10 Apr 2022 11:46:11 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV8ROcNZ1o+uEa9s-VnZp2NZET7SFcX_+-K1RJa-UBCmQ@mail.gmail.com>
-Message-ID: <CAMuHMdV8ROcNZ1o+uEa9s-VnZp2NZET7SFcX_+-K1RJa-UBCmQ@mail.gmail.com>
-Subject: Re: [PATCH] perf: Add missing newline at end of file
-To:     Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Cc:     "Liang, Kan" <kan.liang@intel.com>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andi Kleen <andi@firstfloor.org>,
-        Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zhengjun,
+Disable gmac0 which is not connected to any switch MAC. Enable port@8 of
+the Broadcom switch which is connected to gmac2.
 
-On Fri, Apr 8, 2022 at 4:45 PM Xing Zhengjun
-<zhengjun.xing@linux.intel.com> wrote:
-> On 4/5/2022 9:59 PM, Liang, Kan wrote:
-> >> On Mon, Jun 17, 2019 at 6:00 PM Arnaldo Carvalho de Melo
-> >> <arnaldo.melo@gmail.com> wrote:
-> >>> Em Mon, Jun 17, 2019 at 04:47:25PM +0200, Geert Uytterhoeven escreveu:
-> >>>> "git diff" says:
-> >>>>
-> >>>>      \ No newline at end of file
-> >>>>
-> >>>> after modifying the files.
-> >>> Auto generated files, IIRC, Andi, Kan, Sukadev?
-> >> The auto-generated files have been updated, the issue still exists.
-> >>
-> > It seems like a converter tool issue.
-> >
-> > + Zhengjun
-> >
-> > Zhengjun, could you please take a look?
-> >
-> > Thanks,
-> > Kan
-> It only happened for perf core event files. Add "\n" at the end of the
-> perf core event file, then the issue is fixed.
-> I have updated the event convert tool
-> https://github.com/intel/event-converter-for-linux-perf , then the next
-> time uses the convert tool to generate perf events, the issue will be
-> disappeared.
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+---
+ arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dts | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Thanks a lot!
+diff --git a/arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dts b/arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dts
+index 2f944d1c0330..d8503758342b 100644
+--- a/arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dts
++++ b/arch/arm/boot/dts/bcm47094-asus-rt-ac88u.dts
+@@ -232,7 +232,6 @@ port@8 {
+ 			reg = <8>;
+ 			ethernet = <&gmac2>;
+ 			label = "cpu";
+-			status = "disabled";
+ 
+ 			fixed-link {
+ 				speed = <1000>;
+@@ -242,6 +241,10 @@ fixed-link {
+ 	};
+ };
+ 
++&gmac0 {
++	status = "disabled";
++};
++
+ &gmac1 {
+ 	nvmem-cells = <&et1macaddr>;
+ 	nvmem-cell-names = "mac-address";
+-- 
+2.25.1
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
