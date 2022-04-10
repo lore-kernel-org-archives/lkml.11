@@ -2,65 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E468C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 17:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F02C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 17:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243749AbiDJRuC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 13:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56664 "EHLO
+        id S243755AbiDJRu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 13:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbiDJRt7 (ORCPT
+        with ESMTP id S229554AbiDJRuZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 13:49:59 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E571548309;
-        Sun, 10 Apr 2022 10:47:48 -0700 (PDT)
-Received: from [192.168.254.32] (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id C66A22056568;
-        Sun, 10 Apr 2022 10:47:47 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com C66A22056568
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1649612868;
-        bh=ORQ6Dq/4sVu425G/r1dQy1TQTp07xI4u1wlSfHG4Sm0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Gu2wXzbb5VCg9KUde6+6w1mD7iGDFPVfDnFfwqC+VD5XAO06QFw4L6zqHpXKj9cR6
-         5Bc9pPvM0fMX0A2cdVuNJ/T7S1oJUMdINKUf6FapXsORQ+YHl2vZFw3V8ixw3wZ2qD
-         w5K+7YVEgSjHC4jqWEQ+8qDf2n+GE8NWhhXgLiYI=
-Message-ID: <93b08ed3-80ca-4171-aaed-1513ae7cb0e1@linux.microsoft.com>
-Date:   Sun, 10 Apr 2022 12:47:46 -0500
+        Sun, 10 Apr 2022 13:50:25 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 829D74830B
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 10:48:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649612894; x=1681148894;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=bzQ4b4BOoU26R39Qb50Ig73Hi9r7SDnG5ycG7frQyHg=;
+  b=WdsWb76b/6mdVOugNGHZUzjkPU2G0zXF5E4XArWNEyeF0nPDpkmfFdxY
+   kFS0S0sLqYt5oH2FlDC+sx6yses07AAdJfPGgmMqwVwqtJMaMFPBKDoDn
+   xNXckPiwhQUNDLf9Mk3r87SQwMT87OOzieYl86cj+c0Th3kAs04dWCc/K
+   xFOFM+kW8oEy66DF8tsFBTKLn60PsnqTDcdYIt89U96cMht0MOu2GEsS1
+   gOw/cUo+0vvhxyF2XuV8qlip+uSdmjKk1Z1uRcNsp0NujDXqhJWyqmqGM
+   7+aFG8PuaUdgMhg0anoahJRN/uiybzCVRdJMQAB5L8JeaCtpVbFc1jO0H
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="261424146"
+X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
+   d="scan'208";a="261424146"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2022 10:48:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
+   d="scan'208";a="589506144"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 10 Apr 2022 10:48:13 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ndbfY-000101-DI;
+        Sun, 10 Apr 2022 17:48:12 +0000
+Date:   Mon, 11 Apr 2022 01:47:19 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
+Cc:     kbuild-all@lists.01.org, zx2c4@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [crng-random:jd/not-zero-entropy-ktime 4/13] ERROR: modpost:
+ "ktime_read_raw_clock" [crypto/jitterentropy_rng.ko] undefined!
+Message-ID: <202204110129.BjVchxsJ-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v1 0/9] arm64: livepatch: Use DWARF Call Frame
- Information for frame pointer validation
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
-        ardb@kernel.org, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220407202518.19780-1-madvenka@linux.microsoft.com>
- <YlAUj6w6fePEo7v+@hirez.programming.kicks-ass.net>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <YlAUj6w6fePEo7v+@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git jd/not-zero-entropy-ktime
+head:   340a25fe529e8fc1df1a82b42f021a9d0fa4fb51
+commit: 58b58e8a703d0ae8da60cbbaea9b1032feff00cc [4/13] random: use ktime_read_raw_clock() for random_get_entropy() if no get_cycles()
+config: parisc-generic-32bit_defconfig (https://download.01.org/0day-ci/archive/20220411/202204110129.BjVchxsJ-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git/commit/?id=58b58e8a703d0ae8da60cbbaea9b1032feff00cc
+        git remote add crng-random git://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git
+        git fetch --no-tags crng-random jd/not-zero-entropy-ktime
+        git checkout 58b58e8a703d0ae8da60cbbaea9b1032feff00cc
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash
 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-On 4/8/22 05:55, Peter Zijlstra wrote:
-> On Thu, Apr 07, 2022 at 03:25:09PM -0500, madvenka@linux.microsoft.com wrote:
-> 
->> [-- application/octet-stream is unsupported (use 'v' to view this part) --]
-> 
-> Your emails are unreadable :-(
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-I am not sure why the emails are unreadable. Any suggestions? Should I resend? Please let me know.
-Sorry about this.
+>> ERROR: modpost: "ktime_read_raw_clock" [crypto/jitterentropy_rng.ko] undefined!
 
-Madhavan
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
