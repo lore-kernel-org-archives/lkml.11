@@ -2,89 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5100EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 17:05:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 766E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 17:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240731AbiDJRHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 13:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34484 "EHLO
+        id S242277AbiDJRJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 13:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242571AbiDJRHa (ORCPT
+        with ESMTP id S229990AbiDJRJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 13:07:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AB3101CF;
-        Sun, 10 Apr 2022 10:05:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52F75B80E28;
-        Sun, 10 Apr 2022 17:05:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C674EC385A4;
-        Sun, 10 Apr 2022 17:05:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649610317;
-        bh=7quyUdm7Aq4txqWmhfJZl/DrSbjN8BfInAOcqAh00as=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=A6Pv/CVY9iPEZ3OxWr/blSZDtVbew9r5Q2ZvtxTeW8KmSL7V9Zp+zCbpecR6pGulj
-         3CjtK/b0gMI2uZtDmgyV3e1I9yWVkWHcwLnJtyQGQYqg4PypXWz07uoOO6w15oqUn4
-         MBUcwdmX04t1H+nlbaIxSWyzyHZVczKG+Lvn67gPmAzkXU6jALqui1Lz4wfeLAMpDo
-         24qSeNvZ2R6O86bFcTS4Q2n+/p7glYlAkxll816NJp8KR+Nrkr/ixnNHG0VVgHjpFe
-         JLkvd+5wF0dTKVMIQmY+tSnQEjTb5nGd1rcaHJ2/lRYmcP5KdBj3qWoamvQuh8XJ8R
-         SZfAAi2NNmO3A==
-Date:   Sun, 10 Apr 2022 18:13:06 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Puranjay Mohan <puranjay12@gmail.com>, gregkh@linuxfoundation.org,
-        rafael@kernel.org, heikki.krogerus@linux.intel.com,
-        kuba@kernel.org, saravanak@google.com,
-        linux-kernel@vger.kernel.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: accel: adxl355: use fwnode_irq_get_byname()
-Message-ID: <20220410181306.23202f25@jic23-huawei>
-In-Reply-To: <20220227124134.4d4e4644@jic23-huawei>
-References: <20211109200840.135019-1-puranjay12@gmail.com>
-        <20211109200840.135019-3-puranjay12@gmail.com>
-        <YflfEpKj0ilHnQQm@smile.fi.intel.com>
-        <20220227124134.4d4e4644@jic23-huawei>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        Sun, 10 Apr 2022 13:09:25 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075EA1117C
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 10:07:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649610434; x=1681146434;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=3irv/Hvk7J3OLv+AdB6F7l6hdeozHP/Z6qCmFvQNX4Q=;
+  b=a3T+ZsBn2WNpa4XCvrKhJki3fHBitmxs9Uz4cHUOhiqJtI1BHhfTpqyZ
+   70jf/q8BtzScWfhpCZobtAfMf9F7XWpcqboAORY9pQxQH/kNQXczpxfY5
+   RmBYM13jtb5BNyEmyLltimlZlC5dXsMIef4XyxWp8X9X03Yx5R80Jzd3t
+   IKsjFIJ0erjdYoTbL0hN76y8bXb6O6g9x14qjelpLCPq8tGCr/YpHMSpd
+   lCd/vjxnDDCANy0CdwUyAPWGmFOSPFxUSzY1e9l1GbhPQhtY1HI038YJu
+   LMdB9a+GmfVvXp8aBj5mDtPP77xdYd6n/UMxTx7piiiQDWN3fmJnDwfA2
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="261728428"
+X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
+   d="scan'208";a="261728428"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2022 10:07:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
+   d="scan'208";a="699083777"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 10 Apr 2022 10:07:12 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ndb1r-0000yW-OV;
+        Sun, 10 Apr 2022 17:07:11 +0000
+Date:   Mon, 11 Apr 2022 01:06:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
+Cc:     kbuild-all@lists.01.org, zx2c4@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [crng-random:jd/not-zero-entropy 7/12]
+ arch/arm/include/asm/timex.h:14:63: error: implicit declaration of function
+ 'sched_clock'
+Message-ID: <202204110106.XXNJ3BEs-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Feb 2022 12:41:34 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git jd/not-zero-entropy
+head:   efec3e2057963ad20223fa50a657b3ca9314ed45
+commit: 904df0ccc3b52e7dffc4b968b8839d63ecba08ce [7/12] arm: use sched_clock() for random_get_entropy() instead of zero
+config: arm-buildonly-randconfig-r001-20220410 (https://download.01.org/0day-ci/archive/20220411/202204110106.XXNJ3BEs-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git/commit/?id=904df0ccc3b52e7dffc4b968b8839d63ecba08ce
+        git remote add crng-random git://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git
+        git fetch --no-tags crng-random jd/not-zero-entropy
+        git checkout 904df0ccc3b52e7dffc4b968b8839d63ecba08ce
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
 
-> On Tue, 1 Feb 2022 18:25:54 +0200
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > On Wed, Nov 10, 2021 at 01:38:40AM +0530, Puranjay Mohan wrote:  
-> > > Use the generic fwnode_irq_get_byname() in place of of_irq_get_byname()
-> > > to get the IRQ number from the interrupt pin.    
-> > 
-> > Heads up, the fwnode_irq_get_byname() is in I2C tree and if Jonathan wants to
-> > apply this one, the PR [1] can be used.
-> > 
-> > [1]: https://lore.kernel.org/linux-i2c/YfRiGR3AT8tzyweG@shikoro/T/#u
-> >   
-> 
-> Thanks Andy. 
-> 
-> I'm going to let this go the slow way and pick up this patch after the
-> merge window when I can avoid pulling in that PR.
-> 
-> Basically I'm feeling lazy today :)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Now applied to the togreg branch of iio.git and pushed out as testing to
-see if 0-day can find any problems.
+All errors (new ones prefixed by >>):
 
-Thanks,
+   In file included from include/linux/timex.h:65,
+                    from include/linux/time32.h:13,
+                    from include/linux/time.h:60,
+                    from include/linux/jiffies.h:10,
+                    from lib/random32.c:38:
+   lib/random32.c: In function 'prandom_init_early':
+>> arch/arm/include/asm/timex.h:14:63: error: implicit declaration of function 'sched_clock' [-Werror=implicit-function-declaration]
+      14 | #define random_get_entropy() ((unsigned long)(get_cycles() ?: sched_clock()))
+         |                                                               ^~~~~~~~~~~
+   lib/random32.c:469:22: note: in expansion of macro 'random_get_entropy'
+     469 |                 v1 = random_get_entropy();
+         |                      ^~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+--
+   In file included from include/linux/timex.h:65,
+                    from include/linux/time32.h:13,
+                    from include/linux/time.h:60,
+                    from include/linux/stat.h:19,
+                    from include/linux/module.h:13,
+                    from crypto/jitterentropy-kcapi.c:41:
+   crypto/jitterentropy-kcapi.c: In function 'jent_get_nstime':
+>> arch/arm/include/asm/timex.h:14:63: error: implicit declaration of function 'sched_clock' [-Werror=implicit-function-declaration]
+      14 | #define random_get_entropy() ((unsigned long)(get_cycles() ?: sched_clock()))
+         |                                                               ^~~~~~~~~~~
+   crypto/jitterentropy-kcapi.c:85:15: note: in expansion of macro 'random_get_entropy'
+      85 |         tmp = random_get_entropy();
+         |               ^~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
-Jonathan
 
-> 
-> Jonathan
+vim +/sched_clock +14 arch/arm/include/asm/timex.h
 
+    11	
+    12	typedef unsigned long cycles_t;
+    13	#define get_cycles()	({ cycles_t c; read_current_timer(&c) ? 0 : c; })
+  > 14	#define random_get_entropy() ((unsigned long)(get_cycles() ?: sched_clock()))
+    15	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
