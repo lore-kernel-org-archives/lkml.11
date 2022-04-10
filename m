@@ -2,123 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B0FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 21:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 21:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243840AbiDJVyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 17:54:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42608 "EHLO
+        id S242793AbiDJVzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 17:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244070AbiDJVxT (ORCPT
+        with ESMTP id S244103AbiDJVzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 17:53:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2BEB1C93F;
-        Sun, 10 Apr 2022 14:51:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C66260C8A;
-        Sun, 10 Apr 2022 21:51:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FECAC385A5;
-        Sun, 10 Apr 2022 21:51:00 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Df8ZdRHB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649627459;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=v0GuQCNGwq3fJUQ7IzqmuEoFgX5zC7G7ODjmQAKE6bw=;
-        b=Df8ZdRHBX2SvbUp8tw7wPXpPXDlU6kDTCmgYGh41kIe3ddHm2qqZ8mqMClMRW10+/kz+yS
-        qS0hW7UHDa2CXwgazmm3LHTSLWGxFjdBnwNGAQrJxvZyp2ZtjtH27tB3vmNiu0HI07+LaL
-        gOF3/i/LKf0evowuQUKO1D4BSxkJvIQ=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a59763bf (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sun, 10 Apr 2022 21:50:59 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        tglx@linutronix.de, arnd@arndb.de
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-        linux-riscv@lists.infradead.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, x86@kernel.org,
-        linux-xtensa@linux-xtensa.org
-Subject: [PATCH v2 09/11] um: use ktime_read_raw_clock() for random_get_entropy() instead of zero
-Date:   Sun, 10 Apr 2022 23:49:49 +0200
-Message-Id: <20220410214951.55294-10-Jason@zx2c4.com>
-In-Reply-To: <20220410214951.55294-1-Jason@zx2c4.com>
-References: <20220410214951.55294-1-Jason@zx2c4.com>
+        Sun, 10 Apr 2022 17:55:04 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785AA1FCDC
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 14:52:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649627539; x=1681163539;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=OxpzmW2lJIgftIQ43tvUJMQprbRPeePUBTd2vzh+7CY=;
+  b=PDGCCpnKw9+YM3feHPs+IxVNjZRem10Vl3HRzsnJ40XUv9tAlxrMUjze
+   8kxBD9or+huk10T9WupNJj/anT1CZWaChm00FhPm51kZMcpvhfBG/HGou
+   XH7ugpXFL9jR9c5E/MQ/mDZy+zg/3UnuCAMl9Go44hLaVgNrQjA+a8fgO
+   lW4PvmZ+ptYtsbAFZBBRfa9tNJSaSxFha0VOWiX7s+a6iVyEMyMuhwW/1
+   8R7oWMA9XjwRjv6h2Wnjq+Ff+qDyZXPStCYeQshd6jO2X7W5RgURZUYib
+   lMzZTl6XBK3pDSANjGbpRqR0AREJlarsRLLt9kw5p4H9xKDmxVD+0cO4P
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="287003470"
+X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
+   d="scan'208";a="287003470"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2022 14:52:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,250,1643702400"; 
+   d="scan'208";a="659804676"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 10 Apr 2022 14:52:17 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ndfTl-00017d-0N;
+        Sun, 10 Apr 2022 21:52:17 +0000
+Date:   Mon, 11 Apr 2022 05:51:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [norov:bitmap-for-next 43/43] lib/bitmap.c:1571:22: warning:
+ unsequenced modification and access to 'i'
+Message-ID: <202204110545.nVd02heW-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling ktime_read_raw_clock() would be preferable,
-because that always needs to return _something_, even falling back to
-jiffies eventually. It's not as though ktime_read_raw_clock() is super
-high precision or guaranteed to be entropic, but basically anything
-that's not zero all the time is better than returning zero all the time.
+tree:   https://github.com/norov/linux bitmap-for-next
+head:   a136dfabd10d0c1354c41a069cc4e00147a721e1
+commit: a136dfabd10d0c1354c41a069cc4e00147a721e1 [43/43] bitmap_from_arr64
+config: arm-hackkit_defconfig (https://download.01.org/0day-ci/archive/20220411/202204110545.nVd02heW-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 256c6b0ba14e8a7ab6373b61b7193ea8c0a3651c)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/norov/linux/commit/a136dfabd10d0c1354c41a069cc4e00147a721e1
+        git remote add norov https://github.com/norov/linux
+        git fetch --no-tags norov bitmap-for-next
+        git checkout a136dfabd10d0c1354c41a069cc4e00147a721e1
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-This is accomplished by just including the asm-generic code like on
-other architectures, which means we can get rid of the empty stub
-function here.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc: Johannes Berg <johannes@sipsolutions.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- arch/um/include/asm/timex.h | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+All warnings (new ones prefixed by >>):
 
-diff --git a/arch/um/include/asm/timex.h b/arch/um/include/asm/timex.h
-index e392a9a5bc9b..9f27176adb26 100644
---- a/arch/um/include/asm/timex.h
-+++ b/arch/um/include/asm/timex.h
-@@ -2,13 +2,8 @@
- #ifndef __UM_TIMEX_H
- #define __UM_TIMEX_H
- 
--typedef unsigned long cycles_t;
--
--static inline cycles_t get_cycles (void)
--{
--	return 0;
--}
--
- #define CLOCK_TICK_RATE (HZ)
- 
-+#include <asm-generic/timex.h>
-+
- #endif
+>> lib/bitmap.c:1571:22: warning: unsequenced modification and access to 'i' [-Wunsequenced]
+                   buf[i/2] = bitmap[i++];
+                       ~              ^
+>> lib/bitmap.c:1573:28: warning: shift count >= width of type [-Wshift-count-overflow]
+                           buf[i/2] |= bitmap[i++] << 32;
+                                                   ^  ~~
+   lib/bitmap.c:1573:24: warning: unsequenced modification and access to 'i' [-Wunsequenced]
+                           buf[i/2] |= bitmap[i++] << 32;
+                               ~               ^
+   3 warnings generated.
+
+
+vim +/i +1571 lib/bitmap.c
+
+  1559	
+  1560	/**
+  1561	 * bitmap_to_arr64 - copy the contents of bitmap to a u64 array of bits
+  1562	 *	@buf: array of u64 (in host byte order), the dest bitmap
+  1563	 *	@bitmap: array of unsigned longs, the source bitmap
+  1564	 *	@nbits: number of bits in @bitmap
+  1565	 */
+  1566	void bitmap_to_arr64(u64 *buf, const unsigned long *bitmap, unsigned int nbits)
+  1567	{
+  1568		unsigned int i = 0, words = BITS_TO_LONGS(nbits);
+  1569	
+  1570		while (i < words) {
+> 1571			buf[i/2] = bitmap[i++];
+  1572			if (i < words)
+> 1573				buf[i/2] |= bitmap[i++] << 32;
+  1574		}
+  1575	
+  1576		/* Clear tail bits in last element of array beyond nbits. */
+  1577		if (nbits % 64)
+  1578			buf[i - 1] &= GENMASK_ULL(nbits, 0);
+  1579	}
+  1580	EXPORT_SYMBOL(bitmap_to_arr64);
+  1581	
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
