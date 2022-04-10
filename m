@@ -2,95 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53719C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 09:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 105D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 10 Apr 2022 09:45:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236394AbiDJJfu convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 05:35:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38928 "EHLO
+        id S236451AbiDJJre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 05:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233565AbiDJJfs (ORCPT
+        with ESMTP id S231849AbiDJJra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 05:35:48 -0400
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E66640E4F
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 02:33:37 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 804176081103;
-        Sun, 10 Apr 2022 11:33:34 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 0I2AQ11rsG8P; Sun, 10 Apr 2022 11:33:34 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 0882A6081105;
-        Sun, 10 Apr 2022 11:33:34 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id TrnisQUZSPhL; Sun, 10 Apr 2022 11:33:33 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id C487C6081103;
-        Sun, 10 Apr 2022 11:33:33 +0200 (CEST)
-Date:   Sun, 10 Apr 2022 11:33:33 +0200 (CEST)
-From:   Richard Weinberger <richard@nod.at>
-To:     Thorsten Leemhuis <regressions@leemhuis.info>
-Cc:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        anton ivanov <anton.ivanov@cambridgegreys.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Eduard-Gabriel Munteanu <maxdamage@aladin.ro>,
-        linux-um <linux-um@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        regressions@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
-Message-ID: <1087614384.239493.1649583213699.JavaMail.zimbra@nod.at>
-In-Reply-To: <1b03d888-cea3-3e6f-087f-daeb5642a975@leemhuis.info>
-References: <20210508032239.2177-1-thunder.leizhen@huawei.com> <Yjt31seiNv18HYrf@dev-arch.thelio-3990X> <1b03d888-cea3-3e6f-087f-daeb5642a975@leemhuis.info>
-Subject: Re: [PATCH 1/1] um: fix error return code in winch_tramp()
+        Sun, 10 Apr 2022 05:47:30 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F542AE1B;
+        Sun, 10 Apr 2022 02:45:20 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649583917;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PwDpLp/IMcJeecAEvyOp/CYm1m3XWAQNJ0gM0y66GTQ=;
+        b=kCx397iONgJx+LSvUgmZu29Rb44BWTfWoCL8Pzjc8ufkItUIIR38qbeJLReuhNk3rb1DHM
+        whqWSjLgo7Scvl4fH+JNTnOJAWd+kO7w+LBmanIMJhiy9/0fMpWzg4Ak99I57kQBbsOM2e
+        tSwe6jeCdrX4uj/rRBaCwVCHbV6hVXsdb/oJtcq2Vrd0wBm7+vwl9GACvpYTOqdjeEOsuU
+        9agKG1r8ekyRkF35jQbAP/4ToufmpVClp2HtjZmBsFTBUX7YqszQZHEwW8xExBkmnLmB0d
+        daniebCRqDDa09QEqnyirTAOCKDUqZPZm3O/GGPmsqfrrfoYgk1WrYti6apQlg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649583917;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PwDpLp/IMcJeecAEvyOp/CYm1m3XWAQNJ0gM0y66GTQ=;
+        b=qLi11xHyICneogaEQzyv/PpMpYfwMLTmvBluPhW0NzoHdx4mAe6pomo5wn0wHOrpeSBkY0
+        gDS6wRX8cCadJTAg==
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH] random: make random_get_entropy() return an unsigned long
+In-Reply-To: <20220408175317.140778-1-Jason@zx2c4.com>
+References: <20220408175317.140778-1-Jason@zx2c4.com>
+Date:   Sun, 10 Apr 2022 11:45:16 +0200
+Message-ID: <87tub1gtlf.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Topic: fix error return code in winch_tramp()
-Thread-Index: ceNsql/27C1J+1g3RguAZ58F1pmPwg==
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------ Ursprüngliche Mail -----
-> Von: "Thorsten Leemhuis" <regressions@leemhuis.info>
-> Hi, this is your Linux kernel regression tracker. Top-posting for once,
-> to make this easily accessible to everyone.
-> 
-> Zhen Lei, Richard, what's up here? Below regression report is more than
-> two weeks old now and afaics didn't even get a single reply.
+On Fri, Apr 08 2022 at 19:53, Jason A. Donenfeld wrote:
+> Some implementations were returning type `unsigned long`, while others
+> that fell back to get_cycles() were implicitly returning a `cycles_t` or
+> an untyped constant int literal. That makes for weird and confusing
+> code, and basically all code in the kernel already handled it like it
+> was an `unsigned long`. I recently tried to handle it as the largest
+> type it could be, a `cycles_t`, but doing so doesn't really help with
+> much. Instead let's just make random_get_entropy() return an unsigned
+> long all the time. This also matches the commonly used
+> `arch_get_random_long()` function, so now RDRAND and RDTSC return the
+> same sized integer, which means one can fallback to the other more
+> gracefully.
 
-Sorry, but UML is leisure pursuit, so I can only work on it when my
-schedule permits it.
- 
-> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-> 
-> P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-> reports on my table. I can only look briefly into most of them and lack
-> knowledge about most of the areas they concern. I thus unfortunately
-> will sometimes get things wrong or miss something important. I hope
-> that's not the case here; if you think it is, don't hesitate to tell me
-> in a public reply, it's in everyone's interest to set the public record
-> straight.
-> 
-> 
-> 
-> On 23.03.22 20:41, Nathan Chancellor wrote:
-
-[...]
-
->> in case it helps. I am happy to provide more information or test patches
->> as necessary.
-
-Nathan, can you provide me the error code from os_set_fd_block()?
-My best guess is that setting the fd is optional here and UML does
-not expect failure here.
-
-Thanks,
-//richard
+Acked-by: Thomas Gleixner <tglx@linutronix.de>
