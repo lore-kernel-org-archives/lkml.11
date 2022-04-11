@@ -2,82 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 118A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 02:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04901C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 02:51:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244415AbiDKCvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 22:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
+        id S244416AbiDKCyB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 22:54:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240150AbiDKCvb (ORCPT
+        with ESMTP id S229710AbiDKCx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 22:51:31 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685B42AF8
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 19:49:18 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id y6so12705014plg.2
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 19:49:18 -0700 (PDT)
+        Sun, 10 Apr 2022 22:53:58 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3BD55A6
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 19:51:45 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id o5so1380303pjr.0
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 19:51:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=uXcIee9Yns7jOLzfV/llZix6Uxz5Viuskna/6ugB7Mw=;
-        b=OD6rDXon45iZxMJDeZEO1PIWGEgxz7KmR0yEBJz5VUeRxfm9uUtDlzKbAL7iXtXjqA
-         glo78+MtNXTUC983V2TiNtUs9HqNcSaHfqO3QAtgv9hDZJvqQqc1hE2uFzUCJtSWcECh
-         /uw7o9idEqb7L94kNlgf0LFTDZdrwcufkxTLGP9WXxY0DyqnY3WVds3fzHiFCKhNDXFe
-         ehf/KykXIA9mzy2wihmullxcP/LBPcEPW2RQrErUCldd7aFY4BLpn7sXOj0boqc4KAnn
-         7LJe9ugK/ELoXgykQHl493EZzDijYZT8v0/rmM1pVgOMFD/ae+S37a6WhPaaLsYKj9Z7
-         4nfA==
+        bh=rXMHDZ/wjPIXvL9nqfsrxMZkzmm8UuxVAONDINflarg=;
+        b=AE76w0buips1IavXt8IqZhb/mkmazdyXyCp/cggM8TOunNklvkgT4lSsRzujLmLdE3
+         476Yi8o85rpPXFHnov+x/BLI3qBaqVaaP6I4k4iLECAwuzFym8qZNIZbEP/WaSKDg6Zg
+         Q3gO1XTRhmNyxHLz71bDze79BuvYZ4M53fsVYrBMjvPRw4FZhhWJB6p04pI8WUQU1wUF
+         VS6JxUiB5uS9NezIa01SRAz5HYjTn9xC4rSa4gCrxokcMgDrVexzZAX9iJXsx6xLW0TK
+         CSo+qBkDUpOfw17IEGKJH3+MaferjZI/1prH9OTR0qLrgBsw9ADJ367gVGLHIl088MBE
+         6bVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uXcIee9Yns7jOLzfV/llZix6Uxz5Viuskna/6ugB7Mw=;
-        b=645SnH/6+6GHyYMXsylcIOLXmJfvCtsYQfPu+mf3FQLL1SL5a/iePUl19EvDEC9cUc
-         A/5L27q9JyJdzkbITdg3uW2cDbghu7kr8vqbg27/le+J6UDRvooMPVFkAHwo2X671VEE
-         +JJXlemL5sPJ7kPmFvwF6unUphfVpQ7C0r1arX8pSA05gxqDSZPsomZSel4uh1ziqEu1
-         xQSQC8sGfFjqwntdYYP+rAbzS5eCSELkIN7RiA+WkeeSsBk0jMftpOoebOYekVTU1X3m
-         sqkhrscxyB3h+TExzyh50O5QIa1y1ELPtPtxTidhGLCTA1so29mwfBaYjGykUHrHKOve
-         wB+g==
-X-Gm-Message-State: AOAM530HkHEqWwWH80fpYXvp+FLuYbv99x8K5uzuaeWA/F7w0djbl8cu
-        n0Sjxd5foCp/zc6B+C3a95CUNQ==
-X-Google-Smtp-Source: ABdhPJwiHW7XNh4KwMT8iJrViqSNRE5fm/cebUjnrBUONKKP70zUxuBBAP4I6t2IGX5tnm/+eN4DcA==
-X-Received: by 2002:a17:90a:3d02:b0:1ca:7f92:1bf1 with SMTP id h2-20020a17090a3d0200b001ca7f921bf1mr34536653pjc.177.1649645357878;
-        Sun, 10 Apr 2022 19:49:17 -0700 (PDT)
+        bh=rXMHDZ/wjPIXvL9nqfsrxMZkzmm8UuxVAONDINflarg=;
+        b=GNCNUKICiDsmm1BTvp2Idf2M67+SHe8npVlbcztKlio+ywdeIYEVxYs43Hp2BUWpRm
+         HVb89Xf+l7LbFVOOHuNwOVrNj3nTWWWry1ykSKvI/aUEikiqtMZy/PxMrNUlTbaZ9J20
+         PnIPrUm2HuC9tkRXVVPtPlqpSWkxodHuL1kZtraFgKcrxBmNnLQzlE/9bQAByZxzMwXJ
+         zKgoHiyg2GqdFmAtO+VtlMNevC7foD6npSRV/l60M7Ruk998mEs0ZadRXAbTq3VOAuji
+         R9qLQ0nk7biMFPoGKrsDT07vNtR5hAx/suUTuSzfRWSCgifI1bNpbBa6iLZ5xJ9PXPTy
+         4ocg==
+X-Gm-Message-State: AOAM5302kLs0bXkhYla+dZ8O3bkAeXnw7AQ/HbRIp17snBjmQ8gE6M/r
+        nDZT5apDzEzW5HyOJMwgHqXtag==
+X-Google-Smtp-Source: ABdhPJzGVKQR6w8pMxMmb2S23wGUZsQuhLLg7iNaBj4HpD8z37EDF1Ky46L9XugLcAZWFBAiFvYfIA==
+X-Received: by 2002:a17:90b:4a4e:b0:1ca:c996:20dc with SMTP id lb14-20020a17090b4a4e00b001cac99620dcmr35062125pjb.98.1649645505104;
+        Sun, 10 Apr 2022 19:51:45 -0700 (PDT)
 Received: from localhost ([223.184.83.228])
-        by smtp.gmail.com with ESMTPSA id i7-20020a628707000000b004fa6eb33b02sm32511957pfe.49.2022.04.10.19.49.16
+        by smtp.gmail.com with ESMTPSA id d8-20020aa78688000000b00505793566f7sm9440536pfo.211.2022.04.10.19.51.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 19:49:17 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 08:19:15 +0530
+        Sun, 10 Apr 2022 19:51:44 -0700 (PDT)
+Date:   Mon, 11 Apr 2022 08:21:42 +0530
 From:   Viresh Kumar <viresh.kumar@linaro.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dmitry Osipenko <digetx@gmail.com>, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] PM: opp: Fix NULL pointer exception on a v2 table
- combined with v1 opps
-Message-ID: <20220411024915.7zmoyphgongzorci@vireshk-i7>
-References: <20220404123757.798917-1-krzysztof.kozlowski@linaro.org>
+Cc:     Sekhar Nori <nsekhar@ti.com>, Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Shiraz Hashim <shiraz.linux.kernel@gmail.com>, soc@kernel.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com, arm@kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>
+Subject: Re: [PATCH] ARM: dts: align SPI NOR node name with dtschema
+Message-ID: <20220411025142.uhdllnknn232h26f@vireshk-i7>
+References: <20220407143027.294678-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220404123757.798917-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220407143027.294678-1-krzysztof.kozlowski@linaro.org>
 User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04-04-22, 14:37, Krzysztof Kozlowski wrote:
-> dev_pm_opp_add() adds a v1 OPP.
+On 07-04-22, 16:30, Krzysztof Kozlowski wrote:
+> The node names should be generic and SPI NOR dtschema expects "flash".
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  arch/arm/boot/dts/spear1310-evb.dts              | 2 +-
+>  arch/arm/boot/dts/spear1340-evb.dts              | 2 +-
 
-That's not correct, it adds a simpler version of OPP and doesn't
-support complex types. A opp v2 table with just freq and voltage
-should be supported by dev_pm_opp_add() and we shouldn't disallow it.
-
-I think all we need here is a couple of checks to make sure the
-earlier OPPs don't have anything which the new OPP can't support. For
-example checking required-opps field, etc.
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
 
 -- 
 viresh
