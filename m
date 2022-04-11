@@ -2,159 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41EA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7832BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:22:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343879AbiDKKYO (ORCPT
+        id S1345368AbiDKKYh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:24:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48930 "EHLO
+        Mon, 11 Apr 2022 06:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345287AbiDKKXG (ORCPT
+        with ESMTP id S1345483AbiDKKWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:23:06 -0400
-Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0AE73F898
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:20:50 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
- (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 11 Apr
- 2022 18:20:49 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Mon, 11 Apr
- 2022 18:20:48 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <akpm@linux-foundation.org>, <seanga2@gmail.com>,
-        <sfr@canb.auug.org.au>
-CC:     <linux-kernel@vger.kernel.org>, Haowen Bai <baihaowen@meizu.com>
-Subject: [PATCH] tools/vm/page_owner: support debug log to avoid huge log print
-Date:   Mon, 11 Apr 2022 18:20:46 +0800
-Message-ID: <1649672446-5685-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 11 Apr 2022 06:22:48 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E28040A17;
+        Mon, 11 Apr 2022 03:20:32 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id p25so7463621pfn.13;
+        Mon, 11 Apr 2022 03:20:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XPwt8sGod7zPq0cTkkL/MnhWtC0l3QC4vFa0Zg+Ea+E=;
+        b=c/fA6Q9EuU4ofYYxy79GJYlvLXT8ykwtiA/LrXPGlWubjmYLzm14ZODjef+/HFzewP
+         c3m5daV5trxi1SWgrC8rouV1rYp//gVFSw67Q4b/G/XBawK2hGGLFYYJ1VvmW7rJJN6X
+         vD/yCH2I9BfcUyZfHa9ElFDLmGMECz8BQZmdH0MmQUcCQmowUbEzLGta9sj8BeWQx1IZ
+         FDBUnLAiMUuKzOFg+Y9L6Fxe7p05fQ5dQ7bl+UllZTVwah20R9BtObN1o15fVg8MONsm
+         UR6Y69cASB6mJ+QtHvvQqhcyuaobioaf1cwUwdHr1STb5qbaQamCAd7axso0W/n9OQ+g
+         Glrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XPwt8sGod7zPq0cTkkL/MnhWtC0l3QC4vFa0Zg+Ea+E=;
+        b=a9frOXmGNNFeAYwZzIgElkxmiOzxNV+Bcnvnsyg2LGCL1NItqwYc4ZIv7i2xEge/0i
+         +aXNZo3vfb4sItEaY+jH5I2vuCzkPGgoTJEPy6WlJJ9+J9l5bfGmcKYh6HMbrQwIn7qN
+         CgUmdh8ThShgqL5l0Ie4D63a4s9v1MdyuYcIKZRVysGPRdS87X/I1FVAc+G8CnBMbtJ2
+         xJNXXhBqK9Ahsqd3igh8yBZ4nXIpmQA8YkY56KgeszhJLU/edaCVV1SvVnZ47qp7a6Oa
+         suYIGrgv9cp4nvt9KnjtcCGst9AqG3EUiYJgydm0kpetxKIFPFvaMIQmHLA/+qhUt1IH
+         YgSg==
+X-Gm-Message-State: AOAM533JFi0S8tSX1dO+/FJ07dDgAVnIciQV6BEUupU5qFXkgGo4W+S4
+        hlKIlhevEC4iLjAmqxLb0HM=
+X-Google-Smtp-Source: ABdhPJxQDPKgR0zGDRMxI8sWUu0g3w4WOwnsewfVr5s5E0e4ZXNfIV4MFQDzHg+xFLNtviou/+x2oQ==
+X-Received: by 2002:a63:195f:0:b0:399:1f0e:a21d with SMTP id 31-20020a63195f000000b003991f0ea21dmr25580971pgz.393.1649672432192;
+        Mon, 11 Apr 2022 03:20:32 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.112])
+        by smtp.gmail.com with ESMTPSA id h10-20020a056a00230a00b004faa0f67c3esm34012280pfh.23.2022.04.11.03.20.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 03:20:32 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH RESEND v12 13/17] KVM: x86/pmu: Move pmc_speculative_in_use() to arch/x86/kvm/pmu.h
+Date:   Mon, 11 Apr 2022 18:19:42 +0800
+Message-Id: <20220411101946.20262-14-likexu@tencent.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220411101946.20262-1-likexu@tencent.com>
+References: <20220411101946.20262-1-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As normal usage, tool will print huge parser log and spend a lot of
-time printing, so it would be preferable add "-d" debug control to avoid
-this problem.
+From: Like Xu <like.xu@linux.intel.com>
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+It allows this inline function to be reused by more callers in
+more files, such as pmu_intel.c.
+
+Signed-off-by: Like Xu <like.xu@linux.intel.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- tools/vm/page_owner_sort.c | 28 ++++++++++++++++++++--------
- 1 file changed, 20 insertions(+), 8 deletions(-)
+ arch/x86/kvm/pmu.c | 11 -----------
+ arch/x86/kvm/pmu.h | 11 +++++++++++
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/tools/vm/page_owner_sort.c b/tools/vm/page_owner_sort.c
-index beca990707fb..a32e446e5bb2 100644
---- a/tools/vm/page_owner_sort.c
-+++ b/tools/vm/page_owner_sort.c
-@@ -87,6 +87,7 @@ static int list_size;
- static int max_size;
- static int cull;
- static int filter;
-+static bool debug_on;
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index c1312cd32237..122e4bb4fa47 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -500,17 +500,6 @@ void kvm_pmu_init(struct kvm_vcpu *vcpu)
+ 	kvm_pmu_refresh(vcpu);
+ }
  
- int read_block(char *buf, int buf_size, FILE *fin)
+-static inline bool pmc_speculative_in_use(struct kvm_pmc *pmc)
+-{
+-	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
+-
+-	if (pmc_is_fixed(pmc))
+-		return fixed_ctrl_field(pmu->fixed_ctr_ctrl,
+-			pmc->idx - INTEL_PMC_IDX_FIXED) & 0x3;
+-
+-	return pmc->eventsel & ARCH_PERFMON_EVENTSEL_ENABLE;
+-}
+-
+ /* Release perf_events for vPMCs that have been unused for a full time slice.  */
+ void kvm_pmu_cleanup(struct kvm_vcpu *vcpu)
  {
-@@ -211,7 +212,8 @@ static int search_pattern(regex_t *pattern, char *pattern_str, char *buf)
+diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
+index 06e750824da1..b51f804737bd 100644
+--- a/arch/x86/kvm/pmu.h
++++ b/arch/x86/kvm/pmu.h
+@@ -143,6 +143,17 @@ static inline u64 get_sample_period(struct kvm_pmc *pmc, u64 counter_value)
+ 	return sample_period;
+ }
  
- 	err = regexec(pattern, buf, 2, pmatch, REG_NOTBOL);
- 	if (err != 0 || pmatch[1].rm_so == -1) {
--		fprintf(stderr, "no matching pattern in %s\n", buf);
-+		if (debug_on)
-+			fprintf(stderr, "no matching pattern in %s\n", buf);
- 		return -1;
- 	}
- 	val_len = pmatch[1].rm_eo - pmatch[1].rm_so;
-@@ -276,7 +278,8 @@ static int get_page_num(char *buf)
- 	errno = 0;
- 	order_val = strtol(order_str, &endptr, 10);
- 	if (order_val > 64 || errno != 0 || endptr == order_str || *endptr != '\0') {
--		fprintf(stderr, "wrong order in follow buf:\n%s\n", buf);
-+		if (debug_on)
-+			fprintf(stderr, "wrong order in follow buf:\n%s\n", buf);
- 		return 0;
- 	}
- 
-@@ -293,7 +296,8 @@ static pid_t get_pid(char *buf)
- 	errno = 0;
- 	pid = strtol(pid_str, &endptr, 10);
- 	if (errno != 0 || endptr == pid_str || *endptr != '\0') {
--		fprintf(stderr, "wrong/invalid pid in follow buf:\n%s\n", buf);
-+		if (debug_on)
-+			fprintf(stderr, "wrong/invalid pid in follow buf:\n%s\n", buf);
- 		return -1;
- 	}
- 
-@@ -311,7 +315,8 @@ static pid_t get_tgid(char *buf)
- 	errno = 0;
- 	tgid = strtol(tgid_str, &endptr, 10);
- 	if (errno != 0 || endptr == tgid_str || *endptr != '\0') {
--		fprintf(stderr, "wrong/invalid tgid in follow buf:\n%s\n", buf);
-+		if (debug_on)
-+			fprintf(stderr, "wrong/invalid tgid in follow buf:\n%s\n", buf);
- 		return -1;
- 	}
- 
-@@ -329,7 +334,8 @@ static __u64 get_ts_nsec(char *buf)
- 	errno = 0;
- 	ts_nsec = strtoull(ts_nsec_str, &endptr, 10);
- 	if (errno != 0 || endptr == ts_nsec_str || *endptr != '\0') {
--		fprintf(stderr, "wrong ts_nsec in follow buf:\n%s\n", buf);
-+		if (debug_on)
-+			fprintf(stderr, "wrong ts_nsec in follow buf:\n%s\n", buf);
- 		return -1;
- 	}
- 
-@@ -346,7 +352,8 @@ static __u64 get_free_ts_nsec(char *buf)
- 	errno = 0;
- 	free_ts_nsec = strtoull(free_ts_nsec_str, &endptr, 10);
- 	if (errno != 0 || endptr == free_ts_nsec_str || *endptr != '\0') {
--		fprintf(stderr, "wrong free_ts_nsec in follow buf:\n%s\n", buf);
-+		if (debug_on)
-+			fprintf(stderr, "wrong free_ts_nsec in follow buf:\n%s\n", buf);
- 		return -1;
- 	}
- 
-@@ -362,7 +369,8 @@ static char *get_comm(char *buf)
- 	search_pattern(&comm_pattern, comm_str, buf);
- 	errno = 0;
- 	if (errno != 0) {
--		fprintf(stderr, "wrong comm in follow buf:\n%s\n", buf);
-+		if (debug_on)
-+			fprintf(stderr, "wrong comm in follow buf:\n%s\n", buf);
- 		return NULL;
- 	}
- 
-@@ -594,6 +602,7 @@ static void usage(void)
- 		"-a\t\tSort by memory allocate time.\n"
- 		"-r\t\tSort by memory release time.\n"
- 		"-f\t\tFilter out the information of blocks whose memory has been released.\n"
-+		"-d\t\tPrint debug information.\n"
- 		"--pid <pidlist>\tSelect by pid. This selects the information of blocks whose process ID numbers appear in <pidlist>.\n"
- 		"--tgid <tgidlist>\tSelect by tgid. This selects the information of blocks whose Thread Group ID numbers appear in <tgidlist>.\n"
- 		"--name <cmdlist>\n\t\tSelect by command name. This selects the information of blocks whose command name appears in <cmdlist>.\n"
-@@ -618,11 +627,14 @@ int main(int argc, char **argv)
- 		{ 0, 0, 0, 0},
- 	};
- 
--	while ((opt = getopt_long(argc, argv, "afmnprstP", longopts, NULL)) != -1)
-+	while ((opt = getopt_long(argc, argv, "adfmnprstP", longopts, NULL)) != -1)
- 		switch (opt) {
- 		case 'a':
- 			set_single_cmp(compare_ts, SORT_ASC);
- 			break;
-+		case 'd':
-+			debug_on = true;
-+			break;
- 		case 'f':
- 			filter = filter | FILTER_UNRELEASE;
- 			break;
++static inline bool pmc_speculative_in_use(struct kvm_pmc *pmc)
++{
++	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
++
++	if (pmc_is_fixed(pmc))
++		return fixed_ctrl_field(pmu->fixed_ctr_ctrl,
++					pmc->idx - INTEL_PMC_IDX_FIXED) & 0x3;
++
++	return pmc->eventsel & ARCH_PERFMON_EVENTSEL_ENABLE;
++}
++
+ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel);
+ void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int fixed_idx);
+ void reprogram_counter(struct kvm_pmu *pmu, int pmc_idx);
 -- 
-2.7.4
+2.35.1
 
