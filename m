@@ -2,97 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62FAEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD342C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:50:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346724AbiDKNwK (ORCPT
+        id S1346740AbiDKNxC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 09:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37088 "EHLO
+        Mon, 11 Apr 2022 09:53:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346661AbiDKNwI (ORCPT
+        with ESMTP id S1346748AbiDKNwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 09:52:08 -0400
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066D9237F0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:49:52 -0700 (PDT)
-Received: by mail-qv1-f51.google.com with SMTP id ke15so13232505qvb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:49:51 -0700 (PDT)
+        Mon, 11 Apr 2022 09:52:32 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A42424090
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:50:17 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id b189so10631401qkf.11
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:50:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=Ee9cHL3O4lr4TWLTa3s8ofVsmmXbJuEmkg2vJR97Q5M=;
+        b=geFfMqZanAauvixw04TDDWB3pMYfZF9YMaeCNuqqMuK6YkEaHIg4N1WFuR4NOYrm81
+         Pnib5t96sONoKMMf4N2OqlROMFFoiaxYbCYq9KUk8X8jYh0bKYEEf1ICMCVk2Lk8FqCZ
+         our+s6P0g2iNTgCFt4oOnsN5lCEbmpTor8e88Q/R7VFbajcUFp0qRQpP8PDJeeNeKSEJ
+         xG7PiCjQxlk31z+0y3byT95S9aQMc63CjYB2et+CwkcHyz71p9OP9B46ysKxDT4uVMLO
+         qx7c9aVlQGJZqNabQWdONLPve3Qyk/SnHsB3Y9Ss3uFaQ7M4665lJcaTjUuG/MNrw0ln
+         myXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vVG2fXlBh+awI+zoG5EckE/Z3Lioiux+cIKRFlmEU0g=;
-        b=D3xdY1OK8KmdjzH6LG9W0CVm9zLNajVHJANYnYi0hjA1PDtLKVezFmtkosul9b2pKn
-         GsEPQQsPu5BIILcIbuBYGi6tZHpuy/7LDD2Rq7op4LmELRU0DzVkPQeHl8yM+ugauu6i
-         y44U3rfTSF9mprSn+z3elpnWwsdWy7hGrxjGDgNbAp2c6jmoRuncHagnCeAPyuOBIxm6
-         i2irYgiP+p/IphTv0DuGN58JRRsCrBOHcfYdTs4KYbqtH0MkUsm73Q/VMbHok+OAid+V
-         f+fzBZCtppKJ1U/zBBFKvZClAk39Y0w8298ut0xIBVdEwH088XURmXP9eNP9baY4N3jZ
-         x2nA==
-X-Gm-Message-State: AOAM53057OYrpEq4VlbXc2e6zAL3e1cdwJP81DwqCh+LPkQHD5Hl4VVr
-        qSRWAM8uHmeAjy8SXeXruVfdKTk6EtZxuQ==
-X-Google-Smtp-Source: ABdhPJxF3a0VlW6VCxyXpcYmmOM+U4cwZPOZS2+Qt3rxtXJBR0gUT7fFMAVggrd9tNbfSxjGe8VUxw==
-X-Received: by 2002:a0c:c788:0:b0:444:2c7f:4126 with SMTP id k8-20020a0cc788000000b004442c7f4126mr10856160qvj.50.1649684990576;
-        Mon, 11 Apr 2022 06:49:50 -0700 (PDT)
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
-        by smtp.gmail.com with ESMTPSA id c7-20020a37e107000000b0069c126c5107sm2537458qkm.39.2022.04.11.06.49.50
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 06:49:50 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id t12so7072215ybt.10
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:49:49 -0700 (PDT)
-X-Received: by 2002:a25:29c2:0:b0:641:224f:17d6 with SMTP id
- p185-20020a2529c2000000b00641224f17d6mr7405779ybp.546.1649684989768; Mon, 11
- Apr 2022 06:49:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220312063437.19160-1-yuehaibing@huawei.com> <08e81f07-99d2-62a3-8eea-b2c0432b4d18@redhat.com>
-In-Reply-To: <08e81f07-99d2-62a3-8eea-b2c0432b4d18@redhat.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 11 Apr 2022 15:49:38 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVYtV9KHYqjcXS05XM+QqbCgPKB_uZCCAN0eAqHUmoeTg@mail.gmail.com>
-Message-ID: <CAMuHMdVYtV9KHYqjcXS05XM+QqbCgPKB_uZCCAN0eAqHUmoeTg@mail.gmail.com>
-Subject: Re: [PATCH -next] drm/solomon: Make DRM_SSD130X depends on MMU
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     YueHaibing <yuehaibing@huawei.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=Ee9cHL3O4lr4TWLTa3s8ofVsmmXbJuEmkg2vJR97Q5M=;
+        b=sFnOSgGfdGBNXPU3IbXPdZEvIArPFwAJ64yyCKeu9puF8HwdVdOpPoHHQAUxwMwCml
+         F1ESLkjU/LB1tP90LXv1MZO6AeL/TXnj3OGrMQfX0+X54wNYaUNkm3daTzYxLHG+tl4I
+         hNOavOx5OOhV/herFx01Vk72m9c3mt4SdtvlTOM2LzsABPqdmV53mvnADm19zOGwcACa
+         QXjpdf8IFTumglZnJUUY+WQO7wpFnc4dCmwrEX2ZfUARDZaUjY5cID8mPgI9qeS/nk4r
+         doPVwHGYMUO1ZRgSCbuVI6xrPMBdKJOroEMhIEdH2DB0RdVXqz6CiWJSJbBCf4ug6L5j
+         6zIQ==
+X-Gm-Message-State: AOAM530hg9TFg/GgtNzXnzZxk/yIW9kK9oIdQ1E+OgF6GGUR9DNbveRM
+        CS77ufstIh8XwAo2lwIk+sN+3w==
+X-Google-Smtp-Source: ABdhPJzTPsAEpa9EYwweA9WGhebfnIttjIU58Yz6eHg0zov/iI3h1PCXca6xczQJyN45UetI2l6wKg==
+X-Received: by 2002:a05:620a:121c:b0:67d:da02:19e3 with SMTP id u28-20020a05620a121c00b0067dda0219e3mr21500316qkj.173.1649685016543;
+        Mon, 11 Apr 2022 06:50:16 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (173-246-12-168.qc.cable.ebox.net. [173.246.12.168])
+        by smtp.gmail.com with ESMTPSA id p8-20020a05620a15e800b0069c1006a883sm3162930qkm.2.2022.04.11.06.50.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 06:50:16 -0700 (PDT)
+Message-ID: <854cc6172735360f73d5a93ddadbb3030cc1a57b.camel@ndufresne.ca>
+Subject: Re: [PATCH v2 2/2] media: v4l: Add H265 pixel format
+From:   Nicolas Dufresne <nicolas@ndufresne.ca>
+To:     James_Lin <Ping-lei.Lin@mediatek.com>, linux-kernel@vger.kernel.org
+Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Ming Qian <ming.qian@nxp.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, lecopzer.chen@mediatek.com,
+        max.yan@mediatek.com, sherlock.chang@mediatek.com,
+        tm.wu@mediatek.com
+Date:   Mon, 11 Apr 2022 09:50:14 -0400
+In-Reply-To: <20220411080120.26008-3-Ping-lei.Lin@mediatek.com>
+References: <20220411080120.26008-1-Ping-lei.Lin@mediatek.com>
+         <20220411080120.26008-3-Ping-lei.Lin@mediatek.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.0 (3.44.0-1.fc36) 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Javier,
+Le lundi 11 avril 2022 =C3=A0 16:01 +0800, James_Lin a =C3=A9crit=C2=A0:
+> Add H265 pixel format.
+> So driver can recognize external camera devices=20
+> whom use h265 to describe High Efficiency Video Coding method.
+>=20
+> Signed-off-by: James_Lin <Ping-lei.Lin@mediatek.com>
+> ---
+>  .../userspace-api/media/v4l/pixfmt-compressed.rst      | 10 ++++++++++
+>  drivers/media/v4l2-core/v4l2-ioctl.c                   |  1 +
+>  include/uapi/linux/videodev2.h                         |  1 +
+>  3 files changed, 12 insertions(+)
+>=20
+> diff --git a/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst =
+b/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst
+> index 967fc803ef94..75292aafe2eb 100644
+> --- a/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst
+> +++ b/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst
+> @@ -36,6 +36,16 @@ Compressed Formats
+>        - MPEG multiplexed stream. The actual format is determined by
+>  	extended control ``V4L2_CID_MPEG_STREAM_TYPE``, see
+>  	:ref:`mpeg-control-id`.
+> +    * .. _V4L2-PIX-FMT-H265:
+> +
+> +      - ``V4L2_PIX_FMT_H265``
 
-On Tue, Mar 15, 2022 at 12:28 PM Javier Martinez Canillas
-<javierm@redhat.com> wrote:
-> On 3/12/22 07:34, YueHaibing wrote:
-> > WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER
-> >   Depends on [n]: HAS_IOMEM [=y] && DRM [=m] && MMU [=n]
-> >   Selected by [m]:
-> >   - DRM_SSD130X [=m] && HAS_IOMEM [=y] && DRM [=m]
-> >
-> > DRM_GEM_SHMEM_HELPER depends on MMU, DRM_SSD130X should also depends on MMU.
-> >
-> > Fixes: a61732e80867 ("drm: Add driver for Solomon SSD130x OLED displays")
-> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> > ---
->
-> Indeed. All the DRM drivers that select DRM_GEM_SHMEM_HELPER depend on MMU.
+Please name this V4L2_PIX_FMT_HEVC. This has been discussed few years ago,
+related to the staging V4L2_PIX_FMT_HEVC_SLICE format (which is being worke=
+d on
+to be taken out of staging). HEVC was preferred over H.265, so lets be
+consistent now that decision has been made.
 
-That's very unfortunate. Is there no way around this?
+> +      - 'H265'
+> +      - H.265 Access Unit.
+> +	The decoder expects one Access Unit per buffer.
+> +	The encoder generates one Access Unit per buffer.
+> +	If :ref:`VIDIOC_ENUM_FMT` reports ``V4L2_FMT_FLAG_CONTINUOUS_BYTESTREAM=
+``
+> +	then the decoder has no	requirements since it can parse all the
+> +	information from the raw bytestream.
+>      * .. _V4L2-PIX-FMT-H264:
+> =20
+>        - ``V4L2_PIX_FMT_H264``
+> diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-co=
+re/v4l2-ioctl.c
+> index 96e307fe3aab..aeaeb29307a4 100644
+> --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+> +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+> @@ -1402,6 +1402,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *f=
+mt)
+>  		case V4L2_PIX_FMT_JPEG:		descr =3D "JFIF JPEG"; break;
+>  		case V4L2_PIX_FMT_DV:		descr =3D "1394"; break;
+>  		case V4L2_PIX_FMT_MPEG:		descr =3D "MPEG-1/2/4"; break;
+> +		case V4L2_PIX_FMT_H265:		descr =3D "H.265"; break;
+>  		case V4L2_PIX_FMT_H264:		descr =3D "H.264"; break;
+>  		case V4L2_PIX_FMT_H264_NO_SC:	descr =3D "H.264 (No Start Codes)"; brea=
+k;
+>  		case V4L2_PIX_FMT_H264_MVC:	descr =3D "H.264 MVC"; break;
+> diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev=
+2.h
+> index 3768a0a80830..636e4236bfb8 100644
+> --- a/include/uapi/linux/videodev2.h
+> +++ b/include/uapi/linux/videodev2.h
+> @@ -691,6 +691,7 @@ struct v4l2_pix_format {
+>  #define V4L2_PIX_FMT_JPEG     v4l2_fourcc('J', 'P', 'E', 'G') /* JFIF JP=
+EG     */
+>  #define V4L2_PIX_FMT_DV       v4l2_fourcc('d', 'v', 's', 'd') /* 1394   =
+       */
+>  #define V4L2_PIX_FMT_MPEG     v4l2_fourcc('M', 'P', 'E', 'G') /* MPEG-1/=
+2/4 Multiplexed */
+> +#define V4L2_PIX_FMT_H265     v4l2_fourcc('H', '2', '6', '5') /* H265 wi=
+th start codes */
+>  #define V4L2_PIX_FMT_H264     v4l2_fourcc('H', '2', '6', '4') /* H264 wi=
+th start codes */
+>  #define V4L2_PIX_FMT_H264_NO_SC v4l2_fourcc('A', 'V', 'C', '1') /* H264 =
+without start codes */
+>  #define V4L2_PIX_FMT_H264_MVC v4l2_fourcc('M', '2', '6', '4') /* H264 MV=
+C */
 
-Else fbdev can never be deprecated in favor of DRM.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
