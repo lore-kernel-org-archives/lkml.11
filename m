@@ -2,147 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E813AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:32:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE67C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345624AbiDKLeR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:34:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46966 "EHLO
+        id S243115AbiDKLeo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 07:34:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345296AbiDKLeL (ORCPT
+        with ESMTP id S237928AbiDKLek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:34:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF9F64553D
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:31:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649676715;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hB2hBk95GTkWXMWBYfLe3bO1rW/niBCYyxXv9FcMLps=;
-        b=AAD615L5JqjNl8Fc+orqzaUyYYkimfhgQ3aGDAh+fqCB2bgAKhYEMyGhJe0IpvFJ89W8VD
-        IRBsQ2JYT+bgmIusaGAsv25/3IJNTbbXsV2m5pF7BeZ+/z3i86/LOjPJ8zhLigDdaWYMyq
-        aOZMkjQRks+9YW7t+NyJ3WBdLbRaHiM=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-609-NgLDP6c0PvSrLA860nrGCA-1; Mon, 11 Apr 2022 07:31:54 -0400
-X-MC-Unique: NgLDP6c0PvSrLA860nrGCA-1
-Received: by mail-ed1-f70.google.com with SMTP id cy25-20020a0564021c9900b0041d84fd5d8fso660790edb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:31:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=hB2hBk95GTkWXMWBYfLe3bO1rW/niBCYyxXv9FcMLps=;
-        b=mJJMgZ1yARMupzF/uyZTa1aXtIlChXDD3au1V3YvOZDJO+W6IpuAHDn98pH9FgPv4G
-         YkPNoTbnU/dPWlQT0OIm3WjAy9Gick6QF8nVvSe0YZQB5z1eN4JDJZqHRD5HUHgvzASG
-         dqEQIjgsTz0EO4XORIwsxuQLa9d7fC8I4RoiHWC8CElVGdSLQMamtfzwoSrKxx15Fmp6
-         lxWKMsrGJxpk+FaAgWHTK815IxQTxiplB9TDxmcMrUL6apM27gf+a4f26x61L14wy6EP
-         VRYN/2tI8VljT3Dk4Rpx6rn0I+yvITrcNLxjTDcvZiGYM5f7CAzhXuQC3kBKWfIl5tlc
-         dVDQ==
-X-Gm-Message-State: AOAM531SDcYlC3P8dmq/J6cM63X796uOPluKShqud62qQYi77G/iBa/V
-        yGV3rxjmlK/OcmVBAZhGNFs/j+iztnpfwq92+6ksNxWLcyyoX6TezrIU3S8z73PQPvyOPNxaQVC
-        ZURQqmu7FGUnDxnWKSHK6YPYhSJzL9DNE79kz0/AmdFV/sdBaHF2gE/YeX8lfb4na7uyEhzuok1
-        sp
-X-Received: by 2002:aa7:c948:0:b0:413:2bed:e82e with SMTP id h8-20020aa7c948000000b004132bede82emr32743220edt.394.1649676713536;
-        Mon, 11 Apr 2022 04:31:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzRSkg+D2Qohm3XJcdcxQKbivWModYJTLdUFZ1km//AwjiyajbUyfLCHY00UUBkuk9sIdVnVw==
-X-Received: by 2002:aa7:c948:0:b0:413:2bed:e82e with SMTP id h8-20020aa7c948000000b004132bede82emr32743200edt.394.1649676713338;
-        Mon, 11 Apr 2022 04:31:53 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id z11-20020a50e68b000000b00412ec8b2180sm14959305edm.90.2022.04.11.04.31.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 04:31:52 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 03/31] KVM: x86: hyper-v: Handle
- HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST{,EX} calls gently
-In-Reply-To: <Yk8i+A3E9/JL96A2@google.com>
-References: <20220407155645.940890-1-vkuznets@redhat.com>
- <20220407155645.940890-4-vkuznets@redhat.com>
- <Yk8i+A3E9/JL96A2@google.com>
-Date:   Mon, 11 Apr 2022 13:31:51 +0200
-Message-ID: <87a6cr7t5k.fsf@redhat.com>
+        Mon, 11 Apr 2022 07:34:40 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A744550F;
+        Mon, 11 Apr 2022 04:32:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649676747; x=1681212747;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=TYy9NxpTkSA66TQfkmpTqBo09yMyp2M0WmZn0CW2F1A=;
+  b=kQ+YQsCg6G/4xCsXFjzLezWgd2rQavHB+BeNX4WZk5QEKds1Fr/ROoJX
+   Y4kqL7Yi8t5j+8mFeHlsaJGmEasqFHZ7Dzv35p/XvFKCt2TbaCck05BUU
+   BG1zL/T/rbI8WWarGTE+5h+WKQld/bwJLThZ9O4ixzhQBQI+2vC4QfBn1
+   jjzADhXwt/6h1oIat1f7QJEN0wxUKXHhhp9DsC31qHonWeoSw9IAiUWt6
+   y6th+uM/bFhQ13rY57IA+iFApzc1yE4d13Rqu4JDBRSJ1cH7ZbKBgcaqa
+   sNu9Gui3RrkSdElcC5EMifGkM79BT7qvViLZzzJduuaypQJuGs/RV48bq
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="259689278"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="259689278"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:32:26 -0700
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="589846699"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:32:24 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ndsDt-001C3i-1e;
+        Mon, 11 Apr 2022 14:28:45 +0300
+Date:   Mon, 11 Apr 2022 14:28:44 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Gilles Buloz <gilles.buloz@kontron.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH v3 5/5] tty: Use flow-control char function on closing
+ path
+Message-ID: <YlQQ7MYBiK98n5XK@smile.fi.intel.com>
+References: <20220411094859.10894-1-ilpo.jarvinen@linux.intel.com>
+ <20220411094859.10894-6-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220411094859.10894-6-ilpo.jarvinen@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
+On Mon, Apr 11, 2022 at 12:48:59PM +0300, Ilpo Järvinen wrote:
+> Use n_tty_receive_char_flow_ctrl also on the closing path. This makes
+> the code cleaner and consistent.
+> 
+> However, there a small change of regression!
+> 
+> The earlier closing path has a small difference compared with the
+> normal receive path. If START_CHAR and STOP_CHAR are equal, their
+> precedence is different depending on which path a character is
+> processed. I don't know whether this difference was intentional or
+> not, and if equal START_CHAR and STOP_CHAR is actually used anywhere.
+> But it feels not so useful corner case.
+> 
+> While this change would logically belong to those earlier changes,
+> having a separate patch for this is useful. If this regresses, bisect
+> can pinpoint this change rather than the large patch. Also, this
+> change is not necessary to minimal fix for the issue addressed in
+> the previous patch.
 
-> On Thu, Apr 07, 2022, Vitaly Kuznetsov wrote:
->> @@ -1840,15 +1891,47 @@ void kvm_hv_vcpu_flush_tlb(struct kvm_vcpu *vcpu)
->>  {
->>  	struct kvm_vcpu_hv_tlbflush_ring *tlb_flush_ring;
->>  	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
->> -
->> -	kvm_vcpu_flush_tlb_guest(vcpu);
->> -
->> -	if (!hv_vcpu)
->> +	struct kvm_vcpu_hv_tlbflush_entry *entry;
->> +	int read_idx, write_idx;
->> +	u64 address;
->> +	u32 count;
->> +	int i, j;
->> +
->> +	if (!tdp_enabled || !hv_vcpu) {
->> +		kvm_vcpu_flush_tlb_guest(vcpu);
->>  		return;
->> +	}
->>  
->>  	tlb_flush_ring = &hv_vcpu->tlb_flush_ring;
->> +	read_idx = READ_ONCE(tlb_flush_ring->read_idx);
->> +	write_idx = READ_ONCE(tlb_flush_ring->write_idx);
->> +
->> +	/* Pairs with smp_wmb() in hv_tlb_flush_ring_enqueue() */
->> +	smp_rmb();
->>  
->> -	tlb_flush_ring->read_idx = tlb_flush_ring->write_idx;
->> +	for (i = read_idx; i != write_idx; i = (i + 1) % KVM_HV_TLB_FLUSH_RING_SIZE) {
->> +		entry = &tlb_flush_ring->entries[i];
->> +
->> +		if (entry->flush_all)
->> +			goto out_flush_all;
->> +
->> +		/*
->> +		 * Lower 12 bits of 'address' encode the number of additional
->> +		 * pages to flush.
->> +		 */
->> +		address = entry->addr & PAGE_MASK;
->> +		count = (entry->addr & ~PAGE_MASK) + 1;
->> +		for (j = 0; j < count; j++)
->> +			static_call(kvm_x86_flush_tlb_gva)(vcpu, address + j * PAGE_SIZE);
->> +	}
->> +	++vcpu->stat.tlb_flush;
->> +	goto out_empty_ring;
->> +
->> +out_flush_all:
->> +	kvm_vcpu_flush_tlb_guest(vcpu);
->> +
->> +out_empty_ring:
->> +	tlb_flush_ring->read_idx = write_idx;
->
-> Does this need WRITE_ONCE?  My usual "I suck at memory ordering" disclaimer applies.
->
+This is nice, if it flies!
+FWIW,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Same here) I *think* we're fine for 'read_idx' as it shouldn't matter at
-which point in this function 'tlb_flush_ring->read_idx' gets modified
-(relative to other things, e.g. actual TLB flushes) and there's no
-concurency as we only have one reader (the vCPU which needs its TLB
-flushed). On the other hand, I'm not against adding WRITE_ONCE() here
-even if just to aid an unprepared reader (thinking myself couple years
-in the future).
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/n_tty.c | 13 ++++---------
+>  1 file changed, 4 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+> index fede29ed8daf..e6f47858f98f 100644
+> --- a/drivers/tty/n_tty.c
+> +++ b/drivers/tty/n_tty.c
+> @@ -1414,15 +1414,10 @@ static void n_tty_receive_char_closing(struct tty_struct *tty, unsigned char c,
+>  		c = tolower(c);
+>  
+>  	if (I_IXON(tty)) {
+> -		if (c == STOP_CHAR(tty)) {
+> -			if (!lookahead_done)
+> -				stop_tty(tty);
+> -		} else if (c == START_CHAR(tty) && lookahead_done) {
+> -			return;
+> -		} else if (c == START_CHAR(tty) ||
+> -			 (tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
+> -			  c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
+> -			  c != SUSP_CHAR(tty))) {
+> +		if (!n_tty_receive_char_flow_ctrl(tty, c, lookahead_done) &&
+> +		    tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
+> +		    c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
+> +		    c != SUSP_CHAR(tty)) {
+>  			start_tty(tty);
+>  			process_echoes(tty);
+>  		}
+> -- 
+> 2.30.2
+> 
 
 -- 
-Vitaly
+With Best Regards,
+Andy Shevchenko
+
 
