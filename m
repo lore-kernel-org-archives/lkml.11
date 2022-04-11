@@ -2,113 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93525C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:27:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5447DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347894AbiDKP3L (ORCPT
+        id S1343634AbiDKPba (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58498 "EHLO
+        Mon, 11 Apr 2022 11:31:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348001AbiDKP2i (ORCPT
+        with ESMTP id S231477AbiDKPb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:28:38 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566D53D1CE;
-        Mon, 11 Apr 2022 08:26:23 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id v2so9879344wrv.6;
-        Mon, 11 Apr 2022 08:26:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RWQkTK3rSopa+8qydH4cKynBwojuwyz5cLnIhJAViHI=;
-        b=GRiTgBcRca6sECMacftvFpl+a0/eMYsWuTLi5kdaEw2MYVFiv/5dqE79gmrDQKHwDj
-         58ekxBYj4TauMYafu44BJOZgNuo5mVwdSkSMSFyCSsU9Wyu4SyXWHtCuKcLVFp16FKB7
-         D5cMqscqt2nHnXo77ZDFytCC9+fnpBpa90B5BGXEMhClQ+syz3b3P80bRbCdW8D8Di5t
-         YeotdxshhBo7GP4D1bzzUNA4IAYPTAO/RXFm8cL+eFsn/008Q/KWXMeqpm0f7y593NM+
-         CNhQsNbee7+21aSpHWz/ycVM3JETUX09vnxZvEQqsI/4zpebhFsy1qu3ecPyfS3NI9C8
-         DqAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RWQkTK3rSopa+8qydH4cKynBwojuwyz5cLnIhJAViHI=;
-        b=HiGsVafaDCAladdQIpg6pGMhDwcZ04OLTr/oBbB7o+1/dFuhIryv7rat4n0EfyLwrC
-         q42ylD28G2pOeIXARWvMHjskf54pTk8KCnDAxn3uh24HI0f/b4+8gcsj5hxSuUYgdKuw
-         Vp/nlJ1oo8XtIHFROWCJRpAE67Za+fKycA7BsauZQ/fUgt8Mrazh1BggrukJ0CAfEXvH
-         rHn9wXLv0XALuD0h1dHZ+X53jARZDfou/+9VJQuJ/tSIV7fUxfK7aYA7qqNhxwXc0loR
-         0g48xuJ/he/CVDi2UJteGGJOfzYjEnLxcZih/cLcdnBdXwhxNxahA9gM9cB1s9sMnRDw
-         PwwQ==
-X-Gm-Message-State: AOAM531mt9iPwiWerhv17O2i0O1t7Fn707kOZZ9UjY0yMxJCySS81PIy
-        ZTab/AYcWV2CV6hNEtx6xAg=
-X-Google-Smtp-Source: ABdhPJwKM1YG/JgnOOVdHFFtRjVMNl3v2yETrecwEBgXJy9DyzKjATELxoXpvLb+SDzu5iGVkC3UJA==
-X-Received: by 2002:a5d:588b:0:b0:204:1c1a:965d with SMTP id n11-20020a5d588b000000b002041c1a965dmr25246909wrf.669.1649690781695;
-        Mon, 11 Apr 2022 08:26:21 -0700 (PDT)
-Received: from kista.localnet (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
-        by smtp.gmail.com with ESMTPSA id c8-20020a056000184800b002040e925afasm31421816wri.59.2022.04.11.08.26.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 08:26:21 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <mripard@kernel.org>,
-        Samuel Holland <samuel@sholland.org>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH] dt-bindings: clock: Add compatible for D1 DE2 clocks
-Date:   Mon, 11 Apr 2022 17:26:19 +0200
-Message-ID: <1811990.tdWV9SEqCh@kista>
-In-Reply-To: <20220411044002.37579-1-samuel@sholland.org>
-References: <20220411044002.37579-1-samuel@sholland.org>
+        Mon, 11 Apr 2022 11:31:26 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C581164E8;
+        Mon, 11 Apr 2022 08:29:10 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id 51D3D1F41FB3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649690949;
+        bh=K+UrxZzlRRf172u4oF81TTba8jEf4wzm+exzEnr8SZw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=WJSTsAGKjt0dI/Ht1XH1gscA0EhqfxLEhJL9JD3A6F5q2RlMNxcPaKVnMZPwIVXYz
+         rapcrpRHBOAEHBi4KJJWgQxtLkzl04opDyNgc3WxUi5Hn3AZIJeWGT8ySdvxPPczwf
+         R5OIYtwcHH4pXdtXdxQgnAkMZm7P5x2P5RtxLl5kt4eMHuZrqd54A64/D9lKmE8hfL
+         7Ai3SxpY602oZOntT3/wRD6Lu7be7qjy5lnt10FMuTFjtspJsd/ZpJhlxAYzE+XXjD
+         9Ifq9qrPLOqrrmM/eE7YJJv4kjz1TWPDl58mh0uqRUFXShYdbXAKlvwElUISibf3ZG
+         JdDVZoXG1qhNg==
+Message-ID: <57825f4a-8cfa-ef00-6462-fea37cd4d7be@collabora.com>
+Date:   Mon, 11 Apr 2022 18:29:05 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [Patch v6 3/4] dt-bindings: memory: Update reg maxitems for
+ tegra186
+Content-Language: en-US
+To:     Ashish Mhetre <amhetre@nvidia.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        krzysztof.kozlowski@linaro.org, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     vdumpa@nvidia.com, Snikam@nvidia.com
+References: <20220406052459.10438-1-amhetre@nvidia.com>
+ <20220406052459.10438-4-amhetre@nvidia.com>
+ <3e044f9e-3200-bb26-897d-1977e3825c92@gmail.com>
+ <81686bc4-c580-862b-1c29-51b34e419154@nvidia.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <81686bc4-c580-862b-1c29-51b34e419154@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne ponedeljek, 11. april 2022 ob 06:40:01 CEST je Samuel Holland napisal(a):
-> Allwinner D1 contains a display engine 2.0. Its clock controller
-> matches the layout of the H5 DE2 clocks (2 mixers, no rotation engine,
-> and separate resets), so use that compatible as a fallback.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-
-Best regards,
-Jernej
-
-> ---
-> 
->  .../bindings/clock/allwinner,sun8i-a83t-de2-clk.yaml           | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/clock/allwinner,sun8i-a83t-
-de2-clk.yaml b/Documentation/devicetree/bindings/clock/allwinner,sun8i-a83t-
-de2-clk.yaml
-> index e79eeac5f086..17caf78f0ccf 100644
-> --- a/Documentation/devicetree/bindings/clock/allwinner,sun8i-a83t-de2-
-clk.yaml
-> +++ b/Documentation/devicetree/bindings/clock/allwinner,sun8i-a83t-de2-
-clk.yaml
-> @@ -28,6 +28,9 @@ properties:
->        - items:
->            - const: allwinner,sun8i-r40-de2-clk
->            - const: allwinner,sun8i-h3-de2-clk
-> +      - items:
-> +          - const: allwinner,sun20i-d1-de2-clk
-> +          - const: allwinner,sun50i-h5-de2-clk
->  
->    reg:
->      maxItems: 1
-> -- 
-> 2.35.1
+On 4/11/22 18:02, Ashish Mhetre wrote:
 > 
 > 
+> On 4/10/2022 7:51 PM, Dmitry Osipenko wrote:
+>> External email: Use caution opening links or attachments
+>>
+>>
+>> 06.04.2022 08:24, Ashish Mhetre пишет:
+>>>           memory-controller@2c00000 {
+>>>               compatible = "nvidia,tegra186-mc";
+>>> -            reg = <0x0 0x02c00000 0x0 0xb0000>;
+>>> +            reg = <0x0 0x02c00000 0x0 0x10000>,    /* MC-SID */
+>>> +                  <0x0 0x02c10000 0x0 0x10000>,    /* Broadcast
+>>> channel */
+>>> +                  <0x0 0x02c20000 0x0 0x10000>,    /* MC0 */
+>>> +                  <0x0 0x02c30000 0x0 0x10000>,    /* MC1 */
+>>> +                  <0x0 0x02c40000 0x0 0x10000>,    /* MC2 */
+>>> +                  <0x0 0x02c50000 0x0 0x10000>;    /* MC3 */
+>>> +            reg-names = "mc-sid", "mc-broadcast", "mc0", "mc1",
+>>> "mc2", "mc3";
+>>
+>> The "mc-" prefix feels redundant to me, I'd name the regs like this:
+>>
+>>    "sid", "broadcast", "ch0", "ch1", "ch2", "ch3"
+>>
+>>
+>> You should also add validation of the regs/reg-names to the yaml based
+>> on SoC version. I.e. it's not enough to only bump the maxItems.
+> 
+> Okay, I will add validation of reg-names as following:
+> 
+>   reg-names:
+>     minItems: 0
+>     maxItems: 6
+>     items:
+>       - const: sid
+>       - const: broadcast
+>       - const: ch0
+>       - const: ch1
+>       - const: ch2
+>       - const: ch3
+> 
+> 
+> We will have to keep minItems to 0 in order to make it compatible with
+> old DT, right?
 
-
+Bindings are about the latest DTs. In general older dtbs must be updated
+and you must get error from the schema checker for older DTs. It's only
+drivers that should care about older dtbs.
