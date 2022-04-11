@@ -2,93 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C29F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 01:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18AFFC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 01:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244287AbiDKBm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 21:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42826 "EHLO
+        id S244296AbiDKBnv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 21:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231403AbiDKBmz (ORCPT
+        with ESMTP id S231403AbiDKBnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 21:42:55 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9C2BE25
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 18:40:43 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id a10so822018qvm.8
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 18:40:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/L0IJbKP3lY8e64VY887AJTXuXf2o/pfs3vhcd0kvnE=;
-        b=HhYHV7+QfjbR22YueWQ1hQZtsxTdvw/eZ6GfITrRKFrLEeACNJgbCR4+7DYTSzJBe1
-         U4WPtA6Act49/sbSLA6NfesOygapuDKRVR1xbnvCRADDdlbIYOh8MOdgnCpYdR6W5giX
-         t0gQyzcnnyVbbTfDPZCG0GgQ+HAxUXQRyE6R8y+Js/t7HiS2RoBzcRHnsJnYEqTrZJpT
-         BAO7zUXZHyUcJdiUfwDLHMbMeLKEnfYaIXZMybPWsfz64AiY8UtyM2/AqSn996bCc0qL
-         HzDY05oRMyG6lb0XQyrdHswhtqcycGgFTkETY50WEvXAU4YNvd7hrfg6oS6JzG+UIK57
-         tOMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/L0IJbKP3lY8e64VY887AJTXuXf2o/pfs3vhcd0kvnE=;
-        b=Ai9vDiWrlay0Z87t1mwV4sDTlz0SxNQVxIlp7spw5x+nUxhdjO0BV97RuBax5/Ka6A
-         RRAsIhDSvVbDEqSg6VCiK/jlKQ8sKfPFdPXZXmlz4s6+KFQ3BIEzxcM+vVyweG6iSjso
-         jPVOA2TOlCDgEqWfAa1k6EiQiZLVtCR/5qCGo8hriZTu/jbjxvwDrxuZmteY6NKoeewU
-         J+Knc9hV6h8kCPmwsvEqx5kq/zq9iUOmdN1cinGt5nnMHNw8DQG6c2He4/ubnTAIC8Xd
-         qFQeoDDfDOfRJdyaYMrdXV11KsJmUvKjWFw6AnXvvpnQ/OpwIzMSQv76LVmU666XR4Aa
-         U+KA==
-X-Gm-Message-State: AOAM530UHeuGbjJEMhtP4dYLHEht9GtzEYc7fFms2l7zNMJGPn08p+GD
-        102AbdWD2w7ObIYLIhklwcPT7Wn2mfM=
-X-Google-Smtp-Source: ABdhPJyCH0ppaYsNBhewXEFOiq5v2TU2uFGojChUWvu5CZozFizhuWfhmnoqp1oR3PhffwrPZMKz0Q==
-X-Received: by 2002:a05:6214:5185:b0:444:38ef:5942 with SMTP id kl5-20020a056214518500b0044438ef5942mr6086252qvb.42.1649641242598;
-        Sun, 10 Apr 2022 18:40:42 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id k20-20020a05622a03d400b002ec16d2694fsm8811022qtx.39.2022.04.10.18.40.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 18:40:42 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     srinivas.kandagatla@linaro.org
-Cc:     linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] nvmem: qfprom: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Mon, 11 Apr 2022 01:40:36 +0000
-Message-Id: <20220411014036.2517274-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Sun, 10 Apr 2022 21:43:50 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05DCBE25;
+        Sun, 10 Apr 2022 18:41:33 -0700 (PDT)
+X-UUID: dad9f89e3eec4f6fb9ac5171430f9a11-20220411
+X-UUID: dad9f89e3eec4f6fb9ac5171430f9a11-20220411
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <zhiyong.tao@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 466542650; Mon, 11 Apr 2022 09:41:27 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 11 Apr 2022 09:41:26 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 11 Apr 2022 09:41:22 +0800
+From:   Zhiyong Tao <zhiyong.tao@mediatek.com>
+To:     <lee.jones@linaro.org>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>, <lgirdwood@gmail.com>,
+        <broonie@kernel.org>, <eddie.huang@mediatek.com>,
+        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <fshao@chromium.org>
+CC:     <srv_heupstream@mediatek.com>, <hui.liu@mediatek.com>,
+        <tinghan.shen@mediatek.com>, <zhiyong.tao@mediatek.com>,
+        <hsin-hsiung.wang@mediatek.com>, <sean.wang@mediatek.com>,
+        <macpaul.lin@mediatek.com>, <wen.su@mediatek.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Subject: [PATCH v1 0/1] Mediatek PMIC patch 
+Date:   Mon, 11 Apr 2022 09:41:20 +0800
+Message-ID: <20220411014121.15015-1-zhiyong.tao@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+This patch fix pwrap document for mt8195.
 
-Using pm_runtime_resume_and_get is more appropriate
-for simplifing code
+Zhiyong.Tao (1):
+  dt-bindings: pwrap: mediatek: fix pwrap document for mt8195
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/nvmem/qfprom.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ .../devicetree/bindings/soc/mediatek/pwrap.txt         | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/nvmem/qfprom.c b/drivers/nvmem/qfprom.c
-index 162132c7dab9..c1e893c8a247 100644
---- a/drivers/nvmem/qfprom.c
-+++ b/drivers/nvmem/qfprom.c
-@@ -217,9 +217,8 @@ static int qfprom_enable_fuse_blowing(const struct qfprom_priv *priv,
- 		goto err_clk_rate_set;
- 	}
- 
--	ret = pm_runtime_get_sync(priv->dev);
-+	ret = pm_runtime_resume_and_get(priv->dev);
- 	if (ret < 0) {
--		pm_runtime_put_noidle(priv->dev);
- 		dev_err(priv->dev, "Failed to enable power-domain\n");
- 		goto err_reg_enable;
- 	}
--- 
-2.25.1
+--
+2.18.0
+
 
