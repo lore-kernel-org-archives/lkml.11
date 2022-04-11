@@ -2,120 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E719DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:51:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93972C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347506AbiDKOxQ (ORCPT
+        id S1347511AbiDKOyV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
+        Mon, 11 Apr 2022 10:54:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347653AbiDKOxJ (ORCPT
+        with ESMTP id S241348AbiDKOyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:53:09 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id EDED838A7
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:50:54 -0700 (PDT)
-Received: (qmail 343252 invoked by uid 1000); 11 Apr 2022 10:50:54 -0400
-Date:   Mon, 11 Apr 2022 10:50:54 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Mathias Nyman <mathias.nyman@linux.intel.com>
-Cc:     Evan Green <evgreen@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Rajat Jain <rajatja@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Youngjin Jang <yj84.jang@samsung.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-usb@vger.kernel.org
-Subject: Re: [PATCH] USB: hcd-pci: Fully suspend across freeze/thaw cycle
-Message-ID: <YlRATrMxRWt9gVqt@rowland.harvard.edu>
-References: <20220407115918.1.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid>
- <YlBGvFFSp/R2CBmh@rowland.harvard.edu>
- <CAE=gft7Zi9tpJ74Tf2iqPRbwJkmSLiKJt-WhwD+h-DxQh75D6g@mail.gmail.com>
- <YlDoSY19HYNJGI50@rowland.harvard.edu>
- <022a50ac-7866-2140-1b40-776255f3a036@linux.intel.com>
+        Mon, 11 Apr 2022 10:54:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4905E1B9;
+        Mon, 11 Apr 2022 07:52:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3261B81647;
+        Mon, 11 Apr 2022 14:52:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5CABC385A9;
+        Mon, 11 Apr 2022 14:52:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649688722;
+        bh=9PlZ+Nvnf9pX/GAkoaPUAxYmAa9bWiviBOne6kisTGY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DnZHOxmidU9neSWd4X7QEuMwWksP0TzWset4i/HgYyXKgpEmbfAVqKf2gvocnowZl
+         gwVbEgpMdT6taWEdNnhHnqPJw9Y1WyzVW05fXY7C9d19lIAvnPXA9QbmUyNXM7zu7a
+         84+H0Nxa46OXiUd+RWj8+/M8Sg9MJijocAtVNdLgjBW3LYf8k9S+w497R/BRv1cyyy
+         cuLVLm3uLw2Bsl9o+5xL0neM5KzG1nQsYCXverZYA7mNxwRsJlx9N4ZKQgrBejJVZm
+         p9GsCBIKP0S3Drl0XWvIZ0UiGMzPrNLl8TddaMEszaYtNN8RV3uCshSGcA93pzGeaK
+         lsCaq9bEq5wdQ==
+From:   guoren@kernel.org
+To:     guoren@kernel.org, arnd@arndb.de, mark.rutland@arm.com
+Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-csky@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
+Subject: [PATCH V2 0/2] csky: Optimize with acquire & release for atomic & cmpxchg
+Date:   Mon, 11 Apr 2022 22:51:44 +0800
+Message-Id: <20220411145146.920314-1-guoren@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <022a50ac-7866-2140-1b40-776255f3a036@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 01:43:15PM +0300, Mathias Nyman wrote:
-> Hi
-> 
-> On 9.4.2022 4.58, Alan Stern wrote:
-> >>> So during freeze, wakeups should be disabled on root hubs.  Currently I
-> >>> believe we don't do this; if a root hub was already runtime suspended when
-> >>> asked to go into freeze, its wakeup setting will remain unchanged.  _That_
-> 
-> In xHCI case freeze will suspend the roothub and make sure all connected devices
-> are in suspended U3 state, but it won't prevent interrupts.
-> 
-> And yes, my understanding is also that if devices were runtime suspended with wake
-> enabled before freeze, then devices can can initiate resume any time in the first
-> stages of hibernate (freeze-thaw), causing an interrupt.
+From: Guo Ren <guoren@linux.alibaba.com>
 
-Yeah.  I think we need to change that.
+Optimize arch_xchg|cmpxchg|cmpxchg_local with ASM acquire|release
+instructions instead of previous C based.
 
-> We can reduce interrupts by disabling device wake in freeze, but any port change
-> can still cause interrupts.
+The generic atomic.h used cmpxchg to implement the atomic
+operations, it will cause daul loop to reduce the forward
+guarantee. The patch implement csky custom atomic operations with
+ldex/stex instructions for the best performance.
 
-Are you sure about this?  Disabling wakeup for the root-hub device is 
-supposed to prevent interrupts from being generated when a port-change 
-event happens.
+Important reference comment by Rutland:
+8e86f0b409a4 ("arm64: atomics: fix use of acquire + release for
+full barrier semantics")
 
-> >> I think xhci may still find reasons to generate interrupts even if all
-> >> of its root hub ports are suspended without wake events. For example,
-> >> won't Port Status Change Events still come in if a device is unplugged
-> >> or overcurrents in between freeze() and thaw()?
-> 
-> Yes, as long as host is running, and host is running between freeze and thaw. 
+Changes in V2:
+ - Fixup use of acquire + release for barrier semantics by Rutland.
 
-It's okay for the events to come in, but if wakeup is disabled on the 
-root hub then the events should not cause an interrupt request.
+Guo Ren (2):
+  csky: cmpxchg: Optimize with acquire & release
+  csky: atomic: Add custom atomic.h implementation
 
-> > I'm not an expert on xHCI or xhci-hcd.  For that, we should ask the xhci-hcd 
-> > maintainer (CC'ed).  In fact, he should have been CC'ed on the original 
-> > patch since it was meant to fix a problem involving xHCI controllers.
-> > 
-> > With EHCI, for example, if a port status change event occurs while the root 
-> > hub is suspended with wakeups disabled, no interrupt request will be 
-> > generated because the port-specific WKOC_E, WKDSCNNT_E, and WKCNNT_E (Wake 
-> > on Over-Current Enable, Wake on Disconnect Enable, and Wake on Connect 
-> > Enable) bits are turned off.  In effect, the port-status change events can 
-> > occur but they aren't treated as wakeup events.
-> 
-> The port-specific wake flags in xHCI only affects interrupt and wake generation
-> for a suspended host. In the freeze() to thaw() stage host is running so flags
-> don't have any effect 
+ arch/csky/include/asm/atomic.h  | 130 ++++++++++++++++++++++++++++++++
+ arch/csky/include/asm/barrier.h |   8 +-
+ arch/csky/include/asm/cmpxchg.h |  61 +++++++++++++--
+ 3 files changed, 190 insertions(+), 9 deletions(-)
+ create mode 100644 arch/csky/include/asm/atomic.h
 
-Is it possible to prevent xHCI from generating an interrupt request if a 
-port change occurs on the root hub while the root hub is suspended but 
-the controller is running?
+-- 
+2.25.1
 
-For example, what would happen if the user unplugs a device right in the 
-middle of the freeze transition, after the root hub has been frozen but 
-before the controller is frozen?  We don't want such an unplug event to 
-prevent the system from going into hibernation -- especially if the root 
-hub was not enabled for wakeup.
-
-(If the root hub _is_ enabled for wakeup then it's questionable.  
-Unplugging a device would be a wakeup event, so you could easily argue 
-that it _should_ prevent the system from going into hibernation.  After 
-all, if the unplug happened a few milliseconds later, after the system 
-had fully gone into hibernation, then it would cause the system to wake 
-up.)
-
-> Would it make sense prevent xHCI interrupt generation in the host
-> freeze() stage, clearing the xHCI EINT bit in addition to calling 
-> check_roothub_suspend()?
-> Then enable it back in thaw()
-
-That won't fully eliminate the problem mentioned in the preceding 
-paragraphs, although I guess it would help somewhat.
-
-Alan Stern
