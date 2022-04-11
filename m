@@ -2,141 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02890C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 21:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA3DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 21:15:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350140AbiDKVQl (ORCPT
+        id S1350156AbiDKVRj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 17:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
+        Mon, 11 Apr 2022 17:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350153AbiDKVQc (ORCPT
+        with ESMTP id S237746AbiDKVRf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 17:16:32 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59BA3DFD1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:14:17 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id s4so12239354qkh.0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:14:17 -0700 (PDT)
+        Mon, 11 Apr 2022 17:17:35 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B0215833
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:15:20 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2ebf4b91212so82299017b3.8
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:15:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=pkqd/GLpbqG7LAJ4m2LQWbg8yZe6P+EQh4+ijIpHwnY=;
-        b=OO+sNYffcThi1xuROkKjBvJC05pcnrdx9WCnKGlHC58OIFg0RJeLekSfy1X5KM4QNk
-         bjwKEyighYrUdxNUKxrkvNYNYWPxxatIbz2q+L40irGMA0JDZMD/Ixs04jHpp+vhPOKv
-         QI2RRomlpipb3L+lAycz6Op2Ql1UfTXHVjLfzN23LO7fD+CpaHgUb6YBg46eFtTm4MnU
-         MgJn8UytsHLcKOoUK7Ia5lonrpbyMk68bk49IYduea0dMG8D6dQsJvbUOF7q18bVdbMA
-         w4/tjBahZ9KkqYX1lY7BibX+7ZwN1IKzuJc6zfhXrGVMlmCUFNrSfNOePO2382E0ryll
-         FNIA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BK+a2hyolOZzz96GWzJLTVp92WPHUi38p0fzqvqUHN4=;
+        b=PswKfha9pFPt+kcJK344DtAAoNOhl+xIJ0mO3pQcSfLHCz3nZ8T9PhbWPLUyTx6YkF
+         pKERuzPrBpHBwoZJEcataq7Je1K8gDU/YiN/sIe1127tQmOhIW+u7TvmImH9Cg8XAlvZ
+         bigp/kZrtiX/j6bXJ/ISLwfTgmpLhPM9/U+Zk01xQ5G8IbBYaESPOhyrieLSUyg0lKou
+         WL6Vh2MTND6sZMdXRUyann4AWjg99ZjUbAFm8NtcfxpknuYmocoAqeaeOBWlq75exghv
+         EI/auZTmQr1iCwcDBzpMYH9swCYNIENGJObbo7OOV+e/r+xTgsLnLgv3utzFX0pKRtFm
+         +Vog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=pkqd/GLpbqG7LAJ4m2LQWbg8yZe6P+EQh4+ijIpHwnY=;
-        b=1DDcaVNn4Ns/rSIeW+59xRCT3AAL5TfdwbyrCCBiFpr1WrK+PDhILe+ut/xypyr9g2
-         wcKiTj0CT6Jt2K4ivYEJ4ByH43/sCF70YkZB1Bcyk9BEivhfCt5qAzKT/Cowi7bVY5Ku
-         8PnHrHD4AAiJQ+aRFBgRh8y1lWjwmyKvPiqC7JFiLFigktBpGkNb91pJuqS3PchdWyYG
-         Lu+4lDqlNpGyO9xMbgFx2jQCPm+Hg8Wk/tdpws6CxYDy84wie/xt17QLu6LyMOXH1LuR
-         PWi1uo3FqmgyAQHpnG8W8DROLtKCeILAof9rVBdieV21hUOnsrXzEmH4A2aNwL/96NIw
-         QtJQ==
-X-Gm-Message-State: AOAM533bFKW0kPiPZxtowHODnuQi+GPg22fXjeGDmaojuOjh/cNUqIDN
-        xesqeTtsI2G456sRtC3m0XD0Z5mPGIBN5hya
-X-Google-Smtp-Source: ABdhPJyn7F36KNFwMXSCnqIDUv0dsKQ0NTeXHJoevaRzT0RVRooVRLQYT1yzOqDcZvA56oJwefUpdg==
-X-Received: by 2002:a05:620a:1a99:b0:680:f33c:dbd3 with SMTP id bl25-20020a05620a1a9900b00680f33cdbd3mr970653qkb.17.1649711656365;
-        Mon, 11 Apr 2022 14:14:16 -0700 (PDT)
-Received: from jaehee-ThinkPad-X1-Extreme ([4.34.18.218])
-        by smtp.gmail.com with ESMTPSA id c134-20020ae9ed8c000000b0069bf8f9cfb2sm5123158qkg.118.2022.04.11.14.14.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 14:14:15 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 17:14:11 -0400
-From:   Jaehee Park <jhpark1013@gmail.com>
-To:     Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev,
-        Jaehee Park <jhpark1013@gmail.com>
-Subject: [PATCH] staging: greybus: replace zero-element array with
- flexible-array
-Message-ID: <20220411211411.GA2796005@jaehee-ThinkPad-X1-Extreme>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BK+a2hyolOZzz96GWzJLTVp92WPHUi38p0fzqvqUHN4=;
+        b=vPCAk/LO8mEwYZqtUYgcMg1LnJZHjsFHKCcHNreGjJ9ipRvgtDQGe4TPTFzqeUXpCF
+         vMVVaFy2Az2S3ycK21CR7cMuI+Di4buU++/UFDWwiBFuFoNarSaZE0Pq+DIASE6itlK1
+         vAZBItFcUGj6tUeCtDSs4bodgswP2GEx61YW2aT217MnadurDNGOYSeurSLqPhhuMwKu
+         ylCuXuhxvvlGNNXhAl+K6T5M1ZLUa0PcJzlxzY6KQph/4RKRue5p285NYTy7DjTzKZOP
+         i3GbSpZ4i3yVKenp/avdCwdN/nuDw+WjfE03cvj5Rh8hsbD6jepbDQ/Z69pbW+RWMFjp
+         CLSw==
+X-Gm-Message-State: AOAM531eUNKwJIFpLZPQiRGhjX6kw5JMZ7sV10yv+SVOj4iC2fK+0BqR
+        pfMBds1XRBj0G6ouIAWxIABsP/19dO2i7RKvKb/3/RgQRLWoQw==
+X-Google-Smtp-Source: ABdhPJxxXRNQKSgMIYSybPhYvdP69jmtkDnormm07sSVPDeKxidzDFoexRAtf6OL93weZRoLgGVS7xkrb+Zynf/FvXs=
+X-Received: by 2002:a81:1957:0:b0:2ec:91:c9da with SMTP id 84-20020a811957000000b002ec0091c9damr8755733ywz.254.1649711719549;
+ Mon, 11 Apr 2022 14:15:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220411211015.3091615-1-bgardon@google.com>
+In-Reply-To: <20220411211015.3091615-1-bgardon@google.com>
+From:   Ben Gardon <bgardon@google.com>
+Date:   Mon, 11 Apr 2022 14:15:08 -0700
+Message-ID: <CANgfPd-4xVGyMrPHmgobjSVAY7_p5Kp1dPRggPoCsHxAPh8EVA@mail.gmail.com>
+Subject: Re: [PATCH v4 00/10] KVM: x86: Add a cap to disable NX hugepages on a VM
+To:     LKML <linux-kernel@vger.kernel.org>, kvm <kvm@vger.kernel.org>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Peter Shier <pshier@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Junaid Shahid <junaids@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Mingwei Zhang <mizhang@google.com>,
+        Jing Zhang <jingzhangos@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Zero-length and one-element arrays are deprecated. Flexible-array
-members should be used instead. Flexible-array members are
-recommended because this is the way the kernel expects dynamically
-sized trailing elements to be declared.
-Refer to Documentation/process/deprecated.rst.
+On Mon, Apr 11, 2022 at 2:10 PM Ben Gardon <bgardon@google.com> wrote:
+>
+> Given the high cost of NX hugepages in terms of TLB performance, it may
+> be desirable to disable the mitigation on a per-VM basis. In the case of public
+> cloud providers with many VMs on a single host, some VMs may be more trusted
+> than others. In order to maximize performance on critical VMs, while still
+> providing some protection to the host from iTLB Multihit, allow the mitigation
+> to be selectively disabled.
+>
+> Disabling NX hugepages on a VM is relatively straightforward, but I took this
+> as an opportunity to add some NX hugepages test coverage and clean up selftests
+> infrastructure a bit.
+>
+> This series was tested with the new selftest and the rest of the KVM selftests
+> on an Intel Haswell machine.
+>
+> The following tests failed, but I do not believe that has anything to do with
+> this series:
+>         userspace_io_test
+>         vmx_nested_tsc_scaling_test
+>         vmx_preemption_timer_test
+>
+> Changelog:
+> v1->v2:
+>         Dropped the complicated memslot refactor in favor of Ricardo Koller's
+>         patch with a similar effect.
+>         Incorporated David Dunn's feedback and reviewed by tag: shortened waits
+>         to speed up test.
+> v2->v3:
+>         Incorporated a suggestion from David on how to build the NX huge pages
+>         test.
+>         Fixed a build breakage identified by David.
+>         Dropped the per-vm nx_huge_pages field in favor of simply checking the
+>         global + per-VM disable override.
+>         Documented the new capability
+>         Separated out the commit to test disabling NX huge pages
+>         Removed permission check when checking if the disable NX capability is
+>         supported.
+>         Added test coverage for the permission check.
+> v3->v4:
+>         Collected RB's from Jing and David
+>         Modified stat collection to reduce a memory allocation [David]
+>         Incorporated various improvments to the NX test [David]
+>         Changed the NX disable test to run by default [David]
+>         Removed some now unnecessary commits
+>         Dropped the code to dump KVM stats from the binary stats test, and
+>         factor out parts of the existing test to library functions instead.
+>         [David, Jing, Sean]
+>         Dropped the improvement to a debugging log message as it's no longer
+>         relevant to this series.
+>
+> Ben Gardon (10):
+>   KVM: selftests: Remove dynamic memory allocation for stats header
+>   KVM: selftests: Read binary stats header in lib
+>   KVM: selftests: Read binary stats desc in lib
+>   KVM: selftests: Read binary stat data in lib
+>   KVM: selftests: Add NX huge pages test
+>   KVM: x86/MMU: Factor out updating NX hugepages state for a VM
+>   KVM: x86/MMU: Allow NX huge pages to be disabled on a per-vm basis
+>   KVM: x86: Fix errant brace in KVM capability handling
+>   KVM: x86/MMU: Require reboot permission to disable NX hugepages
+>   KVM: selftests: Test disabling NX hugepages on a VM
 
-Change the zero-length array, buf, in the struct 
-gb_usb_hub_control_response to a flexible array. And add wLength as a 
-member of the struct so that the struct is not a zero-sized struct.
+Paolo, I'm hoping we can get patches 1-5 in relatively quickly, and I
+don't mind merging them first and then iterating on the later commits.
+David Matlack and Mingwei Zhang both have series depending on those
+test commits, so getting them finalized will help move all three of
+our series along.
 
-Issue found by flexible_array coccinelle script.
+David, Mingwei, Sean, when you have time, I'd appreciate your reviews
+on the first five patches in this series.
 
-Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
----
-
-I have a question for the authors: 
-I saw a fixme comment in the hub_control function in usb.c:
-/ FIXME: handle unspecified lengths /
-
-I was wondering why this comment was left there?
-
-In this patch, I'm using this struct:
-
-struct gb_usb_hub_control_response {
-    __le16 wLength;
-    u8 buf[];
-};
-
-And instead of using response_size, I'm doing this:
-
-struct gb_usb_hub_control_response *response;
-And using sizeof(*response) as the input to gb_operation_create.
-
-Would the flexible array address the handling of unspecified lengths 
-issue (in the fixme comment)?
-
-
- drivers/staging/greybus/usb.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/staging/greybus/usb.c b/drivers/staging/greybus/usb.c
-index 8e9d9d59a357..d0b2422401df 100644
---- a/drivers/staging/greybus/usb.c
-+++ b/drivers/staging/greybus/usb.c
-@@ -27,7 +27,8 @@ struct gb_usb_hub_control_request {
- };
- 
- struct gb_usb_hub_control_response {
--	u8 buf[0];
-+	__le16 wLength;
-+	u8 buf[];
- };
- 
- struct gb_usb_device {
-@@ -102,16 +103,14 @@ static int hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue, u16 wIndex,
- 	struct gb_operation *operation;
- 	struct gb_usb_hub_control_request *request;
- 	struct gb_usb_hub_control_response *response;
--	size_t response_size;
- 	int ret;
- 
- 	/* FIXME: handle unspecified lengths */
--	response_size = sizeof(*response) + wLength;
- 
- 	operation = gb_operation_create(dev->connection,
- 					GB_USB_TYPE_HUB_CONTROL,
- 					sizeof(*request),
--					response_size,
-+					sizeof(*response),
- 					GFP_KERNEL);
- 	if (!operation)
- 		return -ENOMEM;
--- 
-2.25.1
-
+>
+>  Documentation/virt/kvm/api.rst                |  13 ++
+>  arch/x86/include/asm/kvm_host.h               |   2 +
+>  arch/x86/kvm/mmu.h                            |  10 +-
+>  arch/x86/kvm/mmu/mmu.c                        |  17 +-
+>  arch/x86/kvm/mmu/spte.c                       |   7 +-
+>  arch/x86/kvm/mmu/spte.h                       |   3 +-
+>  arch/x86/kvm/mmu/tdp_mmu.c                    |   3 +-
+>  arch/x86/kvm/x86.c                            |  17 +-
+>  include/uapi/linux/kvm.h                      |   1 +
+>  tools/testing/selftests/kvm/Makefile          |  10 +
+>  .../selftests/kvm/include/kvm_util_base.h     |  11 +
+>  .../selftests/kvm/kvm_binary_stats_test.c     |  75 +++----
+>  tools/testing/selftests/kvm/lib/kvm_util.c    | 125 ++++++++++-
+>  .../selftests/kvm/x86_64/nx_huge_pages_test.c | 198 ++++++++++++++++++
+>  .../kvm/x86_64/nx_huge_pages_test.sh          |  25 +++
+>  15 files changed, 453 insertions(+), 64 deletions(-)
+>  create mode 100644 tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
+>  create mode 100755 tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
+>
+> --
+> 2.35.1.1178.g4f1659d476-goog
+>
