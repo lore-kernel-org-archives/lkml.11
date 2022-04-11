@@ -2,431 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A17C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A423C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346894AbiDKOFF (ORCPT
+        id S1346902AbiDKOG0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43328 "EHLO
+        Mon, 11 Apr 2022 10:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346855AbiDKOE4 (ORCPT
+        with ESMTP id S1344349AbiDKOGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:04:56 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 016C43205C;
-        Mon, 11 Apr 2022 07:02:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649685762; x=1681221762;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ek89UktAjLzWleHTZx947tfPTU35bCZ9ILBydvOzz9o=;
-  b=Z/bQI1lTbMuYl0WJpWual1rfaM1uNtY9RzNyBzgpfqu9iHNKBqL4pM3N
-   PXQw3HOzpOGgpzsUwS5c6sbttJnR37tzRwsOxxuo++8YkWETVyN/0uY1X
-   qa9YVLsquPFnRlO7pIVo97A6fv+bnfZGNqG/KqNfFX0DSRHgtgNC24iCp
-   4=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 11 Apr 2022 07:02:42 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 07:02:41 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 11 Apr 2022 07:02:40 -0700
-Received: from [10.216.15.65] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+        Mon, 11 Apr 2022 10:06:21 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2083.outbound.protection.outlook.com [40.107.212.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646E5B4D;
+        Mon, 11 Apr 2022 07:04:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nA0C2VA7ipRh/HrYs5MY8qz/ZgVOTrvH1lLwnLRBfUkFmRpCXMVwJybjWmfQ9P9mMfdxoJT0aWvLBcgOq1w/a9B3M/VSbnIlrW5F/pTftI57qU49OvzusRjgCfCLIOab1KX+4BUPUl3/aXEl4hSCSXr4l85Sj19AxMIm8Jrmto03U+xLJEhUBI5P8QrAMapmQdk3qet9ZXIh0jZs2HWzKCgYnMxPpuih7jJtG78Mh5hqLs4bkub5sekiFa/jKWezdwuygY2jyK/mOtR07r59A6VW+I6Josp4ZUu19SP77ZTAci23TbCLng+A07P/eWLDukS9wWYnrspgprx31046Bw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=22+56ZrfnAPSZsJ2Cjo0o63ujteEKjifAhhaWHEZ80w=;
+ b=TnFw9e15KrJBsKSvZBT8eKpFRrlTfsW1QraCGyPr3M+4kZY0SLpB3LndV+70Xrv/T9iOf2w0COJimpqTORzhBisW8LDbfsGH8MW44s8bpqkPyJgCw4Ha2F9O3ygbAKdCFKM4d0hhbTSgl+jnPHSwUZR8p3RRExDzOnBRx19NJSLpCpRrYuwDbJBsixXDgBSm9xjOk5UhOLYoYcwQRilJwcvrnQPMkGvkW6JQFftGKTIDVht4MuYuace//qzYuAqMV64itrWi21svQ4uvP7DmP8TvZxreZX304RhWi05p7YflU6eIRAPyHab5jXT5b9AguLZsPiSsHGjXcwsFjQ63Iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=22+56ZrfnAPSZsJ2Cjo0o63ujteEKjifAhhaWHEZ80w=;
+ b=aHZgyDDsEzIwmidZYkwOg0l0+93Fi0Aqbkwn66l3XCU8gmvGwPDdi0LLRjEsALOnrSrskHuijWyisbOvkr0pPs5xUiiTbeSs3D8XZefIwIgF9wTRgcgyahxFjvQutUbp//63414zx5NQ8JZ4lIenw3YLaH7JYafjDE+y6FSoXyjYgqsMYxPiH/+GbNYNo0NjfB33rGU7dEps2+KHsxuV4zvm59jsaS6mkp/02lqOOPGqAVJirJZHQQPUGnFTnCPNQ1R2rHwrHUkQtrysL6oOOEkFkhZJxVRfAVclj2HN3rLSS65sjsup3c5p0B1aAycv+O5PnMG5pyDnKiGjKAnNUQ==
+Received: from DS7PR03CA0330.namprd03.prod.outlook.com (2603:10b6:8:2b::22) by
+ CY4PR12MB1430.namprd12.prod.outlook.com (2603:10b6:903:3e::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5144.29; Mon, 11 Apr 2022 14:04:01 +0000
+Received: from DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:2b:cafe::28) by DS7PR03CA0330.outlook.office365.com
+ (2603:10b6:8:2b::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29 via Frontend
+ Transport; Mon, 11 Apr 2022 14:04:01 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ DM6NAM11FT057.mail.protection.outlook.com (10.13.172.252) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5144.20 via Frontend Transport; Mon, 11 Apr 2022 14:04:01 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 11 Apr
+ 2022 14:04:00 +0000
+Received: from [172.27.1.57] (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 11 Apr
- 2022 07:02:36 -0700
-Message-ID: <8fea1165-c8b6-6ce2-86dc-82274af8c43d@quicinc.com>
-Date:   Mon, 11 Apr 2022 19:32:33 +0530
+ 2022 07:03:57 -0700
+Message-ID: <92621dc1-5b9d-8e5c-acbf-fff3a0ea0fd8@nvidia.com>
+Date:   Mon, 11 Apr 2022 17:03:55 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v6 1/3] arm64: dts: qcom: sc7280: Add nodes for va tx and
- rx macros and external codecs
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V7 1/1] Intel Sky Lake-E host root ports check.
 Content-Language: en-US
-To:     Matthias Kaehlcke <mka@chromium.org>
-CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <srinivas.kandagatla@linaro.org>, <dianders@chromium.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>,
-        <quic_rohkumar@quicinc.com>
-References: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
- <1649157220-29304-2-git-send-email-quic_srivasam@quicinc.com>
- <Yky2Iwt+tvxvu4/S@google.com>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <Yky2Iwt+tvxvu4/S@google.com>
+To:     Shlomo Pongratz <shlomopongratz@gmail.com>,
+        <linux-pci@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <andrew.maier@eideticom.com>,
+        <logang@deltatee.com>, <bhelgaas@google.com>, <jgg@nvidia.com>,
+        <helgaas@kernel.org>, Shlomo Pongratz <shlomop@pliops.com>
+References: <20220410105213.690-1-shlomop@pliops.com>
+ <20220410105213.690-2-shlomop@pliops.com>
+From:   Maor Gottlieb <maorg@nvidia.com>
+In-Reply-To: <20220410105213.690-2-shlomop@pliops.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ecd38037-4545-4967-c3be-08da1bc4213e
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1430:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1430EB9CA8EE3D8975B275FCDEEA9@CY4PR12MB1430.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fqK3sH0D+fNuTh552VcqBPKC410Q8Q8Zocw+pbR3vPtB102wSVo4qW377NkS4BiUk1NUNhelqUZcECULgZuzAYijLI75nMv+/UAXrT6EdtPNUz0UGmtvTzFASEIMm8ZvQZVrJcUyBCH6G9tVtkhSibKus0Iyuyaz8CczLny8JzecTOaVC9ubQq7qeruv8dJVkEwMnCN+fXPehZ36DR9PoLOucSiPg9PxsmEuTRQDN0Na4wRZg0nFDIQ5mhxGY+mZX0ztqz3i2/ITbopog/TVLghMbz1NIXXw+x8XOZfE7AAaDVj9B4YmrNECbOnSNPE68T2EGZ0FCqzpGVnCL28f4U/7csTH6iGL/1lXC9cmMlaMSrkUEtweou5LtGujuoaXXQnulZhq/hx0108aGfkVdLUEa/qNjbcuG2GFhKMdBw03oEsoW/3toKCXbbNpmtfc5BYStlaCfO6KuFXpzomzlFHRS9RJ2zq0LFHTFtNSwnwyae+ZL3lolVOnhqkUySvazEN72I8A4n5/UTRy2GYYCbT8hHSrNB4UcWeE/XruPnyeaIEHjArLDjjy+oJBLbq2NBs4P1zb8URvAfaTKFD02qaXGTQoq4jC0r+QAvzwCxT5Gj00q96WZEbSTBqiMqg1HbN0iqf4ae3dzCiW37zXSQNbuk9m8oaCl2KOFJwjZF11/CME2O1fvX3ty/9KS/jrUGkFty4PYxrYBC3AVYM06+XExu5AGyqpxxsH1rXIBQkWoKzHcFpGAxejnds/zLCA
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(86362001)(83380400001)(54906003)(110136005)(16576012)(36756003)(40460700003)(2906002)(316002)(508600001)(31696002)(8676002)(81166007)(356005)(4326008)(36860700001)(70206006)(47076005)(70586007)(8936002)(5660300002)(16526019)(186003)(26005)(426003)(336012)(82310400005)(31686004)(2616005)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 14:04:01.0554
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ecd38037-4545-4967-c3be-08da1bc4213e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT057.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1430
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 4/6/2022 3:05 AM, Matthias Kaehlcke wrote:
-Thanks for your time Matthias!!!
-> On Tue, Apr 05, 2022 at 04:43:38PM +0530, Srinivasa Rao Mandadapu wrote:
->> SC7280 has VA, TX and RX macros with SoundWire Controllers to attach with
->> codecs like WCD938x, max98360a using soundwire masters and i2s bus.
->> Add these nodes for sc7280 based platforms audio use case.
->> Add tlmm gpio property in wcd938x node for switching CTIA/OMTP Headset.
->>
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> ---
-> A change log would be helpful for reviewers
-Change log added in cover letter.
->
->>   arch/arm64/boot/dts/qcom/sc7280-crd.dts        |   6 ++
->>   arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi |   8 ++
->>   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi       |  88 ++++++++++++++++++
->>   arch/arm64/boot/dts/qcom/sc7280.dtsi           | 121 +++++++++++++++++++++++++
->>   4 files changed, 223 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
->> index e2efbdd..224a82d 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
->> +++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-> You might want to consider splitting this patch into one that
-> adds the SoC specific bits and one for each board. It's cleaner
-> and might allow to land the SoC specific bits even when the board
-> specific part is still under discussion. It also might make the
-> life easier for folks who want to pick the SoC specific parts,
-> but aren't interested in the board bits (e.g. because they want
-> to support a different board). Just a thought, the split is not
-> strictly necessary.
-Okay. will split accordingly.
->
->> @@ -84,6 +84,12 @@ ap_ts_pen_1v8: &i2c13 {
->>   	pins = "gpio51";
->>   };
->>   
->> +&wcd938x {
->> +	pinctrl-names = "default";
->> +	pinctrl-0 = <&us_euro_select>;
->> +	us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
->> +};
->> +
->>   &tlmm {
->>   	tp_int_odl: tp-int-odl {
->>   		pins = "gpio7";
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
->> index de646d9..c6a04c3 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
->> @@ -20,6 +20,14 @@
->>   #include "sc7280-chrome-common.dtsi"
->>   
->>   / {
->> +	max98360a: audio-codec-0 {
->> +		compatible = "maxim,max98360a";
->> +		pinctrl-names = "default";
->> +		pinctrl-0 = <&amp_en>;
->> +		sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
->> +		#sound-dai-cells = <0>;
->> +	};
->> +
-> This node shouldn't be at top but with the other device nodes, in
-> alphabetical order, i.e. before 'pwmleds'.
+> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+> index 30b1df3c9d2f..187047be83a0 100644
+> --- a/drivers/pci/p2pdma.c
+> +++ b/drivers/pci/p2pdma.c
+> @@ -327,15 +327,19 @@ static const struct pci_p2pdma_whitelist_entry {
+>   
+>   /*
+>    * This lookup function tries to find the PCI device corresponding to a given
+> - * host bridge.
+> + * host bridge or a root port.
+>    *
+>    * It assumes the host bridge device is the first PCI device in the
+> - * bus->devices list and that the devfn is 00.0. These assumptions should hold
+> - * for all the devices in the whitelist above.
+> + * bus->devices list and that the devfn is 00.0. The first assumption should
+> + * hold for all the devices in the whitelist above, however the second
+> + * assumption doesn't always hold for root ports.
+> + * For example for Intel Skylake devices 2030, 2031, 2032 and 2033,
+> + * which are root ports (A, B, C and D respectively).
+> + * So the function checks explicitly that the device is a root port.
+>    *
+> - * This function is equivalent to pci_get_slot(host->bus, 0), however it does
+> - * not take the pci_bus_sem lock seeing __host_bridge_whitelist() must not
+> - * sleep.
+> + * This function is equivalent to pci_get_slot(host->bus, 0) (except for
+> + * the root port test), however it does not take the pci_bus_sem lock seeing
+> + * __host_bridge_whitelist() must not sleep.
+>    *
+>    * For this to be safe, the caller should hold a reference to a device on the
+>    * bridge, which should ensure the host_bridge device will not be freed
+> @@ -350,10 +354,19 @@ static struct pci_dev *pci_host_bridge_dev(struct pci_host_bridge *host)
+>   
+>   	if (!root)
+>   		return NULL;
+> -	if (root->devfn != PCI_DEVFN(0, 0))
+> -		return NULL;
+>   
+> -	return root;
+> +	/* Verify that the device is a host bridge or a root port
+> +	 * It is assumed that host bridges have a 0 devfn, (common practice)
+> +	 * but some of the entries in the whitelist are root ports that can
+> +	 * have any devfn
+> +	 */
+> +	if (root->devfn == PCI_DEVFN(0, 0))
+> +		return root;
+> +
+> +	if (pci_pcie_type(root) == PCI_EXP_TYPE_ROOT_PORT)
+> +		return root;
+> +
+> +	return NULL;
+>   }
+>   
+>   static bool __host_bridge_whitelist(struct pci_host_bridge *host,
 
-Actually we are sorting as per node name. Hence kept it here. As per 
-previous reviewer comments, sorted accordingly.
+Thanks, it also helped our system.
 
-Please suggest better approach.
+Tested-by: Maor Gottlieb <maorg@nvidia.com>
 
->
->>   	chosen {
->>   		stdout-path = "serial0:115200n8";
->>   	};
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> index f912a89..83c76b2 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> @@ -20,6 +20,41 @@
->>   		serial1 = &uart7;
->>   	};
->>   
->> +	max98360a: audio-codec-0 {
->> +		compatible = "maxim,max98360a";
->> +		pinctrl-names = "default";
->> +		pinctrl-0 = <&amp_en>;
->> +		sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
->> +		#sound-dai-cells = <0>;
->> +	};
->> +
->> +	wcd938x: audio-codec-1 {
->> +		compatible = "qcom,wcd9380-codec";
->> +		#sound-dai-cells = <1>;
->> +
->> +		pinctrl-names = "default";
->> +		pinctrl-0 = <&wcd938x_reset_active>, <&wcd938x_reset_sleep>;
->> +		reset-gpios = <&tlmm 83 GPIO_ACTIVE_HIGH>;
->> +
->> +		qcom,rx-device = <&wcd_rx>;
->> +		qcom,tx-device = <&wcd_tx>;
->> +
->> +		vdd-rxtx-supply = <&vreg_l18b_1p8>;
->> +		vdd-io-supply = <&vreg_l18b_1p8>;
->> +		vdd-buck-supply = <&vreg_l17b_1p8>;
->> +		vdd-mic-bias-supply = <&vreg_bob>;
->> +
->> +		qcom,micbias1-microvolt = <1800000>;
->> +		qcom,micbias2-microvolt = <1800000>;
->> +		qcom,micbias3-microvolt = <1800000>;
->> +		qcom,micbias4-microvolt = <1800000>;
->> +
->> +		qcom,mbhc-buttons-vthreshold-microvolt = <75000 150000 237000 500000 500000
->> +							  500000 500000 500000>;
->> +		qcom,mbhc-headset-vthreshold-microvolt = <1700000>;
->> +		qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
->> +	};
->> +
->>   	gpio-keys {
->>   		compatible = "gpio-keys";
->>   		label = "gpio-keys";
->> @@ -373,6 +408,19 @@
->>   	status = "okay";
->>   };
->>   
->> +&rxmacro {
->> +	status = "okay";
->> +};
->> +
->> +&txmacro {
->> +	status = "okay";
->> +};
->> +
->> +&vamacro {
->> +	status = "okay";
->> +	vdd-micb-supply = <&vreg_bob>;
->> +};
->> +
->>   &sdhc_1 {
->>   	status = "okay";
->>   
->> @@ -574,6 +622,24 @@
->>   	drive-strength = <6>;
->>   };
->>   
->> +&swr0 {
->> +	wcd_rx: codec@0,4 {
->> +		compatible = "sdw20217010d00";
->> +		reg = <0 4>;
->> +		#sound-dai-cells = <1>;
->> +		qcom,rx-port-mapping = <1 2 3 4 5>;
->> +	};
->> +};
->> +
->> +&swr1 {
->> +	wcd_tx: codec@0,3 {
->> +		compatible = "sdw20217010d00";
->> +		reg = <0 3>;
->> +		#sound-dai-cells = <1>;
->> +		qcom,tx-port-mapping = <1 2 3 4>;
->> +	};
->> +};
->> +
->>   &tlmm {
->>   	amp_en: amp-en {
->>   		pins = "gpio63";
->> @@ -663,5 +729,27 @@
->>   		function = "gpio";
->>   		bias-pull-down;
->>   	};
->> +
->> +	us_euro_select: us-euro-select {
-> nit: in the schematic this is called 'us_euro_hs_sel'. IMO it's preferable
-> to use the name from the schematic rather than inventing a new one, unless
-> there's a good reason for it.
-Okay. will change accordingly.
->
->> +		pins = "gpio81";
->> +		function = "gpio";
->> +		bias-pull-down;
->> +		drive-strength = <2>;
->> +	};
->> +
->> +	wcd938x_reset_active: wcd938x-reset-active {
-> same as above: the schematic calls this pin 'wcd_reset_n'
->
-> drop the -active suffix
-Okay. will change accordingly.
->
->> +		pins = "gpio83";
->> +		function = "gpio";
->> +		drive-strength = <16>;
-> A value of 16 seems pretty high. Is it really needed?
-Okay. Verified with drive strength 8. will change accordingly.
->
->> +		output-high;
->> +	};
->> +
->> +	wcd938x_reset_sleep: wcd938x-reset-sleep {
->> +		pins = "gpio83";
->> +		function = "gpio";
->> +		drive-strength = <16>;
-> see above
-okay.
->
->> +		bias-disable;
->> +		output-low;
->> +	};
->>   };
->>   
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> index db74fc3..78ec84c 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> @@ -822,6 +822,127 @@
->>   			#power-domain-cells = <1>;
->>   		};
->>   
->> +		rxmacro: codec@3200000 {
-> These node are not at the correct position. They should be sorted by
-> address and hence be inserted between 'lpasscc@3000000' and
-> 'interconnect@3c40000'.
-
-Actually we are sorting as per node(codec) name. Hence kept it here. As 
-per previous reviewer comments, sorted accordingly.
-
-Please suggest better approach.
-
->
->> +			compatible = "qcom,sc7280-lpass-rx-macro";
->> +			reg = <0 0x03200000 0 0x1000>;
->> +
->> +			status = "disabled";
->> +			pinctrl-names = "default";
->> +			pinctrl-0 = <&rx_swr_active>;
->> +
->> +			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
->> +				 <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
->> +				 <&vamacro>;
->> +			clock-names = "mclk", "npl", "fsgen";
->> +
->> +			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
->> +					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
->> +			power-domain-names ="macro", "dcodec";
->> +
->> +			#clock-cells = <0>;
->> +			#sound-dai-cells = <1>;
->> +		};
->> +
->> +		txmacro: codec@3220000 {
->> +			compatible = "qcom,sc7280-lpass-tx-macro";
->> +			reg = <0 0x03220000 0 0x1000>;
->> +
->> +			status = "disabled";
->> +			pinctrl-names = "default";
->> +			pinctrl-0 = <&tx_swr_active>;
->> +
->> +			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
->> +				 <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
->> +				 <&vamacro>;
->> +			clock-names = "mclk", "npl", "fsgen";
->> +
->> +			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
->> +					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
->> +			power-domain-names ="macro", "dcodec";
->> +
->> +			#clock-cells = <0>;
->> +			#sound-dai-cells = <1>;
->> +		};
->> +
->> +		vamacro: codec@3370000 {
->> +			compatible = "qcom,sc7280-lpass-va-macro";
->> +			reg = <0 0x03370000 0 0x1000>;
->> +
->> +			status = "disabled";
->> +			pinctrl-0 = <&dmic01_active>;
->> +			pinctrl-names = "default";
->> +
->> +			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>;
->> +			clock-names = "mclk";
->> +
->> +			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
->> +					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
->> +			power-domain-names ="macro", "dcodec";
->> +
->> +			#clock-cells = <0>;
->> +			#sound-dai-cells = <1>;
->> +		};
->> +
->> +		swr0: soundwire@3210000 {
->> +			compatible = "qcom,soundwire-v1.6.0";
->> +			reg = <0 0x03210000 0 0x2000>;
->> +
->> +			interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
->> +			clocks = <&rxmacro>;
->> +			clock-names = "iface";
->> +
->> +			qcom,din-ports = <0>;
->> +			qcom,dout-ports = <5>;
->> +
->> +			resets = <&lpass_audiocc LPASS_AUDIO_SWR_RX_CGCR>;
->> +			reset-names = "swr_audio_cgcr";
->> +
->> +			qcom,ports-word-length =	/bits/ 8 <0x01 0x07 0x04 0xff 0xff>;
->> +			qcom,ports-sinterval-low =	/bits/ 8 <0x03 0x3f 0x1f 0x03 0x03>;
->> +			qcom,ports-offset1 =		/bits/ 8 <0x00 0x00 0x0b 0x01 0x01>;
->> +			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x0b 0x00 0x00>;
->> +			qcom,ports-lane-control =	/bits/ 8 <0x01 0x00 0x00 0x00 0x00>;
->> +			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0x00 0x01 0xff 0xff>;
->> +			qcom,ports-hstart =		/bits/ 8 <0xff 0x03 0xff 0xff 0xff>;
->> +			qcom,ports-hstop =		/bits/ 8 <0xff 0x06 0xff 0xff 0xff>;
->> +			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff 0xff 0x00>;
->> +
->> +			#sound-dai-cells = <1>;
->> +			#address-cells = <2>;
->> +			#size-cells = <0>;
->> +		};
->> +
->> +		swr1: soundwire@3230000 {
->> +			compatible = "qcom,soundwire-v1.6.0";
->> +			reg = <0 0x03230000 0 0x2000>;
->> +
->> +			interrupts-extended = <&intc GIC_SPI 496 IRQ_TYPE_LEVEL_HIGH>,
->> +					      <&pdc 130 IRQ_TYPE_LEVEL_HIGH>;
->> +			interrupt-names = "swr_master_irq", "swr_wake_irq";
->> +			clocks = <&txmacro>;
->> +			clock-names = "iface";
->> +
->> +			qcom,din-ports = <3>;
->> +			qcom,dout-ports = <0>;
->> +
->> +			resets = <&lpass_audiocc LPASS_AUDIO_SWR_TX_CGCR>;
->> +			reset-names = "swr_audio_cgcr";
->> +
->> +			qcom,ports-sinterval-low =	/bits/ 8 <0x01 0x03 0x03>;
->> +			qcom,ports-offset1 =		/bits/ 8 <0x01 0x00 0x02>;
->> +			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x00>;
->> +			qcom,ports-hstart =		/bits/ 8 <0xff 0xff 0xff>;
->> +			qcom,ports-hstop =		/bits/ 8 <0xff 0xff 0xff>;
->> +			qcom,ports-word-length =	/bits/ 8 <0xff 0x0 0xff>;
-> s/0x0/0x00/
-okay.
->
->> +			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0xff 0xff>;
->> +			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff>;
->> +			qcom,ports-lane-control =	/bits/ 8 <0x00 0x01 0x00>;
->> +			qcom,port-offset = <1>;
->> +
->> +			#sound-dai-cells = <1>;
->> +			#address-cells = <2>;
->> +			#size-cells = <0>;
->> +		};
-> add empty line
-Okay. will remove it.
->
->>   		ipcc: mailbox@408000 {
->>   			compatible = "qcom,sc7280-ipcc", "qcom,ipcc";
->>   			reg = <0 0x00408000 0 0x1000>;
