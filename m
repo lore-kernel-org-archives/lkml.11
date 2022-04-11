@@ -2,124 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C150AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:17:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6746C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347798AbiDKPTM (ORCPT
+        id S1347764AbiDKPTS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
+        Mon, 11 Apr 2022 11:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347729AbiDKPSx (ORCPT
+        with ESMTP id S1347734AbiDKPSx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Apr 2022 11:18:53 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905123204B
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:16:38 -0700 (PDT)
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C88CB1DA
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:16:39 -0700 (PDT)
 X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
 Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 86C6380271F;
+        by relay.mailchannels.net (Postfix) with ESMTP id CB78F1201C0;
         Mon, 11 Apr 2022 15:16:35 +0000 (UTC)
 Received: from pdx1-sub0-mail-a264.dreamhost.com (unknown [127.0.0.6])
         (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 833F480244E;
+        by relay.mailchannels.net (Postfix) with ESMTPA id B7E4E122217;
         Mon, 11 Apr 2022 15:16:33 +0000 (UTC)
 ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1649690193; a=rsa-sha256;
         cv=none;
-        b=pjDYzEQoC7wxatNr4z68ngYNEKdR2E73wUrRJI4MhcKiuB5YgMN+hvUyWsRbosfvZo8ewF
-        +D/8BZtaEZxj+wJpOfrYLmiqOTqby2oiUR/53ui8C1kySqeLbTtCSoNHssipKQ9DHTbvXw
-        oeofk0vvcfjWvZ11L09LA5rmjFBG5aM6NRehb2kJbsNZaGE+jmmY96PrPAZBrJqKfEpNBd
-        OKmt6nPGvywRlGncHyl2v6qzDrRbg99UVDx1fwP3IaXWKsSpyh6XV0lCeTUjaqjs3Dx+tV
-        FN+/pm5kORG4h5yHzo2E1hYj2XYqDLtYiua85IB6K2+OZW/KzN4S+i1CGNLAIQ==
+        b=X4rWZFVBMBfxg8Pn/oaJdQdhYLNjJtHEFSrhh/q73L4EXnnizdhAGmoRcEvImAf74qC5Bl
+        wghtv0TNusA5hgwy1tIZq8dNslUd804sFGkajj55fGozcGT6Mb+baVdWgFVX57kQ6pxZUd
+        mPgWbE/8AJXsQc0gpqEC/Fw4AkgOp+QXUt18h+nTLrAUZQ3/jau06oF6q+03MbHMFqSblt
+        fX9FsGAi0rl6/REijWk+HNpdKUfNqwc8tbbIIHIf/IDzo4wtqZrsOT4KMcAd3EhOITJOHq
+        cbXjcPkOVNY8BWKLiyByq7NNOm4NhBpYYjh9w89ryZJcnjt4wQjankbN4hqJMg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
  d=mailchannels.net;
         s=arc-2022; t=1649690193;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:dkim-signature;
-        bh=u/Daua8zVIDUkH/aA9SNGA5WhmllLNHpY2jDyAUBpVg=;
-        b=6s3LbdtTQbukBVFeOIKreN2p8SLPcByryeRPh1wVZQrVxjx8RKdGXM5ZEuhNIlQN863BfD
-        qUgLKcJOJiWIFPoY7fCfLq0lBSoHNnvIVEXpmCJINPws7/dza3g++NS4H/i6JUo4uYKRr5
-        IgjSvqPfnuxQbYeTw+L7bv/wrYsYUgRncsJCEbwZGNy+RsV7H5vmnW3QgLtocrlx927Cib
-        EpyAnQxFVJ7wtpexZOBVtc+jMYAdpALMkn56vzdXELPgv1H9PDceofuUEoxViaXDQdVhXc
-        a0lEWcUZye1+myjXHARmiIAtz+W6x0II2wUJxi+5uTL3zcFCBlACOU/kAXdwCw==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=glvS6H62LOxTf50dKKy8gsnW9R6qwIoCaN+LjX09TeE=;
+        b=3M+RMLcD/3KPIj4MQ06hrgutOTGoFlP/1jlWUrVtwr955FGkNGZgF7/XYOlTfuoUwGhau6
+        cQ5htMPxEZJfcv+VflxbP6ve/mbLFo7270xmuWxw5lJFQeoYQzww6GzURlk7cwSGSTKBaY
+        ZOlvwhVkPrMETIy9etLHlAl2v5A+6VJBQ51T+FCJcpqs2jkDcjlSkuieNkRdZ4mmE0R7Vy
+        QQZ71OXC7c68p5Dli3xncsSYgZbNUXIweUMvukmjx8+86ozN0rIj3oZFOFi+Oz3eW7nnex
+        Beis4MCAuJCRpo9Vb5om4ICUjfVK9kZI64TwLxnmGPQxrOJkeXTEdmthVHloxA==
 ARC-Authentication-Results: i=1;
-        rspamd-68f9d8f9d5-ttzsm;
+        rspamd-68f9d8f9d5-89cjg;
         auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
 X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
 Received: from pdx1-sub0-mail-a264.dreamhost.com (pop.dreamhost.com
  [64.90.62.162])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.112.55.239 (trex/6.7.1);
+        by 100.96.96.54 (trex/6.7.1);
         Mon, 11 Apr 2022 15:16:35 +0000
 X-MC-Relay: Neutral
 X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
 X-MailChannels-Auth-Id: dreamhost
-X-Callous-Cold: 0d8fe7c25af736a0_1649690193873_275467051
-X-MC-Loop-Signature: 1649690193873:3141922433
-X-MC-Ingress-Time: 1649690193872
+X-Whistle-Attack: 599df652677b6d7b_1649690194051_3611693520
+X-MC-Loop-Signature: 1649690194051:518113923
+X-MC-Ingress-Time: 1649690194051
 Received: from localhost.localdomain (unknown [104.36.29.104])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a264.dreamhost.com (Postfix) with ESMTPSA id 4KcXWJ6976z1H;
-        Mon, 11 Apr 2022 08:16:28 -0700 (PDT)
+        by pdx1-sub0-mail-a264.dreamhost.com (Postfix) with ESMTPSA id 4KcXWN4HHRz1f0;
+        Mon, 11 Apr 2022 08:16:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1649690189;
-        bh=u/Daua8zVIDUkH/aA9SNGA5WhmllLNHpY2jDyAUBpVg=;
+        s=dreamhost; t=1649690193;
+        bh=glvS6H62LOxTf50dKKy8gsnW9R6qwIoCaN+LjX09TeE=;
         h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
-        b=dpRoAD7XMiEtKiRbyQP8Fqvq3W/jl4UUvb1VeqlmnB+Qq3tj83y0SRikUPZsfN+s8
-         YXbF13xqHtO//1jK9QTQRShr1p5OPeGkdd0jRro6MqQLmiSRruSEUfjPbDHPf5mAlA
-         5P4LKjboNY4ZZPPGsnW2TDf7AJCKz9FV6G2J1OLfW/pELqvgFG0gsh2bZ1Vr06u2mN
-         2K2Z7utfuobrSYvfr6xAPxQ++NoCUVm4Uh5gXS+RJn4Y2/ZBzevB2JusDdLf8oZqlj
-         CyId2q7UURcCP5XXpNhU+k/YFicZbyBi1U7kDZUnjxaYM3ffnEJERrL5bSRg2W4t69
-         3bZraeBgoe3CA==
+        b=ieC7sQWunu4PHGVDWwKxxQ25telHBI6DA41iy98wOrVy1OaYcAWfw9gSMC+0Z6iOe
+         ASxiojBJeh4WCydNEXZWRSYDgGkbjsMtI4CKozcj1V47jg0wsTr3DauCfE3pqXRBGU
+         aozM4WzrGjC8o0GeGMyed5XBSSX6hXdSdPWM7KeH7catyWlZOgLGwCaVrdBosxZMk7
+         t9LfYLJYp8X0+CbIZgTfLYl06NsZKUCDgJnqmqB1G5Gf1vQoj7aqNgpW7kdliNrdao
+         5IkL0ajcI2kDR/n6X0sqbnRgZKn4GOUApvsYEVaO4jgOeFzZ272E6FJHgL5nLR6tIj
+         SCZDo3kW/NZ0A==
 From:   Davidlohr Bueso <dave@stgolabs.net>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         dave@stgolabs.net
-Subject: [PATCH 0/6] staging: Some tasklet removals
-Date:   Mon, 11 Apr 2022 08:16:14 -0700
-Message-Id: <20220411151620.129178-1-dave@stgolabs.net>
+Subject: [PATCH 6/6] staging/rtl8192e,ieee80211: replace ps tasklet with work
+Date:   Mon, 11 Apr 2022 08:16:20 -0700
+Message-Id: <20220411151620.129178-7-dave@stgolabs.net>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20220411151620.129178-1-dave@stgolabs.net>
+References: <20220411151620.129178-1-dave@stgolabs.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Tasklets have long been deprecated as being too heavy on the system
+by running in irq context - and this is not a performance critical
+path. If a higher priority process wants to run, it must wait for
+the tasklet to finish before doing so.
 
-The following are patches to further remove tasklet users out of
-staging (none of such drivers at this point should continue using
-these for async work). More complex users remain, which will be dealt
-with in future patches. Compile-tested only.
+rtllib_sta_ps() and ieee80211_sta_ps() will now run in process context
+and have further concurrency (tasklets being serialized among themselves),
+but this is done holding the ieee->lock, so it should be fine.
 
-Thanks!
+Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
+---
+ drivers/staging/rtl8192e/rtllib.h                 |  2 +-
+ drivers/staging/rtl8192e/rtllib_rx.c              |  2 +-
+ drivers/staging/rtl8192e/rtllib_softmac.c         | 12 ++++++++----
+ drivers/staging/rtl8192u/ieee80211/ieee80211.h    |  2 +-
+ .../rtl8192u/ieee80211/ieee80211_softmac.c        | 15 +++++++++------
+ 5 files changed, 20 insertions(+), 13 deletions(-)
 
-Davidlohr Bueso (6):
-  staging/most, dim2: convert dim2_tasklet to threaded irq
-  staging/wlan-ng, prism2usb: replace reaper_bh tasklet with work
-  staging/wlan-ng, prism2usb: replace completion_bh tasklet with work
-  staging/ks7010: replace SME taslet with work
-  staging/rtl8712: remove event_tasklet
-  staging/rtl8192e,ieee80211: replace ps tasklet with work
-
- drivers/staging/ks7010/ks_hostif.c            | 21 ++++++------
- drivers/staging/ks7010/ks_wlan.h              |  2 +-
- drivers/staging/most/dim2/dim2.c              | 29 +++++-----------
- drivers/staging/rtl8192e/rtllib.h             |  2 +-
- drivers/staging/rtl8192e/rtllib_rx.c          |  2 +-
- drivers/staging/rtl8192e/rtllib_softmac.c     | 12 ++++---
- .../staging/rtl8192u/ieee80211/ieee80211.h    |  2 +-
- .../rtl8192u/ieee80211/ieee80211_softmac.c    | 15 ++++----
- drivers/staging/rtl8712/rtl871x_cmd.h         |  1 -
- drivers/staging/wlan-ng/hfa384x.h             |  4 +--
- drivers/staging/wlan-ng/hfa384x_usb.c         | 34 +++++++++----------
- drivers/staging/wlan-ng/prism2usb.c           |  8 ++---
- 12 files changed, 63 insertions(+), 69 deletions(-)
-
---
+diff --git a/drivers/staging/rtl8192e/rtllib.h b/drivers/staging/rtl8192e/rtllib.h
+index c985e4ebc545..0ecd81a81866 100644
+--- a/drivers/staging/rtl8192e/rtllib.h
++++ b/drivers/staging/rtl8192e/rtllib.h
+@@ -1585,7 +1585,7 @@ struct rtllib_device {
+ 	short sta_sleep;
+ 	int ps_timeout;
+ 	int ps_period;
+-	struct tasklet_struct ps_task;
++	struct work_struct ps_task;
+ 	u64 ps_time;
+ 	bool polling;
+ 
+diff --git a/drivers/staging/rtl8192e/rtllib_rx.c b/drivers/staging/rtl8192e/rtllib_rx.c
+index eb904b42f9c6..f5a44bc6d4e4 100644
+--- a/drivers/staging/rtl8192e/rtllib_rx.c
++++ b/drivers/staging/rtl8192e/rtllib_rx.c
+@@ -2721,7 +2721,7 @@ static void rtllib_rx_mgt(struct rtllib_device *ieee,
+ 		if (ieee->sta_sleep || (ieee->ps != RTLLIB_PS_DISABLED &&
+ 		    ieee->iw_mode == IW_MODE_INFRA &&
+ 		    ieee->state == RTLLIB_LINKED))
+-			tasklet_schedule(&ieee->ps_task);
++			schedule_work(&ieee->ps_task);
+ 
+ 		break;
+ 
+diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
+index 4b6c2295a3cf..82bf05eb1cbf 100644
+--- a/drivers/staging/rtl8192e/rtllib_softmac.c
++++ b/drivers/staging/rtl8192e/rtllib_softmac.c
+@@ -2042,13 +2042,17 @@ static short rtllib_sta_ps_sleep(struct rtllib_device *ieee, u64 *time)
+ 
+ }
+ 
+-static inline void rtllib_sta_ps(struct tasklet_struct *t)
++static inline void rtllib_sta_ps(struct work_struct *work)
+ {
+-	struct rtllib_device *ieee = from_tasklet(ieee, t, ps_task);
++	struct rtllib_device *ieee;
+ 	u64 time;
+ 	short sleep;
+ 	unsigned long flags, flags2;
+ 
++	ieee = container_of(work, struct rtllib_device, ps_task);
++	if (!ieee)
++		return;
++
+ 	spin_lock_irqsave(&ieee->lock, flags);
+ 
+ 	if ((ieee->ps == RTLLIB_PS_DISABLED ||
+@@ -3028,7 +3032,7 @@ int rtllib_softmac_init(struct rtllib_device *ieee)
+ 	spin_lock_init(&ieee->mgmt_tx_lock);
+ 	spin_lock_init(&ieee->beacon_lock);
+ 
+-	tasklet_setup(&ieee->ps_task, rtllib_sta_ps);
++	INIT_WORK(&ieee->ps_task, rtllib_sta_ps);
+ 
+ 	return 0;
+ }
+@@ -3050,8 +3054,8 @@ void rtllib_softmac_free(struct rtllib_device *ieee)
+ 	cancel_work_sync(&ieee->associate_complete_wq);
+ 	cancel_work_sync(&ieee->ips_leave_wq);
+ 	cancel_work_sync(&ieee->wx_sync_scan_wq);
++	cancel_work_sync(&ieee->ps_task);
+ 	mutex_unlock(&ieee->wx_mutex);
+-	tasklet_kill(&ieee->ps_task);
+ }
+ 
+ static inline struct sk_buff *
+diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211.h b/drivers/staging/rtl8192u/ieee80211/ieee80211.h
+index 68c0bf9a191a..b577f9c81f85 100644
+--- a/drivers/staging/rtl8192u/ieee80211/ieee80211.h
++++ b/drivers/staging/rtl8192u/ieee80211/ieee80211.h
+@@ -1790,7 +1790,7 @@ struct ieee80211_device {
+ 	short sta_sleep;
+ 	int ps_timeout;
+ 	int ps_period;
+-	struct tasklet_struct ps_task;
++	struct work_struct ps_task;
+ 	u32 ps_th;
+ 	u32 ps_tl;
+ 
+diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+index 1a43979939a8..4e8fbd2410a1 100644
+--- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
++++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+@@ -1687,14 +1687,17 @@ static short ieee80211_sta_ps_sleep(struct ieee80211_device *ieee, u32 *time_h,
+ 	return 1;
+ }
+ 
+-static inline void ieee80211_sta_ps(struct tasklet_struct *t)
++static inline void ieee80211_sta_ps(struct work_struct *work)
+ {
+-	struct ieee80211_device *ieee = from_tasklet(ieee, t, ps_task);
++	struct ieee80211_device *ieee;
+ 	u32 th, tl;
+ 	short sleep;
+-
+ 	unsigned long flags, flags2;
+ 
++	ieee = container_of(work, struct ieee80211_device, ps_task);
++	if (!ieee)
++		return;
++
+ 	spin_lock_irqsave(&ieee->lock, flags);
+ 
+ 	if ((ieee->ps == IEEE80211_PS_DISABLED ||
+@@ -1897,7 +1900,7 @@ ieee80211_rx_frame_softmac(struct ieee80211_device *ieee, struct sk_buff *skb,
+ 	if (ieee->sta_sleep || (ieee->ps != IEEE80211_PS_DISABLED &&
+ 				ieee->iw_mode == IW_MODE_INFRA &&
+ 				ieee->state == IEEE80211_LINKED))
+-		tasklet_schedule(&ieee->ps_task);
++		schedule_work(&ieee->ps_task);
+ 
+ 	if (WLAN_FC_GET_STYPE(header->frame_ctl) != IEEE80211_STYPE_PROBE_RESP &&
+ 	    WLAN_FC_GET_STYPE(header->frame_ctl) != IEEE80211_STYPE_BEACON)
+@@ -2602,7 +2605,7 @@ void ieee80211_softmac_init(struct ieee80211_device *ieee)
+ 	spin_lock_init(&ieee->mgmt_tx_lock);
+ 	spin_lock_init(&ieee->beacon_lock);
+ 
+-	tasklet_setup(&ieee->ps_task, ieee80211_sta_ps);
++	INIT_WORK(&ieee->ps_task, ieee80211_sta_ps);
+ }
+ 
+ void ieee80211_softmac_free(struct ieee80211_device *ieee)
+@@ -2613,7 +2616,7 @@ void ieee80211_softmac_free(struct ieee80211_device *ieee)
+ 	del_timer_sync(&ieee->associate_timer);
+ 
+ 	cancel_delayed_work(&ieee->associate_retry_wq);
+-
++	cancel_work_sync(&ieee->ps_task);
+ 	mutex_unlock(&ieee->wx_mutex);
+ }
+ 
+-- 
 2.26.2
 
