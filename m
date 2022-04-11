@@ -2,189 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 952D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 18:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E67C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 18:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349294AbiDKS55 (ORCPT
+        id S1349258AbiDKTAY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 14:57:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47196 "EHLO
+        Mon, 11 Apr 2022 15:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349330AbiDKS5o (ORCPT
+        with ESMTP id S1344205AbiDKTAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 14:57:44 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2081.outbound.protection.outlook.com [40.107.243.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB8619C0D;
-        Mon, 11 Apr 2022 11:55:29 -0700 (PDT)
+        Mon, 11 Apr 2022 15:00:19 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2066.outbound.protection.outlook.com [40.107.244.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE141FA74;
+        Mon, 11 Apr 2022 11:58:04 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WDSvZGPgYZNM9yv0u5QCBUma4G33eW5fO92Sd4v6Gfe6lYAFrP/4vTnc7+XAw/bzLtiLZ1jzXew+x8kNz2H5v98hbeYYwHx16C2A22dPF4eyqzxxevU+ZLFg69YdtUxNWzoSCEwrH2UCFbs/JLANMvDj5F5d2sR+M3Z4FD6it7G/4gy51zDvvbLrF8C6h9v9ZfwCfa12aKmzfprG7XrSDgdzizXibL5Rs0EDfW7Y1nCVuCIB+8SPEXkw899T+kcWFk7TQD8LTYpYtmllGQVCartpHads3xtzLwLhIFaUBiGeX6je4O//oUkRGG1v+wFQZGNlRZqcNAfdPLkUjI6G2Q==
+ b=EXH6clXYbdM8ohAJDrLo+oeL8v8RfWTzxQBsAZ756MjRJYXvKR44GuYWD2/TRKAUDGUOSOu7DiL515h6a5qzt4a3/7Ca3vd2wcK/UCbTJaiEJc+w+a0dl0U6SWSLpxjAREoCgzfvrArI9D9vxKWW6D7/lrlX1gJnmNsWap2KH8231rm4wX+Z2pr0qzoWiIJ4YJ5+LH8K/+atopkK2m0OweTA6xIGsjmSQyvKESAemiF1RPsYvEPQVRr6SUk0MgzNhzTNKb5/A5Tv981HQLdhf0elTSW2Js0bQdUVePvkdtwnRJm/GFwaZIbzubEznuPP0oC94AqwG2g5ljXftpauaw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oz3Ab3ZvOzc82UVaAfCiGzhOGxr5z7MSw3fYf5ItRmU=;
- b=XDizi/IrSvI6lxCioQ1MCcYYuDaYxgBNkzP3obK7U+Fnp0VUK5GWVQzS99lnffk3/hR4vM4jSNLgND+ZbobrnoGLC3BDDY+IUHXlOmqPq5iItgUsO5n64VZXjHySCGbTIf8fhrCfatGhNBEhxNl/cU82G6coYHasRWYRsYot4nseLP26jrWcWnjVvukAVDYTmHWdPybnn/8KntPxfcGhcgr1iXs/2c08lDqE/qCv/LLxTkRl6Q+ekC6+LWmdZabc9/2OV4Um70zQnfgqOxavkcmvnHqo36rqy+JxwTGacKV0seA+2c9NPCN+9yjjmfF6u5ajT5JV/nk43sqa5gqyKQ==
+ bh=fNr+aXkFl2Uv/0LnxRNPGDl+EjFvEMEPisVUt5oROSo=;
+ b=DrPy6/wefoERmnd/OR56j7wxriySRT8hOhpXlrA0R3sjPjwKLKa+hu6t2ypRtFkYRs9QwEk8Vzz4IOrq0j7BZfkTtlWPiblXC2QI/fY3JyEUGoHDpm/kLh6wV7zfD4qQrsV6LTm49GrSrggIJZ0gww7tkTOHiIKnsVKbOqgnFuftwTIDrGHDmQFJaiNCMMymlqFx5+2Ayxjptikxe6/wImVp4ijz2Zx0R01f8r2QAy6jiMOmi2FVeMfFqITosqTEcWMcMPIYZ/k14bvdeKIrGRELx28UDp9QaPbi4QjscM+OshB+dCYMf9v3ZIt2jt8KG9oH0opJIVCJZzPrnLmh0Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oz3Ab3ZvOzc82UVaAfCiGzhOGxr5z7MSw3fYf5ItRmU=;
- b=lXr17CNWLRPasEDfahSzlwxMp/4BKOtDyFn2yqf8JPUTAbwPds4WwNYQB8qBAjR4FWHMFkFIhjcKSEhoz0S2xyuuqJobH6o+s3WmIyLQPPfkSkBqC4Jl87kdLbRz8B0W/xJhTkMZYtN/e86NV2GH+mh2To2fGWmytVq7ItV25yE=
+ bh=fNr+aXkFl2Uv/0LnxRNPGDl+EjFvEMEPisVUt5oROSo=;
+ b=dGDRzgzdIZrl+X7xyS9b0DsmLEqvZzLzp8+AvnBRX+2h0mGL98G5SL/7dpt2vn7eky9MBkmokktu6eF/UNXUAJ9w6LcFJ+jYopR60yT556NpvPQ6LVQ8QxJGdsXJUakV/HuMWLxSbJY3ALatbg9VBs5drlEm08kWNfnetCIWSlA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by MN2PR12MB4271.namprd12.prod.outlook.com (2603:10b6:208:1d7::16) with
+ by DM5PR12MB2488.namprd12.prod.outlook.com (2603:10b6:4:b5::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
- 2022 18:55:25 +0000
+ 2022 18:58:03 +0000
 Received: from DM4PR12MB5229.namprd12.prod.outlook.com
  ([fe80::1092:2d0b:9aa4:30]) by DM4PR12MB5229.namprd12.prod.outlook.com
  ([fe80::1092:2d0b:9aa4:30%5]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
- 18:55:25 +0000
-Message-ID: <b33c1fbe-a7b5-f5b0-5dc6-f017f5cfc7f4@amd.com>
-Date:   Mon, 11 Apr 2022 13:55:20 -0500
+ 18:58:03 +0000
+Message-ID: <4278ae8b-eb87-06ac-43af-41a1c741f9a9@amd.com>
+Date:   Mon, 11 Apr 2022 13:58:00 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCHv4 1/8] mm: Add support for unaccepted memory
+Subject: Re: [PATCH] crypto: ccp - Fix the INIT_EX data file open failure
 Content-Language: en-US
-To:     Dave Hansen <dave.hansen@intel.com>, Borislav Petkov <bp@alien8.de>
-Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
+To:     Jacky Li <jackyli@google.com>,
         Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>
-References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
- <20220405234343.74045-2-kirill.shutemov@linux.intel.com>
- <93a7cfdf-02e6-6880-c563-76b01c9f41f5@intel.com>
- <20220409175210.xik3ue3shpagskvi@box.shutemov.name>
- <adc87911-e1f2-4e2a-2394-17ee9213ae3e@intel.com> <YlRPdQP5c1DQqZeN@zn.tnic>
- <fae338db-f892-b234-6918-227219e45cbe@intel.com>
+        John Allen <john.allen@amd.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Marc Orr <marcorr@google.com>, Alper Gun <alpergun@google.com>,
+        Peter Gonda <pgonda@google.com>, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220411180006.4187548-1-jackyli@google.com>
 From:   Tom Lendacky <thomas.lendacky@amd.com>
-In-Reply-To: <fae338db-f892-b234-6918-227219e45cbe@intel.com>
+In-Reply-To: <20220411180006.4187548-1-jackyli@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR19CA0032.namprd19.prod.outlook.com
- (2603:10b6:208:178::45) To DM4PR12MB5229.namprd12.prod.outlook.com
+X-ClientProxiedBy: MN2PR12CA0006.namprd12.prod.outlook.com
+ (2603:10b6:208:a8::19) To DM4PR12MB5229.namprd12.prod.outlook.com
  (2603:10b6:5:398::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2e60ab51-3eb8-4557-1811-08da1becd605
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4271:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4271FB90AA253B1CDCB66C43ECEA9@MN2PR12MB4271.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 43672e3a-692f-4848-9f92-08da1bed347a
+X-MS-TrafficTypeDiagnostic: DM5PR12MB2488:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB2488971368F9423D875EF687ECEA9@DM5PR12MB2488.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8JzhQk6FIwJV08TejMPuL6xEibSWYUOFEvYncujv3SYEgGLXU9ZvLW1MpJPWnE+Hm/Ub2GP7F47NWFGMLwDgyDIgB2v/jRcXyiYGboOubfdkN93D8pU0PkQkczSyjK6eqWzSo6dkRQ84q8iZH9l6lDpQSJdeR8k/NS7BKXrF2iK8ZRrgFqHv1BRE3C4Ei+BeQagWytxP+qu18ih2FlUsFd2/jH/T0MOFcotHxImGNznbHkgQ/0wNZ0pwvcdG4mo0Z+Z9MQuCdR1iMJwDZq1S2YPXW094eXUHDFDuXCSIbOcFccr0SF58TI5UicnCq7cdW8czaqwjtDoKWTBU+UrndEd1YWyx8KW+ONav21xrdgc8vOr2gQfXBD6IOJxIAXLfMK9lzbEFky7a1C0gnx0l5DeMeR+h+sabOJjzmvNaBLmiAgbYQgV7WgPhFgXXdNhxwl+0URnbEr/sjcvz2gawNawdWmK+TduL1/gdyFSiVaiO8U8eaC8uqt0cQFvu7Q3CloSfk0SQJBVRpTQruCCdJip1l29htcui4S0UkpUuUf15qv5T9nkHbK8ia+nOeP2ekrYOnlKnkSDDRa0hTrBs2KNFDZh4jKjqSzd1oOhYhCrMveWcPlrcfs+W+o0aBwO1WjMRdejGoV2xMNhIxr9wWEUR1wL4KTtSVsktaoyY/Iwg7y2Q9jtcMcv4Y6iOxD1S+X4XO90v/T0EiEQgv5PjYQE3rqVH5y4BZ6fX50z10bLCk1KGqzpRqiZbwrp9RfyN
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(66556008)(66476007)(66946007)(8676002)(38100700002)(7416002)(186003)(86362001)(31696002)(5660300002)(2906002)(83380400001)(6666004)(6506007)(6512007)(53546011)(26005)(4326008)(2616005)(6486002)(316002)(110136005)(54906003)(36756003)(508600001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 5cmy1HJpjFXy76HkGCE3kUGcvDnIpLdYBnbh4tDfL8ZDwl8TVsQSN7UOtEwizAiXpFSIGQGIFWegXjs60bjufVoTAFNg8NylyumJAyojNSzUm7dWrenZvXmf6uDrtiw0vEoSkqgsNs5qQ61TA3xbY6OkJ03LiF+gzlp3NnDxI9F12fugFV3lvk96/D6mloBkQYbW592TuKYCwmnPMYIQEZ3UBaSpV9AOuILV6oYgNwILgX8SQoqsLEFT1m8ds5qVDokHPnu6DEKryf7H5KQWD1jXn3KDp4JIq/DyE53+VUHDhEYtNrz9zS7hS5n4mrENsWjwAB5yE2/jFSicGYaHawvBr9nRF0n9tw4H0zGGUK+f6WfS9wmNgQVdlYKikz4CLvBzxAP2h50apR7FfU47x/DccY7haE0ibHuPUpVRoJVmNIUjvpA5R8FNl5lSIPLhS6qiLLpmbGeHh/9Z3BkBfrxioiEgcIoWzUyTxDCk7ZJp/M3htWof8oR13mzxUtpj0n++h8ll/TfmU6YtUukDYXlM1Fr51omcxC1NxzvoBYxNOP62uWGVZ3YbaoXX0HBs+ddFvyQM36LKt6NQlqozlPQ8Vo6+ZSTMwjeTktvA5Od4mJrqu4nZ6CPip1DymzcWVH1OX0VWKuWnLCp9HXXBbokmeSg/mtVPWTD0n4j1xXh6At//vBHCOXQYVsDGm3hZuhc5xjbvFmsNGp61Us8E6KPeAJIeqCHToHi7GQfIcB1zFuHWZwhVxOobnyKcDsR3
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66556008)(38100700002)(6486002)(508600001)(31696002)(110136005)(86362001)(8936002)(5660300002)(8676002)(4326008)(316002)(54906003)(66946007)(66476007)(186003)(26005)(6506007)(6636002)(83380400001)(2616005)(6512007)(53546011)(36756003)(31686004)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RjJZaDhMUXdpeTNieUlYTUt4VkJtM1pXcG4rb1ovZnJ1UkIvNGY2eHNLVm5s?=
- =?utf-8?B?RVdZbzkreE1kbktqT1RuVmUzSWxnR3dleU5GMElpRUlhNTJRdHZqSjZFa2hK?=
- =?utf-8?B?YzJWVUJOSkJyam9ob2l5UXR6QU5razBDeTdwMWhpRHp4U01DZmEzS2N2VXEy?=
- =?utf-8?B?V2hoSEZVTWhGT1ZSU09Jdit2QlltK01wOWxMUXB2ckpDSU8wU21wNW01YWtz?=
- =?utf-8?B?Zm92eEVVWWhTZlN0Wnplb1VTbnZhOVJ6enZpQnhoQloyVnZRa3NPdmd3UjR0?=
- =?utf-8?B?SXRHOHk5V2lKMnkvZmpIM2ZWaGRwV25qOXpScXBPWk14MnNNL3NpQkZ1TkFh?=
- =?utf-8?B?NkR0VmFZVUJydWZ5ak9TRS9tM1pCN1VWSTY1M3hzWFMwTG8vTWRYQnV3K1JS?=
- =?utf-8?B?VUNleTgrSGNyL0NnVisvMTBGV2pWL2JGdzdoK0owVDNUeU1ObTZ2U2dhT0ln?=
- =?utf-8?B?Zk5BSG03U21jRmpWNGZGNnVzU0xoK2pXZlBycC8zMVV1aWZ3SmZudHdScWVV?=
- =?utf-8?B?dnYxaWhXaXNxODRpVStMSDBmZGZCSmJWb29tek1sNDNnRXBOMk9UMytaSnk5?=
- =?utf-8?B?VjltK0RBMm9qWGlMYjNiS2ptbllyUGpUVnBiK0x4eWh0eGFOd2tReUZZQ3M1?=
- =?utf-8?B?OXRRL05PVi83bzlYVmR6d0dYaStBSkdzeHhubVIwbHk4Ty81NWd4R1hHMEU5?=
- =?utf-8?B?RStkN3N5bjVyRVI5eFcwVUNNYWpDZDRJUDcwK25Ic3pocCt1SW1yajlxVkFp?=
- =?utf-8?B?TEM5bys2RzFCY3NncTBxUks0c25QSkV0UXJwWXhqU3FkUjIvcmp2OWwxUHU1?=
- =?utf-8?B?TGJZd1FDUmlGRHZyZjRwTzVlUEVVdXFEa1Q1Qkl1eEN1bkxTYnVaSE1pKzd6?=
- =?utf-8?B?ZVZYUEE2TEVKcG5QOGpzNEdES0VmbUVEbFE0TWdoVXh2TWo2QUxuVXZ4ZDNz?=
- =?utf-8?B?VWxwOEE0Y2dBQTNibG1oa0R3OFZydXhkS0NCS1dwajRXWlljOUNwNWRlREg0?=
- =?utf-8?B?WjFQcVFIVVJFN2JnRm5WcVV3b25MSWo2M1ByNHBUeE52R2hRclFIVHdoVlpG?=
- =?utf-8?B?b3U2c1UzQ0RZdjRRSVdVdTEya1dYQmhqd0FIRnYweCtLQmM5RmMzazFUNStY?=
- =?utf-8?B?eHlodU1ac3Z1c2JCZmxOZ1F2cUhoN01GcGpsR214ZjdpYTR6V0pHRFVYa0Vq?=
- =?utf-8?B?REVZd3REdzRTSFVyMzMvbS9Yc1FqQ1pzc2t2Z2VlelRwMW1oZS91SmZyc1c4?=
- =?utf-8?B?eWUvdlVoRlIyeVdEaFU0QjNDeDRYY054Y1dBVXlRWG9qUHQ1TFBLUlpsYTN5?=
- =?utf-8?B?TzZJN2t6Z2Zaa2xDeTdFT2hQZ1JrZzJFVVpzbU9UTFdwSWNBbW9VVTNCTFpB?=
- =?utf-8?B?TGJ2QUJ3NTU3Y29vMFlaNzBEdjZXRytXYnNuajl0NXR6MFYzaW9OSkJIQlIw?=
- =?utf-8?B?dmp0YVNKRzFYamduQklEclVSdnRWK3ZiM1phOFQyaHUzVU11a091SjgvSE5l?=
- =?utf-8?B?Qm0yOEVtZXVJQ0pUOEx0KzVFZWZ1RTZBYkkwMCtZK0F1YkJ4ODAxeWdGdDVR?=
- =?utf-8?B?Z2xOOUsxdGNWUTNPMENmcFI2OTUxUFRRRWlYUnRwQkx2VjcrYTZJbmszVWZF?=
- =?utf-8?B?YVlEUlVVL1VZTjdCdWcrMHkxOWpIVTQ4dkZpdEF6YUk5YlBwMG90aVBJMXlI?=
- =?utf-8?B?dk5wUzVreGRXMFkvRkxUcGpEalE1MFJOKzBIL3orQk1xeEVYV1FpTzF4RnFy?=
- =?utf-8?B?ZGxSMkYwaHhCRWZ0blZ6MW4ycTZZNkRrMEoyMnFwNGgzWDZubklKQTdZclNI?=
- =?utf-8?B?WTVQM2piN0JSa3VaSHJScGt1cm9hRnNIbmF3MVU0RkNOL1RLWEt3VHBzWnVQ?=
- =?utf-8?B?aUlnR0dYSmdua3JWUnJvanpqYlNkdFY1Yng4S2VrcGFOeldzdDZHSmRteDZL?=
- =?utf-8?B?S1pydkhhMDNscXBveGZRVDc3QmtKc2VyTWlzNUZoN24waG5waHlLWkREbCtm?=
- =?utf-8?B?NDVpcHpnVXZQeDBRb1djdFFNYTFuc2ZkVlloL2hZRXdNZjZDc09SME1ZMWVL?=
- =?utf-8?B?ZWswcGFoSko2czdoUTZXb0krS0xoSk1IemxhNi91Z2RFUGVrcTBJUWhFZm9O?=
- =?utf-8?B?OGVqVDdSUnJSOW5yN0VLcDF2SEp1cGxBb1o0VGlQd2RBUTAvNCs2MHo5L1ds?=
- =?utf-8?B?Y0tjc2lYREsyKzVPNXJpTmQ0ZXRVR2phOU9DSW9ma2xZRlhCb2xLWENVSFNk?=
- =?utf-8?B?dFhudEY5NHhIZ1JTSUREbUpKWUpLUmQ3bkxlQTR6SGlwWGFrV1VZaFg3dzMr?=
- =?utf-8?B?T1RxN09BKzI2SnFkR2xvbmN2RElBZVM0TzZGY2owMUYydFRPdWU2UT09?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UkdoNS9sOWlNcnU1MHF6OTcraWFjemRMaDNXT1lkVXp4K0oybDliUjc0TVcv?=
+ =?utf-8?B?QW8wVlA3ZFRsQVZmc0hxL3FOb0dzc2l6R1ZvaitrZkVnOGxtY2t1WmpqWDBJ?=
+ =?utf-8?B?di9LcDFSVGQxbXFuK0FiNldkMk94aWpHSDlWSzBDWjM5TU9OWU43bXdqUmpr?=
+ =?utf-8?B?YmR5SEFGNEJ0YnJNcElOWVhjdUJTTm5DcmFiQklNQkZpUXhRQVZwNVNTU2V1?=
+ =?utf-8?B?RzB2UDB0MFgvbFJ5UHRMRGFTOHRmRGJJZ1hVejVrSnN2U21rZzJ3MXlqa0Mr?=
+ =?utf-8?B?K3ZLQU54bXNTc2hWQitjbnBXa1piRmNrSytHUUhGUTZaL05jV0J6NWl5eVVp?=
+ =?utf-8?B?YjVHTDRDOC8rRXFRSFd6dVlFZzdOaEM0M2gyWC9WT0xxUXdPS2dVVDBZSE5V?=
+ =?utf-8?B?T0JxTXNMYWozRTZvSUtyUzFwWXVsWC9LK2JoaGxUV1VCbnJrYlVqbkIzbzRO?=
+ =?utf-8?B?RGMwYTAyK3B2NE5CdlhEQTFFM3dEa0ZGckRxaWlmTFdIRm5UN0U0WmJQSWta?=
+ =?utf-8?B?eWlRS21QQlZ1VENpaUtmQ3lNSnFUb01XTEJDdm42b24vU0QzMmVLL3ZmRnla?=
+ =?utf-8?B?c2k1WllrSi9veTF1dFpDemlMT1l2bzE4dUg5N2IrcjBNbndLVG5rc1NHM21C?=
+ =?utf-8?B?UTJSZSs3NVRhYStxNlVnL2xkMmkxdzBwTFRiOTYxRG1ETW9lOWhyOTZFS0FJ?=
+ =?utf-8?B?L0NqV3VQTU96RUpFS2FuYTJabmhRMXRZRGVMQ0dMTVp0R0JGQkgybnNqM21u?=
+ =?utf-8?B?eE51NVYrQXVXRjE5OUFJeWw1RG44L0FpRTJJdjZsNG5PY0tNUzBQcDhOMDRL?=
+ =?utf-8?B?SG1oZEY3aVRWN2ZrSEJnWnVyVDBEUm1XbkFYS2tiMzFLWWlUTUZaczVjRm0r?=
+ =?utf-8?B?eGppdmNvS01DNDYwdFZFV09WaGlNaTVSNFBOdzkwZHFSRjhsd29sWndxWndm?=
+ =?utf-8?B?ekk3M2FnZnJ3Vmx5bmJhRHYySXErMFBuVGJOZWl3QzFLU0Ixc1NqSzh6Szhh?=
+ =?utf-8?B?MUpaRzlnc3RkYnJHOXNQTWpudFlYQ0RQeTV0Y1ZRaVFzTzBpOXMzSnJQdVVn?=
+ =?utf-8?B?aHI0YUJ2MVMzUXpoRkw4bkxPZmJDUVpULzdtTm03ZVdBK095WXgrR0RZWHJp?=
+ =?utf-8?B?MHZxMTA4ZDN5NFA3K05qQjBpYnhaZmUzQXYzZk4wWHZGQ2pBajN0U2xzS3F6?=
+ =?utf-8?B?NitrVStwdDBFNVV6djNmK1pPYXdiT1lXSndsY2VzUEJZS05SOGZBVTlKVzF4?=
+ =?utf-8?B?amgyc1NQbER2d1Q4MVdSQWlLQ2lEVDNrWlhCd2ROVUd4aE5PWk1oaVdzczNN?=
+ =?utf-8?B?TTFGanpENWhMallnV1FhSWpudE9NTURaRjBJZ0lYVTFhVHVSdm10L25BRkFW?=
+ =?utf-8?B?bW16dkI1SnF2bHZ0Rno2TFZzUDNHdGxHU3hvRFhLa294N2hvdlJxZW5mczlr?=
+ =?utf-8?B?SHlKemt3c2R6NUo0MVBVUTg2cFE4aFE3aUlYUFkrblpOb3F4dEwzNlFZOVp1?=
+ =?utf-8?B?dkdEd2xONHhiaU9LMDJjYkxJNXhDTWE2S2tqanVQWjJOR0w1eHR6MERaVk9n?=
+ =?utf-8?B?UmhzaFpodFBUZ0dzMDNmeTAyVDBQWWpabGJXT3RLdnJiYjhjY2dQSGZTUFpI?=
+ =?utf-8?B?YUhyYSthY1QwTVpiYzlsS2NEKzlweEF4Ry9mbHdYM1BNRU9PajBaNU5obVhY?=
+ =?utf-8?B?RGo2UnJlcU5XQXVYRzB3bklKRDNuOHhmU3RXV05PS2xmQ3Y1Wmp2SDd5dUdn?=
+ =?utf-8?B?STZrTlZhOTdpRTcxN3NPcVhrdm1IQWxDSElaNUpGdlEzMmZ3VHNhb1JRUnBS?=
+ =?utf-8?B?a3dZMDFxa0lsMXRnZjNPZEdsM25FWnZDSkdJK056QWl5SHoycjhXcTNvZXJs?=
+ =?utf-8?B?Zitwc0w0Z1JXUUlHbURMbzc0cXErRk53YmdwcHkyc3FoSU1zaWJDMy9oUzZS?=
+ =?utf-8?B?UWRUckl3V2hEYUxmWjQ4blIzazR5cS9xOTFMQWljUGlHNGNIR29lUlp3SzFl?=
+ =?utf-8?B?MlMrZU1DOTZYWG5rcldQa2NVYm53M1EwOHhOTm82UXhxSkFUaS9pSFdkalhK?=
+ =?utf-8?B?K2RNVW9ZazdjZGxLcEdSWFFUNTJzelcxc2tyMWpzS3kxdk04NVR5aVdKbHdY?=
+ =?utf-8?B?SlFWaDhXV090Nk5DZXFiWFh3b09XZmxHTWRlbHo5WHhSKytpb3UxRDNCS3BZ?=
+ =?utf-8?B?a2RNazVQampNUjkxbDJLMCtoQVV2TnhCY1FRYUxIMTEzNEhhZVl0RmdRblli?=
+ =?utf-8?B?cFZ2QWEyQ05rak9UbUxxTlBKVVFGSjhreFU0QVIzd0Z6ZjZuVVBYYkdMb05L?=
+ =?utf-8?B?cnRhQWRxKzBCbk43ZVJsb3VBUjdhSWdYWUpmOGhjcENoK3I1Vk9JZz09?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e60ab51-3eb8-4557-1811-08da1becd605
+X-MS-Exchange-CrossTenant-Network-Message-Id: 43672e3a-692f-4848-9f92-08da1bed347a
 X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 18:55:25.1216
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 18:58:02.9714
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mtTUfUagcansPbCRXDxWyIdVCVhSOHCYLWEAHAKwkwQcrtlIXvFyciqCzc+SPpUlgOlhbFOYbNKoodkcdrmIMQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4271
+X-MS-Exchange-CrossTenant-UserPrincipalName: oaXIE0Aiw29Aeyk99cxi7d4CHrbwCKONayfXb3o4oiqnCLrKkQwctgSp3FXz4Dv415/PU25a+jGjnlieYUCsVQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2488
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/11/22 11:27, Dave Hansen wrote:
-> On 4/11/22 08:55, Borislav Petkov wrote:
->> On Sun, Apr 10, 2022 at 11:41:57PM -0700, Dave Hansen wrote:
->>> Let's just call out the possible (probable?) need for new ABI here.
->>> Maybe it will cue folks who care to speak up.
->> Err, why would you teach the user to go poke at some arbitrary sysfs
->> nodes when the accepting code can simply issue a printk from time to
->> time
->>
->>    "Guest unnaccepted memory progress: XX%. This slows down operations at the moment."
+On 4/11/22 13:00, Jacky Li wrote:
+> There are 2 common cases when INIT_EX data file might not be
+> opened successfully and fail the sev initialization:
 > 
-> I guess that's not a horrible place to start.  It's also not *horribly*
-> different from how guests work today.  If hosts lazily allocate RAM,
-> they'll see largely the same kind of behavior.
+> 1. In user namespaces, normal user tasks (e.g. VMM) can change their
+>     current->fs->root to point to arbitrary directories. While
+>     init_ex_path is provided as a module param related to root file
+>     system. Solution: use the root directory of init_task to avoid
+>     accessing the wrong file.
 > 
-> What ends up determining how much memory is pre-accepted versus being
-> done from the guest?  Is that just a normal part of setting up a TDX
-> guest, like from the qemu cmdline?  Or, is there some convention with
-> the virtual firmware?
+> 2. Normal user tasks (e.g. VMM) don't have the privilege to access
+>     the INIT_EX data file. Solution: open the file as root and
+>     restore permissions immediately.
+> 
+> Signed-off-by: Jacky Li <jackyli@google.com>
 
-With SNP, some memory will be accepted as part of the LAUNCH_UPDATE 
-sequences that the hypervisor performs, but that is not all of the guest 
-memory. Once the guest is started, the (initial implementation of) OVMF 
-SNP support will accept (PVALIDATE) all of the remaining guest memory. 
-When the kernel boots, there isn't any unaccepted memory.
-
-Once support is available in the kernel for unaccepted memory, then OVMF 
-could be updated to only accept a limited amount of memory and pass the 
-information about the unaccepted memory to the kernel through the EFI 
-memory map.
-
-The approaches would have to be measured to see which ends up being the 
-best one. The GHCB specification allows for lots of memory to be accepted 
-in a single VMGEXIT (world switch) vs performing a VMGEXIT for each 2MB of 
-memory being accepted.
+Should this have a Fixes: tag?
 
 Thanks,
 Tom
+
+> ---
+>   drivers/crypto/ccp/sev-dev.c | 30 ++++++++++++++++++++++++++++--
+>   1 file changed, 28 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+> index 6ab93dfd478a..3aefb177715e 100644
+> --- a/drivers/crypto/ccp/sev-dev.c
+> +++ b/drivers/crypto/ccp/sev-dev.c
+> @@ -23,6 +23,7 @@
+>   #include <linux/gfp.h>
+>   #include <linux/cpufeature.h>
+>   #include <linux/fs.h>
+> +#include <linux/fs_struct.h>
+>   
+>   #include <asm/smp.h>
+>   
+> @@ -170,6 +171,31 @@ static void *sev_fw_alloc(unsigned long len)
+>   	return page_address(page);
+>   }
+>   
+> +static struct file *open_file_as_root(const char *filename, int flags, umode_t mode)
+> +{
+> +	struct file *fp;
+> +	struct path root;
+> +	struct cred *cred;
+> +	const struct cred *old_cred;
+> +
+> +	task_lock(&init_task);
+> +	get_fs_root(init_task.fs, &root);
+> +	task_unlock(&init_task);
+> +
+> +	cred = prepare_creds();
+> +	if (!cred)
+> +		return ERR_PTR(-ENOMEM);
+> +	cred->fsuid = GLOBAL_ROOT_UID;
+> +	old_cred = override_creds(cred);
+> +
+> +	fp = file_open_root(&root, filename, flags, mode);
+> +	path_put(&root);
+> +
+> +	revert_creds(old_cred);
+> +
+> +	return fp;
+> +}
+> +
+>   static int sev_read_init_ex_file(void)
+>   {
+>   	struct sev_device *sev = psp_master->sev_data;
+> @@ -181,7 +207,7 @@ static int sev_read_init_ex_file(void)
+>   	if (!sev_init_ex_buffer)
+>   		return -EOPNOTSUPP;
+>   
+> -	fp = filp_open(init_ex_path, O_RDONLY, 0);
+> +	fp = open_file_as_root(init_ex_path, O_RDONLY, 0);
+>   	if (IS_ERR(fp)) {
+>   		int ret = PTR_ERR(fp);
+>   
+> @@ -217,7 +243,7 @@ static void sev_write_init_ex_file(void)
+>   	if (!sev_init_ex_buffer)
+>   		return;
+>   
+> -	fp = filp_open(init_ex_path, O_CREAT | O_WRONLY, 0600);
+> +	fp = open_file_as_root(init_ex_path, O_CREAT | O_WRONLY, 0600);
+>   	if (IS_ERR(fp)) {
+>   		dev_err(sev->dev,
+>   			"SEV: could not open file for write, error %ld\n",
