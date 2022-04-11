@@ -2,104 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2098DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35224C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348642AbiDKQdq (ORCPT
+        id S1348652AbiDKQeA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 12:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43072 "EHLO
+        Mon, 11 Apr 2022 12:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348647AbiDKQdn (ORCPT
+        with ESMTP id S241320AbiDKQd6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 12:33:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12E6831537
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:31:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649694686;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9npo1nqXaxbPxEQzLk6Betnt1M5YLmZj/dlQsw0KH3E=;
-        b=YiHrMYvHInwGeCN3bYuEPlIoiDiJVFb9MVt+VeLTcktAdCuNMwbMiegis3p6SVGNsPwCAv
-        5vUEJREkqLSwoCOFuH/+OayrBJT7163N7tjN4yxJhv6w9fmlvXj/vgIEMDDKAHYsFcwWgA
-        4IPkTADn56RN2w6+eOU8j+gb1lcUbXA=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-640-zFXsi7TLM1CDyMt1r-rUQw-1; Mon, 11 Apr 2022 12:31:24 -0400
-X-MC-Unique: zFXsi7TLM1CDyMt1r-rUQw-1
-Received: by mail-qt1-f198.google.com with SMTP id u29-20020a05622a199d00b002e06ae2f56cso13047566qtc.12
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:31:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=9npo1nqXaxbPxEQzLk6Betnt1M5YLmZj/dlQsw0KH3E=;
-        b=LLskDzoO3SGB5ig3ZMxAp5bhhaQvZAd5qRvofvhnCuhS56pMQeH2m7arSndXjTaMm/
-         gIv0OWnReNYxYQiWuGG12pQ5MzsZ0p/mmvrvvDkmvJd2I4py57qoVyGs/DRjRoGXBr8/
-         3Ic/ghohZKW2Hki2tSA+q9yPLUGubG7D2t8tYMsR4hDx5K3TOLljgbd+pp4N8mVxHCEo
-         +Swq78u2lnyJtYjvud6aqUidfvKX983H6i07ixxNtHYjy5leJgDkufr4Mrn7y/fcdjC8
-         4Z2d5ca1AH52ZqBgFs3egERUWwa5MN3w6Lrz6GgJW6M2sspwL+IfBYhlcLV7dsfd57bt
-         KWdA==
-X-Gm-Message-State: AOAM532wWkPeFV3h+ZVjMACcLO1pC/Z60DMZ2LglFUXpaxEfudmYlK4r
-        iucKSDPLIg2Hb1ozFMNvdlDBrnFKFKvAdx/B7L508skxVR0j75raqIeA61RdylU3l6i8859dPXY
-        U7GJYgQxVScjZcLBGegiUW43T
-X-Received: by 2002:a05:620a:1024:b0:69c:2e0f:d020 with SMTP id a4-20020a05620a102400b0069c2e0fd020mr160242qkk.108.1649694684320;
-        Mon, 11 Apr 2022 09:31:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyIBbuzUKRKdpRu1szbFKkqYCYu3AmHHhLAg8TDSWf8+WPdx1Tx8DzyFwTfgzm1rUwE2RhpZg==
-X-Received: by 2002:a05:620a:1024:b0:69c:2e0f:d020 with SMTP id a4-20020a05620a102400b0069c2e0fd020mr160226qkk.108.1649694684121;
-        Mon, 11 Apr 2022 09:31:24 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id s31-20020a05622a1a9f00b002e1df010316sm26851091qtc.80.2022.04.11.09.31.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 09:31:23 -0700 (PDT)
-Subject: Re: [PATCH] security: do not leak information in ioctl
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     tim@cyberelk.net, axboe@kernel.dk, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, nathan@kernel.org,
-        ndesaulniers@google.com, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        llvm@lists.linux.dev
-References: <20220409145137.67592-1-trix@redhat.com>
- <YlREKRb/xgAFsi97@infradead.org>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <eec2efee-1153-8d8e-77c2-96156733a0c6@redhat.com>
-Date:   Mon, 11 Apr 2022 09:31:20 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Mon, 11 Apr 2022 12:33:58 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC6F3135F;
+        Mon, 11 Apr 2022 09:31:43 -0700 (PDT)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23BFkJZ7024108;
+        Mon, 11 Apr 2022 16:31:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=iH9lBHJhM1J/gyBwR0y/mZ34Ldf8D+ODaA4+c/22vuM=;
+ b=NrBQeVscIksbATe3LLXVqjIF4qLNRmr18Kdi5Jlx921F15cj1XQuPin6q7gRwUZOD2Bg
+ eYeUhn5mSA7XguxCVeqpViK9hJgiJPJ2swJzaNovBLTv+7kHxdtw7Lnigwa7gmaKWNmK
+ E3Itr4DpbueGOZmdXZfClkcPOxCNXC9WiS0MRUEBRV2i1d1TAEr2tOf38opK2ZhkTiTI
+ C+BGd/NhF1Wf3wH51tTGc/jlKSs9VXbvv1OY7XIp0+ihn2VCTbu9ixsuOY5wNjM8scmi
+ Tv9Rn0TE1PNAsQbWtGqRL7h23F9+DEl6fgk6TgM5VInOe1ZmGMHG0viGh8wQ1hYhoYoc /w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3fcn584anq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Apr 2022 16:31:36 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23BGKp3Z023499;
+        Mon, 11 Apr 2022 16:31:35 GMT
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3fcn584ang-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Apr 2022 16:31:35 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23BG3pcD020199;
+        Mon, 11 Apr 2022 16:06:37 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
+        by ppma03dal.us.ibm.com with ESMTP id 3fb1s9n26s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Apr 2022 16:06:37 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23BG6aH025100720
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 11 Apr 2022 16:06:36 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 96BD8AE067;
+        Mon, 11 Apr 2022 16:06:36 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F1BA4AE063;
+        Mon, 11 Apr 2022 16:06:35 +0000 (GMT)
+Received: from [9.211.106.206] (unknown [9.211.106.206])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 11 Apr 2022 16:06:35 +0000 (GMT)
+Message-ID: <fe69f04f-c356-b532-e82b-0b9b99e25c86@linux.ibm.com>
+Date:   Mon, 11 Apr 2022 11:06:35 -0500
 MIME-Version: 1.0
-In-Reply-To: <YlREKRb/xgAFsi97@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 2/2] leds: pca955x: Add HW blink support
 Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Joel Stanley <joel@jms.id.au>, Pavel Machek <pavel@ucw.cz>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>
+References: <20220407183941.36555-1-eajames@linux.ibm.com>
+ <20220407183941.36555-3-eajames@linux.ibm.com>
+ <CAHp75VfcmhGitd6_6mDVG6_eE02sX2B3_iqZxeiX3iFDkmPShg@mail.gmail.com>
+From:   Eddie James <eajames@linux.ibm.com>
+In-Reply-To: <CAHp75VfcmhGitd6_6mDVG6_eE02sX2B3_iqZxeiX3iFDkmPShg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: lJmgO7uB-Y7vD9M0-dOWkcXc3w0CFTup
+X-Proofpoint-ORIG-GUID: ARYE2VuD9cgdgj7BI5Lj9Gh-ZfgJXYJB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-11_06,2022-04-11_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ lowpriorityscore=0 impostorscore=0 suspectscore=0 spamscore=0 phishscore=0
+ clxscore=1015 adultscore=0 priorityscore=1501 mlxlogscore=999 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204110091
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 4/11/22 8:07 AM, Christoph Hellwig wrote:
-> Wrong subject prefix, and this really should be split into one patch for
-> pcd and one for sr.
-ok i will split
-> The sr prt looks sensible to me.  But for pcd why can't you just
-> initialize buffer using
+On 4/8/22 06:19, Andy Shevchenko wrote:
+> On Thu, Apr 7, 2022 at 10:43 PM Eddie James <eajames@linux.ibm.com> wrote:
+>> Support blinking using the PCA955x chip. Use PWM0 for blinking
+>> instead of LED_HALF brightness. Since there is only one frequency
+>> and brightness register for any blinking LED, track the blink state
+>> of each LED and only support one HW blinking frequency. If another
+>> frequency is requested, fallback to software blinking.
+> ...
 >
-> 	char buffer[32] = { };
->
-> and be done with it?
+>> +#define PCA955X_BLINK_DEFAULT  1000
+> What's the unit of this number?
 
-The failure can happen in the transfer loop, so some of the data will 
-not be zero.
 
-And checking status should be done.
+milliseconds, I'll change the name to reflect that.
 
-zero-ing is because i am paranoid.
-
-Tom
 
 >
+> ...
+>
+>>    * Write to frequency prescaler register, used to program the
+>> - * period of the PWM output.  period = (PSCx + 1) / 38
+>> + * period of the PWM output.  period = (PSCx + 1) / <38 or 44, chip dependent>
+> Using <> in  formulas a bit confusing, what about
+>
+>   * period of the PWM output.  period = (PSCx + 1) / coeff
+>   * where for ... chips coeff = 38, for ... chips coeff = 44.
+>
+> ?
+
+
+Ack.
+
+
+>
+> ...
+>
+>> +               dev_err(&pca955x->client->dev, "%s: reg 0x%x, err %d\n",
+>> +                       __func__, n, ret);
+> Can be indented better. But I would rather see regmap, where this kind
+> of debugging is for free and already present in the regmap core/.
+
+
+Agree, but perhaps for a future enhancement?
+
+
+>
+> ...
+>
+>> +static u8 pca955x_period_to_psc(struct pca955x *pca955x, unsigned long p)
+>> +{
+>> +       p *= (unsigned long)pca955x->chipdef->blink_div;
+> Why casting?
+
+
+Ack, and all the rest. Will get a v2 up.
+
+
+Thanks Andy.
+
+Eddie
 
