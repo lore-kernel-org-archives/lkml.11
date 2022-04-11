@@ -2,172 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D54C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC75C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245668AbiDKWWv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 18:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47236 "EHLO
+        id S1350436AbiDKWYV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 18:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350437AbiDKWWh (ORCPT
+        with ESMTP id S232202AbiDKWYT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 18:22:37 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB9F644F
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 15:20:22 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id e8-20020a17090a118800b001cb13402ea2so779697pja.0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 15:20:22 -0700 (PDT)
+        Mon, 11 Apr 2022 18:24:19 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41376445;
+        Mon, 11 Apr 2022 15:22:00 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id 125so20352002iov.10;
+        Mon, 11 Apr 2022 15:22:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ilC4hsjkYuKv6ebyejb/hqupiLMdVX0htffDOmrd7F4=;
-        b=FxqMOl+LQRjm4xHV3WMTnaWUoHHNIwNG2iGvDbblMfZ8JddwTKg3ZpTCrlFkBB6rBu
-         rSWbPPe9GjWLrChgxM3IBRCmVz5THofbIx0GGXctZmol6NievamWm9zkyAkJ24Cm0K9A
-         DCtKBvlvzxZRb7YquzNbT2PdlI832d7CHnSCwf1bN5nHFuq8QnFM4JqEliGFJoIQQMbh
-         jlPIO+ne9Hb8R7Ba1ZEnAjMWmLA+Qo6v4RY8WcEEkyOVuQrUjq+FZs7b6JFMuvp4LYVK
-         7gQv7b3itG0nRglCi6Aiz7vPQL4cblVgmQ9M0dGACks264GbH5DuU0YIA9ydPmcdahOM
-         Hryw==
+        bh=sVrk99jK5gTxl0PxzjdJZQxsj8dU0oJ85F8Hhavp+iQ=;
+        b=IDzHXOtiq49zpd6i3rO4En/xTuVuDQozx+2ZlXg/2PjrcZLN0zv1Lib0RYxTc99yRn
+         MJzx2OQr/27DngFWWRLEKzjYfce5In/L1UiVgBgTn75qg3JBUP20ngwTyPj3K0qRso/2
+         Wtx6Y3xvMqNIq+6o7wKbPCVWqnvUr+jmZp6hCHQ0ZPIsG8CNSlmdNR8JQm7H/n78l0LT
+         /+mEdVk91PG5+H77rQyXCIMRUmSBpSjHnohkI5Vk3uPI//X4lC3Cir+ZEn2N+2/i1tEA
+         RqXfMJU3Gl+DEkglYplUoDHL9XA5lSgrephUYGpwCT7TkOUjqVqoV453dj9B3+mSaals
+         6mPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ilC4hsjkYuKv6ebyejb/hqupiLMdVX0htffDOmrd7F4=;
-        b=LT/U4C2cF5+F93ZqYrJvCO/oosSn4OL5M8TL/zKZBShZwwSFUek2aJ+u1eH81hOzCg
-         QhLsKAYRfDNrvyprriwL8gzDLQa8VmUr4CXznbmp/pelzTjcGUc8Mq/T7Yldb9m5JY0y
-         cmVM4u0lnBFUzeXdoP92HRgNdBs/Ic6nMYG8pJygSUicDs7QKx1uhcROfRwWURb47bx5
-         tcdVL5zusaRY7gnZnDtBwb52i6hHfFRflQAho7WRDlX5gpJLZN6PXrV190UX9Wd0OD1a
-         u7XL8JkCiVqn/pOMywV6+z1tRea7tW+ucCGXIWqYFR5ZzcJlqLceIbah9qrE12CqEvzx
-         8r2w==
-X-Gm-Message-State: AOAM5321JSYV3HD7CuLLJidkkcwVCw7tIVc6+3iCdtj+R/Uhj4TCuzky
-        USwetIQpGYDULnszJCjgow2BC86QTOq8ehEwmLTmBA==
-X-Google-Smtp-Source: ABdhPJwobl8Twz9/+FJGw8iwZ7aqkX15fxktugOjY8lPoNQzuoJOzcOfQ2MMC/mpkqomhSOO2S1HZ/lhTWtwo8KT1ZQ=
-X-Received: by 2002:a17:90a:ca:b0:1ca:5253:b625 with SMTP id
- v10-20020a17090a00ca00b001ca5253b625mr1484772pjd.220.1649715621869; Mon, 11
- Apr 2022 15:20:21 -0700 (PDT)
+        bh=sVrk99jK5gTxl0PxzjdJZQxsj8dU0oJ85F8Hhavp+iQ=;
+        b=b96NcSzDg4HnnDRZ9FyQv05RNp/u8f4w5RRktFHT6FUdnZ6N89GoqekiJr65RATVqk
+         VcGcS3zTtVp0R0n3k0XWe0l77sPbUl5nvOJh4KdbVwC2/uIbWMqTtlrcV569emvUIVti
+         xjNooOkuLOp+vs//JrvNWs8Snis2EjKhWSMdptmQYx7T8LcgiTmBUY/Qxo/FFtYSfVjp
+         i2CspF2k5ZSpoTe/38wGJU6urapCykgJudtQbSq1fg7tK33A8RRw7SQzf0YFzecpSjen
+         2XaDl3PFz+UwCz2l5bQiIReeSz3VOLYv02cxN2xRIoD07Yi9UPcpwZe0E9L3GjEC5H4I
+         fx8w==
+X-Gm-Message-State: AOAM531+SGxQfSvj2JGaaWjE2dLFu5QwVaYLeenVjyFoJ0128W2wUD01
+        IBb2/7s0k2YkNEvINQUIOKWpmQHencBYOa0Nsfw=
+X-Google-Smtp-Source: ABdhPJw9XPMkEqORTNjHBOAB03SPoNqX6ianDhxyxywfgFDVskJEzt2devdZllPujqXGxj0NrzDiWRLgaxDi9eahETU=
+X-Received: by 2002:a05:6602:3c6:b0:63d:cac9:bd35 with SMTP id
+ g6-20020a05660203c600b0063dcac9bd35mr14274524iov.144.1649715720304; Mon, 11
+ Apr 2022 15:22:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220405194747.2386619-1-jane.chu@oracle.com> <20220405194747.2386619-3-jane.chu@oracle.com>
-In-Reply-To: <20220405194747.2386619-3-jane.chu@oracle.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Mon, 11 Apr 2022 15:20:10 -0700
-Message-ID: <CAPcyv4iUWLsZRV4StCzHuVUhEsOB5WURD2r_w3L+LEjoQEheog@mail.gmail.com>
-Subject: Re: [PATCH v7 2/6] x86/mce: relocate set{clear}_mce_nospec() functions
-To:     Jane Chu <jane.chu@oracle.com>
-Cc:     david <david@fromorbit.com>, "Darrick J. Wong" <djwong@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Vishal L Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        device-mapper development <dm-devel@redhat.com>,
-        "Weiny, Ira" <ira.weiny@intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-xfs <linux-xfs@vger.kernel.org>, X86 ML <x86@kernel.org>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>
+References: <20220407125224.310255-1-jolsa@kernel.org> <20220408232922.mz2vi2oaxf2fvnvt@MBP-98dd607d3435.dhcp.thefacebook.com>
+ <YlHrdhkfz+IuGbZM@krava> <CAEf4BzYXHeM+m64cV6_5TU0_BjotDVo+iw_wpJEWLkU9gsvfXg@mail.gmail.com>
+ <CAADnVQLQj-ixQo5xEJEZaJavoNpVdhizDmkqFm+pDJq97_Ecpw@mail.gmail.com>
+In-Reply-To: <CAADnVQLQj-ixQo5xEJEZaJavoNpVdhizDmkqFm+pDJq97_Ecpw@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 11 Apr 2022 15:21:49 -0700
+Message-ID: <CAEf4BzbV2PObd26scnTfQ8C1508k=z4cc7mvPS5BAc+9sXhVVg@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/4] bpf: Speed up symbol resolving in kprobe multi link
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiri Olsa <olsajiri@gmail.com>, Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I notice that none of the folks from "X86 MM" are on the cc, added.
-
-On Tue, Apr 5, 2022 at 12:49 PM Jane Chu <jane.chu@oracle.com> wrote:
+On Mon, Apr 11, 2022 at 3:18 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Relocate the twin mce functions to arch/x86/mm/pat/set_memory.c
-> file where they belong.
+> On Mon, Apr 11, 2022 at 10:15 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Sat, Apr 9, 2022 at 1:24 PM Jiri Olsa <olsajiri@gmail.com> wrote:
+> > >
+> > > On Fri, Apr 08, 2022 at 04:29:22PM -0700, Alexei Starovoitov wrote:
+> > > > On Thu, Apr 07, 2022 at 02:52:20PM +0200, Jiri Olsa wrote:
+> > > > > hi,
+> > > > > sending additional fix for symbol resolving in kprobe multi link
+> > > > > requested by Alexei and Andrii [1].
+> > > > >
+> > > > > This speeds up bpftrace kprobe attachment, when using pure symbols
+> > > > > (3344 symbols) to attach:
+> > > > >
+> > > > > Before:
+> > > > >
+> > > > >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> > > > >   ...
+> > > > >   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+> > > > >
+> > > > > After:
+> > > > >
+> > > > >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> > > > >   ...
+> > > > >   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
+> > > > >
+> > > > >
+> > > > > There are 2 reasons I'm sending this as RFC though..
+> > > > >
+> > > > >   - I added test that meassures attachment speed on all possible functions
+> > > > >     from available_filter_functions, which is 48712 functions on my setup.
+> > > > >     The attach/detach speed for that is under 2 seconds and the test will
+> > > > >     fail if it's bigger than that.. which might fail on different setups
+> > > > >     or loaded machine.. I'm not sure what's the best solution yet, separate
+> > > > >     bench application perhaps?
+> > > >
+> > > > are you saying there is a bug in the code that you're still debugging?
+> > > > or just worried about time?
+> > >
+> > > just the time, I can make the test fail (cross the 2 seconds limit)
+> > > when the machine is loaded, like with running kernel build
+> > >
+> > > but I couldn't reproduce this with just paralel test_progs run
+> > >
+> > > >
+> > > > I think it's better for it to be a part of selftest.
+> > > > CI will take extra 2 seconds to run.
+> > > > That's fine. It's a good stress test.
+> >
+> > I agree it's a good stress test, but I disagree on adding it as a
+> > selftests. The speed will depend on actual host machine. In VMs it
+> > will be slower, on busier machines it will be slower, etc. Generally,
+> > depending on some specific timing just causes unnecessary maintenance
+> > headaches. We can have this as a benchmark, if someone things it's
+> > very important. I'm impartial to having this regularly executed as
+> > it's extremely unlikely that we'll accidentally regress from NlogN
+> > back to N^2. And if there is some X% slowdown such selftest is
+> > unlikely to alarm us anyways. Sporadic failures will annoy us way
+> > before that to the point of blacklisting this selftests in CI at the
+> > very least.
 >
-> Signed-off-by: Jane Chu <jane.chu@oracle.com>
-> ---
->  arch/x86/include/asm/set_memory.h | 52 -------------------------------
->  arch/x86/mm/pat/set_memory.c      | 47 ++++++++++++++++++++++++++++
->  include/linux/set_memory.h        |  9 +++---
->  3 files changed, 52 insertions(+), 56 deletions(-)
->
-> diff --git a/arch/x86/include/asm/set_memory.h b/arch/x86/include/asm/set_memory.h
-> index 78ca53512486..b45c4d27fd46 100644
-> --- a/arch/x86/include/asm/set_memory.h
-> +++ b/arch/x86/include/asm/set_memory.h
-> @@ -86,56 +86,4 @@ bool kernel_page_present(struct page *page);
->
->  extern int kernel_set_to_readonly;
->
-> -#ifdef CONFIG_X86_64
-> -/*
-> - * Prevent speculative access to the page by either unmapping
-> - * it (if we do not require access to any part of the page) or
-> - * marking it uncacheable (if we want to try to retrieve data
-> - * from non-poisoned lines in the page).
-> - */
-> -static inline int set_mce_nospec(unsigned long pfn, bool unmap)
-> -{
-> -       unsigned long decoy_addr;
-> -       int rc;
-> -
-> -       /* SGX pages are not in the 1:1 map */
-> -       if (arch_is_platform_page(pfn << PAGE_SHIFT))
-> -               return 0;
-> -       /*
-> -        * We would like to just call:
-> -        *      set_memory_XX((unsigned long)pfn_to_kaddr(pfn), 1);
-> -        * but doing that would radically increase the odds of a
-> -        * speculative access to the poison page because we'd have
-> -        * the virtual address of the kernel 1:1 mapping sitting
-> -        * around in registers.
-> -        * Instead we get tricky.  We create a non-canonical address
-> -        * that looks just like the one we want, but has bit 63 flipped.
-> -        * This relies on set_memory_XX() properly sanitizing any __pa()
-> -        * results with __PHYSICAL_MASK or PTE_PFN_MASK.
-> -        */
-> -       decoy_addr = (pfn << PAGE_SHIFT) + (PAGE_OFFSET ^ BIT(63));
-> -
-> -       if (unmap)
-> -               rc = set_memory_np(decoy_addr, 1);
-> -       else
-> -               rc = set_memory_uc(decoy_addr, 1);
-> -       if (rc)
-> -               pr_warn("Could not invalidate pfn=0x%lx from 1:1 map\n", pfn);
-> -       return rc;
-> -}
-> -#define set_mce_nospec set_mce_nospec
-> -
-> -/* Restore full speculative operation to the pfn. */
-> -static inline int clear_mce_nospec(unsigned long pfn)
-> -{
-> -       return set_memory_wb((unsigned long) pfn_to_kaddr(pfn), 1);
-> -}
-> -#define clear_mce_nospec clear_mce_nospec
-> -#else
-> -/*
-> - * Few people would run a 32-bit kernel on a machine that supports
-> - * recoverable errors because they have too much memory to boot 32-bit.
-> - */
-> -#endif
-> -
->  #endif /* _ASM_X86_SET_MEMORY_H */
-> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-> index 38af155aaba9..93dde949f224 100644
-> --- a/arch/x86/mm/pat/set_memory.c
-> +++ b/arch/x86/mm/pat/set_memory.c
-> @@ -1925,6 +1925,53 @@ int set_memory_wb(unsigned long addr, int numpages)
->  }
->  EXPORT_SYMBOL(set_memory_wb);
->
-> +#ifdef CONFIG_X86_64
+> Such selftest shouldn't be measuring the speed, of course.
+> The selftest will be about:
+> 1. not crashing
+> 2. succeeding to attach and getting some meaningful data back.
 
-It seems like the only X86_64 dependency in this routine is the
-address bit 63 usage, so how about:
-
-if (!IS_ENABLED(CONFIG_64BIT))
-    return 0;
-
-...and drop the ifdef?
-
-Other than that you can add:
-
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Yeah, that's totally fine with me. My biggest beef is using time as a
+measure of test success, which will be flaky. Just a slow-ish test
+doing a lot of work sounds totally fine.
