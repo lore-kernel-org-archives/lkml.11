@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08444C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:23:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B291AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345481AbiDKKZr (ORCPT
+        id S1345401AbiDKK0C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55444 "EHLO
+        Mon, 11 Apr 2022 06:26:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345414AbiDKKZW (ORCPT
+        with ESMTP id S1345494AbiDKKZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:25:22 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FFC44A12
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:22:03 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id f3so14227080pfe.2
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:22:02 -0700 (PDT)
+        Mon, 11 Apr 2022 06:25:24 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17B344A31
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:22:09 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id 32so11663341pgl.4
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:22:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UDJwfC4bXVfds8p9uj2dvjrmmyg7JkvC30fvf514tUw=;
-        b=atCReM7GsEniNQu0eCNJ6aQxRV2SMOdKBHn4gjkvwZaPYYBYmaAoAA09Ho6TWsw2lJ
-         UlepctMkONgP33D7RXbn7vHddoESrb/UmCTLYuJ+ZdXlAh8V7eeiSdhkGSP12UPKuy1f
-         L+z9Wd8pchqmYJIiU2FxlrVE3kVYIMcrpBiB+iCROQctDLErcjO1bZlp3Za/t7npcBW+
-         l6vzKDo+UGuFFfwONCgp78q30rWiwNojvQ/T74pqyUY+6/DkNIaOZt00lhNlicmd01/C
-         Rhpaa6Co/kxuSfiWCuRSjJgCnRfrQlqHpMaa8XNj1V4QzunLH6Z4EFGrD22OsEuRBEF3
-         ZTLQ==
+        bh=pihteJgws3CPWC4SIMyqFCTdNFf4a7DVbmyRBkvm3cc=;
+        b=ozYrBwVoW8GtsA2LMBdHt6bDeJZtkGzYW2+K2uSshw5P4MKZPC6ecevfqXHrxlNoKX
+         TempNdL6Nw8L916q5BfA915Cha2mG1sTewnDh/g+NpQTeohWwR3/uvpoJNSDdnRY8ob5
+         RC5xWCYcKmls1v5W34MCI1hksCjg9tAKgI8xz6Rcu92eXDERMbIqHbx+p5Vk9K63ZQwu
+         5BvNrUsLDsWNg3nTIZpno1vecNM2rFLVclLCnUxPccXBkE7qs/5ta/37e1agqvoZJH4Z
+         yj2PL0FZ1RooB4GiTE1scRriMt54bZp1mVbRlFe4aMyhmay5cv1SOxqfmzzm16w68Pfn
+         r92g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UDJwfC4bXVfds8p9uj2dvjrmmyg7JkvC30fvf514tUw=;
-        b=Vpsb3rUssTA2eUQyXn1TKkH7t2KM6pCN078ejbjDnYCJfb9XWsDSFvji3BJpJbsqhu
-         S07ZTQvhcl8hFqQMKFT4aXflNU7k2nvTUs0RfkK6aN6eKI5G3Ol7H/qy9M8iYK87JJ+1
-         aTuGGG5emJ43yAs4Dp00zNSG7R0GpqeqyG1WF5SfYeVd1MpLXcPF3DEzb//EwanqCqNW
-         fuw4tiezMVIQXU/yMpZBlD09vpSljhmECmPrm57nS3PTwzETcN4EPEvmfT4NOy8JWO1N
-         1Exo4LrlAxgbKI6uVdHLKeRV0JXMwsTy75ZOsBKF9dXnLZ5NMH7fKjO2HDXjun2nzdq0
-         s97Q==
-X-Gm-Message-State: AOAM533yp/KsevM3XVxaNNkuOhc7ulLyDfOHlI9yJ0GKZhkm1QD8NRsx
-        xfHEKOjqF4aqepkynzZbaWk=
-X-Google-Smtp-Source: ABdhPJzNPJjwDfyVPTKLgVA7IrxOrALdvl+BXQbDiROT9w1bmwz9EZklAQiEYiv+as26Osv/zA5eNw==
-X-Received: by 2002:a63:f048:0:b0:39d:6f6d:47ad with SMTP id s8-20020a63f048000000b0039d6f6d47admr1130450pgj.494.1649672522385;
-        Mon, 11 Apr 2022 03:22:02 -0700 (PDT)
+        bh=pihteJgws3CPWC4SIMyqFCTdNFf4a7DVbmyRBkvm3cc=;
+        b=dY85CtUb/w4mnvNu3MGu2iJS96Zp6N2vP+aRG1Tb8XTvkTVctFPd6QgWtVSA80cVLE
+         DqeFZGaV5d6d85cAz3JDakiyAi2KURGcYwA9hrN51GyWQSEJ72LzxvhxacCeBqpV8H4H
+         G8ESxUHKeL0N9BNYbg6c8gImHNAM58otrTBYMkOujb86IU2RFc/et4TmXAWIaRIy+eHS
+         0B9ASCx5pbHB4BZQaqnOcyyiRQXuwm2lJDwhDdG2q6bGgGQxIvzVIzPBlWcuxf72caQD
+         PYtGxyw+BgGF3Gev3UYKyK+EzPg7l0K7n7FX7EQg7bVPWRAhhCCKhQ+sEWQ239Nsj4WU
+         v0uA==
+X-Gm-Message-State: AOAM531qTrbF6cSAS3M6kzRBOcumRZ8EezMC3exObgFjmJ2ClX01Zz0l
+        u9Y+CGn9th174MZMPnLkMo1A5oHl3LRCZBT3
+X-Google-Smtp-Source: ABdhPJzlj6WhlOOW9qmB8onlQwlWiD/Ejx99i9RM2YVhF+dpyaVYOxXQA8UWKS+YVr80s/c5q77fVg==
+X-Received: by 2002:a63:35c1:0:b0:386:3620:3c80 with SMTP id c184-20020a6335c1000000b0038636203c80mr25577283pga.327.1649672529329;
+        Mon, 11 Apr 2022 03:22:09 -0700 (PDT)
 Received: from makvihas.localhost.com ([2405:201:202b:15:4376:c658:ae1e:1781])
-        by smtp.gmail.com with ESMTPSA id z14-20020a17090a170e00b001cb7e69ee5csm4886318pjd.54.2022.04.11.03.21.59
+        by smtp.gmail.com with ESMTPSA id z14-20020a17090a170e00b001cb7e69ee5csm4886318pjd.54.2022.04.11.03.22.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 03:22:02 -0700 (PDT)
+        Mon, 11 Apr 2022 03:22:09 -0700 (PDT)
 From:   Vihas Makwana <makvihas@gmail.com>
 To:     Larry Finger <Larry.Finger@lwfinger.net>,
         Phillip Potter <phil@philpotter.co.uk>,
@@ -58,9 +58,9 @@ Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Dan Carpenter <dan.carpenter@oracle.com>,
         Pavel Skripkin <paskripkin@gmail.com>,
         Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH v2 2/7] staging: r8188eu: drop unnecessary wrapper _rtw_init_cmd_priv
-Date:   Mon, 11 Apr 2022 15:51:31 +0530
-Message-Id: <20220411102136.14937-3-makvihas@gmail.com>
+Subject: [PATCH v2 4/7] staging: r8188eu: drop unnecessary wrapper _rtw_init_mlme_priv
+Date:   Mon, 11 Apr 2022 15:51:33 +0530
+Message-Id: <20220411102136.14937-5-makvihas@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220411102136.14937-1-makvihas@gmail.com>
 References: <20220411102136.14937-1-makvihas@gmail.com>
@@ -70,106 +70,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop unnecessary wrapper _rtw_init_cmd_priv and move its logic to
-rtw_init_cmd_priv.
+Drop unnecessary wrapper _rtw_init_mlme_priv and move its logic to
+_rtw_init_mlme_priv.
 
 Signed-off-by: Vihas Makwana <makvihas@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_cmd.c | 77 ++++++++++++--------------
- 1 file changed, 34 insertions(+), 43 deletions(-)
+ drivers/staging/r8188eu/core/rtw_mlme.c | 103 +++++++++++-------------
+ 1 file changed, 47 insertions(+), 56 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-index d53217900..3d1fdc852 100644
---- a/drivers/staging/r8188eu/core/rtw_cmd.c
-+++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-@@ -15,47 +15,6 @@
-  * No irqsave is necessary.
-  */
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index c90f36dee..6b8c80fe9 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -30,60 +30,6 @@ u8 rtw_to_roaming(struct adapter *adapter)
+ 	return adapter->mlmepriv.to_roaming;
+ }
  
--static int _rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
+-static int _rtw_init_mlme_priv(struct adapter *padapter)
 -{
--	int res = _SUCCESS;
+-	int	i;
+-	u8	*pbuf;
+-	struct wlan_network	*pnetwork;
+-	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
+-	int	res = _SUCCESS;
 -
--	init_completion(&pcmdpriv->enqueue_cmd);
--	/* sema_init(&(pcmdpriv->cmd_done_sema), 0); */
--	init_completion(&pcmdpriv->start_cmd_thread);
--	init_completion(&pcmdpriv->stop_cmd_thread);
+-	/*  We don't need to memset padapter->XXX to zero, because adapter is allocated by vzalloc(). */
 -
--	rtw_init_queue(&pcmdpriv->cmd_queue);
+-	pmlmepriv->nic_hdl = (u8 *)padapter;
+-
+-	pmlmepriv->pscanned = NULL;
+-	pmlmepriv->fw_state = 0;
+-	pmlmepriv->cur_network.network.InfrastructureMode = Ndis802_11AutoUnknown;
+-	pmlmepriv->scan_mode = SCAN_ACTIVE;/*  1: active, 0: pasive. Maybe someday we should rename this varable to "active_mode" (Jeff) */
+-
+-	spin_lock_init(&pmlmepriv->lock);
+-	rtw_init_queue(&pmlmepriv->free_bss_pool);
+-	rtw_init_queue(&pmlmepriv->scanned_queue);
+-
+-	set_scanned_network_val(pmlmepriv, 0);
+-
+-	memset(&pmlmepriv->assoc_ssid, 0, sizeof(struct ndis_802_11_ssid));
+-
+-	pbuf = vzalloc(MAX_BSS_CNT * (sizeof(struct wlan_network)));
+-
+-	if (!pbuf) {
+-		res = _FAIL;
+-		goto exit;
+-	}
+-	pmlmepriv->free_bss_buf = pbuf;
+-
+-	pnetwork = (struct wlan_network *)pbuf;
+-
+-	for (i = 0; i < MAX_BSS_CNT; i++) {
+-		INIT_LIST_HEAD(&pnetwork->list);
+-
+-		list_add_tail(&pnetwork->list, &pmlmepriv->free_bss_pool.queue);
+-
+-		pnetwork++;
+-	}
 -
 -	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
 -
--	pcmdpriv->cmd_seq = 1;
+-	rtw_clear_scan_deny(padapter);
 -
--	pcmdpriv->cmd_allocated_buf = kzalloc(MAX_CMDSZ + CMDBUFF_ALIGN_SZ,
--					      GFP_KERNEL);
+-	rtw_init_mlme_timer(padapter);
 -
--	if (!pcmdpriv->cmd_allocated_buf) {
--		res = _FAIL;
--		goto exit;
--	}
--
--	pcmdpriv->cmd_buf = pcmdpriv->cmd_allocated_buf  +  CMDBUFF_ALIGN_SZ - ((size_t)(pcmdpriv->cmd_allocated_buf) & (CMDBUFF_ALIGN_SZ - 1));
--
--	pcmdpriv->rsp_allocated_buf = kzalloc(MAX_RSPSZ + 4, GFP_KERNEL);
--
--	if (!pcmdpriv->rsp_allocated_buf) {
--		res = _FAIL;
--		goto exit;
--	}
--
--	pcmdpriv->rsp_buf = pcmdpriv->rsp_allocated_buf  +  4 - ((size_t)(pcmdpriv->rsp_allocated_buf) & 3);
--
--	pcmdpriv->cmd_done_cnt = 0;
--	pcmdpriv->rsp_cnt = 0;
 -exit:
 -
 -	return res;
 -}
 -
- static void c2h_wk_callback(struct work_struct *work);
- 
- static int _rtw_init_evt_priv(struct evt_priv *pevtpriv)
-@@ -133,9 +92,41 @@ static struct cmd_obj *_rtw_dequeue_cmd(struct __queue *queue)
- 
- u32	rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
+ static void rtw_free_mlme_ie_data(u8 **ppie, u32 *plen)
  {
--	u32	res;
-+	u32 res = _SUCCESS;
+ 	kfree(*ppie);
+@@ -290,9 +236,54 @@ u8 *rtw_get_beacon_interval_from_ie(u8 *ie)
+ 
+ int rtw_init_mlme_priv(struct adapter *padapter)/* struct	mlme_priv *pmlmepriv) */
+ {
+-	int	res;
++	int	i;
++	u8	*pbuf;
++	struct wlan_network	*pnetwork;
++	struct mlme_priv		*pmlmepriv = &padapter->mlmepriv;
++	int	res = _SUCCESS;
 +
-+	init_completion(&pcmdpriv->enqueue_cmd);
-+	/* sema_init(&(pcmdpriv->cmd_done_sema), 0); */
-+	init_completion(&pcmdpriv->start_cmd_thread);
-+	init_completion(&pcmdpriv->stop_cmd_thread);
++	/*  We don't need to memset padapter->XXX to zero, because adapter is allocated by vzalloc(). */
 +
-+	rtw_init_queue(&pcmdpriv->cmd_queue);
++	pmlmepriv->nic_hdl = (u8 *)padapter;
++
++	pmlmepriv->pscanned = NULL;
++	pmlmepriv->fw_state = 0;
++	pmlmepriv->cur_network.network.InfrastructureMode = Ndis802_11AutoUnknown;
++	pmlmepriv->scan_mode = SCAN_ACTIVE;/*  1: active, 0: pasive. Maybe someday we should rename this varable to "active_mode" (Jeff) */
++
++	spin_lock_init(&pmlmepriv->lock);
++	rtw_init_queue(&pmlmepriv->free_bss_pool);
++	rtw_init_queue(&pmlmepriv->scanned_queue);
++
++	set_scanned_network_val(pmlmepriv, 0);
++
++	memset(&pmlmepriv->assoc_ssid, 0, sizeof(struct ndis_802_11_ssid));
+ 
+-	res = _rtw_init_mlme_priv(padapter);/*  (pmlmepriv); */
++	pbuf = vzalloc(MAX_BSS_CNT * (sizeof(struct wlan_network)));
++
++	if (!pbuf) {
++		res = _FAIL;
++		goto exit;
++	}
++	pmlmepriv->free_bss_buf = pbuf;
++
++	pnetwork = (struct wlan_network *)pbuf;
++
++	for (i = 0; i < MAX_BSS_CNT; i++) {
++		INIT_LIST_HEAD(&pnetwork->list);
++
++		list_add_tail(&pnetwork->list, &pmlmepriv->free_bss_pool.queue);
++
++		pnetwork++;
++	}
 +
 +	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
 +
-+	pcmdpriv->cmd_seq = 1;
++	rtw_clear_scan_deny(padapter);
 +
-+	pcmdpriv->cmd_allocated_buf = kzalloc(MAX_CMDSZ + CMDBUFF_ALIGN_SZ,
-+					      GFP_KERNEL);
++	rtw_init_mlme_timer(padapter);
 +
-+	if (!pcmdpriv->cmd_allocated_buf) {
-+		res = _FAIL;
-+		goto exit;
-+	}
-+
-+	pcmdpriv->cmd_buf = pcmdpriv->cmd_allocated_buf  +  CMDBUFF_ALIGN_SZ - ((size_t)(pcmdpriv->cmd_allocated_buf) & (CMDBUFF_ALIGN_SZ - 1));
-+
-+	pcmdpriv->rsp_allocated_buf = kzalloc(MAX_RSPSZ + 4, GFP_KERNEL);
-+
-+	if (!pcmdpriv->rsp_allocated_buf) {
-+		res = _FAIL;
-+		goto exit;
-+	}
- 
--	res = _rtw_init_cmd_priv(pcmdpriv);
-+	pcmdpriv->rsp_buf = pcmdpriv->rsp_allocated_buf  +  4 - ((size_t)(pcmdpriv->rsp_allocated_buf) & 3);
-+
-+	pcmdpriv->cmd_done_cnt = 0;
-+	pcmdpriv->rsp_cnt = 0;
 +exit:
  
  	return res;
