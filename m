@@ -2,82 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B10CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 02:29:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D26C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 02:32:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244366AbiDKCbT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 22:31:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53898 "EHLO
+        id S244351AbiDKCef (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 22:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243662AbiDKCbF (ORCPT
+        with ESMTP id S244434AbiDKCeZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 22:31:05 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37FE3878F
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 19:28:52 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KcCNg2fF7zBsCw;
-        Mon, 11 Apr 2022 10:24:35 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Apr
- 2022 10:28:50 +0800
-From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <emma@anholt.net>, <mripard@kernel.org>, <maxime@cerno.tech>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
-CC:     <zhengbin13@huawei.com>, <tangyizhou@huawei.com>
-Subject: [PATCH v3 -next] drm/vc4: Fix build error when CONFIG_DRM_VC4=y && CONFIG_RASPBERRYPI_FIRMWARE=m
-Date:   Mon, 11 Apr 2022 10:43:25 +0800
-Message-ID: <20220411024325.3968413-1-zhengbin13@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Sun, 10 Apr 2022 22:34:25 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FA7FC6
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 19:32:10 -0700 (PDT)
+X-UUID: 11a07f499158492cbaa165a6a730aa74-20220411
+X-UUID: 11a07f499158492cbaa165a6a730aa74-20220411
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <xinlei.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1892440418; Mon, 11 Apr 2022 10:32:05 +0800
+Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 11 Apr 2022 10:32:03 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
+ (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 11 Apr
+ 2022 10:31:59 +0800
+Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
+ MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Mon, 11 Apr 2022 10:31:52 +0800
+From:   <xinlei.lee@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
+        <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>,
+        <rex-bc.chen@mediatek.com>
+CC:     <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <jitao.shi@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Xinlei Lee <xinlei.lee@mediatek.com>
+Subject: [PATCH v4,0/4] Cooperate with DSI RX devices to modify dsi funcs and delay mipi high to cooperate with panel sequence
+Date:   Mon, 11 Apr 2022 10:31:44 +0800
+Message-ID: <1649644308-8455-1-git-send-email-xinlei.lee@mediatek.com>
+X-Mailer: git-send-email 2.6.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_DRM_VC4=y, CONFIG_RASPBERRYPI_FIRMWARE=m, CONFIG_COMPILE_TEST=n,
-bulding fails:
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-drivers/gpu/drm/vc4/vc4_drv.o: In function `vc4_drm_bind':
-vc4_drv.c:(.text+0x320): undefined reference to `rpi_firmware_get'
-vc4_drv.c:(.text+0x320): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_get'
-vc4_drv.c:(.text+0x34c): undefined reference to `rpi_firmware_property'
-vc4_drv.c:(.text+0x34c): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_property'
-vc4_drv.c:(.text+0x354): undefined reference to `rpi_firmware_put'
-vc4_drv.c:(.text+0x354): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `rpi_firmware_put'
+In upstream-v5.8, dsi_enable will operate panel_enable, but this
+modification has been moved in v5.9. In order to ensure the timing of
+dsi_power_on/off and the timing of pulling up/down the MIPI signal,
+the modification of v5.9 is synchronized in this series of patches.
 
-Make DRM_VC4 depends on RASPBERRYPI_FIRMWARE || (COMPILE_TEST && !RASPBERRYPI_FIRMWARE) to fix this.
+Changes since v3:
+1. Rebase kernel-5.18-rc1.
+2. Added dsi_enable protection.
+3. Encapsulates the dsi_lane_ready function.
 
-Fixes: c406ad5e4a85 ("drm/vc4: Notify the firmware when DRM is in charge")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
----
-v3: add comment in drivers/gpu/drm/vc4/Kconfig
-v2: follow Maxime's advise, add RASPBERRYPI_FIRMWARE as an additional dependss
- drivers/gpu/drm/vc4/Kconfig | 3 +++
- 1 file changed, 3 insertions(+)
+Changes since v2:
+1. Rebase linux-next.
 
-diff --git a/drivers/gpu/drm/vc4/Kconfig b/drivers/gpu/drm/vc4/Kconfig
-index de3424fed2fc..6cf2621786e6 100644
---- a/drivers/gpu/drm/vc4/Kconfig
-+++ b/drivers/gpu/drm/vc4/Kconfig
-@@ -2,6 +2,9 @@
- config DRM_VC4
- 	tristate "Broadcom VC4 Graphics"
- 	depends on ARCH_BCM || ARCH_BCM2835 || COMPILE_TEST
-+	# Make sure not 'y' when RASPBERRYPI_FIRMWARE is 'm'. This can only
-+	# happen when COMPILE_TEST=y, hence the added !RASPBERRYPI_FIRMWARE.
-+	depends on RASPBERRYPI_FIRMWARE || (COMPILE_TEST && !RASPBERRYPI_FIRMWARE)
- 	depends on DRM
- 	depends on SND && SND_SOC
- 	depends on COMMON_CLK
---
-2.31.1
+Changes since v1:
+1. Dsi sequence marked with patch adjustment.
+2. Fixes: mtk_dsi: Use the drm_panel_bridge.
+
+Jitao Shi (3):
+  drm/mediatek: Adjust the timing of mipi signal from LP00 to LP11
+  drm/mediatek: Separate poweron/poweroff from enable/disable and define
+    new funcs
+  drm/mediatek: keep dsi as LP00 before dcs cmds transfer
+
+Xinlei Lee (1):
+  drm/mediatek: Add pull-down MIPI operation in mtk_dsi_poweroff
+    function
+
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 81 ++++++++++++++++++++----------
+ 1 file changed, 55 insertions(+), 26 deletions(-)
+
+-- 
+2.18.0
 
