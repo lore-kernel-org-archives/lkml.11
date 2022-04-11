@@ -2,214 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2824AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB34C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:53:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349006AbiDKRw4 (ORCPT
+        id S1349012AbiDKRzq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 13:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35964 "EHLO
+        Mon, 11 Apr 2022 13:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244848AbiDKRww (ORCPT
+        with ESMTP id S241252AbiDKRzo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 13:52:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0134530F48
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 10:50:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649699436;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=jZr8+/3dMtuPdhdci07RfqKq5wNhW11aZAga7dGt9wM=;
-        b=apfhV/3qSuZ3Gwosry5zqyXGXiDPQdg0sFjUSjntmXM5T6zuxvKMEqNDjvLFAXC7F0f9/a
-        YHmv0C1Z0PCn3bGjQjfe9ImCQYl57mM2COAAHDzsQ0SZg8hYWR+SxfRA7FHG5LbtSXkg33
-        mAAnvDwBhctLEzR9Ol0mkhkzdKLXRec=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-308-PeJLBn0BOO-H5o33o5Kgzw-1; Mon, 11 Apr 2022 13:50:34 -0400
-X-MC-Unique: PeJLBn0BOO-H5o33o5Kgzw-1
-Received: by mail-qv1-f72.google.com with SMTP id b9-20020a0cfe69000000b00443cff31dfaso16343301qvv.5
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 10:50:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jZr8+/3dMtuPdhdci07RfqKq5wNhW11aZAga7dGt9wM=;
-        b=5YOch3FwnCYY760+2clfF12qyqBH9Pi5mRDQq3C5EE72jUKdxXoiiDLn18AnEqJmHA
-         sziFxqbwDYqJhrrKszXSgd9vKGWvsmLvAayu2YXXEaGsENzkEe2TEeZjr3kq2QCwbIRp
-         YT3cSUP8V0wXyo6W+tf8EBlJD3UTVR1lKJM8+cK8YMy0VHzZgMNOkNaGFj1keL6QkOy3
-         bGSBO4srdIxX8g8pip6X661mKKvmoMMbKfumcF0LVEEFeCKUIE2sh0CjS/g62O3k5KQk
-         MQElEzZPjsRsztiqFzBuqp0GmUCxIKSeaaJBuQ+6gwylTYGxtnp/Fo7s+y/jZOVWWg7Y
-         cOxw==
-X-Gm-Message-State: AOAM532377E7slLiaSXz9KErOfI7F+tX8tJ5qlugqKX/bC1q/dayKv2/
-        cxbTJ8pGiIvCZ2T67Co5RGCMmRzx12E6i/X77PJt7V1ipr/7/EC4UoQxn8HE2yjbd51Jieu3W7k
-        NMdAtjFyliAyxMc72RkODaPR/
-X-Received: by 2002:a05:620a:2944:b0:67e:c9bf:3f9b with SMTP id n4-20020a05620a294400b0067ec9bf3f9bmr421903qkp.144.1649699434290;
-        Mon, 11 Apr 2022 10:50:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzia1Yr5YPgHPUPuyWMsagB0zFBS5Py6/T1HccII27aP7kxWSF8b6jjxJdrdf6VFG6mwt4eeg==
-X-Received: by 2002:a05:620a:2944:b0:67e:c9bf:3f9b with SMTP id n4-20020a05620a294400b0067ec9bf3f9bmr421892qkp.144.1649699434061;
-        Mon, 11 Apr 2022 10:50:34 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id a24-20020a05620a067800b0069c233fa524sm1987715qkh.1.2022.04.11.10.50.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 10:50:33 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     tim@cyberelk.net, axboe@kernel.dk, nathan@kernel.org,
-        ndesaulniers@google.com
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
-Subject: [PATCH v2] pcd: do not leak information in ioctl
-Date:   Mon, 11 Apr 2022 13:50:26 -0400
-Message-Id: <20220411175026.2961880-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        Mon, 11 Apr 2022 13:55:44 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D93735240
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 10:53:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649699609; x=1681235609;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=EuhvspPumDIOccKZm1upAW6UTl1JoHuWZAsdQAsLR4Y=;
+  b=GAwpt+iZMVgXemWBgo0S/tjjI5tphVhaAwXh6FDSf4KVb97UEERtAJy2
+   an53HTAgC50YAYN99zipNN7mu3UewNpO9doMS1eUeecnhX+b1kgFaykXS
+   /z2sJZl9lxCSe0b+GhrNNteLymIDBTiorqCgLB9WbgYbT4cKOrhkOQc0c
+   gWCV6RUdaGPb70VWSQNYJg98noc2cGQIuW2Mqrs9sniDNjumB5JuzjuZD
+   bmxCw1KHvo3m7K15sz78KAxGAXIDWpHDd7uIDui2aH/TmTCtNxkKxEsyH
+   /HB98rMVDZPYbr92O9P0r5xDxHRKRY7s8xj3u+9YvsYYAvXHKAab0i7rs
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="261025203"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="261025203"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 10:53:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="572316777"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 11 Apr 2022 10:53:26 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ndyEA-00022D-7g;
+        Mon, 11 Apr 2022 17:53:26 +0000
+Date:   Tue, 12 Apr 2022 01:52:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ohad Sharabi <osharabi@habana.ai>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Oded Gabbay <ogabbay@kernel.org>
+Subject: [ogabbay:habanalabs-next 33/34]
+ drivers/misc/habanalabs/gaudi/gaudi.c:5041:5: warning: no previous prototype
+ for function 'gaudi_get_dma_desc_list_size'
+Message-ID: <202204120146.AaaXilN7-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-clang static analysis reports this representative issue
-pcd.c:832:22: warning: Assigned value is garbage
-  or undefined
-  tochdr->cdth_trk0 = buffer[2];
-                    ^ ~~~~~~~~~
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git habanalabs-next
+head:   e3e6111dba082a2d77e80ae99a2de75adff9b875
+commit: 7d3600a8f9ffc668f66678211d41eadb224a4dd8 [33/34] habanalabs: use for_each_sgtable_dma_sg for dma sgt
+config: x86_64-randconfig-a002-20220411 (https://download.01.org/0day-ci/archive/20220412/202204120146.AaaXilN7-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c6e83f560f06cdfe8aa47b248d8bdc58f947274b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=7d3600a8f9ffc668f66678211d41eadb224a4dd8
+        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
+        git fetch --no-tags ogabbay habanalabs-next
+        git checkout 7d3600a8f9ffc668f66678211d41eadb224a4dd8
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/misc/
 
-If the call to pcd_atapi fails, buffer is an unknown
-state.  Passing an unknown buffer back to the user
-can leak information and is a security risk.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Check before returning this buffer to the user.
+All warnings (new ones prefixed by >>):
 
-The per-case variables cmd and buffer are common.
-Change their scope to function level.
-Change colliding parameter name cmd to request.
+>> drivers/misc/habanalabs/gaudi/gaudi.c:5041:5: warning: no previous prototype for function 'gaudi_get_dma_desc_list_size' [-Wmissing-prototypes]
+   u32 gaudi_get_dma_desc_list_size(struct hl_device *hdev,
+       ^
+   drivers/misc/habanalabs/gaudi/gaudi.c:5041:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   u32 gaudi_get_dma_desc_list_size(struct hl_device *hdev,
+   ^
+   static 
+   1 warning generated.
 
-Cleanup whitespace
-Additionally initialize the buffer to zero.
 
-This problem can be seen in the 2.4.0 kernel
-However this scm only goes back as far as 2.6.12
+vim +/gaudi_get_dma_desc_list_size +5041 drivers/misc/habanalabs/gaudi/gaudi.c
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
-v2: split from combined scsi,pcd patch
+  5040	
+> 5041	u32 gaudi_get_dma_desc_list_size(struct hl_device *hdev,
+  5042						struct sg_table *sgt)
+  5043	{
+  5044		struct scatterlist *sg, *sg_next_iter;
+  5045		u32 count, dma_desc_cnt;
+  5046		u64 len, len_next;
+  5047		dma_addr_t addr, addr_next;
+  5048	
+  5049		dma_desc_cnt = 0;
+  5050	
+  5051		for_each_sgtable_dma_sg(sgt, sg, count) {
+  5052			len = sg_dma_len(sg);
+  5053			addr = sg_dma_address(sg);
+  5054	
+  5055			if (len == 0)
+  5056				break;
+  5057	
+  5058			while ((count + 1) < sgt->nents) {
+  5059				sg_next_iter = sg_next(sg);
+  5060				len_next = sg_dma_len(sg_next_iter);
+  5061				addr_next = sg_dma_address(sg_next_iter);
+  5062	
+  5063				if (len_next == 0)
+  5064					break;
+  5065	
+  5066				if ((addr + len == addr_next) &&
+  5067					(len + len_next <= DMA_MAX_TRANSFER_SIZE)) {
+  5068					len += len_next;
+  5069					count++;
+  5070					sg = sg_next_iter;
+  5071				} else {
+  5072					break;
+  5073				}
+  5074			}
+  5075	
+  5076			dma_desc_cnt++;
+  5077		}
+  5078	
+  5079		return dma_desc_cnt * sizeof(struct packet_lin_dma);
+  5080	}
+  5081	
 
- drivers/block/paride/pcd.c | 87 +++++++++++++++++---------------------
- 1 file changed, 38 insertions(+), 49 deletions(-)
-
-diff --git a/drivers/block/paride/pcd.c b/drivers/block/paride/pcd.c
-index f462ad67931a..2315918e3647 100644
---- a/drivers/block/paride/pcd.c
-+++ b/drivers/block/paride/pcd.c
-@@ -810,67 +810,56 @@ static void do_pcd_read_drq(void)
- 
- /* the audio_ioctl stuff is adapted from sr_ioctl.c */
- 
--static int pcd_audio_ioctl(struct cdrom_device_info *cdi, unsigned int cmd, void *arg)
-+static int pcd_audio_ioctl(struct cdrom_device_info *cdi, unsigned int request, void *arg)
- {
- 	struct pcd_unit *cd = cdi->handle;
-+	char cmd[12] = { GPCMD_READ_TOC_PMA_ATIP, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0 };
-+	char buffer[32] = {};
- 
--	switch (cmd) {
--
-+	switch (request) {
- 	case CDROMREADTOCHDR:
-+	{
-+		struct cdrom_tochdr *tochdr =
-+			(struct cdrom_tochdr *) arg;
- 
--		{
--			char cmd[12] =
--			    { GPCMD_READ_TOC_PMA_ATIP, 0, 0, 0, 0, 0, 0, 0, 12,
--			 0, 0, 0 };
--			struct cdrom_tochdr *tochdr =
--			    (struct cdrom_tochdr *) arg;
--			char buffer[32];
--			int r;
--
--			r = pcd_atapi(cd, cmd, 12, buffer, "read toc header");
-+		if (pcd_atapi(cd, cmd, 12, buffer, "read toc header"))
-+			return -EIO;
- 
--			tochdr->cdth_trk0 = buffer[2];
--			tochdr->cdth_trk1 = buffer[3];
-+		tochdr->cdth_trk0 = buffer[2];
-+		tochdr->cdth_trk1 = buffer[3];
- 
--			return r ? -EIO : 0;
--		}
-+		return 0;
-+	}
- 
- 	case CDROMREADTOCENTRY:
--
--		{
--			char cmd[12] =
--			    { GPCMD_READ_TOC_PMA_ATIP, 0, 0, 0, 0, 0, 0, 0, 12,
--			 0, 0, 0 };
--
--			struct cdrom_tocentry *tocentry =
--			    (struct cdrom_tocentry *) arg;
--			unsigned char buffer[32];
--			int r;
--
--			cmd[1] =
--			    (tocentry->cdte_format == CDROM_MSF ? 0x02 : 0);
--			cmd[6] = tocentry->cdte_track;
--
--			r = pcd_atapi(cd, cmd, 12, buffer, "read toc entry");
--
--			tocentry->cdte_ctrl = buffer[5] & 0xf;
--			tocentry->cdte_adr = buffer[5] >> 4;
--			tocentry->cdte_datamode =
--			    (tocentry->cdte_ctrl & 0x04) ? 1 : 0;
--			if (tocentry->cdte_format == CDROM_MSF) {
--				tocentry->cdte_addr.msf.minute = buffer[9];
--				tocentry->cdte_addr.msf.second = buffer[10];
--				tocentry->cdte_addr.msf.frame = buffer[11];
--			} else
--				tocentry->cdte_addr.lba =
--				    (((((buffer[8] << 8) + buffer[9]) << 8)
--				      + buffer[10]) << 8) + buffer[11];
--
--			return r ? -EIO : 0;
-+	{
-+		struct cdrom_tocentry *tocentry =
-+			(struct cdrom_tocentry *) arg;
-+
-+		cmd[1] = (tocentry->cdte_format == CDROM_MSF ? 0x02 : 0);
-+		cmd[6] = tocentry->cdte_track;
-+
-+		if (pcd_atapi(cd, cmd, 12, buffer, "read toc entry"))
-+			return -EIO;
-+
-+		tocentry->cdte_ctrl = buffer[5] & 0xf;
-+		tocentry->cdte_adr = buffer[5] >> 4;
-+		tocentry->cdte_datamode =
-+			(tocentry->cdte_ctrl & 0x04) ? 1 : 0;
-+		if (tocentry->cdte_format == CDROM_MSF) {
-+			tocentry->cdte_addr.msf.minute = buffer[9];
-+			tocentry->cdte_addr.msf.second = buffer[10];
-+			tocentry->cdte_addr.msf.frame = buffer[11];
-+		} else {
-+			tocentry->cdte_addr.lba =
-+				(((((buffer[8] << 8) + buffer[9]) << 8)
-+				  + buffer[10]) << 8) + buffer[11];
- 		}
- 
--	default:
-+		return 0;
-+	}
- 
-+	default:
- 		return -ENOSYS;
- 	}
- }
 -- 
-2.27.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
