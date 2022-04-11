@@ -2,86 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44ED1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6166BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345356AbiDKLN6 (ORCPT
+        id S1345912AbiDKLOC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:13:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        Mon, 11 Apr 2022 07:14:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346023AbiDKLNA (ORCPT
+        with ESMTP id S1345873AbiDKLKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:13:00 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2173BE34;
-        Mon, 11 Apr 2022 04:09:52 -0700 (PDT)
-X-UUID: 4d1ee65a5a024114b512a6064079f27b-20220411
-X-UUID: 4d1ee65a5a024114b512a6064079f27b-20220411
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1431660548; Mon, 11 Apr 2022 19:09:46 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 11 Apr 2022 19:09:45 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 11 Apr 2022 19:09:44 +0800
-Message-ID: <5c6dc5ed28c64f62b66e7b68b54c342b63e42d42.camel@mediatek.com>
-Subject: Re: [PATCH V2 15/15] cpufreq: mediatek: Use device print to show
- logs
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-CC:     <rafael@kernel.org>, <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
-        <roger.lu@mediatek.com>, <hsinyi@google.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Mon, 11 Apr 2022 19:09:44 +0800
-In-Reply-To: <20220411032922.yj4p42is5ky6bgau@vireshk-i7>
-References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
-         <20220408045908.21671-16-rex-bc.chen@mediatek.com>
-         <20220411032922.yj4p42is5ky6bgau@vireshk-i7>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 11 Apr 2022 07:10:47 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789A845535;
+        Mon, 11 Apr 2022 04:07:10 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649675228;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ID9+1If3O1I5C3aUxVBIdshKrXYHLqFXQhU3D8qfgBk=;
+        b=BWe/fVhB+hrDqGIsQVN2b1au9xQUDzrA1BjDP8e7Uro0Dk9kmI8GekP06spt1vgNs+8dhY
+        XUjE9bJyradtliMB1dBmu9RHOpfLUGUohKh8bFcX2M3MVB8y3lgz/UhobzYiH3zlSPMUAZ
+        9cxKfaqHD6ZGWhcrByB3KaafVa9gsQGORVEtUQpnXS7HbC19d5DYfh58Iu+8goW7K53bJk
+        SWE7VH1lcqZPhmIZaMBLqgPEdlCPkV3U3yI0gmg84ICBkeU9RRz6fHBunvqJTYtVx2QLFh
+        yaUJO/CYuYEq5OtFmKK779tuHwFkLBm23Effk2gk83Ob20gRVpa3EfcE/9TBqg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649675228;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ID9+1If3O1I5C3aUxVBIdshKrXYHLqFXQhU3D8qfgBk=;
+        b=41PicdIAirKVLp5CLX6NroganBHe4qSH7VB1GdOqBQR/Evh1Ubz1qNGRskL+zkwDGs2Y7u
+        yR54zgYpJXCexJAw==
+To:     Pete Swain <swine@google.com>
+Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Johan Hovold <johan@kernel.org>,
+        Feng Tang <feng.tang@intel.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Juergen Gross <jgross@suse.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, Pete Swain <swine@google.com>
+Subject: Re: [PATCH 2/2] timers: retpoline mitigation for time funcs
+In-Reply-To: <87r165gmoz.ffs@tglx>
+References: <20220218221820.950118-1-swine@google.com>
+ <20220218221820.950118-2-swine@google.com> <87r165gmoz.ffs@tglx>
+Date:   Mon, 11 Apr 2022 13:07:08 +0200
+Message-ID: <87mtgrg9pf.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-11 at 08:59 +0530, Viresh Kumar wrote:
-> On 08-04-22, 12:59, Rex-BC Chen wrote:
-> > Replace pr_* with dev_* to show logs.
-> > 
-> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > ---
-> >  drivers/cpufreq/mediatek-cpufreq.c | 41 +++++++++++++++++---------
-> > ----
-> >  1 file changed, 23 insertions(+), 18 deletions(-)
-> 
-> One should always arrange the patches in this form:
-> 
-> - Fix bugs first (since they need to be applied first and need to go
->   to stable kernels too).
-> 
-> - Trivial fixes next, like this one which you chose to be present at
->   15/15. I would have applied this one right away, if it wasn't he
->   last one, because of which we have conflicts now.
-> 
-> - Non-trivial patches later, so reviews on them don't affect other
->   patches.
-> 
-Hello Viresh,
+On Sun, Apr 10 2022 at 14:14, Thomas Gleixner wrote:
+> On Fri, Feb 18 2022 at 14:18, Pete Swain wrote:
+>> @@ -245,7 +245,8 @@ static int clockevents_program_min_delta(struct clock_event_device *dev)
+>>  
+>>  		dev->retries++;
+>>  		clc = ((unsigned long long) delta * dev->mult) >> dev->shift;
+>> -		if (dev->set_next_event((unsigned long) clc, dev) == 0)
+>> +		if (INDIRECT_CALL_1(dev->set_next_event, lapic_next_deadline,
+>> +				  (unsigned long) clc, dev) == 0)
+>
+> No. We are not sprinkling x86'isms into generic code.
 
-Thanks for your review and suggestions.
-I will put this patch to first in next version.
+Even if we would do that, then this is completely useless.
 
-BRs,
-Rex
+The hotpath function is clockevents_program_event() and not
+clockevents_program_min_delta().
+
+The latter is invoked from the former if the to be programmed event is
+in the past _and_ the force argument is set, i.e. in 0.1% of the
+invocations of clockevents_program_event(), which itself has an indirect
+call to dev->set_next_event().
+
+If your profiles show clockevents_program_min_delta() as dominant, then
+there is something massively wrong with your kernel.
+
+Thanks,
+
+        tglx
+
+
+
+
 
