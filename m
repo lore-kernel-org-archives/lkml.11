@@ -2,114 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0C1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 781BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346563AbiDKNhC (ORCPT
+        id S1346552AbiDKNiF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 09:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54402 "EHLO
+        Mon, 11 Apr 2022 09:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346539AbiDKNgz (ORCPT
+        with ESMTP id S230506AbiDKNiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 09:36:55 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADC1643D
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:34:38 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id s14-20020a17090a880e00b001caaf6d3dd1so18392186pjn.3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:34:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rau6ikLWDvZ3H5Rxeor37L0yr1H0C2rH637cdeZ/OEw=;
-        b=EcsKlULhqSIURak13xFODrD8tjy0rdmIMa8n+/G3m2f+SMKxpBpm+DPWoo/UQr0Fvg
-         l2A0lVR9hkxlkTxwondEhCgwoWXnMP7zzT4I20eNXLBuIF892aJOqFAFb1g2+5/ruJuo
-         SFU2eMVbPiDLIRWtJM9+w4uYmG3g5p9bBxX5+MiSwRI5v/6d3D8euduzdZ/PxOmaMNNT
-         77m6ou9HfzFkLKvyZn/ataeEYhEhQjkDIbpqAbSad6ECJVHCWokGt5rXavbyQxzyXkBJ
-         8nU2z2JqdE09n3ma3XuscmCcI38HQDAOrVzwKJJ1g/8tRFOwzXDkXjbiec+1rmwuO14k
-         W1bQ==
+        Mon, 11 Apr 2022 09:38:03 -0400
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACFD19C32;
+        Mon, 11 Apr 2022 06:35:49 -0700 (PDT)
+Received: by mail-qk1-f171.google.com with SMTP id b33so10595010qkp.13;
+        Mon, 11 Apr 2022 06:35:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rau6ikLWDvZ3H5Rxeor37L0yr1H0C2rH637cdeZ/OEw=;
-        b=S1OzvBDQSW3/YG+u70RVfzWQgLTv9WjX7zGmgH1Xin7hGn5fVArUP+dKYs+1hsD1mE
-         WixurA/zs0Q5LrEv2DLvKxs8aYLnH1+spTz5o85QQ6PVvPdBWDijOn4jexRvYyVogwjM
-         Ma59BntjBYnUvdsNk7Ad78V4L6rqDif9zZlfiNnzrjoq3J8dqCnAHMgfWk/knCq3EhUA
-         yYwHY1z/QWRVcEFItf3OMYsrFeWho1yBGZAwnFNKmDBhlvaO0DJW6J1v+mtffE9of+UM
-         LEdaFwCNPHRwepo+1zethmgMzrS7G4bnEtxstu+N+jjmXYRS8xhr8wNNIRJzc/zWayhw
-         16lw==
-X-Gm-Message-State: AOAM530V6H8R1Pru3xsqPJyngdhvacGEBseEukNxpmqwCRNupHVd698g
-        LQ91USCgwW0M1NOL6VF6TK+U
-X-Google-Smtp-Source: ABdhPJzD+D2eOcZy8zFeHEt8TITM9KS6UhjpgS7YATdQRKhIivWnns/ATZL4rrHpOhDjSQRgZev4pg==
-X-Received: by 2002:a17:902:b189:b0:14d:6f87:7c25 with SMTP id s9-20020a170902b18900b0014d6f877c25mr32803825plr.31.1649684077788;
-        Mon, 11 Apr 2022 06:34:37 -0700 (PDT)
-Received: from localhost.localdomain ([117.217.182.106])
-        by smtp.gmail.com with ESMTPSA id q15-20020a056a00150f00b004fb28ea8d9fsm37390195pfu.171.2022.04.11.06.34.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 06:34:37 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        loic.poulain@linaro.org, dnlplm@gmail.com,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v2] bus: mhi: host: pci_generic: Sort mhi_pci_id_table based on the PID
-Date:   Mon, 11 Apr 2022 19:04:28 +0530
-Message-Id: <20220411133428.42165-1-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6S8S+a0YX9xrAM7ZLPpu+Eb5jo+Pr1Yp9P1ijuzXncc=;
+        b=rq0LA6dl809CA45g6UnZEmOMAgXLjFJ38JBd8iE1m13fF7LZorRYJUu0Ah8y/1ntoD
+         jkVtiCqLu32wIl4/C2fr6+IOSIHoFiWLDPeW/C+0RMaQulgK5pYLyAKOYyBH64ZfqTGj
+         NbNFDOjRCUUMutAItvZ5PtOWHt4Di5tIGpM7NziEraigAqSnMVYQKucUcX4cas2MTMk0
+         bURbEHDZVAQkiS30Y3G1cRLGFIyy5/ej/CDe8iWuUchZvMTcCceRMx//vn2sf+Dy8gB/
+         kqoWNUoRf/7v1vh+xyuMTINiqAiuDyXYbzOMbcC1cT2lcfeCkyrjEFptLUY5fbhecLjo
+         13iw==
+X-Gm-Message-State: AOAM532/O2mvglTFcoPtISYwoIQDbfILACWJE1cOrarDrF/nJbGw6sEz
+        VnE6yRvyvQpP45o5AlScH6MVTwF4f03VAA==
+X-Google-Smtp-Source: ABdhPJzMWbiPHJzD5E/tJf58XoC7dnkFOUfvfYVfnqs00RzsVK0ywczkbe+JqVy07bLaQ5IMZ7599A==
+X-Received: by 2002:a05:620a:424e:b0:67e:4c1b:baef with SMTP id w14-20020a05620a424e00b0067e4c1bbaefmr22077478qko.778.1649684147723;
+        Mon, 11 Apr 2022 06:35:47 -0700 (PDT)
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
+        by smtp.gmail.com with ESMTPSA id s12-20020a05622a018c00b002e1cd88645dsm25399711qtw.74.2022.04.11.06.35.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 06:35:47 -0700 (PDT)
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-2ec05db3dfbso44230457b3.7;
+        Mon, 11 Apr 2022 06:35:47 -0700 (PDT)
+X-Received: by 2002:a0d:e743:0:b0:2eb:3106:9b32 with SMTP id
+ q64-20020a0de743000000b002eb31069b32mr26595858ywe.512.1649684146995; Mon, 11
+ Apr 2022 06:35:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220406172956.3953-1-wens@kernel.org> <20220406172956.3953-3-wens@kernel.org>
+In-Reply-To: <20220406172956.3953-3-wens@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 11 Apr 2022 15:35:36 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUMc35MrWwbDXvsRNx9qSRf1bACNrhsGpeFcLCETsL4dw@mail.gmail.com>
+Message-ID: <CAMuHMdUMc35MrWwbDXvsRNx9qSRf1bACNrhsGpeFcLCETsL4dw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/4] dt-bindings: display: ssd1307fb: Add entry for
+ SINO WEALTH SH1106
+To:     Chen-Yu Tsai <wens@kernel.org>
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Chen-Yu Tsai <wens@csie.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorting this way helps in identifying the products of vendors. There is no
-sorting required for VID and the new VID should be added as the last entry.
+Hi Chen-Yu,
 
-Let's also add a note clarifying this.
+On Wed, Apr 6, 2022 at 10:13 PM Chen-Yu Tsai <wens@kernel.org> wrote:
+> From: Chen-Yu Tsai <wens@csie.org>
+>
+> The SINO WEALTH SH1106 is an OLED display driver that is somewhat
+> compatible with the SSD1306. It supports a slightly wider display,
+> at 132 instead of 128 pixels. The basic commands are the same, but
+> the SH1106 doesn't support the horizontal or vertical address modes.
+>
+> Add a compatible string for it.
+>
+> Signed-off-by: Chen-Yu Tsai <wens@csie.org>
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
+Thanks for your patch!
 
-Changes in v2:
+> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> @@ -13,6 +13,7 @@ maintainers:
+>  properties:
+>    compatible:
+>      enum:
+> +      - sinowealth,sh1106-i2c
 
-* Fixup the 0x0306 entry by moving it after subid
+Please don't introduce new compatible values including the bus type.
+There is no need for that, and this will only lead to more deprecated
+compatible values soon...
 
- drivers/bus/mhi/host/pci_generic.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+Oops, this is already commit 97a40c23cda5d64a ("dt-bindings:
+display: ssd1307fb: Add entry for SINO WEALTH SH1106") in
+drm-misc/for-linux-next...
 
-diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
-index 541ced27d941..8858f3bf4f04 100644
---- a/drivers/bus/mhi/host/pci_generic.c
-+++ b/drivers/bus/mhi/host/pci_generic.c
-@@ -446,20 +446,21 @@ static const struct mhi_pci_dev_info mhi_sierra_em919x_info = {
- 	.sideband_wake = false,
- };
- 
-+/* Keep the list sorted based on the PID. New VID should be added as the last entry */
- static const struct pci_device_id mhi_pci_id_table[] = {
-+	{ PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0304),
-+		.driver_data = (kernel_ulong_t) &mhi_qcom_sdx24_info },
- 	/* EM919x (sdx55), use the same vid:pid as qcom-sdx55m */
- 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_QCOM, 0x0306, 0x18d7, 0x0200),
- 		.driver_data = (kernel_ulong_t) &mhi_sierra_em919x_info },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0306),
- 		.driver_data = (kernel_ulong_t) &mhi_qcom_sdx55_info },
--	{ PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0304),
--		.driver_data = (kernel_ulong_t) &mhi_qcom_sdx24_info },
-+	{ PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0308),
-+		.driver_data = (kernel_ulong_t) &mhi_qcom_sdx65_info },
- 	{ PCI_DEVICE(0x1eac, 0x1001), /* EM120R-GL (sdx24) */
- 		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
- 	{ PCI_DEVICE(0x1eac, 0x1002), /* EM160R-GL (sdx24) */
- 		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
--	{ PCI_DEVICE(PCI_VENDOR_ID_QCOM, 0x0308),
--		.driver_data = (kernel_ulong_t) &mhi_qcom_sdx65_info },
- 	/* T99W175 (sdx55), Both for eSIM and Non-eSIM */
- 	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0ab),
- 		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
--- 
-2.25.1
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
