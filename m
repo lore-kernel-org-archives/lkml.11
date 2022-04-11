@@ -2,101 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F489C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 18:07:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1216FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 18:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349041AbiDKSJy (ORCPT
+        id S1349058AbiDKSKR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 14:09:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40834 "EHLO
+        Mon, 11 Apr 2022 14:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232992AbiDKSJw (ORCPT
+        with ESMTP id S232992AbiDKSKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 14:09:52 -0400
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881CB26FF;
-        Mon, 11 Apr 2022 11:07:37 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2ec05db3dfbso54020767b3.7;
-        Mon, 11 Apr 2022 11:07:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UdFqlnyS6znWMBHrBHznevziGrO6hgWnoxAL9D9H1BY=;
-        b=ZfxQtfuv/EMHqa1vjDU0OkLWr52lNFYIngBIdGjeUfyQyUqxor0NcS8m1JjkNUJRaG
-         YsQsm9AgHGycVehWaBHS6p/eCrJOs/HrrUvjhCFKkUNbKnneu9p/2ilmhdhUtYtTklpH
-         BItFJxGqKVwzY7yPrG4PyLPG78DwFS2DeoNJkp0oAmQCdzHciF510aDvv+BDq9Fr6wbH
-         QShiTZ1Uc73uTs6V/C68TK4dsVNZuQTLrtVio3MzV09WOAGZ/QED14wsO5SCq4efwFsO
-         LDnyyFI/5WVcka7q+rqBWXAPTy8WiVQo+7cg3repaG6+5dV9feb50vx0sqzHMemnoVk9
-         MnPQ==
-X-Gm-Message-State: AOAM533RFOFm1hOGUimTs1/8bbDeMHohzoIhwt0sbUxaLXCrqoxUWp3Z
-        AA71hanQwx1VZQmPxR4fN9h164OMoM5S3m1ClPM=
-X-Google-Smtp-Source: ABdhPJx81h6PmVq/sT/eLgk2/wfWI9xiNZCKOS3KYYmWH0UBz+3LrS91oBTVKXNo9iQ/lO56OkmE6SfaH+M3PjpKYGE=
-X-Received: by 2002:a81:b89:0:b0:2eb:e9e6:470a with SMTP id
- 131-20020a810b89000000b002ebe9e6470amr13058043ywl.7.1649700456794; Mon, 11
- Apr 2022 11:07:36 -0700 (PDT)
+        Mon, 11 Apr 2022 14:10:14 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80EF2B183;
+        Mon, 11 Apr 2022 11:07:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649700479; x=1681236479;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=etbDmp0HEg236kvaE9ytGyeBfa0w1hXztgiz7DlpaKU=;
+  b=ANvNFgXqy8WLjtEnQt6k1gOTt5eMr5il26p7+7VESMIlRAxZWaNHkekd
+   pFzLfBGLeCJdrisrkqGwZ6MIZAFwzaWfRApRmPnfN4fopF4DORarcm/I6
+   Tq+pIw0Aa5diYRNZuraft8+QX3VcWIoggGnrQ6eK9P2untOwy4YebsnDx
+   fLgYeW3FnXxUENLI2AYMh3dQ6pytwNCbLT78Zj6oDfkx5D5qf0fcsXy9s
+   Y8SWAFHrdnqfHDJoam3CCELWM/+TCoi656THQ6CJ+3N5zIS3anuGTA0fX
+   YwSi2P4zPK3lj3ZcrlINWOQrxLGHZttgLh9cWCps8ujrCqsDV/x+nSsPp
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="322625775"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="322625775"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 11:07:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="572321674"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga008.jf.intel.com with ESMTP; 11 Apr 2022 11:07:57 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 3E15C120; Mon, 11 Apr 2022 21:07:57 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Wolfram Sang <wsa@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 2/2] i2c: dev: Force case user pointers in compat_i2cdev_ioctl()
+Date:   Mon, 11 Apr 2022 21:07:52 +0300
+Message-Id: <20220411180752.36920-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220411180752.36920-1-andriy.shevchenko@linux.intel.com>
+References: <20220411180752.36920-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-References: <1836398.tdWV9SEqCh@kreacher> <CAHp75Vc2Lci4ewdosqX4Thm6ME7pKjKw+C+wtUsq2esRM-eXjg@mail.gmail.com>
- <CAJZ5v0hCPG0_4MUW5bt+FLtPmnFZ9NUxsEiFpd-6+wOmYxPm5A@mail.gmail.com> <CAHp75VeS+3-N9rV3CfTLHKKD_pzTHrz4Lnv5XsEbd22CoCJeKw@mail.gmail.com>
-In-Reply-To: <CAHp75VeS+3-N9rV3CfTLHKKD_pzTHrz4Lnv5XsEbd22CoCJeKw@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 11 Apr 2022 20:07:25 +0200
-Message-ID: <CAJZ5v0h-hB918OxUjHQCypyR8JKNEV8FxR7LRYaraoq+Mazfhw@mail.gmail.com>
-Subject: Re: [PATCH v1] PM: runtime: Avoid device usage count underflows
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Alan Stern <stern@rowland.harvard.edu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 6:53 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Mon, Apr 11, 2022 at 6:17 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> > On Mon, Apr 11, 2022 at 5:09 PM Andy Shevchenko
-> > <andy.shevchenko@gmail.com> wrote:
-> > > On Wed, Apr 6, 2022 at 11:49 PM Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
->
-> ...
->
-> > > > +               retval = rpm_drop_usage_count(dev);
-> > > > +               if (retval > 0) {
-> > > >                         trace_rpm_usage_rcuidle(dev, rpmflags);
-> > > >                         return 0;
-> > > > +               } else if (retval < 0) {
-> > > > +                       return retval;
-> > > >                 }
-> > >
-> > > Can be written in a form
-> > >
-> > >                if (retval < 0)
-> > >                        return retval;
-> > >                if (retval > 0) {
-> > >                        trace_rpm_usage_rcuidle(dev, rpmflags);
-> > >                        return 0;
-> > >                }
-> > >
-> >
-> > I know.
-> >
-> > And why would it be better?
->
-> Depends on the perception:
+Sparse has warned us about wrong address space for user pointers:
 
-Well, exactly.
+  i2c-dev.c:561:50: warning: incorrect type in initializer (different address spaces)
+  i2c-dev.c:561:50:    expected unsigned char [usertype] *buf
+  i2c-dev.c:561:50:    got void [noderef] __user *
 
-> a) less characters to parse (no 'else');
+Force cast the pointer to (__u8 *) that is used by I²C core code.
 
-But to me, with the "else" it is clear that the conditionals are
-related to each other which is not so clear otherwise at first sight.
-YMMV
+Note, this is an additional fix to the previously addressed similar issue
+in the I2C_RDWR case in the same function.
 
-> b) checking for errors first, which seems more or less standard pattern.
+Fixes: 3265a7e6b41b ("i2c: dev: Add __user annotation")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/i2c/i2c-dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-So the checks can be reversed no problem, but this is such a minor point ,,,
+diff --git a/drivers/i2c/i2c-dev.c b/drivers/i2c/i2c-dev.c
+index 6fd2b6718b08..ab0adaa130da 100644
+--- a/drivers/i2c/i2c-dev.c
++++ b/drivers/i2c/i2c-dev.c
+@@ -557,7 +557,7 @@ static long compat_i2cdev_ioctl(struct file *file, unsigned int cmd, unsigned lo
+ 				.addr = umsg.addr,
+ 				.flags = umsg.flags,
+ 				.len = umsg.len,
+-				.buf = compat_ptr(umsg.buf)
++				.buf = (__force __u8 *)compat_ptr(umsg.buf),
+ 			};
+ 		}
+ 
+-- 
+2.35.1
+
