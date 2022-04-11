@@ -2,72 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57BEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 18:45:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26648C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 18:47:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349233AbiDKSru convert rfc822-to-8bit (ORCPT
+        id S1349244AbiDKStg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 14:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55966 "EHLO
+        Mon, 11 Apr 2022 14:49:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347867AbiDKSro (ORCPT
+        with ESMTP id S231283AbiDKStc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 14:47:44 -0400
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47ABDDF5C
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 11:45:28 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 8331860F6B61;
-        Mon, 11 Apr 2022 20:45:25 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 2Hw1TfcMpRAi; Mon, 11 Apr 2022 20:45:25 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 21C2960F6B73;
-        Mon, 11 Apr 2022 20:45:25 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id c5DjqaO2bHEL; Mon, 11 Apr 2022 20:45:25 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id E091060F6B61;
-        Mon, 11 Apr 2022 20:45:24 +0200 (CEST)
-Date:   Mon, 11 Apr 2022 20:45:24 +0200 (CEST)
-From:   Richard Weinberger <richard@nod.at>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Thorsten Leemhuis <regressions@leemhuis.info>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        anton ivanov <anton.ivanov@cambridgegreys.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Eduard-Gabriel Munteanu <maxdamage@aladin.ro>,
-        linux-um <linux-um@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        regressions <regressions@lists.linux.dev>
-Message-ID: <1287561645.244713.1649702724736.JavaMail.zimbra@nod.at>
-In-Reply-To: <YlRp9KR1mp3/4Txo@thelio-3990X>
-References: <20210508032239.2177-1-thunder.leizhen@huawei.com> <Yjt31seiNv18HYrf@dev-arch.thelio-3990X> <1b03d888-cea3-3e6f-087f-daeb5642a975@leemhuis.info> <1087614384.239493.1649583213699.JavaMail.zimbra@nod.at> <YlRp9KR1mp3/4Txo@thelio-3990X>
-Subject: Re: [PATCH 1/1] um: fix error return code in winch_tramp()
+        Mon, 11 Apr 2022 14:49:32 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8BE1FCDB;
+        Mon, 11 Apr 2022 11:47:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649702838; x=1681238838;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=BlRY1ucylwTHwi1CNLdV5Rmu+hVaqB1rWV9jwjmzSX0=;
+  b=P4Xo9NxwM93wYkwdmYF5ClJ2wcrKxV3yaAeBTtGumzZuDMHyQJqdQJdP
+   qsV0bS1nJYOKp1CU7byxOr6Y4Ichl7YMutLkSrGv09YFQOjFG/K34M0v8
+   g4C5/hW5PdrwPmxTwW3zj5yU1ugZX6uUa/6+bddgXpvGOpheDNO6dqH/6
+   DBfZUMcB3uGBlD/7dERT9fxFXqal5WHDjDYXpYbIZvtzwDbgmPR3VOIhk
+   xJfrNCq2mdaG+7OZE8zwRxvAdKVVRSiEC/OMLaQWOpwG7b0aYLooLCpIn
+   LISDZfuQJTAmhqQv0e4ApksQGXWkuKKEd4O8JSWYOEt6lKoBjxHg/I43q
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="322633693"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="322633693"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 11:47:17 -0700
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="572338003"
+Received: from minhjohn-mobl.amr.corp.intel.com (HELO [10.212.44.201]) ([10.212.44.201])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 11:47:15 -0700
+Message-ID: <d473d25a-8119-3f17-7c56-c1686b0fe17c@intel.com>
+Date:   Mon, 11 Apr 2022 11:47:20 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Topic: fix error return code in winch_tramp()
-Thread-Index: U06xC3VNSbJwBqt91Rla1kwYc9mhWA==
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Khalid Aziz <khalid.aziz@oracle.com>, akpm@linux-foundation.org,
+        willy@infradead.org
+Cc:     aneesh.kumar@linux.ibm.com, arnd@arndb.de, 21cnbao@gmail.com,
+        corbet@lwn.net, dave.hansen@linux.intel.com, david@redhat.com,
+        ebiederm@xmission.com, hagen@jauu.net, jack@suse.cz,
+        keescook@chromium.org, kirill@shutemov.name, kucharsk@gmail.com,
+        linkinjeon@kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        longpeng2@huawei.com, luto@kernel.org, markhemm@googlemail.com,
+        pcc@google.com, rppt@kernel.org, sieberf@amazon.com,
+        sjpark@amazon.de, surenb@google.com, tst@schoebel-theuer.de,
+        yzaikin@google.com
+References: <cover.1649370874.git.khalid.aziz@oracle.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH v1 00/14] Add support for shared PTEs across processes
+In-Reply-To: <cover.1649370874.git.khalid.aziz@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------ Ursprüngliche Mail -----
-> Von: "Nathan Chancellor" <nathan@kernel.org>
-> I attempted to print out the error code but it seems like there is no
-> output in the console after "reboot: System halted". If I add an
-> unconditional print right before the call to os_set_fd_block(), I see it
-> during start up but I do not see it during shutdown. Is there some way
-> to see that console output during shutdown?
+On 4/11/22 09:05, Khalid Aziz wrote:
+> PTEs are shared at pgdir level and hence it imposes following
+> requirements on the address and size given to the mshare():
+> 
+> - Starting address must be aligned to pgdir size (512GB on x86_64).
+>   This alignment value can be looked up in /proc/sys/vm//mshare_size
+> - Size must be a multiple of pgdir size
+> - Any mappings created in this address range at any time become
+>   shared automatically
+> - Shared address range can have unmapped addresses in it. Any access
+>   to unmapped address will result in SIGBUS
+> 
+> Mappings within this address range behave as if they were shared
+> between threads, so a write to a MAP_PRIVATE mapping will create a
+> page which is shared between all the sharers. The first process that
+> declares an address range mshare'd can continue to map objects in
+> the shared area. All other processes that want mshare'd access to
+> this memory area can do so by calling mshare(). After this call, the
+> address range given by mshare becomes a shared range in its address
+> space. Anonymous mappings will be shared and not COWed.
 
-I think in this case the easiest way is attaching gdb with a breakpoint.
-
-Thanks,
-//richard
+What does this mean in practice?
