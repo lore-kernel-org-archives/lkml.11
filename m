@@ -2,156 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 969F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2415EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345646AbiDKKij (ORCPT
+        id S1344560AbiDKKj1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
+        Mon, 11 Apr 2022 06:39:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345625AbiDKKi3 (ORCPT
+        with ESMTP id S234732AbiDKKjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:38:29 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA6A43EC3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:36:14 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id u19so9918063ljd.11
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:36:13 -0700 (PDT)
+        Mon, 11 Apr 2022 06:39:23 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7598A43ECD
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:37:10 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id 12so1676869pll.12
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:37:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lWbA8BxSlOYVP3LVwiIDtHxC35MchtX1bQhiwUUgIBM=;
-        b=wQZ5G4wbP6asggk3xfZw8FnN5ffLC093ppWdL3I2U0Ii5eh+cP2bkUc5jPU/z/n8VP
-         6fTLvwZu/vYB7UOXSZJipSL1SLu/3fP5wrA5YJQLwpIRaCL0ritC/xdeoKq6Jt8F1dix
-         6t/H2rlxbAH0hAj+8GioML/2lI/jlw94KbL4csTtPG59Whl4ZFO0GnGjWDGBxtiMv2/N
-         vpWW4Qy01T02tBh4jWiNanQKhMgnZ+IPhEKXUfwOvXQxF4m/I6yr0/rnV/w7n8szSz4u
-         2PJnK185zzerZKxrK6on34Ww6HIEwIIMrdL9e2sMg10IbXiJlhLWVVM1qwtSH1HX5D2K
-         q8jQ==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sZ5r1Ulc6PwR+ueUKNqo2D8Zab24hQBuwaMfaw8Ofy0=;
+        b=fc64tTXnjyhGNHfV0GQvoJYJRlkNoJju8a2bH+jOoLii9ffVQ8PzR/409RWEPd58II
+         Ek2BaGkvbWWG3Dw/wkeS1D05l/BsPuJEzMzoSbPc8SJO7Aw883hKMKBzKisAlyJnTEzs
+         UiG2jiyOxLVxmq+27F/+elTgNuy1YVxDl/EM8uAaMoMMhffcgfzUqnd4qFDkG0FXJcOm
+         O2E7nImZ1DyCt9tIzxYaihygWUNomywo32J1THuGi+d5Oer13kkHMeVg2We6ou4FibWO
+         yDmDW0KXvOduGY5DOEkV9WbHK55bBl6zTbAPFmZhQ1xEkKMRXjiT+oxWX6ckWIjAG+sr
+         dAUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lWbA8BxSlOYVP3LVwiIDtHxC35MchtX1bQhiwUUgIBM=;
-        b=Evhpj5tjBN5gRrIko3QixWq0E/3pa7QlKK3ZjGK7bQWrXtwUUQfCFxrH9fJX5Zv+aW
-         /DWe4Ci3UqiotMoK5OvfwsQlCoDVRAz7b4efx1NV0/PV64wDDDfQLLVbDp2xBHojSXPW
-         m5xAvUfDPyaZlB12+diT2leXyLaHv71C0vefj/1JtfraupQq32XHZO2Yos4cH66cOyBD
-         nddRj7R933vwuwhwUMrmKDK6aHIl4c80nd+GlLcBemefg9R1NwtgcDV6+yl48MOqCNoA
-         SlSFzWFS+W+3F4pXB8qz83vW0gCSmfLmJJTAbEPQVZHIWd9tVN91FOWLwik2TbE4AIL3
-         cyqg==
-X-Gm-Message-State: AOAM533VHgvcG5t/8YXd/ky3bL/KJpcoHk8RuTSGiceJMM1zbmq+NlNf
-        RGiYdjBc7TQ+DPGfuwBTzhdnEwxJktQrord0dF3PBPJimEvXxg==
-X-Google-Smtp-Source: ABdhPJzMSB6szqj7+JrFClK5+oBXYA0BTO3VojX36KJWRQfEbbmK9WnDf60M+AqYlDUEuv1kX2aRaWUgyewAkiIWS94=
-X-Received: by 2002:a2e:9048:0:b0:249:78bb:375e with SMTP id
- n8-20020a2e9048000000b0024978bb375emr20336046ljg.229.1649673372244; Mon, 11
- Apr 2022 03:36:12 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sZ5r1Ulc6PwR+ueUKNqo2D8Zab24hQBuwaMfaw8Ofy0=;
+        b=X2UCLf0ogcPp/6vWLJIr9UYEBMlxjINIGOha4Tq2kcBScjKdD16xoUwZKUlw0LtArh
+         regxaK7ndEIszkXYULUEUqCzW7JgJJPwycITyGtR/Edk/QY369yEB7SkTON8PO6HQLH0
+         sBb16uPQPu0UmUn8Xf3qdAAaepkCnrMGzsRGsEtEJ9ML0wJXhpbI6hGVwByjRaxN/Jir
+         k/yy8HK8eTVEoZBEekbBcE9/PNN3zKG0etUdZRkwyoXD4P9rA2gC/eYWl0TN7FGVLdnH
+         4lUILLyiCzmJc65TMUlm39CgtcgQvXopDFjVfTE4UiEVhdNyhpellU2BLWCGe6ru2Smb
+         HM6Q==
+X-Gm-Message-State: AOAM531FKbI+C2O/m5K7h970cn012xueXXZrcHV0G6zgwOVFh4nabT83
+        NS1Lz+8xgpR1ZtwGpBX1Qfw=
+X-Google-Smtp-Source: ABdhPJzqE7fdczyeXzyQeDjOMudzBySH+60ePuOE2mP9NT+DcGJhwjaFeRriNyLNylES+uJmxSfCIw==
+X-Received: by 2002:a17:902:bd89:b0:156:8467:782b with SMTP id q9-20020a170902bd8900b001568467782bmr31684434pls.12.1649673429936;
+        Mon, 11 Apr 2022 03:37:09 -0700 (PDT)
+Received: from hyeyoo ([114.29.24.243])
+        by smtp.gmail.com with ESMTPSA id x39-20020a056a0018a700b004fa7e6ceafesm35865007pfh.169.2022.04.11.03.37.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 03:37:08 -0700 (PDT)
+Date:   Mon, 11 Apr 2022 19:37:01 +0900
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/10] mm/slab: Decouple ARCH_KMALLOC_MINALIGN from
+ ARCH_DMA_MINALIGN
+Message-ID: <YlQEzdOtoNwDHhDi@hyeyoo>
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
+ <20220405135758.774016-2-catalin.marinas@arm.com>
 MIME-Version: 1.0
-References: <1836398.tdWV9SEqCh@kreacher> <CAPDyKFoop_mtWV0i+fH8GSmaxbPCyCPmOeNi6GuK5Qrj7ZVo1g@mail.gmail.com>
- <CAJZ5v0geG77Npdy_Ae7XnpWukPPSJ1nE0DFF-vbJViKj6GtCWA@mail.gmail.com>
-In-Reply-To: <CAJZ5v0geG77Npdy_Ae7XnpWukPPSJ1nE0DFF-vbJViKj6GtCWA@mail.gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Mon, 11 Apr 2022 12:35:35 +0200
-Message-ID: <CAPDyKFo9t__WV00yp5gt+M0BhYtgJU2HmKXF2fXEDtjvSEUhhw@mail.gmail.com>
-Subject: Re: [PATCH v1] PM: runtime: Avoid device usage count underflows
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alan Stern <stern@rowland.harvard.edu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405135758.774016-2-catalin.marinas@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 8 Apr 2022 at 19:05, Rafael J. Wysocki <rafael@kernel.org> wrote:
+On Tue, Apr 05, 2022 at 02:57:49PM +0100, Catalin Marinas wrote:
+> In preparation for supporting a dynamic kmalloc() minimum alignment,
+> allow architectures to define ARCH_KMALLOC_MINALIGN independently of
+> ARCH_DMA_MINALIGN. In addition, always define ARCH_DMA_MINALIGN even if
+> an architecture does not override it.
+> 
+> After this patch, ARCH_DMA_MINALIGN is expected to be used in static
+> alignment annotations and defined by an architecture to be the maximum
+> alignment for all supported configurations/SoCs in a single Image.
+> ARCH_KMALLOC_MINALIGN, if different, is the minimum alignment guaranteed
+> by kmalloc().
+> 
+> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> ---
+>  include/linux/slab.h | 23 ++++++++++++++++++-----
+>  1 file changed, 18 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/linux/slab.h b/include/linux/slab.h
+> index 373b3ef99f4e..d58211bdeceb 100644
+> --- a/include/linux/slab.h
+> +++ b/include/linux/slab.h
+> @@ -187,17 +187,30 @@ bool kmem_valid_obj(void *object);
+>  void kmem_dump_obj(void *object);
+>  #endif
+>  
+> +/*
+> + * slob does not support independent control of ARCH_KMALLOC_MINALIGN and
+> + * ARCH_DMA_MINALIGN.
+> + */
+> +#ifdef CONFIG_SLOB
+> +#undef ARCH_KMALLOC_MINALIGN
+> +#endif
+> +
+>  /*
+>   * Some archs want to perform DMA into kmalloc caches and need a guaranteed
+>   * alignment larger than the alignment of a 64-bit integer.
+> - * Setting ARCH_KMALLOC_MINALIGN in arch headers allows that.
+> + * Setting ARCH_DMA_MINALIGN in arch headers allows that.
+>   */
+> -#if defined(ARCH_DMA_MINALIGN) && ARCH_DMA_MINALIGN > 8
+> +#ifndef ARCH_DMA_MINALIGN
+> +#define ARCH_DMA_MINALIGN __alignof__(unsigned long long)
+> +#elif ARCH_DMA_MINALIGN > 8 && !defined(ARCH_KMALLOC_MINALIGN)
+>  #define ARCH_KMALLOC_MINALIGN ARCH_DMA_MINALIGN
+> -#define KMALLOC_MIN_SIZE ARCH_DMA_MINALIGN
+> -#define KMALLOC_SHIFT_LOW ilog2(ARCH_DMA_MINALIGN)
+> -#else
+> +#endif
+> +
+> +#ifndef ARCH_KMALLOC_MINALIGN
+>  #define ARCH_KMALLOC_MINALIGN __alignof__(unsigned long long)
+> +#else
+> +#define KMALLOC_MIN_SIZE ARCH_KMALLOC_MINALIGN
+> +#define KMALLOC_SHIFT_LOW ilog2(KMALLOC_MIN_SIZE)
+>  #endif
+>  
+>  /*
 >
-> On Fri, Apr 8, 2022 at 4:05 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
-> >
-> > On Wed, 6 Apr 2022 at 21:03, Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
-> > >
-> > > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> > >
-> > > A PM-runtime device usage count underflow is potentially critical,
-> > > because it may cause a device to be suspended when it is expected to
-> > > be operational.
-> >
-> > I get the point. Although, perhaps we should also state that it's a
-> > programming problem that we would like to catch and warn about?
->
-> OK, I can add that to the changelog.
->
-> > >
-> > > For this reason, (1) make rpm_check_suspend_allowed() return an error
-> > > when the device usage count is negative to prevent devices from being
-> > > suspended in that case, (2) introduce rpm_drop_usage_count() that will
-> > > detect device usage count underflows, warn about them and fix them up,
-> > > and (3) use it to drop the usage count in a few places instead of
-> > > atomic_dec_and_test().
-> > >
-> > > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> > > ---
-> > >  drivers/base/power/runtime.c |   44 ++++++++++++++++++++++++++++++++++++-------
-> > >  1 file changed, 37 insertions(+), 7 deletions(-)
-> > >
-> > > Index: linux-pm/drivers/base/power/runtime.c
-> > > ===================================================================
-> > > --- linux-pm.orig/drivers/base/power/runtime.c
-> > > +++ linux-pm/drivers/base/power/runtime.c
-> > > @@ -263,7 +263,7 @@ static int rpm_check_suspend_allowed(str
-> > >                 retval = -EINVAL;
-> > >         else if (dev->power.disable_depth > 0)
-> > >                 retval = -EACCES;
-> > > -       else if (atomic_read(&dev->power.usage_count) > 0)
-> > > +       else if (atomic_read(&dev->power.usage_count))
-> > >                 retval = -EAGAIN;
-> > >         else if (!dev->power.ignore_children &&
-> > >                         atomic_read(&dev->power.child_count))
-> > > @@ -1039,13 +1039,33 @@ int pm_schedule_suspend(struct device *d
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(pm_schedule_suspend);
-> > >
-> > > +static int rpm_drop_usage_count(struct device *dev)
-> > > +{
-> > > +       int ret;
-> > > +
-> > > +       ret = atomic_sub_return(1, &dev->power.usage_count);
-> > > +       if (ret >= 0)
-> > > +               return ret;
-> > > +
-> > > +       /*
-> > > +        * Because rpm_resume() does not check the usage counter, it will resume
-> > > +        * the device even if the usage counter is 0 or negative, so it is
-> > > +        * sufficient to increment the usage counter here to reverse the change
-> > > +        * made above.
-> > > +        */
-> > > +       atomic_inc(&dev->power.usage_count);
-> >
-> > Rather than this two-step process, couldn't we just do an
-> > "atomic_add_unless(&dev->power.usage_count, -1, 0)" - and check the
-> > return value?
->
-> No, we couldn't, because atomic_add_unless() returns a bool and we
-> need to know the new counter value (and in particular whether or not
-> it is 0).
 
-atomic_add_unless(&dev->power.usage_count, -1, 0) would return true as
-long as the counter value is greater than 0.
+Sorry for the noise I made due to misunderstanding :)
+Now this patch looks good to me and I think it's worth adding.
 
-If the counter has become 0, atomic_add_unless() would return false
-and not continue to decrease the value below zero. Isn't this exactly
-what we want?
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
->
-> I thought that it would be better to do the extra access in the
-> failing case only.
->
-> > > +       dev_warn(dev, "Runtime PM usage count underflow!\n");
-> > > +       return -EINVAL;
-> > > +}
-> > > +
-> >
-> > [...]
+and works fine with SLAB/SLOB/SLUB on my arm64 machine.
 
-Kind regards
-Uffe
+Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+
+Thanks!
+
+-- 
+Thanks,
+Hyeonggon
