@@ -2,119 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3995BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B37C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:15:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350271AbiDKWPc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 18:15:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
+        id S240530AbiDKWRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 18:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229678AbiDKWPa (ORCPT
+        with ESMTP id S229678AbiDKWRf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 18:15:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B49162E8;
-        Mon, 11 Apr 2022 15:13:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97EE76173E;
-        Mon, 11 Apr 2022 22:13:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C231C385A3;
-        Mon, 11 Apr 2022 22:13:13 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="KybX01zY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1649715191;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gSudnh1FVwn/cRuaWERLZCgg6VCPqB/kIypq5KjigTQ=;
-        b=KybX01zYWKByBGHHcfMAmavnP7L0p3jg7aV2fmW50XiFpz7B1LAEyJXHq3V4iRh7NnrsVG
-        WlIHJ9f0wTZy8WOOgmyYrCIi8QNK9nY17FyQTt9LA8IcFXu4dkJkUI/J2c7LyuJha0Ot6K
-        tj5LHYp+jIpnZFZ/H9s4FciDdH7BJ7o=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 43c1faab (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 11 Apr 2022 22:13:10 +0000 (UTC)
-Received: by mail-yb1-xb2a.google.com with SMTP id p65so11704866ybp.9;
-        Mon, 11 Apr 2022 15:13:10 -0700 (PDT)
-X-Gm-Message-State: AOAM531o3aMtHXCKOjNg5ZH62+QRpI2yDLO1zJgtX3N5nGdsMGVgt6jA
-        1CxTuqgqwJRJjIifKG5V2sqCHa2KYEntwdUMm64=
-X-Google-Smtp-Source: ABdhPJyrbHcZ7X1J23rQnANqA3RR06u0ZM3R7CT8etsKwGDR+r4LAk7JuXL3JmvpUSxPvBr0OEr8z3kykwSI+XeJazE=
-X-Received: by 2002:a5b:6cf:0:b0:61e:1371:3cda with SMTP id
- r15-20020a5b06cf000000b0061e13713cdamr24066153ybq.235.1649714889427; Mon, 11
- Apr 2022 15:08:09 -0700 (PDT)
+        Mon, 11 Apr 2022 18:17:35 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131E7DEE8;
+        Mon, 11 Apr 2022 15:15:20 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id 125so20336437iov.10;
+        Mon, 11 Apr 2022 15:15:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=g7ssmbicXhxLGtEZMln9w3mBi5v8MseNWcKzGLM3lmg=;
+        b=oBdDL9gNuHStJN1VZPf6NZy5rO0aWRZkD7c3AdMooQ8lHzP/QfcwM3Lw+1FOQ0Uy6w
+         nULa6eS13L1Ydz9pUu1RB+M63pIIZJZLD3QV5ItOhO8kGqgE53x5Lv37UgeKGpeJZO5i
+         m0V6xIaHv+RcM32g1kbQMZ+OJPstaFiSxu7/F/LEwg2vcLKjiSLdqdB0VpzqRqi5ZpBv
+         wpFWpKSVelhKxxvbl68hH5ZVo0v+QKTNQZ+MixAUVJ8PEAAEqTsC6JR7gEU8hQghtXBj
+         a9dLou/R9Trdmzz84wBWq7uNWvk5qUM0RBNuSHxZfZIJ/PZeeY7Zz5x6N7vKV/VaiwX0
+         Oisg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g7ssmbicXhxLGtEZMln9w3mBi5v8MseNWcKzGLM3lmg=;
+        b=XSBI8uoU+p3JTwzEi634cioeMlp7LD6Fym2KBPKXhCh7DNUqC9I5FE3cIn3g1bP5d2
+         fde1Y1xIEAEf/Vgl3UYPWRlzWbKDV3lv6BIOUvZUe6aKWJWQoKUHF//PHazCNX4XV2Fa
+         SvDH2FdY3n5sxfVUFcaLD/69hqHw+2QfFYFhkJF045MFj1eCfO+zqV8noSv3cNCtYB6M
+         yUzNKLIhXIDTbRlUQL4hB2/PkJYMFhNANQEjoM5trruapXg4YpLyAyS2rwukOy10N4xr
+         lSVA/HasGWHuEWZTkgz0cBw6U+UnG8o5D3vZtLOme8/nu/5uLpVrgo15DmwkbQH3ODI7
+         FkxA==
+X-Gm-Message-State: AOAM532HYqzW+2xuwxffTpd4GbaF+BlWc+1gSrjO9wbLPpmJBs46TRx5
+        wjdlX378E4cRQOsoCd0CXkSQEO0+KB0O7q2owvw=
+X-Google-Smtp-Source: ABdhPJweTm72MgwgMK+cRhRotLA0K3mOHxz8lljDaGTlNN1M2KM4QNsJkE6lERPm+9pRv/P3xaqFX4vP1fj3thmnbhA=
+X-Received: by 2002:a05:6638:1696:b0:326:2d59:7b40 with SMTP id
+ f22-20020a056638169600b003262d597b40mr4219180jat.103.1649715319123; Mon, 11
+ Apr 2022 15:15:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220410214951.55294-1-Jason@zx2c4.com> <20220410214951.55294-4-Jason@zx2c4.com>
- <87sfqkf2y1.ffs@tglx>
-In-Reply-To: <87sfqkf2y1.ffs@tglx>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 12 Apr 2022 00:07:58 +0200
-X-Gmail-Original-Message-ID: <CAHmME9qU7x3=KsjfH0qDW=isdcGxTweHbssvshYxkV5iHpamGw@mail.gmail.com>
-Message-ID: <CAHmME9qU7x3=KsjfH0qDW=isdcGxTweHbssvshYxkV5iHpamGw@mail.gmail.com>
-Subject: Re: [PATCH v2 03/11] m68k: use ktime_read_raw_clock() for
- random_get_entropy() instead of zero
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, "Theodore Ts'o" <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
-        X86 ML <x86@kernel.org>, linux-xtensa@linux-xtensa.org
+References: <20220407125224.310255-1-jolsa@kernel.org> <20220408232922.mz2vi2oaxf2fvnvt@MBP-98dd607d3435.dhcp.thefacebook.com>
+ <YlHrdhkfz+IuGbZM@krava>
+In-Reply-To: <YlHrdhkfz+IuGbZM@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 11 Apr 2022 15:15:08 -0700
+Message-ID: <CAEf4BzYXHeM+m64cV6_5TU0_BjotDVo+iw_wpJEWLkU9gsvfXg@mail.gmail.com>
+Subject: Re: [RFC bpf-next 0/4] bpf: Speed up symbol resolving in kprobe multi link
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+On Sat, Apr 9, 2022 at 1:24 PM Jiri Olsa <olsajiri@gmail.com> wrote:
+>
+> On Fri, Apr 08, 2022 at 04:29:22PM -0700, Alexei Starovoitov wrote:
+> > On Thu, Apr 07, 2022 at 02:52:20PM +0200, Jiri Olsa wrote:
+> > > hi,
+> > > sending additional fix for symbol resolving in kprobe multi link
+> > > requested by Alexei and Andrii [1].
+> > >
+> > > This speeds up bpftrace kprobe attachment, when using pure symbols
+> > > (3344 symbols) to attach:
+> > >
+> > > Before:
+> > >
+> > >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> > >   ...
+> > >   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+> > >
+> > > After:
+> > >
+> > >   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+> > >   ...
+> > >   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
+> > >
+> > >
+> > > There are 2 reasons I'm sending this as RFC though..
+> > >
+> > >   - I added test that meassures attachment speed on all possible functions
+> > >     from available_filter_functions, which is 48712 functions on my setup.
+> > >     The attach/detach speed for that is under 2 seconds and the test will
+> > >     fail if it's bigger than that.. which might fail on different setups
+> > >     or loaded machine.. I'm not sure what's the best solution yet, separate
+> > >     bench application perhaps?
+> >
+> > are you saying there is a bug in the code that you're still debugging?
+> > or just worried about time?
+>
+> just the time, I can make the test fail (cross the 2 seconds limit)
+> when the machine is loaded, like with running kernel build
+>
+> but I couldn't reproduce this with just paralel test_progs run
+>
+> >
+> > I think it's better for it to be a part of selftest.
+> > CI will take extra 2 seconds to run.
+> > That's fine. It's a good stress test.
 
-On Mon, Apr 11, 2022 at 10:18 AM Thomas Gleixner <tglx@linutronix.de> wrote:
-> > diff --git a/arch/m68k/include/asm/timex.h b/arch/m68k/include/asm/timex.h
-> > index 6a21d9358280..5351b10e1b18 100644
-> > --- a/arch/m68k/include/asm/timex.h
-> > +++ b/arch/m68k/include/asm/timex.h
-> > @@ -35,7 +35,7 @@ static inline unsigned long random_get_entropy(void)
-> >  {
-> >       if (mach_random_get_entropy)
-> >               return mach_random_get_entropy();
-> > -     return 0;
-> > +     return ktime_read_raw_clock();
->
-> I'd rather do something like this in a common header:
->
-> unsigned long random_get_entropy_fallback(void);
->
-> and use random_get_entropy_fallback() in the architecture specific
-> files.
->
-> That way you can encapsulate the fallback implementation in the random
-> code and if it turns out that ktime_read_raw_clock() is a stupid idea or
-> someone has a better idea then you have to change exactly one place and
-> not patch the whole tree again.
+I agree it's a good stress test, but I disagree on adding it as a
+selftests. The speed will depend on actual host machine. In VMs it
+will be slower, on busier machines it will be slower, etc. Generally,
+depending on some specific timing just causes unnecessary maintenance
+headaches. We can have this as a benchmark, if someone things it's
+very important. I'm impartial to having this regularly executed as
+it's extremely unlikely that we'll accidentally regress from NlogN
+back to N^2. And if there is some X% slowdown such selftest is
+unlikely to alarm us anyways. Sporadic failures will annoy us way
+before that to the point of blacklisting this selftests in CI at the
+very least.
 
-Absolutely. That's a good idea. I'll do that for v3.
 
-Jason
+>
+> ok, great
+>
+> thanks,
+> jirka
+>
+> >
+> > >   - copy_user_syms function potentially allocates lot of memory (~6MB in my
+> > >     tests with attaching ~48k functions). I haven't seen this to fail yet,
+> > >     but it might need to be changed to allocate memory gradually if needed,
+> > >     do we care? ;-)
+> >
+> > replied in the other email.
+> >
+> > Thanks for working on this!
