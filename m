@@ -2,130 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11188C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:40:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44C69C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345651AbiDKKm3 (ORCPT
+        id S1345657AbiDKKnE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:42:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
+        Mon, 11 Apr 2022 06:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbiDKKmY (ORCPT
+        with ESMTP id S239627AbiDKKnC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:42:24 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9833D4A3;
-        Mon, 11 Apr 2022 03:40:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649673610; x=1681209610;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mRbzriUl5s2UXxPQ8GII2Fe20BP3Ht4BRWMMBCGSd9w=;
-  b=BXst8Ls/7qvEjIxR1yB5UZiVoKiuqcO54vS4MqvIrveLwgvrlqy9JF0k
-   Ex1EQxW/xYSesmF8dPyPtamly5szea5+sDzE1F9Cd6/7pUnXukc4Y2NY0
-   cOmuV/4DySXR//pYuOfheL/P4qG4Jbal5APL6HMYDWCl/1yViC0u13jbJ
-   Hsj7QbqKQMCGU/F/S4Xdi09nRqweUsMMMLrhBpFlawATFtdR5FtTZBfDQ
-   fOt0hVRMYfUKc59ai9nCXzb2rw25IvZCSOqNY7JMU1Zo3EGUDTxnH9nYY
-   odc6IAj7mv7zBAYDi3HqS/NeE7aP2S3PRaa3hMpvGriR4mbUyCgU/Vt/x
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="260932307"
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="260932307"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:40:07 -0700
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="589832034"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:39:56 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1ndrP6-001BMJ-OC;
-        Mon, 11 Apr 2022 13:36:16 +0300
-Date:   Mon, 11 Apr 2022 13:36:16 +0300
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Tony Lindgren <tony@atomide.com>,
-        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/7] serial: core: Add support of runtime PM
-Message-ID: <YlQEoNDYRtoHDL68@smile.fi.intel.com>
-References: <20211115084203.56478-1-tony@atomide.com>
- <20211115084203.56478-2-tony@atomide.com>
- <YaX82wxybOZnPKpy@hovoldconsulting.com>
- <YbGwaOj0ZbEuNEPA@atomide.com>
- <YbHb7HRGGFRBorB7@smile.fi.intel.com>
- <YeaLL0cJFeIhz1Tr@atomide.com>
+        Mon, 11 Apr 2022 06:43:02 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA363DDDD
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:40:48 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id f3so14263893pfe.2
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:40:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qRHCFU3vsxOyCqqTuuci/uOq3jyLUilmY7vzgzXVdos=;
+        b=sGt3N6d9Ho2buqWhnPF0ISSL3HrI3WHKB0aJ4B4ANbex7ngxZlD+qNeWa1bFBV6+ko
+         MUtP0V2erl0anWMBYp7+5js9ODFfjHJ1e9fCN6JkKtKCfwlHT6cqgM1+YSCUP6cZeF8X
+         K+JxNicNmgcxaucTFmU+kbvkpetByXuuI22y5oB8JWBizdjxtC1EMVS8MNv9/vh+Ncjl
+         nIlfjFwnvjCgZrMZjTWN0Qu9lXQnX2vZsLR5oZPviv4mOvyGfWifrm5oVJ32z7txCRGQ
+         K8/+ubqGzLReeXPLXdt9Zl/Qe6BZ6MEtb9ezcP8MNQ7lI1z+KqAkoBY/n32KpTP1hRAf
+         94FQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qRHCFU3vsxOyCqqTuuci/uOq3jyLUilmY7vzgzXVdos=;
+        b=o3zkUTpbrqI61mcXwPqRJkfQDaw6569kW3x8D7t8K1TKTizg96el+QRG1vmBrtOPp8
+         tvEgCvL02L25ig4LdHfOnf47thHNqt9sxhnkj1YgaDIez+LHNMrbZWPQcXF4Yw521MQh
+         0+77RHnzCC0tAfA+vPgmhA1Y6LKmdYKE+05b9+u8XWD0EGpiE6DqeruP8xdZJDwpoOAI
+         ZOpAl+dbuC+Nhu8836j8AJN+D6xaKXj2FVZLshSBwnjplyfRAqGtwkvdz5MFJ+K9OOyN
+         qJbTXHwOuf6I8ukBFkqXFg0a1JLtPagvZcpP6qGFWOPiBh90dMMWI9+DtNLiZ9rxCsN+
+         WF4A==
+X-Gm-Message-State: AOAM532TYcqzxxsEjtmlEND0SvGFPQbyaIL+HLLw46wblUlE14VX744j
+        Qz9C2Hw1Um4u+9ZRrqDZxN+2CA==
+X-Google-Smtp-Source: ABdhPJzDyOCCKORv1EINtcfr9u0Tb/fmUdZcJ7oRQZQPJAvs7DB2DtQYDBnPvm+y2Igq/BvLhorJ4A==
+X-Received: by 2002:a65:4681:0:b0:382:b4f5:84c2 with SMTP id h1-20020a654681000000b00382b4f584c2mr25704425pgr.218.1649673647951;
+        Mon, 11 Apr 2022 03:40:47 -0700 (PDT)
+Received: from localhost ([139.177.225.245])
+        by smtp.gmail.com with ESMTPSA id x124-20020a627c82000000b00505aece5638sm5003524pfc.130.2022.04.11.03.40.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 03:40:47 -0700 (PDT)
+Date:   Mon, 11 Apr 2022 18:40:41 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        David Rientjes <rientjes@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>, james.morse@arm.com,
+        Barry Song <21cnbao@gmail.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Xiongchun duan <duanxiongchun@bytedance.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        Muchun Song <smuchun@gmail.com>
+Subject: Re: [PATCH v4 2/2] arm64: mm: hugetlb: Enable
+ HUGETLB_PAGE_FREE_VMEMMAP for arm64
+Message-ID: <YlQFqf9/VSyiZVKG@FVFYT0MHHV2J.usts.net>
+References: <20220331065640.5777-1-songmuchun@bytedance.com>
+ <20220331065640.5777-2-songmuchun@bytedance.com>
+ <d6e2581e-a8ac-4848-2c64-4a221bd03bca@arm.com>
+ <CAMZfGtWyXmPwZWsH_pP_M7p30uBww8BdP0DRXQRjBkT_VP=uUA@mail.gmail.com>
+ <46a99793-2e24-f3c5-c63f-ab2ad88966ea@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YeaLL0cJFeIhz1Tr@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <46a99793-2e24-f3c5-c63f-ab2ad88966ea@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-First of all, my apology for the long delay in answering / commenting on this.
-Second, Cc'ed to Ilpo.
-
-On Tue, Jan 18, 2022 at 11:41:03AM +0200, Tony Lindgren wrote:
-> * Andy Shevchenko <andriy.shevchenko@intel.com> [211209 10:37]:
-> > On Thu, Dec 09, 2021 at 09:29:44AM +0200, Tony Lindgren wrote:
-> > > * Johan Hovold <johan@kernel.org> [211130 10:29]:
-> > > > On Mon, Nov 15, 2021 at 10:41:57AM +0200, Tony Lindgren wrote:
-> > > > > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > > > > 
-> > > > > 8250 driver has wrong implementation of runtime power management, i.e.
-> > > > > it uses an irq_safe flag. The irq_safe flag takes a permanent usage count
-> > > > > on the parent device preventing the parent from idling. This patch
-> > > > > prepares for making runtime power management generic by adding runtime PM
-> > > > > calls to serial core once for all UART drivers.
-> > > > > 
-> > > > > As we have serial drivers that do not enable runtime PM, and drivers that
-> > > > > enable runtime PM, we add new functions for serial_pm_resume_and_get() and
-> > > > > serial_pm_autosuspend() functions to handle errors and allow the use also
-> > > > > for cases when runtime PM is not enabled. The other option considered was
-> > > > > to not check for runtime PM enable errors. But some CPUs can hang when the
-> > > > > clocks are not enabled for the device, so ignoring the errors is not a good
-> > > > > option. Eventually with the serial port drivers updated, we should be able
-> > > > > to just switch to using the standard runtime PM calls with no need for the
-> > > > > wrapper functions.
-> > > > 
-> > > > A third option which needs to be considered is to always enable runtime
-> > > > pm in core but to keep the ports active while they are opened unless a
-> > > > driver opts in for more aggressive power management. This is how USB
-> > > > devices are handled for example.
-> > > > 
-> > > > A next step could then be to move over uart_change_pm() to be handled
-> > > > from the pm callbacks.
-> > > 
-> > > Yes that would be nice to do eventually :)
+On Mon, Apr 11, 2022 at 02:47:26PM +0530, Anshuman Khandual wrote:
 > 
-> I think we should do the "third option" above as the first preparatory patch.
-> It can be done separately from the rest of the series, and we avoid adding
-> serial layer specific wrappers around runtime PM calls in the later patches.
 > 
-> Below is what I came up with for the preparatory patch, can you guys please
-> take a look and see if you have better ideas?
+> On 4/5/22 14:08, Muchun Song wrote:
+> > On Tue, Apr 5, 2022 at 12:44 PM Anshuman Khandual
+> > <anshuman.khandual@arm.com> wrote:
+> >>
+> >>
+> >>
+> >> On 3/31/22 12:26, Muchun Song wrote:
+> >>> 1st concern:
+> >>> '''
+> >>> But what happens when a hot remove section's vmemmap area (which is
+> >>> being teared down) is nearby another vmemmap area which is either created
+> >>> or being destroyed for HugeTLB alloc/free purpose. As you mentioned
+> >>> HugeTLB pages inside the hot remove section might be safe. But what about
+> >>> other HugeTLB areas whose vmemmap area shares page table entries with
+> >>> vmemmap entries for a section being hot removed ? Massive HugeTLB alloc
+> >>> /use/free test cycle using memory just adjacent to a memory hotplug area,
+> >>> which is always added and removed periodically, should be able to expose
+> >>> this problem.
+> >>> '''
+> >>>
+> >>> Answer: At the time memory is removed, all HugeTLB pages either have been
+> >>> migrated away or dissolved.  So there is no race between memory hot remove
+> >>> and free_huge_page_vmemmap().  Therefore, HugeTLB pages inside the hot
+> >>> remove section is safe.  Let's talk your question "what about other
+> >>
+> >> HugeTLB pages inside the memory range is safe but concern is about the
+> >> vmemmap mapping for the HugeTLB which might share intermediate entries
+> >> with vmemmap mapping for the memory range/section being removed.
+> > 
+> > The shared page table level only could be PMD, PUD and PGD, the PTE
+> > page table cannot be shared with other sections, and we only exchange
+> > PTEs for vmemmap mapping.
 > 
-> For system suspend and resume, it seems we don't need to do anything as
-> runtime PM is anyways disabled already in prepare.
+> Right, the shared entries (if any) are not at the leaf level.
 > 
-> Andy, care to give the following also a try for your serial port test
-> cases?
+> > 
+> >>
+> >>> HugeTLB areas whose vmemmap area shares page table entries with vmemmap
+> >>> entries for a section being hot removed ?", the question is not
+> >>
+> >> Right.
+> >>
+> >>> established.  The minimal granularity size of hotplug memory 128MB (on
+> >>> arm64, 4k base page), any HugeTLB smaller than 128MB is within a section,
+> >>> then, there is no share PTE page tables between HugeTLB in this section
+> >>
+> >> 128MB is the hot removable granularity but, its corresponding vmemmap
+> >> range is smaller i.e (128MB/4K) * sizeof(struct page). Memory section
+> >> getting hot removed (its vmemmap mapping being teared down) along with
+> >> HugeTLB (on another section) vmemmap remap operation, could not collide
+> >> while inside vmemmap mapping areas on init_mm ?
+> > 
+> > The boundary address of a section is aligned with 128MB and its
+> > corresponding vmemmap boundary address is aligned with 2MB
+> > which is mapped with a separated PTE page table (or a PMD entry).
+> 
+> Even if these PMD entries split during HugeTLB remapping, they will not
+> conflict with another memory section being removed simultaneously. Also
+> any shared page table pages will not be freed, during memory hot remove
+> operation as vmemmap remap does not delete any entries.
+> 
+> But just wondering if during PMD slit and PTE page table page addition,
+> these PMD entries could not be empty, even temporarily ?
+>
 
-I'm a bit off of the UART work nowadays, but luckily we have Ilpo who is
-pretty much ramped up on the topic. Please, include him in all your work
-WRT 8250 UART improvements. I hope Ilpo might have time to test the patch
-mentioned in this message or give an idea how to do better, if possibly.
+The pmd entry is either a PTE page table or a PMD leaf entry, it cannot
+be a empty entry forever.  More details can refer to
+__split_vmemmap_huge_pmd().
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Thanks.
+ 
