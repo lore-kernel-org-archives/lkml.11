@@ -2,115 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D13C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F54C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:49:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245067AbiDKGv0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 02:51:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
+        id S245074AbiDKGwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 02:52:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231206AbiDKGvW (ORCPT
+        with ESMTP id S231206AbiDKGwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 02:51:22 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44418C3;
-        Sun, 10 Apr 2022 23:49:07 -0700 (PDT)
-X-UUID: 629b40469371445890242bf9eddf07fe-20220411
-X-UUID: 629b40469371445890242bf9eddf07fe-20220411
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 657101163; Mon, 11 Apr 2022 14:49:01 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 11 Apr 2022 14:48:59 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 11 Apr 2022 14:48:59 +0800
-Message-ID: <292e5b8df8a011fdbb9c271e39ba927c6076484a.camel@mediatek.com>
-Subject: Re: [PATCH V2 01/15] dt-bindings: cpufreq: mediatek: Add MediaTek
- CCI property
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>
-CC:     <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
-        <roger.lu@mediatek.com>, <hsinyi@google.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Mon, 11 Apr 2022 14:48:59 +0800
-In-Reply-To: <0ef8f2c3-fd16-041b-3304-b167a2a36ff9@linaro.org>
-References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
-         <20220408045908.21671-2-rex-bc.chen@mediatek.com>
-         <a171f33c-cda1-8602-ac67-93076b676578@linaro.org>
-         <8d466903d42dbc823f4d0a245378d983ab904435.camel@mediatek.com>
-         <0ef8f2c3-fd16-041b-3304-b167a2a36ff9@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 11 Apr 2022 02:52:02 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E4118B13;
+        Sun, 10 Apr 2022 23:49:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649659789; x=1681195789;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=Im18RwYdvETKIFnmTzUmsr5SNvinw0XNRdaj7/G9hPU=;
+  b=nahHGn8CB8nwBoomeylnzecH4kkM2bHE4szTEDm3ePuuo/gahsbgWve7
+   xNDLJb9SlFijIGdBXMqIrupJu8JkhGwfYpF16hiQxeo/wVXzg6DTSk5bi
+   uNwosBm1hYTDsTzHRddJz6CKjWgHiVdJpTFAPDsoKMPnosaNqiGhxncWP
+   yXZCbxXTFAdz1WvyrkpHVCVM7UjDW2ZkgHJFSf9Idefb2qhlTAh/PWyqH
+   R/1Wk8T7S/sch3mHV6O+/aj/26POc2LVBsw7E8xYzSAuyBUYKSZlbGBpU
+   fBbjd13zDwJHDtTpf1BLGku8OYRt+KBo7bFPeUJc2Z03/8E6nUOub4Rwc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="324959680"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="324959680"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2022 23:49:49 -0700
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="525318292"
+Received: from srkondle-mobl.amr.corp.intel.com (HELO [10.212.113.6]) ([10.212.113.6])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2022 23:49:47 -0700
+Message-ID: <a8e79d89-ec91-8f04-88b5-be932e9fb020@intel.com>
+Date:   Sun, 10 Apr 2022 23:49:52 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+ <20220405234343.74045-5-kirill.shutemov@linux.intel.com>
+ <043469ae-427c-b2bb-89ff-db8975894266@intel.com>
+ <20220409202035.plaiekzuihov4kvq@box.shutemov.name>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCHv4 4/8] x86/boot/compressed: Handle unaccepted memory
+In-Reply-To: <20220409202035.plaiekzuihov4kvq@box.shutemov.name>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-08 at 13:49 +0200, Krzysztof Kozlowski wrote:
-> On 08/04/2022 12:24, Rex-BC Chen wrote:
-> > > 
-> > > You need to describe the type. I am a bit confused whether this
-> > > is a
-> > > cci
-> > > (so cci-control-port property?) or an interconnect (so
-> > > interconnect
-> > > property)... It does not look like a generic property, so you
-> > > need
-> > > vendor prefix.
-> > 
-> > Hello Krzysztof,
-> > 
-> > Thanks for your review.
-> > 
-> > Yes, this cci is not arm's cci (cci-control-port property), and
-> > it's
-> > mediatek's cci. I will revise this name to "mtk-cci" in next
-> > version.
+On 4/9/22 13:20, Kirill A. Shutemov wrote:
+> On Fri, Apr 08, 2022 at 10:57:17AM -0700, Dave Hansen wrote:
+...
+>> It's a real shame that we have to duplicate this code.  Is there
+>> anything crazy we could do here like
+>>
+>> #include "../../../lib/find_bit.c"
+>>
+>> ?
 > 
-> Vendor is "mediatek" and comma comes after it. See devicetree spec
-> paragraph 2.3.1.
+> Well, it would require fracturing source files on the kernel side.
 > 
-
-Hello Krzysztof,
-
-OK, I will revise as "mediatek,cci" in next version.
-
-> > 
-> > > 
-> > > > +       For details, please refer to
-> > > > +       Documentation/devicetree/bindings/devfreq/mtk-cci.yaml
-> > > 
-> > > Such file does not exist.
-> > 
-> > This mediatek cci is still upstreaming in this patch:
-> > message-id:20220408052150.22536-2-johnson.wang@mediatek.com
-> > 
-> > Do you have suggestion that I should put this reference?
-> > Or I just remove it and describe the mediatek cci in detail?
+> __bitmap_set() and __bitmap_clear() are now in lib/bitmap.c.
 > 
-> It's ok, but you need to keep path/filename updated.
+> _find_next_bit() is in lib/find_bit.c.
 > 
+> Both lib/bitmap.c and lib/find_bit.c have a lot of stuff that are not used
+> here. I guess we would need to split them into few pieces to make it in
+> sane way. Do you want me to go this path?
+
+I'd be curious if others have any sane ideas for how to do it.
+
+One idea would be to stick most of the implementation in a header that
+we can #include.  Then, lib/find_bit.c #includes that header and does
+something simple like:
+
+#include "header.h"
+int _find_next_bit(...)
+{
+	return _find_next_bit_from_header();
+}
+EXPORT_SYMBOL(_find_next_bit);
+
+
+>>> diff --git a/arch/x86/boot/compressed/misc.c b/arch/x86/boot/compressed/misc.c
+>>> index fa8969fad011..c1d9d71a6615 100644
+>>> --- a/arch/x86/boot/compressed/misc.c
+>>> +++ b/arch/x86/boot/compressed/misc.c
+>>> @@ -18,6 +18,7 @@
+>>>  #include "../string.h"
+>>>  #include "../voffset.h"
+>>>  #include <asm/bootparam_utils.h>
+>>> +#include <asm/unaccepted_memory.h>
+>>>  
+>>>  /*
+>>>   * WARNING!!
+>>> @@ -43,6 +44,9 @@
+>>>  void *memmove(void *dest, const void *src, size_t n);
+>>>  #endif
+>>>  
+>>> +#undef __pa
+>>> +#define __pa(x)	((unsigned long)(x))
+>>
+>> Those #undef's always worry me.  Why is this one needed?
 > 
-> Best regards,
-> Krzysztof
+> arch/x86/boot/compressed/misc.c:47:9: warning: '__pa' macro redefined [-Wmacro-redefined]
+> #define __pa(x) ((unsigned long)(x))
+>         ^
+> arch/x86/include/asm/page.h:47:9: note: previous definition is here
+> #define __pa(x)         __phys_addr((unsigned long)(x))
+> 
+> Note that sev.c does the same. At least we are consistent :)
 
-From your comment of cci series.
-I will write is to be
-"Documentation/devicetree/bindings/devfreq/mediatek,cci.yaml"
+Ugh.  Please do look into fixing this properly.  The SEV folks will
+thank you. :)
 
-Thanks!
+>>> +void accept_memory(phys_addr_t start, phys_addr_t end)
+>>> +{
+>>> +	unsigned long *unaccepted_memory;
+>>> +	unsigned int rs, re;
+>>> +
+>>> +	unaccepted_memory = (unsigned long *)boot_params->unaccepted_memory;
+>>> +	rs = start / PMD_SIZE;
+>>
+>> OK, so start is a physical address, PMD_SIZE is 2^21, and 'rs' is an
+>> unsigned int.  That means 'rs' can, at most, represent a physical
+>> address at 2^(21+32), or 2^53.  That's cutting it a *bit* close, don't
+>> you think?
+>>
+>> Could we please just give 'rs' and 're' real names and make them
+>> 'unsigned long's, please?  It will surely save at least one other person
+>> from doing math.  The find_next_bit() functions seem to take ulongs anyway.
+> 
+> Okay. 'range_start' and 'range_end' are good enough names?
 
-BRs,
-Rex
+Yep, works for me.
 
