@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7832BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41317C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:22:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345368AbiDKKYh (ORCPT
+        id S1345413AbiDKKYm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
+        Mon, 11 Apr 2022 06:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345483AbiDKKWs (ORCPT
+        with ESMTP id S1345521AbiDKKWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:22:48 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E28040A17;
-        Mon, 11 Apr 2022 03:20:32 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id p25so7463621pfn.13;
-        Mon, 11 Apr 2022 03:20:32 -0700 (PDT)
+        Mon, 11 Apr 2022 06:22:55 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8172B3F89E;
+        Mon, 11 Apr 2022 03:20:41 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id k14so13819171pga.0;
+        Mon, 11 Apr 2022 03:20:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XPwt8sGod7zPq0cTkkL/MnhWtC0l3QC4vFa0Zg+Ea+E=;
-        b=c/fA6Q9EuU4ofYYxy79GJYlvLXT8ykwtiA/LrXPGlWubjmYLzm14ZODjef+/HFzewP
-         c3m5daV5trxi1SWgrC8rouV1rYp//gVFSw67Q4b/G/XBawK2hGGLFYYJ1VvmW7rJJN6X
-         vD/yCH2I9BfcUyZfHa9ElFDLmGMECz8BQZmdH0MmQUcCQmowUbEzLGta9sj8BeWQx1IZ
-         FDBUnLAiMUuKzOFg+Y9L6Fxe7p05fQ5dQ7bl+UllZTVwah20R9BtObN1o15fVg8MONsm
-         UR6Y69cASB6mJ+QtHvvQqhcyuaobioaf1cwUwdHr1STb5qbaQamCAd7axso0W/n9OQ+g
-         Glrw==
+        bh=vJaHaz0KFGmDsC5Hs4aNvrwMBMAGrIjrYVANwcH2Ay4=;
+        b=lqKt4ake3F4700E71NnCaowOthLiFwaZqqbahm936uui8RL5RFbWALOhEpjByZGyF3
+         c2uKu6OqoJK3cBNVdjC0STJAyu4sfNqsc4OrV8rA8pWejJ/ocRfKKQvcntR2cp/E3Vrk
+         e+AnCXqPERfJibH0DOwkmCACTtm1Dfe1Q/WFemb9BMQPFoUIn/E8QdwCPmZLWoOEpItk
+         1DypE2JzEXiGvSa9LUIRHTTNUKEcqemJcpbvDRPbUQVfmJIF5wYdHQ0ki2FetK+d29Zk
+         iarRsGPDLXQlUM3BzHDShOIja+Aij8H1BUpRIKEncY2n+JSP07jdZhkRHLDRGg5iXHzd
+         qYdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XPwt8sGod7zPq0cTkkL/MnhWtC0l3QC4vFa0Zg+Ea+E=;
-        b=a9frOXmGNNFeAYwZzIgElkxmiOzxNV+Bcnvnsyg2LGCL1NItqwYc4ZIv7i2xEge/0i
-         +aXNZo3vfb4sItEaY+jH5I2vuCzkPGgoTJEPy6WlJJ9+J9l5bfGmcKYh6HMbrQwIn7qN
-         CgUmdh8ThShgqL5l0Ie4D63a4s9v1MdyuYcIKZRVysGPRdS87X/I1FVAc+G8CnBMbtJ2
-         xJNXXhBqK9Ahsqd3igh8yBZ4nXIpmQA8YkY56KgeszhJLU/edaCVV1SvVnZ47qp7a6Oa
-         suYIGrgv9cp4nvt9KnjtcCGst9AqG3EUiYJgydm0kpetxKIFPFvaMIQmHLA/+qhUt1IH
-         YgSg==
-X-Gm-Message-State: AOAM533JFi0S8tSX1dO+/FJ07dDgAVnIciQV6BEUupU5qFXkgGo4W+S4
-        hlKIlhevEC4iLjAmqxLb0HM=
-X-Google-Smtp-Source: ABdhPJxQDPKgR0zGDRMxI8sWUu0g3w4WOwnsewfVr5s5E0e4ZXNfIV4MFQDzHg+xFLNtviou/+x2oQ==
-X-Received: by 2002:a63:195f:0:b0:399:1f0e:a21d with SMTP id 31-20020a63195f000000b003991f0ea21dmr25580971pgz.393.1649672432192;
-        Mon, 11 Apr 2022 03:20:32 -0700 (PDT)
+        bh=vJaHaz0KFGmDsC5Hs4aNvrwMBMAGrIjrYVANwcH2Ay4=;
+        b=S21fp3eKjOfCJ6VCNJoNZlwNKQnJ21Ls5EpsvzTu0+O349wx6zajLfDJcQs+HKdmxv
+         EuBCIRcg57n/BQRlhbU7aVBq0Tj/SxUqcCEo0vzWU51XR4XBACmY0YG/4bfOL9NYpyCI
+         5u9E+tC4iR23s8SV3GgazdfBN1hnG9I+4mTgC+GboV65Lm2ZxsASaCw1kePWE+IvEQlE
+         udO4nIJ4qQuC1swOFr9yL009v5wVH1ncOg0KPpkmYqjkn3V3f1w7TfdAcC7FZtY57/T6
+         bDdI/hCgdRESaxf/NOgkmMIum/nb+EC+CVgwD7veBciSxZeFx7uG1a4R/IHdYf937ag1
+         N3mg==
+X-Gm-Message-State: AOAM531wBQ3DlCa3eDHiRfMDU8NJUbYHfc8b83p1Dtm3rvCgGMs/WR2x
+        WITHsX5ydCkpmOWEAg4U+Qg=
+X-Google-Smtp-Source: ABdhPJw3jaBb29N1ugVFM8tRPizhnJ+doDoiTtXwSP8r0pdh0ox3OlPYZMiv0tQn1P40X5a/TN42Qg==
+X-Received: by 2002:aa7:8049:0:b0:4fd:bfde:45eb with SMTP id y9-20020aa78049000000b004fdbfde45ebmr32226488pfm.76.1649672441038;
+        Mon, 11 Apr 2022 03:20:41 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.112])
-        by smtp.gmail.com with ESMTPSA id h10-20020a056a00230a00b004faa0f67c3esm34012280pfh.23.2022.04.11.03.20.29
+        by smtp.gmail.com with ESMTPSA id h10-20020a056a00230a00b004faa0f67c3esm34012280pfh.23.2022.04.11.03.20.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 03:20:32 -0700 (PDT)
+        Mon, 11 Apr 2022 03:20:40 -0700 (PDT)
 From:   Like Xu <like.xu.linux@gmail.com>
 X-Google-Original-From: Like Xu <likexu@tencent.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -59,9 +59,9 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Wanpeng Li <wanpengli@tencent.com>,
         Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
         kvm@vger.kernel.org
-Subject: [PATCH RESEND v12 13/17] KVM: x86/pmu: Move pmc_speculative_in_use() to arch/x86/kvm/pmu.h
-Date:   Mon, 11 Apr 2022 18:19:42 +0800
-Message-Id: <20220411101946.20262-14-likexu@tencent.com>
+Subject: [PATCH RESEND v12 16/17] KVM: x86/cpuid: Refactor host/guest CPU model consistency check
+Date:   Mon, 11 Apr 2022 18:19:45 +0800
+Message-Id: <20220411101946.20262-17-likexu@tencent.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220411101946.20262-1-likexu@tencent.com>
 References: <20220411101946.20262-1-likexu@tencent.com>
@@ -73,60 +73,90 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Like Xu <like.xu@linux.intel.com>
 
-It allows this inline function to be reused by more callers in
-more files, such as pmu_intel.c.
+For the same purpose, the leagcy intel_pmu_lbr_is_compatible() can be
+renamed for reuse by more callers, and remove the comment about LBR
+use case can be deleted by the way.
 
 Signed-off-by: Like Xu <like.xu@linux.intel.com>
 Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/kvm/pmu.c | 11 -----------
- arch/x86/kvm/pmu.h | 11 +++++++++++
- 2 files changed, 11 insertions(+), 11 deletions(-)
+ arch/x86/kvm/cpuid.h         |  5 +++++
+ arch/x86/kvm/vmx/pmu_intel.c | 12 +-----------
+ arch/x86/kvm/vmx/vmx.c       |  2 +-
+ arch/x86/kvm/vmx/vmx.h       |  1 -
+ 4 files changed, 7 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index c1312cd32237..122e4bb4fa47 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -500,17 +500,6 @@ void kvm_pmu_init(struct kvm_vcpu *vcpu)
- 	kvm_pmu_refresh(vcpu);
+diff --git a/arch/x86/kvm/cpuid.h b/arch/x86/kvm/cpuid.h
+index 8a770b481d9d..ac72aabba981 100644
+--- a/arch/x86/kvm/cpuid.h
++++ b/arch/x86/kvm/cpuid.h
+@@ -145,6 +145,11 @@ static inline int guest_cpuid_model(struct kvm_vcpu *vcpu)
+ 	return x86_model(best->eax);
  }
  
--static inline bool pmc_speculative_in_use(struct kvm_pmc *pmc)
--{
--	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
--
--	if (pmc_is_fixed(pmc))
--		return fixed_ctrl_field(pmu->fixed_ctr_ctrl,
--			pmc->idx - INTEL_PMC_IDX_FIXED) & 0x3;
--
--	return pmc->eventsel & ARCH_PERFMON_EVENTSEL_ENABLE;
--}
--
- /* Release perf_events for vPMCs that have been unused for a full time slice.  */
- void kvm_pmu_cleanup(struct kvm_vcpu *vcpu)
- {
-diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
-index 06e750824da1..b51f804737bd 100644
---- a/arch/x86/kvm/pmu.h
-+++ b/arch/x86/kvm/pmu.h
-@@ -143,6 +143,17 @@ static inline u64 get_sample_period(struct kvm_pmc *pmc, u64 counter_value)
- 	return sample_period;
- }
- 
-+static inline bool pmc_speculative_in_use(struct kvm_pmc *pmc)
++static inline bool cpuid_model_is_consistent(struct kvm_vcpu *vcpu)
 +{
-+	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
-+
-+	if (pmc_is_fixed(pmc))
-+		return fixed_ctrl_field(pmu->fixed_ctr_ctrl,
-+					pmc->idx - INTEL_PMC_IDX_FIXED) & 0x3;
-+
-+	return pmc->eventsel & ARCH_PERFMON_EVENTSEL_ENABLE;
++	return boot_cpu_data.x86_model == guest_cpuid_model(vcpu);
 +}
 +
- void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel);
- void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int fixed_idx);
- void reprogram_counter(struct kvm_pmu *pmu, int pmc_idx);
+ static inline int guest_cpuid_stepping(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_cpuid_entry2 *best;
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index f2c94e9dfa4b..84b326c4dce9 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -167,16 +167,6 @@ static inline struct kvm_pmc *get_fw_gp_pmc(struct kvm_pmu *pmu, u32 msr)
+ 	return get_gp_pmc(pmu, msr, MSR_IA32_PMC0);
+ }
+ 
+-bool intel_pmu_lbr_is_compatible(struct kvm_vcpu *vcpu)
+-{
+-	/*
+-	 * As a first step, a guest could only enable LBR feature if its
+-	 * cpu model is the same as the host because the LBR registers
+-	 * would be pass-through to the guest and they're model specific.
+-	 */
+-	return boot_cpu_data.x86_model == guest_cpuid_model(vcpu);
+-}
+-
+ bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu)
+ {
+ 	struct x86_pmu_lbr *lbr = vcpu_to_lbr_records(vcpu);
+@@ -599,7 +589,7 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 	nested_vmx_pmu_refresh(vcpu,
+ 			       intel_is_valid_msr(vcpu, MSR_CORE_PERF_GLOBAL_CTRL));
+ 
+-	if (intel_pmu_lbr_is_compatible(vcpu))
++	if (cpuid_model_is_consistent(vcpu))
+ 		x86_perf_get_lbr(&lbr_desc->records);
+ 	else
+ 		lbr_desc->records.nr = 0;
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index c8d768592c8c..945d169eb07f 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -2237,7 +2237,7 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 			if ((data & PMU_CAP_LBR_FMT) !=
+ 			    (vmx_get_perf_capabilities() & PMU_CAP_LBR_FMT))
+ 				return 1;
+-			if (!intel_pmu_lbr_is_compatible(vcpu))
++			if (!cpuid_model_is_consistent(vcpu))
+ 				return 1;
+ 		}
+ 		ret = kvm_set_msr_common(vcpu, msr_info);
+diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+index 9d890e600d27..ef2a2aeccb19 100644
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -95,7 +95,6 @@ union vmx_exit_reason {
+ #define vcpu_to_lbr_records(vcpu) (&to_vmx(vcpu)->lbr_desc.records)
+ 
+ void intel_pmu_cross_mapped_check(struct kvm_pmu *pmu);
+-bool intel_pmu_lbr_is_compatible(struct kvm_vcpu *vcpu);
+ bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu);
+ 
+ int intel_pmu_create_guest_lbr_event(struct kvm_vcpu *vcpu);
 -- 
 2.35.1
 
