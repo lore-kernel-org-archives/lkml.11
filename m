@@ -2,142 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F27C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:19:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B54C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347790AbiDKPVm (ORCPT
+        id S1347787AbiDKPW1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:21:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
+        Mon, 11 Apr 2022 11:22:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347770AbiDKPVi (ORCPT
+        with ESMTP id S1347330AbiDKPWX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:21:38 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4516E25C3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:19:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649690364; x=1681226364;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=EpXc4mnnhUPNf1SAsOLHkEkBT9oLhamkTLhB7CDZfvE=;
-  b=byjUod3mRZismIPhuTYYBeDnWq9MWXs8jMiu2x0Pk6Qjx7o3NVGpYiJM
-   Ar932F7/FpD3ynxalNAMmRqyaXm+Vfwv/wLPYAOYY24rk9d9DBflMHbYS
-   jCxqPX69n04pymYH0WboA9IyZ02T4TZ5gr4yVjasNggL4jZIiGmYhMPua
-   xbWCSkLG8LZdoHPhZb7OeMyoJH//ezvTFUJg14XaMN7pRzFRjLloI+rCb
-   RUV60r6u2KgT9HI1WR8jHmpJ/aQ8HNoFy4hzCHh/B674qR+6YqZ/dKW6V
-   hCS7RwC62cE+Ed26J8/VKfKMkOYtQWiQx4xLCqqYY6tqtcZxZMrbCE/Ab
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="348580133"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="348580133"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 08:18:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="644120811"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 11 Apr 2022 08:18:48 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ndvoV-0001w7-Lx;
-        Mon, 11 Apr 2022 15:18:47 +0000
-Date:   Mon, 11 Apr 2022 23:17:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vineet Gupta <vgupta@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org
-Subject: include/linux/compiler_types.h:328:45: error: call to
- '__compiletime_assert_297' declared with attribute error: BUILD_BUG_ON
- failed: (PTRS_PER_PGD * sizeof(pgd_t)) > PAGE_SIZE
-Message-ID: <202204112315.2CXKJ59h-lkp@intel.com>
+        Mon, 11 Apr 2022 11:22:23 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A9065BE;
+        Mon, 11 Apr 2022 08:20:09 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id 17so20571160lji.1;
+        Mon, 11 Apr 2022 08:20:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fwRs58ucT9BHBffcnjN/Epz6AjEi7FoOYtFJGRPRifA=;
+        b=Q3RSM0usi4SktvlLI8Zt7gDOwQl21dVSI38BL2S1gdbSZQReSFOx/5GL2ZL9ZIsHwf
+         JUWFD0EP5M/sQ1tCihLp9cjx8D0EPTGd7cNScXr83W3kKPvDTfZIWQ3iZckaWuMcIvyw
+         iF+EeY9xdlcyZkRxBEvdgJKBMQNL4eUfaW/VnxA5oezjE5PdHQQDQNzbG3k/DNJ4K/pn
+         9xHPL7yUQw7ukZvbcT0J3uC2k8eT0YtiqzA5mrAY+mNNYEgAyTc7Ej3wsCVLlzjpPC9M
+         LRgyUdy6pK6Q6PaNzub0upnexrrRYoj+tI996jCmwwNtEmMdpyiy6HXu8aGfEoEtQP3o
+         +3JA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fwRs58ucT9BHBffcnjN/Epz6AjEi7FoOYtFJGRPRifA=;
+        b=FQQQSZKhkTkXaGvycXvXpL0u500UNGjHHwmcJ7WTV3Y8VvHb5bj4rfxLV+rAy9UOrc
+         p+j932Sk9ZqC21Q5jNDfLVjLRNIWjMiJfcWyi49U9SNSEmZ1CPWg7Mf2o61qFq5gP3OL
+         RL70TpsGH97D2ff6WNP6cBBj254lpAHLZbbxLP19+mcX/Z+rV3HACnmMTCK5PX1e7gET
+         T3zNTUpEdcqu436ypyQXKjcGIn6pkIh8GVGPkMOb73njipLgIJoU/gz1YX/Xm2dE/a3Y
+         lPe+dhiAY3Hqs2HnSNknVfjIPX3OJewfksxEvz5Us90OzoVZ0czrMH21TRnBWTyuUlyv
+         YFpw==
+X-Gm-Message-State: AOAM5335Orz+q/8QWs1P+JoIf3PWcFCHEfApPrkPaqSEX0dzO7TJSdou
+        P76w1cQqusROwIgGfzHziSg=
+X-Google-Smtp-Source: ABdhPJzZgEQdQ9LUYDWLUNfekyt+uGoqDblZ5uQZLkrmmOrJMNg+8ntDYpwfvTo2ocv5PDzdr7VGqw==
+X-Received: by 2002:a2e:9e02:0:b0:249:7d50:bd8c with SMTP id e2-20020a2e9e02000000b002497d50bd8cmr20061814ljk.327.1649690407456;
+        Mon, 11 Apr 2022 08:20:07 -0700 (PDT)
+Received: from pc638.lan ([155.137.26.201])
+        by smtp.gmail.com with ESMTPSA id s6-20020ac25fa6000000b0044313e88020sm3359928lfe.202.2022.04.11.08.20.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 08:20:06 -0700 (PDT)
+From:   Uladzislau Rezki <urezki@gmail.com>
+X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
+Date:   Mon, 11 Apr 2022 17:20:04 +0200
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Uladzislau Rezki <urezki@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        rcu <rcu@vger.kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+        frederic@kernel.org
+Subject: Re: [PATCH RFC] rcu/nocb: Provide default all-CPUs mask for
+ RCU_NOCB_CPU=y
+Message-ID: <YlRHJK6ldixwm8IR@pc638.lan>
+References: <20220408142232.GA4285@paulmck-ThinkPad-P17-Gen-1>
+ <CAEXW_YQWeqfcKdAKmCn4fFGyWXjOGd=29wvi6bL3k7s2bGkDJw@mail.gmail.com>
+ <20220408155002.GF4285@paulmck-ThinkPad-P17-Gen-1>
+ <CAEXW_YQDgSO2XkkVhN3RBBz3vwYdAtTuPz-xYYsAPnwEnbYZPA@mail.gmail.com>
+ <20220408174908.GK4285@paulmck-ThinkPad-P17-Gen-1>
+ <CAEXW_YQ+oE3xQ0tLnBMFxRXLqKZkT5UfjF+CULxnhf9F-dEA2g@mail.gmail.com>
+ <CAEXW_YRK2t2JO4RyBTd8cR9sTVpgP7Z5Ywhb1g7CRz3HJ_kNQA@mail.gmail.com>
+ <20220408205440.GL4285@paulmck-ThinkPad-P17-Gen-1>
+ <YlCtJzlJDj1DBHQB@pc638.lan>
+ <20220411140846.GA84069@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220411140846.GA84069@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vineet,
+> On Fri, Apr 08, 2022 at 11:46:15PM +0200, Uladzislau Rezki wrote:
+> > > 
+> > > Here is what I believe you are proposing:
+> > > 
+> > > 
+> > > 				---	rcu_nocbs	rcu_nocbs=???
+> > > 
+> > > CONFIG_RCU_NOCB_CPU_ALL=n	[1]	[2]		[3]
+> > > 
+> > > CONFIG_RCU_NOCB_CPU_ALL=y	[4]	[4]		[3]
+> > > 
+> > > 
+> > > [1]	No CPUs are offloaded at boot.	CPUs cannot be offloaded at
+> > > 	runtime.
+> > > 
+> > > [2]	No CPUs are offloaded at boot, but any CPU can be offloaded
+> > > 	(and later de-offloaded) at runtime.
+> > > 
+> > > [3]	The set of CPUs that are offloaded at boot are specified by the
+> > > 	mask, represented above with "???".  The CPUs that are offloaded
+> > > 	at boot can be de-offloaded and offloaded at runtime.  The CPUs
+> > > 	not offloaded at boot cannot be offloaded at runtime.
+> > > 
+> > > [4]	All CPUs are offloaded at boot, and any CPU can be de-offloaded
+> > > 	and offloaded at runtime.  This is the same behavior that
+> > > 	you would currently get with CONFIG_RCU_NOCB_CPU_ALL=n and
+> > > 	rcu_nocbs=0-N.
+> > > 
+> > > 
+> > > I am adding Frederic on CC, who will not be shy about correcting any
+> > > confusion I be suffering from have with respect to the current code.
+> > > 
+> > > Either way, if this is not what you had in mind, what are you suggesting
+> > > instead?
+> > > 
+> > > I believe that Steve Rostedt's review would carry weight for ChromeOS,
+> > > however, I am suffering a senior moment on the right person for Android.
+> > > 
+> > We(in Sony) mark all CPUs as offloaded ones because of power reasons. The
+> > energy aware scheduler has a better knowledge where to place an rcuop/x
+> > task to invoke callbacks. The decision is taken based on many reason and
+> > the most important is to drain less power as a result of task placement.
+> > For example, power table, if OPP becomes higher or not, CPU is idle, etc.
+> > 
+> > What Joel does in this patch sounds natural to me at least from the first
+> > glance. I mean converting the RCU_NOCB_CPU=y to make all CPUs to do offloading.
+> 
+> Just to be very clear, given appropriate acks/reviews, adding something
+> like CONFIG_RCU_NOCB_CPU_ALL to get default rcu_nocbs=0-N is fine.
+> However, Joel's original patch would not be good for the enterprise
+> distros, which rely on the current default.
+> 
+Absolutely. It would be even easier in terms of changing the current concept
+of RCU_NOCB_CPU config. Having an extra CONFIG_RCU_NOCB_CPU_ALL would simplify 
+and get rid of a need of modifying the "rcu_nocbs=" boot parameter.
 
-FYI, the error/warning still remains.
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
-commit: d9820ff76f95fa26d33e412254a89cd65b23142d ARC: mm: switch pgtable_t back to struct page *
-date:   8 months ago
-config: arc-randconfig-r026-20220411 (https://download.01.org/0day-ci/archive/20220411/202204112315.2CXKJ59h-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d9820ff76f95fa26d33e412254a89cd65b23142d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout d9820ff76f95fa26d33e412254a89cd65b23142d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arch/arc/mm/init.c:35:13: warning: no previous prototype for 'arc_get_mem_sz' [-Wmissing-prototypes]
-      35 | long __init arc_get_mem_sz(void)
-         |             ^~~~~~~~~~~~~~
-   arch/arc/mm/init.c:88:13: warning: no previous prototype for 'setup_arch_memory' [-Wmissing-prototypes]
-      88 | void __init setup_arch_memory(void)
-         |             ^~~~~~~~~~~~~~~~~
-   In file included from <command-line>:
-   arch/arc/mm/init.c: In function 'mem_init':
->> include/linux/compiler_types.h:328:45: error: call to '__compiletime_assert_297' declared with attribute error: BUILD_BUG_ON failed: (PTRS_PER_PGD * sizeof(pgd_t)) > PAGE_SIZE
-     328 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:309:25: note: in definition of macro '__compiletime_assert'
-     309 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:328:9: note: in expansion of macro '_compiletime_assert'
-     328 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   arch/arc/mm/init.c:193:9: note: in expansion of macro 'BUILD_BUG_ON'
-     193 |         BUILD_BUG_ON((PTRS_PER_PGD * sizeof(pgd_t)) > PAGE_SIZE);
-         |         ^~~~~~~~~~~~
-
-
-vim +/__compiletime_assert_297 +328 include/linux/compiler_types.h
-
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  314  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  315  #define _compiletime_assert(condition, msg, prefix, suffix) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  316  	__compiletime_assert(condition, msg, prefix, suffix)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  317  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  318  /**
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  319   * compiletime_assert - break build and emit msg if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  320   * @condition: a compile-time constant condition to check
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  321   * @msg:       a message to emit if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  322   *
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  323   * In tradition of POSIX assert, this macro will break the build if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  324   * supplied condition is *false*, emitting the supplied error message if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  325   * compiler has support to do so.
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  326   */
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  327  #define compiletime_assert(condition, msg) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21 @328  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  329  
-
-:::::: The code at line 328 was first introduced by commit
-:::::: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
-
-:::::: TO: Will Deacon <will@kernel.org>
-:::::: CC: Will Deacon <will@kernel.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--
+Uladzislau Rezki
