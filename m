@@ -2,271 +2,380 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8F0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 20:54:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2432C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 20:54:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245232AbiDKU4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 16:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
+        id S244803AbiDKU5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 16:57:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236966AbiDKU4g (ORCPT
+        with ESMTP id S236197AbiDKU5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 16:56:36 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6B8183A9
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 13:54:20 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id md20-20020a17090b23d400b001cb70ef790dso473086pjb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 13:54:20 -0700 (PDT)
+        Mon, 11 Apr 2022 16:57:03 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D79F18E22
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 13:54:43 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id q142so15191020pgq.9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 13:54:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MeANwaP9JmwAACnbLRdVWJXdi5Dvn5w5kJMXuz3gK1s=;
-        b=BOB11IonNKDbW3yU7EG5l64H0Tl6YTrTZaZDHtydQ99KH9fVm92GzrOdjqnbcqGN3s
-         xp2nZi9Q5ES9g34kUo76o9rPWocYwjWS0TCOqbV8u23LyBHH7VpKfkX8rclYarIvxPbS
-         H38N/3n2yTR2cyz2wAM+NOFs1iPi3ixdOudn4=
+        d=cs-iitr-ac-in.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=iQhP4jOvpVJmn7C8Ou52R/v0cIq74spDHh+IKHADHfU=;
+        b=C2DADz6/aDH9HFZNvjtwcOeKvaL6XK3fdvjtgWUqHXWBrdYQq6bYN836KOhnCsQOUA
+         AOJJBdpNQNAQW+ax4Bg/TA1PQarvkeL60DkROURtHQuqLclydxxrX2hlav5u5LbJgHHO
+         SAcoMrTkVc+JpcXr+ts8+M1NKV8+NjBIJyDmsG5QDtJkDmTGPZ6/jgWEZrAXvDMZupm7
+         JUZsu7yVUiSf9QtLP8qfJMeGIgUMmC+jdHpSE6L7mGN5qIvGzoJacVVfTY6H0qxjfvUb
+         I9VpzTWImCWNk1y97mXIw5oxgY049lhr1NKDgbf5M4NZ1GruWtfp68bAmNpCW97t2jaQ
+         KbbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MeANwaP9JmwAACnbLRdVWJXdi5Dvn5w5kJMXuz3gK1s=;
-        b=IffGRQEzYZkdSQ+2Ibu/tGJv1iw3k2sGcSje4LOkriUjzXRT/BpY5Mr0RJNEaCewPH
-         QeLxcL/xuasgDhFyyzy82gMYpyxLy8s9WptkRi9tpCxkQk3vFePdtwhaiXtImxeV1OgI
-         PrLiCVlTkOIbhrLVPKTdwyYWnm2q8rYIQ9040/kVYxbSnLXhLIQtYbDNHxONAyHddn+e
-         HyV+fNQOL1JHAQbsk+5DfcPQnHnVffWVk5v553p357MO3ZilvvP9Be/Ap/ymklvGpIXR
-         jOXgtMA2fh/2bFTdHiTkjO+/ssYWoC8ar1BSFQccY4SKg/Uc4bI81mLyw/c3Ho3U4czQ
-         7pTw==
-X-Gm-Message-State: AOAM5310J20HK69sSb/6CWAxMMQxLSuV2Dvn/Toz8cn5QEh8zN/tok0s
-        kRk50mGhbkZfAF4x4GAj6mg/2g==
-X-Google-Smtp-Source: ABdhPJxqIC9qD7T4GjpjdQlFYQuLPa3Mfns68bxMr9u32io0hAAWyIOerUZLr3L2lBq63+JQ520nPA==
-X-Received: by 2002:a17:902:8bcc:b0:158:20f8:392 with SMTP id r12-20020a1709028bcc00b0015820f80392mr17341328plo.93.1649710459909;
-        Mon, 11 Apr 2022 13:54:19 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:eb96:76ba:e2a1:2442])
-        by smtp.gmail.com with UTF8SMTPSA id u17-20020a056a00159100b004faef351ebcsm35077269pfk.45.2022.04.11.13.54.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 13:54:19 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 13:54:17 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        quic_pkondeti@quicinc.com, quic_ppratap@quicinc.com,
-        quic_kriskura@quicinc.com, quic_vpulyala@quicinc.com
-Subject: Re: [PATCH v13 2/6] usb: dwc3: core: Host wake up support from
- system suspend
-Message-ID: <YlSVec5+SpdMZWCz@google.com>
-References: <1649704614-31518-1-git-send-email-quic_c_sanm@quicinc.com>
- <1649704614-31518-3-git-send-email-quic_c_sanm@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1649704614-31518-3-git-send-email-quic_c_sanm@quicinc.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=iQhP4jOvpVJmn7C8Ou52R/v0cIq74spDHh+IKHADHfU=;
+        b=rgBah4eCSlUH+4VyTrZ8GjHgLtIQgjPwhblPHjiXZur7XfU1lAqTl/1RJLMFf/8f82
+         4c2tupClS2CT8RL2tuZRupXd1lnKcqx4X1p0ncEh2cnr9WMrPxbz0TkVXFSULl6tVzx0
+         S1f6lE8/PUYVaqIEdeUOLGeGTX8wj9d/JzyELDXhnDB9IaEz+HvbYuK0g/P8DNo+qw0C
+         UijvR4lSsMUIETQ5OsDkooHgqtnPIaNR00RAyn7hsNZQBfbBuVPa8+1jIj3t2kSy6VOS
+         UdTwTu6Y3NO60b7+K2A25SiqyE9sx9pjwXOtV304GsBC6NnVD0Na2YMvYZFNyz3OKJQb
+         P9AQ==
+X-Gm-Message-State: AOAM532yUrETtUbSBl6C6pMSSAmwJJTWiW/1o+QyWqlX+CIlUBvyhKe7
+        LOJ6CNMPdW1eNfjsW8hCmGJL/A==
+X-Google-Smtp-Source: ABdhPJzZnfCRWPuBrRN4PmGPjAaOrpWFpmpePxQgI8mDa6FRfRm/0EVIbNhIqS583nEp61dp/tH4NA==
+X-Received: by 2002:aa7:88c2:0:b0:4fa:ba98:4f6f with SMTP id k2-20020aa788c2000000b004faba984f6fmr34764671pff.41.1649710482842;
+        Mon, 11 Apr 2022 13:54:42 -0700 (PDT)
+Received: from mahak-Inspiron-7570.iitr.ac.in ([103.37.201.168])
+        by smtp.googlemail.com with ESMTPSA id j70-20020a638b49000000b003985b5ddaa1sm575086pge.49.2022.04.11.13.54.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 13:54:42 -0700 (PDT)
+From:   Mahak Gupta <mahak_g@cs.iitr.ac.in>
+To:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
+Cc:     Mahak Gupta <mahak_g@cs.iitr.ac.in>
+Subject: [PATCH] staging: r8188eu: correct multiple misspellings in driver r8188eu
+Date:   Tue, 12 Apr 2022 02:23:21 +0530
+Message-Id: <20220411205321.13109-1-mahak_g@cs.iitr.ac.in>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 12:46:50AM +0530, Sandeep Maheswaram wrote:
-> During suspend read the status of all port and set hs phy mode
-> based on current speed. Use this hs phy mode to configure wakeup
-> interrupts in qcom glue driver.
-> 
-> Check wakep-source property for dwc3 core node to set the
+Reported by checkpatch.
 
-s/wakep/wakeup/
+Signed-off-by: Mahak Gupta <mahak_g@cs.iitr.ac.in>
+---
+ drivers/staging/r8188eu/core/rtw_ioctl_set.c |  2 +-
+ drivers/staging/r8188eu/core/rtw_mlme.c      | 10 +++---
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c  | 36 ++++++++++----------
+ drivers/staging/r8188eu/core/rtw_recv.c      |  8 ++---
+ drivers/staging/r8188eu/core/rtw_xmit.c      |  8 ++---
+ 5 files changed, 32 insertions(+), 32 deletions(-)
 
-> wakeup capability. Drop the device_init_wakeup call from
-> runtime suspend and resume.
-> 
-> Also check during suspend if any wakeup capable devices are
-> connected to the controller (directly or through hubs), if there
-> are none set a flag to indicate that the PHY is powered
-> down during suspend.
-> 
-> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> ---
+diff --git a/drivers/staging/r8188eu/core/rtw_ioctl_set.c b/drivers/staging/r8188eu/core/rtw_ioctl_set.c
+index 4b78e42d180d..9df6fb122bc5 100644
+--- a/drivers/staging/r8188eu/core/rtw_ioctl_set.c
++++ b/drivers/staging/r8188eu/core/rtw_ioctl_set.c
+@@ -290,7 +290,7 @@ u8 rtw_set_802_11_infrastructure_mode(struct adapter *padapter,
+ 
+ 		if ((*pold_state == Ndis802_11Infrastructure) || (*pold_state == Ndis802_11IBSS)) {
+ 			if (check_fwstate(pmlmepriv, _FW_LINKED))
+-				rtw_indicate_disconnect(padapter); /* will clr Linked_state; before this function, we must have chked whether  issue dis-assoc_cmd or not */
++				rtw_indicate_disconnect(padapter); /* will clr Linked_state; before this function, we must have checked whether  issue dis-assoc_cmd or not */
+ 	       }
+ 
+ 		*pold_state = networktype;
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
+index c90f36dee1ea..a2b42779bc87 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme.c
+@@ -193,7 +193,7 @@ void _rtw_free_network_nolock(struct	mlme_priv *pmlmepriv, struct wlan_network *
+ /*
+ 	return the wlan_network with the matching addr
+ 
+-	Shall be calle under atomic context... to avoid possible racing condition...
++	Shall be called under atomic context... to avoid possible racing condition...
+ */
+ struct wlan_network *_rtw_find_network(struct __queue *scanned_queue, u8 *addr)
+ {
+@@ -329,7 +329,7 @@ void rtw_free_network_queue(struct adapter *dev, u8 isfreeall)
+ /*
+ 	return the wlan_network with the matching addr
+ 
+-	Shall be calle under atomic context... to avoid possible racing condition...
++	Shall be called under atomic context... to avoid possible racing condition...
+ */
+ struct	wlan_network *rtw_find_network(struct __queue *scanned_queue, u8 *addr)
+ {
+@@ -912,7 +912,7 @@ static struct sta_info *rtw_joinbss_update_stainfo(struct adapter *padapter, str
+ 		}
+ 		/* 	Commented by Albert 2012/07/21 */
+ 		/* 	When doing the WPS, the wps_ie_len won't equal to 0 */
+-		/* 	And the Wi-Fi driver shouldn't allow the data packet to be tramsmitted. */
++		/* 	And the Wi-Fi driver shouldn't allow the data packet to be transmitted. */
+ 		if (padapter->securitypriv.wps_ie_len != 0) {
+ 			psta->ieee8021x_blocked = true;
+ 			padapter->securitypriv.wps_ie_len = 0;
+@@ -1304,7 +1304,7 @@ void rtw_stadel_event_callback(struct adapter *adapter, u8 *pbuf)
+ }
+ 
+ /*
+-* _rtw_join_timeout_handler - Timeout/faliure handler for CMD JoinBss
++* _rtw_join_timeout_handler - Timeout/failure handler for CMD JoinBss
+ * @adapter: pointer to struct adapter structure
+ */
+ void _rtw_join_timeout_handler (struct adapter *adapter)
+@@ -1339,7 +1339,7 @@ void _rtw_join_timeout_handler (struct adapter *adapter)
+ }
+ 
+ /*
+-* rtw_scan_timeout_handler - Timeout/Faliure handler for CMD SiteSurvey
++* rtw_scan_timeout_handler - Timeout/Failure handler for CMD SiteSurvey
+ * @adapter: pointer to struct adapter structure
+ */
+ void rtw_scan_timeout_handler (struct adapter *adapter)
+diff --git a/drivers/staging/r8188eu/core/rtw_mlme_ext.c b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+index 474391bf7cb5..fd445aa09377 100644
+--- a/drivers/staging/r8188eu/core/rtw_mlme_ext.c
++++ b/drivers/staging/r8188eu/core/rtw_mlme_ext.c
+@@ -156,7 +156,7 @@ static struct rt_channel_plan_map	RTW_ChannelPlanMap[RT_CHANNEL_DOMAIN_MAX] = {
+ 	{0x03},	/* 0x41, RT_CHANNEL_DOMAIN_GLOBAL_DOAMIN_2G */
+ };
+ 
+-static struct rt_channel_plan_map RTW_CHANNEL_PLAN_MAP_REALTEK_DEFINE = {0x03}; /* use the conbination for max channel numbers */
++static struct rt_channel_plan_map RTW_CHANNEL_PLAN_MAP_REALTEK_DEFINE = {0x03}; /* use the combination for max channel numbers */
+ 
+ /*
+  * Search the @param channel_num in given @param channel_set
+@@ -1733,7 +1733,7 @@ void issue_p2p_GO_request(struct adapter *padapter, u8 *raddr)
+ 	p2pie[p2pielen++] = 0x09;	/*	WFA P2P v1.0 */
+ 
+ 	/*	Commented by Albert 20110306 */
+-	/*	According to the P2P Specification, the group negoitation request frame should contain 9 P2P attributes */
++	/*	According to the P2P Specification, the group negotiation request frame should contain 9 P2P attributes */
+ 	/*	1. P2P Capability */
+ 	/*	2. Group Owner Intent */
+ 	/*	3. Configuration Timeout */
+@@ -2088,7 +2088,7 @@ static void issue_p2p_GO_response(struct adapter *padapter, u8 *raddr, u8 *frame
+ 	p2pie[p2pielen++] = 0x09;	/*	WFA P2P v1.0 */
+ 
+ 	/*	Commented by Albert 20100908 */
+-	/*	According to the P2P Specification, the group negoitation response frame should contain 9 P2P attributes */
++	/*	According to the P2P Specification, the group negotiation response frame should contain 9 P2P attributes */
+ 	/*	1. Status */
+ 	/*	2. P2P Capability */
+ 	/*	3. Group Owner Intent */
+@@ -2384,7 +2384,7 @@ static void issue_p2p_GO_confirm(struct adapter *padapter, u8 *raddr, u8 result)
+ 	p2pie[p2pielen++] = 0x09;	/*	WFA P2P v1.0 */
+ 
+ 	/*	Commented by Albert 20110306 */
+-	/*	According to the P2P Specification, the group negoitation request frame should contain 5 P2P attributes */
++	/*	According to the P2P Specification, the group negotiation request frame should contain 5 P2P attributes */
+ 	/*	1. Status */
+ 	/*	2. P2P Capability */
+ 	/*	3. Operating Channel */
+@@ -4009,7 +4009,7 @@ struct xmit_frame *alloc_mgtxmitframe(struct xmit_priv *pxmitpriv)
+ 
+ /****************************************************************************
+ 
+-Following are some TX fuctions for WiFi MLME
++Following are some TX functions for WiFi MLME
+ 
+ *****************************************************************************/
+ 
+@@ -4611,7 +4611,7 @@ int issue_probereq_ex(struct adapter *padapter, struct ndis_802_11_ssid *pssid,
+ 	return ret;
+ }
+ 
+-/*  if psta == NULL, indiate we are station(client) now... */
++/*  if psta == NULL, indicate we are station(client) now... */
+ void issue_auth(struct adapter *padapter, struct sta_info *psta, unsigned short status)
+ {
+ 	struct xmit_frame *pmgntframe;
+@@ -5010,7 +5010,7 @@ void issue_assocreq(struct adapter *padapter)
+ 				if (!padapter->registrypriv.wifi_spec) {
+ 					/* Commented by Kurt 20110629 */
+ 					/* In some older APs, WPS handshake */
+-					/* would be fail if we append vender extensions informations to AP */
++					/* would be fail if we append vender extensions information to AP */
+ 					if (!memcmp(pIE->data, WPS_OUI, 4))
+ 						pIE->Length = 14;
+ 				}
+@@ -5165,7 +5165,7 @@ void issue_assocreq(struct adapter *padapter)
+ 		kfree(pmlmepriv->assoc_req);
+ }
+ 
+-/* when wait_ack is ture, this function shoule be called at process context */
++/* when wait_ack is true, this function should be called at process context */
+ static int _issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int power_mode, int wait_ack)
+ {
+ 	int ret = _FAIL;
+@@ -5234,7 +5234,7 @@ static int _issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned
+ 	return ret;
+ }
+ 
+-/* when wait_ms > 0 , this function shoule be called at process context */
++/* when wait_ms > 0 , this function should be called at process context */
+ /* da == NULL for station mode */
+ int issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int power_mode, int try_cnt, int wait_ms)
+ {
+@@ -5243,7 +5243,7 @@ int issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int pow
+ 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+ 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
+ 
+-	/* da == NULL, assum it's null data for sta to ap*/
++	/* da == NULL, assume it's null data for sta to ap*/
+ 	if (!da)
+ 		da = get_my_bssid(&pmlmeinfo->network);
+ 
+@@ -5267,7 +5267,7 @@ int issue_nulldata(struct adapter *padapter, unsigned char *da, unsigned int pow
+ 	return ret;
+ }
+ 
+-/* when wait_ack is ture, this function shoule be called at process context */
++/* when wait_ack is true, this function should be called at process context */
+ static int _issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16 tid, int wait_ack)
+ {
+ 	int ret = _FAIL;
+@@ -5340,7 +5340,7 @@ static int _issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16
+ 	return ret;
+ }
+ 
+-/* when wait_ms > 0 , this function shoule be called at process context */
++/* when wait_ms > 0 , this function should be called at process context */
+ /* da == NULL for station mode */
+ int issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16 tid, int try_cnt, int wait_ms)
+ {
+@@ -5349,7 +5349,7 @@ int issue_qos_nulldata(struct adapter *padapter, unsigned char *da, u16 tid, int
+ 	struct mlme_ext_priv	*pmlmeext = &padapter->mlmeextpriv;
+ 	struct mlme_ext_info	*pmlmeinfo = &pmlmeext->mlmext_info;
+ 
+-	/* da == NULL, assum it's null data for sta to ap*/
++	/* da == NULL, assume it's null data for sta to ap*/
+ 	if (!da)
+ 		da = get_my_bssid(&pmlmeinfo->network);
+ 
+@@ -5790,7 +5790,7 @@ void clear_beacon_valid_bit(struct adapter *adapter)
+ 
+ /****************************************************************************
+ 
+-Following are some utitity fuctions for WiFi MLME
++Following are some utility functions for WiFi MLME
+ 
+ *****************************************************************************/
+ 
+@@ -5888,7 +5888,7 @@ void site_survey(struct adapter *padapter)
+ 		} else {
+ 			/*  20100721:Interrupt scan operation here. */
+ 			/*  For SW antenna diversity before link, it needs to switch to another antenna and scan again. */
+-			/*  It compares the scan result and select beter one to do connection. */
++			/*  It compares the scan result and select better one to do connection. */
+ 			if (AntDivBeforeLink8188E(padapter)) {
+ 				pmlmeext->sitesurvey_res.bss_cnt = 0;
+ 				pmlmeext->sitesurvey_res.channel_idx = -1;
+@@ -6109,7 +6109,7 @@ void start_create_ibss(struct adapter *padapter)
+ 	/* update wireless mode */
+ 	update_wireless_mode(padapter);
+ 
+-	/* udpate capability */
++	/* update capability */
+ 	caps = rtw_get_capability((struct wlan_bssid_ex *)pnetwork);
+ 	update_capinfo(padapter, caps);
+ 	if (caps & cap_IBSS) {/* adhoc master */
+@@ -6160,7 +6160,7 @@ void start_clnt_join(struct adapter *padapter)
+ 	/* update wireless mode */
+ 	update_wireless_mode(padapter);
+ 
+-	/* udpate capability */
++	/* update capability */
+ 	caps = rtw_get_capability((struct wlan_bssid_ex *)pnetwork);
+ 	update_capinfo(padapter, caps);
+ 	if (caps & cap_ESS) {
+@@ -6740,7 +6740,7 @@ void mlmeext_joinbss_event_callback(struct adapter *padapter, int join_res)
+ 	/* BCN interval */
+ 	rtw_write16(padapter, REG_BCN_INTERVAL, pmlmeinfo->bcn_interval);
+ 
+-	/* udpate capability */
++	/* update capability */
+ 	update_capinfo(padapter, pmlmeinfo->capability);
+ 
+ 	/* WMM, Update EDCA param */
+diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
+index 91a6e0f035f4..a3f71697f6d7 100644
+--- a/drivers/staging/r8188eu/core/rtw_recv.c
++++ b/drivers/staging/r8188eu/core/rtw_recv.c
+@@ -877,7 +877,7 @@ static void validate_recv_ctrl_frame(struct adapter *padapter,
+ 			if (psta->sleepq_len == 0) {
+ 				pstapriv->tim_bitmap &= ~BIT(psta->aid);
+ 
+-				/* upate BCN for TIM IE */
++				/* update BCN for TIM IE */
+ 				/* update_BCNTIM(padapter); */
+ 				update_beacon(padapter, _TIM_IE_, NULL, false);
+ 			}
+@@ -891,7 +891,7 @@ static void validate_recv_ctrl_frame(struct adapter *padapter,
+ 
+ 				pstapriv->tim_bitmap &= ~BIT(psta->aid);
+ 
+-				/* upate BCN for TIM IE */
++				/* update BCN for TIM IE */
+ 				/* update_BCNTIM(padapter); */
+ 				update_beacon(padapter, _TIM_IE_, NULL, false);
+ 			}
+@@ -1810,13 +1810,13 @@ void rtw_signal_stat_timer_hdl(struct timer_list *t)
+ 	} else {
+ 		if (recvpriv->signal_strength_data.update_req == 0) {/*  update_req is clear, means we got rx */
+ 			avg_signal_strength = recvpriv->signal_strength_data.avg_val;
+-			/*  after avg_vals are accquired, we can re-stat the signal values */
++			/*  after avg_vals are acquired, we can re-stat the signal values */
+ 			recvpriv->signal_strength_data.update_req = 1;
+ 		}
+ 
+ 		if (recvpriv->signal_qual_data.update_req == 0) {/*  update_req is clear, means we got rx */
+ 			avg_signal_qual = recvpriv->signal_qual_data.avg_val;
+-			/*  after avg_vals are accquired, we can re-stat the signal values */
++			/*  after avg_vals are acquired, we can re-stat the signal values */
+ 			recvpriv->signal_qual_data.update_req = 1;
+ 		}
+ 
+diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
+index 029b994e1b71..2a686b5c65b1 100644
+--- a/drivers/staging/r8188eu/core/rtw_xmit.c
++++ b/drivers/staging/r8188eu/core/rtw_xmit.c
+@@ -958,7 +958,7 @@ s32 rtw_xmitframe_coalesce(struct adapter *padapter, struct sk_buff *pkt, struct
+ 		}
+ 
+ 		if (bmcst) {
+-			/*  don't do fragment to broadcat/multicast packets */
++			/*  don't do fragment to broadcast/multicast packets */
+ 			mem_sz = _rtw_pktfile_read(&pktfile, pframe, pattrib->pktlen);
+ 		} else {
+ 			mem_sz = _rtw_pktfile_read(&pktfile, pframe, mpdu_len);
+@@ -1768,7 +1768,7 @@ int xmitframe_enqueue_for_sleeping_sta(struct adapter *padapter, struct xmit_fra
+ 			pstapriv->tim_bitmap |= BIT(0);/*  */
+ 			pstapriv->sta_dz_bitmap |= BIT(0);
+ 
+-			update_beacon(padapter, _TIM_IE_, NULL, false);/* tx bc/mc packets after upate bcn */
++			update_beacon(padapter, _TIM_IE_, NULL, false);/* tx bc/mc packets after update bcn */
+ 
+ 			ret = true;
+ 		}
+@@ -1818,7 +1818,7 @@ int xmitframe_enqueue_for_sleeping_sta(struct adapter *padapter, struct xmit_fra
+ 				pstapriv->tim_bitmap |= BIT(psta->aid);
+ 
+ 				if (psta->sleepq_len == 1) {
+-					/* upate BCN for TIM IE */
++					/* update BCN for TIM IE */
+ 					update_beacon(padapter, _TIM_IE_, NULL, false);
+ 				}
+ 			}
+@@ -2087,7 +2087,7 @@ void xmit_delivery_enabled_frames(struct adapter *padapter, struct sta_info *pst
+ 		if ((psta->sleepq_ac_len == 0) && (!psta->has_legacy_ac) && (wmmps_ac)) {
+ 			pstapriv->tim_bitmap &= ~BIT(psta->aid);
+ 
+-			/* upate BCN for TIM IE */
++			/* update BCN for TIM IE */
+ 			update_beacon(padapter, _TIM_IE_, NULL, false);
+ 		}
+ 	}
+-- 
+2.17.1
 
-A per-patch change log would be really helpful for reviewers, even
-if it doesn't include older versions.
-
->  drivers/usb/dwc3/core.c | 33 ++++++++++++++++++++-------------
->  drivers/usb/dwc3/core.h |  4 ++++
->  drivers/usb/dwc3/host.c | 25 +++++++++++++++++++++++++
->  3 files changed, 49 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-> index 1170b80..effaa43 100644
-> --- a/drivers/usb/dwc3/core.c
-> +++ b/drivers/usb/dwc3/core.c
-> @@ -32,6 +32,7 @@
->  #include <linux/usb/gadget.h>
->  #include <linux/usb/of.h>
->  #include <linux/usb/otg.h>
-> +#include <linux/usb/hcd.h>
->  
->  #include "core.h"
->  #include "gadget.h"
-> @@ -1723,6 +1724,7 @@ static int dwc3_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, dwc);
->  	dwc3_cache_hwparams(dwc);
-> +	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
->  
->  	spin_lock_init(&dwc->lock);
->  	mutex_init(&dwc->mutex);
-> @@ -1865,6 +1867,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
->  {
->  	unsigned long	flags;
->  	u32 reg;
-> +	struct usb_hcd  *hcd = platform_get_drvdata(dwc->xhci);
->  
->  	switch (dwc->current_dr_role) {
->  	case DWC3_GCTL_PRTCAP_DEVICE:
-> @@ -1877,10 +1880,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
->  		dwc3_core_exit(dwc);
->  		break;
->  	case DWC3_GCTL_PRTCAP_HOST:
-> -		if (!PMSG_IS_AUTO(msg)) {
-> -			dwc3_core_exit(dwc);
-> -			break;
-> -		}
-> +		dwc3_check_phy_speed_mode(dwc);
->  
->  		/* Let controller to suspend HSPHY before PHY driver suspends */
->  		if (dwc->dis_u2_susphy_quirk ||
-> @@ -1896,6 +1896,16 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
->  
->  		phy_pm_runtime_put_sync(dwc->usb2_generic_phy);
->  		phy_pm_runtime_put_sync(dwc->usb3_generic_phy);
-> +
-> +		if (!PMSG_IS_AUTO(msg)) {
-> +			if (device_may_wakeup(dwc->dev) &&
-> +			    usb_wakeup_enabled_descendants(hcd->self.root_hub)) {
-
-You did not answer my question on v12, reposting it:
-
-  Did you ever try whether you could use device_children_wakeup_capable() from
-  [1] instead of usb_wakeup_enabled_descendants()?
-
-  [1] https://patchwork.kernel.org/project/linux-usb/patch/1635753224-23975-2-git-send-email-quic_c_sanm@quicinc.com/#24566065
-
-> +				dwc->phy_power_off = false;
-> +			} else {
-> +				dwc->phy_power_off = true;
-> +				dwc3_core_exit(dwc);
-> +			}
-> +		}
->  		break;
->  	case DWC3_GCTL_PRTCAP_OTG:
->  		/* do nothing during runtime_suspend */
-> @@ -1939,11 +1949,12 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
->  		break;
->  	case DWC3_GCTL_PRTCAP_HOST:
->  		if (!PMSG_IS_AUTO(msg)) {
-> -			ret = dwc3_core_init_for_resume(dwc);
-> -			if (ret)
-> -				return ret;
-> -			dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
-> -			break;
-> +			if (dwc->phy_power_off) {
-> +				ret = dwc3_core_init_for_resume(dwc);
-> +				if (ret)
-> +					return ret;
-> +				dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
-> +			}
->  		}
->  		/* Restore GUSB2PHYCFG bits that were modified in suspend */
->  		reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
-> @@ -2015,8 +2026,6 @@ static int dwc3_runtime_suspend(struct device *dev)
->  	if (ret)
->  		return ret;
->  
-> -	device_init_wakeup(dev, true);
-> -
->  	return 0;
->  }
->  
-> @@ -2025,8 +2034,6 @@ static int dwc3_runtime_resume(struct device *dev)
->  	struct dwc3     *dwc = dev_get_drvdata(dev);
->  	int		ret;
->  
-> -	device_init_wakeup(dev, false);
-> -
->  	ret = dwc3_resume_common(dwc, PMSG_AUTO_RESUME);
->  	if (ret)
->  		return ret;
-> diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
-> index 5c9d467..6a5845f 100644
-> --- a/drivers/usb/dwc3/core.h
-> +++ b/drivers/usb/dwc3/core.h
-> @@ -1154,6 +1154,9 @@ struct dwc3 {
->  
->  	bool			phys_ready;
->  
-> +	unsigned int            hs_phy_mode;
-> +	bool			phy_power_off;
-> +
->  	struct ulpi		*ulpi;
->  	bool			ulpi_ready;
->  
-> @@ -1537,6 +1540,7 @@ int dwc3_core_soft_reset(struct dwc3 *dwc);
->  #if IS_ENABLED(CONFIG_USB_DWC3_HOST) || IS_ENABLED(CONFIG_USB_DWC3_DUAL_ROLE)
->  int dwc3_host_init(struct dwc3 *dwc);
->  void dwc3_host_exit(struct dwc3 *dwc);
-> +void dwc3_check_phy_speed_mode(struct dwc3 *dwc);
->  #else
->  static inline int dwc3_host_init(struct dwc3 *dwc)
->  { return 0; }
-> diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
-> index eda8719..7f22675 100644
-> --- a/drivers/usb/dwc3/host.c
-> +++ b/drivers/usb/dwc3/host.c
-> @@ -13,6 +13,7 @@
->  #include <linux/platform_device.h>
->  
->  #include "core.h"
-> +#include "../host/xhci.h"
->  
->  static void dwc3_host_fill_xhci_irq_res(struct dwc3 *dwc,
->  					int irq, char *name)
-> @@ -138,3 +139,27 @@ void dwc3_host_exit(struct dwc3 *dwc)
->  {
->  	platform_device_unregister(dwc->xhci);
->  }
-> +
-> +void dwc3_check_phy_speed_mode(struct dwc3 *dwc)
-> +{
-> +
-
-delete empty line
-
-> +	int i, num_ports;
-> +	u32 reg;
-> +	struct usb_hcd	*hcd = platform_get_drvdata(dwc->xhci);
-> +	struct xhci_hcd	*xhci_hcd = hcd_to_xhci(hcd);
-> +
-> +	dwc->hs_phy_mode = 0;
-> +
-> +	reg = readl(&xhci_hcd->cap_regs->hcs_params1);
-> +
-> +	num_ports = HCS_MAX_PORTS(reg);
-> +	for (i = 0; i < num_ports; i++) {
-> +		reg = readl(&xhci_hcd->op_regs->port_status_base + i * NUM_PORT_REGS);
-> +		if (reg & PORT_PE) {
-> +			if (DEV_HIGHSPEED(reg) || DEV_FULLSPEED(reg))
-> +				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_HS;
-> +			else if (DEV_LOWSPEED(reg))
-> +				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_LS;
-> +		}
-> +	}
-> +}
-> -- 
-> 2.7.4
-> 
