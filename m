@@ -2,160 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DDB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:12:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC26C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344274AbiDKJOh (ORCPT
+        id S1344278AbiDKJOk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54266 "EHLO
+        Mon, 11 Apr 2022 05:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241756AbiDKJOZ (ORCPT
+        with ESMTP id S1344275AbiDKJOi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:14:25 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D5F3F892
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:12:11 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KcNNB5P8yzFplN;
-        Mon, 11 Apr 2022 17:09:46 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 11 Apr 2022 17:12:06 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 11 Apr 2022 17:12:05 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     <catalin.marinas@arm.com>, <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <vijayb@linux.microsoft.com>, <f.fainelli@gmail.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>
-Subject: [PATCH v3 1/3] arm64: mm: Do not defer reserve_crashkernel() if only ZONE_DMA32
-Date:   Mon, 11 Apr 2022 17:24:53 +0800
-Message-ID: <20220411092455.1461-2-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220411092455.1461-1-wangkefeng.wang@huawei.com>
-References: <20220411092455.1461-1-wangkefeng.wang@huawei.com>
+        Mon, 11 Apr 2022 05:14:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 056933FBD2;
+        Mon, 11 Apr 2022 02:12:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97DAFB8112D;
+        Mon, 11 Apr 2022 09:12:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB315C385A4;
+        Mon, 11 Apr 2022 09:12:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649668339;
+        bh=gHtJO44c4D/gohjY60yF1myOEq2+2TFmuEq1mIQdKs8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jlO1rJC0L2Sco80vrOPrUtn/qGvFa4maFijqjeQQySAugORVnJGPbD4SUipWEuDzz
+         FzYJAniBKI8qbDZVrcxfNYhmvz7iywYzVSsLm29HmogQZvz/OAbRKL1NohJC6JueLd
+         MJDB9mDGYrZL9sdarC0O1F6aYDF8XzD5Fu1PJLAy1BwgPMCqyM9X4T/6CaPAmR9eo2
+         cDAA0EGwdicvF0/dJaUxLEdPYy4Wv1PQBL2x9YWypf5G3BbgNPP9fYXDQ2IKoArwbb
+         ANkBarNOm00mMet0/3WzKUgsAv27RY1WvqipI1XEmXBOHBIe0XUO+UVlGij21AvaEG
+         3BRhTAzh/ZB1g==
+Date:   Mon, 11 Apr 2022 10:12:13 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Peter Gonda <pgonda@google.com>, kvm list <kvm@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Anup Patel <anup@brainfault.org>, maz@kernel.org,
+        alexandru.elisei@arm.com
+Subject: Re: [PATCH v4.1] KVM, SEV: Add KVM_EXIT_SHUTDOWN metadata for SEV-ES
+Message-ID: <20220411091213.GA2120@willie-the-truck>
+References: <20220407210233.782250-1-pgonda@google.com>
+ <Yk+kNqJjzoJ9TWVH@google.com>
+ <CAMkAt6oc=SOYryXu+_w+WZR+VkMZfLR3_nd=hDvMU_cmOjJ0Xg@mail.gmail.com>
+ <YlBqYcXFiwur3zmo@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlBqYcXFiwur3zmo@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kernel could benefit due to BLOCK_MAPPINGS, see commit
-031495635b46 ("arm64: Do not defer reserve_crashkernel() for
-platforms with no DMA memory zones"), if only with ZONE_DMA32,
-set arm64_dma_phys_limit to max_zone_phys(32) earlier in
-arm64_memblock_init(), so platforms with just ZONE_DMA32 config
-enabled will benefit.
+Hi Sean,
 
-Cc: Vijay Balakrishna <vijayb@linux.microsoft.com>
-Cc: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: Will Deacon <will@kernel.org>
-Reviewed-by: Vijay Balakrishna <vijayb@linux.microsoft.com>
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- arch/arm64/mm/init.c | 23 ++++++++++++-----------
- arch/arm64/mm/mmu.c  |  6 ++----
- 2 files changed, 14 insertions(+), 15 deletions(-)
+Cheers for the heads-up.
 
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 1e7b1550e2fc..897de41102d9 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -65,8 +65,9 @@ EXPORT_SYMBOL(memstart_addr);
-  * Memory reservation for crash kernel either done early or deferred
-  * depending on DMA memory zones configs (ZONE_DMA) --
-  *
-- * In absence of ZONE_DMA configs arm64_dma_phys_limit initialized
-- * here instead of max_zone_phys().  This lets early reservation of
-+ * In absence of ZONE_DMA and ZONE_DMA32 configs arm64_dma_phys_limit
-+ * initialized here and if only with ZONE_DMA32 arm64_dma_phys_limit
-+ * initialised to max_zone_phys(32). This lets early reservation of
-  * crash kernel memory which has a dependency on arm64_dma_phys_limit.
-  * Reserving memory early for crash kernel allows linear creation of block
-  * mappings (greater than page-granularity) for all the memory bank rangs.
-@@ -160,11 +161,10 @@ static phys_addr_t __init max_zone_phys(unsigned int zone_bits)
- static void __init zone_sizes_init(unsigned long min, unsigned long max)
- {
- 	unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
--	unsigned int __maybe_unused acpi_zone_dma_bits;
--	unsigned int __maybe_unused dt_zone_dma_bits;
--	phys_addr_t __maybe_unused dma32_phys_limit = max_zone_phys(32);
--
- #ifdef CONFIG_ZONE_DMA
-+	unsigned int acpi_zone_dma_bits;
-+	unsigned int dt_zone_dma_bits;
-+
- 	acpi_zone_dma_bits = fls64(acpi_iort_dma_get_max_cpu_address());
- 	dt_zone_dma_bits = fls64(of_dma_get_max_cpu_address(NULL));
- 	zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits);
-@@ -172,9 +172,7 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
- 	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
- #endif
- #ifdef CONFIG_ZONE_DMA32
--	max_zone_pfns[ZONE_DMA32] = PFN_DOWN(dma32_phys_limit);
--	if (!arm64_dma_phys_limit)
--		arm64_dma_phys_limit = dma32_phys_limit;
-+	max_zone_pfns[ZONE_DMA32] = PFN_DOWN(max_zone_phys(32));
- #endif
- 	max_zone_pfns[ZONE_NORMAL] = max;
- 
-@@ -336,8 +334,11 @@ void __init arm64_memblock_init(void)
- 
- 	early_init_fdt_scan_reserved_mem();
- 
--	if (!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32))
-+	if (!IS_ENABLED(CONFIG_ZONE_DMA)) {
-+		if (IS_ENABLED(CONFIG_ZONE_DMA32))
-+			arm64_dma_phys_limit = max_zone_phys(32);
- 		reserve_crashkernel();
-+	}
- 
- 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
- }
-@@ -385,7 +386,7 @@ void __init bootmem_init(void)
- 	 * request_standard_resources() depends on crashkernel's memory being
- 	 * reserved, so do it here.
- 	 */
--	if (IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32))
-+	if (IS_ENABLED(CONFIG_ZONE_DMA))
- 		reserve_crashkernel();
- 
- 	memblock_dump_all();
-diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
-index 626ec32873c6..23734481318a 100644
---- a/arch/arm64/mm/mmu.c
-+++ b/arch/arm64/mm/mmu.c
-@@ -529,8 +529,7 @@ static void __init map_mem(pgd_t *pgdp)
- 
- #ifdef CONFIG_KEXEC_CORE
- 	if (crash_mem_map) {
--		if (IS_ENABLED(CONFIG_ZONE_DMA) ||
--		    IS_ENABLED(CONFIG_ZONE_DMA32))
-+		if (IS_ENABLED(CONFIG_ZONE_DMA))
- 			flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
- 		else if (crashk_res.end)
- 			memblock_mark_nomap(crashk_res.start,
-@@ -571,8 +570,7 @@ static void __init map_mem(pgd_t *pgdp)
- 	 * through /sys/kernel/kexec_crash_size interface.
- 	 */
- #ifdef CONFIG_KEXEC_CORE
--	if (crash_mem_map &&
--	    !IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32)) {
-+	if (crash_mem_map && !IS_ENABLED(CONFIG_ZONE_DMA)) {
- 		if (crashk_res.end) {
- 			__map_memblock(pgdp, crashk_res.start,
- 				       crashk_res.end + 1,
--- 
-2.26.2
+[+Marc and Alex as this looks similar to [1]]
 
+On Fri, Apr 08, 2022 at 05:01:21PM +0000, Sean Christopherson wrote:
+> On Fri, Apr 08, 2022, Peter Gonda wrote:
+> > On Thu, Apr 7, 2022 at 8:55 PM Sean Christopherson <seanjc@google.com> wrote:
+> > > On Thu, Apr 07, 2022, Peter Gonda wrote:
+> > > > If an SEV-ES guest requests termination, exit to userspace with
+> > > > KVM_EXIT_SYSTEM_EVENT and a dedicated SEV_TERM type instead of -EINVAL
+> > > > so that userspace can take appropriate action.
+> > > >
+> > > > See AMD's GHCB spec section '4.1.13 Termination Request' for more details.
+> > >
+> > > Maybe it'll be obvious by the lack of compilation errors, but the changelog should
+> > > call out the flags => ndata+data shenanigans, otherwise this looks like ABI breakage.
+> > 
+> > Hmm I am not sure we can do this change anymore given that we have two
+> > call sites using 'flags'
+> > 
+> > arch/arm64/kvm/psci.c:184
+> > arch/riscv/kvm/vcpu_sbi.c:97
+> > 
+> > I am not at all familiar with ARM and RISC-V but some quick reading
+> > tells me these archs also require 64-bit alignment on their 64-bit
+> > accesses. If thats correct, should I fix this call sites up by
+> > proceeding with this ndata + data[] change and move whatever they are
+> > assigning to flags into data[0] like I am doing here? It looks like
+> > both of these changes are not in a kernel release so IIUC we can still
+> > fix the ABI here?
+> 
+> Yeah, both came in for v5.18.  Given that there will be multiple paths that need
+> to set data, it's worth adding a common helper to the dirty work.
+> 
+> Anup and Will,
+> 
+> system_event.flags is broken (at least on x86) due to the prior 'type' field not
+> being propery padded, e.g. userspace will read/write garbage if the userspace
+> and kernel compilers pad structs differently.
+> 
+> 		struct {
+> 			__u32 type;
+> 			__u64 flags;
+> 		} system_event;
+
+On arm64, I think the compiler is required to put the padding between type
+and flags so that both the struct and 'flags' are 64-bit aligned [2]. Does
+x86 not offer any guarantees on the overall structure alignment?
+
+> Our plan to unhose this is to change the struct as follows and use bit 31 in the
+> 'type' to indicate that ndata+data are valid.
+> 
+> 		struct {
+>                         __u32 type;
+> 			__u32 ndata;
+> 			__u64 data[16];
+>                 } system_event;
+> 
+> Any objection to updating your architectures to use a helper to set the bit and
+> populate ndata+data accordingly?  It'll require a userspace update, but v5.18
+> hasn't officially released yet so it's not kinda sort not ABI breakage.
+
+It's a bit annoying, as we're using the current structure in Android 13 :/
+Obviously, if there's no choice then upstream shouldn't worry, but it means
+we'll have to carry a delta in crosvm. Specifically, the new 'ndata' field
+is going to be unusable for us because it coincides with the padding.
+
+Will
+
+[1] https://lore.kernel.org/r/20220407162327.396183-6-alexandru.elisei@arm.com
+[2] https://github.com/ARM-software/abi-aa/blob/60a8eb8c55e999d74dac5e368fc9d7e36e38dda4/aapcs64/aapcs64.rst#composite-types
