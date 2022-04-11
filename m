@@ -2,52 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE536C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:26:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B15C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347277AbiDKO2Y (ORCPT
+        id S1347023AbiDKOaF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53768 "EHLO
+        Mon, 11 Apr 2022 10:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347269AbiDKO2X (ORCPT
+        with ESMTP id S234393AbiDKOaC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:28:23 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7C5396A7
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:26:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Y+87u4QYoEsVfA+FHG0tdBUkX/ZdHdh0s0fH1yaPbwg=; b=jpbocxzJOPnRbPSPWl6IBLjSsY
-        zjtrkzIPoRqpIX45xb6EC9KckvKhuOBpj+TNsALOJjZRiXhi3XQtB1BV6dsYzAlva5jcd95I3ewFF
-        7heZXa7OoZilw26jwcwwKxJauT8E5Oq0G/Er3M93CTna/+XQxFnA7cdeayQYU/ThN3M+K2bVwe2K5
-        ekaACOgEBiws7u+b9/invhF3TMxe/Vh2P4nQnLk2lJQD95uNEOO3Axe52RzzBv0aHUH+fsSBPdZaP
-        O83ZF07UGd4sB9+bI33xqju4qComliojgddUgT8f3vMZq4teB8WTHJ+x4yIRqJD3bNHhXV3r8fkcf
-        60ZCzWsg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nduzV-009OLa-MK; Mon, 11 Apr 2022 14:26:05 +0000
-Date:   Mon, 11 Apr 2022 07:26:05 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Change return type of
- dmar_insert_one_dev_info()
-Message-ID: <YlQ6feP5Dd9Ux18Y@infradead.org>
-References: <20220409133006.3953129-1-baolu.lu@linux.intel.com>
+        Mon, 11 Apr 2022 10:30:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C88543AA41
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:27:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649687266;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=poochtT5KCNLtLMccfGFFZ6+lU1Fq36QTZuOmgK85Qk=;
+        b=avH0sVRZrFkrO456qdN71yyHBRLtjBFk03Cgas7/FF0xEqvu9K51IGu76kPyoNLaafyNcF
+        DOS4Pl+ptfQQebM/OafBwIVrTdGqAXrzVzR5qNPgYmGlcBYuSzoxQrsCxaB7GgAcYAm/1p
+        aa1kMPALha5gvroAEv7M1544PD9G0gk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-471-mQVmn2w7M2SjT4sjSk58iw-1; Mon, 11 Apr 2022 10:27:43 -0400
+X-MC-Unique: mQVmn2w7M2SjT4sjSk58iw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E8EDF85A5A8;
+        Mon, 11 Apr 2022 14:27:42 +0000 (UTC)
+Received: from localhost (unknown [10.39.193.127])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 74CCA48FB19;
+        Mon, 11 Apr 2022 14:27:42 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Halil Pasic <pasic@linux.ibm.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Marc Zyngier <maz@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH V2 4/5] virtio-pci: implement synchronize_vqs()
+In-Reply-To: <CACGkMEtarZb6g3ij5=+As17+d9jtdAqNa1EzSuTXc7Pq_som0Q@mail.gmail.com>
+Organization: Red Hat GmbH
+References: <20220406083538.16274-1-jasowang@redhat.com>
+ <20220406083538.16274-5-jasowang@redhat.com>
+ <20220406075952-mutt-send-email-mst@kernel.org>
+ <87wng2e527.fsf@redhat.com> <20220408150307.24b6b99f.pasic@linux.ibm.com>
+ <20220410034556-mutt-send-email-mst@kernel.org>
+ <CACGkMEtarZb6g3ij5=+As17+d9jtdAqNa1EzSuTXc7Pq_som0Q@mail.gmail.com>
+User-Agent: Notmuch/0.34 (https://notmuchmail.org)
+Date:   Mon, 11 Apr 2022 16:27:41 +0200
+Message-ID: <877d7vbspu.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220409133006.3953129-1-baolu.lu@linux.intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 09:30:06PM +0800, Lu Baolu wrote:
-> The dmar_insert_one_dev_info() returns the pass-in domain on success and
-> NULL on failure. This doesn't make much sense. Change it to an integer.
+On Mon, Apr 11 2022, Jason Wang <jasowang@redhat.com> wrote:
 
-Looks sensibel.  Why not also merge it with domain_add_dev_info while
-you're at it?
+> On Sun, Apr 10, 2022 at 3:51 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>>
+>> On Fri, Apr 08, 2022 at 03:03:07PM +0200, Halil Pasic wrote:
+>> > On Wed, 06 Apr 2022 15:04:32 +0200
+>> > Cornelia Huck <cohuck@redhat.com> wrote:
+>> >
+>> > > On Wed, Apr 06 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+>> > >
+>> > > > On Wed, Apr 06, 2022 at 04:35:37PM +0800, Jason Wang wrote:
+>> > > >> This patch implements PCI version of synchronize_vqs().
+>> > > >>
+>> > > >> Cc: Thomas Gleixner <tglx@linutronix.de>
+>> > > >> Cc: Peter Zijlstra <peterz@infradead.org>
+>> > > >> Cc: "Paul E. McKenney" <paulmck@kernel.org>
+>> > > >> Cc: Marc Zyngier <maz@kernel.org>
+>> > > >> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>> > > >
+>> > > > Please add implementations at least for ccw and mmio.
+>> > >
+>> > > I'm not sure what (if anything) can/should be done for ccw...
+>> >
+>> > If nothing needs to be done I would like to have at least a comment in
+>> > the code that explains why. So that somebody who reads the code
+>> > doesn't wonder: why is virtio-ccw not implementing that callback.
+>>
+>> Right.
+>>
+>> I am currently thinking instead of making this optional in the
+>> core we should make it mandatory, and have transports which do not
+>> need to sync have an empty stub with documentation explaining why.
+
+Yes, that makes sense to me. If we can explain why we don't need to do
+anything, we should keep that explanation easily accessible.
+
+>>
+>> Also, do we want to document this sync is explicitly for irq enable/disable?
+>> synchronize_irq_enable_disable?
+>
+> I would not since the transport is not guaranteed to use an interrupt
+> for callbacks.
+>
+>>
+>>
+>> > >
+>> > > >
+>> > > >> ---
+>> > > >>  drivers/virtio/virtio_pci_common.c | 14 ++++++++++++++
+>> > > >>  drivers/virtio/virtio_pci_common.h |  2 ++
+>> > > >>  drivers/virtio/virtio_pci_legacy.c |  1 +
+>> > > >>  drivers/virtio/virtio_pci_modern.c |  2 ++
+>> > > >>  4 files changed, 19 insertions(+)
+>> > > >>
+>> > > >> diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio_pci_common.c
+>> > > >> index d724f676608b..b78c8bc93a97 100644
+>> > > >> --- a/drivers/virtio/virtio_pci_common.c
+>> > > >> +++ b/drivers/virtio/virtio_pci_common.c
+>> > > >> @@ -37,6 +37,20 @@ void vp_synchronize_vectors(struct virtio_device *vdev)
+>> > > >>                  synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
+>> > > >>  }
+>> > > >>
+>> > > >> +void vp_synchronize_vqs(struct virtio_device *vdev)
+>> > > >> +{
+>> > > >> +        struct virtio_pci_device *vp_dev = to_vp_device(vdev);
+>> > > >> +        int i;
+>> > > >> +
+>> > > >> +        if (vp_dev->intx_enabled) {
+>> > > >> +                synchronize_irq(vp_dev->pci_dev->irq);
+>> > > >> +                return;
+>> > > >> +        }
+>> > > >> +
+>> > > >> +        for (i = 0; i < vp_dev->msix_vectors; ++i)
+>> > > >> +                synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
+>> > > >> +}
+>> > > >> +
+>> > >
+>> > > ...given that this seems to synchronize threaded interrupt handlers?
+>> > > Halil, do you think ccw needs to do anything? (AFAICS, we only have one
+>> > > 'irq' for channel devices anyway, and the handler just calls the
+>> > > relevant callbacks directly.)
+>> >
+>> > Sorry I don't understand enough yet. A more verbose documentation on
+>> > "virtio_synchronize_vqs - synchronize with virtqueue callbacks" would
+>> > surely benefit me. It may be more than enough for a back-belt but it
+>> > ain't enough for me to tell what is the callback supposed to accomplish.
+
++1 for more explanations.
+
+>> >
+>> > I will have to study this discussion and the code more thoroughly.
+>> > Tentatively I side with Jason and Michael in a sense, that I don't
+>> > believe virtio-ccw is safe against rough interrupts.
+>
+> That's my feeling as well.
+
+I'd say ccw is safe against "notification interrupts before indicators
+have been registered". For the reverse case, maybe we should always
+invalidate the indicators in the reset case? More information regarding
+the attack vector would help here :)
+
+My main concern is that we would need to synchronize against a single
+interrupt that covers all kinds of I/O interrupts, not just a single
+device...
+
