@@ -2,358 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 116A7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B7AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348350AbiDKP6P (ORCPT
+        id S1348349AbiDKP6c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43926 "EHLO
+        Mon, 11 Apr 2022 11:58:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348379AbiDKP5u (ORCPT
+        with ESMTP id S1348354AbiDKP6T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:57:50 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365E6193D1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:55:35 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id g18so6863784ejc.10
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:55:35 -0700 (PDT)
+        Mon, 11 Apr 2022 11:58:19 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104CD205C8;
+        Mon, 11 Apr 2022 08:56:05 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id b16so19237176ioz.3;
+        Mon, 11 Apr 2022 08:56:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1TiZ9xQSoYHVPQ96AEExSlnYPl67H6HUcYO7BmPuHYo=;
-        b=n1D6/Hc8VURQFXNOkbZZMcry5LTPg73CYmYxEOQzwJrMA8w2tYO2eIOPsOQcIX5q+z
-         7Te3viq9hVMzbqkDcldupI8VPyT822zIoQUh6VPhFI7pPVAt8Ya3eE6SEnLT0dWch4Ei
-         nLVK7WTXhELxdlRE5JNM0FZY/rGKDXu/tla4mqFqLxVBtiEkDkaE0QHgixlgT1jKwxcO
-         yEWvW3EbK+HNaQtKqhwv200QBXQrzcgfUuhmawlA6NUS1pE18kNtWbD7ykiQsmV7dRDL
-         6CR3y+A8DdzC9qvt0sOZU68cf9eHEYv3aae3kilHOktNVvy6Bdo+5Qz3U8fyVc3+MU9B
-         clMQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=vceo+RAyT/EW19vQ+PlKVYgDIlHxuAYrR67tVfgRoO4=;
+        b=LB1SK6Ycdncwa1zdGkw756ua7rfc6E4fcHZOziYi0BxUXsTSAQjc5TE7FsyFA4KnJL
+         AZcNGvXacROBNUEzDiGOdCGP/I0X0PF3gI4r8tzxqU2X5jwqRmP5O/NdZQdesaw9I4Ax
+         gP0VftP2ZWMpi0WytiVkhytrVI+oBXWxQB0BpaL+GndPVt0GimT7f3Fc8V8tqbJ1Gi8O
+         SoZJZ2Gs8/83Y/yDNXjYtqpvYcRHAlrUmt3mdtVU/OSqXM+T897aIjpTgOnutT0IKZ1O
+         T6fFgWtUuxJRgv1T/UdrA299GJkvhM3ZKcVbKaFVfJ5/k+4jdXNhahbnpPQABxuiiPfY
+         UD0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1TiZ9xQSoYHVPQ96AEExSlnYPl67H6HUcYO7BmPuHYo=;
-        b=I8P/xS1AmeT9eIHnfJv5HQklWbHHP6lDjgnjyOd6KeX6L/WMBXpKYI6/hymlSBcBme
-         vTm3KIAKDMK/XdvZwg3U/5MUHxlpNOdnqowdv4AzG1aPZ6BNaupgPBXz4wdqi02/aHG8
-         NS6SqN078jqCIyae4c2SI4/bnSO2MPcxpkuv7Qe5AaPc9YSJ0UTuMen7wNx2IRO7qe1k
-         7WUK2+5E96cnJo9WtCUKqaR3Ww16nVGpuiPPa7QB7Xa31/h+nEPVcoGCUkicv8V78Qq1
-         cd6rl3eCn0xr/nnPrJqQN7kvsJzVvwrVfj9DrKoVMNrcx0tbP9MUZxFghlO9GU4kFt5F
-         USpw==
-X-Gm-Message-State: AOAM532ZmnqyMVh3PCDrii4VnaDbylR3QDZAAfaD2fFuWclDOs/CZidG
-        mLz/2QwaJXVtM/YpzwSZzVLf1+VcP+XN/iDe
-X-Google-Smtp-Source: ABdhPJwQa0dFzXR9oHzeQFtiH0YZlt5odnXi8O4Io/iGzJFKFaDzDt8IcV03J4Z3dBO4TYBSlIQ9lQ==
-X-Received: by 2002:a17:907:da9:b0:6da:beb8:fdac with SMTP id go41-20020a1709070da900b006dabeb8fdacmr30345773ejc.364.1649692533727;
-        Mon, 11 Apr 2022 08:55:33 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id l11-20020a509dcb000000b0041cbaf0ce2asm13337256edk.6.2022.04.11.08.55.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 08:55:33 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2] dt-bindings: soc: qcom,smp2p: convert to dtschema
-Date:   Mon, 11 Apr 2022 17:55:28 +0200
-Message-Id: <20220411155528.502889-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=vceo+RAyT/EW19vQ+PlKVYgDIlHxuAYrR67tVfgRoO4=;
+        b=y1yarJvZZl05i6zqt6Bd6Lec1jtrjX+clPH1seYG210qQ5pUkpA0Im6xOY+8rFl38V
+         F0itCimwKgZ5TJc6Vr6a92yzXbnIotXD+uTe4/xVOIHZ1soTIamXVPONGdqhzWz8tBhC
+         YI5kbhaEVsuNbf8M4STyNyXfoMavXbY+xnyaFjQLYtJg0J3zKOIgjZLZkxoVrZlVnYyi
+         qK2M0uZu8VI2XQHYWYAoQ9Kz7F0+SVgrAdg7lWbgmURW22FV7WLP+3JdJXg0J57i5kn2
+         w2/aGjP0aXtPTLU0iwhs8naL7dA8sDY8IJJI2yV73NgunveBtVxgcbjGfxitOcBEhwpH
+         o4gQ==
+X-Gm-Message-State: AOAM532yhibZfxfs0pKEZb5vyw13uImOQYUoK+iXXrFLI7dR8CwjM0TM
+        LOFyreIBETpOVBvRwItziwxifnUH7tWKsqO8oio=
+X-Google-Smtp-Source: ABdhPJxJAlWWh0EZgcZeswPbH8fIeCWZQFEJN1N2cmO8OHyOUBKsKTdDu/YUqyc9aSFBwZJB5fZMpg==
+X-Received: by 2002:a02:604f:0:b0:30f:e6f1:3883 with SMTP id d15-20020a02604f000000b0030fe6f13883mr16630902jaf.266.1649692564453;
+        Mon, 11 Apr 2022 08:56:04 -0700 (PDT)
+Received: from localhost (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with UTF8SMTPSA id j9-20020a926e09000000b002c9f3388cd4sm18299328ilc.21.2022.04.11.08.56.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 08:56:04 -0700 (PDT)
+From:   Schspa Shi <schspa@gmail.com>
+To:     dsterba@suse.cz
+Cc:     clm@fb.com, dsterba@suse.com, josef@toxicpanda.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        schspa@gmail.com, terrelln@fb.com
+Subject: [PATCH v2] btrfs: zstd: use spin_lock in timer callback
+Date:   Mon, 11 Apr 2022 23:55:41 +0800
+Message-Id: <20220411155540.36853-1-schspa@gmail.com>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+In-Reply-To: <20220411135136.GG15609@suse.cz>
+References: <20220411135136.GG15609@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the Qualcomm Shared Memory Point 2 Point bindings to DT Schema.
+This is an optimization for fix fee13fe96529 ("btrfs:
+correct zstd workspace manager lock to use spin_lock_bh()")
 
-Changes against original bindings: enforce only specific names of child
-nodes, instead of any names.
+The critical region for wsm.lock is only accessed by the process context and
+the softirq context.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Because in the soft interrupt, the critical section will not be preempted by the
+soft interrupt again, there is no need to call spin_lock_bh(&wsm.lock) to turn
+off the soft interrupt, spin_lock(&wsm.lock) is enough for this situation.
 
+Changelog:
+v1 -> v2:
+	- Change the commit message to make it more readable.
+
+[1] https://lore.kernel.org/all/20220408181523.92322-1-schspa@gmail.com/
+
+Signed-off-by: Schspa Shi <schspa@gmail.com>
 ---
+ fs/btrfs/zstd.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Changes since v1:
-1. Correct qcom,local-pid and qcom,remote-pid types to uint32.
-2. The DT schema warnings reported by Rob's robot are fixed already in
-   separate patches.
----
- .../bindings/soc/qcom/qcom,smp2p.txt          | 110 -------------
- .../bindings/soc/qcom/qcom,smp2p.yaml         | 145 ++++++++++++++++++
- 2 files changed, 145 insertions(+), 110 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,smp2p.txt
- create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,smp2p.yaml
-
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,smp2p.txt b/Documentation/devicetree/bindings/soc/qcom/qcom,smp2p.txt
-deleted file mode 100644
-index 49e1d72d3648..000000000000
---- a/Documentation/devicetree/bindings/soc/qcom/qcom,smp2p.txt
-+++ /dev/null
-@@ -1,110 +0,0 @@
--Qualcomm Shared Memory Point 2 Point binding
--
--The Shared Memory Point to Point (SMP2P) protocol facilitates communication of
--a single 32-bit value between two processors.  Each value has a single writer
--(the local side) and a single reader (the remote side).  Values are uniquely
--identified in the system by the directed edge (local processor ID to remote
--processor ID) and a string identifier.
--
--- compatible:
--	Usage: required
--	Value type: <string>
--	Definition: must be one of:
--		    "qcom,smp2p"
--
--- interrupts:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: one entry specifying the smp2p notification interrupt
--
--- mboxes:
--	Usage: required
--	Value type: <prop-encoded-array>
--	Definition: reference to the associated doorbell in APCS, as described
--		    in mailbox/mailbox.txt
--
--- qcom,ipc:
--	Usage: required, unless mboxes is specified
--	Value type: <prop-encoded-array>
--	Definition: three entries specifying the outgoing ipc bit used for
--		    signaling the remote end of the smp2p edge:
--		    - phandle to a syscon node representing the apcs registers
--		    - u32 representing offset to the register within the syscon
--		    - u32 representing the ipc bit within the register
--
--- qcom,smem:
--	Usage: required
--	Value type: <u32 array>
--	Definition: two identifiers of the inbound and outbound smem items used
--		    for this edge
--
--- qcom,local-pid:
--	Usage: required
--	Value type: <u32>
--	Definition: specifies the identifier of the local endpoint of this edge
--
--- qcom,remote-pid:
--	Usage: required
--	Value type: <u32>
--	Definition: specifies the identifier of the remote endpoint of this edge
--
--= SUBNODES
--Each SMP2P pair contain a set of inbound and outbound entries, these are
--described in subnodes of the smp2p device node. The node names are not
--important.
--
--- qcom,entry-name:
--	Usage: required
--	Value type: <string>
--	Definition: specifies the name of this entry, for inbound entries this
--		    will be used to match against the remotely allocated entry
--		    and for outbound entries this name is used for allocating
--		    entries
--
--- interrupt-controller:
--	Usage: required for incoming entries
--	Value type: <empty>
--	Definition: marks the entry as inbound; the node should be specified
--		    as a two cell interrupt-controller as defined in
--		    "../interrupt-controller/interrupts.txt"
--		    If not specified this node will denote the outgoing entry
--
--- #interrupt-cells:
--	Usage: required for incoming entries
--	Value type: <u32>
--	Definition: must be 2 - denoting the bit in the entry and IRQ flags
--
--- #qcom,smem-state-cells:
--	Usage: required for outgoing entries
--	Value type: <u32>
--	Definition: must be 1 - denoting the bit in the entry
--
--= EXAMPLE
--The following example shows the SMP2P setup with the wireless processor,
--defined from the 8974 apps processor's point-of-view. It encompasses one
--inbound and one outbound entry:
--
--wcnss-smp2p {
--	compatible = "qcom,smp2p";
--	qcom,smem = <431>, <451>;
--
--	interrupts = <0 143 1>;
--
--	qcom,ipc = <&apcs 8 18>;
--
--	qcom,local-pid = <0>;
--	qcom,remote-pid = <4>;
--
--	wcnss_smp2p_out: master-kernel {
--		qcom,entry-name = "master-kernel";
--
--		#qcom,smem-state-cells = <1>;
--	};
--
--	wcnss_smp2p_in: slave-kernel {
--		qcom,entry-name = "slave-kernel";
--
--		interrupt-controller;
--		#interrupt-cells = <2>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,smp2p.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,smp2p.yaml
-new file mode 100644
-index 000000000000..795bd8cd4104
---- /dev/null
-+++ b/Documentation/devicetree/bindings/soc/qcom/qcom,smp2p.yaml
-@@ -0,0 +1,145 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/soc/qcom/qcom,smp2p.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm Shared Memory Point 2 Point
-+
-+maintainers:
-+  - Andy Gross <agross@kernel.org>
-+  - Bjorn Andersson <bjorn.andersson@linaro.org>
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-+
-+description:
-+  The Shared Memory Point to Point (SMP2P) protocol facilitates communication
-+  of a single 32-bit value between two processors.  Each value has a single
-+  writer (the local side) and a single reader (the remote side).  Values are
-+  uniquely identified in the system by the directed edge (local processor ID to
-+  remote processor ID) and a string identifier.
-+
-+properties:
-+  compatible:
-+    const: qcom,smp2p
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  mboxes:
-+    maxItems: 1
-+    description:
-+      Reference to the mailbox representing the outgoing doorbell in APCS for
-+      this client.
-+
-+  qcom,ipc:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    items:
-+      - items:
-+          - description: phandle to a syscon node representing the APCS registers
-+          - description: u32 representing offset to the register within the syscon
-+          - description: u32 representing the ipc bit within the register
-+    description:
-+      Three entries specifying the outgoing ipc bit used for signaling the
-+      remote end of the smp2p edge.
-+
-+  qcom,local-pid:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      The identifier of the local endpoint of this edge.
-+
-+  qcom,remote-pid:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      The identifier of the remote endpoint of this edge.
-+
-+  qcom,smem:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    items:
-+      maxItems: 2
-+    description:
-+      Two identifiers of the inbound and outbound smem items used for this edge.
-+
-+patternProperties:
-+  "^master-kernel|slave-kernel|ipa-ap-to-modem|ipa-modem-to-ap$":
-+    type: object
-+    description:
-+      Each SMP2P pair contain a set of inbound and outbound entries, these are
-+      described in subnodes of the smp2p device node. The node names are not
-+      important.
-+
-+    properties:
-+      interrupt-controller:
-+        description:
-+          Marks the entry as inbound; the node should be specified as a two
-+          cell interrupt-controller.  If not specified this node will denote
-+          the outgoing entry.
-+
-+      '#interrupt-cells':
-+        const: 2
-+
-+      qcom,entry-name:
-+        $ref: /schemas/types.yaml#/definitions/string
-+        description:
-+          The name of this entry, for inbound entries this will be used to
-+          match against the remotely allocated entry and for outbound entries
-+          this name is used for allocating entries.
-+
-+      '#qcom,smem-state-cells':
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        const: 1
-+        description:
-+          Required for outgoing entries.
-+
-+    required:
-+      - qcom,entry-name
-+
-+    oneOf:
-+      - required:
-+          - interrupt-controller
-+          - '#interrupt-cells'
-+      - required:
-+          - '#qcom,smem-state-cells'
-+
-+    additionalProperties: false
-+
-+required:
-+  - compatible
-+  - interrupts
-+  - qcom,local-pid
-+  - qcom,remote-pid
-+  - qcom,smem
-+
-+oneOf:
-+  - required:
-+      - mboxes
-+  - required:
-+      - qcom,ipc
-+
-+additionalProperties: false
-+
-+examples:
-+  # The following example shows the SMP2P setup with the wireless processor,
-+  # defined from the 8974 apps processor's point-of-view. It encompasses one
-+  # inbound and one outbound entry.
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    shared-memory {
-+        compatible = "qcom,smp2p";
-+        qcom,smem = <431>, <451>;
-+        interrupts = <GIC_SPI 143 IRQ_TYPE_EDGE_RISING>;
-+        qcom,ipc = <&apcs 8 18>;
-+        qcom,local-pid = <0>;
-+        qcom,remote-pid = <4>;
-+
-+        wcnss_smp2p_out: master-kernel {
-+            qcom,entry-name = "master-kernel";
-+            #qcom,smem-state-cells = <1>;
-+        };
-+
-+        wcnss_smp2p_in: slave-kernel {
-+            qcom,entry-name = "slave-kernel";
-+            interrupt-controller;
-+            #interrupt-cells = <2>;
-+        };
-+    };
+diff --git a/fs/btrfs/zstd.c b/fs/btrfs/zstd.c
+index fc42dd0badd7..faa74306f0b7 100644
+--- a/fs/btrfs/zstd.c
++++ b/fs/btrfs/zstd.c
+@@ -105,10 +105,10 @@ static void zstd_reclaim_timer_fn(struct timer_list *timer)
+ 	unsigned long reclaim_threshold = jiffies - ZSTD_BTRFS_RECLAIM_JIFFIES;
+ 	struct list_head *pos, *next;
+ 
+-	spin_lock_bh(&wsm.lock);
++	spin_lock(&wsm.lock);
+ 
+ 	if (list_empty(&wsm.lru_list)) {
+-		spin_unlock_bh(&wsm.lock);
++		spin_unlock(&wsm.lock);
+ 		return;
+ 	}
+ 
+@@ -137,7 +137,7 @@ static void zstd_reclaim_timer_fn(struct timer_list *timer)
+ 	if (!list_empty(&wsm.lru_list))
+ 		mod_timer(&wsm.timer, jiffies + ZSTD_BTRFS_RECLAIM_JIFFIES);
+ 
+-	spin_unlock_bh(&wsm.lock);
++	spin_unlock(&wsm.lock);
+ }
+ 
+ /*
 -- 
-2.32.0
+2.24.3 (Apple Git-128)
 
