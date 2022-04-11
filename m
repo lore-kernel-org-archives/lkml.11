@@ -2,116 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F36C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:21:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BED5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:21:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345923AbiDKLX6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49954 "EHLO
+        id S229753AbiDKLYF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 07:24:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344418AbiDKLXx (ORCPT
+        with ESMTP id S1345914AbiDKLX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:23:53 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5FB4338F;
-        Mon, 11 Apr 2022 04:21:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1649676063; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=FYR1ljHw9ZleGd6VEvYY5zwbU+JgG4fLt3a2rwmS4wVlnaOl9s2j1HOI0SSXKQ6A+OyZBAnGhe45k+byVXyfC7zH/i5thZnjMfpPDWFCS8CNw2OnTGcSIxnfoViN50bdVrne8aP5+oFxupsAqFo8Nzw8RWZDQAN4fbGYrYKoUA4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1649676063; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=s4xzLoNpe1+7AuZ01StDxH9nnUVROAsjJ2iNHkOD0DU=; 
-        b=oKfNTWkk4QyWgfmc4PKiKA3Ynqjmax8qhZTvK266DXBSy5f9LujDG9UsRwnksOB2161zsbCsxfkxMrQmnJdZvPNzA8jWjJABhEE7Nl6NT8s8zhVHq2RzjW4VI0kQPVFijdOjNZeFz4VNwCGnSyMMy3AMbS9xSk6MpSYTvC1OIjE=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1649676063;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=s4xzLoNpe1+7AuZ01StDxH9nnUVROAsjJ2iNHkOD0DU=;
-        b=WJF6fzUvoRQgTBFtax5JnWNJsc7hJbZ3dZX2/HeUGB1SfRYXJUt+x5VouQMl1Tg/
-        i7FEnf0Vxfc9+FuiZ4ErEWtDeeFH8Pbcz9D/24Yc+a1rchkZ2anAcB8TWHT/wV2QhPZ
-        +FVt1FY1D+gfUfvVwmckgEKi2aZiHE4yO5oZapjs=
-Received: from arinc9-PC.localdomain (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1649676061982713.5477889360059; Mon, 11 Apr 2022 04:21:01 -0700 (PDT)
-From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-To:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH v2 2/3] mips: dts: ralink: mt7621: mux phy4 to gmac1 for GB-PC1
-Date:   Mon, 11 Apr 2022 14:20:48 +0300
-Message-Id: <20220411112049.18001-2-arinc.unal@arinc9.com>
+        Mon, 11 Apr 2022 07:23:57 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB8445510
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:21:43 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id 32so11784147pgl.4
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:21:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ct0KPIwIFBFQvI2RK89Mz30dFbD3GIANQnxanM+V5Hk=;
+        b=pIsrbL6usz31jkne7q1tPeu0ne1pxxjoT9uAJd0h3YObyCn1tzb/VLB/xZdUVld6lS
+         nNppWDpT6aGeR9pBBW8TIQgIbbS61uE0mv5TMr3iN7jRsITnU0mkdH9BIz8Ty+wjFg6y
+         x8syGq/uRIQ4F/KNpRE4sOwmu7HvaNg+Jb/ZEJNCQTiRc1a6IVDotCUiutJnP2kiVnuc
+         7VFRyA862wDCxEU5N21FTg3TwaeC6Oynh/oJrndTiubYW/l0WIizvOYjqtZQTblopDU9
+         do18EQGK8mjffeEdwBfZX/W8l0g4aE9zgrQ8LSTs9qN2BjDBsYSC3nzqBb7HrbnB46NE
+         I04w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ct0KPIwIFBFQvI2RK89Mz30dFbD3GIANQnxanM+V5Hk=;
+        b=Kg9mEK/O7/dBFXqXxeXHRyIyrgee/rSGHndUBdpbhaE+0vjnqxmWO2PxN4U5dn1YEE
+         yL1mzHl0i93lHI8UPIPogj80eO6oSFRCjPXtw0b/JrOvDVBmHmnuLQgbiqAG5g4dywfz
+         bTQz2Z1OOYO6pBV6TYPTg6XZqdmJP6sHIHNgeRzIwffSFWs+6uG+vrBeUVH98sIjW+W9
+         ZZfIqmttMPQjFTKf2Mfw4wCjvxoaD2MSwuToneuKtCQIwE24FCB+qnihg4COeb5rrOqR
+         JZHzHVmW4REmqAprGclmRQ0qY4f2y2Bhx63MlPYN0N8es8+MZIDaH+oWh7p0EWw/yFoY
+         WW6A==
+X-Gm-Message-State: AOAM530pENxlkq9DhsRfL7cLnV5z9609elN2jVj0/gvHQ74RuBu73JX2
+        a1QmFvV4vECYTj1QoKu9ww==
+X-Google-Smtp-Source: ABdhPJzBOeLgMjpOYtSe2jCq3H+Z3APHHfpZ1ubpgpgwVcb/nNz6K1twzSPaimOwZoj9jFdHzg7vNg==
+X-Received: by 2002:a63:5f42:0:b0:39d:4f86:2f59 with SMTP id t63-20020a635f42000000b0039d4f862f59mr4132369pgb.181.1649676102588;
+        Mon, 11 Apr 2022 04:21:42 -0700 (PDT)
+Received: from localhost.localdomain ([144.202.91.207])
+        by smtp.gmail.com with ESMTPSA id y3-20020a63de43000000b0039d1172b90fsm7365844pgi.76.2022.04.11.04.21.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 04:21:42 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com
+Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH] mtd: rawnand: Use managed device resources
+Date:   Mon, 11 Apr 2022 19:21:24 +0800
+Message-Id: <20220411112124.3700126-1-zheyuma97@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220411112049.18001-1-arinc.unal@arinc9.com>
-References: <20220411112049.18001-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mux the MT7530 switch's phy4 to the SoC's gmac1 on the GB-PC1 devicetree.
-This achieves 2 Gbps total bandwidth to the CPU using the second RGMII.
+All of the resources used by this driver has managed interfaces, so use
+them. Otherwise we will get the following splat:
 
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+[    4.472703] denali-nand-pci 0000:00:05.0: timeout while waiting for irq 0x1000
+[    4.474071] denali-nand-pci: probe of 0000:00:05.0 failed with error -5
+[    4.473538] nand: No NAND device found
+[    4.474068] BUG: unable to handle page fault for address: ffffc90005000410
+[    4.475169] #PF: supervisor write access in kernel mode
+[    4.475579] #PF: error_code(0x0002) - not-present page
+[    4.478362] RIP: 0010:iowrite32+0x9/0x50
+[    4.486068] Call Trace:
+[    4.486269]  <IRQ>
+[    4.486443]  denali_isr+0x15b/0x300 [denali]
+[    4.486788]  ? denali_direct_write+0x50/0x50 [denali]
+[    4.487189]  __handle_irq_event_percpu+0x161/0x3b0
+[    4.487571]  handle_irq_event+0x7d/0x1b0
+[    4.487884]  handle_fasteoi_irq+0x2b0/0x770
+[    4.488219]  __common_interrupt+0xc8/0x1b0
+[    4.488549]  common_interrupt+0x9a/0xc0
+
+Fixes: 93db446a424c ("mtd: nand: move raw NAND related code to the raw/ subdir")
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 ---
-v2: add "ralink:" to the commit summary
+ drivers/mtd/nand/raw/denali_pci.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
----
- .../boot/dts/ralink/mt7621-gnubee-gb-pc1.dts   | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
-
-diff --git a/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts
-index 5892bcf71595..75f3b0425487 100644
---- a/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts
-+++ b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts
-@@ -103,14 +103,21 @@ &pinctrl {
+diff --git a/drivers/mtd/nand/raw/denali_pci.c b/drivers/mtd/nand/raw/denali_pci.c
+index 20c085a30adc..de7e722d3826 100644
+--- a/drivers/mtd/nand/raw/denali_pci.c
++++ b/drivers/mtd/nand/raw/denali_pci.c
+@@ -74,22 +74,21 @@ static int denali_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 		return ret;
+ 	}
  
- 	state_default: state-default {
- 		gpio-pinmux {
--			groups = "rgmii2", "uart3", "wdt";
-+			groups = "uart3", "wdt";
- 			function = "gpio";
- 		};
- 	};
- };
+-	denali->reg = ioremap(csr_base, csr_len);
++	denali->reg = devm_ioremap(denali->dev, csr_base, csr_len);
+ 	if (!denali->reg) {
+ 		dev_err(&dev->dev, "Spectra: Unable to remap memory region\n");
+ 		return -ENOMEM;
+ 	}
  
--&ethernet {
--	pinctrl-0 = <&mdio_pins>, <&rgmii1_pins>;
-+&gmac1 {
-+	status = "okay";
-+	phy-handle = <&ethphy4>;
-+};
-+
-+&mdio {
-+	ethphy4: ethernet-phy@4 {
-+		reg = <4>;
-+	};
- };
+-	denali->host = ioremap(mem_base, mem_len);
++	denali->host = devm_ioremap(denali->dev, mem_base, mem_len);
+ 	if (!denali->host) {
+ 		dev_err(&dev->dev, "Spectra: ioremap failed!");
+-		ret = -ENOMEM;
+-		goto out_unmap_reg;
++		return -ENOMEM;
+ 	}
  
- &switch0 {
-@@ -119,10 +126,5 @@ port@0 {
- 			status = "okay";
- 			label = "ethblack";
- 		};
--
--		port@4 {
--			status = "okay";
--			label = "ethblue";
--		};
- 	};
- };
+ 	ret = denali_init(denali);
+ 	if (ret)
+-		goto out_unmap_host;
++		return ret;
+ 
+ 	nsels = denali->nbanks;
+ 
+@@ -117,10 +116,6 @@ static int denali_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 
+ out_remove_denali:
+ 	denali_remove(denali);
+-out_unmap_host:
+-	iounmap(denali->host);
+-out_unmap_reg:
+-	iounmap(denali->reg);
+ 	return ret;
+ }
+ 
+@@ -129,8 +124,6 @@ static void denali_pci_remove(struct pci_dev *dev)
+ 	struct denali_controller *denali = pci_get_drvdata(dev);
+ 
+ 	denali_remove(denali);
+-	iounmap(denali->reg);
+-	iounmap(denali->host);
+ }
+ 
+ static struct pci_driver denali_pci_driver = {
 -- 
 2.25.1
 
