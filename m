@@ -2,213 +2,271 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 146ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 20:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8F0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 20:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236261AbiDKUy3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 16:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33670 "EHLO
+        id S245232AbiDKU4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 16:56:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbiDKUyZ (ORCPT
+        with ESMTP id S236966AbiDKU4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 16:54:25 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17211BE8D;
-        Mon, 11 Apr 2022 13:52:09 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id 15so6836942ljw.8;
-        Mon, 11 Apr 2022 13:52:09 -0700 (PDT)
+        Mon, 11 Apr 2022 16:56:36 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6B8183A9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 13:54:20 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id md20-20020a17090b23d400b001cb70ef790dso473086pjb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 13:54:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=1fDNATJkyI5vBImHKEeTc9B3VeszzusoRqcTsbo8v2w=;
-        b=NVEVfKnOCjNi23AWnXh1onxSYIibMpJ+cqdIO1cYsPCRrafc2NsdNeZuDTTw5TNPrj
-         f8mDzmYvEn8/phwmDJuMZn92Jb2bTCT518T1eKTH9Az5+3NYdBa6YJLP3LzIgNH0n/No
-         3Yd7BbtVwokdoyk9JCOqseG3ThylUFlWjtyHY/oXRHokXbb1FmNEjmTujhzEBc9kMiCH
-         DlBRyghhPN9L4nNX5fe2dsBjq4haLUoIFalHdFy7QW35CCmp7GU9QjWPt3ApdHL5Cmn6
-         7UWP6C+pvyr0zDL3rWCD+VNkWS8obVEBTLDnDNckZFygNxhX9ehV8eLfLP/Ww6qsWKFH
-         zq5A==
+        bh=MeANwaP9JmwAACnbLRdVWJXdi5Dvn5w5kJMXuz3gK1s=;
+        b=BOB11IonNKDbW3yU7EG5l64H0Tl6YTrTZaZDHtydQ99KH9fVm92GzrOdjqnbcqGN3s
+         xp2nZi9Q5ES9g34kUo76o9rPWocYwjWS0TCOqbV8u23LyBHH7VpKfkX8rclYarIvxPbS
+         H38N/3n2yTR2cyz2wAM+NOFs1iPi3ixdOudn4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=1fDNATJkyI5vBImHKEeTc9B3VeszzusoRqcTsbo8v2w=;
-        b=H4tFZPAxp1jahdlLPJzoniF7Shrjj8dSmD2M7ANdETitFhN3WirWmwZym01PxUl34D
-         b1+Fz9JCFSUq0NEakgaxibjf4mmF2sgoZB+Y7+OdhtcLiM/vF48jdDFTjsjwtP0q6Rt2
-         zRvw7ex4N6rAVrNmdCrdF0pbBTNUTZfpnGYtTPtxQNBizWs1tww6CGygybUXEI6x+a5C
-         geKpH20RrSeBAoQZ4U0O9IIRj3JuejaXfxbafIYmTWlarJuH3XlXCNGCYubo6sGY5jmh
-         q0W5LZBWVk7/p9e2yPvO31ygKiM/7Q+mcWg3Tz31s88EFA4hTs+PzcyLT/BqmtJCB8ib
-         o4bw==
-X-Gm-Message-State: AOAM531zx365Dh4rGN4MyC6VytiT16N0chpuumh2ftx9A/A33fvY3BJg
-        qMu41PTsiimcMpAhSd/UjAE=
-X-Google-Smtp-Source: ABdhPJwi05zNjUUYsFAh87JAKA9CCGS5Ug/w31ak5+m0rvsUbAtfR7XG3vZ3296xWyBe7s2xAf6YnQ==
-X-Received: by 2002:a05:651c:2124:b0:24b:6b4d:870b with SMTP id a36-20020a05651c212400b0024b6b4d870bmr1403208ljq.299.1649710327807;
-        Mon, 11 Apr 2022 13:52:07 -0700 (PDT)
-Received: from mobilestation ([95.79.134.149])
-        by smtp.gmail.com with ESMTPSA id p6-20020a196046000000b00464f80a0389sm1393772lfk.33.2022.04.11.13.52.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 13:52:07 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 23:52:05 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 12/21] ata: libahci: Discard redundant force_port_map
- parameter
-Message-ID: <20220411205205.p5vnqvscgfb2siej@mobilestation>
-References: <20220324001628.13028-1-Sergey.Semin@baikalelectronics.ru>
- <20220324001628.13028-13-Sergey.Semin@baikalelectronics.ru>
- <b06a8382-d5c1-e3a5-8577-692fa82cb3c1@opensource.wdc.com>
- <20220411121151.vm6wmtalbl2lgtgo@mobilestation>
- <bde34952-e244-a1c3-fc33-251d618d2bb4@opensource.wdc.com>
+        bh=MeANwaP9JmwAACnbLRdVWJXdi5Dvn5w5kJMXuz3gK1s=;
+        b=IffGRQEzYZkdSQ+2Ibu/tGJv1iw3k2sGcSje4LOkriUjzXRT/BpY5Mr0RJNEaCewPH
+         QeLxcL/xuasgDhFyyzy82gMYpyxLy8s9WptkRi9tpCxkQk3vFePdtwhaiXtImxeV1OgI
+         PrLiCVlTkOIbhrLVPKTdwyYWnm2q8rYIQ9040/kVYxbSnLXhLIQtYbDNHxONAyHddn+e
+         HyV+fNQOL1JHAQbsk+5DfcPQnHnVffWVk5v553p357MO3ZilvvP9Be/Ap/ymklvGpIXR
+         jOXgtMA2fh/2bFTdHiTkjO+/ssYWoC8ar1BSFQccY4SKg/Uc4bI81mLyw/c3Ho3U4czQ
+         7pTw==
+X-Gm-Message-State: AOAM5310J20HK69sSb/6CWAxMMQxLSuV2Dvn/Toz8cn5QEh8zN/tok0s
+        kRk50mGhbkZfAF4x4GAj6mg/2g==
+X-Google-Smtp-Source: ABdhPJxqIC9qD7T4GjpjdQlFYQuLPa3Mfns68bxMr9u32io0hAAWyIOerUZLr3L2lBq63+JQ520nPA==
+X-Received: by 2002:a17:902:8bcc:b0:158:20f8:392 with SMTP id r12-20020a1709028bcc00b0015820f80392mr17341328plo.93.1649710459909;
+        Mon, 11 Apr 2022 13:54:19 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:eb96:76ba:e2a1:2442])
+        by smtp.gmail.com with UTF8SMTPSA id u17-20020a056a00159100b004faef351ebcsm35077269pfk.45.2022.04.11.13.54.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 13:54:19 -0700 (PDT)
+Date:   Mon, 11 Apr 2022 13:54:17 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_pkondeti@quicinc.com, quic_ppratap@quicinc.com,
+        quic_kriskura@quicinc.com, quic_vpulyala@quicinc.com
+Subject: Re: [PATCH v13 2/6] usb: dwc3: core: Host wake up support from
+ system suspend
+Message-ID: <YlSVec5+SpdMZWCz@google.com>
+References: <1649704614-31518-1-git-send-email-quic_c_sanm@quicinc.com>
+ <1649704614-31518-3-git-send-email-quic_c_sanm@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <bde34952-e244-a1c3-fc33-251d618d2bb4@opensource.wdc.com>
+In-Reply-To: <1649704614-31518-3-git-send-email-quic_c_sanm@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 09:25:03PM +0900, Damien Le Moal wrote:
-> On 4/11/22 21:11, Serge Semin wrote:
-> > On Thu, Mar 24, 2022 at 11:05:58AM +0900, Damien Le Moal wrote:
-> >> On 3/24/22 09:16, Serge Semin wrote:
-> >>> Currently there are four port-map-related fields declared in the
-> >>> ahci_host_priv structure and used to setup the HBA ports mapping. First
-> >>> the ports-mapping is read from the PI register and immediately stored in
-> >>> the saved_port_map field. If forced_port_map is initialized with non-zero
-> >>> value then its value will have greater priority over the value read from
-> >>> PI, thus it will override the saved_port_map field. That value will be then
-> >>> masked by a non-zero mask_port_map field and after some sanity checks it
-> >>> will be stored in the ahci_host_priv.port_map field as a final port
-> >>> mapping.
-> >>>
-> >>> As you can see the logic is a bit too complicated for such a simple task.
-> >>> We can freely get rid from at least one of the fields with no change to
-> >>> the implemented semantic. The force_port_map field can be replaced with
-> >>> taking non-zero saved_port_map value into account. So if saved_port_map is
-> >>> pre-initialized by the glue-driver/platform-specific code then it will
-> >>
-> > 
-> >> glue-driver == LLDD (low level device driver), for the entire series please.
-> > 
-> > Why? It's a normal term and well known amongst developers. I've used it
-> > in a plenty of my patches before and none of them has been questioned in that
-> > part so far.
+On Tue, Apr 12, 2022 at 12:46:50AM +0530, Sandeep Maheswaram wrote:
+> During suspend read the status of all port and set hs phy mode
+> based on current speed. Use this hs phy mode to configure wakeup
+> interrupts in qcom glue driver.
 > 
+> Check wakep-source property for dwc3 core node to set the
 
-> This term is not used in libata, nor do I remember seeing it used in SCSI
-> or block subsystem either. We always talk about mid-layer (ahci platform)
-> and LLDD (adapter driver).
+s/wakep/wakeup/
 
-Great, do we need to learn the subsystem-specific dictionary now
-before submitting the patches for it? =)
-Really, you are asking me to change one term to its synonym just
-because it's mainly unused here. Now you know what it means, the
-others can easily google it and get to learn something new. Win-win.)
-
--Sergey
-
+> wakeup capability. Drop the device_init_wakeup call from
+> runtime suspend and resume.
 > 
-> > 
-> > -Sergey
-> > 
-> >>
-> >>> have greater priority over the value read from PI register and will be
-> >>> used as actual HBA ports mapping later on. Thus the ports map forcing task
-> >>> will be just transferred from the force_port_map to saved_port_map field.
-> >>>
-> >>> This modification will perfectly fit into the feature of having OF-based
-> >>> initialization of the HW-init HBA CSR fields we are about to introduce in
-> >>> the next commit.
-> >>>
-> >>> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> >>> ---
-> >>>  drivers/ata/ahci.c             |  2 +-
-> >>>  drivers/ata/ahci.h             |  1 -
-> >>>  drivers/ata/libahci.c          | 10 ++++++----
-> >>>  drivers/ata/libahci_platform.c |  2 +-
-> >>>  4 files changed, 8 insertions(+), 7 deletions(-)
-> >>>
-> >>> diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-> >>> index ab5811ef5a53..8ce0d166cc8d 100644
-> >>> --- a/drivers/ata/ahci.c
-> >>> +++ b/drivers/ata/ahci.c
-> >>> @@ -654,7 +654,7 @@ static void ahci_pci_save_initial_config(struct pci_dev *pdev,
-> >>>  {
-> >>>  	if (pdev->vendor == PCI_VENDOR_ID_JMICRON && pdev->device == 0x2361) {
-> >>>  		dev_info(&pdev->dev, "JMB361 has only one port\n");
-> >>> -		hpriv->force_port_map = 1;
-> >>> +		hpriv->saved_port_map = 1;
-> >>>  	}
-> >>>  
-> >>>  	/*
-> >>> diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
-> >>> index 04690b4168a3..519d148ecaea 100644
-> >>> --- a/drivers/ata/ahci.h
-> >>> +++ b/drivers/ata/ahci.h
-> >>> @@ -329,7 +329,6 @@ struct ahci_port_priv {
-> >>>  struct ahci_host_priv {
-> >>>  	/* Input fields */
-> >>>  	unsigned int		flags;		/* AHCI_HFLAG_* */
-> >>> -	u32			force_port_map;	/* force port map */
-> >>>  	u32			mask_port_map;	/* mask out particular bits */
-> >>>  
-> >>>  	void __iomem *		mmio;		/* bus-independent mem map */
-> >>> diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-> >>> index 0ed484e04fd6..011175e82174 100644
-> >>> --- a/drivers/ata/libahci.c
-> >>> +++ b/drivers/ata/libahci.c
-> >>> @@ -453,7 +453,6 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
-> >>>  	 * reset.  Values without are used for driver operation.
-> >>>  	 */
-> >>>  	hpriv->saved_cap = cap = readl(mmio + HOST_CAP);
-> >>> -	hpriv->saved_port_map = port_map = readl(mmio + HOST_PORTS_IMPL);
-> >>>  
-> >>>  	/* CAP2 register is only defined for AHCI 1.2 and later */
-> >>>  	vers = readl(mmio + HOST_VERSION);
-> >>> @@ -517,10 +516,13 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
-> >>>  		cap &= ~HOST_CAP_SXS;
-> >>>  	}
-> >>>  
-> >>> -	if (hpriv->force_port_map && port_map != hpriv->force_port_map) {
-> >>> +	/* Override the HBA ports mapping if the platform needs it */
-> >>> +	port_map = readl(mmio + HOST_PORTS_IMPL);
-> >>> +	if (hpriv->saved_port_map && port_map != hpriv->saved_port_map) {
-> >>>  		dev_info(dev, "forcing port_map 0x%x -> 0x%x\n",
-> >>> -			 port_map, hpriv->force_port_map);
-> >>> -		port_map = hpriv->force_port_map;
-> >>> +			 port_map, hpriv->saved_port_map);
-> >>> +		port_map = hpriv->saved_port_map;
-> >>> +	} else {
-> >>>  		hpriv->saved_port_map = port_map;
-> >>>  	}
-> >>>  
-> >>> diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
-> >>> index febad33aa43c..5cbc2c42164d 100644
-> >>> --- a/drivers/ata/libahci_platform.c
-> >>> +++ b/drivers/ata/libahci_platform.c
-> >>> @@ -539,7 +539,7 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
-> >>>  	}
-> >>>  
-> >>>  	of_property_read_u32(dev->of_node,
-> >>> -			     "ports-implemented", &hpriv->force_port_map);
-> >>> +			     "ports-implemented", &hpriv->saved_port_map);
-> >>>  
-> >>>  	if (child_nodes) {
-> >>>  		for_each_child_of_node(dev->of_node, child) {
-> >>
-> >>
-> >> -- 
-> >> Damien Le Moal
-> >> Western Digital Research
+> Also check during suspend if any wakeup capable devices are
+> connected to the controller (directly or through hubs), if there
+> are none set a flag to indicate that the PHY is powered
+> down during suspend.
 > 
+> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+> ---
+
+A per-patch change log would be really helpful for reviewers, even
+if it doesn't include older versions.
+
+>  drivers/usb/dwc3/core.c | 33 ++++++++++++++++++++-------------
+>  drivers/usb/dwc3/core.h |  4 ++++
+>  drivers/usb/dwc3/host.c | 25 +++++++++++++++++++++++++
+>  3 files changed, 49 insertions(+), 13 deletions(-)
 > 
+> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+> index 1170b80..effaa43 100644
+> --- a/drivers/usb/dwc3/core.c
+> +++ b/drivers/usb/dwc3/core.c
+> @@ -32,6 +32,7 @@
+>  #include <linux/usb/gadget.h>
+>  #include <linux/usb/of.h>
+>  #include <linux/usb/otg.h>
+> +#include <linux/usb/hcd.h>
+>  
+>  #include "core.h"
+>  #include "gadget.h"
+> @@ -1723,6 +1724,7 @@ static int dwc3_probe(struct platform_device *pdev)
+>  
+>  	platform_set_drvdata(pdev, dwc);
+>  	dwc3_cache_hwparams(dwc);
+> +	device_init_wakeup(&pdev->dev, of_property_read_bool(dev->of_node, "wakeup-source"));
+>  
+>  	spin_lock_init(&dwc->lock);
+>  	mutex_init(&dwc->mutex);
+> @@ -1865,6 +1867,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+>  {
+>  	unsigned long	flags;
+>  	u32 reg;
+> +	struct usb_hcd  *hcd = platform_get_drvdata(dwc->xhci);
+>  
+>  	switch (dwc->current_dr_role) {
+>  	case DWC3_GCTL_PRTCAP_DEVICE:
+> @@ -1877,10 +1880,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+>  		dwc3_core_exit(dwc);
+>  		break;
+>  	case DWC3_GCTL_PRTCAP_HOST:
+> -		if (!PMSG_IS_AUTO(msg)) {
+> -			dwc3_core_exit(dwc);
+> -			break;
+> -		}
+> +		dwc3_check_phy_speed_mode(dwc);
+>  
+>  		/* Let controller to suspend HSPHY before PHY driver suspends */
+>  		if (dwc->dis_u2_susphy_quirk ||
+> @@ -1896,6 +1896,16 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+>  
+>  		phy_pm_runtime_put_sync(dwc->usb2_generic_phy);
+>  		phy_pm_runtime_put_sync(dwc->usb3_generic_phy);
+> +
+> +		if (!PMSG_IS_AUTO(msg)) {
+> +			if (device_may_wakeup(dwc->dev) &&
+> +			    usb_wakeup_enabled_descendants(hcd->self.root_hub)) {
+
+You did not answer my question on v12, reposting it:
+
+  Did you ever try whether you could use device_children_wakeup_capable() from
+  [1] instead of usb_wakeup_enabled_descendants()?
+
+  [1] https://patchwork.kernel.org/project/linux-usb/patch/1635753224-23975-2-git-send-email-quic_c_sanm@quicinc.com/#24566065
+
+> +				dwc->phy_power_off = false;
+> +			} else {
+> +				dwc->phy_power_off = true;
+> +				dwc3_core_exit(dwc);
+> +			}
+> +		}
+>  		break;
+>  	case DWC3_GCTL_PRTCAP_OTG:
+>  		/* do nothing during runtime_suspend */
+> @@ -1939,11 +1949,12 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
+>  		break;
+>  	case DWC3_GCTL_PRTCAP_HOST:
+>  		if (!PMSG_IS_AUTO(msg)) {
+> -			ret = dwc3_core_init_for_resume(dwc);
+> -			if (ret)
+> -				return ret;
+> -			dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
+> -			break;
+> +			if (dwc->phy_power_off) {
+> +				ret = dwc3_core_init_for_resume(dwc);
+> +				if (ret)
+> +					return ret;
+> +				dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
+> +			}
+>  		}
+>  		/* Restore GUSB2PHYCFG bits that were modified in suspend */
+>  		reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
+> @@ -2015,8 +2026,6 @@ static int dwc3_runtime_suspend(struct device *dev)
+>  	if (ret)
+>  		return ret;
+>  
+> -	device_init_wakeup(dev, true);
+> -
+>  	return 0;
+>  }
+>  
+> @@ -2025,8 +2034,6 @@ static int dwc3_runtime_resume(struct device *dev)
+>  	struct dwc3     *dwc = dev_get_drvdata(dev);
+>  	int		ret;
+>  
+> -	device_init_wakeup(dev, false);
+> -
+>  	ret = dwc3_resume_common(dwc, PMSG_AUTO_RESUME);
+>  	if (ret)
+>  		return ret;
+> diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
+> index 5c9d467..6a5845f 100644
+> --- a/drivers/usb/dwc3/core.h
+> +++ b/drivers/usb/dwc3/core.h
+> @@ -1154,6 +1154,9 @@ struct dwc3 {
+>  
+>  	bool			phys_ready;
+>  
+> +	unsigned int            hs_phy_mode;
+> +	bool			phy_power_off;
+> +
+>  	struct ulpi		*ulpi;
+>  	bool			ulpi_ready;
+>  
+> @@ -1537,6 +1540,7 @@ int dwc3_core_soft_reset(struct dwc3 *dwc);
+>  #if IS_ENABLED(CONFIG_USB_DWC3_HOST) || IS_ENABLED(CONFIG_USB_DWC3_DUAL_ROLE)
+>  int dwc3_host_init(struct dwc3 *dwc);
+>  void dwc3_host_exit(struct dwc3 *dwc);
+> +void dwc3_check_phy_speed_mode(struct dwc3 *dwc);
+>  #else
+>  static inline int dwc3_host_init(struct dwc3 *dwc)
+>  { return 0; }
+> diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
+> index eda8719..7f22675 100644
+> --- a/drivers/usb/dwc3/host.c
+> +++ b/drivers/usb/dwc3/host.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/platform_device.h>
+>  
+>  #include "core.h"
+> +#include "../host/xhci.h"
+>  
+>  static void dwc3_host_fill_xhci_irq_res(struct dwc3 *dwc,
+>  					int irq, char *name)
+> @@ -138,3 +139,27 @@ void dwc3_host_exit(struct dwc3 *dwc)
+>  {
+>  	platform_device_unregister(dwc->xhci);
+>  }
+> +
+> +void dwc3_check_phy_speed_mode(struct dwc3 *dwc)
+> +{
+> +
+
+delete empty line
+
+> +	int i, num_ports;
+> +	u32 reg;
+> +	struct usb_hcd	*hcd = platform_get_drvdata(dwc->xhci);
+> +	struct xhci_hcd	*xhci_hcd = hcd_to_xhci(hcd);
+> +
+> +	dwc->hs_phy_mode = 0;
+> +
+> +	reg = readl(&xhci_hcd->cap_regs->hcs_params1);
+> +
+> +	num_ports = HCS_MAX_PORTS(reg);
+> +	for (i = 0; i < num_ports; i++) {
+> +		reg = readl(&xhci_hcd->op_regs->port_status_base + i * NUM_PORT_REGS);
+> +		if (reg & PORT_PE) {
+> +			if (DEV_HIGHSPEED(reg) || DEV_FULLSPEED(reg))
+> +				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_HS;
+> +			else if (DEV_LOWSPEED(reg))
+> +				dwc->hs_phy_mode |= PHY_MODE_USB_HOST_LS;
+> +		}
+> +	}
+> +}
 > -- 
-> Damien Le Moal
-> Western Digital Research
+> 2.7.4
+> 
