@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC86C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:16:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347160AbiDKOTH (ORCPT
+        id S1347139AbiDKOTQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47576 "EHLO
+        Mon, 11 Apr 2022 10:19:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347360AbiDKORr (ORCPT
+        with ESMTP id S1347384AbiDKORt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:17:47 -0400
+        Mon, 11 Apr 2022 10:17:49 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1F513F5F
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:15:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5836613FAB
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:15:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=hqtGJWFU5UxJXTWiuv/FMcNVyUUv+JnqKyxlKX1n9BM=; b=pMtIWHOM5eXHf4PtHumQh0LlZo
-        T9uf89kNIbGhHGnexNokhRRInSC7tfRLHE0FACINgwbqC4B636XCBWRwOdL27qHUIW8sI9zkjCtqk
-        juc68yIkEEz2sQDwxQO+15rrsa4TRnDTCZPbxhm+3HELR41NXHatWk6J//nQ2In2mJipRImddhZ5G
-        uLTPGOuFrD/Kvbazqc7DcMYvcgOl5JONv1zkE74nRL1nYRTMXK6SxgCTHt9BKnOjA+w503p+A+ol0
-        Ya2YlA4I5fN0KvIGSN55uckItuJ3gKCX/NYpvmKFF1DSSo5XdaU14ZIeU6B5dpNWGXs2DAussFyCq
-        nF+5r4rg==;
+        bh=YdF+b0FcxXABBH0432BDS4U/GzIT9oJAPxM5jGvQJLI=; b=yvL86zIOdJH6ZL21DdkLA8w7t0
+        jCaCNmGKQLPXh0PKhuFJ7bPaVx/G/MmWr5wCG++jDq4HLuL/pGj3a4mueFyCve8IeScFbNHYbZM2+
+        vLRnEIaOetPZLNX6N5s9dR25NDd7iPHPBkwGoRjjWfTCmfl6p5FI/cGLd6eqHZs3owNsX/+Qu63qt
+        +u9v6kx55nvY/nttHboL52IaBq4fy2/70Y+OY0s9a8SZ7qf0xa5E3M5pBnv2Ad2Mt5AbAFW0DBQkB
+        L8F24Z0sDK6e9H//4HTmhO3WWCtTdcONGad8IiJ9SHxPna70OrStPR78YH9q0MhB2XIQBhr5OpfOY
+        sdfnsCTA==;
 Received: from [2001:4bb8:18e:76f5:3747:ef85:d03d:53e4] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ndup6-009Ks8-4y; Mon, 11 Apr 2022 14:15:20 +0000
+        id 1ndupB-009Ktr-PF; Mon, 11 Apr 2022 14:15:26 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
@@ -38,9 +38,9 @@ To:     Jani Nikula <jani.nikula@linux.intel.com>,
 Cc:     Jason Gunthorpe <jgg@nvidia.com>, intel-gfx@lists.freedesktop.org,
         intel-gvt-dev@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 24/34] drm/i915/gvt: remove the extra vfio_device refcounting for dmabufs
-Date:   Mon, 11 Apr 2022 16:13:53 +0200
-Message-Id: <20220411141403.86980-25-hch@lst.de>
+Subject: [PATCH 26/34] drm/i915/gvt: pass a struct intel_vgpu to the vfio read/write helpers
+Date:   Mon, 11 Apr 2022 16:13:55 +0200
+Message-Id: <20220411141403.86980-27-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220411141403.86980-1-hch@lst.de>
 References: <20220411141403.86980-1-hch@lst.de>
@@ -51,66 +51,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All the dmabufs are torn down when th VGPU is released, so there is
-no need for extra refcounting here.
-
-Based on an patch from Jason Gunthorpe.
+Pass the structure we actually care about instead of deriving it from
+the mdev_device in the lower level code.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/gpu/drm/i915/gvt/dmabuf.c | 12 ------------
- drivers/gpu/drm/i915/gvt/gvt.h    |  1 -
- 2 files changed, 13 deletions(-)
+ drivers/gpu/drm/i915/gvt/kvmgt.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gvt/dmabuf.c b/drivers/gpu/drm/i915/gvt/dmabuf.c
-index 90443306a9ad4..01e54b45c5c1b 100644
---- a/drivers/gpu/drm/i915/gvt/dmabuf.c
-+++ b/drivers/gpu/drm/i915/gvt/dmabuf.c
-@@ -139,7 +139,6 @@ static void dmabuf_gem_object_free(struct kref *kref)
- 			dmabuf_obj = list_entry(pos, struct intel_vgpu_dmabuf_obj, list);
- 			if (dmabuf_obj == obj) {
- 				list_del(pos);
--				vfio_device_put(vgpu->vfio_device);
- 				idr_remove(&vgpu->object_idr,
- 					   dmabuf_obj->dmabuf_id);
- 				kfree(dmabuf_obj->info);
-@@ -473,16 +472,6 @@ int intel_vgpu_query_plane(struct intel_vgpu *vgpu, void *args)
+diff --git a/drivers/gpu/drm/i915/gvt/kvmgt.c b/drivers/gpu/drm/i915/gvt/kvmgt.c
+index 11bce3a91a225..5db74b6fe5137 100644
+--- a/drivers/gpu/drm/i915/gvt/kvmgt.c
++++ b/drivers/gpu/drm/i915/gvt/kvmgt.c
+@@ -1007,10 +1007,9 @@ static int intel_vgpu_aperture_rw(struct intel_vgpu *vgpu, u64 off,
+ 	return 0;
+ }
  
- 	kref_init(&dmabuf_obj->kref);
+-static ssize_t intel_vgpu_rw(struct mdev_device *mdev, char *buf,
++static ssize_t intel_vgpu_rw(struct intel_vgpu *vgpu, char *buf,
+ 			size_t count, loff_t *ppos, bool is_write)
+ {
+-	struct intel_vgpu *vgpu = mdev_get_drvdata(mdev);
+ 	unsigned int index = VFIO_PCI_OFFSET_TO_INDEX(*ppos);
+ 	u64 pos = *ppos & VFIO_PCI_OFFSET_MASK;
+ 	int ret = -EINVAL;
+@@ -1056,9 +1055,8 @@ static ssize_t intel_vgpu_rw(struct mdev_device *mdev, char *buf,
+ 	return ret == 0 ? count : ret;
+ }
  
--	mutex_lock(&vgpu->dmabuf_lock);
--	vgpu->vfio_device = vfio_device_get_from_dev(mdev_dev(vgpu->mdev));
--	if (!vgpu->vfio_device) {
--		gvt_vgpu_err("failed to get vfio device\n");
--		mutex_unlock(&vgpu->dmabuf_lock);
--		ret = -ENODEV;
--		goto out_free_info;
--	}
--	mutex_unlock(&vgpu->dmabuf_lock);
--
- 	update_fb_info(gfx_plane_info, &fb_info);
+-static bool gtt_entry(struct mdev_device *mdev, loff_t *ppos)
++static bool gtt_entry(struct intel_vgpu *vgpu, loff_t *ppos)
+ {
+-	struct intel_vgpu *vgpu = mdev_get_drvdata(mdev);
+ 	unsigned int index = VFIO_PCI_OFFSET_TO_INDEX(*ppos);
+ 	struct intel_gvt *gvt = vgpu->gvt;
+ 	int offset;
+@@ -1078,6 +1076,7 @@ static bool gtt_entry(struct mdev_device *mdev, loff_t *ppos)
+ static ssize_t intel_vgpu_read(struct mdev_device *mdev, char __user *buf,
+ 			size_t count, loff_t *ppos)
+ {
++	struct intel_vgpu *vgpu = mdev_get_drvdata(mdev);
+ 	unsigned int done = 0;
+ 	int ret;
  
- 	INIT_LIST_HEAD(&dmabuf_obj->list);
-@@ -587,7 +576,6 @@ void intel_vgpu_dmabuf_cleanup(struct intel_vgpu *vgpu)
- 		dmabuf_obj->vgpu = NULL;
+@@ -1086,10 +1085,10 @@ static ssize_t intel_vgpu_read(struct mdev_device *mdev, char __user *buf,
  
- 		idr_remove(&vgpu->object_idr, dmabuf_obj->dmabuf_id);
--		vfio_device_put(vgpu->vfio_device);
- 		list_del(pos);
+ 		/* Only support GGTT entry 8 bytes read */
+ 		if (count >= 8 && !(*ppos % 8) &&
+-			gtt_entry(mdev, ppos)) {
++			gtt_entry(vgpu, ppos)) {
+ 			u64 val;
  
- 		/* dmabuf_obj might be freed in dmabuf_obj_put */
-diff --git a/drivers/gpu/drm/i915/gvt/gvt.h b/drivers/gpu/drm/i915/gvt/gvt.h
-index 865997c5005d5..8565189e0c0dd 100644
---- a/drivers/gpu/drm/i915/gvt/gvt.h
-+++ b/drivers/gpu/drm/i915/gvt/gvt.h
-@@ -231,7 +231,6 @@ struct intel_vgpu {
- 	struct kvm *kvm;
- 	struct work_struct release_work;
- 	atomic_t released;
--	struct vfio_device *vfio_device;
- 	struct vfio_group *vfio_group;
+-			ret = intel_vgpu_rw(mdev, (char *)&val, sizeof(val),
++			ret = intel_vgpu_rw(vgpu, (char *)&val, sizeof(val),
+ 					ppos, false);
+ 			if (ret <= 0)
+ 				goto read_err;
+@@ -1101,7 +1100,7 @@ static ssize_t intel_vgpu_read(struct mdev_device *mdev, char __user *buf,
+ 		} else if (count >= 4 && !(*ppos % 4)) {
+ 			u32 val;
  
- 	struct kvm_page_track_notifier_node track_node;
+-			ret = intel_vgpu_rw(mdev, (char *)&val, sizeof(val),
++			ret = intel_vgpu_rw(vgpu, (char *)&val, sizeof(val),
+ 					ppos, false);
+ 			if (ret <= 0)
+ 				goto read_err;
+@@ -1113,7 +1112,7 @@ static ssize_t intel_vgpu_read(struct mdev_device *mdev, char __user *buf,
+ 		} else if (count >= 2 && !(*ppos % 2)) {
+ 			u16 val;
+ 
+-			ret = intel_vgpu_rw(mdev, (char *)&val, sizeof(val),
++			ret = intel_vgpu_rw(vgpu, (char *)&val, sizeof(val),
+ 					ppos, false);
+ 			if (ret <= 0)
+ 				goto read_err;
+@@ -1125,7 +1124,7 @@ static ssize_t intel_vgpu_read(struct mdev_device *mdev, char __user *buf,
+ 		} else {
+ 			u8 val;
+ 
+-			ret = intel_vgpu_rw(mdev, &val, sizeof(val), ppos,
++			ret = intel_vgpu_rw(vgpu, &val, sizeof(val), ppos,
+ 					false);
+ 			if (ret <= 0)
+ 				goto read_err;
+@@ -1152,6 +1151,7 @@ static ssize_t intel_vgpu_write(struct mdev_device *mdev,
+ 				const char __user *buf,
+ 				size_t count, loff_t *ppos)
+ {
++	struct intel_vgpu *vgpu = mdev_get_drvdata(mdev);
+ 	unsigned int done = 0;
+ 	int ret;
+ 
+@@ -1160,13 +1160,13 @@ static ssize_t intel_vgpu_write(struct mdev_device *mdev,
+ 
+ 		/* Only support GGTT entry 8 bytes write */
+ 		if (count >= 8 && !(*ppos % 8) &&
+-			gtt_entry(mdev, ppos)) {
++			gtt_entry(vgpu, ppos)) {
+ 			u64 val;
+ 
+ 			if (copy_from_user(&val, buf, sizeof(val)))
+ 				goto write_err;
+ 
+-			ret = intel_vgpu_rw(mdev, (char *)&val, sizeof(val),
++			ret = intel_vgpu_rw(vgpu, (char *)&val, sizeof(val),
+ 					ppos, true);
+ 			if (ret <= 0)
+ 				goto write_err;
+@@ -1178,7 +1178,7 @@ static ssize_t intel_vgpu_write(struct mdev_device *mdev,
+ 			if (copy_from_user(&val, buf, sizeof(val)))
+ 				goto write_err;
+ 
+-			ret = intel_vgpu_rw(mdev, (char *)&val, sizeof(val),
++			ret = intel_vgpu_rw(vgpu, (char *)&val, sizeof(val),
+ 					ppos, true);
+ 			if (ret <= 0)
+ 				goto write_err;
+@@ -1190,7 +1190,7 @@ static ssize_t intel_vgpu_write(struct mdev_device *mdev,
+ 			if (copy_from_user(&val, buf, sizeof(val)))
+ 				goto write_err;
+ 
+-			ret = intel_vgpu_rw(mdev, (char *)&val,
++			ret = intel_vgpu_rw(vgpu, (char *)&val,
+ 					sizeof(val), ppos, true);
+ 			if (ret <= 0)
+ 				goto write_err;
+@@ -1202,7 +1202,7 @@ static ssize_t intel_vgpu_write(struct mdev_device *mdev,
+ 			if (copy_from_user(&val, buf, sizeof(val)))
+ 				goto write_err;
+ 
+-			ret = intel_vgpu_rw(mdev, &val, sizeof(val),
++			ret = intel_vgpu_rw(vgpu, &val, sizeof(val),
+ 					ppos, true);
+ 			if (ret <= 0)
+ 				goto write_err;
 -- 
 2.30.2
 
