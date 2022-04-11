@@ -2,96 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B68C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347577AbiDKPUZ (ORCPT
+        id S1343727AbiDKPUf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33450 "EHLO
+        Mon, 11 Apr 2022 11:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347608AbiDKPUV (ORCPT
+        with ESMTP id S1347736AbiDKPTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:20:21 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5015326E4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:18:06 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id p21so19110305ioj.4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:18:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Qxxqdzsm5NNvKuddue8zfK73fgd0MVUdg9etiRzf7DY=;
-        b=gOztIOTJCTDJDS0gZRh6PiXx3DtEHbXV0VsbvU5swCYUaAQYltS3JN/06k00LN+Wfp
-         Q3AeuhuUlXCCgShBxW2ELxPF/Q20PTQpuLzhwQRCIdkti08VI+7tVafICMNE2B2P7Ysb
-         4hc3a2NrVX4muD6KhVlsiEhObJYy/cJUnJJtY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qxxqdzsm5NNvKuddue8zfK73fgd0MVUdg9etiRzf7DY=;
-        b=hW5EHvyBCxbHmD/vTkzu316PLMUXB0ICaF94ycm2ZAcvIdHrNegD///brMKuvq++6Y
-         kmv1BzxR1GKXNX05lsAKWNiisEzDIyupzL+3/MM5AetQq2WrUYpgP22RiY+u6ykFPdGd
-         DTYYF7yHpJjfItKcrYZ6tA65uDYuPNbNdvPfQJFFTyaZi8WndNSI1kewe4XjeVWhNpx0
-         cqVmkzhd36VGXZ2cs6Yth4Y8LweOwide0wsjS8dWH5UTy6PjztiZFVFvZIO5FNc5LW60
-         FyWzlzUZd9Bhjq79l25ZZLuoxUNLIL9kGIKkx5T4Q6TJiNafgq8Dcf5Mbb6FVuYh619Y
-         4+2g==
-X-Gm-Message-State: AOAM531UIpQ0eN41aJnIJYQiWj0xvtvheXf239i9XhAiNfDTrbhHyeeR
-        aONyzQ2idlPtGoTwJHxhazUpUrxcoMZj0tRu7js/Sw==
-X-Google-Smtp-Source: ABdhPJyTacRRyhXpUmMsFf0hOhTvn/aPNyPMKJSLnnAgP89m51SL+egsDhPkNYhtboj1sxiUJnHKWrhMT7chg4SYG9s=
-X-Received: by 2002:a5d:94c2:0:b0:60b:bd34:bb6f with SMTP id
- y2-20020a5d94c2000000b0060bbd34bb6fmr13306775ior.32.1649690285953; Mon, 11
- Apr 2022 08:18:05 -0700 (PDT)
+        Mon, 11 Apr 2022 11:19:51 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAA23BA6D;
+        Mon, 11 Apr 2022 08:17:28 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23BDmdct030005;
+        Mon, 11 Apr 2022 15:17:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Wexj+HWaU6vLgwDQsWYPJ9KbhO7qyvQywXRQlLh7xZQ=;
+ b=PUhFJyGhVUumL20txeq+D3t211cps4xMKEoaQdgM7zyqcL1DwYsW8vgqIJiMx8x1hf3N
+ PNy0xCge11WmIBN6RHGu0sV+TmvmzF7hbinYlhf8j0RmoA2bIdTssDpLVUETuZ9gi1fV
+ JRTZn9nUPEitZHSn2jpohJtJBIDhbI4Pf1ZbuDVeMMWkYjVsgrbdgS2RTqYQRuiaPzCl
+ IgMvazlXeeF77GJ7NyVi165Enk7oH8dd4jJ504v8i5AAjywUcxu6zFEIlbAuHZBtsOfx
+ lVzSS5fM28heXvq5hvRuZ7vUwVUMPoXL4LeFf9seZgqBC2ddpeRAmlx7C7Q0elnh3YAo TQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fcks94qdw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Apr 2022 15:17:18 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23BFHHSe015571;
+        Mon, 11 Apr 2022 15:17:17 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fcks94qdj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Apr 2022 15:17:17 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23BFDH0G014511;
+        Mon, 11 Apr 2022 15:17:16 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
+        by ppma01dal.us.ibm.com with ESMTP id 3fb1s94pw4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Apr 2022 15:17:16 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23BFHFrk25100724
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 11 Apr 2022 15:17:16 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DECAAAE064;
+        Mon, 11 Apr 2022 15:17:15 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3F347AE062;
+        Mon, 11 Apr 2022 15:17:15 +0000 (GMT)
+Received: from [9.211.106.206] (unknown [9.211.106.206])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 11 Apr 2022 15:17:15 +0000 (GMT)
+Message-ID: <47f566cc-bdff-0f4f-557d-b069100911c3@linux.ibm.com>
+Date:   Mon, 11 Apr 2022 10:17:14 -0500
 MIME-Version: 1.0
-References: <20220407210734.2548973-1-joel@joelfernandes.org> <YlQx0rZzrdWIA5w+@pc638.lan>
-In-Reply-To: <YlQx0rZzrdWIA5w+@pc638.lan>
-From:   Joel Fernandes <joel@joelfernandes.org>
-Date:   Mon, 11 Apr 2022 11:17:56 -0400
-Message-ID: <CAEXW_YRu8z0tHn0nOpzd4PtsL0vKpgSuN86CgwXeWCEEiXbaog@mail.gmail.com>
-Subject: Re: [PATCH RFC] rcu/nocb: Provide default all-CPUs mask for RCU_NOCB_CPU=y
-To:     Uladzislau Rezki <urezki@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>, rcu <rcu@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 1/2] leds: pca955x: Clean up and optimize
+Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Joel Stanley <joel@jms.id.au>, Pavel Machek <pavel@ucw.cz>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>
+References: <20220407183941.36555-1-eajames@linux.ibm.com>
+ <20220407183941.36555-2-eajames@linux.ibm.com>
+ <CAHp75VedZdEYB-BjJTVaKJgPwQ9a1DhTp=MYsrh1Ve9Eyfnytw@mail.gmail.com>
+From:   Eddie James <eajames@linux.ibm.com>
+In-Reply-To: <CAHp75VedZdEYB-BjJTVaKJgPwQ9a1DhTp=MYsrh1Ve9Eyfnytw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: etKwe3NLEd6Z7glho5IQ0QJNxjw7N1i4
+X-Proofpoint-ORIG-GUID: KVAdM8862jJhTOXTU87YJCBjxK3RL8sv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-11_06,2022-04-11_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
+ priorityscore=1501 suspectscore=0 mlxlogscore=535 mlxscore=0 phishscore=0
+ clxscore=1015 bulkscore=0 impostorscore=0 lowpriorityscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204110083
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 9:49 AM Uladzislau Rezki <urezki@gmail.com> wrote:
+
+On 4/8/22 06:11, Andy Shevchenko wrote:
+> On Thu, Apr 7, 2022 at 10:42 PM Eddie James <eajames@linux.ibm.com> wrote:
+>> Clean up the I2C access functions to avoid fetching the pca955x
+>> driver data again. Optimize the probe to do at most 4 reads and
+>> 4 writes of the LED selector regs, rather than 16 of each.
+>> Rename some functions and variables to be more consistent and
+>> descriptive.
+> Separate patch.
+
+
+Ack.
+
+
+
 >
-> Hello, Joel.
+>> +               dev_err(&pca955x->client->dev,
+>> +                       "%s: reg 0x%x, val 0x%x, err %d\n", __func__, n, val,
+>> +                       ret);
+> This can be indented better.
 >
-> > On systems with CONFIG_RCU_NOCB_CPU=y, there is no default mask provided
-> > which ends up not offloading any CPU. This patch removes yet another
-> > dependency from the bootloader having to know about RCU, about how many
-> > CPUs the system has, and about how to provide the mask. Basically, I
-> > think we should stop pretending that the user knows what they are doing :).
-> > In other words, if NO_CB_CPU is enabled, lets make use of it.
-> >
-> Could you also please modify the documentation accordingly and send v2?
+> I would add a temporary dev pointer variable and put this on one line.
+>
+>   struct device *dev = &pca955x->client->dev;
+>
+>                 dev_err(dev, "%s: reg 0x%x, val 0x%x, err %d\n",
+> __func__, n, val, ret);
 
-Yes good point, I can go clean that up in v2.
 
- - Joel
+Hm, I still end up having to use two lines for the dev_err function, so 
+not sure it's worth it?
 
-> <snip>
-> urezki@pc638:~/data/raid0/coding/linux-rcu.git$ grep -rn RCU_NOCB_CPU ./Documentation/
-> ./Documentation/timers/no_hz.rst:188:using the CONFIG_RCU_NOCB_CPU=y Kconfig option.  The specific CPUs to
-> ./Documentation/admin-guide/kernel-parameters.txt:4380:                 In kernels built with CONFIG_RCU_NOCB_CPU=y,
-> ./Documentation/admin-guide/kernel-parameters.txt:4507:                 When RCU_NOCB_CPU is set, also adjust the
-> ./Documentation/admin-guide/kernel-per-CPU-kthreads.rst:311:3.  Build with CONFIG_RCU_NOCB_CPU=y and boot with the rcu_nocbs=
-> ./Documentation/admin-guide/kernel-per-CPU-kthreads.rst:331:2.  Build with CONFIG_RCU_NOCB_CPU=n, which will prevent these
-> ./Documentation/RCU/Design/Requirements/Requirements.rst:1424:``CONFIG_RCU_NOCB_CPU=y`` and booted with ``rcu_nocbs=1-63``, where
-> urezki@pc638:~/data/raid0/coding/linux-rcu.git$ grep -rn RCU_NOCB_CPU ./kernel/rcu/
+
+>
 > ...
-> ./kernel/rcu/Kconfig:198:config RCU_NOCB_CPU
-> ..
-> <snip>
 >
-> --
-> Uladzislau Rezki
+>> +               dev_err(&pca955x->client->dev,
+>> +                       "%s: reg 0x%x, val 0x%x, err %d\n", __func__, n, val,
+>> +                       ret);
+> Ditto.
+>
+> ...
+>
+>> +               dev_err(&pca955x->client->dev,
+>> +                       "%s: reg 0x%x, val 0x%x, err %d\n", __func__, n, val,
+>> +                       ret);
+> Ditto.
+>
+> ...
+>
+>> +               dev_err(&pca955x->client->dev, "%s: reg 0x%x, err %d\n",
+>>                          __func__, n, ret);
+> Ditto.
+>
+> ...
+>
+>> +               dev_err(&pca955x->client->dev, "%s: reg 0x%x, err %d\n",
+>>                          __func__, n, ret);
+> Ditto.
+>
+> ...
+>
+>> +       struct pca955x_led *pca955x_led = container_of(led_cdev,
+>> +                                                      struct pca955x_led,
+>> +                                                      led_cdev);
+> Is it used once? If more than once, consider a helper for that as well.
+
+
+Ack.
+
+
+Thanks for the review!
+
+Eddie
+
+>
