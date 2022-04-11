@@ -2,218 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F9DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:33:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B83CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347992AbiDKPfg (ORCPT
+        id S1348040AbiDKPit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
+        Mon, 11 Apr 2022 11:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348001AbiDKPfc (ORCPT
+        with ESMTP id S1348032AbiDKPip (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:35:32 -0400
-X-Greylist: delayed 5153 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Apr 2022 08:33:16 PDT
-Received: from mx0a-0014ca01.pphosted.com (mx0b-0014ca01.pphosted.com [208.86.201.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DE336B5B
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:33:16 -0700 (PDT)
-Received: from pps.filterd (m0042333.ppops.net [127.0.0.1])
-        by mx0b-0014ca01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23BC8RCZ026133;
-        Mon, 11 Apr 2022 07:07:11 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=proofpoint;
- bh=UatKVkxkfCPI1eM6LsEzbQ6C4PnqXjiSiPAMUYXKzxg=;
- b=RLTJ0YvpTd7naAP1qYAfEkIufpl12gVBKpmB9mK3j4+gNh/+rzoIHjWMqkssblh0LfrQ
- koJ2wbFH43yZEjJQ1rC6nW5vtd3nrhJoABH5lG1YuQsvHgvbD2EtYWZrKbvAdtISq1J1
- ESFqrVvtoiZrhoqUeZJeKPj71Hu+Km8Md500gPyUwSQXUuUErB9EVq+2AV6ZUAUnB+eM
- RLYBISAVpLoTCcyM2m5ddmeox60DKTMmqbkyFI7ObOnVBBIr9VR/2W+Shj2cptzJQoay
- JgzbmYX5p87LtfQwTHzEl66gue/+biP8tEwJTp4ylD565gGM5IHbL1z5RXzcKYzfiEMf bA== 
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2108.outbound.protection.outlook.com [104.47.55.108])
-        by mx0b-0014ca01.pphosted.com (PPS) with ESMTPS id 3fb6qvqkd1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 11 Apr 2022 07:07:10 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UghhPaFlOUI16P5rpZS7jB2FvuAO4VuU2W9ZqqujCxALOx643bInqTKBwCleDmPwHaNsaVsP97at9ppQ4bRI2lA78tLh3Tm6Ya8DGSK1yadHpgwrneynnh2IiQSNYRy3qlbMedz7jkaa0FGM24ADA/7cIGvK/HMiu0X3ROqIBe1QwP4kGbRNN30806Sn6DQnWYc7lwN+yXDEu/7CzVnuVPuTEME3k0U3ZlphAqCtK2OeZwbyXYEOt/5OtoW4RKS0gMKZ8YwqWNl00q/u7pwT0am9yGMHysh7tLJl73Z39yowa6yBTEACz3dtg7CnT6LczME7NNGoWhDVK4bfLdtaHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UatKVkxkfCPI1eM6LsEzbQ6C4PnqXjiSiPAMUYXKzxg=;
- b=iktvMqmv5FOs3976GFbrk8R6CiDp9mD0tn9DjXQy12URi4f2YKCdM4UU3O6bwm25E6SMz5vUwG9dB4Lab2E8Cz65lgkc7FLBP9Q9QlzTuQAvISIsMyyMmE6CN1KOBvE8lZK0nIgz7ACqQkXa8BQg5yH68a6T3yzybOdl29HoRA1anZ6yHx69Z/0aouIiDR8WhwpGZKleU2ApHOX3oUYvT7BpArc4nIG/R9yEgvJ/362+Mjz/Ek3YNCw0RivFcTcwGvOOp18X8Nt8O7UtdBFTLqp/JhvOl1eOqdkFiOyhIS8xtAw+VXDGpsJLYyaZSbFh97yPpdEU86G/MdcbWJqOaA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 158.140.1.148) smtp.rcpttodomain=intel.com smtp.mailfrom=cadence.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=cadence.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UatKVkxkfCPI1eM6LsEzbQ6C4PnqXjiSiPAMUYXKzxg=;
- b=UCsAW2clLk/4zRq64hlXjFuVphiDWrhkyrsJggZdCUC9+nJABkdgGEtrUxmfoMjj6HPtR4rGBioIMS6HA0EIv7Ay1fcdQEGM5viiatW0vJs49RVJMXAnwUXE21xz5Kbh9tMALYwmvTRWrcq3KHpavBVzDu1Heexyofbx61MSgmg=
-Received: from BN1PR10CA0010.namprd10.prod.outlook.com (2603:10b6:408:e0::15)
- by MN2PR07MB7839.namprd07.prod.outlook.com (2603:10b6:208:3e::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
- 2022 14:07:06 +0000
-Received: from BN8NAM12FT041.eop-nam12.prod.protection.outlook.com
- (2603:10b6:408:e0:cafe::6c) by BN1PR10CA0010.outlook.office365.com
- (2603:10b6:408:e0::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29 via Frontend
- Transport; Mon, 11 Apr 2022 14:07:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 158.140.1.148)
- smtp.mailfrom=cadence.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=cadence.com;
-Received-SPF: Pass (protection.outlook.com: domain of cadence.com designates
- 158.140.1.148 as permitted sender) receiver=protection.outlook.com;
- client-ip=158.140.1.148; helo=sjmaillnx2.cadence.com;
-Received: from sjmaillnx2.cadence.com (158.140.1.148) by
- BN8NAM12FT041.mail.protection.outlook.com (10.13.182.172) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5164.8 via Frontend Transport; Mon, 11 Apr 2022 14:07:06 +0000
-Received: from maileu3.global.cadence.com (maileu3.cadence.com [10.160.88.99])
-        by sjmaillnx2.cadence.com (8.14.4/8.14.4) with ESMTP id 23BE70aR032352
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 11 Apr 2022 07:07:01 -0700
-X-CrossPremisesHeadersFilteredBySendConnector: maileu3.global.cadence.com
-Received: from maileu4.global.cadence.com (10.160.110.201) by
- maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Mon, 11 Apr 2022 16:06:54 +0200
-Received: from vleu-orange.cadence.com (10.160.88.83) by
- maileu4.global.cadence.com (10.160.110.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7
- via Frontend Transport; Mon, 11 Apr 2022 16:06:54 +0200
-Received: from vleu-orange.cadence.com (localhost.localdomain [127.0.0.1])
-        by vleu-orange.cadence.com (8.14.4/8.14.4) with ESMTP id 23BE6rEi015872;
-        Mon, 11 Apr 2022 16:06:53 +0200
-Received: (from jpawar@localhost)
-        by vleu-orange.cadence.com (8.14.4/8.14.4/Submit) id 23BE6qd7015869;
-        Mon, 11 Apr 2022 16:06:52 +0200
-From:   Jayshri Pawar <jpawar@cadence.com>
-To:     <dri-devel@lists.freedesktop.org>
-CC:     <daniel@ffwll.ch>, <airlied@linux.ie>, <andrzej.hajda@intel.com>,
-        <narmstrong@baylibre.com>, <robert.foss@linaro.org>,
-        <Laurent.pinchart@ideasonboard.com>, <jonas@kwiboo.se>,
-        <jernej.skrabec@gmail.com>, <linux-kernel@vger.kernel.org>,
-        <mparab@cadence.com>, <jpawar@cadence.com>, <sjakhade@cadence.com>,
-        <nm@ti.com>, <yogeshs@ti.com>, <kishon@ti.com>
-Subject: [PATCH] drm/bridge: cdns-dsi: Add support for pre_enable and post_enable control functions.
-Date:   Mon, 11 Apr 2022 16:06:06 +0200
-Message-ID: <20220411140606.15654-1-jpawar@cadence.com>
-X-Mailer: git-send-email 2.15.0
+        Mon, 11 Apr 2022 11:38:45 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123053A5E7;
+        Mon, 11 Apr 2022 08:36:31 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id ay36-20020a05600c1e2400b0038ebc885115so181707wmb.1;
+        Mon, 11 Apr 2022 08:36:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SLNLIgAztxFLrjX98bBOPpDCgmeIBOw+sPwS1eWryvU=;
+        b=UOph7iwMAPryYJQM5t3httN8DjoAflSeCVstrwCvqUO6d7fjB9VplSFa6NFvbOzPpr
+         QLa/vpR5z6HKRgKYelEPmwdQ7cccpfROAOpDA3XkSj/Sl5A8T9Hoq8XcVaPQTR/ndlaY
+         fJg5/SdXmHJOGiGqIXBe+RljbcnYFoHkYbXl6SgcbnpgnZXoBWeNIQoDYOQ9qfkiqIpv
+         sVw1nx/1SL5InqcKHO9VF3Z9mm8vhqUyuGpdOuH2FUrSmE0R+rKcB5y42+LL8fuAwC8X
+         GdAcRbYhWsGkNAGIZAVhvPzqVnL4sBj9qTPhBTitpGHNHCr57/PPksimidd76wfMJmPa
+         irXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SLNLIgAztxFLrjX98bBOPpDCgmeIBOw+sPwS1eWryvU=;
+        b=62La/llz2/4u5ywz4EK1/Ds59azRxGj+iPD+qlQPq6BmF7ERwGzD2T+BJFdel220Bm
+         csnrp2pzP17PgJIVI/m55eWMzkECBG04gER5KEkVmC+1lxFxtXPRCqeza66tT2wU88pX
+         eQl9liduulV9Eg69obRQK9bX+6l6b4iLmdRhZ6h9w8FVJNpZaQSZNY/94ahLAwaF4KWP
+         YahzKmaD6tCxI/WwKkRdOpr/kIMniKkVT6bPTGWspI3reN/7vEnH7Z2+4xD2e9bpGCI9
+         EvurmB+q7fTICS3N/e7Ew+u4W3CCVB+eiBUpTwT3imGZclDYh+ulA06Lg42k5KEl04VB
+         6MBA==
+X-Gm-Message-State: AOAM530qEGeWyVTyY2/Jp8VD/eyQNoSu1XPh0JvV5hUFxjPOaTPBWfC1
+        J6KB8G5JPEZqRAJPRIN9qoM=
+X-Google-Smtp-Source: ABdhPJy2WtwqxmlMvBMosTiNoX/M+q/nLamP1ovzSDcok06XmYlFBZIDDLcyooBH1QPqt+ZF2Wdy0w==
+X-Received: by 2002:a1c:44c5:0:b0:38e:abd1:d894 with SMTP id r188-20020a1c44c5000000b0038eabd1d894mr13177203wma.40.1649691389591;
+        Mon, 11 Apr 2022 08:36:29 -0700 (PDT)
+Received: from localhost (92.40.202.92.threembb.co.uk. [92.40.202.92])
+        by smtp.gmail.com with ESMTPSA id p8-20020a5d4e08000000b002054b5437f2sm26232868wrt.115.2022.04.11.08.36.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 08:36:29 -0700 (PDT)
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     paul@crapouillou.net, vkoul@kernel.org
+Cc:     linux-mips@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dmaengine: jz4780: set DMA maximum segment size
+Date:   Mon, 11 Apr 2022 16:36:18 +0100
+Message-Id: <20220411153618.49876-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-OrganizationHeadersPreserved: maileu3.global.cadence.com
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 08164740-3146-4c96-7251-08da1bc48fd7
-X-MS-TrafficTypeDiagnostic: MN2PR07MB7839:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR07MB783937B5E45389D07DBCCF50C1EA9@MN2PR07MB7839.namprd07.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c/I/PfTMF2S4lOtdbdRpXzKUBGzkDtMnvTBjb+0RckTjKFdOIX/Y+681VxVChUK5Xfl6qQkfy1yIgugEoHN8OXQ7Wcr2jB4h70fyYt5XweIOOIZATrIKzEp5k9289p6lffN7EEIcGMXZwRDf7X5M5wfcbkEHdxVLdOfd24WxgEdRexW1Ai2cbhEwla6UlXgDhD9OO/Bik8tOMFf5IeVWRf7+yTaT3b/Yj80XQPana2H2LAOOiPw2Q1ix+1ApQ4x8BeP75emCnCKYfpAbBNdVj419VgiRq4SSM22NlUarXbZHRJCBcg7SxHRWMgxeuEIZplH/cy+YECIJcIPFLVlx6KvWrmGvINwXg0ZNItgrkqiy1fGeopRjQn91keQwctp/YhxOExhVEpyVORLtlrhb23Y4vghSN5lbCk/Tg3G33SZkf0TEtrpRpSIvTvdqsMKI9kYj78J4sV/WVtfr89dcoI1G7wGQHbh2ygWSbTgZrGEUHbRGmEHmTKx0aAqg21TtezBzn9kmBbEX78m8dCRKoTEmYZoS1IS3k3OIr/C57/4pCQ2e6lTG/DzBHemJF25D0NojSf+vp13jcNFW8ZJOKtd/+DXnnftUONZUW6RtkMOc5AzxyEFtOmOSgFSWdBBYYEagQzm4YWVhR7hwKahjqsfeAiptxiuFZYH9IpDFBUIauibBqWUfqeTFdb733mPq
-X-Forefront-Antispam-Report: CIP:158.140.1.148;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:sjmaillnx2.cadence.com;PTR:unknown.Cadence.COM;CAT:NONE;SFS:(13230001)(4636009)(36092001)(36840700001)(40470700004)(46966006)(336012)(4326008)(47076005)(82310400005)(8676002)(426003)(36756003)(8936002)(186003)(36860700001)(7636003)(70586007)(83380400001)(70206006)(5660300002)(1076003)(2616005)(42186006)(7416002)(26005)(356005)(6916009)(54906003)(2906002)(6666004)(40460700003)(508600001)(86362001)(316002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: cadence.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 14:07:06.5897
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 08164740-3146-4c96-7251-08da1bc48fd7
-X-MS-Exchange-CrossTenant-Id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=d36035c5-6ce6-4662-a3dc-e762e61ae4c9;Ip=[158.140.1.148];Helo=[sjmaillnx2.cadence.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM12FT041.eop-nam12.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR07MB7839
-X-Proofpoint-GUID: 6BG7kzNuUxqNemMchu1gOn0haZTQrZCJ
-X-Proofpoint-ORIG-GUID: 6BG7kzNuUxqNemMchu1gOn0haZTQrZCJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-11_05,2022-04-11_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0 mlxscore=0
- suspectscore=0 phishscore=0 priorityscore=1501 impostorscore=0 bulkscore=0
- adultscore=0 lowpriorityscore=0 mlxlogscore=999 clxscore=1011 spamscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204110078
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: jpawar <jpawar@cadence.com>
+Set the maximum segment size, since the hardware can do transfers larger
+than the default 64 KiB returned by dma_get_max_seg_size().
 
-Add support for pre_enable and post_enable drm bridge control functions.
-Making sure that host to be prepared before panel is powered up,
-for the panels like TC358762.
+The maximum segment size is limited by the 24-bit transfer count field
+in DMA descriptors. The number of bytes is equal to the transfer count
+times the transfer size unit, which is selected by the driver based on
+the DMA buffer address and length of the transfer. The size unit can be
+as small as 1 byte, so set the maximum segment size to 2^24-1 bytes to
+ensure the transfer count will not overflow regardless of the size unit
+selected by the driver.
 
-Signed-off-by: jpawar <jpawar@cadence.com>
+Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 ---
- drivers/gpu/drm/bridge/cdns-dsi.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ drivers/dma/dma-jz4780.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/cdns-dsi.c b/drivers/gpu/drm/bridge/cdns-dsi.c
-index 829e1a144656..20bece84ff8c 100644
---- a/drivers/gpu/drm/bridge/cdns-dsi.c
-+++ b/drivers/gpu/drm/bridge/cdns-dsi.c
-@@ -462,6 +462,7 @@ struct cdns_dsi {
- 	struct reset_control *dsi_p_rst;
- 	struct clk *dsi_sys_clk;
- 	bool link_initialized;
-+	bool phy_initialized;
- 	struct phy *dphy;
- };
+diff --git a/drivers/dma/dma-jz4780.c b/drivers/dma/dma-jz4780.c
+index fc513eb2b289..e2ec540e6519 100644
+--- a/drivers/dma/dma-jz4780.c
++++ b/drivers/dma/dma-jz4780.c
+@@ -8,6 +8,7 @@
  
-@@ -711,11 +712,21 @@ static void cdns_dsi_bridge_disable(struct drm_bridge *bridge)
- 	pm_runtime_put(dsi->base.dev);
- }
+ #include <linux/clk.h>
+ #include <linux/dmapool.h>
++#include <linux/dma-mapping.h>
+ #include <linux/init.h>
+ #include <linux/interrupt.h>
+ #include <linux/module.h>
+@@ -911,6 +912,14 @@ static int jz4780_dma_probe(struct platform_device *pdev)
  
-+static void cdns_dsi_bridge_post_disable(struct drm_bridge *bridge)
-+{
-+	struct cdns_dsi_input *input = bridge_to_cdns_dsi_input(bridge);
-+	struct cdns_dsi *dsi = input_to_dsi(input);
+ 	dd = &jzdma->dma_device;
+ 
++	/*
++	 * The real segment size limit is dependent on the size unit selected
++	 * for the transfer. Because the size unit is selected automatically
++	 * and may be as small as 1 byte, use a safe limit of 2^24-1 bytes to
++	 * ensure the 24-bit transfer count in the descriptor cannot overflow.
++	 */
++	dma_set_max_seg_size(dev, 0xffffff);
 +
-+	pm_runtime_put(dsi->base.dev);
-+}
-+
- static void cdns_dsi_hs_init(struct cdns_dsi *dsi)
- {
- 	struct cdns_dsi_output *output = &dsi->output;
- 	u32 status;
- 
-+	if (dsi->phy_initialized)
-+		return;
- 	/*
- 	 * Power all internal DPHY blocks down and maintain their reset line
- 	 * asserted before changing the DPHY config.
-@@ -739,6 +750,7 @@ static void cdns_dsi_hs_init(struct cdns_dsi *dsi)
- 	writel(DPHY_CMN_PSO | DPHY_ALL_D_PDN | DPHY_C_PDN | DPHY_CMN_PDN |
- 	       DPHY_D_RSTB(output->dev->lanes) | DPHY_C_RSTB,
- 	       dsi->regs + MCTL_DPHY_CFG0);
-+	dsi->phy_initialized = true;
- }
- 
- static void cdns_dsi_init_link(struct cdns_dsi *dsi)
-@@ -914,11 +926,25 @@ static void cdns_dsi_bridge_enable(struct drm_bridge *bridge)
- 	writel(tmp, dsi->regs + MCTL_MAIN_EN);
- }
- 
-+static void cdns_dsi_bridge_pre_enable(struct drm_bridge *bridge)
-+{
-+	struct cdns_dsi_input *input = bridge_to_cdns_dsi_input(bridge);
-+	struct cdns_dsi *dsi = input_to_dsi(input);
-+
-+	if (WARN_ON(pm_runtime_get_sync(dsi->base.dev) < 0))
-+		return;
-+
-+	cdns_dsi_init_link(dsi);
-+	cdns_dsi_hs_init(dsi);
-+}
-+
- static const struct drm_bridge_funcs cdns_dsi_bridge_funcs = {
- 	.attach = cdns_dsi_bridge_attach,
- 	.mode_valid = cdns_dsi_bridge_mode_valid,
- 	.disable = cdns_dsi_bridge_disable,
-+	.pre_enable = cdns_dsi_bridge_pre_enable,
- 	.enable = cdns_dsi_bridge_enable,
-+	.post_disable = cdns_dsi_bridge_post_disable,
- };
- 
- static int cdns_dsi_attach(struct mipi_dsi_host *host,
+ 	dma_cap_set(DMA_MEMCPY, dd->cap_mask);
+ 	dma_cap_set(DMA_SLAVE, dd->cap_mask);
+ 	dma_cap_set(DMA_CYCLIC, dd->cap_mask);
 -- 
-2.30.2
+2.35.1
 
