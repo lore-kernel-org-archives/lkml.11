@@ -2,175 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAC0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B851C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345785AbiDKLfi (ORCPT
+        id S1345911AbiDKLfr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48120 "EHLO
+        Mon, 11 Apr 2022 07:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344167AbiDKLf3 (ORCPT
+        with ESMTP id S1345736AbiDKLfh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:35:29 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD4845783;
-        Mon, 11 Apr 2022 04:33:14 -0700 (PDT)
-X-UUID: ec7307cde0af4b17830cd361f74d2b89-20220411
-X-UUID: ec7307cde0af4b17830cd361f74d2b89-20220411
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1482752981; Mon, 11 Apr 2022 19:33:12 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 11 Apr 2022 19:33:11 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 11 Apr 2022 19:33:11 +0800
-Message-ID: <0fad4560d167ed7f063e3e597b772bd440791b43.camel@mediatek.com>
-Subject: Re: [PATCH V2 06/15] cpufreq: mediatek: Record previous target
- vproc value
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-CC:     <rafael@kernel.org>, <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
-        <roger.lu@mediatek.com>, <hsinyi@google.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        "Andrew-sh . Cheng" <andrew-sh.cheng@mediatek.com>
-Date:   Mon, 11 Apr 2022 19:33:10 +0800
-In-Reply-To: <20220411032654.5tqqivmstqkojfj5@vireshk-i7>
-References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
-         <20220408045908.21671-7-rex-bc.chen@mediatek.com>
-         <20220411032654.5tqqivmstqkojfj5@vireshk-i7>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 11 Apr 2022 07:35:37 -0400
+Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A173C4578F;
+        Mon, 11 Apr 2022 04:33:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1649676804; x=1681212804;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=MikfRTUlq4K03S1l0EVzlzVMymBkQMOzwPYGxEdj2j8=;
+  b=QQhPavLIqamde4Hp83JKWiatcjXzFO5uKb6Ld4LBEEDlQzUNoQWBiWrE
+   gJyrwFSs2p0j016+wM45sD3MPxgX2akE5jJbn9NRzxA+Du7QoDgZduv+p
+   NHNg1GpGNh8INCd/9RFifqcbIzh+EhUdOCAT0Xyzkzz5Jo2f6/cbWPzC2
+   E=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="289851685"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643670000"; 
+   d="scan'208";a="289851685"
+Received: from unknown (HELO mucxv003.muc.infineon.com) ([172.23.11.20])
+  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 13:33:21 +0200
+Received: from MUCSE819.infineon.com (MUCSE819.infineon.com [172.23.29.45])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mucxv003.muc.infineon.com (Postfix) with ESMTPS;
+        Mon, 11 Apr 2022 13:33:20 +0200 (CEST)
+Received: from [10.160.241.183] (172.23.8.247) by MUCSE819.infineon.com
+ (172.23.29.45) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 11 Apr
+ 2022 13:33:19 +0200
+Message-ID: <d6878e6c-e949-3c38-f370-0aa0ac8ca226@infineon.com>
+Date:   Mon, 11 Apr 2022 13:33:17 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 4/4] tpm: Add YAML schema for the TPM TIS I2C options
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+CC:     <devicetree@vger.kernel.org>, <peterhuewe@gmx.de>,
+        <jarkko@kernel.org>, <jgg@ziepe.ca>, <amirmizi6@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <linux-integrity@vger.kernel.org>
+References: <20220404081835.495-1-johannes.holland@infineon.com>
+ <20220404081835.495-4-johannes.holland@infineon.com>
+ <1649088538.021063.1436944.nullmailer@robh.at.kernel.org>
+From:   Johannes Holland <johannes.holland@infineon.com>
+In-Reply-To: <1649088538.021063.1436944.nullmailer@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
+X-Originating-IP: [172.23.8.247]
+X-ClientProxiedBy: MUCSE813.infineon.com (172.23.29.39) To
+ MUCSE819.infineon.com (172.23.29.45)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-04-11 at 08:56 +0530, Viresh Kumar wrote:
-> On 08-04-22, 12:58, Rex-BC Chen wrote:
-> > From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-> > 
-> > We found the buck voltage may not be exactly the same with what we
-> > set
-> > because CPU may share the same buck with other module.
-> > Therefore, we need to record the previous desired value instead of
-> > reading
-> > it from regulators.
-> > 
-> > Signed-off-by: Andrew-sh.Cheng <andrew-sh.cheng@mediatek.com>
-> > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-> > ---
-> >  drivers/cpufreq/mediatek-cpufreq.c | 31 +++++++++++++++++++-------
-> > ----
-> >  1 file changed, 20 insertions(+), 11 deletions(-)
-> > 
-> > diff --git a/drivers/cpufreq/mediatek-cpufreq.c
-> > b/drivers/cpufreq/mediatek-cpufreq.c
-> > index dc4a87e68940..472f4de29e5f 100644
-> > --- a/drivers/cpufreq/mediatek-cpufreq.c
-> > +++ b/drivers/cpufreq/mediatek-cpufreq.c
-> > @@ -40,6 +40,7 @@ struct mtk_cpu_dvfs_info {
-> >  	struct list_head list_head;
-> >  	int intermediate_voltage;
-> >  	bool need_voltage_tracking;
-> > +	int old_vproc;
+On 04.04.2022 18:08, Rob Herring wrote:> On Mon, 04 Apr 2022 10:18:35 +0200, Johannes Holland wrote:
+>> Add a YAML schema to support device tree bindings for the generic I2C
+>> physical layer. Refer to the TCG PC Client Platform TPM Profile (PTP)
+>> Specification for TPM 2.0 v1.04 Revision 14.
+>>
+>> Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
+>> ---
+>>  .../bindings/security/tpm/tpm-tis-i2c.yaml    | 48 +++++++++++++++++++
+>>  1 file changed, 48 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/security/tpm/tpm-tis-i2c.yaml
+>>
 > 
-> I like prev_vproc better somehow, but it is up to you to name it :)
-
-Hello Viresh,
-
-Thanks for your review.
-I will modify this as prev_vproc in next version.
-
+> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> on your patch (DT_CHECKER_FLAGS is new in v5.13):
 > 
-> >  };
-> >  
-> >  static LIST_HEAD(dvfs_info_list);
-> > @@ -190,11 +191,17 @@ static int
-> > mtk_cpufreq_voltage_tracking(struct mtk_cpu_dvfs_info *info,
-> >  
-> >  static int mtk_cpufreq_set_voltage(struct mtk_cpu_dvfs_info *info,
-> > int vproc)
-> >  {
-> > +	int ret;
-> > +
-> >  	if (info->need_voltage_tracking)
-> > -		return mtk_cpufreq_voltage_tracking(info, vproc);
-> > +		ret = mtk_cpufreq_voltage_tracking(info, vproc);
-> >  	else
-> > -		return regulator_set_voltage(info->proc_reg, vproc,
-> > -					     vproc + VOLT_TOL);
-> > +		ret = regulator_set_voltage(info->proc_reg, vproc,
-> > +					    MAX_VOLT_LIMIT);
-> > +	if (!ret)
-> > +		info->old_vproc = vproc;
-> > +
-> > +	return ret;
-> >  }
-> >  
-> >  static int mtk_cpufreq_set_target(struct cpufreq_policy *policy,
-> > @@ -211,15 +218,7 @@ static int mtk_cpufreq_set_target(struct
-> > cpufreq_policy *policy,
-> >  
-> >  	inter_vproc = info->intermediate_voltage;
-> >  
-> > -	old_freq_hz = clk_get_rate(cpu_clk);
-> > -	old_vproc = regulator_get_voltage(info->proc_reg);
-> > -	if (old_vproc < 0) {
-> > -		pr_err("%s: invalid Vproc value: %d\n", __func__,
-> > old_vproc);
-> > -		return old_vproc;
-> > -	}
-> > -
+> yamllint warnings/errors:
 > 
-> Why did you move it down from here? I think it was fine to error out
-> early if voltage isn't available.
-
-I will move them to original position in next version.
-
-Thanks!
-
-BRs,
-Rex
-
+> dtschema/dtc warnings/errors:
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/security/tpm/tpm-tis-i2c.example.dt.yaml: tpm@2e: compatible:1: 'tcg,tpm-tis-i2c' was expected
+>         From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/security/tpm/tpm-tis-i2c.yaml
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/security/tpm/tpm-tis-i2c.example.dt.yaml: tpm@2e: compatible: ['infineon,slb9673', 'nuvoton,npct75x', 'tcg,tpm-tis-i2c'] is too long
+>         From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/security/tpm/tpm-tis-i2c.yaml
 > 
-> >  	freq_hz = freq_table[index].frequency * 1000;
-> > -
-> >  	opp = dev_pm_opp_find_freq_ceil(cpu_dev, &freq_hz);
-> >  	if (IS_ERR(opp)) {
-> >  		pr_err("cpu%d: failed to find OPP for %ld\n",
-> > @@ -229,6 +228,16 @@ static int mtk_cpufreq_set_target(struct
-> > cpufreq_policy *policy,
-> >  	vproc = dev_pm_opp_get_voltage(opp);
-> >  	dev_pm_opp_put(opp);
-> >  
-> > +	old_freq_hz = clk_get_rate(cpu_clk);
-> > +	old_vproc = info->old_vproc;
-> > +	if (old_vproc == 0)
-> > +		old_vproc = regulator_get_voltage(info->proc_reg);
-> > +	if (old_vproc < 0) {
-> > +		dev_err(cpu_dev, "%s: invalid Vproc value: %d\n",
-> > +			__func__, old_vproc);
-> > +		return old_vproc;
-> > +	}
-> > +
-> >  	/*
-> >  	 * If the new voltage or the intermediate voltage is higher
-> > than the
-> >  	 * current voltage, scale up voltage first.
-> > -- 
-> > 2.18.0
+> doc reference errors (make refcheckdocs):
 > 
+> See https://patchwork.ozlabs.org/patch/
+> 
+> This check can fail if there are any dependencies. The base for a patch
+> series is generally the most recent rc1.
+> 
+> If you already ran 'make dt_binding_check' and didn't see the above
+> error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> date:
+> 
+> pip3 install dtschema --upgrade
+> 
+> Please check and re-submit.
 > 
 
+Sorry for the inconvenience. This will be fixed in the next patch.
+
+Thanks,
+Johannes
