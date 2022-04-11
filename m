@@ -2,84 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B17F8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:42:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 979AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345668AbiDKKoZ (ORCPT
+        id S1345675AbiDKKpr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58782 "EHLO
+        Mon, 11 Apr 2022 06:45:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239248AbiDKKoY (ORCPT
+        with ESMTP id S239248AbiDKKpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:44:24 -0400
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A40D3F897
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:42:10 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:b509:6862:2557:437a])
-        by laurent.telenet-ops.be with bizsmtp
-        id HNi82700A1G7NMJ01Ni8NX; Mon, 11 Apr 2022 12:42:08 +0200
-Received: from geert (helo=localhost)
-        by ramsan.of.borg with local-esmtp (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1ndrUl-000A17-WE; Mon, 11 Apr 2022 12:42:08 +0200
-Date:   Mon, 11 Apr 2022 12:42:07 +0200 (CEST)
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-X-X-Sender: geert@ramsan.of.borg
-To:     linux-kernel@vger.kernel.org
-cc:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>, sparclinux@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Subject: Re: Build regressions/improvements in v5.18-rc2
-In-Reply-To: <20220411103528.2187797-1-geert@linux-m68k.org>
-Message-ID: <alpine.DEB.2.22.394.2204111240560.38484@ramsan.of.borg>
-References: <CAHk-=wh0+DYC2+Aeu2=vfUtGaDqVuKxKrxyhwQFoG89rcynzww@mail.gmail.com> <20220411103528.2187797-1-geert@linux-m68k.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Mon, 11 Apr 2022 06:45:45 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 051C642EE4
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:43:30 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A5B131692;
+        Mon, 11 Apr 2022 03:43:30 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 888913F5A1;
+        Mon, 11 Apr 2022 03:43:29 -0700 (PDT)
+Message-ID: <97c6b2e1-3d9f-bf03-a14e-df3249d166dd@arm.com>
+Date:   Mon, 11 Apr 2022 11:43:24 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] habanalabs: Stop using iommu_present()
+Content-Language: en-GB
+To:     Oded Gabbay <ogabbay@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        iommu@lists.linux-foundation.org
+References: <8201946a5b8b26dab35738b87da24ff27a9f9270.1649166391.git.robin.murphy@arm.com>
+ <CAFCwf10bwtpC=syFgcz8Ym5S797x3wmkGx3RFnUNkSsjdeyGgw@mail.gmail.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAFCwf10bwtpC=syFgcz8Ym5S797x3wmkGx3RFnUNkSsjdeyGgw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Apr 2022, Geert Uytterhoeven wrote:
-> JFYI, when comparing v5.18-rc2[1] to v5.18-rc1[3], the summaries are:
->  - build warnings: +23/-0
+On 2022-04-10 11:59, Oded Gabbay wrote:
+> On Tue, Apr 5, 2022 at 4:46 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> Even if an IOMMU might be present for some PCI segment in the system,
+>> that doesn't necessarily mean it provides translation for the device
+>> we care about. Replace iommu_present() with a more appropriate check.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>   drivers/misc/habanalabs/gaudi/gaudi.c | 8 ++++----
+>>   drivers/misc/habanalabs/goya/goya.c   | 8 ++++----
+>>   2 files changed, 8 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+>> index 21c2b678ff72..5dc66dc7618e 100644
+>> --- a/drivers/misc/habanalabs/gaudi/gaudi.c
+>> +++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+>> @@ -6133,7 +6133,7 @@ static int gaudi_debugfs_read32(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>
+>>                  *val = *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>>
+>> @@ -6176,7 +6176,7 @@ static int gaudi_debugfs_write32(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>
+>>                  *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>>
+>> @@ -6223,7 +6223,7 @@ static int gaudi_debugfs_read64(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>
+>>                  *val = *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>>
+>> @@ -6268,7 +6268,7 @@ static int gaudi_debugfs_write64(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>
+>>                  *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>>
+>> diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
+>> index ec9358bcbf0b..0c455bf460f4 100644
+>> --- a/drivers/misc/habanalabs/goya/goya.c
+>> +++ b/drivers/misc/habanalabs/goya/goya.c
+>> @@ -4309,7 +4309,7 @@ static int goya_debugfs_read32(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>                  *val = *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>>
+>>          } else {
+>> @@ -4369,7 +4369,7 @@ static int goya_debugfs_write32(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>                  *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>>
+>>          } else {
+>> @@ -4418,7 +4418,7 @@ static int goya_debugfs_read64(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>                  *val = *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>>
+>>          } else {
+>> @@ -4465,7 +4465,7 @@ static int goya_debugfs_write64(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>                  *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>>
+>>          } else {
+>> --
+>> 2.28.0.dirty
+>>
+> 
+> Hi Robin,
+> Can you please rebase this over the latest habanalabs-next ?
+> The code was totally changed, but I think your core change is
+> definitely relevant.
 
-   + /kisskb/src/arch/sparc/include/asm/cacheflush_32.h: error: 'struct page' declared inside parameter list [-Werror]:  => 38:37
-   + /kisskb/src/arch/sparc/include/asm/cacheflush_32.h: error: its scope is only this definition or declaration, which is probably not what you want [-Werror]:  => 38:37
+Oh, lovely, that makes for a much nicer patch indeed! I'll spin a v2 
+shortly.
 
-sparc64/sparc-allmodconfig
-
-   + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1639:13, 1756:13
-   + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct mm_struct *)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1662:29, 1674:29
-   + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct mm_struct *, long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1767:21
-   + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct vm_area_struct *, long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1741:29, 1726:29
-   + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct vm_area_struct *, long unsigned int,  long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1711:29, 1694:29
-
-sparc64-gcc11/sparc-allmodconfig
-
-   + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_491' declared with attribute error: FIELD_PREP: mask is not constant:  => 352:38
-   + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_520' declared with attribute error: FIELD_PREP: mask is not constant:  => 352:38
-
-mipsel/mips-allmodconfig
-arm64-gcc5.4/arm64-allmodconfig
-
-Actual error is:
-
-     /kisskb/src/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c: In function 'mt76x2e_probe':
-     /kisskb/src/include/linux/compiler_types.h:352:38: error: call to '__compiletime_assert_520' declared with attribute error: FIELD_PREP: mask is not constant
-
-> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e/ (all 96 configs)
-> [3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/3123109284176b1532874591f7c81f3837bbdc17/ (all 96 configs)
-
-Gr{oetje,eeting}s,
-
- 						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
- 							    -- Linus Torvalds
+Thanks,
+Robin.
