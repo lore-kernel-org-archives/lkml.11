@@ -2,99 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF452C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:16:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC66C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:16:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346384AbiDKNSa (ORCPT
+        id S1346405AbiDKNTK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 09:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
+        Mon, 11 Apr 2022 09:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346385AbiDKNS2 (ORCPT
+        with ESMTP id S1346389AbiDKNTG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 09:18:28 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AAF39830
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:16:13 -0700 (PDT)
+        Mon, 11 Apr 2022 09:19:06 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F0B3AA6B;
+        Mon, 11 Apr 2022 06:16:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649682974; x=1681218974;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=YsDBQb12p8x0H2DcxenAH/X0JU8x4I9TcXUcV/eKY8E=;
-  b=oFlfnWUzonNnejrlOyEjnpD8NuOa64+ZxifFDv4/Rj8cDoEuIYPUAtvC
-   Imdxdq3P1NIOQKw8cwHMpWvVEAEOMwANARaQqCTDDqslZ3Yz6AM/A7e9p
-   F/tMg1gRJGQVWIwsqu2Xe1waXzrjnDmKxDVS25OShkpEKaaoc8uUbAfXu
-   DCZOFe8V2SJnHgN0Nf6IjQvfTOmmu8+ukSNzNmz410P1PF0hdF1sq4DKf
-   sdxfNQaHJvKlPdUIqyArAUni5Np7N7xZFc/GgBSHX5zegNDlI4C8S9tPp
-   C6m3YlpWcVODsKJRCrlAhV0S1wQLSjahAp4wQEiC9cSAvOdUWosMxSemZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="261856650"
+  t=1649683012; x=1681219012;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8NkmJflT2vjOmTzpi2Ay4zQaAbqkNIhnYYU/YH2VLeY=;
+  b=RRzMpWLeBad+QQ6BIUs6Br0jqOHgA+IZ44jv/ehdz6S+E5hGXpiMGfRS
+   oOhxJUbxGYe8xGJCzA1kflPHXwLv3Tr9XYlOgX+kmOi+15zTBJgyY+T5P
+   Frhl+HQ85SEzpNpTllB1/dZBPU6RXgdh0bX0W5kEY+dp1+i1p8B68uFad
+   nWTiE89VqQRH4j/rn3NziuinaJLCJ7GJzNGaIpP/S9rwaG9JWcrzHlqKq
+   plCn5YNLpNY5Nl+vMwNh/ieFKE2QIlSsJz6V+qT46O0OuQZxh3p9iW+zk
+   u7zXy4bHzMJw/ndpEqyRdr9uhjoShwjZzQDxtyzNPXs3a/mMBKloWH57/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="259707518"
 X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="261856650"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 06:16:13 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="259707518"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 06:16:52 -0700
 X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="525973899"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 11 Apr 2022 06:16:11 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ndttq-0001s3-O4;
-        Mon, 11 Apr 2022 13:16:10 +0000
-Date:   Mon, 11 Apr 2022 21:15:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Alan Previn <alan.previn.teres.alexis@intel.com>
-Subject: drivers/gpu/drm/i915/pxp/intel_pxp_debugfs.c:59:6: error: no
- previous prototype for 'intel_pxp_debugfs_register'
-Message-ID: <202204112116.5k0b9bqR-lkp@intel.com>
+   d="scan'208";a="644080149"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 06:16:44 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ndtqp-001DRI-MC;
+        Mon, 11 Apr 2022 16:13:03 +0300
+Date:   Mon, 11 Apr 2022 16:13:03 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Qianggui Song <qianggui.song@amlogic.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marc Zyngier <maz@kernel.org>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        openbmc@lists.ozlabs.org, linux-renesas-soc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH v4 05/13] pinctrl: samsung: Switch to use
+ for_each_gpiochip_node() helper
+Message-ID: <YlQpX0Gu/O9IuhyW@smile.fi.intel.com>
+References: <20220401103604.8705-1-andriy.shevchenko@linux.intel.com>
+ <20220401103604.8705-6-andriy.shevchenko@linux.intel.com>
+ <4513324d-3dba-fd21-2a7f-9f1b9ef535cc@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <4513324d-3dba-fd21-2a7f-9f1b9ef535cc@linaro.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniele,
+On Mon, Apr 11, 2022 at 02:21:00PM +0200, Krzysztof Kozlowski wrote:
+> On 01/04/2022 12:35, Andy Shevchenko wrote:
+> > Switch the code to use for_each_gpiochip_node() helper.
+> > 
+> > While at it, in order to avoid additional churn in the future,
+> > switch to fwnode APIs where it makes sense.
+> > 
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > ---
+> >  drivers/pinctrl/samsung/pinctrl-exynos.c  |  8 +++---
+> >  drivers/pinctrl/samsung/pinctrl-s3c24xx.c |  2 +-
+> >  drivers/pinctrl/samsung/pinctrl-s3c64xx.c |  4 +--
+> >  drivers/pinctrl/samsung/pinctrl-samsung.c | 30 +++++++++++------------
+> >  drivers/pinctrl/samsung/pinctrl-samsung.h |  2 +-
+> >  5 files changed, 22 insertions(+), 24 deletions(-)
+> 
+> Tested-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-FYI, the error/warning still remains.
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
-commit: 390cf1b28b11190121cb05d4cec1f86787b47668 drm/i915/pxp: add pxp debugfs
-date:   6 months ago
-config: i386-randconfig-c001-20220411 (https://download.01.org/0day-ci/archive/20220411/202204112116.5k0b9bqR-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=390cf1b28b11190121cb05d4cec1f86787b47668
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 390cf1b28b11190121cb05d4cec1f86787b47668
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/gpu/drm/i915/pxp/intel_pxp_debugfs.c:59:6: error: no previous prototype for 'intel_pxp_debugfs_register' [-Werror=missing-prototypes]
-      59 | void intel_pxp_debugfs_register(struct intel_pxp *pxp, struct dentry *gt_root)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
-
-
-vim +/intel_pxp_debugfs_register +59 drivers/gpu/drm/i915/pxp/intel_pxp_debugfs.c
-
-    57	
-    58	DEFINE_SIMPLE_ATTRIBUTE(pxp_terminate_fops, pxp_terminate_get, pxp_terminate_set, "%llx\n");
-  > 59	void intel_pxp_debugfs_register(struct intel_pxp *pxp, struct dentry *gt_root)
+Thanks!
+I'm going to spread this to two patches to which I pointed out before.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With Best Regards,
+Andy Shevchenko
+
+
