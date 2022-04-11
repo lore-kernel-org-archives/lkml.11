@@ -2,169 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7634C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:19:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345248AbiDKKV3 (ORCPT
+        id S1345258AbiDKKWJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:21:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41728 "EHLO
+        Mon, 11 Apr 2022 06:22:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345241AbiDKKVZ (ORCPT
+        with ESMTP id S1345241AbiDKKWI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:21:25 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B498204
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:19:11 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23B9ruad008564;
-        Mon, 11 Apr 2022 10:18:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=G/mTgcMrs0GZwKURDvVgvtJA1PZ+ilpj8/6T7XhAd9M=;
- b=OZ326YKFYaj8zD9tk5OVbDm3SM6yzhnoQUPGkZ4IQpHp2PtXjx/xvhBeYNjRB2M5Jjzp
- rAjery4ZOcV4TbqlpBEEFqBJ79jBymqmufA7hr55qeI8fiDseI2Xq6cC59kUFJGz/+RP
- QxlRvwdHS8Qf0bXc1rL2G/hQwsZVMHUo5WHWlFW4/p8e1bmbDMBq4RHHh9BKfIOi0N86
- ognCEd7Duyh3heB5Uo0G4TAgXEeTrDl2iJMoNEtzv68P5XuMH3loAQ9ni4IlAi/sUU+v
- EWAAUAs5A+V5H00WoJiQ1L+4fYhXqpbDIRRohW5LvnSgXx1SPdaEz5QfoWlkaxir5vmh 1Q== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3fb0x2b76j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 11 Apr 2022 10:18:57 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23BAC6YE036797;
-        Mon, 11 Apr 2022 10:18:56 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2168.outbound.protection.outlook.com [104.47.57.168])
-        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3fcg9g3mya-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 11 Apr 2022 10:18:56 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AlXU0M3ft0/vLfVxlU7vnnl2PyHxqOtYQLbN88nWjL/CFR2zcKu8f4aGONESdikrfVWAZ5Or/BVYT0vcwAMXIi0n1/HSa2cdwmpfLXXMunK+27ja7LrIj7yOyPOw4bZM/pkqxBkuTz2b1BKIkaVbSvyD40v+IgQQyvP8eFijiXwqrZPOn1v8W97jOGfhio8miTh+noZ1qO/QRuOwMq3OHtC/8t5S6hMXvl7Mp18bxAWyrdXBx+7uSo1tP71XE5h5uuHhqHBHCPm7F9QcuFsXYWG/76AGOWhgAop9yMGYROceGEMGMqoInr0te/pOWKgD5T3nqq8WjNHqu5+ykGzHww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=G/mTgcMrs0GZwKURDvVgvtJA1PZ+ilpj8/6T7XhAd9M=;
- b=aiF+4rGHr2mDXaI3CBl5skxGbsEh/6VJdCbBDtAVjWsxRY9KkuxKTE7Lpm9qkOL8RX8i9q1QCiBUO0rncuPBRleTgH/igbI0kWJLntoqHOaH3OgVW7+a+u0KgcF8XFrgNX1QDVN+hGsn5CYFCkz/uxf09nIL49JYwEQt2nXGQJqwtELwjSMWj8w/1QQ+KYwgjh8d+AkbRQF8xoyPn07Q6/Sisq2Jb3tDK3MPJM2skZEcR+aOch99jQa1KvqXjLW6psNZbHZ4mcTun/ze0eq1sqTmAkCMXRUXK/pwy1o3onVkVy7JtpWvJMqCUWEOuxSNRAR+5qG65v+GlSFGm7Ja4g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Mon, 11 Apr 2022 06:22:08 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD2123BDA;
+        Mon, 11 Apr 2022 03:19:53 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id d15so13426542pll.10;
+        Mon, 11 Apr 2022 03:19:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G/mTgcMrs0GZwKURDvVgvtJA1PZ+ilpj8/6T7XhAd9M=;
- b=XG/60RIUF7cA/cg7BeyjuDjDXsL9NNjF0Uoz3RPQlnnjqEHbRQzYG5VY5Yq7EKoxHur1NYMQd7NpYTlCbLXl29GJ4ZHK3helg9WHjhCspF1AoqA/ibwALoaaFL1Rg6JyelsU+cC5XBrQqwmYjbcKja+riweGZNPFHnijflNCVSA=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by SJ0PR10MB5647.namprd10.prod.outlook.com
- (2603:10b6:a03:3da::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
- 2022 10:18:54 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::b5d5:7b39:ca2d:1b87]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::b5d5:7b39:ca2d:1b87%5]) with mapi id 15.20.5144.022; Mon, 11 Apr 2022
- 10:18:54 +0000
-Date:   Mon, 11 Apr 2022 13:18:34 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Martin Kaiser <martin@kaiser.cx>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/8] staging: r8188eu: don't set _SUCCESS again
-Message-ID: <20220411101834.GW3293@kadam>
-References: <20220409151557.207980-1-martin@kaiser.cx>
- <20220409151557.207980-3-martin@kaiser.cx>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220409151557.207980-3-martin@kaiser.cx>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0026.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::14)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=66gTpdtrozWiIQO6yGFO+8VPTsTAnvATXhTTmW6/CiE=;
+        b=iKBT+fgD7DJFAJ3uxbj4aa07OVirUDiOZFjq3yzxpJOuu5mBDmGQX6iFaxR0Tq8GVR
+         hi6SXuMyyJcdisMcU/TistTTmraGA2szzeCUWwdaO363xW2HiDFrfaabg0jO9EwgP/d2
+         mo6NIFoPPTIrsAZEqduc+buodVknYerZQOamQU6I7X1x7cvKwksqJxzB6WU4PWFLDDL9
+         dKbr+hTjcCRWdkyTxXWuTdBygsjUz++StiNloWdOFm8rRVVns2TI/MG4Q3a50uTOEe3g
+         8dgkowF3FLHYgZf+pTIeHU5DyZJARr40wh8OycQ1Ke/2iVhQbILqg9xXCajhvyWLc0Md
+         qcEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=66gTpdtrozWiIQO6yGFO+8VPTsTAnvATXhTTmW6/CiE=;
+        b=VTlCyhx5EXqk47XYhfxiJUEzKdVKjoMgS1PmybHKgAzNKwcyEPG7NUFhDD1yaEHN/f
+         LdGYbKcfuXcpw0ZfzoaKvSJiufA4sWmDw0GBFozQOt4s+U+bl1qryHXvC1H3T1LsQmca
+         g9vF8ZaYSfTY1RWhQ8pkngUPFY2dCfnbz/j88MLKg2iCzqZaEwvhniXlG2r8AmFkyufA
+         iAbRd5aJUGLEbI/AKTXhTqliJNwiOTOXnrw15lCh/Qbc7mGWV7AmiKZljypPPghGdICf
+         fu3xX+IJTbYlWDxJ5bW5O7a7NptTDRzWvrdXkd9ZcUY216vYQMooxyD7i8LaQDCVYWGQ
+         lHyQ==
+X-Gm-Message-State: AOAM530yMWVxjiRyComOG/YfTBPJWjUAytzbKvSDwINDF0ryLfl3RaU3
+        vxwBLtH8LAJYzLYk2faww4I=
+X-Google-Smtp-Source: ABdhPJxciXvn/N1xcAQNiurzTEB4U6ahEoI+lf07JpMo3uaB6pDkdpNB0SGtmenGRma2cDV94lb2bQ==
+X-Received: by 2002:a17:90a:1597:b0:1cb:7e50:f3e6 with SMTP id m23-20020a17090a159700b001cb7e50f3e6mr8239915pja.215.1649672392714;
+        Mon, 11 Apr 2022 03:19:52 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.112])
+        by smtp.gmail.com with ESMTPSA id h10-20020a056a00230a00b004faa0f67c3esm34012280pfh.23.2022.04.11.03.19.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 03:19:52 -0700 (PDT)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Subject: [PATCH RESEND v12 00/17] KVM: x86/pmu: Add basic support to enable guest PEBS via DS
+Date:   Mon, 11 Apr 2022 18:19:29 +0800
+Message-Id: <20220411101946.20262-1-likexu@tencent.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4985d4a0-9cab-4a55-7506-08da1ba4adfe
-X-MS-TrafficTypeDiagnostic: SJ0PR10MB5647:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR10MB5647AC8E6BBCECE37F4A159A8EEA9@SJ0PR10MB5647.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vdflSPAQYwOJz9deioPO6Rvuz9cKzR+Hx3lzjFdR+JJJvRKz3Zm7POvrYtt4/PN0Aj0XZKQy5F9Z+UWYece1lYyH14bZWV3L2BA1NDGSo0XpSnHKYqUCL4qX3kxwJPjVwR5LRabNBjkVIp0iSqNYThyMF6fTNwICaoFR1jxeZx0GZ2NyFeljPx4p69NJ/HSm3dsksH9K/C0DtSEUTXyYN0C9g80gOueli9WRF2hu/IndSFvr5VUoN2yio4Qbe/xKYuZLxJH/PPucYFP24QERU5FwugZLqy9HtTW1XW7pv6NrP9MEq7QhPeUHxnCZWiotBGDit37K6Z8nt74EbBmfClH+hJJAgFpbcgnoZw99uwDCmDaJVHScEAnRh8pYZsVRNUgw5fUh9Omz0HLEWOgo/J4L1m75KRLv1DlX6EtOzKyY6wlFg+SP7DMuR2bibkjSU/qSADSRbdy6O+UNLCmcPik3X8/ROfGiKIcVGA8Lmbw3pHo34Tuuf4azqtIehWi+QKpBX+cm6PH70ZJlhpdbpbxIvbJmorU15fvagAX1EGnCI9KYJStITk661DsitEzfP8KkOkL82SjKrddIBUbuSi7WwUxhcF3FP56saKhdgysxfhX5VMarUvqN1jPAPIP+IBvI4tQVGzxx8hppkrm1POwJy1Uf5fnrCd6uZJmdW/7N9g17R8ZXqbnznS1faDLZGIXHC4RHi52cglZ05iGOuQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(8936002)(86362001)(33656002)(38350700002)(38100700002)(2906002)(5660300002)(9686003)(6512007)(66476007)(316002)(6506007)(52116002)(1076003)(26005)(186003)(33716001)(508600001)(44832011)(6486002)(6666004)(6916009)(4326008)(8676002)(66946007)(66556008)(4744005)(83380400001)(54906003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TTjNV6iHGYDZkfLkOoJxuR0HeR0z8K7h3qooPwWv5S9GUZCDXa3FgEHL2792?=
- =?us-ascii?Q?XYMph+rNKnARbD6DxfW4j+A47lJ3qs8SjvZDS/55loFSlculcw4GXsH6ZYbI?=
- =?us-ascii?Q?NPdkb/wTkWRCt1Wr7vvQLIHYONCo7fKHCm8tegr4adwGVt5UZdirAADV2cpU?=
- =?us-ascii?Q?fpveUtVzDSRoDKc3GOVYmzJdvPSCi11PIF0XWVApN8Y/AaDDKsSNZOZJXkS1?=
- =?us-ascii?Q?HXtvzAIfFShb4bnmyoeZUthn164Mor5TqAwprZwG+b2aQaIGK8V/hBAOAVId?=
- =?us-ascii?Q?uuem4DHPtXI51UghmakyHkjR/AwcUa9zBEJfQY79PDjy+darwYTXTRhrS06e?=
- =?us-ascii?Q?TbxYeSOWUvL18J1HCH3A4XmqxPHa9yPovA4DiwZd2yNUnr5+B9YohivBH0DA?=
- =?us-ascii?Q?HDNk7vMBpiuhQxITuZQClyPyQcYiq3CE/dyzSplxgiBwdHj2ct3Iz3KqvHRx?=
- =?us-ascii?Q?GUAf8PFQsK+BBzKhohijwriorGBy0sEhHdvChywBRKTVJ5PbrdneW6OB6bAi?=
- =?us-ascii?Q?1nPZMI++Hs2EeLWaTBmvIGCdv5Ag0UftlulTSdCoBqqVKYqFOV2BQb8Y/kc9?=
- =?us-ascii?Q?10mZGsbduHOyr9zzn8q8IyfZdls7DBRjyt5aCARgCgStmR4iIbkMlG63LBNI?=
- =?us-ascii?Q?Tjkh11goVbxKr2sLKZbYE1mzvodqWHb19bhxDmdLOuhejMfYIJ5iD0oFPBQG?=
- =?us-ascii?Q?h6xwSA+F+sjPsnA/ouhLTxPvGIzuB+U+UpwPYDgxjfQfeydBy58EVO2S2vul?=
- =?us-ascii?Q?t0rrENqrlIuczKsLkkTonj4lTyi1afynY7lWNl8r1bfiMpwbeKXctPUajmS4?=
- =?us-ascii?Q?L6K8EPWcWywi1Xmp6GCHaoUiHG/hJ0YXXgg75//zeRv5vo9MA4SxWZcGQm4J?=
- =?us-ascii?Q?5N2sgew+uhQtj+WhGRVXJJbmxI1jFTpIY6y39M+wKumzCK1RTU+nDZM/0GH1?=
- =?us-ascii?Q?OP7DZA51b/9TgMQQvtwYcZKU3usHEmJATM12SHSCD07waLKDZHCfMbCUHxno?=
- =?us-ascii?Q?0l5o+4YVDLA+HEkyk4drvGN4oZsJTey9xqEiHP+WR+Lz06Kuu1FkVf9ynMhE?=
- =?us-ascii?Q?XoqakVlUf8REbPg9nx/eIkHAdiNf0wJATLW8duDyvnjwjvFncr52B3eQ2XI4?=
- =?us-ascii?Q?bS1YAK1KkwduHM43/JPiUv2L0tnnGHvL54/Q09LPux18Cauq+RcxrsnGdtRg?=
- =?us-ascii?Q?NKR81bd64s+84h/omHRrtd9NW3z5mzV0h6xldu22rk98igGA0JdHXrMetHVZ?=
- =?us-ascii?Q?qyWEV4bjuAgrKop8QOFnTn4mFTg+mIJWprveEXufHALvMF4aIxQghKbK1TUn?=
- =?us-ascii?Q?tW0XsIl46Af0fa2SNyX9Bmg71mpCAD/jLnSpVEY4zAPpz2Wmu381dbsGPSWO?=
- =?us-ascii?Q?v42gRWCz5bExFvfz2owlQ54GhuBs78tdBLU38thRFDad/f+JfP++NDlMPEDr?=
- =?us-ascii?Q?jYJgB+k+40jDFSZnOf3woSWxkyxZS8OZYgRpqOL11FQL3pjAUfOEDWOU6ydk?=
- =?us-ascii?Q?K4Wmbf6mtp4CZQUnbWaRfstvidls2XDpzqlxe7RepxiE5DdjUiz7bnvLFE1c?=
- =?us-ascii?Q?+O6owgopDEl4I9VcQ515ObzOcuV4x2cLysdGHXUKcyAcwPSGoW22FWv3kS8K?=
- =?us-ascii?Q?K97z4So07wZ+AJkFa6u2B+sfYWhCYMaPnenJ5dg/tY1lzyf71lD6kcTTRciC?=
- =?us-ascii?Q?E5V5+79lXhM8Z7Ef4Sr/pVuPJQwQRY6hyc1AcnfFhviK946tZ92+q3WPCt/E?=
- =?us-ascii?Q?oAufaKsctCz77loo6e5NbkShbxoi4N0=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4985d4a0-9cab-4a55-7506-08da1ba4adfe
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 10:18:54.0004
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cWYNEr7Efruq9snXhYatVBajbe9aBY7G3S08/IJvTGg/l0ic98CEUS9OAf216J2nOTvf/uER0zFp3WL1Ayp9zV7ez20yMy4d3XBPcgzBtTw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5647
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.858
- definitions=2022-04-11_03:2022-04-11,2022-04-11 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxlogscore=945
- spamscore=0 suspectscore=0 malwarescore=0 adultscore=0 bulkscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204110058
-X-Proofpoint-ORIG-GUID: mdLgnrdShiFwbPvSF-T1dDN_1t7Lf3fw
-X-Proofpoint-GUID: mdLgnrdShiFwbPvSF-T1dDN_1t7Lf3fw
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 05:15:51PM +0200, Martin Kaiser wrote:
-> ret is initialized to _SUCCESS, there's no need to set it again.
-> 
-> Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+Hi,
 
-I liked the original code better.  Otherwise you wonder, is it
-intentional to return success on this path.  Smatch has a static
-checker warning for these because most of the time it is a bug.
-You can set "ret = _SUCCESS;" within 4 lines of the goto to silence
-the warning.  A second, not as good option, is to add comment
-"/* deliberatly returning success */" which saves a little time, but
-also wastes a little time.
+Out of more accurate profiling results, this feature still has loyal
+followers and another new rebased version is here. PeterZ had acked
+the V9 patchset [0] and Paolo had asked for a new version, so please
+check the changelog and feel free to review, test and comment.
 
-If you have to remove something, then remove the initializer.
+[0] https://lore.kernel.org/kvm/YQF7lwM6qzYso0Gg@hirez.programming.kicks-ass.net/
+[1] https://lore.kernel.org/kvm/95bf3dca-c6d1-02c8-40b6-8bb29a3a7a36@redhat.com/
 
-The compiler is probably clever enough to remove these assignments so
-it doesn't make sense to add an additional way to annotate success
-paths.
+---
 
-regards,
-dan carpenter
+The guest Precise Event Based Sampling (PEBS) feature can provide an
+architectural state of the instruction executed after the guest instruction
+that exactly caused the event. It needs new hardware facility only available
+on Intel Ice Lake Server platforms. This patch set enables the basic PEBS
+feature for KVM guests on ICX.
 
+We can use PEBS feature on the Linux guest like native:
+
+   # echo 0 > /proc/sys/kernel/watchdog (on the host)
+   # perf record -e instructions:ppp ./br_instr a
+   # perf record -c 100000 -e instructions:pp ./br_instr a
+
+To emulate guest PEBS facility for the above perf usages,
+we need to implement 2 code paths:
+
+1) Fast path
+
+This is when the host assigned physical PMC has an identical index as the
+virtual PMC (e.g. using physical PMC0 to emulate virtual PMC0).
+This path is used in most common use cases.
+
+2) Slow path
+
+This is when the host assigned physical PMC has a different index from the
+virtual PMC (e.g. using physical PMC1 to emulate virtual PMC0) In this case,
+KVM needs to rewrite the PEBS records to change the applicable counter indexes
+to the virtual PMC indexes, which would otherwise contain the physical counter
+index written by PEBS facility, and switch the counter reset values to the
+offset corresponding to the physical counter indexes in the DS data structure.
+
+The previous version [3] enables both fast path and slow path, which seems
+a bit more complex as the first step. In this patchset, we want to start with
+the fast path to get the basic guest PEBS enabled while keeping the slow path
+disabled. More focused discussion on the slow path [4] is planned to be put to
+another patchset in the next step.
+
+Compared to later versions in subsequent steps, the functionality to support
+host-guest PEBS both enabled and the functionality to emulate guest PEBS when
+the counter is cross-mapped are missing in this patch set
+(neither of these are typical scenarios).
+
+With the basic support, the guest can retrieve the correct PEBS information from
+its own PEBS records on the Ice Lake servers. And we expect it should work when
+migrating to another Ice Lake and no regression about host perf is expected.
+
+Here are the results of pebs test from guest/host for same workload:
+
+perf report on guest:
+# Samples: 2K of event 'instructions:ppp', # Event count (approx.): 1473377250 # Overhead  Command   Shared Object      Symbol
+   57.74%  br_instr  br_instr           [.] lfsr_cond
+   41.40%  br_instr  br_instr           [.] cmp_end
+    0.21%  br_instr  [kernel.kallsyms]  [k] __lock_acquire
+
+perf report on host:
+# Samples: 2K of event 'instructions:ppp', # Event count (approx.): 1462721386 # Overhead  Command   Shared Object     Symbol
+   57.90%  br_instr  br_instr          [.] lfsr_cond
+   41.95%  br_instr  br_instr          [.] cmp_end
+    0.05%  br_instr  [kernel.vmlinux]  [k] lock_acquire
+    Conclusion: the profiling results on the guest are similar tothat on the host.
+
+A minimum guest kernel version may be v5.4 or a backport version support
+Icelake server PEBS.
+
+Please check more details in each commit and feel free to comment.
+
+Previous:
+https://lore.kernel.org/kvm/20220304090427.90888-1-likexu@tencent.com/
+
+[3]
+https://lore.kernel.org/kvm/20210104131542.495413-1-like.xu@linux.intel.com/
+[4]
+https://lore.kernel.org/kvm/20210115191113.nktlnmivc3edstiv@two.firstfloor.org/
+
+V12->V12 RESEND:
+- Rebased on the top of kvm/queue; (Paolo)
+- Add PEBS msrs to the msrs_to_save_all[];
+- Stay up to date on https://github.com/lkml-likexu/linux/tree/kvm-queue-pebs;
+
+V11->V12:
+- Apply the new perf interface from tip/perf/core and fix the merge conflict;
+- Rename "x86_pmu.pebs_ept" to "x86_pmu.pebs_ept"; (Sean)
+- Rebased on the top of kvm/queue (b13a3befc815); (Paolo)
+
+V10->V11:
+- Merge perf_guest_info_callbacks static_call to the tip/perf/core;
+- Keep use perf_guest_cbs in the kvm/queue context before merge window;
+- Fix MSR_IA32_MISC_ENABLE_EMON bit (Liu XiangDong);
+- Rebase "Reprogram PEBS event to emulate guest PEBS counter" patch;
+
+V9->V10:
+- improve readability in core.c(Peter Z)
+- reuse guest_pebs_idxs(Liu XiangDong)
+
+V8 -> V9 Changelog:
+-fix a brackets error in xen_guest_state()
+
+V7 -> V8 Changelog:
+- fix coding style, add {} for single statement of multiple lines(Peter Z)
+- fix coding style in xen_guest_state() (Boris Ostrovsky)
+- s/pmu/kvm_pmu/ in intel_guest_get_msrs() (Peter Z)
+- put lower cost branch in the first place for x86_pmu_handle_guest_pebs() (Peter Z)
+
+V6 -> V7 Changelog:
+- Fix conditions order and call x86_pmu_handle_guest_pebs() unconditionally; (PeterZ)
+- Add a new patch to make all that perf_guest_cbs stuff suck less; (PeterZ)
+- Document IA32_MISC_ENABLE[7] that that behavior matches bare metal; (Sean & Venkatesh)
+- Update commit message for fixed counter mask refactoring;(PeterZ)
+- Clarifying comments about {.host and .guest} for intel_guest_get_msrs(); (PeterZ)
+- Add pebs_capable to store valid PEBS_COUNTER_MASK value; (PeterZ)
+- Add more comments for perf's precise_ip field; (Andi & PeterZ)
+- Refactor perf_overflow_handler_t and make it more legible; (PeterZ)
+- Use "(unsigned long)cpuc->ds" instead of __this_cpu_read(cpu_hw_events.ds); (PeterZ)
+- Keep using "(struct kvm_pmu *)data" to follow K&R; (Andi)
+
+Like Xu (16):
+  perf/x86/intel: Add EPT-Friendly PEBS for Ice Lake Server
+  perf/x86/intel: Handle guest PEBS overflow PMI for KVM guest
+  perf/x86/core: Pass "struct kvm_pmu *" to determine the guest values
+  KVM: x86/pmu: Set MSR_IA32_MISC_ENABLE_EMON bit when vPMU is enabled
+  KVM: x86/pmu: Introduce the ctrl_mask value for fixed counter
+  KVM: x86/pmu: Add IA32_PEBS_ENABLE MSR emulation for extended PEBS
+  KVM: x86/pmu: Reprogram PEBS event to emulate guest PEBS counter
+  KVM: x86/pmu: Adjust precise_ip to emulate Ice Lake guest PDIR counter
+  KVM: x86/pmu: Add IA32_DS_AREA MSR emulation to support guest DS
+  KVM: x86/pmu: Add PEBS_DATA_CFG MSR emulation to support adaptive PEBS
+  KVM: x86: Set PEBS_UNAVAIL in IA32_MISC_ENABLE when PEBS is enabled
+  KVM: x86/pmu: Move pmc_speculative_in_use() to arch/x86/kvm/pmu.h
+  KVM: x86/pmu: Disable guest PEBS temporarily in two rare situations
+  KVM: x86/pmu: Add kvm_pmu_cap to optimize perf_get_x86_pmu_capability
+  KVM: x86/cpuid: Refactor host/guest CPU model consistency check
+  KVM: x86/pmu: Expose CPUIDs feature bits PDCM, DS, DTES64
+
+Peter Zijlstra (Intel) (1):
+  x86/perf/core: Add pebs_capable to store valid PEBS_COUNTER_MASK value
+
+ arch/x86/events/core.c            |   5 +-
+ arch/x86/events/intel/core.c      | 157 +++++++++++++++++++++++++-----
+ arch/x86/events/perf_event.h      |   6 +-
+ arch/x86/include/asm/kvm_host.h   |  16 +++
+ arch/x86/include/asm/msr-index.h  |   6 ++
+ arch/x86/include/asm/perf_event.h |   5 +-
+ arch/x86/kvm/cpuid.c              |  27 ++---
+ arch/x86/kvm/cpuid.h              |   5 +
+ arch/x86/kvm/pmu.c                |  52 +++++++---
+ arch/x86/kvm/pmu.h                |  38 ++++++++
+ arch/x86/kvm/vmx/capabilities.h   |  28 +++---
+ arch/x86/kvm/vmx/pmu_intel.c      | 118 ++++++++++++++++++----
+ arch/x86/kvm/vmx/vmx.c            |  24 ++++-
+ arch/x86/kvm/vmx/vmx.h            |   2 +-
+ arch/x86/kvm/x86.c                |  31 ++++--
+ 15 files changed, 412 insertions(+), 108 deletions(-)
+
+-- 
+2.35.1
 
