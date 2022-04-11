@@ -2,106 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:38:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:40:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244947AbiDKQkm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 12:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
+        id S1348369AbiDKQmV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 12:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239661AbiDKQkh (ORCPT
+        with ESMTP id S241132AbiDKQmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 12:40:37 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D6236E03
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:38:21 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 49DF1210ED;
-        Mon, 11 Apr 2022 16:38:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649695100; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y9/arbXIOBmMDyyrN2Av4t9DefV8dvs2koOjBKbR16o=;
-        b=aYxxcUNMYUZgIStXQpMXpRQuihq2c7AV46HILo5L/me3KwIxobXG0UXTdrgm8JSitDiE2T
-        XiIG135Z2kQFDiqz5DMASSf9zcqSPWCuir/RE+P/niLQ2yGUUjCdnNpxjbw6ekcg2eZcNd
-        2uzHZ2Iai0A6vPyfpCMUbRvQTvwR6pI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649695100;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y9/arbXIOBmMDyyrN2Av4t9DefV8dvs2koOjBKbR16o=;
-        b=gvCHtWB3YEZKCWAi6tPJA5issC5sJtS5VTmxBPxgz+Ar+KtXHHVTgmyPFbPnVD0YcZm+Et
-        vC2vL4vTF+7cemCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D3C6F13A93;
-        Mon, 11 Apr 2022 16:38:19 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 6tb4MntZVGJ6fQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 11 Apr 2022 16:38:19 +0000
-Message-ID: <5bbf024d-225f-0aac-9abb-788e076f271a@suse.cz>
-Date:   Mon, 11 Apr 2022 18:38:19 +0200
+        Mon, 11 Apr 2022 12:42:17 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B5C2654C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:40:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649695202; x=1681231202;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=DcvGMYJPGm5dMWY6hpweF46q58A7DJuEoDeBpYdl5y8=;
+  b=Ovkx36wJ6wLiD3AmgOu0kgpRcM8Q+1rxFEQOlFQwTnc+cbbus9sahmXl
+   YytOT3AsDsIFYt01fWAmf9dp1z2scB8LuyFAuu+cra4Uvsr3+CIvsPErg
+   t3a6oQtGFQJ0KFEeQH1zLS4stxo0cgwJ8IrTlzhr0jQbFbIPl7NppCwxC
+   WHf1Wh5wypp8kLxKCOgx0E2gKV/17fiL0qeZ0nuZst7UNJnujZiUVTLDs
+   1OVDffFEl4H8fwODg/BtKoiGbq/ohQ5HMYcadf04hBfoxerLlQHSiWBF9
+   eM9AcIiU0R0ug/N8edXsfg9iMzOh7G5i6vJxqNtULgdAHeFg8nzpCvX0X
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="261008060"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="261008060"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 09:40:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="660115704"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 11 Apr 2022 09:40:00 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ndx56-0001z5-07;
+        Mon, 11 Apr 2022 16:40:00 +0000
+Date:   Tue, 12 Apr 2022 00:39:48 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ohad Sharabi <osharabi@habana.ai>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Oded Gabbay <ogabbay@kernel.org>
+Subject: [ogabbay:habanalabs-next 33/34]
+ drivers/misc/habanalabs/gaudi/gaudi.c:5041:5: warning: no previous prototype
+ for 'gaudi_get_dma_desc_list_size'
+Message-ID: <202204120049.nXnmmmRn-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 03/16] mm/memory: slightly simplify copy_present_pte()
-Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Jann Horn <jannh@google.com>, Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
-References: <20220329160440.193848-1-david@redhat.com>
- <20220329160440.193848-4-david@redhat.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220329160440.193848-4-david@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/29/22 18:04, David Hildenbrand wrote:
-> Let's move the pinning check into the caller, to simplify return code
-> logic and prepare for further changes: relocating the
-> page_needs_cow_for_dma() into rmap handling code.
-> 
-> While at it, remove the unused pte parameter and simplify the comments a
-> bit.
-> 
-> No functional change intended.
-> 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git habanalabs-next
+head:   e3e6111dba082a2d77e80ae99a2de75adff9b875
+commit: 7d3600a8f9ffc668f66678211d41eadb224a4dd8 [33/34] habanalabs: use for_each_sgtable_dma_sg for dma sgt
+config: sparc-buildonly-randconfig-r006-20220411 (https://download.01.org/0day-ci/archive/20220412/202204120049.nXnmmmRn-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=7d3600a8f9ffc668f66678211d41eadb224a4dd8
+        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
+        git fetch --no-tags ogabbay habanalabs-next
+        git checkout 7d3600a8f9ffc668f66678211d41eadb224a4dd8
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash drivers/misc/
 
-Yeah, much better.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+All warnings (new ones prefixed by >>):
+
+>> drivers/misc/habanalabs/gaudi/gaudi.c:5041:5: warning: no previous prototype for 'gaudi_get_dma_desc_list_size' [-Wmissing-prototypes]
+    5041 | u32 gaudi_get_dma_desc_list_size(struct hl_device *hdev,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/gaudi_get_dma_desc_list_size +5041 drivers/misc/habanalabs/gaudi/gaudi.c
+
+  5040	
+> 5041	u32 gaudi_get_dma_desc_list_size(struct hl_device *hdev,
+  5042						struct sg_table *sgt)
+  5043	{
+  5044		struct scatterlist *sg, *sg_next_iter;
+  5045		u32 count, dma_desc_cnt;
+  5046		u64 len, len_next;
+  5047		dma_addr_t addr, addr_next;
+  5048	
+  5049		dma_desc_cnt = 0;
+  5050	
+  5051		for_each_sgtable_dma_sg(sgt, sg, count) {
+  5052			len = sg_dma_len(sg);
+  5053			addr = sg_dma_address(sg);
+  5054	
+  5055			if (len == 0)
+  5056				break;
+  5057	
+  5058			while ((count + 1) < sgt->nents) {
+  5059				sg_next_iter = sg_next(sg);
+  5060				len_next = sg_dma_len(sg_next_iter);
+  5061				addr_next = sg_dma_address(sg_next_iter);
+  5062	
+  5063				if (len_next == 0)
+  5064					break;
+  5065	
+  5066				if ((addr + len == addr_next) &&
+  5067					(len + len_next <= DMA_MAX_TRANSFER_SIZE)) {
+  5068					len += len_next;
+  5069					count++;
+  5070					sg = sg_next_iter;
+  5071				} else {
+  5072					break;
+  5073				}
+  5074			}
+  5075	
+  5076			dma_desc_cnt++;
+  5077		}
+  5078	
+  5079		return dma_desc_cnt * sizeof(struct packet_lin_dma);
+  5080	}
+  5081	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
