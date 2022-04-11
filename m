@@ -2,100 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F79C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3410C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344654AbiDKJnz (ORCPT
+        id S1344660AbiDKJoA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45618 "EHLO
+        Mon, 11 Apr 2022 05:44:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344689AbiDKJmr (ORCPT
+        with ESMTP id S1344760AbiDKJnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:42:47 -0400
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8D62F012;
-        Mon, 11 Apr 2022 02:40:33 -0700 (PDT)
-Message-ID: <46c1c59e-1368-620d-e57a-f35c2c82084d@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1649670031;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zS90bcIV3w8B4dGQgPINU7Ih71Ht5FIfbS2dm03ISmU=;
-        b=Yc836Dzso0qwc1FwWYDpdsQm1Jow2ayt3zJVXH80ia38H0Bp5G2gt67LQ3Yb4xQQul3l5b
-        FtCpsSpyHdGQTBeqjGm4eoENjBwuW5aK58UH8TmsBWjTfIUEG1vQPWx+ZFO9+hYUxDv09S
-        lIcGnEmTPBRSkah6VKU7E82P3ke94/0=
-Date:   Mon, 11 Apr 2022 12:40:29 +0300
+        Mon, 11 Apr 2022 05:43:05 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0FAFA33E83;
+        Mon, 11 Apr 2022 02:40:52 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CCF2B1691;
+        Mon, 11 Apr 2022 02:40:51 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.9.30])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8D7E83F73B;
+        Mon, 11 Apr 2022 02:40:50 -0700 (PDT)
+Date:   Mon, 11 Apr 2022 10:40:46 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     guoren@kernel.org
+Cc:     arnd@arndb.de, peterz@infradead.org, linux-csky@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guo Ren <guoren@linux.alibaba.com>
+Subject: Re: [PATCH] csky: atomic: Add custom atomic.h implementation
+Message-ID: <YlP3ngtgfaQeq5Q9@FVFF77S0Q05N>
+References: <20220406125436.685264-1-guoren@kernel.org>
 MIME-Version: 1.0
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Vasily Averin <vasily.averin@linux.dev>
-Subject: problem with accounting of allocations called from __net_init hooks
-Content-Language: en-US
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Vlastimil Babka <vbabka@suse.cz>, NeilBrown <neilb@suse.de>,
-        Michal Hocko <mhocko@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Linux MM <linux-mm@kvack.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
-        kernel@openvz.org, Luis Chamberlain <mcgrof@kernel.org>
-References: <a5e09e93-106d-0527-5b1e-48dbf3b48b4e@virtuozzo.com>
- <YhzeCkXEvga7+o/A@bombadil.infradead.org>
- <20220301180917.tkibx7zpcz2faoxy@google.com>
-In-Reply-To: <20220301180917.tkibx7zpcz2faoxy@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406125436.685264-1-guoren@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/1/22 21:09, Shakeel Butt wrote:
-> On Mon, Feb 28, 2022 at 06:36:58AM -0800, Luis Chamberlain wrote:
->> On Mon, Feb 28, 2022 at 10:17:16AM +0300, Vasily Averin wrote:
->> > Following one-liner running inside memcg-limited container consumes
->> > huge number of host memory and can trigger global OOM.
->> >
->> > for i in `seq 1 xxx` ; do ip l a v$i type veth peer name vp$i ; done
->> >
->> > Patch accounts most part of these allocations and can protect host.
->> > ---[cut]---
->> > It is not polished, and perhaps should be splitted.
->> > obviously it affects other kind of netdevices too.
->> > Unfortunately I'm not sure that I will have enough time to handle it properly
->> > and decided to publish current patch version as is.
->> > OpenVz workaround it by using per-container limit for number of
->> > available netdevices, but upstream does not have any kind of
->> > per-container configuration.
->> > ------
+On Wed, Apr 06, 2022 at 08:54:36PM +0800, guoren@kernel.org wrote:
+> From: Guo Ren <guoren@linux.alibaba.com>
+> 
+> The generic atomic.h used cmpxchg to implement the atomic
+> operations, it will cause daul loop to reduce the forward
+> guarantee. The patch implement csky custom atomic operations with
+> ldex/stex instructions for the best performance.
+> 
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Signed-off-by: Guo Ren <guoren@kernel.org>
+> ---
+>  arch/csky/include/asm/atomic.h | 251 +++++++++++++++++++++++++++++++++
+>  1 file changed, 251 insertions(+)
+>  create mode 100644 arch/csky/include/asm/atomic.h
 
-I've noticed that __register_pernet_operations() executes init hook of registered 
-pernet_operation structure in all found net namespaces.
+> +static __always_inline							\
+> +int arch_atomic_fetch_##op(int i, atomic_t *v)				\
+> +{									\
+> +	register int ret, tmp;						\
+> +	__asm__ __volatile__ (						\
+> +	"1:	ldex.w		%0, (%3) \n"				\
+> +	ACQUIRE_FENCE							\
+> +	"	mov		%1, %0   \n"				\
+> +	"	" #op "		%0, %2   \n"				\
+> +	RELEASE_FENCE							\
+> +	"	stex.w		%0, (%3) \n"				\
+> +	"	bez		%0, 1b   \n"				\
+> +		: "=&r" (tmp), "=&r" (ret)				\
+> +		: "r" (I), "r"(&v->counter) 				\
+> +		: "memory");						\
+> +	return ret;							\
+> +}
 
-Usually these hooks are called by process related to specified net namespace,
-and all marked allocation are accounted to related container:
-i.e. objects related to netns in container A are accounted to memcg of container A,
-objects allocated inside container B are accounted to corresponding memcg B,
-and so on.
+I believe this suffers the problem described in:
 
-However __register_pernet_operations() calls the same hooks in one context,
-and as result all marked allocations are accounted to one memcg.
-It is quite rare scenario, however current processing looks incorrect for me.
+  8e86f0b409a44193 ("arm64: atomics: fix use of acquire + release for full barrier semantics")
 
-I expect we can take memcg from 'struct net', because of this structure is accounted per se.
-then we can use set_active_memcg() before init hook execution.
-However I'm not sure it is fully correct.
+... and does not provide FULL ordering semantics.
 
-Could you please advise some better solution?
-
-Thank you,
-	Vasily Averin
+Thanks,
+Mark.
