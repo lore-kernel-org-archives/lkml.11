@@ -2,67 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F91C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2924EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:47:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346796AbiDKNtG (ORCPT
+        id S1345209AbiDKNto (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 09:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58024 "EHLO
+        Mon, 11 Apr 2022 09:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346709AbiDKNs3 (ORCPT
+        with ESMTP id S234271AbiDKNtk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 09:48:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714A117A93;
-        Mon, 11 Apr 2022 06:46:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96BAE61139;
-        Mon, 11 Apr 2022 13:46:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DA48C385A3;
-        Mon, 11 Apr 2022 13:46:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649684766;
-        bh=aKWtMXMYxdsO6I90VlJwQ62Km1pU/xrQPigF44yjuqQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Za1uvVJ5WJ79A+NuP3YEjveGAd0yezV5F6zXkRPkcSjWTrdHc+iFtJgf6x1P4IRSJ
-         /sxdsPkcNFpQey0mOUSyz2nnZWmzqrmXNITNL1UH735ufifR2neJZuSVPd6QkEXviA
-         IXbg9bA217iK5cdKr2+S2PJ6nmu4JTEG+ed6BaG3soLD/gVN6ph2zL1umZzvk/+OVJ
-         g1EVG5yMa3aP8ytfvhbBt5068DnnTFQOs5RKn/k6pnCWKMmSLzdiZyMcttevC8Jwo/
-         yMjd8RPWqcUHuThAPwFlSLqKGPiNIC65ZxOjR/Ln9uvdfl87AkxkJOqfpjQulX6ztu
-         Vl/NCeyp59zGA==
-Date:   Mon, 11 Apr 2022 19:16:02 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     dmaengine@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH] dmaengine: Clarify cyclic transfer residue documentation
-Message-ID: <YlQxGh9Jhzm4ekb7@matsya>
-References: <20220331134114.703782-1-paul.kocialkowski@bootlin.com>
+        Mon, 11 Apr 2022 09:49:40 -0400
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A86C12090;
+        Mon, 11 Apr 2022 06:47:26 -0700 (PDT)
+Received: by mail-qk1-f180.google.com with SMTP id j6so10617243qkp.9;
+        Mon, 11 Apr 2022 06:47:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tCnkeyoKwqeX0JN+o8L5AX58NLvdx+Oy98J9n9irz2I=;
+        b=QsVLZhstsbtqMWAt1NlGRARQ+RZOSXCHb/O1auvUcrzaapQ3Saig1NckFJsTSxuiH1
+         ELayZrTpkO9f7Gm85athQjc0jKGdS8eRAtWq9Yxz7++0jlorRG6q4tmWwPrvknqZ8w7P
+         uqf2Woifk/Xc8qkmPLqYT7/91YKx8Pb/gIItGXqtK/+aCpkS7bK3M66epXLmT6FPGWgc
+         oOM7++jylqUC2HF32ajb/30YPmEg2S06gXHGI7l9m4rhyJT4ecVkox2CAcOzD4vmV8ir
+         ldKtBd9WVXDcyWihgydhychncmS67Vn1UXyHSSE2BRyBaKJsOrvW0lib4E66E+oDWPvO
+         TDaA==
+X-Gm-Message-State: AOAM532qtX7tcyKDcZcp7GNLKIBaINU6T5IdZw+wawZs5m941pHp29BC
+        NgWpyE/yw0BCHYr2ZgfatdNZp/3t4F1x8w==
+X-Google-Smtp-Source: ABdhPJwSgjjIb1LGvAWUwyssIO5dX9zuTvPIMgcCKNCDgMB4ayCF+GdyosCA7XeSglqIP0Ln4BqYqQ==
+X-Received: by 2002:a37:aec7:0:b0:69b:f27b:8784 with SMTP id x190-20020a37aec7000000b0069bf27b8784mr8783717qke.464.1649684845151;
+        Mon, 11 Apr 2022 06:47:25 -0700 (PDT)
+Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
+        by smtp.gmail.com with ESMTPSA id y20-20020a05622a121400b002eefd7bf5basm1519967qtx.63.2022.04.11.06.47.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 06:47:24 -0700 (PDT)
+Received: by mail-yb1-f178.google.com with SMTP id g34so7639127ybj.1;
+        Mon, 11 Apr 2022 06:47:24 -0700 (PDT)
+X-Received: by 2002:a5b:984:0:b0:63f:8c38:676c with SMTP id
+ c4-20020a5b0984000000b0063f8c38676cmr11998194ybq.393.1649684844325; Mon, 11
+ Apr 2022 06:47:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220331134114.703782-1-paul.kocialkowski@bootlin.com>
+References: <20220407200205.28838-1-javierm@redhat.com> <20220407200205.28838-2-javierm@redhat.com>
+In-Reply-To: <20220407200205.28838-2-javierm@redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 11 Apr 2022 15:47:13 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUGQ6qabs_xD6kQeDruQLG-OX17UEVrgeGu3Eo6C2dEgw@mail.gmail.com>
+Message-ID: <CAMuHMdUGQ6qabs_xD6kQeDruQLG-OX17UEVrgeGu3Eo6C2dEgw@mail.gmail.com>
+Subject: Re: [PATCH 1/5] dt-bindings: display: ssd1307fb: Deprecate fbdev
+ compatible strings
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Chen-Yu Tsai <wens@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31-03-22, 15:41, Paul Kocialkowski wrote:
-> The current documentation for the residue reported in a cyclic transfer
-> case mentions that the reported residue should be relative to the current
-> period only. However the definition of DMA_RESIDUE_GRANULARITY_SEGMENT
-> specifies that the residue should be updated after each period for
-> a cyclic transfer, which is in direct contradiction.
-> 
-> Moreover the pcm_dmaengine common code uses the residue relative to
-> the whole cyclic buffer size, not one period.
-> 
-> Correct the residue-related documentation to reflect this.
+Hi Javier,
 
-Applied, thanks
+On Thu, Apr 7, 2022 at 10:03 PM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+> The current compatible strings for SSD130x I2C controllers contain an -fb
+> suffix, this seems to indicate that are for a fbdev driver. But the DT is
+> supposed to describe the hardware and not Linux implementation details.
+>
+> Let's deprecate those compatible strings and add a new enum that contains
+> compatible strings that don't have a -fb suffix. These will be matched by
+> the ssd130x-i2c DRM driver.
+>
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 
--- 
-~Vinod
+> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> @@ -12,12 +12,24 @@ maintainers:
+>
+>  properties:
+>    compatible:
+> -    enum:
+> -      - sinowealth,sh1106-i2c
+> -      - solomon,ssd1305fb-i2c
+> -      - solomon,ssd1306fb-i2c
+> -      - solomon,ssd1307fb-i2c
+> -      - solomon,ssd1309fb-i2c
+> +    oneOf:
+> +      # Deprecated compatible strings
+> +      - items:
+> +          - enum:
+> +              - solomon,ssd1305fb-i2c
+> +              - solomon,ssd1306fb-i2c
+> +              - solomon,ssd1307fb-i2c
+> +              - solomon,ssd1309fb-i2c
+
+Please drop the "-i2c" suffixes, too.
+We already have plenty of IIO sensors and audio codecs using the
+same compatible value for spi and i2c, cfr.
+'git grep compatible -- "*-[si][p2][ic].c"'
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
