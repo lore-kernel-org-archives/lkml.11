@@ -2,135 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E165CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 21:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D98C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 21:21:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350052AbiDKVXg (ORCPT
+        id S1350161AbiDKVYJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 17:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60188 "EHLO
+        Mon, 11 Apr 2022 17:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350236AbiDKVXA (ORCPT
+        with ESMTP id S245205AbiDKVYD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 17:23:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D10AB2E9CB
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:20:44 -0700 (PDT)
+        Mon, 11 Apr 2022 17:24:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9812FE5C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:21:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B093616DC
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 21:20:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AEE5C385A3;
-        Mon, 11 Apr 2022 21:20:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08C1BB815C8
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 21:21:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EB4EC385A3;
+        Mon, 11 Apr 2022 21:21:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649712043;
-        bh=VcMY/lkJl6v3hVQXFaFT0pm0LPne9KUAFAaE6uCrta0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gU4CC3bzYJkTVyk5PqY3DOzknRj13nibImxJjft8FbJbyS+aLxlVtUwOON/Po4SJ8
-         1Nnj4WqU27WloPkpnT4RsEw7Pg+Rywitynfvqajwo5azIlfgkTvpOaJ3D2G/K135xf
-         08Hc9/hizjG+MWuzpeYgtVElI4IIOkrGhttw5/dBjT3iDUxdfFvYxEKZ9gTsC37iuN
-         9bF0E3aSAbXTZkwhJt27n2ic8fUT7psT32uuWFV/hkAPLSxtnxAicvNSXH/8pGSJri
-         QB0MaD/DOcNZiy4eMJos4MO8DNmO6+zVJvWs+mDADGKXFsjhOo3yKuj2DfWALgFPqs
-         C1ToNl9rNCKHA==
-Date:   Mon, 11 Apr 2022 14:20:41 -0700
+        s=k20201202; t=1649712105;
+        bh=KMidD+w99wAIiwGhewAltcaEDYwfTgwuH9rySlM7owU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lk9VWBICFXjGKTnI22r2ysF69//hMym+TGv5xnjmfAAu0maDn0rXzdvqNYHyGD9Ev
+         RiQerYKR1ioyJJQTrAY1ZTljIQNFs1HVWIt3TSrCoF+w+MKXoep1FwVmVhecdcINvc
+         10EzMt5SIL63+xwx2HwNTQnREAZSAn3phmSwvqo6cvy67kjQk9S3YKNQzWeaFWau29
+         hrvuOxMiQ2hfb6IYm4wfIdvz9iDDCLKkVbQFQLTRsDIcgfKT8HjqL7Z8m2+8A/Jw1V
+         Z0Az20XQUp24kxfdlJ3QylhQTbzxq7LCUj4XRjqTSNmQ1p77v9OmpcBhYFDMwBsWCw
+         N5TO3c0Q9UPWg==
 From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     Chao Yu <chao@kernel.org>
-Cc:     Yufen Yu <yuyufen@huawei.com>, linux-kernel@vger.kernel.org,
+To:     linux-kernel@vger.kernel.org,
         linux-f2fs-devel@lists.sourceforge.net
-Subject: Re: [f2fs-dev] [PATCH 4/5] f2fs: get rid of stale fault injection
- code
-Message-ID: <YlSbqay8y6oaCxR6@google.com>
-References: <20220401071909.505086-1-yuyufen@huawei.com>
- <20220401071909.505086-5-yuyufen@huawei.com>
- <0c134e0e-b2d0-0bc0-42fc-cd220ff77e72@kernel.org>
- <25a24259-3ac3-81ab-1c28-f2a4886888b5@huawei.com>
- <778b1f04-a71b-a226-f7a7-4833fc9bf7c2@kernel.org>
+Cc:     Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 1/2] f2fs: fix wrong condition check when failing metapage read
+Date:   Mon, 11 Apr 2022 14:21:40 -0700
+Message-Id: <20220411212141.1775589-1-jaegeuk@kernel.org>
+X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <778b1f04-a71b-a226-f7a7-4833fc9bf7c2@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/11, Chao Yu wrote:
-> On 2022/4/6 11:01, Yufen Yu via Linux-f2fs-devel wrote:
-> > Hi,
-> > 
-> > On 2022/4/1 16:28, Chao Yu wrote:
-> > > On 2022/4/1 15:19, Yufen Yu via Linux-f2fs-devel wrote:
-> > > > Nowly, we can use new fault injection framework. Just delete the
-> > > > stale fault injection code.
-> > > > 
-> > > > Signed-off-by: Yufen Yu <yuyufen@huawei.com>
-> > > > ---
-> > > >   fs/f2fs/checkpoint.c |  2 +-
-> > > >   fs/f2fs/f2fs.h       | 51 ++----------------------------------------
-> > > >   fs/f2fs/super.c      | 53 --------------------------------------------
-> > > >   fs/f2fs/sysfs.c      | 23 -------------------
-> > > >   4 files changed, 3 insertions(+), 126 deletions(-)
-> > > > 
-> > 
-> > ...
-> > 
-> > > >               break;
-> > > > @@ -1963,14 +1920,6 @@ static int f2fs_show_options(struct seq_file *seq, struct dentry *root)
-> > > >       if (F2FS_IO_SIZE_BITS(sbi))
-> > > >           seq_printf(seq, ",io_bits=%u",
-> > > >                   F2FS_OPTION(sbi).write_io_size_bits);
-> > > > -#ifdef CONFIG_F2FS_FAULT_INJECTION
-> > > > -    if (test_opt(sbi, FAULT_INJECTION)) {
-> > > > -        seq_printf(seq, ",fault_injection=%u",
-> > > > -                F2FS_OPTION(sbi).fault_info.inject_rate);
-> > > > -        seq_printf(seq, ",fault_type=%u",
-> > > > -                F2FS_OPTION(sbi).fault_info.inject_type);
-> > > > -    }
-> > > > -#endif
-> > > 
-> > > This will cause regression due to it breaks application usage w/ -o
-> > > fault_* mountoption..., I don't think this is the right way.
-> > 
-> > 
-> > Thanks for catching this. I admit it's a problem. But, IMO fault_* mount
-> > option are mostly been used in test, not in actual product. So, I think
-> > it may just affect some test applications. With the common fault injection
-> > framework, it can be more easy and flexible to do fault injection test.
-> > Therefore, I want to remove the two mount options directly.
-> > 
-> > If you really worried about compatibility, how about just reserving the
-> > two inject_* options but without doing any thing for them. We actually
-> > configure fault injections by debugfs in this patch.
-> > 
-> > Or do you have more better suggestion?
-> 
-> Could you please consider to keep original logic of f2fs fault injection
-> if user use inject_* options, otherwise following common fault injection
-> framework?
-> 
-> Thoughts?
+This patch fixes wrong initialization.
 
-I think it'd be useful to test roll-forward recovery flow by using those mount
-options, since runtime fault injection cannot enable it during mount.
+Fixes: 50c63009f6ab ("f2fs: avoid an infinite loop in f2fs_sync_dirty_inodes")
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+---
+ fs/f2fs/checkpoint.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-BTW, what is the real benefit to use the fault injection framework?
+diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
+index aba1b8a1ce66..ed61ac99a3cf 100644
+--- a/fs/f2fs/checkpoint.c
++++ b/fs/f2fs/checkpoint.c
+@@ -98,9 +98,9 @@ static struct page *__get_meta_page(struct f2fs_sb_info *sbi, pgoff_t index,
+ 	}
+ 
+ 	if (unlikely(!PageUptodate(page))) {
+-		if (page->index == sbi->metapage_eio_ofs &&
+-			sbi->metapage_eio_cnt++ == MAX_RETRY_META_PAGE_EIO) {
+-			set_ckpt_flags(sbi, CP_ERROR_FLAG);
++		if (page->index == sbi->metapage_eio_ofs) {
++			if (sbi->metapage_eio_cnt++ == MAX_RETRY_META_PAGE_EIO)
++				set_ckpt_flags(sbi, CP_ERROR_FLAG);
+ 		} else {
+ 			sbi->metapage_eio_ofs = page->index;
+ 			sbi->metapage_eio_cnt = 0;
+-- 
+2.35.1.1178.g4f1659d476-goog
 
-> 
-> Thanks,
-> 
-> > 
-> > Thanks,
-> > Yufen
-> > 
-> > 
-> > 
-> > 
-> > 
-> > 
-> > 
-> > 
-> > _______________________________________________
-> > Linux-f2fs-devel mailing list
-> > Linux-f2fs-devel@lists.sourceforge.net
-> > https://lists.sourceforge.net/lists/listinfo/linux-f2fs-devel
