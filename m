@@ -2,208 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52741C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C26C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:13:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245345AbiDKLO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:14:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
+        id S243104AbiDKLQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 07:16:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344342AbiDKLOC (ORCPT
+        with ESMTP id S229625AbiDKLQB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:14:02 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2041.outbound.protection.outlook.com [40.107.102.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D4B2ADF
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:11:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P1kjP0O9zZR9s4Q5plZljZ+oSaaN0XfcJYnCMLoWO6SO5tkOZQ4pQo23DkOnkAp7dq9kZpaCEwjhzwy6zan8g0uKH5QXG1wRt20jC+ewfi7Og3kfOm0RMCWRQ5ZBWTYqELMjKDpgGsJsM/w4gqBrRdAg2EoRlLJtlC9SDLKQzLb738cJP0QAtaQYZxLBUs9lDRkHvxWHiq9KBaMnR98tPGL3qHGrfV51IY+7UKIgXgoSK+sliC7wIEKJFOdO8kqr8kG8bpbvHbtTN3ML4SAmjSSNdCkOVr6uG1fcn6AqBA742CWo0yd9eurzAK+yqkkV6VsBl43a101yYw7Y+CytNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7oZZjbFQB8W6ZvzAqpszRz4W73EpjWLsCs7ERX8p2jk=;
- b=S8yj04t0K900JgaWf3Awfkfo/+uyifxcOiXkN6ULznkt5XSYWLRRoOQ2FSwYqRNf+BGW4PTujTYFz/xNttyv7MYywVUuRJtNCXrGmeqQL2d+RLFyfiPZlQmDbb0KIaNRP4XiaLqEeyN0MjxoQxqH40jG9MGSts8HE5rd0jaVCpKa9pW1nDxq2dEtylGxZoRV5pNhWPRYxmFxXrvSjATHXC0j4cyUKqLd9XWMBd0pFgbcouL/Uwsrudhk+mk5RTHUs60viZfYJ3yx50IplauTPwectrkFcxft/uTiae8poHQDsGC9t5htoQmlP0CA2lpjSve6agjJcCYhHtYe1bHp6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7oZZjbFQB8W6ZvzAqpszRz4W73EpjWLsCs7ERX8p2jk=;
- b=dmjafpFvObapVOpRmsG7PRh/a0u9HKpLx84hWT17snTgf77/6TyViy2uLd17/qleM0bVby5wam313lzu1ZYWU8zKHoxZw1NvfYijchVJOSDcK3PHbQ5kIssCEUGjZswVZti3GNe/1Xd9IUXZCFK11aFCRy4i1am27wp4DzkbwCI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from SA0PR12MB4526.namprd12.prod.outlook.com (2603:10b6:806:98::23)
- by DM6PR12MB4500.namprd12.prod.outlook.com (2603:10b6:5:28f::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
- 2022 11:11:43 +0000
-Received: from SA0PR12MB4526.namprd12.prod.outlook.com
- ([fe80::7ceb:a37c:cd60:9d5f]) by SA0PR12MB4526.namprd12.prod.outlook.com
- ([fe80::7ceb:a37c:cd60:9d5f%7]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
- 11:11:42 +0000
-Message-ID: <7775829f-b612-19dd-277b-aed2e9cca991@amd.com>
-Date:   Mon, 11 Apr 2022 06:11:39 -0500
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCHv2] drm/amdgpu: disable ASPM on Intel AlderLake based
- systems
-Content-Language: en-US
-To:     "Lazar, Lijo" <lijo.lazar@amd.com>, alexander.deucher@amd.com,
-        christian.koenig@amd.com, xinhui.pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     mario.limonciello@amd.com, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <20220408190502.4103670-1-richard.gong@amd.com>
- <2c1e5bf0-6952-12c3-6e6f-62cb44fe1490@amd.com>
-From:   "Gong, Richard" <richard.gong@amd.com>
-In-Reply-To: <2c1e5bf0-6952-12c3-6e6f-62cb44fe1490@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: CH2PR18CA0055.namprd18.prod.outlook.com
- (2603:10b6:610:55::35) To SA0PR12MB4526.namprd12.prod.outlook.com
- (2603:10b6:806:98::23)
+        Mon, 11 Apr 2022 07:16:01 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAE513D;
+        Mon, 11 Apr 2022 04:13:48 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id D0AEF1F4023C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649675626;
+        bh=qXNSUAatAu+49KD5X1wMrep6ovWzzUkN4hPQhFlLpHo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=IVYZr2Lw1IHAxdafW4UAznDuUStmuDMak/mGVhX2OPQBC97OvReLzXM7w6GjTI4od
+         ujm+N0VxeBYFIU37jqFRai/sKBgAnp3ecq7ztk65C5WTeXu1vhMhXVibxY1ge2fTQC
+         mLFHwgqKOotEr+6M4xTsLIlBfRfVQhyjXOm7VGHeKrWnfY+tWwJWirBytngkrbBn0g
+         pBeOSKsVKdbuQSxyA1p8ayMTouZpGU1nODpAow528sWt/4izxgd+6O3DkIvzS9Hb/0
+         hyeyiMdRtIXFek7ZljMoOK5eQ3wl4ymhy/sxJfgGCF7HgtH/u3/te7qSBOKFU1ILKD
+         Sp1HIRmWKllCw==
+Message-ID: <c3e6a50f-c098-5165-a596-ee386ac533e8@collabora.com>
+Date:   Mon, 11 Apr 2022 14:13:43 +0300
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2544e1cb-5a5e-4ec7-f269-08da1bac0f06
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4500:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4500ADBD61653B5FF9CBE2ED95EA9@DM6PR12MB4500.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dBXCWbtpeIbSbKpAdQE3vkS70UAY5oA8oWjrfN1Nc0AkNDXSEtjCdw+v+G0B5CNWFYhaJNyCy29/noMHc1KXR7ZIwVqAej909rDtkwuUJZL4eN0Mmn3IhvpStNMexySNQ4jCTb1CDisut7wrF9a/58U6YSERoKyMwyR4sSJpF3dDCnFT2or66fDuC89EjVY03yDoMX0BS8ku8ePtWB4f8vQZ5gJNZQ/629GYdRIMmq2CeAqvXfS6YQbf7j0TDk6+Qp91lmvgSjdCyr2fAbgTnPGgi0BdiTigJ4p1tGQDJAxt1rgUyk9UMuydJ4/qBiKrPk3q9nY7uOBex1FBkBMSCCroCPYaL/4uReH/txPl3ztUTdWIFmexZ4EHi5J0n4SIsmG8AiU8e1NMFNr5wMR7zAkXicoPYaYBrNzJKh47Oo4FIxORVnp849cfWZXsiYfdSwzr9WIlMkHsul3q9LpbP/CkPZPijE0v4UItB0u+65mEI2QzCZbqvE/dP/MEhrVrYM/6gKbYBVUQ4IThTxq5qKjDOnGn7DZENUaLOnd6DKz3zKoebS4xfz2Ihc4NfZhmxanTxLof0bly9BMQx9COlZfr2nTreWzSGdgRWxKiJso4WfRSCs/Zu+DCuPYvfe+oBOcqShZYLiJDJU+vEHF72CyIblSQ351XB+XQ7zOWr89uINMz5vp5QEWNpHoxaWdzUNOGB47ZJZHzHIstH16aVc49FxAx2CGR0+PGAegtYyM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA0PR12MB4526.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(31686004)(2906002)(26005)(186003)(2616005)(66946007)(66556008)(6486002)(38100700002)(66476007)(6512007)(8936002)(5660300002)(508600001)(4326008)(8676002)(6506007)(83380400001)(86362001)(316002)(6666004)(31696002)(53546011)(966005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Sm9TbGRoSk02Rk4vaVdad3pxWXBwTlZaZ1hsTUZEREtKS1c2RUZPL09GMFdr?=
- =?utf-8?B?aFJhV2ZvdHZwUm90SmNrbzZXY2tsZHhYM3ZxTW0reHdGUkJLdk02YXVTYnFv?=
- =?utf-8?B?NldUdGtHVm9VSlQ0MlptYUF3RENyd0EzV0cwT2V1akNRNlMzSE1BUStUL28w?=
- =?utf-8?B?VWJvdmR6RW9aVThhcGIwakk1blpZaFI5S0g4THF4NmNWUFQxeFcyNit3WW1J?=
- =?utf-8?B?RW9sN2xXNkZ3d09HajR0bGdQbmdNMEFWTlNhTzZJaUFMUGFUN1FadERnNnNH?=
- =?utf-8?B?bUdsemVvM0FSZTRCUHR6bVMvUDZIU011MnQwanMzQWcxUS90MTBCeGM0OGRw?=
- =?utf-8?B?V3dVdmloWTZnVnZUc2FYL1lnaEYrSC9UMjA4RjJjei9ITkFIUE13eTFMTkFh?=
- =?utf-8?B?TU1lZW92RUpET0NOMExNeXFKbHFIKy9IajRSbUxKZlNyUjhoU0tXb0JmRnpW?=
- =?utf-8?B?OGRabFZGcjltVTlBb1h6UGM3a05tTnBZYTRUVldpQmZjLzlCUGlNMHh5L3NN?=
- =?utf-8?B?SjV2cXVnWjlCV2NXbHdkWUsrTEVZUFN1U3hLUXlNWHBmRUNhemZXbzdUZWxN?=
- =?utf-8?B?OWNWM2k3R0cwc3ZKa09KSWpMOEZ0UGZxMjVscXQvK2w3TnhLK0RqeXM0Mndo?=
- =?utf-8?B?ekVtRkRyS0tTaldrb0ZjNUdJODVZRWtSN0pzQkk1T1VJVWhldjlsdEgyWmFP?=
- =?utf-8?B?Wm5ibGZYaUFybWI5OWlQQ1IwTk1zcklsUjA2dXJiUHd0ajNpUjNCbFBjdUl0?=
- =?utf-8?B?ZVFWVFI5TWpJYWVtM3hBNXdQa3JVRUJKNUhQVDBYeTJaYUVRVGlDU1NRd2J5?=
- =?utf-8?B?VTdqTHNibXdlTUhUanhRVDB4OHpMdEpKckF4WjZsVCtZa2cvUVVZeUJEZ3hh?=
- =?utf-8?B?L1N0RlVTRGtQaFgvQ01zclZqV0l6UjdNNndIOWJXTjlKNFpLQVI3UkNOeno4?=
- =?utf-8?B?Q0Q2RVlHdWJsZTdDSmVpZVdwTnhhWGFVYWxMTnVGTDlYdFlwUmVOaWlhaGh0?=
- =?utf-8?B?QkNqaHFMZ215Z0dHMWF1NldHWE5SZHk4UUtWNGl5VzRlaktyRWxXaDErVnhK?=
- =?utf-8?B?TjVkVkp5ajBMcHJud0owMjNPSGI1U2gwbWpwb2NRQ1NoeXBZK1NGb25sTmt3?=
- =?utf-8?B?cjRKVlk5Zi9qOHNEZTRnN0ZjRkM1SEZaaWJNMGtnRVZNU0M2aVNHbGZiRHlR?=
- =?utf-8?B?L3Qvb3V0enFJVm9LcWFEQnZ2ZThYdE81QnFoQ0liSzl0a2ZBeTR2VkVCc1FG?=
- =?utf-8?B?c3NXMzdjYzl3czJMUlJBd0NUdFl4azYwY1VycE9ubko2U1hscXFrWTdyVG9x?=
- =?utf-8?B?TnFvNXVoY0p4TGxMdXZDaDA2dEtSODNTeDVWMktKUEs1d2RaeDdXdFY3RHJF?=
- =?utf-8?B?cVpHZEdMeVdILzNjdG1CZUVlY3YyTklkQ1VpK0ZycFpqV014Y0IvdHIwYm55?=
- =?utf-8?B?aHk3OVd1WHhENWFhdWZjalF6b2ZKSlo4b0J2RnZ6WFV4REJqN3J5T3hxMFBH?=
- =?utf-8?B?SmltZDZva1R0enJPOGRtODIzVEhQOFQ3Z0QrU2R4VnZzaVlCSTE0RDFtQUxr?=
- =?utf-8?B?ZmN0bDAxTWFHL2NEZVQ1cVVlWmJlWmQwQURER3JObm4xZXRLZ2J2REp2R2Zp?=
- =?utf-8?B?RE5QazRaZFMrelRiclJxeVVTVGpaRGhQZGZ5Q3RpZncyZ3QxMkd1QjlGVVJH?=
- =?utf-8?B?Ri83b00zM1ZVL2l0c29qbGNTdTRvOG43T200YWZjblJrN043R0ZiNkdUTDdn?=
- =?utf-8?B?SDlHWXJmb3BLRFlrVzRiOWJnUEU4bnpaZm9iY1dodXl6SDNSNWsrR096RzVs?=
- =?utf-8?B?WmhQZlJFbzRVd2Z6NlBUc29FWE4zRmpWcG00dnJlSGo3UEV6VGsyelpsY3Y3?=
- =?utf-8?B?TS9Qd1VhZ2syNWtSMVQ4b3VOam9xS0djK0xpQlF6OW5UUHVSS2dGYU9NYXpY?=
- =?utf-8?B?N2ZsWjVzVDhQbHlYTk9DKy9ibGtIUkQ1NlBTOTRrZjZpQ1JWZTFwRnFzNDJE?=
- =?utf-8?B?L211R1VJdGYzd0R6dkxQYXFVQ0FIUXhPL2FwdkdPNkE0R1FzT0ZhRHM2Y2xN?=
- =?utf-8?B?alJvU29tWDJRaWdpMEh5L09NQXdvdnExRFIrd3l0blJZSWtUd2I1eVlRU2Rp?=
- =?utf-8?B?OTNnbTFqeW9FeWgzVzZUcm9NNVlPaCtPMFl6aXdMWjNhVk1XWkNkazRUVG04?=
- =?utf-8?B?ZkFRUWpKRHZrMGE2VDF1cERuTUF2RFpwbStxSTUxOTQrL0hTcmFoSCtiUzlI?=
- =?utf-8?B?QTZZMGJBTVN1UUZnSjgrb3E5SCt6UURqZmg5WGdqM3U1QXRGVVRlVVZmbzhJ?=
- =?utf-8?B?S1F1ZmV4N3dnZjdYd2pnUmVoazQwNThrZ2pTekFkUWtJVzQxRkg3QT09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2544e1cb-5a5e-4ec7-f269-08da1bac0f06
-X-MS-Exchange-CrossTenant-AuthSource: SA0PR12MB4526.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 11:11:42.8190
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zevk86Bul4qy7vWDblNey4ZCDh0eDHCjIr7NMa4FShXR26uUbXbg7CAwo191TuQNX6n7JxzvBsN125otkU51ug==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [Patch v6 1/4] memory: tegra: Add memory controller channels
+ support
+Content-Language: en-US
+To:     Ashish Mhetre <amhetre@nvidia.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        krzysztof.kozlowski@linaro.org, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     vdumpa@nvidia.com, Snikam@nvidia.com
+References: <20220406052459.10438-1-amhetre@nvidia.com>
+ <20220406052459.10438-2-amhetre@nvidia.com>
+ <3bbbffff-6aa3-7068-6f0c-4372d53daf94@gmail.com>
+ <ba28886f-be5d-9ab2-41d0-942609934263@nvidia.com>
+ <0ce65e42-6567-9fd5-d959-3bc5aa0457eb@collabora.com>
+ <16d5c86b-cb04-5f57-7923-724850ce2633@nvidia.com>
+ <185f72b6-e6a1-3062-5f36-864973d12ec5@collabora.com>
+ <3414a89d-bb80-ec89-3605-e435c7656321@nvidia.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <3414a89d-bb80-ec89-3605-e435c7656321@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Lijo,
 
-On 4/10/2022 11:15 PM, Lazar, Lijo wrote:
->
->
-> On 4/9/2022 12:35 AM, Richard Gong wrote:
->> Active State Power Management (ASPM) feature is enabled since kernel 
->> 5.14.
->> There are some AMD GFX cards (such as WX3200 and RX640) that cannot be
->> used with Intel AlderLake based systems to enable ASPM. Using these GFX
->> cards as video/display output, Intel Alder Lake based systems will hang
->> during suspend/resume.
+On 4/11/22 12:18, Ashish Mhetre wrote:
+> 
+> 
+> On 4/11/2022 1:05 PM, Dmitry Osipenko wrote:
+>> External email: Use caution opening links or attachments
 >>
->> Add extra check to disable ASPM on Intel AlderLake based systems.
 >>
->> Fixes: 0064b0ce85bb ("drm/amd/pm: enable ASPM by default")
->> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
->> Signed-off-by: Richard Gong <richard.gong@amd.com>
->> ---
->> v2: correct commit description
->>      move the check from chip family to problematic platform
->> ---
->>   drivers/gpu/drm/amd/amdgpu/vi.c | 17 ++++++++++++++++-
->>   1 file changed, 16 insertions(+), 1 deletion(-)
+>> On 4/11/22 10:28, Ashish Mhetre wrote:
+>>>
+>>>
+>>> On 4/11/2022 12:03 PM, Dmitry Osipenko wrote:
+>>>> External email: Use caution opening links or attachments
+>>>>
+>>>>
+>>>> On 4/11/22 09:05, Ashish Mhetre wrote:
+>>>>>
+>>>>>
+>>>>> On 4/10/2022 7:48 PM, Dmitry Osipenko wrote:
+>>>>>> External email: Use caution opening links or attachments
+>>>>>>
+>>>>>>
+>>>>>> 06.04.2022 08:24, Ashish Mhetre пишет:
+>>>>>>> +     num_dt_channels =
+>>>>>>> of_property_count_elems_of_size(pdev->dev.of_node, "reg",
+>>>>>>> +                                                       reg_cells *
+>>>>>>> sizeof(u32));
+>>>>>>> +     /*
+>>>>>>> +      * On tegra186 onwards, memory controller support multiple
+>>>>>>> channels.
+>>>>>>> +      * Apart from regular memory controller channels, there is one
+>>>>>>> broadcast
+>>>>>>> +      * channel and one for stream-id registers.
+>>>>>>> +      */
+>>>>>>> +     if (num_dt_channels < mc->soc->num_channels + 2) {
+>>>>>>> +             dev_warn(&pdev->dev, "MC channels are missing, please
+>>>>>>> update memory controller DT node with MC channels\n");
+>>>>>>> +             return 0;
+>>>>>>> +     }
+>>>>>>> +
+>>>>>>> +     mc->bcast_ch_regs =
+>>>>>>> devm_platform_ioremap_resource_byname(pdev,
+>>>>>>> "mc-broadcast");
+>>>>>>> +     if (IS_ERR(mc->bcast_ch_regs))
+>>>>>>> +             return PTR_ERR(mc->bcast_ch_regs);
+>>>>>>
+>>>>>> Looks to me that you don't need to use
+>>>>>> of_property_count_elems_of_size()
+>>>>>> and could only check the "mc-broadcast" presence to decide whether
+>>>>>> this
+>>>>>> is an older DT.
+>>>>>>
+>>>>> Now that we are using reg-names in new DT, yes it'd be fine to just
+>>>>> check mc-broadcast to decide it's a new or old DT.
+>>>>>
+>>>>>> mc->bcast_ch_regs = devm_platform_ioremap_resource_byname(pdev,
+>>>>>> "broadcast");
+>>>>>> if (IS_ERR(mc->bcast_ch_regs)) {
+>>>>>>            dev_warn(&pdev->dev, "Broadcast channel is missing, please
+>>>>>> update your
+>>>>>> device-tree\n");
+>>>>>>            return PTR_ERR(mc->bcast_ch_regs);
+>>>>>> }
+>>>>>
+>>>>> return 0;
+>>>>>
+>>>>> to avoid DT ABI break, right?
+>>>>
+>>>> Yes, it should be "return 0".
+>>>
+>>> But if we "return 0" from here, then what about the case when ioremap()
+>>> actually fails with new DT i.e. when broadcast reg is present in DT?
+>>> In that case error should be returned and probe should be failed, right?
 >>
->> diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c 
->> b/drivers/gpu/drm/amd/amdgpu/vi.c
->> index 039b90cdc3bc..8b4eaf54b23e 100644
->> --- a/drivers/gpu/drm/amd/amdgpu/vi.c
->> +++ b/drivers/gpu/drm/amd/amdgpu/vi.c
->> @@ -81,6 +81,10 @@
->>   #include "mxgpu_vi.h"
->>   #include "amdgpu_dm.h"
->>   +#if IS_ENABLED(CONFIG_X86_64)
->> +#include <asm/intel-family.h>
->> +#endif
->> +
->>   #define ixPCIE_LC_L1_PM_SUBSTATE    0x100100C6
->>   #define PCIE_LC_L1_PM_SUBSTATE__LC_L1_SUBSTATES_OVERRIDE_EN_MASK 
->> 0x00000001L
->>   #define PCIE_LC_L1_PM_SUBSTATE__LC_PCI_PM_L1_2_OVERRIDE_MASK 
->> 0x00000002L
->> @@ -1134,13 +1138,24 @@ static void vi_enable_aspm(struct 
->> amdgpu_device *adev)
->>           WREG32_PCIE(ixPCIE_LC_CNTL, data);
->>   }
->>   +static bool intel_core_apsm_chk(void)
->
-> If this is only for Dell systems, use DMI_SYS_VENDOR/DMI_PRODUCT_NAME 
-> to identify the platform information from SMBIOS.
-Not sure, the report issue was originally for Dell system but may occur 
-with others. This is why I just check CPU info.
->
-> Better to rename to aspm_support_quirk_check() or similar, and return 
-> false on is_alderlake() or is_dell_xyz();
->
-Ok, will rename to aspm_support_quick_check in the next versin.
+>> You should check for the -ENOENT.
+> 
+> I checked __devm_ioremap_resource(), it returns -EINVAL if given
+> resource is not present. So should we check for -EINVAL instead?
 
-> Thanks,
-> Lijo
->
->> +{
->> +#if IS_ENABLED(CONFIG_X86_64)
->> +    struct cpuinfo_x86 *c = &cpu_data(0);
->> +
->> +    return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ALDERLAKE);
->> +#else
->> +    return false;
->> +#endif
->> +}
->> +
->>   static void vi_program_aspm(struct amdgpu_device *adev)
->>   {
->>       u32 data, data1, orig;
->>       bool bL1SS = false;
->>       bool bClkReqSupport = true;
->>   -    if (!amdgpu_device_should_use_aspm(adev))
->> +    if (!amdgpu_device_should_use_aspm(adev) || intel_core_apsm_chk())
->>           return;
->>         if (adev->flags & AMD_IS_APU ||
->>
+Yes
