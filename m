@@ -2,131 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA72C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C03A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348370AbiDKQCt (ORCPT
+        id S1348395AbiDKQGZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 12:02:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55032 "EHLO
+        Mon, 11 Apr 2022 12:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348384AbiDKQCn (ORCPT
+        with ESMTP id S1347783AbiDKQGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 12:02:43 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2049.outbound.protection.outlook.com [40.107.243.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB8A2BB36
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:00:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lQuaz7Bqlam37SLW6bW7g2YvClhGiw5dpX3+mH5VoLaAXVkzILS/o6uEOev7L+zEl2m1gfina+sCIkmltJty8LWOTkahp2IXDl/j6j786JPsSNwJ0S0+X+8xrVjYY1cJrxWsVN4tZ6jHEMJeDOrLj/3R8OmWXIEMRITkQShk1lQCgtu5T2pP9kwn59DLxqqUlFu4PFybG/Lu6oCwTP75UMg/ggTzOOyseh1Z8RJP6wYOQstFeJmbvW+pRugbyol4+h3eX5QFHuWLdiwa32QhMd+C41g+T+nmc9M3+TlnwLhsbzCzycXDb3tJ7DHzqp0WrqPyDAIaKJ7rz256iU/Vuw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2iI6kcpaMTRYbGey6MEi49l2UOUNclB7CVwCk/tLptA=;
- b=IPN7wQDwF8qy+8TP51DpWakNltcdxJo3ftQAyB8xWbg7c8uPdYFWP+bBbVATG5LJ0j0hldRC7lA77yUpoma7PriUWH3qF8CSA2OEcT+lMP2YDrE9IMdtOrASy5oRtOgyMYu7QTip/mvsvEfshyydaIHlRGJDKKW+Y1Zcoon4YCoOMOroGUfX1BFGFPNG9s5nJ/f5OxMJSA/HhWpL5q0ljyCr8qoo/qFgMfEDk9QsdfpEgudOGUwiQbGlDtfYo61+SA3FbMkf6mKQOikyDw1g19aSrAyeFrABGYZ7qh4IZ2MtN6sX7jnNcr/c7OBxf1cu3Qrr5lSPaCnd5g0KAZDkDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2iI6kcpaMTRYbGey6MEi49l2UOUNclB7CVwCk/tLptA=;
- b=l9ip/jGprLNuSB71DKOJCFwODa9SlrOZSS57RPEwiEta/rQ/BgcLypbegN7N84FMGuQNfbD8EYu/n97I1YVUHvNHEe6RTwrfg0wx+X4VL1kxvjKThikpa3BdvB/k9XVrsZrpmteReqNnJjkOkTSQt80wWcEyrFag27vT4k60dmXYS0pUW7qR5SGVEFhP/cXjz3KTgzzlyJC/92mzVq/zbja2W1DiSwfQ+qsHGp1514z23CHIfXo8o/yYK3wyPtn1DLJMV7PonBkb0YwtfLJXsN4T2eD39Kd5RmY8+kxcFIuNiVQqqkkORKeOdtUu00hbUzg0RexLvnKgRt/wLuz0MA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by SN6PR12MB4765.namprd12.prod.outlook.com (2603:10b6:805:e4::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
- 2022 16:00:26 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
- 16:00:26 +0000
-Date:   Mon, 11 Apr 2022 13:00:25 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 09/34] drm/i915/gvt: remove the unused from_virt_to_mfn op
-Message-ID: <20220411160025.GK2120790@nvidia.com>
-References: <20220411141403.86980-1-hch@lst.de>
- <20220411141403.86980-10-hch@lst.de>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411141403.86980-10-hch@lst.de>
-X-ClientProxiedBy: MN2PR16CA0023.namprd16.prod.outlook.com
- (2603:10b6:208:134::36) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Mon, 11 Apr 2022 12:06:21 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD50B74
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:04:05 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1ndwWA-000055-BS; Mon, 11 Apr 2022 18:03:54 +0200
+Message-ID: <c8d3ed7196d09f5f6a61d605a94613f792ab501b.camel@pengutronix.de>
+Subject: Re: [PATCH v3] PCI: imx6: Replace legacy gpio interface for gpiod
+ interface
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        =?ISO-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc:     hongxing.zhu@nxp.com, robh@kernel.org, bhelgaas@google.com,
+        helgaas@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, linux-imx@nxp.com,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 11 Apr 2022 18:03:51 +0200
+In-Reply-To: <20220411115926.GA20890@francesco-nb.int.toradex.com>
+References: <YYCOTx68LXu1Tn1i@fedora> <YlBFa46v5NtWxGLt@lpieralisi>
+         <YlBKyBtbxMpvauLv@fedora>
+         <20220411115926.GA20890@francesco-nb.int.toradex.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 679c8fed-98c5-427d-17ad-08da1bd464de
-X-MS-TrafficTypeDiagnostic: SN6PR12MB4765:EE_
-X-Microsoft-Antispam-PRVS: <SN6PR12MB47653D4AA5B0B17431B02714C2EA9@SN6PR12MB4765.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wjbYaDfMtFxGk0+e6G2PdTVFU3hwUAk49suefNU9JLwoTZyXlZGA96H+7mIB3HWWu0KjvR8AwiD490ST3Q6S2kC+ILog/9bdBB9pdKSsv1HDSemoFMg8/0NhmVDy+6zuFqFpfNGftc9KetWQD4SuGlqqhBjskWH3Nn7EPIk9Nlt+ZIaF4e+lNSEulHc/8XTZNZ1gt8J2gpqoPSmyoRCzka97qZIhAshcXKHwkhpKb88x9bx+3bjGYzorUSuwKlSyibPPfLxTmJzZzVoUojPjDfrJ+ua5rSdlo+P1I0otaXrOi2M7Oxfb3BewdOu2Np6h5NarLrrwSnmNqL7wWnCvl5mxQQdZo2lXXqNHsku9dlWdmDNcxcDTcv/ox5/qI1rIMIwqEuLtmgwesm3Rf+4JomVtvfEgC9ujqjZzFw4m/wUG/C6c/YneeKpvgfT0qf2vIDXDF60IRD8xlYGLGd0yhWcbJpEynH/DYSsXwWmC/0kGUczVOkBIpduqcPeBukPmAvsMVgtxrI9KsOC8Gg69sbmf8Bzro6PV+yV2+aMU0PeHgZHVLOTA1mAaR5qjnJaHeMKdNShx/UIyKv4rl62zUfSoMcjxeP2fhqX7f7IG6Lpxo071JuQ8lWCrJKswC0kgEk0A3xiV5E0mo53UjYRhRw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(66476007)(66946007)(6506007)(7416002)(6486002)(5660300002)(33656002)(4744005)(66556008)(26005)(8676002)(2616005)(508600001)(6512007)(86362001)(4326008)(2906002)(186003)(38100700002)(8936002)(6916009)(54906003)(36756003)(316002)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8eiygvzlfKVz8PRBZzYMf2pXqc7lM5qnKwBkRh24c9KN48t4eySUdUeO5KL0?=
- =?us-ascii?Q?irOslucJOd87n/saE9Z7mYjyrLV+ADWv/HJu6gXv2aYKvjcNEO99+ktmVjg7?=
- =?us-ascii?Q?k0VFinnM3vh2o/Z7mNGYl8LWsga+3h0rNoJaoIxQH3uTkPa7LoQ58MFWOFWj?=
- =?us-ascii?Q?Lc7TryfRy0lp4LTYyNTY0d0ZnNLhZHsZu5yfKadx/jGtgWopvvRVSW6e6xx7?=
- =?us-ascii?Q?uIFrQjtZ8MF51Bf+ZRisjHKDfbBAWhaSeRwQVXD9BTysPG4Q62Nw0TFZ8Gie?=
- =?us-ascii?Q?Zq5vmUpa/2z6vjGr0oO1/6ZRLILGV3mJirj38sHEt8j+hdGCd9AaD59m6Ycc?=
- =?us-ascii?Q?+QaXMqYf5W9PTa07JTC94H7w2vqqdG26uq7PUdbC9UtROzF8mIlBr0dAW+rg?=
- =?us-ascii?Q?2O/9/PQoLRVT6dy53hgITuX+35Zu/8DAEjv8qTvDOglW+UGPZoOs+F0ywLFj?=
- =?us-ascii?Q?lCBeNAETb5V/tSXOEQGrqvcn3htq1MPyNTRvmTNJZkF4M7BcQBU1BprjqXMR?=
- =?us-ascii?Q?jXjReB+CLE8eUjI2MjCC5TwyRlyL4ZdAZOwmwLxrFrQ2MiNuOuV70VyrCPKn?=
- =?us-ascii?Q?pEln+q2mOpWR7Z3JpDY2koD1odj/TMReGA2RYYWDETWFNvamz19OOPctL8z/?=
- =?us-ascii?Q?e0h/tTA3v5rNdBCkN6kKUGMjQ+Zbpy5OjC5N3MoIehFvHxB/D07aHbXFO81l?=
- =?us-ascii?Q?yrLmRDDLwqSnAxfl0JVdQzTBWbP1r6xTFpjRMzqmed8AslUactoJPnRMyfFH?=
- =?us-ascii?Q?ZdBOLrCMdgAMDKpZqsmPpQIyfVoC4p9vse6kGot5F3jsCilazaivmKPctWxJ?=
- =?us-ascii?Q?NllQu4l0dKwmqGuvar0s9lW4/KSIS0hNVaEOzWbAkq7ZFmdIJhJcqN6aPEJ2?=
- =?us-ascii?Q?Kg9Z3CXk/9B9S92Lwv+uoMVQwWzGM6ayNc2it3hi1ss2G0pOTczCdw8EzegL?=
- =?us-ascii?Q?rVHIrKJOEMRIWWBcw1SJ/b87LP4ctTOhIUT4gDthDnG6r0aTgUmFYS7g4cMs?=
- =?us-ascii?Q?2xqxXFVyOWMc9NcyuPwEfclofyV2Zj6uq1cX6ul6enmfF2tjXtlMgxsuetuO?=
- =?us-ascii?Q?Sio6fdmmdGXjKyECztBpCl9DwB/VQg6JbAlratUZgvNJfyDeSRqtxDda4Ffc?=
- =?us-ascii?Q?M2uk3DHhnvj3lbWqWZWPPOzziPvfHYHnosQi5hR/i0fdvDjoMVF5qyFK9TC3?=
- =?us-ascii?Q?r8g7ns+p9WPmaaRv80N+x1MVpnwmxfxFde2MPmU9fDri6ETae2QHy3mTLS1J?=
- =?us-ascii?Q?SmhJo2RITwrrqv08WnCrRNpfudpTV2bQeLJFgM7iVH2md8LT8QGQ2FQsC1cE?=
- =?us-ascii?Q?M80olwJUgMQIDZGqIsET8D8dTF9BQ8Y0SlpffifmlCyuDX5bE3q3t80hydDD?=
- =?us-ascii?Q?NHEwvnlKs9m0Tr1K+JALW3pKjz09FYqxRql7POu/nNpVmJAnB03bF3k6DkTL?=
- =?us-ascii?Q?Z0TXpUpVBpplfE73vSJcPC55sxgJK6nSZj+CuYWyKfhInTXKgFujkqtBe9aN?=
- =?us-ascii?Q?2GrXaKr3/rGX20sJmAsTVXWunLU7Otv2Zb1mRqN9/oofSmJujbUbqudDiK+5?=
- =?us-ascii?Q?xTqr9g4w4wtfba+Iqq/Z5mZQPhbK11lhwantQYgU5PMj5+n0jxDz5JkXppl5?=
- =?us-ascii?Q?JzP/lp4h2HpxSE6fxFDzCEQP3RJ4RS4oPh4+QYxNEJ2VSFqltnsKgEL8z4Mi?=
- =?us-ascii?Q?lSm2f1kMYvL4sXs39Eeh1/Hl+delRVioiQCY8EyejPLpf6VqOvRFhZRBQ0/K?=
- =?us-ascii?Q?9DPAkwGnmg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 679c8fed-98c5-427d-17ad-08da1bd464de
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 16:00:26.6420
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OMPYpNUIqJ7LlNUpuu3by0aWjCt0FW5VWH4n9jSdsDP0Fr3vB4CUnwUDjm24uv4v
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB4765
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 04:13:38PM +0200, Christoph Hellwig wrote:
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  drivers/gpu/drm/i915/gvt/hypercall.h |  1 -
->  drivers/gpu/drm/i915/gvt/kvmgt.c     |  6 ------
->  drivers/gpu/drm/i915/gvt/mpt.h       | 12 ------------
->  3 files changed, 19 deletions(-)
+Hi Maíra, hi Lorenzo,
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Am Montag, dem 11.04.2022 um 13:59 +0200 schrieb Francesco Dolcini:
+> On Fri, Apr 08, 2022 at 11:46:32AM -0300, Maíra Canal wrote:
+> > On Fri, Apr 08, 2022 at 03:23:39PM +0100, Lorenzo Pieralisi wrote:
+> > > On Mon, Nov 01, 2021 at 10:03:11PM -0300, Maíra Canal wrote:
+> > > > Considering the current transition of the GPIO subsystem, remove all
+> > > > dependencies of the legacy GPIO interface (linux/gpio.h and linux
+> > > > /of_gpio.h) and replace it with the descriptor-based GPIO approach.
+> > > > 
+> > > > Signed-off-by: Maíra Canal <maira.canal@usp.br>
+> > > > ---
+> > > > V1 -> V2: Rewrite commit log and subject line to match PCI subsystem standard
+> > > > V2 -> v3: Change gpiod_set_value_cansleep for gpiod_set_raw_value_cansleep
+> > > > ---
+> > > >  drivers/pci/controller/dwc/pci-imx6.c | 30 +++++++++------------------
+> > > >  1 file changed, 10 insertions(+), 20 deletions(-)
+> > > 
+> > > Maira, Lucas,
+> > > 
+> > > what's this patch status ? Please let me know.
 
-Jason
+The patch looks fine to me now, however...
+
+> > 
+> > Thank you for the feedback. Since I sent v3, I didn't get any feedback from the community.
+> > 
+> > If you have any feedback, I would gladly work on it.
+> 
+> Just for you to know that it will likely conflict with
+> 'PCI: imx6: Fix PERST# start-up sequence' [0] that is also still waiting
+> for some additional feedback.
+
+... they do conflict and I guess the functional fix for the reset
+sequence should have priority over this cleanup. Maíra, may I ask you
+to respin your patch as soon as Francescos fix is in? I promise to not
+let it fall through the cracks again.
+
+Regards,
+Lucas
+
