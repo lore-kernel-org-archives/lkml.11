@@ -2,190 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE70C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 12:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 12:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344342AbiDKMOQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 08:14:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43324 "EHLO
+        id S242200AbiDKMNO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 08:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235930AbiDKMOM (ORCPT
+        with ESMTP id S1346046AbiDKMMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 08:14:12 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04571D327;
-        Mon, 11 Apr 2022 05:11:57 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id o16so13944075ljp.3;
-        Mon, 11 Apr 2022 05:11:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zfeBm/kVL7aGnHvdVGIGPzHXygZReL8/W34TZ9i5NvE=;
-        b=UiiFofvP/OoQHfUlKFdlwFJi2wkIVy4C9/JkVNzU5seZrRkbTNnoN+lssIRbk8OAe/
-         nHhPfochu7ArxRw5FvWpGt1r29oA8qIGMyNVnblaf8ED3R5nFcpkWbEtVo9+ah4iNbg5
-         297dpFXaeX6yhyh57wNGK/31X51slp+z4nZKEmb8SqWfTTuElusc+Rc9XH+a2BSJn8Jb
-         gRqdXi8sTSAx2V870JCbQYkd0JZVNc7w/0dwRyUFoT1Brz24vWe2WqC6NdD5ej83Ie9+
-         9KI/5ngDCgfORVftxoG1JnMPbUP1Rb9XmS3jbK8IPEp9Us87iv9ihUMBhTJsGllH5oFo
-         fMEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zfeBm/kVL7aGnHvdVGIGPzHXygZReL8/W34TZ9i5NvE=;
-        b=AyamJEmaPAfevD5LWTQ+ljRaZtkHFSHNPPtAs4kQkxb7Lj/uDhl+yE4+/pNeiYuSuA
-         NLcOBoPUFND0dcxvVYE9ITV+SAu7vxTv2DUpv8ryT/YTdNpd7gQntbgEUyWGYlGRhejU
-         kqsLmxuPC8q5pLKRgD663tvcn9MYCx1v0cXvE6MxQVWaAOR2gFFqD+MZ+xFqhTMWpJ3C
-         84z3znsuAmAXgpfTnKHG4s8oNNCLlHmjpZGvn8YqR4OEJImJacHTRIIdeaQIIOVsVq+Q
-         eFfEiSpHaXCbjynT7v8hDVNAIT6tPYBhmMLDW5b6FVcsmHD9Fbt/9+XgoolaOtk43uad
-         gOdA==
-X-Gm-Message-State: AOAM531dNNQ1f/0sCm4Z1I19m+thv9JxJBPsTUCFfaS5l+WZ6VQNh679
-        pMpOcgSIl8QYXm9yPVVsiMg=
-X-Google-Smtp-Source: ABdhPJy9xf4gUMMhQCrqDFkw5fqBWr/OIqByXvT2Gbv7DkvMSjP3ICj162Bwm3cIS33i48YxaMadZw==
-X-Received: by 2002:a2e:8942:0:b0:24b:405d:ce6d with SMTP id b2-20020a2e8942000000b0024b405dce6dmr13760358ljk.270.1649679114559;
-        Mon, 11 Apr 2022 05:11:54 -0700 (PDT)
-Received: from mobilestation ([95.79.134.149])
-        by smtp.gmail.com with ESMTPSA id m8-20020a194348000000b0046bae58249asm135828lfj.212.2022.04.11.05.11.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 05:11:53 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 15:11:51 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 12/21] ata: libahci: Discard redundant force_port_map
- parameter
-Message-ID: <20220411121151.vm6wmtalbl2lgtgo@mobilestation>
-References: <20220324001628.13028-1-Sergey.Semin@baikalelectronics.ru>
- <20220324001628.13028-13-Sergey.Semin@baikalelectronics.ru>
- <b06a8382-d5c1-e3a5-8577-692fa82cb3c1@opensource.wdc.com>
+        Mon, 11 Apr 2022 08:12:47 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D77E6429;
+        Mon, 11 Apr 2022 05:10:32 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1ndssI-0005vc-NE; Mon, 11 Apr 2022 14:10:30 +0200
+Message-ID: <2d6981fd-c75a-ccb0-9299-65625963a9e3@leemhuis.info>
+Date:   Mon, 11 Apr 2022 14:10:30 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b06a8382-d5c1-e3a5-8577-692fa82cb3c1@opensource.wdc.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] PCI: PM: Quirk bridge D3 on Elo i2
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Stefan Gottwald <gottwald@igel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <CAJZ5v0g9cg=nJ0yr5-a_phNnJLiU74KrfsULsAEsWBKeRr7HCQ@mail.gmail.com>
+ <20220408195342.GA339430@bhelgaas>
+ <CAJZ5v0g6ahvQrCKPXTgQANiUYJNByDUvJZ8Zsp7anqeM7EBAXw@mail.gmail.com>
+ <b24daa29-ae7c-6e24-ebdc-2fe8e0576a9d@leemhuis.info>
+ <CAJZ5v0j=WVOAZQ=nR32OQLtMd4gpWhX0T2M-su+dNdOJ0KgbZw@mail.gmail.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <CAJZ5v0j=WVOAZQ=nR32OQLtMd4gpWhX0T2M-su+dNdOJ0KgbZw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1649679032;092a9564;
+X-HE-SMSGID: 1ndssI-0005vc-NE
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 11:05:58AM +0900, Damien Le Moal wrote:
-> On 3/24/22 09:16, Serge Semin wrote:
-> > Currently there are four port-map-related fields declared in the
-> > ahci_host_priv structure and used to setup the HBA ports mapping. First
-> > the ports-mapping is read from the PI register and immediately stored in
-> > the saved_port_map field. If forced_port_map is initialized with non-zero
-> > value then its value will have greater priority over the value read from
-> > PI, thus it will override the saved_port_map field. That value will be then
-> > masked by a non-zero mask_port_map field and after some sanity checks it
-> > will be stored in the ahci_host_priv.port_map field as a final port
-> > mapping.
-> > 
-> > As you can see the logic is a bit too complicated for such a simple task.
-> > We can freely get rid from at least one of the fields with no change to
-> > the implemented semantic. The force_port_map field can be replaced with
-> > taking non-zero saved_port_map value into account. So if saved_port_map is
-> > pre-initialized by the glue-driver/platform-specific code then it will
-> 
 
-> glue-driver == LLDD (low level device driver), for the entire series please.
 
-Why? It's a normal term and well known amongst developers. I've used it
-in a plenty of my patches before and none of them has been questioned in that
-part so far.
+On 11.04.22 13:35, Rafael J. Wysocki wrote:
+> On Sun, Apr 10, 2022 at 11:16 AM Thorsten Leemhuis
+> <regressions@leemhuis.info> wrote:
+>>
+>> On 09.04.22 15:35, Rafael J. Wysocki wrote:
+>>> On Fri, Apr 8, 2022 at 9:53 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>>>>
+>>>> On Mon, Apr 04, 2022 at 04:46:14PM +0200, Rafael J. Wysocki wrote:
+>>>>> On Fri, Apr 1, 2022 at 1:34 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+>>>>>> On Thu, Mar 31, 2022 at 11:57 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>>>>>>> On Thu, Mar 31, 2022 at 07:38:51PM +0200, Rafael J. Wysocki wrote:
+>>>>>>>> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>>>>>>>>
+>>>>>>>> If one of the PCIe root ports on Elo i2 is put into D3cold and then
+>>>>>>>> back into D0, the downstream device becomes permanently inaccessible,
+>>>>>>>> so add a bridge D3 DMI quirk for that system.
+>>>>>>>>
+>>>>>>>> This was exposed by commit 14858dcc3b35 ("PCI: Use
+>>>>>>>> pci_update_current_state() in pci_enable_device_flags()"), but before
+>>>>>>>> that commit the root port in question had never been put into D3cold
+>>>>>>>> for real due to a mismatch between its power state retrieved from the
+>>>>>>>> PCI_PM_CTRL register (which was accessible even though the platform
+>>>>>>>> firmware indicated that the port was in D3cold) and the state of an
+>>>>>>>> ACPI power resource involved in its power management.
+>>>>>>>
+>>>>>>> In the bug report you suspect a firmware issue.  Any idea what that
+>>>>>>> might be?  It looks like a Gemini Lake Root Port, so I wouldn't think
+>>>>>>> it would be a hardware issue.
+>>>>>>
+>>>>>> The _ON method of the ACPI power resource associated with the root
+>>>>>> port doesn't work correctly.
+>>>>>>
+>>>>>>> Weird how things come in clumps.  Was just looking at Mario's patch,
+>>>>>>> which also has to do with bridges and D3.
+>>>>>>>
+>>>>>>> Do we need a Fixes line?  E.g.,
+>>>>>>>
+>>>>>>>   Fixes: 14858dcc3b35 ("PCI: Use pci_update_current_state() in pci_enable_device_flags()")
+>>>>>>
+>>>>>> Strictly speaking, it is not a fix for the above commit.
+>>>>>>
+>>>>>> It is a workaround for a firmware issue uncovered by it which wasn't
+>>>>>> visible, because power management was not used correctly on the
+>>>>>> affected system because of another firmware problem addressed by
+>>>>>> 14858dcc3b35.  It wouldn't have worked anyway had it been attempted
+>>>>>> AFAICS.
+>>>>>>
+>>>>>> I was thinking about CCing this change to -stable instead.
+>>>>
+>>>> Makes sense, thanks.
+>>>>
+>>>>>>>> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215715
+>>>>>>>> Reported-by: Stefan Gottwald <gottwald@igel.com>
+>>>>>>>> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>>>>>>>> ---
+>>>>>>>>  drivers/pci/pci.c |   10 ++++++++++
+>>>>>>>>  1 file changed, 10 insertions(+)
+>>>>>>>>
+>>>>>>>> Index: linux-pm/drivers/pci/pci.c
+>>>>>>>> ===================================================================
+>>>>>>>> --- linux-pm.orig/drivers/pci/pci.c
+>>>>>>>> +++ linux-pm/drivers/pci/pci.c
+>>>>>>>> @@ -2920,6 +2920,16 @@ static const struct dmi_system_id bridge
+>>>>>>>>                       DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
+>>>>>>>>                       DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
+>>>>>>>>               },
+>>>>>>>> +             /*
+>>>>>>>> +              * Downstream device is not accessible after putting a root port
+>>>>>>>> +              * into D3cold and back into D0 on Elo i2.
+>>>>>>>> +              */
+>>>>>>>> +             .ident = "Elo i2",
+>>>>>>>> +             .matches = {
+>>>>>>>> +                     DMI_MATCH(DMI_SYS_VENDOR, "Elo Touch Solutions"),
+>>>>>>>> +                     DMI_MATCH(DMI_PRODUCT_NAME, "Elo i2"),
+>>>>>>>> +                     DMI_MATCH(DMI_PRODUCT_VERSION, "RevB"),
+>>>>>>>> +             },
+>>>>>>>
+>>>>>>> Is this bridge_d3_blacklist[] similar to the PCI_DEV_FLAGS_NO_D3 bit?
+>>>>>>
+>>>>>> Not really.  The former applies to the entire platform and not to an
+>>>>>> individual device.
+>>>>>>
+>>>>>>> Could they be folded together?  We have a lot of bits that seem
+>>>>>>> similar but maybe not exactly the same (dev->bridge_d3,
+>>>>>>> dev->no_d3cold, dev->d3cold_allowed, dev->runtime_d3cold,
+>>>>>>> PCI_DEV_FLAGS_NO_D3, pci_bridge_d3_force, etc.)  Ugh.
+>>>>>>
+>>>>>> Yes, I agree that this needs to be cleaned up.
+>>>>>>
+>>>>>>> bridge_d3_blacklist[] itself was added by 85b0cae89d52 ("PCI:
+>>>>>>> Blacklist power management of Gigabyte X299 DESIGNARE EX PCIe ports"),
+>>>>>>> which honestly looks kind of random, i.e., it doesn't seem to be
+>>>>>>> working around a hardware or even a firmware defect.
+>>>>>>>
+>>>>>>> Apparently the X299 issue is that 00:1c.4 is connected to a
+>>>>>>> Thunderbolt controller, and the BIOS keeps the Thunderbolt controller
+>>>>>>> powered off unless something is attached to it?  At least, 00:1c.4
+>>>>>>> leads to bus 05, and in the dmesg log attached to [1] shows no devices
+>>>>>>> on bus 05.
+>>>>>>>
+>>>>>>> It also says the platform doesn't support PCIe native hotplug, which
+>>>>>>> matches what Mika said about it using ACPI hotplug.  If a system is
+>>>>>>> using ACPI hotplug, it seems like maybe *that* should prevent us from
+>>>>>>> putting things in D3cold?  How can we know whether ACPI hotplug
+>>>>>>> depends on a certain power state?
+>>>>>>
+>>>>>> We have this check in pci_bridge_d3_possible():
+>>>>>>
+>>>>>> if (bridge->is_hotplug_bridge && !pciehp_is_native(bridge))
+>>>>>>             return false;
+>>>>>>
+>>>>>> but this only applies to the case when the particular bridge itself is
+>>>>>> a hotplug one using ACPI hotplug.
+>>>>>>
+>>>>>> If ACPI hotplug is used, it generally is unsafe to put PCIe ports into
+>>>>>> D3cold, because in that case it is unclear what the platform
+>>>>>> firmware's assumptions regarding control of the config space are.
+>>>>>>
+>>>>>> However, I'm not sure how this is related to the patch at hand.
+>>>>>
+>>>>> So I'm not sure how you want to proceed here.
+>>>>>
+>>>>> The platform is quirky, so the quirk for it will need to be added this
+>>>>> way or another.  The $subject patch adds it using the existing
+>>>>> mechanism, which is the least intrusive way.
+>>>>>
+>>>>> You seem to be thinking that the existing mechanism may not be
+>>>>> adequate, but I'm not sure for what reason and anyway I think that it
+>>>>> can be adjusted after adding the quirk.
+>>>>>
+>>>>> Please let me know what you think.
+>>>>
+>>>> I don't understand all that's going on here, but I applied it to
+>>>> pci/pm for v5.19, thanks!
+>>> Thank you!
+>>
+>> Sorry, but this made me wonder: why v5.19? It's a regression exposed in
+>> v5.15, so it afaics would be good to get this in this cycle -- and also
+>> backported to v5.15.y, but it seem a tag to take care of that is
+>> missing. :-/
+> 
+> Well, the patch is out there for everyone needing it.
 
--Sergey
+IOW: only those that are able to debug the issue, find the patch, and
+capable & willing to patch & compile a kernel.
 
-> 
-> > have greater priority over the value read from PI register and will be
-> > used as actual HBA ports mapping later on. Thus the ports map forcing task
-> > will be just transferred from the force_port_map to saved_port_map field.
-> > 
-> > This modification will perfectly fit into the feature of having OF-based
-> > initialization of the HW-init HBA CSR fields we are about to introduce in
-> > the next commit.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >  drivers/ata/ahci.c             |  2 +-
-> >  drivers/ata/ahci.h             |  1 -
-> >  drivers/ata/libahci.c          | 10 ++++++----
-> >  drivers/ata/libahci_platform.c |  2 +-
-> >  4 files changed, 8 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-> > index ab5811ef5a53..8ce0d166cc8d 100644
-> > --- a/drivers/ata/ahci.c
-> > +++ b/drivers/ata/ahci.c
-> > @@ -654,7 +654,7 @@ static void ahci_pci_save_initial_config(struct pci_dev *pdev,
-> >  {
-> >  	if (pdev->vendor == PCI_VENDOR_ID_JMICRON && pdev->device == 0x2361) {
-> >  		dev_info(&pdev->dev, "JMB361 has only one port\n");
-> > -		hpriv->force_port_map = 1;
-> > +		hpriv->saved_port_map = 1;
-> >  	}
-> >  
-> >  	/*
-> > diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
-> > index 04690b4168a3..519d148ecaea 100644
-> > --- a/drivers/ata/ahci.h
-> > +++ b/drivers/ata/ahci.h
-> > @@ -329,7 +329,6 @@ struct ahci_port_priv {
-> >  struct ahci_host_priv {
-> >  	/* Input fields */
-> >  	unsigned int		flags;		/* AHCI_HFLAG_* */
-> > -	u32			force_port_map;	/* force port map */
-> >  	u32			mask_port_map;	/* mask out particular bits */
-> >  
-> >  	void __iomem *		mmio;		/* bus-independent mem map */
-> > diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-> > index 0ed484e04fd6..011175e82174 100644
-> > --- a/drivers/ata/libahci.c
-> > +++ b/drivers/ata/libahci.c
-> > @@ -453,7 +453,6 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
-> >  	 * reset.  Values without are used for driver operation.
-> >  	 */
-> >  	hpriv->saved_cap = cap = readl(mmio + HOST_CAP);
-> > -	hpriv->saved_port_map = port_map = readl(mmio + HOST_PORTS_IMPL);
-> >  
-> >  	/* CAP2 register is only defined for AHCI 1.2 and later */
-> >  	vers = readl(mmio + HOST_VERSION);
-> > @@ -517,10 +516,13 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
-> >  		cap &= ~HOST_CAP_SXS;
-> >  	}
-> >  
-> > -	if (hpriv->force_port_map && port_map != hpriv->force_port_map) {
-> > +	/* Override the HBA ports mapping if the platform needs it */
-> > +	port_map = readl(mmio + HOST_PORTS_IMPL);
-> > +	if (hpriv->saved_port_map && port_map != hpriv->saved_port_map) {
-> >  		dev_info(dev, "forcing port_map 0x%x -> 0x%x\n",
-> > -			 port_map, hpriv->force_port_map);
-> > -		port_map = hpriv->force_port_map;
-> > +			 port_map, hpriv->saved_port_map);
-> > +		port_map = hpriv->saved_port_map;
-> > +	} else {
-> >  		hpriv->saved_port_map = port_map;
-> >  	}
-> >  
-> > diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
-> > index febad33aa43c..5cbc2c42164d 100644
-> > --- a/drivers/ata/libahci_platform.c
-> > +++ b/drivers/ata/libahci_platform.c
-> > @@ -539,7 +539,7 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
-> >  	}
-> >  
-> >  	of_property_read_u32(dev->of_node,
-> > -			     "ports-implemented", &hpriv->force_port_map);
-> > +			     "ports-implemented", &hpriv->saved_port_map);
-> >  
-> >  	if (child_nodes) {
-> >  		for_each_child_of_node(dev->of_node, child) {
-> 
-> 
-> -- 
-> Damien Le Moal
-> Western Digital Research
+>  The question is
+> how urgent it is to get it into the mainline and -stable, which boils
+> down to the question how many systems out there can be affected by it.
+
+If it was a risky patch I'd agree, but for such a simple quirk? What's
+the benefit of waiting? Sure, every change bears risks, but waiting can
+makes life harder for people.
+
+Thing is: I noticed a lot of maintainer wait way to long with applying
+regression fixes (even for regressions that affect multiple users),
+which contributes to the huge pile of changes that go into early stable
+kernel (like 5.17.2 recently with 1000+ changes). That's why the new
+document on handling regressions (disclaimer: written by yours truly)
+has a section encouraging maintainer to merge things more quickly:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/handling-regressions.rst#n131
+
+> Since it is a firmware defect exposed, hopefully not too many.
+I guess so, but it's always hard to tell.
+
+Ciao, Thorsten
