@@ -2,82 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5002C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B92FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240332AbiDKKAj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:00:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44898 "EHLO
+        id S1344968AbiDKKCd (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 06:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238270AbiDKKAc (ORCPT
+        with ESMTP id S234194AbiDKKC0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:00:32 -0400
-X-Greylist: delayed 81 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Apr 2022 02:58:18 PDT
-Received: from fuzzserver.tsinghua.edu.cn (unknown [166.111.139.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487614132F
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:58:17 -0700 (PDT)
-Received: by fuzzserver.tsinghua.edu.cn (Postfix, from userid 1000)
-        id B5906F40E15; Mon, 11 Apr 2022 17:56:53 +0800 (CST)
-From:   Zixuan Fu <r33s3n6@gmail.com>
-To:     shaggy@kernel.org
-Cc:     jfs-discussion@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Subject: [PATCH] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Mon, 11 Apr 2022 17:56:23 +0800
-Message-Id: <20220411095623.678040-1-r33s3n6@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Apr 2022 06:02:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A203E10FC;
+        Mon, 11 Apr 2022 03:00:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E3CD612D6;
+        Mon, 11 Apr 2022 10:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8D2C3C385A3;
+        Mon, 11 Apr 2022 10:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649671212;
+        bh=zEs5JBbUBkl3v6LO2j24SJhPRwPFMfW/ri9tTEZwQC0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=U7XF5N9naNd7pSFAqXaEkqigo1d3YVyv+9ojjf09U64twBXmAxJiMwD8TNDMKIrR+
+         Cnvf3dBb7oB3VS0dSogBBHWcNRo86mg7dhQEMV1nhML3hWe4gucuj7irbrvpS4FXw+
+         8vlgXy/6k1DPnC6KJuchsgNaAZBaxF3dq89hDWIOghi2n3UUeXYzGWmKDIbZ5iCC9E
+         vkxq3iuS4LwYr6VtpUM9cA4ZEJPV1z9xtlPJON5/T1n3Brq061rV1OTdGb60UKZ5PE
+         PQtxWH49udENLpUxql9Ez6jzt1nEj+Z8PDj/BitOmP89VqAq8TinN9BOa1qHSesveT
+         R5Y1xjsMwqLoA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6DFE2E85B76;
+        Mon, 11 Apr 2022 10:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [Patch net v2] net: phy: LAN87xx: remove genphy_softreset in
+ config_aneg
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164967121244.20630.6489793738825351974.git-patchwork-notify@kernel.org>
+Date:   Mon, 11 Apr 2022 10:00:12 +0000
+References: <20220407044610.8710-1-arun.ramadoss@microchip.com>
+In-Reply-To: <20220407044610.8710-1-arun.ramadoss@microchip.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        prasanna.vengateshan@microchip.com, pabeni@redhat.com,
+        kuba@kernel.org, davem@davemloft.net, linux@armlinux.org.uk,
+        hkallweit1@gmail.com, andrew@lunn.ch, UNGLinuxDriver@microchip.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in 
-"write_metapage(mp)".
+Hello:
 
-The failure log is listed as follows:
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
+On Thu, 7 Apr 2022 10:16:10 +0530 you wrote:
+> When the T1 phy master/slave state is changed, at the end of config_aneg
+> function genphy_softreset is called. After the reset all the registers
+> configured during the config_init are restored to default value.
+> To avoid this, removed the genphy_softreset call.
+> 
+> v1->v2
+> 
+> [...]
 
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
+Here is the summary with links:
+  - [net,v2] net: phy: LAN87xx: remove genphy_softreset in config_aneg
+    https://git.kernel.org/netdev/net/c/b2cd2cde7d69
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
----
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index d8502f4989d9..e75f31b81d63 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -385,7 +385,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 	}
- 
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
- 
- 	IREAD_UNLOCK(ipbmap);
- 
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
