@@ -2,97 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 981D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D60C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:42:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346626AbiDKNn5 (ORCPT
+        id S1346638AbiDKNpC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 09:43:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47240 "EHLO
+        Mon, 11 Apr 2022 09:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235168AbiDKNnw (ORCPT
+        with ESMTP id S230488AbiDKNo6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 09:43:52 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C335BF48;
-        Mon, 11 Apr 2022 06:41:37 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso16872148pjh.3;
-        Mon, 11 Apr 2022 06:41:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lEgz7pDebt7YmqGFvfHdIKDR3vRZu3u1KbLLcx4/FAs=;
-        b=lr8YDAxNvaCJNmyk6Dc29gA9izFiyp89D8uGDEpFcRK0wrBsvJYlC6My8DV4eO2tpm
-         Ch85xGfJnP2PtgWsuOp2M5EYPbfGTI2d/yWmMxpYqHiOz9rzox0oLsHH45/adl7dYYCh
-         U/XNIGthUxbNm5efzHtOreRs8x1TnOSb3iNXAjq/4ZLHud90kuCpW25M52z9Ni/rd4hH
-         MykvGc7q3GqwjyLQ3XL0/3Ol+DRiX4WWW1w0JvcHaVpLC9D3Rvsd61TAz9RX32iCaxXg
-         m0YxPcnMoZdavBDd9jY9WExnEamievgJnqLbZh98OceiAMFKPiyFRHc2fJOuyM/H8uRD
-         JpuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lEgz7pDebt7YmqGFvfHdIKDR3vRZu3u1KbLLcx4/FAs=;
-        b=E8vYzWA9HvNYO1URGVJ40j+h5Fu1rH9t3tQ4Wu+KGatUi3zIm1z0BUCvGvh8eqVBK7
-         hAOIa+mwFCUIaL4o0LsnDhp7/Dg2Um/xo0m5nt0ASULGUSKKcljkg2r15ZOxk9jFTJB7
-         cUWvaL2N0Er1XLPBABHdz6o5NQRGk6l50yWtTaMttTnDhN3krocbcW+4DQEN1U3EJNSa
-         xqXexyHX7N2R61Qrk06s38KZBcfxn/9O2fU5kRo6/XVR+TQDpDvpB+G5T91AKLw5KDg8
-         DB04q2h/j0faNcsP6sCp5fxiQMK7K+DtCsVWYv/U6aKqVej0yEuhT73YcwSCVsCAHk4S
-         fQKQ==
-X-Gm-Message-State: AOAM5332J+YMsJa85f9huVRYdT71v0ZihV3QB5pPwNnD3y7GfmhWPDZf
-        9LYDxyOrRo3I//byoZa5vs0=
-X-Google-Smtp-Source: ABdhPJzr3irFczmBe1eJsYkO2R3dfetS/k0Ri8wGO0te0wYq8lCACULK8dBC/n4cs8uFzqR5OpR//Q==
-X-Received: by 2002:a17:903:18b:b0:154:4d7a:1bac with SMTP id z11-20020a170903018b00b001544d7a1bacmr33143717plg.0.1649684496762;
-        Mon, 11 Apr 2022 06:41:36 -0700 (PDT)
-Received: from localhost.localdomain ([103.149.162.115])
-        by smtp.gmail.com with ESMTPSA id gn21-20020a17090ac79500b001ca3c37af65sm21159730pjb.21.2022.04.11.06.41.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 06:41:36 -0700 (PDT)
-From:   Dongli Si <kvmx86@gmail.com>
-X-Google-Original-From: Dongli Si <sidongli1997@gmail.com>
-To:     peterz@infradead.org
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com, jolsa@kernel.org,
-        joro@8bytes.org, kim.phillips@amd.com, kvmx86@gmail.com,
-        liam.merwick@oracle.com, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
-        mingo@kernel.org, namhyung@kernel.org, tglx@linutronix.de,
-        x86@kernel.org
-Subject: Re: [PATCH v4] perf/x86/amd: Don't touch the Host-only bit inside the guest hypervisor
-Date:   Mon, 11 Apr 2022 21:40:53 +0800
-Message-Id: <20220411134053.738799-1-sidongli1997@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <Ykb400opkmZFsnVN@hirez.programming.kicks-ass.net>
-References: <Ykb400opkmZFsnVN@hirez.programming.kicks-ass.net>
+        Mon, 11 Apr 2022 09:44:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8F9F121
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:42:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649684563;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SeAW1i7bP5vwPIJRU4t8M7oOEg6okFb42IgET/Pn4rE=;
+        b=hO6FCDJjZl8ZJ/bjj9J0c6ROlrD9YudLtBNMNTyIDmbZRS1KO7EaeyJhPCY5qLvH+PQY4S
+        8EwvuBEWmyDEsvYPsd1GsXHfjWJRcIg2BsixezbnhCFRd4uuxXlu+BQKxGD84Ze/yy2wKo
+        WYoz+gsfXofZ17ctJFMlgwWgH5tjqAs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-576-1qS3aKYwOQyo5eXJq_KINw-1; Mon, 11 Apr 2022 09:42:38 -0400
+X-MC-Unique: 1qS3aKYwOQyo5eXJq_KINw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 16249811E78;
+        Mon, 11 Apr 2022 13:42:37 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.37.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C3071492D42;
+        Mon, 11 Apr 2022 13:42:34 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <542f749c-b0f1-1de6-cb41-26e296afb2df@linux.alibaba.com>
+References: <542f749c-b0f1-1de6-cb41-26e296afb2df@linux.alibaba.com> <20220406075612.60298-5-jefflexu@linux.alibaba.com> <20220406075612.60298-1-jefflexu@linux.alibaba.com> <1091405.1649680508@warthog.procyon.org.uk>
+To:     JeffleXu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com
+Subject: Re: [PATCH v8 04/20] cachefiles: notify user daemon when withdrawing cookie
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1094492.1649684554.1@warthog.procyon.org.uk>
+Date:   Mon, 11 Apr 2022 14:42:34 +0100
+Message-ID: <1094493.1649684554@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Apr 2022 15:06:27 +0200, Peter Zijlstra wrote:
-> If SVM enter/exit don't twiddle with counter EN bits, how is all this
-> supposed to work consistently then?
+JeffleXu <jefflexu@linux.alibaba.com> wrote:
 
-Since KVM currently does not support the "Host/Guest Only" bits (41:40),
-CPU wide events created on L1 HV will always count L1 HV and L2, so no
-twiddle counter EN bits are needed when {dis,en}abling SVM on L1 HV.
+> > 
+> >> +	if (fd == 0)
+> >> +		return -ENOENT;
+> > 
+> > 0 is a valid fd.
+> 
+> Yeah, but IMHO fd 0 is always for stdin? I think the allocated anon_fd
+> won't install at fd 0. Please correct me if I'm wrong.
 
-This #GP warning is because KVM does not allow guest to set HO/GO bit,
-It has been fixed in this commit 9b026073db2f
-("KVM: x86/svm: Clear reserved bits written to PerfEvtSeln MSRs")
-and has been merged to 5.18-rc1.
+If someone has closed 0, then you'll get 0 next, I'm pretty sure.  Try it and
+see.
 
-Because the commit df51fe7ea1c1c
-("perf/x86/amd: Don't touch the AMD64_EVENTSEL_HOSTONLY bit inside the guest")
-is to fix a very similar problem caused by the same reason,
-I think it should be revert now, it make things obscure.
+> In fact I wanna use "fd == 0" as the initial state as struct
+> cachefiles_object is allocated with kmem_cache_zalloc().
 
-And perf_ctr_virt_mask is used to mask Host-Only bit when SVM is disabled,
-Using it on a guest doesn't make sense and make things obscure.
+I would suggest presetting it to something like -2 to avoid confusion.
 
-I wrote a patch to clarifies what perf_ctr_virt_mask does.
+David
 
-Regards,
-Dongli
