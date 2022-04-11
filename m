@@ -2,126 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB5FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 21:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36767C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 21:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345665AbiDKVNi (ORCPT
+        id S1347881AbiDKVPL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 17:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
+        Mon, 11 Apr 2022 17:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350106AbiDKVNM (ORCPT
+        with ESMTP id S229692AbiDKVPH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 17:13:12 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E282B1BD
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:10:53 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id q13-20020a638c4d000000b003821725ad66so9429484pgn.23
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:10:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=dXlFBD0LldYOfRc7OaKD0wMXPzi3maZCvF8rPD26eTI=;
-        b=od645DgDIiqdxXTXIqTecH/cdEHvdo6xF2qu5T02FMQ19MQNLm9xVN/ZO9o0v93qEW
-         6kpH4zKRGD2sT+LExaIzj5l4Hp7CRMRF8bLpq6s5ihDNFvAbSv4zOT9ywEHYI53vyLTR
-         jCz9NWc9KdYyem5akZTphuk/sjQ6Tde/iYyfxkuxBjXqop1zMCiSZo7KfPuJm6MACxQU
-         oglTlvRr2XBhY42HCju5FgQRrDnZAsCB7vq3ca9jbt2wTTIBNWEM6zvV3lTVHmQOJ7Dy
-         uYZ4A4QY+6CqedZGz+Q5ng6Q9du0pBMjStji3X/hcVlUKbT3KfYkLQUsCvdH/R4Ku66X
-         4gnQ==
+        Mon, 11 Apr 2022 17:15:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0A6C28989
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:12:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649711571;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=n0gtWVG0aimnuoPQwNXoXZOG0mpWKStMnE3++TkqLKY=;
+        b=ERHTTA/9vs5a8UrmVCQMG+cGbGNIlvH1yfEvV7E4PNR/QSF2ve/7K3K/rxUbBAfrY+v26/
+        9njcoGv5EQ4O69mxr7Xy6j7aBc44WdZ7pKpbJiqBaIud18NbcCe8pDznLVqVIK5slZ3RZv
+        ykPVhpBoJTR6CbLHy+wNXerhA2EwqWk=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-147-3X-P5kq1McCQbp3HHFoJGA-1; Mon, 11 Apr 2022 17:12:50 -0400
+X-MC-Unique: 3X-P5kq1McCQbp3HHFoJGA-1
+Received: by mail-wm1-f71.google.com with SMTP id l19-20020a05600c1d1300b0038e736f98faso5037488wms.4
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:12:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=dXlFBD0LldYOfRc7OaKD0wMXPzi3maZCvF8rPD26eTI=;
-        b=w6jEbkSlkLpVWwhD0fo/MM11zMMHUMZOq2hlaGDyc0iL42seP6u/dkpfnXQBe2IteV
-         Qml3b/FjJB9eLGazfDXuG0BLEK9Q3FKFyLRCnZ8uS4A4ZpA+K8G0+wjYLhCc/PgjAKMe
-         hMMuEFcP1STJkGyITEyOrGquWUQeMKNrGjkIj5ZaJCoz1rzH8uw9ApRmm3Vpyz9Gdlzl
-         ANORu1tPxn+jU6O3EXvOAkFDpon5zoM19oyrmchF2IzEZdxc4FyDFP/2851xD4o3Eak2
-         m6QcW+7Q3S0ilgdXInuUYBMzNPT495RnAj7vdi/phAjVEo+HXy/ZnRb0fdYapI8u/5D7
-         9GYg==
-X-Gm-Message-State: AOAM532LHsNBbXg+6qR9MS7lHQdhF15FjX4tSGwByDAkyQsC5Ig9s7pI
-        TLQNizsO6hLOw8yTVG+4fqNAUELFQoIYLnSuidX1qK8+8RN97OuzFgrnxajHXA28YuHp7H3Kskg
-        EWbOGubvY5lHaojX9IQ3KY0EuZEnmhRHsky50qyqQD39KA7K0WW2zyp3HqvF2yiI7MeSYOgbL
-X-Google-Smtp-Source: ABdhPJxRBDuMX+1iIQMZOMQEGWUuODV9pdUUYDXB5DzdeWHVI/JBHhK3LPtoD+bM0n1KR1cloYlAQTXVNNqc
-X-Received: from bgardon.sea.corp.google.com ([2620:15c:100:202:a2d0:faec:7d8b:2e0b])
- (user=bgardon job=sendgmr) by 2002:a17:90b:1c87:b0:1ca:f4e:4fbe with SMTP id
- oo7-20020a17090b1c8700b001ca0f4e4fbemr1168462pjb.159.1649711452989; Mon, 11
- Apr 2022 14:10:52 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 14:10:14 -0700
-In-Reply-To: <20220411211015.3091615-1-bgardon@google.com>
-Message-Id: <20220411211015.3091615-10-bgardon@google.com>
-Mime-Version: 1.0
-References: <20220411211015.3091615-1-bgardon@google.com>
-X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH v4 09/10] KVM: x86/MMU: Require reboot permission to disable
- NX hugepages
-From:   Ben Gardon <bgardon@google.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Peter Shier <pshier@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Junaid Shahid <junaids@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Mingwei Zhang <mizhang@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Ben Gardon <bgardon@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=n0gtWVG0aimnuoPQwNXoXZOG0mpWKStMnE3++TkqLKY=;
+        b=bYVFPDpyWHlb1sWR5G9UKkueo/Ixre8nK8tdS5nxIMUed+9YoSr5Of9iuRKGXdNz93
+         iMb2MzIbeXcxoywcIMz6DdtbMl8HXcFpOlkeVDbRdz8UMglSnICcoOvtSCdTddzjp+YM
+         DIa2agxDzqdi/PKTs2IH+4fKnfiUSaFNLxj53GY8tU82wDK8OfB6R2MMOVmhCEAK61Wo
+         8cYjBi+dDzmTME2cgRPyTDwDarOxWT2g/q2rHAw1z1MSabaKGxF117Xw0+YZ6+tLGGDH
+         /UAcT8x3IZwf3gADfp1iNwEtZv42nMuWe5X2Qg8eE+Ry2O7P6Yj0aLDJzwCDaL8uNftd
+         pBhw==
+X-Gm-Message-State: AOAM531tsDrbjVEw7Q2iiyfoEePN/h5BMuaGJkrDXNkJFrbDI+sJuB97
+        wekyMBSqhYdxjpjUdC4WfmslOH5nvwEXzayueXS6+i37Pv0nhFblvq4tp0CWc0ElhrSP/9nblpj
+        VP0xM3lBD2vobU0V0O/74ckMVZXTYZ4a6MWg8MFMpP3FQ4xcot45W+lJt77q71Yxt7uJpfh7V7O
+        o=
+X-Received: by 2002:a05:600c:198f:b0:38c:a9e9:754a with SMTP id t15-20020a05600c198f00b0038ca9e9754amr985284wmq.146.1649711569499;
+        Mon, 11 Apr 2022 14:12:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzIG64xz0G/zDMtKH809CxNshjqiDFUCpZN0F0DuF+gDgN8/smhV2a82KJnAYzO7uRz0AUIkA==
+X-Received: by 2002:a05:600c:198f:b0:38c:a9e9:754a with SMTP id t15-20020a05600c198f00b0038ca9e9754amr985248wmq.146.1649711569194;
+        Mon, 11 Apr 2022 14:12:49 -0700 (PDT)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id l9-20020a5d6d89000000b00203d62072c4sm28723722wrs.43.2022.04.11.14.12.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 14:12:48 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Rob Herring <robh@kernel.org>, dri-devel@lists.freedesktop.org,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Chen-Yu Tsai <wens@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Chen-Yu Tsai <wens@csie.org>, Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>, devicetree@vger.kernel.org
+Subject: [PATCH v2 0/5] drm/solomon: Add SSD130x OLED displays SPI support
+Date:   Mon, 11 Apr 2022 23:12:38 +0200
+Message-Id: <20220411211243.11121-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ensure that the userspace actor attempting to disable NX hugepages has
-permission to reboot the system. Since disabling NX hugepages would
-allow a guest to crash the system, it is similar to reboot permissions.
+Hello,
 
-This approach is the simplest permission gating, but passing a file
-descriptor opened for write for the module parameter would also work
-well and be more precise.
-The latter approach was suggested by Sean Christopherson.
+This series adds a ssd130x-spi driver that provides a 4-wire SPI transport
+support for SSD130x OLED controllers that can be accessed through a SPI.
 
-Suggested-by: Jim Mattson <jmattson@google.com>
-Signed-off-by: Ben Gardon <bgardon@google.com>
----
- Documentation/virt/kvm/api.rst | 2 ++
- arch/x86/kvm/x86.c             | 9 +++++++++
- 2 files changed, 11 insertions(+)
+The driver is quite similar to existing ssd130x-i2c driver that is used by
+I2C controllers, but there is a difference in the protocol used by SSD130x
+depending on the transport used. The details are in patch #4 description.
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 31fb002632bb..021452a9fa91 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -7861,6 +7861,8 @@ should adjust CPUID leaf 0xA to reflect that the PMU is disabled.
- :Capability KVM_CAP_PMU_CAPABILITY
- :Architectures: x86
- :Type: vm
-+:Returns 0 on success, -EPERM if the userspace process does not
-+	 have CAP_SYS_BOOT
- 
- This capability disables the NX huge pages mitigation for iTLB MULTIHIT.
- 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index de1d211f8aa3..8d3d6c48c5ec 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -6081,6 +6081,15 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
- 		mutex_unlock(&kvm->lock);
- 		break;
- 	case KVM_CAP_VM_DISABLE_NX_HUGE_PAGES:
-+		/*
-+		 * Since the risk of disabling NX hugepages is a guest crashing
-+		 * the system, ensure the userspace process has permission to
-+		 * reboot the system.
-+		 */
-+		if (!capable(CAP_SYS_BOOT)) {
-+			r = -EPERM;
-+			break;
-+		}
- 		kvm->arch.disable_nx_huge_pages = true;
- 		kvm_update_nx_huge_pages(kvm);
- 		r = 0;
+Patch #1 just makes the current ssd130x-i2c compatible strings in the DT
+binding to be deprecated, and add new ones that don't have an "fb-i2c".
+
+Patch #2 extends the DT binding with the properties needed to support SPI.
+
+Patch #3 adds the new compatible strings to the OF device ID table in the
+ssd130x-i2c DRM driver and deprecate the old ones.
+
+Patch #4 moves the device info for the different SSD130x variants from
+the ssd130x-i2c transport driver to the ssd130x core driver.
+
+Finally patch #5 adds the ssd130x-spi DRM driver for the OLED controllers
+that come with a 4-wire SPI interface, instead of an I2C interface.
+
+This is a v2 that addresses the issues pointed out in v1.
+
+Best regards,
+Javier
+
+Changes in v2:
+- Drop the -i2c suffixes from the compatible strings too (Geert Uytterhoeven).
+- Don't add compatible strings with an "-spi" suffix (Geert Uytterhoeven).
+- Drop ssd13x_variant_to_info() and just use the array index (Neil Armstrong).
+- Add Mark Brown's Acked-by tag to all patches.
+
+Javier Martinez Canillas (5):
+  dt-bindings: display: ssd1307fb: Deprecate "-i2c" compatible strings
+  dt-bindings: display: ssd1307fb: Extend schema for SPI controllers
+  drm/solomon: Add ssd130x new compatible strings and deprecate old
+    ones.
+  drm/solomon: Move device info from ssd130x-i2c to the core driver
+  drm/solomon: Add SSD130x OLED displays SPI support
+
+ .../bindings/display/solomon,ssd1307fb.yaml   |  74 +++++--
+ drivers/gpu/drm/solomon/Kconfig               |   9 +
+ drivers/gpu/drm/solomon/Makefile              |   1 +
+ drivers/gpu/drm/solomon/ssd130x-i2c.c         |  64 +++---
+ drivers/gpu/drm/solomon/ssd130x-spi.c         | 184 ++++++++++++++++++
+ drivers/gpu/drm/solomon/ssd130x.c             |  45 ++++-
+ drivers/gpu/drm/solomon/ssd130x.h             |  12 ++
+ 7 files changed, 332 insertions(+), 57 deletions(-)
+ create mode 100644 drivers/gpu/drm/solomon/ssd130x-spi.c
+
 -- 
-2.35.1.1178.g4f1659d476-goog
+2.35.1
 
