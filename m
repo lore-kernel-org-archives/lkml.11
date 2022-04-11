@@ -2,114 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0249C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:26:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:26:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348094AbiDKP2p (ORCPT
+        id S1348069AbiDKP24 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:28:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47360 "EHLO
+        Mon, 11 Apr 2022 11:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348375AbiDKP2B (ORCPT
+        with ESMTP id S1347917AbiDKP1G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:28:01 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2F318E32;
-        Mon, 11 Apr 2022 08:25:01 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id u17-20020a05600c211100b0038eaf4cdaaeso3691187wml.1;
-        Mon, 11 Apr 2022 08:25:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RzsEqdN9GWBZCp9gbidm1vb5G8aw4lFe2X8gpnY6F9U=;
-        b=JQrYEIFBxiKgk+B/U4eSm8qQmxNxlhQQJSFEVnH4IiJtIEp3Iyxq5LhWBdVbC9LXNE
-         fjx+B0j5+rGkH6hhrv3Vhu2BCOPj7AWkXgjJ8+uaYU2cbY/BVn09qPoZtz4r7WmtCgRc
-         6jAhjsJke1LITOa0Vfldz77wZj1VlbRfWgN7pe8I6kxAzvSOYjNJJc4Nw7MG9YNr4aUG
-         SGm8GZ0/H9xwhSw4bjPRJ9LCkvogFt2nujW+EA73cCJFafK8gHwzuZw+mRbDJ1aVEqlI
-         0njk9NS0L8d1rnRwHRpEArL4g96GYrOCP53MSQAnvE3aRkjnwc2JjwMeLuM8fqhl4EFJ
-         Kb9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RzsEqdN9GWBZCp9gbidm1vb5G8aw4lFe2X8gpnY6F9U=;
-        b=owLh2HgLeV2mOLeM+m3QoIE+10TxU9l8YDJL6P+5Of4Mqyusetg4rjkuUD3STENhNI
-         9dLu5XpxeweZ2UmQ6k3aMeCo35HDaqGh2fQBo7GEffyG87bx58w363k+Qbi/MMozCbih
-         4U3QsGXHkWamBFOR8gxTXtap+r9QMqJ6C52LCKV5K6lZxhDbsS1HoloiEvhcLOM+QdkG
-         JW4LSjo9nOHtTaWiHFTjqSwtUMSq6IkBmJl1HKO9gOkv7M3nfETNHIrSD/UT02Qm5/Pe
-         r+WLFm9rGDtGGxd2UG8sfwW+395CZLred9PRaYyeCECohxE/p783eOxlOFKI4VwB4MfC
-         xpRQ==
-X-Gm-Message-State: AOAM532mQJXb5017l400UucUUVxr6LkoK6tXYje2uZyt9bisb5L90FDV
-        FBOt0v2qLF9zx2TeDAm9Gs8=
-X-Google-Smtp-Source: ABdhPJwEBfXcqXbo6nKoX7IGK2b48hhx00NtVYuq45Z9JeLIYxRw6WPyZdqv7NpnPbruES0SS+KWOQ==
-X-Received: by 2002:a1c:f607:0:b0:381:1db:d767 with SMTP id w7-20020a1cf607000000b0038101dbd767mr28969100wmc.165.1649690700192;
-        Mon, 11 Apr 2022 08:25:00 -0700 (PDT)
-Received: from kista.localnet (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
-        by smtp.gmail.com with ESMTPSA id a7-20020adffb87000000b00207982c7f4dsm9126970wrr.67.2022.04.11.08.24.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 08:24:59 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Chen-Yu Tsai <wens@csie.org>, Samuel Holland <samuel@sholland.org>
-Cc:     Andre Przywara <andre.przywara@arm.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH] clk: sunxi-ng: sun6i-rtc: Mark rtc-32k as critical
-Date:   Mon, 11 Apr 2022 17:24:58 +0200
-Message-ID: <2233461.ElGaqSPkdT@kista>
-In-Reply-To: <20220411050100.40964-1-samuel@sholland.org>
-References: <20220411050100.40964-1-samuel@sholland.org>
+        Mon, 11 Apr 2022 11:27:06 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2066.outbound.protection.outlook.com [40.107.237.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6C63CFCE
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:23:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HRg1s6fEnl7y9txVGnOzW7pT5dn19G86p9em2etbtgk3kc1Bo+MWjIEx5wAaauhLgUUAneXNndlGOjGGrnnNaq2K7UgK4iywAEe62d16Tv2mJ5Ip1/WugpzoGATgCTFtceUf/XNVWz1bSdkmHnJMk4vszWQ6Hpw3vpx0ugbaNtNQ2l6xSiX2aWuA2+wE8MC3zqngequniatdUY+jQYkzq/mEAfeCifHq1rexEOGy8+0CDgiSbfmnud3YwpNIdx1saKj8EwXyWoUdc7W+CLpzSxqeWrj5w5oiHLq3Q8jxqN7et3ArHlSqTr2+hm2l0E+vtafrOioSgsrWgtilTLdwZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HUrO5ENOoxXySb+EmccEluhPuv3N/Zhbj/ac+d5egDU=;
+ b=EOQsEjcDa/mhDqPPoeSWXz40/CmvyfD4OTOhfPIkY75Ql884nkChAYrf4A5rDZcq/Y51OkEbA/MIHkIVAizAXddenGVCty82HXqkNgup5BBG0qbnQKjr+B62F5B96Hi+u0d7rBIkKTIVHHtwnmgDXbw/OEE6D8xjEFXVOmf8kvqVets0soa0eRHOvTjDnnaa4nhkkYKkuyV2yGBOGrbxDXvZg121W11KCIK8RCvoVzxvjFBdO/rS6k1rZgJRwzRyZyciBXKCZnsUeTSp8jOI/eU2rpbrnTjNLh4gxWAPKn8+Ka6LtfCnhCdEQXFKjnHSrbJNSxoE6FrYcpPssFJ5UA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HUrO5ENOoxXySb+EmccEluhPuv3N/Zhbj/ac+d5egDU=;
+ b=tyvFSxKwNGCJmWqwqAdC4364VNmAtAyWp/+tXh//BkDt4TdV16Ii8xMrpCaCxYQ78Fhk/8OYIt7Xf4Ym74SnJw7yfC7lrorExpF3BZE3sSmtMGOCBDVU94PQLrGBWHPUzoEd6Vl0OcTmNfZmw6w1S4vsv/UmuXbYOdP1tV8NN2f91O40cZlxmROJymbR3koUOKVP3KpyVXINV1VZYjOReLq1LOeLuzHzUyUqXhfcQAJxbS5TEqHH8IgRl2RFrjq90xNb0aqDR/U82T3ocblsF+o8Or/JSBMk1FiNU58Vn4ZL8glqbBoz3ciBOW1LHOu7JSVp3Xxr2AXnK1QFZIzFOA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM6PR12MB4105.namprd12.prod.outlook.com (2603:10b6:5:217::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
+ 2022 15:23:52 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
+ 15:23:52 +0000
+Date:   Mon, 11 Apr 2022 12:23:51 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/34] drm/i915/gvt: rename intel_vgpu_ops to
+ intel_vgpu_mdev_ops
+Message-ID: <20220411152351.GF2120790@nvidia.com>
+References: <20220411141403.86980-1-hch@lst.de>
+ <20220411141403.86980-4-hch@lst.de>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411141403.86980-4-hch@lst.de>
+X-ClientProxiedBy: MN2PR17CA0005.namprd17.prod.outlook.com
+ (2603:10b6:208:15e::18) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4e6745df-830b-4d50-78f9-08da1bcf48e1
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4105:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB410567931BF39AFB80257519C2EA9@DM6PR12MB4105.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: emiixFQEIUgJbheNzJLbjR+zIMDR0lMTzM1AoSjkDDrKOays2lpWhv3fjpMFvndVn5JSl2oux4t6kwZSnRRNuPSx45PgMhSAU0ue58ZWWOMuPV4MBGj3b3rwaQeTFYwKaP+wvI6hEm7pVbbl2YU+sc6ez9BkMEw3UNC3JjcCK6NoXaTkNSrIe7LVruc3uoV4dowfNMjXl/HiyMbGCgvzb1peuz1kaMsLzE1oZnauFVCs0xcc1CS3A+KIY80Y1vC1XHx7UkX9DhTKUtiOOv3lrSGpBV/KlLk/NuICnrM9IwWGX2XcsUe+AaqhK2id+bUWw+CG//CSadW5IG0VVmF6+oybCNOkM+bZcNKUsyIGUsvHvECezqzsjoVAnFLoA4scvzl0eeB+KI4fD4pn2B+thARdWvoxyfCGaRw1R+lnrtVkPtM+8FzsXWY/i/g8bryBJZZ4kCsVMlAWurSQo9Koc3vyYW7yIkq+f/rONvUXHq0YEnVNrgad1kUmO2awK2WLQlsWpI42V8acyCYZF/bUHnOD8W2UiRTSzAbrFkxmone4n/3+OewUj9VaCyl9DCfC8yB+rxfEdbBufBkeGIw54P6B+WAA+qfUXJxRApkAzqrfwTZhsV5umW6NuCfLMRLzfFnV/C0OtREYblqm1PGXkQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(186003)(26005)(66946007)(6486002)(83380400001)(86362001)(8676002)(66476007)(36756003)(66556008)(1076003)(2616005)(38100700002)(508600001)(316002)(6916009)(7416002)(5660300002)(8936002)(54906003)(6506007)(6512007)(4744005)(33656002)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AvNeBYYY4mX8F0eYyQT7e282sxDRD0l/E9gy04vb2fODDAGRhup8CIFImz3d?=
+ =?us-ascii?Q?74GdxOZLzwDuJoxEQNJMudMpsCVFPTJkRftatwIvJeutMJ/AvjHl2hv1NmCG?=
+ =?us-ascii?Q?YLvDHYMr8bBY1bIpPTf5ia6XGxWVJi+HC/znQO824JVcgADU7AP9XdojmCdK?=
+ =?us-ascii?Q?qE9tueHe1F3/cPmr1e2gw8owUV2ROSX0o7FN8bsri//BjqFy5aQ4O/u5HA2f?=
+ =?us-ascii?Q?BJscarJadL01VkWcgiLCitbYU1MtXdpQ2PPUPjuHIFYshWQ4O6GNMkBGagM5?=
+ =?us-ascii?Q?H8xHu/zi1VVnx7nWoRJqNF4UO+aR7JYJNt0gSvpazQjI4s29x7/1SfLSz5RR?=
+ =?us-ascii?Q?6Z8OAp6wOegvedwAw7XLhE8yiivUZNpyxTehjnYJCkCvmUoRZt5B+RLqY6lc?=
+ =?us-ascii?Q?kLUt47seUy9SvHEMWO1KsWKuVZ+6E1I7GmeDp6z3mYf669DuYFpd74yCkDrj?=
+ =?us-ascii?Q?Ct08HMcfmR9BoGyPVGzwmu7D1VuEL/77biNO6brZyvedMgVTqjsQGjYnqqSX?=
+ =?us-ascii?Q?huffS742CZcgI5nTOli1uAXI2mh4ty1mfI7fcKub5UlXeZAC6CFnm0UHqcju?=
+ =?us-ascii?Q?Mx90yAH+nMl0c3+sFb//Rnr6Ef5j8Rc86D0te4dtcvasFokMSL8/LSYCoQzc?=
+ =?us-ascii?Q?2Y0WFVJV6xsh8K5zE8NowfbsuJOz8uq8LN77Gk01XiA2/CdIdXSJqcMkH2R9?=
+ =?us-ascii?Q?yansEYCqhmn1Ps8VFHP8iLp66l6yjn0mVBYf4cIulDT+icgD4Mp9xFPCKm6y?=
+ =?us-ascii?Q?ZdMSkCfNuDfmQ/qdp3DlSvdtwbP83hVxsoz7u18kd2HKzbcHDfG/ct1QBaEt?=
+ =?us-ascii?Q?x7OJRCIPNn4MikcNjxrjMPI59DdEtZEY9+zJbYYQUyVqjPbYhHLMa3oF77Wl?=
+ =?us-ascii?Q?KW/NwaZnClbYKV0LR5qqTdq5vUBlPmsNJ4PCrTwkaGnJsL+aQ4mRXY8NxOsj?=
+ =?us-ascii?Q?j9yD8KbH34HtxSAJvpU/qJxKZ5qwqAd+I0JtRl1s9vlaDZ16I7IIJJvRGI1d?=
+ =?us-ascii?Q?54HWwPy8V7N1elMGtfrg2Tw00FGZPY+Jom6R/Hi0fE8hrV40KP1SZmdFIHpP?=
+ =?us-ascii?Q?LlEWXpkIGbfqN6S3rLzmDaH6KMQgeh5hZwUPrbP4kCeYCe9sY0R0c0z2gWfF?=
+ =?us-ascii?Q?WzQLLbjHb+SfIBdoO8UZj5PajWCBXGhJGynxTARbNVb5tIqB+NEHyGF7o1L4?=
+ =?us-ascii?Q?lTITBC39wu+nQJ3K8gYPcMjUUxB5zKvUUA0lLs1twIpViT/SdvHW/Albojjr?=
+ =?us-ascii?Q?sxws/Yt+bhQPbFeGUjzWJlXdWNktfO+8++qeGQfD9yb6EHBe1Gp9vPNktCmC?=
+ =?us-ascii?Q?SMxfIG6WW+7Q4ab4svl0oR393/zG62zkfFEaCSpiX+2tqYhJyl9BKwUNrCOM?=
+ =?us-ascii?Q?JBSjhcS0NG4HrsDANx678oIOUs0CTNwS5AjjrymKhl3m8wmXJwWNJibJdM3z?=
+ =?us-ascii?Q?RzCQu6GGicxc2yvDuRqSev5Ty51dF2pc05m8oSORMDPYWelUSGwqzRncjPQ8?=
+ =?us-ascii?Q?6La2tFFajAmZRSRn0wHq0q3UhC98ex+xhtiGlQoIsmWKgGiMsQZRJWu/pR5W?=
+ =?us-ascii?Q?7QWlpRUj/na/GZm2Zs4ZaQukoZLmqJWVG66wtBKOXJQ0yZLZ2MzHzEusKugo?=
+ =?us-ascii?Q?nRRhKIzTfdZJedRj3AlYY2bwr9nisYAy/G3lMWM/q636CLmloJ2FKhp4bE+g?=
+ =?us-ascii?Q?h/s24FOrpcuT3WgjorYtBINh1D2OnY3zYGZLHu80J8TSJzBYREBPmn0zrhvs?=
+ =?us-ascii?Q?XwT+3yHE5A=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e6745df-830b-4d50-78f9-08da1bcf48e1
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 15:23:52.2512
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BvmeFZSjQZ8eUku1PdJCGY92ZthsklbDTShRulSHPtR8P75YNRh6sHZBcX6IFTGV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4105
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne ponedeljek, 11. april 2022 ob 07:00:59 CEST je Samuel Holland napisal(a):
-> Because some newer hardware variants have multiple possible parents for
-> the RTC's timekeeping clock, this driver models it as a "rtc-32k" clock.
-> However, it does not add any consumer for this clock. This causes the
-> common clock framework to disable it, preventing RTC time access.
+On Mon, Apr 11, 2022 at 04:13:32PM +0200, Christoph Hellwig wrote:
+> Free the intel_vgpu_ops symbol name for something that fits better.
 > 
-> Since the RTC's timekeeping clock should always be enabled, regardless
-> of which drivers are loaded, let's mark this clock as critical instead
-> of adding a consumer in the RTC driver.
-> 
-> Fixes: d91612d7f01a ("clk: sunxi-ng: Add support for the sun6i RTC clocks")
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-
-Best regards,
-Jernej
-
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
-> 
->  drivers/clk/sunxi-ng/ccu-sun6i-rtc.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c b/drivers/clk/sunxi-ng/ccu-
-sun6i-rtc.c
-> index 8a10bade7e0d..3d9c9ce5a3db 100644
-> --- a/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c
-> +++ b/drivers/clk/sunxi-ng/ccu-sun6i-rtc.c
-> @@ -241,6 +241,7 @@ static struct clk_init_data rtc_32k_init_data = {
->  	.ops		= &ccu_mux_ops,
->  	.parent_hws	= rtc_32k_parents,
->  	.num_parents	= ARRAY_SIZE(rtc_32k_parents), /* updated 
-during probe */
-> +	.flags		= CLK_IS_CRITICAL,
->  };
->  
->  static struct ccu_mux rtc_32k_clk = {
-> -- 
-> 2.35.1
-> 
-> 
+>  drivers/gpu/drm/i915/gvt/kvmgt.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
+Jason
