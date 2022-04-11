@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE81C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA01C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345427AbiDKKX6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46950 "EHLO
+        id S243217AbiDKKYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 06:24:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345475AbiDKKWs (ORCPT
+        with ESMTP id S1345494AbiDKKWu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:22:48 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42CD941F96;
-        Mon, 11 Apr 2022 03:20:29 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id y8so9038582pfw.0;
-        Mon, 11 Apr 2022 03:20:29 -0700 (PDT)
+        Mon, 11 Apr 2022 06:22:50 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29A042A37;
+        Mon, 11 Apr 2022 03:20:35 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id 125so13752562pgc.11;
+        Mon, 11 Apr 2022 03:20:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xoMBpnSEunsJDVc9W25Zbl0+g3/+rjVG4pywLxdaxu8=;
-        b=q1GJTWEAHrQ7MeLlmhTi+JGVsHpz84VaFxdo8pdubh3H5yGA/JBHuLQRqJf9Ok4Rvt
-         A1zyBoPMbBXsEl+a/7I2TLY12rjlRioNvHElRzM8lTeOymQ4aorEqXjRUJyQ/M823t5N
-         vGll/5GKSu18G/jAEoj+lkuz6khhQZoE7/CwqV7TBi625PZh7S3Lk2JJLAVv9uMMsOZE
-         cFEZM1ZHy2dCItW5sInJOfEM0aAmnFA2KFN9D26F2gS1bhObQtOksUUCgaqgrZ4gLwUv
-         2ioo8SpHIwO206zezh+Npgv6BdH015BbJkhTNpSMDleTq6Ci786DEeg+G4YsNyj0/9Yb
-         /FXQ==
+        bh=sYmqQhFPUGHJVQOqKQXslK6S7f9FtfqpMFwooJh/+zc=;
+        b=KPQQ9yr+Rws9PyopyERvU4ni8MagOlTzvf4hNesn6k2kexMWvhELTdpMLvygNeAxrv
+         O0sivxcR/strue+lsauaZE8Y5rnSn9WgEk2NN762R4P95nFzXlGmUxeDE4eclqxnzXbJ
+         uqDNp7Su9m08lIlEbbhLBVPDSunHuJxM63LXjKa5hU0a9RH4Tyggn5t6tem98JDh2RZS
+         HtSqQwbuieO2OFX2lcddCZqFwU2hm0fGL6EDLCQwF9AP4d5MyYwmX2jcXNHsp2A/bI12
+         M9b/qBl479ie3KXRw8xuUXt1oO16ZSFN0sxt3jF7IM7PW26AwGe0xyO2V86Cz5LclERb
+         3+fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xoMBpnSEunsJDVc9W25Zbl0+g3/+rjVG4pywLxdaxu8=;
-        b=ydw3htk1CDgsWWXz1AoIE9eUDtcoGMUTYtdc0DibsN2yA0SWAgr250RlaL9FSwApP0
-         kFLFSgnvlkY6VK8PP0A+Lem9bVElfUaSkDVulhBDRMQYCf1HSUma99Iy9GLDuh1HkoKB
-         hnHN4gCq5MIu5U9x5UlBa4r4leGh5wBfZU1zNDSU1YL/Y+zxIQMkJ9qLvH+Rr6RnBSH+
-         yf6zsrFv8H7JtHb+bkYHr1H4mpLpuXe912OpBi//SalaJOLZtdsYflXIc/Lint6FfI7j
-         A8vxDrXN4ATeOtkERtyoMoghOAJIKSK6zMOnWjOisGqz7ayvVjILaI1o0NLMI3gsYjgU
-         ZlSA==
-X-Gm-Message-State: AOAM533Gj7VHMGn5oQp3AZ5yj1i4BhcaVRA0Rezg2g8Mp9I5rSTvIizM
-        9osOJ+5SBrB3LCBD/eTeXnk=
-X-Google-Smtp-Source: ABdhPJwn8cgaLC5E/DjyVziHinAkAFcNCN6EcBIzuN1VwSILaW7WTAUlBaljt1A55mEppydy3RzoUg==
-X-Received: by 2002:a65:604b:0:b0:398:ebeb:ad8f with SMTP id a11-20020a65604b000000b00398ebebad8fmr26434758pgp.89.1649672429060;
-        Mon, 11 Apr 2022 03:20:29 -0700 (PDT)
+        bh=sYmqQhFPUGHJVQOqKQXslK6S7f9FtfqpMFwooJh/+zc=;
+        b=qMm3dAyTshiPl6Eq5qSFLtNCB7xUZQEFNO/qWazJ04zLqww/1bP1nWYFSjPVneS4Db
+         RYyWAhhggtB2Nv4FKWW0ewHW4w+llmuvBYLKN4FcVL9mP1V8+bpF0IlWhAGwi+B2Kz4I
+         aA/kG1d6XawAKoufU+8MVneFbv8+fTx1gPrSokVOcTI4Pe5R2CRnQq5S5ThOmScLGcjf
+         8RKew+83WPSIPYPKVAr4481szWvWdcfR/xjbuQJE+ptH9koPN3+7RRMo7ySJCBqTqgc+
+         iHxTMjmmC2LFcgNDfo748/eJX/5CPoSFtLsz03voEyFu3RODjW9YH6iWMV6jwjBT5/P9
+         EFtg==
+X-Gm-Message-State: AOAM533E9xLPRSaad8gTtIj2/8eUN2VAQLctNOtQBOsWPr2ztUFzBaJP
+        kZmd2jOuVF/I/rM1c9y6321yNrcagjY=
+X-Google-Smtp-Source: ABdhPJzz3VYRuHrAdJUhsHqIM1IZkbg1pflbYbUuIv8XCtmhgBUX/VDQycOe4C8LygMBRQ9ALvjhRg==
+X-Received: by 2002:a63:fb45:0:b0:39d:40ed:d3fd with SMTP id w5-20020a63fb45000000b0039d40edd3fdmr5273195pgj.328.1649672434958;
+        Mon, 11 Apr 2022 03:20:34 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.112])
-        by smtp.gmail.com with ESMTPSA id h10-20020a056a00230a00b004faa0f67c3esm34012280pfh.23.2022.04.11.03.20.26
+        by smtp.gmail.com with ESMTPSA id h10-20020a056a00230a00b004faa0f67c3esm34012280pfh.23.2022.04.11.03.20.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 03:20:28 -0700 (PDT)
+        Mon, 11 Apr 2022 03:20:34 -0700 (PDT)
 From:   Like Xu <like.xu.linux@gmail.com>
 X-Google-Original-From: Like Xu <likexu@tencent.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -59,9 +58,9 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Wanpeng Li <wanpengli@tencent.com>,
         Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
         kvm@vger.kernel.org
-Subject: [PATCH RESEND v12 12/17] KVM: x86: Set PEBS_UNAVAIL in IA32_MISC_ENABLE when PEBS is enabled
-Date:   Mon, 11 Apr 2022 18:19:41 +0800
-Message-Id: <20220411101946.20262-13-likexu@tencent.com>
+Subject: [PATCH RESEND v12 14/17] KVM: x86/pmu: Disable guest PEBS temporarily in two rare situations
+Date:   Mon, 11 Apr 2022 18:19:43 +0800
+Message-Id: <20220411101946.20262-15-likexu@tencent.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220411101946.20262-1-likexu@tencent.com>
 References: <20220411101946.20262-1-likexu@tencent.com>
@@ -73,58 +72,126 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Like Xu <like.xu@linux.intel.com>
 
-The bit 12 represents "Processor Event Based Sampling Unavailable (RO)" :
-	1 = PEBS is not supported.
-	0 = PEBS is supported.
+The guest PEBS will be disabled when some users try to perf KVM and
+its user-space through the same PEBS facility OR when the host perf
+doesn't schedule the guest PEBS counter in a one-to-one mapping manner
+(neither of these are typical scenarios).
 
-A write to this PEBS_UNAVL available bit will bring #GP(0) when guest PEBS
-is enabled. Some PEBS drivers in guest may care about this bit.
+The PEBS records in the guest DS buffer are still accurate and the
+above two restrictions will be checked before each vm-entry only if
+guest PEBS is deemed to be enabled.
 
+Suggested-by: Wei Wang <wei.w.wang@intel.com>
 Signed-off-by: Like Xu <like.xu@linux.intel.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/kvm/vmx/pmu_intel.c | 2 ++
- arch/x86/kvm/x86.c           | 8 +++++++-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+ arch/x86/events/intel/core.c    | 11 +++++++++--
+ arch/x86/include/asm/kvm_host.h |  9 +++++++++
+ arch/x86/kvm/vmx/pmu_intel.c    | 20 ++++++++++++++++++++
+ arch/x86/kvm/vmx/vmx.c          |  4 ++++
+ arch/x86/kvm/vmx/vmx.h          |  1 +
+ 5 files changed, 43 insertions(+), 2 deletions(-)
 
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index f723a24eb29b..f136be17c1e2 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -4048,8 +4048,15 @@ static struct perf_guest_switch_msr *intel_guest_get_msrs(int *nr, void *data)
+ 		.guest = pebs_mask & ~cpuc->intel_ctrl_host_mask,
+ 	};
+ 
+-	/* Set hw GLOBAL_CTRL bits for PEBS counter when it runs for guest */
+-	arr[0].guest |= arr[*nr].guest;
++	if (arr[pebs_enable].host) {
++		/* Disable guest PEBS if host PEBS is enabled. */
++		arr[pebs_enable].guest = 0;
++	} else {
++		/* Disable guest PEBS for cross-mapped PEBS counters. */
++		arr[pebs_enable].guest &= ~kvm_pmu->host_cross_mapped_mask;
++		/* Set hw GLOBAL_CTRL bits for PEBS counter when it runs for guest */
++		arr[global_ctrl].guest |= arr[pebs_enable].guest;
++	}
+ 
+ 	return arr;
+ }
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 66057622164d..92b64fef75c1 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -524,6 +524,15 @@ struct kvm_pmu {
+ 	u64 pebs_data_cfg;
+ 	u64 pebs_data_cfg_mask;
+ 
++	/*
++	 * If a guest counter is cross-mapped to host counter with different
++	 * index, its PEBS capability will be temporarily disabled.
++	 *
++	 * The user should make sure that this mask is updated
++	 * after disabling interrupts and before perf_guest_get_msrs();
++	 */
++	u64 host_cross_mapped_mask;
++
+ 	/*
+ 	 * The gate to release perf_events not marked in
+ 	 * pmc_in_use only once in a vcpu time slice.
 diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index df661b5bbbf1..389f2585f20a 100644
+index 389f2585f20a..fc3b837448a3 100644
 --- a/arch/x86/kvm/vmx/pmu_intel.c
 +++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -609,6 +609,7 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 		bitmap_set(pmu->all_valid_pmc_idx, INTEL_PMC_IDX_FIXED_VLBR, 1);
- 
- 	if (vcpu->arch.perf_capabilities & PERF_CAP_PEBS_FORMAT) {
-+		vcpu->arch.ia32_misc_enable_msr &= ~MSR_IA32_MISC_ENABLE_PEBS_UNAVAIL;
- 		if (vcpu->arch.perf_capabilities & PERF_CAP_PEBS_BASELINE) {
- 			pmu->pebs_enable_mask = ~pmu->global_ctrl;
- 			pmu->reserved_bits &= ~ICL_EVENTSEL_ADAPTIVE;
-@@ -622,6 +623,7 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 				~((1ull << pmu->nr_arch_gp_counters) - 1);
- 		}
- 	} else {
-+		vcpu->arch.ia32_misc_enable_msr |= MSR_IA32_MISC_ENABLE_PEBS_UNAVAIL;
- 		vcpu->arch.perf_capabilities &= ~PERF_CAP_PEBS_MASK;
- 	}
+@@ -790,6 +790,26 @@ static void intel_pmu_cleanup(struct kvm_vcpu *vcpu)
+ 		intel_pmu_release_guest_lbr_event(vcpu);
  }
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 02142fa244f3..1887b7146da6 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3553,7 +3553,13 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		break;
- 	case MSR_IA32_MISC_ENABLE: {
- 		u64 old_val = vcpu->arch.ia32_misc_enable_msr;
--		u64 pmu_mask = MSR_IA32_MISC_ENABLE_EMON;
-+		u64 pmu_mask = MSR_IA32_MISC_ENABLE_EMON |
-+			MSR_IA32_MISC_ENABLE_PEBS_UNAVAIL;
-+
-+		/* RO bits */
-+		if (!msr_info->host_initiated &&
-+		    ((old_val ^ data) & MSR_IA32_MISC_ENABLE_PEBS_UNAVAIL))
-+			return 1;
  
- 		/*
- 		 * For a dummy user space, the order of setting vPMU capabilities and
++void intel_pmu_cross_mapped_check(struct kvm_pmu *pmu)
++{
++	struct kvm_pmc *pmc = NULL;
++	int bit;
++
++	for_each_set_bit(bit, (unsigned long *)&pmu->global_ctrl,
++			 X86_PMC_IDX_MAX) {
++		pmc = intel_pmc_idx_to_pmc(pmu, bit);
++
++		if (!pmc || !pmc_speculative_in_use(pmc) ||
++		    !intel_pmc_is_enabled(pmc))
++			continue;
++
++		if (pmc->perf_event && pmc->idx != pmc->perf_event->hw.idx) {
++			pmu->host_cross_mapped_mask |=
++				BIT_ULL(pmc->perf_event->hw.idx);
++		}
++	}
++}
++
+ struct kvm_pmu_ops intel_pmu_ops __initdata = {
+ 	.pmc_perf_hw_id = intel_pmc_perf_hw_id,
+ 	.pmc_is_enabled = intel_pmc_is_enabled,
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index ff28a3992427..c8d768592c8c 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -6698,6 +6698,10 @@ static void atomic_switch_perf_msrs(struct vcpu_vmx *vmx)
+ 	struct perf_guest_switch_msr *msrs;
+ 	struct kvm_pmu *pmu = vcpu_to_pmu(&vmx->vcpu);
+ 
++	pmu->host_cross_mapped_mask = 0;
++	if (pmu->pebs_enable & pmu->global_ctrl)
++		intel_pmu_cross_mapped_check(pmu);
++
+ 	/* Note, nr_msrs may be garbage if perf_guest_get_msrs() returns NULL. */
+ 	msrs = perf_guest_get_msrs(&nr_msrs, (void *)pmu);
+ 	if (!msrs)
+diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+index 9c6bfcd84008..9d890e600d27 100644
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -94,6 +94,7 @@ union vmx_exit_reason {
+ #define vcpu_to_lbr_desc(vcpu) (&to_vmx(vcpu)->lbr_desc)
+ #define vcpu_to_lbr_records(vcpu) (&to_vmx(vcpu)->lbr_desc.records)
+ 
++void intel_pmu_cross_mapped_check(struct kvm_pmu *pmu);
+ bool intel_pmu_lbr_is_compatible(struct kvm_vcpu *vcpu);
+ bool intel_pmu_lbr_is_enabled(struct kvm_vcpu *vcpu);
+ 
 -- 
 2.35.1
 
