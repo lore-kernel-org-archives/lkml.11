@@ -2,77 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E48C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:18:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F93C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344628AbiDKLUQ (ORCPT
+        id S1345247AbiDKLUw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37396 "EHLO
+        Mon, 11 Apr 2022 07:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233870AbiDKLUN (ORCPT
+        with ESMTP id S233870AbiDKLUq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:20:13 -0400
-X-Greylist: delayed 1031 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Apr 2022 04:17:59 PDT
-Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBED427D1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:17:59 -0700 (PDT)
-Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.94.2)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1ndrml-00DvDF-Aa; Mon, 11 Apr 2022 13:00:43 +0200
-Received: from laforge by localhost.localdomain with local (Exim 4.95)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1ndrmf-004g5j-PN;
-        Mon, 11 Apr 2022 13:00:37 +0200
-Date:   Mon, 11 Apr 2022 13:00:37 +0200
-From:   Harald Welte <laforge@gnumonks.org>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: Wanted: Old network/telecom data sheets + hardware manuals
-Message-ID: <YlQKVdw6iS7aKpbo@nataraja>
+        Mon, 11 Apr 2022 07:20:46 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E6E427D6;
+        Mon, 11 Apr 2022 04:18:32 -0700 (PDT)
+X-UUID: db46d44347744253b0b066f3a07fb425-20220411
+X-UUID: db46d44347744253b0b066f3a07fb425-20220411
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 311027754; Mon, 11 Apr 2022 19:18:26 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 11 Apr 2022 19:18:25 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 11 Apr 2022 19:18:25 +0800
+Message-ID: <371c9a96e80faa26719e00b694e45d176105b6dc.camel@mediatek.com>
+Subject: Re: [PATCH V2 08/15] cpufreq: mediatek: Move voltage limits to
+ platform data
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, <rafael@kernel.org>,
+        <viresh.kumar@linaro.org>, <robh+dt@kernel.org>,
+        <krzk+dt@kernel.org>
+CC:     <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
+        <roger.lu@mediatek.com>, <hsinyi@google.com>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Mon, 11 Apr 2022 19:18:25 +0800
+In-Reply-To: <3dade32c-4b46-351a-b3f9-d1fec16b603c@collabora.com>
+References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
+         <20220408045908.21671-9-rex-bc.chen@mediatek.com>
+         <3dade32c-4b46-351a-b3f9-d1fec16b603c@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear netdev, LKML and friends,
+On Fri, 2022-04-08 at 15:36 +0200, AngeloGioacchino Del Regno wrote:
+> Il 08/04/22 06:59, Rex-BC Chen ha scritto:
+> > From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> > 
+> > Voltages and shifts are defined as macros originally.
+> > There are different requirements of these values for each MediaTek
+> > SoCs.
+> > Therefore, we add the platform data and move these values into it.
+> > 
+> > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> > ---
+> >   drivers/cpufreq/mediatek-cpufreq.c | 90 ++++++++++++++++++++-----
+> > -----
+> >   1 file changed, 61 insertions(+), 29 deletions(-)
+> > 
+> > diff --git a/drivers/cpufreq/mediatek-cpufreq.c
+> > b/drivers/cpufreq/mediatek-cpufreq.c
+> > index 1369da62780a..0be5609ee82e 100644
+> > --- a/drivers/cpufreq/mediatek-cpufreq.c
+> > +++ b/drivers/cpufreq/mediatek-cpufreq.c
+> 
+> ..snip..
+> 
+> > @@ -625,20 +649,27 @@ static struct platform_driver
+> > mtk_cpufreq_platdrv = {
+> >   	.probe		= mtk_cpufreq_probe,
+> >   };
+> >   
+> > +static const struct mtk_cpufreq_platform_data mtk_platform_data =
+> > {
+> 
+> I would prefer if you name this after the oldest SoC that is
+> supported in this
+> driver, or after the IP version.
+> 
+> Example: if the oldest one is mt7622, then this should be
+> mt7622_platform_data;
+>           if newer SoCs have got a different cpu frequency control
+> IP, then we
+>           should have here something like
+>           mtk_v1_platform_data, mtk_v1_3_platform_data.
+> 
+> Please note that I didn't check release dates, so my reference to
+> mt7622 is
+> purely casual.
+> 
+> Regards,
+> Angelo
 
-as some of you may know, I've recently started to get involved in
-"retronetworking" as a hobby, i.e. collecting and running ancient
-data communications, telecommunications and computer networking technologies.
+Hello Angelo,
 
-We're not just collecting/repairing/operating old hardware and ancient software
-stacks (FDDI, TokenRing, ATM, ISDN, ...) but also related hardware documentation,
-data sheets, specifications, ...
+Thanks for your review.
+I will rename it as mt2701_platform_data.
 
-I would like to call on all Linux network developers to donate any surplus
-old networking/telecom chipset documentation, specifications, etc. they may
-have.  We have a non-destructive book scanner for sizes up to A2, as well as
-a variety of other scanners at our disposal to digitize any paper manuals,
-as needed.
+BRs,
+Rex
 
-More information about this 'call for manuals' can be found at
-	https://osmocom.org/projects/retronetworking/wiki/Call_for_old_Manuals
-
-In case anyone is interested, https://osmocom.org/projects/retronetworking/wiki
-contains a bit of info on parts of the collected equipment, and we've started
-to build a ISDN/TDM/PDH overlay network so people can operate their legacy ISDN
-equipment in times where public operators don't offer ISDN service anymore:
-https://osmocom.org/projects/octoi/wiki
-
-Some of the documents we already digitized and unearthed include the
-German "national ISDN" specs (FTZ 1TR6 etc) at
-https://osmocom.org/projects/retronetworking/wiki/German_FTZ_ISDN_Specifications
-
-Thanks in advance for any related document donations.
-
-Kind regards,
-	Harald
-
--- 
-- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
-============================================================================
-"Privacy in residential applications is a desirable marketing option."
-                                                  (ETSI EN 300 175-7 Ch. A6)
