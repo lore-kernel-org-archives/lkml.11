@@ -2,116 +2,372 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 907DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 08:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E072C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 08:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343849AbiDKIf4 (ORCPT
+        id S1343888AbiDKIhD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 04:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
+        Mon, 11 Apr 2022 04:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343848AbiDKIfl (ORCPT
+        with ESMTP id S236171AbiDKIgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 04:35:41 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67AC3E5FC
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 01:33:26 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id e8so5458918wra.7
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 01:33:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=27lr1TeRoTWAFLVF9iWjZf9oxGgkBi1ijJ2WmnDVaWw=;
-        b=FCiOpWwMz1l33QbeB+Jtt4vgr1FQhMBvYuXg9CwxMEZsIcuVknweKFjUN7iW+2i9cK
-         6icNeAlKmv9KMrFKBYTeJzTuTaLQrqAz87rGMry1dWZXm4WaTRZD8qkPhMoBRQIgboJq
-         gkDMBZ4Iywc5c8AWFqttqw8Mf9H62DLQn1ShJ5V1P9YTxEyxOqX6P+22Zz2p+H8QQk7b
-         72SKN7Xp2UiqKy1gotmgGVAH985FbXgT7oZ+HcB5XzDQ6YLW+zqHRxDP9MiZ9FTJ2hbG
-         /qFhqT7Bdal9IeLusenPQiG3Pw7Ma5BF2J+9ynOn0iiNwFlEPSEVFRAdzuuhc8ZgZNrz
-         60Yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=27lr1TeRoTWAFLVF9iWjZf9oxGgkBi1ijJ2WmnDVaWw=;
-        b=rFXqIX/LpZxaQdyRqZ+ehROGanxYH+xwQzZEtmq9DKYwcWpVTg+5DBURsCNeIidO1K
-         M+7gaRfUISaaZvZY+jvVSCt3ggxsadKVjTbkRmq9qRxApNJ7vP7I0os/FcrqqWQPQflT
-         wW2fIWllyyJFk5YM+JUGByuY4R4BI4Tz2DytMDavrgrYltgdGE0IUuoz7TmVb1bFEDWO
-         Q4yb3lN0p9P6X0zZjoMgvKwzgsRim7xNPx6N3bSy/AlizghjLb2CBFmT8F7XlF3keGpy
-         xGdLhwl8G2xYXAqO6Y/tMOqkNt1TNUtXiAit7tlTJvy75j8DNHdjL4tyYr8huWUA0hPd
-         +P+w==
-X-Gm-Message-State: AOAM530g5eHprCclEJMS1lGEOSUVcUJpbporQcYUb6ghTxCbev8TbhUk
-        uBGBVDNZ6rzbqjXYxBa2tIurNQ==
-X-Google-Smtp-Source: ABdhPJyMduce5eskJ2Cz9CC/3y6wawMSFNfIrfesrt3XjKQQPdmm+A6C+5gLz1aqtTxhi5MfzzLSUg==
-X-Received: by 2002:a05:6000:1c14:b0:207:9988:2af0 with SMTP id ba20-20020a0560001c1400b0020799882af0mr11267923wrb.324.1649666005486;
-        Mon, 11 Apr 2022 01:33:25 -0700 (PDT)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id z5-20020a05600c0a0500b0037fa93193a8sm20206956wmp.44.2022.04.11.01.33.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 01:33:24 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 10:33:22 +0200
-From:   LABBE Corentin <clabbe@baylibre.com>
-To:     John Keeping <john@metanate.com>
-Cc:     heiko@sntech.de, herbert@gondor.apana.org.au, krzk+dt@kernel.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH v4 17/33] crypto: rockchip: use read_poll_timeout
-Message-ID: <YlPn0nevX6zdYWwG@Red>
-References: <20220401201804.2867154-1-clabbe@baylibre.com>
- <20220401201804.2867154-18-clabbe@baylibre.com>
- <YkrYs87bgWs7+tOm@donbot>
+        Mon, 11 Apr 2022 04:36:37 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817C8201B2
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 01:34:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649666063; x=1681202063;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=H0zPUd6SqeY0SP/ZrmvMhMcUPe0MxxUMdu5O8GFwUeE=;
+  b=Yg3W6j1kxkbUOYIq8bVZp+O7Sq9KMZZKn7iTkNc4kuRQC5L5x+iRPaxE
+   4nwCSOkuZIzVIxlrVMIQkW56H15cFTubMCXLKqgsJ8ZZ9r6isKtc4i9M4
+   X4YvaQdJoMt2NlfV7tnaDnwxB44ESqWuSOoFTOenvi4hKUNrvmRVAYG51
+   EHiLN6o4qEQ2TX0l3SQrmIsfPUtZ53DTCkBkh4EmzZm55GigNMrzCQiZ4
+   /LaeSOi1LVqE8OsG0vpT15m2WOaCZU15fRfbF552NJElXFbpAPpEnvapR
+   Ry17h7r8kzdn8gGkC3jrOsnxkE8SGdhwYFigZ8ASJpWaeTOpwGNJ+kLqn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="262246326"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="262246326"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 01:34:23 -0700
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="572028817"
+Received: from lwit-desk1.ger.corp.intel.com (HELO localhost) ([10.249.143.43])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 01:34:18 -0700
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Douglas Anderson <dianders@chromium.org>,
+        dri-devel@lists.freedesktop.org
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        Philip Chen <philipchen@chromium.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [RFC PATCH 1/6] drm/dp: Helpers to make it easier for drivers
+ to use DP AUX bus properly
+In-Reply-To: <20220408193536.RFC.1.I4182ae27e00792842cb86f1433990a0ef9c0a073@changeid>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220409023628.2104952-1-dianders@chromium.org>
+ <20220408193536.RFC.1.I4182ae27e00792842cb86f1433990a0ef9c0a073@changeid>
+Date:   Mon, 11 Apr 2022 11:34:16 +0300
+Message-ID: <87o818hvcn.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YkrYs87bgWs7+tOm@donbot>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Mon, Apr 04, 2022 at 12:38:27PM +0100, John Keeping a écrit :
-> On Fri, Apr 01, 2022 at 08:17:48PM +0000, Corentin Labbe wrote:
-> > Use read_poll_timeout instead of open coding it
-> > 
-> > Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> > ---
-> >  drivers/crypto/rockchip/rk3288_crypto_ahash.c | 5 +++--
-> >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/crypto/rockchip/rk3288_crypto_ahash.c b/drivers/crypto/rockchip/rk3288_crypto_ahash.c
-> > index 137013bd4410..21c9a0327ddf 100644
-> > --- a/drivers/crypto/rockchip/rk3288_crypto_ahash.c
-> > +++ b/drivers/crypto/rockchip/rk3288_crypto_ahash.c
-> > @@ -10,6 +10,7 @@
-> >   */
-> >  #include <linux/device.h>
-> >  #include <asm/unaligned.h>
-> > +#include <linux/iopoll.h>
-> >  #include "rk3288_crypto.h"
-> >  
-> >  /*
-> > @@ -305,8 +306,8 @@ static int rk_hash_run(struct crypto_engine *engine, void *breq)
-> >  		 * efficiency, and make it response quickly when dma
-> >  		 * complete.
-> >  		 */
-> > -	while (!CRYPTO_READ(tctx->dev, RK_CRYPTO_HASH_STS))
-> > -		udelay(10);
-> > +	read_poll_timeout(readl, v, v == 0, 10, 1000, false,
-> > +			  tctx->dev->dev + RK_CRYPTO_HASH_STS);
-> 
-> This can be simplified to:
-> 
-> 	readl_poll_timeout(tctx->dev->dev + RK_CRYPTO_HASH_STS,
-> 			   v, v == 0, 10, 1000);
+On Fri, 08 Apr 2022, Douglas Anderson <dianders@chromium.org> wrote:
+> As talked about in the kerneldoc for "struct dp_aux_ep_client" in this
+> patch and also in the past in commit a1e3667a9835 ("drm/bridge:
+> ti-sn65dsi86: Promote the AUX channel to its own sub-dev"), to use the
+> DP AUX bus properly we really need two "struct device"s. One "struct
+> device" is in charge of providing the DP AUX bus and the other is
+> where we'll try to get a reference to the newly probed endpoint
+> devices.
+>
+> In ti-sn65dsi86 this wasn't too difficult to accomplish. That driver
+> is already broken up into several "struct devices" anyway because it
+> also provides a PWM and some GPIOs. Adding one more wasn't that
+> difficult / ugly.
+>
+> When I tried to do the same solution in parade-ps8640, it felt like I
+> was copying too much boilerplate code. I made the realization that I
+> didn't _really_ need a separate "driver" for each person that wanted
+> to do the same thing. By putting all the "driver" related code in a
+> common place then we could save a bit of hassle. This change
+> effectively adds a new "ep_client" driver that can be used by
+> anyone. The devices instantiated by this driver will just call through
+> to the probe/remove/shutdown calls provided.
+>
+> At the moment, the "ep_client" driver is backed by the Linux auxiliary
+> bus (unfortunate naming--this has nothing to do with DP AUX). I didn't
+> want to expose this to clients, though, so as far as clients are
+> concerned they get a vanilla "struct device".
+>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-Thanks, this is better.
+What is an "EP" client or device?
 
-> 
-> But shouldn't this be tctx->dev->reg ?!
+BR,
+Jani.
 
-Yes, I will fix it.
 
-Thanks
-Regards
+> ---
+>
+>  drivers/gpu/drm/dp/drm_dp_aux_bus.c | 165 +++++++++++++++++++++++++++-
+>  include/drm/dp/drm_dp_aux_bus.h     |  58 ++++++++++
+>  2 files changed, 222 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/dp/drm_dp_aux_bus.c b/drivers/gpu/drm/dp/drm_dp_aux_bus.c
+> index 415afce3cf96..5386ceacf133 100644
+> --- a/drivers/gpu/drm/dp/drm_dp_aux_bus.c
+> +++ b/drivers/gpu/drm/dp/drm_dp_aux_bus.c
+> @@ -12,6 +12,7 @@
+>   * to perform transactions on that bus.
+>   */
+>  
+> +#include <linux/auxiliary_bus.h>
+>  #include <linux/init.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+> @@ -299,6 +300,163 @@ void dp_aux_dp_driver_unregister(struct dp_aux_ep_driver *drv)
+>  }
+>  EXPORT_SYMBOL_GPL(dp_aux_dp_driver_unregister);
+>  
+> +/* -----------------------------------------------------------------------------
+> + * DP AUX EP Client
+> + */
+> +
+> +struct dp_aux_ep_client_data {
+> +	struct dp_aux_ep_client *client;
+> +	struct auxiliary_device adev;
+> +};
+> +
+> +static int dp_aux_ep_client_probe(struct auxiliary_device *adev,
+> +				  const struct auxiliary_device_id *id)
+> +{
+> +	struct dp_aux_ep_client_data *data =
+> +		container_of(adev, struct dp_aux_ep_client_data, adev);
+> +
+> +	if (!data->client->probe)
+> +		return 0;
+> +
+> +	return data->client->probe(&adev->dev, data->client);
+> +}
+> +
+> +static void dp_aux_ep_client_remove(struct auxiliary_device *adev)
+> +{
+> +	struct dp_aux_ep_client_data *data =
+> +		container_of(adev, struct dp_aux_ep_client_data, adev);
+> +
+> +	if (data->client->remove)
+> +		data->client->remove(&adev->dev, data->client);
+> +}
+> +
+> +static void dp_aux_ep_client_shutdown(struct auxiliary_device *adev)
+> +{
+> +	struct dp_aux_ep_client_data *data =
+> +		container_of(adev, struct dp_aux_ep_client_data, adev);
+> +
+> +	if (data->client->shutdown)
+> +		data->client->shutdown(&adev->dev, data->client);
+> +}
+> +
+> +static void dp_aux_ep_client_dev_release(struct device *dev)
+> +{
+> +	struct auxiliary_device *adev = to_auxiliary_dev(dev);
+> +	struct dp_aux_ep_client_data *data =
+> +		container_of(adev, struct dp_aux_ep_client_data, adev);
+> +
+> +	kfree(data);
+> +}
+> +
+> +/**
+> + * dp_aux_register_ep_client() - Register an DP AUX EP client
+> + * @client: The structure describing the client. It's the client's
+> + *          responsibility to keep this memory around until
+> + *          dp_aux_unregister_ep_client() is called, either explicitly or
+> + *          implicitly via devm.
+> + *
+> + * See the description of "struct dp_aux_ep_client" for a full explanation
+> + * of when you should use this and why.
+> + *
+> + * Return: 0 if no error or negative error code.
+> + */
+> +int dp_aux_register_ep_client(struct dp_aux_ep_client *client)
+> +{
+> +	struct dp_aux_ep_client_data *data;
+> +	int ret;
+> +
+> +	data = kzalloc(sizeof(*data), GFP_KERNEL);
+> +	if (!data)
+> +		return -ENOMEM;
+> +
+> +	data->client = client;
+> +	data->adev.name = "ep_client";
+> +	data->adev.dev.parent = client->aux->dev;
+> +	data->adev.dev.release = dp_aux_ep_client_dev_release;
+> +	device_set_of_node_from_dev(&data->adev.dev, client->aux->dev);
+> +
+> +	ret = auxiliary_device_init(&data->adev);
+> +	if (ret) {
+> +		/*
+> +		 * NOTE: if init doesn't fail then it takes ownership
+> +		 * of memory and this kfree() is magically part of
+> +		 * auxiliary_device_uninit().
+> +		 */
+> +		kfree(data);
+> +		return ret;
+> +	}
+> +
+> +	ret = auxiliary_device_add(&data->adev);
+> +	if (ret)
+> +		goto err_did_init;
+> +
+> +	client->_opaque = data;
+> +
+> +	return 0;
+> +
+> +err_did_init:
+> +	auxiliary_device_uninit(&data->adev);
+> +	return ret;
+> +}
+> +
+> +/**
+> + * dp_aux_unregister_ep_client() - Inverse of dp_aux_register_ep_client()
+> + * @client: The structure describing the client.
+> + *
+> + * If dp_aux_register_ep_client() returns no error then you should call this
+> + * to free resources.
+> + */
+> +void dp_aux_unregister_ep_client(struct dp_aux_ep_client *client)
+> +{
+> +	struct dp_aux_ep_client_data *data = client->_opaque;
+> +
+> +	auxiliary_device_delete(&data->adev);
+> +	auxiliary_device_uninit(&data->adev);
+> +}
+> +
+> +static void dp_aux_unregister_ep_client_void(void *data)
+> +{
+> +	dp_aux_unregister_ep_client(data);
+> +}
+> +
+> +/**
+> + * devm_dp_aux_register_ep_client() - devm wrapper for dp_aux_register_ep_client()
+> + * @client: The structure describing the client.
+> + *
+> + * Handles freeing w/ devm on the device "client->aux->dev".
+> + *
+> + * Return: 0 if no error or negative error code.
+> + */
+> +int devm_dp_aux_register_ep_client(struct dp_aux_ep_client *client)
+> +{
+> +	int ret;
+> +
+> +	ret = dp_aux_register_ep_client(client);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return devm_add_action_or_reset(client->aux->dev,
+> +					dp_aux_unregister_ep_client_void,
+> +					client);
+> +}
+> +
+> +static const struct auxiliary_device_id dp_aux_ep_client_id_table[] = {
+> +	{ .name = "drm_dp_aux_bus.ep_client", },
+> +	{},
+> +};
+> +
+> +static struct auxiliary_driver dp_aux_ep_client_driver = {
+> +	.name = "ep_client",
+> +	.probe = dp_aux_ep_client_probe,
+> +	.remove = dp_aux_ep_client_remove,
+> +	.shutdown = dp_aux_ep_client_shutdown,
+> +	.id_table = dp_aux_ep_client_id_table,
+> +};
+> +
+> +/* -----------------------------------------------------------------------------
+> + * Module init
+> + */
+> +
+>  static int __init dp_aux_bus_init(void)
+>  {
+>  	int ret;
+> @@ -307,11 +465,16 @@ static int __init dp_aux_bus_init(void)
+>  	if (ret)
+>  		return ret;
+>  
+> -	return 0;
+> +	ret = auxiliary_driver_register(&dp_aux_ep_client_driver);
+> +	if (ret)
+> +		bus_unregister(&dp_aux_bus_type);
+> +
+> +	return ret;
+>  }
+>  
+>  static void __exit dp_aux_bus_exit(void)
+>  {
+> +	auxiliary_driver_unregister(&dp_aux_ep_client_driver);
+>  	bus_unregister(&dp_aux_bus_type);
+>  }
+>  
+> diff --git a/include/drm/dp/drm_dp_aux_bus.h b/include/drm/dp/drm_dp_aux_bus.h
+> index 4f19b20b1dd6..ecf68b6873bd 100644
+> --- a/include/drm/dp/drm_dp_aux_bus.h
+> +++ b/include/drm/dp/drm_dp_aux_bus.h
+> @@ -54,4 +54,62 @@ int __dp_aux_dp_driver_register(struct dp_aux_ep_driver *aux_ep_drv,
+>  				struct module *owner);
+>  void dp_aux_dp_driver_unregister(struct dp_aux_ep_driver *aux_ep_drv);
+>  
+> +/**
+> + * struct dp_aux_ep_device - Helper for clients of DP AUX EP devices
+> + *
+> + * The DP AUX bus can be a bit tricky to use properly. Usually, the way
+> + * things work is that:
+> + * - The DP controller driver provides the DP AUX bus and would like to probe
+> + *   the endpoints on the DP AUX bus (AKA the panel) as part of its probe
+> + *   routine.
+> + * - The DP controller driver would also like to acquire a reference to the
+> + *   DP AUX endpoints (AKA the panel) as part of its probe.
+> + *
+> + * The problem is that the DP AUX endpoints aren't guaranteed to complete their
+> + * probe right away. They could be probing asynchronously or they simply might
+> + * fail to acquire some resource and return -EPROBE_DEFER.
+> + *
+> + * The best way to solve this is to break the DP controller's probe into
+> + * two parts. The first part will create the DP AUX bus. The second part will
+> + * acquire the reference to the DP AUX endpoint. The first part can complete
+> + * finish with no problems and be "done" even if the second part ends up
+> + * deferring while waiting for the DP AUX endpoint.
+> + *
+> + * The dp_aux_ep_client structure and associated functions help with managing
+> + * this common case. They will create/add a second "struct device" for you.
+> + * In the probe for this second "struct device" (known as the "clientdev" here)
+> + * you can acquire references to the AUX DP endpoints and can freely return
+> + * -EPROBE_DEFER if they're not ready yet.
+> + *
+> + * A few notes:
+> + * - The parent of the clientdev is guaranteed to be aux->dev
+> + * - The of_node of the clientdev is guaranteed to be the same as the of_node
+> + *   of aux->dev, copied with device_set_of_node_from_dev().
+> + * - If you're doing "devm" type things in the clientdev's probe you should
+> + *   use the clientdev. This makes lifetimes be managed properly.
+> + *
+> + * NOTE: there's no requirement to use these helpers if you have solved the
+> + * problem described above in some other way.
+> + */
+> +struct dp_aux_ep_client {
+> +	/** @probe: The second half of the probe */
+> +	int (*probe)(struct device *clientdev, struct dp_aux_ep_client *client);
+> +
+> +	/** @remove: Remove function corresponding to the probe */
+> +	void (*remove)(struct device *clientdev, struct dp_aux_ep_client *client);
+> +
+> +	/** @shutdown: Shutdown function corresponding to the probe */
+> +	void (*shutdown)(struct device *clientdev, struct dp_aux_ep_client *client);
+> +
+> +	/** @aux: The AUX bus */
+> +	struct drm_dp_aux *aux;
+> +
+> +	/** @_opaque: Used by the implementation */
+> +	void *_opaque;
+> +};
+> +
+> +int dp_aux_register_ep_client(struct dp_aux_ep_client *client);
+> +void dp_aux_unregister_ep_client(struct dp_aux_ep_client *client);
+> +int devm_dp_aux_register_ep_client(struct dp_aux_ep_client *client);
+> +
+>  #endif /* _DP_AUX_BUS_H_ */
+
+-- 
+Jani Nikula, Intel Open Source Graphics Center
