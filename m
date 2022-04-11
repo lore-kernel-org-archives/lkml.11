@@ -2,55 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3199C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 782F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347561AbiDKO5e (ORCPT
+        id S1347562AbiDKO6G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:57:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34572 "EHLO
+        Mon, 11 Apr 2022 10:58:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347547AbiDKO53 (ORCPT
+        with ESMTP id S1347584AbiDKO5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:57:29 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6296167F7;
-        Mon, 11 Apr 2022 07:55:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=tyW8OjGHVsmy+4/pM+unxwF6ndD9L4IorupExZYMsoM=; b=mJVQPCF4DdjMPE9i4Ff8tniU8Y
-        jD1nadxvHSMVFxH9OzPSkihbfM+E9Erku6wdyZwZOVurmjAXDkO1viQNwAiAZLpu1Vrv0tgzfJyJu
-        dOiuC8GnSO1GeVM+7Wn8qlNdugBC8alqZ/w/tlewhIZTtEx5gNdvKxbw6HCZaeDlG+pk7GJWznKd7
-        Gdyon5Nk+lzhwo7qP5vysjqft7Zogjke621Kw16we20NQmDRWRYTDwHmwtUZTfEsO8SkJOAEttkTz
-        sOZ79i0DafUmImsxSBE7FSXfioIm597BLKHtAKAfAt2kDjTPVtrs0boB5wQOYWzummUorSWQP39vf
-        +TcCW22w==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ndvRg-009S79-Qb; Mon, 11 Apr 2022 14:55:12 +0000
-Date:   Mon, 11 Apr 2022 07:55:12 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Zixuan Fu <r33s3n6@gmail.com>
-Cc:     djwong@kernel.org, linux-xfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, baijiaju1990@gmail.com,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Subject: Re: [PATCH] fs: xfs: fix possible NULL pointer dereference in
- xfs_rw_bdev()
-Message-ID: <YlRBULlBDO7LnbVi@infradead.org>
-References: <20220411113145.797121-1-r33s3n6@gmail.com>
+        Mon, 11 Apr 2022 10:57:44 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AF6165AF;
+        Mon, 11 Apr 2022 07:55:30 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id g18so6485785ejc.10;
+        Mon, 11 Apr 2022 07:55:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cPfG2H4mLBr47cKqUjnT59BLkTDD6UWYrmsvL4zHnIo=;
+        b=Uy/bxAAuqZ9K+qdIhOn4QdDjCdOvTzCsHVj/zq6n0YUDbneYUdT+7RlMaHSomvuQBW
+         jnPhQ5/JaFf4xtfN5tM4IyAoqhfaLouNXd7dXmpnztTU72lhDYzFr8hDDjv8Pb+DpZlb
+         FSu3lcBq+HgrMUa98apFMFNJ5PZO5z/GTYiBrofm/5UWcfRyPey30K1PAwzH988nLf/9
+         5JLsBUgJuuz2UH2fYpob+Sun8G6kQ+vLRfdUxMt5GsLmO0I0C2Rnvnz+QfSa6JPUkDOo
+         geSMpMAgN7mkvqTBVmKBo7WsyMsML6XOICzNloiJUGd6T3JtzpA2777VMAGBITmPiDr8
+         9yTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cPfG2H4mLBr47cKqUjnT59BLkTDD6UWYrmsvL4zHnIo=;
+        b=RaMJFWDIa+6StXUjguJFvN8X+PQepFeZRjXgayrN9f4LCCoLejjY+9uZ4R1iB45MfB
+         8KcS8yovWlasTtWcYL/tZidksoGDn3UUJShAw3qEqt1l+G2IJyoQGwskinfBUk+ezHYh
+         ummOPnxW0xUM6rFFboufPYhb0bEJG7dvpU8EVIR52LvrYTqeZSMMUC7MH1aJs5uHCI9o
+         2Kkqzu3yW4NMJwIPELAo1pdUKYx6X4hNufoEj4O+uZObBchbuWvR6tcrZq3/sp9lgN49
+         i/Qn3GkEg+VjmIBnYSwYgnt+2dDmqutciKBOvDLsk7iWD4Phcm9f3+5Yofkvij5+gIu7
+         P/yg==
+X-Gm-Message-State: AOAM530Yn3vWBh7SjDph0z2XB73RSMWruSnR7eCJ/mlqvbZdAUlG+Y/G
+        7acPfd3QjoMg4VVCo91UMUFP3sKlMwsW85D6CMw=
+X-Google-Smtp-Source: ABdhPJzGTXwGzpSVprY55wJWpFpj9QAGpv0s5vrLkI3vsCX5pfLKwotr0Y91k+A4dhX3GnpI5z8u5+zDGqDzXjfVGC0=
+X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id
+ nd14-20020a170907628e00b006d9c6fa6168mr30299560ejc.132.1649688928772; Mon, 11
+ Apr 2022 07:55:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411113145.797121-1-r33s3n6@gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+References: <20220409120901.267526-1-dzm91@hust.edu.cn>
+In-Reply-To: <20220409120901.267526-1-dzm91@hust.edu.cn>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Apr 2022 17:51:15 +0300
+Message-ID: <CAHp75Vc4hGOJ8gr9R5WqgZ1QkC-uEeQ7WXAqO0YjynDx9jOvnw@mail.gmail.com>
+Subject: Re: [PATCH] driver: usb: nullify dangling pointer in cdc_ncm_free
+To:     Dongliang Mu <dzm91@hust.edu.cn>
+Cc:     Oliver Neukum <oliver@neukum.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com,
+        USB <linux-usb@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 07:31:45PM +0800, Zixuan Fu wrote:
-> In our fault-injection testing, bio_alloc() may fail with low memory and
-> return NULL.
+On Sun, Apr 10, 2022 at 5:14 AM Dongliang Mu <dzm91@hust.edu.cn> wrote:
+>
+> From: Dongliang Mu <mudongliangabcd@gmail.com>
+>
+> cdc_ncm_bind calls cdc_ncm_bind_common and sets dev->data[0]
+> with ctx. However, in the unbind function - cdc_ncm_unbind,
+> it calls cdc_ncm_free and frees ctx, leaving dev->data[0] as
+> a dangling pointer. The following ioctl operation will trigger
+> the UAF in the function cdc_ncm_set_dgram_size.
 
-Well, in that case your fault injection seems to be completely broken.
-Please take a closer look at how bio_alloc is implemented and
-documented.
+First of all, please use the standard form of referring to the func()
+as in this sentence.
+
+> Fix this by setting dev->data[0] as zero.
+>
+> ==================================================================
+> BUG: KASAN: use-after-free in cdc_ncm_set_dgram_size+0xc91/0xde0
+> Read of size 8 at addr ffff8880755210b0 by task dhcpcd/3174
+>
+
+Please, avoid SO noisy commit messages. Find the core part of the
+traceback(s) which should be rarely more than 5-10 lines.
+
+...
+
+The code seems fine.
+
+-- 
+With Best Regards,
+Andy Shevchenko
