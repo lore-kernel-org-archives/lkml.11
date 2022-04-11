@@ -2,33 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE025C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C080C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344866AbiDKORQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44682 "EHLO
+        id S237579AbiDKORU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 10:17:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347057AbiDKOQ7 (ORCPT
+        with ESMTP id S1347079AbiDKORB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:16:59 -0400
+        Mon, 11 Apr 2022 10:17:01 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719A511A3B
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:14:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E0313E88
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:14:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=TO70N9dvqoS5lkquCWR1xtCLH7JNTt1iUVXlp2hpJYM=; b=WSedrvGNNTyDyZyIaNKoC/Ov93
-        u1e2NOa/t3fyPDZWxA+g/b/i53MX2wgE7Z+e9/JBk1kkmcBivNvnU7x24O4R0TpmhL9JfzRow+UYL
-        xU0IqEzUC4zlZkyhLRucprOjK4Hq9dbrL+eikADyyCTkaXO3LSGXxmfncVBrffsiLp4/90rXw3e1W
-        BCAUB2+I1jA8P+BOThxd+w9jK+DkTHx0fZn+Kgs8T2fzVAIKRZDx3BO4QhAoEd86LIGAp+DzjiNiB
-        AGJAbTuV+EbcW0yftpIhKizAZ8HaQ0+K5viSrNxfHfMOIPZcmYxTkHIP0g0z4ti+ivXATy5zaZZZR
-        qBn66DZw==;
+        bh=zk2JcYuzSoUUJtzlalPF3LdlCCzgz8L6zByOy1v9jos=; b=JJNfo/vbA27uN+qV66soBKsCtj
+        a9FtpKP1Z5hxieWuUTsfq8CHl7W7jDj5ezaMgLgr4cuE3K1ipUGUyBkWMoyYRzL3OKUJr+qnnmcQq
+        wJu4sYDBqAx6x+8sEoZPM22/3M8kmtdRh56FW+CwsWNS4Ws7BpOTy8hANarVl7U8NFa1jKAeI1Hwd
+        L4OVCoYO3k1HBK5VDcED1q4JmACjL+5BMpqKOrGJIbqC8nW5ArN5eTpOhS9cVzWeVroh7cB/9mFHh
+        wDtA25KHL94KJLSvnp/QytmBS498h+NEwxdFLsp0Ijo5n59yHDf5AciyYwWRihVq2afLKaBQH0bIk
+        RTlXYXFQ==;
 Received: from [2001:4bb8:18e:76f5:3747:ef85:d03d:53e4] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nduoT-009KUy-HY; Mon, 11 Apr 2022 14:14:42 +0000
+        id 1nduoN-009KS2-Gj; Mon, 11 Apr 2022 14:14:36 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
@@ -38,9 +37,9 @@ To:     Jani Nikula <jani.nikula@linux.intel.com>,
 Cc:     Jason Gunthorpe <jgg@nvidia.com>, intel-gfx@lists.freedesktop.org,
         intel-gvt-dev@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 11/34] drm/i915/gvt: merge struct kvmgt_guest_info into strut intel_vgpu
-Date:   Mon, 11 Apr 2022 16:13:40 +0200
-Message-Id: <20220411141403.86980-12-hch@lst.de>
+Subject: [PATCH 09/34] drm/i915/gvt: remove the unused from_virt_to_mfn op
+Date:   Mon, 11 Apr 2022 16:13:38 +0200
+Message-Id: <20220411141403.86980-10-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220411141403.86980-1-hch@lst.de>
 References: <20220411141403.86980-1-hch@lst.de>
@@ -51,411 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Consolidate the per-VGPU structures into a single one.
-
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/gpu/drm/i915/gvt/gvt.h   |   8 +++
- drivers/gpu/drm/i915/gvt/kvmgt.c | 117 ++++++++++++-------------------
- 2 files changed, 52 insertions(+), 73 deletions(-)
+ drivers/gpu/drm/i915/gvt/hypercall.h |  1 -
+ drivers/gpu/drm/i915/gvt/kvmgt.c     |  6 ------
+ drivers/gpu/drm/i915/gvt/mpt.h       | 12 ------------
+ 3 files changed, 19 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gvt/gvt.h b/drivers/gpu/drm/i915/gvt/gvt.h
-index 628dd686c03d5..16daa615f9c0d 100644
---- a/drivers/gpu/drm/i915/gvt/gvt.h
-+++ b/drivers/gpu/drm/i915/gvt/gvt.h
-@@ -34,6 +34,7 @@
- #define _GVT_H_
- 
- #include <uapi/linux/pci_regs.h>
-+#include <linux/kvm_host.h>
- 
- #include "i915_drv.h"
- #include "intel_gvt.h"
-@@ -174,6 +175,8 @@ struct intel_vgpu_submission {
- 	} last_ctx[I915_NUM_ENGINES];
- };
- 
-+#define KVMGT_DEBUGFS_FILENAME		"kvmgt_nr_cache_entries"
-+
- struct intel_vgpu {
- 	struct intel_gvt *gvt;
- 	struct mutex vgpu_lock;
-@@ -236,6 +239,11 @@ struct intel_vgpu {
- 	atomic_t released;
- 	struct vfio_device *vfio_device;
- 	struct vfio_group *vfio_group;
-+
-+	struct kvm_page_track_notifier_node track_node;
-+#define NR_BKT (1 << 18)
-+	struct hlist_head ptable[NR_BKT];
-+#undef NR_BKT
- };
- 
- /* validating GM healthy status*/
+diff --git a/drivers/gpu/drm/i915/gvt/hypercall.h b/drivers/gpu/drm/i915/gvt/hypercall.h
+index f1a4926f6f1be..27890a5e2d828 100644
+--- a/drivers/gpu/drm/i915/gvt/hypercall.h
++++ b/drivers/gpu/drm/i915/gvt/hypercall.h
+@@ -47,7 +47,6 @@ struct intel_gvt_mpt {
+ 	int (*attach_vgpu)(void *vgpu, unsigned long *handle);
+ 	void (*detach_vgpu)(void *vgpu);
+ 	int (*inject_msi)(unsigned long handle, u32 addr, u16 data);
+-	unsigned long (*from_virt_to_mfn)(void *p);
+ 	int (*enable_page_track)(unsigned long handle, u64 gfn);
+ 	int (*disable_page_track)(unsigned long handle, u64 gfn);
+ 	int (*read_gpa)(unsigned long handle, unsigned long gpa, void *buf,
 diff --git a/drivers/gpu/drm/i915/gvt/kvmgt.c b/drivers/gpu/drm/i915/gvt/kvmgt.c
-index 1c2b949d8e01f..37cdf092a7140 100644
+index 9ed13c86d4765..f7b8ce87bc330 100644
 --- a/drivers/gpu/drm/i915/gvt/kvmgt.c
 +++ b/drivers/gpu/drm/i915/gvt/kvmgt.c
-@@ -39,7 +39,6 @@
- #include <linux/spinlock.h>
- #include <linux/eventfd.h>
- #include <linux/uuid.h>
--#include <linux/kvm_host.h>
- #include <linux/vfio.h>
- #include <linux/mdev.h>
- #include <linux/debugfs.h>
-@@ -92,16 +91,6 @@ struct kvmgt_pgfn {
- 	struct hlist_node hnode;
- };
+@@ -2192,11 +2192,6 @@ static int kvmgt_write_gpa(unsigned long handle, unsigned long gpa,
+ 	return kvmgt_rw_gpa(handle, gpa, buf, len, true);
+ }
  
--#define KVMGT_DEBUGFS_FILENAME "kvmgt_nr_cache_entries"
--struct kvmgt_guest_info {
--	struct kvm *kvm;
--	struct intel_vgpu *vgpu;
--	struct kvm_page_track_notifier_node track_node;
--#define NR_BKT (1 << 18)
--	struct hlist_head ptable[NR_BKT];
--#undef NR_BKT
--};
+-static unsigned long kvmgt_virt_to_pfn(void *addr)
+-{
+-	return PFN_DOWN(__pa(addr));
+-}
 -
- struct gvt_dma {
- 	struct intel_vgpu *vgpu;
- 	struct rb_node gfn_node;
-@@ -232,7 +221,7 @@ static void intel_gvt_cleanup_vgpu_type_groups(struct intel_gvt *gvt)
- 
- static int kvmgt_guest_init(struct mdev_device *mdev);
- static void intel_vgpu_release_work(struct work_struct *work);
--static bool kvmgt_guest_exit(struct kvmgt_guest_info *info);
-+static bool kvmgt_guest_exit(struct intel_vgpu *info);
- 
- static void gvt_unpin_guest_page(struct intel_vgpu *vgpu, unsigned long gfn,
- 		unsigned long size)
-@@ -456,12 +445,12 @@ static void gvt_cache_init(struct intel_vgpu *vgpu)
- 	mutex_init(&vgpu->cache_lock);
- }
- 
--static void kvmgt_protect_table_init(struct kvmgt_guest_info *info)
-+static void kvmgt_protect_table_init(struct intel_vgpu *info)
+ static bool kvmgt_is_valid_gfn(unsigned long handle, unsigned long gfn)
  {
- 	hash_init(info->ptable);
- }
- 
--static void kvmgt_protect_table_destroy(struct kvmgt_guest_info *info)
-+static void kvmgt_protect_table_destroy(struct intel_vgpu *info)
- {
- 	struct kvmgt_pgfn *p;
- 	struct hlist_node *tmp;
-@@ -474,7 +463,7 @@ static void kvmgt_protect_table_destroy(struct kvmgt_guest_info *info)
- }
- 
- static struct kvmgt_pgfn *
--__kvmgt_protect_table_find(struct kvmgt_guest_info *info, gfn_t gfn)
-+__kvmgt_protect_table_find(struct intel_vgpu *info, gfn_t gfn)
- {
- 	struct kvmgt_pgfn *p, *res = NULL;
- 
-@@ -488,8 +477,7 @@ __kvmgt_protect_table_find(struct kvmgt_guest_info *info, gfn_t gfn)
- 	return res;
- }
- 
--static bool kvmgt_gfn_is_write_protected(struct kvmgt_guest_info *info,
--				gfn_t gfn)
-+static bool kvmgt_gfn_is_write_protected(struct intel_vgpu *info, gfn_t gfn)
- {
- 	struct kvmgt_pgfn *p;
- 
-@@ -497,7 +485,7 @@ static bool kvmgt_gfn_is_write_protected(struct kvmgt_guest_info *info,
- 	return !!p;
- }
- 
--static void kvmgt_protect_table_add(struct kvmgt_guest_info *info, gfn_t gfn)
-+static void kvmgt_protect_table_add(struct intel_vgpu *info, gfn_t gfn)
- {
- 	struct kvmgt_pgfn *p;
- 
-@@ -512,8 +500,7 @@ static void kvmgt_protect_table_add(struct kvmgt_guest_info *info, gfn_t gfn)
- 	hash_add(info->ptable, &p->hnode, gfn);
- }
- 
--static void kvmgt_protect_table_del(struct kvmgt_guest_info *info,
--				gfn_t gfn)
-+static void kvmgt_protect_table_del(struct intel_vgpu *info, gfn_t gfn)
- {
- 	struct kvmgt_pgfn *p;
- 
-@@ -940,7 +927,6 @@ static void intel_vgpu_release_msi_eventfd_ctx(struct intel_vgpu *vgpu)
- static void __intel_vgpu_release(struct intel_vgpu *vgpu)
- {
- 	struct drm_i915_private *i915 = vgpu->gvt->gt->i915;
--	struct kvmgt_guest_info *info;
- 	int ret;
- 
- 	if (!handle_valid(vgpu->handle))
-@@ -964,8 +950,7 @@ static void __intel_vgpu_release(struct intel_vgpu *vgpu)
- 	/* dereference module reference taken at open */
- 	module_put(THIS_MODULE);
- 
--	info = (struct kvmgt_guest_info *)vgpu->handle;
--	kvmgt_guest_exit(info);
-+	kvmgt_guest_exit(vgpu);
- 
- 	intel_vgpu_release_msi_eventfd_ctx(vgpu);
- 	vfio_group_put_external_user(vgpu->vfio_group);
-@@ -1751,7 +1736,7 @@ static void kvmgt_host_exit(struct device *dev, void *gvt)
- 
- static int kvmgt_page_track_add(unsigned long handle, u64 gfn)
- {
--	struct kvmgt_guest_info *info;
-+	struct intel_vgpu *info;
- 	struct kvm *kvm;
- 	struct kvm_memory_slot *slot;
- 	int idx;
-@@ -1759,7 +1744,7 @@ static int kvmgt_page_track_add(unsigned long handle, u64 gfn)
- 	if (!handle_valid(handle))
- 		return -ESRCH;
- 
--	info = (struct kvmgt_guest_info *)handle;
-+	info = (struct intel_vgpu *)handle;
- 	kvm = info->kvm;
- 
- 	idx = srcu_read_lock(&kvm->srcu);
-@@ -1785,7 +1770,7 @@ static int kvmgt_page_track_add(unsigned long handle, u64 gfn)
- 
- static int kvmgt_page_track_remove(unsigned long handle, u64 gfn)
- {
--	struct kvmgt_guest_info *info;
-+	struct intel_vgpu *info;
- 	struct kvm *kvm;
- 	struct kvm_memory_slot *slot;
- 	int idx;
-@@ -1793,7 +1778,7 @@ static int kvmgt_page_track_remove(unsigned long handle, u64 gfn)
- 	if (!handle_valid(handle))
- 		return 0;
- 
--	info = (struct kvmgt_guest_info *)handle;
-+	info = (struct intel_vgpu *)handle;
- 	kvm = info->kvm;
- 
- 	idx = srcu_read_lock(&kvm->srcu);
-@@ -1821,11 +1806,11 @@ static void kvmgt_page_track_write(struct kvm_vcpu *vcpu, gpa_t gpa,
- 		const u8 *val, int len,
- 		struct kvm_page_track_notifier_node *node)
- {
--	struct kvmgt_guest_info *info = container_of(node,
--					struct kvmgt_guest_info, track_node);
-+	struct intel_vgpu *info =
-+		container_of(node, struct intel_vgpu, track_node);
- 
- 	if (kvmgt_gfn_is_write_protected(info, gpa_to_gfn(gpa)))
--		intel_vgpu_page_track_handler(info->vgpu, gpa,
-+		intel_vgpu_page_track_handler(info, gpa,
- 						     (void *)val, len);
- }
- 
-@@ -1835,8 +1820,8 @@ static void kvmgt_page_track_flush_slot(struct kvm *kvm,
- {
- 	int i;
- 	gfn_t gfn;
--	struct kvmgt_guest_info *info = container_of(node,
--					struct kvmgt_guest_info, track_node);
-+	struct intel_vgpu *info =
-+		container_of(node, struct intel_vgpu, track_node);
- 
- 	write_lock(&kvm->mmu_lock);
- 	for (i = 0; i < slot->npages; i++) {
-@@ -1853,7 +1838,6 @@ static void kvmgt_page_track_flush_slot(struct kvm *kvm,
- static bool __kvmgt_vgpu_exist(struct intel_vgpu *vgpu, struct kvm *kvm)
- {
- 	struct intel_vgpu *itr;
--	struct kvmgt_guest_info *info;
- 	int id;
- 	bool ret = false;
- 
-@@ -1862,8 +1846,7 @@ static bool __kvmgt_vgpu_exist(struct intel_vgpu *vgpu, struct kvm *kvm)
- 		if (!handle_valid(itr->handle))
- 			continue;
- 
--		info = (struct kvmgt_guest_info *)itr->handle;
--		if (kvm && kvm == info->kvm) {
-+		if (kvm && kvm == itr->kvm) {
- 			ret = true;
- 			goto out;
- 		}
-@@ -1875,7 +1858,6 @@ static bool __kvmgt_vgpu_exist(struct intel_vgpu *vgpu, struct kvm *kvm)
- 
- static int kvmgt_guest_init(struct mdev_device *mdev)
- {
--	struct kvmgt_guest_info *info;
- 	struct intel_vgpu *vgpu;
- 	struct kvm *kvm;
- 
-@@ -1892,38 +1874,29 @@ static int kvmgt_guest_init(struct mdev_device *mdev)
- 	if (__kvmgt_vgpu_exist(vgpu, kvm))
- 		return -EEXIST;
- 
--	info = vzalloc(sizeof(struct kvmgt_guest_info));
--	if (!info)
--		return -ENOMEM;
--
--	vgpu->handle = (unsigned long)info;
--	info->vgpu = vgpu;
--	info->kvm = kvm;
--	kvm_get_kvm(info->kvm);
-+	vgpu->handle = (unsigned long)vgpu;
-+	kvm_get_kvm(vgpu->kvm);
- 
--	kvmgt_protect_table_init(info);
-+	kvmgt_protect_table_init(vgpu);
- 	gvt_cache_init(vgpu);
- 
--	info->track_node.track_write = kvmgt_page_track_write;
--	info->track_node.track_flush_slot = kvmgt_page_track_flush_slot;
--	kvm_page_track_register_notifier(kvm, &info->track_node);
-+	vgpu->track_node.track_write = kvmgt_page_track_write;
-+	vgpu->track_node.track_flush_slot = kvmgt_page_track_flush_slot;
-+	kvm_page_track_register_notifier(kvm, &vgpu->track_node);
- 
- 	debugfs_create_ulong(KVMGT_DEBUGFS_FILENAME, 0444, vgpu->debugfs,
- 			     &vgpu->nr_cache_entries);
+ 	struct kvmgt_guest_info *info;
+@@ -2223,7 +2218,6 @@ static const struct intel_gvt_mpt kvmgt_mpt = {
+ 	.attach_vgpu = kvmgt_attach_vgpu,
+ 	.detach_vgpu = kvmgt_detach_vgpu,
+ 	.inject_msi = kvmgt_inject_msi,
+-	.from_virt_to_mfn = kvmgt_virt_to_pfn,
+ 	.enable_page_track = kvmgt_page_track_add,
+ 	.disable_page_track = kvmgt_page_track_remove,
+ 	.read_gpa = kvmgt_read_gpa,
+diff --git a/drivers/gpu/drm/i915/gvt/mpt.h b/drivers/gpu/drm/i915/gvt/mpt.h
+index bb0e9e71d13e2..6d062cf71de92 100644
+--- a/drivers/gpu/drm/i915/gvt/mpt.h
++++ b/drivers/gpu/drm/i915/gvt/mpt.h
+@@ -140,18 +140,6 @@ static inline int intel_gvt_hypervisor_inject_msi(struct intel_vgpu *vgpu)
  	return 0;
  }
  
--static bool kvmgt_guest_exit(struct kvmgt_guest_info *info)
-+static bool kvmgt_guest_exit(struct intel_vgpu *info)
- {
--	debugfs_remove(debugfs_lookup(KVMGT_DEBUGFS_FILENAME,
--				      info->vgpu->debugfs));
-+	debugfs_remove(debugfs_lookup(KVMGT_DEBUGFS_FILENAME, info->debugfs));
- 
- 	kvm_page_track_unregister_notifier(info->kvm, &info->track_node);
- 	kvm_put_kvm(info->kvm);
- 	kvmgt_protect_table_destroy(info);
--	gvt_cache_destroy(info->vgpu);
--	vfree(info);
+-/**
+- * intel_gvt_hypervisor_set_wp_page - translate a host VA into MFN
+- * @p: host kernel virtual address
+- *
+- * Returns:
+- * MFN on success, INTEL_GVT_INVALID_ADDR if failed.
+- */
+-static inline unsigned long intel_gvt_hypervisor_virt_to_mfn(void *p)
+-{
+-	return intel_gvt_host.mpt->from_virt_to_mfn(p);
+-}
 -
-+	gvt_cache_destroy(info);
- 	return true;
- }
- 
-@@ -1946,14 +1919,12 @@ static void kvmgt_detach_vgpu(void *p_vgpu)
- 
- static int kvmgt_inject_msi(unsigned long handle, u32 addr, u16 data)
- {
--	struct kvmgt_guest_info *info;
- 	struct intel_vgpu *vgpu;
- 
- 	if (!handle_valid(handle))
- 		return -ESRCH;
- 
--	info = (struct kvmgt_guest_info *)handle;
--	vgpu = info->vgpu;
-+	vgpu = (struct intel_vgpu *)handle;
- 
- 	/*
- 	 * When guest is poweroff, msi_trigger is set to NULL, but vgpu's
-@@ -1975,15 +1946,15 @@ static int kvmgt_inject_msi(unsigned long handle, u32 addr, u16 data)
- 
- static unsigned long kvmgt_gfn_to_pfn(unsigned long handle, unsigned long gfn)
- {
--	struct kvmgt_guest_info *info;
-+	struct intel_vgpu *vgpu;
- 	kvm_pfn_t pfn;
- 
- 	if (!handle_valid(handle))
- 		return INTEL_GVT_INVALID_ADDR;
- 
--	info = (struct kvmgt_guest_info *)handle;
-+	vgpu = (struct intel_vgpu *)handle;
- 
--	pfn = gfn_to_pfn(info->kvm, gfn);
-+	pfn = gfn_to_pfn(vgpu->kvm, gfn);
- 	if (is_error_noslot_pfn(pfn))
- 		return INTEL_GVT_INVALID_ADDR;
- 
-@@ -2000,7 +1971,7 @@ static int kvmgt_dma_map_guest_page(unsigned long handle, unsigned long gfn,
- 	if (!handle_valid(handle))
- 		return -EINVAL;
- 
--	vgpu = ((struct kvmgt_guest_info *)handle)->vgpu;
-+	vgpu = (struct intel_vgpu *)handle;
- 
- 	mutex_lock(&vgpu->cache_lock);
- 
-@@ -2042,22 +2013,22 @@ static int kvmgt_dma_map_guest_page(unsigned long handle, unsigned long gfn,
- 
- static int kvmgt_dma_pin_guest_page(unsigned long handle, dma_addr_t dma_addr)
- {
--	struct kvmgt_guest_info *info;
-+	struct intel_vgpu *vgpu;
- 	struct gvt_dma *entry;
- 	int ret = 0;
- 
- 	if (!handle_valid(handle))
- 		return -ENODEV;
- 
--	info = (struct kvmgt_guest_info *)handle;
-+	vgpu = (struct intel_vgpu *)handle;
- 
--	mutex_lock(&info->vgpu->cache_lock);
--	entry = __gvt_cache_find_dma_addr(info->vgpu, dma_addr);
-+	mutex_lock(&vgpu->cache_lock);
-+	entry = __gvt_cache_find_dma_addr(vgpu, dma_addr);
- 	if (entry)
- 		kref_get(&entry->ref);
- 	else
- 		ret = -ENOMEM;
--	mutex_unlock(&info->vgpu->cache_lock);
-+	mutex_unlock(&vgpu->cache_lock);
- 
- 	return ret;
- }
-@@ -2079,7 +2050,7 @@ static void kvmgt_dma_unmap_guest_page(unsigned long handle, dma_addr_t dma_addr
- 	if (!handle_valid(handle))
- 		return;
- 
--	vgpu = ((struct kvmgt_guest_info *)handle)->vgpu;
-+	vgpu = (struct intel_vgpu *)handle;
- 
- 	mutex_lock(&vgpu->cache_lock);
- 	entry = __gvt_cache_find_dma_addr(vgpu, dma_addr);
-@@ -2091,14 +2062,14 @@ static void kvmgt_dma_unmap_guest_page(unsigned long handle, dma_addr_t dma_addr
- static int kvmgt_rw_gpa(unsigned long handle, unsigned long gpa,
- 			void *buf, unsigned long len, bool write)
- {
--	struct kvmgt_guest_info *info;
-+	struct intel_vgpu *vgpu;
- 
- 	if (!handle_valid(handle))
- 		return -ESRCH;
- 
--	info = (struct kvmgt_guest_info *)handle;
-+	vgpu = (struct intel_vgpu *)handle;
- 
--	return vfio_dma_rw(info->vgpu->vfio_group, gpa, buf, len, write);
-+	return vfio_dma_rw(vgpu->vfio_group, gpa, buf, len, write);
- }
- 
- static int kvmgt_read_gpa(unsigned long handle, unsigned long gpa,
-@@ -2115,7 +2086,7 @@ static int kvmgt_write_gpa(unsigned long handle, unsigned long gpa,
- 
- static bool kvmgt_is_valid_gfn(unsigned long handle, unsigned long gfn)
- {
--	struct kvmgt_guest_info *info;
-+	struct intel_vgpu *vgpu;
- 	struct kvm *kvm;
- 	int idx;
- 	bool ret;
-@@ -2123,8 +2094,8 @@ static bool kvmgt_is_valid_gfn(unsigned long handle, unsigned long gfn)
- 	if (!handle_valid(handle))
- 		return false;
- 
--	info = (struct kvmgt_guest_info *)handle;
--	kvm = info->kvm;
-+	vgpu = (struct intel_vgpu *)handle;
-+	kvm = vgpu->kvm;
- 
- 	idx = srcu_read_lock(&kvm->srcu);
- 	ret = kvm_is_visible_gfn(kvm, gfn);
+ /**
+  * intel_gvt_hypervisor_enable_page_track - track a guest page
+  * @vgpu: a vGPU
 -- 
 2.30.2
 
