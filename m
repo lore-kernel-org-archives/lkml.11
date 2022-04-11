@@ -2,64 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C93F6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 04:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 04:34:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244604AbiDKEhA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 00:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40854 "EHLO
+        id S244622AbiDKEhF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 00:37:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237387AbiDKEgp (ORCPT
+        with ESMTP id S242691AbiDKEgr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 00:36:45 -0400
+        Mon, 11 Apr 2022 00:36:47 -0400
 Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AA463A1;
-        Sun, 10 Apr 2022 21:34:30 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id E7D4D3200D78;
-        Mon, 11 Apr 2022 00:34:26 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C15BB65F7;
+        Sun, 10 Apr 2022 21:34:34 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 7E89C3200F81;
+        Mon, 11 Apr 2022 00:34:33 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Mon, 11 Apr 2022 00:34:27 -0400
+  by compute3.internal (MEProxy); Mon, 11 Apr 2022 00:34:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; t=1649651666; x=1649738066; bh=UADj43RFHZwY34uGNWFBbRbPs
-        ti5GL31jj1csV2jv00=; b=d9sIXm3fZjepfsUk1yqvaRFb2lrDthNzo/KLQoROC
-        6o5jt28hQBuvSMy76jkX+CMUOj0iLNAaSZhC4eL5jarzZ2/xaAe+QcN1l1dnY2Z+
-        ZygA/KEdHYZ9Y/lGrFxud+aQAxGYjiEXtmVvu4/p+YykyOi9MZfodx9HX/vSvldg
-        ttPuQ+mNOIO0xCzncr5NcUuiksAvs1SNceQpFsuTZ1DbotOAbQ+Mml4ko0RjEb6j
-        JCYnix5fJIiKmUwDG4T2gQdQuve4RKUQ6N74jfL6OnGeGlQ+gP4Dtpt9/BPxFTa8
-        BxHSENmfaWg7qZK6bxiI5VYFQi9foUogDAofopK1PCwQA==
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1649651673; x=1649738073; bh=mW
+        R5ESPxIyIK6AtQlGiBisdU+PBsLGGav25qxRmI23I=; b=hLO/AuqSkwnjZu3FI1
+        YmygnSAzbdT1jDSgrk3zV8OMcKWRN7oF3Y5U+8fLoKM1CFmkmdflRhEMy0AZbso2
+        I3cVlVZfr9Egm4HpsVSaC4nJoA72uxH33J4Xqp+XgYrhEv7oVViYjxQ4I8+8UrI5
+        dMMGvac+1TcAJdp6zuRaDzs0z3+fMuOmxSpM8DwvmzuNYq+QEYYwF2ZxdcBMzEzu
+        5MnRT7qL7Nkx0dPeea8doghdVhiNt2w7ZofGKB4HZd10HBVAVdxWlwgYUqYUwfMd
+        jFhEVzlLpmIMAPQNv6CatFnSXqeFt/jvTkRiadkgcNvvW/2CA6T8jM+94Z/F71NH
+        dXLg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:message-id:mime-version:reply-to:sender
-        :subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm3; t=1649651666; x=1649738066; bh=U
-        ADj43RFHZwY34uGNWFBbRbPsti5GL31jj1csV2jv00=; b=YYz7e9VAgM1dCGVTV
-        /uK6eUgwClFPFYcNmNkwRyn7gKopKOYIAcZTFtS/tGm7uI4Nh+1Fy3Y+0RoD1qDq
-        dRhTs3ja8m8jutojKg+GLZPUtfdhIsv35IVcWn8vSbjDGmw119+gSe7SOqexonQn
-        zLcAsE8vSBNXfj4nQV1uZlIXB1TnnidSKcCzSNnSh4+IpSaf5vGmJNRBH7xoc53I
-        5R5/b2p5xvRnEWJsteszHCj1B0LeuaUVLNmuCvu9WWaUcA+1tX8P8XuCcbpSdzH2
-        26KSkkYKGigk9UTcbBe0uXV5rHmEcK15LnUzeXoetgmk/4SaBiFk8MVvqkw8wH6I
-        8rUMQ==
-X-ME-Sender: <xms:0a9TYv-p6Q5nuleDPFcP87OHhxG2kU9zyfAs8LPWhEjD4OZS8FUXTQ>
-    <xme:0a9TYruXQmmlRW4rKYGRqO-hFy-mWInFpsWpp_hK6aw58jwQtR94jaMTYW3AFQ7Is
-    SzL8LBqMZ9wQGIYPw>
-X-ME-Received: <xmr:0a9TYtD0cKdslGAxW1FwNE8Bv-SZsr7aaEmKUaJl4_IHp1-bB1JYbibt0G4HHqFuS2snWPgbtQR36bP2L8KZdNuahAgflwXvnnHzl-rDAeYGnkzkFzfpf074dOW4wwIg5atnmA>
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+        1649651673; x=1649738073; bh=mWR5ESPxIyIK6AtQlGiBisdU+PBsLGGav25
+        qxRmI23I=; b=jNn+D2/ip4Q811YH8eaiGZx6mUWwiIpEDlbpCj4UOF964JBrzYY
+        9VBJLy+DGhWZ5ZJk6JABCE1QlQ29RGYT2hPxH1YLQ6kc+lJ8qtw+fWB5AHdowo0u
+        GyARiN7KZJXznULoxcgLcjjlfK/XZlGORKmNWfIylKBxXcpY+qjQm6DvzJ5FDhYg
+        86pvoWvrDbMobphdJbYk0SB6Z3JeCykH0akbhUU3O1L4/slnW56fjwh2acQZqSVP
+        JYpEvxhLL+iVFVpcxRJo4Ibj5UCBpel/noOGvIEeixspe/tEA7u8jGSlGKZXTKAr
+        FM0nGTKv/WFjjcnr6xceUA5los3v6oZR8NA==
+X-ME-Sender: <xms:2K9TYvHAAFeFG6pUQmvHsPgJPiFiwyk43y4fhrxtQPOTWq5ElJy-_A>
+    <xme:2K9TYsXIzNzO9IJ89xwp7chNvANRsirB0u2SeiqrqAoXxzce-R9dG-1AbBtbysXqH
+    ueqmhue9LhtInYrqw>
+X-ME-Received: <xmr:2K9TYhLSjuLHkfrrCsF_Duw47WLmwJ6AqobX5XpByywgcvGM5AIVt_Rvr2ce17sl1jNTb0fH6iOWEwdOF7MZzZ3xJNYKZrr9qaeYzZ85OgLHnLFAmjBD0GcRnwiPFgMw0EjymQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekhedgkedtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgvlhcu
-    jfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtffrrg
-    htthgvrhhnpeeiteekhfehuddugfeltddufeejjeefgeevheekueffhffhjeekheeiffdt
-    vedtveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:0a9TYreIrhsxN46nReyzw4kSGGcCxNwQ7RKO5eK8fzGiDXg6r4z7_w>
-    <xmx:0a9TYkNkHI9965TaJKmaUG9kmGG7VwOfxO3ijqEkhusPmAtaKN33NA>
-    <xmx:0a9TYtl-1XkY6jNrt8ECdRTW2Tv2FpLcshbeNEJKMHUj4U6529nPtQ>
-    <xmx:0q9TYtn5HLMATeVFiRfwfR27Ml3yplO4ZtHnYUk8p9Ojiw_5enLb1w>
+    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
+    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
+    frrghtthgvrhhnpeduhfejfedvhffgfeehtefghfeiiefgfeehgfdvvdevfeegjeehjedv
+    gfejheeuieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:2K9TYtEJB1Hlvr4HgxxAUVmcsoP-N4zDrrxwRz0g73LNFeR4DpUp9w>
+    <xmx:2K9TYlW4wFkgGVMGFY6tpwq5neOSVUa8uP--0cQ6FJYRWvlihmR3uA>
+    <xmx:2K9TYoN27YEkZwBIrvGTIE8BpBhmOgJZNYeRi8r6hFMiqDOz80qmgg>
+    <xmx:2a9TYgMwKuqNR0bg3Y5oxpeh0c1VvQDO0Us7LcSPllCWB_frd8Xpsg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 11 Apr 2022 00:34:24 -0400 (EDT)
+ 11 Apr 2022 00:34:32 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     Chen-Yu Tsai <wens@csie.org>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
@@ -72,52 +73,120 @@ Cc:     Samuel Holland <samuel@sholland.org>,
         dri-devel@lists.freedesktop.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-sunxi@lists.linux.dev
-Subject: [PATCH 00/10] drm/sun4i: Allwinner D1 Display Engine 2.0 Support
-Date:   Sun, 10 Apr 2022 23:34:12 -0500
-Message-Id: <20220411043423.37333-1-samuel@sholland.org>
+Subject: [PATCH 02/10] dt-bindings: display: Add D1 display engine compatibles
+Date:   Sun, 10 Apr 2022 23:34:14 -0500
+Message-Id: <20220411043423.37333-3-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220411043423.37333-1-samuel@sholland.org>
+References: <20220411043423.37333-1-samuel@sholland.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds binding and driver support for Display Engine 2.0
-variant found in the Allwinner D1.
+Allwinner D1 contains a display engine 2.0. It features two mixers, a
+TCON TOP (with DSI and HDMI), one TCON LCD, and one TCON TV.
 
-So far it has only been tested with HDMI. I will be sending the HDMI
-support series separately, because the hardware comes with a brand new
-custom HDMI PHY, which requires some refactoring to support cleanly.
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
 
+ .../allwinner,sun4i-a10-display-engine.yaml   |  1 +
+ .../display/allwinner,sun4i-a10-tcon.yaml     |  2 ++
+ .../allwinner,sun8i-a83t-de2-mixer.yaml       |  2 ++
+ .../display/allwinner,sun8i-r40-tcon-top.yaml | 34 +++++++++++++++++++
+ 4 files changed, 39 insertions(+)
 
-Samuel Holland (10):
-  dt-bindings: display: Separate clock item lists by compatible
-  dt-bindings: display: Add D1 display engine compatibles
-  drm/sun4i: Remove obsolete references to PHYS_OFFSET
-  drm/sun4i: Allow building the driver on RISC-V
-  drm/sun4i: csc: Add support for the new MMIO layout
-  drm/sun4i: Allow VI layers to be primary planes
-  drm/sun4i: Add support for D1 mixers
-  drm/sun4i: Add support for D1 TCON TOP
-  drm/sun4i: Add support for D1 TCONs
-  drm/sun4i: Add compatible for D1 display engine
-
- .../allwinner,sun4i-a10-display-engine.yaml   |   1 +
- .../display/allwinner,sun4i-a10-tcon.yaml     |   2 +
- .../allwinner,sun8i-a83t-de2-mixer.yaml       |   2 +
- .../display/allwinner,sun8i-r40-tcon-top.yaml | 145 ++++++++++++------
- drivers/gpu/drm/sun4i/Kconfig                 |   2 +-
- drivers/gpu/drm/sun4i/sun4i_drv.c             |   1 +
- drivers/gpu/drm/sun4i/sun4i_frontend.c        |   3 -
- drivers/gpu/drm/sun4i/sun4i_tcon.c            |   8 +
- drivers/gpu/drm/sun4i/sun8i_csc.c             |   3 +-
- drivers/gpu/drm/sun4i/sun8i_csc.h             |   1 +
- drivers/gpu/drm/sun4i/sun8i_mixer.c           |  26 ++++
- drivers/gpu/drm/sun4i/sun8i_mixer.h           |   6 +-
- drivers/gpu/drm/sun4i/sun8i_tcon_top.c        |  15 +-
- drivers/gpu/drm/sun4i/sun8i_vi_layer.c        |  36 ++++-
- 14 files changed, 196 insertions(+), 55 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-display-engine.yaml b/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-display-engine.yaml
+index d4412aea7b73..c388ae5da1e4 100644
+--- a/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-display-engine.yaml
++++ b/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-display-engine.yaml
+@@ -62,6 +62,7 @@ properties:
+       - allwinner,sun8i-r40-display-engine
+       - allwinner,sun8i-v3s-display-engine
+       - allwinner,sun9i-a80-display-engine
++      - allwinner,sun20i-d1-display-engine
+       - allwinner,sun50i-a64-display-engine
+       - allwinner,sun50i-h6-display-engine
+ 
+diff --git a/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml b/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml
+index 3a7d5d731712..4a92a4c7dcd7 100644
+--- a/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml
++++ b/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml
+@@ -33,6 +33,8 @@ properties:
+       - const: allwinner,sun8i-v3s-tcon
+       - const: allwinner,sun9i-a80-tcon-lcd
+       - const: allwinner,sun9i-a80-tcon-tv
++      - const: allwinner,sun20i-d1-tcon-lcd
++      - const: allwinner,sun20i-d1-tcon-tv
+ 
+       - items:
+           - enum:
+diff --git a/Documentation/devicetree/bindings/display/allwinner,sun8i-a83t-de2-mixer.yaml b/Documentation/devicetree/bindings/display/allwinner,sun8i-a83t-de2-mixer.yaml
+index 4f91eec26de9..cb243bc58ef7 100644
+--- a/Documentation/devicetree/bindings/display/allwinner,sun8i-a83t-de2-mixer.yaml
++++ b/Documentation/devicetree/bindings/display/allwinner,sun8i-a83t-de2-mixer.yaml
+@@ -19,6 +19,8 @@ properties:
+       - allwinner,sun8i-r40-de2-mixer-0
+       - allwinner,sun8i-r40-de2-mixer-1
+       - allwinner,sun8i-v3s-de2-mixer
++      - allwinner,sun20i-d1-de2-mixer-0
++      - allwinner,sun20i-d1-de2-mixer-1
+       - allwinner,sun50i-a64-de2-mixer-0
+       - allwinner,sun50i-a64-de2-mixer-1
+       - allwinner,sun50i-h6-de3-mixer-0
+diff --git a/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml b/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml
+index 784b267635fb..cc32e2faed91 100644
+--- a/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml
++++ b/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml
+@@ -41,6 +41,7 @@ properties:
+   compatible:
+     enum:
+       - allwinner,sun8i-r40-tcon-top
++      - allwinner,sun20i-d1-tcon-top
+       - allwinner,sun50i-h6-tcon-top
+ 
+   reg:
+@@ -154,6 +155,39 @@ allOf:
+             - port@2
+             - port@3
+ 
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: allwinner,sun20i-d1-tcon-top
++
++    then:
++      properties:
++        clocks:
++          minItems: 4
++          maxItems: 4
++          items:
++            - description: The TCON TOP interface clock
++            - description: The TCON TOP TV0 clock
++            - description: The TCON TOP TVE0 clock
++            - description: The TCON TOP MIPI DSI clock
++
++        clock-names:
++          minItems: 4
++          maxItems: 4
++          items:
++            - const: bus
++            - const: tcon-tv0
++            - const: tve0
++            - const: dsi
++
++        clock-output-names:
++          minItems: 2
++          maxItems: 2
++          items:
++            - description: TCON TV0 output clock name
++            - description: DSI output clock name
++
+   - if:
+       properties:
+         compatible:
 -- 
 2.35.1
 
