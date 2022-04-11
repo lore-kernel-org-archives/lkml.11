@@ -2,141 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF63C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A93E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238745AbiDKJ4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
+        id S1344831AbiDKJ4X (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 05:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344928AbiDKJ4H (ORCPT
+        with ESMTP id S1344830AbiDKJ4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:56:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8904160F
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:53:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D7066CE170D
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:53:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22668C385AA;
-        Mon, 11 Apr 2022 09:53:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649670819;
-        bh=lKIoE+fCrKnnFm+3QbNw32clo6tQo6WExWhfT9DKIPc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=E9glXHmdjnSJGsaaNhsUd3ai286WN/l7Go/zk/ufh7o+jTun3W13zlsjZq4AM+hnX
-         lx/ZTMLWGrJ73xGXmNeESe7KWHEhdrMC6zwcMUsfxCmFtKzLxbcUqnvg6ecBkFUfLi
-         flQq39/uaEIIarJcJXMlzu9Xz29GHz52OMdl+s4FQd9e96zcAAH2dG4FKMMIInLrBn
-         tyL8Jhs8QC6OT9YE3QCrwshvSDj//MociQ5v8LEd459du73AVopB55ulCFTfUzDuRX
-         6e62qpz/O6oudwwIHDYtl4pVzn6PMNntcaI0DvB6tzYLx2NzFFqdns86DujXWbjuu0
-         SktrikGrdeD/g==
-Message-ID: <a25bac9c-188b-4ab4-21e2-d34e20c92524@kernel.org>
-Date:   Mon, 11 Apr 2022 17:53:33 +0800
+        Mon, 11 Apr 2022 05:56:04 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8A141984
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:53:22 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id u18so6967091eda.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:53:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BhgOZc39QKLmHBUXm+e0SJMr8Scf5KRVK5HQ4X3qYVQ=;
+        b=tym9lWOtYSwH5ja36H+aSBzsd4Zzlw+8bl+saKNIgT9jpYXxzk09aE8/UeczM5EV3t
+         sz4LuUG5d6DHMI+oeiFA7eHdHFW1X0Iub4nqE1PohL45yjM+57h9rUxvbDALcdJF0Jrz
+         4D4c63UVn0hsZ0UkDJA34woQHeRokh7rvXrIioOfzWnvWMV2RclezWSpxPkbPyIq8lf7
+         nqdw4j3hzx6l6G/R2VTjSvFtZKSQjp55mkV9GmXZTMjJW2WkfxpWeBDGwzbTcGYeXugl
+         sAFoAAAnWwvRW/PP0piUfG9jGJcIRg3ww/eaRZziHpqdTTAfJw+89CsUQL60d4qcKhY9
+         Z6Aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BhgOZc39QKLmHBUXm+e0SJMr8Scf5KRVK5HQ4X3qYVQ=;
+        b=bBRgRyL1um5JJJTcTW7lPD35FyI1L1SJDobFWOUPqkz3NRMHg4Ojz4bFbICZoKE6Hj
+         fYHJmOA/J7cxjUT7nrzDK5Xm8nfZlrLk+hefDmupfEhnm3zcjVMAY0OI8lIHisx0NGPk
+         bsiTwjnu7nTeCpPGgYhiSN0UBcqmen5IEzk898VCebBugT/kUCwHXBgyyisXEjkGzNIh
+         +6ac/lzFNPYVLISOAP6ypjSAc+JGPF5qIjZPwzjyCvTva4hOTmtytFqssAUDFeMqa4yp
+         wBqkL7GNIu57sPxxN4cvXtSD6M+duzdomB875TmyaKKUnFegTiNNT/33zKeE46AkAW+R
+         9L5A==
+X-Gm-Message-State: AOAM532CKuAdKPuggJ6+CH603EJ06TZXIcDwQuHkl/UaIG5/uz8nm6Oy
+        UjLzb3hn6C2rWeOhXDx74Jei7XhKe2izjTKH
+X-Google-Smtp-Source: ABdhPJx7uRDXMK69U1uBZ1ynJKqKcsr7pdHRVAJK9n+g1AwmPpC5evjXzVAkkb2NTi1lXqJ4T6V7AA==
+X-Received: by 2002:a50:9fa2:0:b0:41c:d9c2:6b19 with SMTP id c31-20020a509fa2000000b0041cd9c26b19mr31934885edf.393.1649670800738;
+        Mon, 11 Apr 2022 02:53:20 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id gq5-20020a170906e24500b006e87644f2f7sm2457774ejb.38.2022.04.11.02.53.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 02:53:20 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] dt-bindings: power: renesas,rcar-sysc: correct typo in path
+Date:   Mon, 11 Apr 2022 11:53:17 +0200
+Message-Id: <20220411095317.221317-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [f2fs-dev] [PATCH] fs: f2fs: remove WARN_ON in
- f2fs_is_valid_blkaddr
-Content-Language: en-US
-To:     Eric Biggers <ebiggers@kernel.org>,
-        Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Dmitry Vyukov <dvyukov@google.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Dongliang Mu <dzm91@hust.edu.cn>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com,
-        linux-f2fs-devel@lists.sourceforge.net
-References: <20220408052207.209856-1-dzm91@hust.edu.cn>
- <f125ece9-872e-39d9-48a5-15b85508f6b6@kernel.org>
- <CAD-N9QV7RUfBreaVOmC0JUwVfieM3kOYigOav8=vpAoak6Uc6A@mail.gmail.com>
- <7e896205-027d-32e2-32b5-8951231132ac@kernel.org>
- <CAD-N9QXM_xds692Lh-QZc5aL01uRivLGrNnxJys41hiTUfKE5w@mail.gmail.com>
- <2f5b7291-da06-0895-8e75-c7a37251b47e@kernel.org>
- <CAD-N9QX7wKN_x88w7p6t1KWeTGodeF-o0i-1d0Sq4Ja1OzPFoA@mail.gmail.com>
- <YlPHWaSlk21cc32p@sol.localdomain>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <YlPHWaSlk21cc32p@sol.localdomain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/11 14:14, Eric Biggers wrote:
-> On Mon, Apr 11, 2022 at 01:06:09PM +0800, Dongliang Mu wrote:
->> On Mon, Apr 11, 2022 at 11:10 AM Chao Yu <chao@kernel.org> wrote:
->>>
->>> On 2022/4/9 14:42, Dongliang Mu wrote:
->>>> On Sat, Apr 9, 2022 at 11:46 AM Chao Yu <chao@kernel.org> wrote:
->>>>>
->>>>> On 2022/4/9 9:34, Dongliang Mu wrote:
->>>>>> On Sat, Apr 9, 2022 at 8:27 AM Chao Yu <chao@kernel.org> wrote:
->>>>>>>
->>>>>>> On 2022/4/8 13:22, Dongliang Mu wrote:
->>>>>>>> From: Dongliang Mu <mudongliangabcd@gmail.com>
->>>>>>>>
->>>>>>>> In f2fs_is_valid_blkaddr, if type is DATA_GENERIC_ENHANCE or
->>>>>>>> DATA_GENERIC_ENHANCE_READ, it invokes WARN_ON(1) not matter
->>>>>>>> blkaddr is in the range or not.
->>>>>>>
->>>>>>> If we run into the path where we invoke WARN_ON(1) in f2fs_is_valid_blkaddr(),
->>>>>>> It means f2fs image may be broken, or there is a bug in f2fs.
->>>>>>>
->>>>>>> So, do you suffer any related issue in your environment?
->>>>>>
->>>>>> related issue? Can you explain a little?
->>>>>>
->>>>>> If you mean if this warning occurs, any other issues or crash
->>>>>
->>>>> I mean have you seen any warning info printed in the path of
->>>>> f2fs_is_valid_blkaddr() before applying this patch, and if so, w/ what
->>>>> reproducer? or you just figure out this patch from perspective of code
->>>>> review?
->>>>
->>>> Yes, I have seen both warning information from Syzbot [1] and my local
->>>> syzkaller instance.
->>>>
->>>> In f2fs_is_valid_blkaddr, if the following condition is satisfied,
->>>> i.e., blkaddr is not in the right range [2], it will directly invoke
->>>> one WARN_ON.
->>>>
->>>> if (unlikely(blkaddr >= MAX_BLKADDR(sbi) ||
->>>>                    blkaddr < MAIN_BLKADDR(sbi))) {
->>>>
->>>> This is the case on Syzbot.
->>>>
->>>> Otherwise, it will jump into __is_bitmap_valid. And if the following
->>>> condition is satisfied [3], it will trigger another WARN_ON.
->>>>
->>>> exist = f2fs_test_bit(offset, se->cur_valid_map);
->>>> if (!exist && type == DATA_GENERIC_ENHANCE) {
->>>>
->>>> This appears in my local syzbot instance, but unfortunately it does
->>>> not get any reproducer.
->>>
->>> Oh, it occurs in syzbot test, I guess it is possible that f2fs prints such
->>> warning info after blkaddr of node/data block was fuzzed to invalid one.
->>>
->>> I prefer to keep WARN_ON() to catch more info of bugs found by non-fuzzed
->>> type test.
->>>
->>> Thoughts?
->>
->> I am fine with both options. I can remove the WARN_ON in my local
->> syzkaller instance and continue fuzzing Linux kernel.
->>
->> +Dmitry Vyukov how do you think? If WARN_ON is kept, this crash will
->> occur on Syzbot from time to time.
-> 
-> WARN_ON is for kernel bugs; please refer to the documentation in
-> include/asm-generic/bug.h.  If this is a kernel bug, then the kernel bug needs
-> to be fixed.  Otherwise, the WARN_ON needs to be removed.
+Fix typo '.' -> '/' in the path to headers.
 
-Alright, so how about using dump_stack() instead as suggested in doc?
+Fixes: 981a34054038 ("dt-bindings: power: renesas,rcar-sysc: drop useless consumer example")
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
+diff --git a/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml b/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
+index bd9608c83c3f..76c417990f12 100644
+--- a/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
++++ b/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
+@@ -14,7 +14,7 @@ description: |
+   The R-Car (RZ/G) System Controller provides power management for the CPU
+   cores and various coprocessors.
+   The power domain IDs for consumers are defined in header files::
+-  include.dt-bindings/power/r8*-sysc.h
++  include/dt-bindings/power/r8*-sysc.h
+ 
+ properties:
+   compatible:
+-- 
+2.32.0
 
-> 
-> - Eric
