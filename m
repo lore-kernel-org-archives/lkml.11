@@ -2,111 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3780BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1835C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350366AbiDKWEC (ORCPT
+        id S1350406AbiDKWEF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 18:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39310 "EHLO
+        Mon, 11 Apr 2022 18:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350312AbiDKWC5 (ORCPT
+        with ESMTP id S1350354AbiDKWDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 18:02:57 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A15BC11
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 15:00:42 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id EC8301F43C7E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649714441;
-        bh=qFt9ZOB1/K3f6j95e83uUTQsFAU8GObxCwVCXrvjk/g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LREqFUxnsMN90DJgwmRZ7u6JNL5myGlW9jIG6varDOlXyjxoaIFSYimM5MxRzygAs
-         O5Ad1UoO1cqMO/unKfXTrk0zWOzrvi7HFGS6s9j7NcVoWJRsglcuvuR6VnXn72aTv0
-         i3GQ9LjparoI7L4PfLG7Wr7/lDzzuNBKUQkT88gyQUKvIOVNoGX+ShAUb/as4Hjofr
-         cqOagGFMIymj9mocJaqElqqKfJOfxJnRFRxEx4iZwdggA+c5OLZiXw9VmKlqwvtU+G
-         Mfi/xgnauguU7GFoNm3sbg1XfVkaAwLnwwIrUiIfcYMWJRVTiz/GIZfJaXlZPIZA1w
-         LitM6cQ0nyYgg==
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        virtualization@lists.linux-foundation.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Subject: [PATCH v3 15/15] drm/shmem-helper: Remove drm_gem_shmem_purge()
-Date:   Tue, 12 Apr 2022 00:59:37 +0300
-Message-Id: <20220411215937.281655-16-dmitry.osipenko@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220411215937.281655-1-dmitry.osipenko@collabora.com>
-References: <20220411215937.281655-1-dmitry.osipenko@collabora.com>
+        Mon, 11 Apr 2022 18:03:13 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CA112A93;
+        Mon, 11 Apr 2022 15:00:53 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KcjTp63hwz4xQr;
+        Tue, 12 Apr 2022 08:00:46 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649714448;
+        bh=31h0VgX2fyThn2NYmi2nE9MwJuhc+Snj7+FPi+GWQEE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=OalkbdV5FEPQqL3fHwhVe9vjMFckCxGFgwwLdMtFJ1KYjxUkz0vMWDLKWO9lTooJ/
+         WYSHOOz5H6b91uqxRX43C05YeHxki0fuOcDvGRHK+GZ/3EGB3m3ber2lVMYrHEiSWk
+         LTUnb22jLSnNK0M7zDuduiwybzjbDLpUSGfqF6PLUzNl8bLPrpPa2zzoxpPnplY4zt
+         D5TE/9B1cnoCQpuxskb4O01n3tbO8l+ZRL1h5qLh0AOTNtM4WJYzUF6EGeCMXWv5Ak
+         BPs0C3+/fyN3J3mEGjCgZuWr5ph/w31lmc/mkvgmitukPCMSPITS17krKLk/Pc6qnu
+         eFvMySPap6a6w==
+Date:   Tue, 12 Apr 2022 08:00:45 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Paolo Bonzini <pbonzini@redhat.com>, KVM <kvm@vger.kernel.org>
+Cc:     Anup Patel <apatel@ventanamicro.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tags need some work in the kvm-fixes tree
+Message-ID: <20220412080045.301da5ef@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/ut_K79XkU=WX26nqHqmCr31";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The drm_gem_shmem_purge() was added back in 2019 and never had a user
-since then. GEM's purging is now managed by the generic shrinker and
-only the "locked" variant of the function is wanted. Remove the obsoleted
-function.
+--Sig_/ut_K79XkU=WX26nqHqmCr31
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
----
- drivers/gpu/drm/drm_gem_shmem_helper.c | 11 -----------
- include/drm/drm_gem_shmem_helper.h     |  2 --
- 2 files changed, 13 deletions(-)
+Hi all,
 
-diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
-index 8e31056575e3..89c64053247c 100644
---- a/drivers/gpu/drm/drm_gem_shmem_helper.c
-+++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
-@@ -992,17 +992,6 @@ void drm_gem_shmem_purge_locked(struct drm_gem_shmem_object *shmem)
- }
- EXPORT_SYMBOL(drm_gem_shmem_purge_locked);
- 
--bool drm_gem_shmem_purge(struct drm_gem_shmem_object *shmem)
--{
--	if (!dma_resv_trylock(shmem->base.resv))
--		return false;
--	drm_gem_shmem_purge_locked(shmem);
--	dma_resv_unlock(shmem->base.resv);
--
--	return true;
--}
--EXPORT_SYMBOL(drm_gem_shmem_purge);
--
- /**
-  * drm_gem_shmem_dumb_create - Create a dumb shmem buffer object
-  * @file: DRM file structure to create the dumb buffer for
-diff --git a/include/drm/drm_gem_shmem_helper.h b/include/drm/drm_gem_shmem_helper.h
-index 7284335ea2c9..197d08452974 100644
---- a/include/drm/drm_gem_shmem_helper.h
-+++ b/include/drm/drm_gem_shmem_helper.h
-@@ -179,8 +179,6 @@ int drm_gem_shmem_swap_in_pages_locked(struct drm_gem_shmem_object *shmem);
- int drm_gem_shmem_swap_in_locked(struct drm_gem_shmem_object *shmem);
- 
- void drm_gem_shmem_evict_locked(struct drm_gem_shmem_object *shmem);
--
--bool drm_gem_shmem_purge(struct drm_gem_shmem_object *shmem);
- void drm_gem_shmem_purge_locked(struct drm_gem_shmem_object *shmem);
- 
- struct sg_table *drm_gem_shmem_get_sg_table(struct drm_gem_shmem_object *shmem);
--- 
-2.35.1
+In commit
 
+  4054eee92902 ("RISC-V: KVM: include missing hwcap.h into vcpu_fp")
+
+Fixes tag
+
+  Fixes: 0a86512dc113 ("RISC-V: KVM: Factor-out FP virtualization into sepa=
+rate
+
+has these problem(s):
+
+  - Subject has leading but no trailing parentheses
+  - Subject has leading but no trailing quotes
+
+In commit
+
+  ebdef0de2dbc ("KVM: selftests: riscv: Fix alignment of the guest_hang() f=
+unction")
+
+Fixes tag
+
+  Fixes: 3e06cdf10520 ("KVM: selftests: Add initial support for RISC-V
+
+has these problem(s):
+
+  - Subject has leading but no trailing parentheses
+  - Subject has leading but no trailing quotes
+
+In commit
+
+  fac372536439 ("KVM: selftests: riscv: Set PTE A and D bits in VS-stage pa=
+ge table")
+
+Fixes tag
+
+  Fixes: 3e06cdf10520 ("KVM: selftests: Add initial support for RISC-V
+
+has these problem(s):
+
+  - Subject has leading but no trailing parentheses
+  - Subject has leading but no trailing quotes
+
+Please do not split fixes tags over more than one line.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/ut_K79XkU=WX26nqHqmCr31
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJUpQ0ACgkQAVBC80lX
+0GwGcwf/aYL8X2y3PSPa/C3+C2yWdnuBkFRWSKZnJpUOMHsQn7Qalucz4RFtHa3j
+6DRtLZbJa9qT5CiQX12DsDO6ZjLsxf5ume0e9mUANr8u5qv06VX/JwUtqqy2abAp
+oo8Jddgvjk2Fh3dDT7rl7JCmqfF1+jFT2HHyM1ZESAKH1r+t5E9+EabUvXP3zbNe
+PU+ySAOf1sEWArNonnqFzqNIGmo9vUj/IR3wR+AzpS7br2bxVd/6CUL06wGopZo2
+FQXYv6UjB4YiDXYm2GHLwramFwHGaCi8Gy35NQmuG7nOuBhuppKjYbC9Gp1+aLlf
+Bp7hlab+7oEYcNnaEsb2TMSKGH2A0w==
+=VjcP
+-----END PGP SIGNATURE-----
+
+--Sig_/ut_K79XkU=WX26nqHqmCr31--
