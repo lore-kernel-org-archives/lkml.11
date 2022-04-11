@@ -2,118 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF013C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7802FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:37:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238903AbiDKRiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 13:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
+        id S1348942AbiDKRjo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 13:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348986AbiDKRhv (ORCPT
+        with ESMTP id S239996AbiDKRjl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 13:37:51 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB43D2E080;
-        Mon, 11 Apr 2022 10:35:35 -0700 (PDT)
-Received: from [192.168.254.32] (unknown [47.189.24.195])
-        by linux.microsoft.com (Postfix) with ESMTPSA id A44D7209DD7D;
-        Mon, 11 Apr 2022 10:35:34 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A44D7209DD7D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1649698535;
-        bh=rG2uaZyAEiyhXkFt52SkyeQGStuNJXxJtH9hUO9i+kA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=AIn04MYTzNVllTU+rmjF8YLvOR/CmtHaTesOXIlZb8pTSC2pHpvygd4qqpul/h4un
-         6VpXElMCG61TaXBBaCzPbpQ8ub9/ZtiD6752Jsxv7FbhDSedBYjnRUcerv9H8XlgAx
-         PmS3DDEZrUSBgqG9dRIppJ9wRLZ7k0ijvQ1lYguU=
-Message-ID: <209888b9-fa98-2012-9f4c-1e37fd3283cd@linux.microsoft.com>
-Date:   Mon, 11 Apr 2022 12:35:33 -0500
+        Mon, 11 Apr 2022 13:39:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA3B821834;
+        Mon, 11 Apr 2022 10:37:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CA4260B8D;
+        Mon, 11 Apr 2022 17:37:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34B2DC385A4;
+        Mon, 11 Apr 2022 17:37:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649698646;
+        bh=kYbh6pX/FHME7Yaf3yi+julbzImYTc4dZfXcNYYWD5I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TL/TnBpth40Ri4M7OsvCOZAPrXxbHxUkNB/eNmNclDjN2ERLvLC2oLVJ6AcW+m6wS
+         LB6nN09+Z2grJ8aXoEXNt963h0cTvg1gnFTaibyDrJaznXn/quCC3Yj6aat5XTgiJS
+         VT6tMd9hdI3PlXaD61qSCVQeXO1V/vRhMxzAIDQq7eNG2RwTrbCtoyLlE0AM+NM4SL
+         KBe1v9Gc6rK1r2QDS6VqPqgw7TRS6cGMrsbEG1c8svwZyCM6QM+Aa7Be+WAiVsgUQh
+         yE0FpXNby4nCq8Bbj6xvcFX+pvopWFOHurlqP9l/qEDw4JwzsaAgNrfZaC5wIMGA+F
+         4CBx39qUN2n/w==
+Date:   Mon, 11 Apr 2022 23:07:22 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-phy@lists.infradead.org
+Subject: Re: [PATCH] phy: ti: tusb1210: Fix an error handling path in
+ tusb1210_probe()
+Message-ID: <YlRnUqSpXAclhWqs@matsya>
+References: <07c4926c42243cedb3b6067a241bb486fdda01b5.1648991162.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH v1 0/9] arm64: livepatch: Use DWARF Call Frame
- Information for frame pointer validation
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
-        ardb@kernel.org, nobuta.keiya@fujitsu.com,
-        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
-        jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
- <20220407202518.19780-1-madvenka@linux.microsoft.com>
- <YlAlK+94gBlVlv2J@hirez.programming.kicks-ass.net>
-From:   "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
-In-Reply-To: <YlAlK+94gBlVlv2J@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <07c4926c42243cedb3b6067a241bb486fdda01b5.1648991162.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 03-04-22, 15:06, Christophe JAILLET wrote:
+> tusb1210_probe_charger_detect() must be undone by a corresponding
+> tusb1210_remove_charger_detect() in the error handling path, as already
+> done in the remove function.
 
+Applied, thanks
 
-On 4/8/22 07:06, Peter Zijlstra wrote:
-> On Thu, Apr 07, 2022 at 03:25:09PM -0500, madvenka@linux.microsoft.com wrote:
->> The solution
->> ============
->>
->> The goal here is to use the absolute minimum CFI needed to compute the FP at
->> every instruction address. The unwinder can compute the FP in each frame,
->> compare the actual FP with the computed one and validate the actual FP.
->>
->> Objtool is enhanced to parse the CFI, extract just the rules required,
->> encode them in compact data structures and create special sections for
->> the rules. The unwinder uses the special sections to find the rules for
->> a given instruction address and compute the FP.
->>
->> Objtool can be invoked as follows:
->>
->> 	objtool dwarf generate <object-file>
->>
->> The version of the DWARF standard supported in this work is version 4. The
->> official documentation for this version is here:
->>
->> 	https://dwarfstd.org/doc/DWARF4.pdf
->>
->> Section 6.4 contains the description of the CFI.
-> 
-> The problem is of course that DWARF is only available for compiler
-> generated code and doesn't cover assembly code, of which is there is
-> always lots.
-> 
-
-Yes. But assembly functions are of two types:
-
-SYM_CODE_*() functions
-SYM_FUNC_*() functions
-
-SYM_CODE functions are, by definition, special functions that don't follow any ABI rules.
-They don't set up a frame. Based on the opinion of ARM64 experts, these need to be
-recognized by the unwinder and, if they are present in a stack trace, the stack trace
-must be considered unreliable. I have, in fact, submitted a patch to implement that.
-
-So, only SYM_FUNC*() functions are relevant for this part. I will look into these for arm64
-and check if any of them can occur frequently in stack traces. If any of them is likely
-to occur frequently in stack traces, I must address them. If there are only a few such
-functions, unwind hints may be sufficient. I will get back to you on this.
-
-> I suppose you can go add DWARF annotations to all the assembly, but IIRC
-> those are pretty terrible. We were *REALLY* happy to delete all that
-> nasty from the x86 code.
-> 
-
-DWARF annotations are a PITA to maintain. I will never recommend that!
-
-> On top of that, AFAIK compilers don't generally consider DWARF
-> generation to be a correctness issue. For them it's debug info and
-> having it be correct is nice but not required. So using it as input for
-> something that's required to be correct, seems unfortunate.
-
-It is only debug info. But if that info can be verified, then it is usable for livepatch
-purposes. I am thinking of implementing a verifier since DWARF reliability is a valid
-concern. I will keep you posted.
-
-Thanks!
-
-Madhavan
+-- 
+~Vinod
