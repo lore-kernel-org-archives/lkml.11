@@ -2,135 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46D2BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:25:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB721C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243076AbiDKP1Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
+        id S1348014AbiDKP2L (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 11:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348045AbiDKP02 (ORCPT
+        with ESMTP id S1348363AbiDKP2A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:26:28 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2043.outbound.protection.outlook.com [40.107.92.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21383EBB4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:23:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TK5yqsIS00bju/u7tCKfHjYpGmSqkQEgGW/q6piz0a1mDNk9KPxWgfvUNjOWYGql95GXeAkP6XfWOoKhzaiyqCqSxkUOWFAD8UnTnvb+NvqYgWaomyr4QPItKndvbPpfbJ/r3bd/4wfxNLD/VzZKZdMByTEYyqKu+0mlQsj9hWdclaeiYkmKZ8gpqiVZnwl6rULZvpt5wmauCAd/ToWO9+PqkN5c/yox89Tca1Dnc3n/z2z3ciloapjVZDAhcCVaJWt2A9K/PUzP4FOt+PlVnGb2MaL0yNW3bZN0d2D0KyhuABW6PEw+i6XKvlQNtiL9VZ9fV1gAhyGF2kgvZxmf4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lizOn1FaBcTlsp8e8liLrWdXraBvdMTitYHOD6Iou9Q=;
- b=ZkHopXE9CCq5bd/Sltq9Aj29K+5WqPrdIFtjdmZrVmGf6j5weK+9sMR13GhHEBtc1yU9+h3cG5PFmZbr7Cf8Dgxj4JBbqGwAhxqPytvJZQ3oCWvBtBxNdFYwWPrMdCXvmqtp8sSvjeN8AYTq41bYmPjse6wJ+WbPw5u8xiq+cEvSq8Z6iTvmCqHBj4PB826RqVzOqeCmuU8/FiR+ivtr+UXYai0JnSXPE5Ep/Q79nuzuPfbLGTj8RpBIKiQG7XHTlhPDZ04Q6jzkgJCxiWKewPBMt2FvyC3XifSlmeDfhwvxHxXkrlnasfb9u6IuRKdhUv9KY5EEp6ijXZCloP3SPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lizOn1FaBcTlsp8e8liLrWdXraBvdMTitYHOD6Iou9Q=;
- b=daRU611ukHpBEbqJFfP0txGsjV4VryVN2ZZOFI9rlFf16sg5P6++QJU2Z4ARGCLksoK0KrsZVZGrnjVsC5x1wO1OBf8LJlWkPQNRUTvjq8rrHg8gPCbYFzkXuXobVk6zyTWJ8C5xJREpxBq7L2YMBYJuP/MYYN1G53Y+qan0Pu4eo36/i4ErKuziea6If4eB+ttaJkPWHXNzAM9btiJLgTxITSdrsBcJITBpLhVHtpP4zr45z1gQiE8yCnpeAu1FzeViDgykmcdu9zBBoq9vzpqJy54AsLMKEGQykh5tp5Yl2z6z2SgnLJB2J2qYkR0lQ7VdWqVvev5Iunek9P6W6g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by LV2PR12MB5871.namprd12.prod.outlook.com (2603:10b6:408:174::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.22; Mon, 11 Apr
- 2022 15:23:33 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
- 15:23:33 +0000
-Date:   Mon, 11 Apr 2022 12:23:32 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 02/34] drm/i915/gvt: remove enum hypervisor_type
-Message-ID: <20220411152332.GE2120790@nvidia.com>
-References: <20220411141403.86980-1-hch@lst.de>
- <20220411141403.86980-3-hch@lst.de>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411141403.86980-3-hch@lst.de>
-X-ClientProxiedBy: MN2PR08CA0027.namprd08.prod.outlook.com
- (2603:10b6:208:239::32) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Mon, 11 Apr 2022 11:28:00 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95E3F18E2B;
+        Mon, 11 Apr 2022 08:25:00 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 613B01570;
+        Mon, 11 Apr 2022 08:25:00 -0700 (PDT)
+Received: from lpieralisi (unknown [10.57.6.174])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 46CAE3F73B;
+        Mon, 11 Apr 2022 08:24:57 -0700 (PDT)
+Date:   Mon, 11 Apr 2022 16:25:01 +0100
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>
+Cc:     l.stach@pengutronix.de, hongxing.zhu@nxp.com, robh@kernel.org,
+        bhelgaas@google.com, helgaas@kernel.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, linux-imx@nxp.com,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linus.walleij@linaro.org
+Subject: Re: [PATCH v3] PCI: imx6: Replace legacy gpio interface for gpiod
+ interface
+Message-ID: <YlRITQq650DCWg75@lpieralisi>
+References: <YYCOTx68LXu1Tn1i@fedora>
+ <YlBFa46v5NtWxGLt@lpieralisi>
+ <YlBKyBtbxMpvauLv@fedora>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 45dc33c7-c807-4428-cda6-08da1bcf3daf
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5871:EE_
-X-Microsoft-Antispam-PRVS: <LV2PR12MB587122237DC28CA6DB5BB9AEC2EA9@LV2PR12MB5871.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RAmjgG2rpvC5oU8PRK0lHSanvohYh7uUiddrDOVMQclEp1y94eCmqceqn7hclIIYUQlmeAF6lW5l3ESdOdkRK7H9IqRklkBES64UBqmBoClgYYV7GwhvC5HGuRvKD1hIiEXpfmv7YRltW/m1fjSgykShvtq5GV2dGxhxbc8uNbdsVDGDwyB6u42mHCeeYrIOFb3AjiWNRylRKqxsoxjBRx75NUXtw95v1DctylNkY8iQNEgQRonn1Kv3OMcBAJck621usDhhoM2/r7WLUo6FCBELavwa5vC490VA/HXB5nlL7n55KAPExiN/eBl+dTZzQTOc4YC6yB6sfRcRpkhOXFRQh1gqxcG0NfKuk1Vdiggs4bxZ4eBbwSQ/6XcJCM5zPjuHYFmPjZdFfjHifHw8GqeKNhn2wAz0cQZA4oy+t5D38UMszipr1lJ7y4TaSRVIUZxO1ewt4yNHs0z5o3bPTlHiKRZ8mX+idHskNGp/H9xqXpw2eeUbZZl1WMUsJb72mpwJjB+ISvytufjBWTTtDjpBwFB2GGLizED+46fCTZTE2Ip4R9erGLqH8K4nvyjjjOQQs7RWUWIxZv7/gEa/nG6Vg56IF9g7zr6TmZMBZx78c4DYIdbbSYzBQtim+Zl6HD/eXok0Tx8e85qVaUFh3A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(66556008)(66476007)(86362001)(4326008)(36756003)(2616005)(508600001)(33656002)(4744005)(316002)(6506007)(8936002)(186003)(26005)(7416002)(5660300002)(6916009)(54906003)(8676002)(6486002)(2906002)(38100700002)(6512007)(1076003)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7B7gbR1wg+IgWu9MPsj4y1RlACtGpT5s2qFvpoadea20PyuRes7kM3s3cQ2o?=
- =?us-ascii?Q?Aulxb+5DcK99LHYjPfOEi803hxpI1FR4jRAmFebdA5nHzGD0xK/o6YDBmUHA?=
- =?us-ascii?Q?o5AK1rONDGeY9f8D3hkiXOMRsLtldj/gD4Ej+DC1bVz2+YfNUtr3KbdvPoWg?=
- =?us-ascii?Q?k3NBOrCnshWcVZoEoZxa1+vPZhZy6u8k6CQ1vurD153Giv7dfPaDNBptn1tH?=
- =?us-ascii?Q?C8XdkMJSopm7dq4yUwTsettcbGSvgNBRmbp23BJIK7xQqLWX1U1tQx6tsmB4?=
- =?us-ascii?Q?hq/yNVbt8LIa7wcjjEkI9WjRMUFSCHAqh9SO2XIpM/FK7Agp44DKv+T+UkmX?=
- =?us-ascii?Q?gWhEKCNitj7RNov1Vms4Ph0GIyPI+YQRLENdcfEJXYBsJf6SNcD4r+huds6n?=
- =?us-ascii?Q?5etk7D8mTnwh5bIJnTIVEu0JK7HEjoyixQk+cEIJ6/AUBIC4+kurfc9s9Jhg?=
- =?us-ascii?Q?hp8b9K6lxmqSkkzgrf5JDqojgwKJTPtJV6MujVEVEzV6gLkjsRifDcGYB8F1?=
- =?us-ascii?Q?hwlNeo0YjyP7G0vD6bS8JFAjjdhjvS1k3I6Cp6uSZDOm/dHRJlycM2p5e+Fc?=
- =?us-ascii?Q?yQxYRR4c+bDG6uTZOzAG7hzAvI2WsqGDwV8/pYcM5SND36rdeSmMYPVeWCs9?=
- =?us-ascii?Q?YLGamKlY1nJBCGL3QuxlmJ/PPZ/FmRhrLsdXIIPpE00RVUosT/Vcu6hl8nwO?=
- =?us-ascii?Q?j/PZ8XdgiI8qsbtUQXJQb5ERu/hFLJ3zh+yBeMGAxQfy2ogtluNsItK8C8Z0?=
- =?us-ascii?Q?dK1kmQ1lXwKYFwpvByHSkR1+KGnRLDe7v1E5IuDe5r3Y8ys+7MDyDzXL7dF2?=
- =?us-ascii?Q?gHKoiX/nApANG1jNnZSmIWeg2UI21PQ2e8cHxeMQMS0O1vvqb2IGHLQYOTPZ?=
- =?us-ascii?Q?yTcGzJ/PzZ77MCo2UbE7VZQhzL47tDzAzLjbEjW7df+QUu3+bD340b1KEfbw?=
- =?us-ascii?Q?8kv6tv1iGPlJlP7+/9uPdcmbQ5p4v7Z98zTZjK8RE9azynrNIEHlUtUUFxi/?=
- =?us-ascii?Q?2dJ9XGvupYC1Opdqvhe65qjd9I4EAC7Ynn3BfCsry2CPrQTwyMrfw3ciyRH8?=
- =?us-ascii?Q?uqxO8UEblb68GxV2i2AEnOhlwkmSd3mga8TbyTlSD9wotlDwRua0k7gM3kG0?=
- =?us-ascii?Q?o/8ZxCzK6WSIPL2tOHPTgIOjUniKE/xCPQC+qBe1l4MTL9eWv2ek4w5QtWIl?=
- =?us-ascii?Q?P6paEKPUrJ3bet+Pgfh0BT+vje4/GzQBqzg53XTNNFOL5A0vh7yGrahzSVIm?=
- =?us-ascii?Q?lS2JotvUXxDnLO2MZzT2V2t4+bshjdsvRHPCVduxHycH9oO1SA/Bpv9tVL6a?=
- =?us-ascii?Q?cwO258dYBwuqDES1U0SY7XmuaLq7xRgJ5ld7FeFnC48+yBAXGpm7s7bfqyu2?=
- =?us-ascii?Q?VZB1dupBy4LMKfhyHH7uK6eC1BdWaiLLhYrzqEtZ/kezf3Q6IPYClZ5kRlal?=
- =?us-ascii?Q?3Tw63Tfb7iLVh1ZJH1/dCrg/XZt58tKCz6ApKKjZTPrAN6YXsrPTXi1OL+/r?=
- =?us-ascii?Q?8k0Sl4EkbOyxfL7j+rv8n+zbZlOobD7XYxsal17bJJgCeTJHfLaav5rPnFdf?=
- =?us-ascii?Q?SDt2h8opFK7wlvZr9OgUDDe8JbZCtKDEpbtrj1lkeHVcTh1M4T41UTxjn3FF?=
- =?us-ascii?Q?5G+r1rE9Hus2rGQW/1PacXWGBBaT2oUe1/+X8TfdJsYTPgmdc+J8CYI518+t?=
- =?us-ascii?Q?/p++BXGVihi1QOiXPa4CJqLIBzbfVLGGM92jB3pCzW6sqRCHVT6DxH1NhdWS?=
- =?us-ascii?Q?7CKJk0Au/w=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 45dc33c7-c807-4428-cda6-08da1bcf3daf
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 15:23:33.4395
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UEr3KFKH/Wwh+QJX9X4cJtrAu4P8rHC/qaNTRJmQERmyqG9pgyW6tPPY/nIB3gTJ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5871
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YlBKyBtbxMpvauLv@fedora>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 04:13:31PM +0200, Christoph Hellwig wrote:
-> The only supported hypervisor is KVM, so don't bother with dead code
-> enumerating hypervisors.
+[+Linus]
+
+On Fri, Apr 08, 2022 at 11:46:32AM -0300, Maíra Canal wrote:
+> On Fri, Apr 08, 2022 at 03:23:39PM +0100, Lorenzo Pieralisi wrote:
+> > On Mon, Nov 01, 2021 at 10:03:11PM -0300, Maíra Canal wrote:
+> > > Considering the current transition of the GPIO subsystem, remove all
+> > > dependencies of the legacy GPIO interface (linux/gpio.h and linux
+> > > /of_gpio.h) and replace it with the descriptor-based GPIO approach.
+> > > 
+> > > Signed-off-by: Maíra Canal <maira.canal@usp.br>
+> > > ---
+> > > V1 -> V2: Rewrite commit log and subject line to match PCI subsystem standard
+> > > V2 -> v3: Change gpiod_set_value_cansleep for gpiod_set_raw_value_cansleep
+> > > ---
+> > >  drivers/pci/controller/dwc/pci-imx6.c | 30 +++++++++------------------
+> > >  1 file changed, 10 insertions(+), 20 deletions(-)
+> > 
+> > Maira, Lucas,
+> > 
+> > what's this patch status ? Please let me know.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  drivers/gpu/drm/i915/gvt/gvt.c       |  17 +--
->  drivers/gpu/drm/i915/gvt/gvt.h       |   1 -
->  drivers/gpu/drm/i915/gvt/hypercall.h |   6 --
->  drivers/gpu/drm/i915/gvt/kvmgt.c     |   1 -
->  drivers/gpu/drm/i915/gvt/opregion.c  | 150 ++++++---------------------
->  5 files changed, 34 insertions(+), 141 deletions(-)
+> 
+> Lorenzo,
+> 
+> Thank you for the feedback. Since I sent v3, I didn't get any feedback from the community.
+> 
+> If you have any feedback, I would gladly work on it.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+I would ask Linus to have a look please given that it is GPIO code.
 
-Jason
+Original thread:
+https://lore.kernel.org/linux-pci/YYCOTx68LXu1Tn1i@fedora
+
+Thanks,
+Lorenzo
