@@ -2,78 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B5EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D31DAC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:33:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347273AbiDKOdc (ORCPT
+        id S1347287AbiDKOf4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37440 "EHLO
+        Mon, 11 Apr 2022 10:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344351AbiDKOda (ORCPT
+        with ESMTP id S240433AbiDKOfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:33:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB692245BA
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:31:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65B8161416
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:31:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68F4EC385A4;
-        Mon, 11 Apr 2022 14:31:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649687474;
-        bh=0GsPIMIyMqFxbNFUf5nCFFo4jiH0XlmIKDB/5ikIqAE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=0bWui8Gag4bGqzgUysGLYRB9Jszo3b0TfPc6WGgopkTiW83+OVFPHiSsb1wZs4Vzh
-         zbKgOBxr0XHns8qhAwLCxKQ8wY0F0HCizRssxlpc0tYZBjgM9j4V65KPZ2pdLtWzjt
-         D7MpsNRVGJGDvdDVlEVnPKa+ZnaVhh5eT6HHjRKs=
-Date:   Mon, 11 Apr 2022 16:31:12 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Liu Junqi <liujunqi@pku.edu.cn>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Leonardo Araujo <leonardo.aa88@gmail.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, sparmaintainer@unisys.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: Remove D. Kershner from Unisys S-PAR
- maintainers
-Message-ID: <YlQ7sJOOi/7gc0MW@kroah.com>
-References: <20220409205857.32083-1-fmdefrancesco@gmail.com>
- <YlJ3ot74ZwfGx53i@kroah.com>
- <YlQ7LBO5xS8ZmsEQ@infradead.org>
+        Mon, 11 Apr 2022 10:35:53 -0400
+Received: from out28-146.mail.aliyun.com (out28-146.mail.aliyun.com [115.124.28.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446D0245BA;
+        Mon, 11 Apr 2022 07:33:37 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1603941|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0169187-0.00675149-0.97633;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047205;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=12;RT=12;SR=0;TI=SMTPD_---.NOa6aYH_1649687597;
+Received: from zhouyanjie-virtual-machine.localdomain(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.NOa6aYH_1649687597)
+          by smtp.aliyun-inc.com(33.40.31.76);
+          Mon, 11 Apr 2022 22:33:33 +0800
+From:   =?UTF-8?q?=E5=91=A8=E7=90=B0=E6=9D=B0=20=28Zhou=20Yanjie=29?= 
+        <zhouyanjie@wanyeetech.com>
+To:     daniel.lezcano@linaro.org, tglx@linutronix.de, robh+dt@kernel.org,
+        krzk+dt@kernel.org
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        dongsheng.qiu@ingenic.com, aric.pzqi@ingenic.com,
+        rick.tyliu@ingenic.com, sernia.zhou@foxmail.com,
+        zhenwenjin@gmail.com, reimu@sudomaker.com
+Subject: [PATCH v4 0/3] Add SMP/SMT support for Ingenic sysost driver.
+Date:   Mon, 11 Apr 2022 22:33:14 +0800
+Message-Id: <1649687597-74219-1-git-send-email-zhouyanjie@wanyeetech.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YlQ7LBO5xS8ZmsEQ@infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 07:29:00AM -0700, Christoph Hellwig wrote:
-> On Sun, Apr 10, 2022 at 08:22:26AM +0200, Greg Kroah-Hartman wrote:
-> > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > index ba405f6ec31a..3b7497359c2b 100644
-> > > --- a/MAINTAINERS
-> > > +++ b/MAINTAINERS
-> > > @@ -20188,7 +20188,6 @@ F:	include/linux/cdrom.h
-> > >  F:	include/uapi/linux/cdrom.h
-> > >  
-> > >  UNISYS S-PAR DRIVERS
-> > > -M:	David Kershner <david.kershner@unisys.com>
-> > >  L:	sparmaintainer@unisys.com (Unisys internal)
-> > >  S:	Supported
-> > 
-> > If so, then that means this list needs to be dropped and the entry
-> > changed to orphaned :(
-> 
-> It might also be a good time to drop the staging part of it, which
-> has been sitting there without progress for years.
-> 
+1.On the hardware of X2000 SoC, the OST has been split into
+  two parts, two 32bit timers for clockevent and one 64bit
+  timer for clocksource (with different addresses), so it
+  not appropriate to use only one "ingenic,x2000-ost", just
+  remove it, then introduce "ingenic,x2000-ost32" and
+  "ingenic,x2000-ost64".
+2.The OST in Ingenic XBurst®2 SoCs has a global timer and
+  up to 16 event timers, add support for the event timers.
+3.Add dt-bindings and compatible strings for the X1600 SoC,
+  the X1700 SoC, the X1830 SoC, the X2000 SoC, the X2500 SoC.
 
-I agree.
+周琰杰 (Zhou Yanjie) (3):
+  dt-bindings: timer: Remove unreasonable binding.
+  dt-bindings: timer: Add bindings for new Ingenic SoCs.
+  clocksource: Ingenic: Add SMP/SMT support for sysost driver.
+
+ .../devicetree/bindings/timer/ingenic,sysost.yaml  |   8 +-
+ drivers/clocksource/ingenic-sysost.c               | 405 ++++++++++++++++-----
+ 2 files changed, 313 insertions(+), 100 deletions(-)
+
+-- 
+2.7.4
+
