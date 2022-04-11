@@ -2,203 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 534BAC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 08:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D0C7C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 08:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343535AbiDKID4 (ORCPT
+        id S1343544AbiDKIEG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 04:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38150 "EHLO
+        Mon, 11 Apr 2022 04:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343537AbiDKIDx (ORCPT
+        with ESMTP id S1343526AbiDKID6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 04:03:53 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60D81900E;
-        Mon, 11 Apr 2022 01:01:38 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id p10so25064784lfa.12;
-        Mon, 11 Apr 2022 01:01:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=dLagX0bznMYseBWYG2xpKUjyrFUW3pN56bkzoSU2tp0=;
-        b=cQkZQcy+MHkSXUoI9MDT/c+0IGaIn27ea7X86YOuBUMNrKg83hntaExUO3lD9XId0p
-         ly/XPa0D6U2DoNOg3j+gf5pkBCLsW1zW6vvL9c8PjlYdJ4tyQJAvIubVqSEIp2QNQDTF
-         5KoGJm0ZiXPohruC2B0c+94CQJV+X/C0xpl70Pt2ejLEWPG4heCAQmGwSfty2je2uFB/
-         QkEmv6M2fi3TlglcnxdMYhJ92xTA9jxJ29wn+Kcd4yqcD8Ahhj8ggyKnlkPN3+W4CzsT
-         LLhA9bxZEx35GUYJtOOVp5N8aR9yyQu7Eu27bjFvWXgpYATBUszDzcYc1kZ1fnSrmOeO
-         TEVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dLagX0bznMYseBWYG2xpKUjyrFUW3pN56bkzoSU2tp0=;
-        b=j6JV2XzllgIkxszDut7I2L3VJkkjxmIPkEB83foREtAkd62FxuSJfACw5HqvmxtzTb
-         cEtTJCwwHJDHQZY4wmAn6Dy/nx2iOuwVQ1EnzXP+/A7T5ugmnhs8mfHqfvWHu7pGgriw
-         2DAbKv36sRlECpeyd/4W3EMWN3awuYcsNUKwx2hqlSrsaABZotsv1a4CW7F2af8ReCf5
-         fKVXZpvjj5jNtyk0HkyV5PpRWUp7KHc0M9SvyFEnxSWEvfmnWYiihTZSi7R+uD8PmDQ6
-         6Dz1vC1nJfW+IErsC0vz77Be4iV+pk28kndkAkdpwUSanCKHzzLgZzKSEynkz8OOo5Ht
-         OpDg==
-X-Gm-Message-State: AOAM533+xUD7AwFd4GuXufnsYd8fyPOKM5VVoedkz1lJbULwy2zIVZ43
-        yJNl5aHCxVY8tDbH0709UBhQTcAu+O299fIL6dY=
-X-Google-Smtp-Source: ABdhPJxgJUUuROZgRKb0LEDLbuJHGqQUY3ojRGDjYwhHu2TK5fuKy2HxIiB6oeFUznuhvW81hNnfqmy8On1RUDGf9mE=
-X-Received: by 2002:a05:6512:262a:b0:45d:b42d:3e46 with SMTP id
- bt42-20020a056512262a00b0045db42d3e46mr20444462lfb.22.1649664096793; Mon, 11
- Apr 2022 01:01:36 -0700 (PDT)
+        Mon, 11 Apr 2022 04:03:58 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8C3DE8;
+        Mon, 11 Apr 2022 01:01:44 -0700 (PDT)
+X-UUID: cbce46d03cda4f509c2a93359d02afd7-20220411
+X-UUID: cbce46d03cda4f509c2a93359d02afd7-20220411
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <ping-lei.lin@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2070875496; Mon, 11 Apr 2022 16:01:35 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 11 Apr 2022 16:01:34 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 11 Apr 2022 16:01:34 +0800
+From:   James_Lin <Ping-lei.Lin@mediatek.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Ming Qian <ming.qian@nxp.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        <linux-media@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <ping-lei.lin@mediatek.com>,
+        <lecopzer.chen@mediatek.com>, <max.yan@mediatek.com>,
+        <sherlock.chang@mediatek.com>, <tm.wu@mediatek.com>,
+        James_Lin <Ping-lei.Lin@mediatek.com>
+Subject: [PATCH v2 1/2] media: usb: uvc: Add H265 pixel format
+Date:   Mon, 11 Apr 2022 16:01:19 +0800
+Message-ID: <20220411080120.26008-2-Ping-lei.Lin@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220411080120.26008-1-Ping-lei.Lin@mediatek.com>
+References: <20220411080120.26008-1-Ping-lei.Lin@mediatek.com>
 MIME-Version: 1.0
-References: <20220322030152.19018-1-ctcchien@nuvoton.com> <20220322030152.19018-3-ctcchien@nuvoton.com>
- <9cf20395-369a-2738-608d-dd5f1aabe48b@molgen.mpg.de>
-In-Reply-To: <9cf20395-369a-2738-608d-dd5f1aabe48b@molgen.mpg.de>
-From:   Medad Young <medadyoung@gmail.com>
-Date:   Mon, 11 Apr 2022 16:01:25 +0800
-Message-ID: <CAHpyw9fByk_pyD3pb0MX=p_t1AuD5qXKaECKwrB0uog6ZxX5qw@mail.gmail.com>
-Subject: Re: [PATCH v6 2/3] dt-bindings: edac: nuvoton: add NPCM memory controller
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     rric@kernel.org, James Morse <james.morse@arm.com>,
-        tony.luck@intel.com, Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Patrick Venture <venture@google.com>, KWLIU@nuvoton.com,
-        YSCHU@nuvoton.com, JJLIU0@nuvoton.com, KFTING <KFTING@nuvoton.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>, ctcchien@nuvoton.com,
-        devicetree <devicetree@vger.kernel.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-edac <linux-edac@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Paul,
+Add H265 pixel format.
+So driver can recognize external camera devices 
+whom use h265 to describe High Efficiency Video Coding method.
 
-thanks for your comments
+Signed-off-by: James_Lin <Ping-lei.Lin@mediatek.com>
+---
+ drivers/media/usb/uvc/uvc_driver.c | 5 +++++
+ drivers/media/usb/uvc/uvcvideo.h   | 3 +++
+ 2 files changed, 8 insertions(+)
 
-Paul Menzel <pmenzel@molgen.mpg.de> =E6=96=BC 2022=E5=B9=B44=E6=9C=889=E6=
-=97=A5 =E9=80=B1=E5=85=AD =E4=B8=8B=E5=8D=882:12=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> Dear Medad,
->
->
-> Thank you for your patch.
->
-> Am 22.03.22 um 04:01 schrieb Medad CChien:
-> > Added device tree binding documentation for Nuvoton BMC
-> > NPCM memory controller.
->
-> Please use present tense, and spell *devicetree* without a space. The
-> line below even fits in 75 characters:
->
-> Document devicetree bindings for the Nuvoton BMC NPCM memory controller.
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+index dda0f0aa78b8..ebb807c33e57 100644
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -154,6 +154,11 @@ static struct uvc_format_desc uvc_fmts[] = {
+ 		.guid		= UVC_GUID_FORMAT_H264,
+ 		.fcc		= V4L2_PIX_FMT_H264,
+ 	},
++	{
++		.name		= "H.265",
++		.guid		= UVC_GUID_FORMAT_H265,
++		.fcc		= V4L2_PIX_FMT_H265,
++	},
+ 	{
+ 		.name		= "Greyscale 8 L/R (Y8I)",
+ 		.guid		= UVC_GUID_FORMAT_Y8I,
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index 143230b3275b..41f4d8c33f2a 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -139,6 +139,9 @@
+ #define UVC_GUID_FORMAT_H264 \
+ 	{ 'H',  '2',  '6',  '4', 0x00, 0x00, 0x10, 0x00, \
+ 	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
++#define UVC_GUID_FORMAT_H265 \
++	{ 'H',  '2',  '6',  '5', 0x00, 0x00, 0x10, 0x00, \
++	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+ #define UVC_GUID_FORMAT_Y8I \
+ 	{ 'Y',  '8',  'I',  ' ', 0x00, 0x00, 0x10, 0x00, \
+ 	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
+-- 
+2.18.0
 
-OK
-
-
->
-> > Signed-off-by: Medad CChien <ctcchien@nuvoton.com>
-> > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> > ---
-> >   .../edac/nuvoton,npcm-memory-controller.yaml  | 62 ++++++++++++++++++=
-+
-> >   1 file changed, 62 insertions(+)
-> >   create mode 100644 Documentation/devicetree/bindings/edac/nuvoton,npc=
-m-memory-controller.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/edac/nuvoton,npcm-memory=
--controller.yaml b/Documentation/devicetree/bindings/edac/nuvoton,npcm-memo=
-ry-controller.yaml
-> > new file mode 100644
-> > index 000000000000..97469294f4ba
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-contro=
-ller.yaml
-> > @@ -0,0 +1,62 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/edac/nuvoton,npcm-memory-controller=
-.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Nuvoton NPCM Memory Controller
-> > +
-> > +maintainers:
-> > +  - Medad CChien <ctcchien@nuvoton.com>
-> > +
-> > +description: |
-> > +  The Nuvoton BMC SoC supports DDR4 memory with and without ECC (error
-> > +  correction check).
-> > +
-> > +  The memory controller supports single bit error correction, double b=
-it
-> > +  error detection (in-line ECC in which a section (1/8th) of the
-> > +  memory device used to store data is used for ECC storage).
->
-> *memory* fits on the line above?
-
-do you mean I should change the term "memory" to others?
-
->
-> > +
-> > +  Note, the bootloader must configure ECC mode for the memory controll=
-er.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - nuvoton,npcm845-memory-controller
-> > +      - nuvoton,npcm750-memory-controller
->
-> Sort the entries?
-
-OK
-
->
->
-> Kind regards,
->
-> Paul
->
->
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    minItems: 1
-> > +    items:
-> > +      - description: uncorrectable error interrupt
-> > +      - description: correctable error interrupt
-> > +
-> > +  interrupt-names:
-> > +    minItems: 1
-> > +    items:
-> > +      - const: ue
-> > +      - const: ce
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - interrupts
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> > +    ahb {
-> > +        #address-cells =3D <2>;
-> > +        #size-cells =3D <2>;
-> > +        mc: memory-controller@f0824000 {
-> > +            compatible =3D "nuvoton,npcm750-memory-controller";
-> > +            reg =3D <0x0 0xf0824000 0x0 0x1000>;
-> > +            interrupts =3D <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
-> > +        };
-> > +    };
-> > +
