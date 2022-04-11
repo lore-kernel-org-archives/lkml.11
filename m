@@ -2,116 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64196C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 07:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9060C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 07:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244009AbiDKH2k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 03:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
+        id S243426AbiDKHaD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 03:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233010AbiDKH2e (ORCPT
+        with ESMTP id S233473AbiDKHaA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 03:28:34 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5A53B540
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 00:26:21 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id j2so25969716ybu.0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 00:26:21 -0700 (PDT)
+        Mon, 11 Apr 2022 03:30:00 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C00D3980C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 00:27:46 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id h126-20020a1c2184000000b0038eb17fb7d6so2872358wmh.2
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 00:27:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DCizahI22iIFGiLOZD5DNvVNsX+gXun47dglVgPNMZ4=;
-        b=VgaDcEqmMcEcE1ceZMEuOoXxj10rwMNqMWLACbgHKz9TPWLFTqZluaSEncQlaCu6p/
-         fuqYskPKCtXP+tRelsRX02072M7dlhWcr7lpIEC3EsSR40w5QGxQC8HMsLs/cxIm6qnr
-         KRUsNvTIe3zqy1bi6+bC6PdV2Z/pCxhaZHA/yPpwntee+Ep0X+Kj7vT925YEQTtMdBzS
-         urdjO1yP5ElzjHL1aiimfIUvns6t5bY3qUQz4Bj9CE6cpT/URHSDRduvNLwMJPTjdmKX
-         0G7R7YlriTgHEJp2EXFiPFioidLFyCHnEWeBrqHyby906gZPit3cyS2Bag+ctoX07Jho
-         Sevw==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=wZSkW98SEIEbhV4Bb3TdcBneRqZQZaCTVUrWB9hDT8Y=;
+        b=3Z2fp/lJWPWwBIqHvvH46BbrRC4X+hrEY4HIiAKeFD9N15+Pc3LOXwkx4z0mRgKKQQ
+         CgXnBts5V8ZDutpV8FgRN864w9S4ovq/11FilejtVOsXAmKd3Btdspx7GjkuiUnkaEpo
+         R454Pw4SnbuZNQJGZC4dK5Hk7dGM+bbWc2wuSSgKQXFaCQeFy3ecS7/9rrQYdK2XC8St
+         q/3goMA8YgwrLBY+UnAa7f6FMeiiWGmDsmTBzcqL4uBRk2SyvbUsbxL83FLSNbQnHNbs
+         wWyuWMajKX4GDhdvMBafAFkfxzk76BE4txrb4M/yPl9BEcJT4R2GK8Tyf3dKHwadSFHm
+         2cRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DCizahI22iIFGiLOZD5DNvVNsX+gXun47dglVgPNMZ4=;
-        b=sqoZGosyNl2Hbs9iAIxygxO7KuR8AmJCxxPRfHmqsl62+ZOxx/wreEwSEgLMVvLztI
-         k7lhz0kBMuZM13ogxDvbeJEz4c8ZlORPXEC1USxFYE8Yk5oOv2ux8S5NbZZE+e4j6INK
-         MjIOeJmTgWmPhrfTbB1K6v/34NrGrvdHLPF66M305cispGtyV2n1i0GHrTM8UZx2zGBD
-         GA4DjLIlObEjpIFCYOkXvts6dxPk/OZklR+h0BcBwjNg7WeB6YFI1y2u5tlI/+IIEA2I
-         l10c7UvXSn93TyH3zRGDdrY4ucvN/lFWXTB9/rZdP33EDypRFpuYRcReOrAzNEstAZ0Y
-         +s/w==
-X-Gm-Message-State: AOAM530FLujmEOoVc0akBMiCt9bQnGPF0hbvUKCBZI82Rlniy7QXmWD5
-        ymEnToj+iJsx00VHzTOQ9LKUwfmicLinynF0yPSJvQ==
-X-Google-Smtp-Source: ABdhPJwTp12ngXqBapiKy2XA1vB5rLb9SSwVJnU7SCCAB6lj0mQgvmUliXU1FzpjXJtBM7nIAs/fPKF7m5VYu6OxDHw=
-X-Received: by 2002:a25:d80a:0:b0:641:38dd:2f4c with SMTP id
- p10-20020a25d80a000000b0064138dd2f4cmr4580482ybg.225.1649661980463; Mon, 11
- Apr 2022 00:26:20 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=wZSkW98SEIEbhV4Bb3TdcBneRqZQZaCTVUrWB9hDT8Y=;
+        b=To699AHpJo/9+08pooc1xyYQlqpnQXW2m/sfjuJeaZt0jAm6wqur8tdWoFVfcQ2QRL
+         C0wzxMFpxEzlwsc8a/8bkBd+i3l1hmLLBHd/WWYrvV+tTuCNEoq6TkyyGhjDRALg+x5q
+         c5Vg9AZDgminaICBEhTpFEz1zRDB6YSGaZ2CfOXsRFq4idLdDiUv0LpY45vhpLAYIWGP
+         3V8eGhh+DqRsVQcq9kL4SWFxiITy3G3I0qeAIO9aTgZUtxbqiCu5HFfwDMX24Jh9BS67
+         DsHd6z6VWIqnAYo3Q5RgmvMKBEuVj8uB94q6+sL8bgROUXpaeG1NPbQ7YxNJjHbGNSIT
+         cr8Q==
+X-Gm-Message-State: AOAM531+yOeTd7W7+AfCzgXJQkdU/dcv8wCpfQ0ngZjKmMf7Qv0QtwAV
+        XhrgS9+FGomXxTKEuIkUBODiYQ==
+X-Google-Smtp-Source: ABdhPJxK439eNBYeBmj50odYBDMozzwt8V7STzblGIDkD8wftNkCQ+v5AbP0Ddx/I7IqteBxuzC+aA==
+X-Received: by 2002:a1c:f413:0:b0:37b:d1de:5762 with SMTP id z19-20020a1cf413000000b0037bd1de5762mr27942434wma.108.1649662064710;
+        Mon, 11 Apr 2022 00:27:44 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:d1:e096:d183:1bc5? ([2001:861:44c0:66c0:d1:e096:d183:1bc5])
+        by smtp.gmail.com with ESMTPSA id k124-20020a1ca182000000b0038eb706c030sm4031206wme.39.2022.04.11.00.27.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 00:27:44 -0700 (PDT)
+Message-ID: <5d5d4590-18fc-1d94-08e3-7ffde8d9146d@baylibre.com>
+Date:   Mon, 11 Apr 2022 09:27:46 +0200
 MIME-Version: 1.0
-References: <20220311161406.23497-1-vincent.guittot@linaro.org>
- <7a7e1e21-df3d-4623-d9cd-51f5272919d5@arm.com> <CAKfTPtC36OLqrQ57bnGDi93N+3Ozk5cX-+KHHTWHkwCGp=z4gA@mail.gmail.com>
- <20220401121525.flngciwjtkn3mwlv@airbuntu> <CAKfTPtD7YntSV+fJkdwZxX0iO52hL0SxZ9G5hZTBSyZf6hMYRQ@mail.gmail.com>
- <20220409170841.upcimeak2ch3aj35@wubuntu> <20220409132829.16b03d69@rorschach.local.home>
- <20220409181036.v4mm3q2rotctbxb3@wubuntu>
-In-Reply-To: <20220409181036.v4mm3q2rotctbxb3@wubuntu>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Mon, 11 Apr 2022 09:26:08 +0200
-Message-ID: <CAKfTPtB326TQ7YTjqkE9Tq7OqOj2fdz1FhYZ2iObSDckfQEfwQ@mail.gmail.com>
-Subject: Re: [PATCH 0/6] Add latency_nice priority
-To:     Qais Yousef <qais.yousef@arm.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com, bsegall@google.com,
-        mgorman@suse.de, linux-kernel@vger.kernel.org, parth@linux.ibm.com,
-        chris.hyser@oracle.com, pkondeti@codeaurora.org,
-        Valentin.Schneider@arm.com, patrick.bellasi@matbug.net,
-        David.Laight@aculab.com, pjt@google.com, pavel@ucw.cz,
-        tj@kernel.org, qperret@google.com, tim.c.chen@linux.intel.com,
-        Wei Wang <wvw@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/2] i2c: meson: Use _SHIFT and _MASK for register
+ definitions
+Content-Language: en-US
+To:     Lucas Tanure <tanure@linux.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220409164334.157664-1-tanure@linux.com>
+ <20220409164334.157664-2-tanure@linux.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <20220409164334.157664-2-tanure@linux.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 9 Apr 2022 at 20:10, Qais Yousef <qais.yousef@arm.com> wrote:
->
-> On 04/09/22 13:28, Steven Rostedt wrote:
-> > On Sat, 9 Apr 2022 18:08:41 +0100
-> > Qais Yousef <qais.yousef@arm.com> wrote:
-> >
-> > > One other corner case to consider if you're working on next version is what
-> > > should happen when there are multiple tasks of the same priority on the rq. RT
-> > > scheduler will push/pull tasks to ensure the task will get to run ASAP if
-> > > there's another cpu at lower priority is available. Seems a lot of complexity
-> > > to add to CFS, but at the same time if 2 important tasks require low latency
-> > > are on the same rq, one of them will suffer without introducing the ability to
-> > > migrate one of them where it can get to run sooner.
-> >
-> > Instead of having the greedy algorithm of the RT push/pull logic, how
-> > hard would it be to have the load balancer know of these tasks, and try
-> > to keep them on different CPUs? When two are queued on the same CPU,
->
-> Oh yeah I didn't think we need to replicate push/pull. Load balancer will need
-> to know about it when it moves task so that it avoids placing two of these asks
-> on the same cpu.
->
-> > could it be possible to just trigger load balancing and let it do the
-> > work?
->
-> I think the other part will need to be at wake up when we decide the CPU.
->
-> If we trigger the load balancing instead then it'd behave like a push/pull?
->
-> All these paths are already complex though. So we need to carefully analyze the
-> trade-offs. Maybe we don't need to deliver such level of service after all. It
-> needs more thinking and experimenting.
+On 09/04/2022 18:43, Lucas Tanure wrote:
+> Differentiate between masks and shifts
+> 
+> Signed-off-by: Lucas Tanure <tanure@linux.com>
+> ---
+>   drivers/i2c/busses/i2c-meson.c | 41 ++++++++++++++++++----------------
+>   1 file changed, 22 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/i2c/busses/i2c-meson.c b/drivers/i2c/busses/i2c-meson.c
+> index 07eb819072c4..4b4a5b2d77ab 100644
+> --- a/drivers/i2c/busses/i2c-meson.c
+> +++ b/drivers/i2c/busses/i2c-meson.c
+> @@ -30,18 +30,21 @@
+>   #define REG_TOK_RDATA1		0x1c
+>   
+>   /* Control register fields */
+> -#define REG_CTRL_START		BIT(0)
+> -#define REG_CTRL_ACK_IGNORE	BIT(1)
+> -#define REG_CTRL_STATUS		BIT(2)
+> -#define REG_CTRL_ERROR		BIT(3)
+> -#define REG_CTRL_CLKDIV		GENMASK(21, 12)
+> -#define REG_CTRL_CLKDIVEXT	GENMASK(29, 28)
+> -
+> -#define REG_SLV_ADDR		GENMASK(7, 0)
+> -#define REG_SLV_SDA_FILTER	GENMASK(10, 8)
+> -#define REG_SLV_SCL_FILTER	GENMASK(13, 11)
+> -#define REG_SLV_SCL_LOW		GENMASK(27, 16)
+> -#define REG_SLV_SCL_LOW_EN	BIT(28)
+> +#define REG_CTRL_START			BIT(0)
+> +#define REG_CTRL_ACK_IGNORE		BIT(1)
+> +#define REG_CTRL_STATUS			BIT(2)
+> +#define REG_CTRL_ERROR			BIT(3)
+> +#define REG_CTRL_CLKDIV_SHIFT		12
+> +#define REG_CTRL_CLKDIV_MASK		GENMASK(21, REG_CTRL_CLKDIV_SHIFT)
+> +#define REG_CTRL_CLKDIVEXT_SHIFT	28
+> +#define REG_CTRL_CLKDIVEXT_MASK		GENMASK(29, REG_CTRL_CLKDIVEXT_SHIFT)
+> +
+> +#define REG_SLV_ADDR_MASK		GENMASK(7, 0)
+> +#define REG_SLV_SDA_FILTER_MASK		GENMASK(10, 8)
+> +#define REG_SLV_SCL_FILTER_MASK		GENMASK(13, 11)
+> +#define REG_SLV_SCL_LOW_SHIFT		16
+> +#define REG_SLV_SCL_LOW_MASK		GENMASK(27, REG_SLV_SCL_LOW_SHIFT)
+> +#define REG_SLV_SCL_LOW_EN		BIT(28)
+>   
+>   #define I2C_TIMEOUT_MS		500
+>   #define FILTER_DELAY		15
+> @@ -149,11 +152,11 @@ static void meson_i2c_set_clk_div(struct meson_i2c *i2c, unsigned int freq)
+>   		div = GENMASK(11, 0);
+>   	}
+>   
+> -	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_CLKDIV,
+> -			   FIELD_PREP(REG_CTRL_CLKDIV, div & GENMASK(9, 0)));
+> +	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_CLKDIV_MASK,
+> +			   FIELD_PREP(REG_CTRL_CLKDIV_MASK, div & GENMASK(9, 0)));
+>   
+> -	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_CLKDIVEXT,
+> -			   FIELD_PREP(REG_CTRL_CLKDIVEXT, div >> 10));
+> +	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_CLKDIVEXT_MASK,
+> +			   FIELD_PREP(REG_CTRL_CLKDIVEXT_MASK, div >> 10));
+>   
+>   	/* Disable HIGH/LOW mode */
+>   	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR, REG_SLV_SCL_LOW_EN, 0);
+> @@ -292,8 +295,8 @@ static void meson_i2c_do_start(struct meson_i2c *i2c, struct i2c_msg *msg)
+>   		TOKEN_SLAVE_ADDR_WRITE;
+>   
+>   
+> -	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR, REG_SLV_ADDR,
+> -			   FIELD_PREP(REG_SLV_ADDR, msg->addr << 1));
+> +	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR, REG_SLV_ADDR_MASK,
+> +			   FIELD_PREP(REG_SLV_ADDR_MASK, msg->addr << 1));
+>   
+>   	meson_i2c_add_token(i2c, TOKEN_START);
+>   	meson_i2c_add_token(i2c, token);
+> @@ -467,7 +470,7 @@ static int meson_i2c_probe(struct platform_device *pdev)
+>   
+>   	/* Disable filtering */
+>   	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR,
+> -			   REG_SLV_SDA_FILTER | REG_SLV_SCL_FILTER, 0);
+> +			   REG_SLV_SDA_FILTER_MASK | REG_SLV_SCL_FILTER_MASK, 0);
+>   
+>   	meson_i2c_set_clk_div(i2c, timings.bus_freq_hz);
+>   
 
-I will consider this for v2 but we have to take care of not adding
-more latency by trying to find a better CPU. As you said this
-additional behavior will need more thinking and experimenting
-
-Vincent
-
->
-> Thanks
->
-> --
-> Qais Yousef
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
