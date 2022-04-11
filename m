@@ -2,100 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0758C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54781C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244883AbiDKGUW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 02:20:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55592 "EHLO
+        id S244890AbiDKGUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 02:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244879AbiDKGUS (ORCPT
+        with ESMTP id S244322AbiDKGUi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 02:20:18 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B4C3CFEE
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 23:18:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649657886; x=1681193886;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=WMqosNgxlZ7WImro7S0Sf8rdr2r7XjJad/ExirCdumY=;
-  b=bMiQxJ7j31V53XLf50mvWffiP7sH8EFx8Vg25bTQw7dRsoBoqwED+vvT
-   fx65Au6C1gfSlK9AQ8P2lJQ7cN9avjM1oRlanjCSYBR3h5hqmfQZY801k
-   Jj0GOuae9FzLfbexhr+xratlzjPyWCILq+QvAfao2NUlU4yNDxntFRtNV
-   jUJo02uFwROqrRmgYLfO4X2sHNotFH3IwNyNzuUlAiSNGnxKWKZWJ1Zti
-   TBlfW9qpqMqRw3NYTtjVE/a+Zv+Ul+rnVojoEP5vGT9Mhbhjj7WsQi54j
-   Eq3nmK/uHYMyTM3BbeQb1IW3JlL7ljZcNBq4RlVUBO/0keP5J8jZeF8BY
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="243927027"
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="243927027"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2022 23:18:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="723840352"
-Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga005.jf.intel.com with ESMTP; 10 Apr 2022 23:17:59 -0700
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] perf tools: Fix misleading add event pmu debug message
-Date:   Mon, 11 Apr 2022 09:17:58 +0300
-Message-Id: <20220411061758.2458417-1-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Apr 2022 02:20:38 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201393CFE1;
+        Sun, 10 Apr 2022 23:18:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1649657900;
+        bh=DEmNhBL/gohEUMJP8JibIxeatvMiK2dGmVjbuB97Fyc=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=DTYxIIxSrTbphxaZpPdNkGBdxIx4xgavKoAi0RQpMqIiaOpWpcmk5Z42kBtiauavl
+         b3y9WRPtqX8Rut1wKJXPtC3kyBZXNsWWHGXhkSnfwZoIM2stMvQUJdmeEMctK3Lnmx
+         8Ofp7p6LJYUWaEuESkPg+XwcEzuetajM+zfvZJiU=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.145.57]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MulqD-1nuMpD1OYl-00rsZa; Mon, 11
+ Apr 2022 08:18:20 +0200
+Message-ID: <e0f26cb5-a67f-dbb0-46cf-441a19a82129@gmx.de>
+Date:   Mon, 11 Apr 2022 08:16:35 +0200
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] fbdev: i740fb: use memset_io() to clear screen
+Content-Language: en-US
+To:     Ondrej Zary <linux@zary.sk>
+Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20220410202833.26608-1-linux@zary.sk>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <20220410202833.26608-1-linux@zary.sk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:wDZTZbxfEuUfXVVlZgGev+nwA1g7MKEILesmHJFJP4UYp3fOPxV
+ kWzG+kJJSU0aNzxkRa1b1qqPnAMDd/jWqhk9l9kkJpvVvjWTHNTck+l5ISZB6fKiobMXV4+
+ aP2IFDjxT1BrluJrHO5ppdKmmzC2vX18Ati0IYPmbRz1zXFxxEOZanwyZXkgqYqDuqT0T2G
+ TNF13pw59FCq/9OoG8Amg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:jYWVJBqjH/0=:yYvVfny61rLZJasumIHxC3
+ wW2XCQSzcisl+0gcWX8hz1Om40LkQmMfGosY0XsbiPFADJJ6EnF4aNzvQg5egxeo+hPlwgO0H
+ HubMC7f5Aff/nypweDl/u288F5XFfur80lXPUu+1qA8u1fsA8Xj5NqcDmOE0Wucg0i4IdFz3l
+ 9y+EOuzMvq31aSFWACw0dtMy8OLkBXGqwWK7j1b67lOvjPUVlp4nFrXEKU4bXwFkjEuemiaIC
+ c57j6FhR9Mv6p2SZNShshJ+SrgPn3lKwNbIT78EKF2d09BUsdKX5/PCQE6dO+6gD8wEfDR7YL
+ cF7Vlvie1pZ/qkKhmBRHoeX8RCdpgAuWdtojqTQWqdu0utqCjVvlVsnXPRCk30OqcMPooRnxI
+ KePaQufjtB3KdV9pcLTN8GAeo0RHXhw5wsJQmdEA3CFOFWFf2Z2KYJRavI3nRAgoJ9dLMVlEf
+ RDzdnrr5LqFvW2dRqmLQhqCUIokrlYBrucABlk1obczZGxsF/wfij+NkHf00S5qqHodeUWe6V
+ hcaWpXakqBa/HLBv8Lxxl5anxayH8lBxT5vQEGVpUCmD+zYLTsX0HF8EFRF/cmxqp0fHJwmLZ
+ sn/w0HP2RwcR9FHcVcsJ1pL9H12STHj0yx4KGvOegB0NBi8X7Xy7aBSHw49ay8SA8QWJyX0me
+ 0jRhxS+OPtCguuqpv6HiajLpUw5kgRTxc0i5YKgpbCfGH41CZ6OhP1Ve8eFsvqWIBjr391jMW
+ BTljY+rkr0NHCYCptJ5Ok9JJJUpfP+R/MH8doFrkYW+DULuji8YpHmlN58gonxORW5H8hTSZy
+ n9RByI80s9CjNb1KMgVljHV5ZInUOagTo6YogNA/46qB9eggZ9TwBrpCAaAPSkGMLPcejCpMJ
+ JzjnqM+fyqc0kPXoUB6lPpa+t9WMmNmpqR80NQjJCcrqMNphnTzj3IxsGIYO4pEwFi2XqQNAz
+ pTpF/V0R5TZC8TXcAVm2BcGRKoPfuP51l0pzN9yr4vitmT7PbIHHDqKxQioogPw8W3upskaLo
+ PO5TcCr1HzgUIoeb28w4Ci6W7pCJvNnTZxaOufkGGgUZ7zN0WcDzB9qxOX4eQWA0BLPzsOs+j
+ oZUgAjlooUUGqE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix incorrect debug message:
+On 4/10/22 22:28, Ondrej Zary wrote:
+> sparse complains that using memset() on __iomem pointer is wrong:
+> incorrect type in argument 1 (different address spaces)
+>
+> Use memset_io() to clear screen instead.
+>
+> Tested on real i740 cards.
+>
+> Signed-off-by: Ondrej Zary <linux@zary.sk>
 
-   Attempting to add event pmu 'intel_pt' with '' that may result in
-   non-fatal errors
+applied.
+Thanks!
 
-which always appears with perf record -vv and intel_pt e.g.
+Helge
 
-    perf record -vv -e intel_pt//u uname
 
-The message is incorrect because there will never be non-fatal errors.
-
-Suppress the message if the pmu is 'selectable' i.e. meant to be selected
-directly as an event.
-
-Fixes: 4ac22b484d4c79 ("perf parse-events: Make add PMU verbose output clearer")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
----
- tools/perf/util/parse-events.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index 24997925ae00..dd84fed698a3 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -1523,7 +1523,9 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
- 	bool use_uncore_alias;
- 	LIST_HEAD(config_terms);
- 
--	if (verbose > 1) {
-+	pmu = parse_state->fake_pmu ?: perf_pmu__find(name);
-+
-+	if (verbose > 1 && !(pmu && pmu->selectable)) {
- 		fprintf(stderr, "Attempting to add event pmu '%s' with '",
- 			name);
- 		if (head_config) {
-@@ -1536,7 +1538,6 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
- 		fprintf(stderr, "' that may result in non-fatal errors\n");
- 	}
- 
--	pmu = parse_state->fake_pmu ?: perf_pmu__find(name);
- 	if (!pmu) {
- 		char *err_str;
- 
--- 
-2.25.1
+> ---
+>  drivers/video/fbdev/i740fb.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/video/fbdev/i740fb.c b/drivers/video/fbdev/i740fb.c
+> index 52cce0db8bd3..dd45ea8203be 100644
+> --- a/drivers/video/fbdev/i740fb.c
+> +++ b/drivers/video/fbdev/i740fb.c
+> @@ -740,7 +740,7 @@ static int i740fb_set_par(struct fb_info *info)
+>  	if (i)
+>  		return i;
+>
+> -	memset(info->screen_base, 0, info->screen_size);
+> +	memset_io(info->screen_base, 0, info->screen_size);
+>
+>  	vga_protect(par);
+>
 
