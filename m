@@ -2,122 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 12:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72B82C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 12:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346022AbiDKM2h (ORCPT
+        id S1346028AbiDKM34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 08:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48582 "EHLO
+        Mon, 11 Apr 2022 08:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239096AbiDKM2f (ORCPT
+        with ESMTP id S236026AbiDKM3x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 08:28:35 -0400
-Received: from esa1.hgst.iphmx.com (esa1.hgst.iphmx.com [68.232.141.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED912228D
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 05:26:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1649679981; x=1681215981;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=nxDlmRhRAD3e4b50YnwI05OwnqM0Kx3WSfBLQtZ4B+4=;
-  b=CjSJdnTE/L62lCCPObATJv3SMU3NeYq8Tr/hPnyP4Cgr48CQyzWdTI3E
-   djS1YFSV/DHIVGukUm1E9qyroDpRSsffIBd8K1Bdmli5Lx8924GX/ASq2
-   kK4FzZCCqqMMrpWHsm+MoheiJtRwaDDQ1QCS4yNyMBz7KUGqsJ1kMWKyK
-   ZyGlrxJmbVt4zgSMZtzsaUBtosPIiYqtDaBF9jXZHecc/gtGNRTZOVvGW
-   OAmFKwA92pIgQjMsCQhggDYZ2/DtZ1xcuDYR+pFLwyl3gKtDfKzDgi+gh
-   MIkPeZ1czBHjxrQVeS7PeYgXyO4h3If70NxPyF60ZMrJYC9P64v71kXjy
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,251,1643644800"; 
-   d="scan'208";a="309587277"
-Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 11 Apr 2022 20:26:20 +0800
-IronPort-SDR: eCB+57LlV2F1zSToMPkTVU5Sokwf8CqMUosAWmg/uVsoIglfunOCy+9vjOn3E4Q0o/LkDFikIT
- vtQNuTyV6hJsv+298ekentwETaZQlk6WBtFTX6UypeLXJ6Um3sxJJSvJUi8t9KyDihzN5BS98y
- nBa8ZT0Yj7Kag36DH1j2b7lO1iF8aavKj36oUhc2eC0hKlPJRiBNtim0EkPHnTzTARvuc8xX14
- cJhiHRAG5FpHAAivriKv1eW2xofM0DpDIptxhK/uy53opUaWEh1Wenb4O4TanTb6035i/PXGml
- yi/O7wg7az2jynSgkP0FCBun
-Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 11 Apr 2022 04:56:50 -0700
-IronPort-SDR: +Ce5avOs1UQeWc852eOj9M93dDE5rfhylO6C6MtjclC90RAvpXjLQleJ/DPDuYA4HsR0lqka48
- cDFynTKiI+UiaoFlIip9iMEjuOQbARpl2NzHj/9NNBgvxV3ddq9tuE90rZ9N676A5Q2VvZCCC8
- YcbOag7zUEyfX9jV6nB81VuZZJir1M9IzruDOX3ByIkHZxe39jPeJAlZH6ydUt6xmUMELXpRC9
- yiqD+Qhl0BtN7+VNg/Z1rRJWH2B5UBN0NJqUMITNwFhoEQasiNHFHYxr/Ns+8qEk1YzKuxNhSH
- mak=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 11 Apr 2022 05:26:21 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KcSl03C4tz1Rwrw
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 05:26:20 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1649679980; x=1652271981; bh=nxDlmRhRAD3e4b50YnwI05OwnqM0Kx3WSfB
-        LQtZ4B+4=; b=Y6YMMzkjp56dtzgUYupp0o+cOKzOyT6mbiOz+Ndy76IucRqegtu
-        HK4kCrTTVPEvmwa9n5NJjVqrhQUEyp26gMpwhPZuYNaFeqaEUNpEazyMxofJQQ8C
-        T8AerkJHVH1/1DZ9oNDjOAJxcqEllGfeT3JHvxLrN6CNgg58glAKMxCbiT3GdRes
-        GA1DBZDXb9KXC9fg9RQRYIaOLX8Z/93N26KdRnXJ32aD+EilFP1kZAOaxEROiuNf
-        RBjHkB6Gc/X7si7yguvQmn/WHGW0r6BGUZkz8pNVF01xk8ZWR62VhcDClnmK7tKk
-        FDBjxyfwcwdBTy8jyK/MFmn2XUlTx0wKJYg==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 1JEKaAVkSTyf for <linux-kernel@vger.kernel.org>;
-        Mon, 11 Apr 2022 05:26:20 -0700 (PDT)
-Received: from [10.225.163.9] (unknown [10.225.163.9])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KcSkz1flXz1Rvlx;
-        Mon, 11 Apr 2022 05:26:18 -0700 (PDT)
-Message-ID: <58553b08-3c58-a4c8-a402-26d036ef0640@opensource.wdc.com>
-Date:   Mon, 11 Apr 2022 21:26:18 +0900
+        Mon, 11 Apr 2022 08:29:53 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2053.outbound.protection.outlook.com [40.107.94.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E3F286EE
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 05:27:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ktxsGS43oErAocmecpULTwkxHqvlXpI+fTMhF8EmZ1ZIm2ou7l5knpSGkAYCS70S6U1nf4KXK29XM6aoXqWday+7b6k7mfEP6zGr6PSJNoncECxkvk4LQ1JJqon4LXSEmRoofDy3hbzVH3u4+pPHSzP7iMzefYPXoQXudhS+wZl1BtuF/nz3DABMINLRf9b4HHs+q/nW+b1ytSVY3lRMxdkkh0dmFx7BQwauDAcy9ZNW3t5wOh/tRk5KW3JqB9HwH63Pdib8SXsLSBtiiVFe9fGDEJWoc5Oq3V6TnUHXGC7XWI9YTvadeIFfRZsXsKoVqs/Fth0Zh69/8TcSApvAWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JFz/k8UR5BPc2LCqeuQXVR7q+ecmyaE+OB+MDMhb5II=;
+ b=SP4fYF649jSJaOE8YTlo1sxgA8DX3SwI9bYqlcSrieOJbuJRuk6xXWnfY3S1PtD45Wwwli1lkS59tG8k1x0w4d1ENzC0WFZVNisrBoyb7OJFirvjO9kuYoqIFPJAc7arxamE4SYzy/BWgrNwbUwxRNl8lVXNBa8uidEPyg3mLcHzu5soDiKgJPUxlEjB9HgVpSphT04iFggmIghcn/6jFZcu7SFKX2LV8qf/U4NTb6D32n0NU2h+34cKP7m5fXvJFfsFBSUmvnAbEtFL5YkTn2agxyVYb7iPhQyZsjVqLByKA5a4VSI5lfzgitDWDqBJEzYmEk/IXSGZi7QlsUZAnw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JFz/k8UR5BPc2LCqeuQXVR7q+ecmyaE+OB+MDMhb5II=;
+ b=Bn6E+TSjN5/eNYxWHoWFFbm9ENV0hGVkB6q5oZi7LKGQvvL4ItcF4R/UduLoGHbgXjbfX3+A1D1C27JYB+4rp56XDovfAt8Z8lmwqTDwEzmCKfqT/BiQfcLZvltwNSvbl2ZXSHZLReiLNtRljBYnbYqlBU7hnKsCXGBvsnzC/tKi8d2i2+kmrwtQpRjm0Uip23ST5OFNNJ3X6Vsum7BnQP9A+jvC3MCwuHVo4inFsIC2tLTjp2LKeXf7EXHbQTrgXtWNi1P+mj80o23NXvu+Dly+oaY+dXVuHCl7t+BvDsv8J8xGzYvqS2dTceB8Y+oy5GbNdlP9XjFbhYdqb4IIYQ==
+Received: from MW4PR04CA0115.namprd04.prod.outlook.com (2603:10b6:303:83::30)
+ by BN8PR12MB3604.namprd12.prod.outlook.com (2603:10b6:408:45::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
+ 2022 12:27:38 +0000
+Received: from CO1NAM11FT016.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:83:cafe::58) by MW4PR04CA0115.outlook.office365.com
+ (2603:10b6:303:83::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29 via Frontend
+ Transport; Mon, 11 Apr 2022 12:27:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT016.mail.protection.outlook.com (10.13.175.141) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5144.20 via Frontend Transport; Mon, 11 Apr 2022 12:27:37 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Mon, 11 Apr 2022 12:27:36 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 11 Apr 2022 05:27:36 -0700
+Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server id 15.2.986.22 via Frontend
+ Transport; Mon, 11 Apr 2022 05:27:34 -0700
+From:   Eli Cohen <elic@nvidia.com>
+To:     <mst@redhat.com>, <asowang@redhat.com>
+CC:     <virtualization@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, <si-wei.liu@oracle.com>,
+        Eli Cohen <elic@nvidia.com>
+Subject: [PATCH 0/3] mlx5_vdpa: Support MAC/VLAN haw offloading
+Date:   Mon, 11 Apr 2022 15:27:25 +0300
+Message-ID: <20220411122728.225588-1-elic@nvidia.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4] libata: Improve ATA queued command allocation
-Content-Language: en-US
-To:     John Garry <john.garry@huawei.com>, hch@lst.de
-Cc:     linux-doc@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1649408652-217372-1-git-send-email-john.garry@huawei.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <1649408652-217372-1-git-send-email-john.garry@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fdcd71f6-7d11-4f09-e5b4-08da1bb6a9e3
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3604:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB3604C4EAD226301808F2FA73ABEA9@BN8PR12MB3604.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WfnYPFqIkCgAMaC2tmWU9yS0rgaQRPgQwkuOYDLzY0U9j4DqILsDmO8ebzfuW6iX1WZnA6r5ylAH1zzpXs27ZCNh6aEpn1n9/D+VBky2rk9AYqAlxmi8PTqhdgbfiKwOv2fFi17mai3n0iDNF/EWD8lGlOZ8552a4R/LEHApHJeJfvz6OGYUUkcGTWupl9uMQ4RRh/vk2wX9j9g++TdETGo0QQTmVAL1/qkAjCMnmL0iv9+exwrRR2qlSUAtVinLagcdf3OJEUbFk7vEKie89Rgtl59SKN9LPTBxOy43fR1KG0e1aOxvE9GaLH75t22lIZl2f8KZVS0/ANGeZWVTDI9Lux8deLya+QLAk884oUP02a91oSc9rcinPqC1d1Xol6qCCQA5yhE39fLldtnB4aplJaBbC6ZFnWTUYyILBikQC+qHYl98CBrGhnjS4yYAkFdncai1L43APMnZ61SPTgOYyIUJue8TZITWCS0CqNytKH0vWv5bphkULiIxzp6UWwwFlOaD5YmBwJQB5sv2+zqe72u38ju4arAtyNHFe6Klt0Rt5MyXjtkLKG2ZWrovb9C/QQuGCLNUJsonzB4uBBB+VetW+2uDCe0yuprCWSEb9Pnxiw6tbMZ0ltqvKwGd0BvYRBh8aRB1tLaprky3Lfp/PU9nn2audkqtf2bvaiRlddN9wZYrA7sbTwaO6W+s+lqLSUhSe87tNAnT+E1t6A==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(6666004)(81166007)(83380400001)(82310400005)(36756003)(2906002)(2616005)(110136005)(4744005)(8936002)(508600001)(86362001)(356005)(426003)(36860700001)(336012)(7696005)(47076005)(107886003)(1076003)(186003)(26005)(40460700003)(4326008)(70206006)(5660300002)(8676002)(316002)(70586007)(54906003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 12:27:37.3535
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: fdcd71f6-7d11-4f09-e5b4-08da1bb6a9e3
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT016.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3604
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/8/22 18:04, John Garry wrote:
-> Improve ATA queued command allocation as follows:
-> 
-> - For attaining a qc tag for a SAS host we need to allocate a bit in
->   ata_port.sas_tag_allocated bitmap.
-> 
->   However we already have a unique tag per device in range
->   [0, ATA_MAX_QUEUE -1] in the scsi cmnd budget token, so just use that
->   instead.
-> 
-> - It is a bit pointless to have ata_qc_new_init() in libata-core.c since it
->   pokes scsi internals, so inline it in ata_scsi_qc_new() (in
->   libata-scsi.c). Also update Doc accordingly.
-> 
-> - Use standard SCSI helpers set_host_byte() and set_status_byte() in
->   ata_scsi_qc_new().
-> 
-> Christoph Hellwig originally contributed the change to inline
-> ata_qc_new_init().
-> 
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
+The following patches introduce MAC/VLAN filter suport for mlx5 vdpa.
+First patch remove code that uses hardware counters which are not
+necessary anymore.
+Second patch add missing struct to carry VLAN IDs.
+The third patch is the actual vlan MAC/VLAN filtering implementation. 
 
-Applied to for-5.19. Thanks !
+Eli Cohen (3):
+  vdpa/mlx5: Remove flow counter from steering
+  virtio_net: Add control VQ struct to carry vlan id
+  vdpa/mlx5: Add RX MAC VLAN filter support
+
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 292 ++++++++++++++++++++++--------
+ include/uapi/linux/virtio_net.h   |   3 +
+ 2 files changed, 222 insertions(+), 73 deletions(-)
 
 -- 
-Damien Le Moal
-Western Digital Research
+2.35.1
+
