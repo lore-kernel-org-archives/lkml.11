@@ -2,153 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4313C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CAEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234278AbiDKWYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 18:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49978 "EHLO
+        id S1348181AbiDKWY5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 18:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350446AbiDKWYa (ORCPT
+        with ESMTP id S1350461AbiDKWYi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 18:24:30 -0400
-Received: from hutie.ust.cz (hutie.ust.cz [185.8.165.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E3513EA3;
-        Mon, 11 Apr 2022 15:22:12 -0700 (PDT)
-From:   =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cutebit.org; s=mail;
-        t=1649715729; bh=EJZTC/ClSFKyr/qub0lf6Q+PSSWH+Yce7kdkcf2d4vY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=DCTjTMULcjbFUSOvZ8DpPqsy4YspOWq5V0XcpueglHW4vK03njzDfMUHLbVb902HB
-         VDcU5HQub2U9RQbFqUzjPzHwEn61ljMeRbGMDnsW9u0yRxW2cS0OUom50mYhdgAa9C
-         AlK8biOu4kczo/F+wldczavCD0cFaNn7i3tv1tx0=
-To:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>
-Subject: [PATCH v2 1/2] dt-bindings: dma: Add Apple ADMAC
-Date:   Tue, 12 Apr 2022 00:22:03 +0200
-Message-Id: <20220411222204.96860-2-povik+lin@cutebit.org>
-In-Reply-To: <20220411222204.96860-1-povik+lin@cutebit.org>
-References: <20220411222204.96860-1-povik+lin@cutebit.org>
+        Mon, 11 Apr 2022 18:24:38 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175E310FCB;
+        Mon, 11 Apr 2022 15:22:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649715743; x=1681251743;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=oXXoBWTt1Xe5PEiUAYw2pYMljxLFcnpZnLwQ3WTj6sw=;
+  b=kPl84TItKpioIO7FoLBe1Nn0rhAxL5NuB0nYhZE45Kr78eHF/xYsIdcd
+   j2tcYlFbllUGVxA5EJ8bIUmrFe927M1TirGT5rpt+JQKlnR8QFIy6b3Z0
+   1Ua8qZCv1RpDi8mp+zG5wVqcDR/3B51faij1aJ5ZFHPtZ0YeGwgXvUxYq
+   0YNtlFGn837VU9LSTdgY+bAsmxbYX7YCQ3SnEPZfWKZNbZh98F7hIzSpr
+   CM575xyUCZlPV/RqY8bYCesJxIrNtDjbLTdFoOQVwLMlWdwbAbwo3VxA5
+   7enMe8I6VancJWYvKSnPG6F/i3hNI23jaMkZiRrhCSaiDH987O4lhp5K0
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="325139667"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="325139667"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 15:22:22 -0700
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="507292101"
+Received: from lvnguyen-mobl2.amr.corp.intel.com (HELO localhost) ([10.213.163.243])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 15:22:22 -0700
+Date:   Mon, 11 Apr 2022 15:22:21 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        peterz@infradead.org
+Subject: Re: [PATCH] Documentation/vm: Extend "Temporary Virtual Mappings" in
+ highmem.rst
+Message-ID: <YlSqHf8Kv23iNp0E@iweiny-desk3>
+References: <20220409184907.25122-1-fmdefrancesco@gmail.com>
+ <YlJNI7c9pwq5R0RB@casper.infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlJNI7c9pwq5R0RB@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Apple's Audio DMA Controller (ADMAC) is used to fetch and store audio
-samples on SoCs from the "Apple Silicon" family.
+On Sun, Apr 10, 2022 at 04:21:07AM +0100, Matthew Wilcox wrote:
+> On Sat, Apr 09, 2022 at 08:49:07PM +0200, Fabio M. De Francesco wrote:
+> > @@ -52,25 +52,65 @@ Temporary Virtual Mappings
+> >  
+> >  The kernel contains several ways of creating temporary mappings:
+> >  
+> > -* vmap().  This can be used to make a long duration mapping of multiple
+> > -  physical pages into a contiguous virtual space.  It needs global
+> > -  synchronization to unmap.
+> > +* vmap().  This can be used to make a long duration mapping of multiple physical
+> > +  pages into a contiguous virtual space. It needs global synchronization to unmap.
+> 
+> Did you change any words here?  If so, I can't see them.  Please don't
+> gratuitously reformat paragraphs; it obscures the real changes.  Also,
+> 75 characters is a good limit for line length, and you're well past
+> that.  If in doubt, use `fmt`.
+> 
+> > -* kmap().  This permits a short duration mapping of a single page.  It needs
+> > -  global synchronization, but is amortized somewhat.  It is also prone to
+> > -  deadlocks when using in a nested fashion, and so it is not recommended for
+> > -  new code.
+> > +* kmap().  This can be used to make long duration mapping of a single page with
+> 
+> kmap() really isn't for long duration.  But the pointer returned from
+> kmap() is valid across all CPUs, unlike kmap_local() or kmap_atomic().
 
-Signed-off-by: Martin Povišer <povik+lin@cutebit.org>
----
+I think the problem is in how kmap() is being used now for the long duration
+maps in a couple of places.
 
-After the v1 discussion, I dropped the apple,internal-irq-destination
-property and instead the index of the usable interrupt is now signified
-by prepending -1 entries to the interrupts= list. This works when I do
-it like this:
+That said, I agree with Matt that we should not document this fact.  Rather we
+should steer people away from making use of kmap() at all.
 
-  interrupt-parent = <&aic>;
-  interrupts = <AIC_IRQ 0xffffffff 0>,
-               <AIC_IRQ 626 IRQ_TYPE_LEVEL_HIGH>;
+That said if kmap() goes away what replaces it in the areas of the code which
+require a long term access to a VA?
 
-I would find it neat to do it like this:
+The addition of PKS like protections on the direct map complicate this.
 
-  interrupts-extended = <0xffffffff>,
-                        <&aic AIC_IRQ 626 IRQ_TYPE_LEVEL_HIGH>;
+[snip]
 
-but unfortunately the kernel doesn't pick up on it:
+> > +
+> > +* kmap_local_*().  These provide a set of functions similar to kmap_atomic() and
+> > +  are used to require short term mappings. They can be invoked from any context
+> > +  (including interrupts).
+> > +
+> > +  The mapping can only be used in the context which acquired it, it is per thread,
+> > +  CPU local (i.e., migration from one CPU to another is disabled - this is why
+> > +  they are called "local"), but they don't disable preemption. It's valid to take
+> > +  pagefaults in a local kmap region, unless the context in which the local mapping
+> > +  is acquired does not allow it for other reasons.
+> > +
+> > +  If a task holding local kmaps is preempted, the maps are removed on context
+> > +  switch and restored when the task comes back on the CPU. As the maps are strictly
+> > +  CPU local, it is guaranteed that the task stays on the CPU and that the CPU
+> > +  cannot be unplugged until the local kmaps are released.
+> > +
+> > +  Nesting kmap_local.*() and kmap_atomic.*() mappings is allowed to a certain
+> > +  extent (up to KMAP_TYPE_NR). Nested kmap_local.*() and kunmap_local.*()
+> > +  invocations have to be strictly ordered because the map implementation is stack
+> > +  based.
+> 
+> I think the original layout of all this is flawed.  We should start by
+> describing the interface we want people to use first -- kmap_local*(),
+> then say "But if you can't use that, there's kmap_atomic()" and "If
+> you can't use kmap_atomic(), you can use kmap()".
 
-[    0.767964] apple-admac 238200000.dma-controller: error -6: IRQ index 0 not found
-[    0.773943] apple-admac 238200000.dma-controller: error -6: IRQ index 1 not found
-[    0.780154] apple-admac 238200000.dma-controller: error -6: IRQ index 2 not found
-[    0.786367] apple-admac 238200000.dma-controller: error -6: IRQ index 3 not found
-[    0.788592] apple-admac 238200000.dma-controller: error -6: no usable interrupt
+...  If, and only if, one absolutely has to use kmap(), then ok...
 
- .../devicetree/bindings/dma/apple,admac.yaml  | 68 +++++++++++++++++++
- 1 file changed, 68 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/dma/apple,admac.yaml
-
-diff --git a/Documentation/devicetree/bindings/dma/apple,admac.yaml b/Documentation/devicetree/bindings/dma/apple,admac.yaml
-new file mode 100644
-index 000000000000..bbd5eaf5f709
---- /dev/null
-+++ b/Documentation/devicetree/bindings/dma/apple,admac.yaml
-@@ -0,0 +1,68 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/dma/apple,admac.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Apple Audio DMA Controller (ADMAC)
-+
-+description: |
-+  Apple's Audio DMA Controller (ADMAC) is used to fetch and store audio samples
-+  on SoCs from the "Apple Silicon" family.
-+
-+  The controller has been seen with up to 24 channels. Even-numbered channels
-+  are TX-only, odd-numbered are RX-only. Individual channels are coupled to
-+  fixed device endpoints.
-+
-+maintainers:
-+  - Martin Povišer <povik+lin@cutebit.org>
-+
-+allOf:
-+  - $ref: "dma-controller.yaml#"
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - apple,t6000-admac
-+          - apple,t8103-admac
-+      - const: apple,admac
-+
-+  reg:
-+    maxItems: 1
-+
-+  '#dma-cells':
-+    const: 1
-+    description:
-+      Clients specify single cell with channel number.
-+
-+  dma-channels:
-+    maximum: 24
-+
-+  interrupts:
-+    minItems: 1
-+    maxItems: 4
-+
-+required:
-+  - compatible
-+  - reg
-+  - '#dma-cells'
-+  - dma-channels
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/apple-aic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    admac: dma-controller@238200000 {
-+      compatible = "apple,t8103-admac", "apple,admac";
-+      reg = <0x38200000 0x34000>;
-+      dma-channels = <24>;
-+      interrupt-parent = <&aic>;
-+      interrupts = <AIC_IRQ 0xffffffff 0>,
-+                   <AIC_IRQ 626 IRQ_TYPE_LEVEL_HIGH>;
-+      #dma-cells = <1>;
-+    };
--- 
-2.33.0
-
+Ira
