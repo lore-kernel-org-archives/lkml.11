@@ -2,194 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0752DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B005C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:11:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343971AbiDKLLS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39868 "EHLO
+        id S245292AbiDKLNk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 07:13:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345897AbiDKLJI (ORCPT
+        with ESMTP id S1345925AbiDKLKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:09:08 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E169A5FF9;
-        Mon, 11 Apr 2022 04:06:43 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9F969215FC;
-        Mon, 11 Apr 2022 11:06:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649675202; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=G8l3FS8YFsk/OqORAn3rxQjestKsacMckcsHSATHBZE=;
-        b=RpGdQP6AE8ApZkRf+wiTqgUy7XiIRUzzA242TdudFTdWxPJ1SJuJIXa+7c/j7bnwsyK0hs
-        c6CKFY+G8yjB4D/JTMIP9VO4kBSBhE9sdI+JAEW2RZxA/dlB/cg+HR9/I7N9u2iKfEQb/Y
-        O3NsJO7kukxFtJedjsk0nJDSJCccm8U=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649675202;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=G8l3FS8YFsk/OqORAn3rxQjestKsacMckcsHSATHBZE=;
-        b=VuqUqLw4Phk6BXBhmJokHyII+BVnZFEpZ8ILrFTtCiBX7Vu4aNQiwDiCKwqxZGqzSqVXIV
-        aUszz5eFJFXmkwAw==
-Received: from kunlun.suse.cz (unknown [10.100.128.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id CD12AA3B82;
-        Mon, 11 Apr 2022 11:06:41 +0000 (UTC)
-Date:   Mon, 11 Apr 2022 13:06:40 +0200
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Eric Snowberg <eric.snowberg@oracle.com>
-Cc:     dhowells@redhat.com, dwmw2@infradead.org, ardb@kernel.org,
-        jarkko@kernel.org, jmorris@namei.org, serge@hallyn.com,
-        nayna@linux.ibm.com, zohar@linux.ibm.com, keescook@chromium.org,
-        torvalds@linux-foundation.org, weiyongjun1@huawei.com,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-efi@vger.kernel.org, linux-security-module@vger.kernel.org,
-        James.Bottomley@hansenpartnership.com, pjones@redhat.com,
-        konrad.wilk@oracle.com
-Subject: Re: [PATCH v10 8/8] integrity: Only use machine keyring when
- uefi_check_trust_mok_keys is true
-Message-ID: <20220411110640.GC163591@kunlun.suse.cz>
-References: <20220126025834.255493-1-eric.snowberg@oracle.com>
- <20220126025834.255493-9-eric.snowberg@oracle.com>
+        Mon, 11 Apr 2022 07:10:47 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412AD4553B
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:08:04 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id j17so12825453pfi.9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:08:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sLKOyEDQ94V4T7IMbKowetu23bD0e9Tu4ZHOeay0Nmw=;
+        b=Z8w11YypcQClOBGXJEkE3vzocyTa84nM9++PON2DhSNRnGzR8wLsabf1eZWhjFrkLQ
+         t4gZm37BQaOhYyaq6Za4OLDl5zRWURbf3+lYpuTwMRrZrKH9hLcWmERyyHXL/D1ujwkB
+         TqrQ/J00olz2VGqofIzSgZsoOHlc9O0SKZywuyxbg2UARzRza79eEG6eWkc91expZqrb
+         f7KtUHhHNDqOtQ+A/+WgfZaTbax3tuUrv1E/csb6EPOMxm9o0szDmysiZg8Q+D4sCjNu
+         uOA4RmeMGMYP/fnskE11HyF2xUI4mrUWZ5AwDXk0cs/nwXgGJjjRtpizE4QwfO77QbVT
+         aTew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sLKOyEDQ94V4T7IMbKowetu23bD0e9Tu4ZHOeay0Nmw=;
+        b=ZmGW4uGI+c5hVLFjM0RoONLjSa+68Ba1pbEfEXfATst9cL09jf4qyIzhKc++BjN+mL
+         U27iqFSnFEERVGePtpeTYwN1rrAZ4oggL9xzf+Uu0MOpEL2s5COMngzv8D8nsktNjS6h
+         Oflbh4PKh8pHoOA1UitHQ3wKX4wZGUXL2/g4AuidWNQFkKQuUWi6Lf32qtSxNQOJjqo2
+         b3qcX82O+zKzsOGC8cxmSNFpiqU8GFJ1oN2NRsonoiPPy26z/Fbm3y5wbvopTFBlmrqL
+         8DeVTtTQh4Y/yeJHfllyMGtE177nUEiSULG6XAF712lfqr1FKUtEVOOmMlNbCwVazbFY
+         ajeA==
+X-Gm-Message-State: AOAM531lU12h7Qay+PKTKIL2qQqb3Px2csWoot6OwYw8G/ZM98+dICyJ
+        hZu4OiNECBPQEPyoQEZJn1I=
+X-Google-Smtp-Source: ABdhPJz7/6ofoutkdPkyf59dqggkjVqNNJBtorDyZuwg3taNrLb8ll7lpbYgrDXUBoT1TBI7CHlX0A==
+X-Received: by 2002:a63:db4c:0:b0:39d:18bf:7857 with SMTP id x12-20020a63db4c000000b0039d18bf7857mr9615859pgi.413.1649675283592;
+        Mon, 11 Apr 2022 04:08:03 -0700 (PDT)
+Received: from hyeyoo ([114.29.24.243])
+        by smtp.gmail.com with ESMTPSA id c74-20020a621c4d000000b00505be1ae39bsm3694138pfc.9.2022.04.11.04.07.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 04:08:02 -0700 (PDT)
+Date:   Mon, 11 Apr 2022 20:07:55 +0900
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Ohhoon Kwon <ohkwon1043@gmail.com>
+Cc:     Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        JaeSang Yoo <jsyoo5b@gmail.com>,
+        Wonhyuk Yang <vvghjk1234@gmail.com>,
+        Jiyoup Kim <lakroforce@gmail.com>,
+        Donghyeok Kim <dthex5d@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mm/slab_common: move dma-kmalloc caches creation into
+ new_kmalloc_cache()
+Message-ID: <YlQMC9x1hfgonJH/@hyeyoo>
+References: <20220410162511.656541-1-ohkwon1043@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220126025834.255493-9-eric.snowberg@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220410162511.656541-1-ohkwon1043@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-On Tue, Jan 25, 2022 at 09:58:34PM -0500, Eric Snowberg wrote:
-> With the introduction of uefi_check_trust_mok_keys, it signifies the end-
-
-What value does such flag have?
-
-The user is as much in control of the flag as the MOK keys.
-
-> user wants to trust the machine keyring as trusted keys.  If they have
-> chosen to trust the machine keyring, load the qualifying keys into it
-> during boot, then link it to the secondary keyring .  If the user has not
-> chosen to trust the machine keyring, it will be empty and not linked to
-> the secondary keyring.
-
-Why is importing the keys and using them linked together?
-
-If later we get, say, machine keyring on powerpc managed by secvarctl
-then it has its value to import the keyring and be able to list the
-content with the same tools on EFI and powerpc.
-
-It also makes sense to be able to configure the kernel to import the
-keys and not use them. I don't see any value in configuring that in
-shim, though. shim is both source of the key material and the flag so
-the flag is redundant, it does not exist on existing shim versions
-installed on user systems, and it's unlikely to exist on other
-plaltforms, either.
-
-Thanks
-
-Michal
-
+On Mon, Apr 11, 2022 at 01:25:11AM +0900, Ohhoon Kwon wrote:
+> There are four types of kmalloc_caches: KMALLOC_NORMAL, KMALLOC_CGROUP,
+> KMALLOC_RECLAIM, and KMALLOC_DMA. While the first three types are
+> created using new_kmalloc_cache(), KMALLOC_DMA caches are created in a
+> separate logic. Let KMALLOC_DMA caches be also created using
+> new_kmalloc_cache(), to enhance readability.
 > 
-> Signed-off-by: Eric Snowberg <eric.snowberg@oracle.com>
-> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-> ---
-> v4: Initial version
-> v5: Rename to machine keyring
-> v6: Unmodified from v5
-> v7: Made trust_mok static
-> v8: Unmodified from v7
-> v10: Added Jarkko's Reviewed-by
-> ---
->  security/integrity/digsig.c                      |  2 +-
->  security/integrity/integrity.h                   |  5 +++++
->  .../integrity/platform_certs/keyring_handler.c   |  2 +-
->  .../integrity/platform_certs/machine_keyring.c   | 16 ++++++++++++++++
->  4 files changed, 23 insertions(+), 2 deletions(-)
+> Historically, there were only KMALLOC_NORMAL caches and KMALLOC_DMA
+> caches in the first place, and they were initialized in two separate
+> logics. However, when KMALLOC_RECLAIM was introduced in v4.20 via
+> commit 1291523f2c1d ("mm, slab/slub: introduce kmalloc-reclaimable
+> caches") and KMALLOC_CGROUP was introduced in v5.14 via
+> commit 494c1dfe855e ("mm: memcg/slab: create a new set of kmalloc-cg-<n>
+> caches"), their creations were merged with KMALLOC_NORMAL's only.
+> KMALLOC_DMA creation logic should be merged with them, too.
 > 
-> diff --git a/security/integrity/digsig.c b/security/integrity/digsig.c
-> index 7b719aa76188..c8c8a4a4e7a0 100644
-> --- a/security/integrity/digsig.c
-> +++ b/security/integrity/digsig.c
-> @@ -112,7 +112,7 @@ static int __init __integrity_init_keyring(const unsigned int id,
->  	} else {
->  		if (id == INTEGRITY_KEYRING_PLATFORM)
->  			set_platform_trusted_keys(keyring[id]);
-> -		if (id == INTEGRITY_KEYRING_MACHINE)
-> +		if (id == INTEGRITY_KEYRING_MACHINE && trust_moklist())
->  			set_machine_trusted_keys(keyring[id]);
->  		if (id == INTEGRITY_KEYRING_IMA)
->  			load_module_cert(keyring[id]);
-> diff --git a/security/integrity/integrity.h b/security/integrity/integrity.h
-> index 730771eececd..2e214c761158 100644
-> --- a/security/integrity/integrity.h
-> +++ b/security/integrity/integrity.h
-> @@ -287,9 +287,14 @@ static inline void __init add_to_platform_keyring(const char *source,
+> By merging KMALLOC_DMA initialization with other types, the following
+> two changes might occur:
+> 1. The order dma-kmalloc-<n> caches added in slab_cache list may be
+> sorted by size. i.e. the order they appear in /proc/slabinfo may change
+> as well.
+> 2. slab_state will be set to UP after KMALLOC_DMA is created.
+> In case of slub, freelist randomization is dependent on slab_state>=UP,
+> and therefore KMALLOC_DMA cache's freelist will not be randomized in
+> creation, but will be deferred to init_freelist_randomization().
+> 
+> Co-developed-by: JaeSang Yoo <jsyoo5b@gmail.com>
+> Signed-off-by: JaeSang Yoo <jsyoo5b@gmail.com>
+> Signed-off-by: Ohhoon Kwon <ohkwon1043@gmail.com>
+> ---
+>  mm/slab_common.c | 18 +++---------------
+>  1 file changed, 3 insertions(+), 15 deletions(-)
+> 
+> diff --git a/mm/slab_common.c b/mm/slab_common.c
+> index 6ee64d6208b3..a959d247c27b 100644
+> --- a/mm/slab_common.c
+> +++ b/mm/slab_common.c
+> @@ -849,6 +849,8 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
+>  			return;
+>  		}
+>  		flags |= SLAB_ACCOUNT;
+> +	} else if (IS_ENABLED(CONFIG_ZONE_DMA) && (type == KMALLOC_DMA)) {
+> +		flags |= SLAB_CACHE_DMA;
+>  	}
 >  
->  #ifdef CONFIG_INTEGRITY_MACHINE_KEYRING
->  void __init add_to_machine_keyring(const char *source, const void *data, size_t len);
-> +bool __init trust_moklist(void);
->  #else
->  static inline void __init add_to_machine_keyring(const char *source,
->  						  const void *data, size_t len)
->  {
+>  	kmalloc_caches[type][idx] = create_kmalloc_cache(
+> @@ -877,7 +879,7 @@ void __init create_kmalloc_caches(slab_flags_t flags)
+>  	/*
+>  	 * Including KMALLOC_CGROUP if CONFIG_MEMCG_KMEM defined
+>  	 */
+> -	for (type = KMALLOC_NORMAL; type <= KMALLOC_RECLAIM; type++) {
+> +	for (type = KMALLOC_NORMAL; type < NR_KMALLOC_TYPES; type++) {
+>  		for (i = KMALLOC_SHIFT_LOW; i <= KMALLOC_SHIFT_HIGH; i++) {
+>  			if (!kmalloc_caches[type][i])
+>  				new_kmalloc_cache(i, type, flags);
+> @@ -898,20 +900,6 @@ void __init create_kmalloc_caches(slab_flags_t flags)
+>  
+>  	/* Kmalloc array is now usable */
+>  	slab_state = UP;
+> -
+> -#ifdef CONFIG_ZONE_DMA
+> -	for (i = 0; i <= KMALLOC_SHIFT_HIGH; i++) {
+> -		struct kmem_cache *s = kmalloc_caches[KMALLOC_NORMAL][i];
+> -
+> -		if (s) {
+> -			kmalloc_caches[KMALLOC_DMA][i] = create_kmalloc_cache(
+> -				kmalloc_info[i].name[KMALLOC_DMA],
+> -				kmalloc_info[i].size,
+> -				SLAB_CACHE_DMA | flags, 0,
+> -				kmalloc_info[i].size);
+> -		}
+> -	}
+> -#endif
 >  }
-> +static inline bool __init trust_moklist(void)
-> +{
-> +	return false;
-> +}
->  #endif
-> diff --git a/security/integrity/platform_certs/keyring_handler.c b/security/integrity/platform_certs/keyring_handler.c
-> index 4872850d081f..1db4d3b4356d 100644
-> --- a/security/integrity/platform_certs/keyring_handler.c
-> +++ b/security/integrity/platform_certs/keyring_handler.c
-> @@ -83,7 +83,7 @@ __init efi_element_handler_t get_handler_for_db(const efi_guid_t *sig_type)
->  __init efi_element_handler_t get_handler_for_mok(const efi_guid_t *sig_type)
->  {
->  	if (efi_guidcmp(*sig_type, efi_cert_x509_guid) == 0) {
-> -		if (IS_ENABLED(CONFIG_INTEGRITY_MACHINE_KEYRING))
-> +		if (IS_ENABLED(CONFIG_INTEGRITY_MACHINE_KEYRING) && trust_moklist())
->  			return add_to_machine_keyring;
->  		else
->  			return add_to_platform_keyring;
-> diff --git a/security/integrity/platform_certs/machine_keyring.c b/security/integrity/platform_certs/machine_keyring.c
-> index 09fd8f20c756..7aaed7950b6e 100644
-> --- a/security/integrity/platform_certs/machine_keyring.c
-> +++ b/security/integrity/platform_certs/machine_keyring.c
-> @@ -8,6 +8,8 @@
->  #include <linux/efi.h>
->  #include "../integrity.h"
->  
-> +static bool trust_mok;
-> +
->  static __init int machine_keyring_init(void)
->  {
->  	int rc;
-> @@ -59,3 +61,17 @@ static __init bool uefi_check_trust_mok_keys(void)
->  
->  	return false;
->  }
-> +
-> +bool __init trust_moklist(void)
-> +{
-> +	static bool initialized;
-> +
-> +	if (!initialized) {
-> +		initialized = true;
-> +
-> +		if (uefi_check_trust_mok_keys())
-> +			trust_mok = true;
-> +	}
-> +
-> +	return trust_mok;
-> +}
+>  #endif /* !CONFIG_SLOB */
+>
+
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+
+BTW this patch may conflict with [1] (not merged yet)
+
+[1] https://lore.kernel.org/linux-mm/20220405135758.774016-9-catalin.marinas@arm.com/
+
+Thanks!
+
 > -- 
-> 2.18.4
+> 2.25.1
 > 
+
+-- 
+Thanks,
+Hyeonggon
