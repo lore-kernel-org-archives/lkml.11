@@ -2,89 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2081C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:56:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348326AbiDKP6H (ORCPT
+        id S1348345AbiDKP6L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44230 "EHLO
+        Mon, 11 Apr 2022 11:58:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348400AbiDKP5y (ORCPT
+        with ESMTP id S1348339AbiDKP5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:57:54 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74081A804;
-        Mon, 11 Apr 2022 08:55:39 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 1A6C51EC051F;
-        Mon, 11 Apr 2022 17:55:34 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649692534;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=+qm6xxaKZ1LEXRx+Q8w+uMhxMAISclspO9iaopSo6C4=;
-        b=EpI4AFGUegZ/8pATs/HB27ODf/aTQFNOqs1L5bF6c/6VW28wW7C07qKtAn1UY6hIcAHcqr
-        X7cTScH/818ZNmY/9bhit78ZT54ChEl1N9WwhrbGljuJj/DpDeSeqIHo5Pi7dhyevmonbB
-        rZUXmrNhqpuaAEtbh5J7J4E8ZeivFhY=
-Date:   Mon, 11 Apr 2022 17:55:33 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCHv4 1/8] mm: Add support for unaccepted memory
-Message-ID: <YlRPdQP5c1DQqZeN@zn.tnic>
-References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
- <20220405234343.74045-2-kirill.shutemov@linux.intel.com>
- <93a7cfdf-02e6-6880-c563-76b01c9f41f5@intel.com>
- <20220409175210.xik3ue3shpagskvi@box.shutemov.name>
- <adc87911-e1f2-4e2a-2394-17ee9213ae3e@intel.com>
+        Mon, 11 Apr 2022 11:57:38 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B858167DB;
+        Mon, 11 Apr 2022 08:55:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=y0SNVmMp7H+ptzmcsyoUL9pL/AxP4E97rpWB6EyeD1c=; b=czjs/J+XQMI6TDlpo4/BBukBpN
+        auEAxmc22XkER3cO4nYXuZiOEJtQlbN/p9JcMHEXBRcgJ5OqIAuaya1uuzslGsX9pOUESzZwOMm4q
+        ACSUDQiIqSME6pwKTJvU97wA0PtcsVUHf1KfHV4qzOn5K4XpT35HFXr+jnMWjE8CWbmZOw4Eq26nW
+        SuNseXXNIWRXEB19iV328Vpu6yCxEvM5zF/WMWgbflo/QoMaITcIA6lhZTzwIuKwAFgPI16Gm1pzk
+        0gbmPdNhWL3Ga2XWblrbLHU4gxLnURyPoaBo5IufXQZy0ortUwcrU7d3oPwKgcsLzgZgmOCks5upi
+        SoDGAu8A==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ndwNr-009gN7-VV; Mon, 11 Apr 2022 15:55:20 +0000
+Date:   Mon, 11 Apr 2022 08:55:19 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] init: print some info about UUID and LABEL in
+ name_to_dev_t()
+Message-ID: <YlRPZy+trbDdanyh@infradead.org>
+References: <1649475581-12139-1-git-send-email-yangtiezhu@loongson.cn>
+ <1649475581-12139-2-git-send-email-yangtiezhu@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <adc87911-e1f2-4e2a-2394-17ee9213ae3e@intel.com>
+In-Reply-To: <1649475581-12139-2-git-send-email-yangtiezhu@loongson.cn>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 10, 2022 at 11:41:57PM -0700, Dave Hansen wrote:
-> Let's just call out the possible (probable?) need for new ABI here.
-> Maybe it will cue folks who care to speak up.
+On Sat, Apr 09, 2022 at 11:39:39AM +0800, Tiezhu Yang wrote:
+> If there is no valid initrd, but root=UUID or root=LABEL is used
+> in the command line, boot hangs like this:
 
-Err, why would you teach the user to go poke at some arbitrary sysfs
-nodes when the accepting code can simply issue a printk from time to
-time
-
-  "Guest unnaccepted memory progress: XX%. This slows down operations at the moment."
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+There is no root=UUID or root=LABEL handling in the kernel at all, so
+I don't see why we should print anything here.
