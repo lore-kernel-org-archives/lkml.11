@@ -2,101 +2,313 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 057A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 19:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B59C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 19:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349736AbiDKT3X (ORCPT
+        id S1349561AbiDKTfF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 15:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55320 "EHLO
+        Mon, 11 Apr 2022 15:35:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231283AbiDKT3J (ORCPT
+        with ESMTP id S230134AbiDKTfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 15:29:09 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E262D1EAE8;
-        Mon, 11 Apr 2022 12:26:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649705208; x=1681241208;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=361ZTGM96hxe/t9hSuSoqin9yJQVr5tnIcedOoLzyXM=;
-  b=HcDqwUXdxoMlvvs4jNh+IkzmEgU6IP8xkodwarq3NDQjUxhS+JLxBRGp
-   SEacHOQVzToDjuqZIRJB95NmfssmbOYaRGAqj569yeQaFFDNztMKZWsiJ
-   wa2t0rzxRGOZKQ+f5XhxI3vdaGSQRv4pGbYwjw5GPLuQygB74g+5t8F3d
-   oHLARBD6xy7x9gnVQSurYEr2GuTY8nxRi0OYO0fQRLtXpAg5YceKbEr3C
-   CUdZi3QxcVMEh1JPxstBkinFegzaLHheGyLjx4J35jSEg0qo7T+oiK6Yp
-   CK01Bvc62Vxxk/yINktWqWQYRV8VALSQxba7hrbV26iGjzFsBLiINqVlc
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="249480514"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="249480514"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 12:26:48 -0700
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="572352902"
-Received: from minhjohn-mobl.amr.corp.intel.com (HELO [10.212.44.201]) ([10.212.44.201])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 12:26:47 -0700
-Message-ID: <41a3ca80-d3e2-47d2-8f1c-9235c55de8d1@intel.com>
-Date:   Mon, 11 Apr 2022 12:26:52 -0700
+        Mon, 11 Apr 2022 15:35:01 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADCD020F61
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 12:32:43 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id f3so15490563pfe.2
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 12:32:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1nw9nGDw3cyaodYoYUj8R0+46X+s4DMoFeDUNwSoPyg=;
+        b=TAsLcYCv4sz81w/n8MvQtbPBB3prwgo1mKMBJOlcw2nHGGLR2CgkDSKoj6s1wG07H9
+         rI5ECYWhbz2CCVcJXbUzQF37guA5iVw4Tj7apRb/qnVvcmUa9gwj+Xc8HatdyqGermV7
+         Ab+7qn1rG+UNNegueVDVcpK+LRTmdRCzF3cOs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1nw9nGDw3cyaodYoYUj8R0+46X+s4DMoFeDUNwSoPyg=;
+        b=4acHMM1bXf5xPhwVwZ/KJ708Qu0XHm90fglhfNHbeqBPT3R/97hXE/NdiIRHMOqGoV
+         /goMQp6KOncQ0JVPxt9mBVFkpMbIjz0DQSfVxs+Ek6e/dTiqWVpWuPGQfrQTYUVvESg4
+         tyo9F6m1B9+bEfW7HEAO/1WACA4g9FFyCUUNsqatD3RlCjh4CLhKJvy6g29KzPTzR56o
+         5/Drba0Cs55zlo50NUdOpd63F6cgLZv26iOovrhLMxdAoxiPluLY1KnNMlSCezI2WoSp
+         ixBuldI9BmvVpfW5n+LBeanRSfE/Cv6fRjkUq5Ng/jAxNECrZbLQ4XwUjbx52qn8+jJM
+         QS/w==
+X-Gm-Message-State: AOAM532lDOn8medyGEoRg1+jDDdpvgFvzqoDn1hcNVAqT4GSjLq+OTMv
+        1OaEILj6W6oJm6OeDIF/SYtnEg==
+X-Google-Smtp-Source: ABdhPJyUnvrHRzsogOoAwvw5UT39B1TmAveE7475OEb59s+Yy1MSWBx2hPkCPpvKYj+m+bG8+tClMg==
+X-Received: by 2002:a63:7804:0:b0:398:1338:86a with SMTP id t4-20020a637804000000b003981338086amr27732593pgc.575.1649705563221;
+        Mon, 11 Apr 2022 12:32:43 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:eb96:76ba:e2a1:2442])
+        by smtp.gmail.com with UTF8SMTPSA id j22-20020a637a56000000b003984be1f515sm451688pgn.69.2022.04.11.12.32.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 12:32:42 -0700 (PDT)
+Date:   Mon, 11 Apr 2022 12:32:40 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v7 2/2] arm64: dts: qcom: sc7280: add lpass lpi pin
+ controller node
+Message-ID: <YlSCWC47tITuW/BZ@google.com>
+References: <1649685184-8448-1-git-send-email-quic_srivasam@quicinc.com>
+ <1649685184-8448-3-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Jon Kohler <jon@nutanix.com>, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>,
-        Neelima Krishnan <neelima.krishnan@intel.com>,
-        "kvm @ vger . kernel . org" <kvm@vger.kernel.org>
-References: <20220411180131.5054-1-jon@nutanix.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH] x86/tsx: fix KVM guest live migration for tsx=on
-In-Reply-To: <20220411180131.5054-1-jon@nutanix.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1649685184-8448-3-git-send-email-quic_srivasam@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/11/22 11:01, Jon Kohler wrote:
->  static enum tsx_ctrl_states x86_get_tsx_auto_mode(void)
->  {
-> +	/*
-> +	 * Hardware will always abort a TSX transaction if both CPUID bits
-> +	 * RTM_ALWAYS_ABORT and TSX_FORCE_ABORT are set. In this case, it is
-> +	 * better not to enumerate CPUID.RTM and CPUID.HLE bits. Clear them
-> +	 * here.
-> +	 */
-> +	if (boot_cpu_has(X86_FEATURE_RTM_ALWAYS_ABORT) &&
-> +	    boot_cpu_has(X86_FEATURE_TSX_FORCE_ABORT)) {
-> +		tsx_clear_cpuid();
-> +		setup_clear_cpu_cap(X86_FEATURE_RTM);
-> +		setup_clear_cpu_cap(X86_FEATURE_HLE);
-> +		return TSX_CTRL_RTM_ALWAYS_ABORT;
-> +	}
+On Mon, Apr 11, 2022 at 07:23:04PM +0530, Srinivasa Rao Mandadapu wrote:
+> Add LPASS LPI pinctrl node required for Audio functionality on sc7280
+> based platforms.
+> 
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  84 ++++++++++++++++++++++++
+>  arch/arm64/boot/dts/qcom/sc7280.dtsi     | 107 +++++++++++++++++++++++++++++++
+>  2 files changed, 191 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> index 4ba2274..ea751dc 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> @@ -238,6 +238,90 @@
+>  	modem-init;
+>  };
+>  
+> +&dmic01 {
 
-I don't really like hiding the setup_clear_cpu_cap() like this.  Right
-now, all of the setup_clear_cpu_cap()'s are in a single function and
-they are pretty easy to figure out.
+Shouldn't these nodes be in the PINCTRL section at their respective
+positions in alphabetical order?
 
-This seems like logic that deserves to be appended down to the last if()
-block of code in tsx_init() instead of squirreled away in a "get mode"
-function.  Does this work?
+nit: since you are keeping the groups the group names are a bit generic IMO.
+e.g. it is fairly obvious that 'dmic01_clk' refers to a clock pin, however
+just 'dmic01' is a bit vague. You could consider adding the prefix 'lpass_'
+to the group names for more clarity.
 
-        if (tsx_ctrl_state == TSX_CTRL_DISABLE) {
-		...
-        } else if (tsx_ctrl_state == TSX_CTRL_ENABLE) {
-		...	
-        } else if (tsx_ctrl_state == TSX_CTRL_RTM_ALWAYS_ABORT) {
-		tsx_clear_cpuid();
+> +	clk {
+> +		drive-strength = <8>;
+> +	};
+> +};
+> +
+> +&dmic01_sleep {
+> +	clk {
+> +		drive-strength = <2>;
+> +		bias-disable;
+> +	};
+> +
+> +	data {
+> +		pull-down;
+> +	};
+> +};
+> +
+> +&dmic23 {
+> +	clk {
+> +		drive-strength = <8>;
+> +	};
+> +};
+> +
+> +&dmic23_sleep {
+> +	clk {
+> +		drive-strength = <2>;
+> +		bias-disable;
+> +	};
+> +
+> +	data {
+> +		pull-down;
+> +	};
+> +};
+> +
+> +&rx_swr {
+> +	clk {
+> +		drive-strength = <2>;
+> +		slew-rate = <1>;
+> +		bias-disable;
+> +	};
+> +
+> +	data {
+> +		drive-strength = <2>;
+> +		slew-rate = <1>;
+> +		bias-bus-hold;
+> +	};
+> +};
+> +
+> +&rx_swr_sleep {
+> +	clk {
+> +		drive-strength = <2>;
+> +		bias-pull-down;
+> +	};
+> +
+> +	data {
+> +		drive-strength = <2>;
+> +		bias-pull-down;
+> +	};
+> +};
+> +
+> +&tx_swr {
+> +	clk {
+> +		drive-strength = <2>;
+> +		slew-rate = <1>;
+> +		bias-disable;
+> +	};
+> +
+> +	data {
+> +		slew-rate = <1>;
+> +		bias-bus-hold;
+> +	};
+> +};
+> +
+> +&tx_swr_sleep {
+> +	clk {
+> +		drive-strength = <2>;
+> +		bias-pull-down;
+> +	};
+> +
+> +	data {
+> +		bias-bus-hold;
+> +	};
+> +};
+> +
+>  &pcie1 {
+>  	status = "okay";
+>  	perst-gpio = <&tlmm 2 GPIO_ACTIVE_LOW>;
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> index 8099c80..c692420 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> @@ -1987,6 +1987,113 @@
+>  			qcom,bcm-voters = <&apps_bcm_voter>;
+>  		};
+>  
+> +		lpass_tlmm: pinctrl@33c0000 {
+> +			compatible = "qcom,sc7280-lpass-lpi-pinctrl";
+> +			reg = <0 0x033c0000 0x0 0x20000>,
+> +				<0 0x03550000 0x0 0x10000>;
+> +			gpio-controller;
+> +			#gpio-cells = <2>;
+> +			gpio-ranges = <&lpass_tlmm 0 0 15>;
+> +
+> +			#clock-cells = <1>;
+> +
+> +			dmic01: dmic01 {
+> +				clk {
+> +					pins = "gpio6";
 
-		setup_clear_cpu_cap(X86_FEATURE_RTM);
-		setup_clear_cpu_cap(X86_FEATURE_HLE);
-	}
+From the schematics I interpret that the LPASS GPIOs 0-9 are mapped to the
+SC7280 GPIOs 144-153. Is that correct?
 
+> +					function = "dmic1_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio7";
+> +					function = "dmic1_data";
+> +				};
+> +			};
+> +
+> +			dmic01_sleep: dmic01-sleep {
+> +				clk {
+> +					pins = "gpio6";
+> +					function = "dmic1_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio7";
+> +					function = "dmic1_data";
+> +				};
+> +			};
+> +
+> +			dmic23: dmic23 {
+> +				clk {
+> +					pins = "gpio8";
+> +					function = "dmic2_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio9";
+> +					function = "dmic2_data";
+> +				};
+> +			};
+> +
+> +			dmic23_sleep: dmic23_sleep {
+
+s/dmic23_sleep/dmic23-sleep/ for the node name.
+
+> +				clk {
+> +					pins = "gpio8";
+> +					function = "dmic2_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio9";
+> +					function = "dmic2_data";
+> +				};
+> +			};
+> +
+> +			rx_swr: rx-swr {
+> +				clk {
+> +					pins = "gpio3";
+> +					function = "swr_rx_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio4", "gpio5";
+> +					function = "swr_rx_data";
+> +				};
+> +			};
+> +
+> +			rx_swr_sleep: rx-swr-sleep {
+> +				clk {
+> +					pins = "gpio3";
+> +					function = "swr_rx_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio4", "gpio5";
+> +					function = "swr_rx_data";
+> +				};
+> +			};
+> +
+> +			tx_swr: tx-swr {
+> +				clk {
+> +					pins = "gpio0";
+> +					function = "swr_tx_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio1", "gpio2", "gpio14";
+> +					function = "swr_tx_data";
+> +				};
+> +			};
+> +
+> +			tx_swr_sleep: tx-swr-sleep {
+> +				clk {
+> +					pins = "gpio0";
+> +					function = "swr_tx_clk";
+> +				};
+> +
+> +				data {
+> +					pins = "gpio1", "gpio2", "gpio14";
+> +					function = "swr_tx_data";
+> +				};
+> +			};
+> +		};
+> +
+>  		gpu: gpu@3d00000 {
+>  			compatible = "qcom,adreno-635.0", "qcom,adreno";
+>  			reg = <0 0x03d00000 0 0x40000>,
+> -- 
+> 2.7.4
+> 
