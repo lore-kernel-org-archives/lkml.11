@@ -2,93 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF0CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF21C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:19:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241570AbiDKLVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37826 "EHLO
+        id S1344220AbiDKLWC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 07:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345338AbiDKLUw (ORCPT
+        with ESMTP id S232099AbiDKLWA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:20:52 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716ED427DB
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:18:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649675920; x=1681211920;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ea5nwmZ8Hu0lK2U2vtQf3n2ONvqD/pSJbCmGqETJbxM=;
-  b=ShwRv9smSuhtbdrW3gTH88J2aLpdYr93Mo00JhDRiAyEwiY38hnxH15l
-   //wJNHk+oqitxFDardYT7XfIJQDohevbXOSJ06VFmyUiwZoWzb+5CO3si
-   Z60lxcTX8nwMewTXZ/MW/6nPeZxQX2DG5GIWvGnOnL6qsa9Mb0HMMKPZ7
-   /St0M1WrzU2GmsbLabgE2/ZQCAy0P6ETdCKCLHoo0CdP6KSI94vWr5q1K
-   Gg00JhO8X/u2e2+XdpUZlA1VsSyusOWxWet3A0odb4qtNMkUSahJXTSzv
-   0Ck6/bQ66T+eX0eA/TF/zlmtKXEUcGZI73fSXU7WX0RFD7NuDg46X7svB
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,251,1643698800"; 
-   d="scan'208";a="159637099"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2022 04:18:40 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 11 Apr 2022 04:18:38 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 11 Apr 2022 04:18:37 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <linux@armlinux.org.uk>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 4/4] ARM: at91: pm: use kernel documentation style
-Date:   Mon, 11 Apr 2022 14:20:57 +0300
-Message-ID: <20220411112057.35369-5-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220411112057.35369-1-claudiu.beznea@microchip.com>
-References: <20220411112057.35369-1-claudiu.beznea@microchip.com>
+        Mon, 11 Apr 2022 07:22:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 224F642A01
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:19:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649675986;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FjKusdcXN/svcmlawOVsWWcBk1qRxJxq3tOJtjRM3qU=;
+        b=ftRKXN+XvisfzNy8U91BajPJPYQiEAV6fnnUcXp1df0R4ZKd9UNc9hVohGipOYV1xkFXrQ
+        JAyZ+qFyYJIyAt80oDSW2s3VUlkJ3nXwtC12lsr3udR+WWkakl5s2olkhUOlxZ/AKerzNP
+        zoiUZlz189PXmoOYXGuxadPuDgmC+xE=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-179-n5eqk-4nNo-D1zeECLfyPQ-1; Mon, 11 Apr 2022 07:19:45 -0400
+X-MC-Unique: n5eqk-4nNo-D1zeECLfyPQ-1
+Received: by mail-ej1-f71.google.com with SMTP id ga31-20020a1709070c1f00b006cec400422fso6791812ejc.22
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:19:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=FjKusdcXN/svcmlawOVsWWcBk1qRxJxq3tOJtjRM3qU=;
+        b=lm3bsSwCqsz438X4ZUFHYh0LseLzvlDk3GCykY/4BGZ9UI9VTBD+BwiGrao1Eq6jdP
+         +Nh4dZoFmofcsULH/KXGZkf7FM4HpFBU30gdW+BwrDJ0xlxpC3iE0wXgCIRN82AWB113
+         ocF3/gmmLlvz4S86V696fObn22g/GLE/YxKfqzdgOGtbSVrmo032lQ0DnvZ18oP2HjC2
+         hl1kqT5eiikAHF7mkWn4BtuWcnsl4kduo1ShK4R/uNN35hHCTL/rizOQkJgW8B4v/k2z
+         jQz9KYAY12j7oED90lIxx8hxa6jFe9KRaXGOndYNHFlB3TbFEdYFdTDmiwKgmsLjI9FM
+         FuWg==
+X-Gm-Message-State: AOAM531wjfvOh8p8mRjrebQoElHaHUeweivDEJYmdi5QGw/6QdG3/Bp+
+        tKsOsfHfaITVRsomU7vr3Up79lxG5ELG/hMlDGIu036a2kYuQj1HofAm4Iy2kJ4wSXhrSESl1lM
+        o4SnhliVH9xWk4w6zWSwbXzONzeOVaidbpTXpH6zN6P3YblNHXbVJz3qjExxXXOLeb/sY17ZSco
+        3n
+X-Received: by 2002:a17:906:7111:b0:6e8:973a:1515 with SMTP id x17-20020a170906711100b006e8973a1515mr2645576ejj.308.1649675984103;
+        Mon, 11 Apr 2022 04:19:44 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxUvNAro+h5LGDSH7dNHuSRzLrFf9n39vBmpdd1x4PS7yTMqCT5cnNc8/AomnXQVO2my3WO7w==
+X-Received: by 2002:a17:906:7111:b0:6e8:973a:1515 with SMTP id x17-20020a170906711100b006e8973a1515mr2645556ejj.308.1649675983900;
+        Mon, 11 Apr 2022 04:19:43 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id g2-20020a50bf42000000b0041cc5233252sm11955251edk.57.2022.04.11.04.19.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 04:19:43 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 16/31] KVM: nVMX: hyper-v: Direct TLB flush
+In-Reply-To: <Yk8x2rF/UkuXY/X2@google.com>
+References: <20220407155645.940890-1-vkuznets@redhat.com>
+ <20220407155645.940890-17-vkuznets@redhat.com>
+ <Yk8x2rF/UkuXY/X2@google.com>
+Date:   Mon, 11 Apr 2022 13:19:42 +0200
+Message-ID: <87czhn7tpt.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use kernel documentation style.
+Sean Christopherson <seanjc@google.com> writes:
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- arch/arm/mach-at91/pm.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> On Thu, Apr 07, 2022, Vitaly Kuznetsov wrote:
+>> Enable Direct TLB flush feature on nVMX when:
+>> - Enlightened VMCS is in use.
+>> - Direct TLB flush flag is enabled in eVMCS.
+>> - Direct TLB flush is enabled in partition assist page.
+>
+> Yeah, KVM definitely needs a different name for "Direct TLB flush".  I don't have
+> any good ideas offhand, but honestly anything is better than "Direct".
+>
 
-diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
-index 239339bf6f79..6f5ca50e71f4 100644
---- a/arch/arm/mach-at91/pm.c
-+++ b/arch/arm/mach-at91/pm.c
-@@ -48,8 +48,8 @@ struct at91_pm_bu {
- 	unsigned long ddr_phy_calibration[BACKUP_DDR_PHY_CALIBRATION];
- };
- 
--/*
-- * struct at91_pm_sfrbu_offsets: registers mapping for SFRBU
-+/**
-+ * struct at91_pm_sfrbu_offsets - registers mapping for SFRBU
-  * @pswbu: power switch BU control registers
-  */
- struct at91_pm_sfrbu_regs {
-@@ -132,7 +132,7 @@ struct at91_soc_pm {
- };
- 
- /**
-- * enum at91_pm_iomaps:	IOs that needs to be mapped for different PM modes
-+ * enum at91_pm_iomaps - IOs that needs to be mapped for different PM modes
-  * @AT91_PM_IOMAP_SHDWC:	SHDWC controller
-  * @AT91_PM_IOMAP_SFRBU:	SFRBU controller
-  * @AT91_PM_IOMAP_ETHC:		Ethernet controller
+I think we can get away without a name inside KVM, we'll be doing either
+'L1 TLB flush' or 'L2 TLB flush'. In QEMU we can still use 'Direct' I
+believe as it matches TLFS and doesn't intersect with KVM's MMU.
+
 -- 
-2.32.0
+Vitaly
 
