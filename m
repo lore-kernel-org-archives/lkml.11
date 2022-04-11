@@ -2,118 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38697C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 12:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7298C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 12:17:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345988AbiDKMTP (ORCPT
+        id S1345999AbiDKMT1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 08:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56586 "EHLO
+        Mon, 11 Apr 2022 08:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233946AbiDKMTN (ORCPT
+        with ESMTP id S1345997AbiDKMT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 08:19:13 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1046C27CD9;
-        Mon, 11 Apr 2022 05:16:59 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id c15so19824671ljr.9;
-        Mon, 11 Apr 2022 05:16:58 -0700 (PDT)
+        Mon, 11 Apr 2022 08:19:26 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25DB340E6E;
+        Mon, 11 Apr 2022 05:17:12 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id c6so2986941edn.8;
+        Mon, 11 Apr 2022 05:17:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SwlzXZe5gV8+pFvJZHXYo05mqSjtl8vaF4Cm8yRdmF4=;
-        b=EqhE4evILFPuJAW/tZZdb5l3kkuSl2VPpas+U7WJiRz3rePHdobkUXUUfYoD7zRd3N
-         bfy2xD7eyepIebPuUZ+mGgZhMtsGj/oeb+Pv/QeVgZ8d4E7oyc+G5bCUBrs3NtNvGGCA
-         VdpmI4zBJXWbkbj6gIaDXn8vNPBIOXnLp7pcMpDoeNAo35LXkgqCBPDiFLsvV3Hlllkc
-         AQJtERViwG8Dku/9f0jDfltR6zaXtoTJuWH8cZ6PsBhK7XlLUa+T8+p+r1KJBpj+klrd
-         +ggN6mklstQiE+q/TltyHMq4fp868htmvnuKvmtiF4Y0k3iKYfwEKfYyvOKj6MAO9ZKe
-         1QiA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+UzpRpDVSr1lDiVoAplTW0nNMatrStbGOT5sfh+3vF4=;
+        b=qjaEI8sJKqCx6FqhjcgLMMWbTeG8y9NQUGiw4l5oizRI0AGwlg5Y/6wjt3qUVCMemK
+         HJ723UHXzhcilmubQLVjvE8GMPB+M8DAFvu5208ryBWBBBxvphWi4DYhW2ZPx6zEqftN
+         aDmTvNgfSG03v4rfwifL9Lg6o/GhB4fCTsv5A/pQDfHok9xeEPeTG0it3nm5sCqa5T5Z
+         21V8hEhkUyg2P3YGzwvEFtQvECO+x5vzcOT6GY6azWBmL79Dm7nJ9kse2ILCW6j4M3dO
+         rf7C8DNKmv6qZapoVTCBOVw03mSeq8vJw86C8C7l49pA6Lhg3q4KDsbijtjTRsDTgTH9
+         UJQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SwlzXZe5gV8+pFvJZHXYo05mqSjtl8vaF4Cm8yRdmF4=;
-        b=QubnabigrAHdsVwkBkbDGQKSUy//i0sXgZLOEqhy0J/ZyqE5JjB9v4GEV1WgmDadXq
-         q0qT+cquQW6tV2dxoSCQoTClDHuS8HPOq5FXryoCuaDLxTiJm91iCiQJfltwHJSWKbso
-         0AEBRAvK2v1mEAHhCnG80Ge1e+4A+wCTRMDVHIuUpDktZ1WuFyNIuHmGSJDEeUiTUKGB
-         uWRvPcjvG/n9jwkMkTPSekK8dR3kqFonzGfmOvj5neFRd0Lrk1h1a2xUGW0GAnlk1qej
-         D7csVOTWPieaH1LDxbx4zKgUS28Ujfi+mAARb1/5QtE3lRYfR6N7zqQPE0EeY7pQFVFZ
-         yUIQ==
-X-Gm-Message-State: AOAM531U3tq/OsD+WuSy6ZcYLJ3QlhD7UqvKXckKZjssWOV8l3UqB2zZ
-        dawEE+xojerGw6/fKqbbgExlPF78NCimZg==
-X-Google-Smtp-Source: ABdhPJz9nwi9knLMn0iSU+PoTmNxSzwRTgJoB66bIKUM2XJsrtI/A0vEgQCLxsVPNP+zsHSxx1KxLQ==
-X-Received: by 2002:a05:651c:54c:b0:249:9d06:24ef with SMTP id q12-20020a05651c054c00b002499d0624efmr20279739ljp.331.1649679417317;
-        Mon, 11 Apr 2022 05:16:57 -0700 (PDT)
-Received: from mobilestation ([95.79.134.149])
-        by smtp.gmail.com with ESMTPSA id g36-20020a0565123ba400b0044a2a1ccd99sm3314311lfv.20.2022.04.11.05.16.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 05:16:56 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 15:16:55 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 21/21] MAINTAINERS: Add maintainers for DWC AHCI SATA
- driver
-Message-ID: <20220411121655.l5ft7r6bywg2nxcp@mobilestation>
-References: <20220324001628.13028-1-Sergey.Semin@baikalelectronics.ru>
- <20220324001628.13028-22-Sergey.Semin@baikalelectronics.ru>
- <eb79ee49-53aa-57eb-94af-90997aa6cbed@opensource.wdc.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+UzpRpDVSr1lDiVoAplTW0nNMatrStbGOT5sfh+3vF4=;
+        b=VtItX5u9PKIrb9uL874m8DtZ3Uzw4KAvlhPnw3ATEj/VgMbYQCKjqxXWwRF3m6ykE5
+         90H1L4pXi7QZOdJGLb5BaU0umqmzY7qOHgMov2P3ebcnZJHcpdVYYituWkfeylEEJqae
+         N6FY0p4mrNNhRkDuNKLnhKI4gnec+TFafkbKPRbfbpXbYBXLn5K9ZUQ9iPZ0tlnSm834
+         lBqfpk5m+Rc2sAldLConLHyVDwTBckwam1frK6lTzPiqsXH5xafjKBCPEbeiAnWrjb1s
+         IA7H9wGEyom0cszJFYTsU9mXra3cuAGAXcpBSIMhZpF1ShbZSMiZATopUiGdfa/2/2aB
+         bZZA==
+X-Gm-Message-State: AOAM532mWpSGWA/UorrIyxbqt+0lwAastayL0B1SQvUcCCz6BtOtsh1K
+        CObPWvF/nl0aRagAqvjRUUpiUlj3DsWFx3i/hcA=
+X-Google-Smtp-Source: ABdhPJxfCv2MsAKHu3FYt2iZh2qWd14meSVbj2riyzMkKlv/CxExK5WPThXw92D+8woazoiQekGqTucridJwTRIUE0A=
+X-Received: by 2002:a05:6402:d7:b0:413:673:ba2f with SMTP id
+ i23-20020a05640200d700b004130673ba2fmr33225629edu.29.1649679430440; Mon, 11
+ Apr 2022 05:17:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <eb79ee49-53aa-57eb-94af-90997aa6cbed@opensource.wdc.com>
+References: <20220411063324.98542-1-andrei.lalaev@emlid.com>
+In-Reply-To: <20220411063324.98542-1-andrei.lalaev@emlid.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Apr 2022 15:12:57 +0300
+Message-ID: <CAHp75VfyxspOScEt1qffshdrDYuQp50O5HFbr2cUV7MYsg=JdQ@mail.gmail.com>
+Subject: Re: [PATCH] gpiolib: of: fix bounds check for valid mask
+To:     Andrei Lalaev <andrei.lalaev@emlid.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 11:17:12AM +0900, Damien Le Moal wrote:
-> On 3/24/22 09:16, Serge Semin wrote:
-> > Add myself as a maintainer of the new DWC AHCI SATA driver and
-> > its DT-bindings schema.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >  MAINTAINERS | 9 +++++++++
-> >  1 file changed, 9 insertions(+)
-> > 
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index cd0f68d4a34a..19c9ea0758cc 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -10919,6 +10919,15 @@ F:	drivers/ata/ahci_platform.c
-> >  F:	drivers/ata/libahci_platform.c
-> >  F:	include/linux/ahci_platform.h
-> >  
-> > +LIBATA SATA AHCI SYNOPSYS DWC CONTROLLER DRIVER
-> > +M:	Serge Semin <fancer.lancer@gmail.com>
-> > +L:	linux-ide@vger.kernel.org
-> > +S:	Maintained
-> > +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git
-> 
+On Mon, Apr 11, 2022 at 12:57 PM Andrei Lalaev <andrei.lalaev@emlid.com> wrote:
+>
+> Use "greater" instead of "greater or equal" when performs bounds check
+> to make sure that GPIOS are in available range. Previous implementation
 
-> Wrong tree. This should be libata tree.
+the available
 
-Got it. Thanks.
+> skipped ranges which include last GPIO in range.
 
--Sergey
+the last
 
-> 
-> > +F:	Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
-> > +F:	Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml
-> > +F:	drivers/ata/ahci_dwc.c
-> > +
-> >  LIBATA SATA PROMISE TX2/TX4 CONTROLLER DRIVER
-> >  M:	Mikael Pettersson <mikpelinux@gmail.com>
-> >  L:	linux-ide@vger.kernel.org
-> 
-> 
-> -- 
-> Damien Le Moal
-> Western Digital Research
+Should it have a Fixes tag?
+
+OTOH, the current implementation suggests that we have start,end
+rather than start,count. What does documentation tell about it? Does
+it need to be fixed?
+
+-- 
+With Best Regards,
+Andy Shevchenko
