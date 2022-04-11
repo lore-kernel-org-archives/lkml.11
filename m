@@ -2,74 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23814C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:18:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06477C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347305AbiDKOVA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60350 "EHLO
+        id S241434AbiDKOWP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 10:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347280AbiDKOUs (ORCPT
+        with ESMTP id S1347254AbiDKOVo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:20:48 -0400
+        Mon, 11 Apr 2022 10:21:44 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9E03DA5C
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:17:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AD632ECE
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:18:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
         :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=EoFq52mSAifW7hmuVJnEyfr/qKi5kNzEY/xR+93cmVg=; b=ZYGRV0W++ZoliBjPm8B/gRwIu4
-        yAha5BgUDGee0KMNCZBqDJOA+BzqF0ms9akjt1wPKXlqpSMGBLVI4icLCVOaijECDLG42o9pwoSXo
-        o0hMZnSSZl3f8HP7oXjaF8INUytI/Y7TV/z6CFTuiWgHcnlOOjj9E87a0rNQMqXkpgz3o0MpldTiC
-        ZIzDNVxdScS0OqZipt3YNOzaUVI7ItPQdX96u7P7w0w058N3KnvSc9BB3VtrVZVgVn+0zqPTuoUaM
-        +EtgkgmNXDrUQ2v3YZbMTJKlgwbSB5U/aWpsktKKjYazh5AsR2WUGg+PIKa6xxIDx50xZrC2pXiRj
-        0oyLBqtg==;
+        bh=I/ZtqvD3xK3kfPk+73YTWW3kCWtR0aNVp8BTmJwEmOQ=; b=BkJMAp5B+oF01w97YWBr28PJby
+        5Ldv/lPhedaO45v1JjAhAC5FZ5lkCA0W46PaVpZKi6lcpMwApAtmXwP7EHg8ulyC3acHcnm63yHXj
+        MRMkeMK/YWsCUX4bCDawdy26eMIXjT8gCIMV4uIprZ1F6QRdeqqG8ybjQROty59vEpLYCLNUUNTbe
+        3NGgUdfBBYB2mBg40gA2TPZ/sxApCLdr4gMw0dfpqpinXCY0pok60BBIWLhvbPuWC5ptPdssQ2zau
+        OHCaTJEfQEQIFdd+Or7PaUshqxdnsk7t/Zp9W55JRuNMLsVqnZupsKErII+tF27Vmc+pbKd7zDjIm
+        6nBx5o4g==;
 Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nduqg-009Lde-5Y; Mon, 11 Apr 2022 14:16:58 +0000
-Date:   Mon, 11 Apr 2022 07:16:58 -0700
+        id 1ndusN-009MLx-T8; Mon, 11 Apr 2022 14:18:43 +0000
+Date:   Mon, 11 Apr 2022 07:18:43 -0700
 From:   Christoph Hellwig <hch@infradead.org>
 To:     Miaohe Lin <linmiaohe@huawei.com>
 Cc:     akpm@linux-foundation.org, ying.huang@intel.com,
         songmuchun@bytedance.com, hch@infradead.org, willy@infradead.org,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/9] mm/vmscan: add a comment about MADV_FREE pages
- check in folio_check_dirty_writeback
-Message-ID: <YlQ4WkQ1CMYNtted@infradead.org>
+Subject: Re: [PATCH v2 2/9] mm/vmscan: remove unneeded can_split_huge_page
+ check
+Message-ID: <YlQ4w907eRUrBabJ@infradead.org>
 References: <20220409093500.10329-1-linmiaohe@huawei.com>
- <20220409093500.10329-2-linmiaohe@huawei.com>
+ <20220409093500.10329-3-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220409093500.10329-2-linmiaohe@huawei.com>
+In-Reply-To: <20220409093500.10329-3-linmiaohe@huawei.com>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 05:34:52PM +0800, Miaohe Lin wrote:
-> The MADV_FREE pages check in folio_check_dirty_writeback is a bit hard to
-> follow. Add a comment to make the code clear.
+On Sat, Apr 09, 2022 at 05:34:53PM +0800, Miaohe Lin wrote:
+> We don't need to check can_split_folio() because folio_maybe_dma_pinned()
+> is checked before. It will avoid the long term pinned pages to be swapped
+> out. And we can live with short term pinned pages. Without can_split_folio
+> checking we can simplify the code. Also activate_locked can be changed to
+> keep_locked as it's just short term pinning.
 > 
 > Suggested-by: Huang, Ying <ying.huang@intel.com>
 > Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 > ---
->  mm/vmscan.c | 3 +++
->  1 file changed, 3 insertions(+)
+>  mm/vmscan.c | 22 ++++++++--------------
+>  1 file changed, 8 insertions(+), 14 deletions(-)
 > 
 > diff --git a/mm/vmscan.c b/mm/vmscan.c
-> index c77d5052f230..4a76be47bed1 100644
+> index 4a76be47bed1..01f5db75a507 100644
 > --- a/mm/vmscan.c
 > +++ b/mm/vmscan.c
-> @@ -1436,6 +1436,9 @@ static void folio_check_dirty_writeback(struct folio *folio,
->  	/*
->  	 * Anonymous pages are not handled by flushers and must be written
->  	 * from reclaim context. Do not stall reclaim based on them
+> @@ -1711,20 +1711,14 @@ static unsigned int shrink_page_list(struct list_head *page_list,
+>  					goto keep_locked;
+>  				if (folio_maybe_dma_pinned(folio))
+>  					goto keep_locked;
+> -				if (PageTransHuge(page)) {
+> -					/* cannot split THP, skip it */
+> -					if (!can_split_folio(folio, NULL))
+> -						goto activate_locked;
+> -					/*
+> -					 * Split pages without a PMD map right
+> -					 * away. Chances are some or all of the
+> -					 * tail pages can be freed without IO.
+> -					 */
+> -					if (!folio_entire_mapcount(folio) &&
+> -					    split_folio_to_list(folio,
+> -								page_list))
+> -						goto activate_locked;
+> -				}
+> +				/*
+> +				 * Split pages without a PMD map right
+> +				 * away. Chances are some or all of the
+> +				 * tail pages can be freed without IO.
+> +				 */
 
-While you touch this please add a period at the end of the above
-sentence.
+This could use more of the line length and be more readable:
 
-Otherwise looks good:
+				/*
+				 * Split pages without a PMD map right away.
+				 * Chances are some or all of the tail pages
+				 * can be freed without IO.
+				 */
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+> +				if (PageTransHuge(page) && !folio_entire_mapcount(folio) &&
+
+Please put the folio_entire_mapcoun ont a separate line to make this a
+bit more redable.
