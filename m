@@ -2,70 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF98AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 08:14:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D86F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 08:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343616AbiDKIQ7 (ORCPT
+        id S1343631AbiDKIRY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 04:16:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40044 "EHLO
+        Mon, 11 Apr 2022 04:17:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234288AbiDKIQ4 (ORCPT
+        with ESMTP id S1343619AbiDKIRU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 04:16:56 -0400
-X-Greylist: delayed 128 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Apr 2022 01:14:36 PDT
-Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D1D33A05;
-        Mon, 11 Apr 2022 01:14:34 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id GEY00121;
-        Mon, 11 Apr 2022 16:12:21 +0800
-Received: from localhost.localdomain (10.200.104.97) by
- jtjnmail201604.home.langchao.com (10.100.2.4) with Microsoft SMTP Server id
- 15.1.2308.21; Mon, 11 Apr 2022 16:12:20 +0800
-From:   Bo Liu <liubo03@inspur.com>
-To:     <pbonzini@redhat.com>, <seanjc@google.com>, <vkuznets@redhat.com>,
-        <wanpengli@tencent.com>, <jmattson@google.com>, <joro@8bytes.org>,
-        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>
-CC:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Bo Liu <liubo03@inspur.com>
-Subject: [PATCH] KVM: x86: fix the return type of kvm_age_rmapp
-Date:   Mon, 11 Apr 2022 04:12:18 -0400
-Message-ID: <20220411081218.2296-1-liubo03@inspur.com>
-X-Mailer: git-send-email 2.18.2
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.200.104.97]
-tUid:   2022411161221e79c7889c96454f924143db2f61e5534
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+        Mon, 11 Apr 2022 04:17:20 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66CD3E0D2
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 01:15:06 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id s18so6727854ejr.0
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 01:15:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fairphone.com; s=fair;
+        h=mime-version:content-transfer-encoding:date:message-id:cc:subject
+         :from:to:references:in-reply-to;
+        bh=RIVhF17ZHyHEkRri4xITDP87S8vJ9Qvq5E0aaRqPUqo=;
+        b=HpaD939JeDZag7GNabmmQUbDl6GkCFHqziohJsuZGD+aNbU1ARxNfXa3i2WnDYA538
+         fW9gwz8E+m/NaeSym75ztYGKWgO37LMloV/o3DijSlF0lFfIn9CSK9f8puk6IHC1AoZ6
+         um4jHwLJyvHVr3qBulK72R6/IdOk7gQBN1mmoB+Fw6FHinX1mNOOJ+GRx4Q87yrxXzpe
+         SBFoJYhlOgONfzWDahBatGtSgcpfv7I9amynwL7I1O+Y4Hd3Zldqm+2fZdtslt227Dz+
+         WNKYlVr9HNypLGyRgcqTVJ5R7lB87i0atreNYS0WipI3cJ4Vl8BxRfBeyKzCdACYKpX9
+         nlbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:content-transfer-encoding:date
+         :message-id:cc:subject:from:to:references:in-reply-to;
+        bh=RIVhF17ZHyHEkRri4xITDP87S8vJ9Qvq5E0aaRqPUqo=;
+        b=BJFUoZzNwPLb2iPlKgy/5+1Nb8cexnpm/On96p/VDDOE0qerdcGhKC1iYyXprgFEsh
+         tFwSF2SAUxjangOg2bcKnn1DgDCPyPhukeJogf72rvEIZ3xQK5ql1Jed8W1Yo11mYeDW
+         SnyqQlmDHMR6dR0u4yb+CUaLXdzdtvEubCQsY9RekHpLl4nUgeMuxIJ8HAdS6fUM46ba
+         B02o2ZXGZ89FDGLz4qsIyGIFxf6RrW7JZEv3y5tF/2jsOptqmlrGSfZy3ytdPKBiBGt8
+         XiV52rsG1VXY5DoMgUUH1+Ua4Me7pWKlFW6VWnQvtW4Q3R3EEtc50xQ3Pd6vnqeUD8dJ
+         6LQA==
+X-Gm-Message-State: AOAM533MkHZzX7DH1UxuBuUl49uBVlUHrS2R/sEHKmslmAi26qk4pAJE
+        uJma+nHgsyg68qXh05XyFSwwxDSqa/UK9A==
+X-Google-Smtp-Source: ABdhPJzRz84+mPotUb9JXXoXBsuHqdyI4MsyzEKZLWh+RTv0i4v5vUAvX5V9WgyUrO7Z4GDU8ed/3A==
+X-Received: by 2002:a17:907:c0c:b0:6d1:8c46:6415 with SMTP id ga12-20020a1709070c0c00b006d18c466415mr29329284ejc.326.1649664905140;
+        Mon, 11 Apr 2022 01:15:05 -0700 (PDT)
+Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
+        by smtp.gmail.com with ESMTPSA id p3-20020a1709060e8300b006d0e8ada804sm11609969ejf.127.2022.04.11.01.15.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 01:15:04 -0700 (PDT)
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date:   Mon, 11 Apr 2022 10:15:04 +0200
+Message-Id: <CJ79EIW9Z89J.YZTZ6AU91TGE@otso>
+Cc:     <~postmarketos/upstreaming@lists.sr.ht>,
+        <phone-devel@vger.kernel.org>,
+        "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/3] dt-bindings: input: Add bindings for Awinic AW8695
+ haptics
+From:   "Luca Weiss" <luca.weiss@fairphone.com>
+To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
+        <linux-input@vger.kernel.org>
+X-Mailer: aerc 0.9.0
+References: <20220408115311.237039-1-luca.weiss@fairphone.com>
+ <1a45984a-752b-6bad-0320-f0946d83f2b9@linaro.org>
+In-Reply-To: <1a45984a-752b-6bad-0320-f0946d83f2b9@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change the return type of kvm_age_rmapp to "bool"
+Hi Krzysztof,
 
-Signed-off-by: Bo Liu <liubo03@inspur.com>
----
- arch/x86/kvm/mmu/mmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+thanks for the review, replies are inline!
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index c623019929a7..799ab899f552 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -1572,7 +1572,7 @@ static bool kvm_age_rmapp(struct kvm *kvm, struct kvm_rmap_head *rmap_head,
- {
- 	u64 *sptep;
- 	struct rmap_iterator iter;
--	int young = 0;
-+	bool young = false;
- 
- 	for_each_rmap_spte(rmap_head, &iter, sptep)
- 		young |= mmu_spte_age(sptep);
--- 
-2.27.0
+On Fri Apr 8, 2022 at 5:05 PM CEST, Krzysztof Kozlowski wrote:
+> On 08/04/2022 13:53, Luca Weiss wrote:
+> > Add a document describing the bindings for the AW8695 LRA Haptic Driver=
+.
+>
+> (...)
+>
+> > +  reset-gpios:
+> > +    maxItems: 1
+> > +    description: GPIO connected to RSTN pin (active high)
+> > +
+> > +  awinic,f0-preset:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > +    description: Default value for the f0 of LRA
+> > +
+> > +  awinic,f0-coefficient:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > +    description: Coefficient between actual f0 and the value in the re=
+gisters
+> > +
+> > +  awinic,f0-calibration-percent:
+> > +    maxItems: 1
+> > +    description: Limit of f0 deviation from awinic,f0-preset
+> > +
+> > +  awinic,drive-level:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > +    description: Level of drive waveform in normal driving
+> > +
+> > +  awinic,f0-detection-play-time:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > +    description: Drive waveform play times in the first period in the =
+f0 detection
+>
+> Use standard unit suffixes for known units (e.g. time).
+
+While the datasheet doesn't mention any time unit, the value is used to
+calculate the f0_trace_ms variable (which is milliseconds) but the
+result also depends on the awinic,f0-preset value, so it's not a raw
+time value.
+
+>
+> > +
+> > +  awinic,f0-detection-wait-time:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > +    description: Waveform wait times in the f0 detection
+>
+> Ditto.
+>
+> > +
+> > +  awinic,f0-detection-repeat:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > +    description: Repeat times in the f0 detection
+> > +
+> > +  awinic,f0-detection-trace:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > +    description: Drive waveform play times in the second period and la=
+ter in the f0 detection
+> > +
+> > +  awinic,boost-debug:
+> > +    $ref: /schemas/types.yaml#/definitions/uint8-array
+> > +    minItems: 3
+> > +    maxItems: 3
+> > +    description: Values for BSTDBG1-3 registers
+>
+> Do not encode device programming model (registers) into the binding. You
+> need to define it as a property related to hardware itself, not its
+> registers (e.g. boost value in mV).
+
+Unfortunately I couldn't figure the meaning for this and the two values
+below.
+
+The datasheet doesn't mention these registers at all and the downstream
+driver doesn't do anything meaningful with them (other than setting them)
+nor has any comment to indicate what they do.
+In the datasheet there's only BSTDBG4 mentioned where bits [5:1] mean
+PVDD output voltage setting so for these registers it could really be
+anthing :(
+
+Maybe someone with more knowledge about LRAs might be able to decipher
+what tset and r_spare is at least? I unfortunately didn't manage.
+
+Regards
+Luca
+
+>
+> > +
+> > +  awinic,tset:
+> > +    $ref: /schemas/types.yaml#/definitions/uint8
+> > +    description: Value for TSET register
+>
+> Ditto.
+>
+> > +
+> > +  awinic,r-spare:
+> > +    $ref: /schemas/types.yaml#/definitions/uint8
+> > +    description: Value for R_SPARE register
+>
+> Ditto.
+>
+>
+> Best regards,
+> Krzysztof
 
