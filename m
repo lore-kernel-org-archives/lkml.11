@@ -2,103 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74C8CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 07:28:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E37C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 07:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245383AbiDKHaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 03:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
+        id S245396AbiDKHay (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 03:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243598AbiDKHaF (ORCPT
+        with ESMTP id S231654AbiDKHat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 03:30:05 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3523CFD9
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 00:27:52 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so15895168pjk.4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 00:27:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dPQb2XUhCwirAl6RZqcjJK++gcgif/8kvwh+CadUz3I=;
-        b=vk8tSK2SuBtu1pR68M+NpcoBAAxowa3wJlU3AMOY72md1Hscl+QNeJNVcx10ejkuuV
-         NKZxxgnF1yldlX2MkwYMlndhvYLdVpauINzM1OJe7Gm4Ja0ONJJ+moREvoB2tju7IFxG
-         S2uciJD12fnvlOYAOjli/Oc0252AsxXr19m7FjVkfEfVt7d+4W8EhVfPiayUUIK55VO2
-         1OYinPvHp8r7yCmeTFS6M61kgx9Sby11bwnsIxYHeJC71r9vlPUoCggPbNqj876PY8KC
-         MZ55RMC5eFxv0ZOnQF7zxi+0Nfwm8wE7DR3hGUQhMy9kF/pIKmngY7NXMpyUPOcxegs5
-         ID2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dPQb2XUhCwirAl6RZqcjJK++gcgif/8kvwh+CadUz3I=;
-        b=KxVvwktG7HlIqMkxW99BZHc06TNUZ/8bLM1auyXoYql5Zxh5yAkWjRCh16mJvkI6cE
-         F7wORCE2BHGPsVQ4hjEvA4X0cFnVO74l6oIIeAwyXHTUqOISdDJscaXCMZgiKh9mYUj+
-         eJ906AX/Uf6fOyfXv/wkDYtX/xKygeFgzMkKvD2pu3QvXAP+KAtlTYWNTVy72Cp3+e9m
-         7/PDI80pCUFJbqS9kwVUMbmcLwJQ8LHWFvAuPPALhhCA0yrA2aOpxeh58yx+EEXp9YbT
-         gUgy1/fpy9CU3iFufauBSWlVOYFbjA1yBSgrew+6MMct7nHPOZyxLoOCfoNMM4ZQFNUK
-         IysQ==
-X-Gm-Message-State: AOAM533yhlYkTMqGhrp30nbUcc77hMkl4/Sc+OrdHDOp/m2fBw+qtscv
-        UKOk3CxI72wlvs2NdXj9KkvH
-X-Google-Smtp-Source: ABdhPJwfZOmz7bn126D73jA4tU3ELBxulz6f/9h9UuNvv751oKovp9R+buhc7tnYmqMckMjra91bgA==
-X-Received: by 2002:a17:902:f68e:b0:154:6518:69ba with SMTP id l14-20020a170902f68e00b00154651869bamr31399663plg.60.1649662072219;
-        Mon, 11 Apr 2022 00:27:52 -0700 (PDT)
-Received: from thinkpad ([117.217.182.106])
-        by smtp.gmail.com with ESMTPSA id m1-20020a17090ade0100b001cb3feaddfcsm8828185pjv.2.2022.04.11.00.27.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 00:27:51 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 12:57:43 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Rohit Agarwal <quic_rohiagar@quicinc.com>
-Cc:     will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-        robh+dt@kernel.org, krzk+dt@kernel.org, ulf.hansson@linaro.org,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH 0/7] SDX65 devicetree updates
-Message-ID: <20220411072743.GA24975@thinkpad>
-References: <1649660143-22400-1-git-send-email-quic_rohiagar@quicinc.com>
+        Mon, 11 Apr 2022 03:30:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9153980C;
+        Mon, 11 Apr 2022 00:28:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CBDFB810A9;
+        Mon, 11 Apr 2022 07:28:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DA9DC385AA;
+        Mon, 11 Apr 2022 07:28:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649662113;
+        bh=2/oel7D/T3xFqsHucMWFI9RxFKXj0LlHoDy+p6l+hS0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dMjzYz2P5ugiPBC4qpENXS23ET/WKy+OmwhbtRJJ45YkrLx7QTkwio6TaetOMFPbK
+         YKcNhhTjxBzhxMw8JIb2mksOq1KKt0/Wb8ryYpNNnZnLK0ACq2JORejuHT8TGDYBcN
+         /clbVSFzlkP/C5O/k8WE8egauvNWj2arZgNyxcoQ=
+Date:   Mon, 11 Apr 2022 09:28:30 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
+        <holger@applied-asynchrony.com>
+Cc:     Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org,
+        linux-tip-commits@vger.kernel.org,
+        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>, x86@kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [tip: sched/core] sched/tracing: Don't re-read p->state when
+ emitting sched_switch event
+Message-ID: <YlPYnvTHx5SHUIXt@kroah.com>
+References: <20220120162520.570782-2-valentin.schneider@arm.com>
+ <164614827941.16921.4995078681021904041.tip-bot2@tip-bot2>
+ <20220308180240.qivyjdn4e3te3urm@wubuntu>
+ <YiecMTy8ckUdXTQO@kroah.com>
+ <20220308185138.ldxfqd242uxowymd@wubuntu>
+ <20220409233829.o2s6tffuzujkx6w2@airbuntu>
+ <20220410220608.cdf6hmf5mwcqzwun@airbuntu>
+ <db6ec3a4-3ac9-e96b-d7a5-3e1b4de2adc8@applied-asynchrony.com>
+ <ae117c69-68e2-93e3-1c0e-f2f4bb9ce03b@applied-asynchrony.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <1649660143-22400-1-git-send-email-quic_rohiagar@quicinc.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ae117c69-68e2-93e3-1c0e-f2f4bb9ce03b@applied-asynchrony.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 12:25:36PM +0530, Rohit Agarwal wrote:
-> Hello,
+On Mon, Apr 11, 2022 at 09:18:19AM +0200, Holger Hoffstätte wrote:
+> On 2022-04-11 01:22, Holger Hoffstätte wrote:
+> > On 2022-04-11 00:06, Qais Yousef wrote:
+> > > On 04/10/22 00:38, Qais Yousef wrote:
+> > > > On 03/08/22 18:51, Qais Yousef wrote:
+> > > > > On 03/08/22 19:10, Greg KH wrote:
+> > > > > > On Tue, Mar 08, 2022 at 06:02:40PM +0000, Qais Yousef wrote:
+> > > > > > > +CC stable
+> > > > > > > 
+> > > > > > > On 03/01/22 15:24, tip-bot2 for Valentin Schneider wrote:
+> > > > > > > > The following commit has been merged into the sched/core branch of tip:
+> > > > > > > > 
+> > > > > > > > Commit-ID:     fa2c3254d7cfff5f7a916ab928a562d1165f17bb
+> > > > > > > > Gitweb:        https://git.kernel.org/tip/fa2c3254d7cfff5f7a916ab928a562d1165f17bb
+> > > > > > > > Author:        Valentin Schneider <valentin.schneider@arm.com>
+> > > > > > > > AuthorDate:    Thu, 20 Jan 2022 16:25:19
+> > > > > > > > Committer:     Peter Zijlstra <peterz@infradead.org>
+> > > > > > > > CommitterDate: Tue, 01 Mar 2022 16:18:39 +01:00
+> > > > > > > > 
+> > > > > > > > sched/tracing: Don't re-read p->state when emitting sched_switch event
+> > > > > > > > 
+> > > > > > > > As of commit
+> > > > > > > > 
+> > > > > > > >    c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+> > > > > > > > 
+> > > > > > > > the following sequence becomes possible:
+> > > > > > > > 
+> > > > > > > >               p->__state = TASK_INTERRUPTIBLE;
+> > > > > > > >               __schedule()
+> > > > > > > >             deactivate_task(p);
+> > > > > > > >    ttwu()
+> > > > > > > >      READ !p->on_rq
+> > > > > > > >      p->__state=TASK_WAKING
+> > > > > > > >             trace_sched_switch()
+> > > > > > > >               __trace_sched_switch_state()
+> > > > > > > >                 task_state_index()
+> > > > > > > >                   return 0;
+> > > > > > > > 
+> > > > > > > > TASK_WAKING isn't in TASK_REPORT, so the task appears as TASK_RUNNING in
+> > > > > > > > the trace event.
+> > > > > > > > 
+> > > > > > > > Prevent this by pushing the value read from __schedule() down the trace
+> > > > > > > > event.
+> > > > > > > > 
+> > > > > > > > Reported-by: Abhijeet Dharmapurikar <adharmap@quicinc.com>
+> > > > > > > > Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+> > > > > > > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > > > > > > > Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> > > > > > > > Link: https://lore.kernel.org/r/20220120162520.570782-2-valentin.schneider@arm.com
+> > > > > > > 
+> > > > > > > Any objection to picking this for stable? I'm interested in this one for some
+> > > > > > > Android users but prefer if it can be taken by stable rather than backport it
+> > > > > > > individually.
+> > > > > > > 
+> > > > > > > I think it makes sense to pick the next one in the series too.
+> > > > > > 
+> > > > > > What commit does this fix in Linus's tree?
+> > > > > 
+> > > > > It should be this one: c6e7bd7afaeb ("sched/core: Optimize ttwu() spinning on p->on_cpu")
+> > > > 
+> > > > Should this be okay to be picked up by stable now? I can see AUTOSEL has picked
+> > > > it up for v5.15+, but it impacts v5.10 too.
+> > > 
+> > > commit: fa2c3254d7cfff5f7a916ab928a562d1165f17bb
+> > > subject: sched/tracing: Don't re-read p->state when emitting sched_switch event
+> > > 
+> > > This patch has an impact on Android 5.10 users who experience tooling breakage.
+> > > Is it possible to include in 5.10 LTS please?
+> > > 
+> > > It was already picked up for 5.15+ by AUTOSEL and only 5.10 is missing.
+> > > 
+> > 
+> > https://lore.kernel.org/stable/Yk2PQzynOVOzJdPo@kroah.com/
+> > 
+> > However, since then further investigation (still in progress) has shown that this
+> > may have been the fault of the tool in question, so if you can verify that tracing
+> > sched still works for you with this patch in 5.15.x then by all means
+> > let's merge it.
 > 
-> This series adds devicetree nodes for SDX65. It adds
-> reserved memory nodes, SDHCI, smmu and tcsr mutex support.
-> 
+> So it turns out the lockup is indeed the fault of the tool, which contains multiple
+> kernel-version dependent tracepoint definitions and now fails with this
+> patch.
 
-Please CC me to all SDX65 related patches as I'd like to review them.
+What tools is this?
 
-Thanks,
-Mani
+> Greg, please re-enqueue this patch where necessary (5.10, 5.15+)
 
-> Thanks,
-> Rohit.
-> 
-> Rohit Agarwal (7):
->   ARM: dts: qcom: sdx65: Add reserved memory nodes
->   dt-bindings: mmc: sdhci-msm: Document the SDX65 compatible
->   ARM: dts: qcom: sdx65: Add support for SDHCI controller
->   dt-bindings: arm-smmu: Add binding for SDX65 SMMU
->   ARM: dts: qcom: sdx65: Enable ARM SMMU
->   ARM: dts: qcom: sdx65: Add support for TCSR Mutex
->   ARM: dts: qcom: sdx65: Add Shared memory manager support
-> 
->  .../devicetree/bindings/iommu/arm,smmu.yaml        |   1 +
->  .../devicetree/bindings/mmc/sdhci-msm.txt          |   1 +
->  arch/arm/boot/dts/qcom-sdx65-mtp.dts               |  21 ++++
->  arch/arm/boot/dts/qcom-sdx65.dtsi                  | 110 +++++++++++++++++++++
->  4 files changed, 133 insertions(+)
-> 
-> -- 
-> 2.7.4
-> 
+If I queue it up again, will the tools keep breaking?
+
+thanks,
+
+greg k-hj
