@@ -2,147 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 741DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:51:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BFBBC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348700AbiDKQxx (ORCPT
+        id S1348709AbiDKQzx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 12:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59856 "EHLO
+        Mon, 11 Apr 2022 12:55:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348701AbiDKQxs (ORCPT
+        with ESMTP id S243965AbiDKQzt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 12:53:48 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B87136B58
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:51:32 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id b16so19440382ioz.3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:51:32 -0700 (PDT)
+        Mon, 11 Apr 2022 12:55:49 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C3035AA6;
+        Mon, 11 Apr 2022 09:53:35 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id s18so9684342ejr.0;
+        Mon, 11 Apr 2022 09:53:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=eiAYIK4eB9YpKVQY7uodlLNbKuIMZrkg3r+tUafoF+8=;
-        b=KZiBB6oG1FD1CE/9BBJANOo58MujeM4G+RO7m0j+T/VCQTn2cFaXrCMbVSBax+yoN7
-         zKDoOVZlUkLaZ3ztKLjDMlm48/fezbrjDjd8FinhGjO/FLRdb2WT+p4RV7ZQF1GSlEoM
-         zg/KHadgywEe+78idGiO1rJO41wOAmyIQaqmGm7D0TJo4fBqK0V5vxf7W2kNRvfSqWe/
-         n2dc0BeZUdc7FFx0l3CrIv4eLePLZWBHlARH5xY0AFfmWa0edY3kh4EDCa7ynSehK1oI
-         zgYYXZ46rdiFi8fAR7Y+nIkHgoyOShglax8UmPcZR49QbLOjlDvBow6HyZjIhs09/T8U
-         fh4w==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hq9f5/RKeqFPfe01WxjMVIHowJsKBfJmwCx5QvdPw1A=;
+        b=q7qbmDs1dVWdTOe6VYfzmW5Hff9GRPCexV+KafoUs4J4l8gBflhswSYlelDdbTETyC
+         jZyxwSDKViY8H0/Wc6/IuTK70Hg52/z5gsdZyKfC7lcLdhTmX4n10VgiyNvzSQh/5LOT
+         6Ct4gvmWALz/zr5I8uolBr4Iq+EqIChUhTIDJDgS7kSX8WG6hLW4ndHviGkI1/4UUc7o
+         dd1Xu1dAGi4+vlddV531nJPW0oB4h2L/HyxaBt0D155u3YIujD0NJCqLNoevSG9va9Cw
+         pDUnzccVhbWv0bJuvRw2XS8P0J8rL1cUIAMjbnUCRHuEQaSzsQ1/fgH+JQ8/8SHG4utm
+         UcRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=eiAYIK4eB9YpKVQY7uodlLNbKuIMZrkg3r+tUafoF+8=;
-        b=fxHIj1ACFeVlDFgdub4iC2GgM9QsSGu7h1Kd++V+iIi4dKBI+tZEpcewc1Dg5vtwVU
-         E6qyN6Gf6DCjT6TMh1ubfhvnes2PX2Zy+WsAM2ZiCuAoSBMh7VcbLIDd1bAKDcEBZW0J
-         Dp/DU92bf+VqigpAMUMt1O4A/8vh0BH9+8i1gE34vBhw0FKN6gn2oy2xtT6YG6BWyYn3
-         jMOoyNIOgSv7e5PteMT6eVSPwv6RsFz6DJM+sW+zagne8uUinpcefa92hxQA2DmvF6vH
-         9zyCAmUgTa0nQt+1ULtNpdLnIq/tJAFo7m/DiICYvsP0Ujb4JwjBQ6Tx9m6/Cqc5FHlp
-         583g==
-X-Gm-Message-State: AOAM5337vYNPU+oYAACdhd1skTH+CNwEq6K88zUwfMVQvYFwXIep8GMF
-        DUdSzaYQn7mh4dKxOrxJymwjLw==
-X-Google-Smtp-Source: ABdhPJyrBJiJPWff548IHrGfcWxyvtBO+exqiqx6SfQ/bhIkV++JhY6PT88XFxSZLp9IJ3vkLBwX/Q==
-X-Received: by 2002:a05:6638:4984:b0:326:11b5:74fb with SMTP id cv4-20020a056638498400b0032611b574fbmr4965472jab.153.1649695891345;
-        Mon, 11 Apr 2022 09:51:31 -0700 (PDT)
-Received: from [192.168.1.172] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id s13-20020a6bdc0d000000b006408888551dsm20145509ioc.8.2022.04.11.09.51.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 09:51:30 -0700 (PDT)
-Message-ID: <226c4072-a3ca-a5a4-1b7f-f7104b43af03@kernel.dk>
-Date:   Mon, 11 Apr 2022 10:51:28 -0600
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hq9f5/RKeqFPfe01WxjMVIHowJsKBfJmwCx5QvdPw1A=;
+        b=n5T3gOpEjXzdBMR7xKmaZDapyTeHPUKvB6vpZyIUh4SQX+Gfi5BtQUqr1CHxU1MxT0
+         d2QuSC+qicgMxQjdmkj3C38RGxCXdePRqXDknjrPddHwlTudpgVDiROy2opL5ogm1I7Q
+         cS8zxJ6urFgnhE02TVoVvQO0JCyX2CAJkSNOorOMRLsta1q8IBu8ibLDSBAwWEr7spaz
+         GblZ3hs5ThMwsPP3f7cY6EwXZJLBuo8p8CP6IIWiqTf+F8bW8Foaakh9pN02wwYPGYfP
+         R+BNH+7i/rW5OAjqSxlUGe1ZDuXnDHqO1kT/zwZdM7KRfb9bdTnmn3iE+NmLkEBKNBtl
+         T8qw==
+X-Gm-Message-State: AOAM532C7nXumIFB6zVYFYRn4OkqQ70SXH1O/RMFYbJJUYZzbyXF3il7
+        EGZ2bhHvJAZvN3Vy4OYr9sBdWYdiMwy+SYNsZ3Y=
+X-Google-Smtp-Source: ABdhPJwueRgvgtGfwQpcXyTVd2yIAAAw3b3k4eXgNiUE5AD52zIkqZMqXgsqUSYOOpQl2rVjarI5FqwQF/T6UBvKT78=
+X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id
+ nd14-20020a170907628e00b006d9c6fa6168mr30782381ejc.132.1649696013529; Mon, 11
+ Apr 2022 09:53:33 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] cdrom: do not print info list when there is no cdrom
- device
-Content-Language: en-US
-To:     Enze Li <lienze@kylinos.cn>, Phillip Potter <phil@philpotter.co.uk>
-Cc:     linux-kernel@vger.kernel.org, linux-block@vger.kernel.org
-References: <20220408084221.1681592-1-lienze@kylinos.cn>
- <25390602-cfa0-dba3-bfbc-a35ed6b44bcf@kernel.dk>
- <20220409122530.60353fcd@asus> <YlFA7USiCtqsFvVD@equinox>
- <f74b6933-5357-6b2c-3127-7a3465dadbdf@kylinos.cn>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <f74b6933-5357-6b2c-3127-7a3465dadbdf@kylinos.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <1836398.tdWV9SEqCh@kreacher> <CAHp75Vc2Lci4ewdosqX4Thm6ME7pKjKw+C+wtUsq2esRM-eXjg@mail.gmail.com>
+ <CAJZ5v0hCPG0_4MUW5bt+FLtPmnFZ9NUxsEiFpd-6+wOmYxPm5A@mail.gmail.com>
+In-Reply-To: <CAJZ5v0hCPG0_4MUW5bt+FLtPmnFZ9NUxsEiFpd-6+wOmYxPm5A@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Apr 2022 19:49:20 +0300
+Message-ID: <CAHp75VeS+3-N9rV3CfTLHKKD_pzTHrz4Lnv5XsEbd22CoCJeKw@mail.gmail.com>
+Subject: Re: [PATCH v1] PM: runtime: Avoid device usage count underflows
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Alan Stern <stern@rowland.harvard.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/11/22 2:41 AM, Enze Li wrote:
-> 
-> On 4/9/22 16:16, Phillip Potter wrote:
->> On Sat, Apr 09, 2022 at 12:25:30PM +0800, Enze Li wrote:
-> 
-> <snip>
-> 
->>> On Fri, 8 Apr 2022 06:34:04 -0600
->>> Jens Axboe <axboe@kernel.dk> wrote:
->>>> Will this potentially break applications that parse it?
->>>>
->>> I dunno, is there any way to confirm this thing?  And if this is really
->>> a possibility, does it mean that we cannot make changes?
->>>
->> Sorry, anything that can be parsed from userspace has the potential to
->> break userspace applications. For that reason, I would have to say I
->> don't think this patch is suitable. Sure there are times it's
->> appropriate to change userspace interfaces, but I'd rather err on the
->> side of caution here. Thanks for the patch though.
->>
->> Nacked-by: Phillip Potter <phil@philpotter.co.uk>
->>
->> Regards,
->> Phil
-> 
-> Hi Phil,
-> 
-> Thanks for your review.  I got what you said. ?
-> 
-> In addition, I noticed that in the source file[1], there is a Todo List there.  I'm quite
-> interested in it.  It says:
-> ================================================
->   17 To Do List:
->   18 ----------------------------------
->   19
->   20  -- Modify sysctl/proc interface. I plan on having one directory per                 
->   21  drive, with entries for outputing general drive information, and sysctl             
->   22  based tunable parameters such as whether the tray should auto-close for             
->   23  that drive. Suggestions (or patches) for this welcome!
-> ================================================
-> I'd like to know if the relevant patches are still welcome?
-> 
-> IIUC, the TODO List says that we need to implement a modification of the
-> following form:
-> ----------------------------------------------------------------------------------------------------------
-> $ tree /proc/sys/dev/cdrom
-> /proc/sys/dev/cdrom
-> |--sr0--autoclose
-> |       |-autoeject
-> |       |-check_media
-> |       |-debug
-> |       |-info
-> |       |-lock
-> |
-> |--sr1--autoclose
-> |       |-autoeject
-> |       |-check_media
-> |       |-debug
-> |       |-info
-> |       |-lock
-> |
-> |--sr2 ...
-> .
-> .
-> .
-> ----------------------------------------------------------------------------------------------------------
-> I would appreciate it if you could give me some advice.
+On Mon, Apr 11, 2022 at 6:17 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+> On Mon, Apr 11, 2022 at 5:09 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Wed, Apr 6, 2022 at 11:49 PM Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
 
-Let's not do that, this advice is perhaps 20 years old. /proc isn't to
-be used for anything like that these days.
+...
+
+> > > +               retval = rpm_drop_usage_count(dev);
+> > > +               if (retval > 0) {
+> > >                         trace_rpm_usage_rcuidle(dev, rpmflags);
+> > >                         return 0;
+> > > +               } else if (retval < 0) {
+> > > +                       return retval;
+> > >                 }
+> >
+> > Can be written in a form
+> >
+> >                if (retval < 0)
+> >                        return retval;
+> >                if (retval > 0) {
+> >                        trace_rpm_usage_rcuidle(dev, rpmflags);
+> >                        return 0;
+> >                }
+> >
+>
+> I know.
+>
+> And why would it be better?
+
+Depends on the perception:
+a) less characters to parse (no 'else');
+b) checking for errors first, which seems more or less standard pattern.
 
 -- 
-Jens Axboe
-
+With Best Regards,
+Andy Shevchenko
