@@ -2,200 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE44C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:15:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350348AbiDKWRm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 18:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36586 "EHLO
+        id S229678AbiDKWSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 18:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350281AbiDKWRg (ORCPT
+        with ESMTP id S1350418AbiDKWR5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 18:17:36 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26841AD8E
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 15:15:20 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id 15so7045661ljw.8
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 15:15:20 -0700 (PDT)
+        Mon, 11 Apr 2022 18:17:57 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE9B26112;
+        Mon, 11 Apr 2022 15:15:35 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id k25so20346908iok.8;
+        Mon, 11 Apr 2022 15:15:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=bUJXQhFUIN7iCsj9QS5jIjGRNk+z+TdH4UZzpSxdCm4=;
-        b=RV/micvGsZe9mZ8Hgcs7Y5/k/VpZqPkSFY9zXkPpDEr9tcgeW8eWFBzd1f0+r4k5b2
-         N+Qvt9c2zBrO8T4mdohRydU1bT1n+NID9YwvUsYGWgQ1nrgNLVYNhDVxNHEXtgHSRSlp
-         LsMVSXHAZVAPhJRV/XSulcUDl5A5GS/Jjk/eEu6w3I29s/enzaet88wKF2ziHk8j/XwB
-         7F2Mjjngkfe8b8q8CBwHsDxw2oGefncdNKdWSn5qBAIEqRitrYsW6uC0iyumiYkTPAF/
-         +bz/TnRbM8rqQZW49yUg5+zbOjGbwPwCO4kGomjTwV+hTEMAR5PeItnQ/JsKIbAbDkm6
-         iTQA==
+        bh=kL8nw+kkxRkF6850uohgHzWtw+kuxUaqTysptdnGkC8=;
+        b=JIbrFBlm2+YqWyPQ9JmNckPFktJHytR/kSF7WkbgqY3lYq8prTVFwQOQkYwPem0DNe
+         TkHoLBgTnD83MUICH5xJpN8xUxC6G/mSbHNAdxlv/SWx1lkfRxuYDjxsMj8TYLv9vVu3
+         CRb72ycRk2Tu0yW29dW5TqOj4zEe2s5J1dcuwIPoUpVW3PjDE3p6XG2kLogwyh2zN5vT
+         hZWI7+bCcgTGJ3bnJ3jdrhn1VIIG0UL603yeVOijESZmny6QGIrR9IvtFS8qMP1+648C
+         lHNuRNpUPpDPPNYcfv/ModIIiFq72dhnUSuTJyVs+oMVQgqQHXch9ZX1Oe6f/4ZgfYi4
+         1oiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=bUJXQhFUIN7iCsj9QS5jIjGRNk+z+TdH4UZzpSxdCm4=;
-        b=h+Hk7vDzz3PKVQRmLroOKdUmNAnkZGT8hcRXHfcDrNUAlFDnyVWJKRIuTEARVwmgzM
-         n9WQCB4bUzURf15dUetrei+yedP7WewDz7hB66W7hNC6ETyq4ftC85Sy0NQQ70PfuVL1
-         2qA9wCyaK/Jnq4c7ADbXPAJkRzpxo0VvF4LZaotLy+WyIHOQdZcIqXd0rZbu1XgT8YEd
-         JqTcnB9m7CbXwbJalbfnMWsNmkq4ekJWCjjXUNKaZWGx7A5vgex9niWi2sZWH1xdrfkI
-         TbLf5YlDNgxfQmzWbpZHbVBh/C0IgZ3NdlImzWncyIFObmqAJk0iRwScvTH/HQ2FoKYu
-         GGzw==
-X-Gm-Message-State: AOAM532OCw+OJLYnjCV90h2nPBfPKrEsBxyR0ROneK56xCg5nHo+o/6m
-        ZgFUq5y7XoSYaaljlK8DPPdKlCxTHDK7AHRdnA5c2Q==
-X-Google-Smtp-Source: ABdhPJxHm2gkf3/2gRmHVdxJHdV/qOMQszeZjvP243YyKawT1vGPDZrKQZgHVscnRhkeI3BWITudiXRPRM/zsnKNpYA=
-X-Received: by 2002:a05:651c:54c:b0:249:9d06:24ef with SMTP id
- q12-20020a05651c054c00b002499d0624efmr21807549ljp.331.1649715318743; Mon, 11
- Apr 2022 15:15:18 -0700 (PDT)
+        bh=kL8nw+kkxRkF6850uohgHzWtw+kuxUaqTysptdnGkC8=;
+        b=iVLVvysR3aLMs7zYEYfzmirT4LjwMCvZ0S1k7HYMHE2Ky48QUrBsuFfAkz0WkRgUMY
+         OoBu7BAmEEgDkmBJMDgZ9ePhlbM3WVyS6YGdJw3eFc68w36Lsd0EOE3ax3dT05YaVuBA
+         +Ac32B8WTI533Bxea0qqw+V83S4G7yLdP1X1vKbtnTT089I9y6Ed02fNhJMQt5ak4COL
+         G6Qbnd0kOEGg4ZSLz3ENXOfVgcNYipWnyeffKH+L3wPnoE86FbiGCxCVeDka3s5Cmnwe
+         i7g618T8E+1oHnXLYbgY8q1X7WRVs8KhFZwi5pGg/SbSkXow++dUvwv2UdRK5njKrCxW
+         7PTA==
+X-Gm-Message-State: AOAM530CbQ5Ffn+ASf2k1n5HjAFhiiSlpDpkdf5A8lG3V+zeO4SbBvbt
+        XsYZMLQHJOkKN2ZZDbHov+Ss4wvPl3Sw/vtaCUE=
+X-Google-Smtp-Source: ABdhPJyf/1hHwHPkmGlwPJdP5IAugKSUeFN0fJQaM6DsPOny+KiO2QsNJyxP21v/6Eqcs4XOYUdkWa3zFA5I7PbPH20=
+X-Received: by 2002:a05:6638:2104:b0:326:1e94:efa6 with SMTP id
+ n4-20020a056638210400b003261e94efa6mr5719614jaj.234.1649715333863; Mon, 11
+ Apr 2022 15:15:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220411211015.3091615-1-bgardon@google.com> <20220411211015.3091615-5-bgardon@google.com>
-In-Reply-To: <20220411211015.3091615-5-bgardon@google.com>
-From:   David Matlack <dmatlack@google.com>
-Date:   Mon, 11 Apr 2022 15:14:52 -0700
-Message-ID: <CALzav=fCnRX=JZ-knxf9_Aq_A_JOVjTq34ACe5JOmVr5Ms=vVw@mail.gmail.com>
-Subject: Re: [PATCH v4 04/10] KVM: selftests: Read binary stat data in lib
-To:     Ben Gardon <bgardon@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Peter Shier <pshier@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Junaid Shahid <junaids@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Mingwei Zhang <mizhang@google.com>,
-        Jing Zhang <jingzhangos@google.com>
+References: <20220407125224.310255-1-jolsa@kernel.org> <20220407125224.310255-2-jolsa@kernel.org>
+In-Reply-To: <20220407125224.310255-2-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 11 Apr 2022 15:15:23 -0700
+Message-ID: <CAEf4BzYffXGFigxywjP391s4G=6VpykxaqD5OYuOR5mBRa1Tmw@mail.gmail.com>
+Subject: Re: [RFC bpf-next 1/4] kallsyms: Add kallsyms_lookup_names function
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 2:10 PM Ben Gardon <bgardon@google.com> wrote:
+On Thu, Apr 7, 2022 at 5:52 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Move the code to read the binary stats data to the KVM selftests
-> library. It will be re-used by other tests to check KVM behavior.
+> Adding kallsyms_lookup_names function that resolves array of symbols
+> with single pass over kallsyms.
 >
-> No functional change intended.
+> The user provides array of string pointers with count and pointer to
+> allocated array for resolved values.
 >
-> Signed-off-by: Ben Gardon <bgardon@google.com>
+>   int kallsyms_lookup_names(const char **syms, u32 cnt,
+>                             unsigned long *addrs)
+>
+> Before we iterate kallsyms we sort user provided symbols by name and
+> then use that in kalsyms iteration to find each kallsyms symbol in
+> user provided symbols.
+>
+> We also check each symbol to pass ftrace_location, because this API
+> will be used for fprobe symbols resolving. This can be optional in
+> future if there's a need.
+>
+> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  .../selftests/kvm/include/kvm_util_base.h     |  3 +++
->  .../selftests/kvm/kvm_binary_stats_test.c     | 20 +++++-------------
->  tools/testing/selftests/kvm/lib/kvm_util.c    | 21 +++++++++++++++++++
->  3 files changed, 29 insertions(+), 15 deletions(-)
+>  include/linux/kallsyms.h |  6 +++++
+>  kernel/kallsyms.c        | 48 ++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 54 insertions(+)
 >
-> diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> index c5f34551ff76..b2684cfc2cb1 100644
-> --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-> +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-> @@ -405,6 +405,9 @@ struct kvm_stats_desc *alloc_vm_stats_desc(int stats_fd,
->                                           struct kvm_stats_header *header);
->  void read_vm_stats_desc(int stats_fd, struct kvm_stats_header *header,
->                         struct kvm_stats_desc *stats_desc);
-> +int read_stat_data(int stats_fd, struct kvm_stats_header *header,
-> +                  struct kvm_stats_desc *desc, uint64_t *data,
-> +                  ssize_t max_elements);
+> diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
+> index ce1bd2fbf23e..5320a5e77f61 100644
+> --- a/include/linux/kallsyms.h
+> +++ b/include/linux/kallsyms.h
+> @@ -72,6 +72,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
+>  #ifdef CONFIG_KALLSYMS
+>  /* Lookup the address for a symbol. Returns 0 if not found. */
+>  unsigned long kallsyms_lookup_name(const char *name);
+> +int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs);
 >
->  uint32_t guest_get_vcpuid(void);
->
-> diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> index e4795bad7db6..97b180249ba0 100644
-> --- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> +++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> @@ -20,6 +20,8 @@
->  #include "asm/kvm.h"
->  #include "linux/kvm.h"
->
-> +#define STAT_MAX_ELEMENTS 1000
-> +
->  static void stats_test(int stats_fd)
->  {
->         ssize_t ret;
-> @@ -29,7 +31,7 @@ static void stats_test(int stats_fd)
->         struct kvm_stats_header header;
->         char *id;
->         struct kvm_stats_desc *stats_desc;
-> -       u64 *stats_data;
-> +       u64 stats_data[STAT_MAX_ELEMENTS];
-
-What is the benefit of changing stats_data to a stack allocation with
-a fixed limit?
-
->         struct kvm_stats_desc *pdesc;
->
->         /* Read kvm stats header */
-> @@ -130,25 +132,13 @@ static void stats_test(int stats_fd)
->                         pdesc->offset, pdesc->name);
->         }
->
-> -       /* Allocate memory for stats data */
-> -       stats_data = malloc(size_data);
-> -       TEST_ASSERT(stats_data, "Allocate memory for stats data");
-> -       /* Read kvm stats data as a bulk */
-> -       ret = pread(stats_fd, stats_data, size_data, header.data_offset);
-> -       TEST_ASSERT(ret == size_data, "Read KVM stats data");
->         /* Read kvm stats data one by one */
-> -       size_data = 0;
->         for (i = 0; i < header.num_desc; ++i) {
->                 pdesc = (void *)stats_desc + i * size_desc;
-> -               ret = pread(stats_fd, stats_data,
-> -                               pdesc->size * sizeof(*stats_data),
-> -                               header.data_offset + size_data);
-> -               TEST_ASSERT(ret == pdesc->size * sizeof(*stats_data),
-> -                               "Read data of KVM stats: %s", pdesc->name);
-> -               size_data += pdesc->size * sizeof(*stats_data);
-> +               read_stat_data(stats_fd, &header, pdesc, stats_data,
-> +                              ARRAY_SIZE(stats_data));
->         }
->
-> -       free(stats_data);
->         free(stats_desc);
->         free(id);
+>  extern int kallsyms_lookup_size_offset(unsigned long addr,
+>                                   unsigned long *symbolsize,
+> @@ -103,6 +104,11 @@ static inline unsigned long kallsyms_lookup_name(const char *name)
+>         return 0;
 >  }
-> diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-> index e3ae26fbef03..64e2085f1129 100644
-> --- a/tools/testing/selftests/kvm/lib/kvm_util.c
-> +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-> @@ -2593,3 +2593,24 @@ void read_vm_stats_desc(int stats_fd, struct kvm_stats_header *header,
->         TEST_ASSERT(ret == stats_descs_size(header),
->                     "Read KVM stats descriptors");
->  }
-> +
-> +int read_stat_data(int stats_fd, struct kvm_stats_header *header,
-
-I would like to keep up the practice of adding docstrings to functions
-in kvm_util. Can you add docstring comments for this function and the
-other kvm_util functions introduced by this series?
-
-> +                  struct kvm_stats_desc *desc, uint64_t *data,
-> +                  ssize_t max_elements)
+>
+> +int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs)
 > +{
-> +       ssize_t ret;
-> +
-> +       TEST_ASSERT(desc->size <= max_elements,
-> +                   "Max data elements should be at least as large as stat data");
-
-What is the reason for this assertion? Callers are required to read
-all the data elements of a given stat?
-
-> +
-> +       ret = pread(stats_fd, data, desc->size * sizeof(*data),
-> +                   header->data_offset + desc->offset);
-> +
-> +       /* ret from pread is in bytes. */
-> +       ret = ret / sizeof(*data);
-> +
-> +       TEST_ASSERT(ret == desc->size,
-> +                   "Read data of KVM stats: %s", desc->name);
-
-Won't this assertion fail when called from kvm_binary_stats_test.c?
-kvm_binary_stats_test.c looks like it reads all the stat data at once,
-which means ret will be the total number of stat data points, and
-desc->size will be the number of stat data points in the first stat.
-
-> +
-> +       return ret;
+> +       return -ERANGE;
 > +}
+> +
+>  static inline int kallsyms_lookup_size_offset(unsigned long addr,
+>                                               unsigned long *symbolsize,
+>                                               unsigned long *offset)
+> diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+> index 79f2eb617a62..a3738ddf9e87 100644
+> --- a/kernel/kallsyms.c
+> +++ b/kernel/kallsyms.c
+> @@ -29,6 +29,8 @@
+>  #include <linux/compiler.h>
+>  #include <linux/module.h>
+>  #include <linux/kernel.h>
+> +#include <linux/bsearch.h>
+> +#include <linux/sort.h>
+>
+>  /*
+>   * These will be re-linked against their real values
+> @@ -572,6 +574,52 @@ int sprint_backtrace_build_id(char *buffer, unsigned long address)
+>         return __sprint_symbol(buffer, address, -1, 1, 1);
+>  }
+>
+> +static int symbols_cmp(const void *a, const void *b)
+
+isn't this literally strcmp? Or compiler will actually complain about
+const void * vs const char *?
+
+> +{
+> +       const char **str_a = (const char **) a;
+> +       const char **str_b = (const char **) b;
+> +
+> +       return strcmp(*str_a, *str_b);
+> +}
+> +
+> +struct kallsyms_data {
+> +       unsigned long *addrs;
+> +       const char **syms;
+> +       u32 cnt;
+> +       u32 found;
+> +};
+> +
+> +static int kallsyms_callback(void *data, const char *name,
+> +                            struct module *mod, unsigned long addr)
+> +{
+> +       struct kallsyms_data *args = data;
+> +
+> +       if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
+> +               return 0;
+> +
+> +       addr = ftrace_location(addr);
+> +       if (!addr)
+> +               return 0;
+> +
+> +       args->addrs[args->found++] = addr;
+> +       return args->found == args->cnt ? 1 : 0;
+> +}
+> +
+> +int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs)
+> +{
+> +       struct kallsyms_data args;
+> +
+> +       sort(syms, cnt, sizeof(*syms), symbols_cmp, NULL);
+> +
+> +       args.addrs = addrs;
+> +       args.syms = syms;
+> +       args.cnt = cnt;
+> +       args.found = 0;
+> +       kallsyms_on_each_symbol(kallsyms_callback, &args);
+> +
+> +       return args.found == args.cnt ? 0 : -EINVAL;
+
+ESRCH or ENOENT makes a bit more sense as an error?
+
+
+> +}
+> +
+>  /* To avoid using get_symbol_offset for every symbol, we carry prefix along. */
+>  struct kallsym_iter {
+>         loff_t pos;
 > --
-> 2.35.1.1178.g4f1659d476-goog
+> 2.35.1
 >
