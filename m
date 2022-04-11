@@ -2,137 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D754C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B82BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233491AbiDKJjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37588 "EHLO
+        id S1344611AbiDKJjo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 05:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344552AbiDKJjW (ORCPT
+        with ESMTP id S1344579AbiDKJjW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Apr 2022 05:39:22 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA634090F;
-        Mon, 11 Apr 2022 02:37:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649669824; x=1681205824;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=j7yxrIW5JHTanE/rqGKH77B25ab5eWBeaxexb2VIdDk=;
-  b=RpLbOXieJnlXFBKLCHkIGiU0K/MXMW/cB6tUYLDF4zquBKyMAEHUO7rU
-   TU+5TVJoNaZdAFucFU4VVrndcxzPXMJ4zzKb98QFYIjvYKHt/dTQqJPjY
-   oZdXtJVa6OOrvRaFBSQdhr0yzNWyaqFbzeEqMZ5PY4uYb5TQI2+fy6RHe
-   eqow5XXErVT1/SLQV89ZwJWtSp1qG/KoPSf5FomqG/4qP5FalvwIBCTr5
-   pGyxG4vlCSfmdhGcIHSYmKNyzXmeZZXnYND7BrrKEysKDaOKfG9W7Y9Gf
-   T18K3nMNfydpqWWCqsLbKbwsZeHBL1ikWrv93dYJFJyzmbhhLTfd0QgoO
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="260923505"
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="260923505"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 02:37:04 -0700
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="572050545"
-Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 02:36:57 -0700
-From:   Zeng Guang <guang.zeng@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBE4403F5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:36:53 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 279091EC0202;
+        Mon, 11 Apr 2022 11:36:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649669808;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=yubHAmQOKFXQzNV5jAier9r1b9P81adyeJrEjeDlCUw=;
+        b=nfLCSOmQv2gPFZSwZuwH56Qf9el3EYe27Hk7ra/Ew/a7m4WWcNkNcsL+tlVZzjQJTZXRNQ
+        aK9DUOCdSHffKLAGMoITCXitPXd5oRivKEAx3MifA8ViS0TArYo3smilmacnmURCPNFgJc
+        KU6b3SmlaDskKkiIQkDPJcxgNcZJz+0=
+Date:   Mon, 11 Apr 2022 11:36:51 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Ingo Molnar <mingo@redhat.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
-        Zeng Guang <guang.zeng@intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH v8 6/9] KVM: x86: lapic: don't allow to change APIC ID unconditionally
-Date:   Mon, 11 Apr 2022 17:04:44 +0800
-Message-Id: <20220411090447.5928-7-guang.zeng@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220411090447.5928-1-guang.zeng@intel.com>
-References: <20220411090447.5928-1-guang.zeng@intel.com>
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Thomas Tai <thomas.tai@oracle.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH V4 1/7] x86/traps: Move pt_regs only in fixup_bad_iret()
+Message-ID: <YlP2s5pbY0YcibAC@zn.tnic>
+References: <20220318143016.124387-1-jiangshanlai@gmail.com>
+ <20220318143016.124387-2-jiangshanlai@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220318143016.124387-2-jiangshanlai@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Levitsky <mlevitsk@redhat.com>
+On Fri, Mar 18, 2022 at 10:30:10PM +0800, Lai Jiangshan wrote:
+> diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+> index 1563fb995005..9fe9cd9d3eeb 100644
+> --- a/arch/x86/kernel/traps.c
+> +++ b/arch/x86/kernel/traps.c
+> @@ -892,13 +892,8 @@ asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *r
+>  }
+>  #endif
+>  
+> -struct bad_iret_stack {
+> -	void *error_entry_ret;
+> -	struct pt_regs regs;
+> -};
+> -
+>  asmlinkage __visible noinstr
+> -struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s)
+> +struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs)
+>  {
+>  	/*
+>  	 * This is called from entry_64.S early in handling a fault
 
-No normal guest has any reason to change physical APIC IDs, and
-allowing this introduces bugs into APIC acceleration code.
+While at it, unbreak that line:
 
-And Intel recent hardware just ignores writes to APIC_ID in
-xAPIC mode. More background can be found at:
-https://lore.kernel.org/lkml/Yfw5ddGNOnDqxMLs@google.com/
-
-Looks there is no much value to support writable xAPIC ID in
-guest except supporting some old and crazy use cases which
-probably would fail on real hardware. So, make xAPIC ID
-read-only for KVM guests.
-
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Zeng Guang <guang.zeng@intel.com>
----
- arch/x86/kvm/lapic.c | 25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
-
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index 137c3a2f5180..62d5ce4dc0c5 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2047,10 +2047,17 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index 9fe9cd9d3eeb..28591132e885 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -892,8 +892,7 @@ asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *r
+ }
+ #endif
  
- 	switch (reg) {
- 	case APIC_ID:		/* Local APIC ID */
--		if (!apic_x2apic_mode(apic))
--			kvm_apic_set_xapic_id(apic, val >> 24);
--		else
-+		if (apic_x2apic_mode(apic)) {
- 			ret = 1;
-+			break;
-+		}
-+		/* Don't allow changing APIC ID to avoid unexpected issues */
-+		if ((val >> 24) != apic->vcpu->vcpu_id) {
-+			kvm_vm_bugged(apic->vcpu->kvm);
-+			break;
-+		}
-+
-+		kvm_apic_set_xapic_id(apic, val >> 24);
- 		break;
- 
- 	case APIC_TASKPRI:
-@@ -2635,11 +2642,15 @@ int kvm_get_apic_interrupt(struct kvm_vcpu *vcpu)
- static int kvm_apic_state_fixup(struct kvm_vcpu *vcpu,
- 		struct kvm_lapic_state *s, bool set)
+-asmlinkage __visible noinstr
+-struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs)
++asmlinkage __visible noinstr struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs)
  {
--	if (apic_x2apic_mode(vcpu->arch.apic)) {
--		u32 *id = (u32 *)(s->regs + APIC_ID);
--		u32 *ldr = (u32 *)(s->regs + APIC_LDR);
--		u64 icr;
-+	u32 *id = (u32 *)(s->regs + APIC_ID);
-+	u32 *ldr = (u32 *)(s->regs + APIC_LDR);
-+	u64 icr;
- 
-+	if (!apic_x2apic_mode(vcpu->arch.apic)) {
-+		/* Don't allow changing APIC ID to avoid unexpected issues */
-+		if ((*id >> 24) != vcpu->vcpu_id)
-+			return -EINVAL;
-+	} else {
- 		if (vcpu->kvm->arch.x2apic_format) {
- 			if (*id != vcpu->vcpu_id)
- 				return -EINVAL;
--- 
-2.27.0
+ 	/*
+ 	 * This is called from entry_64.S early in handling a fault
 
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
