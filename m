@@ -2,100 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 923DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 12:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E180C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 12:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346050AbiDKMa1 (ORCPT
+        id S1346060AbiDKMan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 08:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51048 "EHLO
+        Mon, 11 Apr 2022 08:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245248AbiDKMa0 (ORCPT
+        with ESMTP id S1346053AbiDKMal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 08:30:26 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C5F2CC86
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 05:28:12 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id bg24so2704671pjb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 05:28:12 -0700 (PDT)
+        Mon, 11 Apr 2022 08:30:41 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F16039BA5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 05:28:27 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id k14so14089298pga.0
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 05:28:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QodfVSYvtajfZu5GfMihFlyPJS016l+/i2+aa3dvR/M=;
-        b=48tVOWYpd8ZPY/3YXoKZl/BMYH7ui+Amk8t7+6bc6Y3MHSVGrA7nNaU4JNpefswj4O
-         3QIbwtZ5+BHBTZNgGUx6DrH3/naQop/ghumvjDr5b4gjrSw5xBXTR+9zH8IAaoLG5gv8
-         gD+ExHUS5TaUwjwlBih/bZxaVMFu2pAfBQK6etpOVvQnbXqO15kpDPu07EQ5Hns27pDy
-         GdJdYuKQsFNBL/EYDP1UNsIuB8BOmBL5kmxp4DW+gbRcvB5rsPta4dYUENQVHVbbLWVR
-         zP4WnsTReOaNJvd5FYJsk+SEB+0e5y8/aNOQ5n1BKxPeWkivTzYBGdVtTERal50mDJcC
-         dgDQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=e3rfORwlh+GfqoV3kM6mCVh4CbmOsNbVFGcxLf2a93Y=;
+        b=tUzS/ZzNqMYlIK7xIRTzMRkB0E+u5pTIJc5hG2P+LzCVsM81KuY0HBTxPxRMvXMkzv
+         oArvRyInh5BVoQ3NN8F1ULSlphST13oZQDkTAy7PISkJ/sw/GGwKDY73Ef1i6rS2/CQf
+         fnZ2blBUbpt4VRCKuMf03pLBSIH/fOsSYSBaG23dUmknp/oe7F0mizwZhCJKFo1n6rwq
+         sSIHsxmnjhbUHl3E/SkzJbB92zo11E2aDLbTndlxflxTwhBFLCLW0ELK+AXg30SA1Hhu
+         qqK2l7tOTMABUv5l157AdADgW2SkC1fNQrZtWK1B/mWqqgrL9GWxiBaAfpv5IhGPnjOM
+         gtVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QodfVSYvtajfZu5GfMihFlyPJS016l+/i2+aa3dvR/M=;
-        b=RyX65f0FHFlbXAR+jHMtq0wkRQmBFIldxOFFu0iomvpfi9TcmrYJIWr3cD64rZimTW
-         lywov/UA7PkKaAGGtsI+oesRpiHgB+3ztM3ONdVTo6ASwbstIkwOoLo5Ovo0/5z91DWC
-         /A3uwTOU9BgRj1IEps520tXjzgwurtzOPR/LuJPhH1cj/coICCzHJ4hXnfCrIXHBDKhu
-         +D9WClHyICpOVEtLwYfXSQ7eiv3hKZq6LVmTC0/orTNcTQxOySv+QzNTqESpAR+ZxVdo
-         +q/bAUQzUGrJGGcs0neOutyO7XdVWLQZdwHULBMMwocCqARm5rw7dXHQz1XcLmsxKSRC
-         obiA==
-X-Gm-Message-State: AOAM533s9IDCyyi25Pzb1sN7+X5NX6TXkQ2l0zPboKk/7AAfr8tB2Ks3
-        ZjvZvQ8EWuK8UvlOelR4ojrQ2XAbEDo/Vw==
-X-Google-Smtp-Source: ABdhPJymaL28YkA+U0QTjSOpHtH19n1Ae0krubSKlT0fk5Q1jJNPCSnDRqn1pqEh0YKC/Ps/1r0OBw==
-X-Received: by 2002:a17:90a:600b:b0:1cb:8ba5:d3bc with SMTP id y11-20020a17090a600b00b001cb8ba5d3bcmr7319539pji.42.1649680091792;
-        Mon, 11 Apr 2022 05:28:11 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id fa11-20020a17090af0cb00b001ca6e27a684sm20065699pjb.16.2022.04.11.05.28.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 05:28:11 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     will@kernel.org, catalin.marinas@arm.com,
-        akpm@linux-foundation.org, anshuman.khandual@arm.com,
-        steven.price@arm.com, lengxujun2007@126.com, arnd@arndb.de,
-        smuchun@gmail.com, duanxiongchun@bytedance.com,
-        quic_qiancai@quicinc.com, aneesh.kumar@linux.ibm.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v2] arm64: mm: fix pmd_leaf()
-Date:   Mon, 11 Apr 2022 20:26:53 +0800
-Message-Id: <20220411122653.40284-1-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=e3rfORwlh+GfqoV3kM6mCVh4CbmOsNbVFGcxLf2a93Y=;
+        b=R4z2q6PiEd6OpME49jQlZ9SxzDtwmB23rJkjxrIIWQY8Jz3cuveBrUER3fvtrlPRpg
+         DUOwWk3Icht9yKth0L79/8I6TuSgDfZywXo/mhiJQsLZ88MbM+aEfo4CUDsK2lavLwtu
+         6A3bieBg7S57pHk65KpHtPRhwLwwOHkuu6maZmBcxBXAITJz2YsCWc1VuXqajHGeAfpA
+         jyXAcLAA9zZlSmGTrTb1do9wBASZOQQsAn2cmE8128ZqzywdY65JblyCQ/M1Tq/OX/qB
+         SUYnSw327yN06/v6jqHr2MCDEZd9JjtmtzQvbetu4hv7TNEVvHhe0742Q4PYi4U0hlKq
+         7/Xg==
+X-Gm-Message-State: AOAM533Tr3PSTTwVK5iTmNoM9WXQbQSh3NSB5EP+QQa/NtR01mXKWl3H
+        Qp/frxQNN1jrRv+2K2fKLFWpp3N8LjjX8W0xBELuyw==
+X-Google-Smtp-Source: ABdhPJxYTTZYwoekbEmlJ9vg6MC9aSPPn1/GrkR9rhG/OcTek55aJldP+zAq4vHoJGXiv6FOT+/qDM9SUT15Z+BSqks=
+X-Received: by 2002:a65:6a97:0:b0:398:ae2:d207 with SMTP id
+ q23-20020a656a97000000b003980ae2d207mr25656875pgu.197.1649680106538; Mon, 11
+ Apr 2022 05:28:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220321130341.935535-1-jens.wiklander@linaro.org> <20220321130341.935535-2-jens.wiklander@linaro.org>
+In-Reply-To: <20220321130341.935535-2-jens.wiklander@linaro.org>
+From:   Sumit Garg <sumit.garg@linaro.org>
+Date:   Mon, 11 Apr 2022 17:58:15 +0530
+Message-ID: <CAFA6WYPJ5S0w3L8+PYGF474v+DqvSp8T=U2w=bjAKummrCuUBQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] optee: rename rpc_arg_count to rpc_param_count
+To:     Jens Wiklander <jens.wiklander@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pmd_leaf() is used to test a leaf mapped PMD, however, it misses
-the PROT_NONE mapped PMD on arm64.  Fix it.  A real world issue [1]
-caused by this was reported by Qian Cai.
+On Mon, 21 Mar 2022 at 18:33, Jens Wiklander <jens.wiklander@linaro.org> wrote:
+>
+> Renames the field rpc_arg_count in struct optee to rpc_param_count.
+> Function parameter names and local variables are also renamed to match.
+>
+> Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+> ---
+>  drivers/tee/optee/call.c          |  6 +++---
+>  drivers/tee/optee/ffa_abi.c       | 10 +++++-----
+>  drivers/tee/optee/optee_private.h |  4 ++--
+>  3 files changed, 10 insertions(+), 10 deletions(-)
+>
 
-Link: https://patchwork.kernel.org/comment/24798260/ [1]
-Fixes: 8aa82df3c123 ("arm64: mm: add p?d_leaf() definitions")
-Reported-by: Qian Cai <quic_qiancai@quicinc.com>
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
-v2:
-- Replace pmd_present() with pmd_val() since we expect pmd_leaf() works
-  well on non-present pmd case.
+Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
 
- arch/arm64/include/asm/pgtable.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+-Sumit
 
-diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
-index ad9b221963d4..00cdd2d895d3 100644
---- a/arch/arm64/include/asm/pgtable.h
-+++ b/arch/arm64/include/asm/pgtable.h
-@@ -551,7 +551,7 @@ extern pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
- 				 PMD_TYPE_TABLE)
- #define pmd_sect(pmd)		((pmd_val(pmd) & PMD_TYPE_MASK) == \
- 				 PMD_TYPE_SECT)
--#define pmd_leaf(pmd)		pmd_sect(pmd)
-+#define pmd_leaf(pmd)		(pmd_val(pmd) && !(pmd_val(pmd) & PMD_TABLE_BIT))
- #define pmd_bad(pmd)		(!pmd_table(pmd))
- 
- #define pmd_leaf_size(pmd)	(pmd_cont(pmd) ? CONT_PMD_SIZE : PMD_SIZE)
--- 
-2.11.0
-
+> diff --git a/drivers/tee/optee/call.c b/drivers/tee/optee/call.c
+> index bd49ec934060..a9a237d20c61 100644
+> --- a/drivers/tee/optee/call.c
+> +++ b/drivers/tee/optee/call.c
+> @@ -113,12 +113,12 @@ struct tee_shm *optee_get_msg_arg(struct tee_context *ctx, size_t num_params,
+>         struct optee_msg_arg *ma;
+>
+>         /*
+> -        * rpc_arg_count is set to the number of allocated parameters in
+> +        * rpc_param_count is set to the number of allocated parameters in
+>          * the RPC argument struct if a second MSG arg struct is expected.
+>          * The second arg struct will then be used for RPC.
+>          */
+> -       if (optee->rpc_arg_count)
+> -               sz += OPTEE_MSG_GET_ARG_SIZE(optee->rpc_arg_count);
+> +       if (optee->rpc_param_count)
+> +               sz += OPTEE_MSG_GET_ARG_SIZE(optee->rpc_param_count);
+>
+>         shm = tee_shm_alloc_priv_buf(ctx, sz);
+>         if (IS_ERR(shm))
+> diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
+> index a5eb4ef46971..7686f7020616 100644
+> --- a/drivers/tee/optee/ffa_abi.c
+> +++ b/drivers/tee/optee/ffa_abi.c
+> @@ -678,7 +678,7 @@ static bool optee_ffa_api_is_compatbile(struct ffa_device *ffa_dev,
+>
+>  static bool optee_ffa_exchange_caps(struct ffa_device *ffa_dev,
+>                                     const struct ffa_dev_ops *ops,
+> -                                   unsigned int *rpc_arg_count)
+> +                                   unsigned int *rpc_param_count)
+>  {
+>         struct ffa_send_direct_data data = { OPTEE_FFA_EXCHANGE_CAPABILITIES };
+>         int rc;
+> @@ -693,7 +693,7 @@ static bool optee_ffa_exchange_caps(struct ffa_device *ffa_dev,
+>                 return false;
+>         }
+>
+> -       *rpc_arg_count = (u8)data.data1;
+> +       *rpc_param_count = (u8)data.data1;
+>
+>         return true;
+>  }
+> @@ -772,7 +772,7 @@ static void optee_ffa_remove(struct ffa_device *ffa_dev)
+>  static int optee_ffa_probe(struct ffa_device *ffa_dev)
+>  {
+>         const struct ffa_dev_ops *ffa_ops;
+> -       unsigned int rpc_arg_count;
+> +       unsigned int rpc_param_count;
+>         struct tee_shm_pool *pool;
+>         struct tee_device *teedev;
+>         struct tee_context *ctx;
+> @@ -788,7 +788,7 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
+>         if (!optee_ffa_api_is_compatbile(ffa_dev, ffa_ops))
+>                 return -EINVAL;
+>
+> -       if (!optee_ffa_exchange_caps(ffa_dev, ffa_ops, &rpc_arg_count))
+> +       if (!optee_ffa_exchange_caps(ffa_dev, ffa_ops, &rpc_param_count))
+>                 return -EINVAL;
+>
+>         optee = kzalloc(sizeof(*optee), GFP_KERNEL);
+> @@ -805,7 +805,7 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
+>         optee->ops = &optee_ffa_ops;
+>         optee->ffa.ffa_dev = ffa_dev;
+>         optee->ffa.ffa_ops = ffa_ops;
+> -       optee->rpc_arg_count = rpc_arg_count;
+> +       optee->rpc_param_count = rpc_param_count;
+>
+>         teedev = tee_device_alloc(&optee_ffa_clnt_desc, NULL, optee->pool,
+>                                   optee);
+> diff --git a/drivers/tee/optee/optee_private.h b/drivers/tee/optee/optee_private.h
+> index e77765c78878..e80c5d9b62ec 100644
+> --- a/drivers/tee/optee/optee_private.h
+> +++ b/drivers/tee/optee/optee_private.h
+> @@ -143,7 +143,7 @@ struct optee_ops {
+>   * @notif:             notification synchronization struct
+>   * @supp:              supplicant synchronization struct for RPC to supplicant
+>   * @pool:              shared memory pool
+> - * @rpc_arg_count:     If > 0 number of RPC parameters to make room for
+> + * @rpc_param_count:   If > 0 number of RPC parameters to make room for
+>   * @scan_bus_done      flag if device registation was already done.
+>   * @scan_bus_wq                workqueue to scan optee bus and register optee drivers
+>   * @scan_bus_work      workq to scan optee bus and register optee drivers
+> @@ -161,7 +161,7 @@ struct optee {
+>         struct optee_notif notif;
+>         struct optee_supp supp;
+>         struct tee_shm_pool *pool;
+> -       unsigned int rpc_arg_count;
+> +       unsigned int rpc_param_count;
+>         bool   scan_bus_done;
+>         struct workqueue_struct *scan_bus_wq;
+>         struct work_struct scan_bus_work;
+> --
+> 2.31.1
+>
