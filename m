@@ -2,96 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B08A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:04:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346925AbiDKOHC (ORCPT
+        id S1346927AbiDKOHF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46668 "EHLO
+        Mon, 11 Apr 2022 10:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346929AbiDKOG5 (ORCPT
+        with ESMTP id S1346914AbiDKOHA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:06:57 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F8B32ED3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:04:40 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id a5so13300488qvx.1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:04:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=prism19-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cuS4NjENNZyOi0TdSjKIhrtOrxyukLSc/60jZJBAYhg=;
-        b=bZaOFiWvWozs6rAmx9Rehdei3ZVcQSOMezzhPtvzQ55BcPqKxNSPPB5eJV4bUudjM/
-         XQxs0m4AUpjY/1E9By826HLqhnJDS40xQjGEl/EX88LH8rAmbYefXX6Bd4TtcKf8lj6Q
-         llzdtl2SOfpNlnBNDSm//RhjqdWYNITtFKgvfrr0jOJTYq+CmkfEUrWThSR0X5LEue1U
-         5RGao015u3iiAiuGmVg2iyJ8h/NDW22U2E/PptBVDg/t4alWZFLhD5/h28at/rkf6tJF
-         7eVDcgQMeAv9fr48R+apcGnYdhyQFWATPqPh6VoSqp01c535plie4ZUBZBAPRdnLWYEo
-         gWjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cuS4NjENNZyOi0TdSjKIhrtOrxyukLSc/60jZJBAYhg=;
-        b=KapFwwZ7HNggtkblUgtTwgJTNcCZHqDPXjUK/0urMoUaW/qZvj3txUxnq7vVdfg1k4
-         1BPM/FNTs+8bzvHYv9M2jljYW39yOVWTpYMo+pBRBIRKd2mUtZ54EA2XH4yKWMv8ff0P
-         nQ5DuffgXg6ivLQKSmGtoNudsfvy3vzHrPEdNrqfHFvq0aVTuK5iE7q6pk4URVfeEvW9
-         NrFaCWx9F6AKC3T0XNjN1yrD4NQ9F2WQPyK9bKflnhTuay32lKQiYpZbo8T8m8sIGiBt
-         RBY2Q1znuITNLK3SOik47B5poIj/VGuWahpIvFF8o6BO2C3HJH31OPGnycmIZ4kniIsr
-         J6YA==
-X-Gm-Message-State: AOAM531CGiih7CJxg1c7t33wWaeAazGAmAhbunJK/xpbyKJlbJsOU1Ii
-        WN2WS6CaQ/tUY91YyTXLLyfGJ+jKlzOxmiR+MPfjPA==
-X-Google-Smtp-Source: ABdhPJxcJkfnTI8XP7q8uXyN/Q/OVYCG4hOjfqR773QCchY4BI97Dthg44tw5mELirvjxvO2cnp+ng==
-X-Received: by 2002:a05:6214:76d:b0:443:6801:6d0f with SMTP id f13-20020a056214076d00b0044368016d0fmr26549037qvz.60.1649685879766;
-        Mon, 11 Apr 2022 07:04:39 -0700 (PDT)
-Received: from RADIUM.localdomain (bras-base-mtrlpq2718w-grc-02-76-67-205-66.dsl.bell.ca. [76.67.205.66])
-        by smtp.googlemail.com with ESMTPSA id a200-20020a3766d1000000b0069c1125b7bbsm2896549qkc.57.2022.04.11.07.04.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 07:04:39 -0700 (PDT)
-From:   Guillaume Giraudon <ggiraudon@prism19.com>
-To:     kernel-dev@prism19.com
-Cc:     ggiraudon@prism19.com, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH RESEND] arm64: dts: meson-sm1-bananapi-m5: fix wrong GPIO pin labeling for CON1
-Date:   Mon, 11 Apr 2022 10:04:02 -0400
-Message-Id: <20220411140401.450-1-ggiraudon@prism19.com>
-X-Mailer: git-send-email 2.20.1
+        Mon, 11 Apr 2022 10:07:00 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA983299B;
+        Mon, 11 Apr 2022 07:04:44 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 3A513210F4;
+        Mon, 11 Apr 2022 14:04:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649685883;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mabhyMUHoOtwjOm0+3v+wDSJt7vVsJDccsK4CpT9dlY=;
+        b=GPgjX9c0ohP3PVlSqdv9BoZDTTPnECG5aQBk4El5f2Dj7k6ZfJQwnXbbE4TF+BckM6ZU15
+        90c41ZEHxjr3YMvpb/hOqAi4cs0FSxau6yl75maJUABAIbuee8+1tZOLTzfTSnF3/4vA5N
+        mkNpGdDnCrGmbAJlIC0Fe3AlC8Pmiaw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649685883;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mabhyMUHoOtwjOm0+3v+wDSJt7vVsJDccsK4CpT9dlY=;
+        b=hen0VLae0O/WS/EOG1IkKyGEGxgQhP4nmnXMxfKyJskvGQli5tvYjLfMERAm5f4rTWh8LT
+        CkQClfix2bdbl2BA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id EE6A9A3B87;
+        Mon, 11 Apr 2022 14:04:42 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 9CDE2DA7DA; Mon, 11 Apr 2022 16:00:38 +0200 (CEST)
+Date:   Mon, 11 Apr 2022 16:00:38 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     cgel.zte@gmail.com
+Cc:     dsterba@suse.com, clm@fb.com, josef@toxicpanda.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH] btrfs: remove unnecessary conditional
+Message-ID: <20220411140038.GI15609@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, cgel.zte@gmail.com, dsterba@suse.com,
+        clm@fb.com, josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220411032252.2517399-1-lv.ruyi@zte.com.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411032252.2517399-1-lv.ruyi@zte.com.cn>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The labels for lines 61 through 84 on the periphs-banks were offset by 2.
-Realigned them to match the Banana Pi M5 schematics.
+On Mon, Apr 11, 2022 at 03:22:52AM +0000, cgel.zte@gmail.com wrote:
+> From: Lv Ruyi <lv.ruyi@zte.com.cn>
+> 
+> iput() has already handled null and non-null parameter, so it is no
+> need to use if().
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-Fixes: 976e920183e4 ("arm64: dts: meson-sm1: add Banana PI BPI-M5 board dts")
-
-Signed-off-by: Guillaume Giraudon <ggiraudon@prism19.com>
----
- arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
-index 5751c48620ed..754c3d43ef0b 100644
---- a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
-+++ b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
-@@ -448,7 +448,7 @@
- 		"",
- 		/* GPIOA */
- 		"", "", "", "", "", "", "", "",
--		"", "", "", "", "", "",
-+		"", "", "", "", "", "", "", "",
- 		"CON1-P27", /* GPIOA_14 */
- 		"CON1-P28", /* GPIOA_15 */
- 		/* GPIOX */
--- 
-2.20.1
-
+Thanks, I've applied this version.
