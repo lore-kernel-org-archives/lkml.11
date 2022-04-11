@@ -2,2381 +2,385 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B730C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA36EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:12:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348588AbiDKROM (ORCPT
+        id S1348792AbiDKROd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 13:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40418 "EHLO
+        Mon, 11 Apr 2022 13:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348795AbiDKROJ (ORCPT
+        with ESMTP id S231969AbiDKRO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 13:14:09 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79B624592;
-        Mon, 11 Apr 2022 10:11:45 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id b2-20020a17090a010200b001cb0c78db57so14332916pjb.2;
-        Mon, 11 Apr 2022 10:11:45 -0700 (PDT)
+        Mon, 11 Apr 2022 13:14:27 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A3E125592;
+        Mon, 11 Apr 2022 10:11:59 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23BF2K3R022836;
+        Mon, 11 Apr 2022 17:09:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=PnN9h8B7grLufEkfeJDsA9P2l8BNkrfjO0ZVvbwJXEw=;
+ b=epPPfHPL/vEBq4vpHkdRSPgS7Ha+Wg0fhv830nQM2a5KNmwNdRUYHnyZ27Tqp12hG9c2
+ QBBywpBU0unadNbrfCHNMMh37ylm8qOiblJlcMFWocrdGQNphcsPmL/WRDJ8Leyzkxnv
+ r/hQwTr1A8kVNE8F0eH0hKof17RIWGkBLHmH53Q88Vs16kIee+D9idnu1+9GofHsS0LP
+ ZfBKfJbqG3g1jxq3oTMlC3BeibFyEJYdALmYK0ofiN0WQvkQNQozyXXs5LVLBzCQ4QFG
+ vhIIUmJuQU+nJGy0ky+EsR43tGqhXWGFes1Jk6sZ5O1QfHbYQozWl/o/FqlrrBvkP4aV Lw== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3fb0jd49s7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 11 Apr 2022 17:09:57 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 23BH19jr007965;
+        Mon, 11 Apr 2022 17:09:56 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2106.outbound.protection.outlook.com [104.47.58.106])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3fb0k1n5ja-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 11 Apr 2022 17:09:56 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E+oluz+5OFMpRwHDCWOSIE7Tprpop23b0+BB7cfiyXuL4i8RVj9nSlessimPwQG2LYDYjkQ5xiUqmVQfiC/5Qibrek8EuoFXBaijAifaimC5BvtkhsBUe9BNZPV+GGk4WbINFjk9jRQ8MGYT5ZiBNyo6Se2YMSSGJrP6PYnZNCQHGtc1Z+Hend4s24G05Guq0DAnmMMnGIbaRORP1nGbtEbrQqC/v4IpSPvOLRx4XJSXIY6t39y3rxZNjv13KhZIIUaBlmY74wJ2cqGmWloOQnUX/9cZMXLhO2oTpSlMMoBNlD+OB21BTeNuPAv9JaeStTViNTCUBlKf38fPyMTwag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PnN9h8B7grLufEkfeJDsA9P2l8BNkrfjO0ZVvbwJXEw=;
+ b=a/OkjoKY5yXzp7xs+C+wy89qCO/ocWJoYtg2Zae2O2ym1JLAfuVPyWryDP8wwy6baqBya3aBgRYtmYI9/UVf5otr2g2ZFlsxLGTODyvP9fNucRwm/cSlPLmZVdMjlw+eYoDP0nJwsSlRhXjYCMRJqq2BQ0VCGGi/BZ+BBvsUXPiSph2liUl0Y1SthLAc1pMmK7DF4P6U1YEweBs+LnhmGYbNcdnOjgoqQb56vxPRAMQ17MNCu9RbibGhHbB8sltt7ObvYxpjcPyEacOF/y4efK0h5BpmuAmO5Qmwo4l2XIRVQIWCpLSRY2WLR9ZEbwL6lmHCyclakHBy48UdTGHcVw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=yocyvEJHvb8B47S5i3tUcgYKysGNHoNNRGU8f2OdiG0=;
-        b=pdVB9R9d9LxgIzBWZNjO1Qm/EGBCmlwbLy5/Z/IEx4jue1f1TgU1KFJBw+eAlzeXiG
-         Eh2RY2EXDf5653IenUdVEJsVnIDY6rpd3RVlARJe5TnPKcseyN9v8cML4SlauLO5CzRw
-         g6YaUt5zI6Kz+HaXPtynE1/qTXWKj4TiRPXPgVE8/p2xp2GAQ4Lvo6oSVdArs+RbkivR
-         /ZgudEnhJOSG4RX+TzXuZTQ56dQCSzumYYRSY5Su0FV4CJ8MIoLezsifWkJBxmE8QweB
-         x6indTvfDksUqCGmn7PF6iel02KTxcTqoRpRkHywKqGHVh75Gpuu3Kbdf89Ge3ILz1jb
-         Fkhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=yocyvEJHvb8B47S5i3tUcgYKysGNHoNNRGU8f2OdiG0=;
-        b=ptQRZWswU4kCsiCy+hLOBNKbFCYIow1MkhR7Xx+EItGu7ioQQwMqv1VUHIy2ioR+Nb
-         1o0TYp3M+0Yzq8MzwiJvVkctUBPG4ivgC9CuYDMKUc2Bi2wXILhEc1DPbwKn52OubVwH
-         TDPyJ3AM/ENUdSRDbBhzq4OE3K12jJ6zt0w6UH1otN6ajQrimyA5oL+tRB2UAnfMlaU1
-         pGN7FUdW4cbtHvL7yTPcDUUASR/HjZM009tCfiMJLmvO4SEU9fer8LaRLmSr+u4drOvl
-         hJoMrDUQmizjsqyHNavoCF+t8RGHb2qMiYc9cXN+/IA7BHQsorfQBRhK79+37S7siqLL
-         dpxA==
-X-Gm-Message-State: AOAM532OmHpyGOtVEdwth5JnSAbXWr/M58IOv6GmRqnDfUgwSs7aEyZb
-        Cmttx/1DxJTdSvwEKiM/yYzJQZt6pyJhmA==
-X-Google-Smtp-Source: ABdhPJw8D54boXdTGUxHigEZw9MU0L22dYnbJgeriTlcyCfxCBeCKz+RpsowHsmYI5picjADBC5vAw==
-X-Received: by 2002:a17:90b:1803:b0:1c7:24c4:ab52 with SMTP id lw3-20020a17090b180300b001c724c4ab52mr181562pjb.240.1649697103846;
-        Mon, 11 Apr 2022 10:11:43 -0700 (PDT)
-Received: from scdiu3.sunplus.com ([113.196.136.192])
-        by smtp.googlemail.com with ESMTPSA id y16-20020a63b510000000b00398d8b19bbfsm307213pge.23.2022.04.11.10.11.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 Apr 2022 10:11:43 -0700 (PDT)
-From:   Wells Lu <wellslutw@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
-        pabeni@redhat.com, krzk+dt@kernel.org, roopa@nvidia.com,
-        andrew@lunn.ch, edumazet@google.com
-Cc:     wells.lu@sunplus.com, Wells Lu <wellslutw@gmail.com>
-Subject: [PATCH net-next v7 2/2] net: ethernet: Add driver for Sunplus SP7021
-Date:   Tue, 12 Apr 2022 01:11:28 +0800
-Message-Id: <1649697088-7812-3-git-send-email-wellslutw@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649697088-7812-1-git-send-email-wellslutw@gmail.com>
-References: <1649697088-7812-1-git-send-email-wellslutw@gmail.com>
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PnN9h8B7grLufEkfeJDsA9P2l8BNkrfjO0ZVvbwJXEw=;
+ b=SwBZYFQVKjIi1MbtDI5wNxTq03kd3+sCnDSfjZcyWS3sg3ScUL7grEpcTqHQY0SxC0EUDgjTiYQZVHwUAmMxNlKVc6SmDkgPQ5l3ttbhOx2wNLEq2cYuJ1ZoYkRWNdrXWq+zcQ117tniK4FlKHNvboGf6DRY2swRyHtQVEdeP/s=
+Received: from BLAPR10MB5315.namprd10.prod.outlook.com (2603:10b6:208:324::8)
+ by DM6PR10MB4393.namprd10.prod.outlook.com (2603:10b6:5:223::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
+ 2022 17:09:53 +0000
+Received: from BLAPR10MB5315.namprd10.prod.outlook.com
+ ([fe80::d9c8:54d:a93a:54e0]) by BLAPR10MB5315.namprd10.prod.outlook.com
+ ([fe80::d9c8:54d:a93a:54e0%7]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
+ 17:09:53 +0000
+From:   Alex Kogan <alex.kogan@oracle.com>
+To:     LKML <linux-kernel@vger.kernel.org>
+CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Waiman Long <longman@redhat.com>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Jan Glauber <jglauber@marvell.com>,
+        Steven Sistare <steven.sistare@oracle.com>,
+        Daniel Jordan <daniel.m.jordan@oracle.com>,
+        Dave Dice <dave.dice@oracle.com>
+Subject: Re: [PATCH v15 0/6] Add NUMA-awareness to qspinlock
+Thread-Topic: [PATCH v15 0/6] Add NUMA-awareness to qspinlock
+Thread-Index: AQHYTcb0ItDmpDT0R0WUWd+2hoaJ1A==
+Date:   Mon, 11 Apr 2022 17:09:53 +0000
+Message-ID: <50F3F13D-705C-4213-89C3-043B0DA2C5AF@oracle.com>
+References: <20210514200743.3026725-1-alex.kogan@oracle.com>
+In-Reply-To: <20210514200743.3026725-1-alex.kogan@oracle.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3693.60.0.1.1)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f1dee9dd-3b4b-4380-61bd-08da1bde18b0
+x-ms-traffictypediagnostic: DM6PR10MB4393:EE_
+x-microsoft-antispam-prvs: <DM6PR10MB4393CDC9AE7E543EAC22A162F1EA9@DM6PR10MB4393.namprd10.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: WgY/YIhpXUWNeAiqF2LFCnfX6BqMrZlGE4lShJYIRgXsjQEuLS9JKfBm/TbWsXB/5sNA663LT4VtENeOqqmRAZKL9BGNUAKlBPTi/Dcy5uwuxZm0hmC9pyeJ1cai5gIVlr/Ja1yXRvwVUMjQ/2yphSVKxvcin3QJgTL7hfnVf6VJsdvefb4ayuHM2WVayT2Ttf5QksF6U/YjDZ4zg3fASeci16qZqyAsloEDl/k8iE8F0KGj80UU+jwF+F1mZihF0BLnutuEMTqqj664gcme4pnUMdKlMPLFR05/ggV3/+Z7vZPhbOMDt6gbobkUBjO+NIoyxww0wDfo2/E3O1Hn7vIX2GzaNgBDKSMvro5Nr0NsMm9iFLC7I9eG+o7kLN4v7m6UisQymnVp+O0gV6Ao91iRo9jgvHOGxSLxuwNA1SMW3l5YmuY4Ho2LwNjzwiJcVG8w6bI3bWAfncThkpCRuKMvS1kxsuv2X5wKXZ7rEK+vp+GOazfR9tQ8oIPQgcPEuVHzLfZ5gOgdepTU9TGd2XCmhBYHiyLJFTtli5RXCarpyxa4reotDXxIYw8BvO1qlrrwqrRp5umcOXbS3hJGSMtJyfrpMiV3sZtMUYiFo0bAfUylBryfFAM9258cIVvn3DSgkgoSdLVhI5ISWYNZ5+ka5AyVoJm2bTHWOHgXWsONY5VwnTGJn6zE35gsQwZUkyH88h8hbX1pFkMdkIy/1sm6xDV2dkBZzYFPsxgDVhMb6ixxmv7asVfSb9ZzTEJdURQ3FeXXk9I/DRESAJY8kZbt0Sp6qCfosTPyPBfXqHDCATgJA57a44mg9RiJqN7VRS9rUs3p/24NcshitkycQeBnpHwGWraI4JfZ9IxXOQ0=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5315.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(83380400001)(6506007)(33656002)(36756003)(2906002)(40140700001)(2616005)(53546011)(6512007)(6916009)(8936002)(30864003)(86362001)(66556008)(44832011)(38100700002)(966005)(6486002)(122000001)(71200400001)(508600001)(66476007)(66446008)(64756008)(186003)(107886003)(4326008)(316002)(7416002)(5660300002)(91956017)(8676002)(66946007)(38070700005)(76116006)(54906003)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OHlWQ1JVZGk2bXU1QU9EV3dQN0NxQUYreURQZGV5NXBBbnppd0NCVGZURzdB?=
+ =?utf-8?B?L3JkeGlobGJRcEZKUmVQSFlxMDJGZmw2MUMyV0M1YmM2S2ozMkNZTE1VREU5?=
+ =?utf-8?B?a1ZqbnB5eW1kajUxYnpJQVQwWlJaUXlHSzAwYzNwNFo2UTgwS3pTQ0xPeHd1?=
+ =?utf-8?B?bUFKMHdPYTFodmV2NFpadXMvRXNxWWJSL3dTT2dsckkrRkNXUGdrNUV3QWFr?=
+ =?utf-8?B?RDgrcnZFWUdaMFNVZVZKMVVjTFR2ZzJoREtZY29jRGV6aVdsOHc3QnRMazZE?=
+ =?utf-8?B?YzljQzg0L1ppSkFKa0krNWpkVGNOVEFMU1lqTnJQczdoWkJZcldJaEMvQmNL?=
+ =?utf-8?B?b2dxVkpoLzNlR0JJcHc4TG0rUGYyWnZBc0hBQnp0V3plbkI5d0hZM056R2Zp?=
+ =?utf-8?B?ZnpsMFVudVg5OTUyNjNCY1BGa1VCQndsT2tEekxWU2d1cWZoci8vK1RnN0Ny?=
+ =?utf-8?B?VUQ0L3RwUjdhKzYxdE1JVFJ2K1ZudFZtS05XejFwTWxsbUllcVJkMXNGU2ZE?=
+ =?utf-8?B?TGo1aWhiZSsvcGZHR3p3TkVIdG9VRitiU2NaTWk5Nm9PaG5FSDNjZklkV2Jl?=
+ =?utf-8?B?SnpoQ0Y4WGpBN0ZHb0svK28xOXE1cXZSY0pZTUJydGhSVURYMTN6cGxDMm1l?=
+ =?utf-8?B?eTFlaS95QlpHN3AvQUZkb3RwSzR3a3hqWVpQQVhXZS85Q1Jra3FRb2NqL2Ft?=
+ =?utf-8?B?RktwR3drWTh3ZmcvWStaRUpTWGV5QnJCUkZUbW1aaUdYMm4xN1ZjYlpFZkxN?=
+ =?utf-8?B?RmN3MStkYTUzUXIzNFRSOFV2NUZUWCtJeDdrZ0FyeG91MTlqV2dlUUVyaHJW?=
+ =?utf-8?B?TU1hMUxXMTlEanoxdXpXenMwVXJ0L2wxZGhHUHpwZTduVzNPVHU4RkFjOWZi?=
+ =?utf-8?B?RmUwdjFuU3I2bCtUTm44R0RNME5LcFNpRlBZOENWTzJzRHBCcDhPQ1Z1SzFD?=
+ =?utf-8?B?dDFhN1VQOEM4d2w3c0hUQTBoNVJKUE1pcStOUjN1bnB1eURZN3lkTmtUZzAr?=
+ =?utf-8?B?M3A1djBtMFAreDhvVi9kNFNwcWFWTmVobUJ5ekZDVGRUc2lKeS9kemptanFo?=
+ =?utf-8?B?d3g5Yng2cGJXWnJUc1Q5Ky94ckxrMFg2VElvS0g5d1Bud2ZrajI5NkxSODRw?=
+ =?utf-8?B?MG9KNGxzc1ZXVHJFNThYSnpianhWWTVQb0k4NWl0cEdpeWJJYS83Zm5WSy96?=
+ =?utf-8?B?UFA2cFdOdlFHcFJiU1NPYk5zbVFSUENtNHFOVlowNzNXTzlXc3ZZWmhYcFBF?=
+ =?utf-8?B?R1hWTnFvMEFpVzNCbExWbzI5aHh0cytuYjFpUEdjQWRTd1B4M1NIcTlwMmlm?=
+ =?utf-8?B?dHNORDUvbVhPZ1JOdjNCTHlPMmwraVlWZDRlRVpFb0Z6M0h5cmdRVnU0THJP?=
+ =?utf-8?B?eDlEZ3BtQWdGeGR4OEk0RVo2cmczVVhCSXMzRldTZlhnMlVDMFA3Z3VnRyti?=
+ =?utf-8?B?TS9XR0thYTJuYzlGYitML0V0T1lSbEJDU09sOTQvcTVwUGJ4Q2hDZEZ2dGdS?=
+ =?utf-8?B?TkdDNElwSWxoRTBDS2oraUZhRVYwSlFmTkhOblFDMUxWUzl5OEd6MXpPeFIz?=
+ =?utf-8?B?OWN2aUs5TjJTK1JoTWN3bktVZS9OYmpUREJudVBDWC9CT2o3ZVlOQ0V0VVZ4?=
+ =?utf-8?B?TEtTTWVkcnVHbS9uUkl6dzdYS1BONWdRbFFpek5PUUhnS2lwSm01Mnk4OXBp?=
+ =?utf-8?B?V1pWQzlKMFY5NUN4K3ExeUl5VFdJL1F0VWJvSzZBQkNrUytsZldGSlgrd2l5?=
+ =?utf-8?B?QncyNklHSlAwc3k3NEtPM2c2d2JFdmZ5V252Y2VkR0wyQUtyeTcrUC9oYWhw?=
+ =?utf-8?B?d0czTW1zZWlrazFOMUIvU2dTRVJ2am9OK1F0OFlDRngwTy92N0NZS25rQzdz?=
+ =?utf-8?B?QzhjNEpxVDk5a3EwVlB2UmdhYk9peXQ0aFJ6aWNFcXJTUWN3Ty9XajB4bENS?=
+ =?utf-8?B?NnhhYWw1bGFDUEdGbVRUQkNETnFEclNwZVhqRVhLOHRvZzY3M0IybFdod2cr?=
+ =?utf-8?B?L29lNzg4L2hQYTFTL3FlL01QenVaWHRmU0s2Mm1odkFjdk5BdFlmWml5aHJJ?=
+ =?utf-8?B?RTVKNkh3VUJuZzBLbHRwcmI1WkcwaFBaaUVpTjJGQndVVWFkdld2UVJPdjA0?=
+ =?utf-8?B?Ty93R2ZaTnhybDUrV3JMVHZVb1lCT3R4WStyRU05NmJ4SjVZV1JtYzNKTVVO?=
+ =?utf-8?B?d1ZRMHRseVJuUE85b01rVjNBak9lZWMzZEhIemtLTWJIVEE3dXdQRi9Wc0xZ?=
+ =?utf-8?B?cnYzdTlnMFRMT3VOL2FGWmpXU0kxY1VSOEpnT05lUmEzWjFQUFVRSlg5SnpC?=
+ =?utf-8?B?Z2todEpUcm81Z21iR29ZQlVvWVVPTTJkQjRtdVBtVWpLTVFoR0V0MlU2R2ds?=
+ =?utf-8?Q?rxTmq14nE1y5SAYyJERCOsWaB38joOkF6JQ8g?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E1D5ECEC53FEDF46ADC78BC691150BC5@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5315.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1dee9dd-3b4b-4380-61bd-08da1bde18b0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Apr 2022 17:09:53.6143
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5xLSwra3bkKr5kd3Kobn7pLglfhyQ4rQnr3CBQENpXZF4NWduH3KG6CpD87i+KqPk/Yc7JEoHnIwpsctYJDwWQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB4393
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.858
+ definitions=2022-04-11_06:2022-04-11,2022-04-11 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0 mlxscore=0
+ bulkscore=0 phishscore=0 spamscore=0 mlxlogscore=999 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204110095
+X-Proofpoint-ORIG-GUID: yO8qMx5nOR-v6HWzRwaepJLZ2zSXDPYe
+X-Proofpoint-GUID: yO8qMx5nOR-v6HWzRwaepJLZ2zSXDPYe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add driver for Sunplus SP7021 SoC.
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Wells Lu <wellslutw@gmail.com>
----
-Changes in v7
-  - Fixed compilation errors Reported-by: kernel test robot <lkp@intel.com>
-    error: implicit declaration of function...
-    Added '#include <linux/of.h>' statement to fix the error.
-
- MAINTAINERS                                    |   1 +
- drivers/net/ethernet/Kconfig                   |   1 +
- drivers/net/ethernet/Makefile                  |   1 +
- drivers/net/ethernet/sunplus/Kconfig           |  36 ++
- drivers/net/ethernet/sunplus/Makefile          |   6 +
- drivers/net/ethernet/sunplus/spl2sw_define.h   | 271 +++++++++++
- drivers/net/ethernet/sunplus/spl2sw_desc.c     | 226 +++++++++
- drivers/net/ethernet/sunplus/spl2sw_desc.h     |  19 +
- drivers/net/ethernet/sunplus/spl2sw_driver.c   | 604 +++++++++++++++++++++++++
- drivers/net/ethernet/sunplus/spl2sw_driver.h   |  12 +
- drivers/net/ethernet/sunplus/spl2sw_int.c      | 253 +++++++++++
- drivers/net/ethernet/sunplus/spl2sw_int.h      |  13 +
- drivers/net/ethernet/sunplus/spl2sw_mac.c      | 346 ++++++++++++++
- drivers/net/ethernet/sunplus/spl2sw_mac.h      |  19 +
- drivers/net/ethernet/sunplus/spl2sw_mdio.c     | 126 ++++++
- drivers/net/ethernet/sunplus/spl2sw_mdio.h     |  12 +
- drivers/net/ethernet/sunplus/spl2sw_phy.c      |  92 ++++
- drivers/net/ethernet/sunplus/spl2sw_phy.h      |  12 +
- drivers/net/ethernet/sunplus/spl2sw_register.h |  86 ++++
- 19 files changed, 2136 insertions(+)
- create mode 100644 drivers/net/ethernet/sunplus/Kconfig
- create mode 100644 drivers/net/ethernet/sunplus/Makefile
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_define.h
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_desc.c
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_desc.h
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_driver.c
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_driver.h
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_int.c
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_int.h
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mac.c
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mac.h
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mdio.c
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mdio.h
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_phy.c
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_phy.h
- create mode 100644 drivers/net/ethernet/sunplus/spl2sw_register.h
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1d54292..0269797 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18875,6 +18875,7 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- W:	https://sunplus.atlassian.net/wiki/spaces/doc/overview
- F:	Documentation/devicetree/bindings/net/sunplus,sp7021-emac.yaml
-+F:	drivers/net/ethernet/sunplus/
- 
- SUNPLUS OCOTP DRIVER
- M:	Vincent Shih <vincent.sunplus@gmail.com>
-diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-index bd4cb9d..8828539 100644
---- a/drivers/net/ethernet/Kconfig
-+++ b/drivers/net/ethernet/Kconfig
-@@ -179,6 +179,7 @@ source "drivers/net/ethernet/smsc/Kconfig"
- source "drivers/net/ethernet/socionext/Kconfig"
- source "drivers/net/ethernet/stmicro/Kconfig"
- source "drivers/net/ethernet/sun/Kconfig"
-+source "drivers/net/ethernet/sunplus/Kconfig"
- source "drivers/net/ethernet/synopsys/Kconfig"
- source "drivers/net/ethernet/tehuti/Kconfig"
- source "drivers/net/ethernet/ti/Kconfig"
-diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
-index 8ef43e0..9eb0116 100644
---- a/drivers/net/ethernet/Makefile
-+++ b/drivers/net/ethernet/Makefile
-@@ -90,6 +90,7 @@ obj-$(CONFIG_NET_VENDOR_SMSC) += smsc/
- obj-$(CONFIG_NET_VENDOR_SOCIONEXT) += socionext/
- obj-$(CONFIG_NET_VENDOR_STMICRO) += stmicro/
- obj-$(CONFIG_NET_VENDOR_SUN) += sun/
-+obj-$(CONFIG_NET_VENDOR_SUNPLUS) += sunplus/
- obj-$(CONFIG_NET_VENDOR_TEHUTI) += tehuti/
- obj-$(CONFIG_NET_VENDOR_TI) += ti/
- obj-$(CONFIG_NET_VENDOR_TOSHIBA) += toshiba/
-diff --git a/drivers/net/ethernet/sunplus/Kconfig b/drivers/net/ethernet/sunplus/Kconfig
-new file mode 100644
-index 0000000..5af2c5b
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/Kconfig
-@@ -0,0 +1,36 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Sunplus network device configuration
-+#
-+
-+config NET_VENDOR_SUNPLUS
-+	bool "Sunplus devices"
-+	default y
-+	depends on ARCH_SUNPLUS || COMPILE_TEST
-+	help
-+	  If you have a network (Ethernet) card belonging to this
-+	  class, say Y here.
-+
-+	  Note that the answer to this question doesn't directly
-+	  affect the kernel: saying N will just cause the configurator
-+	  to skip all the questions about Sunplus cards. If you say Y,
-+	  you will be asked for your specific card in the following
-+	  questions.
-+
-+if NET_VENDOR_SUNPLUS
-+
-+config SP7021_EMAC
-+	tristate "Sunplus Dual 10M/100M Ethernet devices"
-+	depends on SOC_SP7021 || COMPILE_TEST
-+	select PHYLIB
-+	select PINCTRL_SPPCTL
-+	select COMMON_CLK_SP7021
-+	select RESET_SUNPLUS
-+	select NVMEM_SUNPLUS_OCOTP
-+	help
-+	  If you have Sunplus dual 10M/100M Ethernet devices, say Y.
-+	  The network device creates two net-device interfaces.
-+	  To compile this driver as a module, choose M here. The
-+	  module will be called sp7021_emac.
-+
-+endif # NET_VENDOR_SUNPLUS
-diff --git a/drivers/net/ethernet/sunplus/Makefile b/drivers/net/ethernet/sunplus/Makefile
-new file mode 100644
-index 0000000..ef7d7d0
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for the Sunplus network device drivers.
-+#
-+obj-$(CONFIG_SP7021_EMAC) += sp7021_emac.o
-+sp7021_emac-objs := spl2sw_driver.o spl2sw_int.o spl2sw_desc.o spl2sw_mac.o spl2sw_mdio.o spl2sw_phy.o
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_define.h b/drivers/net/ethernet/sunplus/spl2sw_define.h
-new file mode 100644
-index 0000000..f299bda
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_define.h
-@@ -0,0 +1,271 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#ifndef __SPL2SW_DEFINE_H__
-+#define __SPL2SW_DEFINE_H__
-+
-+#define MAX_NETDEV_NUM			2	/* Maximum # of net-device */
-+
-+/* Interrupt status */
-+#define MAC_INT_DAISY_MODE_CHG		BIT(31) /* Daisy Mode Change             */
-+#define MAC_INT_IP_CHKSUM_ERR		BIT(23) /* IP Checksum Append Error      */
-+#define MAC_INT_WDOG_TIMER1_EXP		BIT(22) /* Watchdog Timer1 Expired       */
-+#define MAC_INT_WDOG_TIMER0_EXP		BIT(21) /* Watchdog Timer0 Expired       */
-+#define MAC_INT_INTRUDER_ALERT		BIT(20) /* Atruder Alert                 */
-+#define MAC_INT_PORT_ST_CHG		BIT(19) /* Port Status Change            */
-+#define MAC_INT_BC_STORM		BIT(18) /* Broad Cast Storm              */
-+#define MAC_INT_MUST_DROP_LAN		BIT(17) /* Global Queue Exhausted        */
-+#define MAC_INT_GLOBAL_QUE_FULL		BIT(16) /* Global Queue Full             */
-+#define MAC_INT_TX_SOC_PAUSE_ON		BIT(15) /* Soc Port TX Pause On          */
-+#define MAC_INT_RX_SOC_QUE_FULL		BIT(14) /* Soc Port Out Queue Full       */
-+#define MAC_INT_TX_LAN1_QUE_FULL	BIT(9)  /* Port 1 Out Queue Full         */
-+#define MAC_INT_TX_LAN0_QUE_FULL	BIT(8)  /* Port 0 Out Queue Full         */
-+#define MAC_INT_RX_L_DESCF		BIT(7)  /* Low Priority Descriptor Full  */
-+#define MAC_INT_RX_H_DESCF		BIT(6)  /* High Priority Descriptor Full */
-+#define MAC_INT_RX_DONE_L		BIT(5)  /* RX Low Priority Done          */
-+#define MAC_INT_RX_DONE_H		BIT(4)  /* RX High Priority Done         */
-+#define MAC_INT_TX_DONE_L		BIT(3)  /* TX Low Priority Done          */
-+#define MAC_INT_TX_DONE_H		BIT(2)  /* TX High Priority Done         */
-+#define MAC_INT_TX_DES_ERR		BIT(1)  /* TX Descriptor Error           */
-+#define MAC_INT_RX_DES_ERR		BIT(0)  /* Rx Descriptor Error           */
-+
-+#define MAC_INT_RX			(MAC_INT_RX_DONE_H | MAC_INT_RX_DONE_L | \
-+					MAC_INT_RX_DES_ERR)
-+#define MAC_INT_TX			(MAC_INT_TX_DONE_L | MAC_INT_TX_DONE_H | \
-+					MAC_INT_TX_DES_ERR)
-+#define MAC_INT_MASK_DEF		(MAC_INT_DAISY_MODE_CHG | MAC_INT_IP_CHKSUM_ERR | \
-+					MAC_INT_WDOG_TIMER1_EXP | MAC_INT_WDOG_TIMER0_EXP | \
-+					MAC_INT_INTRUDER_ALERT | MAC_INT_PORT_ST_CHG | \
-+					MAC_INT_BC_STORM | MAC_INT_MUST_DROP_LAN | \
-+					MAC_INT_GLOBAL_QUE_FULL | MAC_INT_TX_SOC_PAUSE_ON | \
-+					MAC_INT_RX_SOC_QUE_FULL | MAC_INT_TX_LAN1_QUE_FULL | \
-+					MAC_INT_TX_LAN0_QUE_FULL | MAC_INT_RX_L_DESCF | \
-+					MAC_INT_RX_H_DESCF)
-+
-+/* Address table search */
-+#define MAC_ADDR_LOOKUP_IDLE		BIT(2)
-+#define MAC_SEARCH_NEXT_ADDR		BIT(1)
-+#define MAC_BEGIN_SEARCH_ADDR		BIT(0)
-+
-+/* Address table status */
-+#define MAC_HASH_LOOKUP_ADDR		GENMASK(31, 22)
-+#define MAC_R_PORT_MAP			GENMASK(13, 12)
-+#define MAC_R_CPU_PORT			GENMASK(11, 10)
-+#define MAC_R_VID			GENMASK(9, 7)
-+#define MAC_R_AGE			GENMASK(6, 4)
-+#define MAC_R_PROXY			BIT(3)
-+#define MAC_R_MC_INGRESS		BIT(2)
-+#define MAC_AT_TABLE_END		BIT(1)
-+#define MAC_AT_DATA_READY		BIT(0)
-+
-+/* Wt mac ad0 */
-+#define MAC_W_PORT_MAP			GENMASK(13, 12)
-+#define MAC_W_LAN_PORT_1		BIT(13)
-+#define MAC_W_LAN_PORT_0		BIT(12)
-+#define MAC_W_CPU_PORT			GENMASK(11, 10)
-+#define MAC_W_CPU_PORT_1		BIT(11)
-+#define MAC_W_CPU_PORT_0		BIT(10)
-+#define MAC_W_VID			GENMASK(9, 7)
-+#define MAC_W_AGE			GENMASK(6, 4)
-+#define MAC_W_PROXY			BIT(3)
-+#define MAC_W_MC_INGRESS		BIT(2)
-+#define MAC_W_MAC_DONE			BIT(1)
-+#define MAC_W_MAC_CMD			BIT(0)
-+
-+/* W mac 15_0 bus */
-+#define MAC_W_MAC_15_0			GENMASK(15, 0)
-+
-+/* W mac 47_16 bus */
-+#define MAC_W_MAC_47_16			GENMASK(31, 0)
-+
-+/* PVID config 0 */
-+#define MAC_P1_PVID			GENMASK(6, 4)
-+#define MAC_P0_PVID			GENMASK(2, 0)
-+
-+/* VLAN member config 0 */
-+#define MAC_VLAN_MEMSET_3		GENMASK(27, 24)
-+#define MAC_VLAN_MEMSET_2		GENMASK(19, 16)
-+#define MAC_VLAN_MEMSET_1		GENMASK(11, 8)
-+#define MAC_VLAN_MEMSET_0		GENMASK(3, 0)
-+
-+/* VLAN member config 1 */
-+#define MAC_VLAN_MEMSET_5		GENMASK(11, 8)
-+#define MAC_VLAN_MEMSET_4		GENMASK(3, 0)
-+
-+/* Port ability */
-+#define MAC_PORT_ABILITY_LINK_ST	GENMASK(25, 24)
-+
-+/* CPU control */
-+#define MAC_EN_SOC1_AGING		BIT(15)
-+#define MAC_EN_SOC0_AGING		BIT(14)
-+#define MAC_DIS_LRN_SOC1		BIT(13)
-+#define MAC_DIS_LRN_SOC0		BIT(12)
-+#define MAC_EN_CRC_SOC1			BIT(9)
-+#define MAC_EN_CRC_SOC0			BIT(8)
-+#define MAC_DIS_SOC1_CPU		BIT(7)
-+#define MAC_DIS_SOC0_CPU		BIT(6)
-+#define MAC_DIS_BC2CPU_P1		BIT(5)
-+#define MAC_DIS_BC2CPU_P0		BIT(4)
-+#define MAC_DIS_MC2CPU			GENMASK(3, 2)
-+#define MAC_DIS_MC2CPU_P1		BIT(3)
-+#define MAC_DIS_MC2CPU_P0		BIT(2)
-+#define MAC_DIS_UN2CPU			GENMASK(1, 0)
-+
-+/* Port control 0 */
-+#define MAC_DIS_PORT			GENMASK(25, 24)
-+#define MAC_DIS_PORT1			BIT(25)
-+#define MAC_DIS_PORT0			BIT(24)
-+#define MAC_DIS_RMC2CPU_P1		BIT(17)
-+#define MAC_DIS_RMC2CPU_P0		BIT(16)
-+#define MAC_EN_FLOW_CTL_P1		BIT(9)
-+#define MAC_EN_FLOW_CTL_P0		BIT(8)
-+#define MAC_EN_BACK_PRESS_P1		BIT(1)
-+#define MAC_EN_BACK_PRESS_P0		BIT(0)
-+
-+/* Port control 1 */
-+#define MAC_DIS_SA_LRN_P1		BIT(9)
-+#define MAC_DIS_SA_LRN_P0		BIT(8)
-+
-+/* Port control 2 */
-+#define MAC_EN_AGING_P1			BIT(9)
-+#define MAC_EN_AGING_P0			BIT(8)
-+
-+/* Switch Global control */
-+#define MAC_RMC_TB_FAULT_RULE		GENMASK(26, 25)
-+#define MAC_LED_FLASH_TIME		GENMASK(24, 23)
-+#define MAC_BC_STORM_PREV		GENMASK(5, 4)
-+
-+/* LED port 0 */
-+#define MAC_LED_ACT_HI			BIT(28)
-+
-+/* PHY control register 0  */
-+#define MAC_CPU_PHY_WT_DATA		GENMASK(31, 16)
-+#define MAC_CPU_PHY_CMD			GENMASK(14, 13)
-+#define MAC_CPU_PHY_REG_ADDR		GENMASK(12, 8)
-+#define MAC_CPU_PHY_ADDR		GENMASK(4, 0)
-+
-+/* PHY control register 1 */
-+#define MAC_CPU_PHY_RD_DATA		GENMASK(31, 16)
-+#define MAC_PHY_RD_RDY			BIT(1)
-+#define MAC_PHY_WT_DONE			BIT(0)
-+
-+/* MAC force mode */
-+#define MAC_EXT_PHY1_ADDR		GENMASK(28, 24)
-+#define MAC_EXT_PHY0_ADDR		GENMASK(20, 16)
-+#define MAC_FORCE_RMII_LINK		GENMASK(9, 8)
-+#define MAC_FORCE_RMII_EN_1		BIT(7)
-+#define MAC_FORCE_RMII_EN_0		BIT(6)
-+#define MAC_FORCE_RMII_FC		GENMASK(5, 4)
-+#define MAC_FORCE_RMII_DPX		GENMASK(3, 2)
-+#define MAC_FORCE_RMII_SPD		GENMASK(1, 0)
-+
-+/* CPU transmit trigger */
-+#define MAC_TRIG_L_SOC0			BIT(1)
-+#define MAC_TRIG_H_SOC0			BIT(0)
-+
-+/* Config descriptor queue */
-+#define TX_DESC_NUM			16	/* # of descriptors in TX queue   */
-+#define MAC_GUARD_DESC_NUM		2	/* # of descriptors of gap      0 */
-+#define RX_QUEUE0_DESC_NUM		16	/* # of descriptors in RX queue 0 */
-+#define RX_QUEUE1_DESC_NUM		16	/* # of descriptors in RX queue 1 */
-+#define TX_DESC_QUEUE_NUM		1	/* # of TX queue                  */
-+#define RX_DESC_QUEUE_NUM		2	/* # of RX queue                  */
-+
-+#define MAC_RX_LEN_MAX			2047	/* Size of RX buffer       */
-+
-+/* Tx descriptor */
-+/* cmd1 */
-+#define TXD_OWN				BIT(31)
-+#define TXD_ERR_CODE			GENMASK(29, 26)
-+#define TXD_SOP				BIT(25)		/* start of a packet */
-+#define TXD_EOP				BIT(24)		/* end of a packet */
-+#define TXD_VLAN			GENMASK(17, 12)
-+#define TXD_PKT_LEN			GENMASK(10, 0)	/* packet length */
-+/* cmd2 */
-+#define TXD_EOR				BIT(31)		/* end of ring */
-+#define TXD_BUF_LEN2			GENMASK(22, 12)
-+#define TXD_BUF_LEN1			GENMASK(10, 0)
-+
-+/* Rx descriptor */
-+/* cmd1 */
-+#define RXD_OWN				BIT(31)
-+#define RXD_ERR_CODE			GENMASK(29, 26)
-+#define RXD_TCP_UDP_CHKSUM		BIT(23)
-+#define RXD_PROXY			BIT(22)
-+#define RXD_PROTOCOL			GENMASK(21, 20)
-+#define RXD_VLAN_TAG			BIT(19)
-+#define RXD_IP_CHKSUM			BIT(18)
-+#define RXD_ROUTE_TYPE			GENMASK(17, 16)
-+#define RXD_PKT_SP			GENMASK(14, 12)	/* packet source port */
-+#define RXD_PKT_LEN			GENMASK(10, 0)	/* packet length */
-+/* cmd2 */
-+#define RXD_EOR				BIT(31)		/* end of ring */
-+#define RXD_BUF_LEN2			GENMASK(22, 12)
-+#define RXD_BUF_LEN1			GENMASK(10, 0)
-+
-+/* structure of descriptor */
-+struct spl2sw_mac_desc {
-+	u32 cmd1;
-+	u32 cmd2;
-+	u32 addr1;
-+	u32 addr2;
-+};
-+
-+struct spl2sw_skb_info {
-+	struct sk_buff *skb;
-+	u32 mapping;
-+	u32 len;
-+};
-+
-+struct spl2sw_common {
-+	void __iomem *l2sw_reg_base;
-+
-+	struct platform_device *pdev;
-+	struct reset_control *rstc;
-+	struct clk *clk;
-+	int irq;
-+
-+	void *desc_base;
-+	dma_addr_t desc_dma;
-+	s32 desc_size;
-+	struct spl2sw_mac_desc *rx_desc[RX_DESC_QUEUE_NUM];
-+	struct spl2sw_skb_info *rx_skb_info[RX_DESC_QUEUE_NUM];
-+	u32 rx_pos[RX_DESC_QUEUE_NUM];
-+	u32 rx_desc_num[RX_DESC_QUEUE_NUM];
-+	u32 rx_desc_buff_size;
-+
-+	struct spl2sw_mac_desc *tx_desc;
-+	struct spl2sw_skb_info tx_temp_skb_info[TX_DESC_NUM];
-+	u32 tx_done_pos;
-+	u32 tx_pos;
-+	u32 tx_desc_full;
-+
-+	struct net_device *ndev[MAX_NETDEV_NUM];
-+	struct mii_bus *mii_bus;
-+
-+	struct napi_struct rx_napi;
-+	struct napi_struct tx_napi;
-+
-+	spinlock_t rx_lock;	/* spinlock for accessing rx buffer */
-+	spinlock_t tx_lock;	/* spinlock for accessing tx buffer */
-+	spinlock_t mdio_lock;	/* spinlock for mdio commands */
-+
-+	u8 enable;
-+};
-+
-+struct spl2sw_mac {
-+	struct net_device *ndev;
-+	struct spl2sw_common *comm;
-+
-+	u8 mac_addr[ETH_ALEN];
-+	phy_interface_t phy_mode;
-+	struct device_node *phy_node;
-+
-+	u8 lan_port;
-+	u8 to_vlan;
-+	u8 vlan_id;
-+};
-+
-+#endif
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_desc.c b/drivers/net/ethernet/sunplus/spl2sw_desc.c
-new file mode 100644
-index 0000000..7d237d4
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_desc.c
-@@ -0,0 +1,226 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#include <linux/platform_device.h>
-+#include <linux/netdevice.h>
-+#include <linux/of_mdio.h>
-+
-+#include "spl2sw_define.h"
-+#include "spl2sw_desc.h"
-+
-+void spl2sw_rx_descs_flush(struct spl2sw_common *comm)
-+{
-+	struct spl2sw_skb_info *rx_skbinfo;
-+	struct spl2sw_mac_desc *rx_desc;
-+	u32 i, j;
-+
-+	for (i = 0; i < RX_DESC_QUEUE_NUM; i++) {
-+		rx_desc = comm->rx_desc[i];
-+		rx_skbinfo = comm->rx_skb_info[i];
-+		for (j = 0; j < comm->rx_desc_num[i]; j++) {
-+			rx_desc[j].addr1 = rx_skbinfo[j].mapping;
-+			rx_desc[j].cmd2 = (j == comm->rx_desc_num[i] - 1) ?
-+					  RXD_EOR | comm->rx_desc_buff_size :
-+					  comm->rx_desc_buff_size;
-+			wmb();	/* Set RXD_OWN after other fields are ready. */
-+			rx_desc[j].cmd1 = RXD_OWN;
-+		}
-+	}
-+}
-+
-+void spl2sw_tx_descs_clean(struct spl2sw_common *comm)
-+{
-+	u32 i;
-+
-+	if (!comm->tx_desc)
-+		return;
-+
-+	for (i = 0; i < TX_DESC_NUM; i++) {
-+		comm->tx_desc[i].cmd1 = 0;
-+		wmb();	/* Clear TXD_OWN and then set other fields. */
-+		comm->tx_desc[i].cmd2 = 0;
-+		comm->tx_desc[i].addr1 = 0;
-+		comm->tx_desc[i].addr2 = 0;
-+
-+		if (comm->tx_temp_skb_info[i].mapping) {
-+			dma_unmap_single(&comm->pdev->dev, comm->tx_temp_skb_info[i].mapping,
-+					 comm->tx_temp_skb_info[i].skb->len, DMA_TO_DEVICE);
-+			comm->tx_temp_skb_info[i].mapping = 0;
-+		}
-+
-+		if (comm->tx_temp_skb_info[i].skb) {
-+			dev_kfree_skb_any(comm->tx_temp_skb_info[i].skb);
-+			comm->tx_temp_skb_info[i].skb = NULL;
-+		}
-+	}
-+}
-+
-+void spl2sw_rx_descs_clean(struct spl2sw_common *comm)
-+{
-+	struct spl2sw_skb_info *rx_skbinfo;
-+	struct spl2sw_mac_desc *rx_desc;
-+	u32 i, j;
-+
-+	for (i = 0; i < RX_DESC_QUEUE_NUM; i++) {
-+		if (!comm->rx_skb_info[i])
-+			continue;
-+
-+		rx_desc = comm->rx_desc[i];
-+		rx_skbinfo = comm->rx_skb_info[i];
-+		for (j = 0; j < comm->rx_desc_num[i]; j++) {
-+			rx_desc[j].cmd1 = 0;
-+			wmb();	/* Clear RXD_OWN and then set other fields. */
-+			rx_desc[j].cmd2 = 0;
-+			rx_desc[j].addr1 = 0;
-+
-+			if (rx_skbinfo[j].skb) {
-+				dma_unmap_single(&comm->pdev->dev, rx_skbinfo[j].mapping,
-+						 comm->rx_desc_buff_size, DMA_FROM_DEVICE);
-+				dev_kfree_skb_any(rx_skbinfo[j].skb);
-+				rx_skbinfo[j].skb = NULL;
-+				rx_skbinfo[j].mapping = 0;
-+			}
-+		}
-+
-+		kfree(rx_skbinfo);
-+		comm->rx_skb_info[i] = NULL;
-+	}
-+}
-+
-+void spl2sw_descs_clean(struct spl2sw_common *comm)
-+{
-+	spl2sw_rx_descs_clean(comm);
-+	spl2sw_tx_descs_clean(comm);
-+}
-+
-+void spl2sw_descs_free(struct spl2sw_common *comm)
-+{
-+	u32 i;
-+
-+	spl2sw_descs_clean(comm);
-+	comm->tx_desc = NULL;
-+	for (i = 0; i < RX_DESC_QUEUE_NUM; i++)
-+		comm->rx_desc[i] = NULL;
-+
-+	/*  Free descriptor area  */
-+	if (comm->desc_base) {
-+		dma_free_coherent(&comm->pdev->dev, comm->desc_size, comm->desc_base,
-+				  comm->desc_dma);
-+		comm->desc_base = NULL;
-+		comm->desc_dma = 0;
-+		comm->desc_size = 0;
-+	}
-+}
-+
-+void spl2sw_tx_descs_init(struct spl2sw_common *comm)
-+{
-+	memset(comm->tx_desc, '\0', sizeof(struct spl2sw_mac_desc) *
-+	       (TX_DESC_NUM + MAC_GUARD_DESC_NUM));
-+}
-+
-+int spl2sw_rx_descs_init(struct spl2sw_common *comm)
-+{
-+	struct spl2sw_skb_info *rx_skbinfo;
-+	struct spl2sw_mac_desc *rx_desc;
-+	struct sk_buff *skb;
-+	u32 i, j;
-+
-+	for (i = 0; i < RX_DESC_QUEUE_NUM; i++) {
-+		comm->rx_skb_info[i] = kcalloc(comm->rx_desc_num[i], sizeof(*rx_skbinfo),
-+					       GFP_KERNEL | GFP_DMA);
-+		if (!comm->rx_skb_info[i])
-+			goto mem_alloc_fail;
-+
-+		rx_skbinfo = comm->rx_skb_info[i];
-+		rx_desc = comm->rx_desc[i];
-+		for (j = 0; j < comm->rx_desc_num[i]; j++) {
-+			skb = netdev_alloc_skb(NULL, comm->rx_desc_buff_size);
-+			if (!skb)
-+				goto mem_alloc_fail;
-+
-+			rx_skbinfo[j].skb = skb;
-+			rx_skbinfo[j].mapping = dma_map_single(&comm->pdev->dev, skb->data,
-+							       comm->rx_desc_buff_size,
-+							       DMA_FROM_DEVICE);
-+			if (dma_mapping_error(&comm->pdev->dev, rx_skbinfo[j].mapping))
-+				goto mem_alloc_fail;
-+
-+			rx_desc[j].addr1 = rx_skbinfo[j].mapping;
-+			rx_desc[j].addr2 = 0;
-+			rx_desc[j].cmd2 = (j == comm->rx_desc_num[i] - 1) ?
-+					  RXD_EOR | comm->rx_desc_buff_size :
-+					  comm->rx_desc_buff_size;
-+			wmb();	/* Set RXD_OWN after other fields are effective. */
-+			rx_desc[j].cmd1 = RXD_OWN;
-+		}
-+	}
-+
-+	return 0;
-+
-+mem_alloc_fail:
-+	spl2sw_rx_descs_clean(comm);
-+	return -ENOMEM;
-+}
-+
-+int spl2sw_descs_alloc(struct spl2sw_common *comm)
-+{
-+	s32 desc_size;
-+	u32 i;
-+
-+	/* Alloc descriptor area  */
-+	desc_size = (TX_DESC_NUM + MAC_GUARD_DESC_NUM) * sizeof(struct spl2sw_mac_desc);
-+	for (i = 0; i < RX_DESC_QUEUE_NUM; i++)
-+		desc_size += comm->rx_desc_num[i] * sizeof(struct spl2sw_mac_desc);
-+
-+	comm->desc_base = dma_alloc_coherent(&comm->pdev->dev, desc_size, &comm->desc_dma,
-+					     GFP_KERNEL);
-+	if (!comm->desc_base)
-+		return -ENOMEM;
-+
-+	comm->desc_size = desc_size;
-+
-+	/* Setup Tx descriptor */
-+	comm->tx_desc = comm->desc_base;
-+
-+	/* Setup Rx descriptor */
-+	comm->rx_desc[0] = &comm->tx_desc[TX_DESC_NUM + MAC_GUARD_DESC_NUM];
-+	for (i = 1; i < RX_DESC_QUEUE_NUM; i++)
-+		comm->rx_desc[i] = comm->rx_desc[i - 1] + comm->rx_desc_num[i - 1];
-+
-+	return 0;
-+}
-+
-+int spl2sw_descs_init(struct spl2sw_common *comm)
-+{
-+	u32 i, ret;
-+
-+	/* Initialize rx descriptor's data */
-+	comm->rx_desc_num[0] = RX_QUEUE0_DESC_NUM;
-+	comm->rx_desc_num[1] = RX_QUEUE1_DESC_NUM;
-+
-+	for (i = 0; i < RX_DESC_QUEUE_NUM; i++) {
-+		comm->rx_desc[i] = NULL;
-+		comm->rx_skb_info[i] = NULL;
-+		comm->rx_pos[i] = 0;
-+	}
-+	comm->rx_desc_buff_size = MAC_RX_LEN_MAX;
-+
-+	/* Initialize tx descriptor's data */
-+	comm->tx_done_pos = 0;
-+	comm->tx_desc = NULL;
-+	comm->tx_pos = 0;
-+	comm->tx_desc_full = 0;
-+	for (i = 0; i < TX_DESC_NUM; i++)
-+		comm->tx_temp_skb_info[i].skb = NULL;
-+
-+	/* Allocate tx & rx descriptors. */
-+	ret = spl2sw_descs_alloc(comm);
-+	if (ret)
-+		return ret;
-+
-+	spl2sw_tx_descs_init(comm);
-+
-+	return spl2sw_rx_descs_init(comm);
-+}
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_desc.h b/drivers/net/ethernet/sunplus/spl2sw_desc.h
-new file mode 100644
-index 0000000..f04e2d8
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_desc.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#ifndef __SPL2SW_DESC_H__
-+#define __SPL2SW_DESC_H__
-+
-+void spl2sw_rx_descs_flush(struct spl2sw_common *comm);
-+void spl2sw_tx_descs_clean(struct spl2sw_common *comm);
-+void spl2sw_rx_descs_clean(struct spl2sw_common *comm);
-+void spl2sw_descs_clean(struct spl2sw_common *comm);
-+void spl2sw_descs_free(struct spl2sw_common *comm);
-+void spl2sw_tx_descs_init(struct spl2sw_common *comm);
-+int  spl2sw_rx_descs_init(struct spl2sw_common *comm);
-+int  spl2sw_descs_alloc(struct spl2sw_common *comm);
-+int  spl2sw_descs_init(struct spl2sw_common *comm);
-+
-+#endif
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_driver.c b/drivers/net/ethernet/sunplus/spl2sw_driver.c
-new file mode 100644
-index 0000000..43a18bd
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_driver.c
-@@ -0,0 +1,604 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#include <linux/platform_device.h>
-+#include <linux/nvmem-consumer.h>
-+#include <linux/etherdevice.h>
-+#include <linux/netdevice.h>
-+#include <linux/of.h>
-+#include <linux/of_net.h>
-+#include <linux/reset.h>
-+#include <linux/clk.h>
-+
-+#include "spl2sw_register.h"
-+#include "spl2sw_define.h"
-+#include "spl2sw_driver.h"
-+#include "spl2sw_desc.h"
-+#include "spl2sw_mdio.h"
-+#include "spl2sw_phy.h"
-+#include "spl2sw_int.h"
-+#include "spl2sw_mac.h"
-+
-+/* net device operations */
-+static int spl2sw_ethernet_open(struct net_device *ndev)
-+{
-+	struct spl2sw_mac *mac = netdev_priv(ndev);
-+	struct spl2sw_common *comm = mac->comm;
-+	u32 mask;
-+
-+	netdev_dbg(ndev, "Open port = %x\n", mac->lan_port);
-+
-+	comm->enable |= mac->lan_port;
-+
-+	spl2sw_mac_hw_start(comm);
-+
-+	/* Enable TX and RX interrupts */
-+	mask = readl(comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+	mask &= ~(MAC_INT_TX | MAC_INT_RX);
-+	writel(mask, comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+
-+	phy_start(ndev->phydev);
-+
-+	netif_start_queue(ndev);
-+
-+	return 0;
-+}
-+
-+static int spl2sw_ethernet_stop(struct net_device *ndev)
-+{
-+	struct spl2sw_mac *mac = netdev_priv(ndev);
-+	struct spl2sw_common *comm = mac->comm;
-+
-+	netif_stop_queue(ndev);
-+
-+	comm->enable &= ~mac->lan_port;
-+
-+	phy_stop(ndev->phydev);
-+
-+	spl2sw_mac_hw_stop(comm);
-+
-+	return 0;
-+}
-+
-+static int spl2sw_ethernet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-+{
-+	struct spl2sw_mac *mac = netdev_priv(ndev);
-+	struct spl2sw_common *comm = mac->comm;
-+	struct spl2sw_skb_info *skbinfo;
-+	struct spl2sw_mac_desc *txdesc;
-+	unsigned long flags;
-+	u32 tx_pos;
-+	u32 cmd1;
-+	u32 cmd2;
-+
-+	if (unlikely(comm->tx_desc_full == 1)) {
-+		/* No TX descriptors left. Wait for tx interrupt. */
-+		netdev_dbg(ndev, "TX descriptor queue full when xmit!\n");
-+		return NETDEV_TX_BUSY;
-+	}
-+
-+	/* If skb size is shorter than ETH_ZLEN (60), pad it with 0. */
-+	if (unlikely(skb->len < ETH_ZLEN)) {
-+		if (skb_tailroom(skb) >= (ETH_ZLEN - skb->len)) {
-+			memset(skb_put(skb, ETH_ZLEN - skb->len), '\0',
-+			       ETH_ZLEN - skb->len);
-+		} else {
-+			struct sk_buff *old_skb = skb;
-+
-+			skb = netdev_alloc_skb(ndev, ETH_ZLEN);
-+			if (skb) {
-+				memset(skb->data + old_skb->len, '\0',
-+				       ETH_ZLEN - old_skb->len);
-+				memcpy(skb->data, old_skb->data, old_skb->len);
-+				skb_put(skb, ETH_ZLEN);
-+				dev_kfree_skb(old_skb);
-+			} else {
-+				skb = old_skb;
-+			}
-+		}
-+	}
-+
-+	spin_lock_irqsave(&comm->tx_lock, flags);
-+	tx_pos = comm->tx_pos;
-+	txdesc = &comm->tx_desc[tx_pos];
-+	skbinfo = &comm->tx_temp_skb_info[tx_pos];
-+	skbinfo->len = skb->len;
-+	skbinfo->skb = skb;
-+	skbinfo->mapping = dma_map_single(&comm->pdev->dev, skb->data,
-+					  skb->len, DMA_TO_DEVICE);
-+	if (dma_mapping_error(&comm->pdev->dev, skbinfo->mapping)) {
-+		ndev->stats.tx_errors++;
-+		dev_kfree_skb(skb);
-+		skbinfo->mapping = 0;
-+		skbinfo->len = 0;
-+		skbinfo->skb = NULL;
-+		goto xmit_drop;
-+	}
-+
-+	/* Set up a TX descriptor */
-+	cmd1 = TXD_OWN | TXD_SOP | TXD_EOP | (mac->to_vlan << 12) |
-+	       (skb->len & TXD_PKT_LEN);
-+	cmd2 = skb->len & TXD_BUF_LEN1;
-+
-+	if (tx_pos == (TX_DESC_NUM - 1))
-+		cmd2 |= TXD_EOR;
-+
-+	txdesc->addr1 = skbinfo->mapping;
-+	txdesc->cmd2 = cmd2;
-+	wmb();	/* Set TXD_OWN after other fields are effective. */
-+	txdesc->cmd1 = cmd1;
-+
-+	/* Move tx_pos to next position */
-+	tx_pos = ((tx_pos + 1) == TX_DESC_NUM) ? 0 : tx_pos + 1;
-+
-+	if (unlikely(tx_pos == comm->tx_done_pos)) {
-+		netif_stop_queue(ndev);
-+		comm->tx_desc_full = 1;
-+	}
-+	comm->tx_pos = tx_pos;
-+	wmb();		/* make sure settings are effective. */
-+
-+	/* trigger gmac to transmit */
-+	writel(MAC_TRIG_L_SOC0, comm->l2sw_reg_base + L2SW_CPU_TX_TRIG);
-+
-+xmit_drop:
-+	spin_unlock_irqrestore(&comm->tx_lock, flags);
-+	return NETDEV_TX_OK;
-+}
-+
-+static void spl2sw_ethernet_set_rx_mode(struct net_device *ndev)
-+{
-+	struct spl2sw_mac *mac = netdev_priv(ndev);
-+
-+	spl2sw_mac_rx_mode_set(mac);
-+}
-+
-+static int spl2sw_ethernet_set_mac_address(struct net_device *ndev, void *addr)
-+{
-+	struct spl2sw_mac *mac = netdev_priv(ndev);
-+	int err;
-+
-+	err = eth_mac_addr(ndev, addr);
-+	if (err)
-+		return err;
-+
-+	/* Delete the old MAC address */
-+	netdev_dbg(ndev, "Old Ethernet (MAC) address = %pM\n", mac->mac_addr);
-+	if (is_valid_ether_addr(mac->mac_addr)) {
-+		err = spl2sw_mac_addr_del(mac);
-+		if (err)
-+			return err;
-+	}
-+
-+	/* Set the MAC address */
-+	ether_addr_copy(mac->mac_addr, ndev->dev_addr);
-+	return spl2sw_mac_addr_add(mac);
-+}
-+
-+static void spl2sw_ethernet_tx_timeout(struct net_device *ndev, unsigned int txqueue)
-+{
-+	struct spl2sw_mac *mac = netdev_priv(ndev);
-+	struct spl2sw_common *comm = mac->comm;
-+	unsigned long flags;
-+	int i;
-+
-+	netdev_err(ndev, "TX timed out!\n");
-+	ndev->stats.tx_errors++;
-+
-+	spin_lock_irqsave(&comm->tx_lock, flags);
-+
-+	for (i = 0; i < MAX_NETDEV_NUM; i++)
-+		if (comm->ndev[i])
-+			netif_stop_queue(comm->ndev[i]);
-+
-+	spl2sw_mac_soft_reset(comm);
-+
-+	/* Accept TX packets again. */
-+	for (i = 0; i < MAX_NETDEV_NUM; i++)
-+		if (comm->ndev[i]) {
-+			netif_trans_update(comm->ndev[i]);
-+			netif_wake_queue(comm->ndev[i]);
-+		}
-+
-+	spin_unlock_irqrestore(&comm->tx_lock, flags);
-+}
-+
-+static const struct net_device_ops netdev_ops = {
-+	.ndo_open = spl2sw_ethernet_open,
-+	.ndo_stop = spl2sw_ethernet_stop,
-+	.ndo_start_xmit = spl2sw_ethernet_start_xmit,
-+	.ndo_set_rx_mode = spl2sw_ethernet_set_rx_mode,
-+	.ndo_set_mac_address = spl2sw_ethernet_set_mac_address,
-+	.ndo_do_ioctl = phy_do_ioctl,
-+	.ndo_tx_timeout = spl2sw_ethernet_tx_timeout,
-+};
-+
-+static void spl2sw_check_mac_vendor_id_and_convert(u8 *mac_addr)
-+{
-+	u8 tmp;
-+
-+	/* Byte order of MAC address of some samples are reversed.
-+	 * Check vendor id and convert byte order if it is wrong.
-+	 * OUI of Sunplus: fc:4b:bc
-+	 */
-+	if (mac_addr[5] == 0xfc && mac_addr[4] == 0x4b && mac_addr[3] == 0xbc &&
-+	    (mac_addr[0] != 0xfc || mac_addr[1] != 0x4b || mac_addr[2] != 0xbc)) {
-+		/* Swap mac_addr[0] and mac_addr[5] */
-+		tmp = mac_addr[0];
-+		mac_addr[0] = mac_addr[5];
-+		mac_addr[5] = tmp;
-+
-+		/* Swap mac_addr[1] and mac_addr[4] */
-+		tmp = mac_addr[1];
-+		mac_addr[1] = mac_addr[4];
-+		mac_addr[4] = tmp;
-+
-+		/* Swap mac_addr[2] and mac_addr[3] */
-+		tmp = mac_addr[2];
-+		mac_addr[2] = mac_addr[3];
-+		mac_addr[3] = tmp;
-+	}
-+}
-+
-+static int spl2sw_nvmem_get_mac_address(struct device *dev, struct device_node *np,
-+					void *addrbuf)
-+{
-+	struct nvmem_cell *cell;
-+	ssize_t len;
-+	u8 *mac;
-+
-+	/* Get nvmem cell of mac-address from dts. */
-+	cell = of_nvmem_cell_get(np, "mac-address");
-+	if (IS_ERR(cell))
-+		return PTR_ERR(cell);
-+
-+	/* Read mac address from nvmem cell. */
-+	mac = nvmem_cell_read(cell, &len);
-+	nvmem_cell_put(cell);
-+	if (IS_ERR(mac))
-+		return PTR_ERR(mac);
-+
-+	if (len != ETH_ALEN) {
-+		kfree(mac);
-+		dev_info(dev, "Invalid length of mac address in nvmem!\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Byte order of some samples are reversed.
-+	 * Convert byte order here.
-+	 */
-+	spl2sw_check_mac_vendor_id_and_convert(mac);
-+
-+	/* Check if mac address is valid */
-+	if (!is_valid_ether_addr(mac)) {
-+		kfree(mac);
-+		dev_info(dev, "Invalid mac address in nvmem (%pM)!\n", mac);
-+		return -EINVAL;
-+	}
-+
-+	ether_addr_copy(addrbuf, mac);
-+	kfree(mac);
-+	return 0;
-+}
-+
-+static u32 spl2sw_init_netdev(struct platform_device *pdev, u8 *mac_addr,
-+			      struct net_device **r_ndev)
-+{
-+	struct net_device *ndev;
-+	struct spl2sw_mac *mac;
-+	int ret;
-+
-+	/* Allocate the devices, and also allocate spl2sw_mac,
-+	 * we can get it by netdev_priv().
-+	 */
-+	ndev = devm_alloc_etherdev(&pdev->dev, sizeof(*mac));
-+	if (!ndev) {
-+		*r_ndev = NULL;
-+		return -ENOMEM;
-+	}
-+	SET_NETDEV_DEV(ndev, &pdev->dev);
-+	ndev->netdev_ops = &netdev_ops;
-+	mac = netdev_priv(ndev);
-+	mac->ndev = ndev;
-+	ether_addr_copy(mac->mac_addr, mac_addr);
-+
-+	eth_hw_addr_set(ndev, mac_addr);
-+	dev_info(&pdev->dev, "Ethernet (MAC) address = %pM\n", mac_addr);
-+
-+	ret = register_netdev(ndev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to register net device \"%s\"!\n",
-+			ndev->name);
-+		free_netdev(ndev);
-+		*r_ndev = NULL;
-+		return ret;
-+	}
-+	netdev_dbg(ndev, "Registered net device \"%s\" successfully.\n", ndev->name);
-+
-+	*r_ndev = ndev;
-+	return 0;
-+}
-+
-+static struct device_node *spl2sw_get_eth_child_node(struct device_node *ether_np, int id)
-+{
-+	struct device_node *port_np;
-+	int port_id;
-+
-+	for_each_child_of_node(ether_np, port_np) {
-+		/* It is not a 'port' node, continue. */
-+		if (strcmp(port_np->name, "port"))
-+			continue;
-+
-+		if (of_property_read_u32(port_np, "reg", &port_id) < 0)
-+			continue;
-+
-+		if (port_id == id)
-+			return port_np;
-+	}
-+
-+	/* Not found! */
-+	return NULL;
-+}
-+
-+static int spl2sw_probe(struct platform_device *pdev)
-+{
-+	struct device_node *eth_ports_np;
-+	struct device_node *port_np;
-+	struct spl2sw_common *comm;
-+	struct device_node *phy_np;
-+	phy_interface_t phy_mode;
-+	struct net_device *ndev;
-+	u8 mac_addr[ETH_ALEN];
-+	struct spl2sw_mac *mac;
-+	int irq, i;
-+	int ret;
-+
-+	if (platform_get_drvdata(pdev))
-+		return -ENODEV;
-+
-+	/* Allocate memory for 'spl2sw_common' area. */
-+	comm = devm_kzalloc(&pdev->dev, sizeof(*comm), GFP_KERNEL);
-+	if (!comm)
-+		return -ENOMEM;
-+	comm->pdev = pdev;
-+
-+	spin_lock_init(&comm->rx_lock);
-+	spin_lock_init(&comm->tx_lock);
-+	spin_lock_init(&comm->mdio_lock);
-+
-+	/* Get memory resource 0 from dts. */
-+	comm->l2sw_reg_base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(comm->l2sw_reg_base))
-+		return PTR_ERR(comm->l2sw_reg_base);
-+
-+	/* Get irq resource from dts. */
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0)
-+		return ret;
-+	irq = ret;
-+
-+	/* Get clock controller. */
-+	comm->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(comm->clk)) {
-+		dev_err_probe(&pdev->dev, PTR_ERR(comm->clk),
-+			      "Failed to retrieve clock controller!\n");
-+		return PTR_ERR(comm->clk);
-+	}
-+
-+	/* Get reset controller. */
-+	comm->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
-+	if (IS_ERR(comm->rstc)) {
-+		dev_err_probe(&pdev->dev, PTR_ERR(comm->rstc),
-+			      "Failed to retrieve reset controller!\n");
-+		return PTR_ERR(comm->rstc);
-+	}
-+
-+	/* Enable clock. */
-+	clk_prepare_enable(comm->clk);
-+	udelay(1);
-+
-+	reset_control_assert(comm->rstc);
-+	udelay(1);
-+	reset_control_deassert(comm->rstc);
-+	udelay(1);
-+
-+	/* Get child node ethernet-ports. */
-+	eth_ports_np = of_get_child_by_name(pdev->dev.of_node, "ethernet-ports");
-+	if (!eth_ports_np) {
-+		dev_err(&pdev->dev, "No ethernet-ports child node found!\n");
-+		ret = -ENODEV;
-+		goto out_clk_disable;
-+	}
-+
-+	for (i = 0; i < MAX_NETDEV_NUM; i++) {
-+		/* Get port@i of node ethernet-ports. */
-+		port_np = spl2sw_get_eth_child_node(eth_ports_np, i);
-+		if (!port_np)
-+			continue;
-+
-+		/* Get phy-mode. */
-+		if (of_get_phy_mode(port_np, &phy_mode)) {
-+			dev_err(&pdev->dev, "Failed to get phy-mode property of port@%d!\n",
-+				i);
-+			continue;
-+		}
-+
-+		/* Get phy-handle. */
-+		phy_np = of_parse_phandle(port_np, "phy-handle", 0);
-+		if (!phy_np) {
-+			dev_err(&pdev->dev, "Failed to get phy-handle property of port@%d!\n",
-+				i);
-+			continue;
-+		}
-+
-+		/* Get mac-address from nvmem. */
-+		ret = spl2sw_nvmem_get_mac_address(&pdev->dev, port_np, mac_addr);
-+		if (ret) {
-+			dev_info(&pdev->dev, "Generate a random mac address!\n");
-+
-+			/* Generate a mac address using OUI of Sunplus Technology
-+			 * and random controller number.
-+			 */
-+			mac_addr[0] = 0xfc; /* OUI of Sunplus: fc:4b:bc */
-+			mac_addr[1] = 0x4b;
-+			mac_addr[2] = 0xbc;
-+			mac_addr[3] = get_random_int() % 256;
-+			mac_addr[4] = get_random_int() % 256;
-+			mac_addr[5] = get_random_int() % 256;
-+		}
-+
-+		/* Initialize the net device. */
-+		ret = spl2sw_init_netdev(pdev, mac_addr, &ndev);
-+		if (ret)
-+			goto out_unregister_dev;
-+
-+		ndev->irq = irq;
-+		comm->ndev[i] = ndev;
-+		mac = netdev_priv(ndev);
-+		mac->phy_node = phy_np;
-+		mac->phy_mode = phy_mode;
-+		mac->comm = comm;
-+
-+		mac->lan_port = 0x1 << i;	/* forward to port i */
-+		mac->to_vlan = 0x1 << i;	/* vlan group: i     */
-+		mac->vlan_id = i;		/* vlan group: i     */
-+
-+		/* Set MAC address */
-+		ret = spl2sw_mac_addr_add(mac);
-+		if (ret)
-+			goto out_unregister_dev;
-+
-+		spl2sw_mac_rx_mode_set(mac);
-+	}
-+
-+	/* Find first valid net device. */
-+	for (i = 0; i < MAX_NETDEV_NUM; i++) {
-+		if (comm->ndev[i])
-+			break;
-+	}
-+	if (i >= MAX_NETDEV_NUM) {
-+		dev_err(&pdev->dev, "No valid ethernet port!\n");
-+		ret = -ENODEV;
-+		goto out_clk_disable;
-+	}
-+
-+	/* Save first valid net device */
-+	ndev = comm->ndev[i];
-+	platform_set_drvdata(pdev, ndev);
-+
-+	/* Request irq. */
-+	ret = devm_request_irq(&pdev->dev, irq, spl2sw_ethernet_interrupt,
-+			       0, ndev->name, ndev);
-+	if (ret) {
-+		netdev_err(ndev, "Failed to request irq #%d for \"%s\"!\n",
-+			   irq, ndev->name);
-+		goto out_unregister_dev;
-+	}
-+
-+	/* Initialize mdio bus */
-+	ret = spl2sw_mdio_init(comm);
-+	if (ret) {
-+		netdev_err(ndev, "Failed to initialize mdio bus!\n");
-+		goto out_unregister_dev;
-+	}
-+
-+	ret = spl2sw_mac_addr_del_all(comm);
-+	if (ret)
-+		goto out_free_mdio;
-+
-+	ret = spl2sw_descs_init(comm);
-+	if (ret) {
-+		dev_err(&comm->pdev->dev, "Fail to initialize mac descriptors!\n");
-+		spl2sw_descs_free(comm);
-+		goto out_free_mdio;
-+	}
-+
-+	spl2sw_mac_init(comm);
-+
-+	ret = spl2sw_phy_connect(comm);
-+	if (ret) {
-+		netdev_err(ndev, "Failed to connect phy!\n");
-+		goto out_free_mdio;
-+	}
-+
-+	netif_napi_add(ndev, &comm->rx_napi, spl2sw_rx_poll, SPL2SW_RX_NAPI_WEIGHT);
-+	napi_enable(&comm->rx_napi);
-+	netif_napi_add(ndev, &comm->tx_napi, spl2sw_tx_poll, SPL2SW_TX_NAPI_WEIGHT);
-+	napi_enable(&comm->tx_napi);
-+	return 0;
-+
-+out_free_mdio:
-+	spl2sw_mdio_remove(comm);
-+
-+out_unregister_dev:
-+	for (i = 0; i < MAX_NETDEV_NUM; i++)
-+		if (comm->ndev[i])
-+			unregister_netdev(comm->ndev[i]);
-+
-+out_clk_disable:
-+	clk_disable_unprepare(comm->clk);
-+	return ret;
-+}
-+
-+static int spl2sw_remove(struct platform_device *pdev)
-+{
-+	struct spl2sw_common *comm;
-+	struct net_device *ndev;
-+	struct spl2sw_mac *mac;
-+	int i;
-+
-+	ndev = platform_get_drvdata(pdev);
-+	if (!ndev)
-+		return 0;
-+
-+	mac = netdev_priv(ndev);
-+	comm = mac->comm;
-+
-+	spl2sw_phy_remove(comm);
-+
-+	/* Unregister and free net device. */
-+	for (i = 0; i < MAX_NETDEV_NUM; i++)
-+		if (comm->ndev[i])
-+			unregister_netdev(comm->ndev[i]);
-+
-+	comm->enable = 0;
-+	spl2sw_mac_hw_stop(comm);
-+	spl2sw_descs_free(comm);
-+
-+	/* Disable and delete napi. */
-+	napi_disable(&comm->rx_napi);
-+	netif_napi_del(&comm->rx_napi);
-+	napi_disable(&comm->tx_napi);
-+	netif_napi_del(&comm->tx_napi);
-+
-+	spl2sw_mdio_remove(comm);
-+
-+	clk_disable_unprepare(comm->clk);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id spl2sw_of_match[] = {
-+	{.compatible = "sunplus,sp7021-emac"},
-+	{ /* sentinel */ }
-+};
-+
-+MODULE_DEVICE_TABLE(of, spl2sw_of_match);
-+
-+static struct platform_driver spl2sw_driver = {
-+	.probe = spl2sw_probe,
-+	.remove = spl2sw_remove,
-+	.driver = {
-+		.name = "sp7021_emac",
-+		.owner = THIS_MODULE,
-+		.of_match_table = spl2sw_of_match,
-+	},
-+};
-+
-+module_platform_driver(spl2sw_driver);
-+
-+MODULE_AUTHOR("Wells Lu <wellslutw@gmail.com>");
-+MODULE_DESCRIPTION("Sunplus Dual 10M/100M Ethernet driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_driver.h b/drivers/net/ethernet/sunplus/spl2sw_driver.h
-new file mode 100644
-index 0000000..5f177b3
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_driver.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#ifndef __SPL2SW_DRIVER_H__
-+#define __SPL2SW_DRIVER_H__
-+
-+#define SPL2SW_RX_NAPI_WEIGHT	16
-+#define SPL2SW_TX_NAPI_WEIGHT	16
-+
-+#endif
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_int.c b/drivers/net/ethernet/sunplus/spl2sw_int.c
-new file mode 100644
-index 0000000..b6ab8fe
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_int.c
-@@ -0,0 +1,253 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#include <linux/platform_device.h>
-+#include <linux/etherdevice.h>
-+#include <linux/netdevice.h>
-+#include <linux/bitfield.h>
-+#include <linux/of_mdio.h>
-+
-+#include "spl2sw_register.h"
-+#include "spl2sw_define.h"
-+#include "spl2sw_int.h"
-+
-+int spl2sw_rx_poll(struct napi_struct *napi, int budget)
-+{
-+	struct spl2sw_common *comm = container_of(napi, struct spl2sw_common, rx_napi);
-+	struct spl2sw_mac_desc *desc, *h_desc;
-+	struct net_device_stats *stats;
-+	struct sk_buff *skb, *new_skb;
-+	struct spl2sw_skb_info *sinfo;
-+	u32 rx_pos, pkg_len;
-+	u32 num, rx_count;
-+	s32 queue;
-+	u32 mask;
-+	int port;
-+	u32 cmd;
-+
-+	spin_lock(&comm->rx_lock);
-+
-+	/* Process high-priority queue and then low-priority queue. */
-+	for (queue = 0; queue < RX_DESC_QUEUE_NUM; queue++) {
-+		rx_pos = comm->rx_pos[queue];
-+		rx_count = comm->rx_desc_num[queue];
-+
-+		for (num = 0; num < rx_count; num++) {
-+			sinfo = comm->rx_skb_info[queue] + rx_pos;
-+			desc = comm->rx_desc[queue] + rx_pos;
-+			cmd = desc->cmd1;
-+
-+			if (cmd & RXD_OWN)
-+				break;
-+
-+			port = FIELD_GET(RXD_PKT_SP, cmd);
-+			if (port < MAX_NETDEV_NUM && comm->ndev[port])
-+				stats = &comm->ndev[port]->stats;
-+			else
-+				goto spl2sw_rx_poll_rec_err;
-+
-+			pkg_len = FIELD_GET(RXD_PKT_LEN, cmd);
-+			if (unlikely((cmd & RXD_ERR_CODE) || pkg_len < ETH_ZLEN + 4)) {
-+				stats->rx_length_errors++;
-+				stats->rx_dropped++;
-+				goto spl2sw_rx_poll_rec_err;
-+			}
-+
-+			if (unlikely(cmd & RXD_IP_CHKSUM)) {
-+				stats->rx_crc_errors++;
-+				stats->rx_dropped++;
-+				goto spl2sw_rx_poll_rec_err;
-+			}
-+
-+			dma_unmap_single(&comm->pdev->dev, sinfo->mapping,
-+					 comm->rx_desc_buff_size, DMA_FROM_DEVICE);
-+
-+			skb = sinfo->skb;
-+			skb_put(skb, pkg_len - 4); /* Minus FCS */
-+			skb->ip_summed = CHECKSUM_NONE;
-+			skb->protocol = eth_type_trans(skb, comm->ndev[port]);
-+			netif_receive_skb(skb);
-+
-+			stats->rx_packets++;
-+			stats->rx_bytes += skb->len;
-+
-+			/* Allocate a new skb for receiving. */
-+			new_skb = netdev_alloc_skb(NULL, comm->rx_desc_buff_size);
-+			if (unlikely(!new_skb)) {
-+				desc->cmd2 = (rx_pos == comm->rx_desc_num[queue] - 1) ?
-+					     RXD_EOR : 0;
-+				sinfo->skb = NULL;
-+				sinfo->mapping = 0;
-+				goto spl2sw_rx_poll_alloc_err;
-+			}
-+
-+			sinfo->mapping = dma_map_single(&comm->pdev->dev, new_skb->data,
-+							comm->rx_desc_buff_size,
-+							DMA_FROM_DEVICE);
-+			if (dma_mapping_error(&comm->pdev->dev, sinfo->mapping)) {
-+				dev_kfree_skb_irq(new_skb);
-+				desc->cmd2 = (rx_pos == comm->rx_desc_num[queue] - 1) ?
-+					     RXD_EOR : 0;
-+				sinfo->skb = NULL;
-+				goto spl2sw_rx_poll_alloc_err;
-+			}
-+
-+			sinfo->skb = new_skb;
-+			desc->addr1 = sinfo->mapping;
-+
-+spl2sw_rx_poll_rec_err:
-+			desc->cmd2 = (rx_pos == comm->rx_desc_num[queue] - 1) ?
-+				     RXD_EOR | comm->rx_desc_buff_size :
-+				     comm->rx_desc_buff_size;
-+
-+spl2sw_rx_poll_alloc_err:
-+			wmb();	/* Set RXD_OWN after other fields are effective. */
-+			desc->cmd1 = RXD_OWN;
-+
-+			/* Move rx_pos to next position */
-+			rx_pos = ((rx_pos + 1) == comm->rx_desc_num[queue]) ? 0 : rx_pos + 1;
-+
-+			/* If there are packets in high-priority queue,
-+			 * stop processing low-priority queue.
-+			 */
-+			if (queue == 1 && !(h_desc->cmd1 & RXD_OWN))
-+				break;
-+		}
-+
-+		comm->rx_pos[queue] = rx_pos;
-+
-+		/* Save pointer to last rx descriptor of high-priority queue. */
-+		if (queue == 0)
-+			h_desc = comm->rx_desc[queue] + rx_pos;
-+	}
-+
-+	spin_unlock(&comm->rx_lock);
-+
-+	wmb();	/* make sure settings are effective. */
-+	mask = readl(comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+	mask &= ~MAC_INT_RX;
-+	writel(mask, comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+
-+	napi_complete(napi);
-+	return 0;
-+}
-+
-+int spl2sw_tx_poll(struct napi_struct *napi, int budget)
-+{
-+	struct spl2sw_common *comm = container_of(napi, struct spl2sw_common, tx_napi);
-+	struct spl2sw_skb_info *skbinfo;
-+	struct net_device_stats *stats;
-+	u32 tx_done_pos;
-+	u32 mask;
-+	u32 cmd;
-+	int i;
-+
-+	spin_lock(&comm->tx_lock);
-+
-+	tx_done_pos = comm->tx_done_pos;
-+	while ((tx_done_pos != comm->tx_pos) || (comm->tx_desc_full == 1)) {
-+		cmd = comm->tx_desc[tx_done_pos].cmd1;
-+		if (cmd & TXD_OWN)
-+			break;
-+
-+		skbinfo = &comm->tx_temp_skb_info[tx_done_pos];
-+		if (unlikely(!skbinfo->skb))
-+			goto spl2sw_tx_poll_next;
-+
-+		i = ffs(FIELD_GET(TXD_VLAN, cmd)) - 1;
-+		if (i < MAX_NETDEV_NUM && comm->ndev[i])
-+			stats = &comm->ndev[i]->stats;
-+		else
-+			goto spl2sw_tx_poll_unmap;
-+
-+		if (unlikely(cmd & (TXD_ERR_CODE))) {
-+			stats->tx_errors++;
-+		} else {
-+			stats->tx_packets++;
-+			stats->tx_bytes += skbinfo->len;
-+		}
-+
-+spl2sw_tx_poll_unmap:
-+		dma_unmap_single(&comm->pdev->dev, skbinfo->mapping, skbinfo->len,
-+				 DMA_TO_DEVICE);
-+		skbinfo->mapping = 0;
-+		dev_kfree_skb_irq(skbinfo->skb);
-+		skbinfo->skb = NULL;
-+
-+spl2sw_tx_poll_next:
-+		/* Move tx_done_pos to next position */
-+		tx_done_pos = ((tx_done_pos + 1) == TX_DESC_NUM) ? 0 : tx_done_pos + 1;
-+
-+		if (comm->tx_desc_full == 1)
-+			comm->tx_desc_full = 0;
-+	}
-+
-+	comm->tx_done_pos = tx_done_pos;
-+	if (!comm->tx_desc_full)
-+		for (i = 0; i < MAX_NETDEV_NUM; i++)
-+			if (comm->ndev[i])
-+				if (netif_queue_stopped(comm->ndev[i]))
-+					netif_wake_queue(comm->ndev[i]);
-+
-+	spin_unlock(&comm->tx_lock);
-+
-+	wmb();			/* make sure settings are effective. */
-+	mask = readl(comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+	mask &= ~MAC_INT_TX;
-+	writel(mask, comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+
-+	napi_complete(napi);
-+	return 0;
-+}
-+
-+irqreturn_t spl2sw_ethernet_interrupt(int irq, void *dev_id)
-+{
-+	struct net_device *ndev = (struct net_device *)dev_id;
-+	struct spl2sw_mac *mac = netdev_priv(ndev);
-+	struct spl2sw_common *comm = mac->comm;
-+	u32 status;
-+	u32 mask;
-+
-+	status = readl(comm->l2sw_reg_base + L2SW_SW_INT_STATUS_0);
-+	if (unlikely(!status)) {
-+		netdev_dbg(ndev, "Interrput status is null!\n");
-+		goto spl2sw_ethernet_int_out;
-+	}
-+	writel(status, comm->l2sw_reg_base + L2SW_SW_INT_STATUS_0);
-+
-+	if (status & MAC_INT_RX) {
-+		/* Disable RX interrupts. */
-+		mask = readl(comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+		mask |= MAC_INT_RX;
-+		writel(mask, comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+
-+		if (unlikely(status & MAC_INT_RX_DES_ERR)) {
-+			netdev_dbg(ndev, "Illegal RX Descriptor!\n");
-+			ndev->stats.rx_fifo_errors++;
-+		}
-+
-+		napi_schedule(&comm->rx_napi);
-+	}
-+
-+	if (status & MAC_INT_TX) {
-+		/* Disable TX interrupts. */
-+		mask = readl(comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+		mask |= MAC_INT_TX;
-+		writel(mask, comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+
-+		if (unlikely(status & MAC_INT_TX_DES_ERR)) {
-+			netdev_dbg(ndev, "Illegal TX Descriptor Error\n");
-+			ndev->stats.tx_fifo_errors++;
-+			mask = readl(comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+			mask &= ~MAC_INT_TX;
-+			writel(mask, comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+		} else {
-+			napi_schedule(&comm->tx_napi);
-+		}
-+	}
-+
-+spl2sw_ethernet_int_out:
-+	return IRQ_HANDLED;
-+}
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_int.h b/drivers/net/ethernet/sunplus/spl2sw_int.h
-new file mode 100644
-index 0000000..64f6f25
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_int.h
-@@ -0,0 +1,13 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#ifndef __SPL2SW_INT_H__
-+#define __SPL2SW_INT_H__
-+
-+int spl2sw_rx_poll(struct napi_struct *napi, int budget);
-+int spl2sw_tx_poll(struct napi_struct *napi, int budget);
-+irqreturn_t spl2sw_ethernet_interrupt(int irq, void *dev_id);
-+
-+#endif
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_mac.c b/drivers/net/ethernet/sunplus/spl2sw_mac.c
-new file mode 100644
-index 0000000..e704642
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_mac.c
-@@ -0,0 +1,346 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#include <linux/platform_device.h>
-+#include <linux/netdevice.h>
-+#include <linux/bitfield.h>
-+#include <linux/of_mdio.h>
-+
-+#include "spl2sw_register.h"
-+#include "spl2sw_define.h"
-+#include "spl2sw_desc.h"
-+#include "spl2sw_mac.h"
-+
-+void spl2sw_mac_hw_stop(struct spl2sw_common *comm)
-+{
-+	u32 reg;
-+
-+	if (comm->enable == 0) {
-+		/* Mask and clear all interrupts. */
-+		writel(0xffffffff, comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+		writel(0xffffffff, comm->l2sw_reg_base + L2SW_SW_INT_STATUS_0);
-+
-+		/* Disable cpu 0 and cpu 1. */
-+		reg = readl(comm->l2sw_reg_base + L2SW_CPU_CNTL);
-+		reg |= MAC_DIS_SOC1_CPU | MAC_DIS_SOC0_CPU;
-+		writel(reg, comm->l2sw_reg_base + L2SW_CPU_CNTL);
-+	}
-+
-+	/* Disable LAN ports. */
-+	reg = readl(comm->l2sw_reg_base + L2SW_PORT_CNTL0);
-+	reg |= FIELD_PREP(MAC_DIS_PORT, ~comm->enable);
-+	writel(reg, comm->l2sw_reg_base + L2SW_PORT_CNTL0);
-+}
-+
-+void spl2sw_mac_hw_start(struct spl2sw_common *comm)
-+{
-+	u32 reg;
-+
-+	/* Enable cpu port 0 (6) & CRC padding (8) */
-+	reg = readl(comm->l2sw_reg_base + L2SW_CPU_CNTL);
-+	reg &= ~MAC_DIS_SOC0_CPU;
-+	reg |= MAC_EN_CRC_SOC0;
-+	writel(reg, comm->l2sw_reg_base + L2SW_CPU_CNTL);
-+
-+	/* Enable port 0 & port 1 */
-+	reg = readl(comm->l2sw_reg_base + L2SW_PORT_CNTL0);
-+	reg &= FIELD_PREP(MAC_DIS_PORT, ~comm->enable) | ~MAC_DIS_PORT;
-+	writel(reg, comm->l2sw_reg_base + L2SW_PORT_CNTL0);
-+}
-+
-+int spl2sw_mac_addr_add(struct spl2sw_mac *mac)
-+{
-+	struct spl2sw_common *comm = mac->comm;
-+	u32 reg;
-+	int ret;
-+
-+	/* Write 6-octet MAC address. */
-+	writel((mac->mac_addr[0] << 0) + (mac->mac_addr[1] << 8),
-+	       comm->l2sw_reg_base + L2SW_W_MAC_15_0);
-+	writel((mac->mac_addr[2] << 0) + (mac->mac_addr[3] << 8) +
-+	       (mac->mac_addr[4] << 16) + (mac->mac_addr[5] << 24),
-+	       comm->l2sw_reg_base + L2SW_W_MAC_47_16);
-+
-+	/* Set learn port = cpu_port, aging = 1 */
-+	reg = MAC_W_CPU_PORT_0 | FIELD_PREP(MAC_W_VID, mac->vlan_id) |
-+	      FIELD_PREP(MAC_W_AGE, 1) | MAC_W_MAC_CMD;
-+	writel(reg, comm->l2sw_reg_base + L2SW_WT_MAC_AD0);
-+
-+	/* Wait for completing. */
-+	ret = read_poll_timeout(readl, reg, reg & MAC_W_MAC_DONE, 1, 200, true,
-+				comm->l2sw_reg_base + L2SW_WT_MAC_AD0);
-+	if (ret) {
-+		netdev_err(mac->ndev, "Failed to add address to table!\n");
-+		return ret;
-+	}
-+
-+	netdev_dbg(mac->ndev, "mac_ad0 = %08x, mac_ad = %08x%04x\n",
-+		   readl(comm->l2sw_reg_base + L2SW_WT_MAC_AD0),
-+		   (u32)FIELD_GET(MAC_W_MAC_47_16,
-+		   readl(comm->l2sw_reg_base + L2SW_W_MAC_47_16)),
-+		   (u32)FIELD_GET(MAC_W_MAC_15_0,
-+		   readl(comm->l2sw_reg_base + L2SW_W_MAC_15_0)));
-+	return 0;
-+}
-+
-+int spl2sw_mac_addr_del(struct spl2sw_mac *mac)
-+{
-+	struct spl2sw_common *comm = mac->comm;
-+	u32 reg;
-+	int ret;
-+
-+	/* Write 6-octet MAC address. */
-+	writel((mac->mac_addr[0] << 0) + (mac->mac_addr[1] << 8),
-+	       comm->l2sw_reg_base + L2SW_W_MAC_15_0);
-+	writel((mac->mac_addr[2] << 0) + (mac->mac_addr[3] << 8) +
-+	       (mac->mac_addr[4] << 16) + (mac->mac_addr[5] << 24),
-+	       comm->l2sw_reg_base + L2SW_W_MAC_47_16);
-+
-+	/* Set learn port = lan_port0 and aging = 0
-+	 * to wipe (age) out the entry.
-+	 */
-+	reg = MAC_W_LAN_PORT_0 | FIELD_PREP(MAC_W_VID, mac->vlan_id) | MAC_W_MAC_CMD;
-+	writel(reg, comm->l2sw_reg_base + L2SW_WT_MAC_AD0);
-+
-+	/* Wait for completing. */
-+	ret = read_poll_timeout(readl, reg, reg & MAC_W_MAC_DONE, 1, 200, true,
-+				comm->l2sw_reg_base + L2SW_WT_MAC_AD0);
-+	if (ret) {
-+		netdev_err(mac->ndev, "Failed to delete address from table!\n");
-+		return ret;
-+	}
-+
-+	netdev_dbg(mac->ndev, "mac_ad0 = %08x, mac_ad = %08x%04x\n",
-+		   readl(comm->l2sw_reg_base + L2SW_WT_MAC_AD0),
-+		   (u32)FIELD_GET(MAC_W_MAC_47_16,
-+		   readl(comm->l2sw_reg_base + L2SW_W_MAC_47_16)),
-+		   (u32)FIELD_GET(MAC_W_MAC_15_0,
-+		   readl(comm->l2sw_reg_base + L2SW_W_MAC_15_0)));
-+	return 0;
-+}
-+
-+int spl2sw_mac_addr_del_all(struct spl2sw_common *comm)
-+{
-+	u32 reg;
-+	int ret;
-+
-+	/* Wait for address table being idle. */
-+	ret = read_poll_timeout(readl, reg, reg & MAC_ADDR_LOOKUP_IDLE, 1, 200, true,
-+				comm->l2sw_reg_base + L2SW_ADDR_TBL_SRCH);
-+	if (ret)
-+		goto spl2sw_mac_addr_del_all_err;
-+
-+	/* Search address table from start. */
-+	writel(MAC_BEGIN_SEARCH_ADDR, comm->l2sw_reg_base + L2SW_ADDR_TBL_SRCH);
-+	while (1) {
-+		/* Wait for completing. */
-+		ret = read_poll_timeout(readl, reg, reg & (MAC_AT_TABLE_END |
-+					MAC_AT_DATA_READY), 1, 2000, true,
-+					comm->l2sw_reg_base + L2SW_ADDR_TBL_ST);
-+		if (ret)
-+			goto spl2sw_mac_addr_del_all_err;
-+
-+		if (reg & MAC_AT_TABLE_END)
-+			break;
-+
-+		dev_dbg(&comm->pdev->dev, "addr_tbl_st = %08x\n", reg);
-+		dev_dbg(&comm->pdev->dev, "@AT #%u: port=%01x, cpu=%01x, vid=%u, aging=%u, proxy=%u, mc_ingress=%u\n",
-+			(u32)FIELD_GET(MAC_HASH_LOOKUP_ADDR, reg),
-+			(u32)FIELD_GET(MAC_R_PORT_MAP, reg),
-+			(u32)FIELD_GET(MAC_R_CPU_PORT, reg),
-+			(u32)FIELD_GET(MAC_R_VID, reg),
-+			(u32)FIELD_GET(MAC_R_AGE, reg),
-+			(u32)FIELD_GET(MAC_R_PROXY, reg),
-+			(u32)FIELD_GET(MAC_R_MC_INGRESS, reg));
-+
-+		/* Delete all entries which are learnt from lan ports. */
-+		if (reg & MAC_R_PORT_MAP) {
-+			writel(readl(comm->l2sw_reg_base + L2SW_MAC_AD_SER0),
-+			       comm->l2sw_reg_base + L2SW_W_MAC_15_0);
-+			writel(readl(comm->l2sw_reg_base + L2SW_MAC_AD_SER1),
-+			       comm->l2sw_reg_base + L2SW_W_MAC_47_16);
-+
-+			/* Keep VID field, set learn port = lan_port0 and
-+			 * aging = 0 to wipe (age) out the entry.
-+			 */
-+			reg &= MAC_W_VID;
-+			reg |= MAC_W_LAN_PORT_0 | MAC_W_MAC_CMD;
-+			writel(reg, comm->l2sw_reg_base + L2SW_WT_MAC_AD0);
-+
-+			/* Wait for completing. */
-+			ret = read_poll_timeout(readl, reg, reg & MAC_W_MAC_DONE, 1, 200,
-+						true, comm->l2sw_reg_base + L2SW_WT_MAC_AD0);
-+			if (ret)
-+				goto spl2sw_mac_addr_del_all_err;
-+
-+			dev_dbg(&comm->pdev->dev, "mac_ad0 = %08x, mac_ad = %08x%04x\n",
-+				readl(comm->l2sw_reg_base + L2SW_WT_MAC_AD0),
-+				(u32)FIELD_GET(MAC_W_MAC_47_16,
-+				readl(comm->l2sw_reg_base + L2SW_W_MAC_47_16)),
-+				(u32)FIELD_GET(MAC_W_MAC_15_0,
-+				readl(comm->l2sw_reg_base + L2SW_W_MAC_15_0)));
-+		}
-+
-+		/* Search next entry. */
-+		writel(MAC_SEARCH_NEXT_ADDR, comm->l2sw_reg_base + L2SW_ADDR_TBL_SRCH);
-+	}
-+	return 0;
-+
-+spl2sw_mac_addr_del_all_err:
-+	dev_err(&comm->pdev->dev, "Failed to delete all addresses from table!\n");
-+	return ret;
-+}
-+
-+void spl2sw_mac_hw_init(struct spl2sw_common *comm)
-+{
-+	u32 reg;
-+
-+	/* Disable cpu0 and cpu 1 port. */
-+	reg = readl(comm->l2sw_reg_base + L2SW_CPU_CNTL);
-+	reg |= MAC_DIS_SOC1_CPU | MAC_DIS_SOC0_CPU;
-+	writel(reg, comm->l2sw_reg_base + L2SW_CPU_CNTL);
-+
-+	/* Set base addresses of TX and RX queues. */
-+	writel(comm->desc_dma, comm->l2sw_reg_base + L2SW_TX_LBASE_ADDR_0);
-+	writel(comm->desc_dma + sizeof(struct spl2sw_mac_desc) * TX_DESC_NUM,
-+	       comm->l2sw_reg_base + L2SW_TX_HBASE_ADDR_0);
-+	writel(comm->desc_dma + sizeof(struct spl2sw_mac_desc) * (TX_DESC_NUM +
-+	       MAC_GUARD_DESC_NUM), comm->l2sw_reg_base + L2SW_RX_HBASE_ADDR_0);
-+	writel(comm->desc_dma + sizeof(struct spl2sw_mac_desc) * (TX_DESC_NUM +
-+	       MAC_GUARD_DESC_NUM + RX_QUEUE0_DESC_NUM),
-+	       comm->l2sw_reg_base + L2SW_RX_LBASE_ADDR_0);
-+
-+	/* Fc_rls_th=0x4a, Fc_set_th=0x3a, Drop_rls_th=0x2d, Drop_set_th=0x1d */
-+	writel(0x4a3a2d1d, comm->l2sw_reg_base + L2SW_FL_CNTL_TH);
-+
-+	/* Cpu_rls_th=0x4a, Cpu_set_th=0x3a, Cpu_th=0x12, Port_th=0x12 */
-+	writel(0x4a3a1212, comm->l2sw_reg_base + L2SW_CPU_FL_CNTL_TH);
-+
-+	/* mtcc_lmt=0xf, Pri_th_l=6, Pri_th_h=6, weigh_8x_en=1 */
-+	writel(0xf6680000, comm->l2sw_reg_base + L2SW_PRI_FL_CNTL);
-+
-+	/* High-active LED */
-+	reg = readl(comm->l2sw_reg_base + L2SW_LED_PORT0);
-+	reg |= MAC_LED_ACT_HI;
-+	writel(reg, comm->l2sw_reg_base + L2SW_LED_PORT0);
-+
-+	/* Disable aging of cpu port 0 & 1.
-+	 * Disable SA learning of cpu port 0 & 1.
-+	 * Enable UC and MC packets
-+	 */
-+	reg = readl(comm->l2sw_reg_base + L2SW_CPU_CNTL);
-+	reg &= ~(MAC_EN_SOC1_AGING | MAC_EN_SOC0_AGING |
-+		 MAC_DIS_BC2CPU_P1 | MAC_DIS_BC2CPU_P0 |
-+		 MAC_DIS_MC2CPU_P1 | MAC_DIS_MC2CPU_P0);
-+	reg |= MAC_DIS_LRN_SOC1 | MAC_DIS_LRN_SOC0;
-+	writel(reg, comm->l2sw_reg_base + L2SW_CPU_CNTL);
-+
-+	/* Enable RMC2CPU for port 0 & 1
-+	 * Enable Flow control for port 0 & 1
-+	 * Enable Back pressure for port 0 & 1
-+	 */
-+	reg = readl(comm->l2sw_reg_base + L2SW_PORT_CNTL0);
-+	reg &= ~(MAC_DIS_RMC2CPU_P1 | MAC_DIS_RMC2CPU_P0);
-+	reg |= MAC_EN_FLOW_CTL_P1 | MAC_EN_FLOW_CTL_P0 |
-+	       MAC_EN_BACK_PRESS_P1 | MAC_EN_BACK_PRESS_P0;
-+	writel(reg, comm->l2sw_reg_base + L2SW_PORT_CNTL0);
-+
-+	/* Disable LAN port SA learning. */
-+	reg = readl(comm->l2sw_reg_base + L2SW_PORT_CNTL1);
-+	reg |= MAC_DIS_SA_LRN_P1 | MAC_DIS_SA_LRN_P0;
-+	writel(reg, comm->l2sw_reg_base + L2SW_PORT_CNTL1);
-+
-+	/* Enable rmii force mode and
-+	 * set both external phy-address to 31.
-+	 */
-+	reg = readl(comm->l2sw_reg_base + L2SW_MAC_FORCE_MODE);
-+	reg &= ~(MAC_EXT_PHY1_ADDR | MAC_EXT_PHY0_ADDR);
-+	reg |= FIELD_PREP(MAC_EXT_PHY1_ADDR, 31) | FIELD_PREP(MAC_EXT_PHY0_ADDR, 31);
-+	reg |= MAC_FORCE_RMII_EN_1 | MAC_FORCE_RMII_EN_0;
-+	writel(reg, comm->l2sw_reg_base + L2SW_MAC_FORCE_MODE);
-+
-+	/* Port 0: VLAN group 0
-+	 * Port 1: VLAN group 1
-+	 */
-+	reg = FIELD_PREP(MAC_P1_PVID, 1) | FIELD_PREP(MAC_P0_PVID, 0);
-+	writel(reg, comm->l2sw_reg_base + L2SW_PVID_CONFIG0);
-+
-+	/* VLAN group 0: cpu0 (bit3) + port0 (bit0) = 1001 = 0x9
-+	 * VLAN group 1: cpu0 (bit3) + port1 (bit1) = 1010 = 0xa
-+	 */
-+	reg = FIELD_PREP(MAC_VLAN_MEMSET_1, 0xa) | FIELD_PREP(MAC_VLAN_MEMSET_0, 9);
-+	writel(reg, comm->l2sw_reg_base + L2SW_VLAN_MEMSET_CONFIG0);
-+
-+	/* RMC forward: to_cpu (1)
-+	 * LED: 60mS (1)
-+	 * BC storm prev: 31 BC (1)
-+	 */
-+	reg = readl(comm->l2sw_reg_base + L2SW_SW_GLB_CNTL);
-+	reg &= ~(MAC_RMC_TB_FAULT_RULE | MAC_LED_FLASH_TIME | MAC_BC_STORM_PREV);
-+	reg |= FIELD_PREP(MAC_RMC_TB_FAULT_RULE, 1) |
-+	       FIELD_PREP(MAC_LED_FLASH_TIME, 1) |
-+	       FIELD_PREP(MAC_BC_STORM_PREV, 1);
-+	writel(reg, comm->l2sw_reg_base + L2SW_SW_GLB_CNTL);
-+
-+	writel(MAC_INT_MASK_DEF, comm->l2sw_reg_base + L2SW_SW_INT_MASK_0);
-+}
-+
-+void spl2sw_mac_rx_mode_set(struct spl2sw_mac *mac)
-+{
-+	struct spl2sw_common *comm = mac->comm;
-+	struct net_device *ndev = mac->ndev;
-+	u32 mask, reg, rx_mode;
-+
-+	netdev_dbg(ndev, "ndev->flags = %08x\n", ndev->flags);
-+	mask = FIELD_PREP(MAC_DIS_MC2CPU, mac->lan_port) |
-+	       FIELD_PREP(MAC_DIS_UN2CPU, mac->lan_port);
-+	reg = readl(comm->l2sw_reg_base + L2SW_CPU_CNTL);
-+
-+	if (ndev->flags & IFF_PROMISC) {
-+		/* Allow MC and unknown UC packets */
-+		rx_mode = FIELD_PREP(MAC_DIS_MC2CPU, mac->lan_port) |
-+			  FIELD_PREP(MAC_DIS_UN2CPU, mac->lan_port);
-+	} else if ((!netdev_mc_empty(ndev) && (ndev->flags & IFF_MULTICAST)) ||
-+		   (ndev->flags & IFF_ALLMULTI)) {
-+		/* Allow MC packets */
-+		rx_mode = FIELD_PREP(MAC_DIS_MC2CPU, mac->lan_port);
-+	} else {
-+		/* Disable MC and unknown UC packets */
-+		rx_mode = 0;
-+	}
-+
-+	writel((reg & (~mask)) | ((~rx_mode) & mask), comm->l2sw_reg_base + L2SW_CPU_CNTL);
-+	netdev_dbg(ndev, "cpu_cntl = %08x\n", readl(comm->l2sw_reg_base + L2SW_CPU_CNTL));
-+}
-+
-+void spl2sw_mac_init(struct spl2sw_common *comm)
-+{
-+	u32 i;
-+
-+	for (i = 0; i < RX_DESC_QUEUE_NUM; i++)
-+		comm->rx_pos[i] = 0;
-+	mb();	/* make sure settings are effective. */
-+
-+	spl2sw_mac_hw_init(comm);
-+}
-+
-+void spl2sw_mac_soft_reset(struct spl2sw_common *comm)
-+{
-+	u32 i;
-+
-+	spl2sw_mac_hw_stop(comm);
-+
-+	spl2sw_rx_descs_flush(comm);
-+	comm->tx_pos = 0;
-+	comm->tx_done_pos = 0;
-+	comm->tx_desc_full = 0;
-+
-+	for (i = 0; i < RX_DESC_QUEUE_NUM; i++)
-+		comm->rx_pos[i] = 0;
-+	mb();	/* make sure settings are effective. */
-+
-+	spl2sw_mac_hw_init(comm);
-+	spl2sw_mac_hw_start(comm);
-+}
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_mac.h b/drivers/net/ethernet/sunplus/spl2sw_mac.h
-new file mode 100644
-index 0000000..04b6296
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_mac.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#ifndef __SPL2SW_MAC_H__
-+#define __SPL2SW_MAC_H__
-+
-+void spl2sw_mac_hw_stop(struct spl2sw_common *comm);
-+void spl2sw_mac_hw_start(struct spl2sw_common *comm);
-+int  spl2sw_mac_addr_add(struct spl2sw_mac *mac);
-+int  spl2sw_mac_addr_del(struct spl2sw_mac *mac);
-+int  spl2sw_mac_addr_del_all(struct spl2sw_common *comm);
-+void spl2sw_mac_hw_init(struct spl2sw_common *comm);
-+void spl2sw_mac_rx_mode_set(struct spl2sw_mac *mac);
-+void spl2sw_mac_init(struct spl2sw_common *comm);
-+void spl2sw_mac_soft_reset(struct spl2sw_common *comm);
-+
-+#endif
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_mdio.c b/drivers/net/ethernet/sunplus/spl2sw_mdio.c
-new file mode 100644
-index 0000000..139ac8f
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_mdio.c
-@@ -0,0 +1,126 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#include <linux/platform_device.h>
-+#include <linux/netdevice.h>
-+#include <linux/bitfield.h>
-+#include <linux/of_mdio.h>
-+
-+#include "spl2sw_register.h"
-+#include "spl2sw_define.h"
-+#include "spl2sw_mdio.h"
-+
-+#define SPL2SW_MDIO_READ_CMD           0x02
-+#define SPL2SW_MDIO_WRITE_CMD          0x01
-+
-+static int spl2sw_mdio_access(struct spl2sw_common *comm, u8 cmd, u8 addr, u8 regnum, u16 wdata)
-+{
-+	u32 reg, reg2;
-+	u32 val;
-+	int ret;
-+
-+	/* Note that addr (of phy) should match either ext_phy0_addr
-+	 * or ext_phy1_addr, or mdio commands won't be sent out.
-+	 */
-+	reg = readl(comm->l2sw_reg_base + L2SW_MAC_FORCE_MODE);
-+	reg &= ~MAC_EXT_PHY0_ADDR;
-+	reg |= FIELD_PREP(MAC_EXT_PHY0_ADDR, addr);
-+
-+	reg2 = FIELD_PREP(MAC_CPU_PHY_WT_DATA, wdata) | FIELD_PREP(MAC_CPU_PHY_CMD, cmd) |
-+	       FIELD_PREP(MAC_CPU_PHY_REG_ADDR, regnum) | FIELD_PREP(MAC_CPU_PHY_ADDR, addr);
-+
-+	/* Set ext_phy0_addr and then issue mdio command.
-+	 * No interrupt is allowed in between.
-+	 */
-+	spin_lock_irq(&comm->mdio_lock);
-+	writel(reg, comm->l2sw_reg_base + L2SW_MAC_FORCE_MODE);
-+	writel(reg2, comm->l2sw_reg_base + L2SW_PHY_CNTL_REG0);
-+	spin_unlock_irq(&comm->mdio_lock);
-+
-+	ret = read_poll_timeout(readl, val, val & cmd, 1, 1000, true,
-+				comm->l2sw_reg_base + L2SW_PHY_CNTL_REG1);
-+
-+	/* Set ext_phy0_addr back to 31 to prevent
-+	 * from sending mdio command to phy by
-+	 * hardware auto-mdio function.
-+	 */
-+	reg = readl(comm->l2sw_reg_base + L2SW_MAC_FORCE_MODE);
-+	reg &= ~MAC_EXT_PHY0_ADDR;
-+	reg |= FIELD_PREP(MAC_EXT_PHY0_ADDR, 31);
-+	writel(reg, comm->l2sw_reg_base + L2SW_MAC_FORCE_MODE);
-+
-+	if (ret == 0)
-+		return val >> 16;
-+	else
-+		return ret;
-+}
-+
-+static int spl2sw_mii_read(struct mii_bus *bus, int addr, int regnum)
-+{
-+	struct spl2sw_common *comm = bus->priv;
-+
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
-+	return spl2sw_mdio_access(comm, SPL2SW_MDIO_READ_CMD, addr, regnum, 0);
-+}
-+
-+static int spl2sw_mii_write(struct mii_bus *bus, int addr, int regnum, u16 val)
-+{
-+	struct spl2sw_common *comm = bus->priv;
-+	int ret;
-+
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
-+	ret = spl2sw_mdio_access(comm, SPL2SW_MDIO_WRITE_CMD, addr, regnum, val);
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+u32 spl2sw_mdio_init(struct spl2sw_common *comm)
-+{
-+	struct device_node *mdio_np;
-+	struct mii_bus *mii_bus;
-+	int ret;
-+
-+	/* Get mdio child node. */
-+	mdio_np = of_get_child_by_name(comm->pdev->dev.of_node, "mdio");
-+	if (!mdio_np) {
-+		dev_err(&comm->pdev->dev, "No mdio child node found!\n");
-+		return -ENODEV;
-+	}
-+
-+	/* Allocate and register mdio bus. */
-+	mii_bus = devm_mdiobus_alloc(&comm->pdev->dev);
-+	if (!mii_bus)
-+		return -ENOMEM;
-+
-+	mii_bus->name = "sunplus_mii_bus";
-+	mii_bus->parent = &comm->pdev->dev;
-+	mii_bus->priv = comm;
-+	mii_bus->read = spl2sw_mii_read;
-+	mii_bus->write = spl2sw_mii_write;
-+	snprintf(mii_bus->id, MII_BUS_ID_SIZE, "%s-mii", dev_name(&comm->pdev->dev));
-+
-+	ret = of_mdiobus_register(mii_bus, mdio_np);
-+	if (ret) {
-+		dev_err(&comm->pdev->dev, "Failed to register mdiobus!\n");
-+		return ret;
-+	}
-+
-+	comm->mii_bus = mii_bus;
-+	return ret;
-+}
-+
-+void spl2sw_mdio_remove(struct spl2sw_common *comm)
-+{
-+	if (comm->mii_bus) {
-+		mdiobus_unregister(comm->mii_bus);
-+		comm->mii_bus = NULL;
-+	}
-+}
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_mdio.h b/drivers/net/ethernet/sunplus/spl2sw_mdio.h
-new file mode 100644
-index 0000000..8a24c9c
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_mdio.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#ifndef __SPL2SW_MDIO_H__
-+#define __SPL2SW_MDIO_H__
-+
-+u32  spl2sw_mdio_init(struct spl2sw_common *comm);
-+void spl2sw_mdio_remove(struct spl2sw_common *comm);
-+
-+#endif
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_phy.c b/drivers/net/ethernet/sunplus/spl2sw_phy.c
-new file mode 100644
-index 0000000..404f508
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_phy.c
-@@ -0,0 +1,92 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#include <linux/netdevice.h>
-+#include <linux/bitfield.h>
-+#include <linux/of_mdio.h>
-+
-+#include "spl2sw_register.h"
-+#include "spl2sw_define.h"
-+#include "spl2sw_phy.h"
-+
-+static void spl2sw_mii_link_change(struct net_device *ndev)
-+{
-+	struct spl2sw_mac *mac = netdev_priv(ndev);
-+	struct phy_device *phydev = ndev->phydev;
-+	struct spl2sw_common *comm = mac->comm;
-+	u32 reg;
-+
-+	reg = readl(comm->l2sw_reg_base + L2SW_MAC_FORCE_MODE);
-+
-+	if (phydev->link) {
-+		reg |= FIELD_PREP(MAC_FORCE_RMII_LINK, mac->lan_port);
-+
-+		if (phydev->speed == 100) {
-+			reg |= FIELD_PREP(MAC_FORCE_RMII_SPD, mac->lan_port);
-+		} else {
-+			reg &= FIELD_PREP(MAC_FORCE_RMII_SPD, ~mac->lan_port) |
-+			       ~MAC_FORCE_RMII_SPD;
-+		}
-+
-+		if (phydev->duplex) {
-+			reg |= FIELD_PREP(MAC_FORCE_RMII_DPX, mac->lan_port);
-+		} else {
-+			reg &= FIELD_PREP(MAC_FORCE_RMII_DPX, ~mac->lan_port) |
-+			       ~MAC_FORCE_RMII_DPX;
-+		}
-+
-+		if (phydev->pause) {
-+			reg |= FIELD_PREP(MAC_FORCE_RMII_FC, mac->lan_port);
-+		} else {
-+			reg &= FIELD_PREP(MAC_FORCE_RMII_FC, ~mac->lan_port) |
-+			       ~MAC_FORCE_RMII_FC;
-+		}
-+	} else {
-+		reg &= FIELD_PREP(MAC_FORCE_RMII_LINK, ~mac->lan_port) |
-+		       ~MAC_FORCE_RMII_LINK;
-+	}
-+
-+	writel(reg, comm->l2sw_reg_base + L2SW_MAC_FORCE_MODE);
-+
-+	phy_print_status(phydev);
-+}
-+
-+int spl2sw_phy_connect(struct spl2sw_common *comm)
-+{
-+	struct phy_device *phydev;
-+	struct net_device *ndev;
-+	struct spl2sw_mac *mac;
-+	int i;
-+
-+	for (i = 0; i < MAX_NETDEV_NUM; i++)
-+		if (comm->ndev[i]) {
-+			ndev = comm->ndev[i];
-+			mac = netdev_priv(ndev);
-+			phydev = of_phy_connect(ndev, mac->phy_node, spl2sw_mii_link_change,
-+						0, mac->phy_mode);
-+			if (!phydev)
-+				return -ENODEV;
-+
-+			phy_support_asym_pause(phydev);
-+			phy_attached_info(phydev);
-+		}
-+
-+	return 0;
-+}
-+
-+void spl2sw_phy_remove(struct spl2sw_common *comm)
-+{
-+	struct net_device *ndev;
-+	int i;
-+
-+	for (i = 0; i < MAX_NETDEV_NUM; i++)
-+		if (comm->ndev[i]) {
-+			ndev = comm->ndev[i];
-+			if (ndev) {
-+				phy_disconnect(ndev->phydev);
-+				ndev->phydev = NULL;
-+			}
-+		}
-+}
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_phy.h b/drivers/net/ethernet/sunplus/spl2sw_phy.h
-new file mode 100644
-index 0000000..3d051a2
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_phy.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#ifndef __SPL2SW_PHY_H__
-+#define __SPL2SW_PHY_H__
-+
-+int  spl2sw_phy_connect(struct spl2sw_common *comm);
-+void spl2sw_phy_remove(struct spl2sw_common *comm);
-+
-+#endif
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_register.h b/drivers/net/ethernet/sunplus/spl2sw_register.h
-new file mode 100644
-index 0000000..9718e2e
---- /dev/null
-+++ b/drivers/net/ethernet/sunplus/spl2sw_register.h
-@@ -0,0 +1,86 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright Sunplus Technology Co., Ltd.
-+ *       All rights reserved.
-+ */
-+
-+#ifndef __SPL2SW_REGISTER_H__
-+#define __SPL2SW_REGISTER_H__
-+
-+/* Register L2SW */
-+#define L2SW_SW_INT_STATUS_0		0x0
-+#define L2SW_SW_INT_MASK_0		0x4
-+#define L2SW_FL_CNTL_TH			0x8
-+#define L2SW_CPU_FL_CNTL_TH		0xc
-+#define L2SW_PRI_FL_CNTL		0x10
-+#define L2SW_VLAN_PRI_TH		0x14
-+#define L2SW_EN_TOS_BUS			0x18
-+#define L2SW_TOS_MAP0			0x1c
-+#define L2SW_TOS_MAP1			0x20
-+#define L2SW_TOS_MAP2			0x24
-+#define L2SW_TOS_MAP3			0x28
-+#define L2SW_TOS_MAP4			0x2c
-+#define L2SW_TOS_MAP5			0x30
-+#define L2SW_TOS_MAP6			0x34
-+#define L2SW_TOS_MAP7			0x38
-+#define L2SW_GLOBAL_QUE_STATUS		0x3c
-+#define L2SW_ADDR_TBL_SRCH		0x40
-+#define L2SW_ADDR_TBL_ST		0x44
-+#define L2SW_MAC_AD_SER0		0x48
-+#define L2SW_MAC_AD_SER1		0x4c
-+#define L2SW_WT_MAC_AD0			0x50
-+#define L2SW_W_MAC_15_0			0x54
-+#define L2SW_W_MAC_47_16		0x58
-+#define L2SW_PVID_CONFIG0		0x5c
-+#define L2SW_PVID_CONFIG1		0x60
-+#define L2SW_VLAN_MEMSET_CONFIG0	0x64
-+#define L2SW_VLAN_MEMSET_CONFIG1	0x68
-+#define L2SW_PORT_ABILITY		0x6c
-+#define L2SW_PORT_ST			0x70
-+#define L2SW_CPU_CNTL			0x74
-+#define L2SW_PORT_CNTL0			0x78
-+#define L2SW_PORT_CNTL1			0x7c
-+#define L2SW_PORT_CNTL2			0x80
-+#define L2SW_SW_GLB_CNTL		0x84
-+#define L2SW_L2SW_SW_RESET		0x88
-+#define L2SW_LED_PORT0			0x8c
-+#define L2SW_LED_PORT1			0x90
-+#define L2SW_LED_PORT2			0x94
-+#define L2SW_LED_PORT3			0x98
-+#define L2SW_LED_PORT4			0x9c
-+#define L2SW_WATCH_DOG_TRIG_RST		0xa0
-+#define L2SW_WATCH_DOG_STOP_CPU		0xa4
-+#define L2SW_PHY_CNTL_REG0		0xa8
-+#define L2SW_PHY_CNTL_REG1		0xac
-+#define L2SW_MAC_FORCE_MODE		0xb0
-+#define L2SW_VLAN_GROUP_CONFIG0		0xb4
-+#define L2SW_VLAN_GROUP_CONFIG1		0xb8
-+#define L2SW_FLOW_CTRL_TH3		0xbc
-+#define L2SW_QUEUE_STATUS_0		0xc0
-+#define L2SW_DEBUG_CNTL			0xc4
-+#define L2SW_RESERVED_1			0xc8
-+#define L2SW_MEM_TEST_INFO		0xcc
-+#define L2SW_SW_INT_STATUS_1		0xd0
-+#define L2SW_SW_INT_MASK_1		0xd4
-+#define L2SW_SW_GLOBAL_SIGNAL		0xd8
-+
-+#define L2SW_CPU_TX_TRIG		0x208
-+#define L2SW_TX_HBASE_ADDR_0		0x20c
-+#define L2SW_TX_LBASE_ADDR_0		0x210
-+#define L2SW_RX_HBASE_ADDR_0		0x214
-+#define L2SW_RX_LBASE_ADDR_0		0x218
-+#define L2SW_TX_HW_ADDR_0		0x21c
-+#define L2SW_TX_LW_ADDR_0		0x220
-+#define L2SW_RX_HW_ADDR_0		0x224
-+#define L2SW_RX_LW_ADDR_0		0x228
-+#define L2SW_CPU_PORT_CNTL_REG_0	0x22c
-+#define L2SW_TX_HBASE_ADDR_1		0x230
-+#define L2SW_TX_LBASE_ADDR_1		0x234
-+#define L2SW_RX_HBASE_ADDR_1		0x238
-+#define L2SW_RX_LBASE_ADDR_1		0x23c
-+#define L2SW_TX_HW_ADDR_1		0x240
-+#define L2SW_TX_LW_ADDR_1		0x244
-+#define L2SW_RX_HW_ADDR_1		0x248
-+#define L2SW_RX_LW_ADDR_1		0x24c
-+#define L2SW_CPU_PORT_CNTL_REG_1	0x250
-+
-+#endif
--- 
-2.7.4
-
+SGksIGFsbC4NCg0KSeKAmXZlIGdvdCBhcm91bmQgdG8gY29sbGVjdCBtb3JlIHBlcmZvcm1hbmNl
+IGRhdGEgd2l0aCBtYWNyby1iZW5jaG1hcmtzDQpmcm9tIHRoZSBMS1Agc3VpdGVbMV0uIFNwZWNp
+ZmljYWxseSwgSSBtZWFzdXJlZCBtb3JlIHRoYW4gMi41eCBpbXByb3ZlbWVudA0Kd2l0aCBmc21h
+cmsgYW5kIHVwIHRvIG5lYXJseSAyeCBpbXByb3ZlbWVudCB3aXRoIEFJTTcuIE5vdGUgdGhhdCBz
+aW1pbGFyIA0KaW1wcm92ZW1lbnRzIGhhdmUgYmVlbiBwcmV2aW91c2x5IHJlcG9ydGVkIGJ5IHRo
+ZSBrZXJuZWwgdGVzdCByb2JvdCBbMiwzXSwNCmJ1dCBpdCBpcyBuaWNlIHRvIHNlZSB0aGF0IHRo
+ZXkgYXJlIHJlcHJvZHVjaWJsZSBvbiBvdXIgc3lzdGVtIGFzIHdlbGwuIA0KVGhlIGRldGFpbHMg
+YXBwZWFyIGJlbG93Lg0KDQpPdXIgcGVyZm9ybWFuY2UgdGVhbSBhbHNvIGV2YWx1YXRlZCB0aGUg
+cGVyZm9ybWFuY2Ugb2YgVFBDLUMgd2l0aCANCk9yYWNsZSBEQiBvbiB0aGUgcGF0Y2hlZCBrZXJu
+ZWwgd2l0aCBDTkEuIFRoZSBldmFsdWF0aW9uLCBjYXJyaWVkIG9uIGENCnN5c3RlbSBlcXVpcHBl
+ZCB3aXRoIHR3byBBTUQgRVBZQyA3NTUxIHByb2Nlc3NvcnMsIHNob3dlZA0Kbm8gc2Vuc2l0aXZp
+dHkgdG8gQ05BIC0tIG5vIGltcHJvdmVtZW50cywgbm8gcmVncmVzc2lvbnMuDQoNCj09PT09PT09
+PT09PT0NCg0KVGhlIGZvbGxvd2luZyByZXN1bHRzIGFyZSBmcm9tIGFuIE9yYWNsZSBYNS04IHNl
+cnZlciAoZWlnaHQgSW50ZWwgWGVvbg0KRTctODg5NSB2MyBAIDIuNjBHSHogc29ja2V0cyB3aXRo
+IDE4IGh5cGVydGhyZWFkZWQgY29yZXMgZWFjaCkuIEVhY2gNCm51bWJlciByZXByZXNlbnRzIGF2
+ZXJhZ2UgdGhyb3VnaHB1dCBvdmVyIDI1IHJ1bnMuIFRoZSBzdGFuZGFyZCBkZXZpYXRpb24NCmlz
+IGFsc28gcmVwb3J0ZWQgaW4gKCksIGFuZCBpdCB3YXMgcHJldHR5IGxhcmdlIGluIHNvbWUgZXhw
+ZXJpbWVudHMuIA0KDQpUaGUgZm9sbG93aW5nIHJlc3VsdHMgYXJlIGZyb20gdGhlIGZzbWFyayBi
+ZW5jaG1hcmsgKGJhc2VkIG9uIHRoZSANCmBmc21hcmstZ2VuZXJpYy0xYnJkLTFCUkRfNDhHLTRN
+LWJ0cmZzLTF4LSp0LU5vU3luYy0yNEdgIGNvbmZpZykuDQpUaGUgcmVwb3J0ZWQgbnVtYmVycyBy
+ZXByZXNlbnQgYGZpbGVzLXBlci1zZWNgLg0KDQpudW0tdGhyZWFkcyAgc3RvY2sgICAgICBDTkEg
+ICAgICAgICAgLyBzcGVlZHVwDQogIDEgIDQwMC4yMTYgKDcuMzk5KSA0MDMuMjEyICg3LjE2OSkg
+LyAxLjAwNw0KICAyICA3ODQuNDg0ICgxMy44MDkpIDc3OC4xOTYgKDIyLjY5OSkgLyAwLjk5Mg0K
+ICA0ICAxMTUzLjc5MiAoNTQuNjk5KSAxMTMwLjE0MCAoNTMuODIzKSAvIDAuOTgwDQogIDggIDEy
+NDAuNDI0ICgxNjAuNDUzKSAxMjg3LjUzMiAoMTY5LjY1OSkgLyAxLjAzOA0KIDE2ICAxNDQwLjcy
+MCAoMTgyLjU1NSkgMTQ4OS4yODggKDE0OC42MDQpIC8gMS4wMzQNCiAzMiAgMTYwMC40MzIgKDU5
+Ljk0NCkgMTg2MC42NTIgKDIxMi45NzEpIC8gMS4xNjMNCiA2NCAgMTE2OS43NDAgKDQwLjgxNSkg
+MzAyNy42ODAgKDE0Mi4zNDkpIC8gMi41ODgNCiA3MiAgMTE3NC4yNDAgKDM5LjI2MSkgMjY4Mi41
+NjAgKDU0My42OTApIC8gMi4yODUNCjE0NCAgMTE2NC4yOTYgKDQyLjQ0MSkgMjg0Mi42ODQgKDQw
+MC42NjQpIC8gMi40NDINCjIxNiAgMTE3NC4zMTIgKDM4LjM5MikgMjQ0NS4xNjggKDU3NS42Njgp
+IC8gMi4wODINCjI4NiAgMTE3NC43MzIgKDUyLjQzMCkgMjU5OC40NDQgKDQ2OC42MTUpIC8gMi4y
+MTINCg0KV2UgYWxzbyBleHBlcmltZW50ZWQgd2l0aCBhbm90aGVyIGNvbmZpZyANCihgZnNtYXJr
+LWdlbmVyaWMtMWJyZC0xQlJEXzQ4Ry00TS1idHJmcy0xeC0qdC1mc3luY0JlZm9yZUNsb3NlLTI0
+R2ApDQphbmQgbWVhc3VyZWQgbW9yZSBtb2Rlc3QsIHlldCByb2J1c3QgaW1wcm92ZW1lbnQ6DQoN
+Cm51bS10aHJlYWRzICBzdG9jayAgICAgIENOQSAgICAgICAgICAvIHNwZWVkdXANCiAgMSAgMTc3
+LjMwNCAoMy42NTkpIDE3OC41OTYgKDMuMjk5KSAvIDEuMDA3DQogIDIgIDM0NS4yNjAgKDguMzk4
+KSAzNDkuMzg0ICg1LjcwNikgLyAxLjAxMg0KICA0ICA2NDcuMjkyICgxNC45ODIpIDY0OC4xNjQg
+KDExLjI4NikgLyAxLjAwMQ0KICA4ICAxMDA4LjMwNCAoNDYuMzQyKSAxMDA3LjEwOCAoMzcuNzY1
+KSAvIDAuOTk5DQogMTYgIDExMTYuNjUyICg1Ny44MTYpIDExNTAuNzUyICg0OS4wMDUpIC8gMS4w
+MzENCiAzMiAgMTIyOS43NjAgKDg0LjkzMikgMTM0Ni4xMzIgKDgwLjkzNSkgLyAxLjA5NQ0KIDY0
+ICA5ODEuNTY0ICg1OS41MzMpIDEzMTMuOTkyICg3NC45NzEpIC8gMS4zMzkNCiA3MiAgOTk1LjE4
+MCAoNTkuMjI4KSAxMjY2LjY2MCAoNjMuMjg3KSAvIDEuMjczDQoxNDQgIDk3OC40NDggKDY5LjU4
+MSkgMTI5MC4zMzYgKDQzLjA2NSkgLyAxLjMxOQ0KMjE2ICAxMDExLjg4MCAoNjAuMTU0KSAxMzEw
+LjUyNCAoNjEuNjMxKSAvIDEuMjk1DQoyODYgIDk4NS4xNjQgKDY3LjAxNikgMTMwNS4yNDQgKDYz
+LjczNSkgLyAxLjMyNQ0KDQpUaGUgZm9sbG93aW5nIHJlc3VsdHMgYXJlIGZyb20gdGhlIEFJTTcg
+YmVuY2htYXJrIChiYXNlZCBvbiB0aGUgDQpgYWltNy1mcy1yYWlkLTRCUkRfMTJHLWJ0cmZzLSot
+UkFJRDAtZGlza19ycmAgY29uZmlnKS4gSGVyZSB3ZSB2YXJ5IA0KdGhlIGxvYWQsIGFuZCBtZWFz
+dXJlIHBlcmZvcm1hbmNlIGluIGBqb2JzLXBlci1taW51dGVgIHVuaXRzLiBEdWUgdG8gdGltZQ0K
+bGltaXRhdGlvbnMsIGVhY2ggZXhwZXJpbWVudCB3YXMgcmVwZWF0ZWQgb25seSA3IHRpbWVzLg0K
+DQpsb2FkICBzdG9jayAgICAgIENOQSAgICAgICAgICAvIHNwZWVkdXANCiAgMiAgOTY1LjYzMSAo
+MS42OTYpIDk2My45NjkgKDAuOTY1KSAvIDAuOTk4DQogMjAgIDc5MDEuNjQ3ICgxMTYuNjcxKSA4
+MjU2LjU3NiAoOTMuMzYyKSAvIDEuMDQ1DQoxMDAgIDE2NDA5LjE0NCAoMjgwLjgyOCkgMjMzODAu
+ODE5ICgyNzkuMzY1KSAvIDEuNDI1DQo1MDAgIDIwMzU1LjU0MSAoMzUzLjg2MikgMzQyODEuODM2
+ICg4NzMuMzU3KSAvIDEuNjg0DQoxMDAwICAyMDczMy45NDcgKDUwNy4zODgpIDM2NTQ2LjgyOSAo
+Njk1LjI3MykgLyAxLjc2Mw0KMTUwMCAgMjE1NzAuNjM5ICg0OTkuMjA1KSAzNzA3OC4yNDkgKDgw
+Ni42NjkpIC8gMS43MTkNCjMwMDAgIDIyMDY4Ljc2MSAoNDE1LjgxMykgMzY2NDkuMTQ0ICgxMjE5
+LjYzOCkgLyAxLjY2MQ0KOTAwMCAgMTk1NTEuNjgxICgzMzcuMjMyKSAzNzk5OC40NjQgKDY4Ny4w
+NTkpIC8gMS45NDMNCg0KQmVzdCByZWdhcmRzLA0K4oCUIEFsZXgNCg0KWzFdIGh0dHBzOi8vZ2l0
+aHViLmNvbS9pbnRlbC9sa3AtdGVzdHMuZ2l0DQpbMl0gaHR0cHM6Ly9saXN0cy4wMS5vcmcvaHlw
+ZXJraXR0eS9saXN0L2xrcEBsaXN0cy4wMS5vcmcvdGhyZWFkL0hHVk9DWURFRTVLVExZUFRBRkJE
+MlJYRFFPQ0RQRlVKLw0KWzNdIGh0dHBzOi8vbGlzdHMuMDEub3JnL2h5cGVya2l0dHkvbGlzdC9s
+a3BAbGlzdHMuMDEub3JnL3RocmVhZC9ETk1FUVBYSlJRWTJJS0haM0VSR1JZNlRVUFdEVEZVTi8N
+Cg0KPiBPbiBNYXkgMTQsIDIwMjEsIGF0IDQ6MDcgUE0sIEFsZXggS29nYW4gPGFsZXgua29nYW5A
+b3JhY2xlLmNvbT4gd3JvdGU6DQo+IA0KPiBDaGFuZ2VzIGZyb20gdjE0Og0KPiAtLS0tLS0tLS0t
+LS0tLS0tDQo+IA0KPiAtIENoYW5nZSB0aGUgd2F5IHRoZSBtYWluIHF1ZXVlIGlzIHNjYW5uZWQg
+YW5kIHJlb3JkZXJlZCBpbg0KPiBjbmFfd2FpdF9oZWFkX29yX2xvY2soKSwgYmFzZWQgb24gUGV0
+ZXIncyBzdWdnZXN0aW9uLg0KPiANCj4gSW4gZGV0YWlsOiBpbnN0ZWFkIG9mIGluc3BlY3Rpbmcg
+b25seSBvbmUgcXVldWUgbm9kZSwgd2Ugbm93IHNjYW4NCj4gKGFuZCBtb3ZlIG5vZGVzIGludG8g
+dGhlIHNlY29uZGFyeSBxdWV1ZSkgYXMgbG9uZyBhcyB0aGUgbG9jaw0KPiByZW1haW5zIGJ1c3ku
+IFRoaXMgc2ltcGxpZmllZCB0aGUgY29kZSBxdWl0ZSBhIGJpdCwgYXMgd2UgZG9uJ3QgbmVlZA0K
+PiB0byBjYWxsIGNuYV9vcmRlcl9xdWV1ZSgpIGFnYWluIGZyb20gY25hX2xvY2tfaGFuZG9mZigp
+LiANCj4gDQo+IC0gVXNlIGxvY2FsX2Nsb2NrKCkgaW5zdGVhZCBvZiByZWx5aW5nIG9uIGppZmZp
+ZXMgdG8gZGVjaWRlIHdoZW4gdG8NCj4gZmx1c2ggdGhlIHNlY29uZGFyeSBxdWV1ZSwgcGVyIEFu
+ZHkncyBzdWdnZXN0aW9uLg0KPiANCj4gLSBVc2UgbW9kdWxlX3BhcmFtKCkgZm9yIG51bWFfc3Bp
+bmxvY2tfdGhyZXNob2xkX25zLCBzbyBpdCBjYW4gYmUgdHdlYWtlZA0KPiBhdCBydW50aW1lLCBw
+ZXIgQW5keSdzIHN1Z2dlc3Rpb24uDQo+IA0KPiAtIFJlZHVjZSB0aGUgZGVmYXVsdCB2YWx1ZSBm
+b3IgbnVtYV9zcGlubG9ja190aHJlc2hvbGRfbnMgdG8gMW1zIGJhc2VkIG9uDQo+IHRoZSBjb21t
+ZW50cyBmcm9tIEFuZHkgYW5kIFBldGVyLiBUaGUgcGVyZm9ybWFuY2UgbnVtYmVycyBiZWxvdyBp
+bmNsdWRlDQo+IHJlc3VsdHMgd2l0aCB0aGUgbmV3IGRlZmF1bHQgYXMgd2VsbCBhcyB3aXRoIHRo
+ZSB2YWx1ZSBvZiAxMG1zLCB3aGljaCB3YXMgDQo+IHRoZSBkZWZhdWx0IHRocmVzaG9sZCBpbiBw
+cmV2aW91cyByZXZpc2lvbnMgb2YgdGhlIHNlcmllcy4NCj4gDQo+IFN1bW1hcnkNCj4gLS0tLS0t
+LQ0KPiANCj4gTG9jayB0aHJvdWdocHV0IGNhbiBiZSBpbmNyZWFzZWQgYnkgaGFuZGluZyBhIGxv
+Y2sgdG8gYSB3YWl0ZXIgb24gdGhlDQo+IHNhbWUgTlVNQSBub2RlIGFzIHRoZSBsb2NrIGhvbGRl
+ciwgcHJvdmlkZWQgY2FyZSBpcyB0YWtlbiB0byBhdm9pZA0KPiBzdGFydmF0aW9uIG9mIHdhaXRl
+cnMgb24gb3RoZXIgTlVNQSBub2Rlcy4gVGhpcyBwYXRjaCBpbnRyb2R1Y2VzIENOQQ0KPiAoY29t
+cGFjdCBOVU1BLWF3YXJlIGxvY2spIGFzIHRoZSBzbG93IHBhdGggZm9yIHFzcGlubG9jay4gSXQg
+aXMNCj4gZW5hYmxlZCB0aHJvdWdoIGEgY29uZmlndXJhdGlvbiBvcHRpb24gKE5VTUFfQVdBUkVf
+U1BJTkxPQ0tTKS4NCj4gDQo+IENOQSBpcyBhIE5VTUEtYXdhcmUgdmVyc2lvbiBvZiB0aGUgTUNT
+IGxvY2suIFNwaW5uaW5nIHRocmVhZHMgYXJlDQo+IG9yZ2FuaXplZCBpbiB0d28gcXVldWVzLCBh
+IHByaW1hcnkgcXVldWUgZm9yIHRocmVhZHMgcnVubmluZyBvbiB0aGUgc2FtZQ0KPiBub2RlIGFz
+IHRoZSBjdXJyZW50IGxvY2sgaG9sZGVyLCBhbmQgYSBzZWNvbmRhcnkgcXVldWUgZm9yIHRocmVh
+ZHMNCj4gcnVubmluZyBvbiBvdGhlciBub2Rlcy4gVGhyZWFkcyBzdG9yZSB0aGUgSUQgb2YgdGhl
+IG5vZGUgb24gd2hpY2gNCj4gdGhleSBhcmUgcnVubmluZyBpbiB0aGVpciBxdWV1ZSBub2Rlcy4g
+QWZ0ZXIgYWNxdWlyaW5nIHRoZSBNQ1MgbG9jayBhbmQNCj4gYmVmb3JlIGFjcXVpcmluZyB0aGUg
+c3BpbmxvY2ssIHRoZSBNQ1MgbG9jayBob2xkZXIgY2hlY2tzIHdoZXRoZXIgdGhlIG5leHQNCj4g
+d2FpdGVyIGluIHRoZSBwcmltYXJ5IHF1ZXVlIChpZiBleGlzdHMpIGlzIHJ1bm5pbmcgb24gdGhl
+IHNhbWUgTlVNQSBub2RlLg0KPiBJZiBpdCBpcyBub3QsIHRoYXQgd2FpdGVyIGlzIGRldGFjaGVk
+IGZyb20gdGhlIG1haW4gcXVldWUgYW5kIG1vdmVkIGludG8NCj4gdGhlIHRhaWwgb2YgdGhlIHNl
+Y29uZGFyeSBxdWV1ZS4gVGhpcyB3YXksIHdlIGdyYWR1YWxseSBmaWx0ZXIgdGhlIHByaW1hcnkN
+Cj4gcXVldWUsIGxlYXZpbmcgb25seSB3YWl0ZXJzIHJ1bm5pbmcgb24gdGhlIHNhbWUgcHJlZmVy
+cmVkIE5VTUEgbm9kZS4gTm90ZQ0KPiB0aGF0IGNlcnRhaW4gcHJpb3J0aXplZCB3YWl0ZXJzIChl
+LmcuLCBpbiBpcnEgYW5kIG5taSBjb250ZXh0cykgYXJlDQo+IGV4Y2x1ZGVkIGZyb20gYmVpbmcg
+bW92ZWQgdG8gdGhlIHNlY29uZGFyeSBxdWV1ZS4gV2UgY2hhbmdlIHRoZSBOVU1BIG5vZGUNCj4g
+cHJlZmVyZW5jZSBhZnRlciBhIHdhaXRlciBhdCB0aGUgaGVhZCBvZiB0aGUgc2Vjb25kYXJ5IHF1
+ZXVlIHNwaW5zIGZvciBhDQo+IGNlcnRhaW4gYW1vdW50IG9mIHRpbWUuIFdlIGRvIHRoYXQgYnkg
+Zmx1c2hpbmcgdGhlIHNlY29uZGFyeSBxdWV1ZSBpbnRvDQo+IHRoZSBoZWFkIG9mIHRoZSBwcmlt
+YXJ5IHF1ZXVlLCBlZmZlY3RpdmVseSBjaGFuZ2luZyB0aGUgcHJlZmVyZW5jZSB0byB0aGUNCj4g
+TlVNQSBub2RlIG9mIHRoZSB3YWl0ZXIgYXQgdGhlIGhlYWQgb2YgdGhlIHNlY29uZGFyeSBxdWV1
+ZSBhdCB0aGUgdGltZSBvZg0KPiB0aGUgZmx1c2guDQo+IA0KPiBNb3JlIGRldGFpbHMgYXJlIGF2
+YWlsYWJsZSBhdCBodHRwczovL2FyeGl2Lm9yZy9hYnMvMTgxMC4wNTYwMC4NCj4gDQo+IFdlIGhh
+dmUgZG9uZSBzb21lIHBlcmZvcm1hbmNlIGV2YWx1YXRpb24gd2l0aCB0aGUgbG9ja3RvcnR1cmUg
+bW9kdWxlDQo+IGFzIHdlbGwgYXMgd2l0aCBzZXZlcmFsIGJlbmNobWFya3MgZnJvbSB0aGUgd2ls
+bC1pdC1zY2FsZSByZXBvLg0KPiBUaGUgZm9sbG93aW5nIGxvY2t0b3J0dXJlIHJlc3VsdHMgYXJl
+IGZyb20gYW4gT3JhY2xlIFg1LTQgc2VydmVyDQo+IChmb3VyIEludGVsIFhlb24gRTctODg5NSB2
+MyBAIDIuNjBHSHogc29ja2V0cyB3aXRoIDE4IGh5cGVydGhyZWFkZWQNCj4gY29yZXMgZWFjaCku
+IEVhY2ggbnVtYmVyIHJlcHJlc2VudHMgYW4gYXZlcmFnZSAob3ZlciAyNSBydW5zKSBvZiB0aGUN
+Cj4gdG90YWwgbnVtYmVyIG9mIG9wcyAoeDEwXjcpIHJlcG9ydGVkIGF0IHRoZSBlbmQgb2YgZWFj
+aCBydW4uIFRoZSANCj4gc3RhbmRhcmQgZGV2aWF0aW9uIGlzIGFsc28gcmVwb3J0ZWQgaW4gKCks
+IGFuZCBpbiBnZW5lcmFsIGlzIGFib3V0IDMlDQo+IGZyb20gdGhlIGF2ZXJhZ2UuIFRoZSAnc3Rv
+Y2snIGtlcm5lbCBpcyB2NS4xMi4wLA0KPiBjb21taXQgM2NmNWM4ZWEzYTY2LCBjb21waWxlZCBp
+biB0aGUgZGVmYXVsdCBjb25maWd1cmF0aW9uLiANCj4gJ0NOQScgaXMgdGhlIG1vZGlmaWVkIGtl
+cm5lbCB3aXRoIE5VTUFfQVdBUkVfU1BJTkxPQ0tTIHNldCBhbmQNCj4gdGhlIG5ldyBkZWZhdWx0
+IHRocmVzaG9sZCBvZiAxbXMgZm9yIGZsdXNoaW5nIHRoZSBzZWNvbmRhcnkgcXVldWUNCj4gKG51
+bWFfc3BpbmxvY2tfdGhyZXNob2xkX25zKTsgJ0NOQS0xMG1zJyBpcyB0aGUgc2FtZSBhcyBDTkEs
+IA0KPiBidXQgdXNlcyB0aGUgdGhyZXNob2xkIG9mIDEwbXMuIFRoZSBzcGVlZHVwIGlzIGNhbGN1
+bGF0ZWQgYnkgZGl2aWRpbmcgDQo+IHRoZSByZXN1bHQgb2YgJ0NOQScgYW5kICdDTkEtMTBtcycs
+IHJlc3BlY3RpdmVseSwgYnkgdGhlIHJlc3VsdA0KPiBhY2hpZXZlZCB3aXRoICdzdG9jaycuDQo+
+IA0KPiAjdGhyICAJIHN0b2NrICAgICAgQ05BICAgICAgICAgIC8gc3BlZWR1cCAgQ05BLTEwbXMg
+ICAgLyBzcGVlZHVwDQo+ICAxICAyLjY5NSAoMC4xMDgpIDIuNzA0ICgwLjA5OSkgLyAxLjAwMyAg
+Mi43MTIgKDAuMDc3KSAvIDEuMDA2DQo+ICAyICAyLjc1MyAoMC4xODcpIDIuNzg1ICgwLjE3MSkg
+LyAxLjAxMiAgMi44MjIgKDAuMTc0KSAvIDEuMDI1DQo+ICA0ICA0LjM1NSAoMC4xMzkpIDQuNDE3
+ICgwLjE3OSkgLyAxLjAxNCAgNC4zNjEgKDAuMTgxKSAvIDEuMDAxDQo+ICA4ICA1LjE2MyAoMC4x
+MTkpIDcuMDE3ICgwLjE5NSkgLyAxLjM1OSAgNy4zNjkgKDAuMTg2KSAvIDEuNDI3DQo+IDE2ICA1
+Ljk0NCAoMC4xMzQpIDkuMTEwICgwLjI0MikgLyAxLjUzMiAgOS4xODcgKDAuMjMzKSAvIDEuNTQ2
+DQo+IDMyICA2LjMxMCAoMC4wODIpIDkuNzEwICgwLjE1NikgLyAxLjUzOSAgOS44MjcgKDAuMTYx
+KSAvIDEuNTU3DQo+IDM2ICA2LjM3NCAoMC4xMTIpIDkuNzc3ICgwLjE0MSkgLyAxLjUzNCAgOS44
+MzAgKDAuMTI0KSAvIDEuNTQyDQo+IDcyICA2LjE3MCAoMC4xMzkpIDkuOTIyICgwLjE5MCkgLyAx
+LjYwOCAgOS45NDUgKDAuMTM2KSAvIDEuNjEyDQo+IDEwOCAgNi4wMDIgKDAuMDg5KSA5LjY1MSAo
+MC4xNzYpIC8gMS42MDggIDkuODQ3ICgwLjEyNSkgLyAxLjY0MQ0KPiAxNDIgIDUuNzg0ICgwLjA3
+OSkgOS40NzcgKDAuMDg5KSAvIDEuNjM4ICA5LjY0MSAoMC4xMTMpIC8gMS42NjcNCj4gDQo+IFRo
+ZSBmb2xsb3dpbmcgdGFibGVzIGNvbnRhaW4gdGhyb3VnaHB1dCByZXN1bHRzIChvcHMvdXMpIGZy
+b20gdGhlIHNhbWUNCj4gc2V0dXAgZm9yIHdpbGwtaXQtc2NhbGUvb3BlbjFfdGhyZWFkczogDQo+
+IA0KPiAjdGhyICAJIHN0b2NrICAgICAgQ05BICAgICAgICAgIC8gc3BlZWR1cCAgQ05BLTEwbXMg
+ICAgLyBzcGVlZHVwDQo+ICAxICAwLjUwMyAoMC4wMDQpIDAuNTAxICgwLjAwMSkgLyAwLjk5NiAg
+MC41MDMgKDAuMDAyKSAvIDEuMDAwDQo+ICAyICAwLjc4MyAoMC4wMTQpIDAuNzczICgwLjAxMSkg
+LyAwLjk4OCAgMC43NzQgKDAuMDE2KSAvIDAuOTg5DQo+ICA0ICAxLjQyMiAoMC4wMjUpIDEuMzk4
+ICgwLjAzMCkgLyAwLjk4MyAgMS40MDMgKDAuMDI1KSAvIDAuOTg3DQo+ICA4ICAxLjc1MyAoMC4x
+MDQpIDEuNjQxICgwLjEzMikgLyAwLjkzNiAgMS42NzUgKDAuMTM0KSAvIDAuOTU2DQo+IDE2ICAx
+Ljg1MSAoMC4wOTcpIDEuNzYwICgwLjEwMykgLyAwLjk1MSAgMS43NzQgKDAuMTE5KSAvIDAuOTU5
+DQo+IDMyICAwLjkwNSAoMC4wODEpIDEuNzA4ICgwLjA4MSkgLyAxLjg4OCAgMS43MzggKDAuMDY5
+KSAvIDEuOTIyDQo+IDM2ICAwLjg5NSAoMC4wNTgpIDEuNzI2ICgwLjA2NSkgLyAxLjkyOCAgMS43
+MzUgKDAuMDgxKSAvIDEuOTM4DQo+IDcyICAwLjgyMyAoMC4wMzMpIDEuNjEwICgwLjA2NykgLyAx
+Ljk1NyAgMS42NDcgKDAuMDY3KSAvIDIuMDAyDQo+IDEwOCAgMC44NDUgKDAuMDM1KSAxLjU4OCAo
+MC4wNTQpIC8gMS44NzggIDEuNzQwICgwLjA2NykgLyAyLjA1OA0KPiAxNDIgIDAuODQwICgwLjAz
+MCkgMS41NDYgKDAuMDQyKSAvIDEuODM5ICAxLjc0MCAoMC4wNDgpIC8gMi4wNzANCj4gDQo+IGFu
+ZCB3aWxsLWl0LXNjYWxlL2xvY2syX3RocmVhZHM6DQo+IA0KPiAjdGhyICAJIHN0b2NrICAgICAg
+Q05BICAgICAgICAgIC8gc3BlZWR1cCAgQ05BLTEwbXMgICAgLyBzcGVlZHVwDQo+ICAxICAxLjU1
+MSAoMC4wMDMpIDEuNTU4ICgwLjAwNikgLyAxLjAwNSAgMS41NTggKDAuMDAzKSAvIDEuMDA1DQo+
+ICAyICAyLjcyMiAoMC4wNjQpIDIuNzA0ICgwLjA2MykgLyAwLjk5MyAgMi43MjcgKDAuMDU4KSAv
+IDEuMDAyDQo+ICA0ICA1LjI4NiAoMC4xNzgpIDUuMzYwICgwLjE1MSkgLyAxLjAxNCAgNS4zNjAg
+KDAuMTM1KSAvIDEuMDE0DQo+ICA4ICA0LjExNSAoMC4yOTcpIDMuOTA2ICgwLjM4MykgLyAwLjk0
+OSAgNC4wNjIgKDAuMzY2KSAvIDAuOTg3DQo+IDE2ICA0LjExOSAoMC4xMjEpIDMuOTUwICgwLjEz
+MSkgLyAwLjk1OSAgNC4wMDkgKDAuMTMyKSAvIDAuOTczDQo+IDMyICAyLjUwOCAoMC4wOTcpIDMu
+ODA1ICgwLjEwNikgLyAxLjUxNyAgMy45NjAgKDAuMDkxKSAvIDEuNTc5DQo+IDM2ICAyLjQ1NyAo
+MC4xMDEpIDMuODEwICgwLjA3MikgLyAxLjU1MSAgMy45MzEgKDAuMTA2KSAvIDEuNjAwDQo+IDcy
+ICAxLjkxMyAoMC4xMDMpIDMuNTMwICgwLjA3MCkgLyAxLjg0NSAgMy44NjAgKDAuMDc4KSAvIDIu
+MDE4DQo+IDEwOCAgMS44OTEgKDAuMTA5KSAzLjQxMCAoMC4wNzkpIC8gMS44MDMgIDMuODgxICgw
+LjA5NykgLyAyLjA1Mg0KPiAxNDIgIDEuNzUyICgwLjA5NikgMy4yMzYgKDAuMDgwKSAvIDEuODQ3
+ICAzLjc3NCAoMC4wNzgpIC8gMi4xNTUNCj4gDQo+IE91ciBldmFsdWF0aW9uIHNob3dzIHRoYXQg
+Q05BIGFsc28gaW1wcm92ZXMgcGVyZm9ybWFuY2Ugb2YgdXNlciANCj4gYXBwbGljYXRpb25zIHRo
+YXQgaGF2ZSBob3QgcHRocmVhZCBtdXRleGVzLiBUaG9zZSBtdXRleGVzIGFyZSANCj4gYmxvY2tp
+bmcsIGFuZCB3YWl0aW5nIHRocmVhZHMgcGFyayBhbmQgdW5wYXJrIHZpYSB0aGUgZnV0ZXggDQo+
+IG1lY2hhbmlzbSBpbiB0aGUga2VybmVsLiBHaXZlbiB0aGF0IGtlcm5lbCBmdXRleCBjaGFpbnMs
+IHdoaWNoDQo+IGFyZSBoYXNoZWQgYnkgdGhlIG11dGV4IGFkZHJlc3MsIGFyZSBlYWNoIHByb3Rl
+Y3RlZCBieSBhIA0KPiBjaGFpbi1zcGVjaWZpYyBzcGluIGxvY2ssIHRoZSBjb250ZW50aW9uIG9u
+IGEgdXNlci1tb2RlIG11dGV4IA0KPiB0cmFuc2xhdGVzIGludG8gY29udGVudGlvbiBvbiBhIGtl
+cm5lbCBsZXZlbCBzcGlubG9jay4gDQo+IA0KPiBIZXJlIGFyZSB0aGUgdGhyb3VnaHB1dCByZXN1
+bHRzIChvcHMvdXMpIGZvciB0aGUgbGV2ZWxkYiDigJhyZWFkcmFuZG9t4oCZDQo+IGJlbmNobWFy
+azoNCj4gDQo+ICN0aHIgIAkgc3RvY2sgICAgICBDTkEgICAgICAgICAgLyBzcGVlZHVwICBDTkEt
+MTBtcyAgICAvIHNwZWVkdXANCj4gIDEgIDAuNTMzICgwLjAxMSkgMC41MzkgKDAuMDE0KSAvIDEu
+MDEyICAwLjUzNiAoMC4wMTMpIC8gMS4wMDYNCj4gIDIgIDAuODU0ICgwLjAyMikgMC44NTYgKDAu
+MDE3KSAvIDEuMDAzICAwLjg1NyAoMC4wMjApIC8gMS4wMDQNCj4gIDQgIDEuMjM2ICgwLjAyOCkg
+MS4yMzggKDAuMDU0KSAvIDEuMDAyICAxLjIxNyAoMC4wNTQpIC8gMC45ODUNCj4gIDggIDEuMjA3
+ICgwLjExNykgMS4xOTggKDAuMTIyKSAvIDAuOTkzICAxLjE1NSAoMC4xMzgpIC8gMC45NTcNCj4g
+MTYgIDAuNzU4ICgwLjA1NSkgMS4xMjggKDAuMTE4KSAvIDEuNDg5ICAxLjA2OCAoMC4xMzEpIC8g
+MS40MDkNCj4gMzIgIDAuNzQzICgwLjAyNykgMS4xNTMgKDAuMDI4KSAvIDEuNTUxICAxLjE0NyAo
+MC4wMjEpIC8gMS41NDMNCj4gMzYgIDAuNzA4ICgwLjAyNykgMS4xNTAgKDAuMDI0KSAvIDEuNjIz
+ICAxLjEzNyAoMC4wMjYpIC8gMS42MDUNCj4gNzIgIDAuNjI5ICgwLjAxNikgMS4xMTIgKDAuMDE5
+KSAvIDEuNzY3ICAxLjEzNCAoMC4wMTkpIC8gMS44MDINCj4gMTA4ICAwLjYxMCAoMC4wMTIpIDEu
+MDUzICgwLjAxOCkgLyAxLjcyNSAgMS4xMzAgKDAuMDE3KSAvIDEuODUzDQo+IDE0MiAgMC42MDYg
+KDAuMDEzKSAxLjAwOCAoMC4wMjApIC8gMS42NjQgIDEuMTEwICgwLjAyMykgLyAxLjgzMw0KPiAN
+Cj4gRnVydGhlciBjb21tZW50cyBhcmUgd2VsY29tZSBhbmQgYXBwcmVjaWF0ZWQuDQo+IA0KPiBB
+bGV4IEtvZ2FuICg2KToNCj4gIGxvY2tpbmcvcXNwaW5sb2NrOiBSZW5hbWUgbWNzIGxvY2svdW5s
+b2NrIG1hY3JvcyBhbmQgbWFrZSB0aGVtIG1vcmUNCj4gICAgZ2VuZXJpYw0KPiAgbG9ja2luZy9x
+c3BpbmxvY2s6IFJlZmFjdG9yIHRoZSBxc3BpbmxvY2sgc2xvdyBwYXRoDQo+ICBsb2NraW5nL3Fz
+cGlubG9jazogSW50cm9kdWNlIENOQSBpbnRvIHRoZSBzbG93IHBhdGggb2YgcXNwaW5sb2NrDQo+
+ICBsb2NraW5nL3FzcGlubG9jazogSW50cm9kdWNlIHN0YXJ2YXRpb24gYXZvaWRhbmNlIGludG8g
+Q05BDQo+ICBsb2NraW5nL3FzcGlubG9jazogQXZvaWQgbW92aW5nIGNlcnRhaW4gdGhyZWFkcyBi
+ZXR3ZWVuIHdhaXRpbmcgcXVldWVzDQo+ICAgIGluIENOQQ0KPiAgbG9ja2luZy9xc3BpbmxvY2s6
+IEludHJvZHVjZSB0aGUgc2h1ZmZsZSByZWR1Y3Rpb24gb3B0aW1pemF0aW9uIGludG8NCj4gICAg
+Q05BDQo+IA0KPiAuLi4vYWRtaW4tZ3VpZGUva2VybmVsLXBhcmFtZXRlcnMudHh0ICAgICAgICAg
+fCAgMTggKw0KPiBhcmNoL2FybS9pbmNsdWRlL2FzbS9tY3Nfc3BpbmxvY2suaCAgICAgICAgICAg
+fCAgIDYgKy0NCj4gYXJjaC94ODYvS2NvbmZpZyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IHwgIDIwICsNCj4gYXJjaC94ODYvaW5jbHVkZS9hc20vcXNwaW5sb2NrLmggICAgICAgICAgICAg
+IHwgICA0ICsNCj4gYXJjaC94ODYva2VybmVsL2FsdGVybmF0aXZlLmMgICAgICAgICAgICAgICAg
+IHwgICA0ICsNCj4gaW5jbHVkZS9hc20tZ2VuZXJpYy9tY3Nfc3BpbmxvY2suaCAgICAgICAgICAg
+IHwgICA0ICstDQo+IGtlcm5lbC9sb2NraW5nL21jc19zcGlubG9jay5oICAgICAgICAgICAgICAg
+ICB8ICAyMCArLQ0KPiBrZXJuZWwvbG9ja2luZy9xc3BpbmxvY2suYyAgICAgICAgICAgICAgICAg
+ICAgfCAgODIgKysrLQ0KPiBrZXJuZWwvbG9ja2luZy9xc3BpbmxvY2tfY25hLmggICAgICAgICAg
+ICAgICAgfCA0MjUgKysrKysrKysrKysrKysrKysrDQo+IGtlcm5lbC9sb2NraW5nL3FzcGlubG9j
+a19wYXJhdmlydC5oICAgICAgICAgICB8ICAgMiArLQ0KPiAxMCBmaWxlcyBjaGFuZ2VkLCA1NjIg
+aW5zZXJ0aW9ucygrKSwgMjMgZGVsZXRpb25zKC0pDQo+IGNyZWF0ZSBtb2RlIDEwMDY0NCBrZXJu
+ZWwvbG9ja2luZy9xc3BpbmxvY2tfY25hLmgNCj4gDQo+IC0tIA0KPiAyLjI0LjMgKEFwcGxlIEdp
+dC0xMjgpDQo+IA0KDQo=
