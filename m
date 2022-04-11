@@ -2,106 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E804DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 815EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:34:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345822AbiDKLgh (ORCPT
+        id S1344020AbiDKLhC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50238 "EHLO
+        Mon, 11 Apr 2022 07:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238890AbiDKLgd (ORCPT
+        with ESMTP id S238890AbiDKLhB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:36:33 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A2E13DF9
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:34:18 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id c64so5817829edf.11
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:34:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=PriMJtte/5hgjriSNEToIdFfrLkuSVpCW0l+e7C3lOg=;
-        b=YW/bjohkH5YlnoINwYy8ZTkU/kPoS6OSYhi2Nmyw7qdSMmHEjs6NR3ndPlfr4QwKhB
-         3Da1O5Tfe5om2Fo0lnNVVIocYfoarmWleA9BaF0Fw/5Y0uZ1OrEzmRUS4VMyFkNRGcnS
-         MaDeUeLNE7oiI86kaZTbibpAbvxLWXC6SYJKuWCDtAgdV79dKBBwn6ZfLwElfbesdWbj
-         pA3EzTQ55zndlfF9NH+onk5bNc8VAUfNp4XWPRpBdEj/Nne63MNOv/B8RfvSbjsOnKVb
-         5Hvl47nRTYDjy35vU4upXpJ5E795ux/CuVBX7DA3iEPxFNGUEyMCB250FS9PYrQVqoM4
-         i8mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=PriMJtte/5hgjriSNEToIdFfrLkuSVpCW0l+e7C3lOg=;
-        b=eXU9S2p2IR0rU5tSaFr9eZtSfrKSGcsxFr6rPyCN44zhUM8y/BuYCW+W9HAs8toAQE
-         UBV2GgwwftG2bZZkU2376eQlVyQvPa8ULdQaLxLfc8gNkcF9wa8ehI7zs4MGIVOabo8l
-         iS4fGcfs81xVSlty+FoVHwec3DDspC9enwj3SPlvm8ntjzttwJ5gfY9/UILuaeWBHNGw
-         G01YLS9zRh1d+W89EFyR17Z12TS30r19/9OUznDkK+WZKGhjkdHylteHSR850JCExVnB
-         HC3RVvOuC52bBtk0etELqjUIoPyFyFuwUN132J6zPGNS9O4yXour7+Rva5gA/dz1cUty
-         wWwA==
-X-Gm-Message-State: AOAM533qomQrfZU6zAsRJ8G1Cc6GUvzxOqYz1Yx141wJUsFE1A7hsN01
-        lyopDDuHTFVueXYP4xTsRKjJog==
-X-Google-Smtp-Source: ABdhPJwWKcguqGqBLwNOxShWwcd7Yc3YcqboI8pqcx86iqrVVgwAv1TKmUt48U31rdiVBxs5t/VMew==
-X-Received: by 2002:a05:6402:5210:b0:419:d802:626e with SMTP id s16-20020a056402521000b00419d802626emr33267210edd.11.1649676857289;
-        Mon, 11 Apr 2022 04:34:17 -0700 (PDT)
-Received: from [192.168.0.191] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id s11-20020a170906284b00b006e108693850sm11793292ejc.28.2022.04.11.04.34.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 04:34:16 -0700 (PDT)
-Message-ID: <aefe5080-475b-946e-d6c7-1c39dc90da1c@linaro.org>
-Date:   Mon, 11 Apr 2022 13:34:15 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC PATCH 1/2] regulator: dt-bindings: qcom,rpmh: document
- supplies per variant
-Content-Language: en-US
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220411110344.231903-1-krzysztof.kozlowski@linaro.org>
- <20220411110344.231903-2-krzysztof.kozlowski@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220411110344.231903-2-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Mon, 11 Apr 2022 07:37:01 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA9013DF9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:34:46 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V9nhU4j_1649676883;
+Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0V9nhU4j_1649676883)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 11 Apr 2022 19:34:44 +0800
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+To:     akpm@linux-foundation.org
+Cc:     willy@infradead.org, baolin.wang@linux.alibaba.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] mm: migrate: Simplify the refcount validation when migrating hugetlb mapping
+Date:   Mon, 11 Apr 2022 19:34:30 +0800
+Message-Id: <eb2fbbeaef2b1714097b9dec457426d682ee0635.1649676424.git.baolin.wang@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/04/2022 13:03, Krzysztof Kozlowski wrote:
-> The RPMH regulator binding covers several devices with different
-> regulator supplies, so it uses patterns matching broad range of these
-> supplies.  This works fine but is not specific and might miss actual
-> mistakes when a wrong supply property is used for given variant.
-> 
-> Add separate child schema which describes the supplies depending on the
-> compatible.
+There is no need to validate the hugetlb page's refcount before trying
+to freeze the hugetlb page's expected refcount, instead we can just
+rely on the page_ref_freeze() to simplify the validation.
 
+Moreover we are always under the page lock when migrating the hugetlb
+page mapping, which means nowhere else can remove it from the page cache,
+so we can remove the xas_load() validation under the i_pages lock.
 
-(...)
+Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+---
+ mm/migrate.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-> -additionalProperties: false
-> -
->  required:
->    - compatible
->    - qcom,pmic-id
->  
-> +allOf:
-> +  - $ref: qcom,rpmh-regulator-supplies.yaml#
-> +
-> +additionalProperties: false
+diff --git a/mm/migrate.c b/mm/migrate.c
+index a3d8c2b..b267827 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -477,11 +477,6 @@ int migrate_huge_page_move_mapping(struct address_space *mapping,
+ 
+ 	xas_lock_irq(&xas);
+ 	expected_count = 2 + page_has_private(page);
+-	if (page_count(page) != expected_count || xas_load(&xas) != page) {
+-		xas_unlock_irq(&xas);
+-		return -EAGAIN;
+-	}
+-
+ 	if (!page_ref_freeze(page, expected_count)) {
+ 		xas_unlock_irq(&xas);
+ 		return -EAGAIN;
+-- 
+1.8.3.1
 
-This should be unevaluatedProperties:false, although this makes schema
-matching any property. :(
-
-
-Best regards,
-Krzysztof
