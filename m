@@ -2,88 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF41AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:09:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A43C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:09:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347643AbiDKPLW (ORCPT
+        id S1347651AbiDKPMJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35606 "EHLO
+        Mon, 11 Apr 2022 11:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347644AbiDKPLR (ORCPT
+        with ESMTP id S1347598AbiDKPMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:11:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9456356;
-        Mon, 11 Apr 2022 08:09:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4837661526;
-        Mon, 11 Apr 2022 15:09:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 431F1C385A3;
-        Mon, 11 Apr 2022 15:09:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649689741;
-        bh=22S2yrevAEeFE4scZEMGrxj+dH0qEXV6ljblsP2XRkk=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=rRBzsys0HqU8ZdjYOqL9oFRE7C+qqsTs9tSu6vKmX11f7BrV5Nz36ZSLjToT2hmtV
-         NOhG2S33MsOZukl20/yQcIjPu7zhmHndMyebTTpHpRK68IWzSTqmi1LGHsUkdmG5+w
-         l0Wza0vxiSNk45K8Rxz36u/9NoFv3LUGWJ8leHwDysacXK+urjOJqNTa8vLcIzENjc
-         KB4Zdh7lA+Lx7KrkFfipftAfRMJ1PvC6IuyoFp32OnuXB44xMeDhe/vJSGxyJgp7U9
-         q59j3H7uskuloY4e/FqCvsAapgNrp4F81KZ9bAcV6GtR1pm2s9seKlr7Rms/7cOAS0
-         OuqdXm6USUnTg==
-Date:   Mon, 11 Apr 2022 17:08:58 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Bastien Nocera <hadess@hadess.net>
-cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Ping Cheng <ping.cheng@wacom.com>,
-        Jason Gerecke <jason.gerecke@wacom.com>
-Subject: Re: [PATCH] HID: wacom: Correct power_supply type
-In-Reply-To: <20220407115406.115112-1-hadess@hadess.net>
-Message-ID: <nycvar.YFH.7.76.2204111708230.30217@cbobk.fhfr.pm>
-References: <20220407115406.115112-1-hadess@hadess.net>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Mon, 11 Apr 2022 11:12:06 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB4342DD71;
+        Mon, 11 Apr 2022 08:09:51 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id bh17so31513927ejb.8;
+        Mon, 11 Apr 2022 08:09:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Jk6M0DbfHBN0zLnudjgrB69c9HcXkYUuA3+BM6Jtrw4=;
+        b=A9SlVEDpcfZWlKCkgW4Ii0W+8+t2na/CW7KYHuT3p8rKlo8pXuQjWY1ZB4TlwTOttb
+         YhfsZv0Rv9AKamOEw5VZi8vGk+K1V5OADFVzP8bm6N5PlC9ckXnUnq1ZstXu0KOYPujp
+         iFl0c0DeLRHY+VHguqXnK9wwQbTtGTLbZVD2iHG/lH+yX1x/CxvBhe1F130seUI6TsRY
+         MbslGLrWiyFZdx+VTcwsuixiWtu7+hQwV2XH0AsAVnMHCdprNIFRQN/+cMSx9OhcwHBy
+         uf7QYc1oSUzePBewqV+lPl4wwSLqBjA0UYuYARHMwdHdXNGcbR7HTJItgEYYi798FGro
+         ZlGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Jk6M0DbfHBN0zLnudjgrB69c9HcXkYUuA3+BM6Jtrw4=;
+        b=DdG3ci9BD+bhHZMRMADM0YfT+1u919lQNHyZe0rGGT5DYM6MSsQricCiejCUpn7Jk/
+         n8sbVyJ5cypBgKIBZ+9a9I71+0MWqRWc5QrZY4QSC4FnoztP0m9El78XbsSMRg6CFj1u
+         JIXe34jpgKRcNEfIue03ojjOZvdV3qqKHSIDvX1MV+voOeDN5uezSVR8WXMPrmDCAzLS
+         nFHYgZDDIx2zDP3YZsY+Ah8q8xwAYQSf3z0xIBoZYCz5FsQsgQhfPBgCnQY7/h8wBSrp
+         7Ms4vQg07kiahzMfehM9pRupiD5PyH4l+xyNBS1ytaQ8+MgKKaSNU6PMBQe8GGiBh/h5
+         PEAQ==
+X-Gm-Message-State: AOAM530KtLIaXr3wQS3OJqF6n9lyxbaDfJviA+gh9Vfnr8nnMLM2QvKu
+        5ZlXp2c+6cAidXS0Ee4V5YF0zpSTzOpqmqWrFzf15RLLiD3z9A==
+X-Google-Smtp-Source: ABdhPJzTliG/iioOIcrQyniSG2pOQ+CpW+KIB1/ppsWIrMr0hnnOshu4TzUdgVPi8gVXv+q1QUKI11gbfTJ3e7M3wqU=
+X-Received: by 2002:a17:907:968e:b0:6db:aed5:43c8 with SMTP id
+ hd14-20020a170907968e00b006dbaed543c8mr30659865ejc.636.1649689790278; Mon, 11
+ Apr 2022 08:09:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <1836398.tdWV9SEqCh@kreacher>
+In-Reply-To: <1836398.tdWV9SEqCh@kreacher>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Apr 2022 18:05:37 +0300
+Message-ID: <CAHp75Vc2Lci4ewdosqX4Thm6ME7pKjKw+C+wtUsq2esRM-eXjg@mail.gmail.com>
+Subject: Re: [PATCH v1] PM: runtime: Avoid device usage count underflows
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Alan Stern <stern@rowland.harvard.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 7 Apr 2022, Bastien Nocera wrote:
+On Wed, Apr 6, 2022 at 11:49 PM Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
+>
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>
+> A PM-runtime device usage count underflow is potentially critical,
+> because it may cause a device to be suspended when it is expected to
+> be operational.
+>
+> For this reason, (1) make rpm_check_suspend_allowed() return an error
+> when the device usage count is negative to prevent devices from being
+> suspended in that case, (2) introduce rpm_drop_usage_count() that will
+> detect device usage count underflows, warn about them and fix them up,
+> and (3) use it to drop the usage count in a few places instead of
+> atomic_dec_and_test().
 
-> POWER_SUPPLY_TYPE_USB seems to only ever be used by USB ports that are
-> used to charge the machine itself (so a "system" scope), like the
-> single USB port on a phone, rather than devices.
-> 
-> The wacom_sys driver is the only driver that sets its device battery as
-> being a USB type, which doesn't seem correct based on its usage, so
-> switch it to be a battery type like all the other USB-connected devices.
-> 
-> Signed-off-by: Bastien Nocera <hadess@hadess.net>
-> ---
->  drivers/hid/wacom_sys.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/hid/wacom_sys.c b/drivers/hid/wacom_sys.c
-> index 066c567dbaa2..620fe74f5676 100644
-> --- a/drivers/hid/wacom_sys.c
-> +++ b/drivers/hid/wacom_sys.c
-> @@ -1777,7 +1777,7 @@ static int __wacom_initialize_battery(struct wacom *wacom,
->  	bat_desc->get_property = wacom_battery_get_property;
->  	sprintf(battery->bat_name, "wacom_battery_%ld", n);
->  	bat_desc->name = battery->bat_name;
-> -	bat_desc->type = POWER_SUPPLY_TYPE_USB;
-> +	bat_desc->type = POWER_SUPPLY_TYPE_BATTERY;
->  	bat_desc->use_for_apm = 0;
->  
->  	ps_bat = devm_power_supply_register(dev, bat_desc, &psy_cfg);
+...
 
-Thanks Bastien, makes sense. CCing Jason and Ping (the Wacom driver 
-maintainers) to get their Ack.
+> +               retval = rpm_drop_usage_count(dev);
+> +               if (retval > 0) {
+>                         trace_rpm_usage_rcuidle(dev, rpmflags);
+>                         return 0;
+> +               } else if (retval < 0) {
+> +                       return retval;
+>                 }
+
+Can be written in a form
+
+               if (retval < 0)
+                       return retval;
+               if (retval > 0) {
+                       trace_rpm_usage_rcuidle(dev, rpmflags);
+                       return 0;
+               }
+
+...
+
+> +               if (retval > 0) {
+>                         trace_rpm_usage_rcuidle(dev, rpmflags);
+>                         return 0;
+> +               } else if (retval < 0) {
+> +                       return retval;
+>                 }
+
+Ditto.
 
 -- 
-Jiri Kosina
-SUSE Labs
-
+With Best Regards,
+Andy Shevchenko
