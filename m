@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8840BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4454DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 22:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350314AbiDKWC7 (ORCPT
+        id S1350332AbiDKWDB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 18:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38192 "EHLO
+        Mon, 11 Apr 2022 18:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350376AbiDKWCk (ORCPT
+        with ESMTP id S1350398AbiDKWCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 18:02:40 -0400
+        Mon, 11 Apr 2022 18:02:47 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C43CDBC5
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 15:00:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740CE26C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 15:00:32 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id 306EB1F43C86
+        with ESMTPSA id DB2AE1F43C82
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649714424;
-        bh=H5TVWLdKQBunPI+41h2cAjj6IZ6UbyVtXydAliQEN5M=;
+        s=mail; t=1649714431;
+        bh=rykbT46970dnwG8XD3/7UFJ4mDKmg/KtVkYLQH0qBew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ghRkbXF8rhL12mWU1KFreAJI9IWMEWq2ZRIsd90oRUbv2Hi22nfvWlGYPyx1iO2Im
-         lLepkN8foGV3yYTi/kthftgh9ENBp8b7zqRqle9F6fYOnHDfVSbhI8GzOT2hwaGSGS
-         /A9STdZ5CD57NoJuhmSH9+3wm4N/Rbnd3gwu2JHh/UaekEDaQbVEtZW2zIbMnuK+Ei
-         vJ9nKFF0g73jEi//GPA6LAidI0lgOOscDFiB2ovh753SJpGMgB78FCJdtcr6okk34Z
-         iERUQs1LXIUQrYCJxf7S+GhF4m+eVHXZ6hnye92nR2xg0sDYgozC5onFTpl7k71MfR
-         JkzMscCGSUXlg==
+        b=Ynz54hlDD9OMiT6vTyY2rs246aLEQ6s85f9REUWTafcGadzyFiOoKAPgh1085Vxde
+         xh48RRmftrJRm0bxOHSpO6oCIdshqXcROjyBO2HKNoEpcOgzdciVW2py4O3fwqHIvT
+         kPuOqFKs3jLEgbnreRC5er2ffUz4zz/a5Ugw9UkEZL2UAfdjA5fQLzcAPSWDHidFz5
+         Ykx25wi36RZWuR9zGT174kJDEaUEHJhvHeuVI/sciCZkVdW+EjVaTw5ZBh3rBYmZdE
+         pmSEvKwUF0cdmn5eJPq/0PWsY+rEqG5KqIrwwUcZkYmXtjIBUM3qnBUwV+I6FKKII5
+         9k9a50GhP6obA==
 From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
 To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
         Gurchetan Singh <gurchetansingh@chromium.org>,
@@ -49,9 +49,9 @@ Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org,
         Dmitry Osipenko <digetx@gmail.com>,
         Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Subject: [PATCH v3 05/15] drm/virtio: Use appropriate atomic state in virtio_gpu_plane_cleanup_fb()
-Date:   Tue, 12 Apr 2022 00:59:27 +0300
-Message-Id: <20220411215937.281655-6-dmitry.osipenko@collabora.com>
+Subject: [PATCH v3 09/15] drm/shmem-helper: Correct doc-comment of drm_gem_shmem_get_sg_table()
+Date:   Tue, 12 Apr 2022 00:59:31 +0300
+Message-Id: <20220411215937.281655-10-dmitry.osipenko@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220411215937.281655-1-dmitry.osipenko@collabora.com>
 References: <20220411215937.281655-1-dmitry.osipenko@collabora.com>
@@ -61,39 +61,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make virtio_gpu_plane_cleanup_fb() to clean the state which DRM core
-wants to clean up and not the current plane's state. Normally the older
-atomic state is cleaned up, but the newer state could also be cleaned up
-in case of aborted commits.
+drm_gem_shmem_get_sg_table() never returns NULL on error, but a ERR_PTR.
+Correct the doc comment which says that it returns NULL on error.
 
-Cc: stable@vger.kernel.org
 Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 ---
- drivers/gpu/drm/virtio/virtgpu_plane.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/drm_gem_shmem_helper.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/virtio/virtgpu_plane.c b/drivers/gpu/drm/virtio/virtgpu_plane.c
-index 6d3cc9e238a4..7148f3813d8b 100644
---- a/drivers/gpu/drm/virtio/virtgpu_plane.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_plane.c
-@@ -266,14 +266,14 @@ static int virtio_gpu_plane_prepare_fb(struct drm_plane *plane,
- }
- 
- static void virtio_gpu_plane_cleanup_fb(struct drm_plane *plane,
--					struct drm_plane_state *old_state)
-+					struct drm_plane_state *state)
+diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
+index 8ad0e02991ca..30ee46348a99 100644
+--- a/drivers/gpu/drm/drm_gem_shmem_helper.c
++++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
+@@ -662,7 +662,7 @@ EXPORT_SYMBOL(drm_gem_shmem_print_info);
+  * drm_gem_shmem_get_pages_sgt() instead.
+  *
+  * Returns:
+- * A pointer to the scatter/gather table of pinned pages or NULL on failure.
++ * A pointer to the scatter/gather table of pinned pages or errno on failure.
+  */
+ struct sg_table *drm_gem_shmem_get_sg_table(struct drm_gem_shmem_object *shmem)
  {
- 	struct virtio_gpu_framebuffer *vgfb;
- 
--	if (!plane->state->fb)
-+	if (!state->fb)
- 		return;
- 
--	vgfb = to_virtio_gpu_framebuffer(plane->state->fb);
-+	vgfb = to_virtio_gpu_framebuffer(state->fb);
- 	if (vgfb->fence) {
- 		dma_fence_put(&vgfb->fence->f);
- 		vgfb->fence = NULL;
+@@ -688,7 +688,8 @@ EXPORT_SYMBOL_GPL(drm_gem_shmem_get_sg_table);
+  * drm_gem_shmem_get_sg_table() should not be directly called by drivers.
+  *
+  * Returns:
+- * A pointer to the scatter/gather table of pinned pages or errno on failure.
++ * A pointer to the scatter/gather table of pinned pages ERR_PTR()-encoded
++ * error code on failure.
+  */
+ struct sg_table *drm_gem_shmem_get_pages_sgt(struct drm_gem_shmem_object *shmem)
+ {
 -- 
 2.35.1
 
