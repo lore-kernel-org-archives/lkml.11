@@ -2,123 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67215C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:20:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D76C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244902AbiDKGWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 02:22:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60000 "EHLO
+        id S244915AbiDKGWu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 02:22:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244879AbiDKGWN (ORCPT
+        with ESMTP id S244879AbiDKGWo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 02:22:13 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49B23D1DF;
-        Sun, 10 Apr 2022 23:19:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1649657995;
-        bh=sfEMxueHlINxP3Ft9h3uCgQL3x0NL57EBnCByLr9WHw=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=LXG4o5IDHO3ef5fr2tCKvvAdmWy6WIOep7bK3zPAw1v0pOte4O2KeD1jEN7hX5ct4
-         IcwhR6sh4VZBXqQfqgaSM9+8BW5vCFjVtyaGLZZVttgDs/8q7oGwGLU+PTHciFrDh2
-         adcuO0ETsyF73Pz5sk0MlqsJzWhDmnmrfh/Fm57M=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.145.57]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MvK0R-1nuukM0DMv-00rHOG; Mon, 11
- Apr 2022 08:19:55 +0200
-Message-ID: <f68dde85-5ead-3c5c-3bf3-3e6bd7458f2e@gmx.de>
-Date:   Mon, 11 Apr 2022 08:18:09 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+        Mon, 11 Apr 2022 02:22:44 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2047.outbound.protection.outlook.com [40.107.237.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EA03CFFE;
+        Sun, 10 Apr 2022 23:20:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lGMUQiDwst/nGEntSV0RdbV1TyBGiK/AvvZyZoy2JIsxCdkGeZrb6FhCk/Jci7xdWETl1o3qwGquBro0vIg9yNRSFn8i+b7RmUwEoVFlBj8Qj6+TWsMkXV3vHxEiYH+plw5XNUDU6gRg9ZK+K/rPAcJsvYjqvj82UY6mERYDqs/5k1ZUAwK56eIqmsu2rTZMXvIJ7ASEbArZxx8fvpK+ap8iKswLl7X7YtCBTpVAWuEP8FOpOCerFBbp+w5ZQsNj6mQliKrCRsc8tv8QApdvgFtv/24LCm6SM32ajCedgSv3WNpjExwGq4WVLM4pLRqcGcq96d356HsKbO8G1vsn9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ekQje0vr6x6L3tsTd/meNQjPoBcIcYG5ev20jzUt198=;
+ b=g0M7zC3WdcPHiXv2Ms/jAErSI7a4NuZZTaEH5R8Mf2DR+qVgtp4NYP4YYI+GsVucf2ztoa+7sGbRM6kkvbxKoxBEqWgvk49eDlW7bj44ChLjGtqxtY90IoaoXTfHbhRmf5aXTzvMaigDNaMGGPU7jZN954VNk7fFJiCeNCW/YJFL2XflcrgM/SZjroYHNvUUjRmsOn8pCCI6YyXjSiaqz7e8X14WRzN+iVpLYjN3NtMQ9BS8Wn79+RO5WTKkDITu8KjmCC+vYhF5stG3+ohYqMB/QeMviAeZQ38MkAd7FGa9YWN01eDqmog0YOXfi3XN+Le6ycTtpvV+8vaE8g+mGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ekQje0vr6x6L3tsTd/meNQjPoBcIcYG5ev20jzUt198=;
+ b=t6BCaGLLfKVDjsXMCX2TebxHk0Q0f5M0oQxnWpJlL1LmxFuZD/f0F32kAMxxIrmBsPT0o27ospF+JXhomdgbcX9fXwRm4zXzF0oMXUe5t8mzaEGb6NDsObdMjBE4JeyJNguyeqDXI4thj8uVv+1Y9Doz4lkyPjkSLRmc7xkxvFeUy9ZHp2ubThN8WAP9gCDKOl+QlBAUv2whvLi3hZ5FbPfNfYoYcf73VdCtAZ5VfIvep/Pzbj0Y0ujtyztK2L99RZE5KPFg72i96dt44DUPheH7EvVD5MKHlW+gkWUmb1uHCbrc+SiaH0WrK3N9IMyWwvWngKzT5CgxOO9RohpKyA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from SA0PR12MB4349.namprd12.prod.outlook.com (2603:10b6:806:98::21)
+ by BYAPR12MB2872.namprd12.prod.outlook.com (2603:10b6:a03:12e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
+ 2022 06:20:28 +0000
+Received: from SA0PR12MB4349.namprd12.prod.outlook.com
+ ([fe80::e15c:41ca:1c76:2ef]) by SA0PR12MB4349.namprd12.prod.outlook.com
+ ([fe80::e15c:41ca:1c76:2ef%4]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
+ 06:20:28 +0000
+Message-ID: <eac41cf0-6057-2f52-26fd-50a0fbecd7a8@nvidia.com>
+Date:   Mon, 11 Apr 2022 11:50:14 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH 1/7] video: fbdev: i740fb: Error out if 'pixclock' equals
- zero
+Subject: Re: [Patch v6 1/4] memory: tegra: Add memory controller channels
+ support
 Content-Language: en-US
-To:     Ondrej Zary <linux@zary.sk>, Zheyu Ma <zheyuma97@gmail.com>
-Cc:     Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220404084723.79089-1-zheyuma97@gmail.com>
- <eb2edc5a-afad-f0c9-012f-9b9f226d2e5a@gmx.de>
- <CAMhUBjmm6ADp2Fr89CCQNX5FnhmBBrwFE0EQ3sq7CLER0J3ZEg@mail.gmail.com>
- <202204101102.13505.linux@zary.sk>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <202204101102.13505.linux@zary.sk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:7UMRgaQGw+lmVxgdw35JNxFmQ8/erZc7B2ZAznUL56KFExbyAyL
- eozhZDqrTS640g+EG/wkbxyUl8tATZwLYGBClGzFD5kDMy1zVp8ncsOPrHKCShmztq59eXl
- 43nNT+8gxU1B2smqyyhJrXqFFnQ5TDJsLNhcWI8Uh+nsFWnporQ37jdkOTraCUBwf05DeQm
- egEJBdtNlJbsWoNHbWn6w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:wz+exaJD4EU=:qCbHUBMR0eECdtBeg75SJM
- U4Thoi+oZ8fwwOrWoG2hwwJ07nadK6Jm03W7VVGxZEYRgPFh1iZpPDRgvRM4S1oB+TVrN9IvV
- 2B/S4Lm21lqV9vwhXQK66Xc2YQjR6DxQkm+FeMVWdsOFDjTS7G+UwlxQB0NRUQ6h0s5oHTTkp
- n5U9MdMRoHHf/JfpRgPLBvCb55hXzHbbI6NmoZFjCjTuJe+eglBElNT0Eowp/LxqMnkWwoPjA
- 8osGq39Rah3GpUONk5awjJHiR0pe8C1iesARwQNu42byJ9Nmip0nh+CD0XtGK/VnPiEEPdPeO
- yEINGfEAHdyYvn8ccLQjcA/JSZMDulF9dLFb2iKZfw7cYuKkmsOQrvCseLVzAESqVhX1vCM3L
- /FmPOOKieZ+6bzZPYAV/+OvsyHCjCTaKtv44feUrok68MrLiZZCGGzva5twG/e7uq+PW+hx0O
- xdnlq8hgdkIYmK+BJaubWb097/CLjtgw4jSbVfq+yuEQiT0GwaWTGHSJVRtcUDANHqLwv0h7q
- x1D+bzOomHGx8kmiP5uPq4zNlDBrhfAtNBuUQGj9gbIsLdyZnz1tjRBDdCUWvSisNnY0B8eE+
- 6Pmq4EUmauZY5MlJX/4iY5w1vaBC6pzHjVqf35fQ+S/6aJtDqeRfa0Nx69h+K86yhJYH+A2sA
- +/QN+JQ6a1q19QElMcOywTVCoJ3AM25ThZ2RZ16wm9/km/K0wzAeSwgpa+Z/iQ7YIokH6hu0j
- Gw4Dpl8Kc1PBaWHrLjfiSDOqjP3gpgZL13w6YCXxx9j9d7qhHvkvPDYnyneSiMxwVCxMCfaw9
- Yiri1Y6qZK/6IFrCN/bMuipbcuCY0YGu2/QUgAo8CJ663SYVSIgXH0cL8A/E+uqCm1pO+shqM
- MTAWAP0JDcXSgUWFJsEuZqigyKLSLudz+57FTgBGqa25uA432PzWSgdJEoEPFG0eAJq6JT+UH
- 98pFXzf3KPz4EK5SrFBm8/CICP60rHasqehg7bFe+VWjJXWONFwdcXUM2zNkLUKj2hy4rxMaj
- hCO6AlqijlgG+syyV4ATSMQ+NlLKZ9t3qfSu+PGqucClxai+BNEoqpVuk8noaVYKyCKBV76Bi
- iV/iWoQhb/7Iw0=
+To:     Dmitry Osipenko <digetx@gmail.com>, krzysztof.kozlowski@linaro.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     vdumpa@nvidia.com, Snikam@nvidia.com
+References: <20220406052459.10438-1-amhetre@nvidia.com>
+ <20220406052459.10438-2-amhetre@nvidia.com>
+ <bf23e357-1e74-6bbe-7f37-11147654e5fc@gmail.com>
+From:   Ashish Mhetre <amhetre@nvidia.com>
+In-Reply-To: <bf23e357-1e74-6bbe-7f37-11147654e5fc@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MA0PR01CA0013.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:80::13) To SA0PR12MB4349.namprd12.prod.outlook.com
+ (2603:10b6:806:98::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9fccd836-5757-4b08-382c-08da1b835f23
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2872:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB287239CCBDE9CC9E5780186DCAEA9@BYAPR12MB2872.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jsN5PCXa6ukSX8rq86yW+Cm5023nV8Ro8u/x9ejqWtBQK6sP7wOI4NYFHe7KhBh6gD5UK+e77Shn/rb5qj6iiQ8d9FQ9S56KxZoi4ibSVZUv3pg3/jyYdhtmmG3ZvHZgeNCUZ4TwsUzIgbQt8i1msaOiQMG3MHGGl3X5IwMwcPJxWRtwGHTCMuPXU1ZN8Gnt55PVG7IQnrVKUA8htcSF3rIVwNLziBg6yn3+DksSdKc8cgsyP+WV4LsQjUCh7m+Wge0JQUyCE9bsl64KopdQTN8EDosWGdRbkxUzDp6wxBjuQpWBIbg+ArYn1T1CjtMeXAAe0oQ3cJYqbwKAZ5c9auIOSg1k1zT166/+y/CQrJf7m4MPCxXtFR8SzyVGxnWvkL2iwr3yVz1JZcLeQMp5W40I1YT66jomQrCl0caSqebp9tj2zQR/UnPQYpD+YCGfK6v6wOxowy51tdTjDsmweuRQ7nKtURfEkTkEgTbdy0HZgfQbRcSA1hNkp4myF9afbn6lfooWvQQWInC1NC03l0GA6EM15Cyn+Yp5V/IUEGqjYEBt2B7nH17AIrfSZnsOZoCuOhD2yvBy5xo36ein82UYL3VuTDdE9X2MAyzsRM9NO3guD8Ks06Z9WGIKI3FuizoWZUOoNTxwX/F7OR8sf/SYHsFPGo0z3Ale/VyBOx27IaSlDeC8kG5tGYecpOQh95X+WSU0MnAcuxIzOnTbrWln1/SBdRONEFIa/dCU9lw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA0PR12MB4349.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(86362001)(31696002)(186003)(38100700002)(53546011)(2906002)(5660300002)(316002)(6512007)(66476007)(55236004)(26005)(6506007)(2616005)(107886003)(36756003)(508600001)(6486002)(6666004)(66556008)(66946007)(4326008)(8676002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MHJyMlROVW9qSTdWOGRBUE9iTHFRRHBGVzI1RzJuR3o2RjFwNExtVUVKUERq?=
+ =?utf-8?B?a3lUNzJiQkhCUjdEYU1RekRnanhnVDdhay92R3ZvRTRidjZSOVBqaUM1YXJU?=
+ =?utf-8?B?WWRlRmsydjh1N1NGbks4a2Q5RUdBWGsvTHo4LzlrV1FQWUFDZWRQSy9YREJt?=
+ =?utf-8?B?dUF0dzFTUHhXRHdzbExCNlBaOHdCekZCbmp6dnNDa244YUxnNkRqaE1zeHlh?=
+ =?utf-8?B?ZWhDbStFQzFEaWdhVnE2ZkxJb0RSWDBoYVNDdXpjQWp3dHRPcEpyeWtRcjh5?=
+ =?utf-8?B?eVpnckZhbUN1WXdoK3B3M24vSzRpeDFKWjRGb2R1aWZWQmVqa2NCVjFxcHZ4?=
+ =?utf-8?B?RGduU3p4WWIwaEZka01mUWpvVG5tb1JSUytpaVA3UlhpZ2k0UmR0RHpBNVhj?=
+ =?utf-8?B?YWc4NkpNdUVEcjk3WnJFVzJlUHFZSWx2a1hFUjdSWGs2QkJuRmdkb1RkRTNX?=
+ =?utf-8?B?TDhxRGk0OTYrdmFpUE5PcFFwRmtlSWt6MFVraHJ4SGFxaW4ycHNVODZ2Vm10?=
+ =?utf-8?B?bW1VQy81SFZMa2E2Zm96NGcyUG9ocWZldXl5MWtNL1oxREhnWlJ6NU9LUjRo?=
+ =?utf-8?B?VGF6ZENtTE8ra2RCbWlDdGhaWWJORFp2aTFVTDZKd1RwU0hYL2JPSTlVa0Ry?=
+ =?utf-8?B?LzJKN3BUYm1WYWlwTThranA1SlQ4MmxhRmRDV0dkVXczc1EvUTlRUVhSRDRZ?=
+ =?utf-8?B?RU1lRStTalhPNmgrWm41NFdOV0RZN09HZWNnRjlTQUNhbkxKQ2x1RXI1aWdT?=
+ =?utf-8?B?WGdYSWgyakxYaDhiSDhVVHRkUXNEQXp5Sk9XVnBGeDdEbER2ZnZVR1VqYjkv?=
+ =?utf-8?B?YWZJWnZZQnVCYnpBL1hpbTk2WG15bEE2bS9vQ2ZNZ2tuUUFaSk9VdHRiVXBt?=
+ =?utf-8?B?UGFtYWo3bll6ZUhTaGl5aTZMWWZXQ01jaVlpQ3BlU3duYnN1Qkl4S1ZNWHZk?=
+ =?utf-8?B?ak5ubDVJckpOL2V4TGUyN01vbm5JcEpNRnNKNzZHNGRVaXI2bTYvREJSSFhi?=
+ =?utf-8?B?dzhrOEJVRTRaRlZlTEU3dE42ZTdGc05BS0E0TkJiRFZPNFRPalI2clU4Q0lN?=
+ =?utf-8?B?MGdmT04rYkN6OHErS2xXeVBvZFZWeHR2MGJ0VjZoOGlsU0FlSUxqaW9Na1ly?=
+ =?utf-8?B?bjlnUmg2QVdOLzMyTVF1dzhZZXRDL2NJb1JaNlNodTR4TXlnRGF3am0vZE5h?=
+ =?utf-8?B?TStsVFU4dnczK2FYTm9zcnkrLy9hWVd3M2hVeE5ZK2RUb0RPTTN1NUVlVmJq?=
+ =?utf-8?B?QXgyNE8vVXFaL2lmU2hYZlZwZUlvK3dUYnVLNlk1aUhtbmdhNTlleGg4ZkE0?=
+ =?utf-8?B?TUkyTys3QUFyTjNjQ2FDVEZMVHZaWE1rSnVVemlKejF6U1NxRFNWOEM1K1N4?=
+ =?utf-8?B?QnhBSWczYmpZQnprZ3lXMDRDeDF2aVgwVVZIbnV6YkNiRmNQaCtkaVVrYzZU?=
+ =?utf-8?B?cklJSyt2TVhKZ3Y2OWtzSmRuYzA2YUxGWng1eDd4ZXBqNUxmclppcFBmU3FN?=
+ =?utf-8?B?cUhpeGMxQU9HODhuVGNKZTJ4VUk1U3RIeEtyOG0wdm51eUE0eHNkNW80d0h6?=
+ =?utf-8?B?QWJaZmJCMEgvTVdQR2hQNGhPNUsxeUZzUWNWOWZqNVZWUnFrN3NzZzhJUUhO?=
+ =?utf-8?B?U1NpOXZ0YzNhVUFhLzA5VWNZb2dncU1heHJTT3hVZ1lTVmpDQWVQWTkxYWNI?=
+ =?utf-8?B?OVRyaS9lb2FQaC9LL3VJYnNVQmxkRlBLQ043aTEwNUU1R2hObkxIRzFaSEtW?=
+ =?utf-8?B?TkhiN2QvMUdxVzlkTGNWMkluYmdUeWljQWZnTURxK05rYXhQZmtNeFhOMnJH?=
+ =?utf-8?B?bG9ucWZDblJBa0Q4VmQ5K0pBT1JnYXdTOVVCMm5TMlFMaGdtUUo4Z3c2ZjBU?=
+ =?utf-8?B?VnZiNUhLUEpYdnBSMFYxQjQvbThraDNIaGJoUWJSbzhxZnpqV1NuMzRXMWYr?=
+ =?utf-8?B?MDRGUUJrYk9ILzdwUUVqOVJZU0lDVXBoTkhBNU11YzBOWXp4YS90MStIRDRZ?=
+ =?utf-8?B?RjQ5dFR4WGxVdUxqVldvL2Faa1lFNHN6SlVEc2M2aDNQY0c1cGJBTllqL2ll?=
+ =?utf-8?B?UTJNT3JMcnJ3UnFyV3greU9jMm9GMU91eXhtSmtxTXZtRTdNeFdtcEU4djZx?=
+ =?utf-8?B?M2xYZG12SWQ1dFU2am9XemJ5Y1VFeDlBOWxqc1NINGRIV0dhQzhVdFdPcDFi?=
+ =?utf-8?B?aCtaWjFzdnQ1anVLcmlhYVJ0K2V6QTNGamFIN0VnWFRiY0dDTm9SWDNSYUsw?=
+ =?utf-8?B?SHh3a0UxTXlOdmlSbVRudUUyaWplcHpIS0VuMTJFc2R3WVdsUDdCT2FkZzY0?=
+ =?utf-8?B?eEtjQzI0MUVnbnlXdFdBdHNxYUZlWHg1aFoxbVhsajIxWkkrb3VTdz09?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9fccd836-5757-4b08-382c-08da1b835f23
+X-MS-Exchange-CrossTenant-AuthSource: SA0PR12MB4349.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 06:20:28.0606
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Vy6T6LpTi1OX3wWrfW4VHJNaFTZ1UZrcBtSLsyNEoRvlQ3KLZr/alxKFhUe6UtzbmgVmYrSZYNnwe24NWqcC6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2872
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/10/22 11:02, Ondrej Zary wrote:
-> On Friday 08 April 2022 03:58:10 Zheyu Ma wrote:
->> On Fri, Apr 8, 2022 at 3:50 AM Helge Deller <deller@gmx.de> wrote:
->>>
->>> On 4/4/22 10:47, Zheyu Ma wrote:
->>>> The userspace program could pass any values to the driver through
->>>> ioctl() interface. If the driver doesn't check the value of 'pixclock=
-',
->>>> it may cause divide error.
->>>>
->>>> Fix this by checking whether 'pixclock' is zero in the function
->>>> i740fb_check_var().
->>>>
->>>> The following log reveals it:
->>>>
->>>> divide error: 0000 [#1] PREEMPT SMP KASAN PTI
->>>> RIP: 0010:i740fb_decode_var drivers/video/fbdev/i740fb.c:444 [inline]
->>>> RIP: 0010:i740fb_set_par+0x272f/0x3bb0 drivers/video/fbdev/i740fb.c:7=
-39
->>>> Call Trace:
->>>>     fb_set_var+0x604/0xeb0 drivers/video/fbdev/core/fbmem.c:1036
->>>>     do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1112
->>>>     fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1191
->>>>     vfs_ioctl fs/ioctl.c:51 [inline]
->>>>     __do_sys_ioctl fs/ioctl.c:874 [inline]
->>>>
->>>> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
->>>
->>> Hello Zheyu,
->>>
->>> I've applied the patches #2-#7 of this series, but left
->>> out this specific patch (for now).
->>> As discussed on the mailing list we can try to come up with a
->>> better fix (to round up the pixclock when it's invalid).
->>> If not, I will apply this one later.
+
+
+On 4/10/2022 8:34 PM, Dmitry Osipenko wrote:
+> External email: Use caution opening links or attachments
+> 
+> 
+> 06.04.2022 08:24, Ashish Mhetre пишет:
+>> diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
+>> index 1066b1194a5a..c3c121fbfbb7 100644
+>> --- a/include/soc/tegra/mc.h
+>> +++ b/include/soc/tegra/mc.h
+>> @@ -13,6 +13,9 @@
+>>   #include <linux/irq.h>
+>>   #include <linux/reset-controller.h>
+>>   #include <linux/types.h>
+>> +#include <linux/platform_device.h>
+>> +
+>> +#define MC_MAX_CHANNELS 16
 >>
->> I'm also looking forward to a more appropriate patch for this driver!
->
-> I was not able to reproduce it at first but finally found it: the
-> monitor must be unplugged. If a valid EDID is present,
-> fb_validate_mode() call in i740fb_check_var() will refuse zero
-> pixclock.
->
-> Haven't found any obvious way to correct zero pixclock value. Most other=
- drivers simply return -EINVAL.
+>>   struct clk;
+>>   struct device;
+>> @@ -181,6 +184,7 @@ struct tegra_mc_ops {
+>>        int (*resume)(struct tegra_mc *mc);
+>>        irqreturn_t (*handle_irq)(int irq, void *data);
+>>        int (*probe_device)(struct tegra_mc *mc, struct device *dev);
+>> +     int (*map_regs)(struct tegra_mc *mc, struct platform_device *pdev);
+>>   };
+>>
+>>   struct tegra_mc_soc {
+>> @@ -194,6 +198,7 @@ struct tegra_mc_soc {
+>>        unsigned int atom_size;
+>>
+>>        u8 client_id_mask;
+>> +     u8 num_channels;
+>>
+>>        const struct tegra_smmu_soc *smmu;
+>>
+>> @@ -212,6 +217,8 @@ struct tegra_mc {
+>>        struct tegra_smmu *smmu;
+>>        struct gart_device *gart;
+>>        void __iomem *regs;
+>> +     void __iomem *bcast_ch_regs;
+>> +     void __iomem *ch_regs[MC_MAX_CHANNELS];
+> 
+> Why not to allocate ch_regs at runtime?
 
-Thanks for checking, Ondrej!
+Yes, we can do that. I'll make necessary changes in v7.
 
-So, I'll apply the EINVAL-patch from Zheyu for now.
-
-Helge
