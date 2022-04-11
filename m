@@ -2,291 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 772AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C18C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346787AbiDKNzu (ORCPT
+        id S1346789AbiDKN4M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 09:55:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45862 "EHLO
+        Mon, 11 Apr 2022 09:56:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346773AbiDKNzq (ORCPT
+        with ESMTP id S238419AbiDKN4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 09:55:46 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B610924F30;
-        Mon, 11 Apr 2022 06:53:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649685212; x=1681221212;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=tgpPo55v0hZMP1D9KLS+8Bk9D5L0sftc2mUdtFpjW8k=;
-  b=FotL7c2SP6A+WwNuPd/WFDDuGZ+uWFJ+pf3UF8GFzXHAu90WqaaYeYx3
-   PSWLIcmVH57CQIjmrriLbjHYLvVS7zfwn/gg+0AYiMzfB31H8rBiFPZOv
-   icRWyvNfGqy9FpggVMh+r0+Sb2wHF7sn5h+O2KzzwlplMmzKMjKUMvJQi
-   M=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 11 Apr 2022 06:53:32 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 06:53:32 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 11 Apr 2022 06:53:31 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 11 Apr 2022 06:53:27 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v7 2/2] arm64: dts: qcom: sc7280: add lpass lpi pin controller node
-Date:   Mon, 11 Apr 2022 19:23:04 +0530
-Message-ID: <1649685184-8448-3-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649685184-8448-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1649685184-8448-1-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 11 Apr 2022 09:56:08 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BC4624F2C;
+        Mon, 11 Apr 2022 06:53:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649685235; x=1681221235;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ietpjAH2T/bkGKzP1TWlkHX10R1PiEwOjSTCOSWzC/E=;
+  b=dAwO6bDG/YC9ESQmMFpbbD2uW3ozKtW/UAk9hNSrEh6oULLuFVY/b7gp
+   upLGbcLRNqZVtbqPfnbLi+0uwhoaLDd7DGTMxNl7Cf6urzEOEgIYEkn5S
+   ecIhMWQbVqITvMd09HFmWZLSOfj7NwRjcrlw6tc+ICML7XSb7CFQzyasH
+   6xptn2gJUfdBN+bPWimaffjXBFO1W38G2qexqN/QmS0fVusLqgNY4gsSj
+   vO8MB+xP58VBHN6UGy2jdH7NA/L4rZqZWT96HRh1CRKw8ykm4AGOuB9BL
+   PvgPymyAKxotzAeKIsYcAKxAF4wb1vi8q4Eh13bRcI9YN4s3y5cjoxigW
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="242057827"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="242057827"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 06:53:54 -0700
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="654627742"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 06:53:51 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nduQl-001Dys-JD;
+        Mon, 11 Apr 2022 16:50:11 +0300
+Date:   Mon, 11 Apr 2022 16:50:11 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Rob Herring <robh@kernel.org>, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Len Brown <lenb@kernel.org>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH v6 1/5] device property: Allow error pointer to be passed
+ to fwnode APIs
+Message-ID: <YlQyEz3/J0rb2Hew@smile.fi.intel.com>
+References: <20220408184844.22829-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220408184844.22829-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add LPASS LPI pinctrl node required for Audio functionality on sc7280
-based platforms.
+On Fri, Apr 08, 2022 at 09:48:40PM +0300, Andy Shevchenko wrote:
+> Some of the fwnode APIs might return an error pointer instead of NULL
+> or valid fwnode handle. The result of such API call may be considered
+> optional and hence the test for it is usually done in a form of
+> 
+> 	fwnode = fwnode_find_reference(...);
+> 	if (IS_ERR(fwnode))
+> 		...error handling...
+> 
+> Nevertheless the resulting fwnode may have bumped the reference count
+> and hence caller of the above API is obliged to call fwnode_handle_put().
+> Since fwnode may be not valid either as NULL or error pointer the check
+> has to be performed there. This approach uglifies the code and adds
+> a point of making a mistake, i.e. forgetting about error point case.
+> 
+> To prevent this, allow an error pointer to be passed to the fwnode APIs.
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  84 ++++++++++++++++++++++++
- arch/arm64/boot/dts/qcom/sc7280.dtsi     | 107 +++++++++++++++++++++++++++++++
- 2 files changed, 191 insertions(+)
+Rafael and Greg, if this okay for you, can the first three patches be
+applied, so we will have at least the fix in and consider constification
+a further work?
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index 4ba2274..ea751dc 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -238,6 +238,90 @@
- 	modem-init;
- };
- 
-+&dmic01 {
-+	clk {
-+		drive-strength = <8>;
-+	};
-+};
-+
-+&dmic01_sleep {
-+	clk {
-+		drive-strength = <2>;
-+		bias-disable;
-+	};
-+
-+	data {
-+		pull-down;
-+	};
-+};
-+
-+&dmic23 {
-+	clk {
-+		drive-strength = <8>;
-+	};
-+};
-+
-+&dmic23_sleep {
-+	clk {
-+		drive-strength = <2>;
-+		bias-disable;
-+	};
-+
-+	data {
-+		pull-down;
-+	};
-+};
-+
-+&rx_swr {
-+	clk {
-+		drive-strength = <2>;
-+		slew-rate = <1>;
-+		bias-disable;
-+	};
-+
-+	data {
-+		drive-strength = <2>;
-+		slew-rate = <1>;
-+		bias-bus-hold;
-+	};
-+};
-+
-+&rx_swr_sleep {
-+	clk {
-+		drive-strength = <2>;
-+		bias-pull-down;
-+	};
-+
-+	data {
-+		drive-strength = <2>;
-+		bias-pull-down;
-+	};
-+};
-+
-+&tx_swr {
-+	clk {
-+		drive-strength = <2>;
-+		slew-rate = <1>;
-+		bias-disable;
-+	};
-+
-+	data {
-+		slew-rate = <1>;
-+		bias-bus-hold;
-+	};
-+};
-+
-+&tx_swr_sleep {
-+	clk {
-+		drive-strength = <2>;
-+		bias-pull-down;
-+	};
-+
-+	data {
-+		bias-bus-hold;
-+	};
-+};
-+
- &pcie1 {
- 	status = "okay";
- 	perst-gpio = <&tlmm 2 GPIO_ACTIVE_LOW>;
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 8099c80..c692420 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -1987,6 +1987,113 @@
- 			qcom,bcm-voters = <&apps_bcm_voter>;
- 		};
- 
-+		lpass_tlmm: pinctrl@33c0000 {
-+			compatible = "qcom,sc7280-lpass-lpi-pinctrl";
-+			reg = <0 0x033c0000 0x0 0x20000>,
-+				<0 0x03550000 0x0 0x10000>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			gpio-ranges = <&lpass_tlmm 0 0 15>;
-+
-+			#clock-cells = <1>;
-+
-+			dmic01: dmic01 {
-+				clk {
-+					pins = "gpio6";
-+					function = "dmic1_clk";
-+				};
-+
-+				data {
-+					pins = "gpio7";
-+					function = "dmic1_data";
-+				};
-+			};
-+
-+			dmic01_sleep: dmic01-sleep {
-+				clk {
-+					pins = "gpio6";
-+					function = "dmic1_clk";
-+				};
-+
-+				data {
-+					pins = "gpio7";
-+					function = "dmic1_data";
-+				};
-+			};
-+
-+			dmic23: dmic23 {
-+				clk {
-+					pins = "gpio8";
-+					function = "dmic2_clk";
-+				};
-+
-+				data {
-+					pins = "gpio9";
-+					function = "dmic2_data";
-+				};
-+			};
-+
-+			dmic23_sleep: dmic23_sleep {
-+				clk {
-+					pins = "gpio8";
-+					function = "dmic2_clk";
-+				};
-+
-+				data {
-+					pins = "gpio9";
-+					function = "dmic2_data";
-+				};
-+			};
-+
-+			rx_swr: rx-swr {
-+				clk {
-+					pins = "gpio3";
-+					function = "swr_rx_clk";
-+				};
-+
-+				data {
-+					pins = "gpio4", "gpio5";
-+					function = "swr_rx_data";
-+				};
-+			};
-+
-+			rx_swr_sleep: rx-swr-sleep {
-+				clk {
-+					pins = "gpio3";
-+					function = "swr_rx_clk";
-+				};
-+
-+				data {
-+					pins = "gpio4", "gpio5";
-+					function = "swr_rx_data";
-+				};
-+			};
-+
-+			tx_swr: tx-swr {
-+				clk {
-+					pins = "gpio0";
-+					function = "swr_tx_clk";
-+				};
-+
-+				data {
-+					pins = "gpio1", "gpio2", "gpio14";
-+					function = "swr_tx_data";
-+				};
-+			};
-+
-+			tx_swr_sleep: tx-swr-sleep {
-+				clk {
-+					pins = "gpio0";
-+					function = "swr_tx_clk";
-+				};
-+
-+				data {
-+					pins = "gpio1", "gpio2", "gpio14";
-+					function = "swr_tx_data";
-+				};
-+			};
-+		};
-+
- 		gpu: gpu@3d00000 {
- 			compatible = "qcom,adreno-635.0", "qcom,adreno";
- 			reg = <0 0x03d00000 0 0x40000>,
 -- 
-2.7.4
+With Best Regards,
+Andy Shevchenko
+
 
