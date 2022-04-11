@@ -2,112 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C339AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 20:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 553BCC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 20:35:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346061AbiDKUhI (ORCPT
+        id S1349914AbiDKUhT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 16:37:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
+        Mon, 11 Apr 2022 16:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240336AbiDKUhE (ORCPT
+        with ESMTP id S240336AbiDKUhQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 16:37:04 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE313DEB9
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 13:34:48 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id t11so6283256eju.13
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 13:34:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ie+QkOmFE8UTE3hyBEH9mlG+n6irl6CyrcT3wa6CMKg=;
-        b=Qm7oC3V8HC75KdBBaoCL5RO3B/cBlxpzT1hPeg1/mFEaIgkVS9QXpw8bzHXsZ/xL2c
-         wSYJp/J6Ic7hrhfKhLc8JA0Rb/tNtq/AyOVkRML6tWsW8DhXG6QoZGueu13LtGJTP8TZ
-         p5EHssQPpzS8XTe2C5v7j40cJoBREMDp1y7undUYImVQTN/Znli+fhaKabPafpdcCSfC
-         wMxVqoRuSFvXhCw+0IYrNyc00w0NV7BQd7iwTmhkHmL1ScDdGzjqMkbungHg2TgBu0CL
-         Djp8Bq7JDSGVeXCQ20FOjPWep8787Bd2ivEK7Vi+2kaHKK8fp/7pN8QRCiLtgjB3ZL1Q
-         WxQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ie+QkOmFE8UTE3hyBEH9mlG+n6irl6CyrcT3wa6CMKg=;
-        b=Rlfxbq32l3cJSinS/BrKtefl03LOviYfSeplZcEm/+/M8a4JS1I99UWINiMb8i0rym
-         xa0LjWN/LlWzD7rs3oWDkBkoD9WcgWQwGUegOt5VNSIPy2C9UTXSY19cEvIlfxpywdRN
-         g6Q88yVQA+X6TjgiScY7vx2KafhiFNKzK1jXM2k1/doHfgNrj3hVv3J7swm0NRRFvyBa
-         g8muStGzAFYaCp8NfuaN6INgYJFU+doQL9wGEa7jlbK3d/bp7C+mJaepLVF9bSlD+zVF
-         UkcMmqc93ix6YEYRTMe5dJlgqGfiGZ1UDKjyw4yK0yR/WTUv0o6mZ4ZpeFZ0iABOqBfV
-         2ryA==
-X-Gm-Message-State: AOAM532SzUbWzk+DrKyCxT0nkYOufwk2fShlKShcD08G6oFYTGCYoo/L
-        vLQ5nqA+MDEQLrti3M5L3Xo=
-X-Google-Smtp-Source: ABdhPJzkd1u1sG/qXxzNgb47n0qmUolgQV4HEdfpa+StYJ95FHkUBW96eBipbqQD4S+vJvLvYfqm2w==
-X-Received: by 2002:a17:906:c282:b0:6ce:369d:3d5 with SMTP id r2-20020a170906c28200b006ce369d03d5mr31454727ejz.425.1649709287367;
-        Mon, 11 Apr 2022 13:34:47 -0700 (PDT)
-Received: from leap.localnet (host-82-60-208-254.retail.telecomitalia.it. [82.60.208.254])
-        by smtp.gmail.com with ESMTPSA id o5-20020a50c905000000b0041d828d0c58sm1582226edh.53.2022.04.11.13.34.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 13:34:46 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        Vihas Makwana <makvihas@gmail.com>
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Vihas Makwana <makvihas@gmail.com>
-Subject: Re: [PATCH v2 0/7] drop some unnecessary wrappers
-Date:   Mon, 11 Apr 2022 22:34:44 +0200
-Message-ID: <37499399.10thIPus4b@leap>
-In-Reply-To: <20220411102136.14937-1-makvihas@gmail.com>
-References: <20220411102136.14937-1-makvihas@gmail.com>
+        Mon, 11 Apr 2022 16:37:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F3711C20;
+        Mon, 11 Apr 2022 13:35:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3725B8170E;
+        Mon, 11 Apr 2022 20:35:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAC22C385A3;
+        Mon, 11 Apr 2022 20:34:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649709299;
+        bh=zvNqK4P+5QQN8s0u8A7+ok31XpbPjuJiekP3FbT2bwA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VpX9/3JoameD25kAtsu0SBt//6rBhNVByIB8aV6zeJ7H9pKhhTZDKQaXY/0dhklOS
+         lo645n/IyG05A1kSnp0sDb/5Ijholkjug1gCSeT0CS/sjChqwYTE//kmjcsI9+uEDO
+         Qc2v9x2GwnxzRdyBaP1k45dKsOSquHw3rW2q9HApVsrki/l84fadBTjVuQjxbIJDvF
+         fp8o/bDvzWEfXfb6+2uTP4pULFBq+y92eADHoKqah9FEFdNxtfLal57EtRMjHJmEbA
+         uri4m7mt4ACtPFqne5BqNAgBGbZGot3EyCJX/jVqyd8BPliazOlaNAw3CijqxOrm5b
+         ZHa2fax4xsSow==
+Date:   Mon, 11 Apr 2022 13:34:57 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Wells Lu <wellslutw@gmail.com>
+Cc:     davem@davemloft.net, robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        p.zabel@pengutronix.de, pabeni@redhat.com, krzk+dt@kernel.org,
+        roopa@nvidia.com, andrew@lunn.ch, edumazet@google.com,
+        wells.lu@sunplus.com
+Subject: Re: [PATCH net-next v7 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Message-ID: <20220411133457.1c783e4c@kernel.org>
+In-Reply-To: <1649697088-7812-3-git-send-email-wellslutw@gmail.com>
+References: <1649697088-7812-1-git-send-email-wellslutw@gmail.com>
+        <1649697088-7812-3-git-send-email-wellslutw@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On luned=EC 11 aprile 2022 12:21:29 CEST Vihas Makwana wrote:
-> Drop some unnecessary wrappers and update all the references
-> accordingly.
-> Tested on Comfast CF-WU810N RTL8188EUS wireless adapter.
->=20
-> v1 -> v2:
-> Drop the wrapper functions with underscores prefixed.
->=20
-> Vihas Makwana (7):
->   staging: r8188eu: drop unnecessary wrapper _rtw_free_cmd_priv
->   staging: r8188eu: drop unnecessary wrapper _rtw_init_cmd_priv
->   staging: r8188eu: drop unnecessary wrapper _rtw_init_evt_priv
->   staging: r8188eu: drop unnecessary wrapper _rtw_init_mlme_priv
->   staging: r8188eu: drop unnecessary wrapper _rtw_free_mlme_priv
->   staging: r8188eu: drop unnecessary wrapper _rtw_alloc_network
->   staging: r8188eu: drop unnecessary wrapper _rtw_dequeue_cmd
->=20
->  drivers/staging/r8188eu/core/rtw_cmd.c     | 145 +++++++----------
->  drivers/staging/r8188eu/core/rtw_mlme.c    | 179 +++++++++------------
->  drivers/staging/r8188eu/include/rtw_mlme.h |   4 +-
->  3 files changed, 135 insertions(+), 193 deletions(-)
->=20
-> --=20
-> 2.30.2
->=20
-=46ormally, you are removing the wrapped functions (or helpers, if you=20
-prefer) by moving their code into the wrappers. To say that you are=20
-removing the wrappers is not correct.
+On Tue, 12 Apr 2022 01:11:28 +0800 Wells Lu wrote:
+> +config NET_VENDOR_SUNPLUS
+> +	bool "Sunplus devices"
+> +	default y
+> +	depends on ARCH_SUNPLUS || COMPILE_TEST
+> +	help
+> +	  If you have a network (Ethernet) card belonging to this
+> +	  class, say Y here.
+> +
+> +	  Note that the answer to this question doesn't directly
+> +	  affect the kernel: saying N will just cause the configurator
+> +	  to skip all the questions about Sunplus cards. If you say Y,
+> +	  you will be asked for your specific card in the following
+> +	  questions.
+> +
+> +if NET_VENDOR_SUNPLUS
+> +
+> +config SP7021_EMAC
+> +	tristate "Sunplus Dual 10M/100M Ethernet devices"
+> +	depends on SOC_SP7021 || COMPILE_TEST
+> +	select PHYLIB
+> +	select PINCTRL_SPPCTL
+> +	select COMMON_CLK_SP7021
+> +	select RESET_SUNPLUS
+> +	select NVMEM_SUNPLUS_OCOTP
+> +	help
+> +	  If you have Sunplus dual 10M/100M Ethernet devices, say Y.
+> +	  The network device creates two net-device interfaces.
+> +	  To compile this driver as a module, choose M here. The
+> +	  module will be called sp7021_emac.
 
-However, I'm sure this kind of formal mistake won't prevent your patches
-to be accepted. I wanted to point this out to you in case you decide to=20
-submit similar patches in the future and perhaps want to describe your=20
-changes a little more accurately.
+x86 allmodconfig is not happy about it:
 
-Thanks,
+WARNING: unmet direct dependencies detected for PINCTRL_SPPCTL
+  Depends on [n]: PINCTRL [=y] && SOC_SP7021 && OF [=y] && HAS_IOMEM [=y]
+  Selected by [m]:
+  - SP7021_EMAC [=m] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_SUNPLUS [=y] && (SOC_SP7021 || COMPILE_TEST [=y])
 
-=46abio M. De Francesco=20
-
-
-
+Please wait at least 24h before reposting.
