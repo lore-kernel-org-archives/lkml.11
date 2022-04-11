@@ -2,92 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3908C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:12:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5040FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347669AbiDKPOP (ORCPT
+        id S1347425AbiDKPQH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:14:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46460 "EHLO
+        Mon, 11 Apr 2022 11:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243642AbiDKPON (ORCPT
+        with ESMTP id S235648AbiDKPQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:14:13 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6657031530
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:11:59 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id b24so18809042edu.10
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:11:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w3qO0b98B6aae3zjIvsIIDBv+sAwQNljamHHXkkiayc=;
-        b=GiVRkpGcMnz/Wpt9j7pz4rjKJzD+F3eNm0D9KAacAo+BNW5yoDAqRTmacoMbduS5a1
-         8QyZXp+wpWUcVw698Kp5UH+oACjSANO15i605qH3npEhmAAT+2fbZUxCE4ZdtOfMpKb4
-         dc6hwc9Migb5VS/6TGHpchu+F32laNYHApklj4Rc1Fg2+wKjNj8pNFl+5NyA9Vw6mNhM
-         NkFPYUxgAlTwbdiP9n/NUYMRs/12ZCu1PWASLqa/995sqMldPnUrIGg6JWZA4lB0Dj6s
-         kiPu2fXSfJ1EDQ/6qzQd5HDRkc3v7uUWSd4qUT1/MKwAaoRA+2DORUXqG/FWchDQknwu
-         snnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w3qO0b98B6aae3zjIvsIIDBv+sAwQNljamHHXkkiayc=;
-        b=JKeexLjN3c/Cf2tPfaCAGofGeBMaI5w1HHos3EpCVdRBFnukf31tGhSx9sU2bxiZ1h
-         dgoBkkJms/rV5/9uHGatl6rOBmWQDSQIh8KB2W75OHVL42eQvK+4Fhz6i0xGeEzcbSAF
-         WryuCjexpGJIVXUzKqe4JjPpO+HsTb3mLRFGefiTjkcIxHT6OUYEWklDXmRI8zgXutjR
-         SNn4/3CxgM5E5nXnk5x7E56/hW6+cn1tFXg0FKQVhLkVj5A+/ChEYeEPJ/riy9/hiVil
-         +jdp1SXiCEfEK+sBvxpv9PVj4XiGXcU/edOiSq7bv1qwgtE7F1uBaz2gltihnuonoTSQ
-         hWQQ==
-X-Gm-Message-State: AOAM532ByQHWDhd205ENOImYtIor4RD4Dyxmt3z36vModPPMyK53HzIv
-        nUDpFERpFL8UmURO98nEqU4gK320tQFFzQhhdoA=
-X-Google-Smtp-Source: ABdhPJykEVDLi3ZkJCSqI6anMzXqe+THc/EqtjJ1PuTNly4Xah6SEqzv6roORGOparvFOZQF0oGTRPLKyAPxZ4+8nn0=
-X-Received: by 2002:a05:6402:d7:b0:413:673:ba2f with SMTP id
- i23-20020a05640200d700b004130673ba2fmr34135941edu.29.1649689917967; Mon, 11
- Apr 2022 08:11:57 -0700 (PDT)
+        Mon, 11 Apr 2022 11:16:04 -0400
+Received: from out162-62-57-137.mail.qq.com (out162-62-57-137.mail.qq.com [162.62.57.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4DF3152B
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:13:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1649690024;
+        bh=28M5lhAtnZOyUfE1LzLlkbiL5y+pZYDo9mGQ5Q/tvIs=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=BSDt4mSkN4hjoijsc/dLY21pilM9yAooR3R/aAzy4aVTANA+0E964bY1+6pRulIYt
+         2pFuuU3I8YZ0VZSS0A25BFQ2f+OAvOc179IKE7pnFcPwehHluNpeveXLWfnFAbmesh
+         E10vnN6dpMMPeu1X1xXNodEuh1vI5U/AGSbLDz24=
+Received: from [192.168.0.110] ([36.57.147.99])
+        by newxmesmtplogicsvrszb7.qq.com (NewEsmtp) with SMTP
+        id 3681BC5A; Mon, 11 Apr 2022 23:13:40 +0800
+X-QQ-mid: xmsmtpt1649690020ta5upzabz
+Message-ID: <tencent_4D5A6753559A4D835707D1A06484CF369606@qq.com>
+X-QQ-XMAILINFO: NQR8mRxMnur9LEcvCo3XM0873Nsg49FRdhT228Ob+jseg4lPImmFyJDw0dyjq2
+         1inUfGtSQpjOKkT1c+/th+IVe6qc1RFG/LSh8Gbi2z1qDOdz3I2UVGjj+pvEkcsElir20rb4OLvJ
+         OG9mIlkZ33dyfiBswIrAx/A/guTUsRWelXSPyZlSyJSPA1tCro61SVyI2n8F9cPCu9x2CL4rI92N
+         MhZvRHV2eiUjqIbW84A9EbMPX5nyxybB/D+lHI0eHN/w21qMD2xsoNsU/iNp3uATraiiKXf3KdfX
+         QDUbEQKSDbof/qj6hx2eOhgw/Uy4hIwiggh/FoHURVSMScsEirhtJhhLfIvk75qIwNGO5dl5du8c
+         O9MbA3imrNUtODhcDVzJQFk6zzwk8VhyVqDq1/e+7uZJycBxmzynGJk3mJfOgoWODYIKw8cSopLG
+         9CTxaHU7MCpKG/gxksyFzWF2K8a0sppFTt3Pd9Tfrl8+Y1V9/k+5AmzD56hw1ztJ8kKtVo+du28J
+         IV+dtyWKUFyaOUPJZH3MvL43gx9tDsrsFZ8LIEobkhqLu55s0PsGDjhXGuX+wCFTw/5+8EIIzVoS
+         BtSWlJcwNvvOOtIUYyH6YHmPtPDsp0TUgae+XFxH4wBb0TrCI1k3e0Bu81qbTHwkLTCPT1ZbKs4F
+         GuBegEHaryk2Q0nhvGrG5yOtPiSKQW3ECBpkglLyopCpmEZGGmKxwx0YhpoZhew1X9clMipXktu1
+         Vs0GZta3wjJHsyKF0DLdntrRPfCGmFuCQQQEiRyH27uStAiqA6uddJfy/ABNgJWOgXu4Sqneh5sw
+         PqWnJccEn8uEHFcZ+xqUiOPDBQDkN1xxopJtBO1NdW0Ct2aIZYjLO/H7/smEiIdJ3NYmYGTXzbKB
+         Fb3eAQKcdT6rHg8JL34NOc3QLWm9wzn2cGwKQaWKIPA5Cz20MX/F9K4l/W8fTe/RPfdkQrBNoGnl
+         h/YSHY29w=
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+To:     Dave Hansen <dave.hansen@intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        jean-philippe <jean-philippe@linaro.org>
+Cc:     Ravi V Shankar <ravi.v.shankar@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        iommu <iommu@lists.linux-foundation.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+References: <20220207230254.3342514-1-fenghua.yu@intel.com>
+ <20220207230254.3342514-6-fenghua.yu@intel.com> <Ygt4h0PgYzKOiB38@8bytes.org>
+ <tencent_F6830A1196DB4C6A904D7C691F0D961D1108@qq.com>
+ <56ed509d-a7cf-1fde-676c-a28eb204989b@intel.com>
+ <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
+ <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
+ <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
+ <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
+From:   "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
+X-OQ-MSGID: <0da0fea2-2b19-a9b6-910a-122ff57cb8f5@foxmail.com>
+Date:   Mon, 11 Apr 2022 23:13:40 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <1649644580-54626-1-git-send-email-wangqing@vivo.com>
-In-Reply-To: <1649644580-54626-1-git-send-email-wangqing@vivo.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 11 Apr 2022 18:07:45 +0300
-Message-ID: <CAHp75Vc-frdJSAMxK1YpHwmPa_-0fTpRxq=QObcux3Jt=5+9kw@mail.gmail.com>
-Subject: Re: [PATCH] arch_topology: Do not set llc_sibling if llc_id is invalid
-To:     Qing Wang <wangqing@vivo.com>
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 12:10 PM Qing Wang <wangqing@vivo.com> wrote:
->
-> From: Wang Qing <wangqing@vivo.com>
->
-> When ACPI is not enabled, cpuid_topo->llc_id = cpu_topo->llc_id = -1, which
-> will set llc_sibling 0xff(...), this is misleading.
 
-Shouldn't it be a Fixes tag then?
 
-> Don't set llc_sibling(default 0) if we don't know the cache topology.
+On 2022/4/11 下午10:52, Dave Hansen wrote:
+> On 4/11/22 07:44, zhangfei.gao@foxmail.com wrote:
+>> On 2022/4/11 下午10:36, Dave Hansen wrote:
+>>> On 4/11/22 07:20, zhangfei.gao@foxmail.com wrote:
+>>>>> Is there nothing before this call trace?  Usually there will be at least
+>>>>> some warning text.
+>>>> I added dump_stack() in ioasid_free.
+>>> Hold on a sec, though...
+>>>
+>>> What's the *problem* here?  Did something break or are you just saying
+>>> that something looks weird to _you_?
+>> After this, nginx is not working at all, and hardware reports error.
+>> Suppose the the master use the ioasid for init, but got freed.
+>>
+>> hardware reports:
+>> [  152.731869] hisi_sec2 0000:76:00.0: qm_acc_do_task_timeout [error status=0x20] found
+>> [  152.739657] hisi_sec2 0000:76:00.0: qm_acc_wb_not_ready_timeout [error status=0x40] found
+>> [  152.747877] hisi_sec2 0000:76:00.0: sec_fsm_hbeat_rint [error status=0x20] found
+>> [  152.755340] hisi_sec2 0000:76:00.0: Controller resetting...
+>> [  152.762044] hisi_sec2 0000:76:00.0: QM mailbox operation timeout!
+>> [  152.768198] hisi_sec2 0000:76:00.0: Failed to dump sqc!
+>> [  152.773490] hisi_sec2 0000:76:00.0: Failed to drain out data for stopping!
+>> [  152.781426] hisi_sec2 0000:76:00.0: QM mailbox is busy to start!
+>> [  152.787468] hisi_sec2 0000:76:00.0: Failed to dump sqc!
+>> [  152.792753] hisi_sec2 0000:76:00.0: Failed to drain out data for stopping!
+>> [  152.800685] hisi_sec2 0000:76:00.0: QM mailbox is busy to start!
+>> [  152.806730] hisi_sec2 0000:76:00.0: Failed to dump sqc!
+>> [  152.812017] hisi_sec2 0000:76:00.0: Failed to drain out data for stopping!
+>> [  152.819946] hisi_sec2 0000:76:00.0: QM mailbox is busy to start!
+>> [  152.825992] hisi_sec2 0000:76:00.0: Failed to dump sqc!
+> That would have been awfully handy information to have in an initial bug report. :)
+> Is there a chance you could dump out that ioasid alloc *and* free information in ioasid_alloc/free()?  This could be some kind of problem with the allocator, or with copying the ioasid at fork.
+Sure, will add some trace tomorrow.
 
-...
+Thanks Dave
 
-> -               if (cpuid_topo->llc_id == cpu_topo->llc_id) {
-> +               if (cpu_topo->llc_id != -1 && cpuid_topo->llc_id == cpu_topo->llc_id) {
 
-I'm wondering if more strict check is better here, i.e.
-
-               if (cpu_topo->llc_id >= 0 && cpuid_topo->llc_id ==
-cpu_topo->llc_id) {
-
->                         cpumask_set_cpu(cpu, &cpuid_topo->llc_sibling);
->                         cpumask_set_cpu(cpuid, &cpu_topo->llc_sibling);
->                 }
-
--- 
-With Best Regards,
-Andy Shevchenko
