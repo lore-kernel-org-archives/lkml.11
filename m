@@ -2,116 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F93C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10F1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345247AbiDKLUw (ORCPT
+        id S1345565AbiDKLU4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37760 "EHLO
+        Mon, 11 Apr 2022 07:20:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233870AbiDKLUq (ORCPT
+        with ESMTP id S1343721AbiDKLUr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:20:46 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E6E427D6;
-        Mon, 11 Apr 2022 04:18:32 -0700 (PDT)
-X-UUID: db46d44347744253b0b066f3a07fb425-20220411
-X-UUID: db46d44347744253b0b066f3a07fb425-20220411
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 311027754; Mon, 11 Apr 2022 19:18:26 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 11 Apr 2022 19:18:25 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 11 Apr 2022 19:18:25 +0800
-Message-ID: <371c9a96e80faa26719e00b694e45d176105b6dc.camel@mediatek.com>
-Subject: Re: [PATCH V2 08/15] cpufreq: mediatek: Move voltage limits to
- platform data
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, <rafael@kernel.org>,
-        <viresh.kumar@linaro.org>, <robh+dt@kernel.org>,
-        <krzk+dt@kernel.org>
-CC:     <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
-        <roger.lu@mediatek.com>, <hsinyi@google.com>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Mon, 11 Apr 2022 07:20:47 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E34D427D5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:18:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1649675912; x=1681211912;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=b8MRCdA9KkHqlIOxp7L+60IpEhaonoO7aCn57xUekUA=;
+  b=YfqAEq2Re7Y9V1+2NnkWsJHMz3NgVZB4giRi5gZL8royePRxUgT8OJVt
+   rEDQmvYOZ2e2xybv30CTAvgFRONpdTtj52B0qFifgbGN8EBb1hh6EFchU
+   IE7UU/MRp73bsZ/L1W+CD6qUY/wl9mUyT/X16sJ+YRuXZ7MDNwqPDDyG2
+   6wM+AkKqPZMHs5PT72BRmGSxaOPSigxCkisY2I2bTDb0lB9rJCPZpwOpT
+   4YM3Hhvxj2Mg4qdWX4qJAmpfDKIGRTDcjEbnF0TkpNWMbrloN9ijHA0Ft
+   VzG6937lY6O9Zqz3RS3w++iqoehhbpB2f4RsV9pFs+O6I35hZhy8F/cUy
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,251,1643698800"; 
+   d="scan'208";a="159637089"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2022 04:18:31 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 11 Apr 2022 04:18:30 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 11 Apr 2022 04:18:29 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <linux@armlinux.org.uk>
+CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Mon, 11 Apr 2022 19:18:25 +0800
-In-Reply-To: <3dade32c-4b46-351a-b3f9-d1fec16b603c@collabora.com>
-References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
-         <20220408045908.21671-9-rex-bc.chen@mediatek.com>
-         <3dade32c-4b46-351a-b3f9-d1fec16b603c@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 0/4] ARM: at91: pm: add quirks for ethernet
+Date:   Mon, 11 Apr 2022 14:20:53 +0300
+Message-ID: <20220411112057.35369-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-04-08 at 15:36 +0200, AngeloGioacchino Del Regno wrote:
-> Il 08/04/22 06:59, Rex-BC Chen ha scritto:
-> > From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-> > 
-> > Voltages and shifts are defined as macros originally.
-> > There are different requirements of these values for each MediaTek
-> > SoCs.
-> > Therefore, we add the platform data and move these values into it.
-> > 
-> > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
-> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> > ---
-> >   drivers/cpufreq/mediatek-cpufreq.c | 90 ++++++++++++++++++++-----
-> > -----
-> >   1 file changed, 61 insertions(+), 29 deletions(-)
-> > 
-> > diff --git a/drivers/cpufreq/mediatek-cpufreq.c
-> > b/drivers/cpufreq/mediatek-cpufreq.c
-> > index 1369da62780a..0be5609ee82e 100644
-> > --- a/drivers/cpufreq/mediatek-cpufreq.c
-> > +++ b/drivers/cpufreq/mediatek-cpufreq.c
-> 
-> ..snip..
-> 
-> > @@ -625,20 +649,27 @@ static struct platform_driver
-> > mtk_cpufreq_platdrv = {
-> >   	.probe		= mtk_cpufreq_probe,
-> >   };
-> >   
-> > +static const struct mtk_cpufreq_platform_data mtk_platform_data =
-> > {
-> 
-> I would prefer if you name this after the oldest SoC that is
-> supported in this
-> driver, or after the IP version.
-> 
-> Example: if the oldest one is mt7622, then this should be
-> mt7622_platform_data;
->           if newer SoCs have got a different cpu frequency control
-> IP, then we
->           should have here something like
->           mtk_v1_platform_data, mtk_v1_3_platform_data.
-> 
-> Please note that I didn't check release dates, so my reference to
-> mt7622 is
-> purely casual.
-> 
-> Regards,
-> Angelo
+Hi,
 
-Hello Angelo,
+As described in patch 3/4 when receiving WoL packet on Ethernet
+interfaces of AT91 SoCs and being in ULP0 or ULP1 AT91 specific power
+management modes some SoCs may block other may have Ethernet interfaces
+broken after resume. Workaround for this would be to disable clocks
+for these Ethernet interfaces. As the MACB driver is common to multiple
+vendors and multiple architectures and ULP0, ULP1 PM modes are AT91
+specific the fix has been implemented in arch/arm/mach-at91 to avoid
+having AT91 specific code in MACB driver.
 
-Thanks for your review.
-I will rename it as mt2701_platform_data.
+Along with this patches I took the chance and added few comment style
+fixups.
 
-BRs,
-Rex
+Thank you,
+Claudiu Beznea
+
+Claudiu Beznea (4):
+  ARM: at91: pm: keep documentation inline with structure members
+  ARM: at91: pm: introduce macros for pm mode replacement
+  ARM: at91: pm: add quirks for pm
+  ARM: at91: pm: use kernel documentation style
+
+ arch/arm/mach-at91/pm.c | 367 ++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 334 insertions(+), 33 deletions(-)
+
+-- 
+2.32.0
 
