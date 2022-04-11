@@ -2,159 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 855D5C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 21:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A51FDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 21:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350208AbiDKVhc (ORCPT
+        id S1350212AbiDKViI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 17:37:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55642 "EHLO
+        Mon, 11 Apr 2022 17:38:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240775AbiDKVh3 (ORCPT
+        with ESMTP id S237681AbiDKViF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 17:37:29 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422CD32EC3;
-        Mon, 11 Apr 2022 14:35:13 -0700 (PDT)
+        Mon, 11 Apr 2022 17:38:05 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E8733376;
+        Mon, 11 Apr 2022 14:35:49 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 933201F38D;
-        Mon, 11 Apr 2022 21:35:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649712911; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=r3uWqyQeh3AA+Cb46dnWvEZ3Eid4YgcxD15T0bs7OF0=;
-        b=x0Y0t9ignpUl5ppfhCGjNNVzR3W2LNG7TIA+jRNvkPwW6FTlHMpmEZLNyHfBvuN9wvLliT
-        vyRlXNTDtCCF8OPpwP/+cQ9Ww6cPwV0gOWqNSHFD84Rsti9dz5v3NpljGwbfNCxlDxCvJ8
-        FVKPDKp/Od3Pfp13LahQTCoMntoEjVk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649712911;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=r3uWqyQeh3AA+Cb46dnWvEZ3Eid4YgcxD15T0bs7OF0=;
-        b=Og1/lO74QMsxltiaEGnXBQ3qTUSdssihtPWBqe7B1xPnv5j2TtvEoklcTp41wddCYhku+J
-        u2AYR6PAxvbBUMAw==
-Received: from kunlun.suse.cz (unknown [10.100.128.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 93C70A3B83;
-        Mon, 11 Apr 2022 21:35:10 +0000 (UTC)
-Date:   Mon, 11 Apr 2022 23:35:09 +0200
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Eric Snowberg <eric.snowberg@oracle.com>
-Cc:     David Howells <dhowells@redhat.com>,
-        "dwmw2@infradead.org" <dwmw2@infradead.org>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "serge@hallyn.com" <serge@hallyn.com>,
-        "nayna@linux.ibm.com" <nayna@linux.ibm.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
-        "weiyongjun1@huawei.com" <weiyongjun1@huawei.com>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "James.Bottomley@hansenpartnership.com" 
-        <James.Bottomley@hansenpartnership.com>,
-        "pjones@redhat.com" <pjones@redhat.com>,
-        Konrad Wilk <konrad.wilk@oracle.com>
-Subject: Re: [PATCH v10 8/8] integrity: Only use machine keyring when
- uefi_check_trust_mok_keys is true
-Message-ID: <20220411213509.GG163591@kunlun.suse.cz>
-References: <20220126025834.255493-1-eric.snowberg@oracle.com>
- <20220126025834.255493-9-eric.snowberg@oracle.com>
- <20220411110640.GC163591@kunlun.suse.cz>
- <C970A5DB-0238-4B5A-9935-588DF9B1DDEF@oracle.com>
- <20220411172450.GD163591@kunlun.suse.cz>
- <54B1CDD9-F690-4F1F-9A9A-9412AAB21A72@oracle.com>
+        by smtp-out1.suse.de (Postfix) with ESMTP id DF44B21602;
+        Mon, 11 Apr 2022 21:35:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1649712947;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=R28uIVDq4qAGeIwTtENJyrG9YUAQBJ+HFp4P3OulMU8=;
+        b=j9vSkizSx+tA64WhgaS9lAFKYq0GPLni6gmAQIy6inli8F9Mo6Bz90QqlF/5n4K4ZEKlU7
+        0IdDc/gmY4rY1Q/z3i3mmxFN9GAgBncnOUQEkw9TWv3ZJMW5ixs/EvJfU+wvq1mvh1+eRo
+        sF07OXaOOQLPar/tVdHuBMXigPiaoEM=
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id D480AA3B89;
+        Mon, 11 Apr 2022 21:35:47 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 57086DA7F7; Mon, 11 Apr 2022 23:31:43 +0200 (CEST)
+Date:   Mon, 11 Apr 2022 23:31:43 +0200
+From:   David Sterba <dsterba@suse.com>
+To:     torvalds@linux-foundation.org
+Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Btrfs fixes for 5.18-rc3
+Message-ID: <cover.1649705056.git.dsterba@suse.com>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, torvalds@linux-foundation.org,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <54B1CDD9-F690-4F1F-9A9A-9412AAB21A72@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 08:34:55PM +0000, Eric Snowberg wrote:
-> 
-> 
-> > On Apr 11, 2022, at 11:24 AM, Michal Suchánek <msuchanek@suse.de> wrote:
-> > 
-> > On Mon, Apr 11, 2022 at 04:39:42PM +0000, Eric Snowberg wrote:
-> >> 
-> >> 
-> >>> On Apr 11, 2022, at 5:06 AM, Michal Suchánek <msuchanek@suse.de> wrote:
-> >>> 
-> >>> Hello,
-> >>> 
-> >>> On Tue, Jan 25, 2022 at 09:58:34PM -0500, Eric Snowberg wrote:
-> >>>> With the introduction of uefi_check_trust_mok_keys, it signifies the end-
-> >>> 
-> >>> What value does such flag have?
-> >>> 
-> >>> The user is as much in control of the flag as the MOK keys.
-> >> 
-> >> The flag allows the system owner (not root) the ability to determine 
-> >> if they want to load MOKList into the machine keyring.  Keys contained 
-> >> in the machine keyring are then linked to the secondary.  The flag is no 
-> >> different than the '—ignore-db' currently available in shim, which then 
-> >> gets propagated to Linux (uefi_check_ignore_db).  These flags can be 
-> >> set by the system owner, who can prove physical presence.  
-> > 
-> > Managing the MOK keys requires physical presence equally.
-> > 
-> > Moreover, these keys are trusted for running code at ring0, in fact the
-> > running kernel is expected to be signed by one of them, and can be
-> > signed by any of them.
-> > 
-> > Then what exact purpose does this extra flag serve?
-> > 
-> > If such compile-time flag exists in the kernel it cannot be overriden by
-> > the root once the kernel is signed, either.
-> > 
-> >>>> user wants to trust the machine keyring as trusted keys.  If they have
-> >>>> chosen to trust the machine keyring, load the qualifying keys into it
-> >>>> during boot, then link it to the secondary keyring .  If the user has not
-> >>>> chosen to trust the machine keyring, it will be empty and not linked to
-> >>>> the secondary keyring.
-> >>> 
-> >>> Why is importing the keys and using them linked together?
-> >>> 
-> >>> If later we get, say, machine keyring on powerpc managed by secvarctl
-> >>> then it has its value to import the keyring and be able to list the
-> >>> content with the same tools on EFI and powerpc.
-> >> 
-> >> The machine keyring is linked to the secondary keyring, exactly the same way 
-> >> the builtin is linked to it.  Linking this way should eliminate the need to change 
-> >> any user space tools to list the contents. 
-> > 
-> > That's answer to a completely different question, though.
-> > 
-> > You either import the keys and use them, or you don't use them and don't
-> > import them. The option to import and not use is not available.
-> 
-> Why import something into a keyring that can not be used?
-> 
-> MOKList keys get imported into one of two keyrings, either the machine or the 
-> platform.  If uefi_check_trust_mok_keys returns false, the MOKList keys are 
-> loaded into the platform along with the UEFI SB DB keys.  If true, they are loaded 
-> into the machine keyring.
+Hi,
 
-Ooh, such quirky and convoluted design. Not sure how anyone is supposed
-to make any sense of this but hey, none of this can possibly change to
-not break something.
+a few more code fixes and a warning fixes. There's one feature ioctl
+removal patch slated for 5.18 that did not make it to the main pull
+request.  It's just a one-liner and the ioctl has a v2 that's in use for
+a long time, no point to postpone it to 5.19.
 
-Now I at least know.
+Please pull, thanks.
 
-Thanks
+- fixes:
+  - add back cgroup attribution for compressed writes
+  - add super block write start/end annotations to asynchronous balance
+  - fix root reference count on an error handling path
+  - in zoned mode, activate zone at the chunk allocation time to avoid
+    ENOSPC due to timing issues
+  - fix delayed allocation accounting for direct IO
 
-Michal
+- remove balance v1 ioctl, superseded by v2 in 2012
+
+- warning fixes:
+  - simplify assertion condition in zoned check
+  - remove an unused variable
+
+----------------------------------------------------------------
+The following changes since commit 60021bd754c6ca0addc6817994f20290a321d8d6:
+
+  btrfs: prevent subvol with swapfile from being deleted (2022-03-24 17:50:57 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.18-rc2-tag
+
+for you to fetch changes up to acee08aaf6d158d03668dc82b0a0eef41100531b:
+
+  btrfs: fix btrfs_submit_compressed_write cgroup attribution (2022-04-06 00:50:51 +0200)
+
+----------------------------------------------------------------
+Dennis Zhou (1):
+      btrfs: fix btrfs_submit_compressed_write cgroup attribution
+
+Haowen Bai (1):
+      btrfs: zoned: remove redundant condition in btrfs_run_delalloc_range
+
+Jia-Ju Bai (1):
+      btrfs: fix root ref counts in error handling in btrfs_get_root_ref
+
+Naohiro Aota (4):
+      btrfs: release correct delalloc amount in direct IO write path
+      btrfs: mark resumed async balance as writing
+      btrfs: return allocated block group from do_chunk_alloc()
+      btrfs: zoned: activate block group only for extent allocation
+
+Nathan Chancellor (1):
+      btrfs: remove unused variable in btrfs_{start,write}_dirty_block_groups()
+
+Nikolay Borisov (1):
+      btrfs: remove support of balance v1 ioctl
+
+ fs/btrfs/block-group.c | 40 +++++++++++++++++++++++++++-------------
+ fs/btrfs/block-group.h |  4 ++++
+ fs/btrfs/compression.c |  8 ++++++++
+ fs/btrfs/disk-io.c     |  5 +++--
+ fs/btrfs/extent-tree.c |  2 +-
+ fs/btrfs/inode.c       |  9 ++++-----
+ fs/btrfs/ioctl.c       |  2 --
+ fs/btrfs/volumes.c     |  2 ++
+ 8 files changed, 49 insertions(+), 23 deletions(-)
+
