@@ -2,143 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 258A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 01:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF6BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 01:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239203AbiDKBWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 21:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44958 "EHLO
+        id S239313AbiDKB3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 21:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242759AbiDKBW2 (ORCPT
+        with ESMTP id S229834AbiDKB3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 21:22:28 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0A9BB1E5
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 18:20:15 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id x17so14879659lfa.10
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 18:20:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=05X/pQBV2MI76IjGX7fSWAPTcXgd+Vfg/z1tUXGVcQc=;
-        b=HL6xtEPacsZ6zEKa4xgS6WpIIMLbpOvanq1tH1R7pc6+fIzJsqF2GEV5pG2IK8elON
-         hsvsroTmMu2x5m6FPVW5qBKhOYyboosL2EwPqiYVFTS0jKuLzouTo1KtofUzvDfkD4cs
-         xL4TYxCEuMsVT4bKCXdH+iC0gQLvWGlE8UbgE/VycNqIfEchp1SI7lntYmR437jI/5qy
-         PkYk45rDiQT6d9iXs7Ub/EwEvcr3AmZ8U60Qn8oScXCXO00MkqUaTkU0MRXRw1mygVbw
-         QjrFj7UF2xCBo+z2qiy9CNBAqj9VWhvR7o0CcSEuWatpe88mc5YfMKKWYZ9/DaVqB5d7
-         KWfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=05X/pQBV2MI76IjGX7fSWAPTcXgd+Vfg/z1tUXGVcQc=;
-        b=CbeC7rZaLDag8Fx/aBUKpyFB1vyBQGAO9wuuoE6OrJeq2CNWr/kMqxpg7Al9eY+evj
-         2ThMyWqWoEdUEL3vpMV54HdeRAzlnYAekSqqTUqt60nTNXIq7GiGySp9Di4hsp5MMcnG
-         V1jOsawKcEwDqWkK0RaEQ8jiPk1PQufF49rU5Fa5tx55q5BJ1k4TnUQgCAqKwNmnu1Ft
-         KBrlFSkGArHKs5eUHL2IyharZLYzPyhit/rpegJyhCOCqvP390F0sSSmRjNKAdkqWZF8
-         cf/lr4BXKT6A259O1SAN7JghwnztdzRaTpx5xkcT1wYAdCZNt8QYSmIPKKuj+EUdg3Qs
-         sy7A==
-X-Gm-Message-State: AOAM533g7eCLnNV+i0VttKTQcbUahPA3CqLvxHALBOx7qxp1StvEIpSa
-        6QUaDEmpgaq+yLusNYDGyewjQA==
-X-Google-Smtp-Source: ABdhPJwgOvDStoVkU5PcymcKMDfs/8Fh2oeLos5hkTOAv/lK50CRFRy3NioQSwXdvc/8q7VUKZrx6g==
-X-Received: by 2002:a05:6512:3994:b0:44a:7125:c689 with SMTP id j20-20020a056512399400b0044a7125c689mr20002136lfu.166.1649640014132;
-        Sun, 10 Apr 2022 18:20:14 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id b16-20020a2ebc10000000b0024b63f0da2csm154707ljf.13.2022.04.10.18.20.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Apr 2022 18:20:13 -0700 (PDT)
-Message-ID: <7e0592bc-1e8f-0981-cea2-f74402ab5886@linaro.org>
-Date:   Mon, 11 Apr 2022 04:20:12 +0300
+        Sun, 10 Apr 2022 21:29:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B01A2E9D7;
+        Sun, 10 Apr 2022 18:27:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02149B80CED;
+        Mon, 11 Apr 2022 01:27:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64384C385A1;
+        Mon, 11 Apr 2022 01:27:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649640441;
+        bh=L4L9jfnhdFvFNpuV1PPrk/+fo41aYcf20eGtgKboxSk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pg4O9zDD8TbN3+2d5vF3S1GrmB+E6L2fk9QqPtaAgkrrBqFAk14rQ0NkFpV7dS0fa
+         Llm8taxNs3Y9OUpQpj2onhcOkhghj5lVpfFcDaK12gOzbEPF0PAe4F5QX++zkRPA4O
+         VBQJo0bX2vIu2rsd26dNxkjTas25H5I8SpGQBsan6Yrny9WyId56tNViUiOyfrSUTv
+         jn1ik13/oDzUEhwcJ64UKVUwwpiZlZxn8QI7p1Rkq4miUKu0Md0AR1XSV2EttzUEKG
+         EsxgWHDleOrhZgFr/wJADZidlXcG/rfst/NVMIqxMCxBCKOwHND1DqJknYIPKtJ4yS
+         zHoTdmVPRmF7Q==
+Date:   Mon, 11 Apr 2022 09:27:14 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] imx8mm-venice-gw7901: move UART gpio config into hog
+ group
+Message-ID: <20220411012714.GC129381@dragon>
+References: <20220405200407.18698-1-tharvey@gateworks.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] dpu1: dpu_encoder: fix a missing check on list iterator
-Content-Language: en-GB
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, robdclark@gmail.com,
-        sean@poorly.run, airlied@linux.ie, daniel@ffwll.ch
-Cc:     quic_abhinavk@quicinc.com, swboyd@chromium.org,
-        bjorn.andersson@linaro.org, quic_khsieh@quicinc.com,
-        quic_kalyant@quicinc.com, markyacoub@google.com,
-        jsanka@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20220327073252.10871-1-xiam0nd.tong@gmail.com>
- <0788b245-ee8f-25de-dde3-7ff10f6c688c@linaro.org>
-In-Reply-To: <0788b245-ee8f-25de-dde3-7ff10f6c688c@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405200407.18698-1-tharvey@gateworks.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/04/2022 03:56, Dmitry Baryshkov wrote:
-> On 27/03/2022 10:32, Xiaomeng Tong wrote:
->> The bug is here:
->>      cstate = to_dpu_crtc_state(drm_crtc->state);
->>
->> For the drm_for_each_crtc(), just like list_for_each_entry(),
->> the list iterator 'drm_crtc' will point to a bogus position
->> containing HEAD if the list is empty or no element is found.
->> This case must be checked before any use of the iterator,
->> otherwise it will lead to a invalid memory access.
->>
->> To fix this bug, use a new variable 'iter' as the list iterator,
->> while use the origin variable 'drm_crtc' as a dedicated pointer
->> to point to the found element.
->>
->> Cc: stable@vger.kernel.org
->> Fixes: b107603b4ad0f ("drm/msm/dpu: map mixer/ctl hw blocks in encoder 
->> modeset")
->> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> 
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+On Tue, Apr 05, 2022 at 01:04:07PM -0700, Tim Harvey wrote:
+> Move UART related GPIO into hog group so that they still are pinmuxed
+> even if the uart driver is not probed.
 
-On the other hand, this code has been removed in 5.18-rc1 in the commit 
-764332bf96244cbc8baf08aa35844b29106da312.
+What are these GPIOs used for?  So they will be used anyway even when
+UART support is disabled?
+
+Shawn
 
 > 
->> ---
->>   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 11 ++++++++---
->>   1 file changed, 8 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c 
->> b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
->> index 1e648db439f9..d3fdb18e96f9 100644
->> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
->> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
->> @@ -965,7 +965,7 @@ static void dpu_encoder_virt_mode_set(struct 
->> drm_encoder *drm_enc,
->>       struct dpu_kms *dpu_kms;
->>       struct list_head *connector_list;
->>       struct drm_connector *conn = NULL, *conn_iter;
->> -    struct drm_crtc *drm_crtc;
->> +    struct drm_crtc *drm_crtc = NULL, *iter;
->>       struct dpu_crtc_state *cstate;
->>       struct dpu_global_state *global_state;
->>       struct dpu_hw_blk *hw_pp[MAX_CHANNELS_PER_ENC];
->> @@ -1007,9 +1007,14 @@ static void dpu_encoder_virt_mode_set(struct 
->> drm_encoder *drm_enc,
->>           return;
->>       }
->> -    drm_for_each_crtc(drm_crtc, drm_enc->dev)
->> -        if (drm_crtc->state->encoder_mask & drm_encoder_mask(drm_enc))
->> +    drm_for_each_crtc(iter, drm_enc->dev)
->> +        if (iter->state->encoder_mask & drm_encoder_mask(drm_enc)) {
->> +            drm_crtc = iter;
->>               break;
->> +        }
->> +
->> +    if (!drm_crtc)
->> +        return;
->>       /* Query resource that have been reserved in atomic check step. */
->>       num_pp = dpu_rm_get_assigned_resources(&dpu_kms->rm, global_state,
+> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+> ---
+>  .../dts/freescale/imx8mm-venice-gw7901.dts    | 44 +++++++------------
+>  1 file changed, 15 insertions(+), 29 deletions(-)
 > 
+> diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts
+> index 7e7231046215..ee78c189c556 100644
+> --- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts
+> +++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dts
+> @@ -710,7 +710,7 @@
+>  
+>  &uart1 {
+>  	pinctrl-names = "default";
+> -	pinctrl-0 = <&pinctrl_uart1>, <&pinctrl_uart1_gpio>;
+> +	pinctrl-0 = <&pinctrl_uart1>;
+>  	rts-gpios = <&gpio1 10 GPIO_ACTIVE_LOW>;
+>  	cts-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
+>  	dtr-gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
+> @@ -728,7 +728,7 @@
+>  
+>  &uart3 {
+>  	pinctrl-names = "default";
+> -	pinctrl-0 = <&pinctrl_uart3>, <&pinctrl_uart3_gpio>;
+> +	pinctrl-0 = <&pinctrl_uart3>;
+>  	cts-gpios = <&gpio4 10 GPIO_ACTIVE_LOW>;
+>  	rts-gpios = <&gpio4 9 GPIO_ACTIVE_LOW>;
+>  	status = "okay";
+> @@ -736,7 +736,7 @@
+>  
+>  &uart4 {
+>  	pinctrl-names = "default";
+> -	pinctrl-0 = <&pinctrl_uart4>, <&pinctrl_uart4_gpio>;
+> +	pinctrl-0 = <&pinctrl_uart4>;
+>  	cts-gpios = <&gpio5 11 GPIO_ACTIVE_LOW>;
+>  	rts-gpios = <&gpio5 12 GPIO_ACTIVE_LOW>;
+>  	status = "okay";
+> @@ -807,6 +807,18 @@
+>  			MX8MM_IOMUXC_SAI3_RXD_GPIO4_IO30	0x40000041 /* SIM2DET# */
+>  			MX8MM_IOMUXC_SAI3_RXC_GPIO4_IO29	0x40000041 /* SIM1DET# */
+>  			MX8MM_IOMUXC_SPDIF_EXT_CLK_GPIO5_IO5	0x40000041 /* SIM2SEL */
+> +			MX8MM_IOMUXC_SAI3_TXFS_GPIO4_IO31	0x40000041 /* WDIS# */
+> +			MX8MM_IOMUXC_GPIO1_IO00_GPIO1_IO0	0x40000041 /* UART1_RS422# */
+> +			MX8MM_IOMUXC_GPIO1_IO03_GPIO1_IO3	0x40000041 /* UART1_RS485# */
+> +			MX8MM_IOMUXC_GPIO1_IO05_GPIO1_IO5	0x40000041 /* UART1_RS232# */
+> +			MX8MM_IOMUXC_SAI1_RXD4_GPIO4_IO6	0x40000110 /* UART3_RS232# */
+> +			MX8MM_IOMUXC_SAI1_RXD5_GPIO4_IO7	0x40000110 /* UART3_RS422# */
+> +			MX8MM_IOMUXC_SAI1_RXD6_GPIO4_IO8	0x40000110 /* UART3_RS485# */
+> +
+> +			MX8MM_IOMUXC_ECSPI2_SCLK_GPIO5_IO10	0x40000041 /* UART4_RS232# */
+> +			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0x40000041 /* UART4_RS422# */
+> +			MX8MM_IOMUXC_SAI2_MCLK_GPIO4_IO27	0x40000041 /* UART4_RS485# */
+> +
+>  		>;
+>  	};
+>  
+> @@ -874,7 +886,6 @@
+>  
+>  	pinctrl_pcie0: pciegrp {
+>  		fsl,pins = <
+> -			MX8MM_IOMUXC_SAI3_TXFS_GPIO4_IO31	0x40000041 /* WDIS# */
+>  			MX8MM_IOMUXC_SAI3_MCLK_GPIO5_IO2	0x41
+>  		>;
+>  	};
+> @@ -932,14 +943,6 @@
+>  		>;
+>  	};
+>  
+> -	pinctrl_uart1_gpio: uart1gpiogrp {
+> -		fsl,pins = <
+> -			MX8MM_IOMUXC_GPIO1_IO00_GPIO1_IO0	0x40000041 /* RS422# */
+> -			MX8MM_IOMUXC_GPIO1_IO03_GPIO1_IO3	0x40000041 /* RS485# */
+> -			MX8MM_IOMUXC_GPIO1_IO05_GPIO1_IO5	0x40000041 /* RS232# */
+> -		>;
+> -	};
+> -
+>  	pinctrl_uart2: uart2grp {
+>  		fsl,pins = <
+>  			MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX	0x140
+> @@ -956,14 +959,6 @@
+>  		>;
+>  	};
+>  
+> -	pinctrl_uart3_gpio: uart3gpiogrp {
+> -		fsl,pins = <
+> -			MX8MM_IOMUXC_SAI1_RXD4_GPIO4_IO6	0x40000110 /* RS232# */
+> -			MX8MM_IOMUXC_SAI1_RXD5_GPIO4_IO7	0x40000110 /* RS422# */
+> -			MX8MM_IOMUXC_SAI1_RXD6_GPIO4_IO8	0x40000110 /* RS485# */
+> -		>;
+> -	};
+> -
+>  	pinctrl_uart4: uart4grp {
+>  		fsl,pins = <
+>  			MX8MM_IOMUXC_UART4_RXD_UART4_DCE_RX	0x140
+> @@ -973,15 +968,6 @@
+>  		>;
+>  	};
+>  
+> -	pinctrl_uart4_gpio: uart4gpiogrp {
+> -		fsl,pins = <
+> -
+> -			MX8MM_IOMUXC_ECSPI2_SCLK_GPIO5_IO10	0x40000041 /* RS232# */
+> -			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0x40000041 /* RS422# */
+> -			MX8MM_IOMUXC_SAI2_MCLK_GPIO4_IO27	0x40000041 /* RS485# */
+> -		>;
+> -	};
+> -
+>  	pinctrl_usdhc1: usdhc1grp {
+>  		fsl,pins = <
+>  			MX8MM_IOMUXC_SD1_CLK_USDHC1_CLK		0x190
+> -- 
+> 2.17.1
 > 
-
-
--- 
-With best wishes
-Dmitry
