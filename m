@@ -2,238 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D10C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08903C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:30:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347125AbiDKQcL (ORCPT
+        id S1348621AbiDKQdD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 12:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
+        Mon, 11 Apr 2022 12:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348610AbiDKQcG (ORCPT
+        with ESMTP id S1348610AbiDKQdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 12:32:06 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC8730F41
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:29:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649694591; x=1681230591;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=77oPR4LmE7Bt119yuWsMyORGZb3xw2RvMXnIBUrecwE=;
-  b=iQ8d9GTRxKXqE63iQJZuY3KijPWZf/NgGuvZk1rilWpQRa8HRd7FNeiw
-   p3lpEMfot1kGARYRwdrKDLpW9V/BU6oFOLiotjcdN8OrOY2OrXWt8Od0G
-   3wjnsqt+ia10ov1tBo5sbxyvOFwgRjPX1qIt6ZRyqpgkN/i4Xg3tOLHXV
-   fJzlFyhDVbujtGB0KaMUOpgBws/IcgDfUGYLR/dGmuU+98p/+LWkDmaMT
-   TccjMar7evhxdKvCSGs4Gxs35JLaAXyCFu8J1hAxVC6ax7BFUfBBAHlxR
-   5zEuUYWhNrRr2SoK8CK4OlPmy+IsV/sUV/F/phzJi7jOzsiHqas1SzK9t
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="325069196"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="325069196"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 09:29:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="589943900"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 11 Apr 2022 09:29:48 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ndwvE-0001yl-5R;
-        Mon, 11 Apr 2022 16:29:48 +0000
-Date:   Tue, 12 Apr 2022 00:29:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jirislaby:devel 48/48] drivers/tty/serial/atmel_serial.c:985:13:
- warning: variable 'sg_len' is uninitialized when used here
-Message-ID: <202204120034.naMtjHQQ-lkp@intel.com>
+        Mon, 11 Apr 2022 12:33:01 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3004931226;
+        Mon, 11 Apr 2022 09:30:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649694646; x=1681230646;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=0t7/Xk/BGN/6TFZIjOo455dEA7/BKT+i+NbErgmrJVM=;
+  b=OWMzAVZSXaI9JJYqdpSGMje+DyOjHRyXsz9D2wAyqR4Cn5UnQpsdkrhH
+   kq0xHwoU+jqtfAkHeahfMOHVPgKZ98oR0rXa+QzmLFFoRfH4kZgEqLEVX
+   tx4efTvqi8NWtQm4MvHICyHtcC2UaZXnUp+C4uQEUgKVxsvWV9ykzuyaw
+   c=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 11 Apr 2022 09:30:45 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 09:30:45 -0700
+Received: from hu-mojha-hyd.qualcomm.com (10.80.80.8) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 11 Apr 2022 09:30:42 -0700
+From:   Mukesh Ojha <quic_mojha@quicinc.com>
+To:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
+        Mukesh Ojha <quic_mojha@quicinc.com>
+Subject: [PATCH v3 ] remoteproc: Use unbounded workqueue for recovery work
+Date:   Mon, 11 Apr 2022 22:00:20 +0530
+Message-ID: <1649694620-10070-1-git-send-email-quic_mojha@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.47.97.222)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git devel
-head:   c196e3b15cddb539135de6a3c6bcf32b89213b4c
-commit: c196e3b15cddb539135de6a3c6bcf32b89213b4c [48/48] tty: serial, use kfifo
-config: hexagon-randconfig-r045-20220411 (https://download.01.org/0day-ci/archive/20220412/202204120034.naMtjHQQ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c6e83f560f06cdfe8aa47b248d8bdc58f947274b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?id=c196e3b15cddb539135de6a3c6bcf32b89213b4c
-        git remote add jirislaby https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git
-        git fetch --no-tags jirislaby devel
-        git checkout c196e3b15cddb539135de6a3c6bcf32b89213b4c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/tty/serial/
+There could be a scenario where there is too much load on a core
+(n number of tasks which is affined) or in a case when multiple
+rproc subsystem is going for a recovery and they queued recovery
+work to one core so even though subsystem are independent there
+recovery will be delayed if one of the subsystem recovery work
+is taking more time in completing.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+If we make this queue unbounded, the recovery work could be picked
+on any cpu. This patch try to address this.
 
-All warnings (new ones prefixed by >>):
+Signed-off-by: Mukesh Ojha <quic_mojha@quicinc.com>
+---
+Changes in v3:
+  - Add fallback option to go back to earlier path incase recovery wq
+    creation fails.
 
-   drivers/tty/serial/atmel_serial.c:927:23: warning: variable 'part1_len' set but not used [-Wunused-but-set-variable]
-           unsigned int tx_len, part1_len, part2_len, sg_len;
-                                ^
-   drivers/tty/serial/atmel_serial.c:927:34: warning: variable 'part2_len' set but not used [-Wunused-but-set-variable]
-           unsigned int tx_len, part1_len, part2_len, sg_len;
-                                           ^
->> drivers/tty/serial/atmel_serial.c:985:13: warning: variable 'sg_len' is uninitialized when used here [-Wuninitialized]
-                                                  sg_len,
-                                                  ^~~~~~
-   drivers/tty/serial/atmel_serial.c:927:51: note: initialize the variable 'sg_len' to silence this warning
-           unsigned int tx_len, part1_len, part2_len, sg_len;
-                                                            ^
-                                                             = 0
-   3 warnings generated.
---
->> drivers/tty/serial/serial-tegra.c:584:25: warning: variable 'count' is uninitialized when used here [-Wuninitialized]
-           if (tup->use_tx_pio || count < TEGRA_UART_MIN_DMA)
-                                  ^~~~~
-   drivers/tty/serial/serial-tegra.c:571:21: note: initialize the variable 'count' to silence this warning
-           unsigned long count;
-                              ^
-                               = 0
->> drivers/tty/serial/serial-tegra.c:586:26: warning: variable 'tail' is uninitialized when used here [-Wuninitialized]
-           else if (BYTES_TO_ALIGN(tail) > 0)
-                                   ^~~~
-   drivers/tty/serial/serial-tegra.c:39:46: note: expanded from macro 'BYTES_TO_ALIGN'
-   #define BYTES_TO_ALIGN(x)                       ((unsigned long)(x) & 0x3)
-                                                                    ^
-   drivers/tty/serial/serial-tegra.c:570:20: note: initialize the variable 'tail' to silence this warning
-           unsigned long tail;
-                             ^
-                              = 0
->> drivers/tty/serial/serial-tegra.c:1188:26: warning: variable 'dma_buf' is uninitialized when used here [-Wuninitialized]
-                   tup->tx_dma_buf_virt = dma_buf;
-                                          ^~~~~~~
-   drivers/tty/serial/serial-tegra.c:1140:24: note: initialize the variable 'dma_buf' to silence this warning
-           unsigned char *dma_buf;
-                                 ^
-                                  = NULL
->> drivers/tty/serial/serial-tegra.c:1189:26: warning: variable 'dma_phys' is uninitialized when used here [-Wuninitialized]
-                   tup->tx_dma_buf_phys = dma_phys;
-                                          ^~~~~~~~
-   drivers/tty/serial/serial-tegra.c:1141:21: note: initialize the variable 'dma_phys' to silence this warning
-           dma_addr_t dma_phys;
-                              ^
-                               = 0
-   4 warnings generated.
+Changes in v2:
+  - Removed WQ_HIGHPRI.
+  - Updated commit text.
 
+ drivers/remoteproc/remoteproc_core.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-vim +/sg_len +985 drivers/tty/serial/atmel_serial.c
-
-08f738be88bb7a Elen Song       2013-07-22   916  
-08f738be88bb7a Elen Song       2013-07-22   917  /*
-08f738be88bb7a Elen Song       2013-07-22   918   * Called from tasklet with TXRDY interrupt is disabled.
-08f738be88bb7a Elen Song       2013-07-22   919   */
-08f738be88bb7a Elen Song       2013-07-22   920  static void atmel_tx_dma(struct uart_port *port)
-08f738be88bb7a Elen Song       2013-07-22   921  {
-08f738be88bb7a Elen Song       2013-07-22   922  	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-c196e3b15cddb5 Jiri Slaby      2022-01-05   923  	struct tty_port *tport = &port->state->port;
-08f738be88bb7a Elen Song       2013-07-22   924  	struct dma_chan *chan = atmel_port->chan_tx;
-08f738be88bb7a Elen Song       2013-07-22   925  	struct dma_async_tx_descriptor *desc;
-c196e3b15cddb5 Jiri Slaby      2022-01-05   926  	struct scatterlist sgl[2], /**sg,*/ *sg_tx = &atmel_port->sg_tx;
-5f258b3e3d223b Cyrille Pitchen 2015-07-02  @927  	unsigned int tx_len, part1_len, part2_len, sg_len;
-c196e3b15cddb5 Jiri Slaby      2022-01-05   928  	//dma_addr_t phys_addr;
-08f738be88bb7a Elen Song       2013-07-22   929  
-08f738be88bb7a Elen Song       2013-07-22   930  	/* Make sure we have an idle channel */
-08f738be88bb7a Elen Song       2013-07-22   931  	if (atmel_port->desc_tx != NULL)
-08f738be88bb7a Elen Song       2013-07-22   932  		return;
-08f738be88bb7a Elen Song       2013-07-22   933  
-c196e3b15cddb5 Jiri Slaby      2022-01-05   934  	if (!kfifo_is_empty(&tport->xmit_fifo) && !uart_tx_stopped(port)) {
-08f738be88bb7a Elen Song       2013-07-22   935  		/*
-08f738be88bb7a Elen Song       2013-07-22   936  		 * DMA is idle now.
-08f738be88bb7a Elen Song       2013-07-22   937  		 * Port xmit buffer is already mapped,
-08f738be88bb7a Elen Song       2013-07-22   938  		 * and it is one page... Just adjust
-08f738be88bb7a Elen Song       2013-07-22   939  		 * offsets and lengths. Since it is a circular buffer,
-08f738be88bb7a Elen Song       2013-07-22   940  		 * we have to transmit till the end, and then the rest.
-08f738be88bb7a Elen Song       2013-07-22   941  		 * Take the port lock to get a
-08f738be88bb7a Elen Song       2013-07-22   942  		 * consistent xmit buffer state.
-08f738be88bb7a Elen Song       2013-07-22   943  		 */
-c196e3b15cddb5 Jiri Slaby      2022-01-05   944  		tx_len = 0;/*CIRC_CNT_TO_END(xmit->head,
-08f738be88bb7a Elen Song       2013-07-22   945  					 xmit->tail,
-c196e3b15cddb5 Jiri Slaby      2022-01-05   946  					 UART_XMIT_SIZE);*/
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   947  
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   948  		if (atmel_port->fifo_size) {
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   949  			/* multi data mode */
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   950  			part1_len = (tx_len & ~0x3); /* DWORD access */
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   951  			part2_len = (tx_len & 0x3); /* BYTE access */
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   952  		} else {
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   953  			/* single data (legacy) mode */
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   954  			part1_len = 0;
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   955  			part2_len = tx_len; /* BYTE access only */
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   956  		}
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   957  
-c196e3b15cddb5 Jiri Slaby      2022-01-05   958  #if 0
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   959  		sg_init_table(sgl, 2);
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   960  		sg_len = 0;
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   961  		phys_addr = sg_dma_address(sg_tx) + xmit->tail;
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   962  		if (part1_len) {
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   963  			sg = &sgl[sg_len++];
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   964  			sg_dma_address(sg) = phys_addr;
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   965  			sg_dma_len(sg) = part1_len;
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   966  
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   967  			phys_addr += part1_len;
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   968  		}
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   969  
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   970  		if (part2_len) {
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   971  			sg = &sgl[sg_len++];
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   972  			sg_dma_address(sg) = phys_addr;
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   973  			sg_dma_len(sg) = part2_len;
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   974  		}
-c196e3b15cddb5 Jiri Slaby      2022-01-05   975  #endif
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   976  
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   977  		/*
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   978  		 * save tx_len so atmel_complete_tx_dma() will increase
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   979  		 * xmit->tail correctly
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   980  		 */
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   981  		atmel_port->tx_len = tx_len;
-08f738be88bb7a Elen Song       2013-07-22   982  
-08f738be88bb7a Elen Song       2013-07-22   983  		desc = dmaengine_prep_slave_sg(chan,
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   984  					       sgl,
-5f258b3e3d223b Cyrille Pitchen 2015-07-02  @985  					       sg_len,
-08f738be88bb7a Elen Song       2013-07-22   986  					       DMA_MEM_TO_DEV,
-08f738be88bb7a Elen Song       2013-07-22   987  					       DMA_PREP_INTERRUPT |
-08f738be88bb7a Elen Song       2013-07-22   988  					       DMA_CTRL_ACK);
-08f738be88bb7a Elen Song       2013-07-22   989  		if (!desc) {
-08f738be88bb7a Elen Song       2013-07-22   990  			dev_err(port->dev, "Failed to send via dma!\n");
-08f738be88bb7a Elen Song       2013-07-22   991  			return;
-08f738be88bb7a Elen Song       2013-07-22   992  		}
-08f738be88bb7a Elen Song       2013-07-22   993  
-5f258b3e3d223b Cyrille Pitchen 2015-07-02   994  		dma_sync_sg_for_device(port->dev, sg_tx, 1, DMA_TO_DEVICE);
-08f738be88bb7a Elen Song       2013-07-22   995  
-08f738be88bb7a Elen Song       2013-07-22   996  		atmel_port->desc_tx = desc;
-08f738be88bb7a Elen Song       2013-07-22   997  		desc->callback = atmel_complete_tx_dma;
-08f738be88bb7a Elen Song       2013-07-22   998  		desc->callback_param = atmel_port;
-08f738be88bb7a Elen Song       2013-07-22   999  		atmel_port->cookie_tx = dmaengine_submit(desc);
-1e67bd2b8cb90b Tudor Ambarus   2021-11-25  1000  		if (dma_submit_error(atmel_port->cookie_tx)) {
-1e67bd2b8cb90b Tudor Ambarus   2021-11-25  1001  			dev_err(port->dev, "dma_submit_error %d\n",
-1e67bd2b8cb90b Tudor Ambarus   2021-11-25  1002  				atmel_port->cookie_tx);
-1e67bd2b8cb90b Tudor Ambarus   2021-11-25  1003  			return;
-1e67bd2b8cb90b Tudor Ambarus   2021-11-25  1004  		}
-4f4b9b5895614e Tudor Ambarus   2021-11-25  1005  
-4f4b9b5895614e Tudor Ambarus   2021-11-25  1006  		dma_async_issue_pending(chan);
-08f738be88bb7a Elen Song       2013-07-22  1007  	}
-08f738be88bb7a Elen Song       2013-07-22  1008  
-c196e3b15cddb5 Jiri Slaby      2022-01-05  1009  	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
-08f738be88bb7a Elen Song       2013-07-22  1010  		uart_write_wakeup(port);
-08f738be88bb7a Elen Song       2013-07-22  1011  }
-08f738be88bb7a Elen Song       2013-07-22  1012  
-
-:::::: The code at line 985 was first introduced by commit
-:::::: 5f258b3e3d223b5cb6d1753b2f9b821ba4455f81 tty/serial: at91: use 32bit writes into TX FIFO when DMA is enabled
-
-:::::: TO: Cyrille Pitchen <cyrille.pitchen@atmel.com>
-:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
+diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+index c510125..6446c84 100644
+--- a/drivers/remoteproc/remoteproc_core.c
++++ b/drivers/remoteproc/remoteproc_core.c
+@@ -59,6 +59,7 @@ static int rproc_release_carveout(struct rproc *rproc,
+ 
+ /* Unique indices for remoteproc devices */
+ static DEFINE_IDA(rproc_dev_index);
++static struct workqueue_struct *rproc_recovery_wq;
+ 
+ static const char * const rproc_crash_names[] = {
+ 	[RPROC_MMUFAULT]	= "mmufault",
+@@ -2755,8 +2756,11 @@ void rproc_report_crash(struct rproc *rproc, enum rproc_crash_type type)
+ 	dev_err(&rproc->dev, "crash detected in %s: type %s\n",
+ 		rproc->name, rproc_crash_to_string(type));
+ 
+-	/* Have a worker handle the error; ensure system is not suspended */
+-	queue_work(system_freezable_wq, &rproc->crash_handler);
++	if (rproc_recovery_wq)
++		queue_work(rproc_recovery_wq, &rproc->crash_handler);
++	else
++		queue_work(system_freezable_wq, &rproc->crash_handler);
++
+ }
+ EXPORT_SYMBOL(rproc_report_crash);
+ 
+@@ -2805,6 +2809,11 @@ static void __exit rproc_exit_panic(void)
+ 
+ static int __init remoteproc_init(void)
+ {
++	rproc_recovery_wq = alloc_workqueue("rproc_recovery_wq",
++						WQ_UNBOUND | WQ_FREEZABLE, 0);
++	if (!rproc_recovery_wq)
++		pr_err("remoteproc: creation of rproc_recovery_wq failed\n");
++
+ 	rproc_init_sysfs();
+ 	rproc_init_debugfs();
+ 	rproc_init_cdev();
+@@ -2821,6 +2830,8 @@ static void __exit remoteproc_exit(void)
+ 	rproc_exit_panic();
+ 	rproc_exit_debugfs();
+ 	rproc_exit_sysfs();
++	if (rproc_recovery_wq)
++		destroy_workqueue(rproc_recovery_wq);
+ }
+ module_exit(remoteproc_exit);
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.7.4
+
