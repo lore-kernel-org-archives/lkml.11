@@ -2,547 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01724C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344283AbiDKJNm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50244 "EHLO
+        id S245029AbiDKJO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 05:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344278AbiDKJNX (ORCPT
+        with ESMTP id S233259AbiDKJOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:13:23 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD223FBCA
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:11:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649668265; x=1681204265;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=odzJXBAfND22zDvU+RyvVJ3pirtZMgtb8UMnZjarqeo=;
-  b=YFqbuRGW1in23lNl471S4yrR9RWXax5g6iu1R9pcX9/klwK0OG/54ECF
-   eelLK3jldEMSiHPX2KIfY9RpS1eTTuiavhhyDrgCa4FbiHail0NahT8JI
-   lrp15vNxFGmWlaMOEe4xyfCR+4NTuUKEEiuoXIqT5nj6/NMgaubSwKvF5
-   VoZf8t1dSONO68pvMRmkQAM4ocbvk07iaq/CIJTtP5pjr4iScQj3oHW+5
-   PIikb87zMlQ7xKbQnWIu+IsDudzS64Oe+hHLLf7JI+CkcIoAqz3RDn2wG
-   NAe9pQiKaIDQgADj74hwJpXKOaYm+wVd5+JzUQ/RaoH1J7b/9uwcpCdSi
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,251,1643698800"; 
-   d="scan'208";a="160048763"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Apr 2022 02:11:03 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+        Mon, 11 Apr 2022 05:14:23 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB8D3F892
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:12:09 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KcNQD4hVmz1HBkw;
+        Mon, 11 Apr 2022 17:11:32 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 11 Apr 2022 02:11:02 -0700
-Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 11 Apr 2022 02:11:00 -0700
-From:   Tudor Ambarus <tudor.ambarus@microchip.com>
-To:     <p.yadav@ti.com>, <michael@walle.cc>
-CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <nicolas.ferre@microchip.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>
-Subject: [PATCH v3 9/9] mtd: spi-nor: Introduce templates for SPI NOR operations
-Date:   Mon, 11 Apr 2022 12:10:33 +0300
-Message-ID: <20220411091033.98754-10-tudor.ambarus@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220411091033.98754-1-tudor.ambarus@microchip.com>
-References: <20220411091033.98754-1-tudor.ambarus@microchip.com>
+ 15.1.2375.24; Mon, 11 Apr 2022 17:12:05 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 11 Apr 2022 17:12:05 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     <catalin.marinas@arm.com>, <will@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <vijayb@linux.microsoft.com>, <f.fainelli@gmail.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH v3 0/3] arm64: mm: Do not defer reserve_crashkernel()
+Date:   Mon, 11 Apr 2022 17:24:52 +0800
+Message-ID: <20220411092455.1461-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean the op declaration and hide the details of each op. With this it
-results a cleanner, easier to read code. No functional change expected.
+Commit 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
+platforms with no DMA memory zones"), this lets the kernel benifit
+due to BLOCK_MAPPINGS, we could do more if ZONE_DMA and ZONE_DMA32
+enabled.
 
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
----
-v3: new patch taken from, no changes
-https://lore.kernel.org/lkml/20220304093011.198173-1-tudor.ambarus@microchip.com/
+1) Don't defer reserve_crashkernel() if only ZONE_DMA32
+2) Don't defer reserve_crashkernel() if ZONE_DMA with dma_force_32bit
+   kernel parameter(newly added)
 
- drivers/mtd/spi-nor/core.c      | 101 ++++++-------------------------
- drivers/mtd/spi-nor/core.h      | 102 ++++++++++++++++++++++++++++++++
- drivers/mtd/spi-nor/micron-st.c |  24 ++++----
- drivers/mtd/spi-nor/spansion.c  |  26 +++++---
- drivers/mtd/spi-nor/xilinx.c    |  12 ++--
- 5 files changed, 158 insertions(+), 107 deletions(-)
+Here is another case to show the benefit of the block mapping.
 
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index 42794328d3b6..fe853532204c 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -359,11 +359,7 @@ int spi_nor_write_enable(struct spi_nor *nor)
- 	int ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WREN, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_NO_DATA);
-+		struct spi_mem_op op = SPI_NOR_WREN_OP;
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-@@ -390,11 +386,7 @@ int spi_nor_write_disable(struct spi_nor *nor)
- 	int ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WRDI, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_NO_DATA);
-+		struct spi_mem_op op = SPI_NOR_WRDI_OP;
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-@@ -454,11 +446,7 @@ int spi_nor_read_sr(struct spi_nor *nor, u8 *sr)
- 	int ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDSR, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_DATA_IN(1, sr, 0));
-+		struct spi_mem_op op = SPI_NOR_RDSR_OP(sr);
- 
- 		if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR) {
- 			op.addr.nbytes = nor->params->rdsr_addr_nbytes;
-@@ -498,11 +486,7 @@ int spi_nor_read_cr(struct spi_nor *nor, u8 *cr)
- 	int ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDCR, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_DATA_IN(1, cr, 0));
-+		struct spi_mem_op op = SPI_NOR_RDCR_OP(cr);
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-@@ -531,14 +515,7 @@ int spi_nor_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
- 	int ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(enable ?
--						  SPINOR_OP_EN4B :
--						  SPINOR_OP_EX4B,
--						  0),
--				  SPI_MEM_OP_NO_ADDR,
--				  SPI_MEM_OP_NO_DUMMY,
--				  SPI_MEM_OP_NO_DATA);
-+		struct spi_mem_op op = SPI_NOR_EN4B_EX4B_OP(enable);
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-@@ -572,11 +549,7 @@ static int spansion_set_4byte_addr_mode(struct spi_nor *nor, bool enable)
- 	nor->bouncebuf[0] = enable << 7;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_BRWR, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_DATA_OUT(1, nor->bouncebuf, 0));
-+		struct spi_mem_op op = SPI_NOR_BRWR_OP(nor->bouncebuf);
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-@@ -606,11 +579,7 @@ int spi_nor_write_ear(struct spi_nor *nor, u8 ear)
- 	nor->bouncebuf[0] = ear;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WREAR, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_DATA_OUT(1, nor->bouncebuf, 0));
-+		struct spi_mem_op op = SPI_NOR_WREAR_OP(nor->bouncebuf);
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-@@ -721,11 +690,7 @@ int spi_nor_global_block_unlock(struct spi_nor *nor)
- 		return ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_GBULK, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_NO_DATA);
-+		struct spi_mem_op op = SPI_NOR_GBULK_OP;
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-@@ -760,11 +725,7 @@ int spi_nor_write_sr(struct spi_nor *nor, const u8 *sr, size_t len)
- 		return ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WRSR, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_DATA_OUT(len, sr, 0));
-+		struct spi_mem_op op = SPI_NOR_WRSR_OP(sr, len);
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-@@ -964,11 +925,7 @@ static int spi_nor_write_sr2(struct spi_nor *nor, const u8 *sr2)
- 		return ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WRSR2, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_DATA_OUT(1, sr2, 0));
-+		struct spi_mem_op op = SPI_NOR_WRSR2_OP(sr2);
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-@@ -1000,11 +957,7 @@ static int spi_nor_read_sr2(struct spi_nor *nor, u8 *sr2)
- 	int ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDSR2, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_DATA_IN(1, sr2, 0));
-+		struct spi_mem_op op = SPI_NOR_RDSR2_OP(sr2);
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-@@ -1033,11 +986,7 @@ static int spi_nor_erase_chip(struct spi_nor *nor)
- 	dev_dbg(nor->dev, " %lldKiB\n", (long long)(nor->mtd.size >> 10));
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CHIP_ERASE, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_NO_DATA);
-+		struct spi_mem_op op = SPI_NOR_CHIP_ERASE_OP;
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->write_proto);
- 
-@@ -1179,10 +1128,8 @@ int spi_nor_erase_sector(struct spi_nor *nor, u32 addr)
- 
- 	if (nor->spimem) {
- 		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(nor->erase_opcode, 0),
--				   SPI_MEM_OP_ADDR(nor->addr_width, addr, 0),
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_NO_DATA);
-+			SPI_NOR_SECTOR_ERASE_OP(nor->erase_opcode,
-+						nor->addr_width, addr);
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->write_proto);
- 
-@@ -1978,10 +1925,7 @@ static int spi_nor_spimem_check_op(struct spi_nor *nor,
- static int spi_nor_spimem_check_readop(struct spi_nor *nor,
- 				       const struct spi_nor_read_command *read)
- {
--	struct spi_mem_op op = SPI_MEM_OP(SPI_MEM_OP_CMD(read->opcode, 0),
--					  SPI_MEM_OP_ADDR(3, 0, 0),
--					  SPI_MEM_OP_DUMMY(1, 0),
--					  SPI_MEM_OP_DATA_IN(2, NULL, 0));
-+	struct spi_mem_op op = SPI_NOR_READ_OP(read->opcode);
- 
- 	spi_nor_spimem_setup_op(nor, &op, read->proto);
- 
-@@ -2004,10 +1948,7 @@ static int spi_nor_spimem_check_readop(struct spi_nor *nor,
- static int spi_nor_spimem_check_pp(struct spi_nor *nor,
- 				   const struct spi_nor_pp_command *pp)
- {
--	struct spi_mem_op op = SPI_MEM_OP(SPI_MEM_OP_CMD(pp->opcode, 0),
--					  SPI_MEM_OP_ADDR(3, 0, 0),
--					  SPI_MEM_OP_NO_DUMMY,
--					  SPI_MEM_OP_DATA_OUT(2, NULL, 0));
-+	struct spi_mem_op op = SPI_NOR_PP_OP(pp->opcode);
- 
- 	spi_nor_spimem_setup_op(nor, &op, pp->proto);
- 
-@@ -2831,10 +2772,7 @@ static void spi_nor_soft_reset(struct spi_nor *nor)
- 	struct spi_mem_op op;
- 	int ret;
- 
--	op = (struct spi_mem_op)SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_SRSTEN, 0),
--			SPI_MEM_OP_NO_DUMMY,
--			SPI_MEM_OP_NO_ADDR,
--			SPI_MEM_OP_NO_DATA);
-+	op = (struct spi_mem_op)SPINOR_SRSTEN_OP;
- 
- 	spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-@@ -2844,10 +2782,7 @@ static void spi_nor_soft_reset(struct spi_nor *nor)
- 		return;
- 	}
- 
--	op = (struct spi_mem_op)SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_SRST, 0),
--			SPI_MEM_OP_NO_DUMMY,
--			SPI_MEM_OP_NO_ADDR,
--			SPI_MEM_OP_NO_DATA);
-+	op = (struct spi_mem_op)SPINOR_SRST_OP;
- 
- 	spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
-index 7c704475946d..8b7e597fd38c 100644
---- a/drivers/mtd/spi-nor/core.h
-+++ b/drivers/mtd/spi-nor/core.h
-@@ -18,6 +18,108 @@
- 		   SPI_MEM_OP_DUMMY(ndummy, 0),				\
- 		   SPI_MEM_OP_DATA_IN(len, buf, 0))
- 
-+#define SPI_NOR_WREN_OP							\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WREN, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_NO_DATA)
-+
-+#define SPI_NOR_WRDI_OP							\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WRDI, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_NO_DATA)
-+
-+#define SPI_NOR_RDSR_OP(buf)						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDSR, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_DATA_IN(1, buf, 0))
-+
-+#define SPI_NOR_WRSR_OP(buf, len)					\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WRSR, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_DATA_OUT(len, buf, 0))
-+
-+#define SPI_NOR_RDSR2_OP(buf)						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDSR2, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_DATA_OUT(1, buf, 0))
-+
-+#define SPI_NOR_WRSR2_OP(buf)						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WRSR2, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_DATA_OUT(1, buf, 0))
-+
-+#define SPI_NOR_RDCR_OP(buf)						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDCR, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_DATA_IN(1, buf, 0))
-+
-+#define SPI_NOR_EN4B_EX4B_OP(enable)					\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(enable ? SPINOR_OP_EN4B : SPINOR_OP_EX4B, 0),	\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_NO_DATA)
-+
-+#define SPI_NOR_BRWR_OP(buf)						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_BRWR, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_DATA_OUT(1, buf, 0))
-+
-+#define SPI_NOR_WREAR_OP(buf)						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_WREAR, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_DATA_OUT(1, buf, 0))
-+
-+#define SPI_NOR_GBULK_OP						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_GBULK, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_NO_DATA)
-+
-+#define SPI_NOR_CHIP_ERASE_OP						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CHIP_ERASE, 0),		\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_NO_DATA)
-+
-+#define SPI_NOR_SECTOR_ERASE_OP(opcode, addr_width, addr)		\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(opcode, 0),				\
-+		   SPI_MEM_OP_ADDR(addr_width, addr, 0),		\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_NO_DATA)
-+
-+#define SPI_NOR_READ_OP(opcode)						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(opcode, 0),				\
-+		   SPI_MEM_OP_ADDR(3, 0, 0),				\
-+		   SPI_MEM_OP_DUMMY(1, 0),				\
-+		   SPI_MEM_OP_DATA_IN(2, NULL, 0))
-+
-+#define SPI_NOR_PP_OP(opcode)						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(opcode, 0),				\
-+		   SPI_MEM_OP_ADDR(3, 0, 0),				\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_DATA_OUT(2, NULL, 0))
-+
-+#define SPINOR_SRSTEN_OP						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_SRSTEN, 0),			\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DATA)
-+
-+#define SPINOR_SRST_OP							\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_SRST, 0),			\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DATA)
-+
- enum spi_nor_option_flags {
- 	SNOR_F_HAS_SR_TB	= BIT(0),
- 	SNOR_F_NO_OP_CHIP_ERASE	= BIT(1),
-diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
-index a447762c0d78..26b9a1c2309d 100644
---- a/drivers/mtd/spi-nor/micron-st.c
-+++ b/drivers/mtd/spi-nor/micron-st.c
-@@ -35,6 +35,18 @@
- 		   SPI_MEM_OP_NO_DUMMY,					\
- 		   SPI_MEM_OP_DATA_OUT(ndata, buf, 0))
- 
-+#define MICRON_ST_RDFSR_OP(buf)						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDFSR, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_DATA_IN(1, buf, 0))
-+
-+#define MICRON_ST_CLFSR_OP						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLFSR, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_NO_DATA)
-+
- static int micron_st_nor_octal_dtr_en(struct spi_nor *nor)
- {
- 	struct spi_mem_op op;
-@@ -324,11 +336,7 @@ static int micron_st_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
- 	int ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDFSR, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_DATA_IN(1, fsr, 0));
-+		struct spi_mem_op op = MICRON_ST_RDFSR_OP(fsr);
- 
- 		if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR) {
- 			op.addr.nbytes = nor->params->rdsr_addr_nbytes;
-@@ -363,11 +371,7 @@ static void micron_st_nor_clear_fsr(struct spi_nor *nor)
- 	int ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLFSR, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_NO_DATA);
-+		struct spi_mem_op op = MICRON_ST_CLFSR_OP;
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-diff --git a/drivers/mtd/spi-nor/spansion.c b/drivers/mtd/spi-nor/spansion.c
-index 35d8edb515a3..952db7af6932 100644
---- a/drivers/mtd/spi-nor/spansion.c
-+++ b/drivers/mtd/spi-nor/spansion.c
-@@ -30,6 +30,18 @@
- 		   SPI_MEM_OP_NO_DUMMY,					\
- 		   SPI_MEM_OP_DATA_OUT(ndata, buf, 0))
- 
-+#define CYPRESS_NOR_RD_ANY_REG_OP(naddr, addr, buf)			\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RD_ANY_REG, 0),		\
-+		   SPI_MEM_OP_ADDR(naddr, addr, 0),			\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_DATA_IN(1, buf, 0))
-+
-+#define SPANSION_CLSR_OP						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLSR, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_NO_DATA)
-+
- static int cypress_nor_octal_dtr_en(struct spi_nor *nor)
- {
- 	struct spi_mem_op op;
-@@ -165,12 +177,12 @@ static int s28hs512t_post_bfpt_fixup(struct spi_nor *nor,
- 	 * CFR3V[4] and set the correct size.
- 	 */
- 	struct spi_mem_op op =
--		SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RD_ANY_REG, 1),
--			   SPI_MEM_OP_ADDR(3, SPINOR_REG_CYPRESS_CFR3V, 1),
--			   SPI_MEM_OP_NO_DUMMY,
--			   SPI_MEM_OP_DATA_IN(1, nor->bouncebuf, 1));
-+		CYPRESS_NOR_RD_ANY_REG_OP(3, SPINOR_REG_CYPRESS_CFR3V,
-+					  nor->bouncebuf);
- 	int ret;
- 
-+	spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
-+
- 	ret = spi_mem_exec_op(nor->spimem, &op);
- 	if (ret)
- 		return ret;
-@@ -320,11 +332,7 @@ static void spansion_nor_clear_sr(struct spi_nor *nor)
- 	int ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_CLSR, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_NO_DATA);
-+		struct spi_mem_op op = SPANSION_CLSR_OP;
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
-diff --git a/drivers/mtd/spi-nor/xilinx.c b/drivers/mtd/spi-nor/xilinx.c
-index 9459ac2609dc..1d2f5db047bd 100644
---- a/drivers/mtd/spi-nor/xilinx.c
-+++ b/drivers/mtd/spi-nor/xilinx.c
-@@ -15,6 +15,12 @@
- #define XSR_PAGESIZE		BIT(0)	/* Page size in Po2 or Linear */
- #define XSR_RDY			BIT(7)	/* Ready */
- 
-+#define XILINX_RDSR_OP(buf)						\
-+	SPI_MEM_OP(SPI_MEM_OP_CMD(XILINX_OP_RDSR, 0),			\
-+		   SPI_MEM_OP_NO_ADDR,					\
-+		   SPI_MEM_OP_NO_DUMMY,					\
-+		   SPI_MEM_OP_DATA_IN(1, buf, 0))
-+
- #define S3AN_INFO(_jedec_id, _n_sectors, _page_size)			\
- 		.id = {							\
- 			((_jedec_id) >> 16) & 0xff,			\
-@@ -72,11 +78,7 @@ static int xilinx_nor_read_sr(struct spi_nor *nor, u8 *sr)
- 	int ret;
- 
- 	if (nor->spimem) {
--		struct spi_mem_op op =
--			SPI_MEM_OP(SPI_MEM_OP_CMD(XILINX_OP_RDSR, 0),
--				   SPI_MEM_OP_NO_ADDR,
--				   SPI_MEM_OP_NO_DUMMY,
--				   SPI_MEM_OP_DATA_IN(1, sr, 0));
-+		struct spi_mem_op op = XILINX_RDSR_OP(sr);
- 
- 		spi_nor_spimem_setup_op(nor, &op, nor->reg_proto);
- 
+Unixbench benchmark result shows between the block mapping and page mapping.
+----------------+------------------+-------------------
+        	| block mapping    |   page mapping    
+----------------+------------------+-------------------
+Process Creation|  5,030.7         |    4,711.8       
+(in unixbench)  |                  |                   
+----------------+------------------+-------------------
+
+note: RODATA_FULL_DEFAULT_ENABLED is not enabled
+
+v3:
+- renaming crashkernel_could_early_reserve() to crashkernel_early_reserve() 
+- drop dma32_phys_limit, directly use max_zone_phys(32)
+- fix no previous prototype issue
+- add RB of Vijay to patch2/3
+v2 resend:
+- fix build error reported-by lkp
+v2:
+- update patch1 according to Vijay and Florian, and RB of Vijay
+- add new patch2
+
+Kefeng Wang (3):
+  arm64: mm: Do not defer reserve_crashkernel() if only ZONE_DMA32
+  arm64: mm: Don't defer reserve_crashkernel() with dma_force_32bit
+  arm64: mm: Cleanup useless parameters in zone_sizes_init()
+
+ arch/arm64/include/asm/kexec.h |  1 +
+ arch/arm64/mm/init.c           | 60 ++++++++++++++++++++++++----------
+ arch/arm64/mm/mmu.c            |  6 ++--
+ 3 files changed, 46 insertions(+), 21 deletions(-)
+
 -- 
-2.25.1
+2.26.2
 
