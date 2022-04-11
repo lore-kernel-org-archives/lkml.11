@@ -2,151 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C033C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 19:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D69FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 19:26:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349673AbiDKT2a (ORCPT
+        id S1349676AbiDKT2m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 15:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
+        Mon, 11 Apr 2022 15:28:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349627AbiDKT13 (ORCPT
+        with ESMTP id S1349663AbiDKT1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 15:27:29 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB89F140EB;
-        Mon, 11 Apr 2022 12:25:13 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id o2so6777068lfu.13;
-        Mon, 11 Apr 2022 12:25:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UOaY0dvj8Jn2enDiXoZlQyItDDBhGi0Z21ViX26p86o=;
-        b=U6kjZXIbUv4b7puIl3hY+AHHqCRrcLP/bQOpqdVlTrqNd5ke6pZelqt6KH5sxiL/xh
-         qYdpdzV97YmJLaUUGeBYO8oYSqUcvVrNr8ZDz/i3aFSQtcXtQngT0zZt/G3zSKBtiNOG
-         UvyCAsu/NwHmTmMjjqyscuZXLFv/sijhPs3bLZGRwATOnoRbfm1TlNykjwd1+7prXJFJ
-         A4mRSnVmKAzM7tRpsCbuaxXyU8iVofSCCoSrlETtaCjAkRE7L8CTaQlQVUsArXR6mUTP
-         aNyfhDFLDdkT9og3qXJ/aDaV2z+FkgfhJDXVyR/tUBUNOS4qC2TCeWXT/f68LaLEcLtA
-         FF9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UOaY0dvj8Jn2enDiXoZlQyItDDBhGi0Z21ViX26p86o=;
-        b=5DAxOgoHwQMs7VG+YwOT1U3bXPHchGMYo9ANs8MHXgEGCqP33V+zGC/6XcVLl6Y24h
-         WyiCDQ2O5fvqEdyt2GqIuDAKIRMM25PJcunN4NZBN0XA4mUAnhRhFcL5uND0VQHqmgao
-         4L4tvHvM6ObKzE3J87yiKQ/YGw/ILzYI+o2U/1/IpjNX7DxWYxwWTcG/Xza7ZkaEtDFm
-         06I6E+DqUxndMW08/xw1v/K4pFYEpqfT1SqunEn5YQ8TAZgErVu0t+u5bnzYCWiYfZ1D
-         XrfWmIqiL7w4FszwDnORRDogjIV1bOuWZSF3hzlNpFegclQfBsAiB/GmSL0H8CKrQzKm
-         X7tw==
-X-Gm-Message-State: AOAM532MFOWgGMs/NvObKKnVzGp8NV6NNmmUU3ipEdN3G+p8oObbBJBR
-        jP4N/jYYQ1rdZWXq8rqyF9k=
-X-Google-Smtp-Source: ABdhPJy4eqh2ZkmCD78meCjWFsinmbRWaCH5CMTmE9vvWebzuCAVfufD3H1i2eU8do0lH/TsVTWDnA==
-X-Received: by 2002:ac2:5922:0:b0:46a:2396:f575 with SMTP id v2-20020ac25922000000b0046a2396f575mr13092449lfi.654.1649705111898;
-        Mon, 11 Apr 2022 12:25:11 -0700 (PDT)
-Received: from mobilestation ([95.79.134.149])
-        by smtp.gmail.com with ESMTPSA id u2-20020a2e8542000000b0024b4b8dd24dsm1211010ljj.140.2022.04.11.12.25.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 12:25:11 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 22:25:09 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 01/21] dt-bindings: ata: sata: Extend number of SATA ports
-Message-ID: <20220411192509.odx6vn7kxnfs6mxo@mobilestation>
-References: <20220324001628.13028-1-Sergey.Semin@baikalelectronics.ru>
- <20220324001628.13028-2-Sergey.Semin@baikalelectronics.ru>
- <92699f07-0efc-e471-d886-c7d6c83f352e@opensource.wdc.com>
+        Mon, 11 Apr 2022 15:27:44 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573DD19006
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 12:25:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649705129; x=1681241129;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qVII6WCIx6urEHUvPWa41zc/m5lMhoAb+7gCWYfPbVg=;
+  b=iz/7QqgIyQEIKy8GDiUTvMaBZFR6HuWqQlKXe6qeZ+dYbLfQQHDq1PeO
+   x6Gyh+agUfytdUm7R4Kh6jAfE8SDq+rpNZEn83gFyaZJlL/E4rs2Ub3mU
+   FQilVWNXy7W50f4hqDSHgT5zR86gxYoTJQPPtepSFKbixWkCF3Lv0qhuu
+   9SlmpCQ5pqCeanCiHMXe/XB43FzjeGIQzB1iA3p8v9UlyQ8FZFjhCJlGo
+   aHM1QaYALXj2K1YB+oJcgdywIf9O/ZgK91tDk3Davg21fCCGsthBv5+yK
+   wAHOfe84WUS6DeADux2uXUh0IYev+D9UpdrV0VPAQ59c2bu/KBINYZFpH
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="261636842"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="261636842"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 12:25:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
+   d="scan'208";a="507235347"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 11 Apr 2022 12:25:27 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ndzfC-00026s-U1;
+        Mon, 11 Apr 2022 19:25:26 +0000
+Date:   Tue, 12 Apr 2022 03:24:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Keith Busch <keith.busch@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Rajat Jain <rajatja@google.com>,
+        Gwendal Grignou <gwendal@chromium.org>
+Subject: [RFC PATCH jsarha] BACKPORT: FROMGIT: nvme-pci: nvme_dev_pm_ops can
+ be static
+Message-ID: <YlSAffL1A6Q6BCZ0@efd45e54f7c9>
+References: <202204120348.5EvqQlqc-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <92699f07-0efc-e471-d886-c7d6c83f352e@opensource.wdc.com>
+In-Reply-To: <202204120348.5EvqQlqc-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 05:15:12PM +0900, Damien Le Moal wrote:
-> On 3/24/22 09:16, Serge Semin wrote:
-> > The denoted in the description upper limit only concerns the Port
-> > Multipliers, but not the actual SATA ports. It's an external device
-> > attached to a SATA port in order to access more than one SATA-drive. So
-> > when it's attached to a SATA port it just extends the port capability
-> > while the number of actual SATA ports stays the same. For instance on AHCI
-> > controllers the number of actual ports is determined by the CAP.NP field
-> > and the PI (Ports Implemented) register. AFAICS in general the maximum
-> > number of SATA ports depends on the particular controller implementation.
-> > Generic AHCI controller can't have more than 32 ports (since CAP.NP is of
-> > 5 bits wide and PI register is 32-bits size), while DWC AHCI SATA
-> > controller can't be configured with more than 8 ports activated. So let's
-> > discard the SATA ports reg-property restrictions and just make sure that
-> > it consists of a single reg-item.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >  Documentation/devicetree/bindings/ata/sata-common.yaml | 7 +++----
-> >  1 file changed, 3 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/ata/sata-common.yaml b/Documentation/devicetree/bindings/ata/sata-common.yaml
-> > index 7ac77b1c5850..c619f0ae72fb 100644
-> > --- a/Documentation/devicetree/bindings/ata/sata-common.yaml
-> > +++ b/Documentation/devicetree/bindings/ata/sata-common.yaml
-> > @@ -41,11 +41,10 @@ patternProperties:
-> >      properties:
-> >        reg:
-> >          minimum: 0
-> > -        maximum: 14
-> 
+drivers/nvme/host/pci.c:2705:25: warning: symbol 'nvme_dev_pm_ops' was not declared. Should it be static?
 
-> Why remove this ? Since AHCI can have up to 32 ports, then change the
-> value to 31. As the comment at the top of the file says, this is not
-> intended to be a device tree binding spec, but defines properties common
-> to most adapters.
+Fixes: bc7304877066 ("BACKPORT: FROMGIT: nvme-pci: Use host managed power state for suspend")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+---
+ drivers/nvme/host/pci.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Right, but the schema determines the common !SATA! controllers properties,
-while you are referring to the AHCI-specific limit. As I said in the patch
-log AFAICS in general the SATA controllers may have any number of ports.
-The number is determined by the hardware designers needs only. Thus the
-actual constraints needs to be specified in the controller-specific
-YAML-schema (the one which will $ref to sata-common.yaml).
-
-Though I couldn't find any ATA device driver in the kernel which would
-handle a device with even 32 ports, not to mention a greater number.
-So replacing it with 31 might be reasonable after all. But me failing
-to find any such device doesn't me it can't exist. Thus I've decided to
-drop the upper limit completely.
-
-> 
-> >          description:
-> > -          The ID number of the drive port SATA can potentially use a port
-> > -          multiplier making it possible to connect up to 15 disks to a single
-> > -          SATA port.
-> > +          The ID number of the SATA port. Aside with being directly used
-> > +          each port can have a Port Multiplier attached thus allowing to
-> > +          access more than one drive by means of a single channel.
-> 
-
-> Please add a comma after "Aside with being directly used", otherwise the
-> sentence is hard to understand. And replace "channel" with "SATA port" to
-> stick with the terms defined here.
-
-Ok.
-
--Sergey
-
-> 
-> >  
-> >  additionalProperties: true
-> >  
-> 
-> 
-> -- 
-> Damien Le Moal
-> Western Digital Research
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 23f999fef88bcb..a33a32e6787799 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -2702,7 +2702,7 @@ static int nvme_suspend(struct device *dev)
+ 		nvme_simple_suspend(dev) : nvme_deep_state(ndev);
+ }
+ 
+-const struct dev_pm_ops nvme_dev_pm_ops = {
++static const struct dev_pm_ops nvme_dev_pm_ops = {
+ 	.suspend = nvme_suspend,
+ 	.resume = nvme_resume,
+ 	.freeze = nvme_simple_suspend,
