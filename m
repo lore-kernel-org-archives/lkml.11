@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5832CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 19:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A346C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 19:06:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349319AbiDKTHU (ORCPT
+        id S1349465AbiDKTH0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 15:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
+        Mon, 11 Apr 2022 15:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349376AbiDKTGz (ORCPT
+        with ESMTP id S1349414AbiDKTHN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 15:06:55 -0400
+        Mon, 11 Apr 2022 15:07:13 -0400
 Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFACE2F388;
-        Mon, 11 Apr 2022 12:04:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B1933E01;
+        Mon, 11 Apr 2022 12:04:35 -0700 (PDT)
 Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
  by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 2d7cc22c75eb7076; Mon, 11 Apr 2022 21:04:27 +0200
+ id 637c3884135cd960; Mon, 11 Apr 2022 21:04:33 +0200
 Received: from kreacher.localnet (unknown [213.134.175.113])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id B40E266BDFE;
-        Mon, 11 Apr 2022 21:04:26 +0200 (CEST)
+        by v370.home.net.pl (Postfix) with ESMTPSA id C797266BDFC;
+        Mon, 11 Apr 2022 21:04:32 +0200 (CEST)
 From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
 To:     Linux ACPI <linux-acpi@vger.kernel.org>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
         Bob Moore <robert.moore@intel.com>
-Subject: [PATCH 12/20] ACPICA: executer/exsystem: Add units to time variable names
-Date:   Mon, 11 Apr 2022 20:57:02 +0200
-Message-ID: <8110555.NyiUUSuA9g@kreacher>
+Subject: [PATCH 08/20] ACPICA: Clean up double word in comment
+Date:   Mon, 11 Apr 2022 20:53:22 +0200
+Message-ID: <21448490.EfDdHjke4D@kreacher>
 In-Reply-To: <5578328.DvuYhMxLoT@kreacher>
 References: <5578328.DvuYhMxLoT@kreacher>
 MIME-Version: 1.0
@@ -40,101 +40,51 @@ Content-Type: text/plain; charset="UTF-8"
 X-CLIENT-IP: 213.134.175.113
 X-CLIENT-HOSTNAME: 213.134.175.113
 X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudekiedgudefgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepgfektdehueehteffueelleehhfffgfejtdehvddtfeetjeffveetheehvdejgfdunecuffhomhgrihhnpehgihhthhhusgdrtghomhenucfkphepvddufedrudefgedrudejhedruddufeenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddujeehrdduudefpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeefpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprhhosggvrhhtrdhmohhorhgvsehinhhtvghlrdgtohhm
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudekiedgudefgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepgfektdehueehteffueelleehhfffgfejtdehvddtfeetjeffveetheehvdejgfdunecuffhomhgrihhnpehgihhthhhusgdrtghomhenucfkphepvddufedrudefgedrudejhedruddufeenucevlhhushhtvghrufhiiigvpedvnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddujeehrdduudefpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeefpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprhhosggvrhhtrdhmohhorhgvsehinhhtvghlrdgtohhm
 X-DCC--Metrics: v370.home.net.pl 1024; Body=3 Fuz1=3 Fuz2=3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Menzel <pmenzel@molgen.mpg.de>
+From: Tom Rix <trix@redhat.com>
 
-ACPICA commit b69cbef7a83eadb102a1ff6c6f6fc5abce34805a
+ACPICA commit 01f43b049722fa7613fca3c9fa657b150fae8ac1
 
-`how_long` refers to different units in both functions, so make it more
-clear, what unit they expect. That also makes one comment superfluous.
+Remove the second 'know' and 'than'.
 
-Link: https://github.com/acpica/acpica/commit/b69cbef7
+Link: https://github.com/acpica/acpica/commit/01f43b04
+Signed-off-by: Tom Rix <trix@redhat.com>
 Signed-off-by: Bob Moore <robert.moore@intel.com>
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 ---
- exsystem.c |   22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ exfldio.c |    2 +-
+ hwregs.c  |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff -Nurp linux.before_name/drivers/acpi/acpica/exsystem.c linux.after_name/drivers/acpi/acpica/exsystem.c
---- linux.before_name/drivers/acpi/acpica/exsystem.c	2022-04-01 18:26:24.556426955 +0200
-+++ linux.after_name/drivers/acpi/acpica/exsystem.c	2022-04-01 18:26:20.646475824 +0200
-@@ -107,7 +107,7 @@ acpi_status acpi_ex_system_wait_mutex(ac
-  *
-  * FUNCTION:    acpi_ex_system_do_stall
-  *
-- * PARAMETERS:  how_long        - The amount of time to stall,
-+ * PARAMETERS:  how_long_us     - The amount of time to stall,
-  *                                in microseconds
-  *
-  * RETURN:      Status
-@@ -120,24 +120,24 @@ acpi_status acpi_ex_system_wait_mutex(ac
-  *
-  ******************************************************************************/
- 
--acpi_status acpi_ex_system_do_stall(u32 how_long)
-+acpi_status acpi_ex_system_do_stall(u32 how_long_us)
- {
- 	acpi_status status = AE_OK;
- 
- 	ACPI_FUNCTION_ENTRY();
- 
--	if (how_long > 255) {	/* 255 microseconds */
-+	if (how_long_us > 255) {
- 		/*
--		 * Longer than 255 usec, this is an error
-+		 * Longer than 255 microseconds, this is an error
- 		 *
- 		 * (ACPI specifies 100 usec as max, but this gives some slack in
- 		 * order to support existing BIOSs)
- 		 */
- 		ACPI_ERROR((AE_INFO,
--			    "Time parameter is too large (%u)", how_long));
-+			    "Time parameter is too large (%u)", how_long_us));
- 		status = AE_AML_OPERAND_VALUE;
- 	} else {
--		acpi_os_stall(how_long);
-+		acpi_os_stall(how_long_us);
- 	}
- 
- 	return (status);
-@@ -147,7 +147,7 @@ acpi_status acpi_ex_system_do_stall(u32
-  *
-  * FUNCTION:    acpi_ex_system_do_sleep
-  *
-- * PARAMETERS:  how_long        - The amount of time to sleep,
-+ * PARAMETERS:  how_long_ms     - The amount of time to sleep,
-  *                                in milliseconds
-  *
-  * RETURN:      None
-@@ -156,7 +156,7 @@ acpi_status acpi_ex_system_do_stall(u32
-  *
-  ******************************************************************************/
- 
--acpi_status acpi_ex_system_do_sleep(u64 how_long)
-+acpi_status acpi_ex_system_do_sleep(u64 how_long_ms)
- {
- 	ACPI_FUNCTION_ENTRY();
- 
-@@ -168,11 +168,11 @@ acpi_status acpi_ex_system_do_sleep(u64
- 	 * For compatibility with other ACPI implementations and to prevent
- 	 * accidental deep sleeps, limit the sleep time to something reasonable.
+diff -Nurp linux.before_name/drivers/acpi/acpica/exfldio.c linux.after_name/drivers/acpi/acpica/exfldio.c
+--- linux.before_name/drivers/acpi/acpica/exfldio.c	2022-04-01 18:24:45.720672171 +0200
++++ linux.after_name/drivers/acpi/acpica/exfldio.c	2022-04-01 18:24:42.481713739 +0200
+@@ -104,7 +104,7 @@ acpi_ex_setup_region(union acpi_operand_
+ #ifdef ACPI_UNDER_DEVELOPMENT
+ 	/*
+ 	 * If the Field access is any_acc, we can now compute the optimal
+-	 * access (because we know know the length of the parent region)
++	 * access (because we know the length of the parent region)
  	 */
--	if (how_long > ACPI_MAX_SLEEP) {
--		how_long = ACPI_MAX_SLEEP;
-+	if (how_long_ms > ACPI_MAX_SLEEP) {
-+		how_long_ms = ACPI_MAX_SLEEP;
- 	}
- 
--	acpi_os_sleep(how_long);
-+	acpi_os_sleep(how_long_ms);
- 
- 	/* And now we must get the interpreter again */
- 
+ 	if (!(obj_desc->common.flags & AOPOBJ_DATA_VALID)) {
+ 		if (ACPI_FAILURE(status)) {
+diff -Nurp linux.before_name/drivers/acpi/acpica/hwregs.c linux.after_name/drivers/acpi/acpica/hwregs.c
+--- linux.before_name/drivers/acpi/acpica/hwregs.c	2022-04-01 18:24:45.726672095 +0200
++++ linux.after_name/drivers/acpi/acpica/hwregs.c	2022-04-01 18:24:42.487713662 +0200
+@@ -446,7 +446,7 @@ struct acpi_bit_register_info *acpi_hw_g
+  * RETURN:      Status
+  *
+  * DESCRIPTION: Write the PM1 A/B control registers. These registers are
+- *              different than than the PM1 A/B status and enable registers
++ *              different than the PM1 A/B status and enable registers
+  *              in that different values can be written to the A/B registers.
+  *              Most notably, the SLP_TYP bits can be different, as per the
+  *              values returned from the _Sx predefined methods.
 
 
 
