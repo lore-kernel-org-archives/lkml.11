@@ -2,85 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4924DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E48C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344261AbiDKLTR (ORCPT
+        id S1344628AbiDKLUQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36800 "EHLO
+        Mon, 11 Apr 2022 07:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233870AbiDKLTP (ORCPT
+        with ESMTP id S233870AbiDKLUN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:19:15 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9121B427CF;
-        Mon, 11 Apr 2022 04:17:01 -0700 (PDT)
-Received: from hillo.muru.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTP id 4E7CB809F;
-        Mon, 11 Apr 2022 11:14:28 +0000 (UTC)
-From:   Tony Lindgren <tony@atomide.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: [PATCHv2] serial: 8250: Fix runtime PM for start_tx() for empty buffer
-Date:   Mon, 11 Apr 2022 14:16:57 +0300
-Message-Id: <20220411111657.16744-1-tony@atomide.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 11 Apr 2022 07:20:13 -0400
+X-Greylist: delayed 1031 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Apr 2022 04:17:59 PDT
+Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBED427D1
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:17:59 -0700 (PDT)
+Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.94.2)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1ndrml-00DvDF-Aa; Mon, 11 Apr 2022 13:00:43 +0200
+Received: from laforge by localhost.localdomain with local (Exim 4.95)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1ndrmf-004g5j-PN;
+        Mon, 11 Apr 2022 13:00:37 +0200
+Date:   Mon, 11 Apr 2022 13:00:37 +0200
+From:   Harald Welte <laforge@gnumonks.org>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: Wanted: Old network/telecom data sheets + hardware manuals
+Message-ID: <YlQKVdw6iS7aKpbo@nataraja>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 932d596378b0 ("serial: 8250: Return early in .start_tx() if there
-are no chars to send") caused a regression where the drivers implementing
-runtime PM stopped idling. This is because serial8250_rpm_put_tx() is now
-unbalanced on early return, it normally gets called at __stop_tx().
+Dear netdev, LKML and friends,
 
-Fixes: 932d596378b0 ("serial: 8250: Return early in .start_tx() if there are no chars to send")
-Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>
-Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
----
+as some of you may know, I've recently started to get involved in
+"retronetworking" as a hobby, i.e. collecting and running ancient
+data communications, telecommunications and computer networking technologies.
 
-Changes since v1:
+We're not just collecting/repairing/operating old hardware and ancient software
+stacks (FDDI, TokenRing, ATM, ISDN, ...) but also related hardware documentation,
+data sheets, specifications, ...
 
-- Call serial8250_rpm_get_tx() only after buffer empty test as suggested
-  by Uwe and Johan
+I would like to call on all Linux network developers to donate any surplus
+old networking/telecom chipset documentation, specifications, etc. they may
+have.  We have a non-destructive book scanner for sizes up to A2, as well as
+a variety of other scanners at our disposal to digitize any paper manuals,
+as needed.
 
-- Drop RS885 related patch for now, it needs to be investigated further
+More information about this 'call for manuals' can be found at
+	https://osmocom.org/projects/retronetworking/wiki/Call_for_old_Manuals
 
----
- drivers/tty/serial/8250/8250_port.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+In case anyone is interested, https://osmocom.org/projects/retronetworking/wiki
+contains a bit of info on parts of the collected equipment, and we've started
+to build a ISDN/TDM/PDH overlay network so people can operate their legacy ISDN
+equipment in times where public operators don't offer ISDN service anymore:
+https://osmocom.org/projects/octoi/wiki
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1675,11 +1675,11 @@ static void serial8250_start_tx(struct uart_port *port)
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct uart_8250_em485 *em485 = up->em485;
- 
--	serial8250_rpm_get_tx(up);
--
- 	if (!port->x_char && uart_circ_empty(&port->state->xmit))
- 		return;
- 
-+	serial8250_rpm_get_tx(up);
-+
- 	if (em485 &&
- 	    em485->active_timer == &em485->start_tx_timer)
- 		return;
+Some of the documents we already digitized and unearthed include the
+German "national ISDN" specs (FTZ 1TR6 etc) at
+https://osmocom.org/projects/retronetworking/wiki/German_FTZ_ISDN_Specifications
+
+Thanks in advance for any related document donations.
+
+Kind regards,
+	Harald
+
 -- 
-2.35.1
+- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
+============================================================================
+"Privacy in residential applications is a desirable marketing option."
+                                                  (ETSI EN 300 175-7 Ch. A6)
