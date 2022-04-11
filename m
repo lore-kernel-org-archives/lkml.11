@@ -2,121 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E66C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9989C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:14:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346995AbiDKOP7 (ORCPT
+        id S1346997AbiDKOQX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
+        Mon, 11 Apr 2022 10:16:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232828AbiDKOPz (ORCPT
+        with ESMTP id S1346964AbiDKOQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:15:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4ECF32068
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:13:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649686419;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0SNHqyoujE1GhBLe1zLEQWUOV0WCvLfbwgxIMJwWNvQ=;
-        b=QrQNfVUiiT84RBbUzp2UlM0cZMJWVYi6QDxzh8NOWffWx+dKQ0avqor1oFULW21/kgyyDH
-        ksswtFffDdpjwcuV/nQfccInglRPT1iCKz2+cjyh8B8gfW0RIiZ36KGzmJqJVbW7jLUyea
-        f0FuP5vH3u/vaZjVHF7sSVniKvPRztc=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-624-OfKBIF1ROASMFS3oImhQVA-1; Mon, 11 Apr 2022 10:13:38 -0400
-X-MC-Unique: OfKBIF1ROASMFS3oImhQVA-1
-Received: by mail-wr1-f69.google.com with SMTP id s8-20020adfc548000000b00207a28e0583so883737wrf.23
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:13:37 -0700 (PDT)
+        Mon, 11 Apr 2022 10:16:19 -0400
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64080E66
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:14:05 -0700 (PDT)
+Received: by mail-ot1-f46.google.com with SMTP id z9-20020a05683020c900b005b22bf41872so11349423otq.13
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:14:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0SNHqyoujE1GhBLe1zLEQWUOV0WCvLfbwgxIMJwWNvQ=;
-        b=pHewt4SyMHVyEHQB4kCpHXvQgs0QssHvvuiWB+ua7RQbFOGI0j5fLMyRTY4uRJEVdI
-         qGE0sSaIjVRf6DsWzsT8LBAo6HycQaTML4Y0S/EnBbHfbutLStVZIFnIwHBOfHV36hhe
-         EnSrYFg2m2iQuGjOScIQsdZaYqq5stcGtmUkThj3t0cpBHKTXvU1LhVIM1+YQYfa8zLc
-         xfVDe89Bi2Gha4r5YsHD8jNq8Q05At4lpSFlCpW8Z4rCI9Kas7oCjHAyYJ6MoCDvzCba
-         Ddh7z6FYwkBTxF3XVvaasW0J0/gX8wg1wzwmkruw5WIXnubGcfCE3Pr8mefHtYUna5VX
-         nKsw==
-X-Gm-Message-State: AOAM531E/PD+k924k0GqVDKOYoSJ4jsZNW3xBCUI48W+Ry5E6TgpGvQl
-        mHtc41GJjFLOC2tofx4rT29rulX8sZgtTwga37SkMLCT8DioYmPOjsQjOjCdnbATN4GcjHLrZcN
-        r5wFTsGgbl0sbdxK+X81enudd
-X-Received: by 2002:a1c:721a:0:b0:38e:c24d:7b8d with SMTP id n26-20020a1c721a000000b0038ec24d7b8dmr1682798wmc.83.1649686416942;
-        Mon, 11 Apr 2022 07:13:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJypN8mGgqi50Hob/p+VhbodRxqFTy9Fb8P7XpksOj9p2Bu5RgSHmeLyVffabHvq+u9lP8hzqA==
-X-Received: by 2002:a1c:721a:0:b0:38e:c24d:7b8d with SMTP id n26-20020a1c721a000000b0038ec24d7b8dmr1682771wmc.83.1649686416724;
-        Mon, 11 Apr 2022 07:13:36 -0700 (PDT)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id q17-20020adff951000000b00205c1b97ac4sm26117938wrr.20.2022.04.11.07.13.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 07:13:36 -0700 (PDT)
-Message-ID: <5c00d6cf-ab0c-850b-821c-36413d894773@redhat.com>
-Date:   Mon, 11 Apr 2022 16:13:34 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=epGgzu2Ny8qonfAKGy3XqYkS4s5oChNon87Rbg1X4DI=;
+        b=jXam3gLFpWG8JdtBIsuGouhDsOGqqqai6AnScbayWfVdCMIXFumAjl4ZKhn61qXVuc
+         GJ6LVeIPGZzrzCFmEqmce2+vNWRGbsrtBoXD16I8Hnmy/fc/83r66/cEdq4hB0NxJ44W
+         LI2tTQYB0Uf4JoWjM/hI7R/O88DoiiqvuXj5bVXiDiFdlbZy3yFnxuR0NJFpw2iK4OzF
+         ooBGUcW6MvUjmSMnaOTTqpAeO0evV2sy1xcs4xnP888fnlhrbWYZr8yd0u0/agz5JG2h
+         OOxakjIlftyPfsDz1jYfyIfpQ4Ir8KYE3APW8Sfv+oNpL20aY3WllIMyBRJAtWt8zrLG
+         18jQ==
+X-Gm-Message-State: AOAM532LwbCbxT27CxhVxGzq7sltSnZvGmuQtrzeh53TAhvpfdSfdrYO
+        KdVI1HuCTrz9VYXPvw4X9A==
+X-Google-Smtp-Source: ABdhPJw88XMo9SoKDKkqY63+AaV8GxGkx57LPhvYdKeY94/HK72LX5lZr0Wp4IF6thsMJ9bA1q7l/Q==
+X-Received: by 2002:a05:6830:22f2:b0:5c4:3f05:33cf with SMTP id t18-20020a05683022f200b005c43f0533cfmr11262336otc.330.1649686444710;
+        Mon, 11 Apr 2022 07:14:04 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id s125-20020acaa983000000b002ecdbaf98fesm11374779oie.34.2022.04.11.07.14.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 07:14:04 -0700 (PDT)
+Received: (nullmailer pid 1159237 invoked by uid 1000);
+        Mon, 11 Apr 2022 14:14:03 -0000
+Date:   Mon, 11 Apr 2022 09:14:03 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     Will Deacon <will@kernel.org>, Al Grant <al.grant@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm_pmu: Validate single/group leader events
+Message-ID: <YlQ3q9YFhQU9JsBt@robh.at.kernel.org>
+References: <20220408203330.4014015-1-robh@kernel.org>
+ <YlP9KgIZ1PW64tn9@FVFF77S0Q05N>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/4] dt-bindings: display: ssd1307fb: Add entry for
- SINO WEALTH SH1106
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Chen-Yu Tsai <wens@kernel.org>
-Cc:     Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Chen-Yu Tsai <wens@csie.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220406172956.3953-1-wens@kernel.org>
- <20220406172956.3953-3-wens@kernel.org>
- <CAMuHMdUMc35MrWwbDXvsRNx9qSRf1bACNrhsGpeFcLCETsL4dw@mail.gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <CAMuHMdUMc35MrWwbDXvsRNx9qSRf1bACNrhsGpeFcLCETsL4dw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlP9KgIZ1PW64tn9@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Geert,
-
-On 4/11/22 15:35, Geert Uytterhoeven wrote:
-> Hi Chen-Yu,
-
-[snip]
-
->> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
->> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
->> @@ -13,6 +13,7 @@ maintainers:
->>  properties:
->>    compatible:
->>      enum:
->> +      - sinowealth,sh1106-i2c
+On Mon, Apr 11, 2022 at 11:04:26AM +0100, Mark Rutland wrote:
+> Hi Rob,
 > 
-> Please don't introduce new compatible values including the bus type.
-> There is no need for that, and this will only lead to more deprecated
-> compatible values soon...
+> On Fri, Apr 08, 2022 at 03:33:30PM -0500, Rob Herring wrote:
+> > In the case where there is only a cycle counter available (i.e.
+> > PMCR_EL0.N is 0) and an event other than CPU cycles is opened, the open
+> > should fail as the event can never possibly be scheduled. However, the
+> > event validation when an event is opened is skipped when the group
+> > leader is opened. Fix this by always validating the group leader events.
+> > 
+> > Reported-by: Al Grant <al.grant@arm.com>
+> > Cc: Will Deacon <will@kernel.org>
+> > Cc: Mark Rutland <mark.rutland@arm.com>
+> > Signed-off-by: Rob Herring <robh@kernel.org>
 > 
-> Oops, this is already commit 97a40c23cda5d64a ("dt-bindings:
-> display: ssd1307fb: Add entry for SINO WEALTH SH1106") in
-> drm-misc/for-linux-next...
+> This looks obviously correct to me, so FWIW:
 > 
+> Acked-by: Mark Rutland <mark.rutland@arm.com>
 
-Yeah, too late :/ I didn't think it would be controversial at the time.
+Thanks.
 
--- 
-Best regards,
+> Just to check, have you tested this (e.g. by running on a platform with
+> PMCR_EL0.N == 0, or hacking the PMU probing to report just the cycle counter)
 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+Yes, tested on FVP with 0 counters running the libperf evsel userspace 
+access tests as that tries both the cycle counter and instruction 
+counts.
 
+Rob
