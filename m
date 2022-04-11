@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2821EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344800AbiDKJyd (ORCPT
+        id S1344822AbiDKJyo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:54:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38946 "EHLO
+        Mon, 11 Apr 2022 05:54:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345016AbiDKJxM (ORCPT
+        with ESMTP id S1345008AbiDKJxM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Apr 2022 05:53:12 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4C94198E;
-        Mon, 11 Apr 2022 02:50:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719434162A;
+        Mon, 11 Apr 2022 02:50:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649670652; x=1681206652;
+  t=1649670645; x=1681206645;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=i/ljBsm2MD9nNiXlMhM5SAGKdRLtBR+dGXw5lsuABgE=;
-  b=w3U0bygSIeN40QIFOXYESB0GQx5A6VhfrdFu+0bLD0oAKgULgH0XnyKR
-   ysH6avxAbjaBZ9L/bcOtub1Sbqc8ZWuwhpKtSnVstvcWKewyfeZOD8HJV
-   /4MpLq2VGU6izE2W7JnMmwm+Kzy6j73WILD01seUMbvJh+X9Y6i8Jw2Xh
-   g=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 11 Apr 2022 02:50:51 -0700
+  bh=lKgU7DGnnJO1363k0XRN8KK92ZB2lTy71WHh/n83z8M=;
+  b=qnA+dPOAa2OLrGRSqzTkPkNcZyV7i1cRdwRjOQ0BH4iGH56sTuSaD8sS
+   dKs3heB5rATySoOJZcyZL1Jgoy+5IOixT8uvchk5zDvqKyO1G+WIag42D
+   C4AjdEOCvxdbkuBLIYu25LGgyx8vJyIQ1TFC0O1FF/QMe9Lvz5YdjMKX8
+   s=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 11 Apr 2022 02:50:45 -0700
 X-QCInternal: smtphost
 Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Apr 2022 02:50:49 -0700
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Apr 2022 02:50:43 -0700
 X-QCInternal: smtphost
 Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Apr 2022 15:20:27 +0530
+  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Apr 2022 15:20:25 +0530
 Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-        id 82DCC3A9B; Mon, 11 Apr 2022 15:20:26 +0530 (+0530)
+        id 6C8093AB3; Mon, 11 Apr 2022 15:20:24 +0530 (+0530)
 From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
 To:     will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
         robh+dt@kernel.org, krzk+dt@kernel.org, ulf.hansson@linaro.org,
@@ -46,9 +46,9 @@ Cc:     manivannan.sadhasivam@linaro.org,
         linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
         linux-arm-msm@vger.kernel.org,
         Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH v2 6/7] ARM: dts: qcom: sdx65: Add support for TCSR Mutex
-Date:   Mon, 11 Apr 2022 15:20:14 +0530
-Message-Id: <1649670615-21268-7-git-send-email-quic_rohiagar@quicinc.com>
+Subject: [PATCH v2 3/7] ARM: dts: qcom: sdx65: Add support for SDHCI controller
+Date:   Mon, 11 Apr 2022 15:20:11 +0530
+Message-Id: <1649670615-21268-4-git-send-email-quic_rohiagar@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1649670615-21268-1-git-send-email-quic_rohiagar@quicinc.com>
 References: <1649670615-21268-1-git-send-email-quic_rohiagar@quicinc.com>
@@ -56,31 +56,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add TCSR Mutex node to support Qualcomm Hardware Mutex block
-on SDX65 platform.
+Add devicetree support for SDHCI controller found in Qualcomm SDX65
+platform. The SDHCI controller is based on the MSM SDHCI v5 IP.
 
 Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
 ---
- arch/arm/boot/dts/qcom-sdx65.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm/boot/dts/qcom-sdx65.dtsi | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
 diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
-index f50a8a4..210e55c 100644
+index dcc94c2..77bca58 100644
 --- a/arch/arm/boot/dts/qcom-sdx65.dtsi
 +++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
-@@ -137,6 +137,12 @@
+@@ -137,6 +137,19 @@
  			status = "disabled";
  		};
  
-+		tcsr_mutex: hwlock@1f40000 {
-+			compatible = "qcom,tcsr-mutex";
-+			reg = <0x01f40000 0x40000>;
-+			#hwlock-cells = <1>;
++		sdhc_1: sdhci@8804000 {
++			compatible = "qcom,sdx65-sdhci", "qcom,sdhci-msm-v5";
++			reg = <0x08804000 0x1000>;
++			reg-names = "hc_mem";
++			interrupts = <GIC_SPI 210 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 227 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "hc_irq", "pwr_irq";
++			clocks = <&gcc GCC_SDCC1_APPS_CLK>,
++				 <&gcc GCC_SDCC1_AHB_CLK>;
++			clock-names = "core", "iface";
++			status = "disabled";
 +		};
 +
- 		sdhc_1: sdhci@8804000 {
- 			compatible = "qcom,sdx65-sdhci", "qcom,sdhci-msm-v5";
- 			reg = <0x08804000 0x1000>;
+ 		spmi_bus: qcom,spmi@c440000 {
+ 			compatible = "qcom,spmi-pmic-arb";
+ 			reg = <0xc440000 0xd00>,
 -- 
 2.7.4
 
