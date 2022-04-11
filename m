@@ -2,95 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4944C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 02:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 02:38:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343548AbiDLC2I (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 22:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34096 "EHLO
+        id S243687AbiDLCku (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 22:40:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344278AbiDLC1p (ORCPT
+        with ESMTP id S235248AbiDLCkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 22:27:45 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3629140EB
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 19:25:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649730328; x=1681266328;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=/YNjGe2k1XHHXzOpRm2DQ1nukMRHEZIryQqNHeS5Lho=;
-  b=eYx8U7fFHd+Cn8rSdDC1GZQnH48F7y4i6uNEw9sTrpUSgon3tX9sL87C
-   Rk/skhXuRcslnnC29Tw8xyrRpynwX4k9BchMZLuydAMw7WL27c6D7aIPU
-   +hmJll++opt4O1vpPn0kueCNsak4AMESu4Afc6YneUmlL2w3Th7ETZREw
-   PbVlJ2n3GXP2NKmOLkdPiVL9W1TEi9/x7ArS0lJPTawEbgqSfiYSL8Ybj
-   HZGXp9tV8/Q0zc0dddncRwsTZZARadfvC11a+++JbkOt/7jlPtkfMYkEN
-   whUAwtX8g8i5b9ywwbBaRh79OrmNC1G452e5kARLAsrOfGuawZKMN+YJ9
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="261107485"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="261107485"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 19:25:28 -0700
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="572517663"
-Received: from joliu-mobl2.ccr.corp.intel.com ([10.254.214.243])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 19:25:22 -0700
-Message-ID: <e268117b314817ecd4c07ac48b0a6dcaf680ed69.camel@intel.com>
-Subject: Re: [PATCH 0/4] A few cleanup and fixup patches for migration
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     mike.kravetz@oracle.com, shy828301@gmail.com, willy@infradead.org,
-        ziy@nvidia.com, minchan@kernel.org, apopple@nvidia.com,
-        dave.hansen@linux.intel.com, o451686892@gmail.com,
-        jhubbard@nvidia.com, peterx@redhat.com, naoya.horiguchi@nec.com,
-        mhocko@suse.com, riel@redhat.com, osalvador@suse.de,
-        david@redhat.com, sfr@canb.auug.org.au, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 12 Apr 2022 10:25:17 +0800
-In-Reply-To: <20220409073846.22286-1-linmiaohe@huawei.com>
-References: <20220409073846.22286-1-linmiaohe@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Mon, 11 Apr 2022 22:40:45 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3471F19C35
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 19:38:30 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-df02f7e2c9so19412538fac.10
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 19:38:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Pa9WwzHadKlCjrvfcB9D4MgnDzHSCGlSrVswLImMa8I=;
+        b=D72TXjIRRxAYUF1GhrIJuBx5NNanvsTIdEn3+x88WpFvr8xQvL9Okk2fyovtwES8im
+         rjXE8JZEsJHZ+50iEyXzBCfhA0H7a9ghbwIyEo5RRHCX5CUvnxCb12+TN40zmDgzQrU+
+         w+feNeZGB/zowaw/EuMMhc9s644RVHwPs8itqCEzBzb9N7Xs0yOOXwRQW+Sn+gsDLooD
+         qI8DofOhBZLAQX/9GiPaHsi/I9Zbx8qAO0bBFKt+5D+lazIILxC6JOY284BEVlabuh/m
+         DaLXJHuHws8JcJ5GdqhMoxW6X+RdoWdHxwN4I+ScA+JDDb2rchTTzjX/6Z0qAKSqvBkB
+         02ZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Pa9WwzHadKlCjrvfcB9D4MgnDzHSCGlSrVswLImMa8I=;
+        b=dWOd9k0mubiQAmHjZhP9cLbWTXWvrvDfB6jr5jijMW6dxV3szPOiQK9xdwyRqmzJhY
+         oAlrFYA2LC51dzUSL/gm0uyBGVf7ri8qV1LqPF4e8NlxWKdO0kgTruGu5JV3QVAR99pB
+         RkS5+Q/WY30zQFB+kRlwtg2VgLViWfyrV3MKg2w9Ri81973aVUwaovcfXMijNvKmm7Ep
+         //tswuPTfoo5R+0SOBw2JE0/ZmfkkSVuaB6d+Sgb7ZcMe5eKpxYj/bXUwbRiJO0OEBs/
+         DQCDNLJaVfypMT/hETvqlUTgjLqiJEJuOT2eiGwFsqe+Bqy9aPr1JKvG3YRYAL5gRWsA
+         kvAw==
+X-Gm-Message-State: AOAM532rUr6tlfani43+Xe9N7Mx+bCU/6YOhSkgiaFxUdGqNSQAgEzbM
+        NwpiYs7jsxugSdiP19O28Ig=
+X-Google-Smtp-Source: ABdhPJyCDg9ewqGRiwFCMT8iZhMryAHQAGR8IoOQ4I0nYRrdV4IAsb5Ni421s9WyGQK7M1Rg7wrRNA==
+X-Received: by 2002:a05:6870:c20e:b0:e2:ae93:8ee1 with SMTP id z14-20020a056870c20e00b000e2ae938ee1mr1156567oae.12.1649731109593;
+        Mon, 11 Apr 2022 19:38:29 -0700 (PDT)
+Received: from localhost.localdomain ([2804:14c:4c2:8a9b::1002])
+        by smtp.gmail.com with ESMTPSA id p14-20020a9d744e000000b005b235f5cf92sm12995256otk.65.2022.04.11.19.38.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 19:38:29 -0700 (PDT)
+From:   Tales Lelo da Aparecida <tales.aparecida@gmail.com>
+To:     Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>,
+        Melissa Wen <melissa.srw@gmail.com>,
+        Haneen Mohammed <hamohammed.sa@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        andrealmeid@riseup.net
+Cc:     Tales Lelo da Aparecida <tales.aparecida@gmail.com>
+Subject: [PATCH 0/1] drm/vkms: check plane_composer->map[0] before using it
+Date:   Mon, 11 Apr 2022 20:38:00 -0300
+Message-Id: <20220411233801.36297-1-tales.aparecida@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-04-09 at 15:38 +0800, Miaohe Lin wrote:
-> Hi everyone,
-> This series contains a few patches to remove unneeded lock page and
-> PageMovable check, reduce the rcu lock duration. Also we fix potential
-> pte_unmap on an not mapped pte. More details can be found in the
-> respective changelogs. Thanks!
+Hello, I'm interested in collaborating with VKMS, please let me know if there's
+anything that I could better.
 
-It appears that you ignored my comments for the previous version.  Can
-you check it?
+Tales Lelo da Aparecida (1):
+  drm/vkms: check plane_composer->map[0] before using it
 
-Best Regards,
-Huang, Ying
+ drivers/gpu/drm/vkms/vkms_composer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
-> v1:
->   rebase [1] on mainline.
-> 
-> [1] https://lore.kernel.org/lkml/20220304093409.25829-2-linmiaohe@huawei.com/T/
-> ---
-> Miaohe Lin (4):
->   mm/migration: reduce the rcu lock duration
->   mm/migration: remove unneeded lock page and PageMovable check
->   mm/migration: return errno when isolate_huge_page failed
->   mm/migration: fix potential pte_unmap on an not mapped pte
-> 
->  include/linux/migrate.h |  2 +-
->  include/linux/swapops.h |  4 ++--
->  mm/filemap.c            | 10 +++++-----
->  mm/hugetlb.c            |  2 +-
->  mm/migrate.c            | 31 +++++++++++++------------------
->  5 files changed, 22 insertions(+), 27 deletions(-)
-> 
-
+-- 
+2.35.1
 
