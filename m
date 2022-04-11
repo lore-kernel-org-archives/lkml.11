@@ -2,98 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 782F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D56CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347562AbiDKO6G (ORCPT
+        id S1347564AbiDKO7E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35548 "EHLO
+        Mon, 11 Apr 2022 10:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347584AbiDKO5o (ORCPT
+        with ESMTP id S235240AbiDKO7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:57:44 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AF6165AF;
-        Mon, 11 Apr 2022 07:55:30 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id g18so6485785ejc.10;
-        Mon, 11 Apr 2022 07:55:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cPfG2H4mLBr47cKqUjnT59BLkTDD6UWYrmsvL4zHnIo=;
-        b=Uy/bxAAuqZ9K+qdIhOn4QdDjCdOvTzCsHVj/zq6n0YUDbneYUdT+7RlMaHSomvuQBW
-         jnPhQ5/JaFf4xtfN5tM4IyAoqhfaLouNXd7dXmpnztTU72lhDYzFr8hDDjv8Pb+DpZlb
-         FSu3lcBq+HgrMUa98apFMFNJ5PZO5z/GTYiBrofm/5UWcfRyPey30K1PAwzH988nLf/9
-         5JLsBUgJuuz2UH2fYpob+Sun8G6kQ+vLRfdUxMt5GsLmO0I0C2Rnvnz+QfSa6JPUkDOo
-         geSMpMAgN7mkvqTBVmKBo7WsyMsML6XOICzNloiJUGd6T3JtzpA2777VMAGBITmPiDr8
-         9yTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cPfG2H4mLBr47cKqUjnT59BLkTDD6UWYrmsvL4zHnIo=;
-        b=RaMJFWDIa+6StXUjguJFvN8X+PQepFeZRjXgayrN9f4LCCoLejjY+9uZ4R1iB45MfB
-         8KcS8yovWlasTtWcYL/tZidksoGDn3UUJShAw3qEqt1l+G2IJyoQGwskinfBUk+ezHYh
-         ummOPnxW0xUM6rFFboufPYhb0bEJG7dvpU8EVIR52LvrYTqeZSMMUC7MH1aJs5uHCI9o
-         2Kkqzu3yW4NMJwIPELAo1pdUKYx6X4hNufoEj4O+uZObBchbuWvR6tcrZq3/sp9lgN49
-         i/Qn3GkEg+VjmIBnYSwYgnt+2dDmqutciKBOvDLsk7iWD4Phcm9f3+5Yofkvij5+gIu7
-         P/yg==
-X-Gm-Message-State: AOAM530Yn3vWBh7SjDph0z2XB73RSMWruSnR7eCJ/mlqvbZdAUlG+Y/G
-        7acPfd3QjoMg4VVCo91UMUFP3sKlMwsW85D6CMw=
-X-Google-Smtp-Source: ABdhPJzGTXwGzpSVprY55wJWpFpj9QAGpv0s5vrLkI3vsCX5pfLKwotr0Y91k+A4dhX3GnpI5z8u5+zDGqDzXjfVGC0=
-X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id
- nd14-20020a170907628e00b006d9c6fa6168mr30299560ejc.132.1649688928772; Mon, 11
- Apr 2022 07:55:28 -0700 (PDT)
+        Mon, 11 Apr 2022 10:59:01 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDBB17059
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:56:45 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KcX4X0kSMz9sTy;
+        Mon, 11 Apr 2022 16:56:44 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id C4HA8KL1UI-r; Mon, 11 Apr 2022 16:56:44 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KcX4W74KJz9sTw;
+        Mon, 11 Apr 2022 16:56:43 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E091A8B76E;
+        Mon, 11 Apr 2022 16:56:43 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id gVNm8j7ZB0BX; Mon, 11 Apr 2022 16:56:43 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id CA9488B763;
+        Mon, 11 Apr 2022 16:56:43 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 23BEuYej960585
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 11 Apr 2022 16:56:34 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 23BEuY1X960584;
+        Mon, 11 Apr 2022 16:56:34 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH] lkdtm/bugs: Don't expect thread termination without CONFIG_UBSAN_TRAP
+Date:   Mon, 11 Apr 2022 16:56:33 +0200
+Message-Id: <7c2d2a48034223a95cf4346c5a2255a0b9b25670.1649688637.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220409120901.267526-1-dzm91@hust.edu.cn>
-In-Reply-To: <20220409120901.267526-1-dzm91@hust.edu.cn>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 11 Apr 2022 17:51:15 +0300
-Message-ID: <CAHp75Vc4hGOJ8gr9R5WqgZ1QkC-uEeQ7WXAqO0YjynDx9jOvnw@mail.gmail.com>
-Subject: Re: [PATCH] driver: usb: nullify dangling pointer in cdc_ncm_free
-To:     Dongliang Mu <dzm91@hust.edu.cn>
-Cc:     Oliver Neukum <oliver@neukum.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+eabbf2aaa999cc507108@syzkaller.appspotmail.com,
-        USB <linux-usb@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1649688992; l=1739; s=20211009; h=from:subject:message-id; bh=jwwWohV7yXLmpOMeCedag6V2XJ7SIl+kvTa8YLVpcy8=; b=tWrWBXicWW82s2WSQlaOA1OwPXdEW/U0fcBhz5uqRFwK1Hvc7kA0rD8I3YSFAvnQ5ZnV6LXW3qXB PGObulx9CejDfOP37YFauBxdJ9Bd+fQvjp2QybAKjPHOc8E9WHy4
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 10, 2022 at 5:14 AM Dongliang Mu <dzm91@hust.edu.cn> wrote:
->
-> From: Dongliang Mu <mudongliangabcd@gmail.com>
->
-> cdc_ncm_bind calls cdc_ncm_bind_common and sets dev->data[0]
-> with ctx. However, in the unbind function - cdc_ncm_unbind,
-> it calls cdc_ncm_free and frees ctx, leaving dev->data[0] as
-> a dangling pointer. The following ioctl operation will trigger
-> the UAF in the function cdc_ncm_set_dgram_size.
+When you don't select CONFIG_UBSAN_TRAP, you get:
 
-First of all, please use the standard form of referring to the func()
-as in this sentence.
+  # echo ARRAY_BOUNDS > /sys/kernel/debug/provoke-crash/DIRECT
+[  102.265827] ================================================================================
+[  102.278433] UBSAN: array-index-out-of-bounds in drivers/misc/lkdtm/bugs.c:342:16
+[  102.287207] index 8 is out of range for type 'char [8]'
+[  102.298722] ================================================================================
+[  102.313712] lkdtm: FAIL: survived array bounds overflow!
+[  102.318770] lkdtm: Unexpected! This kernel (5.16.0-rc1-s3k-dev-01884-g720dcf79314a ppc) was built with CONFIG_UBSAN_BOUNDS=y
 
-> Fix this by setting dev->data[0] as zero.
->
-> ==================================================================
-> BUG: KASAN: use-after-free in cdc_ncm_set_dgram_size+0xc91/0xde0
-> Read of size 8 at addr ffff8880755210b0 by task dhcpcd/3174
->
+It is not correct because when CONFIG_UBSAN_TRAP is not selected
+you can't expect array bounds overflow to kill the thread.
 
-Please, avoid SO noisy commit messages. Find the core part of the
-traceback(s) which should be rarely more than 5-10 lines.
+Modify the logic so that when the kernel is built with
+CONFIG_UBSAN_BOUNDS but without CONFIG_UBSAN_TRAP, you get a warning
+about CONFIG_UBSAN_TRAP not been selected instead.
 
-...
+Fixes: c75be56e35b2 ("lkdtm/bugs: Add ARRAY_BOUNDS to selftests")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ drivers/misc/lkdtm/bugs.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-The code seems fine.
-
+diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
+index f21854ac5cc2..0f4dd9621b75 100644
+--- a/drivers/misc/lkdtm/bugs.c
++++ b/drivers/misc/lkdtm/bugs.c
+@@ -346,7 +346,10 @@ void lkdtm_ARRAY_BOUNDS(void)
+ 	kfree(not_checked);
+ 	kfree(checked);
+ 	pr_err("FAIL: survived array bounds overflow!\n");
+-	pr_expected_config(CONFIG_UBSAN_BOUNDS);
++	if (IS_ENABLED(CONFIG_UBSAN_BOUNDS))
++		pr_expected_config(CONFIG_UBSAN_TRAP);
++	else
++		pr_expected_config(CONFIG_UBSAN_BOUNDS);
+ }
+ 
+ void lkdtm_CORRUPT_LIST_ADD(void)
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
