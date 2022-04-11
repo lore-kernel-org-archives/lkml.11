@@ -2,97 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8758C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245108AbiDKG6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 02:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34552 "EHLO
+        id S245119AbiDKG62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 02:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245135AbiDKG5u (ORCPT
+        with ESMTP id S236475AbiDKG6Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 02:57:50 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79C21F627;
-        Sun, 10 Apr 2022 23:55:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=GJM0jYn00v1gzHURiVOdNItn1NFnRTfjl2UiVvY+3iE=; b=S6U9UkjbII+TZi9sq+N2w7jRIL
-        gxayyYr/3ajrps4WfKYqkBXwe+qgjlqpClozl35qB24rRl150bmssg8ghyX0veUlZMGel3yDA4Kg9
-        iWtO74ihMEDlS0R4OWRidlpwSmQIAYjobNQuTCSO5FXSaZLumRPx3Mku81oGPVb8uPw2S1jjyPQ3T
-        CKyyY/mh11QGYZXGYu8Ob6Yg8bJv5oNBsbfEWCbVc9T4Fyf13ET9sjHS4MQWNx6xg/XYyPQB/ZyUH
-        SRYJ1r0yV4Y1xarcJs34friUNfRvATgVUw0N+0cxDzTP5eniAa+K6cI9Qb6cMAlWsKzI3Rh31tirf
-        clpm8YTg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ndnxX-0070Zq-Vb; Mon, 11 Apr 2022 06:55:36 +0000
-Date:   Sun, 10 Apr 2022 23:55:35 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
-Cc:     linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
-        nvdimm@lists.linux.dev, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, djwong@kernel.org,
-        dan.j.williams@intel.com, david@fromorbit.com, hch@infradead.org,
-        jane.chu@oracle.com
-Subject: Re: [PATCH v12 7/7] fsdax: set a CoW flag when associate reflink
- mappings
-Message-ID: <YlPQ59w4L4pnDYWq@infradead.org>
-References: <20220410160904.3758789-1-ruansy.fnst@fujitsu.com>
- <20220410160904.3758789-8-ruansy.fnst@fujitsu.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220410160904.3758789-8-ruansy.fnst@fujitsu.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        Mon, 11 Apr 2022 02:58:25 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929CA2A25E;
+        Sun, 10 Apr 2022 23:56:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1649660171; x=1681196171;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=SPn7rGfpCdKX5BixSOyXy7nTS1C2Ef91VXqrhvWkrS4=;
+  b=bifZ/ONFdc8+Kw/P+M4RC3weZByYW/1FoZLoLTgYYM3wHcwkh1GifZ9f
+   K2j3H7MpXuj4Nbdod6LoU6WXyVyz2TxCZ+ytkbmY5igwM/8eqpMBaGJr0
+   N2r2ZumcnvznHOzPalae9XhQeB/KEoHJ7incWdSVWNiBRDZaBzNKmGI29
+   o=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 10 Apr 2022 23:56:11 -0700
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 10 Apr 2022 23:56:09 -0700
+X-QCInternal: smtphost
+Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 11 Apr 2022 12:25:54 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
+        id 4B7773A9B; Mon, 11 Apr 2022 12:25:53 +0530 (+0530)
+From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
+To:     will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org, ulf.hansson@linaro.org,
+        agross@kernel.org, bjorn.andersson@linaro.org
+Cc:     linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        Rohit Agarwal <quic_rohiagar@quicinc.com>
+Subject: [PATCH 5/7] ARM: dts: qcom: sdx65: Enable ARM SMMU
+Date:   Mon, 11 Apr 2022 12:25:41 +0530
+Message-Id: <1649660143-22400-6-git-send-email-quic_rohiagar@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1649660143-22400-1-git-send-email-quic_rohiagar@quicinc.com>
+References: <1649660143-22400-1-git-send-email-quic_rohiagar@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> + * Set or Update the page->mapping with FS_DAX_MAPPING_COW flag.
-> + * Return true if it is an Update.
-> + */
-> +static inline bool dax_mapping_set_cow(struct page *page)
-> +{
-> +	if (page->mapping) {
-> +		/* flag already set */
-> +		if (dax_mapping_is_cow(page->mapping))
-> +			return false;
-> +
-> +		/*
-> +		 * This page has been mapped even before it is shared, just
-> +		 * need to set this FS_DAX_MAPPING_COW flag.
-> +		 */
-> +		dax_mapping_set_cow_flag(&page->mapping);
-> +		return true;
-> +	}
-> +	/* Newly associate CoW mapping */
-> +	dax_mapping_set_cow_flag(&page->mapping);
-> +	return false;
+Add a node for the ARM SMMU found in the SDX65.
 
-Given that this is the only place calling dax_mapping_set_cow I wonder
-if we should just open code it here, and also lift the page->index logic
-from the caller into this helper.
+Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+---
+ arch/arm/boot/dts/qcom-sdx65.dtsi | 40 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-static inline void dax_mapping_set_cow(struct page *page)
-{
-	if ((uintptr_t)page->mapping != PAGE_MAPPING_DAX_COW) {
-		/*
-		 * Reset the index if the page was already mapped
-		 * regularly before.
-		 */
-		if (page->mapping)
-			page->index = 1;
-		page->mapping = (void *)PAGE_MAPPING_DAX_COW;
-	}
-	page->index++;
-}
+diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
+index 632ac78..2481769 100644
+--- a/arch/arm/boot/dts/qcom-sdx65.dtsi
++++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
+@@ -181,6 +181,46 @@
+ 			status = "disabled";
+ 		};
+ 
++		apps_smmu: iommu@15000000 {
++			compatible = "qcom,sdx65-smmu-500", "arm,mmu-500";
++			reg = <0x15000000 0x40000>;
++			#iommu-cells = <2>;
++			#global-interrupts = <1>;
++			interrupts =	<GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 298 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 299 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 301 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 302 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 303 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 304 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 305 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 306 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 307 IRQ_TYPE_LEVEL_HIGH>,
++					<GIC_SPI 308 IRQ_TYPE_LEVEL_HIGH>;
++		};
++
+ 		pdc: interrupt-controller@b210000 {
+ 			compatible = "qcom,sdx65-pdc", "qcom,pdc";
+ 			reg = <0xb210000 0x10000>;
+-- 
+2.7.4
 
-> +		if (!dax_mapping_is_cow(page->mapping)) {
-> +			/* keep the CoW flag if this page is still shared */
-> +			if (page->index-- > 0)
-> +				continue;
-> +		} else
-> +			WARN_ON_ONCE(page->mapping && page->mapping != mapping);
-
-Isnt the dax_mapping_is_cow check above inverted?
