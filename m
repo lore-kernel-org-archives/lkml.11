@@ -2,109 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B6C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2081C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348337AbiDKP4x (ORCPT
+        id S1348326AbiDKP6H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:56:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39954 "EHLO
+        Mon, 11 Apr 2022 11:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348320AbiDKP4n (ORCPT
+        with ESMTP id S1348400AbiDKP5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:56:43 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752296459;
-        Mon, 11 Apr 2022 08:54:29 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id r206-20020a1c44d7000000b0038ccb70e239so4876051wma.3;
-        Mon, 11 Apr 2022 08:54:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nmuYtqAwEElb8nxVd+fxQ89gGHmXquxvJjVsYoqHv2Y=;
-        b=keocVt8ryOJFNtu5Az/dug++DkTAI4OLWaFHkX4cvSsY1xV/Wskbcl5ImhbUzHtCaE
-         4OMIC3t4sUW/61SlvymjUxxHekkkGk8zMK66fM3+/Ff7PxoGkiTMizk0GgsSIZLo/faB
-         kLIO1o1ZFqcHSMwQjOHxjyHcqO6AYi7MqD6XDvPzTCtq0xAgBohx+LNW4dE7cbKZg7js
-         WdIJ2O1rpMwswpbjOOCj2iLMgUeClP+tOnqgOJc6YJeAyfnjPl7nyIpmEYi7YQvceh2V
-         q8elVAXixGrrTSNmOmBdmnykQ14lXvMlgHWhHaASaJrj6SOf2cOsJHVG1CQKSGJ1JfCK
-         IUJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nmuYtqAwEElb8nxVd+fxQ89gGHmXquxvJjVsYoqHv2Y=;
-        b=YFOuq/rJLcb6mP4CgGEFKA5mo2vmTI7gEko7hkS+cgrAEgPNZs6ifvvXDSVg9HpW2P
-         TKoM+Pt92l59LhiSrGFv01xk+aFI1iefjOx5JD4aafIZdtMKkdNUaygjSwSxE04ooRTj
-         ejpZBleUJu5iY/KRdB/W2JacdnXYavgBh3KzkJhegO5rd99+jfJSFxh3aN/g173RCcHf
-         /VPdHSkFz2pI98BRLnij2dAItxetKV5vV4JnLWb9C7bB3ko1KP1/N15gD0jMmasCwISs
-         UDuhUmR2Heqgjvgo+sQqfIlQLaMdROlI9XDqdgwG6hrv2htgPa0jqsDzTTRDBR0HLMSw
-         kICg==
-X-Gm-Message-State: AOAM5303+DYc5GU/1I1TOCN0m0NIGc031UWL9/z+HhFFUGwuPJRPkV2v
-        20m11gSnErUd/2KrXBxWl7o=
-X-Google-Smtp-Source: ABdhPJwKMQkKpncM2rJZD2K2/Z9LaMxbxU3HY7D5aMcEWRGUB8rsH5POeRJ5rWtiP9HOlGX7T5u88w==
-X-Received: by 2002:a05:600c:4ecc:b0:38e:354d:909 with SMTP id g12-20020a05600c4ecc00b0038e354d0909mr30666672wmq.33.1649692467942;
-        Mon, 11 Apr 2022 08:54:27 -0700 (PDT)
-Received: from kista.localnet (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
-        by smtp.gmail.com with ESMTPSA id b1-20020a05600018a100b00207ab2305d5sm1569272wri.16.2022.04.11.08.54.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 08:54:27 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <mripard@kernel.org>,
-        Samuel Holland <samuel@sholland.org>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH 10/10] drm/sun4i: Add compatible for D1 display engine
-Date:   Mon, 11 Apr 2022 17:54:26 +0200
-Message-ID: <1908291.usQuhbGJ8B@kista>
-In-Reply-To: <20220411043423.37333-11-samuel@sholland.org>
-References: <20220411043423.37333-1-samuel@sholland.org> <20220411043423.37333-11-samuel@sholland.org>
+        Mon, 11 Apr 2022 11:57:54 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74081A804;
+        Mon, 11 Apr 2022 08:55:39 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 1A6C51EC051F;
+        Mon, 11 Apr 2022 17:55:34 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649692534;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=+qm6xxaKZ1LEXRx+Q8w+uMhxMAISclspO9iaopSo6C4=;
+        b=EpI4AFGUegZ/8pATs/HB27ODf/aTQFNOqs1L5bF6c/6VW28wW7C07qKtAn1UY6hIcAHcqr
+        X7cTScH/818ZNmY/9bhit78ZT54ChEl1N9WwhrbGljuJj/DpDeSeqIHo5Pi7dhyevmonbB
+        rZUXmrNhqpuaAEtbh5J7J4E8ZeivFhY=
+Date:   Mon, 11 Apr 2022 17:55:33 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>, x86@kernel.org,
+        linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCHv4 1/8] mm: Add support for unaccepted memory
+Message-ID: <YlRPdQP5c1DQqZeN@zn.tnic>
+References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
+ <20220405234343.74045-2-kirill.shutemov@linux.intel.com>
+ <93a7cfdf-02e6-6880-c563-76b01c9f41f5@intel.com>
+ <20220409175210.xik3ue3shpagskvi@box.shutemov.name>
+ <adc87911-e1f2-4e2a-2394-17ee9213ae3e@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <adc87911-e1f2-4e2a-2394-17ee9213ae3e@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne ponedeljek, 11. april 2022 ob 06:34:22 CEST je Samuel Holland napisal(a):
-> Now that the various blocks in the D1 display engine pipeline are
-> supported, we can enable the overall engine.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
+On Sun, Apr 10, 2022 at 11:41:57PM -0700, Dave Hansen wrote:
+> Let's just call out the possible (probable?) need for new ABI here.
+> Maybe it will cue folks who care to speak up.
 
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Err, why would you teach the user to go poke at some arbitrary sysfs
+nodes when the accepting code can simply issue a printk from time to
+time
 
-Best regards,
-Jernej
+  "Guest unnaccepted memory progress: XX%. This slows down operations at the moment."
 
-> ---
-> 
->  drivers/gpu/drm/sun4i/sun4i_drv.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/
-sun4i_drv.c
-> index 6a9ba8a77c77..275f7e4a03ae 100644
-> --- a/drivers/gpu/drm/sun4i/sun4i_drv.c
-> +++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
-> @@ -418,6 +418,7 @@ static const struct of_device_id sun4i_drv_of_table[] = 
-{
->  	{ .compatible = "allwinner,sun8i-r40-display-engine" },
->  	{ .compatible = "allwinner,sun8i-v3s-display-engine" },
->  	{ .compatible = "allwinner,sun9i-a80-display-engine" },
-> +	{ .compatible = "allwinner,sun20i-d1-display-engine" },
->  	{ .compatible = "allwinner,sun50i-a64-display-engine" },
->  	{ .compatible = "allwinner,sun50i-h6-display-engine" },
->  	{ }
-> -- 
-> 2.35.1
-> 
-> 
+-- 
+Regards/Gruss,
+    Boris.
 
-
+https://people.kernel.org/tglx/notes-about-netiquette
