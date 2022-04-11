@@ -2,79 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1602C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 759BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:04:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345020AbiDKKGC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56500 "EHLO
+        id S243899AbiDKKGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 06:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238656AbiDKKFv (ORCPT
+        with ESMTP id S235283AbiDKKGg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:05:51 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9421640E73;
-        Mon, 11 Apr 2022 03:03:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1649671418;
-  x=1681207418;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=c+CrCB3jSesuxm+UkvkLWNLlRUO9xSMBS+b8dMwF3PA=;
-  b=NgmWvDBSkvlbyF7ZjfNsDufI69S13VbQMB2VwQ2I6iOUNcmjX8TY3rK0
-   /4+Qja0AZtuSy8uURGMxXKNqv0oK8BcpvV8QzQpI98g2de5RSF6Jjpw1R
-   j6aa7aNkLkDFMGeE28QwKKRQmQ7Aporw0EQjSFiCIa++Fefnt6pcdkr2j
-   LXuwOfqDEflTdjhkMcrx/0z5SK/SmAc+CBniGSvH47rUHG6JQap3Hav97
-   /4Uit0/j6HwhgLYpCrQjyAGU1V+9nlKS+bYTmzK1uiLasQuRkdGY3DLqw
-   S3Nll0dKIs8/Ik+LEq3K0eOVNC3BQ6Zt0g0426LoQjZPKBbkEWkSJgZ/X
-   w==;
-From:   Camel Guo <camel.guo@axis.com>
-To:     <linux@roeck-us.net>, <jdelvare@suse.com>, <robh+dt@kernel.org>,
-        <krzk+dt@kernel.org>
-CC:     <kernel@axis.com>, Camel Guo <camel.guo@axis.com>,
-        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/2] hwmon/tmp401: add support of three advanced features
-Date:   Mon, 11 Apr 2022 12:03:27 +0200
-Message-ID: <20220411100329.1783432-1-camel.guo@axis.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 11 Apr 2022 06:06:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9432E643C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:04:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58521B80F97
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 10:04:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1A8AC385A3;
+        Mon, 11 Apr 2022 10:04:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649671459;
+        bh=xHZRDomLmwqSfuPknWUMoWKn9F/EZqlM+28KfOsbDSU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=u/AFkPDRUktcC5iIrFpT6pN6ARlP3YbRvEv/E8RoG/gXZygPiZeLs+Zj6V0u7UZwn
+         W9Xfdfk36XgZOZrNATIHmrM/pK7tx8kU6wCe/ULfb6Lm7Ev4CJ2CnO/YUuhurOnKgZ
+         hdn0iFZh3kIAgSjWNGsJJtdWcI+oxJQqLfhX/7EBCF+V7ZMPZnwyXOINQWNb0ZtqYP
+         cwvi2o946+7rWgm6zT/VgaRC40RPHwJt1L7mXUyXz++DX8x9prh/uP23qzHzWkdbp4
+         aRoUPKi4I5rDZFSwGDi8sWzB+T48Lk+wqUy9b4x01qgMgl1XbERIDbOIG9PMD6MRs1
+         IqVI7yEStu/XA==
+Message-ID: <778b1f04-a71b-a226-f7a7-4833fc9bf7c2@kernel.org>
+Date:   Mon, 11 Apr 2022 18:04:14 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [f2fs-dev] [PATCH 4/5] f2fs: get rid of stale fault injection
+ code
+Content-Language: en-US
+To:     Yufen Yu <yuyufen@huawei.com>, jaegeuk@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+References: <20220401071909.505086-1-yuyufen@huawei.com>
+ <20220401071909.505086-5-yuyufen@huawei.com>
+ <0c134e0e-b2d0-0bc0-42fc-cd220ff77e72@kernel.org>
+ <25a24259-3ac3-81ab-1c28-f2a4886888b5@huawei.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <25a24259-3ac3-81ab-1c28-f2a4886888b5@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According the their datasheets:
-- TMP401, TMP411 and TMP43x support extended temperature range;
-- TMP411 and TMP43x support n-factor correction;
-- TMP43x support beta compensation.
+On 2022/4/6 11:01, Yufen Yu via Linux-f2fs-devel wrote:
+> Hi,
+> 
+> On 2022/4/1 16:28, Chao Yu wrote:
+>> On 2022/4/1 15:19, Yufen Yu via Linux-f2fs-devel wrote:
+>>> Nowly, we can use new fault injection framework. Just delete the
+>>> stale fault injection code.
+>>>
+>>> Signed-off-by: Yufen Yu <yuyufen@huawei.com>
+>>> ---
+>>>   fs/f2fs/checkpoint.c |  2 +-
+>>>   fs/f2fs/f2fs.h       | 51 ++----------------------------------------
+>>>   fs/f2fs/super.c      | 53 --------------------------------------------
+>>>   fs/f2fs/sysfs.c      | 23 -------------------
+>>>   4 files changed, 3 insertions(+), 126 deletions(-)
+>>>
+> 
+> ...
+> 
+>>>               break;
+>>> @@ -1963,14 +1920,6 @@ static int f2fs_show_options(struct seq_file *seq, struct dentry *root)
+>>>       if (F2FS_IO_SIZE_BITS(sbi))
+>>>           seq_printf(seq, ",io_bits=%u",
+>>>                   F2FS_OPTION(sbi).write_io_size_bits);
+>>> -#ifdef CONFIG_F2FS_FAULT_INJECTION
+>>> -    if (test_opt(sbi, FAULT_INJECTION)) {
+>>> -        seq_printf(seq, ",fault_injection=%u",
+>>> -                F2FS_OPTION(sbi).fault_info.inject_rate);
+>>> -        seq_printf(seq, ",fault_type=%u",
+>>> -                F2FS_OPTION(sbi).fault_info.inject_type);
+>>> -    }
+>>> -#endif
+>>
+>> This will cause regression due to it breaks application usage w/ -o
+>> fault_* mountoption..., I don't think this is the right way.
+> 
+> 
+> Thanks for catching this. I admit it's a problem. But, IMO fault_* mount
+> option are mostly been used in test, not in actual product. So, I think
+> it may just affect some test applications. With the common fault injection
+> framework, it can be more easy and flexible to do fault injection test.
+> Therefore, I want to remove the two mount options directly.
+> 
+> If you really worried about compatibility, how about just reserving the
+> two inject_* options but without doing any thing for them. We actually
+> configure fault injections by debugfs in this patch.
+> 
+> Or do you have more better suggestion?
 
-In order to make it possible for users to enable these features and set up them
-based on their needs, this patch series adds the following devicetree bindings:
-- ti,extended-range-enable;
-- ti,n-factor;
-- ti,beta-compensation.
-In the meanwhile, tmp401 driver reads them and configures the coressponding
-registers accordingly.
+Could you please consider to keep original logic of f2fs fault injection
+if user use inject_* options, otherwise following common fault injection
+framework?
 
-Cc: linux-hwmon@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+Thoughts?
 
-Camel Guo (2):
-  dt-bindings: hwmon: Add TMP401, TMP411 and TMP43x
-  hwmon: (tmp401) Add support of three advanced features
+Thanks,
 
- .../devicetree/bindings/hwmon/ti,tmp401.yaml  | 111 ++++++++++++++++++
- MAINTAINERS                                   |   1 +
- drivers/hwmon/tmp401.c                        |  43 ++++++-
- 3 files changed, 154 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
-
-
-base-commit: ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
--- 
-2.30.2
-
+> 
+> Thanks,
+> Yufen
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Linux-f2fs-devel mailing list
+> Linux-f2fs-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/linux-f2fs-devel
