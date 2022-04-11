@@ -2,113 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F068C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:42:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB9D5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:44:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348144AbiDKPol (ORCPT
+        id S1348158AbiDKPqh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:44:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42282 "EHLO
+        Mon, 11 Apr 2022 11:46:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348169AbiDKPog (ORCPT
+        with ESMTP id S1348160AbiDKPqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:44:36 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004D93B004;
-        Mon, 11 Apr 2022 08:42:19 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-df22f50e0cso17673359fac.3;
-        Mon, 11 Apr 2022 08:42:19 -0700 (PDT)
+        Mon, 11 Apr 2022 11:46:23 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBAA81025
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:44:06 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id i27so31742307ejd.9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:44:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TxbUHNQvrMBIjTCW3//JKuYPMwW2kqiY97PwifExrW0=;
-        b=XlnjY4oJEsmqZB55ghLmlOimOPY0RzYLb/AfQU6nI2vdlmK0pF0sOosXA5xjhY1xje
-         DcbHccNQE+JUR1/SHK65Pr9104N6ZeutHWlCIR33lxl5VTRZhwsrR1Zv1MY4tnhZvM3z
-         QQKkRGZMeaA20iFJVktLgkSTLRMZmlNG3HobVNASgycrkA0IgK17OZLDMRInivTj85T2
-         IAs9JRRJet16/+4vjmQN9sb8H0BJSKCLU9c85YUhbi4KJcieBC7WrJNO+PDxolwiBrdM
-         zrUpdvX7r7uUIhpfci5wFFbLklAsC7uUnxbvq82FIH0WsRajKe0xguA7OXJ59PlZy0F4
-         RA2w==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=IfKH2CI9M//LkZvjQ2ovL0RNbL5cFQ7ZiAOaiFFFhfo=;
+        b=ibV3kGQKwcinaS1/iTDMsTIAihVjTtojxDgUre25vi954+OrzzCXK8ImxtuxVEAkb2
+         Hg9OL2s+Yf0sIU3ag62n4Ww/agXCDQNz5u+5hwgF3rM8FvjzAS/cv77t3QdhbGi2/mD+
+         0XAUrkKofi8LF/r3ulNzcVqr+YwXdWMoGhBIYA87ahdPZYM6pBWZKbmdU4Nkd0MRshwZ
+         TA5ctc+Tgvmf8HPMTDqH+EPOlDdJv554KFI0zXq3pxu6zIQCOA1h93UhRBD5MSLmuJeD
+         KvMLtcYHgtnubwq5Kasz3jHltnu7vd9PdyRo1xU3wl4I2ZXZnDcU9HfKbs2KU2m5cEhV
+         LH3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=TxbUHNQvrMBIjTCW3//JKuYPMwW2kqiY97PwifExrW0=;
-        b=ypa0TndwiDDhxyZa9Y10ByHStrM7p+ruD9wWU6otFaIiTy7vVwI90SKe4YCt84HyRP
-         6CD8E0A/SP7YeEF1LmLqC1rY/8WLgr7PCLaXyltfncephDtwyyuOKWqPifKxL/NbKprO
-         9bDsYYvkw15BoeLNypmuUpGrdu+JuH6/GszZegQYHrrV4HXLyp1Gnuphy+GD1kHsCoGv
-         8bb8YPfyv4ZheoJ0BWhlb2rj+WrdPj69v0tC938iuq5SWIdIhkypIJUT3Tcle9MwM8+B
-         9h6k+rS9e+hPyUEBEo9RlXWor6HpwjMy8fIsAzsFIpaxhlDx14nzBHuynYqrl077cKtV
-         IhBw==
-X-Gm-Message-State: AOAM5338adRH4VI9sVPU/fZMpfQHM92gWPXt0SgvX9vtQBKqIm6zTvaN
-        ajHAvP+o1ja4hns7dd4pTva9sPaJf4g=
-X-Google-Smtp-Source: ABdhPJzniQoI+xcfeMw2+smpP0QcrSIfAaa6a3E0tMqs8h5Apl4XV+TulHiqRKW4kTxjB+R0UVH00w==
-X-Received: by 2002:a05:6871:79b:b0:d3:4039:7e7c with SMTP id o27-20020a056871079b00b000d340397e7cmr14657208oap.121.1649691738902;
-        Mon, 11 Apr 2022 08:42:18 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id c9-20020a4a8ec9000000b0032438ba79b0sm11513951ool.0.2022.04.11.08.42.17
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=IfKH2CI9M//LkZvjQ2ovL0RNbL5cFQ7ZiAOaiFFFhfo=;
+        b=1k7HHJhaYJydxUDKbUpYWbFE6OhhmuSmQ/+J0/bjDH1k2a7XzZxa6PmCR0vA27OT4t
+         AbqKk8zzgB29+9aty961oTuUWWYxQwEAzZ4qoT8Gz5Mn0J4QkaS5C2BFT7ROgs49FG4+
+         Y/R9swAoNtIUByY6w9fy4n9x6WVl2dg0V6zov4tvYvxcgXaQ7Na0OhI2D4c2bPT/g4Fk
+         ug/3nPZALl5T52JiZoaMZX+DzZhX13TQEMTSFvsvZezxfvcYx96S9RAOo9vxxpe1vVuw
+         higIIrXON60FZlIAY3XFbp8KXkZvz0IdYW//o7MG+MscvrT5jXyplcA/UJmbypa+fjFZ
+         fP3Q==
+X-Gm-Message-State: AOAM530HK9s5EgGS4ZmlTZcGtaPVFXjgyE5tSWoFFh6xwFTDldBVRBRX
+        F/tP4LplkTM/qOBLh7xSzuytTQ==
+X-Google-Smtp-Source: ABdhPJxV0mCjni3ixH3ficisiO0VgzkFHoIXlralC8ju8qT8Yv+egeY0tlkfaqMPsRNcX8XOEFMyjg==
+X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id nd14-20020a170907628e00b006d9c6fa6168mr30508428ejc.132.1649691845390;
+        Mon, 11 Apr 2022 08:44:05 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id t14-20020a170906608e00b006d1455acc62sm12173177ejj.74.2022.04.11.08.44.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 08:42:17 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     linux-wireless@vger.kernel.org
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Gregory Greenman <gregory.greenman@intel.com>
-Subject: [PATCH] iwlwifi: iwl-dbg: Use del_timer_sync() before freeing
-Date:   Mon, 11 Apr 2022 08:42:10 -0700
-Message-Id: <20220411154210.1870008-1-linux@roeck-us.net>
-X-Mailer: git-send-email 2.35.1
+        Mon, 11 Apr 2022 08:44:04 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Taniya Das <tdas@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-scsi@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [RFC PATCH v2 1/6] dt-bindings: clock: qcom,gcc-sdm845: add parent power domain
+Date:   Mon, 11 Apr 2022 17:43:42 +0200
+Message-Id: <20220411154347.491396-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220411154347.491396-1-krzysztof.kozlowski@linaro.org>
+References: <20220411154347.491396-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In Chrome OS, a large number of crashes is observed due to corrupted timer
-lists. Steven Rostedt pointed out that this usually happens when a timer
-is freed while still active, and that the problem is often triggered
-by code calling del_timer() instead of del_timer_sync() just before
-freeing.
+Allow Qualcomm GCC to register its parent power domain (e.g. RPMHPD) to
+properly pass performance state from children.
 
-Steven also identified the iwlwifi driver as one of the possible culprits
-since it does exactly that.
-
-Reported-by: Steven Rostedt <rostedt@goodmis.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Johannes Berg <johannes.berg@intel.com>
-Cc: Gregory Greenman <gregory.greenman@intel.com>
-Fixes: 60e8abd9d3e91 ("iwlwifi: dbg_ini: add periodic trigger new API support")
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
-v1 (from RFC):
-    Removed Shahar S Matityahu from Cc: and added Gregory Greenman.
-    No functional change.
+ Documentation/devicetree/bindings/clock/qcom,gcc-sdm845.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-I thought about the need to add a mutex to protect the timer list, but
-I convinced myself that it is not necessary because the code adding
-the timer list and the code removing it should never be never executed
-in parallel.
-
- drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-index 866a33f49915..3237d4b528b5 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-@@ -371,7 +371,7 @@ void iwl_dbg_tlv_del_timers(struct iwl_trans *trans)
- 	struct iwl_dbg_tlv_timer_node *node, *tmp;
+diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-sdm845.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-sdm845.yaml
+index d902f137ab17..daf7906ebc40 100644
+--- a/Documentation/devicetree/bindings/clock/qcom,gcc-sdm845.yaml
++++ b/Documentation/devicetree/bindings/clock/qcom,gcc-sdm845.yaml
+@@ -43,6 +43,9 @@ properties:
+   '#reset-cells':
+     const: 1
  
- 	list_for_each_entry_safe(node, tmp, timer_list, list) {
--		del_timer(&node->timer);
-+		del_timer_sync(&node->timer);
- 		list_del(&node->list);
- 		kfree(node);
- 	}
++  power-domains:
++    maxItems: 1
++
+   '#power-domain-cells':
+     const: 1
+ 
 -- 
-2.35.1
+2.32.0
 
