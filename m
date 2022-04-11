@@ -2,176 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343972AbiDKPcF (ORCPT
+        id S1347955AbiDKPeW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:32:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
+        Mon, 11 Apr 2022 11:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244647AbiDKPcA (ORCPT
+        with ESMTP id S1348187AbiDKPdS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:32:00 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6A623BF2
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:29:45 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id g18so7329617wrb.10
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:29:44 -0700 (PDT)
+        Mon, 11 Apr 2022 11:33:18 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE4933EB1
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:31:03 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id j9so19234578lfe.9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:31:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XGNIRWliO2h0rV5PJMq5A+wGOUta4TqvuZt8zvkwu8U=;
-        b=TpHauy7PnsdLuuoGkLIj6iiH+z0/m2Rs/b15ngcsmm/hRwGVcrC3imcH4EQMHmqNCD
-         TthqDhpL4cL1zHuRq1OXllmEvH8Pk9QfRXe54AzlFpBpcW7pC0MEeIgE1FrOFwDLkpul
-         seLjX+n7fLZJ8VZv+lDLJXetTqMKg8chqckgAM/tAP95+DvG507REoAH5x0kkSRFVYcv
-         2G8YxOFElb7sa6gVYzEY4hFUFMdOcE8442RBWFqIqLCtFKG8MkktKaOBZuihIwZMjgZC
-         LIlj24AA3KmyNezXVp6t4rK4JALr0+bsbr1ikVHr5S6t9piQbddklZuaSlZMeNO0xWFe
-         ZISw==
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xjS2P4qPRuklgAWHvx4nddXDONB01ig+sjZdob2rUZw=;
+        b=FV3bsbjWahU5dJ0sji7/IJLbsnx56//V4Rko+5Sg47dXy4c+ztKWDHA1RNVD7WvPgr
+         yK/qGVOHKnh25F0KE05KBV9H1r9OI30310p5PG2PDV1Va+D7E+zBPyJQ3GLPd+ArztSz
+         lrPNi8EiBdyRuWMQK80WfVgqDFmgS3k2Y9eK88CTC7O93hqJ35i8F5cEA6skMGujcbeA
+         8BD+pN6zgnu4xfwTVNBKJBt2m4qBDjJnaxI/fb85Yf6i+HshEOjYKqNAq3V5w99m67cG
+         eL4nyyZ+vUt0LJJW9FtrCg8OMzKVImZqDlCviEztwjVLYF/N6A1zGFbLaP9VZXnGa6f8
+         0s/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XGNIRWliO2h0rV5PJMq5A+wGOUta4TqvuZt8zvkwu8U=;
-        b=DrxFvQUdMTo56/nTAOtVhOpJJyJD4Q0Vx8/xfY48Hw39Zo/OIwfAWvDmuN3Iu2PdAa
-         //lzuRz7ovKk7tiZYVztwiKUwletCf5/H5SX+tBVQdCWrmJZwsTLN9NiKv00BGWz3Q7I
-         HXViaCCObB+n5ElWUZ0+uJEeQ27tCtRLeLYNuYoGE/EClxcAoFV6LrzMg+VPQVq5wGnI
-         eGngKHq91q5e31wqA7zxC29bUzdvjdKaHWnEhqEY76aG1KzmfWljvkfmJP6DGihCcIb8
-         W7vn1atOvRbLdpXv92xNJz0USQFVZkRC4168hW2lY6JH9RPmUkzcRffol8YkbA0IPtfG
-         NJgQ==
-X-Gm-Message-State: AOAM533kKDglofk5HbTb07zR/gK5rtPv0TNKBK7oR6ahL/ECRFEOP56t
-        Yzd39EY6kW8NFg2PQ2QU0VFOd5MbPTQaETTjShb1eg==
-X-Google-Smtp-Source: ABdhPJyvWXyQyxMKgjcPcX5Czb41yXvstd8O/7lilCQ0wJLap9p1elt+zFg/coXZrQRfng4blMF+eucPkgzZiOCg2RY=
-X-Received: by 2002:a5d:6241:0:b0:207:ac0e:3549 with SMTP id
- m1-20020a5d6241000000b00207ac0e3549mr1040376wrv.343.1649690982963; Mon, 11
- Apr 2022 08:29:42 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xjS2P4qPRuklgAWHvx4nddXDONB01ig+sjZdob2rUZw=;
+        b=TS5n2+/jWNIWPxYgfMvKvyZSeyL/RRNxz4ka02wqlfw8PzPuJ91BkboE26XEkHW9Hu
+         L75FUlEkh4dUC5JsNNmZX4WSNAUyWFNqcxWQhyt/sJe5SbmRUEAg5f1YLZiso6W/ADwz
+         27ZkJyuolyezOofXbdoKh1J0hpFqIU7mF17bJPRAo8P52kGHaoWW+qhyw5bMiKLW+eF5
+         JNoNk/AOm+V1VY5WbG5EOwBS9bwtH49bVagJmGvaqYdNnAi9jw2o4noyKu/bPtQbzweR
+         uaNzlb9cjFyy5CbzO8E/zHorhGSjzspEKdtWKq8t14lXG89IpeBEDHdOrT1tANG8veG0
+         gpqg==
+X-Gm-Message-State: AOAM531uac8u7Qv0hhQIEMIjNP8QEXAOyycYr1b5RidDh9xK69i0Hfh3
+        PsRaw9bP8SEdIrP3ke6cADG1TA==
+X-Google-Smtp-Source: ABdhPJyyKel4+BxKnE8zItkwufzaPuu1o/Qdf3y9wLaeW/pMks9H6z/sxphXdamwlvCAG9JGwj2NPg==
+X-Received: by 2002:a19:674c:0:b0:448:3f49:e6d5 with SMTP id e12-20020a19674c000000b004483f49e6d5mr22543031lfj.518.1649691061797;
+        Mon, 11 Apr 2022 08:31:01 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id j4-20020a05651231c400b0044ac20061ecsm3351801lfe.128.2022.04.11.08.31.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 08:31:01 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id BF102103CE0; Mon, 11 Apr 2022 18:32:33 +0300 (+03)
+Date:   Mon, 11 Apr 2022 18:32:33 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Chao Peng <chao.p.peng@linux.intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        qemu-devel@nongnu.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com
+Subject: Re: [PATCH v5 04/13] mm/shmem: Restrict MFD_INACCESSIBLE memory
+ against RLIMIT_MEMLOCK
+Message-ID: <20220411153233.54ljmi7zgqovhgsn@box.shutemov.name>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-5-chao.p.peng@linux.intel.com>
+ <Yk8L0CwKpTrv3Rg3@google.com>
 MIME-Version: 1.0
-References: <69656438-8b9a-000b-0702-02dc480639f9@linux.intel.com>
- <20220407085721.3289414-1-florian.fischer@muhq.space> <20220407085721.3289414-3-florian.fischer@muhq.space>
- <CAP-5=fWC5e9PTs9PVttVDdNbCzYQVeqyuf95q181Vkg4NqJxqg@mail.gmail.com> <20220410164136.bxqtpbrmfbqxdx4n@pasture>
-In-Reply-To: <20220410164136.bxqtpbrmfbqxdx4n@pasture>
-From:   Ian Rogers <irogers@google.com>
-Date:   Mon, 11 Apr 2022 08:29:30 -0700
-Message-ID: <CAP-5=fXuR2tK_4FDnRA88a9wQkndbqyeN6G2muppaMhV5mAQ=A@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] perf stat: add rusage utime and stime events
-To:     Florian Fischer <florian.fischer@muhq.space>
-Cc:     Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Florian Schmaus <flow@cs.fau.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yk8L0CwKpTrv3Rg3@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 10, 2022 at 9:41 AM Florian Fischer
-<florian.fischer@muhq.space> wrote:
->
-> > > This patch adds two new tool internal events 'rusage_user_time'
-> > > and 'rusage_system_time' as well as their aliases 'ru_utime' and
-> > > 'ru_stime', similarly to the already present 'duration_time' event.
-> > >
-> > > Both events use the already collected rusage information obtained by wait4
-> > > and tracked in the global ru_stats.
-> > >
-> > > Examples presenting cache-misses and rusage information in both human and
-> > > machine-readable form:
-> > >
-> > > $ ./perf stat -e duration_time,ru_utime,ru_stime,cache-misses -- grep -q -r duration_time .
-> > >
-> > >  Performance counter stats for 'grep -q -r duration_time .':
-> > >
-> > >         67,422,542 ns   duration_time:u
-> > >         50,517,000 ns   ru_utime:u
-> > >         16,839,000 ns   ru_stime:u
-> > >             30,937      cache-misses:u
-> > >
-> > >        0.067422542 seconds time elapsed
-> > >
-> > >        0.050517000 seconds user
-> > >        0.016839000 seconds sys
-> > >
-> > > $ ./perf stat -x, -e duration_time,ru_utime,ru_stime,cache-misses -- grep -q -r duration_time .
-> > > 72134524,ns,duration_time:u,72134524,100.00,,
-> > > 65225000,ns,ru_utime:u,65225000,100.00,,
-> > > 6865000,ns,ru_stime:u,6865000,100.00,,
-> > > 38705,,cache-misses:u,71189328,100.00,,
-> >
-> > This is really nice. For metric code we currently handle duration_time
-> > in a special way, for example:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/util/metricgroup.c?h=perf/core#n745
-> > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/util/metricgroup.c?h=perf/core#n1131
-> > We will need to do something similar with these tool events, but I'm
-> > happy that it can be follow-up work.
-> >
-> > I'm not a huge fan of the names ru_utime and ru_stime, two thoughts
-> > here we could do duration_time:u and duration_time:k but I don't think
-> > that really makes sense. My preference would be to just call ru_utime
-> > user_time and ru_stime system_time.
->
-> I considered ru_{u,s}_time only as aliases because those are the field names in
-> the rusage struct filled by wait4 and are probably known by perf users.
-> The "official" names are currently rusage_{user,system}_time.
-> I could change them to only {user,system}_time because those names are more in line
-> with the already present duration_time and are independent of the rusage
-> implementation detail.
->
-> What do you think of?
+On Thu, Apr 07, 2022 at 04:05:36PM +0000, Sean Christopherson wrote:
+> Hmm, shmem_writepage() already handles SHM_F_INACCESSIBLE by rejecting the swap, so
+> maybe it's just the page migration path that needs to be updated?
 
-I like user_time and system_time, short and to the point [1] while
-satisfying being intention-revealing. The aliases, ru_utime and
-ru_stime, are fine but a bit of an acronym soup. They mean we need to
-special case more names in the metric code. I don't know how others
-feel but I'd stick to just user_time and system_time.
+My early version prevented migration with -ENOTSUPP for
+address_space_operations::migratepage().
 
-Thanks,
-Ian
+What's wrong with that approach?
 
-
-[1] https://www.kernel.org/doc/html/v4.10/process/coding-style.html#naming
-
-> ---
->  tools/perf/util/parse-events.c | 4 ++--
->  tools/perf/util/parse-events.l | 4 ++--
->  2 files changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-> index c232ab79d434..afcba6671748 100644
-> --- a/tools/perf/util/parse-events.c
-> +++ b/tools/perf/util/parse-events.c
-> @@ -160,11 +160,11 @@ struct event_symbol event_symbols_tool[PERF_TOOL_LAST] = {
->                 .alias  = "",
->         },
->         [PERF_TOOL_RU_UTIME] = {
-> -               .symbol = "rusage_user_time",
-> +               .symbol = "user_time",
->                 .alias  = "ru_utime",
->         },
->         [PERF_TOOL_RU_STIME] = {
-> -               .symbol = "rusage_system_time",
-> +               .symbol = "system_time",
->                 .alias  = "ru_stime",
->         },
->  };
-> diff --git a/tools/perf/util/parse-events.l b/tools/perf/util/parse-events.l
-> index 3c7227b8035c..7ee8613b6011 100644
-> --- a/tools/perf/util/parse-events.l
-> +++ b/tools/perf/util/parse-events.l
-> @@ -353,8 +353,8 @@ alignment-faults                            { return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_AL
->  emulation-faults                               { return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_EMULATION_FAULTS); }
->  dummy                                          { return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_DUMMY); }
->  duration_time                                  { return tool(yyscanner, PERF_TOOL_DURATION_TIME); }
-> -rusage_user_time|ru_utime      { return tool(yyscanner, PERF_TOOL_RU_UTIME); }
-> -rusage_system_time|ru_stime    { return tool(yyscanner, PERF_TOOL_RU_STIME); }
-> +user_time|ru_utime     { return tool(yyscanner, PERF_TOOL_RU_UTIME); }
-> +system_time|ru_stime   { return tool(yyscanner, PERF_TOOL_RU_STIME); }
->  bpf-output                                     { return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_BPF_OUTPUT); }
->  cgroup-switches                                        { return sym(yyscanner, PERF_TYPE_SOFTWARE, PERF_COUNT_SW_CGROUP_SWITCHES); }
->
-> --
-> 2.35.1
->
-> Florian Fischer
+-- 
+ Kirill A. Shutemov
