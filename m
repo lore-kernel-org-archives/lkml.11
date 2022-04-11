@@ -2,98 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A70D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44ED1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344622AbiDKLNy (ORCPT
+        id S1345356AbiDKLN6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:13:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43342 "EHLO
+        Mon, 11 Apr 2022 07:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346067AbiDKLND (ORCPT
+        with ESMTP id S1346023AbiDKLNA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:13:03 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9356845508;
-        Mon, 11 Apr 2022 04:10:39 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id h10so2603696pfr.10;
-        Mon, 11 Apr 2022 04:10:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=XXujWv8lbJXMrh5FclRTjsJnuyiej8YOUUAvRohoa3s=;
-        b=gcT9GQEj1t1ZMdyhctXLydfAFX5hJlcGLVeDVXE4xRStIU2phGu2595faUy4D1XVQi
-         8NSlPudyh3AoIrKfEXsKH69GAECt1esYOrQJRR/FqRoRD11sgBzHskkRewUOdrXyEiUp
-         TqBPv6EKHFYBtQq6tHrGMj/esWKe1/h13FeoMF+mSYO6m+4NVXpqcLoEk8Zv254RDUJ5
-         S+XPXVWWMJSezaAIYNRmaFn5PTNn3g41KbYdteLwnTSUCZKQboIYrR+FshheB1W7N9Q9
-         6y36Ot/AwRSZWFAPOXwRU1n6mzm+F11yj0Qmw2CzLVoi8Geh/pUWpHA76QDVpBf63Q8T
-         YkEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=XXujWv8lbJXMrh5FclRTjsJnuyiej8YOUUAvRohoa3s=;
-        b=kHQ/nuQnOFHLTahuGOZTyj/8d3MRL4l5pjJvt3RnmyrsVxAaKQkr8zOh8ZI7MHYoZ1
-         fFMrnJpbF7TGI1LtznxEZJO8h2/5oBEdjt3NVHoji99Hf8PciDZUY6G5J7uAAHmKugKw
-         bqKhLE9Uq2VrqaVYyt/41Ty74r+vPqvAAKqLd6Omfhj7jC4zvuL4AAKPIDJTYZj04udY
-         AvQ2Ghhp3iNOwV/HXKSUemOFWynZunUY9P8WyI4L+4zg3Ey7AljsonT5ouT4Y8OGDDor
-         aJBkuGInXDGxYZ796pJTJl1NOa1/q2A5vIMSKl4tOGk+Rk/ImS6MuMSx9adDEnOm4tNp
-         eZTw==
-X-Gm-Message-State: AOAM530c1mvmNy4Y0b+7GbxTa0JuYfoPEUnQiiBkwJveCZ5jOpC6C02e
-        JJ0wHkyYf2vR98x5Kv3znbA=
-X-Google-Smtp-Source: ABdhPJw72lmFNFIrZAgtp85ZjO3V6LbjMyNXozucroQEKDrnteZXfV9NtvRYf7wNnYPlC4pJ653QKg==
-X-Received: by 2002:a65:638d:0:b0:39d:74ad:ce0b with SMTP id h13-20020a65638d000000b0039d74adce0bmr1023945pgv.103.1649675439049;
-        Mon, 11 Apr 2022 04:10:39 -0700 (PDT)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id g6-20020a056a001a0600b004f7bd56cc08sm34628169pfv.123.2022.04.11.04.10.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 04:10:38 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Mark Brown <broonie@kernel.org>, Vignesh R <vigneshr@ti.com>,
-        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] spi: spi-ti-qspi: Fix return value handling of wait_for_completion_timeout
-Date:   Mon, 11 Apr 2022 11:10:33 +0000
-Message-Id: <20220411111034.24447-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 11 Apr 2022 07:13:00 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2173BE34;
+        Mon, 11 Apr 2022 04:09:52 -0700 (PDT)
+X-UUID: 4d1ee65a5a024114b512a6064079f27b-20220411
+X-UUID: 4d1ee65a5a024114b512a6064079f27b-20220411
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1431660548; Mon, 11 Apr 2022 19:09:46 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 11 Apr 2022 19:09:45 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 11 Apr 2022 19:09:44 +0800
+Message-ID: <5c6dc5ed28c64f62b66e7b68b54c342b63e42d42.camel@mediatek.com>
+Subject: Re: [PATCH V2 15/15] cpufreq: mediatek: Use device print to show
+ logs
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+CC:     <rafael@kernel.org>, <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
+        <roger.lu@mediatek.com>, <hsinyi@google.com>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Mon, 11 Apr 2022 19:09:44 +0800
+In-Reply-To: <20220411032922.yj4p42is5ky6bgau@vireshk-i7>
+References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
+         <20220408045908.21671-16-rex-bc.chen@mediatek.com>
+         <20220411032922.yj4p42is5ky6bgau@vireshk-i7>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-wait_for_completion_timeout() returns unsigned long not int.
-It returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case.
+On Mon, 2022-04-11 at 08:59 +0530, Viresh Kumar wrote:
+> On 08-04-22, 12:59, Rex-BC Chen wrote:
+> > Replace pr_* with dev_* to show logs.
+> > 
+> > Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> > ---
+> >  drivers/cpufreq/mediatek-cpufreq.c | 41 +++++++++++++++++---------
+> > ----
+> >  1 file changed, 23 insertions(+), 18 deletions(-)
+> 
+> One should always arrange the patches in this form:
+> 
+> - Fix bugs first (since they need to be applied first and need to go
+>   to stable kernels too).
+> 
+> - Trivial fixes next, like this one which you chose to be present at
+>   15/15. I would have applied this one right away, if it wasn't he
+>   last one, because of which we have conflicts now.
+> 
+> - Non-trivial patches later, so reviews on them don't affect other
+>   patches.
+> 
+Hello Viresh,
 
-Fixes: 5720ec0a6d26 ("spi: spi-ti-qspi: Add DMA support for QSPI mmap read")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/spi/spi-ti-qspi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Thanks for your review and suggestions.
+I will put this patch to first in next version.
 
-diff --git a/drivers/spi/spi-ti-qspi.c b/drivers/spi/spi-ti-qspi.c
-index e06aafe169e0..081da1fd3fd7 100644
---- a/drivers/spi/spi-ti-qspi.c
-+++ b/drivers/spi/spi-ti-qspi.c
-@@ -448,6 +448,7 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
- 	enum dma_ctrl_flags flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT;
- 	struct dma_async_tx_descriptor *tx;
- 	int ret;
-+	unsigned long time_left;
- 
- 	tx = dmaengine_prep_dma_memcpy(chan, dma_dst, dma_src, len, flags);
- 	if (!tx) {
-@@ -467,9 +468,9 @@ static int ti_qspi_dma_xfer(struct ti_qspi *qspi, dma_addr_t dma_dst,
- 	}
- 
- 	dma_async_issue_pending(chan);
--	ret = wait_for_completion_timeout(&qspi->transfer_complete,
-+	time_left = wait_for_completion_timeout(&qspi->transfer_complete,
- 					  msecs_to_jiffies(len));
--	if (ret <= 0) {
-+	if (time_left == 0) {
- 		dmaengine_terminate_sync(chan);
- 		dev_err(qspi->dev, "DMA wait_for_completion_timeout\n");
- 		return -ETIMEDOUT;
--- 
-2.17.1
+BRs,
+Rex
 
