@@ -2,107 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E2AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:50:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348281AbiDKPwM (ORCPT
+        id S1348282AbiDKPwz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59604 "EHLO
+        Mon, 11 Apr 2022 11:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348265AbiDKPwH (ORCPT
+        with ESMTP id S1348265AbiDKPws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:52:07 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 324AEF21;
-        Mon, 11 Apr 2022 08:49:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649692192; x=1681228192;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gyDoMc98GJmanTHsL9qK4pOeFXXJEueQFvdOn+5W79Q=;
-  b=amlsel1Uy9yIbiytLhirB8tp8mpgRstrJ90lUEyqAAmyFZLMARkfR7Eu
-   5d5QDnl+FkGSTqL5dkKbm/vlvEtuInXaYiY4q/VuK+2zlWgfi3Ob3S9yR
-   2ndh6do8c/9ap3JUZ7FESw0kYbojapUR/2kEKiKAcBLXUcF3x3C9MOM/O
-   grzHdNRIQShBOEWP5CZ6qv/NGEVCcr2SeRkIScHlJJs8/Nf1oM46Okvp0
-   nXe0sHDz244+uKrx1nYSlUeqGcJmgQVRlUU/EclKDOCjdVAV38ZKNtRlG
-   qnehE2fXfGC8g0fBajnryQDuFb1riB1olRaSiHt0hJveFsd+MPzPjFRaI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="262326628"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="262326628"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 08:49:51 -0700
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="660096199"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 08:49:47 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ndwEx-001J5c-Tx;
-        Mon, 11 Apr 2022 18:46:07 +0300
-Date:   Mon, 11 Apr 2022 18:46:07 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Rob Herring <robh@kernel.org>, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Len Brown <lenb@kernel.org>,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v6 1/5] device property: Allow error pointer to be passed
- to fwnode APIs
-Message-ID: <YlRNPyxHcNRQE/5A@smile.fi.intel.com>
-References: <20220408184844.22829-1-andriy.shevchenko@linux.intel.com>
- <YlQyEz3/J0rb2Hew@smile.fi.intel.com>
- <YlQ69jMduq/evgTt@kroah.com>
+        Mon, 11 Apr 2022 11:52:48 -0400
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0336710F9;
+        Mon, 11 Apr 2022 08:50:34 -0700 (PDT)
+Received: by mail-qv1-f41.google.com with SMTP id y19so1619363qvk.5;
+        Mon, 11 Apr 2022 08:50:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SVb5BcZzBrrdvju5vTaDEqBtUthWOli6gJ+6pTxlf68=;
+        b=6+lysK8aYFQ5EFA11b4ujl6WEwBJpiFkL1he+Vv2umhovMiWhCNtobGX/F/YRsh0vQ
+         DMceFi8l4kZnjj5MMhQhg8jcHscOIzDjXb283qKzcKjOkpKKqHKtz7iRbXGGAo8PvggT
+         GmD/vJgCuD+fVldb5hLGPoVbqL/SpZ1Rx2JbIS9R5mIixUwoMErMXZGV0u5RNsNcaZgr
+         iNFBkVgakbeyLwn2wp7K+5mPcPvO8U9uV6xPNKjF5uJLy1pXb6JoUt7qR4SOrdxXeG5R
+         di7bR4CVsyY26D25f6YVcH6jspuMDvkpuAn+i8X/zkXXXf1ygJyl+HQWLwEruRjrRa/B
+         Q6dQ==
+X-Gm-Message-State: AOAM532MdDuxLNwJP+gDZvC1NBPuC68KQxkEcPRgujbkqyZRWGamhyFX
+        oI2Siazx6ci6bdTC/qYTrNs4jLc0a21Few==
+X-Google-Smtp-Source: ABdhPJx3qbNtUUQ70J/aUkn8WHaTH1x5f1MGWsRMnsMbuPzAkA3Lv7Qu0jzyQzJIuWmm7Ha+lkJM2A==
+X-Received: by 2002:ad4:5dc9:0:b0:441:56ad:8d93 with SMTP id m9-20020ad45dc9000000b0044156ad8d93mr26864265qvh.76.1649692233023;
+        Mon, 11 Apr 2022 08:50:33 -0700 (PDT)
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
+        by smtp.gmail.com with ESMTPSA id u187-20020a3792c4000000b0067e679cfe5asm19440807qkd.59.2022.04.11.08.50.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 08:50:32 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id t67so11434873ybi.2;
+        Mon, 11 Apr 2022 08:50:32 -0700 (PDT)
+X-Received: by 2002:a05:6902:101:b0:633:ccde:cfca with SMTP id
+ o1-20020a056902010100b00633ccdecfcamr22352056ybh.207.1649692232274; Mon, 11
+ Apr 2022 08:50:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YlQ69jMduq/evgTt@kroah.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220406072417.14185-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220406072417.14185-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 11 Apr 2022 17:50:21 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUNPmhxTADmdWVqw0fox0UsiLpFj_X_s7aBphCLfoK4Qg@mail.gmail.com>
+Message-ID: <CAMuHMdUNPmhxTADmdWVqw0fox0UsiLpFj_X_s7aBphCLfoK4Qg@mail.gmail.com>
+Subject: Re: [PATCH] clocksource/drivers/renesas-ostm: Add support for RZ/V2L SoC
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 04:28:06PM +0200, Greg Kroah-Hartman wrote:
-> On Mon, Apr 11, 2022 at 04:50:11PM +0300, Andy Shevchenko wrote:
-> > On Fri, Apr 08, 2022 at 09:48:40PM +0300, Andy Shevchenko wrote:
-> > > Some of the fwnode APIs might return an error pointer instead of NULL
-> > > or valid fwnode handle. The result of such API call may be considered
-> > > optional and hence the test for it is usually done in a form of
-> > > 
-> > > 	fwnode = fwnode_find_reference(...);
-> > > 	if (IS_ERR(fwnode))
-> > > 		...error handling...
-> > > 
-> > > Nevertheless the resulting fwnode may have bumped the reference count
-> > > and hence caller of the above API is obliged to call fwnode_handle_put().
-> > > Since fwnode may be not valid either as NULL or error pointer the check
-> > > has to be performed there. This approach uglifies the code and adds
-> > > a point of making a mistake, i.e. forgetting about error point case.
-> > > 
-> > > To prevent this, allow an error pointer to be passed to the fwnode APIs.
-> > 
-> > Rafael and Greg, if this okay for you, can the first three patches be
-> > applied, so we will have at least the fix in and consider constification
-> > a further work?
-> 
-> Give us a chance, you sent this on friday and are asking about it first
-> thing Monday morning?
-> 
-> Please go and review other patches sent on the list to help us catch up.
+On Wed, Apr 6, 2022 at 9:31 AM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> The OSTM block is identical on Renesas RZ/G2L and RZ/V2L SoC's, so instead
+> of adding dependency for each SoC's add dependency on ARCH_RZG2L. The
+> ARCH_RZG2L config option is already selected by ARCH_R9A07G044 and
+> ARCH_R9A07G054.
+>
+> With the above change OSTM will be enabled on RZ/V2L SoC.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-OK! Reviewed (actually commented on) a few patches so far.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
--- 
-With Best Regards,
-Andy Shevchenko
+Gr{oetje,eeting}s,
 
+                        Geert
 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
