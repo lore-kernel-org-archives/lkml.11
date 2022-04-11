@@ -2,151 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B26C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 217FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 12:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343672AbiDKMBt (ORCPT
+        id S1344689AbiDKMC2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 08:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33986 "EHLO
+        Mon, 11 Apr 2022 08:02:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231547AbiDKMBn (ORCPT
+        with ESMTP id S231547AbiDKMC0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 08:01:43 -0400
-Received: from CHE01-GV0-obe.outbound.protection.outlook.com (mail-gv0che01on2138.outbound.protection.outlook.com [40.107.23.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8CB1B7A6;
-        Mon, 11 Apr 2022 04:59:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oSu7rbp72hQlFDdvxaLPoI47hxLdL7cvBnZH54c/ap0s7HWgfv5lvuGjBkCPuBddHUeFHpg1s7ffvgqQ9T4xvIB2yae6P42WvlxVJ2DWwGrp+7UAS7r8eCsRz2rnmEubT6vEjSayjFtoZURLKq3d+sYuqRMHnsLHkuGV0qp9bqsLRegV0lzv+gXi2NoNXto2sNPcuE1Onwp7pAdNIcS7wAMfFqRG2Ak1WTJQr6MYgPX/FamnqhvIaHygMaWh36oAdQouJotu15aOcmB51EUbR146NWoCJKdbedKcbx713Uh7lIAibuUWaHIyCSsR5dH3p5+djqCdXsAgOQKfPhNF5A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RCjUSQxKMr/2JUyBkpnOinXGIH/plX7A0sTuqyfJkPY=;
- b=OEZk0gFRcJOx1R//inKLfZrQzdDbjd2vtUIBGggsqYc2Pn31q4Dppt8nbrTH9wGvpDfcFk5+jFmvtFHV/r1udZmQR9hGCPPRt0+Hwsi9GWg2tP2uVtWt2Ouek3cko0EWrX6gt2Ri0oeKEZhxikP6XmGFb28vy+HTpdxgZPqht5SZFTaxOt6KRxc21nk0VgCaD8Cn2FUfmyWi4GS+a1umPRKvbSHDf/FCc28DnFDADpazTtY7l/QPIQtFpDYl8zHIQ+zJM7U7vslXlOKXEcv7+kdatoSuqjtaUPVauDgwl0OW4sxT23oiUshsJnQlZ1AnBHaVy8o2b8DZi+q2+sk0zw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
- dkim=pass header.d=toradex.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RCjUSQxKMr/2JUyBkpnOinXGIH/plX7A0sTuqyfJkPY=;
- b=jHGpRk9HqDxq3Sgig8UIVfsQ/iswXx++K4yOJFUFADvCvsQzMwASLleIOzUcTVdpHymFlSV9SeJLqqwxXBD72hykynW/+3+weXBDtOvf0q6XPGn7y7nzwi44D6aKxf9aqTNC3MJZQvWQMRd0J8LWe+QnaiaCt/dGnMQm2Ni2Htc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=toradex.com;
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
- ZR0P278MB0249.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:30::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5144.29; Mon, 11 Apr 2022 11:59:27 +0000
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::f465:3051:c795:3c2]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::f465:3051:c795:3c2%7]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
- 11:59:27 +0000
-Date:   Mon, 11 Apr 2022 13:59:26 +0200
-From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        l.stach@pengutronix.de, hongxing.zhu@nxp.com, robh@kernel.org,
-        bhelgaas@google.com, helgaas@kernel.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, linux-imx@nxp.com,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] PCI: imx6: Replace legacy gpio interface for gpiod
- interface
-Message-ID: <20220411115926.GA20890@francesco-nb.int.toradex.com>
-References: <YYCOTx68LXu1Tn1i@fedora>
- <YlBFa46v5NtWxGLt@lpieralisi>
- <YlBKyBtbxMpvauLv@fedora>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YlBKyBtbxMpvauLv@fedora>
-X-ClientProxiedBy: ZR0P278CA0017.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:16::27) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:2e::8)
+        Mon, 11 Apr 2022 08:02:26 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B730E2A732;
+        Mon, 11 Apr 2022 05:00:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649678412; x=1681214412;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sC8CyttMimPSNhIr3hh4HcfuM59Ph6N7lGNcafQdvcs=;
+  b=jqXvzjSStgCyRqvoJe3HZnI+q2y3XJh8E6mUbYsEQEEljEfhy4N71v2t
+   Ns+ZpiWLX9hm5jCu6qwfqnBROgzcQ3JRJGTDDX6nw4lGHB9DjZ6MMBGEl
+   oOONbDcSSiNWXvQW+4QiqtLtEM5DjIHO4bNzE6AEEs/axwzY+anicEVds
+   KpttVF73a/+vW9D3NZiiWT8jxdtVMKBrij3QxOh1dmUsaxBIlDjl9frR2
+   uWcvmeacufpMCpXRhrj6wmrem5IC0MvPc75mzIit3AUYI/PHBExqwm/zX
+   l0ehMil4gbzh1ksUkyqamWiqcWouuLNL9as6GiLh8YCOPPirLpMQOx+Fu
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="242684842"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="242684842"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 05:00:12 -0700
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="699346695"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 05:00:05 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ndsed-001CQ3-RA;
+        Mon, 11 Apr 2022 14:56:23 +0300
+Date:   Mon, 11 Apr 2022 14:56:23 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Qianggui Song <qianggui.song@amlogic.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marc Zyngier <maz@kernel.org>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        openbmc@lists.ozlabs.org, linux-renesas-soc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH v4 05/13] pinctrl: samsung: Switch to use
+ for_each_gpiochip_node() helper
+Message-ID: <YlQXZ3Ye13rObMy8@smile.fi.intel.com>
+References: <20220401103604.8705-1-andriy.shevchenko@linux.intel.com>
+ <20220401103604.8705-6-andriy.shevchenko@linux.intel.com>
+ <d1f873c6-150f-5f4d-7aa8-7bb15823d991@linaro.org>
+ <YlBXSVyj88CqjGj4@smile.fi.intel.com>
+ <3b527700-444e-1f6e-fee1-5cd6ed2ef7f9@linaro.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7b619175-3808-4c36-da4c-08da1bb2ba3b
-X-MS-TrafficTypeDiagnostic: ZR0P278MB0249:EE_
-X-Microsoft-Antispam-PRVS: <ZR0P278MB02492FB27A9758DD8D70038EE2EA9@ZR0P278MB0249.CHEP278.PROD.OUTLOOK.COM>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kKlrSTfF6NXd8NBJHbcj6G7pWB0RhXKkOGRPLTw5zeC6S+wqJ4FlmrdBTXhT9sw+8BsITmidPqFbChMaoq1wyj85FAq0frcyT5A9lHuxxBX9yBtt9jeiEbNKYTbl/OoNBObtO/KA1HBLAzhI9Fb9/8vx5wbu3tX9M3qK6Pg/hcD/IymfmZ5q5fTR3eh3gqzVZqjAgNb7Ub/g/vbQLfSXJg5zD+pL68X7doKK+KT6BSKVWdiF5G80cR6Nix+3qPnM2dr99r3XN401q+vYM4IMPfiROiFYuJJLtatr70jFnFtomyB4e4iaWh+jeKQFI/+0GYY0E4d/6JQhiMLyhVn448xx3fVdPKd3QBy0sern5vUl6+s4huD4sY2K5Fsq5Q9b/wVlFdHyGnzVUkybGcgVk8Rdru/RHvBnqsnq8JAH4eyFLNnqZ0T9tEgwzLAjQE3sR8GC5U9baoWz/xPvXGd6sfaqsuniJnwJsYjn2OFusnFyNhbPDCOJC75sPc4qanbLAiN5vxytp5VjMnyH1mil/rndJmT6ynyBhdMqYWLq5nmlm9u7Xy267y/olKx6q60zY1y3Om7Fqxv9rpcz0Bb75L69jWG9PW0pHg+orjbZnvoqtlE42Sa57q7sFsY9wd8lyXkb8nar+f9YsoPJvHvLEH6H3irEZpF/2bYptlgVsOpLNqC/8ANtoFSWzvWhzzsLWpwxKiTRU5uu9+o2lRcU+MBzxlAyn1CMyyKqWf/WOGhM25oam1/8qUZc0esXI3hTj58e3IwoECG4JKk9gknWn7CoRSQ4iJAxpDQXLlAJZtrGXUt0ZVy6QyFfs0fSIfnc
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(39850400004)(366004)(396003)(346002)(376002)(136003)(2906002)(52116002)(6506007)(5660300002)(44832011)(6512007)(186003)(7416002)(83380400001)(26005)(316002)(86362001)(8676002)(966005)(508600001)(66946007)(6486002)(1076003)(4326008)(38350700002)(38100700002)(66476007)(66556008)(6916009)(33656002)(8936002)(354624002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?GQhxQYha2X4fLK27stc2Zpza1QqYQ/0O/tt381M5/VkCZg08/OySqQaDmS?=
- =?iso-8859-1?Q?SozfN0o7PE0ag03RJI5MIsAd0dSLr2dXxDDJ6LpAFqbYjNxnmEx9WqaLsQ?=
- =?iso-8859-1?Q?rI0/XKi7I0bMLybI85VYn2vVLOYJhs/kOl1XGvR6iOEmRdaXzajm28LjVi?=
- =?iso-8859-1?Q?g+GAbSG3XUX7M/WZlrlBXrpGwbvB9HsL5/HLfnG0kgWu+BZlAvIKBnnrL6?=
- =?iso-8859-1?Q?VJJURPl1HwCIir8EOEanNnPHl1hmrxzc/x2jCpilxZTmH0aAKGk4UbiJaq?=
- =?iso-8859-1?Q?TJDhZ+eu0gdvMZGla3pZHLToHFpKBIV82erusoJb5kPgmYjDJFzW7pwATR?=
- =?iso-8859-1?Q?rkRuo1F7Ns6hmUC8MRwK0f+NDRE8/hJkTFeSbrbvCjNZ5WdPveC62vZpbo?=
- =?iso-8859-1?Q?7Dt2FeywC/OS4X96SRquxf7bw4ozAuQMdiBX3O+Z7zYDQUy6oG4fE+S4er?=
- =?iso-8859-1?Q?n3MaM6pVXspJkGznWC8R3eC1Hvmp+jEmligZ7tqb1SQJ7A4pJnzrOjlPuG?=
- =?iso-8859-1?Q?13Zw8EfG5iGi5iLm3MLK4hbbA/N6vmP7K8GRjKB397MtwpDMH1hSqVi5cr?=
- =?iso-8859-1?Q?xusz36JDPVTlZNyhr49EVkhYa5MD3YlsUHaxoPZDkX+k5WOe36jGhApnV7?=
- =?iso-8859-1?Q?c8C3NhAgs4SbGdnkR6BE4pxpvSbrFrFkRq3UFQ3YQPjIbbhMVY4NLCPqTr?=
- =?iso-8859-1?Q?cUbim209Dycp2dkiBdpxNmrdUHLXzXDYbouPQnJpI4p8t2q36gTkYhk7QS?=
- =?iso-8859-1?Q?xOr2xghyY3dQJCOLbUQghXkhwm39+cpamczVjw5S60BX/IG/EFmG7i1G8E?=
- =?iso-8859-1?Q?WzWg2qJu8v3ljEgmuDNo+HwXCcs1NesKnZwkEEfvmQGZOdcu/iNUAMpO0e?=
- =?iso-8859-1?Q?moOcV1C4ZNNtRMrIFU8xbhaAEYqmcQXEc5c/xTEc5CHtCMmxWbtJ5Kp6rm?=
- =?iso-8859-1?Q?wxieUW8O0QFm0tnSCwnoZ9/1wMAXKdT4sofK0f/7L/idhISXvkSwWH1vfM?=
- =?iso-8859-1?Q?r4lpq7tnB95V3u5/heAqAePw+FWqQ69ktD9n452V7CzMSqiNjiOowjnlCs?=
- =?iso-8859-1?Q?vVNW3V8187BBlCOYSdwZy1mQ349eqH3u2xQ2Yx1kkW4HdEOIzu64xlRT5s?=
- =?iso-8859-1?Q?mkKod5jbscldNLO1awqcUFk0rFGkBNG8RutXL7mcwiaB+tcdjCZl0N+m25?=
- =?iso-8859-1?Q?FlkCIvB4sRgQ+XO6Q7lGEpRZxI9u1jsaCxVXAnFBighwQDY/qE4nzD/PwD?=
- =?iso-8859-1?Q?BKhDnIzmhv+tSOWqFDjSCsf9TZY2IQ/iAjnfmmVQN7Y56ZVCIUvUksE4kz?=
- =?iso-8859-1?Q?R/PFHe/s+++MiFRYw/XTv/mPDlWmVDeTnGWs/HkZwUdom3Wv4sFSfEnR0M?=
- =?iso-8859-1?Q?dR0sWIWFNmAFvkKZZedVyFJHRP5eDB/UpE/l2XW17Qv6slxEoVi4cx0OxP?=
- =?iso-8859-1?Q?OhY3n3OZzPu7gm++4RP/9Z8nd3Yxt/0zQ/BvtXI0o90dpjvxjkgTsJakNA?=
- =?iso-8859-1?Q?k3NwW5IeupyPfA6fv40LislOcSwwL0id9UbiqQZuYZjGQcIl0x6P5ZdLVv?=
- =?iso-8859-1?Q?Z5VH0XpcwbyBtjLh0yLSmhVIa4lftrO7LeHQi2hMAJ2hFpK4n7o6nIrHWq?=
- =?iso-8859-1?Q?EXy2AJGN4YM/OXlL2cooD6rdFGeIeP5sbgdayY8OYmYWjacCC6/bJA5Zr+?=
- =?iso-8859-1?Q?y0r+MwKIK4BO/DmnfVJMRe/EE6UvvIEGyMnlOmY1tAkel7Lq6lFBvnrTOE?=
- =?iso-8859-1?Q?HCrBKkH3ePcemb0Zd6JBxIKVN+Wl2eXlL0NbYH1cGpz0npz7LWsUB+Q/bz?=
- =?iso-8859-1?Q?Jk1mRBEiPVb/pZwYZanKXdp8Ojs2UMqhkpSV1FmF3bsn/aiDC3xS?=
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b619175-3808-4c36-da4c-08da1bb2ba3b
-X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 11:59:26.9740
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wwRq4eG4sDx9SA8bWCT1LELHaYynoXdEgfsBaaNXUGJJ1E/yrLX4cON016gD8jH/Ow1ovsPKO39hVohuE6FGXn69IPsz0JsNHHPraOuMA+c=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR0P278MB0249
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3b527700-444e-1f6e-fee1-5cd6ed2ef7f9@linaro.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 11:46:32AM -0300, Maíra Canal wrote:
-> On Fri, Apr 08, 2022 at 03:23:39PM +0100, Lorenzo Pieralisi wrote:
-> > On Mon, Nov 01, 2021 at 10:03:11PM -0300, Maíra Canal wrote:
-> > > Considering the current transition of the GPIO subsystem, remove all
-> > > dependencies of the legacy GPIO interface (linux/gpio.h and linux
-> > > /of_gpio.h) and replace it with the descriptor-based GPIO approach.
-> > > 
-> > > Signed-off-by: Maíra Canal <maira.canal@usp.br>
-> > > ---
-> > > V1 -> V2: Rewrite commit log and subject line to match PCI subsystem standard
-> > > V2 -> v3: Change gpiod_set_value_cansleep for gpiod_set_raw_value_cansleep
-> > > ---
-> > >  drivers/pci/controller/dwc/pci-imx6.c | 30 +++++++++------------------
-> > >  1 file changed, 10 insertions(+), 20 deletions(-)
+On Sat, Apr 09, 2022 at 03:33:49PM +0200, Krzysztof Kozlowski wrote:
+> On 08/04/2022 17:39, Andy Shevchenko wrote:
+> > On Fri, Apr 08, 2022 at 05:22:21PM +0200, Krzysztof Kozlowski wrote:
+> >> On 01/04/2022 12:35, Andy Shevchenko wrote:
+> >>> Switch the code to use for_each_gpiochip_node() helper.
 > > 
-> > Maira, Lucas,
+> > (...)
 > > 
-> > what's this patch status ? Please let me know.
+> >>>  /*
+> >>>   * Iterate over all driver pin banks to find one matching the name of node,
+> >>>   * skipping optional "-gpio" node suffix. When found, assign node to the bank.
+> >>>   */
+> >>> -static void samsung_banks_of_node_get(struct device *dev,
+> >>> -				      struct samsung_pinctrl_drv_data *d,
+> >>> -				      struct device_node *node)
+> >>> +static void samsung_banks_node_get(struct device *dev, struct samsung_pinctrl_drv_data *d)
+> >>
+> >> This is worth simplification anyway, so please split it to separate patch.
+> > 
+> > Not sure what to do and why it worth an additional churn.
 > 
-> Thank you for the feedback. Since I sent v3, I didn't get any feedback from the community.
-> 
-> If you have any feedback, I would gladly work on it.
+> Makes this change smaller so it's easier to review.
 
-Just for you to know that it will likely conflict with
-'PCI: imx6: Fix PERST# start-up sequence' [0] that is also still waiting
-for some additional feedback.
+https://git.kernel.org/pub/scm/linux/kernel/git/andy/linux-gpio-intel.git/log/?h=review-andy
 
-Francesco
+That's how it looks like. Tell me if it is what you have had in mind.
 
-[0] https://lore.kernel.org/all/20220404081509.94356-1-francesco.dolcini@toradex.com/
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
