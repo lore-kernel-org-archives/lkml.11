@@ -2,221 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0684AC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:06:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 603B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:07:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346937AbiDKOIL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51660 "EHLO
+        id S232016AbiDKOJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 10:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347084AbiDKOIE (ORCPT
+        with ESMTP id S1346838AbiDKOJm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:08:04 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 039652706;
-        Mon, 11 Apr 2022 07:05:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649685950; x=1681221950;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=0Kk56LmgC+V4pObETO0B0bCp5Q95K95byo8lRQNSDEs=;
-  b=fROwvRoz7n2fzQemBhKOCrRxYYCs9q444YNz7KxSdmcozJCLX4wHUDwP
-   vUfXL4g9dsX3WsAehQ6BmY1+L26CUNypLFmIeV3LK0cLRk9rNWyaNTyZh
-   WcGODU6LEviQwmQDiH6fU/aEoMWFEumXhqsC6fQ5p1whynhLgVxogeCel
-   8=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 11 Apr 2022 07:05:50 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 07:05:49 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 11 Apr 2022 07:05:49 -0700
-Received: from [10.216.15.65] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 11 Apr
- 2022 07:05:45 -0700
-Message-ID: <338cf0bc-8a88-cc6c-9528-1d0ec633aee6@quicinc.com>
-Date:   Mon, 11 Apr 2022 19:35:42 +0530
+        Mon, 11 Apr 2022 10:09:42 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8FE34329B8
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:07:28 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 48E2B1570;
+        Mon, 11 Apr 2022 07:07:28 -0700 (PDT)
+Received: from [192.168.178.6] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4C6763F73B;
+        Mon, 11 Apr 2022 07:07:26 -0700 (PDT)
+Message-ID: <9bb00bcb-f984-1cf6-39aa-c11dcf7f07cb@arm.com>
+Date:   Mon, 11 Apr 2022 16:07:14 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v6 2/3] arm64: dts: qcom: sc7280: Add lpass cpu node
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] sched: Take thermal pressure into account when determine
+ rt fits capacity
 Content-Language: en-US
-To:     Matthias Kaehlcke <mka@chromium.org>
-CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <srinivas.kandagatla@linaro.org>, <dianders@chromium.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>,
-        <quic_rohkumar@quicinc.com>
-References: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
- <1649157220-29304-3-git-send-email-quic_srivasam@quicinc.com>
- <YkzPzP7kYgaYKwcQ@google.com>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <YkzPzP7kYgaYKwcQ@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Xuewen Yan <xuewen.yan94@gmail.com>
+Cc:     Xuewen Yan <xuewen.yan@unisoc.com>, Lukasz.Luba@arm.com,
+        rafael@kernel.org, viresh.kumar@linaro.org, mingo@redhat.com,
+        peterz@infradead.org, vincent.guittot@linaro.org,
+        rostedt@goodmis.org, linux-kernel@vger.kernel.org,
+        di.shen@unisoc.com
+References: <20220407051932.4071-1-xuewen.yan@unisoc.com>
+ <02350916-aa36-ea53-2c98-91b97f49d27e@arm.com>
+ <CAB8ipk-KenZaVWQwWqVMksQXLP5r19BQ1OGAdmwHRbjwv3qFHg@mail.gmail.com>
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+In-Reply-To: <CAB8ipk-KenZaVWQwWqVMksQXLP5r19BQ1OGAdmwHRbjwv3qFHg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 11/04/2022 10:52, Xuewen Yan wrote:
+> HI Dietmar
+> 
+> On Mon, Apr 11, 2022 at 4:21 PM Dietmar Eggemann
+> <dietmar.eggemann@arm.com> wrote:
+>>
+>> On 07/04/2022 07:19, Xuewen Yan wrote:
+>>> There are cases when the cpu max capacity might be reduced due to thermal.
+>>> Take into the thermal pressure into account when judge whether the rt task
+>>> fits the cpu. And when schedutil govnor get cpu util, the thermal pressure
+>>> also should be considered.
+>>>
+>>> Signed-off-by: Xuewen Yan <xuewen.yan@unisoc.com>
+>>> ---
+>>>  kernel/sched/cpufreq_schedutil.c | 1 +
+>>>  kernel/sched/rt.c                | 1 +
+>>>  2 files changed, 2 insertions(+)
+>>>
+>>> diff --git a/kernel/sched/cpufreq_schedutil.c b/kernel/sched/cpufreq_schedutil.c
+>>> index 3dbf351d12d5..285ad51caf0f 100644
+>>> --- a/kernel/sched/cpufreq_schedutil.c
+>>> +++ b/kernel/sched/cpufreq_schedutil.c
+>>> @@ -159,6 +159,7 @@ static void sugov_get_util(struct sugov_cpu *sg_cpu)
+>>>       struct rq *rq = cpu_rq(sg_cpu->cpu);
+>>>       unsigned long max = arch_scale_cpu_capacity(sg_cpu->cpu);
+>>>
+>>> +     max -= arch_scale_thermal_pressure(sg_cpu->cpu);
+>>
+>> max' = arch_scale_cpu_capacity() - arch_scale_thermal_pressure()
+>>
+>> For the energy part (A) we use max' in compute_energy() to cap sum_util
+>> and max_util at max' and to call em_cpu_energy(..., max_util, sum_util,
+>> max'). This was done to match (B)'s `policy->max` capping.
+>>
+>> For the frequency part (B) we have freq_qos_update_request() in:
+>>
+>> power_actor_set_power()
+>>   ...
+>>   cdev->ops->set_cur_state()
+>>
+>>     cpufreq_set_cur_state()
+>>       freq_qos_update_request()      <-- !
+>>       arch_update_thermal_pressure()
+>>
+>> restricting `policy->max` which then clamps `target_freq` in:
+>>
+>>   cpufreq_update_util()
+>>     ...
+>>     get_next_freq()
+>>       cpufreq_driver_resolve_freq()
+>>         __resolve_freq()
+>>
+> 
+> Do you mean that the "max" here will not affect the frequency
+> conversion, so there is no need to change it?
+> But is it better to reflect the influence of thermal here?
 
-On 4/6/2022 4:55 AM, Matthias Kaehlcke wrote:
-Thanks for your time Matthias!!!
-> On Tue, Apr 05, 2022 at 04:43:39PM +0530, Srinivasa Rao Mandadapu wrote:
->> Add lpass cpu node for audio on sc7280 based platforms.
+I guess your point is that even though max' has no effect on frequency
+since QOS caps policy->max anyway, it is still easier to understand the
+dependency between schedutil and EAS/EM when it comes to the use of
+thermal pressure.
+
+I agree. The way how the "hidden" policy->max capping guarantees that
+schedutil and EAS/EM are doing the same even when only the latter uses
+max' is not obvious.
+
+I just wanted to mention the historical reason why the code looks like
+it does today.
+
+>> [...]
 >>
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> ---
->>   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 28 ++++++++++++++
->>   arch/arm64/boot/dts/qcom/sc7280.dtsi     | 63 ++++++++++++++++++++++++++++++++
->>   2 files changed, 91 insertions(+)
+>>> diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+>>> index a32c46889af8..d9982ebd4821 100644
+>>> --- a/kernel/sched/rt.c
+>>> +++ b/kernel/sched/rt.c
+>>> @@ -466,6 +466,7 @@ static inline bool rt_task_fits_capacity(struct task_struct *p, int cpu)
+>>>       max_cap = uclamp_eff_value(p, UCLAMP_MAX);
+>>>
+>>>       cpu_cap = capacity_orig_of(cpu);
+>>> +     cpu_cap -= arch_scale_thermal_pressure(cpu);
+>>>
+>>>       return cpu_cap >= min(min_cap, max_cap);
+>>>  }
 >>
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> index 83c76b2..e3d8cbf 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> @@ -273,6 +273,34 @@
->>   	modem-init;
->>   };
->>   
->> +&lpass_cpu {
->> +	status = "okay";
->> +
->> +	pinctrl-names = "default";
->> +	pinctrl-0 = <&sec_mi2s_data0>, <&sec_mi2s_sclk>, <&sec_mi2s_ws>;
->> +
->> +	mi2s-secondary@1 {
-> in line with an earlier comment, the primary/secondary terminology seem to
-> reflect how things are called in the datasheet (which only talks about a
-> primary/secondary master clock, otherwise about mi2sN). How about calling
-> these nodes 'dai-link@N' as in the binding (and a bunch of other
-> boards/SoCs)?
-Okay. will change accordingly.
->
->> +		reg = <MI2S_SECONDARY>;
->> +		qcom,playback-sd-lines = <0>;
->> +	};
->> +
->> +	hdmi-primary@5 {
->> +		reg = <LPASS_DP_RX>;
->> +	};
->> +
->> +	wcd-rx@6 {
->> +		reg = <LPASS_CDC_DMA_RX0>;
->> +	};
->> +
->> +	wcd-tx@19 {
->> +		reg = <LPASS_CDC_DMA_TX3>;
->> +	};
->> +
->> +	va-tx@25 {
->> +		reg = <LPASS_CDC_DMA_VA_TX0>;
->> +	};
->> +};
->> +
->>   &lpass_tlmm {
->>   	dmic01_active: dmic01-active {
->>   		clk {
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> index 78ec84c..e808d53 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> @@ -19,6 +19,7 @@
->>   #include <dt-bindings/reset/qcom,sdm845-aoss.h>
->>   #include <dt-bindings/reset/qcom,sdm845-pdc.h>
->>   #include <dt-bindings/soc/qcom,rpmh-rsc.h>
->> +#include <dt-bindings/sound/qcom,lpass.h>
->>   #include <dt-bindings/thermal/thermal.h>
->>   
->>   / {
->> @@ -2101,6 +2102,68 @@
->>   			#clock-cells = <1>;
->>   		};
->>   
->> +		lpass_cpu: audio@3987000 {
->> +			compatible = "qcom,sc7280-lpass-cpu";
->> +
->> +			reg = <0 0x03987000 0 0x68000>,
->> +			      <0 0x03b00000 0 0x29000>,
->> +			      <0 0x03260000 0 0xc000>,
->> +			      <0 0x03280000 0 0x29000>,
->> +			      <0 0x03340000 0 0x29000>,
->> +			      <0 0x0336c000 0 0x3000>;
->> +
-> Drop empty line, 'reg' and 'reg-names' belong together'.
-Okay.
->
->> +			reg-names = "lpass-hdmiif",
->> +				    "lpass-lpaif",
->> +				    "lpass-rxtx-cdc-dma-lpm",
->> +				    "lpass-rxtx-lpaif",
->> +				    "lpass-va-lpaif",
->> +				    "lpass-va-cdc-dma-lpm";
->> +
->> +			iommus = <&apps_smmu 0x1820 0>,
->> +				 <&apps_smmu 0x1821 0>,
->> +				 <&apps_smmu 0x1832 0>;
->> +			status = "disabled";
-> Detter put this at the end as many other nodes do, rather than
-> 'hiding' it inmidst of the hardware description.
-Okay. will do accordingly.
->
->> +
->> +			power-domains =	<&rpmhpd SC7280_LCX>;
->> +			power-domain-names = "lcx";
->> +			required-opps = <&rpmhpd_opp_nom>;
->> +
->> +			clocks = <&lpass_aon LPASS_AON_CC_AUDIO_HM_H_CLK>,
->> +				 <&lpass_audiocc LPASS_AUDIO_CC_EXT_MCLK0_CLK>,
->> +				 <&lpasscore LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK>,
->> +				 <&lpasscore LPASS_CORE_CC_EXT_IF0_IBIT_CLK>,
->> +				 <&lpasscore LPASS_CORE_CC_EXT_IF1_IBIT_CLK>,
->> +				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM_CLK>,
->> +				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM0_CLK>,
->> +				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM1_CLK>,
->> +				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM2_CLK>,
->> +				 <&lpass_aon LPASS_AON_CC_VA_MEM0_CLK>;
->> +			clock-names = "aon_cc_audio_hm_h",
->> +				      "audio_cc_ext_mclk0",
->> +				      "core_cc_sysnoc_mport_core",
->> +				      "core_cc_ext_if0_ibit",
->> +				      "core_cc_ext_if1_ibit",
->> +				      "audio_cc_codec_mem",
->> +				      "audio_cc_codec_mem0",
->> +				      "audio_cc_codec_mem1",
->> +				      "audio_cc_codec_mem2",
->> +				      "aon_cc_va_mem0";
->> +
->> +			#sound-dai-cells = <1>;
->> +			#address-cells = <1>;
->> +			#size-cells = <0>;
->> +
->> +			interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
->> +				     <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>,
->> +				     <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
->> +				     <GIC_SPI 180 IRQ_TYPE_LEVEL_HIGH>;
->> +
-> drop empty line, 'interrupts' and 'interrupt-names' belong together.
-Okay.
->
->> +			interrupt-names = "lpass-irq-lpaif",
->> +					  "lpass-irq-hdmi",
->> +					  "lpass-irq-vaif",
->> +					  "lpass-irq-rxtxif";
->> +		};
->> +
->>   		lpass_ag_noc: interconnect@3c40000 {
->>   			reg = <0 0x03c40000 0 0xf080>;
->>   			compatible = "qcom,sc7280-lpass-ag-noc";
+>> IMHO, this should follow what we do with rq->cpu_capacity
+>> (capacity_of(), the remaining capacity for CFS). E.g. we use
+>> capacity_of() in find_energy_efficient_cpu() and select_idle_capacity()
+>> to compare capacities. So we would need a function like
+>> scale_rt_capacity() for RT (minus the rq->avg_rt.util_avg) but then also
+>> one for DL (minus rq->avg_dl.util_avg and rq->avg_rt.util_avg).
+> 
+> It's a really good idea. And do you already have the corresponding patch?
+> If there is, can you tell me the corresponding link?
+
+No, I don't have any code for this. Should be trivial though. But the
+issue is that the update would probably have to be decoupled from CFS
+load_balance (update_group_capacity()) and the use cases in RT/DL are
+only valid for asymmetric CPU capacity systems.
