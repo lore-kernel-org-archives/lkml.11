@@ -2,167 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3EE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5769FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:00:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344606AbiDKRCN (ORCPT
+        id S1348720AbiDKRCR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 13:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45232 "EHLO
+        Mon, 11 Apr 2022 13:02:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348724AbiDKRCJ (ORCPT
+        with ESMTP id S1348726AbiDKRCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 13:02:09 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565FB2624
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:59:53 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23B603sk024512;
-        Mon, 11 Apr 2022 11:59:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=UcPGU3tlBZDRLTES+qLUEqhSB/mK4EAvCmChnr/N0yk=;
- b=oMakITAvt4e2bZF0/Yh73q64EWkqKH+sWdBfCCYqRlMBvtYxdDUtqUBQLxNhOEY6YHqA
- aemLtMHSaFfc1xy9O7BCp355RVLRKUbKFREFXMqPQrSBVexXAIuuLR5aqZ2zyC276u9L
- bUf0bNdDlbKkOISBCiRydBdrOupFDGcsxwMq3TrSaH7HFA3or5ckatadK2nSiDLrB+84
- ygd3Z4M1Dmm6Z6YbEyJN0km4jzf+nfSp8PXcYV38Qe0KzXqUAxwtbdO5l7ZNYtLDJdCj
- jrU117S1K1TRsjrBEMqcYM2vI0hSVkGhWiBYTSr31jFGSENnF6cIrb3tfplSAjZoKKXy fg== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3fb7hyjh4g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 11 Apr 2022 11:59:41 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 11 Apr
- 2022 17:59:39 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.24 via Frontend
- Transport; Mon, 11 Apr 2022 17:59:39 +0100
-Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.64.75])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id D3E99B06;
-        Mon, 11 Apr 2022 16:59:38 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH] ASoC: cs35l45: Make exports namespaced
-Date:   Mon, 11 Apr 2022 17:59:29 +0100
-Message-ID: <20220411165929.1302333-1-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 11 Apr 2022 13:02:12 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C4EDFF0;
+        Mon, 11 Apr 2022 09:59:57 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id u18so8563397eda.3;
+        Mon, 11 Apr 2022 09:59:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oSODxI5rAnqM80EDxdMFwPMs5KtqtdCptsA1K17lu/c=;
+        b=n/zHDZ+3Bfl1LJHIrS5bnb++6zzYtWgjjx/mkvUq8+cpd0T4xuvMdao0SM3gVI3SZq
+         sBH3TYrJPYtWAt1W/Z+o0gLSyyA9rLCi/K+0obqCBpox3mnfM84k7b6GnEnOasYY/VMx
+         vTcjgynQw5K0/CNqYIPCJm1p0F3TSxk2Ef5H2aIZYwxe+VyUO6p0vRFNOgmMg/lV1JsL
+         y8E/6QqXSfGHbZyOwd/uEEpydbWbtUJG0swemY/fPAEPV7PyuYbnLs1VObOKKaFVjxXN
+         xmZmbzQNUcrqvoskyMUruh9ckUEfpy4lPRm9zfC5P+Uflt/fQNLvGp5/uhsq8dJtORn8
+         n+JA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oSODxI5rAnqM80EDxdMFwPMs5KtqtdCptsA1K17lu/c=;
+        b=C/fXQY8C6/elvZ5ahZGeUL2X98uWjY2iaXA0ykbTru4rVD5898uHN0HB7GJwHG/wyB
+         jQWNElZxwbMpafTM92q+OkF8i5xUu+69KuiIgxVNDLqpIWamQ7tSB2jEIyYJX4sUce7L
+         fnxDv1dINa76f+72NSl8TqviJJix2WKNK3ARDZ5Ku4rBvyQQwRBr+IbFzHlVO3CIqHnr
+         JRzFLHbILewXrFkcX8jb3qxS8Q1VHv6bqBd9cdaUhZrAsWNhNdK88mtFq2bqvnE99iSL
+         iFl0Epdcjg+ilDayAyFAzLwc/1jWBsk5q6ZVIsd/qhgfuhbrCTBV3XOzokyvy/ZBAbMt
+         yRBg==
+X-Gm-Message-State: AOAM533PtabNRvmqsSfmLris04IdEjiZ5WcMoKJ9wWswSRkdaBkgPtWW
+        S25qMVoYGr6c0hf792wunUOxHUqt7zlYL6d2WTn/dE0OALU=
+X-Google-Smtp-Source: ABdhPJyQgi2P6l2/eSg/AH3FXatW+Wqx7HAXFr5ol7gZpCIammkTobohJESsf/j35fHy0n5TSHNML1ecCmcfyK/E3G0=
+X-Received: by 2002:a50:cc9e:0:b0:41d:7123:d3ba with SMTP id
+ q30-20020a50cc9e000000b0041d7123d3bamr11224277edi.296.1649696396112; Mon, 11
+ Apr 2022 09:59:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: DERTtYHPlJVmlZWf6olYc9EleWNNiAkT
-X-Proofpoint-ORIG-GUID: DERTtYHPlJVmlZWf6olYc9EleWNNiAkT
-X-Proofpoint-Spam-Reason: safe
+References: <CAHp75VfyxspOScEt1qffshdrDYuQp50O5HFbr2cUV7MYsg=JdQ@mail.gmail.com>
+ <20220411144602.127262-1-andrei.lalaev@emlid.com>
+In-Reply-To: <20220411144602.127262-1-andrei.lalaev@emlid.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Apr 2022 19:55:43 +0300
+Message-ID: <CAHp75VePiCm6wH7aXcbnrt-4nntqx99s45wYk3+C2AKs=Usang@mail.gmail.com>
+Subject: Re: [PATCH] gpiolib: of: fix bounds check for valid mask
+To:     Andrei Lalaev <andrei.lalaev@emlid.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new EXPORT_SYMBOL_NS_GPL() for exports from the set of
-drivers for cs35l45.
+On Mon, Apr 11, 2022 at 5:46 PM Andrei Lalaev <andrei.lalaev@emlid.com> wrote:
 
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
----
- sound/soc/codecs/cs35l45-i2c.c    | 2 ++
- sound/soc/codecs/cs35l45-spi.c    | 2 ++
- sound/soc/codecs/cs35l45-tables.c | 8 ++++----
- sound/soc/codecs/cs35l45.c        | 7 ++++---
- 4 files changed, 12 insertions(+), 7 deletions(-)
+...
 
-diff --git a/sound/soc/codecs/cs35l45-i2c.c b/sound/soc/codecs/cs35l45-i2c.c
-index 18ebf1e14b91..38a4dbc9e9fe 100644
---- a/sound/soc/codecs/cs35l45-i2c.c
-+++ b/sound/soc/codecs/cs35l45-i2c.c
-@@ -70,3 +70,5 @@ module_i2c_driver(cs35l45_i2c_driver);
- MODULE_DESCRIPTION("I2C CS35L45 driver");
- MODULE_AUTHOR("James Schulman, Cirrus Logic Inc, <james.schulman@cirrus.com>");
- MODULE_LICENSE("Dual BSD/GPL");
-+MODULE_IMPORT_NS(SND_SOC_CS35L45);
-+MODULE_IMPORT_NS(SND_SOC_CS35L45_TABLES);
-diff --git a/sound/soc/codecs/cs35l45-spi.c b/sound/soc/codecs/cs35l45-spi.c
-index 445f57ff1fcd..baaf6e0f4fb9 100644
---- a/sound/soc/codecs/cs35l45-spi.c
-+++ b/sound/soc/codecs/cs35l45-spi.c
-@@ -70,3 +70,5 @@ module_spi_driver(cs35l45_spi_driver);
- MODULE_DESCRIPTION("SPI CS35L45 driver");
- MODULE_AUTHOR("James Schulman, Cirrus Logic Inc, <james.schulman@cirrus.com>");
- MODULE_LICENSE("Dual BSD/GPL");
-+MODULE_IMPORT_NS(SND_SOC_CS35L45);
-+MODULE_IMPORT_NS(SND_SOC_CS35L45_TABLES);
-diff --git a/sound/soc/codecs/cs35l45-tables.c b/sound/soc/codecs/cs35l45-tables.c
-index 95d5b3606448..5a2c2e684ef9 100644
---- a/sound/soc/codecs/cs35l45-tables.c
-+++ b/sound/soc/codecs/cs35l45-tables.c
-@@ -38,7 +38,7 @@ int cs35l45_apply_patch(struct cs35l45_private *cs35l45)
- 	return regmap_register_patch(cs35l45->regmap, cs35l45_patch,
- 				     ARRAY_SIZE(cs35l45_patch));
- }
--EXPORT_SYMBOL_GPL(cs35l45_apply_patch);
-+EXPORT_SYMBOL_NS_GPL(cs35l45_apply_patch, SND_SOC_CS35L45_TABLES);
- 
- static const struct reg_default cs35l45_defaults[] = {
- 	{ CS35L45_BLOCK_ENABLES,		0x00003323 },
-@@ -126,7 +126,7 @@ const struct regmap_config cs35l45_i2c_regmap = {
- 	.readable_reg = cs35l45_readable_reg,
- 	.cache_type = REGCACHE_RBTREE,
- };
--EXPORT_SYMBOL_GPL(cs35l45_i2c_regmap);
-+EXPORT_SYMBOL_NS_GPL(cs35l45_i2c_regmap, SND_SOC_CS35L45_TABLES);
- 
- const struct regmap_config cs35l45_spi_regmap = {
- 	.reg_bits = 32,
-@@ -142,7 +142,7 @@ const struct regmap_config cs35l45_spi_regmap = {
- 	.readable_reg = cs35l45_readable_reg,
- 	.cache_type = REGCACHE_RBTREE,
- };
--EXPORT_SYMBOL_GPL(cs35l45_spi_regmap);
-+EXPORT_SYMBOL_NS_GPL(cs35l45_spi_regmap, SND_SOC_CS35L45_TABLES);
- 
- static const struct {
- 	u8 cfg_id;
-@@ -195,7 +195,7 @@ unsigned int cs35l45_get_clk_freq_id(unsigned int freq)
- 
- 	return -EINVAL;
- }
--EXPORT_SYMBOL_GPL(cs35l45_get_clk_freq_id);
-+EXPORT_SYMBOL_NS_GPL(cs35l45_get_clk_freq_id, SND_SOC_CS35L45_TABLES);
- 
- MODULE_DESCRIPTION("ASoC CS35L45 driver tables");
- MODULE_AUTHOR("James Schulman, Cirrus Logic Inc, <james.schulman@cirrus.com>");
-diff --git a/sound/soc/codecs/cs35l45.c b/sound/soc/codecs/cs35l45.c
-index 7822626d3693..86daa2574388 100644
---- a/sound/soc/codecs/cs35l45.c
-+++ b/sound/soc/codecs/cs35l45.c
-@@ -667,7 +667,7 @@ int cs35l45_probe(struct cs35l45_private *cs35l45)
- 
- 	return ret;
- }
--EXPORT_SYMBOL_GPL(cs35l45_probe);
-+EXPORT_SYMBOL_NS_GPL(cs35l45_probe, SND_SOC_CS35L45);
- 
- int cs35l45_remove(struct cs35l45_private *cs35l45)
- {
-@@ -680,14 +680,15 @@ int cs35l45_remove(struct cs35l45_private *cs35l45)
- 
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(cs35l45_remove);
-+EXPORT_SYMBOL_NS_GPL(cs35l45_remove, SND_SOC_CS35L45);
- 
- const struct dev_pm_ops cs35l45_pm_ops = {
- 	SET_RUNTIME_PM_OPS(cs35l45_runtime_suspend, cs35l45_runtime_resume, NULL)
- };
--EXPORT_SYMBOL_GPL(cs35l45_pm_ops);
-+EXPORT_SYMBOL_NS_GPL(cs35l45_pm_ops, SND_SOC_CS35L45);
- 
- MODULE_DESCRIPTION("ASoC CS35L45 driver");
- MODULE_AUTHOR("James Schulman, Cirrus Logic Inc, <james.schulman@cirrus.com>");
- MODULE_AUTHOR("Richard Fitzgerald <rf@opensource.cirrus.com>");
- MODULE_LICENSE("Dual BSD/GPL");
-+MODULE_IMPORT_NS(SND_SOC_CS35L45_TABLES);
+> > What does documentation tell about it?
+>
+> Documentation (devicetree/bindings/gpio/gpio.txt line 152) tells that
+> "This property indicates the start and size of the GPIOs that can't be used."
+> And the example (line 178) at the same file shows that the second element of
+> a tuple is the count: "gpio-reserved-ranges = <0 4>, <12 2>;"
+>
+> > Does it need to be fixed?
+
+This question was related to the documentation contents.
+
+> I think so, because the current implementation doesn't reserve some GPIO ranges.
+> For example, we have 20 GPIOs and we want to reserve GPIOs from 14 to 19.
+> In this case the "reserved-ranges" looks like "<14 6>" but the
+> "of_gpiochip_init_valid_mask" drops the range and this is not expected behavior.
+
+On top of that, it would be nice to be sure that at least all current
+in-kernel users (meaning all DTS provided so far by the kernel) do
+interpret it as start,size. Otherwise this will be an (unacceptable)
+ABI change and hence documentation would need to be fixed with
+variable names in the code.
+
 -- 
-2.30.2
-
+With Best Regards,
+Andy Shevchenko
