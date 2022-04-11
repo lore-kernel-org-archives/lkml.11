@@ -2,197 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44EA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:39:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CECBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:42:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345163AbiDKLlV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34610 "EHLO
+        id S245741AbiDKLoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 07:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343496AbiDKLlT (ORCPT
+        with ESMTP id S237230AbiDKLoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:41:19 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2086.outbound.protection.outlook.com [40.107.92.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADB8188
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:39:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cfalJG0WMTKsfGyXhg6uplgr5n5j5v7HrSJixNsMx4Yg3AmBTna9h67pQJO/eXkP71wrhMaGvSa4Q5thgBovtK8xLhxn4HpbrPXT7gn8twuxkU4SseJJMRt/NcGkRvDAqU+ixUU4b0S5ZS3z8iACwy75zmD07oMHL96j9u/Q5fRn77khFNj2uW8PhQzk9dszZ7ugYsA35CCzzCHQKj3QjJrjIJ6MyecnL8GPU03zbiG8RQDWu7RgHPMtv9EZZIanOdX1CdtcEdP1tapTSYL9mvOLBLYdFefPTFmYVd8yvVw76xFf2cKfdWIqWvTDLOiZAOi2m3bBdZOQI+dkezJh/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tp73sOTOUFztA4heLMym96GYu+3DLmyT78gAw49ACPw=;
- b=RSeWnysbeyBtVz8MPPwtjZZ6NyTejxRGzojlamjqLprtqUmMo+7Wcaef+KJURst0ERAIJCnGj9wNuEOJwDYSUoGZlCN2MAkoz6phkoqirH2/z7OXN8q3AATVKJF3FOHk/xJ9E8BRbTiowxwpUNcBRwTiaSof2gX60qB8iH3fXUZbb+hF3X6atBNo37RxUe1mVrpkXvWRzKC1dn+OpndDsGUhFG1bMRkRfdKPmX333lA3l5UuxrHVqXwIY2eXYlTTYooC+KQpNqYWTs01/4Evxhgeve3gO5icAOAObiUyBxVhwQeeOTyVnu78iQXlpvQyVqnPpRWjNsNjk8HYqSqmWg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tp73sOTOUFztA4heLMym96GYu+3DLmyT78gAw49ACPw=;
- b=bLs3bh36bKr455SM5JEeXkKthEmAkk5fFPPOxJiYVl440UqlBcVDat+re2LQ0Rbtniu6qDtmqv52gAaMQPoEls8NIIu5Wp20Ag/fa4L+RdX2kjH37tC4W9ECdMRAh6jwuD1FTIAdmOAKFwfAgenjFNHarOeQFoemHDagn7b82Mk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from SA0PR12MB4526.namprd12.prod.outlook.com (2603:10b6:806:98::23)
- by DM6PR12MB3564.namprd12.prod.outlook.com (2603:10b6:5:11d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
- 2022 11:39:02 +0000
-Received: from SA0PR12MB4526.namprd12.prod.outlook.com
- ([fe80::7ceb:a37c:cd60:9d5f]) by SA0PR12MB4526.namprd12.prod.outlook.com
- ([fe80::7ceb:a37c:cd60:9d5f%7]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
- 11:39:02 +0000
-Message-ID: <192375d0-85ac-ced0-43d6-e5ea4e3c0fae@amd.com>
-Date:   Mon, 11 Apr 2022 06:38:57 -0500
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCHv2] drm/amdgpu: disable ASPM on Intel AlderLake based
- systems
-Content-Language: en-US
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     airlied@linux.ie, dri-devel@lists.freedesktop.org,
-        xinhui.pan@amd.com, linux-kernel@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org, mario.limonciello@amd.com,
-        daniel@ffwll.ch, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Dell.Client.Kernel@dell.com
-References: <20220408190502.4103670-1-richard.gong@amd.com>
- <44354d78-b340-fbc4-fd6c-060d7ad3404e@molgen.mpg.de>
- <45ea5705-71d6-4008-f094-1aa902e5cc41@amd.com>
- <0d0a3f0f-f021-ccc2-a80a-f789cb53a47b@molgen.mpg.de>
-From:   "Gong, Richard" <richard.gong@amd.com>
-In-Reply-To: <0d0a3f0f-f021-ccc2-a80a-f789cb53a47b@molgen.mpg.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: CH0PR04CA0093.namprd04.prod.outlook.com
- (2603:10b6:610:75::8) To SA0PR12MB4526.namprd12.prod.outlook.com
- (2603:10b6:806:98::23)
+        Mon, 11 Apr 2022 07:44:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73EE345786
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:42:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649677322;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7DSSalCMKrMQL2sXsyII9bpO/a5YUZjo+XSNzqSdDyY=;
+        b=jCZX2NZRsmAXeubbYkq5jDn5jL3bY/0N/j1xI/ASz3h//lW8+0dA5R3Kfgl6Ht7dppM41q
+        yX9KyOX+xMsLlrU//JTyyt8l3zYszJWBj2KwimlXxmcLYqrveTCYfIwXgLskJhuXWJVH4m
+        xJTFZpnvU6PSfDp83u7rI1UQM2aChWI=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-508-3s2iJBHaPSGB0kTYufBa5g-1; Mon, 11 Apr 2022 07:42:01 -0400
+X-MC-Unique: 3s2iJBHaPSGB0kTYufBa5g-1
+Received: by mail-wm1-f71.google.com with SMTP id c62-20020a1c3541000000b0038ec265155fso143391wma.6
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:42:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=7DSSalCMKrMQL2sXsyII9bpO/a5YUZjo+XSNzqSdDyY=;
+        b=su+YAJ78RiUogwOawgUlhY0PkJGyFK/gVa1x4OwLiEUvUdOc4n3J6k0Eu9uwkP32Zs
+         vOwpy6CCrksNULXLRhXVghpH54rSr0nKknAHP3H4LVym3O6bqM3zkH2R+dqMidepi27V
+         8pj7wSPf3kgl3Q1hGtE+i2PbW6Zsbl4Oz8biMvTtsuexQU4dna2NFSH2Bm9zji8cxwMO
+         TSFrrhTzJBoNL7o8sCnCkvwIMaP5VBS4xVbkJ4DZSLStN8y/+do1rCfS9XMXjZq5Hr66
+         UR9TFALL6Kp6A02SqMDtgo9NK3sTiI2o9NyZAcOqXCvwkZheykkdNGGCjGJyFjFsoaMg
+         0eXA==
+X-Gm-Message-State: AOAM5304L9N3xtZVuV4UAa20OMY1UHIqKiJKlEdMujT7tc86iKq2DK5K
+        kRTwxKjdhYIIOo3j0/89GEyWH9Lxjwe/V2Oa2E0sWpUCFQ1nz7nND/NdZ8+FxVIyYyveHZ0Le+u
+        7yc6VNLf4bPz5cMOm7Gwag4sS
+X-Received: by 2002:a05:600c:21d1:b0:381:4fed:159a with SMTP id x17-20020a05600c21d100b003814fed159amr29032270wmj.143.1649677320230;
+        Mon, 11 Apr 2022 04:42:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxFyEjzxc0zgKdZrTtMLN/bRitSPe9MQ9NWFxCCokqVwO5R2gJOb3FmGMihPyQbA4IMTuZ1Xg==
+X-Received: by 2002:a05:600c:21d1:b0:381:4fed:159a with SMTP id x17-20020a05600c21d100b003814fed159amr29032250wmj.143.1649677320010;
+        Mon, 11 Apr 2022 04:42:00 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c703:aa00:2064:15bd:222d:3a02? (p200300cbc703aa00206415bd222d3a02.dip0.t-ipconnect.de. [2003:cb:c703:aa00:2064:15bd:222d:3a02])
+        by smtp.gmail.com with ESMTPSA id k23-20020a05600c1c9700b0038e71072376sm17268187wms.19.2022.04.11.04.41.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 04:41:59 -0700 (PDT)
+Message-ID: <a190e78f-d833-780b-6fbe-b129c2505deb@redhat.com>
+Date:   Mon, 11 Apr 2022 13:41:58 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 67ffcb58-2705-49d7-f5b5-08da1bafe00a
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3564:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3564446AEB399A99CF12402D95EA9@DM6PR12MB3564.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 23E3FvOahz0r1MqH22MoHdIZKVifOwbRjaXTOw07j6GRGGg9b/Y290OscxiycIoEQSUkjUFTPAnDgO5HbLLVyDQ8VermY4r9mjV8JbWrkcerWLB856YW8Sa5/tHBtpbf7KKorO/6+K8Hcf9SwhWVpPoku5lzSYKLKQXNoCnvzFZQWZ/fi2BwRRMY1gyjVWKpeb/L9E5nimz9Q72jSqB7ZKHpjRej4SiJ1FrIZFUFjgSeaacjYKMaHjb09BgNeGwfoNcLaQbg9DfV3IOyUtUXmdZuTSsSmsjpWHgXicvg0lqoOvhNO0mxhrcqGi4NUP+Z+b8rVjbzB1aDe/y3kDtOGBiEqhw8moI9fdw/b/NZZX1N+Z6dRE3qKQRcTEFFxW7FwZjEByrKZe15W1pqokswabnpDSjOvWhgQcANYFC57XBzVIxNbkJbuGfaHd8Zh2u2QEtB1lHEOAmMFUp+Zg6fXQg5HRg2djHIjsBJU0VwBuFXe3Ff0IuY/6I144VA4nP1h0N0gtUBb/Me6zwX4rhTiPa8Be5wf52azm0ZONKebu6VpxzdpwYMX2icbx2Th3SNeMc0KLjHV6j4EBDIDXi5GDENtGY9Ic5XcDVDHC5EZ09+q1mx20z7ZZw5CYP0E2xFfL5zEmzdALpBeL2lZwbOGSyWafkBufVP0o2kubZ6j3ucAizXV5mN0sdhy3d5PadWHP4uSLQu64T7AymNTj92JFxVwHWRw3nGR4j41G/HzvBqFhqYdrxlL+gV5ihmLte+
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA0PR12MB4526.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(31696002)(86362001)(36756003)(8676002)(38100700002)(316002)(66556008)(66946007)(66476007)(6486002)(966005)(4326008)(6916009)(8936002)(5660300002)(2906002)(26005)(186003)(83380400001)(508600001)(6666004)(2616005)(31686004)(53546011)(6512007)(6506007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZlNoU3A1VGRWc3NzeDBkOGdDenJmaUNOZUZ4YWR6L3ZuQnB6a3dIbE1RdEJn?=
- =?utf-8?B?OE5qM0pNeFZiQXdHenBRRjFmSHlVU0tSVi9yTUdCeThmTFRyZTF1KzdsM2pG?=
- =?utf-8?B?cjI4RVZuMDFQeEM5MUJ2bUQ1T0xjczB0OUdXVUs3eUoxelIrbGxxeFd6c1o4?=
- =?utf-8?B?a0haUWw2ZlIxTnhPVmNRWFlCMHVNYkZvR01mUE9RTDhUSklrQ2d5czkvOFRr?=
- =?utf-8?B?T09aSGhCaEZ4OU5BVFo2T3ZrUUtlVEZWNE8rMTBrUno2Nlh6cTYzQlBFU0Ey?=
- =?utf-8?B?bmF2dXB5OUV6ZnlKOW9JcVpoUHBUYnhTbGJ3TUhFWVU5c05yYTVkUVF6OCtW?=
- =?utf-8?B?Kzd3UjJxbXArV0lacWtCVlkySkhldXdNNStaV1VnS3E5M2JjdmhKNjVJVWx0?=
- =?utf-8?B?V0FVRE9JU1FEZWVMTTJCdlU5WHJuR3dONEdyR25OUFE0V2FVNDdpOFBIcm82?=
- =?utf-8?B?T1BRTm00VnV5eU9LdmIvMG9PRjRrVU9ZcEZRNStnQWtOVUFJL3RZbmNjRjJU?=
- =?utf-8?B?NnlTUkhQWTJOUHlrSFFUT21tR0xIMjVWZjVJZER3RlFBeXppSVJoMnI3NHc0?=
- =?utf-8?B?V01PMHNmVVNZNXE4WGQ1TS9VM29HNmVubG9zZ0tiWE1LOFNDaVp5ZmF2L3kz?=
- =?utf-8?B?SVVYY2duOUk3NGJCSnRBZWcwTjc1aXY4c0dqMStUbjFxQzlFd1o0WW9UaWFp?=
- =?utf-8?B?VWlhUE01NzZBejg0cHlhSnQ3eEJLVWVjWDIxcXR4V3JFVzViRnVSQ1g5UXFC?=
- =?utf-8?B?WnBuN0tEKzNRSDVHeDJzTERGS0VnMFlSOEM4YXpFNy82QlVOOHgweTNMZ0Nj?=
- =?utf-8?B?c1ZtSjRXdVVXUjBlU1FlNUp0ZjZMTmY5MW91eXhUenFRVlRWUlIyRlVkVkhM?=
- =?utf-8?B?OXhzMFpUZE12Rlh1QUpBOHFRMjVLbmFoNVJaN0tORGhXYThUZ0NlbysyZmlr?=
- =?utf-8?B?QnNVTzBzZ0tTaFExaVptUWNSVlBnZmRQRGk0cnlDbm5vRXhYT2wvMTQrNGYy?=
- =?utf-8?B?WWtCMm9oNzV3d0NyZDJQSENNTGtWN0tNL2Zqa2NxcEFsYXFDZVFobVBZTWhG?=
- =?utf-8?B?Yk12SVYyd3MzMGd0NzJyaGhCQnRPN3VGckJ6SHk5TWN4MkpnaUEzbjY5TDhC?=
- =?utf-8?B?SHVTVVlJb1JRUURkUWc4cEhTaG1zWTg3RitjRkVSQ3NrS05KMkZKM3NpMmpW?=
- =?utf-8?B?d3h0SEFYalR0NVltOGJGUU9TdllsMkVmcWtWYTltazY2Z3dmaWZJN1Z1ejZm?=
- =?utf-8?B?RlJTMFNaekduMVczKzFBN1pIQVRqdGY5M250V2Z3K202Q2IrZ0Z0MHdWTXJw?=
- =?utf-8?B?VjF5Z1Y5YW1sU2oyRE0rdUtHV3NSOXVTT0Jrbmx4ekE2MDdIR0ZmdGdpajg5?=
- =?utf-8?B?VTU2aXJiMmlJak5ZeVRVazBOUTlMd0VmMWFvYzlqdE03eU1YanlBT1Rocm5N?=
- =?utf-8?B?NTRtTmlkOEQwMjRzNEFuZnZZYm1XWDRKVzcwUHRmYVNPd2xDMXdvQVR3REp5?=
- =?utf-8?B?TTl6TXhJSndLMjNTS2FCMWpTcnRLMXREWG9kc3V4NUFhdHdVMFEwb1ArK1dY?=
- =?utf-8?B?QmpWSXlqaklUNmpFS0VUTjhWQzRSTDNibUFCV0JlbGNTWnBZQzZFdVlWSS9S?=
- =?utf-8?B?dVAxeEpUaXFDSWlIWWJPZHcyaU4yWFF0SWpUdXNyNE41WkJ6M1llN2U0Y0sr?=
- =?utf-8?B?dFMxQ1JXZGhyUlZOWC9KdmVUTCtLRDRjY0JqTEI5U2xFNmx2T0xTMGRoTGVv?=
- =?utf-8?B?ekVsMzduR3B2VWNDdHFSRi8rdmw3SGV0djIxT3NTWHJxdHdMTFplQTg3d1Fv?=
- =?utf-8?B?elJkbkhnQVRpWnJOR1RVTTBSRnFualVhNENCNnFzUnp1Z3hQUkRXMzFVQnhq?=
- =?utf-8?B?SVRheW9oalVmU2tsL3pJaDVyOUF6bnppMmN4ejJNZytHcUpKRnFhcDRsSWgv?=
- =?utf-8?B?M3U1bDVpMjhQOENibVA4dlIzdmJndTc5YWc0bzhJRFpHanU3ZjdxSy9TY3Zm?=
- =?utf-8?B?bndHOWREZ2xYL0VRUEZsV250QnFEbldIcmJGZjJrcmJzcS81WURPOUdMcXdV?=
- =?utf-8?B?VVFDSkQyR2pmSHhudDR1Q0VoNW03RFVQZ3RtSnVwSElua2ZjbktJNmhDVGxD?=
- =?utf-8?B?bU96d3pCTTI5V3lSaGJ2K1hoU1VEaTJ6bGZzb0lpMlpWQUhVeHdUUjdOcFlU?=
- =?utf-8?B?b1BUVkxPS2pkRGYva2EzejNlT09IWEp0Snk5bityWEFIZmduQ1Uwa2NKenJZ?=
- =?utf-8?B?R2w5V1lHRGxwcDR6N0pVM0x2SkptUzhIN1BKdys5ZzZOb200YVl1eElkbWFQ?=
- =?utf-8?B?ZkpDeHFya2x1SG1wMDA3ZkNWWEJLRDlnUDdBNXlLZU5tQ3ZtVGFCdz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67ffcb58-2705-49d7-f5b5-08da1bafe00a
-X-MS-Exchange-CrossTenant-AuthSource: SA0PR12MB4526.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 11:39:02.0123
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: h6SEFeWnoayCTkcvbruQRq1uXBwoOqcedRrqrNMhNXtjaorNOHDiwiYUn6CIbwh8+JQIB9TL3F03S91VDCPA5A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3564
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
+Cc:     mike.kravetz@oracle.com, shy828301@gmail.com, willy@infradead.org,
+        ying.huang@intel.com, ziy@nvidia.com, minchan@kernel.org,
+        apopple@nvidia.com, dave.hansen@linux.intel.com,
+        o451686892@gmail.com, jhubbard@nvidia.com, peterx@redhat.com,
+        naoya.horiguchi@nec.com, mhocko@suse.com, riel@redhat.com,
+        osalvador@suse.de, sfr@canb.auug.org.au, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220409073846.22286-1-linmiaohe@huawei.com>
+ <20220409073846.22286-5-linmiaohe@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH 4/4] mm/migration: fix potential pte_unmap on an not
+ mapped pte
+In-Reply-To: <20220409073846.22286-5-linmiaohe@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+On 09.04.22 09:38, Miaohe Lin wrote:
+> __migration_entry_wait and migration_entry_wait_on_locked assume pte is
+> always mapped from caller. But this is not the case when it's called from
+> migration_entry_wait_huge and follow_huge_pmd. And a parameter unmap to
+> indicate whether pte needs to be unmapped to fix this issue.
 
-On 4/11/2022 2:41 AM, Paul Menzel wrote:
-> [Cc: +<Dell.Client.Kernel@dell.com>]
->
-> Dear Richard,
->
->
-> Am 11.04.22 um 02:27 schrieb Gong, Richard:
->
->> On 4/8/2022 7:19 PM, Paul Menzel wrote:
->
->>> Am 08.04.22 um 21:05 schrieb Richard Gong:
->>>> Active State Power Management (ASPM) feature is enabled since 
->>>> kernel 5.14.
->>>> There are some AMD GFX cards (such as WX3200 and RX640) that cannot be
->>>> used with Intel AlderLake based systems to enable ASPM. Using these 
->>>> GFX
->>>
->>> Alder Lake
->> will correct in the next version.
->>>
->>>> cards as video/display output, Intel Alder Lake based systems will 
->>>> hang
->>>> during suspend/resume.
->>>
->>> Please reflow for 75 characters per line.
->>>
->>> Also please mention the exact system you had problems with (also 
->>> firmware versions).
->>>
->>>>
->>>> Add extra check to disable ASPM on Intel AlderLake based systems.
->>>
->>> Is that a problem with Intel Alder Lake or the Dell system? 
->>> Shouldn’t ASPM just be disabled for the problematic cards for the 
->>> Dell system. You write newer cards worked fine.
->>
->> There is a problem with Dell system (Dell Precision DT workstation), 
->> which is based on Intel Alder Lake.
->>
->> ASPM works just fine on these GPU's. It's more of an issue with 
->> whether the underlying platform supports ASPM or not.
->
-> At least you didn’t document what the real issue is,
+Hm.
 
-You can refer to bug tag from the comment messages.
 
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
+migration_entry_wait_on_locked documents
 
-Regards,
+"@ptep: mapped pte pointer. Will return with the ptep unmapped. Only
+required for pte entries, pass NULL for pmd entries."
 
-Richard
+Setting ptep implies that we have a *mapped pte* pointer that requires unmap.
+If some code sets that although that's not guaranteed, that calling code
+is wrong and needs to be fixed to not pass a ptep.
 
-> that ASPM does not work. With current information (some GPU graphics 
-> card with the the Dell system and others don’t), it could be the GPU, 
-> the Dell system (firmware, …), a problem with Alder Lake SOC, or 
-> another bug. I hope you are in contact with Dell to analyze it, so 
-> ASPM can be enabled again.
->
-> […]
->
->
-> Kind regards,
->
-> Paul
+
+hugetlbfs never requires a map/unmap. I really don't see we there is need to
+adjust migration_entry_wait_on_locked(): just don't pass a ptep as documented.
+
+What's really nasty here is that hugetlbfs actually mostly works on PMD/PUD,
+but we call it PTEs. One corner case might be CONT PTEs, but they are also
+accessed without a map+unmap.
+
+Regarding __migration_entry_wait(), I think we should just stop using it for
+hugetlbfs and have a proper hugetlbfs variant that calls
+hugetlb_migration_entry_wait(ptep == NULL), and knows that although we're
+handling ptes, we're usually not actually holding ptes in our hands
+that need a map+unmap.
+
+
+Something like (including some cleanups mm parameter):
+
+
+diff --git a/include/linux/swapops.h b/include/linux/swapops.h
+index 32d517a28969..898c407ad8f7 100644
+--- a/include/linux/swapops.h
++++ b/include/linux/swapops.h
+@@ -234,8 +234,8 @@ extern void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
+ 					spinlock_t *ptl);
+ extern void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+ 					unsigned long address);
+-extern void migration_entry_wait_huge(struct vm_area_struct *vma,
+-		struct mm_struct *mm, pte_t *pte);
++extern void __migration_entry_wait_huge(pte_t *ptep, spinlock_t *ptl);
++extern void migration_entry_wait_huge(struct vm_area_struct *vma, pte_t *pte);
+ #else
+ static inline swp_entry_t make_readable_migration_entry(pgoff_t offset)
+ {
+@@ -261,8 +261,9 @@ static inline void __migration_entry_wait(struct mm_struct *mm, pte_t *ptep,
+ 					spinlock_t *ptl) { }
+ static inline void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+ 					 unsigned long address) { }
++static inline void __migration_entry_wait_huge(pte_t *ptep, spinlock_t *ptl) { }
+ static inline void migration_entry_wait_huge(struct vm_area_struct *vma,
+-		struct mm_struct *mm, pte_t *pte) { }
++					     pte_t *pte) { }
+ static inline int is_writable_migration_entry(swp_entry_t entry)
+ {
+ 	return 0;
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 48740e6c3476..2b38eaaa2e60 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -5622,7 +5622,7 @@ vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+ 		 */
+ 		entry = huge_ptep_get(ptep);
+ 		if (unlikely(is_hugetlb_entry_migration(entry))) {
+-			migration_entry_wait_huge(vma, mm, ptep);
++			migration_entry_wait_huge(vma, ptep);
+ 			return 0;
+ 		} else if (unlikely(is_hugetlb_entry_hwpoisoned(entry)))
+ 			return VM_FAULT_HWPOISON_LARGE |
+@@ -6770,7 +6770,7 @@ follow_huge_pmd(struct mm_struct *mm, unsigned long address,
+ 	} else {
+ 		if (is_hugetlb_entry_migration(pte)) {
+ 			spin_unlock(ptl);
+-			__migration_entry_wait(mm, (pte_t *)pmd, ptl);
++			__migration_entry_wait_huge((pte_t *)pmd, ptl);
+ 			goto retry;
+ 		}
+ 		/*
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 231907e89b93..84b685a235fe 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -315,11 +315,26 @@ void migration_entry_wait(struct mm_struct *mm, pmd_t *pmd,
+ 	__migration_entry_wait(mm, ptep, ptl);
+ }
+ 
++void __migration_entry_wait_huge(pte_t *ptep, spinlock_t *ptl)
++{
++	swp_entry_t entry;
++	pte_t pte;
++
++	spin_lock(ptl);
++	pte = huge_ptep_get(ptep);
++
++	if (unlikely(!is_hugetlb_entry_migration(pte)))
++		spin_unlock(ptl);
++	else
++		migration_entry_wait_on_locked(pte_to_swp_entry(pte), NULL, ptl);
++}
++
+ void migration_entry_wait_huge(struct vm_area_struct *vma,
+ 		struct mm_struct *mm, pte_t *pte)
+ {
+-	spinlock_t *ptl = huge_pte_lockptr(hstate_vma(vma), mm, pte);
+-	__migration_entry_wait(mm, pte, ptl);
++	spinlock_t *ptl = huge_pte_lockptr(hstate_vma(vma), vma->mm, pte);
++
++	__migration_entry_wait_huge(pte, ptl);
+ }
+ 
+ #ifdef CONFIG_ARCH_ENABLE_THP_MIGRATION
+
+-- 
+Thanks,
+
+David / dhildenb
+
