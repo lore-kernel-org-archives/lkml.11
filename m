@@ -2,97 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 695C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:51:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EED7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:51:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344196AbiDKLyB (ORCPT
+        id S1345927AbiDKLyI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45032 "EHLO
+        Mon, 11 Apr 2022 07:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232463AbiDKLx7 (ORCPT
+        with ESMTP id S1344103AbiDKLyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:53:59 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9F53150B
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:51:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649677905; x=1681213905;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+dgU86UwUCyAYn8649X0AQlN4MKbtuA/88ovTvxs994=;
-  b=PdGArVJzvcyKp0ypUDxpzW7KHAmfmWtZSEd/UWIRLt/BLPGGTtUD2c5S
-   78SBPeMN3+CJDUV+EdjN7yJQTrfG/Bedo2uc+inRCj3uA9WeTMKnP+4Xa
-   Mi9ns2gk3WBcro9GaSzlxxd2eaCvSKjEYf7HXeoTl+oKXxLVjYG+KZVDg
-   2VBAIAY0oINffuohzdD2sEqczffbP+3tEroNpIbtMKiCVuG9+qdD7KT05
-   2CNjWQYaBIJSxt9BRx0gKBZPlHPDgGwEDZEJGuOaumRNhULo01RvSQ8Ag
-   kL1a5jp+c+sN3hIn7opBA1asVF/kPu28uNr0oWCXx38tiQhi6s4yOp3JJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="260942918"
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="260942918"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:50:47 -0700
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="551106292"
-Received: from leichu-mobl1.ccr.corp.intel.com ([10.254.213.5])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:50:45 -0700
-Message-ID: <4b7923585e07b0238545ebb997af92eeadcdaf78.camel@intel.com>
-Subject: Re: [PATCH v2 1/9] mm/vmscan: add a comment about MADV_FREE pages
- check in folio_check_dirty_writeback
-From:   "ying.huang@intel.com" <ying.huang@intel.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     songmuchun@bytedance.com, hch@infradead.org, willy@infradead.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Date:   Mon, 11 Apr 2022 19:50:42 +0800
-In-Reply-To: <20220409093500.10329-2-linmiaohe@huawei.com>
-References: <20220409093500.10329-1-linmiaohe@huawei.com>
-         <20220409093500.10329-2-linmiaohe@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Mon, 11 Apr 2022 07:54:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D89F3150B;
+        Mon, 11 Apr 2022 04:51:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0145B812AA;
+        Mon, 11 Apr 2022 11:51:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66D95C385A4;
+        Mon, 11 Apr 2022 11:51:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649677904;
+        bh=BDikYPFUNZHxaMZPAkSUszg+oHpAijqAD/E62XoIl0o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QLMZ8mTLfEd7kHxsGPdf39EJZp5qcYYJkFKuUlGV4xl52d7eqOjkIRx7Ab2OJqAGA
+         73zSssV2zUvnGm8TCQMBY56zT3oShfL1hbJUNr3btLIFpNXGOItqZgc+0iKZxUd6OC
+         fsvdLSUb0xSipfr4kUwJQYHBMruAIKdclt4afvr27XsJEv16BFlDYwy1rNtz3uFxmM
+         4GLVd8av5v8N1RTmKzI/JNZMIwphosq4cfqeYiZgWi3Gq74AsFgoqW0WB77qrwzJDo
+         N5loo63BXh4RtDs4qvhMg+lJ12JHGQSxrb9OHpTfR0WrjX/Wt9AQn0fqiW073vpbOK
+         YuUBWrRmaRcKQ==
+Received: by pali.im (Postfix)
+        id 765DF807; Mon, 11 Apr 2022 13:51:41 +0200 (CEST)
+Date:   Mon, 11 Apr 2022 13:51:41 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH 3/3] tty: serial: use uart_port_tx_limit() helper
+Message-ID: <20220411115141.o2i3rlfcyzg6qlnz@pali>
+References: <20220411105405.9519-1-jslaby@suse.cz>
+ <20220411105405.9519-4-jslaby@suse.cz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220411105405.9519-4-jslaby@suse.cz>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-04-09 at 17:34 +0800, Miaohe Lin wrote:
-> The MADV_FREE pages check in folio_check_dirty_writeback is a bit hard to
-> follow. Add a comment to make the code clear.
+Hello!
+
+On Monday 11 April 2022 12:54:05 Jiri Slaby wrote:
+> uart_port_tx_limit() is a new helper to send characters to the device.
+> Use it in these drivers.
 > 
-> Suggested-by: Huang, Ying <ying.huang@intel.com>
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> It means we have to define two new uart hooks: tx_ready() and put_char()
+> to do the real job now.
+> 
+> And mux.c also needs to define tx_done(). But I'm not sure if the driver
+> really wants to wait for all the characters to dismiss from the HW fifo
+> at this code point. Hence I marked this as FIXME.
+> 
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: bcm-kernel-feedback-list@broadcom.com
+> Cc: "Pali Rohár" <pali@kernel.org>
+> Cc: Kevin Cernekee <cernekee@gmail.com>
+> Cc: Palmer Dabbelt <palmer@dabbelt.com>
+> Cc: Paul Walmsley <paul.walmsley@sifive.com>
+> Cc: Orson Zhai <orsonzhai@gmail.com>
+> Cc: Baolin Wang <baolin.wang7@gmail.com>
+> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
+> Cc: Patrice Chotard <patrice.chotard@foss.st.com>
+> Cc: linux-riscv@lists.infradead.org
 > ---
->  mm/vmscan.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/mm/vmscan.c b/mm/vmscan.c
-> index c77d5052f230..4a76be47bed1 100644
-> --- a/mm/vmscan.c
-> +++ b/mm/vmscan.c
-> @@ -1436,6 +1436,9 @@ static void folio_check_dirty_writeback(struct folio
-> *folio,
->         /*
->          * Anonymous pages are not handled by flushers and must be written
->          * from reclaim context. Do not stall reclaim based on them
-> +        * MADV_FREE anonymous pages are put into inactive file list too.
-> +        * They could be mistakenly treated as file lru. So further anon
-> +        * test is needed.
->          */
+>  drivers/tty/serial/21285.c           | 40 +++++++--------------
+>  drivers/tty/serial/altera_jtaguart.c | 43 ++++++----------------
+>  drivers/tty/serial/amba-pl010.c      | 40 ++++-----------------
+>  drivers/tty/serial/apbuart.c         | 37 ++++---------------
+>  drivers/tty/serial/bcm63xx_uart.c    | 48 ++++++-------------------
+>  drivers/tty/serial/mux.c             | 48 ++++++++-----------------
+>  drivers/tty/serial/mvebu-uart.c      | 47 +++++++-----------------
+>  drivers/tty/serial/omap-serial.c     | 53 +++++++---------------------
+>  drivers/tty/serial/pxa.c             | 43 +++++-----------------
+>  drivers/tty/serial/rp2.c             | 36 ++++++-------------
+>  drivers/tty/serial/serial_txx9.c     | 40 ++++-----------------
+>  drivers/tty/serial/sifive.c          | 48 ++++---------------------
+>  drivers/tty/serial/sprd_serial.c     | 41 ++++-----------------
+>  drivers/tty/serial/st-asc.c          | 51 ++++----------------------
+>  drivers/tty/serial/vr41xx_siu.c      | 42 ++++------------------
+>  15 files changed, 143 insertions(+), 514 deletions(-)
+...
+> diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
+> index 0429c2a54290..3d07ab9eb15e 100644
+> --- a/drivers/tty/serial/mvebu-uart.c
+> +++ b/drivers/tty/serial/mvebu-uart.c
+> @@ -194,6 +194,16 @@ static unsigned int mvebu_uart_tx_empty(struct uart_port *port)
+>  	return (st & STAT_TX_EMP) ? TIOCSER_TEMT : 0;
+>  }
+>  
+> +static bool mvebu_uart_tx_ready(struct uart_port *port)
+> +{
+> +	return !(readl(port->membase + UART_STAT) & STAT_TX_FIFO_FUL);
 
-How about something as follows,
+mvebu-uart.c driver in its tx_ready function should probably use
+STAT_TX_RDY macro (access to STAT_TX_RDY bit in register).
 
-	/*
-         * Anonymous pages (including MADV_FREE ones) are not handled
-by	 * flushers and must be written from reclaim context. Do not stall
-	 * reclaim based on them
-	 */.
+Documentation for UART1 (STD) about this bit says:
 
-Best Regards,
-Huang, Ying
+This bit is set when TRANS_HLD (our UART_TSH macro) is empty and ready
+for the CPU to write the next character to be transmitted out. The TSR
+can still shift out the previous character when this bit is set. This
+bit is cleared when the CPU writes to TRANS_HLD.
 
->         if (!folio_is_file_lru(folio) ||
->             (folio_test_anon(folio) && !folio_test_swapbacked(folio))) {
+For UART2 (EXT) there is just information: UART Tx Ready for 1 Byte
+Write. UART2 (EXT) has also bit (bit 5) which indicates that CPU can
+load 4 bytes, but seems that this is not used by mvebu-uart.c driver.
 
+Macro STAT_TX_RDY() is polled also in wait_for_xmitr() function.
 
+> +}
+> +
+> +static void mvebu_uart_put_char(struct uart_port *port, unsigned char ch)
+> +{
+> +	writel(ch, port->membase + UART_TSH(port));
+> +}
+> +
+>  static unsigned int mvebu_uart_get_mctrl(struct uart_port *port)
+>  {
+>  	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
+> @@ -324,40 +334,7 @@ static void mvebu_uart_rx_chars(struct uart_port *port, unsigned int status)
+>  
+>  static void mvebu_uart_tx_chars(struct uart_port *port, unsigned int status)
+>  {
+> -	struct circ_buf *xmit = &port->state->xmit;
+> -	unsigned int count;
+> -	unsigned int st;
+> -
+> -	if (port->x_char) {
+> -		writel(port->x_char, port->membase + UART_TSH(port));
+> -		port->icount.tx++;
+> -		port->x_char = 0;
+> -		return;
+> -	}
+> -
+> -	if (uart_circ_empty(xmit) || uart_tx_stopped(port)) {
+> -		mvebu_uart_stop_tx(port);
+> -		return;
+> -	}
+> -
+> -	for (count = 0; count < port->fifosize; count++) {
+> -		writel(xmit->buf[xmit->tail], port->membase + UART_TSH(port));
+> -		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+> -		port->icount.tx++;
+> -
+> -		if (uart_circ_empty(xmit))
+> -			break;
+> -
+> -		st = readl(port->membase + UART_STAT);
+> -		if (st & STAT_TX_FIFO_FUL)
+> -			break;
+
+I see that driver here currently use STAT_TX_FIFO_FUL for checking if it
+can do next iteration and write next character to UART_TSH.
+
+Documentation about this bit says that ... the FIFO is full, which is
+indicated by TX_FIFO_FULL. TX_READY status is set as long as the FIFO is
+not full. The Tx ready status is cleared when in THR FIFO is full.
+
+In case driver does not use 4 byte loads for UART2, TX_READY and
+!TX_FIFO_FULL are probably same...
+
+Anyway, mvebu_uart_tx_chars() is called from the mvebu_uart_tx_isr()
+interrupt handler which is registered for CTRL_RX_RDY_INT interrupt
+which should signal when TX_READY is set.
+
+> -	}
+> -
+> -	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> -		uart_write_wakeup(port);
+> -
+> -	if (uart_circ_empty(xmit))
+> -		mvebu_uart_stop_tx(port);
+> +	uart_port_tx_limit(port, port->fifosize);
+>  }
+>  
+>  static irqreturn_t mvebu_uart_isr(int irq, void *dev_id)
+> @@ -654,6 +631,8 @@ static void mvebu_uart_put_poll_char(struct uart_port *port, unsigned char c)
+>  
+>  static const struct uart_ops mvebu_uart_ops = {
+>  	.tx_empty	= mvebu_uart_tx_empty,
+> +	.tx_ready	= mvebu_uart_tx_ready,
+> +	.put_char	= mvebu_uart_put_char,
+>  	.set_mctrl	= mvebu_uart_set_mctrl,
+>  	.get_mctrl	= mvebu_uart_get_mctrl,
+>  	.stop_tx	= mvebu_uart_stop_tx,
