@@ -2,550 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F83C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BECB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346615AbiDKNlZ (ORCPT
+        id S1346628AbiDKNnU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 09:41:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36548 "EHLO
+        Mon, 11 Apr 2022 09:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346603AbiDKNlS (ORCPT
+        with ESMTP id S1346590AbiDKNnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 09:41:18 -0400
+        Mon, 11 Apr 2022 09:43:18 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F073F22B0E
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:39:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C933B2ADC
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:41:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649684339;
+        s=mimecast20190719; t=1649684462;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZN2biAUnTrTodc0JZhas+iGpcRCK3gpzadZQYbc1pBk=;
-        b=FddHh3zUJtmv1BoZQxlgH2aD+LQBv4zHppdN/lnHQlxiJ0hSfqToobV/DyzubDBCfzfwJd
-        PxapzJ4DUVItNnCVauO0DQyBzaxyr6/TV3JOtPiFFjuFWAeekl/M9/iRULpxPVDA2A0KSc
-        EEP/7GqgdgHI1RKz5nZsk/dAGZj0EPM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=UL4VC3xNL12j2w1KHO9njXE09mphZepoMWPC1sq8ni4=;
+        b=R28XdzyLQb0Hu7ThX6XHGdHWgASsBM70z4IfrPnFPCGTD+Iefo5+y7EHM4/Q9Vb528nR0X
+        uVYiWCh/bQSAi2d/Ek5apeja7nGdIUAyi311hLFK50u0Fg2iPU6LE8mt496YhNndizBZa+
+        YjUeoSg1BufOzxKYviXycsvt2/YLTIg=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-388-0L_x8Q6WPne-TfycMu9Vhg-1; Mon, 11 Apr 2022 09:38:56 -0400
-X-MC-Unique: 0L_x8Q6WPne-TfycMu9Vhg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7031D18A65AA;
-        Mon, 11 Apr 2022 13:38:55 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.37.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A6991C15D40;
-        Mon, 11 Apr 2022 13:38:52 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220406075612.60298-8-jefflexu@linux.alibaba.com>
-References: <20220406075612.60298-8-jefflexu@linux.alibaba.com> <20220406075612.60298-1-jefflexu@linux.alibaba.com>
-To:     Jeffle Xu <jefflexu@linux.alibaba.com>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org,
-        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
-        fannaihao@baidu.com
-Subject: Re: [PATCH v8 07/20] cachefiles: document on-demand read mode
+ us-mta-512-35vXXLyvO8mygSP-cSAN0A-1; Mon, 11 Apr 2022 09:41:01 -0400
+X-MC-Unique: 35vXXLyvO8mygSP-cSAN0A-1
+Received: by mail-ed1-f69.google.com with SMTP id eg29-20020a056402289d00b0041d6db0fbc9so3778433edb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 06:41:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=UL4VC3xNL12j2w1KHO9njXE09mphZepoMWPC1sq8ni4=;
+        b=WsTZ+pMM6Rgz4jQ8Dey9VWCJ0DnKJpV3qkbvqmPe0FrOcYj2+rGhhw385bMj6WQ1H6
+         DtVIMq2rMoCtSol09pueNrzNYMa1+zN8AkwvrTkt2SoZ0+8h18c1AjE/n3FG5/rcRnCI
+         vxnzRKDIzormmiiawK+xgx84cRV1ffwI/K/QwLqCGwrZdzpBRWk+SPuEgkei8jw5oyNJ
+         PEqXHPjwAdHsPrX3jB+e6jg8krE6B4nAAQZnXKrbCQGi2bYB26RnuYP3YW3q90eQS/Iu
+         zCsBCUNjyDgL5oJdE4L8iyZM9MAKoCLMjuWs62Nhoj7gmvYGLPtI1E+r3di47m8sEbGQ
+         u43Q==
+X-Gm-Message-State: AOAM530tKiKQBYv/P+u+XCmzNG7Enp8aWr1+KaiD79P03BUA8M0TMxSj
+        qkWyNGjsUlaccPaouMsyuoOCUZ/spUa/1jqRNnfWCtNdRek8GiNIuRudNRhNOAwCumLk4QDTy2F
+        /C7Ox50Qn6/zkXFNHh0LYicRY
+X-Received: by 2002:a17:906:58c9:b0:6e8:6bbb:3b7 with SMTP id e9-20020a17090658c900b006e86bbb03b7mr10796301ejs.252.1649684460336;
+        Mon, 11 Apr 2022 06:41:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwxOwY7W61+4P6gNnoRNEF1DoqwVewwh4An9ai4g2HZYPzMQeQ5RAmTsYwwQwPRa1V7B86d9Q==
+X-Received: by 2002:a17:906:58c9:b0:6e8:6bbb:3b7 with SMTP id e9-20020a17090658c900b006e86bbb03b7mr10796272ejs.252.1649684460064;
+        Mon, 11 Apr 2022 06:41:00 -0700 (PDT)
+Received: from [10.40.98.142] ([78.108.130.194])
+        by smtp.gmail.com with ESMTPSA id u19-20020a17090617d300b006cea86ca384sm11897209eje.40.2022.04.11.06.40.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 06:40:59 -0700 (PDT)
+Message-ID: <e25f5599-10f5-90b7-227a-01616f722cca@redhat.com>
+Date:   Mon, 11 Apr 2022 15:40:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1094291.1649684331.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Mon, 11 Apr 2022 14:38:51 +0100
-Message-ID: <1094292.1649684331@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH RESEND v6] platform: x86: Add ChromeOS ACPI device driver
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Len Brown <lenb@kernel.org>, Mark Gross <markgross@kernel.org>,
+        Collabora Kernel ML <kernel@collabora.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Benson Leung <bleung@chromium.org>,
+        Dmitry Torokhov <dtor@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>, vbendeb@chromium.org,
+        Andy Shevchenko <andy@infradead.org>,
+        Ayman Bagabas <ayman.bagabas@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        =?UTF-8?Q?Bla=c5=be_Hrastnik?= <blaz@mxxn.io>,
+        Darren Hart <dvhart@infradead.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jeremy Soller <jeremy@system76.com>,
+        Mattias Jacobsson <2pi@mok.nu>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Rajat Jain <rajatja@google.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Enric Balletbo i Serra <eballetbo@gmail.com>
+References: <Yk7aeAcKIBrTupcq@debian-BULLSEYE-live-builder-AMD64>
+ <708fb1ec-4e57-7a1d-b0a0-a3a10b3cacf3@redhat.com>
+ <CAJZ5v0g2UDOR3mYsdqnPcpYgmecY706YQcTKTWMRtezkK0sfaQ@mail.gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <CAJZ5v0g2UDOR3mYsdqnPcpYgmecY706YQcTKTWMRtezkK0sfaQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
+Hi,
+
+On 4/11/22 15:37, Rafael J. Wysocki wrote:
+> On Mon, Apr 11, 2022 at 3:26 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>>
+>> Hi,
+>>
+>> On 4/7/22 14:35, Muhammad Usama Anjum wrote:
+>>> From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+>>>
+>>> The x86 Chromebooks have ChromeOS ACPI device. This driver attaches to
+>>> the ChromeOS ACPI device and exports the values reported by ACPI in a
+>>> sysfs directory. This data isn't present in ACPI tables when read
+>>> through ACPI tools, hence a driver is needed to do it. The driver gets
+>>> data from firmware using ACPI component of the kernel. The ACPI values
+>>> are presented in string form (numbers as decimal values) or binary
+>>> blobs, and can be accessed as the contents of the appropriate read only
+>>> files in the standard ACPI device's sysfs directory tree. This data is
+>>> consumed by the ChromeOS user space.
+>>>
+>>> Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>>> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+>>> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+>>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>>
+>>
+>> Thanks overall this looks pretty good to me.  The only remark which
+>> I have is that I would like to see the Kconfig symbol changed
+>> from CONFIG_ACPI_CHROMEOS to CONFIG_CHROMEOS_ACPI to match the
+>> filename.
+>>
+>> CONFIG_ACPI_CHROMEOS to me suggests that this is an ACPI subsystem
+>> Kconfig option which, with the driver living under
+>> drivers/platform/x86 it is not.
+>>
+>> There is no need to send a new version for this, if you agree
+>> with the change let me know and I can change this while merging
+>> the driver.
+>>
+>> Rafael, before I merge this do you have any (more) remarks
+>> about this driver?
+> 
+> I'm not sure why it has to be an acpi_driver.
+> 
+> I think that the generic enumeration code creates a platform device
+> for this ACPI device object, so why can't it bind to that platform
+> device?
+> 
+> Generally speaking, IMV we should avoid adding drivers binding
+> directly to ACPI device objects, because that is confusing (it is kind
+> of like binding directly to an of_node) and it should be entirely
+> avoidable.
+
+Ah I missed that, good point.
+
+Muhammad can you give turning this into a platform driver a try please?
+
+Note this will change all the sysfs attribute paths from:
+
+/sys/bus/acpi/devices/GGL0001:00/...
+
+to:
+
+/sys/bus/platform/devices/GGL0001:00/...
+
+and the ABI documentation should be updated accordingly.
+
+Regards,
+
+Hans
 
-> + (*) On-demand Read.
-> +
 
-Unnecessary extra blank line.
-
-Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
-
-> +
-> +
-> +On-demand Read
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +When working in original mode, cachefiles mainly serves as a local cach=
-e for
-> +remote networking fs, while in on-demand read mode, cachefiles can boos=
-t the
-> +scenario where on-demand read semantics is needed, e.g. container image
-> +distribution.
-> +
-> +The essential difference between these two modes is that, in original m=
-ode,
-> +when cache miss, netfs itself will fetch data from remote, and then wri=
-te the
-> +fetched data into cache file. While in on-demand read mode, a user daem=
-on is
-> +responsible for fetching data and then writing to the cache file.
-> +
-> +``CONFIG_CACHEFILES_ONDEMAND`` shall be enabled to support on-demand re=
-ad mode.
-
-You're missing a few articles there.  How about:
-
-"""
-When working in its original mode, cachefiles mainly serves as a local cac=
-he
-for a remote networking fs - while in on-demand read mode, cachefiles can =
-boost
-the scenario where on-demand read semantics are needed, e.g. container ima=
-ge
-distribution.
-
-The essential difference between these two modes is that, in original mode=
-,
-when a cache miss occurs, the netfs will fetch the data from the remote se=
-rver
-and then write it to the cache file.  With on-demand read mode, however,
-fetching and the data and writing it into the cache is delegated to a user
-daemon.
-
-``CONFIG_CACHEFILES_ONDEMAND`` shall be enabled to support on-demand read =
-mode.
-"""
-
-"should be enabled".
-
-Also, two spaces after a full stop please (but not after the dot in a
-contraction, e.g. "e.g.").
-
-> +The on-demand read mode relies on a simple protocol used for communicat=
-ion
-> +between kernel and user daemon. The model is like::
-
-"The protocol can be modelled as"?
-
-> +The cachefiles kernel module will send requests to
-
-the
-
-> user daemon when needed.
-> +
-
-the
-
-> User daemon needs to poll on the devnode ('/dev/cachefiles') to check if
-> +there's
-
-a
-
-> pending request to be processed.  A POLLIN event will be returned
-> +when there's
-
-a
-
-> pending request.
-
-> +Then user daemon needs to read
-
-"The user daemon [than] reads "
-
-> the devnode to fetch one
-
-one -> a
-
-> request and process it
-> +accordingly. It is worth nothing
-
-nothing -> noting
-
-> that each read only gets one request. When
-> +finished processing the request,
-
-the
-
-> user daemon needs to write the reply to the
-> +devnode.
-
-> +Each request is started with a message header like::
-
-"is started with" -> "starts with".
-"like" -> "of the form".
-
-> +	* ``id`` is a unique ID identifying this request among all pending
-> +	  requests.
-
-What's the scope of the uniqueness of "id"?  Is it just unique to a partic=
-ular
-cachefiles cache?
-
-> +	* ``len`` identifies the whole length of this request, including the
-> +	  header and following type specific payload.
-
-type-specific.
-
-> +An optional parameter is added to "bind" command::
-
-to the "bind" command.
-
-> +When
-
-the
-
-> "bind" command takes
-
-takes -> is given
-
-> without argument, it defaults to the original mode.
-> +When
-
-the
-
-> "bind" command takes
-
-is given
-
-> with
-
-the
-
-> "ondemand" argument, i.e. "bind ondemand",
-> +on-demand read mode will be enabled.
-
-> +OPEN Request
-
-The
-
-> +------------
-> +
-> +When
-
-the
-
-> netfs opens a cache file for the first time, a request with
-
-the
-
-> +CACHEFILES_OP_OPEN opcode, a.k.a
-
-an
-
-> OPEN request will be sent to
-
-the
-
-> user daemon. The
-> +payload format is like::
-
-format is like -> of the form
-
-> +
-> +	struct cachefiles_open {
-> +		__u32 volume_key_size;
-> +		__u32 cookie_key_size;
-> +		__u32 fd;
-> +		__u32 flags;
-> +		__u8  data[];
-> +	};
-> +
-
-"where:"
-
-> +	* ``data`` contains
-
-the
-
-> volume_key and cookie_key in sequence.
-
-Might be better to say "contains the volume_key followed directly by the
-cookie_key.  The volume key is a NUL-terminated string; cookie_key is bina=
-ry
-data.".
-
-> +
-> +	* ``volume_key_size`` identifies
-
-identifies -> indicates/supplies
-
-> the size of
-
-the
-
-> volume key of the cache
-> +	  file, in bytes. volume_key is of string format, with a suffix '\0'.
-> +
-> +	* ``cookie_key_size`` identifies the size of cookie key of the cache
-> +	  file, in bytes. cookie_key is of binary format, which is netfs
-> +	  specific.
-
-"... indicates the size of the cookie key in bytes."
-
-> +
-> +	* ``fd`` identifies the
-
-the -> an
-
-> anonymous fd of
-
-of -> referring to
-
-> the cache file, with
-
-with -> through
-
-> which user
-> +	  daemon can perform write/llseek file operations on the cache file.
-> +
-> +
-> +
-
-The
-
-> OPEN request contains
-
-a
-
-> (volume_key, cookie_key, anon_fd) triple for
-
-triplet for the
-
-I would probably also use {...} rather than (...).
-
-> corresponding
-> +cache file. With this triple,
-
-triplet, the
-
-> user daemon could
-
-could -> can
-
-> fetch and write data into the
-> +cache file in the background, even when kernel has not triggered the
-
-the -> a
-
-> cache miss
-> +yet.
-
-The
-
-> User daemon is able to distinguish the requested cache file with the giv=
-en
-> +(volume_key, cookie_key), and write the fetched data into
-
-the
-
-> cache file with
-
-with -> using
-
-> the
-> +given anon_fd.
-> +
-> +After recording the (volume_key, cookie_key, anon_fd) triple,
-
-triplet, the
-
-> user daemon shall
-
-shall -> should
-
-> +reply with
-
-reply with -> complete the request by issuing a
-
-> "copen" (complete open) command::
-> +
-> +	copen <id>,<cache_size>
-> +
-> +	* ``id`` is exactly the id field of the previous OPEN request.
-> +
-> +	* When >=3D 0, ``cache_size`` identifies the size of the cache file;
-> +	  when < 0, ``cache_size`` identifies the error code ecountered by the
-> +	  user daemon.
-
-identifies -> indicates
-ecountered -> encountered
-
-> +CLOSE Request
-
-The
-
-> +-------------
-> +When
-
-a
-
-> cookie withdrawed,
-
-withdrawed -> withdrawn
-
-> a request with
-
-a
-
-> CACHEFILES_OP_CLOSE opcode, a.k.a CLOSE
-> +request,
-
-Maybe phrase as "... a close request (opcode CACHEFILES_OP_CLOSE),
-
-> will be sent to user daemon. It will notify
-
-the
-
-> user daemon to close the
-> +attached anon_fd. The payload format is like::
-
-like -> of the form
-
-> +
-> +	struct cachefiles_close {
-> +		__u32 fd;
-> +	};
-> +
-
-"where:"
-
-> +	* ``fd`` identifies the anon_fd to be closed, which is exactly the sam=
-e
-
-"... which should be the same as that provided to the OPEN request".
-
-Is it possible for userspace to move the fd around with dup() or whatever?
-
-> +	  with that in OPEN request.
-> +
-> +
-> +READ Request
-
-The
-
-> +------------
-> +
-> +When on-demand read mode is turned on, and
-
-a
-
-> cache miss encountered,
-
-the
-
-> kernel will
-> +send a request with CACHEFILES_OP_READ opcode, a.k.a READ request,
-
-"send a READ request (opcode CACHEFILES_OP_READ)"
-
-> to
-
-the
-
-> user
-> +daemon. It will notify
-
-It will notify -> This will ask/tell
-
-> user daemon to fetch data in the requested file range.
-> +The payload format is like::
-
-format is like -> is of the form
-
-> +
-> +	struct cachefiles_read {
-> +		__u64 off;
-> +		__u64 len;
-> +		__u32 fd;
-> +	};
-> +
-> +	* ``off`` identifies the starting offset of the requested file range.
-
-identifies -> indicates
-
-> +
-> +	* ``len`` identifies the length of the requested file range.
-> +
-
-identifies -> indicates (you could alternatively say "specified")
-
-> +	* ``fd`` identifies the anonymous fd of the requested cache file. It i=
-s
-> +	  guaranteed that it shall be the same with
-
-"same with" -> "same as"
-
-Since the kernel cannot make such a guarantee, I think you may need to res=
-tate
-this as something like "Userspace must present the same fd as was given in=
- the
-previous OPEN request".
-
-> the fd field in the previous
-> +	  OPEN request.
-> +
-> +When receiving one
-
-one -> a
-
-> READ request,
-
-the
-
-> user daemon needs to fetch
-
-the
-
-> data of the
-> +requested file range, and then write the fetched data
-
-, and then write the fetched data -> and write it
-
-> into cache file
-
-cache file -> cache
-
-> with
-
-using
-
-> the
-> +given anonymous fd.
-
-+ to indicate the destination.
-
-> +
-> +When finished
-
-When finished -> To finish
-
-> processing the READ request,
-
-the
-
-> user daemon needs to reply with
-
-the
-
-> +CACHEFILES_IOC_CREAD ioctl on the corresponding anon_fd::
-> +
-> +	ioctl(fd, CACHEFILES_IOC_CREAD, id);
-> +
-> +	* ``fd`` is exactly the fd field of the previous READ request.
-
-Does that have to be true?  What if userspace moves it somewhere else?
-
-> +
-> +	* ``id`` is exactly the id field of the previous READ request.
-
-is exactly the -> must match the
-
-David
 
