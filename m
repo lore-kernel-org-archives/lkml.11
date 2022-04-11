@@ -2,93 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A93E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FD9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:55:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344831AbiDKJ4X (ORCPT
+        id S1344826AbiDKJ5o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56146 "EHLO
+        Mon, 11 Apr 2022 05:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344830AbiDKJ4E (ORCPT
+        with ESMTP id S1344885AbiDKJ5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:56:04 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8A141984
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:53:22 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id u18so6967091eda.3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:53:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BhgOZc39QKLmHBUXm+e0SJMr8Scf5KRVK5HQ4X3qYVQ=;
-        b=tym9lWOtYSwH5ja36H+aSBzsd4Zzlw+8bl+saKNIgT9jpYXxzk09aE8/UeczM5EV3t
-         sz4LuUG5d6DHMI+oeiFA7eHdHFW1X0Iub4nqE1PohL45yjM+57h9rUxvbDALcdJF0Jrz
-         4D4c63UVn0hsZ0UkDJA34woQHeRokh7rvXrIioOfzWnvWMV2RclezWSpxPkbPyIq8lf7
-         nqdw4j3hzx6l6G/R2VTjSvFtZKSQjp55mkV9GmXZTMjJW2WkfxpWeBDGwzbTcGYeXugl
-         sAFoAAAnWwvRW/PP0piUfG9jGJcIRg3ww/eaRZziHpqdTTAfJw+89CsUQL60d4qcKhY9
-         Z6Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BhgOZc39QKLmHBUXm+e0SJMr8Scf5KRVK5HQ4X3qYVQ=;
-        b=bBRgRyL1um5JJJTcTW7lPD35FyI1L1SJDobFWOUPqkz3NRMHg4Ojz4bFbICZoKE6Hj
-         fYHJmOA/J7cxjUT7nrzDK5Xm8nfZlrLk+hefDmupfEhnm3zcjVMAY0OI8lIHisx0NGPk
-         bsiTwjnu7nTeCpPGgYhiSN0UBcqmen5IEzk898VCebBugT/kUCwHXBgyyisXEjkGzNIh
-         +6ac/lzFNPYVLISOAP6ypjSAc+JGPF5qIjZPwzjyCvTva4hOTmtytFqssAUDFeMqa4yp
-         wBqkL7GNIu57sPxxN4cvXtSD6M+duzdomB875TmyaKKUnFegTiNNT/33zKeE46AkAW+R
-         9L5A==
-X-Gm-Message-State: AOAM532CKuAdKPuggJ6+CH603EJ06TZXIcDwQuHkl/UaIG5/uz8nm6Oy
-        UjLzb3hn6C2rWeOhXDx74Jei7XhKe2izjTKH
-X-Google-Smtp-Source: ABdhPJx7uRDXMK69U1uBZ1ynJKqKcsr7pdHRVAJK9n+g1AwmPpC5evjXzVAkkb2NTi1lXqJ4T6V7AA==
-X-Received: by 2002:a50:9fa2:0:b0:41c:d9c2:6b19 with SMTP id c31-20020a509fa2000000b0041cd9c26b19mr31934885edf.393.1649670800738;
-        Mon, 11 Apr 2022 02:53:20 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id gq5-20020a170906e24500b006e87644f2f7sm2457774ejb.38.2022.04.11.02.53.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 02:53:20 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] dt-bindings: power: renesas,rcar-sysc: correct typo in path
-Date:   Mon, 11 Apr 2022 11:53:17 +0200
-Message-Id: <20220411095317.221317-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 11 Apr 2022 05:57:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88301263F;
+        Mon, 11 Apr 2022 02:55:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54DB3612A0;
+        Mon, 11 Apr 2022 09:55:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72B09C385A4;
+        Mon, 11 Apr 2022 09:55:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649670922;
+        bh=+RklqxRhzlfdfvUIrHk5oEeLX7rsicASkcyAD7DL274=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZmrH4u2zGqXgrrS8YbjgR8pyrc26ioLlxlVFAwGOnEoDxn19O2AP2KQtFKWbArXAN
+         unLc+mJGerT+uXwvHXlAO7sGuQZ6HPVVcdS6J5REiDu1Y3QCuV3QdGDgXtdliBKJLj
+         JWt/fKhpFDpoDUdIp1fh2Up+yyi0NLlYkNMKHCZ+Rq4FR5yyVLDheKB+FVktMtTJCG
+         vDcJzv7UsUe0v93JT2gFGgBG5dwTau6ilzfiIWBwK586/CDT/iX7a5c+Up52DA+WFQ
+         8YtH+yZ1WV2ehBuVcfdYfbdvIzYuPbN+ERizUA/WMdRAEnc9JwgsYPGgu1Cs7v9D4j
+         gZ3Xh5HoZ2X8w==
+From:   Roger Quadros <rogerq@kernel.org>
+To:     krzk@kernel.org
+Cc:     miquel.raynal@bootlin.com, tony@atomide.com, vigneshr@ti.com,
+        kishon@ti.com, nm@ti.com, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Roger Quadros <rogerq@kernel.org>
+Subject: [PATCH v3 0/2] memory: omap-gpmc: Allow module build
+Date:   Mon, 11 Apr 2022 12:55:14 +0300
+Message-Id: <20220411095516.24754-1-rogerq@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix typo '.' -> '/' in the path to headers.
+Hi,
 
-Fixes: 981a34054038 ("dt-bindings: power: renesas,rcar-sysc: drop useless consumer example")
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+These patches allow OMAP_GPMC config to be visible in menuconfig
+and buildable as a module.
 
-diff --git a/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml b/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
-index bd9608c83c3f..76c417990f12 100644
---- a/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
-+++ b/Documentation/devicetree/bindings/power/renesas,rcar-sysc.yaml
-@@ -14,7 +14,7 @@ description: |
-   The R-Car (RZ/G) System Controller provides power management for the CPU
-   cores and various coprocessors.
-   The power domain IDs for consumers are defined in header files::
--  include.dt-bindings/power/r8*-sysc.h
-+  include/dt-bindings/power/r8*-sysc.h
- 
- properties:
-   compatible:
+Changelog:
+v3:
+- Remove not required MODULE_ALIAS
+- Mention in commit message why we need to remove of_match_node() call
+
+v2:
+- Allow building as a module
+
+Roger Quadros (2):
+  memory: omap-gpmc: Make OMAP_GPMC config visible and selectable
+  memory: omap-gpmc: Allow building as a module
+
+ drivers/memory/Kconfig     |  4 ++--
+ drivers/memory/omap-gpmc.c | 43 ++++++++++++++++++++------------------
+ 2 files changed, 25 insertions(+), 22 deletions(-)
+
 -- 
-2.32.0
+2.17.1
 
