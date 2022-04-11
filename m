@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D1CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DED6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345874AbiDKLGO (ORCPT
+        id S1345426AbiDKLGV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59446 "EHLO
+        Mon, 11 Apr 2022 07:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345868AbiDKLGI (ORCPT
+        with ESMTP id S1345864AbiDKLGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:06:08 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E9F44761
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:03:54 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id bv19so7048628ejb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:03:54 -0700 (PDT)
+        Mon, 11 Apr 2022 07:06:07 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C90FE44A27
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:03:52 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id k23so30050065ejd.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:03:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mLZ9QFNTOo+e+4B3gFn1AL6Uth7YED0Q2wsCtU1CceQ=;
-        b=apM2h1ms5c+iI/NSYW3yyfH81cEjMRDAnDYfuDCWwG+CkJbHHtJ9BlBeGWDh5ZQb6E
-         1UNZVL+969e58TvdEsH6dwakbcbEXRfAmSdbIUQ+wZOAgassczKahWx5K4wTfYcig1ZV
-         QW6N1HrY0/Pg639vIev2F7sB4N1aSBCgkf1wSSzcQdbkX96/KLwYMgSY+pXa37/Mjd9O
-         7or+dmYzX0vrgIooU5m0z+eKFcCpB3pDEBCQZ52gN7TtfvZpyUuQ3oTgl54+fgM/puKv
-         PyDBsRR3rD/UVUs96QkjqCZHWvSz2ED0aI6n0hcL1Is6BQN45aGr7p8ED70GsmBVNLrR
-         GwCA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=imus7EzT9HGnez1gAdtPtsmomcq86LoFHSJJI+tG7Mk=;
+        b=QaCJS/Z+EMVo1NmDsVDWdCM9aawilr7BqjiFFApSOdjMKEfAbII2GdTMLz6rKfJjmH
+         n6DwYwftr6FkV6fTBpHohU0DODVKMyGhJe5xnXP+BKX8CaXQb9055+VmldOhGrP5gzQU
+         Q7FJucFp4LJTHWVVa4dXJgPy5Dst66sKH6sWSKJHJZk8au2spXOo30Fcet49KpL8pLeY
+         yqqHroPRNIELYJcxBul6KVFRvKOeTkkesY5QixKRrNqdninh6DfJzmPOF6V/4LyCaVr6
+         U1rfMIm8Eq4SzpIveAjMLYxfVCyh/WzG56e1FBxNecrkOrrasbBTDaibKWwK7vTaBgrn
+         T2lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mLZ9QFNTOo+e+4B3gFn1AL6Uth7YED0Q2wsCtU1CceQ=;
-        b=qUdyNHjDu9kfceV3au+aPYdH8s1UYe3bZObzXFzLo5h2t9w+IbYrT8G++CS6wm9HE6
-         XGsboTbZPTdsQsUDR6Os6wUXOkGdeJKgL/ttn1OXQ2kkYW+JhrDGhNw/1xSYQOuKIPfT
-         szppjMzsUnPFk/FmT2piKCQjV8F+KWpbM9z9laFvlB5bc7yq61qQB6kwjvJ3wjs0bRto
-         tJf/CwzvnC/bDH7w2nTmF+Du0sdfZjGkvuC7/OSfPenVQFRZTho2CSIlGwcj7H4qvrMv
-         X3bBodzzpf7r8881MGKrZaBynwu5rgSukfV8Pxz01s0N9SZob+19UV0WXFG59c/YnoTk
-         rkJw==
-X-Gm-Message-State: AOAM532l77UxwfRBYb5LChd4RX927phpoMf5RaHJ1mOPposnSiSbR8ik
-        QJoHs5KaG4b6bcr7aWS8ZXM9DA==
-X-Google-Smtp-Source: ABdhPJzOFbGMPqgKmzqRB7SXP1KsdleWb89TPTqiFSR+KZ7uozFAHd0F3yhLU9CzFeARCrylPJtzUw==
-X-Received: by 2002:a17:906:3144:b0:6ce:de5d:5e3b with SMTP id e4-20020a170906314400b006cede5d5e3bmr29463811eje.689.1649675033144;
-        Mon, 11 Apr 2022 04:03:53 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=imus7EzT9HGnez1gAdtPtsmomcq86LoFHSJJI+tG7Mk=;
+        b=icr6GslG5rfDZYg4DQzoron49LtD1dR2782ysyntIU4Z1dbagivWT+MCr6YfdDDSBn
+         M+iv/GMO4bY5yV2Ga/1lKl6w+Z3pYH8p1QiMn7wP+tDMxdXYh6WoicOKpnVaFh24Qpqd
+         bQD0048bMn7bp4tPyi+zUfbjHNHvt+bJ0d9w/94MtdskCHSV5qBdVSE+J4/56uuspdiD
+         hSR+9wZzwEQycu1pVmO0wccne4ZLa3ykeIgYE7LkVe0+Yi9g0kJdz49VozeJhEA8jqlw
+         hOmdN9kdeaFKj8giACv6y5ywJnj8VpKcEt/wzMnPxkoXHtmh7XY8aJfEbSuNwEbHGALO
+         IA6A==
+X-Gm-Message-State: AOAM53143Do/iLYb1N84S+pCk7tuBUGRtKdf0phibyy6gHpLwDjuyUqL
+        URgXpsT3h/SgMtpRxVGp4xcPqSi2D9ZZDvNP
+X-Google-Smtp-Source: ABdhPJyg1vExJqwz1s5jjjQQ4vRNJlEuplRSomxUrnaA33LcKhQ5AwbmBjRVRX8DW6+wQVxR1BbsbQ==
+X-Received: by 2002:a17:907:1b1f:b0:6e4:b202:db68 with SMTP id mp31-20020a1709071b1f00b006e4b202db68mr30196747ejc.294.1649675031268;
+        Mon, 11 Apr 2022 04:03:51 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id j12-20020a50e0cc000000b0041cd813ac01sm11074074edl.28.2022.04.11.04.03.52
+        by smtp.gmail.com with ESMTPSA id j12-20020a50e0cc000000b0041cd813ac01sm11074074edl.28.2022.04.11.04.03.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 04:03:52 -0700 (PDT)
+        Mon, 11 Apr 2022 04:03:50 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,37 +59,37 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RFC PATCH 2/2] regulator: dt-bindings: qcom,rpmh: document vdd-l7-bob-supply on PMR735A
-Date:   Mon, 11 Apr 2022 13:03:44 +0200
-Message-Id: <20220411110344.231903-3-krzysztof.kozlowski@linaro.org>
+Subject: [RFC PATCH 0/2] regulator: dt-bindings: qcom,rpmh: minor cleanups and extend supplies
+Date:   Mon, 11 Apr 2022 13:03:42 +0200
+Message-Id: <20220411110344.231903-1-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220411110344.231903-1-krzysztof.kozlowski@linaro.org>
-References: <20220411110344.231903-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PMR735A comes with vdd-l7-bob-supply supply.
+Hi,
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../bindings/regulator/qcom,rpmh-regulator-supplies.yaml         | 1 +
- 1 file changed, 1 insertion(+)
+Extend the RPMH regulator bindings with minor fixes and adding narrow supply
+matching.
 
-diff --git a/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator-supplies.yaml b/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator-supplies.yaml
-index 26baa6f2edc7..df50fcefb3e5 100644
---- a/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator-supplies.yaml
-+++ b/Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator-supplies.yaml
-@@ -223,6 +223,7 @@ allOf:
-         vdd-l3-supply: true
-         vdd-l4-supply: true
-         vdd-l5-l6-supply: true
-+        vdd-l7-bob-supply: true
- 
-   - if:
-       properties:
+The latter actually does not work yet, because dtschema does not like it.  I
+need some advise with that.  This is the reason why it's an RFC.
+
+Best regards,
+Krzysztof
+
+Krzysztof Kozlowski (2):
+  regulator: dt-bindings: qcom,rpmh: document supplies per variant
+  regulator: dt-bindings: qcom,rpmh: document vdd-l7-bob-supply on
+    PMR735A
+
+ .../qcom,rpmh-regulator-supplies.yaml         | 262 ++++++++++++++++++
+ .../regulator/qcom,rpmh-regulator.yaml        |  19 +-
+ 2 files changed, 267 insertions(+), 14 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/regulator/qcom,rpmh-regulator-supplies.yaml
+
 -- 
 2.32.0
 
