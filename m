@@ -2,111 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB24C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1274C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:00:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347587AbiDKPBp (ORCPT
+        id S1347595AbiDKPDG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43116 "EHLO
+        Mon, 11 Apr 2022 11:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347580AbiDKPBl (ORCPT
+        with ESMTP id S1347630AbiDKPCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:01:41 -0400
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6A221E06;
-        Mon, 11 Apr 2022 07:59:27 -0700 (PDT)
-Received: by mail-qk1-f172.google.com with SMTP id b33so10825289qkp.13;
-        Mon, 11 Apr 2022 07:59:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yUq/l2eFC4o7PuogV4g6ysQ8qWlSny+TA+UhI++mHfU=;
-        b=E7Oydqafp1Ye+7rSEheT3Vk8E2s7P4xfcCMvF6l3vwuMytFrvtmifUva0C35539irM
-         Fict1Oe6lNXZgadclQFLxjSj1afwS2WC+vkUeL5yUaAbZsN/TIS3s4k2jREpb/U0wILm
-         Y2iZSGBzR9UPZos/Q5DcoWv+CEnZgObdhUhT5TOpJt2YYEOkUFd71h7E24UqOW8sFAqq
-         qxNoFl9Ga3vYzC6Fyh5Ig8Cl5F1qm3pdzmR38hIQgbalWXSDZ2CzmuFUu6KdGnlU03tc
-         Iw6gIjLj4hiEVXudZvTq8ymnVhQqXr4ZQn1+yKqoH//FFVFoCad/gHpH0YrGzveo4GIW
-         k9NA==
-X-Gm-Message-State: AOAM533eA1ubrQ5IYBKfA8ETn+LDp5FWcN+CluMV1nKUpjuEYiHDwNej
-        CELkE+tk9H1B8yvxwhLUSOkcqHeeGYkI4g==
-X-Google-Smtp-Source: ABdhPJwXXobat+RR5zXQ9srHJH7D9PuWKPe705W1XxLfwdseXxqXdskAH/9lU59ySFm5QRhp9togFQ==
-X-Received: by 2002:a05:620a:a57:b0:69c:2bc2:6579 with SMTP id j23-20020a05620a0a5700b0069c2bc26579mr1916343qka.455.1649689165887;
-        Mon, 11 Apr 2022 07:59:25 -0700 (PDT)
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
-        by smtp.gmail.com with ESMTPSA id g4-20020ac87d04000000b002e06b4674a1sm25478505qtb.61.2022.04.11.07.59.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 07:59:25 -0700 (PDT)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-2db2add4516so168862767b3.1;
-        Mon, 11 Apr 2022 07:59:25 -0700 (PDT)
-X-Received: by 2002:a81:3d81:0:b0:2eb:8069:5132 with SMTP id
- k123-20020a813d81000000b002eb80695132mr26323646ywa.438.1649689164877; Mon, 11
- Apr 2022 07:59:24 -0700 (PDT)
+        Mon, 11 Apr 2022 11:02:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D092422299;
+        Mon, 11 Apr 2022 08:00:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6091761530;
+        Mon, 11 Apr 2022 15:00:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD324C385A4;
+        Mon, 11 Apr 2022 15:00:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649689225;
+        bh=WQgiPWw15vZto8Oz4YQkJk3Gl2iuHt80f6Y58X7n7co=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=WlLeKH9ng0yCZvpA3Et0fAqBe5kAgqcQwXe7UKuqut42rDdVgVCfcNjlqzjgYHei+
+         C20cmatbGojQapZUjpDeFOEijhnpcHNSMZnQOxZc8jehKDi/gp+eXd+t2B6t9re9he
+         ZcC2XiAVUFQridhcvTxShgjHRERKHyOMRxc0U97XHF2E/QC5+qMeJjx2YcMP4VoFb6
+         uhNIsaVL7rLa48QHVtmMksDGttg4kwySmeVQs5YpDw2mWwQmD6zULx4fJpDt08W6Zu
+         MABLvJTzOtS8ImU/jlYohoqlUZk+WIzu4eq/k6lM8z9dcgj3wc0N0i2zTZw/GJjKwD
+         R0vdXURSU5aGw==
+Date:   Mon, 11 Apr 2022 17:00:22 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Josh Kilmer <srjek2@gmail.com>
+cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: Re: [PATCH] hid: asus: ROG NKey: Ignore portion of 0x5a report
+In-Reply-To: <CAMXW6=97T1tzT=FSyzZN6jBAKgzUDOjqRoH-FMAPLHk1gsD=mA@mail.gmail.com>
+Message-ID: <nycvar.YFH.7.76.2204111658520.30217@cbobk.fhfr.pm>
+References: <CAMXW6=97T1tzT=FSyzZN6jBAKgzUDOjqRoH-FMAPLHk1gsD=mA@mail.gmail.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-References: <20220408122636.505737-1-valentin.caron@foss.st.com> <20220408122636.505737-4-valentin.caron@foss.st.com>
-In-Reply-To: <20220408122636.505737-4-valentin.caron@foss.st.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 11 Apr 2022 16:59:13 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWD8fxeqPUaT_CwnYdq02aaTsnQM_G-YyOGWooS5epCeQ@mail.gmail.com>
-Message-ID: <CAMuHMdWD8fxeqPUaT_CwnYdq02aaTsnQM_G-YyOGWooS5epCeQ@mail.gmail.com>
-Subject: Re: [PATCH V2 3/3] serial: stm32: add earlycon support
-To:     Valentin Caron <valentin.caron@foss.st.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Erwan Le Ray <erwan.leray@foss.st.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Valentin,
+On Mon, 14 Mar 2022, Josh Kilmer wrote:
 
-On Fri, Apr 8, 2022 at 3:14 PM Valentin Caron
-<valentin.caron@foss.st.com> wrote:
-> Add early console support in stm32 uart driver.
->
-> Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
-> Signed-off-by: Valentin Caron <valentin.caron@foss.st.com>
+> On an Asus G513QY, of the 5 bytes in a 0x5a report, only the first byte
+> is a meaningful keycode. The other bytes are zeroed out or hold garbage
+> from the last packet sent to the keyboard.
+> 
+> This patch fixes up the report descriptor for this event so that the
+> general hid code will only process 1 byte for keycodes, avoiding
+> spurious key events and unmapped Asus vendor usagepage code warnings.
+> 
+> Signed-off-by: Josh Kilmer <srjek2@gmail.com>
 
-Thanks for your patch!
+Hi Josh,
 
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1264,6 +1264,12 @@
->                         address must be provided, and the serial port must
->                         already be setup and configured.
->
-> +               stm32,<addr>
-> +                       Use early console provided by ST Microelectronics
-> +                       serial driver for STM32 SoCs. A valid base address
-> +                       must be provided, and the serial port must already
-> +                       be setup and configured.
+thanks for the patch.
 
-Why do you need this parameter?
+A couple remarks:
 
-Given this driver uses DT, can't it figure out the serial port address
-from chosen/stdout-path?
+> ---
+>  drivers/hid/hid-asus.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
+> index 08c9a9a60ae4..73fb9fc0701c 100644
+> --- a/drivers/hid/hid-asus.c
+> +++ b/drivers/hid/hid-asus.c
+> @@ -1212,6 +1212,14 @@ static __u8 *asus_report_fixup(struct
+> hid_device *hdev, __u8 *rdesc,
+>         rdesc = new_rdesc;
+>     }
+> 
+> +   if (drvdata->quirks & QUIRK_ROG_NKEY_KEYBOARD &&
+> +           *rsize == 331 && rdesc[190] == 0x85 && rdesc[191] == 0x5a &&
+> +           rdesc[204] == 0x95 && rdesc[205] == 0x05) {
+> +       hid_info(hdev, "Fixing up Asus N-KEY keyb report descriptor\n");
+> +       // On the 0x5A input report, change count from 5 to 1
+> +       rdesc[205] = 0x01;
+> +   }
 
-+OF_EARLYCON_DECLARE(stm32, "st,stm32h7-uart", early_stm32_h7_serial_setup);
-+OF_EARLYCON_DECLARE(stm32, "st,stm32f7-uart", early_stm32_f7_serial_setup);
-+OF_EARLYCON_DECLARE(stm32, "st,stm32-uart", early_stm32_f4_serial_setup);
+- your mail client whitespace-damaged the patch, so it can't be applied; 
+  could you please fix that and resend?
 
-Gr{oetje,eeting}s,
+- the comment above is (a) using non-standard kernel commenting style, and 
+  quite honestly (b) seems a little bit superfluous
 
-                        Geert
+Could you please fix that up and resend?
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Thanks,
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+Jiri Kosina
+SUSE Labs
+
