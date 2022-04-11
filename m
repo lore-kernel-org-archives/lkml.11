@@ -2,96 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D35C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F2C4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:56:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240078AbiDKJ63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:58:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38142 "EHLO
+        id S1344903AbiDKJ65 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 05:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235994AbiDKJ6X (ORCPT
+        with ESMTP id S238758AbiDKJ6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:58:23 -0400
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0193941334;
-        Mon, 11 Apr 2022 02:56:10 -0700 (PDT)
-Received: by mail-qt1-f182.google.com with SMTP id o18so8632424qtk.7;
-        Mon, 11 Apr 2022 02:56:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O7QWdPF9wFARWEpFmkRlF+ejhR6FxhyYYT3eOvfg8Zw=;
-        b=5psvg43/DtqxhYLFwn3pBE+VGGcfDQw69MAipfDrQWasKB0xv6PzQLKEjdEktPN0U2
-         7uhzdyDefKxJGMH4huOf4tl8f2fNKewDWIdFsdnoO81DGmMdSZb39S6RNAB2vUS2i3G3
-         +yXwQ7y1p7TjYZjorUcgyl3whLHpfZ9WMXMX9qLxAzYcEA8+XP0xUR9k3kL1aWO6OqNh
-         GnEr31p5EVKTjDOYBT5GyX4Jwr5+V+H46/sUgdRw5s8vYuCqKW9LM7Lcx7mWQUCBbKSr
-         U+JILX+1FWMWDgvsn7OjY4GzxEqBNxrrHnIGTu14fOo3U/Bk7aYfmHEO7uWGIAuMCbyU
-         Z0AQ==
-X-Gm-Message-State: AOAM533+MmyEb8zvb5vFtTVAhi6BvLwqxrG5xHJDTw2VmUvj6pQ8J0pQ
-        m9v5DDRhisqi8UWNqxb4CFf+b4niX6NG/Q==
-X-Google-Smtp-Source: ABdhPJxJuL2ZWi0mhsTvs+bSBUdKPCu8byMUZlBikR/lfgTSX1IQwQQ5g9NnMVhSwN32zJmeU4jKWw==
-X-Received: by 2002:a05:622a:1896:b0:2ef:483b:16b9 with SMTP id v22-20020a05622a189600b002ef483b16b9mr785790qtc.610.1649670969057;
-        Mon, 11 Apr 2022 02:56:09 -0700 (PDT)
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
-        by smtp.gmail.com with ESMTPSA id z8-20020ac87f88000000b002e1cecad0e4sm24678071qtj.33.2022.04.11.02.56.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 02:56:08 -0700 (PDT)
-Received: by mail-yb1-f170.google.com with SMTP id p65so8226866ybp.9;
-        Mon, 11 Apr 2022 02:56:08 -0700 (PDT)
-X-Received: by 2002:a05:6902:101:b0:633:ccde:cfca with SMTP id
- o1-20020a056902010100b00633ccdecfcamr21144323ybh.207.1649670968330; Mon, 11
- Apr 2022 02:56:08 -0700 (PDT)
+        Mon, 11 Apr 2022 05:58:53 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2930941608;
+        Mon, 11 Apr 2022 02:56:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649671000;
+  x=1681207000;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=/Aw9Ecq6L7fdadg/faZ3YXTQ0SGHw1j32xDTyNi0kHM=;
+  b=N4dMZASulTs8wZG0HkADzLTTKj9os8YoNKHm+ehjxm0HUBU6s14vxjnx
+   gUg6n5hzRktK4/66k+VKAmu+ucEIdC/TBjzqyG7NAS0NFEJsbS0wDzG0X
+   dyyjDtft497xGkJ8Bd9z2+XPbk3FDc5iponK27haBRuFYnQtL2PoeIdm9
+   CfXsulCqi7gwFQbLMyUaIuWuI+kLDVKucYr4cWepeVl3W6Lmge5W4LV38
+   7/MVx8ww30e8TLsSHSP+S7q+R4MEWckdzKpfpvc66y3F3yreteM+lb9Tj
+   d6hU7OntPxunM9O5j0z1JtZEVIX5fu0dcC1mH2MIPhcAHaZaJGZ5kiPPd
+   w==;
+From:   Camel Guo <camel.guo@axis.com>
+To:     <inux@roeck-us.net>, <jdelvare@suse.com>, <robh+dt@kernel.org>,
+        <krzk+dt@kernel.org>
+CC:     <kernel@axis.com>, Camel Guo <camel.guo@axis.com>,
+        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Camel Guo <camelg@axis.com>
+Subject: [PATCH 1/2] dt-bindings: hwmon: Add TMP401, TMP411 and TMP43x
+Date:   Mon, 11 Apr 2022 11:56:33 +0200
+Message-ID: <20220411095634.1782732-2-camel.guo@axis.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220411095634.1782732-1-camel.guo@axis.com>
+References: <20220411095634.1782732-1-camel.guo@axis.com>
 MIME-Version: 1.0
-References: <20220406201523.243733-1-laurent@vivier.eu>
-In-Reply-To: <20220406201523.243733-1-laurent@vivier.eu>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 11 Apr 2022 11:55:57 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWkPcHW3Ba19giDHJC6g-GNmQ7HnZAavutxh3q_ZF5y6Q@mail.gmail.com>
-Message-ID: <CAMuHMdWkPcHW3Ba19giDHJC6g-GNmQ7HnZAavutxh3q_ZF5y6Q@mail.gmail.com>
-Subject: Re: [PATCH v16 0/4] m68k: Add Virtual M68k Machine
-To:     Laurent Vivier <laurent@vivier.eu>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-rtc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Alessandro Zummo <a.zummo@towertech.it>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 10:15 PM Laurent Vivier <laurent@vivier.eu> wrote:
-> The most powerful m68k machine emulated by QEMU is a Quadra 800,
-> but this machine is very limited: only 1 GiB of memory and only some
-> specific interfaces, with no DMA.
->
-> The Virtual M68k Machine is based on Goldfish interfaces defined by Google
-> for Android simulator. It uses Goldfish-rtc (timer and RTC),
-> Goldfish-pic (PIC) and Goldfish-tty (for early tty).
->
-> The machine is created with 128 virtio-mmio buses, and they can
-> be used to add serial console, GPU, disk, NIC, HID, hwrng, 9PFS...
->
-> The virtual m68k machine has been merged in QEMU and will be available
-> with the release 6.0.
->
-> This series introduces the support of this new machine in the linux kernel.
+From: Camel Guo <camelg@axis.com>
 
-Thanks, queued in the m68k for-v5.19 branch.
+Document the TMP401, TMP411 and TMP43x device devicetree bindings
 
-Gr{oetje,eeting}s,
+Signed-off-by: Camel Guo <camelg@axis.com>
+---
+ .../devicetree/bindings/hwmon/ti,tmp401.yaml  | 111 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ 2 files changed, 112 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
 
-                        Geert
+diff --git a/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+new file mode 100644
+index 000000000000..28be5cbb009b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+@@ -0,0 +1,111 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/hwmon/ti,tmp401.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: TMP401, TPM411 and TMP43x temperature sensor
++
++maintainers:
++  - Guenter Roeck <linux@roeck-us.net>
++
++description: |
++  ±1°C Remote and Local temperature sensor
++
++  Datasheets:
++  https://www.ti.com/lit/ds/symlink/tmp401.pdf
++  https://www.ti.com/lit/ds/symlink/tmp411.pdf
++  https://www.ti.com/lit/ds/symlink/tmp431.pdf
++  https://www.ti.com/lit/ds/symlink/tmp435.pdf
++
++properties:
++  compatible:
++    enum:
++      - ti,tmp401
++      - ti,tmp411
++      - ti,tmp431
++      - ti,tmp432
++      - ti,tmp435
++  reg:
++    maxItems: 1
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  ti,extended-range-enable:
++    description: |
++      When set, this sensor measures over extended temperature range.
++    type: boolean
++
++  ti,n-factor:
++    description: |
++      The value (two's complement) to be programmed in the n-factor correction
++      register.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    items:
++      minimum: 0
++      maximum: 255
++
++  ti,beta-compensation:
++    description: |
++      The value to be programmed in the beta range register.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    items:
++      minimum: 0
++      maximum: 15
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - ti,tmp401
++    then:
++      properties:
++        ti,n-factor: false
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - ti,tmp401
++              - ti,tmp411
++    then:
++      properties:
++        ti,beta-compensation: false
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      sensor@4c {
++        compatible = "ti,tmp401";
++        reg = <0x4c>;
++      };
++    };
++  - |
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      sensor@4c {
++        compatible = "ti,tmp431";
++        reg = <0x4c>;
++        ti,extended-range-enable;
++        ti,n-factor = <0x3b>;
++        ti,beta-compensation = <0x7>;
++      };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 61d9f114c37f..6b0d8f5cc68e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19838,6 +19838,7 @@ TMP401 HARDWARE MONITOR DRIVER
+ M:	Guenter Roeck <linux@roeck-us.net>
+ L:	linux-hwmon@vger.kernel.org
+ S:	Maintained
++F:	Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+ F:	Documentation/hwmon/tmp401.rst
+ F:	drivers/hwmon/tmp401.c
+ 
+-- 
+2.30.2
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
