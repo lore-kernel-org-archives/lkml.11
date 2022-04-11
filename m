@@ -2,233 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B94CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 13:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346578AbiDKNjX (ORCPT
+        id S1346474AbiDKNj5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 09:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
+        Mon, 11 Apr 2022 09:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346163AbiDKNjU (ORCPT
+        with ESMTP id S1343774AbiDKNjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 09:39:20 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 020CC2180D;
-        Mon, 11 Apr 2022 06:37:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649684225; x=1681220225;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=U5xmi+ZKs6LVmqmHM/hjJ79x5Wcf0VgOcaX88wCM5wg=;
-  b=zToeqIQRVcW9YSL5LKnaxA4mfkLWnhB/vVKVUPjMwdCBciDgHglfMInY
-   VUwJSBc8+Q2WkTr4qIg24srRmQXFtEjsrC3LR6iXFYOjDGGXsVmtMuAoJ
-   MMRJGkrtgWk7vU5ii/nt52HySHpLT6AgK6UUHxrhIol/uCPBI4c+9ghSU
-   s=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 11 Apr 2022 06:37:05 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 06:37:05 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 11 Apr 2022 06:37:04 -0700
-Received: from [10.50.47.200] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 11 Apr
- 2022 06:37:00 -0700
-Message-ID: <8a627cc0-8f9b-0bda-c9b5-6d51a788948a@quicinc.com>
-Date:   Mon, 11 Apr 2022 19:06:56 +0530
+        Mon, 11 Apr 2022 09:39:55 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B472180D;
+        Mon, 11 Apr 2022 06:37:40 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 2083D215FF;
+        Mon, 11 Apr 2022 13:37:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1649684259;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=11KZMTEDGr7Y36I2Hveh49be2Dvb2g0aFWQxmVrJlYI=;
+        b=eDK1BZE9UndY5Nm9Y1Q59yBMO963EEGxBP0S38+VGGctz+x2Fb0yJXLQjsEeMpv39fol/F
+        UxqWru6Qnx8Qla0tyL+dE2espoSNyvL6V3VCh/Bnu15mMpRhx1IJxNESIv93US4PeeDFwJ
+        03qWuC61jirABqrbJF1paxcbuKv7YK4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1649684259;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=11KZMTEDGr7Y36I2Hveh49be2Dvb2g0aFWQxmVrJlYI=;
+        b=LGdulimxNbMm/rpsEUldDVRgpVU3DBCKIiIk43EGsCiab+bFLyjHVXUmCAKOSIv6ZgDjzV
+        zspTx+zQhFykusBA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id C20BBA3B82;
+        Mon, 11 Apr 2022 13:37:38 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 69163DA7DA; Mon, 11 Apr 2022 15:33:34 +0200 (CEST)
+Date:   Mon, 11 Apr 2022 15:33:34 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Naohiro Aota <Naohiro.Aota@wdc.com>
+Cc:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>
+Subject: Re: [PATCH] btrfs: wait between incomplete batch allocations
+Message-ID: <20220411133334.GF15609@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Naohiro Aota <Naohiro.Aota@wdc.com>,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>
+References: <07d6dbf34243b562287e953c44a70cbb6fca15a1.1649268923.git.sweettea-kernel@dorminy.me>
+ <20220411071124.zwtcarqngqqkdd6q@naota-xeon>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 2/3] soc: qcom: llcc: Add sc8180x and sc8280xp
- configurations
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Luca Weiss <luca.weiss@fairphone.com>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>
-References: <20220408213336.581661-1-bjorn.andersson@linaro.org>
- <20220408213336.581661-2-bjorn.andersson@linaro.org>
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-In-Reply-To: <20220408213336.581661-2-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411071124.zwtcarqngqqkdd6q@naota-xeon>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
+On Mon, Apr 11, 2022 at 07:11:24AM +0000, Naohiro Aota wrote:
+> On Wed, Apr 06, 2022 at 02:24:18PM -0400, Sweet Tea Dorminy wrote:
+> > When allocating memory in a loop, each iteration should call
+> > memalloc_retry_wait() in order to prevent starving memory-freeing
+> > processes (and to mark where allcoation loops are). ext4, f2fs, and xfs
+> > all use this function at present for their allocation loops; btrfs ought
+> > also.
+> > 
+> > The bulk page allocation is the only place in btrfs with an allocation
+> > retry loop, so add an appropriate call to it.
+> > 
+> > Suggested-by: David Sterba <dsterba@suse.cz>
+> > Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+> 
+> The fstests btrfs/187 becomes incredibly slow with this patch applied.
+> 
+> For example, on a nvme ZNS SSD (zoned) device, it takes over 10 hours to
+> finish the test case. It only takes 765 seconds if I revert this commit
+> from the misc-next branch.
+> 
+> I also confirmed the same slowdown occurs on regular btrfs. For the
+> baseline, with this commit reverted, it takes 335 seconds on 8GB ZRAM
+> device running on QEMU (8GB RAM), and takes 768 seconds on a (non-zoned)
+> HDD running on a real machine (128GB RAM). The tests on misc-next with the
+> same setup above is still running, but it already took 2 hours.
+> 
+> The test case runs full btrfs sending 5 times and incremental btrfs sending
+> 10 times at the same time. Also, dedupe loop and balance loop is running
+> simultaneously while all the send commands finish.
+> 
+> The slowdown of the test case basically comes from slow "btrfs send"
+> command. On the HDD run, it takes 25 minutes to run a full btrfs sending
+> command and 1 hour 18 minutes to run a incremental btrfs sending
+> command. Thus, we will need 78 minutes x 5 = 6.5 hours to finish all the
+> send commands, making the test case incredibly slow.
+> 
+> > ---
+> >  fs/btrfs/extent_io.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+> > index 9f2ada809dea..4bcc182744e4 100644
+> > --- a/fs/btrfs/extent_io.c
+> > +++ b/fs/btrfs/extent_io.c
+> > @@ -6,6 +6,7 @@
+> >  #include <linux/mm.h>
+> >  #include <linux/pagemap.h>
+> >  #include <linux/page-flags.h>
+> > +#include <linux/sched/mm.h>
+> >  #include <linux/spinlock.h>
+> >  #include <linux/blkdev.h>
+> >  #include <linux/swap.h>
+> > @@ -3159,6 +3160,8 @@ int btrfs_alloc_page_array(unsigned int nr_pages, struct page **page_array)
+> >  		 */
+> >  		if (allocated == last)
+> >  			return -ENOMEM;
+> > +
+> > +		memalloc_retry_wait(GFP_NOFS);
+> 
+> And, I just noticed this is because we are waiting for the retry even if we
+> successfully allocated all the pages. We should exit the loop if (allocated
+> == nr_pages).
 
-Looks like downstream LLCC configuration data is not up to date, I have cross checked with SCT table in IP doc
-and have suggested the changes inline as per the latest doc.
-
-On 4/9/2022 3:03 AM, Bjorn Andersson wrote:
-> Add LLCC configuration data for the SC8180X and SC8280XP platforms,
-> based on the downstream tables.
->
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->   drivers/soc/qcom/llcc-qcom.c       | 60 ++++++++++++++++++++++++++++++
->   include/linux/soc/qcom/llcc-qcom.h |  2 +
->   2 files changed, 62 insertions(+)
->
-> diff --git a/drivers/soc/qcom/llcc-qcom.c b/drivers/soc/qcom/llcc-qcom.c
-> index eecafeded56f..a76d58195637 100644
-> --- a/drivers/soc/qcom/llcc-qcom.c
-> +++ b/drivers/soc/qcom/llcc-qcom.c
-> @@ -130,6 +130,50 @@ static const struct llcc_slice_config sc7280_data[] =  {
->   	{ LLCC_MODPE,    29, 64,  1, 1, 0x3f, 0x0, 0, 0, 0, 1, 0, 0},
->   };
->   
-> +static const struct llcc_slice_config sc8180x_data[] = {
-> +	{ LLCC_CPUSS,    1, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 1 },
-> +	{ LLCC_VIDSC0,    2, 512, 2, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_VIDSC1,    3, 512, 2, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_ROTATOR,    4, 1024, 2, 1, 0xfff, 0x0, 2, 0, 0, 1, 0 },
-> +	{ LLCC_VOICE,    5, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-
-These two are not present in latest SCT table, you can remove these.
-
-> +	{ LLCC_AUDIO,    6, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-
-Max size is 1024KB -> { LLCC_AUDIO,    6, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-
-> +	{ LLCC_MDMHPGRW,    7, 1024, 2, 0, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-
-Max size is 3072KB , priority is 1, fixed size is 1, bonus ways is 0x3ff, reserved ways is 0xc00, change like below.
-
-{ LLCC_MDMHPGRW,    7, 3072, 1, 1, 0x3ff, 0xc00, 0, 0, 0, 1, 0 },
-
-> +	{ LLCC_MDM,    8, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-
-Max size is 3072KB -> { LLCC_MDM,    8, 3072, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-There is one more entry for LLCC_MODHW like below after LLCC_MDM,
-
-{ LLCC_MODHW,    9, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-
-> +	{ LLCC_CMPT,   10, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_GPUHTW,   11, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_GPU,   12, 5120, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_MMUHWT,   13, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1 },
-
-Max size is 1024KB -> { LLCC_MMUHWT,   13, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1 },
-
-> +	{ LLCC_CMPTDMA,   15, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_DISP,   16, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_VIDFW,   17, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-
-Max size is 1024KB -> { LLCC_VIDFW,   17, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-
-> +	{ LLCC_MDMHPFX,   20, 1024, 2, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_MDMPNG,   21, 1024, 0, 1, 0xf, 0x0, 0, 0, 0, 1, 0 },
-
-Bonus ways is 0xc -> { LLCC_MDMPNG,   21, 1024, 0, 1, 0xc, 0x0, 0, 0, 0, 1, 0 },
-
-> +	{ LLCC_AUDHW,   22, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_NPU,   23, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_WLHW,   24, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_PIMEM,   25, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-
-There is no PIMEM entry, you can remove that and add 3 other entries as below,
-
-{ LLCC_MODPE,    29, 512,  1, 1, 0xc,   0x0, 0, 0, 0, 1, 0 },
-{ LLCC_APTCM,    30, 512,  3, 1, 0x0,   0x1, 1, 0, 0, 1, 0 },
-{ LLCC_WRCACHE,  31, 128,  1, 1, 0xfff, 0x0, 0, 0, 0, 0, 0 },
-
-
-> +};
-> +
-> +static const struct llcc_slice_config sc8280xp_data[] = {
-> +	{ LLCC_CPUSS,    1,  6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 1 },
-> +	{ LLCC_VIDSC0,   2,  512,  3, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_AUDIO,    6,  1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 0 },
-> +	{ LLCC_CMPT,     10, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 0 },
-> +	{ LLCC_GPUHTW,   11, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_GPU,      12, 4608, 1, 0, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-
-Max capacity in 4096KB, fixed size is 1 -> { LLCC_GPU,      12, 4096, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-
-> +	{ LLCC_MMUHWT,   13, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1 },
-> +	{ LLCC_DISP,     16, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_AUDHW,    22, 2048, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_DRE,      26, 1024, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_CVP,      28, 512,  3, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_APTCM,    30, 1024, 3, 1, 0x0,   0x1, 1, 0, 0, 1, 0 },
-> +	{ LLCC_WRCACHE,  31, 512,  1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1 },
-
-Max capacity is 1024KB -> { LLCC_WRCACHE,  31, 1024,  1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1 },
-
-> +	{ LLCC_CVPFW,    17, 512,  1, 0, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_CPUSS1,   3,  2048, 1, 1, 0xfff, 0x0, 0, 0, 0, 1, 0 },
-> +	{ LLCC_CAMEXP0,  14, 6144, 1, 1, 0xfff, 0x0, 0, 0, 0, 0, 0 },
-
-This is not present in latest LLCC SCT table, you can remove it.
-
-> +	{ LLCC_CPUHWT,   5,  512,  1, 1, 0xfff, 0x0, 0, 0, 0, 0, 1 },
-> +};
-> +
-
-Also need one more column field (write_scid_en) at the end with all false(0) values except for GPU SCID (12)
-which is true (1) for sc8280xp.
-
->   static const struct llcc_slice_config sdm845_data[] =  {
->   	{ LLCC_CPUSS,    1,  2816, 1, 0, 0xffc, 0x2,   0, 0, 1, 1, 1 },
->   	{ LLCC_VIDSC0,   2,  512,  2, 1, 0x0,   0x0f0, 0, 0, 1, 1, 0 },
-> @@ -276,6 +320,20 @@ static const struct qcom_llcc_config sc7280_cfg = {
->   	.reg_offset	= llcc_v1_2_reg_offset,
->   };
->   
-> +static const struct qcom_llcc_config sc8180x_cfg = {
-> +	.sct_data	= sc8180x_data,
-> +	.size		= ARRAY_SIZE(sc8180x_data),
-> +	.need_llcc_cfg	= true,
-> +	.reg_offset	= llcc_v1_2_reg_offset,
-> +};
-> +
-> +static const struct qcom_llcc_config sc8280xp_cfg = {
-> +	.sct_data	= sc8280xp_data,
-> +	.size		= ARRAY_SIZE(sc8280xp_data),
-> +	.need_llcc_cfg	= true,
-> +	.reg_offset	= llcc_v1_2_reg_offset,
-> +};
-> +
->   static const struct qcom_llcc_config sdm845_cfg = {
->   	.sct_data	= sdm845_data,
->   	.size		= ARRAY_SIZE(sdm845_data),
-> @@ -741,6 +799,8 @@ static int qcom_llcc_probe(struct platform_device *pdev)
->   static const struct of_device_id qcom_llcc_of_match[] = {
->   	{ .compatible = "qcom,sc7180-llcc", .data = &sc7180_cfg },
->   	{ .compatible = "qcom,sc7280-llcc", .data = &sc7280_cfg },
-> +	{ .compatible = "qcom,sc8180x-llcc", .data = &sc8180x_cfg },
-> +	{ .compatible = "qcom,sc8280xp-llcc", .data = &sc8280xp_cfg },
->   	{ .compatible = "qcom,sdm845-llcc", .data = &sdm845_cfg },
->   	{ .compatible = "qcom,sm6350-llcc", .data = &sm6350_cfg },
->   	{ .compatible = "qcom,sm8150-llcc", .data = &sm8150_cfg },
-> diff --git a/include/linux/soc/qcom/llcc-qcom.h b/include/linux/soc/qcom/llcc-qcom.h
-> index 0bc21ee58fac..9ed5384c5ca1 100644
-> --- a/include/linux/soc/qcom/llcc-qcom.h
-> +++ b/include/linux/soc/qcom/llcc-qcom.h
-> @@ -29,6 +29,8 @@
->   #define LLCC_AUDHW       22
->   #define LLCC_NPU         23
->   #define LLCC_WLHW        24
-> +#define LLCC_PIMEM       25
-> +#define LLCC_DRE         26
->   #define LLCC_CVP         28
->   #define LLCC_MODPE       29
->   #define LLCC_APTCM       30
-
-
-Thanks,
-Sai
+Can you please test if the fixup restores the run time? This looks like
+a mistake and the delays are not something we'd observe otherwise. If it
+does not fix the problem then the last option is to revert the patch.
