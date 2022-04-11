@@ -2,102 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B82BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 032A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344611AbiDKJjo (ORCPT
+        id S1344623AbiDKJjr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:39:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
+        Mon, 11 Apr 2022 05:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344579AbiDKJjW (ORCPT
+        with ESMTP id S1344576AbiDKJjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:39:22 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBE4403F5
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:36:53 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 279091EC0202;
-        Mon, 11 Apr 2022 11:36:48 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649669808;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=yubHAmQOKFXQzNV5jAier9r1b9P81adyeJrEjeDlCUw=;
-        b=nfLCSOmQv2gPFZSwZuwH56Qf9el3EYe27Hk7ra/Ew/a7m4WWcNkNcsL+tlVZzjQJTZXRNQ
-        aK9DUOCdSHffKLAGMoITCXitPXd5oRivKEAx3MifA8ViS0TArYo3smilmacnmURCPNFgJc
-        KU6b3SmlaDskKkiIQkDPJcxgNcZJz+0=
-Date:   Mon, 11 Apr 2022 11:36:51 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Ingo Molnar <mingo@redhat.com>,
+        Mon, 11 Apr 2022 05:39:36 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83594403E7;
+        Mon, 11 Apr 2022 02:37:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649669836; x=1681205836;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=Ac+Tj+oOHnMDyhI2NE6QYoSazPkEr2C+i7OWolZUv+E=;
+  b=DBy/3LuSo6LwUrj+IYYXRksJa1LAi5N/ejBlIYgk+hlobRdPWxAFB4lF
+   YM1WD4j/Yt1ZYli7SIAWEtXEhkhq8B1mi3F7iMJj4efUMPIn3eP0L53R1
+   OwcndjDjGxEwPl9Cq9/eFwqCHOGP6pidxteXf4sFSGKjKx9Bvrvlhmf9i
+   Otjw2yfKNBJGaeKEIGXgSM6EmJuv9bSe1mR87CyNjgylsOPUXx8ncTUVQ
+   Vb8EepWUluiz56CnhfCY6Y+SaDvdy9aSyBDLRZ64GNUA3x/ZHC8SNSFPD
+   hl3esKEuRQDFCpKI8kbH/8K5gIIGvgUxaAoiTBFkS/2fpcegJdHS765ob
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="243960657"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="243960657"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 02:37:15 -0700
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="572050604"
+Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 02:37:09 -0700
+From:   Zeng Guang <guang.zeng@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
         Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         "H. Peter Anvin" <hpa@zytor.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Thomas Tai <thomas.tai@oracle.com>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: Re: [PATCH V4 1/7] x86/traps: Move pt_regs only in fixup_bad_iret()
-Message-ID: <YlP2s5pbY0YcibAC@zn.tnic>
-References: <20220318143016.124387-1-jiangshanlai@gmail.com>
- <20220318143016.124387-2-jiangshanlai@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220318143016.124387-2-jiangshanlai@gmail.com>
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
+        Zeng Guang <guang.zeng@intel.com>
+Subject: [PATCH v8 8/9] KVM: x86: Allow userspace set maximum VCPU id for VM
+Date:   Mon, 11 Apr 2022 17:04:46 +0800
+Message-Id: <20220411090447.5928-9-guang.zeng@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220411090447.5928-1-guang.zeng@intel.com>
+References: <20220411090447.5928-1-guang.zeng@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 10:30:10PM +0800, Lai Jiangshan wrote:
-> diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-> index 1563fb995005..9fe9cd9d3eeb 100644
-> --- a/arch/x86/kernel/traps.c
-> +++ b/arch/x86/kernel/traps.c
-> @@ -892,13 +892,8 @@ asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *r
->  }
->  #endif
->  
-> -struct bad_iret_stack {
-> -	void *error_entry_ret;
-> -	struct pt_regs regs;
-> -};
-> -
->  asmlinkage __visible noinstr
-> -struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s)
-> +struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs)
->  {
->  	/*
->  	 * This is called from entry_64.S early in handling a fault
+Introduce new max_vcpu_ids in KVM for x86 architecture. Userspace
+can assign maximum possible vcpu id for current VM session using
+KVM_CAP_MAX_VCPU_ID of KVM_ENABLE_CAP ioctl().
 
-While at it, unbreak that line:
+This is done for x86 only because the sole use case is to guide
+memory allocation for PID-pointer table, a structure needed to
+enable VMX IPI.
 
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index 9fe9cd9d3eeb..28591132e885 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -892,8 +892,7 @@ asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *r
- }
- #endif
+By default, max_vcpu_ids set as KVM_MAX_VCPU_IDS.
+
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Zeng Guang <guang.zeng@intel.com>
+---
+ Documentation/virt/kvm/api.rst  | 17 +++++++++++++++++
+ arch/x86/include/asm/kvm_host.h |  6 ++++++
+ arch/x86/kvm/x86.c              | 18 +++++++++++++++++-
+ 3 files changed, 40 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+index d13fa6600467..bb0b0f3edefe 100644
+--- a/Documentation/virt/kvm/api.rst
++++ b/Documentation/virt/kvm/api.rst
+@@ -7136,6 +7136,23 @@ The valid bits in cap.args[0] are:
+                                     IA32_MISC_ENABLE[bit 18] is cleared.
+ =================================== ============================================
  
--asmlinkage __visible noinstr
--struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs)
-+asmlinkage __visible noinstr struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs)
- {
- 	/*
- 	 * This is called from entry_64.S early in handling a fault
-
++7.32 KVM_CAP_MAX_VCPU_ID
++------------------------
++
++:Architectures: x86
++:Target: VM
++:Parameters: args[0] - maximum APIC ID value set for current VM
++:Returns: 0 on success, -EINVAL if args[0] is beyond KVM_MAX_VCPU_IDS
++          supported in KVM or if vCPU has been created.
++
++Userspace is able to calculate the limit to APIC ID values from designated CPU
++topology. This capability allows userspace to specify maximum possible APIC ID
++assigned for current VM session prior to the creation of vCPUs. KVM can manage
++memory allocation of VM-scope structures which depends on the value of APIC ID.
++
++Calling KVM_CHECK_EXTENSION for this capability returns the value of maximum APIC
++ID that KVM supports at runtime. It sets as KVM_MAX_VCPU_IDS in VM initialization.
++
+ 8. Other capabilities.
+ ======================
+ 
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index d23e80a56eb8..cdd14033988d 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1238,6 +1238,12 @@ struct kvm_arch {
+ 	hpa_t	hv_root_tdp;
+ 	spinlock_t hv_root_tdp_lock;
+ #endif
++	/*
++	 * VM-scope maximum vCPU ID. Used to determine the size of structures
++	 * that increase along with the maximum vCPU ID, in which case, using
++	 * the global KVM_MAX_VCPU_IDS may lead to significant memory waste.
++	 */
++	u32 max_vcpu_ids;
+ };
+ 
+ struct kvm_vm_stat {
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 0c0ca599a353..d1a39285deab 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4320,7 +4320,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 		r = KVM_MAX_VCPUS;
+ 		break;
+ 	case KVM_CAP_MAX_VCPU_ID:
+-		r = KVM_MAX_VCPU_IDS;
++		r = kvm->arch.max_vcpu_ids;
+ 		break;
+ 	case KVM_CAP_PV_MMU:	/* obsolete */
+ 		r = 0;
+@@ -6064,6 +6064,18 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
+ 		}
+ 		mutex_unlock(&kvm->lock);
+ 		break;
++	case KVM_CAP_MAX_VCPU_ID:
++		r = -EINVAL;
++		if (cap->args[0] > KVM_MAX_VCPU_IDS)
++			break;
++
++		mutex_lock(&kvm->lock);
++		if (!kvm->created_vcpus) {
++			kvm->arch.max_vcpu_ids = cap->args[0];
++			r = 0;
++		}
++		mutex_unlock(&kvm->lock);
++		break;
+ 	default:
+ 		r = -EINVAL;
+ 		break;
+@@ -11180,6 +11192,9 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
+ 	struct page *page;
+ 	int r;
+ 
++	if (vcpu->vcpu_id >= vcpu->kvm->arch.max_vcpu_ids)
++		return -EINVAL;
++
+ 	vcpu->arch.last_vmentry_cpu = -1;
+ 	vcpu->arch.regs_avail = ~0;
+ 	vcpu->arch.regs_dirty = ~0;
+@@ -11704,6 +11719,7 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
+ 	spin_lock_init(&kvm->arch.hv_root_tdp_lock);
+ 	kvm->arch.hv_root_tdp = INVALID_PAGE;
+ #endif
++	kvm->arch.max_vcpu_ids = KVM_MAX_VCPU_IDS;
+ 
+ 	INIT_DELAYED_WORK(&kvm->arch.kvmclock_update_work, kvmclock_update_fn);
+ 	INIT_DELAYED_WORK(&kvm->arch.kvmclock_sync_work, kvmclock_sync_fn);
 -- 
-Regards/Gruss,
-    Boris.
+2.27.0
 
-https://people.kernel.org/tglx/notes-about-netiquette
