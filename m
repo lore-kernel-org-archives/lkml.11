@@ -2,63 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 816EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 01:36:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 01:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244261AbiDKBiZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 21:38:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
+        id S244268AbiDKBjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 21:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230036AbiDKBiX (ORCPT
+        with ESMTP id S230036AbiDKBjO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 21:38:23 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF2543EEB;
-        Sun, 10 Apr 2022 18:36:10 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id e22so12133277qvf.9;
-        Sun, 10 Apr 2022 18:36:10 -0700 (PDT)
+        Sun, 10 Apr 2022 21:39:14 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7385A44756;
+        Sun, 10 Apr 2022 18:37:02 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id s4so9548368qkh.0;
+        Sun, 10 Apr 2022 18:37:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=e4GkgwH8Cf5+Xk57d8WjJ96d7p3KRonjzQ3FCZd7W90=;
-        b=H3H6brXvjJkdtmxaq5yq+JtfipPNGEp5xhxyLrzDZGHtfM2M4F0x//PiDTwU1MFYg8
-         GyoSYDU69O5c0DQivLQr7QUUdlTKqC0COELV0NJdlSMXzKyF3Psc6fbXio6hsPezCBZT
-         DbtTe6BvGE6l0VdHKc9T9FlQ1TjBQ5c0B6uGudeiz6bPHB+CBd8TAIEzLw1eTgxEiVdW
-         FiHweF+vmHx5UAOd48Gg/OwW4UY6/7qm01ArhPS6V9XQSc9HcpFKnVgbfgz0tPOgQcr2
-         gFXKFfafhbCjRl0iEIrjPhimGeT2IaSsjewEmHsYLBkrfmfdVfxZRfQVOoR/+5E1XOpf
-         fa5w==
+        bh=UkxHGgn4YJBPlk25zh9PGFZqZ3wjtsZgFqYO+Io+0Vo=;
+        b=eX/qToAEh3fUmerBCAQdhIIJEVvzDsXp6xsYO9VX2ktc+oXx7W7U52fugi0R3Wz8vb
+         iyyASX0a+qnVXX0cs2eW211fZEQMd3Ho4YQREJAHkPJ7R29UrG0aSSV65svsFBAJ/gsr
+         GbC+4f7ur6jIQHKRMtrIic/UJBRsBDY+ihRCMQAnR0Mu+2asUPOksIptPPMna9ztNscG
+         y5iaALiiR7hVKuDq9hphPOZpo7b93lxRoxqCyBBqWlCWJ3ojMmEcXky3dgrVO/b7H0l5
+         kGhs34ZSrImDWH+cQ+JC7nlA2ZBJMD8l+Enlfcf8PGaPd+r96mVKxouMVtUiFr2lXUHT
+         T+OQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=e4GkgwH8Cf5+Xk57d8WjJ96d7p3KRonjzQ3FCZd7W90=;
-        b=HVnTN/XMbYliZP/HsnFbxKnmFNJfHMKUhJzsUW4yoSVUUzLpI9b4/8kESGBB6mdUNW
-         19oVQG8OdkzGV5G3Ndibumf5XION3yS1ITkrJ3/mE+GJXctDBcQHkRtVoI9FWShgt/6i
-         zQLEg2ZthTh0Dz6/dHyKUcBMyaNzrTmZGiYVDKOJ30VeqWdsoSTxaczCOkQEv6zpi7TW
-         mBfjV/BWChg4G2r9qNWkkw+oO85q6bFzQJAucNlZsVCJ919wb3/0gQRo2W5AieGwB4jj
-         jp57tqYl+bE0kQ90C3+M8IqMo7XRXT9524N5UCdvFL12F2XnPBYk7oNlBjBs6ychAxIA
-         YT1Q==
-X-Gm-Message-State: AOAM533PpQrk6CPvqyUeu+D9sA12pOzwwGd2uDuqM24p37YATMCFRKf2
-        cgSPRG6w4WwUBzHnoD2hH6iCKlih3js=
-X-Google-Smtp-Source: ABdhPJybI46Cuunj2Qqdpk7JajdoBLPu6o8OSbbeo/0MMW1NkzzSrVFw18O8k532OEnnoZUYXh9WNA==
-X-Received: by 2002:a05:6214:e4a:b0:444:28a7:9fb7 with SMTP id o10-20020a0562140e4a00b0044428a79fb7mr10580217qvc.30.1649640969374;
-        Sun, 10 Apr 2022 18:36:09 -0700 (PDT)
+        bh=UkxHGgn4YJBPlk25zh9PGFZqZ3wjtsZgFqYO+Io+0Vo=;
+        b=YogPpC2D5/U+SfdUBHw9dNZzvd//+3vQugJ2nnDWuJb5DGk7WeJh1pmzo12P1+iElD
+         Glec9jATXee7/HKvJlc2riEPRgQT4QIjnpYSuQZZfpwyBlrmaEOtDKsx7dYaX5pTAnNq
+         xmLWAJswageiwdHST3pTTdr3aVZj2Lh8FBSSFkyFowb6L2SUIzTTGAZx+vFweh3e7G7/
+         7MbQ/T7jnKYU9U1BcdnOnU+VOd37pjGCkVhVobBylmuo9qcR+yzA0NJ5VSBWEUoEdBxm
+         JqYO9YdE7AjUbgWYW8FiCfPVi3BY2qykKgmSYtrMssoQakAdWeCQGoCq/G9nF8I1FXkI
+         HjcA==
+X-Gm-Message-State: AOAM5323bUAkSbA27O1JDne/OyFTkp5+VFlA/534cjNRCkKkUVTZh8go
+        qwCksoMHVcyOsUjwh4E4C3E9yQOFwZo=
+X-Google-Smtp-Source: ABdhPJw1cX3ShZhFRemD6RIMaN/zN45MsdoLXoS7wLzSfcsJjqUa3Ne59RW7Np4PEGNUZYO76bKz8A==
+X-Received: by 2002:a05:620a:13f9:b0:69a:17b:7a0a with SMTP id h25-20020a05620a13f900b0069a017b7a0amr12862609qkl.67.1649641021669;
+        Sun, 10 Apr 2022 18:37:01 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id u5-20020a05622a198500b002ee933faf83sm1101121qtc.73.2022.04.10.18.36.06
+        by smtp.gmail.com with ESMTPSA id e7-20020ac85987000000b002e1b7fa2201sm24122996qte.56.2022.04.10.18.36.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 18:36:08 -0700 (PDT)
+        Sun, 10 Apr 2022 18:37:01 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     merez@codeaurora.org
-Cc:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
+To:     bjorn.andersson@linaro.org
+Cc:     mathieu.poirier@linaro.org, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] wil6210: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Mon, 11 Apr 2022 01:36:02 +0000
-Message-Id: <20220411013602.2517086-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] remoteproc: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Mon, 11 Apr 2022 01:36:56 +0000
+Message-Id: <20220411013656.2517150-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -74,24 +72,23 @@ for simplifing code
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/net/wireless/ath/wil6210/pm.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/remoteproc/keystone_remoteproc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wil6210/pm.c b/drivers/net/wireless/ath/wil6210/pm.c
-index ed4df561e5c5..f521af575e9b 100644
---- a/drivers/net/wireless/ath/wil6210/pm.c
-+++ b/drivers/net/wireless/ath/wil6210/pm.c
-@@ -445,10 +445,9 @@ int wil_pm_runtime_get(struct wil6210_priv *wil)
- 	int rc;
- 	struct device *dev = wil_to_dev(wil);
+diff --git a/drivers/remoteproc/keystone_remoteproc.c b/drivers/remoteproc/keystone_remoteproc.c
+index 54781f553f4e..594a9b43b7ae 100644
+--- a/drivers/remoteproc/keystone_remoteproc.c
++++ b/drivers/remoteproc/keystone_remoteproc.c
+@@ -410,10 +410,9 @@ static int keystone_rproc_probe(struct platform_device *pdev)
  
--	rc = pm_runtime_get_sync(dev);
-+	rc = pm_runtime_resume_and_get(dev);
- 	if (rc < 0) {
--		wil_err(wil, "pm_runtime_get_sync() failed, rc = %d\n", rc);
+ 	/* enable clock for accessing DSP internal memories */
+ 	pm_runtime_enable(dev);
+-	ret = pm_runtime_get_sync(dev);
++	ret = pm_runtime_resume_and_get(dev);
+ 	if (ret < 0) {
+ 		dev_err(dev, "failed to enable clock, status = %d\n", ret);
 -		pm_runtime_put_noidle(dev);
-+		wil_err(wil, "pm_runtime_resume_and_get() failed, rc = %d\n", rc);
- 		return rc;
+ 		goto disable_rpm;
  	}
  
 -- 
