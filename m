@@ -2,104 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DD81C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29643C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347609AbiDKPGC (ORCPT
+        id S1347542AbiDKPGM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52366 "EHLO
+        Mon, 11 Apr 2022 11:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241792AbiDKPGA (ORCPT
+        with ESMTP id S1347610AbiDKPGC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:06:00 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EEAE23BEF;
-        Mon, 11 Apr 2022 08:03:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=E4dwbCWrITT9Gc93/E4bis1uw9rHZXkBXHbxh0GQ1ew=; b=OUbKgv6Ffn4P0SjIjiIO2TXNWm
-        KmHPB0hhxQH+tBea3Y6K3UH8izu7lEhi2KZJCd7sEc30IT+Vwfm5q2zrzarbwl2Ist2akc5zIRKEO
-        qbClGABwgo0MBNZkkMNJajExdg9654sBPodCy0KbhcwZ9TiAMhZ1Z9/yOsABWB60tmSpGElbo85iZ
-        9dAMAjBFxCg3DM0p4k928WgIAqB6gvrRUKnDxw2pl++Xt0E+Icg87ssIcgTLNZb1n42K9pVFzBwX1
-        K6Mia2am0Pw76RPBB/xRwUQsTIO8DKqdBWppfy/zEnWP4qe+UYH4hnYWBAMnfObvtjiFYL4bzTmPJ
-        HvnR2X4g==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ndvZq-00CQ4p-0L; Mon, 11 Apr 2022 15:03:38 +0000
-Date:   Mon, 11 Apr 2022 16:03:37 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] stat: don't fail if the major number is >= 256
-Message-ID: <YlRDSXQG+ED1Okpp@casper.infradead.org>
-References: <alpine.LRH.2.02.2204111023230.6206@file01.intranet.prod.int.rdu2.redhat.com>
+        Mon, 11 Apr 2022 11:06:02 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A5023BEF
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:03:47 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id r13so31528070ejd.5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:03:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=t3iDWnR4HRse3iuMOHSPZXwIa+ie+fx1vx4WdB22/OI=;
+        b=Lmox+OzzNKPaMKIHJewtVmlTgRjchsWwwXlKo04flpnM81uR2JWt3t7uAhjSU2Lxqv
+         4FBVmdWQmz7SstReeJMxOvsKO+miR9S8Mt6E102/v2D3A2vFc1nMbDYaThX/nRpbpEod
+         y0KhGmNwS3zh5sfJpXqG0em8G4ix1zH4AGW3NiY7KXJTwMl0JwN+gYF3+Azc1LqZizfy
+         iO4IGAkiIxkFIZeEFxo0AWIdjsUw4YkZ5OWOulk2VMy4tTL4AapGKitYymfb4/mVoat8
+         Tw8XXW9tG/3+T0L3z3Ah538ige3cEWhd/zbWSP3eDl0zXJvOn4qiVSfPtEBZCtqCD+qU
+         Seew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t3iDWnR4HRse3iuMOHSPZXwIa+ie+fx1vx4WdB22/OI=;
+        b=xSjV00BtF/yMsJRY+bukCI1bAit5IRv+rl/vFDgw+vVMH0IwQPOL7wkn4erWQPkBXc
+         S+8q+jmM7Q4gjO0AkOERY24DdkrSk79nkrD3GUBdtAJkIYk3sSp6eBTgUcLNGOOH1J2W
+         rH7lITkCL/tzJxodY63CJv8cnMNxQqnXH8UnGQP9YTcqHJuLp/efpoiw3pmAMBBOQBL4
+         BE9Pi9MjNdO5A5jcgNQxMUAzAM/4smGqW38v0y2F07cGwg4xT3IWoikeMIBQgNFlFl79
+         sY3SZ6QYgY1Gg2E3FfdN4Utl7CQ7Q6o92sPcrALC8MBCMPSlc/5iFMiUEKSND5FCuiW/
+         /CeQ==
+X-Gm-Message-State: AOAM531SFOGCUEVMO3t4j4b7oDL3oQ4FmcD6AXIL/xzMqj+Kxw4WOfwT
+        PuzAFLe4s2ViLqBw/Z3J2irX7fbfbOXdEEoiWFstVnRcpuQ=
+X-Google-Smtp-Source: ABdhPJx2wE44H54Rp7c2CuNoGo1Ja2LPbFw08fx38Qpb0r9gZzk9LDbZ7PIxZ74ZlXDaf0SXae5+x9MgxDkXB/ggTOw=
+X-Received: by 2002:a17:907:8a05:b0:6e8:441c:358d with SMTP id
+ sc5-20020a1709078a0500b006e8441c358dmr17285696ejc.77.1649689426227; Mon, 11
+ Apr 2022 08:03:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.02.2204111023230.6206@file01.intranet.prod.int.rdu2.redhat.com>
+References: <20220328225628.3012397-1-linux@rasmusvillemoes.dk> <YkRPOM9GKo3tlxUh@sirena.org.uk>
+In-Reply-To: <YkRPOM9GKo3tlxUh@sirena.org.uk>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Apr 2022 17:59:33 +0300
+Message-ID: <CAHp75VdiBqJ_+1eewmgrdGpsYUr=+xLpeH+4B_rS4nDtc-fMYA@mail.gmail.com>
+Subject: Re: [PATCH] regmap: make range check functions static
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 10:43:33AM -0400, Mikulas Patocka wrote:
-> If you run a program compiled with OpenWatcom for Linux on a filesystem on 
-> NVMe, all "stat" syscalls fail with -EOVERFLOW. The reason is that the 
-> NVMe driver allocates a device with the major number 259 and it doesn't 
-> pass the "old_valid_dev" test.
-> 
-> This patch removes the tests - it's better to wrap around than to return
-> an error. (note that cp_old_stat also doesn't report an error and wraps
-> the number around)
+On Wed, Mar 30, 2022 at 11:17 PM Mark Brown <broonie@kernel.org> wrote:
+>
+> On Tue, Mar 29, 2022 at 12:56:28AM +0200, Rasmus Villemoes wrote:
+> > regmap_reg_in_ranges() and regmap_check_range_table() have no callers
+> > outside regmap.c, so they have no reason to be exported nor have
+> > external linkage.
+>
+> These are intentional API in case someone needs them, no need to
+> encourage open coding.
 
-Is it better?  You've done a good job arguing why it is for this particular
-situation, but if there's a program which compares files by
-st_dev+st_ino, it might think two files are identical when they're
-actually different and, eg, skip backing up a file because it thinks
-it already did it.  That would be a silent failure, which is worse
-than this noisy failure.
+But currently it's not used and simply consumes namespace resources.
+Isn't it our practice not to add dead code / etc?
 
-The real problem is clearly that Linus denied my request for a real
-major number for NVMe back in 2012 or whenever it was :-P
+In practice I assume that one will grep before implementing, or at
+least at review stage it may be pointed out for a helper, that might
+be exported when needed, no?
 
-> Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-> 
-> ---
->  fs/stat.c |    6 ------
->  1 file changed, 6 deletions(-)
-> 
-> Index: linux-5.17.2/fs/stat.c
-> ===================================================================
-> --- linux-5.17.2.orig/fs/stat.c	2022-04-10 21:39:27.000000000 +0200
-> +++ linux-5.17.2/fs/stat.c	2022-04-10 21:42:43.000000000 +0200
-> @@ -334,7 +334,6 @@ SYSCALL_DEFINE2(fstat, unsigned int, fd,
->  #  define choose_32_64(a,b) b
->  #endif
->  
-> -#define valid_dev(x)  choose_32_64(old_valid_dev(x),true)
->  #define encode_dev(x) choose_32_64(old_encode_dev,new_encode_dev)(x)
->  
->  #ifndef INIT_STRUCT_STAT_PADDING
-> @@ -345,8 +344,6 @@ static int cp_new_stat(struct kstat *sta
->  {
->  	struct stat tmp;
->  
-> -	if (!valid_dev(stat->dev) || !valid_dev(stat->rdev))
-> -		return -EOVERFLOW;
->  #if BITS_PER_LONG == 32
->  	if (stat->size > MAX_NON_LFS)
->  		return -EOVERFLOW;
-> @@ -644,9 +641,6 @@ static int cp_compat_stat(struct kstat *
->  {
->  	struct compat_stat tmp;
->  
-> -	if (!old_valid_dev(stat->dev) || !old_valid_dev(stat->rdev))
-> -		return -EOVERFLOW;
-> -
->  	memset(&tmp, 0, sizeof(tmp));
->  	tmp.st_dev = old_encode_dev(stat->dev);
->  	tmp.st_ino = stat->ino;
-> 
+-- 
+With Best Regards,
+Andy Shevchenko
