@@ -2,169 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF0AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:45:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF94C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345725AbiDKKrw (ORCPT
+        id S1345730AbiDKKsA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36730 "EHLO
+        Mon, 11 Apr 2022 06:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345702AbiDKKrj (ORCPT
+        with ESMTP id S1345727AbiDKKr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:47:39 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FAE12AFC
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:45:25 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id F24411F7AC;
-        Mon, 11 Apr 2022 10:45:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1649673924; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hVUYTB3WUBI3nipWSQVbDluR/gCziMt65ki2FyAL220=;
-        b=EvQfgf2H+f8wmc3qTwFQQ/mf95NCQovHsr09zTZw65SjomlzxNHdni9o8lyDTitv+dzXK9
-        hGiKYejR/ya+WRC9qsG2oaiyWcPTRKyIaC2eTVX7fEz8TKAnFt7A8XqeZBi0iTXPkyRTi/
-        Q/2OEJd3eQJfIcPYsmNBPOw8grSPRRs=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A9BC2A3B92;
-        Mon, 11 Apr 2022 10:45:23 +0000 (UTC)
-Date:   Mon, 11 Apr 2022 12:45:20 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: guarantee forward progress: was: Re: [PATCH printk v2 11/12]
- printk: extend console_lock for proper kthread support
-Message-ID: <YlQGwNi2yB8WFaVM@alley>
-References: <20220405132535.649171-1-john.ogness@linutronix.de>
- <20220405132535.649171-12-john.ogness@linutronix.de>
- <YlA8jpuziDrD27A2@alley>
- <87v8vjnxdg.fsf@jogness.linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87v8vjnxdg.fsf@jogness.linutronix.de>
+        Mon, 11 Apr 2022 06:47:58 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CF31704D
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:45:44 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id md4so6592223pjb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:45:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=dVMawSZQEIcAON9OuUYu/RF6i61CbmAB/0P2rS+Niq0=;
+        b=ZnVU6Vdi4CL+JdxE8NFBbrd2sFXyWSxK0EFH++TjTRbG0/Ywgy/TvN0oHQ3T5rfWcE
+         JASXMyls9+hBrh1Nfos+PNyEVSVcSZdsydGO8g3MGdIUcatsCtr6fU2sJnhfjh/bf1CR
+         xXh3fB/W7HafnoxbTQbsipPRGjD1rMWaGmeQ1NLhCMsauZfie2C6vjbC4MOoVaVGoyRW
+         k3pm9Ne7QviKJeFFn5/d7audwxNXD/hi2con3rOImdwR6Qu16+rfzjzqahPzEcyNMS3x
+         yzXSJu3B0MR0TkTboEiPf4FV0J5umSUb/aLoDh3/oxxaL+JZUtzuFoDZDuEZTxJXGaf/
+         6oSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=dVMawSZQEIcAON9OuUYu/RF6i61CbmAB/0P2rS+Niq0=;
+        b=33hVVfsMZ1m/vAcT9fVsimKO7VNCyEnFUMpr8b0nVjG6cr0QYGeNXFF01J/xJAE+kG
+         WlTXKHg7ITtjADxQeC+sXYg4XBDaD/9fVIdSTGJYWw2wOZWfPWpXfL4/cXPS2zO2eijo
+         gv/QsCzt5p1nPF2H5vEHu98i/HyND2GLY+WewcCceXFNsNmF6LOcoMXNy8yEKdGLYQzS
+         2SRDNJ/W3ScR3nuZP5uGsKynBC4szPNL3IBRMw9hvBdVaYc+58cEpOeHGzmi+UCbxjdh
+         xNn0wvNx+raojx8HhzISSLg2Vxee2JD/R2vpj/Uinr3t+ecuEbkLeTOpzOLtxlSwrVK2
+         SMGw==
+X-Gm-Message-State: AOAM533zkqpCcHgefmx16hF64YhdEFes4dHJRqfMe0F9gfDEqxam+wi8
+        cxWWUSZVLLG6vIzp5OMysuSBp5NByHZoDM68
+X-Google-Smtp-Source: ABdhPJxQV566YQ2sGmNBa8P8URwOqIk8qwZsHAzUIOx7hk+NCDPg/uZ03WlZyPfhOG1kf2JlU/lMvg==
+X-Received: by 2002:a17:902:c94e:b0:156:498c:f02b with SMTP id i14-20020a170902c94e00b00156498cf02bmr32159946pla.49.1649673944101;
+        Mon, 11 Apr 2022 03:45:44 -0700 (PDT)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id s26-20020a65645a000000b0039cc7a70728sm12122565pgv.5.2022.04.11.03.45.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 03:45:43 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] firmware: turris-mox-rwtm: Fix return value check of wait_for_completion_timeout
+Date:   Mon, 11 Apr 2022 10:45:38 +0000
+Message-Id: <20220411104539.17971-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 2022-04-08 22:23:15, John Ogness wrote:
-> On 2022-04-08, Petr Mladek <pmladek@suse.com> wrote:
-> > I played a lot with it and it is really hard because:
-> >
-> >    + new messages can appear anytime
-> >    + direct mode might get requested anytime
-> >    + only the direct mode knows whether all messages were flushed
-> >      on all consoles
-> 
-> Yes, and this is why v1 dramatically simplified the picture by making
-> kthreads not care about direct mode. In v1 the kthread logic is very
-> simple: If there are messages to print, try to print them no matter
-> what. We didn't need to worry if someone was printing, because we knew
-> that at least the kthread was always printing.
-> 
-> This meant that there would be times when direct mode is active but the
-> kthreads are doing the printing. But in my experimenting, that tends to
-> be the case anyway, even with this more complex v2 approach. The reason
-> is that if some code does:
-> 
-> printk_prefer_direct_enter();
-> (100 lines of printk calls)
-> printk_prefer_direct_exit();
-> 
-> And directly before that printk_prefer_direct_enter() _any_ kthread was
-> already inside call_console_driver(), then _all_ the console_trylock()
-> calls of the above 100 printk's will fail. Inserting messages into the
-> ringbuffer is fast and any active printer will not have finished
-> printing its message before the above code snippet is done.
+wait_for_completion_timeout() returns unsigned long not int.
+It returns 0 if timed out, and positive if completed.
+The check for <= 0 is ambiguous and should be == 0 here
+indicating timeout which is the only error case
 
-Good to know.
+Fixes: 389711b37493 ("firmware: Add Turris Mox rWTM firmware driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/firmware/turris-mox-rwtm.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-> In fact, the above snippet will only do direct printing if there were
-> previously no unflushed messages. That is true for v1 (by design) and v2
-> (by misfortune, because ringbuffer insertion is much faster than a
-> single call_console_driver() call).
+diff --git a/drivers/firmware/turris-mox-rwtm.c b/drivers/firmware/turris-mox-rwtm.c
+index c2d34dc8ba46..5040b81d7849 100644
+--- a/drivers/firmware/turris-mox-rwtm.c
++++ b/drivers/firmware/turris-mox-rwtm.c
+@@ -193,15 +193,16 @@ static int mox_get_board_info(struct mox_rwtm *rwtm)
+ 	struct armada_37xx_rwtm_tx_msg msg;
+ 	struct armada_37xx_rwtm_rx_msg *reply = &rwtm->reply;
+ 	int ret;
++	unsigned long timeout;
+ 
+ 	msg.command = MBOX_CMD_BOARD_INFO;
+ 	ret = mbox_send_message(rwtm->mbox, &msg);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = wait_for_completion_timeout(&rwtm->cmd_done, HZ / 2);
+-	if (ret < 0)
+-		return ret;
++	timeout = wait_for_completion_timeout(&rwtm->cmd_done, HZ / 2);
++	if (timeout == 0)
++		return -ETIMEDOUT;
+ 
+ 	ret = mox_get_status(MBOX_CMD_BOARD_INFO, reply->retval);
+ 	if (ret == -ENODATA) {
+@@ -235,9 +236,9 @@ static int mox_get_board_info(struct mox_rwtm *rwtm)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = wait_for_completion_timeout(&rwtm->cmd_done, HZ / 2);
+-	if (ret < 0)
+-		return ret;
++	timeout = wait_for_completion_timeout(&rwtm->cmd_done, HZ / 2);
++	if (timeout == 0)
++		return -ETIMEDOUT;
+ 
+ 	ret = mox_get_status(MBOX_CMD_ECDSA_PUB_KEY, reply->retval);
+ 	if (ret == -ENODATA) {
+@@ -264,6 +265,7 @@ static int check_get_random_support(struct mox_rwtm *rwtm)
+ {
+ 	struct armada_37xx_rwtm_tx_msg msg;
+ 	int ret;
++	unsigned long timeout;
+ 
+ 	msg.command = MBOX_CMD_GET_RANDOM;
+ 	msg.args[0] = 1;
+@@ -274,9 +276,9 @@ static int check_get_random_support(struct mox_rwtm *rwtm)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = wait_for_completion_timeout(&rwtm->cmd_done, HZ / 2);
+-	if (ret < 0)
+-		return ret;
++	timeout = wait_for_completion_timeout(&rwtm->cmd_done, HZ / 2);
++	if (timeout == 0)
++		return -ETIMEDOUT;
+ 
+ 	return mox_get_status(MBOX_CMD_GET_RANDOM, rwtm->reply.retval);
+ }
+-- 
+2.17.1
 
-Yup.
-
-> This new idea (v2) of trying to stop kthreads in order to "step aside"
-> for direct printing is really just adding a lot of complexity, a lot of
-> irqwork calls, and a lot of races. And with my experimenting I am not
-> seeing any gain, except for new risks of nobody printing.
-> 
-> I understand that when we say printk_prefer_direct_enter() that we
-> _really_ want to do direct printing. But we cannot force it if any
-> printer is already inside call_console_driver(). In that case, direct
-> printing simply will not and cannot happen.
-
-I think that we should split it into situations when we need the
-direct printk and where we prefer the direct printing.
-
-1. The direct printing is needed in situations when the kthreads can't
-   work by design, e.g. early boot, panic, suspend, reboot.
-
-   This was the reason why I wanted to increase the chance that
-   kthreads would not block it. But as you write above, it does
-   not help much. The consoles are so slow that the direct mode
-   is not used.
-
-   It is clear that my proposal does not work. And it is not
-   reliable anyway. This patchset actually takes care of some
-   situations much better way, by calling pr_flush() in console_stop()
-   or suspend_console().
-
-
-2. The direct printing is only preferred in some situations where
-   the system is in troubles, for example, stall reports.
-
-   The direct mode is preferred because we think that it will be
-   more reliable. It is a conservative thinking. But in fact,
-   the kthreads might provide better results in many situations.
-
-   These stall reports often print a lot of debugging information.
-   The direct mode might cause soft-lockups and stalls on its own.
-   The kthreads allow showing the messages faster on fast consoles.
-
-   I could imagine that we actually remove the direct mode for
-   these stall reports in the future.
-
-   Anyway, it is perfectly fine to print them using kthreads
-   when the kthreads are working.
-
-
-> For v3 I recommend going back to the v1 model, where kthreads do not
-> care if direct mode is preferred. I claim that v2 does yield any more
-> actual direct printing than v1 did.
-
-I agree.
-
-> However, I would keep the v2 change that kthreads go into their
-> wait_event check after every message. That at least provides earlier
-> responses for kthreads to stop themselves if they are disabled.
-
-I am not sure what you mean. They seems to be completely disabled
-only when newly registered console is not able to create the kthread
-or when the kthread is not able to allocate buffers.
-
-I think that there is no hurry to stop the other kthreads in this
-case.
-
-Or do you mean panic?
-
-> Once we have atomic consoles, things will look different. Then we
-> perform true synchronous direct printing. But without them, the "prefer"
-> in printk_prefer_direct_enter() is only a preference that can only be
-> satisfied under ideal situations (i.e. no kthread is inside
-> call_console_driver()).
-
-OK.
-
-Best Regards,
-Petr
