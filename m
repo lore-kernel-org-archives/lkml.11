@@ -2,103 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1274C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:00:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FC6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:01:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347595AbiDKPDG (ORCPT
+        id S1347599AbiDKPDn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47276 "EHLO
+        Mon, 11 Apr 2022 11:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347630AbiDKPCk (ORCPT
+        with ESMTP id S1347522AbiDKPDk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:02:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D092422299;
-        Mon, 11 Apr 2022 08:00:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6091761530;
-        Mon, 11 Apr 2022 15:00:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD324C385A4;
-        Mon, 11 Apr 2022 15:00:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649689225;
-        bh=WQgiPWw15vZto8Oz4YQkJk3Gl2iuHt80f6Y58X7n7co=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=WlLeKH9ng0yCZvpA3Et0fAqBe5kAgqcQwXe7UKuqut42rDdVgVCfcNjlqzjgYHei+
-         C20cmatbGojQapZUjpDeFOEijhnpcHNSMZnQOxZc8jehKDi/gp+eXd+t2B6t9re9he
-         ZcC2XiAVUFQridhcvTxShgjHRERKHyOMRxc0U97XHF2E/QC5+qMeJjx2YcMP4VoFb6
-         uhNIsaVL7rLa48QHVtmMksDGttg4kwySmeVQs5YpDw2mWwQmD6zULx4fJpDt08W6Zu
-         MABLvJTzOtS8ImU/jlYohoqlUZk+WIzu4eq/k6lM8z9dcgj3wc0N0i2zTZw/GJjKwD
-         R0vdXURSU5aGw==
-Date:   Mon, 11 Apr 2022 17:00:22 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Josh Kilmer <srjek2@gmail.com>
-cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: Re: [PATCH] hid: asus: ROG NKey: Ignore portion of 0x5a report
-In-Reply-To: <CAMXW6=97T1tzT=FSyzZN6jBAKgzUDOjqRoH-FMAPLHk1gsD=mA@mail.gmail.com>
-Message-ID: <nycvar.YFH.7.76.2204111658520.30217@cbobk.fhfr.pm>
-References: <CAMXW6=97T1tzT=FSyzZN6jBAKgzUDOjqRoH-FMAPLHk1gsD=mA@mail.gmail.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Mon, 11 Apr 2022 11:03:40 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED4A22299
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:01:25 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id bv19so8463445ejb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:01:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8vzSRBeXvKjyTeUPc4QPwovFMBjJth2YNwp4fztDyrw=;
+        b=ngskO0MeMTz8MP1V/LdrseX0mPwNADHPy7XdJdepngtWWQ9BDbSXrbDnn4/5q3QY3q
+         oYIw526pTTgrNZVMJ6ESjuLl5dt5pE5Cj/8PLDqQSTxy0+oeX2dzi9d8Sz2Hd/QiLyZp
+         6MPr0fCA3HmD9YvNqOgoiETAPLCBkEWsqK7XwZ4a5AsRPviWcrhT0BD6Aj4CHoewrKZ8
+         4ElbnMLp5TzYXSlvsj/xhgkoqOBDC9FMmKKG7arIFgjSwitJDjHEfMYKqku1osk7vFsc
+         QIOs+pu4KAUCi7+duR/U23VNKYszxWSPvoJ4PFUDh1f5UueUvDxYiFS6NBBsRGmvZfFu
+         PRow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8vzSRBeXvKjyTeUPc4QPwovFMBjJth2YNwp4fztDyrw=;
+        b=cx6furN4w65Thyn8SYrEmaREcIblF4IOSvNx8chAYbBSEF7u87S+ss94jFZcLi0bEn
+         VQOhY06Bem5VJui3a2V6t3RW2EJnEqeKzWteYmyMF+qXlbJXzzPIX1LbXaNpv9eFW1b0
+         /krRvDnawVq7jNhKaDgMa3sZ18mTHiuN2+OEOPp/FhhI4F3pruyCCR2DvHD5iY+GHdrc
+         weGNv/7OxY1vWsOzn1hZO7LM5YI5QaEkiFMkIoxwGmJ4bjAeaBXFj8IOEpcrrjdDekqL
+         cMraezK7gZ28T+HPmfcYWTftARjnRaObyLhVClQumMHcj89mKKnSTADd7OH4IlEOCaSB
+         j0YQ==
+X-Gm-Message-State: AOAM530qN00lOernjuY4rrtlp1lgK5n2tXfJQjU4CKTFxwakwLNxzg2Y
+        ThuJyOQRPDIAE0bYZuPi7Gvm8lv0mP+C9QOIBwc=
+X-Google-Smtp-Source: ABdhPJwa3H8FRInC0BMJQHSPtoBeu3c19lyO5abPmk8AQ4K2YdqBJB5Fy3XZURkZWKBfKHFCxKl222DKj5IMQoaKB2o=
+X-Received: by 2002:a17:907:a411:b0:6e1:2084:99d2 with SMTP id
+ sg17-20020a170907a41100b006e1208499d2mr13335085ejc.639.1649689282042; Mon, 11
+ Apr 2022 08:01:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20220405135758.774016-1-catalin.marinas@arm.com> <20220405135758.774016-3-catalin.marinas@arm.com>
+In-Reply-To: <20220405135758.774016-3-catalin.marinas@arm.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Apr 2022 17:57:08 +0300
+Message-ID: <CAHp75Ve85_gDMUN91ZOhRLO3TkxmdO1crAcYjb1TGDCBmWbmFQ@mail.gmail.com>
+Subject: Re: [PATCH 02/10] drivers/base: Use ARCH_DMA_MINALIGN instead of ARCH_KMALLOC_MINALIGN
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022, Josh Kilmer wrote:
+On Wed, Apr 6, 2022 at 2:30 PM Catalin Marinas <catalin.marinas@arm.com> wrote:
+>
+> ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
+> operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
+> alignment.
 
-> On an Asus G513QY, of the 5 bytes in a 0x5a report, only the first byte
-> is a meaningful keycode. The other bytes are zeroed out or hold garbage
-> from the last packet sent to the keyboard.
-> 
-> This patch fixes up the report descriptor for this event so that the
-> general hid code will only process 1 byte for keycodes, avoiding
-> spurious key events and unmapped Asus vendor usagepage code warnings.
-> 
-> Signed-off-by: Josh Kilmer <srjek2@gmail.com>
+...
 
-Hi Josh,
+> -        * Thus we use ARCH_KMALLOC_MINALIGN here and get exactly the same
+> +        * Thus we use ARCH_DMA_MINALIGN here and get at least the same
+>          * buffer alignment as if it was allocated by plain kmalloc().
 
-thanks for the patch.
-
-A couple remarks:
-
-> ---
->  drivers/hid/hid-asus.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
-> index 08c9a9a60ae4..73fb9fc0701c 100644
-> --- a/drivers/hid/hid-asus.c
-> +++ b/drivers/hid/hid-asus.c
-> @@ -1212,6 +1212,14 @@ static __u8 *asus_report_fixup(struct
-> hid_device *hdev, __u8 *rdesc,
->         rdesc = new_rdesc;
->     }
-> 
-> +   if (drvdata->quirks & QUIRK_ROG_NKEY_KEYBOARD &&
-> +           *rsize == 331 && rdesc[190] == 0x85 && rdesc[191] == 0x5a &&
-> +           rdesc[204] == 0x95 && rdesc[205] == 0x05) {
-> +       hid_info(hdev, "Fixing up Asus N-KEY keyb report descriptor\n");
-> +       // On the 0x5A input report, change count from 5 to 1
-> +       rdesc[205] = 0x01;
-> +   }
-
-- your mail client whitespace-damaged the patch, so it can't be applied; 
-  could you please fix that and resend?
-
-- the comment above is (a) using non-standard kernel commenting style, and 
-  quite honestly (b) seems a little bit superfluous
-
-Could you please fix that up and resend?
-
-Thanks,
+But then it becomes not true either, because the kmalloc() has other
+alignment constraints.
 
 -- 
-Jiri Kosina
-SUSE Labs
-
+With Best Regards,
+Andy Shevchenko
