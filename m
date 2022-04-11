@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFEFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:24:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAD6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345480AbiDKK0N (ORCPT
+        id S1345524AbiDKK0S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:26:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55134 "EHLO
+        Mon, 11 Apr 2022 06:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345373AbiDKKZ0 (ORCPT
+        with ESMTP id S1345488AbiDKKZX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:25:26 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9664E45040
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:22:13 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id mp16-20020a17090b191000b001cb5efbcab6so5687626pjb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:22:13 -0700 (PDT)
+        Mon, 11 Apr 2022 06:25:23 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EF0A44A28
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:22:06 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id s14so3845072plk.8
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:22:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=u0Zrucn+WwL2muTuZbK71MP5TYNDykrOeiAojxdU0WI=;
-        b=Ch7QdJknQqzcOMoV8qxSf6WOdf7BNtp+gc2rzVO0jw+mSNFxtNzmw/zu72/nAI7tbw
-         u84t7t6no98vZm/up1Z8bUEbzFlFfeRkYmRPlwKjT+cscsV9eEHUZKNnBiuXUf3WhiT4
-         yPeU1K1tv8EeDkfGOupRpLBLT5r3GAPx9tkcLat/RfuI+z1KHRLY5mP3sBnpPbY5vGzV
-         ChatEL3m4Iv7smjU4LZfDieL8WwozJFtKPBJ53+kk4lVstpqd9bhbnUlPZBXGGVoKRHA
-         vS8onxkLGq1yq67MU22cpGaXBel69FYTvpn+BrITDN2uXhqbUtpOR2xOYOoCVC7saFlA
-         Xgjg==
+        bh=+lgjywWBVQmpZrn9ZKLreOJoALlRHPio16ACwlfnaJI=;
+        b=d7rxJ+WZDC/jumO0M6nhsIm/EvJFwzJlyjaIVOFxY4HjphZSBQxsdtT960isCe5iit
+         K6iZXL1Vq+bP1qtBM8muP7wtGOE2jbM0pgK7d5g6hwbXyMdtJwf3o4f1GIO3sa7tAd5d
+         nvw2lWVy+CtXSVi1a76Pz7tA6qmTnAdlX0oiKJ0FqWOnbPDp1mjPViotd/ICEasQHM6c
+         Y9NCQYx5wlY8LGhchJofcdURg7hU6eu8982d0nLflSfIm6P2O9IFUaIkhWH3hPgtIWSg
+         a6QS9DeawegMypCz3ZvxhiYktBMRl4Nq/IYmp+25x1Ot4cVNs7TTw1pFUiEcGIdw2CbR
+         nWhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=u0Zrucn+WwL2muTuZbK71MP5TYNDykrOeiAojxdU0WI=;
-        b=yTGuILQsFKwJGFTbRyMuDyk8fHSsrq96KrQLx2tXjV8IQFfSlnC6sechTrZwlRoENa
-         9nOyixrdaCKlu+83G4Yt7j2aR/Gf93OPynFWO5158WEqjDYbozS5DEC2obg4D19b5Jr6
-         p6hGcChBxQ1wz7QL5CGanqOZ0t1v3P1o+ZOIOneuOmhchSWRorPW5yZK+RQJIrzcAMn0
-         DJaFOZ0HI8CipCNwfgS51A6WlkR7P+WtKh+0yaXyyaPeMNMom0gO/wmX1ns1w+VLNB8T
-         UGxu8IwX5w9VOXVrAEPnCknYUT7PuScbHMpcxeXjQMaNRk8p9OUDYe9xR6KiGjokYkcI
-         zO5g==
-X-Gm-Message-State: AOAM531oYjsvskGKL3F7qDz0m4oD3ML+uRneZKOnS5eBDDBJogTdB5u2
-        6+DEPWoF6FlfQVc1W11nHoo=
-X-Google-Smtp-Source: ABdhPJxYWMg1MZfRhJeYN5uUBu1QegtEZehtCCABl6fPidSMXprTMg1jnpqCwnjSCiprkDJGzgMJQA==
-X-Received: by 2002:a17:90b:4c92:b0:1c7:a9a3:6274 with SMTP id my18-20020a17090b4c9200b001c7a9a36274mr35551149pjb.148.1649672532937;
-        Mon, 11 Apr 2022 03:22:12 -0700 (PDT)
+        bh=+lgjywWBVQmpZrn9ZKLreOJoALlRHPio16ACwlfnaJI=;
+        b=IEWZIhCcHXbQN2f96CnluF3It6a1J0s8a59Ti3Vuz01/1AnLMNxd+nFlhH5o24XUdN
+         WdSBeFPIvtc0shmFPD9II6/K11ObszjXFe6ViRhHZJbfsvkPtOW+N6wPAOjD6paRhQ7S
+         FvAWUTKc1/GwKInb9NHshT50yxABYT62AyJgYWmCdJQkNegu/KsOV4Nx9oKGmNClVO37
+         JHrCD58it5Nhc6kIG8D1qlJaChqF38Mkt6K8AeE/vzcETsB0I5/v4yaDfjoVs9HC0ph8
+         GpgzYXNwRLZc3DcWn8q1ngSESgfuyqoj4RzMfAMTYQKWBv7EY4IJVLJ1sgRyEj3Qjph7
+         B9lA==
+X-Gm-Message-State: AOAM530jADbsmVB01JCXTfcddRFxQxnQpc8wwzrFKroSKRrYHlVRcoSP
+        byFE9uGE/Ze0j+u9pHn6SVDZ0UdPtU4QIpL/
+X-Google-Smtp-Source: ABdhPJyeaS1sxH+615n08xEVAzTOHEZPU/3I6q1yhe6Wg0OVgR5ePq0jgn/eRBNwPrt9PVkSdvsKBg==
+X-Received: by 2002:a17:902:cf05:b0:156:2aa:6e13 with SMTP id i5-20020a170902cf0500b0015602aa6e13mr31406752plg.137.1649672525858;
+        Mon, 11 Apr 2022 03:22:05 -0700 (PDT)
 Received: from makvihas.localhost.com ([2405:201:202b:15:4376:c658:ae1e:1781])
-        by smtp.gmail.com with ESMTPSA id z14-20020a17090a170e00b001cb7e69ee5csm4886318pjd.54.2022.04.11.03.22.09
+        by smtp.gmail.com with ESMTPSA id z14-20020a17090a170e00b001cb7e69ee5csm4886318pjd.54.2022.04.11.03.22.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 03:22:12 -0700 (PDT)
+        Mon, 11 Apr 2022 03:22:05 -0700 (PDT)
 From:   Vihas Makwana <makvihas@gmail.com>
 To:     Larry Finger <Larry.Finger@lwfinger.net>,
         Phillip Potter <phil@philpotter.co.uk>,
@@ -58,9 +58,9 @@ Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Dan Carpenter <dan.carpenter@oracle.com>,
         Pavel Skripkin <paskripkin@gmail.com>,
         Vihas Makwana <makvihas@gmail.com>
-Subject: [PATCH v2 5/7] staging: r8188eu: drop unnecessary wrapper _rtw_free_mlme_priv
-Date:   Mon, 11 Apr 2022 15:51:34 +0530
-Message-Id: <20220411102136.14937-6-makvihas@gmail.com>
+Subject: [PATCH v2 3/7] staging: r8188eu: drop unnecessary wrapper _rtw_init_evt_priv
+Date:   Mon, 11 Apr 2022 15:51:32 +0530
+Message-Id: <20220411102136.14937-4-makvihas@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220411102136.14937-1-makvihas@gmail.com>
 References: <20220411102136.14937-1-makvihas@gmail.com>
@@ -70,63 +70,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop unnecessary wrapper _rtw_free_mlme_priv and move its logic to
-rtw_free_mlme_priv.
+Drop unnecessary wrapper _rtw_init_evt_priv and move its logic to
+rtw_init_evt_priv.
 
 Signed-off-by: Vihas Makwana <makvihas@gmail.com>
 ---
- drivers/staging/r8188eu/core/rtw_mlme.c    | 17 +++++------------
- drivers/staging/r8188eu/include/rtw_mlme.h |  2 --
- 2 files changed, 5 insertions(+), 14 deletions(-)
+ drivers/staging/r8188eu/core/rtw_cmd.c | 27 +++++++++-----------------
+ 1 file changed, 9 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_mlme.c b/drivers/staging/r8188eu/core/rtw_mlme.c
-index 6b8c80fe9..5584e1b84 100644
---- a/drivers/staging/r8188eu/core/rtw_mlme.c
-+++ b/drivers/staging/r8188eu/core/rtw_mlme.c
-@@ -53,17 +53,6 @@ void rtw_free_mlme_priv_ie_data(struct mlme_priv *pmlmepriv)
- 	rtw_free_mlme_ie_data(&pmlmepriv->p2p_assoc_req_ie, &pmlmepriv->p2p_assoc_req_ie_len);
- }
+diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+index 3d1fdc852..3781706f7 100644
+--- a/drivers/staging/r8188eu/core/rtw_cmd.c
++++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+@@ -17,22 +17,6 @@
  
--void _rtw_free_mlme_priv(struct mlme_priv *pmlmepriv)
+ static void c2h_wk_callback(struct work_struct *work);
+ 
+-static int _rtw_init_evt_priv(struct evt_priv *pevtpriv)
 -{
+-	int res = _SUCCESS;
 -
--	rtw_free_mlme_priv_ie_data(pmlmepriv);
+-	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
+-	atomic_set(&pevtpriv->event_seq, 0);
 -
--	if (pmlmepriv) {
--		vfree(pmlmepriv->free_bss_buf);
--	}
+-	INIT_WORK(&pevtpriv->c2h_wk, c2h_wk_callback);
+-	pevtpriv->c2h_wk_alive = false;
+-	pevtpriv->c2h_queue = rtw_cbuf_alloc(C2H_QUEUE_MAX_LEN + 1);
+-	if (!pevtpriv->c2h_queue)
+-		res = _FAIL;
 -
+-	return res;
 -}
 -
- struct	wlan_network *_rtw_alloc_network(struct	mlme_priv *pmlmepriv)/* _queue *free_queue) */
+ void rtw_free_evt_priv(struct	evt_priv *pevtpriv)
  {
- 	struct	wlan_network	*pnetwork;
-@@ -290,7 +279,11 @@ int rtw_init_mlme_priv(struct adapter *padapter)/* struct	mlme_priv *pmlmepriv)
+ 	cancel_work_sync(&pevtpriv->c2h_wk);
+@@ -133,9 +117,16 @@ u32	rtw_init_cmd_priv(struct cmd_priv *pcmdpriv)
  
- void rtw_free_mlme_priv(struct mlme_priv *pmlmepriv)
+ u32 rtw_init_evt_priv(struct evt_priv *pevtpriv)
  {
--	_rtw_free_mlme_priv(pmlmepriv);
-+	rtw_free_mlme_priv_ie_data(pmlmepriv);
+-	int	res;
++	u32 res = _SUCCESS;
 +
-+	if (pmlmepriv) {
-+		vfree(pmlmepriv->free_bss_buf);
-+	}
++	/* allocate DMA-able/Non-Page memory for cmd_buf and rsp_buf */
++	atomic_set(&pevtpriv->event_seq, 0);
+ 
+-	res = _rtw_init_evt_priv(pevtpriv);
++	INIT_WORK(&pevtpriv->c2h_wk, c2h_wk_callback);
++	pevtpriv->c2h_wk_alive = false;
++	pevtpriv->c2h_queue = rtw_cbuf_alloc(C2H_QUEUE_MAX_LEN + 1);
++	if (!pevtpriv->c2h_queue)
++		res = _FAIL;
+ 
+ 	return res;
  }
- 
- static struct wlan_network *rtw_alloc_network(struct mlme_priv *pmlmepriv)
-diff --git a/drivers/staging/r8188eu/include/rtw_mlme.h b/drivers/staging/r8188eu/include/rtw_mlme.h
-index 1dc1fbf04..fc30793f4 100644
---- a/drivers/staging/r8188eu/include/rtw_mlme.h
-+++ b/drivers/staging/r8188eu/include/rtw_mlme.h
-@@ -560,8 +560,6 @@ void rtw_scan_timeout_handler(struct adapter *adapter);
- 
- void rtw_free_mlme_priv_ie_data(struct mlme_priv *pmlmepriv);
- 
--void _rtw_free_mlme_priv(struct mlme_priv *pmlmepriv);
--
-  struct wlan_network *_rtw_alloc_network(struct mlme_priv *pmlmepriv);
- 
- void _rtw_free_network(struct mlme_priv *pmlmepriv,
 -- 
 2.30.2
 
