@@ -2,102 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 787C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:16:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFA5C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344303AbiDKJSk (ORCPT
+        id S1344295AbiDKJTO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38040 "EHLO
+        Mon, 11 Apr 2022 05:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237452AbiDKJSd (ORCPT
+        with ESMTP id S236206AbiDKJTL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:18:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E90A2CC9D;
-        Mon, 11 Apr 2022 02:16:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88DBFB8118C;
-        Mon, 11 Apr 2022 09:16:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A377C385A3;
-        Mon, 11 Apr 2022 09:16:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649668571;
-        bh=xisObcFJacVpSDNre/0NSb+BNa0t4nHTlVZpSFv1auw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dBIs6uqIbCd6a+kmttrcDqRKHOuazGnT4xsxgF5WYpv9e+B3fd7i8MfEv4OgkVnO9
-         7i+++kF7sHCouQ837msmSo5buiO4/FFkXxVpD4fU97zueHa58hpBQ8/rMa7Bsk/CtD
-         Xq9u9rW4ppHiy54KvKJx8GwphBsSF7TqUQoUzbSc=
-Date:   Mon, 11 Apr 2022 11:16:03 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Laurent Vivier <laurent@vivier.eu>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-rtc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        stable <stable@vger.kernel.org>
-Subject: Re: [PATCH v16 1/4] tty: goldfish: introduce
- gf_ioread32()/gf_iowrite32()
-Message-ID: <YlPx0/u/g9dMYxEn@kroah.com>
-References: <20220406201523.243733-1-laurent@vivier.eu>
- <20220406201523.243733-2-laurent@vivier.eu>
- <Yk5tNOPE4b2QbHLG@kroah.com>
- <198be9ea-a8c2-0f9e-6ae5-a7358035def4@vivier.eu>
- <Yk6CO11wyo86ylee@kroah.com>
- <CAMuHMdW=-nnKSLRZbHGkQQ8zEBxjQ4T1XXyTfv5-fM-h-+fQQA@mail.gmail.com>
+        Mon, 11 Apr 2022 05:19:11 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C74E2C67F
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:16:58 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C22B2ED1;
+        Mon, 11 Apr 2022 02:16:57 -0700 (PDT)
+Received: from [10.163.38.140] (unknown [10.163.38.140])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A9ABB3F73B;
+        Mon, 11 Apr 2022 02:16:51 -0700 (PDT)
+Message-ID: <46a99793-2e24-f3c5-c63f-ab2ad88966ea@arm.com>
+Date:   Mon, 11 Apr 2022 14:47:26 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMuHMdW=-nnKSLRZbHGkQQ8zEBxjQ4T1XXyTfv5-fM-h-+fQQA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 2/2] arm64: mm: hugetlb: Enable
+ HUGETLB_PAGE_FREE_VMEMMAP for arm64
+Content-Language: en-US
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        David Rientjes <rientjes@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>, james.morse@arm.com,
+        Barry Song <21cnbao@gmail.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Xiongchun duan <duanxiongchun@bytedance.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        Muchun Song <smuchun@gmail.com>
+References: <20220331065640.5777-1-songmuchun@bytedance.com>
+ <20220331065640.5777-2-songmuchun@bytedance.com>
+ <d6e2581e-a8ac-4848-2c64-4a221bd03bca@arm.com>
+ <CAMZfGtWyXmPwZWsH_pP_M7p30uBww8BdP0DRXQRjBkT_VP=uUA@mail.gmail.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <CAMZfGtWyXmPwZWsH_pP_M7p30uBww8BdP0DRXQRjBkT_VP=uUA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 10:53:39AM +0200, Geert Uytterhoeven wrote:
-> Hi Greg,
-> 
-> On Thu, Apr 7, 2022 at 8:18 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > On Thu, Apr 07, 2022 at 08:00:08AM +0200, Laurent Vivier wrote:
-> > > Le 07/04/2022 à 06:48, Greg KH a écrit :
-> > > > On Wed, Apr 06, 2022 at 10:15:20PM +0200, Laurent Vivier wrote:
-> > > > > Revert
-> > > > > commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
-> > > > >
-> > > > > and define gf_ioread32()/gf_iowrite32() to be able to use accessors
-> > > > > defined by the architecture.
-> > > > >
-> > > > > Cc: stable@vger.kernel.org # v5.11+
-> > > > > Fixes: da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
-> > > > > Signed-off-by: Laurent Vivier <laurent@vivier.eu>
-> > > > > Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > > > ---
-> > > > >   drivers/tty/goldfish.c   | 20 ++++++++++----------
-> > > > >   include/linux/goldfish.h | 15 +++++++++++----
-> > > > >   2 files changed, 21 insertions(+), 14 deletions(-)
-> > > > >
-> > > >
-> > > > Why is this a commit for the stable trees?  What bug does it fix?  You
-> > > > did not describe the problem in the changelog text at all, this looks
-> > > > like a housekeeping change only.
-> > >
-> > > Arnd asked for that in:
-> > >
-> > >   Re: [PATCH v11 2/5] tty: goldfish: introduce gf_ioread32()/gf_iowrite32()
-> > >   https://lore.kernel.org/lkml/CAK8P3a1oN8NrUjkh2X8jHQbyz42Xo6GSa=5n0gD6vQcXRjmq1Q@mail.gmail.com/
-> >
-> > You did not provide a reason in this changelog to explain any of that :(
-> 
-> OK if I queue that patch with the rationale from Arnd's email added
-> to the patch description?
 
-Fine with me, merge away!
+
+On 4/5/22 14:08, Muchun Song wrote:
+> On Tue, Apr 5, 2022 at 12:44 PM Anshuman Khandual
+> <anshuman.khandual@arm.com> wrote:
+>>
+>>
+>>
+>> On 3/31/22 12:26, Muchun Song wrote:
+>>> 1st concern:
+>>> '''
+>>> But what happens when a hot remove section's vmemmap area (which is
+>>> being teared down) is nearby another vmemmap area which is either created
+>>> or being destroyed for HugeTLB alloc/free purpose. As you mentioned
+>>> HugeTLB pages inside the hot remove section might be safe. But what about
+>>> other HugeTLB areas whose vmemmap area shares page table entries with
+>>> vmemmap entries for a section being hot removed ? Massive HugeTLB alloc
+>>> /use/free test cycle using memory just adjacent to a memory hotplug area,
+>>> which is always added and removed periodically, should be able to expose
+>>> this problem.
+>>> '''
+>>>
+>>> Answer: At the time memory is removed, all HugeTLB pages either have been
+>>> migrated away or dissolved.  So there is no race between memory hot remove
+>>> and free_huge_page_vmemmap().  Therefore, HugeTLB pages inside the hot
+>>> remove section is safe.  Let's talk your question "what about other
+>>
+>> HugeTLB pages inside the memory range is safe but concern is about the
+>> vmemmap mapping for the HugeTLB which might share intermediate entries
+>> with vmemmap mapping for the memory range/section being removed.
+> 
+> The shared page table level only could be PMD, PUD and PGD, the PTE
+> page table cannot be shared with other sections, and we only exchange
+> PTEs for vmemmap mapping.
+
+Right, the shared entries (if any) are not at the leaf level.
+
+> 
+>>
+>>> HugeTLB areas whose vmemmap area shares page table entries with vmemmap
+>>> entries for a section being hot removed ?", the question is not
+>>
+>> Right.
+>>
+>>> established.  The minimal granularity size of hotplug memory 128MB (on
+>>> arm64, 4k base page), any HugeTLB smaller than 128MB is within a section,
+>>> then, there is no share PTE page tables between HugeTLB in this section
+>>
+>> 128MB is the hot removable granularity but, its corresponding vmemmap
+>> range is smaller i.e (128MB/4K) * sizeof(struct page). Memory section
+>> getting hot removed (its vmemmap mapping being teared down) along with
+>> HugeTLB (on another section) vmemmap remap operation, could not collide
+>> while inside vmemmap mapping areas on init_mm ?
+> 
+> The boundary address of a section is aligned with 128MB and its
+> corresponding vmemmap boundary address is aligned with 2MB
+> which is mapped with a separated PTE page table (or a PMD entry).
+
+Even if these PMD entries split during HugeTLB remapping, they will not
+conflict with another memory section being removed simultaneously. Also
+any shared page table pages will not be freed, during memory hot remove
+operation as vmemmap remap does not delete any entries.
+
+But just wondering if during PMD slit and PTE page table page addition,
+these PMD entries could not be empty, even temporarily ?
+
+> Different sections do not share the same PTE, there are no conflicts
+> between a hot removed section and a remapping vmemmap section
+> since we are operating on different PTE. Right?
+> 
+>>
+>>> and ones in other sections and a HugeTLB page could not cross two
+>>> sections.  In this case, the section cannot be freed.  Any HugeTLB bigger
+>>
+>> Right, they dont cross into two different sections.
+>>
+>>> than 128MB (section size) whose vmemmap pages is an integer multiple of
+>>> 2MB (PMD-mapped).  As long as:
+>>>
+>>>   1) HugeTLBs are naturally aligned, power-of-two sizes
+>>>   2) The HugeTLB size >= the section size
+>>>   3) The HugeTLB size >= the vmemmap leaf mapping size
+>>>
+>>> Then a HugeTLB will not share any leaf page table entries with *anything
+>>> else*, but will share intermediate entries.  In this case, at the time memory
+>>> is removed, all HugeTLB pages either have been migrated away or dissolved.
+>>> So there is also no race between memory hot remove and
+>>> free_huge_page_vmemmap().
+>>
+>> If they just share intermediate entries, free_empty_tables() will not free
+>> up page table pages, as there will be valid non-zero entries in them. But
+> 
+> Right.
+> 
+>> the problem here is not UAF, its accessing wrong entries and crashing while
+>> de-referncing the pointer. Hence I am wondering if no such scenario can be
+>> possible.
+>>
+> 
+> What's the wrong entries? You mean the reused vmemmap page entries?
+> If so, I think free_empty_tables() will not cause any crash.  The hot removed
+> operation couldn't reach those entries since those addresses mapped with
+> those reused entries are not included in the range of the hot removed section.
+
+Fair enough. I guess if intermediate PMD entries during split, during HugeTLB
+vmemmap remap, cannot be empty (even temporarily), this should be fine.
