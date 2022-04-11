@@ -2,95 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 726A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F25DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344872AbiDKJzA (ORCPT
+        id S1344719AbiDKJzF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51130 "EHLO
+        Mon, 11 Apr 2022 05:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345072AbiDKJxW (ORCPT
+        with ESMTP id S1344943AbiDKJw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:53:22 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B285CD3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:51:08 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id l7so24262589ejn.2
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:51:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=iDorRWYF+QQ7tsQ5XJAfMUGysPHXxZuhvqA5athArg4=;
-        b=cQUcIjYqumxFXKIfax6Ac8EtD9FDWOfGxzbGQVqSOljpl775nxUIiMeTO8Xp/bJT9n
-         grUwLrpbFGnfB1LswBBPbgAuAlSZZalLgirSgNC8Wz6z12NgXyEI3u6lTpl0XoFngnt/
-         Ao6Zj5AdYIwiBtHhcUNWFdV9E4rRwnuejnHx5RXMcwpeECvQXlRzL1ap2ZaPbC3Q/ZLT
-         hdMmrdhF+tPKedGTSo7exitV750T6YVuHFDM17lKLxHO+en6cinkI9rZy4HAMe897N6x
-         sna7mzw2litogiKbmAHMl5lVfdwFnBZNTh6ussREe/jgl2E34XnhViJgLcbRVEQDVcPN
-         HoiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iDorRWYF+QQ7tsQ5XJAfMUGysPHXxZuhvqA5athArg4=;
-        b=YgzjiMuCdIcrisgxaIsyJcc3pdeETRQr04EbALFjNd9qfQQoLP07H1Ay49dBwh6All
-         uilxmiClgtutILd4uEkQeIiD1LG7m1dpVry4tKqLTOUnEOhFkTmv7jsTDezeQLh0QSMD
-         0qgunqJRJS0bOHytCZbIvGwp/1C/1XQb36artmc9yhhq/RVVZrxvjag1QdSkyc75M10I
-         rxrmqww9obtcYoDb8O4Hk/azrk6UrM3xYTo0Q7FFSgs0xwIpg2ET051k54eWS+tdebxd
-         4oiTI8zFo6l60A/bBf706OQdoPnIdEfComjhWcEmTn8F0/zRhq8/7eaTGbsdzmiJN7RW
-         99oA==
-X-Gm-Message-State: AOAM5311dmrRJiC82Z5rNodfcVJ5/6KaGH+JRpkr0iu9oGxfw4fVZXTw
-        XygMGNIUyhIyiZDfiJdX1LOv1Eca2m6BReEQ
-X-Google-Smtp-Source: ABdhPJyKyVJsgYT5B0W9dpIJ6npkZo/eH4l4L0qruFZU6wbmitvhLWcwAuqSBf+SfmmtGbdwMwfbWg==
-X-Received: by 2002:a17:906:7314:b0:6df:839f:af7 with SMTP id di20-20020a170906731400b006df839f0af7mr29069881ejc.65.1649670667205;
-        Mon, 11 Apr 2022 02:51:07 -0700 (PDT)
-Received: from [192.168.0.191] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id j12-20020a056402238c00b0041ce094cf47sm9469078eda.60.2022.04.11.02.51.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 02:51:06 -0700 (PDT)
-Message-ID: <b4d721f5-7eb6-480b-84ea-8fcea7516fde@linaro.org>
-Date:   Mon, 11 Apr 2022 11:51:05 +0200
+        Mon, 11 Apr 2022 05:52:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963D24160F;
+        Mon, 11 Apr 2022 02:50:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16D90611FA;
+        Mon, 11 Apr 2022 09:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 75C93C385AA;
+        Mon, 11 Apr 2022 09:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649670612;
+        bh=GuJFG53Lyt1GJWIAIkP2ZLP4k7bednAsSosnxkzKEvE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ljqi4+aVEpo3l/6vai2pbhlpFy33dAC8X2BpoABkMlf11n6IzWB24DyD4xic06plD
+         ejHSzGsPA43MD8YKB22E1BS8mEBZ8FY1l/gcADMHj8XGrPYUNNAOTqciakUeFcqZ/V
+         VC+iv46S+m4LxTapSin1UNtCGtwufLp6GurKNI95BiDpHiIDLcw5JX7eIktiRIBySB
+         trnyEEB5C+heli5zKeKx1n5kv9sxCsQuotCzC81um1BPFPx7whsCU5tUEyonEgVI2a
+         GzISkVu6DS7xUMBdg1duJFqEreWaul4oe69o7yn2u0H2+UqNx9qLXAI3nxB9J8yNRF
+         Uqv4vQ0mQjo/A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5C63AE85B76;
+        Mon, 11 Apr 2022 09:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RESEND PATCH] dt-bindings: power: renesas,rcar-sysc: drop
- useless consumer example
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220407193542.17230-1-krzysztof.kozlowski@linaro.org>
- <CAMuHMdWXLiTKDpXydKQh-fmyHOHb8WpCe9oetNrs2GGNGZqRCg@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAMuHMdWXLiTKDpXydKQh-fmyHOHb8WpCe9oetNrs2GGNGZqRCg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH RESEND net-next v5 0/4] net: icmp: add skb drop reasons to
+ icmp
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164967061237.14330.9593328118973073943.git-patchwork-notify@kernel.org>
+Date:   Mon, 11 Apr 2022 09:50:12 +0000
+References: <20220407062052.15907-1-imagedong@tencent.com>
+In-Reply-To: <20220407062052.15907-1-imagedong@tencent.com>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        rostedt@goodmis.org, mingo@redhat.com, xeb@mail.ru,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org, alobakin@pm.me,
+        flyingpeng@tencent.com, mengensun@tencent.com,
+        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, benbjiang@tencent.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/04/2022 11:14, Geert Uytterhoeven wrote:
->>
->> -description:
->> +description: |
->>    The R-Car (RZ/G) System Controller provides power management for the CPU
->>    cores and various coprocessors.
->> +  The power domain IDs for consumers are defined in header files::
->> +  include.dt-bindings/power/r8*-sysc.h
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu,  7 Apr 2022 14:20:48 +0800 you wrote:
+> From: Menglong Dong <imagedong@tencent.com>
 > 
-> include/dt-bindings/power/r8*-sysc.h?
+> In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()"),
+> we added the support of reporting the reasons of skb drops to kfree_skb
+> tracepoint. And in this series patches, reasons for skb drops are added
+> to ICMP protocol.
 > 
-> Or does the period have a special meaning here?
+> [...]
 
-Uh, sorry for this. A typo. Thanks for the report. I will send a fix.
+Here is the summary with links:
+  - [RESEND,net-next,v5,1/4] net: sock: introduce sock_queue_rcv_skb_reason()
+    https://git.kernel.org/netdev/net-next/c/c1b8a56755ee
+  - [RESEND,net-next,v5,2/4] net: skb: rename SKB_DROP_REASON_PTYPE_ABSENT
+    https://git.kernel.org/netdev/net-next/c/9f8ed577c288
+  - [RESEND,net-next,v5,3/4] net: icmp: introduce __ping_queue_rcv_skb() to report drop reasons
+    https://git.kernel.org/netdev/net-next/c/41a95a00ebef
+  - [RESEND,net-next,v5,4/4] net: icmp: add skb drop reasons to icmp protocol
+    https://git.kernel.org/netdev/net-next/c/b384c95a861e
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Best regards,
-Krzysztof
