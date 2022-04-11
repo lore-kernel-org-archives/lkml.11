@@ -2,82 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C011DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53640C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344980AbiDKKFK (ORCPT
+        id S1345007AbiDKKFy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:05:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56028 "EHLO
+        Mon, 11 Apr 2022 06:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238825AbiDKKFJ (ORCPT
+        with ESMTP id S240125AbiDKKFt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:05:09 -0400
-Received: from fuzzserver.tsinghua.edu.cn (unknown [166.111.139.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C7F40E73
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:02:55 -0700 (PDT)
-Received: by fuzzserver.tsinghua.edu.cn (Postfix, from userid 1000)
-        id 1E144F42C77; Mon, 11 Apr 2022 18:02:54 +0800 (CST)
-From:   Zixuan Fu <r33s3n6@gmail.com>
-To:     shaggy@kernel.org
-Cc:     jfs-discussion@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Subject: [PATCH] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Mon, 11 Apr 2022 18:02:45 +0800
-Message-Id: <20220411100245.685611-1-r33s3n6@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Apr 2022 06:05:49 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7871B4160E;
+        Mon, 11 Apr 2022 03:03:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649671416;
+  x=1681207416;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=/Aw9Ecq6L7fdadg/faZ3YXTQ0SGHw1j32xDTyNi0kHM=;
+  b=XxL4bL5gQqGvgs3+kNk4872vI8TUrRicmfn5CKGocooS8TI6L4RqfjPB
+   gZtWN12zeSSzYEGaNzM1Gd5xcqRGMpmOSvaj+mdvaL0WqKfQnYTDuFujz
+   VVD6rRRx8h7ioA/gCZy4h3lkLUthPsBj3yowYC5YXkDvPapkuphwetIOs
+   KJKp2Hso60apAafHXpcTKfoqjSz+jhIVilbvjAJ9l/Pb1rQuJNONefFOt
+   Q9G6vkKBafUC1uhzbDaU7Qz7Z9JKBrNnEP673AavPhCkoH874zzYuI/EA
+   NiN3hq9cDDnV0DgHZzUNl8jZbqU85XFzH9qDPau+Be+YJOgK0k5bIhjq8
+   g==;
+From:   Camel Guo <camel.guo@axis.com>
+To:     <linux@roeck-us.net>, <jdelvare@suse.com>, <robh+dt@kernel.org>,
+        <krzk+dt@kernel.org>
+CC:     <kernel@axis.com>, Camel Guo <camel.guo@axis.com>,
+        <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Camel Guo <camelg@axis.com>
+Subject: [PATCH 1/2] dt-bindings: hwmon: Add TMP401, TMP411 and TMP43x
+Date:   Mon, 11 Apr 2022 12:03:28 +0200
+Message-ID: <20220411100329.1783432-2-camel.guo@axis.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220411100329.1783432-1-camel.guo@axis.com>
+References: <20220411100329.1783432-1-camel.guo@axis.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in 
-"write_metapage(mp)".
+From: Camel Guo <camelg@axis.com>
 
-The failure log is listed as follows:
+Document the TMP401, TMP411 and TMP43x device devicetree bindings
 
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
-
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Signed-off-by: Camel Guo <camelg@axis.com>
 ---
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/hwmon/ti,tmp401.yaml  | 111 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ 2 files changed, 112 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
 
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index d8502f4989d9..e75f31b81d63 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -385,7 +385,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 	}
- 
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
- 
- 	IREAD_UNLOCK(ipbmap);
+diff --git a/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+new file mode 100644
+index 000000000000..28be5cbb009b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+@@ -0,0 +1,111 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/hwmon/ti,tmp401.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: TMP401, TPM411 and TMP43x temperature sensor
++
++maintainers:
++  - Guenter Roeck <linux@roeck-us.net>
++
++description: |
++  ±1°C Remote and Local temperature sensor
++
++  Datasheets:
++  https://www.ti.com/lit/ds/symlink/tmp401.pdf
++  https://www.ti.com/lit/ds/symlink/tmp411.pdf
++  https://www.ti.com/lit/ds/symlink/tmp431.pdf
++  https://www.ti.com/lit/ds/symlink/tmp435.pdf
++
++properties:
++  compatible:
++    enum:
++      - ti,tmp401
++      - ti,tmp411
++      - ti,tmp431
++      - ti,tmp432
++      - ti,tmp435
++  reg:
++    maxItems: 1
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  ti,extended-range-enable:
++    description: |
++      When set, this sensor measures over extended temperature range.
++    type: boolean
++
++  ti,n-factor:
++    description: |
++      The value (two's complement) to be programmed in the n-factor correction
++      register.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    items:
++      minimum: 0
++      maximum: 255
++
++  ti,beta-compensation:
++    description: |
++      The value to be programmed in the beta range register.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    items:
++      minimum: 0
++      maximum: 15
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - ti,tmp401
++    then:
++      properties:
++        ti,n-factor: false
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - ti,tmp401
++              - ti,tmp411
++    then:
++      properties:
++        ti,beta-compensation: false
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      sensor@4c {
++        compatible = "ti,tmp401";
++        reg = <0x4c>;
++      };
++    };
++  - |
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      sensor@4c {
++        compatible = "ti,tmp431";
++        reg = <0x4c>;
++        ti,extended-range-enable;
++        ti,n-factor = <0x3b>;
++        ti,beta-compensation = <0x7>;
++      };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 61d9f114c37f..6b0d8f5cc68e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19838,6 +19838,7 @@ TMP401 HARDWARE MONITOR DRIVER
+ M:	Guenter Roeck <linux@roeck-us.net>
+ L:	linux-hwmon@vger.kernel.org
+ S:	Maintained
++F:	Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+ F:	Documentation/hwmon/tmp401.rst
+ F:	drivers/hwmon/tmp401.c
  
 -- 
-2.25.1
+2.30.2
 
