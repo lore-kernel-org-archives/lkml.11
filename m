@@ -2,120 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47454C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 05:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A51C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 05:30:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244750AbiDKFbe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 01:31:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40624 "EHLO
+        id S242081AbiDKFc5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 01:32:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244012AbiDKFba (ORCPT
+        with ESMTP id S230020AbiDKFcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 01:31:30 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C46423BF0;
-        Sun, 10 Apr 2022 22:29:14 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id nt14-20020a17090b248e00b001ca601046a4so17385668pjb.0;
-        Sun, 10 Apr 2022 22:29:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HNjOIvGfpKlYe9wGf5L54cTS95mFqUVX5pLI3c1t/0Q=;
-        b=pYw7EYEt5KRWyio0EGoQnA8bnjK/xoTj2lt4hWQjWWfOcz+F25jauhf5U5+k69poCq
-         9/j97ypRf1M3MEK7H0UtqxQy8T5r9ugHSd+B8lY8W89mBBNC9BHFev+BSlIO6OZ7jrcM
-         OoTNzHT68ontPn3UaADQs5/94Sd21PnyMAW8nn9jqNO/pIAkNVYdRtSeLDw3m+8Bu66r
-         +HHBp+hTzjxPxcT+/3VyzIRYx6WBaCcE8VtMA1JlDaS+jt5xYeNjCwZJ7xiDiAeA5IO2
-         RIAJm0RU2FoMv1HFfdtYbsViArO1Fivi8Mzh62zSqOWieYsv43jPA8InOChYe7O55RKN
-         5y0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HNjOIvGfpKlYe9wGf5L54cTS95mFqUVX5pLI3c1t/0Q=;
-        b=S0UpqPCuzgMW1ePFDojEJX5+FhvhaCPQ0nxv9c9uqEbfSVc/tIExHpR5W1uTf0JdiE
-         6Rq2EqwzxqNHwvuFl8S0n/McdHs5GhtGVsGEA/3fqVgWNpTa+15RLNxUC52GUuVVoij/
-         ZXo9Iv/oCpfWQbaSe0vcA+fjmPOQBL5ChEGYJcNLt79LUtZqVNsO1/1imycKRsxWop13
-         vIZA5ipN2jvWmTA7bd75waNdwsQjEubRGyR+PYD/J8/nK/tp964bzyxPlj5WkijuypC1
-         VQLMiU81owEf0nxYg1rzivlcRRuiLqnzwhKviiF0PsnKp1K4pI0HvcmPJiKPjQhtZ1LP
-         ChRA==
-X-Gm-Message-State: AOAM531IEHFm4BXh2FgdZlVOiwn3Pu08XcO/2XjJK5rp9jLNYossigYq
-        bxibm2QaXegfjw8I++i5NVoKjgTkw7K3gQ==
-X-Google-Smtp-Source: ABdhPJxc3T4pl5lVimkQQoQLXOf8Qm96a/yVwv0beUf9D1C+MSK2hld/dLKIlDd+Ke4oteQRox3QDg==
-X-Received: by 2002:a17:903:32c8:b0:158:72d6:90ee with SMTP id i8-20020a17090332c800b0015872d690eemr884829plr.3.1649654953761;
-        Sun, 10 Apr 2022 22:29:13 -0700 (PDT)
-Received: from [10.11.37.162] ([103.84.139.53])
-        by smtp.gmail.com with ESMTPSA id q13-20020a056a00088d00b004e1bea9c582sm33751227pfj.43.2022.04.10.22.29.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Apr 2022 22:29:13 -0700 (PDT)
-Message-ID: <55d22e24-09ad-20b8-e1de-8d7c2f8ab1a8@gmail.com>
-Date:   Mon, 11 Apr 2022 13:29:09 +0800
+        Mon, 11 Apr 2022 01:32:51 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A6F22983C;
+        Sun, 10 Apr 2022 22:30:36 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DFB65ED1;
+        Sun, 10 Apr 2022 22:30:35 -0700 (PDT)
+Received: from [10.163.38.140] (unknown [10.163.38.140])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4C0853F5A1;
+        Sun, 10 Apr 2022 22:30:31 -0700 (PDT)
+Message-ID: <90cea600-74b8-6c05-b698-23dba01e4889@arm.com>
+Date:   Mon, 11 Apr 2022 11:01:06 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] usb: usbip: fix a refcount leak in stub_probe()
+ Thunderbird/91.5.0
+Subject: Re: [PATCH V4 2/7] powerpc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
 Content-Language: en-US
-To:     Shuah Khan <skhan@linuxfoundation.org>,
-        valentina.manea.m@gmail.com, shuah@kernel.org,
-        gregkh@linuxfoundation.org, khoroshilov@ispras.ru
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220407022204.10730-1-hbh25y@gmail.com>
- <7c584e2d-1c23-3df9-7e4e-c4d9a9014224@linuxfoundation.org>
- <d40cb8cf-a92d-3f87-3af1-0422f8d8264f@gmail.com>
- <91089407-cc21-ba05-5346-4f546cca7555@linuxfoundation.org>
-From:   Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <91089407-cc21-ba05-5346-4f546cca7555@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>, linux-mm@kvack.org,
+        akpm@linux-foundation.org
+Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@infradead.org>,
+        Paul Mackerras <paulus@samba.org>, sparclinux@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
+References: <20220407103251.1209606-1-anshuman.khandual@arm.com>
+ <20220407103251.1209606-3-anshuman.khandual@arm.com>
+ <e860f404-af69-aebc-c5eb-8822a585e653@csgroup.eu>
+ <8f1d5ba5-c03e-d222-ffc0-d9a6baea1037@csgroup.eu>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <8f1d5ba5-c03e-d222-ffc0-d9a6baea1037@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/8 23:04, Shuah Khan wrote:
-> On 4/7/22 7:59 PM, Hangyu Hua wrote:
->> Hi Shuah,
->>
->> I find this by code review. Do i really need to add this to commit 
->> log? This look like a little weird.
->>
-> 
-> Great. Good find.
-> 
-> It is important to understand how the problem is found. Please add it
-> the change log. We usually expect dmesg or such info. that revealed
-> refcount leak, since this one is found during code review, we would
-> like to see that information the commit log.
-> 
-> Also please remember to avoid top posting.
 
-I get what you meant now. But i don't know how to get a clear dmesg or 
-any other log. The kernel will not crash because of this. I just used 
-gdb to find that udev->dev->kobj->kref gets bigger and bigger whenever I 
-call stub_probe with busid_priv->status = STUB_BUSID_REMOV.
 
-Thanks for telling me the rules.
-
+On 4/9/22 17:06, Christophe Leroy wrote:
 > 
+> 
+> Le 08/04/2022 à 14:53, Christophe Leroy a écrit :
 >>
->> On 2022/4/8 00:31, Shuah Khan wrote:
->>> On 4/6/22 8:22 PM, Hangyu Hua wrote:
->>>> usb_get_dev() is called in stub_device_alloc(). When stub_probe() fails
->>>> after that, usb_put_dev() needs to be called to release the reference.
->>>>
->>>> Fix this by moving usb_put_dev() to sdev_free error path handling.
->>>>
->>>> Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
->>>> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
->>>> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
->>>> ---
->>>>
->>>> v2: add more description of this patch.
+>>
+>> Le 07/04/2022 à 12:32, Anshuman Khandual a écrit :
+>>> This defines and exports a platform specific custom vm_get_page_prot() via
+>>> subscribing ARCH_HAS_VM_GET_PAGE_PROT. While here, this also localizes
+>>> arch_vm_get_page_prot() as powerpc_vm_get_page_prot() and moves it near
+>>> vm_get_page_prot().
 >>>
->>> Still missing details on how this problem was found. Please add them
->>> to the commit log.
+>>> Cc: Michael Ellerman <mpe@ellerman.id.au>
+>>> Cc: Paul Mackerras <paulus@samba.org>
+>>> Cc: linuxppc-dev@lists.ozlabs.org
+>>> Cc: linux-kernel@vger.kernel.org
+>>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+>>> ---
+>>>   arch/powerpc/Kconfig            |  1 +
+>>>   arch/powerpc/include/asm/mman.h | 12 ------------
+>>>   arch/powerpc/mm/mmap.c          | 26 ++++++++++++++++++++++++++
+>>>   3 files changed, 27 insertions(+), 12 deletions(-)
 >>>
+>>> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+>>> index 174edabb74fa..eb9b6ddbf92f 100644
+>>> --- a/arch/powerpc/Kconfig
+>>> +++ b/arch/powerpc/Kconfig
+>>> @@ -140,6 +140,7 @@ config PPC
+>>>       select ARCH_HAS_TICK_BROADCAST        if GENERIC_CLOCKEVENTS_BROADCAST
+>>>       select ARCH_HAS_UACCESS_FLUSHCACHE
+>>>       select ARCH_HAS_UBSAN_SANITIZE_ALL
+>>> +    select ARCH_HAS_VM_GET_PAGE_PROT
+>>>       select ARCH_HAVE_NMI_SAFE_CMPXCHG
+>>>       select ARCH_KEEP_MEMBLOCK
+>>>       select ARCH_MIGHT_HAVE_PC_PARPORT
+>>> diff --git a/arch/powerpc/include/asm/mman.h b/arch/powerpc/include/asm/mman.h
+>>> index 7cb6d18f5cd6..1b024e64c8ec 100644
+>>> --- a/arch/powerpc/include/asm/mman.h
+>>> +++ b/arch/powerpc/include/asm/mman.h
+>>> @@ -24,18 +24,6 @@ static inline unsigned long arch_calc_vm_prot_bits(unsigned long prot,
+>>>   }
+>>>   #define arch_calc_vm_prot_bits(prot, pkey) arch_calc_vm_prot_bits(prot, pkey)
+>>> -static inline pgprot_t arch_vm_get_page_prot(unsigned long vm_flags)
+>>> -{
+>>> -#ifdef CONFIG_PPC_MEM_KEYS
+>>> -    return (vm_flags & VM_SAO) ?
+>>> -        __pgprot(_PAGE_SAO | vmflag_to_pte_pkey_bits(vm_flags)) :
+>>> -        __pgprot(0 | vmflag_to_pte_pkey_bits(vm_flags));
+>>> -#else
+>>> -    return (vm_flags & VM_SAO) ? __pgprot(_PAGE_SAO) : __pgprot(0);
+>>> -#endif
+>>> -}
+>>> -#define arch_vm_get_page_prot(vm_flags) arch_vm_get_page_prot(vm_flags)
+>>> -
+>>>   static inline bool arch_validate_prot(unsigned long prot, unsigned long addr)
+>>>   {
+>>>       if (prot & ~(PROT_READ | PROT_WRITE | PROT_EXEC | PROT_SEM | PROT_SAO))
+>>> diff --git a/arch/powerpc/mm/mmap.c b/arch/powerpc/mm/mmap.c
+>>> index c475cf810aa8..cd17bd6fa36b 100644
+>>> --- a/arch/powerpc/mm/mmap.c
+>>> +++ b/arch/powerpc/mm/mmap.c
+>>> @@ -254,3 +254,29 @@ void arch_pick_mmap_layout(struct mm_struct *mm, struct rlimit *rlim_stack)
+>>>           mm->get_unmapped_area = arch_get_unmapped_area_topdown;
+>>>       }
+>>>   }
+>>> +
+>>> +#ifdef CONFIG_PPC64
+>>> +static pgprot_t powerpc_vm_get_page_prot(unsigned long vm_flags)
+>>> +{
+>>> +#ifdef CONFIG_PPC_MEM_KEYS
+>>> +    return (vm_flags & VM_SAO) ?
+>>> +        __pgprot(_PAGE_SAO | vmflag_to_pte_pkey_bits(vm_flags)) :
+>>> +        __pgprot(0 | vmflag_to_pte_pkey_bits(vm_flags));
+>>> +#else
+>>> +    return (vm_flags & VM_SAO) ? __pgprot(_PAGE_SAO) : __pgprot(0);
+>>> +#endif
+>>> +}
+>>> +#else
+>>> +static pgprot_t powerpc_vm_get_page_prot(unsigned long vm_flags)
+>>> +{
+>>> +    return __pgprot(0);
+>>> +}
+>>> +#endif /* CONFIG_PPC64 */
+>>
+>> Can we reduce this forest of #ifdefs and make it more readable ?
+>>
+>> mm/mmap.c is going away with patch https://patchwork.ozlabs.org/project/linuxppc-dev/patch/d6d849621f821af253e777a24eda4c648814a76e.1646847562.git.christophe.leroy@csgroup.eu/
+>>
+>> So it would be better to add two versions of vm_get_page_prot(), for instance one in mm/pgtable_64.c and one in mm/pgtable_32.c
 > 
-> thanks,
-> -- Shuah
+> Indeed, you don't need anything at all for PPC32. All you need to do is
 > 
+>     select ARCH_HAS_VM_GET_PAGE_PROT if PPC64
+> 
+> And in fact it could even be PPC_BOOK3S_64 instead of PPC64 because CONFIG_PPC_MEM_KEYS depends on PPC_BOOK3S_64 and _PAGE_SAO is 0 on nohash/64.
+> 
+> So you can then put it into arch/powerpc/mm/book3s64/pgtable.c
+
+Would something like the following change work ?
+
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index eb9b6ddbf92f..69e44358a235 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -140,7 +140,7 @@ config PPC
+        select ARCH_HAS_TICK_BROADCAST          if GENERIC_CLOCKEVENTS_BROADCAST
+        select ARCH_HAS_UACCESS_FLUSHCACHE
+        select ARCH_HAS_UBSAN_SANITIZE_ALL
+-       select ARCH_HAS_VM_GET_PAGE_PROT
++       select ARCH_HAS_VM_GET_PAGE_PROT        if PPC_BOOK3S_64
+        select ARCH_HAVE_NMI_SAFE_CMPXCHG
+        select ARCH_KEEP_MEMBLOCK
+        select ARCH_MIGHT_HAVE_PC_PARPORT
+diff --git a/arch/powerpc/mm/book3s64/pgtable.c b/arch/powerpc/mm/book3s64/pgtable.c
+index 052e6590f84f..59d235519b44 100644
+--- a/arch/powerpc/mm/book3s64/pgtable.c
++++ b/arch/powerpc/mm/book3s64/pgtable.c
+@@ -7,6 +7,7 @@
+ #include <linux/mm_types.h>
+ #include <linux/memblock.h>
+ #include <linux/memremap.h>
++#include <linux/pkeys.h>
+ #include <linux/debugfs.h>
+ #include <misc/cxl-base.h>
+ 
+@@ -549,3 +550,22 @@ unsigned long memremap_compat_align(void)
+ }
+ EXPORT_SYMBOL_GPL(memremap_compat_align);
+ #endif
++
++static pgprot_t __vm_get_page_prot(unsigned long vm_flags)
++{
++#ifdef CONFIG_PPC_MEM_KEYS
++       return (vm_flags & VM_SAO) ?
++               __pgprot(_PAGE_SAO | vmflag_to_pte_pkey_bits(vm_flags)) :
++               __pgprot(0 | vmflag_to_pte_pkey_bits(vm_flags));
++#else
++       return (vm_flags & VM_SAO) ? __pgprot(_PAGE_SAO) : __pgprot(0);
++#endif
++}
++
++pgprot_t vm_get_page_prot(unsigned long vm_flags)
++{
++       return __pgprot(pgprot_val(protection_map[vm_flags &
++                       (VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]) |
++              pgprot_val(__vm_get_page_prot(vm_flags)));
++}
++EXPORT_SYMBOL(vm_get_page_prot);
