@@ -2,95 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDD0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 12:41:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29706C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 12:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345957AbiDKMoC (ORCPT
+        id S1346122AbiDKMq7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 08:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32780 "EHLO
+        Mon, 11 Apr 2022 08:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346187AbiDKMnp (ORCPT
+        with ESMTP id S236431AbiDKMq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 08:43:45 -0400
-Received: from out29-196.mail.aliyun.com (out29-196.mail.aliyun.com [115.124.29.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305254132C;
-        Mon, 11 Apr 2022 05:41:30 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.08153398|-1;BR=01201311R771S34rulernew998_84748_2000303;CH=blue;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.0990518-0.001919-0.899029;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047207;MF=zhouyu@wanyeetech.com;NM=1;PH=DS;RN=7;RT=7;SR=0;TI=SMTPD_---.NOW40yE_1649680886;
-Received: from 192.168.30.128(mailfrom:zhouyu@wanyeetech.com fp:SMTPD_---.NOW40yE_1649680886)
-          by smtp.aliyun-inc.com(33.40.85.40);
-          Mon, 11 Apr 2022 20:41:27 +0800
-Subject: Re: [PATCH] mips: dts: ingenic: x1000: Add PWM device tree node
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>, robh+dt@kernel.org,
-        krzk+dt@kernel.org
-Cc:     paul@crapouillou.net, linux-mips@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220411100139.15672-1-aidanmacdonald.0x0@gmail.com>
-From:   Zhou Yanjie <zhouyu@wanyeetech.com>
-Message-ID: <8a3f88d8-3e94-1388-b1c6-b0f71d59f34c@wanyeetech.com>
-Date:   Mon, 11 Apr 2022 20:41:26 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Mon, 11 Apr 2022 08:46:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1E4015FDE
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 05:44:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649681081;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=L3D5twS6fI8upjNFbaq7L4RyTo/YSaqC5qUAqNUSSRk=;
+        b=YpgNpxYy1mbkRVy/O2dnDrMJHb7EoggFM2YOQsnpnHanH608Nom2joR+0ZsRXik8zMHMA1
+        Rlp4D+5LwYrydehgKWBlaWeLR2nD9uCIn9wJDMijIkn3/WUjQHFORz/f6/d08REvtdUyjB
+        +IHpKY8ZqgeMOo57motIm4iwq+Uqb5w=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-488-xIvNM0C2OXKCHP56sbKC7w-1; Mon, 11 Apr 2022 08:44:38 -0400
+X-MC-Unique: xIvNM0C2OXKCHP56sbKC7w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 546293802AC2;
+        Mon, 11 Apr 2022 12:44:37 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.37.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EF59C40CFD0F;
+        Mon, 11 Apr 2022 12:44:34 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220406075612.60298-6-jefflexu@linux.alibaba.com>
+References: <20220406075612.60298-6-jefflexu@linux.alibaba.com> <20220406075612.60298-1-jefflexu@linux.alibaba.com>
+To:     Jeffle Xu <jefflexu@linux.alibaba.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org,
+        torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
+        willy@infradead.org, linux-fsdevel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
+        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
+        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        luodaowen.backend@bytedance.com, tianzichen@kuaishou.com,
+        fannaihao@baidu.com
+Subject: Re: [PATCH v8 05/20] cachefiles: implement on-demand read
 MIME-Version: 1.0
-In-Reply-To: <20220411100139.15672-1-aidanmacdonald.0x0@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1091904.1649681074.1@warthog.procyon.org.uk>
+Date:   Mon, 11 Apr 2022 13:44:34 +0100
+Message-ID: <1091905.1649681074@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Aidan,
+Jeffle Xu <jefflexu@linux.alibaba.com> wrote:
 
-On 2022/4/11 下午6:01, Aidan MacDonald wrote:
-> Copied from the jz4740 devicetree and trimmed to 5 timers, which
-> is what the hardware supports.
->
-> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-> ---
->   arch/mips/boot/dts/ingenic/x1000.dtsi | 13 +++++++++++++
->   1 file changed, 13 insertions(+)
->
-> diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi b/arch/mips/boot/dts/ingenic/x1000.dtsi
-> index 8bd27edef216..0dcf37527c8e 100644
-> --- a/arch/mips/boot/dts/ingenic/x1000.dtsi
-> +++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
-> @@ -127,6 +127,19 @@ wdt: watchdog@0 {
->   			clocks = <&tcu TCU_CLK_WDT>;
->   			clock-names = "wdt";
->   		};
-> +
-> +		pwm: pwm@40 {
-> +			compatible = "ingenic,x1000-pwm";
-> +			reg = <0x40 0x80>;
+>  	/*
+>  	 * Uninstall anon_fd to the cachefiles object, so that no further
+>  	 * associated requests will get enqueued.
+>  	 */
 
+"Uninstall anon_fd from..."?
 
-It seems more reasonable to use "reg = <0x40 0x80>" since the
-X1000 has only 5 PWM channels.
+> +static int init_read_req(struct cachefiles_req *req, void *private)
 
+Prefix with "cachefiles_" please (or "cachefiles_ondemand_").
 
-> +
-> +			#pwm-cells = <3>;
-> +
-> +			clocks = <&tcu TCU_CLK_TIMER0>, <&tcu TCU_CLK_TIMER1>,
-> +				 <&tcu TCU_CLK_TIMER2>, <&tcu TCU_CLK_TIMER3>,
-> +				 <&tcu TCU_CLK_TIMER4>;
-> +			clock-names = "timer0", "timer1", "timer2",
-> +				      "timer3", "timer4";
+David
 
-
-One line is now allowed to hold at most 100 characters,
-so it is possible to use only one line like:
-
-         clock-names = "timer0", "timer1", "timer2", "timer3", "timer4";
-
-to reduce the number of lines in the dtsi file.
-
-
-Thanks and best regards!
-
-
-> +		};
->   	};
->   
->   	rtc: rtc@10003000 {
