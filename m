@@ -2,158 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44C69C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAC3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345657AbiDKKnE (ORCPT
+        id S1345662AbiDKKnm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53738 "EHLO
+        Mon, 11 Apr 2022 06:43:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239627AbiDKKnC (ORCPT
+        with ESMTP id S231744AbiDKKni (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:43:02 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA363DDDD
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:40:48 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id f3so14263893pfe.2
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:40:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qRHCFU3vsxOyCqqTuuci/uOq3jyLUilmY7vzgzXVdos=;
-        b=sGt3N6d9Ho2buqWhnPF0ISSL3HrI3WHKB0aJ4B4ANbex7ngxZlD+qNeWa1bFBV6+ko
-         MUtP0V2erl0anWMBYp7+5js9ODFfjHJ1e9fCN6JkKtKCfwlHT6cqgM1+YSCUP6cZeF8X
-         K+JxNicNmgcxaucTFmU+kbvkpetByXuuI22y5oB8JWBizdjxtC1EMVS8MNv9/vh+Ncjl
-         nIlfjFwnvjCgZrMZjTWN0Qu9lXQnX2vZsLR5oZPviv4mOvyGfWifrm5oVJ32z7txCRGQ
-         K8/+ubqGzLReeXPLXdt9Zl/Qe6BZ6MEtb9ezcP8MNQ7lI1z+KqAkoBY/n32KpTP1hRAf
-         94FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qRHCFU3vsxOyCqqTuuci/uOq3jyLUilmY7vzgzXVdos=;
-        b=o3zkUTpbrqI61mcXwPqRJkfQDaw6569kW3x8D7t8K1TKTizg96el+QRG1vmBrtOPp8
-         tvEgCvL02L25ig4LdHfOnf47thHNqt9sxhnkj1YgaDIez+LHNMrbZWPQcXF4Yw521MQh
-         0+77RHnzCC0tAfA+vPgmhA1Y6LKmdYKE+05b9+u8XWD0EGpiE6DqeruP8xdZJDwpoOAI
-         ZOpAl+dbuC+Nhu8836j8AJN+D6xaKXj2FVZLshSBwnjplyfRAqGtwkvdz5MFJ+K9OOyN
-         qJbTXHwOuf6I8ukBFkqXFg0a1JLtPagvZcpP6qGFWOPiBh90dMMWI9+DtNLiZ9rxCsN+
-         WF4A==
-X-Gm-Message-State: AOAM532TYcqzxxsEjtmlEND0SvGFPQbyaIL+HLLw46wblUlE14VX744j
-        Qz9C2Hw1Um4u+9ZRrqDZxN+2CA==
-X-Google-Smtp-Source: ABdhPJzDyOCCKORv1EINtcfr9u0Tb/fmUdZcJ7oRQZQPJAvs7DB2DtQYDBnPvm+y2Igq/BvLhorJ4A==
-X-Received: by 2002:a65:4681:0:b0:382:b4f5:84c2 with SMTP id h1-20020a654681000000b00382b4f584c2mr25704425pgr.218.1649673647951;
-        Mon, 11 Apr 2022 03:40:47 -0700 (PDT)
-Received: from localhost ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id x124-20020a627c82000000b00505aece5638sm5003524pfc.130.2022.04.11.03.40.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 03:40:47 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 18:40:41 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        David Rientjes <rientjes@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>, james.morse@arm.com,
-        Barry Song <21cnbao@gmail.com>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>
-Subject: Re: [PATCH v4 2/2] arm64: mm: hugetlb: Enable
- HUGETLB_PAGE_FREE_VMEMMAP for arm64
-Message-ID: <YlQFqf9/VSyiZVKG@FVFYT0MHHV2J.usts.net>
-References: <20220331065640.5777-1-songmuchun@bytedance.com>
- <20220331065640.5777-2-songmuchun@bytedance.com>
- <d6e2581e-a8ac-4848-2c64-4a221bd03bca@arm.com>
- <CAMZfGtWyXmPwZWsH_pP_M7p30uBww8BdP0DRXQRjBkT_VP=uUA@mail.gmail.com>
- <46a99793-2e24-f3c5-c63f-ab2ad88966ea@arm.com>
+        Mon, 11 Apr 2022 06:43:38 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836E03F32B;
+        Mon, 11 Apr 2022 03:41:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649673684; x=1681209684;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=F7BhIvlrt00kTkPSYro8/o/CAvwADvOIxE2+7hXIp+s=;
+  b=dVwVmRgDHk8kNBNsSARxPmMIbiyJXYmy+W+rtMFlcNwquCBkhKHDSYcY
+   f15ZMeKFmNBEVAJRSPxXIl/L8Rx+8zb+nzaL9rsaGBDHKLmfAAJVXKqyP
+   My3nIoBO2aeDjx5oZ+s/Am5KXPbG77F8tNqJbuZ7CzIUWq9Dpcpaeh+l8
+   r5wqk0T0clVxtbOrgFnXQCCVuTBzc5slltEBaU8ISF53BYGdMfe2gdySp
+   PZIY/oCjwA9qKzSO528z2CgYNnquuUy4yJK3CpvCRp90CGfl3wHMkF1Xr
+   SJCsZW5SFL/eyjTsA7yoTzLSgcUBSHA966kIPKlPq3B9iPXBnHmd7HTgr
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="348523635"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="348523635"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:41:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="723919511"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga005.jf.intel.com with ESMTP; 11 Apr 2022 03:41:21 -0700
+To:     Alan Stern <stern@rowland.harvard.edu>,
+        Evan Green <evgreen@chromium.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Rajat Jain <rajatja@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Youngjin Jang <yj84.jang@samsung.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-usb@vger.kernel.org
+References: <20220407115918.1.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid>
+ <YlBGvFFSp/R2CBmh@rowland.harvard.edu>
+ <CAE=gft7Zi9tpJ74Tf2iqPRbwJkmSLiKJt-WhwD+h-DxQh75D6g@mail.gmail.com>
+ <YlDoSY19HYNJGI50@rowland.harvard.edu>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH] USB: hcd-pci: Fully suspend across freeze/thaw cycle
+Message-ID: <022a50ac-7866-2140-1b40-776255f3a036@linux.intel.com>
+Date:   Mon, 11 Apr 2022 13:43:15 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <46a99793-2e24-f3c5-c63f-ab2ad88966ea@arm.com>
+In-Reply-To: <YlDoSY19HYNJGI50@rowland.harvard.edu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 02:47:26PM +0530, Anshuman Khandual wrote:
-> 
-> 
-> On 4/5/22 14:08, Muchun Song wrote:
-> > On Tue, Apr 5, 2022 at 12:44 PM Anshuman Khandual
-> > <anshuman.khandual@arm.com> wrote:
-> >>
-> >>
-> >>
-> >> On 3/31/22 12:26, Muchun Song wrote:
-> >>> 1st concern:
-> >>> '''
-> >>> But what happens when a hot remove section's vmemmap area (which is
-> >>> being teared down) is nearby another vmemmap area which is either created
-> >>> or being destroyed for HugeTLB alloc/free purpose. As you mentioned
-> >>> HugeTLB pages inside the hot remove section might be safe. But what about
-> >>> other HugeTLB areas whose vmemmap area shares page table entries with
-> >>> vmemmap entries for a section being hot removed ? Massive HugeTLB alloc
-> >>> /use/free test cycle using memory just adjacent to a memory hotplug area,
-> >>> which is always added and removed periodically, should be able to expose
-> >>> this problem.
-> >>> '''
-> >>>
-> >>> Answer: At the time memory is removed, all HugeTLB pages either have been
-> >>> migrated away or dissolved.  So there is no race between memory hot remove
-> >>> and free_huge_page_vmemmap().  Therefore, HugeTLB pages inside the hot
-> >>> remove section is safe.  Let's talk your question "what about other
-> >>
-> >> HugeTLB pages inside the memory range is safe but concern is about the
-> >> vmemmap mapping for the HugeTLB which might share intermediate entries
-> >> with vmemmap mapping for the memory range/section being removed.
-> > 
-> > The shared page table level only could be PMD, PUD and PGD, the PTE
-> > page table cannot be shared with other sections, and we only exchange
-> > PTEs for vmemmap mapping.
-> 
-> Right, the shared entries (if any) are not at the leaf level.
-> 
-> > 
-> >>
-> >>> HugeTLB areas whose vmemmap area shares page table entries with vmemmap
-> >>> entries for a section being hot removed ?", the question is not
-> >>
-> >> Right.
-> >>
-> >>> established.  The minimal granularity size of hotplug memory 128MB (on
-> >>> arm64, 4k base page), any HugeTLB smaller than 128MB is within a section,
-> >>> then, there is no share PTE page tables between HugeTLB in this section
-> >>
-> >> 128MB is the hot removable granularity but, its corresponding vmemmap
-> >> range is smaller i.e (128MB/4K) * sizeof(struct page). Memory section
-> >> getting hot removed (its vmemmap mapping being teared down) along with
-> >> HugeTLB (on another section) vmemmap remap operation, could not collide
-> >> while inside vmemmap mapping areas on init_mm ?
-> > 
-> > The boundary address of a section is aligned with 128MB and its
-> > corresponding vmemmap boundary address is aligned with 2MB
-> > which is mapped with a separated PTE page table (or a PMD entry).
-> 
-> Even if these PMD entries split during HugeTLB remapping, they will not
-> conflict with another memory section being removed simultaneously. Also
-> any shared page table pages will not be freed, during memory hot remove
-> operation as vmemmap remap does not delete any entries.
-> 
-> But just wondering if during PMD slit and PTE page table page addition,
-> these PMD entries could not be empty, even temporarily ?
->
+Hi
 
-The pmd entry is either a PTE page table or a PMD leaf entry, it cannot
-be a empty entry forever.  More details can refer to
-__split_vmemmap_huge_pmd().
+On 9.4.2022 4.58, Alan Stern wrote:
+> On Fri, Apr 08, 2022 at 02:52:30PM -0700, Evan Green wrote:
+>> Hi Alan,
+> 
+> Hello.
+> 
+>> On Fri, Apr 8, 2022 at 7:29 AM Alan Stern <stern@rowland.harvard.edu> wrote:
+>>>
+>>> On Thu, Apr 07, 2022 at 11:59:55AM -0700, Evan Green wrote:
+>>>> The documentation for the freeze() method says that it "should quiesce
+>>>> the device so that it doesn't generate IRQs or DMA". The unspoken
+>>>> consequence of not doing this is that MSIs aimed at non-boot CPUs may
+>>>> get fully lost if they're sent during the period where the target CPU is
+>>>> offline.
+>>>>
+>>>> The current callbacks for USB HCD do not fully quiesce interrupts,
+>>>> specifically on XHCI. Change to use the full suspend/resume flow for
+>>>> freeze/thaw to ensure interrupts are fully quiesced. This fixes issues
+>>>> where USB devices fail to thaw during hibernation because XHCI misses
+>>>> its interrupt and fails to recover.
+>>>
+>>> I don't think your interpretation is quite right.  The problem doesn't lie
+>>> in the HCD callbacks but rather in the root-hub callbacks.
+>>>
+>>> Correct me if I'm wrong about xHCI, but AFAIK the host controller doesn't
+>>> issue any interrupt requests on its own behalf; it issues IRQs only on
+>>> behalf of its root hubs.  Given that the root hubs should be suspended
+>>> (i.e., frozen) at this point, and hence not running, the only IRQs they
+>>> might make would be for wakeup requests.
+>>>
+>>> So during freeze, wakeups should be disabled on root hubs.  Currently I
+>>> believe we don't do this; if a root hub was already runtime suspended when
+>>> asked to go into freeze, its wakeup setting will remain unchanged.  _That_
 
-Thanks.
- 
+In xHCI case freeze will suspend the roothub and make sure all connected devices
+are in suspended U3 state, but it won't prevent interrupts.
+
+And yes, my understanding is also that if devices were runtime suspended with wake
+enabled before freeze, then devices can can initiate resume any time in the first
+stages of hibernate (freeze-thaw), causing an interrupt.
+
+We can reduce interrupts by disabling device wake in freeze, but any port change
+can still cause interrupts.
+
+>>
+>> For my issue at least, it's the opposite. Enabling runtime pm on the
+>> controller significantly reduces the repro rate of the lost interrupt.
+> 
+> That doesn't seem to make sense.  If the controller is in runtime suspend at 
+> the start of hibernation, the pci_pm_freeze() routine will do a runtime 
+> resume before calling the HCD freeze function.  So when the controller gets 
+> put into the freeze state, it is guaranteed not to be runtime suspended 
+> regardless of what you enable.
+> 
+>> I think having the controller runtime suspended reduces the overall
+>> number of interrupts that flow in, which is why my chances to hit an
+>> interrupt in this window drop, but aren't fully eliminated.
+> 
+> When you ran your tests, was wakeup enabled for the host controller?
+> 
+>> I think xhci may still find reasons to generate interrupts even if all
+>> of its root hub ports are suspended without wake events. For example,
+>> won't Port Status Change Events still come in if a device is unplugged
+>> or overcurrents in between freeze() and thaw()?
+
+Yes, as long as host is running, and host is running between freeze and thaw. 
+
+> 
+> I'm not an expert on xHCI or xhci-hcd.  For that, we should ask the xhci-hcd 
+> maintainer (CC'ed).  In fact, he should have been CC'ed on the original 
+> patch since it was meant to fix a problem involving xHCI controllers.
+> 
+> With EHCI, for example, if a port status change event occurs while the root 
+> hub is suspended with wakeups disabled, no interrupt request will be 
+> generated because the port-specific WKOC_E, WKDSCNNT_E, and WKCNNT_E (Wake 
+> on Over-Current Enable, Wake on Disconnect Enable, and Wake on Connect 
+> Enable) bits are turned off.  In effect, the port-status change events can 
+> occur but they aren't treated as wakeup events.
+
+The port-specific wake flags in xHCI only affects interrupt and wake generation
+for a suspended host. In the freeze() to thaw() stage host is running so flags
+don't have any effect 
+
+> 
+>>  The spec does mention
+>> that generation of this event is gated by the HCHalted flag, but at
+>> least in my digging around I couldn't find a place where we halt the
+>> controller through this path.
+> 
+> Bear in mind that suspending the controller and suspending the root hub are 
+> two different things.
+> 
+>>  With how fragile xhci (and maybe
+>> others?) are towards lost interrupts, even if it does happen to be
+>> perfect now, it seems like it would be more resilient to just fully
+>> suspend the controller across this transition.
+> 
+> Suspending the controller won't fix the problem if the wakeup settings for 
+> the root hubs are wrong (although it may reduce the window for a race, like 
+> what you mentioned above).  Conversely, if the wakeup settings for the root 
+> hubs are correct then suspending the controller shouldn't make any 
+> difference.
+> 
+>> I'd also put forward the hypothesis (feel free to shoot it down!) that
+>> unless there's a human-scale time penalty with this change, the
+>> downsides of being more heavy handed like this across freeze/thaw are
+>> minimal. There's always a thaw() right on the heels of freeze(), and
+>> hibernation is such a rare and jarring transition that being able to
+>> recover after the transition is more important than accomplishing the
+>> transition quickly.
+> 
+> That's true, but it ignores the underlying problem described in the 
+> preceding paragraphs.
+> 
+
+Would it make sense prevent xHCI interrupt generation in the host
+freeze() stage, clearing the xHCI EINT bit in addition to calling 
+check_roothub_suspend()?
+Then enable it back in thaw()
+
+Thanks
+-Mathias
