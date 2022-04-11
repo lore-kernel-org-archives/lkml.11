@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7FC5C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 18:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBCE4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 18:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349095AbiDKSLr (ORCPT
+        id S1349094AbiDKSPa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 14:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43476 "EHLO
+        Mon, 11 Apr 2022 14:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349071AbiDKSLi (ORCPT
+        with ESMTP id S240011AbiDKSP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 14:11:38 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC201B67
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 11:09:17 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id j8so14527180pll.11
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 11:09:17 -0700 (PDT)
+        Mon, 11 Apr 2022 14:15:29 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556DADF95
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 11:13:14 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id k14so14935541pga.0
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 11:13:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:in-reply-to:references:date:message-id
          :mime-version;
-        bh=zNUERBDcPB2O2rB/hm+cxzZzogWX5mDVNkGC3aPcqtg=;
-        b=ubK9eztOVEQwI6eXRPT1fItHhUdVMxBXWzSUYBncNVK3t9delHoEHg7VoYaVwLaaVD
-         un4JEPhW5Fn90OTG+Us9Joe4FtPGhkQiUOQalp1TJ1VtQQB2y9KBhPqGU14dIY3S4+yF
-         KYpGjzWgKAbGF4b5U2zrmU5qlo5RXOMrnCbGhKaEDV5kSexl9xwjLhXXIuOIOAezsG6k
-         gBezEULtZgrK8ceqzUFLorW5mglkqbuqwoQyZY+zKNTP2dmDhed1iXF+pvnTRR0YZfIx
-         I9JV4Rx/Sp6j4LMc9erJDssMh0NGgG/J8WhNP3ilvZUOePb0pvbbp2QiiimUNj8KWlew
-         mx8w==
+        bh=Jw2w5fc9s7LYCxNyjF4Anw/31mGnF1Xnlp2YCJojif4=;
+        b=zYUmChAbevCzMKAOteYpCt8iCZnXii2/ZAqbsWsSzdO+W6XUiXCDFOfEFJO4LuI29J
+         GRfLdTG71rNc/4fdqQ6qUxbUXZRjAg/2nBe3XM+bYVDggr68EsmbxVGph1uscr1XvI7I
+         H9thhM8YlDLthSuyIVx3oKcri5EMQCZNH7Nx7iBufxmFnXpJjfMSVZ1CC/4i58B1ZoSZ
+         pt68xA/6LSO9ec+sEYg8O1wBSGS4tPWSCfCz0lyB+uncZ0kG0QoNZkTTEmpHD+r/98yR
+         ppY5AdTcH52vSTE6T7ECEiu34gSQpmbib1ZrOqRGx9VPczLU12Rjrt+V9ksp8ODe2T0+
+         LRjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version;
-        bh=zNUERBDcPB2O2rB/hm+cxzZzogWX5mDVNkGC3aPcqtg=;
-        b=IkpcYijFuUo7sHAtsDLHieXAotwL+7csQv4WmUF7gbJKWCm61yixd3Wbf0zEvnb8mU
-         kVXM2HZZF0+qqUEV7/HkJca+d7+ts+80MYhlX/7CzyzFFakg+PVQq+tquMYcSCYXkPZk
-         1mSrUIh7oaGWv35huuILbMqgothUNtRuyVNMfCjPxZOvjE5Tyh51lbxmEJIkCQ8vWMmY
-         N8zDiHshvST2y7Ny/+bcuMn3choOQLoPAvS05YoQ4Z/U/yUQZmlWmnf5C8GNRI705Zsb
-         OzICbuiVJ497KZ1Qa1Zl/e/ltbx+f7nuNsYJS1MO/GDnFDWN4SMkGdfdF3cwWxMa/zFB
-         ttiA==
-X-Gm-Message-State: AOAM531VBfIDVae9tGgVBea7Pzipa1ScCJPe4fV/bO0VAyq/cddWBcdP
-        UC9VvOMEgLFsAu5lAY3QWXPa+A==
-X-Google-Smtp-Source: ABdhPJzaA6/MgmKAb8SuJ5HGfoAPrl2QB/lzXvt5Kk3MNfq9B8523d7j9MNmGKNEJUy0txgS1hN7ng==
-X-Received: by 2002:a17:90a:7147:b0:1bd:24ac:13bd with SMTP id g7-20020a17090a714700b001bd24ac13bdmr486003pjs.70.1649700556996;
-        Mon, 11 Apr 2022 11:09:16 -0700 (PDT)
+        bh=Jw2w5fc9s7LYCxNyjF4Anw/31mGnF1Xnlp2YCJojif4=;
+        b=zmHeOb2bKJ0KC90igp+GI4HOlnuo8oZqZQn9OMY7oJGxBxmKKrLn1LMsRAbNbIr9vo
+         Ygxq1hCQnbdVf7UzZnKkgCubVFJj4nN/mfGVpyoVBKVEtP/B/IYAzp+QEBX/bbA1kjVk
+         e37Q8Z9qARhaRMPWmBNAJIxz1ioDHsK/gROhjIH/Vz3pZb8H+0C3s2UEhh2RHAQWHlqt
+         iZXE8MXQnf6qJBy9hxaP6LtGXTYwsy9mQmXKmwA95XjPVM3bZFlFP1keOZnBUB2FkId1
+         +VIODgNo0SqsVbx6c2nsuYKO7qsan1UkZKM93tYdL3iHJF67/Wj6vnZ2IsAikcYcoPwZ
+         xHBQ==
+X-Gm-Message-State: AOAM530jApJ2No6JgIIDxLqSrgjWOKDa7uSC8EKx/2YxfkJnzJAU4auk
+        2JLsZD6bPJ72Kdu2/CQRDlImQw==
+X-Google-Smtp-Source: ABdhPJwFnQOXCSv95jf3Mtp1Xp4D95v+w5pquv+GUaB8VSDncNnmKQidKvtg+7Fpe/4FvzhLFVMuQw==
+X-Received: by 2002:a63:6e07:0:b0:398:1337:d99e with SMTP id j7-20020a636e07000000b003981337d99emr27022351pgc.23.1649700793750;
+        Mon, 11 Apr 2022 11:13:13 -0700 (PDT)
 Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
-        by smtp.gmail.com with ESMTPSA id c4-20020a056a00248400b004faad8c81bcsm36999513pfv.127.2022.04.11.11.09.16
+        by smtp.gmail.com with ESMTPSA id x5-20020aa79a45000000b00504a1c8b75asm17752885pfj.165.2022.04.11.11.13.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 11:09:16 -0700 (PDT)
+        Mon, 11 Apr 2022 11:13:13 -0700 (PDT)
 From:   Kevin Hilman <khilman@baylibre.com>
 To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, rafael@kernel.org,
         viresh.kumar@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org
@@ -57,89 +57,94 @@ Cc:     matthias.bgg@gmail.com, jia-wei.chang@mediatek.com,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        "Andrew-sh.Cheng" <andrew-sh.cheng@mediatek.com>
-Subject: Re: [PATCH V2 07/15] cpufreq: mediatek: Add opp notification for
- SVS support
-In-Reply-To: <3b7bf25a3da6c8f780c87784c1f796bf1e464238.camel@mediatek.com>
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH V2 13/15] cpufreq: mediatek: Link CCI device to CPU
+In-Reply-To: <bc6dd020a1cc3f00f5be2bf2929046b9116bbeef.camel@mediatek.com>
 References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
- <20220408045908.21671-8-rex-bc.chen@mediatek.com>
- <7hsfqn5nft.fsf@baylibre.com>
- <3b7bf25a3da6c8f780c87784c1f796bf1e464238.camel@mediatek.com>
-Date:   Mon, 11 Apr 2022 11:09:15 -0700
-Message-ID: <7hzgkr4hmc.fsf@baylibre.com>
+ <20220408045908.21671-14-rex-bc.chen@mediatek.com>
+ <7hfsmn5m9f.fsf@baylibre.com>
+ <bc6dd020a1cc3f00f5be2bf2929046b9116bbeef.camel@mediatek.com>
+Date:   Mon, 11 Apr 2022 11:13:12 -0700
+Message-ID: <7hwnfv4hfr.fsf@baylibre.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rex,
-
 Rex-BC Chen <rex-bc.chen@mediatek.com> writes:
 
-> On Fri, 2022-04-08 at 13:29 -0700, Kevin Hilman wrote:
+> On Fri, 2022-04-08 at 13:54 -0700, Kevin Hilman wrote:
 >> Rex-BC Chen <rex-bc.chen@mediatek.com> writes:
 >> 
->> > From: "Andrew-sh.Cheng" <andrew-sh.cheng@mediatek.com>
+>> > From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
 >> > 
->> > The Smart Voltage Scaling (SVS) is a hardware which calculates
->> > suitable
->> > SVS bank voltages to OPP voltage table.
+>> > In some MediaTek SoCs, like MT8183, CPU and CCI share the same
+>> > power
+>> > supplies. Cpufreq needs to check if CCI devfreq exists and wait
+>> > until
+>> > CCI devfreq ready before scaling frequency.
 >> > 
->> > When the SVS is enabled, cpufreq should listen to opp notification
->> > and do
->> > proper actions when receiving events of disable and voltage
->> > adjustment.
+>> > - Add is_ccifreq_ready() to link CCI device to CPI, and CPU will
+>> > start
+>> >   DVFS when CCI is ready.
+>> > - Add platform data for MT8183.
+>> > 
+>> > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
 >> 
->> So listenting for OPP notifications should be done only when SVS is
->> enabled...
+>> The checks here are not enough, and will lead to unexpected behavior.
+>> IIUC, before doing DVFS, you're checking:
 >> 
->
-> Thanks for your review.
-> Yes, the OPP notification is only called from MediaTek SVS.
->
->> [...]
+>> 1) if the "cci" DT node is present and
+>> 2) if the driver for that device is bound
 >> 
->> >  static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info,
->> > int cpu)
->> >  {
->> >  	struct device *cpu_dev;
->> > @@ -392,6 +455,17 @@ static int mtk_cpu_dvfs_info_init(struct
->> > mtk_cpu_dvfs_info *info, int cpu)
->> >  	info->intermediate_voltage = dev_pm_opp_get_voltage(opp);
->> >  	dev_pm_opp_put(opp);
->> >  
->> > +	info->opp_cpu = cpu;
->> > +	info->opp_nb.notifier_call = mtk_cpufreq_opp_notifier;
->> > +	ret = dev_pm_opp_register_notifier(cpu_dev, &info->opp_nb);
+>> If both those conditions are not met, you don't actually fail, you
+>> just
+>> silently do nothing in ->set_target().  As Angelo pointed out also,
+>> this
+>> is not a good idea, and will be rather confusing to users.
 >> 
->> ...but here youlisten to OPP notifications unconditionally.  Seems
->> there
->> should be a check whether SVS is enabled before deciding to register.
+>> The same thing would happen if the cci DT node was present, but the
+>> CCI
+>> devfreq driver was disabled.  Silent failure would also be quite
+>> unexpected behavior.  Similarily, if the cci DT node is not present
+>> at
+>> all (like it is in current upstream DT), this CPUfreq driver will
+>> silently do nothing.  Not good.
+>> 
+>> So, this patch needs to handle several scenarios:
+>> 
+>> 1) CCI DT node not present
+>> 
+>> In this case, the driver should still operate normally.  With no CCI
+>> node, or driver there's no conflict.
+>> 
+>> 2) CCI DT present/enabled but not yet bound
+>> 
+>> In this case, you could return -EAGAIN as suggested by Angelo, or
+>> maybe
+>> better, it should do a deferred probe.
+>> 
+>> 3) CCI DT present, but driver disabled
+>> 
+>> This case is similar to (1), this driver should continue to work.
 >> 
 >> Kevin
->>
-> Do you think it's ok that we wrap it with the SVS Kconfig define?
-> like
-> #ifdef CONFIG_MTK_SVS
-> mtk_cpufreq_opp_notifier()
-> ...
-> dev_pm_opp_register_notifier()
-> #endif
+>
+> Hello Kevin and Angelo,
+>
+> In my review, if we do not get the link or the link status is not
+> correct between cci and cpufreq in target_index, I think it will never
+> established again for this link.
+> Because it's not checked in probe stage.
+>
+> So I think we just need to deal with the issue without cci device, and
+> don't expect the link between cci and cpufreq will be connected again.
+>
+> If I am wrong, please correct me.
 
-Generally, we don't like to see #ifdefs in C files[1].
-
-But more importantly, compile-time check is not enough, because SVS
-feature could be compiled into kernel, but not actually enabled for an
-SoC (e.g. DT node not enabled, etc.) so checking this at compile time is
-not enough.
-
-Ideally, the SVSdriver should provide a function that allows others to
-check if it's enabled.  That function needs to know not only if it's
-compile in, but if it's enabled/running.  If SVS is not compiled in,
-then that function just returns false.
+I don't fully understand your questions, but I think what your getting
+at suggest that you might need to use deferred probe to handle the case
+where the ordering of CCI and cpufreq probing is not predictable.
 
 Kevin
-
-[1] https://www.kernel.org/doc/html/latest/process/4.Coding.html?highlight=ifdef#ifdef-and-preprocessor-use-in-general
