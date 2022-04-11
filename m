@@ -2,110 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC68C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 21:22:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B062C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 21:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241766AbiDKVYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 17:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
+        id S1350181AbiDKV0m (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 17:26:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350114AbiDKVYH (ORCPT
+        with ESMTP id S233286AbiDKV0j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 17:24:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E85D2FE61
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 14:21:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649712111;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:in-reply-to:in-reply-to:  references:references;
-        bh=hYNVq0t1WrkTI/K6D/l/f7tQTRIta/302c+AVM0dqpk=;
-        b=ZYe/bbLU88HwXDOCYm4mM+BkBNYSN6PSHWLQGjB4Mgv5zTq1TMT9nBduLGXE3E/WhwJSTE
-        V5byJjfE+rzXm3a25L7z/F74XOJMwfrDb63V9tmlDjXm+BeLzwZgsB1Ef/ERCWYdzAJfK+
-        n5V7vzPETcAiP0WLRQcvITA/F3FAd80=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-137-PCLCKfmRMeisw7VBMB77DA-1; Mon, 11 Apr 2022 17:21:48 -0400
-X-MC-Unique: PCLCKfmRMeisw7VBMB77DA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 824D4185A7BA;
-        Mon, 11 Apr 2022 21:21:47 +0000 (UTC)
-Received: from tucnak.zalov.cz (unknown [10.39.195.172])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6192E40CF914;
-        Mon, 11 Apr 2022 21:21:46 +0000 (UTC)
-Received: from tucnak.zalov.cz (localhost [127.0.0.1])
-        by tucnak.zalov.cz (8.16.1/8.16.1) with ESMTPS id 23BLLg5f2961636
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 11 Apr 2022 23:21:42 +0200
-Received: (from jakub@localhost)
-        by tucnak.zalov.cz (8.16.1/8.16.1/Submit) id 23BLLe6o2961635;
-        Mon, 11 Apr 2022 23:21:40 +0200
-Date:   Mon, 11 Apr 2022 23:21:40 +0200
-From:   Jakub Jelinek <jakub@redhat.com>
-To:     Sergei Trofimovich <slyich@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        Joe Perches <joe@perches.com>, linux-kbuild@vger.kernel.org,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>
-Subject: Re: gcc inserts __builtin_popcount, causes 'modpost: "__popcountdi2"
- ... amdgpu.ko] undefined'
-Message-ID: <YlSb5D3rDTyCWpay@tucnak>
-Reply-To: Jakub Jelinek <jakub@redhat.com>
-References: <YlSYv3d9a5cZR9KE@nz>
+        Mon, 11 Apr 2022 17:26:39 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5A7611C1B;
+        Mon, 11 Apr 2022 14:24:22 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id y32so28905409lfa.6;
+        Mon, 11 Apr 2022 14:24:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=W07LTDRQTymKjPFZm77aBEtSzK9heBCBPkTFYPnHBGQ=;
+        b=D8N5US+NdVQZMy2EJ5v7Xz6ZD9q6Hd5yAEmkIT4EjBlI0MaZvgipuDjOLIecaMhXEY
+         EPVbV7avstzga0x2QyLBumJ/04DfAUQSdyj3v5SXyvrkb0s8Gcq4t3qDiKy1AVAwny81
+         A993XTEO/cta909Ukxl4q/I11MBtdqzEmTc5DIG/lG1CikSYsOoo33+h5yfriq2u18Ss
+         Cor/q+sD/AOxpslaUcgNiimjWsOtmflglBAD7ztg2QG/HCml5nmZ1/DmXDzvZr6/eB3B
+         hPSpxGSZ6Az6UwlvRlUuN3Nr4jzHfUmmTlwgrd/TNsCDZysrXgwMHElqz+nV23MAxEmC
+         xLHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=W07LTDRQTymKjPFZm77aBEtSzK9heBCBPkTFYPnHBGQ=;
+        b=ti+8Mc6L+Je3nmpqqCt3byVNLb/6tggF6eMp4LG/533PzPkBgfmqZBXY8q2dkI4OC+
+         RDEq/n4EaoMOPVI6tbzItxMkT6rFkxPFeCj0y2Gi/mqzr/3rFMlHMVMIA8vdh+XTb7EI
+         Ml8Y3kgsNsOAw91ibBlpkuehVyIp2QSLXmNeIAE+z0UQObT8nvOvusYRtCL6JPJJRG3C
+         SwCwbZ039AHk+asXWIp6/g19V1xe4LAAsfAJUnjbBDXqlNNrEJdVEmdtKQfjgfONgSJR
+         2IQsORtFV53LgmdwNVtVfN5GkfZNsTmVpYZha5DDje9SBLmkGCk8wEKR+8t05eNCsbb4
+         o+Sw==
+X-Gm-Message-State: AOAM532zr4jwkBByQQqj+TQFqdeLJlVQvDFzpvg+yvcLzn1n9IRVJQjf
+        7CadpWt2eU+7l07D1tuvGFI=
+X-Google-Smtp-Source: ABdhPJw1EDfVylJkSFMhb+KePBf/A0pmLkpS8KaCP2Pczay4AqN39f+VBLDlVnKx/RkXKgLfQXkupw==
+X-Received: by 2002:a05:6512:2292:b0:46b:a65c:91b9 with SMTP id f18-20020a056512229200b0046ba65c91b9mr4597915lfu.663.1649712261053;
+        Mon, 11 Apr 2022 14:24:21 -0700 (PDT)
+Received: from mobilestation ([95.79.134.149])
+        by smtp.gmail.com with ESMTPSA id w10-20020a2e9bca000000b0024b598ff427sm830391ljj.73.2022.04.11.14.24.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 14:24:20 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 00:24:18 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Brad Larson <brad@pensando.io>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Mark Brown <broonie@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Olof Johansson <olof@lixom.net>,
+        David Clear <dac2@pensando.io>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 01/11] dt-bindings: arm: add Pensando boards
+Message-ID: <20220411212418.44p3dvqiez4romqz@mobilestation>
+References: <20220406233648.21644-1-brad@pensando.io>
+ <20220406233648.21644-2-brad@pensando.io>
+ <05febd3f-bfdb-13c2-8cce-b9dc422c5eae@linaro.org>
+ <CAK9rFnyRrS_LvoZ_j66cKDHgecqcqzJN5krSxdCquBanViKyHg@mail.gmail.com>
+ <49c1d200-8c07-b306-a400-86ee6a637bb4@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YlSYv3d9a5cZR9KE@nz>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+In-Reply-To: <49c1d200-8c07-b306-a400-86ee6a637bb4@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 10:08:15PM +0100, Sergei Trofimovich wrote:
-> Current linux-5.17.1 on fresh gcc-12 fails to build with errors like:
+On Sat, Apr 09, 2022 at 12:39:59PM +0200, Krzysztof Kozlowski wrote:
+> On 09/04/2022 04:19, Brad Larson wrote:
+> > On Thu, Apr 7, 2022 at 11:45 AM Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>> Change from V3:
+> >>> - Add description and board compatible
+> >>
+> >> That's a bit confusing... the subject is for v1.
+> > 
+> > Goal was to identify in the cover letter patch the key changes from
+> > the V3 patchset to this V4 patchset.  Then in each patch that had a
+> > material change highlight that in the patch itself.  Will try and make
+> > it more clear.
 > 
->     ERROR: modpost: "__popcountdi2" [drivers/net/ethernet/broadcom/bnx2x/bnx2x.ko] undefined!
->     ERROR: modpost: "__popcountdi2" [drivers/gpu/drm/amd/amdgpu/amdgpu.ko] undefined!
-> 
-> It is occasionally seen by others on previous gcc versions as well:
-> 
->     https://lkml.org/lkml/2021/7/11/261
->     https://lkml.org/lkml/2018/10/24/403
-> 
-> '__popcountdi2' are inserted by gcc for code like the following
-> from 'drivers/gpu/drm/amd/display/modules/hdcp/hdcp1_execution.c':
-> 
->     static inline enum mod_hdcp_status validate_bksv(struct mod_hdcp *hdcp)
->     {
->         uint64_t n = 0;
->         uint8_t count = 0;
->         u8 bksv[sizeof(n)] = { };
-> 
->         memcpy(bksv, hdcp->auth.msg.hdcp1.bksv, sizeof(hdcp->auth.msg.hdcp1.bksv));
->         n = *(uint64_t *)bksv;
-> 
->         /* Here gcc inserts 'count = __builtin_popcount(n);' */
->         while (n) {
->                 count++;
->                 n &= (n - 1);
->         }
-> 
->         return (count == 20) ? MOD_HDCP_STATUS_SUCCESS :
->                                MOD_HDCP_STATUS_HDCP1_INVALID_BKSV;
->     }
-> 
-> Note that gcc can insert it regardless of -mno-* options.
 
-Just FYI, this has been added in GCC 9 for https://gcc.gnu.org/PR82479
-If the kernel implements its own __popcount?i2, it can perhaps with
-runtime patching use hw instructions when those are available and
-fallback to the generic version.
+> This is fine, I am talking about the subject - it is marked as a v1, so
+> it's confusing to see a changelog.
+> 
+> One way to achieve this is: "git format-patch -v4 -11 ..."
 
-	Jakub
+v2 was submitted by Brad one year ago:
+https://patches.linaro.org/project/linux-spi/cover/20210329015938.20316-1-brad@pensando.io/
+most likely he has just forgotten to add the proper suffix.
 
+-Sergey
+
+> 
+> Best regards,
+> Krzysztof
