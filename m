@@ -2,109 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56BAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD9B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345436AbiDKK2m (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37662 "EHLO
+        id S237610AbiDKK3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 06:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345834AbiDKK2B (ORCPT
+        with ESMTP id S1345438AbiDKK3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:28:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BD02253D;
-        Mon, 11 Apr 2022 03:25:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81B5961494;
-        Mon, 11 Apr 2022 10:25:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D43D2C385A5;
-        Mon, 11 Apr 2022 10:25:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649672746;
-        bh=ToeC9tEdnIhlAOR1pPNmn1re702gqOBJ1GoLQPVv7K0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SrhLIUOEc1lbZh4BFijvTmYSn+pFIKhlkruchPzE/FS52FFP880HJHvxTZE0an0+2
-         9fiGIoeBCdM6izDDe1VOtswW5OnW8QQLFNLlFdQH1XJ3o4I55FNV9Ag1755pLSEHjc
-         g1e7JN/LnHyAERGrPlC74jn88/tFhhyK0IGcjCB2hWAVdhZq33ASMucq4q3SC8y5aE
-         y5/7GHpoTJdGnlS679MWQYbwQchrJXutdAEGwqq1JZ52AHLGrEa4d8+YayNSTWEK/Y
-         IMwCSoIXYHrYLX+F66ElFEgwN6RZpsGI9Sa1Vu2SFWp00uySGSmkfIAvvPVUf+39BH
-         y3Dz6az2EPoZA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1ndrEq-0003zS-9G; Mon, 11 Apr 2022 12:25:40 +0200
-Date:   Mon, 11 Apr 2022 12:25:40 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Matwey V . Kornilov" <matwey@sai.msu.ru>,
-        Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 1/2] serial: 8250: Fix runtime PM for start_tx() for RS485
-Message-ID: <YlQCJE4yQRsO8JPn@hovoldconsulting.com>
-References: <20220411094805.45696-1-tony@atomide.com>
- <YlP7eArvvNWnbMF2@hovoldconsulting.com>
- <YlP+muZF1nDIU0t4@atomide.com>
+        Mon, 11 Apr 2022 06:29:00 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336473DDEB;
+        Mon, 11 Apr 2022 03:26:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649672807; x=1681208807;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=w/B9OC3B9ubhCDDuz61ASu2Hiu/rM8Lrj6qHHNYq32U=;
+  b=PEkdTgVIBKpikfPJb9nnVxnlA7BOopgtITPDU0Q2kruQ2xYupDh9yJQ6
+   qfP5fAyJwj3rYVAByYgqb7SUqe9BwckDUuSwI/Dqvyv17zU4iY1KOx3I0
+   Vm5eRey3DGlFnO4zf9RWCvGEyIekG+YMytSUVy5ckG/QnBXCUWjA76yB6
+   U4uN9DJSM8vn3vXJrjDT9slo6xRKaVfktAoTPsgzMHBzEeljNLVcjIIiz
+   8rtG/5hweZad0kRBqP5wBm4MgZlSe1DXFDEu4PC+ZzxwNy28x7pnLmZyv
+   77d5ytlLVp2y4KJJaFSOjRmPtIM/wakOiehx+X3kYmepRGuvFcWmh139E
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="348521541"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="348521541"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:26:46 -0700
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="644032222"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:26:40 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ndrCE-001BAf-W7;
+        Mon, 11 Apr 2022 13:22:58 +0300
+Date:   Mon, 11 Apr 2022 13:22:58 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tom Rix <trix@redhat.com>
+Cc:     balbi@kernel.org, gregkh@linuxfoundation.org, joel@jms.id.au,
+        andrew@aj.id.au, nicolas.ferre@microchip.com,
+        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
+        alcooperx@gmail.com, christophe.jaillet@wanadoo.fr,
+        cai.huoqing@linux.dev, benh@kernel.crashing.org,
+        neal_liu@aspeedtech.com, miles.chen@mediatek.com,
+        balamanikandan.gunasundar@microchip.com, macpaul.lin@mediatek.com,
+        s.shtylyov@omp.ru, jakobkoschel@gmail.com,
+        stern@rowland.harvard.edu, quic_wcheng@quicinc.com,
+        yashsri421@gmail.com, rdunlap@infradead.org,
+        linux-geode@lists.infradead.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org,
+        bcm-kernel-feedback-list@broadcom.com
+Subject: Re: [PATCH] usb: gadget: udc: clean up comments
+Message-ID: <YlQBgnjpkSurf9PZ@smile.fi.intel.com>
+References: <20220410150828.1891123-1-trix@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YlP+muZF1nDIU0t4@atomide.com>
+In-Reply-To: <20220410150828.1891123-1-trix@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 01:10:34PM +0300, Tony Lindgren wrote:
-> * Johan Hovold <johan@kernel.org> [220411 09:54]:
-> > On Mon, Apr 11, 2022 at 12:48:04PM +0300, Tony Lindgren wrote:
-> > > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> > > --- a/drivers/tty/serial/8250/8250_port.c
-> > > +++ b/drivers/tty/serial/8250/8250_port.c
-> > > @@ -1681,8 +1681,10 @@ static void serial8250_start_tx(struct uart_port *port)
-> > >  		return;
-> > >  
-> > >  	if (em485 &&
-> > > -	    em485->active_timer == &em485->start_tx_timer)
-> > > +	    em485->active_timer == &em485->start_tx_timer) {
-> > > +		serial8250_rpm_put_tx(up);
-> > >  		return;
-> > > +	}
-> > 
-> > I was just taking a quick look at your report about this and also
-> > noticed this return statement.
-> > 
-> > The runtime PM implementation is a bit of mess as we've discussed
-> > elsewhere, but the change you propose here doesn't look right.
+On Sun, Apr 10, 2022 at 11:08:28AM -0400, Tom Rix wrote:
+> SPDX
+> *.h use /* */ style comments
 > 
-> Frankly "a bit of mess" applies "a bit more" than just the serial runtime
-> PM :)
-
-Heh. I'm afraid that's all too true. :)
-
-> > start_tx() can be deferred in the rs485 case, but that doesn't mean you
-> > should suspend the device here. In fact, that look like it would just
-> > break runtime PM (the parts that may work to some extent).
+> For double words, remove
+> with, also
 > 
-> AFAIK there's currently nothing paired with the serial8250_rpm_get_tx(up)
-> call at the beginning of serial8250_start_tx() for the early exit cases
-> if start_tx_rs485() or __start_tx() won't get called.
-> 
-> Care to clarify a bit more what you have in mind?
+> Spelling replacements
+> wayt to way
+> wakup to wakeup
+> Contrl to Control
+> cheks to checks
+> initiaization to initialization
+> dyanmic to dynamic
 
-The problem is that that serial8250_rpm_put_tx() you're adding may
-suspend the device unconditionally (i.e. regardless of any previous
-calls to serial8250_rpm_get_tx()).
+Something really wrong with indentation above.
 
-If rs485 tx is just being deferred you mustn't suspend the device before
-it has had a chance to start transmitting.
+...
 
-Johan
+>  drivers/usb/gadget/udc/amd5536udc.h       | 2 +-
+>  drivers/usb/gadget/udc/aspeed-vhub/core.c | 2 +-
+>  drivers/usb/gadget/udc/aspeed-vhub/ep0.c  | 2 +-
+>  drivers/usb/gadget/udc/aspeed-vhub/hub.c  | 2 +-
+>  drivers/usb/gadget/udc/aspeed-vhub/vhub.h | 4 ++--
+>  drivers/usb/gadget/udc/at91_udc.c         | 2 +-
+>  drivers/usb/gadget/udc/bdc/bdc_core.c     | 4 ++--
+>  drivers/usb/gadget/udc/core.c             | 4 ++--
+>  drivers/usb/gadget/udc/trace.h            | 2 +-
+
+I believe that Greg's bot asks to split on per-driver basis.
+OTOH I don't see anything that can be problematic if in one
+change. So, it's up to maintainers then.
+
+...
+
+> --- a/drivers/usb/gadget/udc/amd5536udc.h
+> +++ b/drivers/usb/gadget/udc/amd5536udc.h
+
+>   * amd5536.h -- header for AMD 5536 UDC high/full speed USB device controller
+
+At the same time you may drop the filename(s) from the file(s) as this very
+one shows why it's good not to have a filename inside file.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
