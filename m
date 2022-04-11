@@ -2,89 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B0B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 07:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C545C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 07:24:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245308AbiDKHYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 03:24:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52234 "EHLO
+        id S245337AbiDKH0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 03:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230194AbiDKHYW (ORCPT
+        with ESMTP id S245311AbiDKH0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 03:24:22 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB27038BFF;
-        Mon, 11 Apr 2022 00:22:08 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id 75so7108329qkk.8;
-        Mon, 11 Apr 2022 00:22:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Cle8K5S6vVtn1JXrhhTeWuHVXYaRfpQzQC3UXOxjSXQ=;
-        b=Y6h0WBWvhdDrbLDKkIlt6BolxlUasB2v7HT2X+21KUGqBKjhk1WZuiBYUSN8BfVhOp
-         GaqIaIM8k3tsr4V0pLaDITzBcEuIq6aCgmETg4vEt4ivazuNeB+lGHrgekpApesOOFQy
-         NnMjkWHqqW05oMFKsnFutvWZD9q9T0JZi9YDUFddgGk7h2L4teMediK1sFIGpXJqguLH
-         Jp9V/NxmQ5x4HfvZrjzL6RsyKWVBLjZKmA5vbu2uDu9eyUkKNP84a8XhyW2JBv0vIS8M
-         3/l4Qvg9LXXmyZayEaK0PH9PiN1+OUGeei5LRrVjGw2kYr9S1vXTIlMB59DTEokwdXw+
-         brbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Cle8K5S6vVtn1JXrhhTeWuHVXYaRfpQzQC3UXOxjSXQ=;
-        b=jSgeqyNcm9zP7OuHgHakvr1s0M9B1g7AR0JbPTd08/j/J6ulUrC48QmruoR6KoNMDX
-         rCzBxKIQnHEb+uyizraiFa0P/6hH5LD50/jcMOHBW659+LbaMuOclL5QtsYCQCp8FApj
-         yfcV5AeXOCSM0j3N6noW32rpDXw46cRBIHyL4YH99FFdNq0snmDgL+8vWa5u8XEMEtyV
-         38I+WvOnTDC6KRskOwO9vvRXqnXB5ZfgHrS9eMsFGxaocQnY+z3fLsG5cAmOchMqAmAt
-         qOoDq7whxX7j5u2PNCDDBPh8buwAGNNCF5mpYZjE/sgXeWRy1J9nG3o5kJEkpwJUYOXp
-         1vkg==
-X-Gm-Message-State: AOAM532s/L1gkcO1rFAvi/zBpBEDwC3E/zrTP5s6S/bXhupmfHPZCJUY
-        qY/m705HZav6FDv2H/ldO7sGqAV8CJx3T04xQNI=
-X-Google-Smtp-Source: ABdhPJxLRWIxX+ylSeHh5gNn/W0febTp1WSbgiRGPMA2M0haLGbHDuacQuJmqW/SsTB2vLUtNxHD7kryu35rr91PuUU=
-X-Received: by 2002:a05:620a:bd5:b0:67d:15ed:2fcd with SMTP id
- s21-20020a05620a0bd500b0067d15ed2fcdmr21096563qki.81.1649661728137; Mon, 11
- Apr 2022 00:22:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220410203138.22513-1-arinc.unal@arinc9.com> <20220410203138.22513-3-arinc.unal@arinc9.com>
-In-Reply-To: <20220410203138.22513-3-arinc.unal@arinc9.com>
-From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Date:   Mon, 11 Apr 2022 09:21:57 +0200
-Message-ID: <CAMhs-H9yu-DS_7jHitHg4=0qQusQMN0LqA++k0nJFt0q7z-GzA@mail.gmail.com>
-Subject: Re: [PATCH 3/3] mips: dts: mt7621: remove binding for defining gpio
- function for pin groups
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Mon, 11 Apr 2022 03:26:30 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81905E019;
+        Mon, 11 Apr 2022 00:24:14 -0700 (PDT)
+X-UUID: 97fa6df90e9c4bad82d026175b2da3f3-20220411
+X-UUID: 97fa6df90e9c4bad82d026175b2da3f3-20220411
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <moudy.ho@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1545205006; Mon, 11 Apr 2022 15:24:08 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 11 Apr 2022 15:24:07 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 11 Apr
+ 2022 15:24:06 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 11 Apr 2022 15:24:06 +0800
+From:   Moudy Ho <moudy.ho@mediatek.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, linux-arm-kernel@lists.infradead.org,
-        "moderated list:ARM/Mediatek SoC support" 
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jernej Skrabec <jernej.skrabec@siol.net>
+CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Landley <rob@landley.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        <linux-kernel@vger.kernel.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        <tfiga@chromium.org>, <drinkcat@chromium.org>,
+        <pihsun@chromium.org>, <hsinyi@google.com>,
+        "Benjamin Gaignard" <benjamin.gaignard@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        daoyuan huang <daoyuan.huang@mediatek.com>,
+        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
+        <allen-kh.cheng@mediatek.com>, <xiandong.wang@mediatek.com>,
+        <randy.wu@mediatek.com>, <moudy.ho@mediatek.com>,
+        <jason-jh.lin@mediatek.com>, <roy-cw.yeh@mediatek.com>,
+        <river.cheng@mediatek.com>, <srv_heupstream@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v14 3/6] dt-bindings: soc: mediatek: move out common module from display folder
+Date:   Mon, 11 Apr 2022 15:24:00 +0800
+Message-ID: <20220411072403.24016-4-moudy.ho@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220411072403.24016-1-moudy.ho@mediatek.com>
+References: <20220411072403.24016-1-moudy.ho@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 10, 2022 at 10:32 PM Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arin=
-c9.com> wrote:
->
-> All pin groups function as gpio unless set otherwise. Therefore, remove
-> this unnecessary binding.
->
-> Tested on UniElec U7621-06-16M on OpenWrt.
->
-> Signed-off-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
-> ---
->  arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts | 12 ------------
->  arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts | 12 ------------
->  2 files changed, 24 deletions(-)
+In order to share the same hardware information with MDP3,
+change the MUTEX dt-binding to the path "soc/mediatek".
 
-Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+---
+ .../bindings/{display => soc}/mediatek/mediatek,mutex.yaml      | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ rename Documentation/devicetree/bindings/{display => soc}/mediatek/mediatek,mutex.yaml (97%)
 
-Thanks,
-   Sergio Paracuellos
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
+similarity index 97%
+rename from Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
+rename to Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
+index 00e6a1041a9b..40598243c84d 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
++++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ %YAML 1.2
+ ---
+-$id: http://devicetree.org/schemas/display/mediatek/mediatek,mutex.yaml#
++$id: http://devicetree.org/schemas/soc/mediatek/mediatek,mutex.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Mediatek mutex
+-- 
+2.18.0
+
