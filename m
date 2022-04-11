@@ -2,95 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 736F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 04:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A20C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 04:34:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243242AbiDKE3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 00:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52604 "EHLO
+        id S244247AbiDKEgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 00:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236240AbiDKE3i (ORCPT
+        with ESMTP id S237633AbiDKEgq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 00:29:38 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8661B7BE;
-        Sun, 10 Apr 2022 21:27:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649651245; x=1681187245;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=XMkyb6U22eVnNL7TEkYzIf/lCVfO5BZjV/i/7bGW49M=;
-  b=F8PGjbQhRpUn8sEaLN+zGq3Kht9KxRensfKJu4lEjBhYJq3FDl3qu5Bt
-   shGVghQO5MLgS5K5eFc0WHAba7BPm4NCuABro03ZSmIXoXb2DMJRNfgYx
-   R0/9qUfnk5U7owDUCxbSdUpA8md1E2igwO7AMSjQIyDc8/EF9JkYg42M3
-   E=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 10 Apr 2022 21:27:24 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2022 21:27:24 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Sun, 10 Apr 2022 21:27:23 -0700
-Received: from [10.79.138.7] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Sun, 10 Apr
- 2022 21:27:20 -0700
-Message-ID: <a8b2a783-45d3-0a5d-8b21-e8da1163af49@quicinc.com>
-Date:   Mon, 11 Apr 2022 09:57:17 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 3/3] soc: qcom: llcc: Add MODULE_DEVICE_TABLE()
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Luca Weiss <luca.weiss@fairphone.com>
-CC:     Rob Herring <robh+dt@kernel.org>,
+        Mon, 11 Apr 2022 00:36:46 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1152DF9;
+        Sun, 10 Apr 2022 21:34:31 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 5842032009EF;
+        Mon, 11 Apr 2022 00:34:30 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Mon, 11 Apr 2022 00:34:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm2; t=1649651669; x=1649738069; bh=uz
+        54NS14e7zXJlOyUIZUVcf4KVhO2+zporksnlKNjNk=; b=BfRzkMNNWIIqQOHr7M
+        EagAAanZ6v0dbW1NZlqfLio5ABfsz33OThVXdL7mfZZd+jwddxHEuTwQjHy2m/LJ
+        6BwYzaPYic3iKoQtKp5tu0iZVQCN2JtI5+aZa737D6sq395S0cpMclqaaMdpuOQU
+        UCqyT20WTf9h+Dg1Lc6Gj5EYAybGUAxON5bvNjeJn8Tl/spdBIgq6UeXIATIS7EJ
+        7n0R6rkYVPoccXOYvrGTQxzWTn09cgYJqvT6FV9t07rLK+FzYk4S2YWMO9ddFVBE
+        CU1I9Ty2egK758D4D6gn4COLLJ+i5KlaQOwpxwRTPMAdP759bhcs9CAK/0WBaHP+
+        1GKA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+        1649651669; x=1649738069; bh=uz54NS14e7zXJlOyUIZUVcf4KVhO2+zpork
+        snlKNjNk=; b=XTFrVSgraIw5wg8qxb+I9ZAh8b59dMn/i+5rkW6jIB1W69xQsOf
+        WpmcuEA54SaMn+M1rirJxd9QIv5n6S+ghA2amo2epQ1FDF43WtDRbS1iQX2Nzv0i
+        YtSC+gNSuxqe2LZdyKStVnWzmt4Bz0d48/7qUp1dXV6Hi0BnrZdi3wAjJIFtNje+
+        6AqVh9CY5q6gEhE4z1kRLVygHm4lkF97KZkFTTbaTnf6Lcdw57nXss45Vvu5k5Gs
+        SoHdXOiqLxj2e+Ob4WD4RjNT7MO95aQM64nMNv4ssUmBMxkchiBC7viNH0/Et6Ex
+        mkoh2j0n+KSrcB/WuDcR+zDug5o0fQiLCPw==
+X-ME-Sender: <xms:1a9TYpGSPtSQTSSuwjYTpGo2ajfV71tzSRmQ0_XeDs4q_9__0rkJMw>
+    <xme:1a9TYuXJ9LlLNXQdhYlrfGVoSEil6g-Yxl4CDnCgaXFqN_b1m52wr1o-WY7wuh5mK
+    PhWFPpHmBpsjT-fYw>
+X-ME-Received: <xmr:1a9TYrIMGseNYjC_jPCnE6wUe_sjjk772tGOAoVdraJZoy_Cqik9ivreVttI9M4QW8fKDuzliJzJ6cDLiDTbeICcOhVIcgfyKOkfs1w3GGzYCIyNxQqrjz2SL6IRNMG7VsZy8Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekhedgjeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
+    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
+    frrghtthgvrhhnpeduhfejfedvhffgfeehtefghfeiiefgfeehgfdvvdevfeegjeehjedv
+    gfejheeuieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:1a9TYvG_eoLFcDNCsIHdkFhpB3PY_G1-iYTkLof7MmQqCTPyCFDvVQ>
+    <xmx:1a9TYvUDJgMXS5bRQVHpaYsJefuoxBcNZz-cafJ5MNtZJe4Zkvc_OA>
+    <xmx:1a9TYqNpgBtKfJ9NMS3atu07VoLd7-3lUExv2Oso1DiXy3PdkPNMXA>
+    <xmx:1a9TYiMr4DjmxHjztURPW3onnndcoHDijs06OLVQ8JYuRC4p3tPllg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 11 Apr 2022 00:34:28 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>
+Cc:     Samuel Holland <samuel@sholland.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>
-References: <20220408213336.581661-1-bjorn.andersson@linaro.org>
- <20220408213336.581661-3-bjorn.andersson@linaro.org>
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-In-Reply-To: <20220408213336.581661-3-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: [PATCH 01/10] dt-bindings: display: Separate clock item lists by compatible
+Date:   Sun, 10 Apr 2022 23:34:13 -0500
+Message-Id: <20220411043423.37333-2-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220411043423.37333-1-samuel@sholland.org>
+References: <20220411043423.37333-1-samuel@sholland.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/9/2022 3:03 AM, Bjorn Andersson wrote:
-> The llcc-qcom driver can be compiled as a module, but lacks
-> MODULE_DEVICE_TABLE() and will therefore not be loaded automatically.
-> Fix this.
->
-> Fixes: a3134fb09e0b ("drivers: soc: Add LLCC driver")
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->   drivers/soc/qcom/llcc-qcom.c | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/soc/qcom/llcc-qcom.c b/drivers/soc/qcom/llcc-qcom.c
-> index a76d58195637..918bfd0df0e2 100644
-> --- a/drivers/soc/qcom/llcc-qcom.c
-> +++ b/drivers/soc/qcom/llcc-qcom.c
-> @@ -809,6 +809,7 @@ static const struct of_device_id qcom_llcc_of_match[] = {
->   	{ .compatible = "qcom,sm8450-llcc", .data = &sm8450_cfg },
->   	{ }
->   };
-> +MODULE_DEVICE_TABLE(of, qcom_llcc_of_match);
->   
->   static struct platform_driver qcom_llcc_driver = {
->   	.driver = {
+So far, the binding and driver have relied on the fact that the H6
+clocks are both a prefix and a subset of the R40 clocks. This allows
+them to share the clocks/clock-names items and the clock-output-names
+order between the hardware variants.
 
-Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+However, the D1 hardware has TCON TV0 and DSI, but no TCON TV1. This
+cannot be supported by the existing scheme because it puts a gap in the
+middle of the item lists. To prepare for adding D1 support, use separate
+lists for variants with different combinations of clocks.
 
-Thanks,
-Sai
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
+
+ .../display/allwinner,sun8i-r40-tcon-top.yaml | 111 +++++++++++-------
+ 1 file changed, 67 insertions(+), 44 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml b/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml
+index 61ef7b337218..784b267635fb 100644
+--- a/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml
++++ b/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml
+@@ -48,31 +48,15 @@ properties:
+ 
+   clocks:
+     minItems: 2
+-    items:
+-      - description: The TCON TOP interface clock
+-      - description: The TCON TOP TV0 clock
+-      - description: The TCON TOP TVE0 clock
+-      - description: The TCON TOP TV1 clock
+-      - description: The TCON TOP TVE1 clock
+-      - description: The TCON TOP MIPI DSI clock
++    maxItems: 6
+ 
+   clock-names:
+     minItems: 2
+-    items:
+-      - const: bus
+-      - const: tcon-tv0
+-      - const: tve0
+-      - const: tcon-tv1
+-      - const: tve1
+-      - const: dsi
++    maxItems: 6
+ 
+   clock-output-names:
+     minItems: 1
+     maxItems: 3
+-    description: >
+-      The first item is the name of the clock created for the TV0
+-      channel, the second item is the name of the TCON TV1 channel
+-      clock and the third one is the name of the DSI channel clock.
+ 
+   resets:
+     maxItems: 1
+@@ -129,32 +113,71 @@ required:
+ 
+ additionalProperties: false
+ 
+-if:
+-  properties:
+-    compatible:
+-      contains:
+-        const: allwinner,sun50i-h6-tcon-top
+-
+-then:
+-  properties:
+-    clocks:
+-      maxItems: 2
+-
+-    clock-output-names:
+-      maxItems: 1
+-
+-else:
+-  properties:
+-    clocks:
+-      minItems: 6
+-
+-    clock-output-names:
+-      minItems: 3
+-
+-    ports:
+-      required:
+-        - port@2
+-        - port@3
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: allwinner,sun8i-r40-tcon-top
++
++    then:
++      properties:
++        clocks:
++          minItems: 6
++          items:
++            - description: The TCON TOP interface clock
++            - description: The TCON TOP TV0 clock
++            - description: The TCON TOP TVE0 clock
++            - description: The TCON TOP TV1 clock
++            - description: The TCON TOP TVE1 clock
++            - description: The TCON TOP MIPI DSI clock
++
++        clock-names:
++          minItems: 6
++          items:
++            - const: bus
++            - const: tcon-tv0
++            - const: tve0
++            - const: tcon-tv1
++            - const: tve1
++            - const: dsi
++
++        clock-output-names:
++          minItems: 3
++          items:
++            - description: TCON TV0 output clock name
++            - description: TCON TV1 output clock name
++            - description: DSI output clock name
++
++        ports:
++          required:
++            - port@2
++            - port@3
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: allwinner,sun50i-h6-tcon-top
++
++    then:
++      properties:
++        clocks:
++          maxItems: 2
++          items:
++            - description: The TCON TOP interface clock
++            - description: The TCON TOP TV0 clock
++
++        clock-names:
++          maxItems: 2
++          items:
++            - const: bus
++            - const: tcon-tv0
++
++        clock-output-names:
++          maxItems: 1
++          items:
++            - description: TCON TV0 output clock name
+ 
+ examples:
+   - |
+-- 
+2.35.1
+
