@@ -2,105 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E10C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11188C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:40:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345650AbiDKKk4 (ORCPT
+        id S1345651AbiDKKm3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
+        Mon, 11 Apr 2022 06:42:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234711AbiDKKkx (ORCPT
+        with ESMTP id S231491AbiDKKmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:40:53 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89D643EDB
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:38:39 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 6E03A1F38D;
-        Mon, 11 Apr 2022 10:38:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649673518; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EOTb1DQ5T3tvzJWECRWfvUKR8Hc1CyPGEyTngR4bZGU=;
-        b=Ru34jhYMJZ28HD9uShZ0rqtS66eZ5sAIcsHD+SzBFmIyk/qX2R1sU4hgL+AWBg2lWQM1n4
-        EbrQBkjtYYl/SVUfFsgN7vIIwbgCNvz/HaDtMf6KHgvHBY24eK2N1kU6f2SEBCMZpxJ5UX
-        VmfmX3DeX5wVZNVoRHg4T+2sJyZ6gC0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649673518;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EOTb1DQ5T3tvzJWECRWfvUKR8Hc1CyPGEyTngR4bZGU=;
-        b=FebQQU7IOomtxeosFQW+9vaGx4X3kzFydI9IxxDIK/VgR/nK2Xf1opaeEvLHjzRqOjtzgm
-        R2c3Mq8u67FdiDDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 368B413AB5;
-        Mon, 11 Apr 2022 10:38:38 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 5mO6DC4FVGJYZAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 11 Apr 2022 10:38:38 +0000
-Message-ID: <888c1d6f-bdc7-2811-26cd-d8d46fdeb427@suse.cz>
-Date:   Mon, 11 Apr 2022 12:38:37 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] mm/slub: remove meaningless node check in ___slab_alloc()
-Content-Language: en-US
-To:     JaeSang Yoo <js.yoo.5b@gmail.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Ohhoon Kwon <ohkwon1043@gmail.com>,
-        Wonhyuk Yang <vvghjk1234@gmail.com>,
-        Jiyoup Kim <lakroforce@gmail.com>,
-        Donghyeok Kim <dthex5d@gmail.com>,
-        JaeSang Yoo <jsyoo5b@gmail.com>, linux-mm@kvack.org,
+        Mon, 11 Apr 2022 06:42:24 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9833D4A3;
+        Mon, 11 Apr 2022 03:40:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649673610; x=1681209610;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mRbzriUl5s2UXxPQ8GII2Fe20BP3Ht4BRWMMBCGSd9w=;
+  b=BXst8Ls/7qvEjIxR1yB5UZiVoKiuqcO54vS4MqvIrveLwgvrlqy9JF0k
+   Ex1EQxW/xYSesmF8dPyPtamly5szea5+sDzE1F9Cd6/7pUnXukc4Y2NY0
+   cOmuV/4DySXR//pYuOfheL/P4qG4Jbal5APL6HMYDWCl/1yViC0u13jbJ
+   Hsj7QbqKQMCGU/F/S4Xdi09nRqweUsMMMLrhBpFlawATFtdR5FtTZBfDQ
+   fOt0hVRMYfUKc59ai9nCXzb2rw25IvZCSOqNY7JMU1Zo3EGUDTxnH9nYY
+   odc6IAj7mv7zBAYDi3HqS/NeE7aP2S3PRaa3hMpvGriR4mbUyCgU/Vt/x
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="260932307"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="260932307"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:40:07 -0700
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="589832034"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:39:56 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1ndrP6-001BMJ-OC;
+        Mon, 11 Apr 2022 13:36:16 +0300
+Date:   Mon, 11 Apr 2022 13:36:16 +0300
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Tony Lindgren <tony@atomide.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220409144239.2649257-1-jsyoo5b@gmail.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220409144239.2649257-1-jsyoo5b@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 1/7] serial: core: Add support of runtime PM
+Message-ID: <YlQEoNDYRtoHDL68@smile.fi.intel.com>
+References: <20211115084203.56478-1-tony@atomide.com>
+ <20211115084203.56478-2-tony@atomide.com>
+ <YaX82wxybOZnPKpy@hovoldconsulting.com>
+ <YbGwaOj0ZbEuNEPA@atomide.com>
+ <YbHb7HRGGFRBorB7@smile.fi.intel.com>
+ <YeaLL0cJFeIhz1Tr@atomide.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YeaLL0cJFeIhz1Tr@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/9/22 16:42, JaeSang Yoo wrote:
-> node_match() with node=NUMA_NO_NODE always returns 1.
-> Duplicate check by goto statement is meaningless. Remove it.
-> 
-> Signed-off-by: JaeSang Yoo <jsyoo5b@gmail.com>
+First of all, my apology for the long delay in answering / commenting on this.
+Second, Cc'ed to Ilpo.
 
-Thanks, added.
-
-> ---
->  mm/slub.c | 1 -
->  1 file changed, 1 deletion(-)
+On Tue, Jan 18, 2022 at 11:41:03AM +0200, Tony Lindgren wrote:
+> * Andy Shevchenko <andriy.shevchenko@intel.com> [211209 10:37]:
+> > On Thu, Dec 09, 2021 at 09:29:44AM +0200, Tony Lindgren wrote:
+> > > * Johan Hovold <johan@kernel.org> [211130 10:29]:
+> > > > On Mon, Nov 15, 2021 at 10:41:57AM +0200, Tony Lindgren wrote:
+> > > > > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > > > > 
+> > > > > 8250 driver has wrong implementation of runtime power management, i.e.
+> > > > > it uses an irq_safe flag. The irq_safe flag takes a permanent usage count
+> > > > > on the parent device preventing the parent from idling. This patch
+> > > > > prepares for making runtime power management generic by adding runtime PM
+> > > > > calls to serial core once for all UART drivers.
+> > > > > 
+> > > > > As we have serial drivers that do not enable runtime PM, and drivers that
+> > > > > enable runtime PM, we add new functions for serial_pm_resume_and_get() and
+> > > > > serial_pm_autosuspend() functions to handle errors and allow the use also
+> > > > > for cases when runtime PM is not enabled. The other option considered was
+> > > > > to not check for runtime PM enable errors. But some CPUs can hang when the
+> > > > > clocks are not enabled for the device, so ignoring the errors is not a good
+> > > > > option. Eventually with the serial port drivers updated, we should be able
+> > > > > to just switch to using the standard runtime PM calls with no need for the
+> > > > > wrapper functions.
+> > > > 
+> > > > A third option which needs to be considered is to always enable runtime
+> > > > pm in core but to keep the ports active while they are opened unless a
+> > > > driver opts in for more aggressive power management. This is how USB
+> > > > devices are handled for example.
+> > > > 
+> > > > A next step could then be to move over uart_change_pm() to be handled
+> > > > from the pm callbacks.
+> > > 
+> > > Yes that would be nice to do eventually :)
 > 
-> diff --git a/mm/slub.c b/mm/slub.c
-> index 9fe000fd19ca..a65e282b8238 100644
-> --- a/mm/slub.c
-> +++ b/mm/slub.c
-> @@ -2913,7 +2913,6 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
->  		 */
->  		if (!node_isset(node, slab_nodes)) {
->  			node = NUMA_NO_NODE;
-> -			goto redo;
->  		} else {
->  			stat(s, ALLOC_NODE_MISMATCH);
->  			goto deactivate_slab;
+> I think we should do the "third option" above as the first preparatory patch.
+> It can be done separately from the rest of the series, and we avoid adding
+> serial layer specific wrappers around runtime PM calls in the later patches.
+> 
+> Below is what I came up with for the preparatory patch, can you guys please
+> take a look and see if you have better ideas?
+> 
+> For system suspend and resume, it seems we don't need to do anything as
+> runtime PM is anyways disabled already in prepare.
+> 
+> Andy, care to give the following also a try for your serial port test
+> cases?
+
+I'm a bit off of the UART work nowadays, but luckily we have Ilpo who is
+pretty much ramped up on the topic. Please, include him in all your work
+WRT 8250 UART improvements. I hope Ilpo might have time to test the patch
+mentioned in this message or give an idea how to do better, if possibly.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
