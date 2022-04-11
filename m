@@ -2,115 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A24ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09830C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348948AbiDKRkQ (ORCPT
+        id S1348951AbiDKRmE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 13:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        Mon, 11 Apr 2022 13:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231695AbiDKRkP (ORCPT
+        with ESMTP id S231695AbiDKRmB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 13:40:15 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBAA521834;
-        Mon, 11 Apr 2022 10:37:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=bMrJHV/z+bX/cuAH7pcyQOkcKK7bzLU7VyTOOCpZyb4=; b=erkRbNGLY+gX7G3uPm3SG0mTx3
-        Jdx7PliLE1m6zK4NNVitRkQJ6unZgko9E1n00r2oC94gRsCHlLsiGCswwo30LyKn8N3eyiV0eHzGK
-        KVQo5nx4BpZwhqUwnIow2CDwbB9TMMWDq5CJBWafSeNZYkXctNhJmdLRMiPKfS0wr8sH/Y3MkvOCu
-        I6C7teJwx6u095ud9PIjrshxJo1aZWTwEIXb+0lfYBvYJZsVtn4juZ7I/t1Dy8HbVWfv5MuWCO5fF
-        Uu/6C3J3litqwbHDD4o+p6RHN5Igw3cMd9w3oAoQfGeia3NmBkehIjhXciZ3tFpmt7WX/oWeThaxq
-        N/Ln3s2A==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ndxyI-00CX12-Kx; Mon, 11 Apr 2022 17:37:02 +0000
-Date:   Mon, 11 Apr 2022 18:37:02 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Khalid Aziz <khalid.aziz@oracle.com>
-Cc:     akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
-        arnd@arndb.de, 21cnbao@gmail.com, corbet@lwn.net,
-        dave.hansen@linux.intel.com, david@redhat.com,
-        ebiederm@xmission.com, hagen@jauu.net, jack@suse.cz,
-        keescook@chromium.org, kirill@shutemov.name, kucharsk@gmail.com,
-        linkinjeon@kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        longpeng2@huawei.com, luto@kernel.org, markhemm@googlemail.com,
-        pcc@google.com, rppt@kernel.org, sieberf@amazon.com,
-        sjpark@amazon.de, surenb@google.com, tst@schoebel-theuer.de,
-        yzaikin@google.com
-Subject: Re: [PATCH v1 00/14] Add support for shared PTEs across processes
-Message-ID: <YlRnPstOywJzxUib@casper.infradead.org>
-References: <cover.1649370874.git.khalid.aziz@oracle.com>
+        Mon, 11 Apr 2022 13:42:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1863E21257
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 10:39:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB718B817F9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 17:39:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75909C385A4;
+        Mon, 11 Apr 2022 17:39:41 +0000 (UTC)
+Date:   Mon, 11 Apr 2022 18:39:37 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH 02/10] drivers/base: Use ARCH_DMA_MINALIGN instead of
+ ARCH_KMALLOC_MINALIGN
+Message-ID: <YlRn2Wal4ezjvomZ@arm.com>
+References: <20220405135758.774016-1-catalin.marinas@arm.com>
+ <20220405135758.774016-3-catalin.marinas@arm.com>
+ <CAHp75Ve85_gDMUN91ZOhRLO3TkxmdO1crAcYjb1TGDCBmWbmFQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1649370874.git.khalid.aziz@oracle.com>
+In-Reply-To: <CAHp75Ve85_gDMUN91ZOhRLO3TkxmdO1crAcYjb1TGDCBmWbmFQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 10:05:44AM -0600, Khalid Aziz wrote:
-> Page tables in kernel consume some of the memory and as long as number
-> of mappings being maintained is small enough, this space consumed by
-> page tables is not objectionable. When very few memory pages are
-> shared between processes, the number of page table entries (PTEs) to
-> maintain is mostly constrained by the number of pages of memory on the
-> system. As the number of shared pages and the number of times pages
-> are shared goes up, amount of memory consumed by page tables starts to
-> become significant.
-
-All of this is true.  However, I've found a lot of people don't see this
-as compelling.  I've had more success explaining this from a different
-direction:
-
---- 8< ---
-
-Linux supports processes which share all of their address space (threads)
-and processes that share none of their address space (tasks).  We propose
-a useful intermediate model where two or more cooperating processes
-can choose to share portions of their address space with each other.
-The shared portion is referred to by a file descriptor which processes
-can choose to attach to their own address space.
-
-Modifications to the shared region affect all processes sharing
-that region, just as changes by one thread affect all threads in a
-multithreaded program.  This implies a certain level of trust between
-the different processes (ie malicious processes should not be allowed
-access to the mshared region).
-
---- 8< ---
-
-Another argument that MM developers find compelling is that we can reduce
-some of the complexity in hugetlbfs where it has the ability to share
-page tables between processes.
-
-One objection that was raised is that the mechanism for starting the
-shared region is a bit clunky.  Did you investigate the proposed approach
-of creating an empty address space, attaching to it and using an fd-based
-mmap to modify its contents?
-
-> int mshare_unlink(char *name)
+On Mon, Apr 11, 2022 at 05:57:08PM +0300, Andy Shevchenko wrote:
+> On Wed, Apr 6, 2022 at 2:30 PM Catalin Marinas <catalin.marinas@arm.com> wrote:
+> > ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
+> > operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
+> > alignment.
 > 
-> A shared address range created by mshare() can be destroyed using
-> mshare_unlink() which removes the  shared named object. Once all
-> processes have unmapped the shared object, the shared address range
-> references are de-allocated and destroyed.
+> ...
 > 
-> mshare_unlink() returns 0 on success or -1 on error.
+> > -        * Thus we use ARCH_KMALLOC_MINALIGN here and get exactly the same
+> > +        * Thus we use ARCH_DMA_MINALIGN here and get at least the same
+> >          * buffer alignment as if it was allocated by plain kmalloc().
+> 
+> But then it becomes not true either, because the kmalloc() has other
+> alignment constraints.
 
-Can you explain why this is a syscall instead of being a library
-function which does
+Maybe the comment could be improved a bit but I think it's still valid.
+After this patch, struct devres becomes:
 
-	int dirfd = open("/sys/fs/mshare");
-	err = unlinkat(dirfd, name, 0);
-	close(dirfd);
-	return err;
+struct devres {
+	struct devres_node		node;
+	u8 __aligned(ARCH_DMA_MINALIGN) data[];
+};
 
-Does msharefs support creating directories, so that we can use file
-permissions to limit who can see the sharable files?  Or is it strictly
-a single-level-deep hierarchy?
+While we no longer guarantee the ARCH_DMA_MINALIGN alignment (which is
+too big on most arm64 SoCs), what we need is for devres.data[] to be
+aligned to the newly introduced arch_kmalloc_minalign(). This would give
+us the DMA safety guarantees.
 
+Since devres.data[] is at an offset multiple of ARCH_DMA_MINALIGN, in
+order for the array to be aligned to arch_kmalloc_minalign(), all we
+need is for ARCH_DMA_MINALIGN to be a multiple of
+arch_kmalloc_minalign(). I actually had to write down some simple
+equations to convince myself.
+
+devres.data[] is at an offset multiple of ARCH_DMA_MINALIGN (after this
+patch), even when struct devres is included in another structure, so we
+have:
+
+  offsetof(struct devres, data) = m * ARCH_DMA_MINALIGN
+
+ARCH_DMA_MINALIGN is a power of two while arch_kmalloc_minalign() is
+also a power of two, equal to or less than ARCH_DMA_MINALIGN:
+
+  ARCH_DMA_MINALIGN = n * arch_kmalloc_minalign()
+
+A kmalloc()'ed object of struct devres (or a container of) is aligned to
+arch_kmalloc_minalign() by definition so:
+
+  kmalloc() = p * arch_kmalloc_minalign()
+
+From the above, we can conclude that the data[] pointer is at a multiple
+of arch_kmalloc_minalign():
+
+  devres.data = (p + m * n) * arch_kmalloc_minalign()
+
+Where m, n, p are all positive integers (n is also power of two).
+
+If we did not change the devres structure, the alignment of
+ARCH_KMALLOC_MINALIGN would no no be longer sufficient since the dynamic
+arch_kmalloc_minalign() can be greater than ARCH_KMALLOC_MINALIGN on
+specific SoCs (the first offsetof equation is no longer true).
+
+-- 
+Catalin
