@@ -2,88 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D678C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C82BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:37:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244968AbiDKGig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 02:38:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
+        id S244975AbiDKGjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 02:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244960AbiDKGib (ORCPT
+        with ESMTP id S234271AbiDKGjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 02:38:31 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477A921269
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 23:36:17 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id u19so4697602lff.4
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 23:36:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=emlid.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iRcYxJVdDiiICHxHO2f45y7+4rlasd/ctsihDzRoQKU=;
-        b=BpM+uhn+mmt2R1nQH6oS5XFfR4Lj8J1o+xE07ONTJPEvD+TWtrex7qmw+Ws8ZDJKqj
-         XhnIrN0znHoacNC9scPWxael80iJfPG4fvtUIDBn+QkTGlSJmcJBjDhD1FUBK/pETfD7
-         DPKRYn1l72t67LCTh0bxnOOkIjee8QntF15+86TyhP8kBAa0UDw+BkqyaMcHEWdzjaqG
-         9Jw1DmM+jOniZKquWKci5tT7lC4PeAQr+KNMf6OEMSbu8yzaz5yBj4/h1ciJoJ8m0j3M
-         EdEmiQut3AE2oDd0S3jJ+HpwfEA8uKrkw8/B8DKxReOH3JNmK2vNLDWtzy97glvHQ8mX
-         Am/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iRcYxJVdDiiICHxHO2f45y7+4rlasd/ctsihDzRoQKU=;
-        b=Nz4Ua2frWIYviEj7wOkkSjAMvJQPFwPwnxY6q/3Cc6KI9bgfWJSU4VyYlzcFsNKDUZ
-         HpvACKjcOgU0dixzFWIioafEOTtO1vOeHAnXel/e8xeOqZ8UPX/B5iSObAc3lmsjprRO
-         AVDqbeVE20O66sXdsMfzZN/NNoehPuM5CTpgDSa/T3VVkpyz0YKC0vLgfxm480X3Sn67
-         gfKTfz39Fy1i4Np56cELAK1qAvxLcqoOhKy2MEWKb2B+ZWRKBeTiUuCWEyyVcdx1Owft
-         U/+bxu+yrMaQeiaCabKNsyn0tLGW3Snomz83lvXVyzcZ4jPSB9DmyGS0lFWKnF0m78dT
-         vTrw==
-X-Gm-Message-State: AOAM532xvWVq0AFuj/tyaapZCSQISiebIlV7QCWONTmzUgNqihQHX2MW
-        w6XeSA3vM8nOBEeIVPxa+XyeDA==
-X-Google-Smtp-Source: ABdhPJxjyvTdAHPbrmGoXOI8yTgOwtl7h3M7ZrlEuC8Go1T3gG8NFMg7Im+eaJwh31CJQ6s8ussEHw==
-X-Received: by 2002:ac2:514c:0:b0:46b:8997:9ad6 with SMTP id q12-20020ac2514c000000b0046b89979ad6mr9554456lfd.620.1649658975548;
-        Sun, 10 Apr 2022 23:36:15 -0700 (PDT)
-Received: from emlid-ThinkPad-E480.localdomain ([85.143.205.202])
-        by smtp.gmail.com with ESMTPSA id m9-20020ac24249000000b004471fa09a95sm3232177lfl.265.2022.04.10.23.36.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Apr 2022 23:36:15 -0700 (PDT)
-From:   Andrei Lalaev <andrei.lalaev@emlid.com>
-To:     linus.walleij@linaro.org, brgl@bgdev.pl
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrei Lalaev <andrei.lalaev@emlid.com>
-Subject: [PATCH] gpiolib: of: fix bounds check for valid mask
-Date:   Mon, 11 Apr 2022 09:33:25 +0300
-Message-Id: <20220411063324.98542-1-andrei.lalaev@emlid.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Apr 2022 02:39:33 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FFAE222B7;
+        Sun, 10 Apr 2022 23:37:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=zuE9Oa+Qeir18sQSYzqnRYIpuPNJeRgzj07o7ivdwmk=; b=jhLaW6gCJNXjHQjbpXI001NoLm
+        AdFauJ9hVbDbbdwuShc0kE3TWVJ7U6cHbS1IVv5Dkz7vDn/LxPDJbM1rz1CQYtaBq9enHaO+9NlL/
+        jw3q0mng0Gv7hWxJJvqwU/5geav0RGI5PD2R26zZwNTmbVZ0e2qgaOoci6Tk8P03ECRbTlHhAWhWI
+        Nu2CciiC2elMY1Hh1rOZEbKyZ+CMYK7ToiTB8yDWTIR+NTU9faXcILk2jK5BIglpKBW1v2DZQYhXT
+        c4S6MZxbtPM/AI23zj/vdJiRazAwFyTd0o2QCLP287g1iNfUVd0oCI7ghVyoF7Tju6mc5yarGTDAJ
+        +XuGp9AA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1ndnfr-006wdX-RD; Mon, 11 Apr 2022 06:37:19 +0000
+Date:   Sun, 10 Apr 2022 23:37:19 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
+Cc:     linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, djwong@kernel.org,
+        dan.j.williams@intel.com, david@fromorbit.com, hch@infradead.org,
+        jane.chu@oracle.com, Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v12 2/7] mm: factor helpers for memory_failure_dev_pagemap
+Message-ID: <YlPMn2DjbqzAVhrb@infradead.org>
+References: <20220410160904.3758789-1-ruansy.fnst@fujitsu.com>
+ <20220410160904.3758789-3-ruansy.fnst@fujitsu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220410160904.3758789-3-ruansy.fnst@fujitsu.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use "greater" instead of "greater or equal" when performs bounds check
-to make sure that GPIOS are in available range. Previous implementation
-skipped ranges which include last GPIO in range.
+> +	unmap_and_kill(&to_kill, pfn, page->mapping, page->index, flags);
+> +unlock:
+> +	dax_unlock_page(page, cookie);
+> +	return 0;
 
-Signed-off-by: Andrei Lalaev <andrei.lalaev@emlid.com>
----
- drivers/gpio/gpiolib-of.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpio/gpiolib-of.c b/drivers/gpio/gpiolib-of.c
-index ae1ce319cd78..7e5e51d49d09 100644
---- a/drivers/gpio/gpiolib-of.c
-+++ b/drivers/gpio/gpiolib-of.c
-@@ -910,7 +910,7 @@ static void of_gpiochip_init_valid_mask(struct gpio_chip *chip)
- 					   i, &start);
- 		of_property_read_u32_index(np, "gpio-reserved-ranges",
- 					   i + 1, &count);
--		if (start >= chip->ngpio || start + count >= chip->ngpio)
-+		if (start >= chip->ngpio || start + count > chip->ngpio)
- 			continue;
- 
- 		bitmap_clear(chip->valid_mask, start, count);
--- 
-2.25.1
-
+As the buildbot points out this should probably be a "return rc".
