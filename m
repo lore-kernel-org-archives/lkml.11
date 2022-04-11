@@ -2,222 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F00C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:26:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B55C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345021AbiDKL2Z (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:28:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60082 "EHLO
+        id S245570AbiDKLcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 07:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241757AbiDKL2W (ORCPT
+        with ESMTP id S234457AbiDKLcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:28:22 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C5538DAD
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:26:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649676367; x=1681212367;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ptwZowuews8b7YIuVfZnUSjP57RWQMODKD8r+8x93NQ=;
-  b=YNMqoYZbPuuvY6/gOj8w7JYo+Q3vUtta5xrXT8KW+FnUCM8ylDFkNgl/
-   GahCyN1ns39cRMKYUtLtmXWGgE8+pWuv5NJX1VOnurGWX5xKK2WjlVdmr
-   a+j6sQW58a1kebzjoR8VqtBlTlVfNBOxi3ZKeIfHhP7NDjdz9eicyoUR4
-   UEg5F6WQWCQvIS8qBBo9qy+7kDb7f3XjXSCMv4XjAvA17Xw9HsEjOmwI1
-   aa7QFSWNNgdTQF+CYbt86pe/oumQS7cFvowapBYHnnxpEQV/qRlpoxi5V
-   7pXQBkKpchAQbDdjmnVoI6Di9lBfgN/qB4GblZq+w/oR3QXQeF6u4+gu0
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="261836833"
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="261836833"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:26:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="572081813"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 11 Apr 2022 04:25:58 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ndsBB-0001oR-E3;
-        Mon, 11 Apr 2022 11:25:57 +0000
-Date:   Mon, 11 Apr 2022 19:25:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/cleanups] BUILD SUCCESS
- c2a911d302b0d014a4d0d732a2bfc319e643eb62
-Message-ID: <62541015.vjLLl8gdeoAYGyzL%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Mon, 11 Apr 2022 07:32:04 -0400
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 264483EF3D;
+        Mon, 11 Apr 2022 04:29:47 -0700 (PDT)
+Received: by mail-yb1-f175.google.com with SMTP id t12so6379000ybt.10;
+        Mon, 11 Apr 2022 04:29:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wPfh2b3MSo8EtzyqRm45I0kme5Bj24uZnA2dVJHDBqY=;
+        b=59SHDFMDbTdV2wsGl76YrcYoyEkpTKHoFxlBJB2s1BlcxO2Ps3btFCYQvTOa2yN5lL
+         W9Eke702cr6dWvFj7fV9zHvh2PPWuNetMf7MP2oR3axis0gPbSFWOayJ1dES8JoJeSqt
+         rgEtrPimoVY4xK4OjDZShACGrRvb7vArlBDn15Wdl2DD38Iyi4hw8i/vV1hLc0OarJ5E
+         O3CSC23M6B6AQ8GiwP9hHA+8sc1+xmMxOPjyQiPwB/uZVyC0wBj+8ZRd6+mUAZnnIJ+/
+         5l5SAFVlNLtYeJGJAQILdb9wj7muudGN0ztc55whpfdJ7pYIGcbdOCKnorMWlPBC3TOr
+         5XpA==
+X-Gm-Message-State: AOAM530n0M7g6FW071Y3Kk86vvRNt0KioKD8TOC8daDFBiP/AUcEamap
+        e0zmjzpnwErcjXS8YOueRMdNDCphEOWjGsDOqYE=
+X-Google-Smtp-Source: ABdhPJynVaCSGdTcwySWkkFMTdN+kUa+og8pNv/S4Hq3zWxI/D99qBqMrNmQiLmr7GodBZNBGqyBc4aE/AJGEZ4DC6I=
+X-Received: by 2002:a25:230d:0:b0:641:375c:b5ad with SMTP id
+ j13-20020a25230d000000b00641375cb5admr5185825ybj.137.1649676586309; Mon, 11
+ Apr 2022 04:29:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <1836398.tdWV9SEqCh@kreacher> <CAPDyKFoop_mtWV0i+fH8GSmaxbPCyCPmOeNi6GuK5Qrj7ZVo1g@mail.gmail.com>
+ <CAJZ5v0geG77Npdy_Ae7XnpWukPPSJ1nE0DFF-vbJViKj6GtCWA@mail.gmail.com> <CAPDyKFo9t__WV00yp5gt+M0BhYtgJU2HmKXF2fXEDtjvSEUhhw@mail.gmail.com>
+In-Reply-To: <CAPDyKFo9t__WV00yp5gt+M0BhYtgJU2HmKXF2fXEDtjvSEUhhw@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Mon, 11 Apr 2022 13:29:31 +0200
+Message-ID: <CAJZ5v0jFA0Yi-4L6WQmcX5A-4_t1PTtEyFU7JRceKjr8UXgj_g@mail.gmail.com>
+Subject: Re: [PATCH v1] PM: runtime: Avoid device usage count underflows
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alan Stern <stern@rowland.harvard.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/cleanups
-branch HEAD: c2a911d302b0d014a4d0d732a2bfc319e643eb62  x86/mm: Replace nodes_weight() with nodes_empty() where appropriate
+On Mon, Apr 11, 2022 at 12:36 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+>
+> On Fri, 8 Apr 2022 at 19:05, Rafael J. Wysocki <rafael@kernel.org> wrote:
+> >
+> > On Fri, Apr 8, 2022 at 4:05 PM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+> > >
+> > > On Wed, 6 Apr 2022 at 21:03, Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
+> > > >
+> > > > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > > >
+> > > > A PM-runtime device usage count underflow is potentially critical,
+> > > > because it may cause a device to be suspended when it is expected to
+> > > > be operational.
+> > >
+> > > I get the point. Although, perhaps we should also state that it's a
+> > > programming problem that we would like to catch and warn about?
+> >
+> > OK, I can add that to the changelog.
+> >
+> > > >
+> > > > For this reason, (1) make rpm_check_suspend_allowed() return an error
+> > > > when the device usage count is negative to prevent devices from being
+> > > > suspended in that case, (2) introduce rpm_drop_usage_count() that will
+> > > > detect device usage count underflows, warn about them and fix them up,
+> > > > and (3) use it to drop the usage count in a few places instead of
+> > > > atomic_dec_and_test().
+> > > >
+> > > > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > > > ---
+> > > >  drivers/base/power/runtime.c |   44 ++++++++++++++++++++++++++++++++++++-------
+> > > >  1 file changed, 37 insertions(+), 7 deletions(-)
+> > > >
+> > > > Index: linux-pm/drivers/base/power/runtime.c
+> > > > ===================================================================
+> > > > --- linux-pm.orig/drivers/base/power/runtime.c
+> > > > +++ linux-pm/drivers/base/power/runtime.c
+> > > > @@ -263,7 +263,7 @@ static int rpm_check_suspend_allowed(str
+> > > >                 retval = -EINVAL;
+> > > >         else if (dev->power.disable_depth > 0)
+> > > >                 retval = -EACCES;
+> > > > -       else if (atomic_read(&dev->power.usage_count) > 0)
+> > > > +       else if (atomic_read(&dev->power.usage_count))
+> > > >                 retval = -EAGAIN;
+> > > >         else if (!dev->power.ignore_children &&
+> > > >                         atomic_read(&dev->power.child_count))
+> > > > @@ -1039,13 +1039,33 @@ int pm_schedule_suspend(struct device *d
+> > > >  }
+> > > >  EXPORT_SYMBOL_GPL(pm_schedule_suspend);
+> > > >
+> > > > +static int rpm_drop_usage_count(struct device *dev)
+> > > > +{
+> > > > +       int ret;
+> > > > +
+> > > > +       ret = atomic_sub_return(1, &dev->power.usage_count);
+> > > > +       if (ret >= 0)
+> > > > +               return ret;
+> > > > +
+> > > > +       /*
+> > > > +        * Because rpm_resume() does not check the usage counter, it will resume
+> > > > +        * the device even if the usage counter is 0 or negative, so it is
+> > > > +        * sufficient to increment the usage counter here to reverse the change
+> > > > +        * made above.
+> > > > +        */
+> > > > +       atomic_inc(&dev->power.usage_count);
+> > >
+> > > Rather than this two-step process, couldn't we just do an
+> > > "atomic_add_unless(&dev->power.usage_count, -1, 0)" - and check the
+> > > return value?
+> >
+> > No, we couldn't, because atomic_add_unless() returns a bool and we
+> > need to know the new counter value (and in particular whether or not
+> > it is 0).
+>
+> atomic_add_unless(&dev->power.usage_count, -1, 0) would return true as
+> long as the counter value is greater than 0.
 
-elapsed time: 726m
+Yes, and it in particular, when the current value of the counter is 1
+before the operation IIUC.
 
-configs tested: 144
-configs skipped: 72
+So after the operation it is 0 and true will be returned, won't it?
+But that's exactly the case we want to catch.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> If the counter has become 0, atomic_add_unless() would return false
+> and not continue to decrease the value below zero. Isn't this exactly
+> what we want?
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-powerpc              randconfig-c003-20220410
-i386                          randconfig-c001
-i386                 randconfig-c001-20220411
-xtensa                         virt_defconfig
-powerpc                     taishan_defconfig
-powerpc                 mpc8540_ads_defconfig
-powerpc                   currituck_defconfig
-nios2                            alldefconfig
-arm                       omap2plus_defconfig
-arc                          axs101_defconfig
-arm                             pxa_defconfig
-arm                        mini2440_defconfig
-powerpc                    adder875_defconfig
-powerpc                      bamboo_defconfig
-m68k                        m5307c3_defconfig
-mips                        vocore2_defconfig
-sh                          r7780mp_defconfig
-sh                            migor_defconfig
-powerpc                      makalu_defconfig
-powerpc                     stx_gp3_defconfig
-arc                          axs103_defconfig
-arm                      jornada720_defconfig
-sh                   sh7724_generic_defconfig
-arm                           h3600_defconfig
-arm                       multi_v4t_defconfig
-arm                          pxa910_defconfig
-m68k                       m5275evb_defconfig
-powerpc                mpc7448_hpc2_defconfig
-h8300                            allyesconfig
-arm                        clps711x_defconfig
-m68k                           sun3_defconfig
-mips                         tb0226_defconfig
-sh                        sh7785lcr_defconfig
-openrisc                    or1ksim_defconfig
-arm                  randconfig-c002-20220411
-arm                  randconfig-c002-20220410
-x86_64               randconfig-c001-20220411
-ia64                             allmodconfig
-ia64                             allyesconfig
-ia64                                defconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-nios2                               defconfig
-arc                              allyesconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-sparc                               defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-x86_64               randconfig-a016-20220411
-x86_64               randconfig-a012-20220411
-x86_64               randconfig-a013-20220411
-x86_64               randconfig-a014-20220411
-x86_64               randconfig-a015-20220411
-x86_64               randconfig-a011-20220411
-i386                 randconfig-a015-20220411
-i386                 randconfig-a011-20220411
-i386                 randconfig-a016-20220411
-i386                 randconfig-a012-20220411
-i386                 randconfig-a013-20220411
-i386                 randconfig-a014-20220411
-riscv                randconfig-r042-20220411
-arc                  randconfig-r043-20220411
-s390                 randconfig-r044-20220411
-riscv                               defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                         rhel-8.3-kunit
-x86_64                               rhel-8.3
+Not really.
 
-clang tested configs:
-arm                       netwinder_defconfig
-arm                      pxa255-idp_defconfig
-mips                         tb0219_defconfig
-mips                      bmips_stb_defconfig
-powerpc                     akebono_defconfig
-mips                     loongson2k_defconfig
-arm64                            allyesconfig
-powerpc                     kilauea_defconfig
-mips                          ath25_defconfig
-powerpc                     powernv_defconfig
-arm                         hackkit_defconfig
-mips                       lemote2f_defconfig
-mips                   sb1250_swarm_defconfig
-mips                          malta_defconfig
-powerpc                 mpc8272_ads_defconfig
-arm                         s3c2410_defconfig
-arm                          collie_defconfig
-x86_64               randconfig-a003-20220411
-x86_64               randconfig-a004-20220411
-x86_64               randconfig-a006-20220411
-x86_64               randconfig-a001-20220411
-x86_64               randconfig-a002-20220411
-x86_64               randconfig-a005-20220411
-i386                 randconfig-a004-20220411
-i386                 randconfig-a001-20220411
-i386                 randconfig-a003-20220411
-i386                 randconfig-a005-20220411
-i386                 randconfig-a006-20220411
-i386                 randconfig-a002-20220411
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-riscv                randconfig-r042-20220410
-hexagon              randconfig-r041-20220411
-hexagon              randconfig-r041-20220410
-hexagon              randconfig-r045-20220411
-hexagon              randconfig-r045-20220410
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+We want to detect transitions from 0 to 1 which is the case when the
+device can be suspended.
