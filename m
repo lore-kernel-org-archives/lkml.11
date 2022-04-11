@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF2BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77AE8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244191AbiDKHAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 03:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
+        id S245288AbiDKHAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 03:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245186AbiDKG7y (ORCPT
+        with ESMTP id S245251AbiDKG7z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 02:59:54 -0400
+        Mon, 11 Apr 2022 02:59:55 -0400
 Received: from mx1.cqplus1.com (unknown [113.204.237.245])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B50B3DDC1
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 23:57:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9557B3DDC7
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 23:57:14 -0700 (PDT)
 X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
         LIVER,40,3)
 Received: from 172.28.114.216
         by mx1.cqplus1.com with MailGates ESMTP Server V5.0(1173:0:AUTH_RELAY)
-        (envelope-from <qinjian@cqplus1.com>); Mon, 11 Apr 2022 14:49:04 +0800 (CST)
+        (envelope-from <qinjian@cqplus1.com>); Mon, 11 Apr 2022 14:49:06 +0800 (CST)
 From:   Qin Jian <qinjian@cqplus1.com>
 To:     krzysztof.kozlowski@linaro.org
 Cc:     robh+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
@@ -28,9 +28,9 @@ Cc:     robh+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
         Qin Jian <qinjian@cqplus1.com>
-Subject: [PATCH v13 2/9] dt-bindings: reset: Add bindings for SP7021 reset driver
-Date:   Mon, 11 Apr 2022 14:49:52 +0800
-Message-Id: <11b8f60a7f19f25d2fdaa7a2ed770e9383cec3ba.1649659095.git.qinjian@cqplus1.com>
+Subject: [PATCH v13 7/9] irqchip: Add Sunplus SP7021 interrupt controller driver
+Date:   Mon, 11 Apr 2022 14:49:57 +0800
+Message-Id: <20437e316e49a3a66e7003a7dc5258086558ce9a.1649659095.git.qinjian@cqplus1.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1649659095.git.qinjian@cqplus1.com>
 References: <cover.1649659095.git.qinjian@cqplus1.com>
@@ -40,169 +40,346 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation to describe Sunplus SP7021 reset driver bindings.
+Add interrupt controller driver for Sunplus SP7021 SoC.
+
+This is the interrupt controller in P-chip which collects all interrupt
+sources in P-chip and routes them to parent interrupt controller in C-chip.
 
 Signed-off-by: Qin Jian <qinjian@cqplus1.com>
 ---
-Move HW mapping from dt-binding header to driver.
+Remove the empty set_affinity callback function.
 ---
- .../bindings/reset/sunplus,reset.yaml         | 38 ++++++++
- MAINTAINERS                                   |  2 +
- include/dt-bindings/reset/sp-sp7021.h         | 87 +++++++++++++++++++
- 3 files changed, 127 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/reset/sunplus,reset.yaml
- create mode 100644 include/dt-bindings/reset/sp-sp7021.h
+ MAINTAINERS                       |   1 +
+ drivers/irqchip/Kconfig           |   9 +
+ drivers/irqchip/Makefile          |   2 +
+ drivers/irqchip/irq-sp7021-intc.c | 278 ++++++++++++++++++++++++++++++
+ 4 files changed, 290 insertions(+)
+ create mode 100644 drivers/irqchip/irq-sp7021-intc.c
 
-diff --git a/Documentation/devicetree/bindings/reset/sunplus,reset.yaml b/Documentation/devicetree/bindings/reset/sunplus,reset.yaml
-new file mode 100644
-index 000000000..f24646ba9
---- /dev/null
-+++ b/Documentation/devicetree/bindings/reset/sunplus,reset.yaml
-@@ -0,0 +1,38 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) Sunplus Co., Ltd. 2021
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/reset/sunplus,reset.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Sunplus SoC Reset Controller
-+
-+maintainers:
-+  - Qin Jian <qinjian@cqplus1.com>
-+
-+properties:
-+  compatible:
-+    const: sunplus,sp7021-reset
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#reset-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#reset-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    rstc: reset@9c000054 {
-+      compatible = "sunplus,sp7021-reset";
-+      reg = <0x9c000054 0x28>;
-+      #reset-cells = <1>;
-+    };
-+
-+...
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 8b5e2e639..a8be86b25 100644
+index 9fba67159..cf6873295 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -2744,6 +2744,8 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for mon-subscribers)
- S:	Maintained
- W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
- F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
-+F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
-+F:	include/dt-bindings/reset/sp-sp7021.h
+@@ -2748,6 +2748,7 @@ F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ F:	Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
+ F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+ F:	drivers/clk/clk-sp7021.c
++F:	drivers/irqchip/irq-sp7021-intc.c
+ F:	drivers/reset/reset-sunplus.c
+ F:	include/dt-bindings/clock/sp-sp7021.h
+ F:	include/dt-bindings/reset/sp-sp7021.h
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 7038957f4..f5c2596bc 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -617,4 +617,13 @@ config MCHP_EIC
+ 	help
+ 	  Support for Microchip External Interrupt Controller.
  
- ARM/Synaptics SoC support
- M:	Jisheng Zhang <jszhang@kernel.org>
-diff --git a/include/dt-bindings/reset/sp-sp7021.h b/include/dt-bindings/reset/sp-sp7021.h
++config SUNPLUS_SP7021_INTC
++	bool "Sunplus SP7021 interrupt controller" if COMPILE_TEST
++	default SOC_SP7021
++	help
++	  Support for the Sunplus SP7021 Interrupt Controller IP core.
++	  SP7021 SoC has 2 Chips: C-Chip & P-Chip. This is used as a
++	  chained controller, routing all interrupt source in P-Chip to
++	  the primary controller on C-Chip.
++
+ endmenu
+diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+index c1f611cbf..eb0ac83ff 100644
+--- a/drivers/irqchip/Makefile
++++ b/drivers/irqchip/Makefile
+@@ -117,3 +117,5 @@ obj-$(CONFIG_WPCM450_AIC)		+= irq-wpcm450-aic.o
+ obj-$(CONFIG_IRQ_IDT3243X)		+= irq-idt3243x.o
+ obj-$(CONFIG_APPLE_AIC)			+= irq-apple-aic.o
+ obj-$(CONFIG_MCHP_EIC)			+= irq-mchp-eic.o
++obj-$(CONFIG_SUNPLUS_SP7021_INTC)	+= irq-sp7021-intc.o
++
+diff --git a/drivers/irqchip/irq-sp7021-intc.c b/drivers/irqchip/irq-sp7021-intc.c
 new file mode 100644
-index 000000000..ab4867073
+index 000000000..b45c1a601
 --- /dev/null
-+++ b/include/dt-bindings/reset/sp-sp7021.h
-@@ -0,0 +1,87 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++++ b/drivers/irqchip/irq-sp7021-intc.c
+@@ -0,0 +1,278 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +/*
 + * Copyright (C) Sunplus Technology Co., Ltd.
 + *       All rights reserved.
 + */
-+#ifndef _DT_BINDINGS_RST_SUNPLUS_SP7021_H
-+#define _DT_BINDINGS_RST_SUNPLUS_SP7021_H
++#include <linux/irq.h>
++#include <linux/irqdomain.h>
++#include <linux/io.h>
++#include <linux/irqchip.h>
++#include <linux/irqchip/chained_irq.h>
++#include <linux/of_address.h>
++#include <linux/of_irq.h>
 +
-+#define RST_SYSTEM              0
-+#define RST_RTC                 1
-+#define RST_IOCTL               2
-+#define RST_IOP                 3
-+#define RST_OTPRX               4
-+#define RST_NOC                 5
-+#define RST_BR                  6
-+#define RST_RBUS_L00            7
-+#define RST_SPIFL               8
-+#define RST_SDCTRL0             9
-+#define RST_PERI0               10
-+#define RST_A926                11
-+#define RST_UMCTL2              12
-+#define RST_PERI1               13
-+#define RST_DDR_PHY0            14
-+#define RST_ACHIP               15
-+#define RST_STC0                16
-+#define RST_STC_AV0             17
-+#define RST_STC_AV1             18
-+#define RST_STC_AV2             19
-+#define RST_UA0                 20
-+#define RST_UA1                 21
-+#define RST_UA2                 22
-+#define RST_UA3                 23
-+#define RST_UA4                 24
-+#define RST_HWUA                25
-+#define RST_DDC0                26
-+#define RST_UADMA               27
-+#define RST_CBDMA0              28
-+#define RST_CBDMA1              29
-+#define RST_SPI_COMBO_0         30
-+#define RST_SPI_COMBO_1         31
-+#define RST_SPI_COMBO_2         32
-+#define RST_SPI_COMBO_3         33
-+#define RST_AUD                 34
-+#define RST_USBC0               35
-+#define RST_USBC1               36
-+#define RST_UPHY0               37
-+#define RST_UPHY1               38
-+#define RST_I2CM0               39
-+#define RST_I2CM1               40
-+#define RST_I2CM2               41
-+#define RST_I2CM3               42
-+#define RST_PMC                 43
-+#define RST_CARD_CTL0           44
-+#define RST_CARD_CTL1           45
-+#define RST_CARD_CTL4           46
-+#define RST_BCH                 47
-+#define RST_DDFCH               48
-+#define RST_CSIIW0              49
-+#define RST_CSIIW1              50
-+#define RST_MIPICSI0            51
-+#define RST_MIPICSI1            52
-+#define RST_HDMI_TX             53
-+#define RST_VPOST               54
-+#define RST_TGEN                55
-+#define RST_DMIX                56
-+#define RST_TCON                57
-+#define RST_INTERRUPT           58
-+#define RST_RGST                59
-+#define RST_GPIO                60
-+#define RST_RBUS_TOP            61
-+#define RST_MAILBOX             62
-+#define RST_SPIND               63
-+#define RST_I2C2CBUS            64
-+#define RST_SEC                 65
-+#define RST_DVE                 66
-+#define RST_GPOST0              67
-+#define RST_OSD0                68
-+#define RST_DISP_PWM            69
-+#define RST_UADBG               70
-+#define RST_DUMMY_MASTER        71
-+#define RST_FIO_CTL             72
-+#define RST_FPGA                73
-+#define RST_L2SW                74
-+#define RST_ICM                 75
-+#define RST_AXI_GLOBAL          76
++#define SP_INTC_HWIRQ_MIN	0
++#define SP_INTC_HWIRQ_MAX	223
 +
-+#endif
++#define SP_INTC_NR_IRQS		(SP_INTC_HWIRQ_MAX - SP_INTC_HWIRQ_MIN + 1)
++#define SP_INTC_NR_GROUPS	DIV_ROUND_UP(SP_INTC_NR_IRQS, 32)
++#define SP_INTC_REG_SIZE	(SP_INTC_NR_GROUPS * 4)
++
++/* REG_GROUP_0 regs */
++#define REG_INTR_TYPE		(sp_intc.g0)
++#define REG_INTR_POLARITY	(REG_INTR_TYPE     + SP_INTC_REG_SIZE)
++#define REG_INTR_PRIORITY	(REG_INTR_POLARITY + SP_INTC_REG_SIZE)
++#define REG_INTR_MASK		(REG_INTR_PRIORITY + SP_INTC_REG_SIZE)
++
++/* REG_GROUP_1 regs */
++#define REG_INTR_CLEAR		(sp_intc.g1)
++#define REG_MASKED_EXT1		(REG_INTR_CLEAR    + SP_INTC_REG_SIZE)
++#define REG_MASKED_EXT0		(REG_MASKED_EXT1   + SP_INTC_REG_SIZE)
++#define REG_INTR_GROUP		(REG_INTR_CLEAR    + 31 * 4)
++
++#define GROUP_MASK		(BIT(SP_INTC_NR_GROUPS) - 1)
++#define GROUP_SHIFT_EXT1	(0)
++#define GROUP_SHIFT_EXT0	(8)
++
++/*
++ * When GPIO_INT0~7 set to edge trigger, doesn't work properly.
++ * WORKAROUND: change it to level trigger, and toggle the polarity
++ * at ACK/Handler to make the HW work.
++ */
++#define GPIO_INT0_HWIRQ		120
++#define GPIO_INT7_HWIRQ		127
++#define IS_GPIO_INT(irq)					\
++({								\
++	u32 i = irq;						\
++	(i >= GPIO_INT0_HWIRQ) && (i <= GPIO_INT7_HWIRQ);	\
++})
++
++/* index of states */
++enum {
++	_IS_EDGE = 0,
++	_IS_LOW,
++	_IS_ACTIVE
++};
++
++#define STATE_BIT(irq, idx)		(((irq) - GPIO_INT0_HWIRQ) * 3 + (idx))
++#define ASSIGN_STATE(irq, idx, v)	assign_bit(STATE_BIT(irq, idx), sp_intc.states, v)
++#define TEST_STATE(irq, idx)		test_bit(STATE_BIT(irq, idx), sp_intc.states)
++
++static struct sp_intctl {
++	/*
++	 * REG_GROUP_0: include type/polarity/priority/mask regs.
++	 * REG_GROUP_1: include clear/masked_ext0/masked_ext1/group regs.
++	 */
++	void __iomem *g0; // REG_GROUP_0 base
++	void __iomem *g1; // REG_GROUP_1 base
++
++	struct irq_domain *domain;
++	raw_spinlock_t lock;
++
++	/*
++	 * store GPIO_INT states
++	 * each interrupt has 3 states: is_edge, is_low, is_active
++	 */
++	DECLARE_BITMAP(states, (GPIO_INT7_HWIRQ - GPIO_INT0_HWIRQ + 1) * 3);
++} sp_intc;
++
++static struct irq_chip sp_intc_chip;
++
++static void sp_intc_assign_bit(u32 hwirq, void __iomem *base, bool value)
++{
++	u32 offset, mask;
++	unsigned long flags;
++	void __iomem *reg;
++
++	offset = (hwirq / 32) * 4;
++	reg = base + offset;
++
++	raw_spin_lock_irqsave(&sp_intc.lock, flags);
++	mask = readl_relaxed(reg);
++	if (value)
++		mask |= BIT(hwirq % 32);
++	else
++		mask &= ~BIT(hwirq % 32);
++	writel_relaxed(mask, reg);
++	raw_spin_unlock_irqrestore(&sp_intc.lock, flags);
++}
++
++static void sp_intc_ack_irq(struct irq_data *d)
++{
++	u32 hwirq = d->hwirq;
++
++	if (unlikely(IS_GPIO_INT(hwirq) && TEST_STATE(hwirq, _IS_EDGE))) { // WORKAROUND
++		sp_intc_assign_bit(hwirq, REG_INTR_POLARITY, !TEST_STATE(hwirq, _IS_LOW));
++		ASSIGN_STATE(hwirq, _IS_ACTIVE, true);
++	}
++
++	sp_intc_assign_bit(hwirq, REG_INTR_CLEAR, 1);
++}
++
++static void sp_intc_mask_irq(struct irq_data *d)
++{
++	sp_intc_assign_bit(d->hwirq, REG_INTR_MASK, 0);
++}
++
++static void sp_intc_unmask_irq(struct irq_data *d)
++{
++	sp_intc_assign_bit(d->hwirq, REG_INTR_MASK, 1);
++}
++
++static int sp_intc_set_type(struct irq_data *d, unsigned int type)
++{
++	u32 hwirq = d->hwirq;
++	bool is_edge = !(type & IRQ_TYPE_LEVEL_MASK);
++	bool is_low = (type == IRQ_TYPE_LEVEL_LOW || type == IRQ_TYPE_EDGE_FALLING);
++
++	irq_set_handler_locked(d, is_edge ? handle_edge_irq : handle_level_irq);
++
++	if (unlikely(IS_GPIO_INT(hwirq) && is_edge)) { // WORKAROUND
++		/* store states */
++		ASSIGN_STATE(hwirq, _IS_EDGE, is_edge);
++		ASSIGN_STATE(hwirq, _IS_LOW, is_low);
++		ASSIGN_STATE(hwirq, _IS_ACTIVE, false);
++		/* change to level */
++		is_edge = false;
++	}
++
++	sp_intc_assign_bit(hwirq, REG_INTR_TYPE, is_edge);
++	sp_intc_assign_bit(hwirq, REG_INTR_POLARITY, is_low);
++
++	return 0;
++}
++
++static int sp_intc_get_ext_irq(int ext_num)
++{
++	void __iomem *base = ext_num ? REG_MASKED_EXT1 : REG_MASKED_EXT0;
++	u32 shift = ext_num ? GROUP_SHIFT_EXT1 : GROUP_SHIFT_EXT0;
++	u32 groups;
++	u32 pending_group;
++	u32 group;
++	u32 pending_irq;
++
++	groups = readl_relaxed(REG_INTR_GROUP);
++	pending_group = (groups >> shift) & GROUP_MASK;
++	if (!pending_group)
++		return -1;
++
++	group = fls(pending_group) - 1;
++	pending_irq = readl_relaxed(base + group * 4);
++	if (!pending_irq)
++		return -1;
++
++	return (group * 32) + fls(pending_irq) - 1;
++}
++
++static void sp_intc_handle_ext_cascaded(struct irq_desc *desc)
++{
++	struct irq_chip *chip = irq_desc_get_chip(desc);
++	int ext_num = (int)irq_desc_get_handler_data(desc);
++	int hwirq;
++
++	chained_irq_enter(chip, desc);
++
++	while ((hwirq = sp_intc_get_ext_irq(ext_num)) >= 0) {
++		if (unlikely(IS_GPIO_INT(hwirq) && TEST_STATE(hwirq, _IS_ACTIVE))) { // WORKAROUND
++			ASSIGN_STATE(hwirq, _IS_ACTIVE, false);
++			sp_intc_assign_bit(hwirq, REG_INTR_POLARITY, TEST_STATE(hwirq, _IS_LOW));
++		} else {
++			generic_handle_domain_irq(sp_intc.domain, hwirq);
++		}
++	}
++
++	chained_irq_exit(chip, desc);
++}
++
++static struct irq_chip sp_intc_chip = {
++	.name = "sp_intc",
++	.irq_ack = sp_intc_ack_irq,
++	.irq_mask = sp_intc_mask_irq,
++	.irq_unmask = sp_intc_unmask_irq,
++	.irq_set_type = sp_intc_set_type,
++};
++
++static int sp_intc_irq_domain_map(struct irq_domain *domain,
++				  unsigned int irq, irq_hw_number_t hwirq)
++{
++	irq_set_chip_and_handler(irq, &sp_intc_chip, handle_level_irq);
++	irq_set_chip_data(irq, &sp_intc_chip);
++	irq_set_noprobe(irq);
++
++	return 0;
++}
++
++static const struct irq_domain_ops sp_intc_dm_ops = {
++	.xlate = irq_domain_xlate_twocell,
++	.map = sp_intc_irq_domain_map,
++};
++
++static int sp_intc_irq_map(struct device_node *node, int i)
++{
++	unsigned int irq;
++
++	irq = irq_of_parse_and_map(node, i);
++	if (!irq)
++		return -ENOENT;
++
++	irq_set_chained_handler_and_data(irq, sp_intc_handle_ext_cascaded, (void *)i);
++
++	return 0;
++}
++
++static int __init sp_intc_init_dt(struct device_node *node, struct device_node *parent)
++{
++	int i, ret;
++
++	sp_intc.g0 = of_iomap(node, 0);
++	if (!sp_intc.g0)
++		return -ENXIO;
++
++	sp_intc.g1 = of_iomap(node, 1);
++	if (!sp_intc.g1) {
++		ret = -ENXIO;
++		goto out_unmap0;
++	}
++
++	ret = sp_intc_irq_map(node, 0); // EXT_INT0
++	if (ret)
++		goto out_unmap1;
++
++	ret = sp_intc_irq_map(node, 1); // EXT_INT1
++	if (ret)
++		goto out_unmap1;
++
++	/* initial regs */
++	for (i = 0; i < SP_INTC_NR_GROUPS; i++) {
++		/* all mask */
++		writel_relaxed(0, REG_INTR_MASK + i * 4);
++		/* all edge */
++		writel_relaxed(~0, REG_INTR_TYPE + i * 4);
++		/* all high-active */
++		writel_relaxed(0, REG_INTR_POLARITY + i * 4);
++		/* all EXT_INT0 */
++		writel_relaxed(~0, REG_INTR_PRIORITY + i * 4);
++		/* all clear */
++		writel_relaxed(~0, REG_INTR_CLEAR + i * 4);
++	}
++
++	sp_intc.domain = irq_domain_add_linear(node, SP_INTC_NR_IRQS,
++					       &sp_intc_dm_ops, &sp_intc);
++	if (!sp_intc.domain) {
++		ret = -ENOMEM;
++		goto out_unmap1;
++	}
++
++	raw_spin_lock_init(&sp_intc.lock);
++
++	return 0;
++
++out_unmap1:
++	iounmap(sp_intc.g1);
++out_unmap0:
++	iounmap(sp_intc.g0);
++
++	return ret;
++}
++
++IRQCHIP_DECLARE(sp_intc, "sunplus,sp7021-intc", sp_intc_init_dt);
 -- 
 2.33.1
 
