@@ -2,156 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5378C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:08:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05BB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 17:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348751AbiDKRKf (ORCPT
+        id S1348755AbiDKRMx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 13:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59562 "EHLO
+        Mon, 11 Apr 2022 13:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235105AbiDKRKe (ORCPT
+        with ESMTP id S1348739AbiDKRMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 13:10:34 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42EF31FCD8
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 10:08:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=+iXwtVZvUdEhLEVqNt7D0roMyUFGILOUPB/s//8bFdU=; b=pSTkAwRoffNrDT+tQEQnmaFNcG
-        Sl/WcFSGdTIFNjO553AgubZybJn+IKvIMGq4kJ/laKrhFs05W7UjJ+vTDrldkJVgPdPupmLJddwaR
-        s02MC63I+H4D8yggIONijJk+i3bk5gGYqbQLJqoBT+KwUaI/96ZijYq8DeA9dzkSB6mUGPxEmjdoE
-        QH4zNUA+6BXcJMQPh6veFUs5UHzDm0SJAxyMfmGKXt+oBB7b3SEK0z4aXObZACA+fJNkC3/UM/1X5
-        xAxD5PbpntJoe6Vo/imVayj6iMK5WTcDf7qOQ9apedjCqLWnqcZ0As6KHTM/QEKoSZzGyw6Ij3S6+
-        P3Fb28aw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1ndxW6-0042Q1-Da; Mon, 11 Apr 2022 17:07:55 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7781F300212;
-        Mon, 11 Apr 2022 19:07:53 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 33F082D2B129D; Mon, 11 Apr 2022 19:07:53 +0200 (CEST)
-Date:   Mon, 11 Apr 2022 19:07:53 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Oleg Nesterov <oleg@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: Re: [PATCH v2] ptrace: fix ptrace vs tasklist_lock race on
- PREEMPT_RT.
-Message-ID: <YlRgaZnJp2YONKhS@hirez.programming.kicks-ass.net>
-References: <20220405101026.GB34954@worktop.programming.kicks-ass.net>
- <20220405102849.GA2708@redhat.com>
- <Ykwn0MpcrZ/N+LOG@hirez.programming.kicks-ass.net>
- <20220407121340.GA2762@worktop.programming.kicks-ass.net>
- <87v8vk8q4g.fsf@email.froward.int.ebiederm.org>
- <20220408090908.GO2731@worktop.programming.kicks-ass.net>
- <874k332wjp.fsf@email.froward.int.ebiederm.org>
- <YlCVxlTVL1pyBF08@hirez.programming.kicks-ass.net>
- <YlQSe6m2tidxwHt0@hirez.programming.kicks-ass.net>
- <87ee23zqdj.fsf@email.froward.int.ebiederm.org>
+        Mon, 11 Apr 2022 13:12:51 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD4EDE9F;
+        Mon, 11 Apr 2022 10:10:36 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id g20so19270874edw.6;
+        Mon, 11 Apr 2022 10:10:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gXYI7jas27KXQFWzQAqCjxbvW9SNZ9FrO2KKjkUfn0k=;
+        b=VTXUTMM8/MVPRxc7Dj8tuvwskdeJ2OL3vjFhCYJjaL7PT8yjgolt0IrOwBQF4CIuaV
+         1QvMjeVI+WJvJ/RpGs/CnsXytir4GHRcHL6zapzw+8WocEdElNfeWnm9dwNq/qCfXAty
+         ntyM2100cVWknYXIFfPG8PNxs81t4Jxe+pi2t65vgrrpUQrlGGFvMvGUam1h3QCAIRdF
+         rxn1S9XmmDq7K2Y3V7IoVjLooqMxNYqYTCTcF7BHlpEaSDc0xPGiOHFW0FstDB8B+uAO
+         zop20r0dXRU5zORi5/uArwPzcq9xNJPejLFvLFl09Dly+Ua/D0Q+C+10QOQQn0djfvqz
+         lDXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gXYI7jas27KXQFWzQAqCjxbvW9SNZ9FrO2KKjkUfn0k=;
+        b=VDyVwgucSf+VQsBR+4ljtjdi045cXxNFhFl2agGD6meKd5OGTmEULVsCjS7sjp7/0r
+         zEROMVAVFgeeSJgrjjP1ZbMna9dlmltHdMQRzJEPpupsc/bLSCMGcjAB9SWz2G+FIVOB
+         kegTuCnH82KOaQpZnR3FQoVXBZX+KxGj6OC9//ujWDIO81Cvc+fqcBiSyTraVPRvBpvS
+         /j/qlPxn5Gq744VG+tj+EZ7sEQPzxidct1ZFCbYcECOYEV7I7cTdpPupV0V3IMbq+yy/
+         jbZ5nMqGUloumYybVOMsMUVj9Q1NzUqTpO8Iulo8wPyD6RQtc4LNfS1QUqH2ySEl1y3l
+         wdJg==
+X-Gm-Message-State: AOAM531Wa8ObLNFepjlz/c+q1qyAHY2Up4V8rL/+XMVQrXakPwrObbg7
+        HTZFhx8ezyGXZpXpm+Ab2xidyLhGIFobyIGk05M=
+X-Google-Smtp-Source: ABdhPJw9xLUS4WGM4zeOtEBtedr4s97anadMlmsyHgl4E+GO4fVj7RlJfDmCSp5DWYDyKqMJeEW6PPURDHgW7jz33ZU=
+X-Received: by 2002:a05:6402:27d1:b0:419:1b02:4a04 with SMTP id
+ c17-20020a05640227d100b004191b024a04mr34275976ede.218.1649697034913; Mon, 11
+ Apr 2022 10:10:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ee23zqdj.fsf@email.froward.int.ebiederm.org>
+References: <20220411162033.39613-1-eajames@linux.ibm.com>
+In-Reply-To: <20220411162033.39613-1-eajames@linux.ibm.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 11 Apr 2022 20:06:21 +0300
+Message-ID: <CAHp75VeXCMobbcpvcWPt2eeDXeHs5caB=fsAFC0xy4_0DT2miA@mail.gmail.com>
+Subject: Re: [PATCH v3 0/4] leds: pca955x: Add HW blink support
+To:     Eddie James <eajames@linux.ibm.com>
+Cc:     Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, patrick@stwcx.xyz,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Joel Stanley <joel@jms.id.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 08:44:24AM -0500, Eric W. Biederman wrote:
-> Peter Zijlstra <peterz@infradead.org> writes:
-> 
-> > On Fri, Apr 08, 2022 at 10:06:30PM +0200, Peter Zijlstra wrote:
-> >
-> >> I'll ponder if wait_task_inactive() can simplify things..
-> >
-> > This,.. so ptrace_check_attach(), which does ptrace_freeze_traced()
-> > already does wait_task_inactive(), but on the 'wrong' side of things.
-> >
-> > AFAICT, if we move that up, we're almost there, except that opens up a
-> > detach+attach race. That could be fixed by doing another
-> > wait_task_inactive(), but we can't due to locking :/
-> >
-> > Let's see if I can make that work without making a mess of things.
-> > Because ensuring the task is stuck in schedule() makes the whole
-> > saved_state thing go away -- as you noted.
-> 
-> The code can perhaps synchronize on a bit using the the full locking and
-> then drop the locks and call the wait_task_inactive or whatever.
-> 
-> The challenge as I see it is after the traced task is inactive to allow
-> "wake_up_state(t, TASK_WAKEKILL)" on the traced task, have the traced
-> tasks state change to TASK_RUNNING and not allow the traced task to run
-> until what is today ptrace_unfreeze_task is called.
-> 
-> I just don't know how to get something stuck and not allow it to run.
+On Mon, Apr 11, 2022 at 7:20 PM Eddie James <eajames@linux.ibm.com> wrote:
+>
+> This series adds support for blinking using the PCA955x chip, falling
+> back to software blinking if another LED on the chip is already blinking
+> at a different rate, or if the requested rate isn't representable with
+> the PCA955x.
+> Also included are some minor clean up and optimization changes that make
+> the HW blinking a bit easier.
 
-Same as today? Clear TASK_WAKEKILL from __state and check
-__fatal_signal_pending() before putting it back again.
+Don't see any big issues here, FWIW,
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-The thing is, once we hit schedule() with TASK_TRACED, there's only two
-possible ways for that task to wake up:
+But please consider two things for the future improvements:
+1) switching to regmap API;
+2) switching to bitmap API.
 
-  wake_up_state(t, TASK_WAKEKILL)
+You may find some code in drivers/gpio/gpio-pca953x.c. It might be
+that some common code can be split to the generic bitmap/regmap
+operations.
 
-and
-
-  wake_up_state(t, __TASK_TRACED)
-
-both are issued while holding sighand lock, so provided we hold sighand
-lock, we can actually frob __state as we do today, we just need to know
-the task really has scheduled out first.
-
-That is, the problem today, for PREEMPT_RT, is:
-
-ptrace_stop():					ptrace_freeze_traced()
-
-  set_special_state(TASK_TRACING)
-
-  ...
-
-  spin_lock(&foo)
-    current->saved_state = current->__state;
-    current->__state = TASK_RTLOCK_WAIT
-
-						READ_ONCE(t->__state)
-						  // whoopsie, not
-						  // TRACED
-
-  ...
-
-  schedule()
+> Changes since v2:
+>  - Split the cleanup patch
+>  - Prettier dev_err calls
+>  - Include units for blink period and use defined unit translations
+>    rather than just a number.
+>  - Use positive conditionals.
+>
+> Changes since v1:
+>  - Rework the blink function to fallback to software blinking if the
+>    period is out of range of the chip's capabilities or if another LED
+>    on the chip is already blinking at a different rate.
+>  - Add the cleanup patch
+>
+> Eddie James (4):
+>   leds: pca955x: Refactor with helper functions and renaming
+>   leds: pca955x: Use pointers to driver data rather than I2C client
+>   leds: pca955x: Optimize probe led selection
+>   leds: pca955x: Add HW blink support
+>
+>  drivers/leds/leds-pca955x.c | 341 ++++++++++++++++++++++++------------
+>  1 file changed, 232 insertions(+), 109 deletions(-)
+>
+> --
+> 2.27.0
+>
 
 
-But if wait_task_inactive() ensures our @t is actually in schedule(),
-we're good again, nothing will then ever change __state as long as we
-hold sighand lock.
-
-The only fun bit is that wait_task_inactive() likes to schedule so we
-want do that with sighand lock held. What we need to do is call it
-first, and then re-check stuff is still sane once we (re)acquire all the
-locks.
-
-This is certainly possible -- and not in fact too hard; the only thing
-I'm really concerned about is not making it more ugly than dealing with
-saved_state in the first place (and *that* is turning out to be somewhat
-hard).
-
-But while going over all this I think there might be an additional
-problem; wait_task_inactive() is stubbed for SMP=n...
-
-
+-- 
+With Best Regards,
+Andy Shevchenko
