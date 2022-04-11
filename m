@@ -2,181 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C848FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:32:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78537C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:32:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348008AbiDKPec (ORCPT
+        id S1345256AbiDKPfK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:34:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
+        Mon, 11 Apr 2022 11:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348369AbiDKPeI (ORCPT
+        with ESMTP id S1347971AbiDKPfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:34:08 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F8AF369FD
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:31:53 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 208AF21100;
-        Mon, 11 Apr 2022 15:31:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649691112; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FYat79/7pG8HYkrEImZXhwDV0UKca1/KnNQ9I3dHX0c=;
-        b=wMtEydag0BsohSfymKljISu20kAG0cCFcQ8RNZ7fGabsPpf7X4QO9rkAi1AZuEujM1UyjZ
-        1BjzkBTlYs86jXPV4I4wEpUpocPn0yZD6ml9nvt4l6soTlrX2Yr75mqiRayuVrc7U6cUT2
-        ckIW/U28aRkd6qX6zg4aKsSfiYz5+E4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649691112;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FYat79/7pG8HYkrEImZXhwDV0UKca1/KnNQ9I3dHX0c=;
-        b=tS6tlzFmkCSgDl3NJDtSu+DgOM/EbaQ6ZDEbZJA3jlmjJ960V6rXIQfj32PfyH1IgKe5y5
-        jgmzm4eAx1AQ9oBw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D4B1B13AB5;
-        Mon, 11 Apr 2022 15:31:51 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id hEhKM+dJVGJyZAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 11 Apr 2022 15:31:51 +0000
-Message-ID: <9b02d27a-b4c0-acfa-dc0b-ac4912c1d3e6@suse.cz>
-Date:   Mon, 11 Apr 2022 17:31:51 +0200
+        Mon, 11 Apr 2022 11:35:01 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2072.outbound.protection.outlook.com [40.107.102.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FA8369FF
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:32:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dim4kAh53hD+VRiwm/VifrLYkZ7fGw1q68aEjqUWMG+GbeyADFJNTX6mmepVaN83DBBSVF7yq4TwkmifelppuXTMefFpsxjXDxlV9a1DBnMuqPbcdDpW7LuGYi1SXMUsPcdCuZS8bYY0mR9lZyiAZn4QKpBNESNzrqNBanaTMXyKF/5nVbiLe5uccDger53UIMgSoUNVwq3BFdjYN7nrSQ0lMlUkRpRQcwhVcpkkG9F0BUgvc1A/DZULjStF/wtPWnlcJokXVtwAgHvLr6vagxerykAMfVIG1Z4Yol1steHowiOZFXyDGn7HTWff0phG4l1JxfpjS/TyjStlyy1MAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fzVcFCBXrPU8/+PXqEclaIDQWu8oS6vJnSpaq2u9e0k=;
+ b=NJWmoZvbvW4OO3J2luXOdtpqQe09Cur9wCbQNFYSd6JD0KT6Kj7wpPxbTON7ouzQs8mvbgBPu6kC1v8k4v2yCTwQPrpsqRUMDP6Zyu6nhMDIZCj2AfePskseZn+JPV6fh2Z3QAq1qg2kvq+SzoBl51KiVdRZbGo+w01i2ScYpYIp4SAJaJ+3SOyEgfxU62sXSWokf2gfHm5MStECraMmG8mpz4CFLf9blUpWNecLiIubEDqM9jtYRszNd1Byk96SffXRroOXthen3nNVm1ZYtAFwBhq2CyJzX+eGkcXnn7qRb2cdqvUh4OaVB9A91W2o8GGJjUjFd7RkdmepflmLmA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fzVcFCBXrPU8/+PXqEclaIDQWu8oS6vJnSpaq2u9e0k=;
+ b=ChLjmc322r3BOHCFFQNZ1CfqcoSDYvFpiGIiiTrqajBYVnmuc+2qCzEYeLluMzx0igbnf85r4SxKQXADExYSN/jv2xAPNv4LeLpqsljoEaM0aqiMwqsii0BzVIqq0HFcxlFjTYmkDfx+sZVHE6Pw2VSCSly1dPLUH4MG6SQVbmd2pj0G7S56kjp/L684OWkciiqe9e21BYOu11xAXrcw9vh1L6BmEr+3GVDQ+0E65/eK9TejUujkZ6cR9o1pTeC1xa3dSnUN16NLZTNKfD0a+AXWC23Q493KwPFOLsWVMikWH1Wj+9rGCYy6jrEfkPvJT7T1mCQwORaYBRiz4iNchw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by MN2PR12MB3421.namprd12.prod.outlook.com (2603:10b6:208:cd::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
+ 2022 15:32:37 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
+ 15:32:37 +0000
+Date:   Mon, 11 Apr 2022 12:32:36 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 07/34] drm/i915/gvt: remove intel_gvt_ops
+Message-ID: <20220411153236.GI2120790@nvidia.com>
+References: <20220411141403.86980-1-hch@lst.de>
+ <20220411141403.86980-8-hch@lst.de>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411141403.86980-8-hch@lst.de>
+X-ClientProxiedBy: MN2PR11CA0030.namprd11.prod.outlook.com
+ (2603:10b6:208:23b::35) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2] mm/slab_common: move dma-kmalloc caches creation into
- new_kmalloc_cache()
-Content-Language: en-US
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Ohhoon Kwon <ohkwon1043@gmail.com>
-Cc:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        JaeSang Yoo <jsyoo5b@gmail.com>,
-        Wonhyuk Yang <vvghjk1234@gmail.com>,
-        Jiyoup Kim <lakroforce@gmail.com>,
-        Donghyeok Kim <dthex5d@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Catalin Marinas <Catalin.Marinas@arm.com>
-References: <20220410162511.656541-1-ohkwon1043@gmail.com>
- <YlQMC9x1hfgonJH/@hyeyoo>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <YlQMC9x1hfgonJH/@hyeyoo>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1588412a-e357-4256-4488-08da1bd08216
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3421:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB342156EA54E21887FDE7A713C2EA9@MN2PR12MB3421.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pA/nZA4VjByoDq/zx17Di58DMGt9NR7NbTbsLhFtIiqK/LH3am8Tkf28yjhDAMD/uB7aqdr8/xd9KitPCt0a8KUCcAtVU9SgShyeX21Cr/zwgovjbrr2lWBbw69bH+UFdC++A2YhJIfrKxl06bNnXVcwv/+BIw9OmuODMc00yaqU0SlHAsARs7jd+CBvO6SLzh9jhkq6ODTHimjQQamHxsQoxsgKLmcFuMDiYnxp3VAvXNRIh96UcpePE8EQpPqPf3Sizr+/ePoh9x0+cKqiD62rs7mKM8tdVlkySwgC13F+1ucSpVDLwRJeO/f9VNPg/91OAECxXZRJ09YRcsb/I7jj5k5auTyNwn5+XYHesDrlRSysKx8EuVMPc4lznC1f9JhT4c00zrTItlT2fLj+qOWj69AbhMGvscHXiNXNqVp2rflHXRkCQ9CJWOrGu2ukZRGHUIp9AjdmC4d4H0DH/XEfQTUE5nr6JmUkh/9ZbLnSm4B3r02lRxcUOcQYKEN/QTTBGsMIPTQ96aIO0xlnshLAU03kvOxO1bQpJh7oGfo6vx0R8kMblaJNviLHOO3OfQdo5EtNq1seQSSZeAYfPlSS734WfmdpZ6nMF6QcVBl8v72Ozc6c0MPU83udrewzv6csmd5lKjk5M0TMgibLnw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(33656002)(36756003)(2906002)(558084003)(2616005)(6512007)(6916009)(66556008)(8936002)(86362001)(38100700002)(6486002)(508600001)(66476007)(186003)(1076003)(26005)(316002)(7416002)(5660300002)(4326008)(66946007)(54906003)(8676002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CgZxZAJOmON6Sy5SCaafW9w2EYVI7KNKDTHD1GsmPHS21hkPLfhFnYmbe0wu?=
+ =?us-ascii?Q?ePALfy0T7nIvIZy7QBZhY+6+Q1nUXWwHL2uE0pK0sotObEKj2HOWZ6MQZcLd?=
+ =?us-ascii?Q?dHPm+oBsWyRYfYZ5sabDl9LntSyekBcE5N67QwWVXa7oGbpNerb3UYiEa0XD?=
+ =?us-ascii?Q?juGY2f6p2WkwUwjG/E7MPywCwELWQ3tvUm4Engm2laSC3L2DISHnBKC4h+3j?=
+ =?us-ascii?Q?yIHVn7/BaQ+NFJ6iVbhjpoFc7INCj69cIL5MGbfV0MXX+8erApECEoF1kQ7i?=
+ =?us-ascii?Q?RBZAYXUvZIPRr4A+Y8MFoYh8lWR5phLjtZDwAkOr3xRx6fvYeL0CUU35u7gt?=
+ =?us-ascii?Q?Dx3UwArVRkTxkAVRfrbpFVorIJd9Fap5LvYhScxwjUSXfSbqXtS6j8ZyU8jI?=
+ =?us-ascii?Q?TCQ1688IKM7/YbLzUvMEApkrgjauvMwk4x1xGz8Pad9LYUEO1vXR5OEy5ZUs?=
+ =?us-ascii?Q?JtwoTOdcVv95wNfUyiYIYh+ncd8L5anhb757d/QF0Yhw8IJzP5yQUSs5m6jf?=
+ =?us-ascii?Q?jVZx+p87BYl7qGxz4ZP9aj+OeGMDvioMI7ZWPER7Z28wqlFimkugQIKjxYDr?=
+ =?us-ascii?Q?sQw83g14dkTUiVbK2nivoL+s7FbnuqrT8BpQfCusv5HZ8bqwhqN9pMgGmzdu?=
+ =?us-ascii?Q?XhSLnheRRL5ASbVO5mZDopanYxGPEt1/UUVWFSJAkXZnPARiGJojsoRNXvcx?=
+ =?us-ascii?Q?hv5dt1qDlJrY3Ctg4VTztLaMVDpxJ4eOB9DCLxtvKwZYlCcBrjFzw5nuex5f?=
+ =?us-ascii?Q?Fcxu7RfeKGolnVk/rqfJ/9lEsb0d/1jfltjMwpwBMctXaiOQpMsY2McNxl4G?=
+ =?us-ascii?Q?YJAEItmcdHshfakEmLRqi6Odh8yInlpbrEypZ4yPPUIrNd/1lPeDD2KVQBNp?=
+ =?us-ascii?Q?Tty2KLfDPXRbuaFxSFW4cQf0mAqI+R0tBUrw5SW/Y0UegmCVa7RA/IBGrXEJ?=
+ =?us-ascii?Q?9b9A3uRHnjSGTqFBBmOVrxJEqOaIwCQxjbMMDXDWW8hsYkXd9l9TUebez3Qw?=
+ =?us-ascii?Q?qGMCYYhk9RgyTdAGYUBIHYVLYh6eZx4BKuFBi119Nw73i+DYoIkOO3k+gIKT?=
+ =?us-ascii?Q?YKg1Qk67Tb5Ic8qhVDQG0ZF/I08J97FR9kiktEp/TGAfP8fk8wGwxapHyvVg?=
+ =?us-ascii?Q?zkmzCPn/mZS8BWbGJd5n7PV80Fe1oamSbtdN+sc9q++y8jbj5XI6HhhIbvzl?=
+ =?us-ascii?Q?+/KnNn9Qo1GdhoT8Gx8F+Q2a/pdiO4aOZ2BZSXYARWHRkJJslYo/Wb38lG1Y?=
+ =?us-ascii?Q?dXvn2ugoGBw0UBiJaboUntPITqN3g23o7ZMynPeY7w//iY4vi+KLi5HpeIdB?=
+ =?us-ascii?Q?LWud4uzIKfS98GVrA4NFeOXsvCRPgeYvO7N6H1o9mXqzK9GfcPXHF79MrRJF?=
+ =?us-ascii?Q?jd9Xo08jaz+zxQyAIJzQEvAOnpPL2NiDsbFqcAU6FKzdtzgaJHG1d1Fb1kkC?=
+ =?us-ascii?Q?f1fsR7UnFeg26F42RdFvntoj5eL4ecwy0xxaGFx9f/79S+lx/oI1K209q1yg?=
+ =?us-ascii?Q?TtAKoLjLSQG0zmcW4cPZoPDwn3WIQ0WYOL64c0sJzbXgSg+am17RuT3D0iYC?=
+ =?us-ascii?Q?zIlLEacCnkljDkj/fFr553jyoMrczln7KzjX+bsjiRHF8anKqduTYPj98do1?=
+ =?us-ascii?Q?7q3yAAvD4KELQu0+SZ7qXm5pfdQq70yYFpWkAgnCOCsa9Dv3Lfkj6fd9hTiP?=
+ =?us-ascii?Q?mBerJB2DtQFY+3qMbG10IWQa1ZOp0aDI6zuS4fClbuXpj6drAADJN5++ohbI?=
+ =?us-ascii?Q?0FyiRFI8zg=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1588412a-e357-4256-4488-08da1bd08216
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 15:32:37.7084
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7Ey+WQQFq/ljYKAFtod7XA5XCxvsYGVtAZwyAYpzna9b1EKxb/vSiLsfA85SHBl1
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3421
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/11/22 13:07, Hyeonggon Yoo wrote:
-> On Mon, Apr 11, 2022 at 01:25:11AM +0900, Ohhoon Kwon wrote:
->> There are four types of kmalloc_caches: KMALLOC_NORMAL, KMALLOC_CGROUP,
->> KMALLOC_RECLAIM, and KMALLOC_DMA. While the first three types are
->> created using new_kmalloc_cache(), KMALLOC_DMA caches are created in a
->> separate logic. Let KMALLOC_DMA caches be also created using
->> new_kmalloc_cache(), to enhance readability.
->> 
->> Historically, there were only KMALLOC_NORMAL caches and KMALLOC_DMA
->> caches in the first place, and they were initialized in two separate
->> logics. However, when KMALLOC_RECLAIM was introduced in v4.20 via
->> commit 1291523f2c1d ("mm, slab/slub: introduce kmalloc-reclaimable
->> caches") and KMALLOC_CGROUP was introduced in v5.14 via
->> commit 494c1dfe855e ("mm: memcg/slab: create a new set of kmalloc-cg-<n>
->> caches"), their creations were merged with KMALLOC_NORMAL's only.
->> KMALLOC_DMA creation logic should be merged with them, too.
->> 
->> By merging KMALLOC_DMA initialization with other types, the following
->> two changes might occur:
->> 1. The order dma-kmalloc-<n> caches added in slab_cache list may be
->> sorted by size. i.e. the order they appear in /proc/slabinfo may change
->> as well.
->> 2. slab_state will be set to UP after KMALLOC_DMA is created.
->> In case of slub, freelist randomization is dependent on slab_state>=UP,
->> and therefore KMALLOC_DMA cache's freelist will not be randomized in
->> creation, but will be deferred to init_freelist_randomization().
->> 
->> Co-developed-by: JaeSang Yoo <jsyoo5b@gmail.com>
->> Signed-off-by: JaeSang Yoo <jsyoo5b@gmail.com>
->> Signed-off-by: Ohhoon Kwon <ohkwon1043@gmail.com>
->> ---
->>  mm/slab_common.c | 18 +++---------------
->>  1 file changed, 3 insertions(+), 15 deletions(-)
->> 
->> diff --git a/mm/slab_common.c b/mm/slab_common.c
->> index 6ee64d6208b3..a959d247c27b 100644
->> --- a/mm/slab_common.c
->> +++ b/mm/slab_common.c
->> @@ -849,6 +849,8 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
->>  			return;
->>  		}
->>  		flags |= SLAB_ACCOUNT;
->> +	} else if (IS_ENABLED(CONFIG_ZONE_DMA) && (type == KMALLOC_DMA)) {
->> +		flags |= SLAB_CACHE_DMA;
->>  	}
->>  
->>  	kmalloc_caches[type][idx] = create_kmalloc_cache(
->> @@ -877,7 +879,7 @@ void __init create_kmalloc_caches(slab_flags_t flags)
->>  	/*
->>  	 * Including KMALLOC_CGROUP if CONFIG_MEMCG_KMEM defined
->>  	 */
->> -	for (type = KMALLOC_NORMAL; type <= KMALLOC_RECLAIM; type++) {
->> +	for (type = KMALLOC_NORMAL; type < NR_KMALLOC_TYPES; type++) {
->>  		for (i = KMALLOC_SHIFT_LOW; i <= KMALLOC_SHIFT_HIGH; i++) {
->>  			if (!kmalloc_caches[type][i])
->>  				new_kmalloc_cache(i, type, flags);
->> @@ -898,20 +900,6 @@ void __init create_kmalloc_caches(slab_flags_t flags)
->>  
->>  	/* Kmalloc array is now usable */
->>  	slab_state = UP;
->> -
->> -#ifdef CONFIG_ZONE_DMA
->> -	for (i = 0; i <= KMALLOC_SHIFT_HIGH; i++) {
->> -		struct kmem_cache *s = kmalloc_caches[KMALLOC_NORMAL][i];
->> -
->> -		if (s) {
->> -			kmalloc_caches[KMALLOC_DMA][i] = create_kmalloc_cache(
->> -				kmalloc_info[i].name[KMALLOC_DMA],
->> -				kmalloc_info[i].size,
->> -				SLAB_CACHE_DMA | flags, 0,
->> -				kmalloc_info[i].size);
->> -		}
->> -	}
->> -#endif
->>  }
->>  #endif /* !CONFIG_SLOB */
->>
-> 
-> Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+On Mon, Apr 11, 2022 at 04:13:36PM +0200, Christoph Hellwig wrote:
+> Remove these pointless indirect alls by just calling the only instance
 
-Thanks.
-Added to:
-https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git/log/?h=for-5.19/refactor
+'alls' -> 'calls'
 
-> BTW this patch may conflict with [1] (not merged yet)
-> 
-> [1] https://lore.kernel.org/linux-mm/20220405135758.774016-9-catalin.marinas@arm.com/
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-FYI Catalin, might want to base v2 on the above once the crypto side is
-solved. At cursory look it shouldn't be a significant conflict.
-
-> Thanks!
-> 
->> -- 
->> 2.25.1
->> 
-> 
-
+Jason
