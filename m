@@ -2,104 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2268BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:33:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345568AbiDKKeq (ORCPT
+        id S1345581AbiDKKfP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58176 "EHLO
+        Mon, 11 Apr 2022 06:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242812AbiDKKem (ORCPT
+        with ESMTP id S1345092AbiDKKfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:34:42 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4152543AC1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:32:29 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id EB43521112;
-        Mon, 11 Apr 2022 10:32:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1649673147; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=F7yn14Y/CNyAPNmn1Vk4CncuqQ7yIwJ/m/NWdKk6AwE=;
-        b=SHIFLTG4fxP64tFjsmBTuKW0xZaXURXx4OYOA89r2RKiKxJYta/2cGgn+YEzmneyLPYPaz
-        f3+wUrbivyqaIIY8WQe0YbouLIfFxBsamLsw1gsvp3xhqJzkLU23ETGXOB2RzHmgOyrmI+
-        7QjOAnL77o0eCKq1cNnt5pCT6Q1c9QU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1649673147;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=F7yn14Y/CNyAPNmn1Vk4CncuqQ7yIwJ/m/NWdKk6AwE=;
-        b=phA3f4AM9CXr/rcsh4h12IH/EqBtuKqQwnwM0eNcSFQpqqgZI4StWaBfSJ4TzVTN0y4f/N
-        UXwzQxc0PNJL0gAA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C3C3013AB5;
-        Mon, 11 Apr 2022 10:32:27 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id aUP+LrsDVGL0YQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 11 Apr 2022 10:32:27 +0000
-Message-ID: <78656e93-fc52-5ae1-4da3-b779dac4d779@suse.cz>
-Date:   Mon, 11 Apr 2022 12:32:27 +0200
+        Mon, 11 Apr 2022 06:35:13 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5328D434B6;
+        Mon, 11 Apr 2022 03:32:59 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1F3BA169C;
+        Mon, 11 Apr 2022 03:32:59 -0700 (PDT)
+Received: from [192.168.1.11] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8B5CF3F5A1;
+        Mon, 11 Apr 2022 03:32:55 -0700 (PDT)
+Message-ID: <7e6c2393-8e24-2755-f3c7-16764f700880@arm.com>
+Date:   Mon, 11 Apr 2022 12:33:08 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] mm/slub: remove duplicate flag in allocate_slab()
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 3/3] cpufreq: CPPC: Register EM based on efficiency
+ class information
 Content-Language: en-US
-To:     Jiyoup Kim <lakroforce@gmail.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Ohhoon Kwon <ohkwon1043@gmail.com>,
-        JaeSang Yoo <jsyoo5b@gmail.com>,
-        Wonhyuk Yang <vvghjk1234@gmail.com>,
-        Donghyeok Kim <dthex5d@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <20220409150538.1264-1-lakroforce@gmail.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220409150538.1264-1-lakroforce@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
+        Lukasz.Luba@arm.com, Morten.Rasmussen@arm.com,
+        Dietmar.Eggemann@arm.com, maz@kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Fuad Tabba <tabba@google.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org
+References: <20220407081620.1662192-1-pierre.gondois@arm.com>
+ <20220407081620.1662192-4-pierre.gondois@arm.com>
+ <20220411031231.noq5yprp5oui3lsx@vireshk-i7>
+From:   Pierre Gondois <pierre.gondois@arm.com>
+In-Reply-To: <20220411031231.noq5yprp5oui3lsx@vireshk-i7>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/9/22 17:05, Jiyoup Kim wrote:
-> In allocate_slab(), __GFP_NOFAIL flag is removed twice when trying
-> higher-order allocation. Remove it.
+Hello Viresh,
+
+On 4/11/22 05:12, Viresh Kumar wrote:
+> On 07-04-22, 10:16, Pierre Gondois wrote:
+>> +static void cppc_cpufreq_register_em(struct cpufreq_policy *policy)
+>> +{
+>> +	struct cppc_cpudata *cpu_data;
+>> +	struct em_data_callback em_cb =
+>> +		EM_ADV_DATA_CB(cppc_get_cpu_power, cppc_get_cpu_cost);
+>> +
+>> +	if (!efficiency_class_populated)
 > 
-> Signed-off-by: Jiyoup Kim <lakroforce@gmail.com>
-
-Thanks, added.
-
-> ---
->  mm/slub.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Instead of a new variable for this, what about setting
+> cppc_cpufreq_driver.register_em = cppc_cpufreq_register_em, only if
+> you were able to populate the efficiency class in the first place ?
 > 
-> diff --git a/mm/slub.c b/mm/slub.c
-> index 74d92aa4a3a2..a0e605ab3036 100644
-> --- a/mm/slub.c
-> +++ b/mm/slub.c
-> @@ -1939,7 +1939,7 @@ static struct slab *allocate_slab(struct kmem_cache *s, gfp_t flags, int node)
->  	 */
->  	alloc_gfp = (flags | __GFP_NOWARN | __GFP_NORETRY) & ~__GFP_NOFAIL;
->  	if ((alloc_gfp & __GFP_DIRECT_RECLAIM) && oo_order(oo) > oo_order(s->min))
-> -		alloc_gfp = (alloc_gfp | __GFP_NOMEMALLOC) & ~(__GFP_RECLAIM|__GFP_NOFAIL);
-> +		alloc_gfp = (alloc_gfp | __GFP_NOMEMALLOC) & ~__GFP_RECLAIM;
->  
->  	slab = alloc_slab_page(alloc_gfp, node, oo);
->  	if (unlikely(!slab)) {
 
+Yes right, this would be better,
+Regards,
+Pierre
