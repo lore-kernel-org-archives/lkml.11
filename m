@@ -2,128 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D97C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 20:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8F9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 20:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349854AbiDKU1M (ORCPT
+        id S1349824AbiDKUd5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 16:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42812 "EHLO
+        Mon, 11 Apr 2022 16:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231363AbiDKU1I (ORCPT
+        with ESMTP id S231363AbiDKUdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 16:27:08 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13633584C
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 13:24:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649708692; x=1681244692;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=V7Uy1mATUqvrpHiI+mrEfE74gw8XVuz63+OC085XC9s=;
-  b=Vs9m7JLRhOTwcLE+OuTNLnPiHn0zWyVL609S4fc6qDAvKXmgWc/AOk0W
-   ZBlpqpMd79aYWfj5yDZeu1ERPud1mR16Fqw+1IxxmVX7fM92NbqLw1dJk
-   VuX6uuQE78YtJVgIgE0ZbCY868nhsveD2mA2f9x4xjietSmcPchuEnr6a
-   aXhnHQObym0S0iyi6n+9X4us6OdxAQMVDva9o4jqOYLr5aMMFyaiYdZbs
-   auSKkM0qw22TsgIJ9F+qtEmywL2yXGDKMlPgFCs24nx+kDX1qlj7yDrI5
-   I2mEIJKCh/fK9fhFVlxr6aMM0W38qepVyHr4ptHHKG97AuSMnN6TvZvxr
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="261953743"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="261953743"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 13:24:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="526137688"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 11 Apr 2022 13:24:51 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ne0ag-0002Ak-HP;
-        Mon, 11 Apr 2022 20:24:50 +0000
-Date:   Tue, 12 Apr 2022 04:24:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [ls-zhu:get_dev_config_submit 5/5] drivers/vdpa/vdpa.c:823:20:
- sparse: sparse: incorrect type in assignment (different base types)
-Message-ID: <202204120428.0TpzQuA8-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Mon, 11 Apr 2022 16:33:54 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1C335DD2;
+        Mon, 11 Apr 2022 13:31:38 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id s10so7344094plg.9;
+        Mon, 11 Apr 2022 13:31:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=pahEFmYM/dsCPcY4Y1wBDDI/c4yMZubWtYa+PmtvY0c=;
+        b=iYwUJ5GODL5uQqRqwYSn+GxQCEKSwCapFY59buzzIw6CzuSWR5Z577nZYAcNPYLaJd
+         paLf3Xu2kCPLRJaMZFywJvJ3JwjWn4/UXhCFvvJWoO/JgluCS0927TT5aXNp8HvrTjVA
+         LrksFnr6Wr0SLl+CB2rKg5EE+Y//CGYStjiFgri+JT9ada9tho3/2cnO9BDTw1ds1BnK
+         vyIcwrcDDoBYVqBpFJazvD4C7xVP+gGRVaSEggjhtZb1h1YZEV14GxSAX1tHs/wGepif
+         p3U35m4yMqP7YDJsmoWKlH+fkTKt2d6xP62cIgBtR1UE7kxeWzbWpLmlwtc0S00k173b
+         c8GQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=pahEFmYM/dsCPcY4Y1wBDDI/c4yMZubWtYa+PmtvY0c=;
+        b=rBeLsgKbh5yyy2i2OQQQyyQTzhtvNZkY+7/B0pvV8NcoSsj0cPdPYxivr77JUKRYAE
+         lgVxvw5xpThNlOBtMIjvxzKO3Cg1DE8nroln/zYG3qC9XN9sJw57afedIlPTMnMgB++j
+         gOLTNDyk23SI58RmgBztMBqJ95KzhB7uJ9LEL11pu520igxROFRKMXuFm6P7qvRlcNMk
+         KUwCo56eXD5ADz2PqRzOXMjs8pl1bTbAgDb3ph4nvGPB9EidrNjO6JqoQdiiSZFVdcL+
+         EVFh+LYtiXr+UGcXCkCMchyV/Jolw6h554Lpw9v8RSZ3fupm7GGlgHSVbqAeLGvCraal
+         G+wQ==
+X-Gm-Message-State: AOAM5320n8PyYjkVd1ZCxuqPyRVyeooHcNK0aqU4BcLLSGyMbS1NcMB9
+        EvSmTJctPH0DkZvpkwWRdmY=
+X-Google-Smtp-Source: ABdhPJxn23UHAlNxz7kyirUouNR/dc3JheRJ5SMGCHPU+WWvi4gPtz2UfCcVn/r6HbZ/GRJohugwEA==
+X-Received: by 2002:a17:90b:2516:b0:1ca:aa68:ca71 with SMTP id ns22-20020a17090b251600b001caaa68ca71mr1049975pjb.58.1649709098103;
+        Mon, 11 Apr 2022 13:31:38 -0700 (PDT)
+Received: from localhost.localdomain ([27.7.99.112])
+        by smtp.gmail.com with ESMTPSA id z15-20020a056a001d8f00b004fda37855ddsm34069828pfw.168.2022.04.11.13.31.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 13:31:37 -0700 (PDT)
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+To:     dan@dlrobertson.com, jic23@kernel.org, andy.shevchenko@gmail.com
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/9] iio: accel: bma400: Add buffer, step and activity/inactivity
+Date:   Tue, 12 Apr 2022 02:01:24 +0530
+Message-Id: <20220411203133.19929-1-jagathjog1996@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ls-zhu/linux get_dev_config_submit
-head:   c4a67f3ac1a9cc5a7bdc0121a9076c67a4f20af9
-commit: c4a67f3ac1a9cc5a7bdc0121a9076c67a4f20af9 [5/5] vDPA: answer num of queue pairs = 1 to userspace when VIRTIO_NET_F_MQ == 0
-config: m68k-randconfig-s031-20220411 (https://download.01.org/0day-ci/archive/20220412/202204120428.0TpzQuA8-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/ls-zhu/linux/commit/c4a67f3ac1a9cc5a7bdc0121a9076c67a4f20af9
-        git remote add ls-zhu https://github.com/ls-zhu/linux
-        git fetch --no-tags ls-zhu get_dev_config_submit
-        git checkout c4a67f3ac1a9cc5a7bdc0121a9076c67a4f20af9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=m68k SHELL=/bin/bash drivers/vdpa/
+This patch series adds trigger buffer support with data ready interrupt,
+separate channel for step counter, an event for step change interrupt,
+activity recognition and activity/inactivity event support.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+changes since v2
+1. Reordering of header includes in the separate patch.
+2. Matching the IIO syntax for multiline comment.
+3. Following the preference in the interrupt handler for returning.
+4. Add support for activity recognition.
+5. Add support for debugfs to access registers from userspace.
+6. Add support for activity and inactivity events
 
+changes since v1
+1. Added comment section that describes the math for scale calculation.
+2. Added separate devm_add_action_or_reset() calls to disable regulator
+   and to put the sensor in power down mode.
+3. Remove the err_reg_disable and out, goto labels and returning directly
+   if error occurs.
+4. Added mutex calls while putting sensor in power down.
+5. Added ___cacheline_aligned for device data.
+6. Ordering the header includes.
+7. Handling erroneous and spurious interrupts in the interrupt handler
+   by returning IRQ_NONE.
+8. Using dev_err_probe() instead of dev_err().
+9. Configured the interrupt to open drain.
+10. Using le16_to_cpu() to fix the sparse warning.
+11. Checking the step change event is enabled or not.
+12. Enabling the step change event will also enable the step channel.
+13. Using FIELD_GET() instead of bitwise operation.
+14. Removal of dead code in the _event_config().
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/vdpa/vdpa.c:823:20: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned short [assigned] [usertype] mq @@     got restricted __virtio16 const [usertype] max_virtqueue_pairs @@
-   drivers/vdpa/vdpa.c:823:20: sparse:     expected unsigned short [assigned] [usertype] mq
-   drivers/vdpa/vdpa.c:823:20: sparse:     got restricted __virtio16 const [usertype] max_virtqueue_pairs
-   drivers/vdpa/vdpa.c:825:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:825:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:825:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:825:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:842:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:842:19: sparse: sparse: cast from restricted __virtio16
-   drivers/vdpa/vdpa.c:842:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:842:19: sparse: sparse: cast from restricted __virtio16
-   drivers/vdpa/vdpa.c:842:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:842:19: sparse: sparse: cast from restricted __virtio16
-   drivers/vdpa/vdpa.c:842:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:842:19: sparse: sparse: cast from restricted __virtio16
-   drivers/vdpa/vdpa.c:846:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:846:19: sparse: sparse: cast from restricted __virtio16
-   drivers/vdpa/vdpa.c:846:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:846:19: sparse: sparse: cast from restricted __virtio16
-   drivers/vdpa/vdpa.c:846:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:846:19: sparse: sparse: cast from restricted __virtio16
-   drivers/vdpa/vdpa.c:846:19: sparse: sparse: cast to restricted __le16
-   drivers/vdpa/vdpa.c:846:19: sparse: sparse: cast from restricted __virtio16
+Jagath Jog J (9):
+  iio: accel: bma400: Fix the scale min and max macro values
+  iio: accel: bma400: Reordering of header files
+  iio: accel: bma400: conversion to device-managed function
+  iio: accel: bma400: Add triggered buffer support
+  iio: accel: bma400: Add separate channel for step counter
+  iio: accel: bma400: Add step change event
+  iio: accel: bma400: Add activity recognition support
+  iio: accel: bma400: Add debugfs register access support
+  iio: accel: bma400: Add support for activity and inactivity events
 
-vim +823 drivers/vdpa/vdpa.c
-
-   813	
-   814	static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
-   815					       struct sk_buff *msg, u64 features,
-   816					       const struct virtio_net_config *config)
-   817	{
-   818		u16 val_u16, mq;
-   819	
-   820		if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) == 0) {
-   821			mq = 1;
-   822		} else
- > 823			mq = config->max_virtqueue_pairs;
-   824	
-   825		val_u16 = le16_to_cpu(mq);
-   826	
-   827		return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, val_u16);
-   828	}
-   829	
+ drivers/iio/accel/Kconfig       |   2 +
+ drivers/iio/accel/bma400.h      |  49 ++-
+ drivers/iio/accel/bma400_core.c | 701 +++++++++++++++++++++++++++++---
+ drivers/iio/accel/bma400_i2c.c  |  10 +-
+ drivers/iio/accel/bma400_spi.c  |   8 +-
+ 5 files changed, 703 insertions(+), 67 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.17.1
+
