@@ -2,104 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D56CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:56:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0378C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347564AbiDKO7E (ORCPT
+        id S1343554AbiDKPAK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40066 "EHLO
+        Mon, 11 Apr 2022 11:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235240AbiDKO7B (ORCPT
+        with ESMTP id S229604AbiDKPAH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:59:01 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDBB17059
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:56:45 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KcX4X0kSMz9sTy;
-        Mon, 11 Apr 2022 16:56:44 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id C4HA8KL1UI-r; Mon, 11 Apr 2022 16:56:44 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KcX4W74KJz9sTw;
-        Mon, 11 Apr 2022 16:56:43 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id E091A8B76E;
-        Mon, 11 Apr 2022 16:56:43 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id gVNm8j7ZB0BX; Mon, 11 Apr 2022 16:56:43 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id CA9488B763;
-        Mon, 11 Apr 2022 16:56:43 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 23BEuYej960585
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 11 Apr 2022 16:56:34 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 23BEuY1X960584;
-        Mon, 11 Apr 2022 16:56:34 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Kees Cook <keescook@chromium.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH] lkdtm/bugs: Don't expect thread termination without CONFIG_UBSAN_TRAP
-Date:   Mon, 11 Apr 2022 16:56:33 +0200
-Message-Id: <7c2d2a48034223a95cf4346c5a2255a0b9b25670.1649688637.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        Mon, 11 Apr 2022 11:00:07 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E0319C2F
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:57:52 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23BEvYVE120912;
+        Mon, 11 Apr 2022 09:57:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649689054;
+        bh=Bkb4qpWqHQ6vYHvivbb3symdVtlEi4LucrYwnLeoFbo=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=P6Jz9UPVl2TkYvAnJNHXl6xG9DWmb98/nbyExKeNnCwbHKqlCrhsIR2jw3Z9q6eYP
+         UdH2geiqBYqSWszS3TlAJtG26TC73LE1P88l0Am9QhrltVoHNNN9Fpuhh1Sn5Fkpo3
+         Wj6IXkjvv+rX9SAaqyMsdFsThDW1/KX7zTY4M6A0=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23BEvYIH073574
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 11 Apr 2022 09:57:34 -0500
+Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 11
+ Apr 2022 09:57:33 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 11 Apr 2022 09:57:33 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23BEvX5d015915;
+        Mon, 11 Apr 2022 09:57:33 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Santosh Shilimkar <ssantosh@kernel.org>,
+        Yihao Han <hanyihao@vivo.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Nishanth Menon <nm@ti.com>, <kernel@vivo.com>
+Subject: Re: [PATCH] soc: ti: wkup_m3_ipc: fix platform_get_irq.cocci warning
+Date:   Mon, 11 Apr 2022 09:57:33 -0500
+Message-ID: <164968903905.28930.7936433232294762097.b4-ty@ti.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220303124444.3373-1-hanyihao@vivo.com>
+References: <20220303124444.3373-1-hanyihao@vivo.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1649688992; l=1739; s=20211009; h=from:subject:message-id; bh=jwwWohV7yXLmpOMeCedag6V2XJ7SIl+kvTa8YLVpcy8=; b=tWrWBXicWW82s2WSQlaOA1OwPXdEW/U0fcBhz5uqRFwK1Hvc7kA0rD8I3YSFAvnQ5ZnV6LXW3qXB PGObulx9CejDfOP37YFauBxdJ9Bd+fQvjp2QybAKjPHOc8E9WHy4
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When you don't select CONFIG_UBSAN_TRAP, you get:
+Hi Yihao Han,
 
-  # echo ARRAY_BOUNDS > /sys/kernel/debug/provoke-crash/DIRECT
-[  102.265827] ================================================================================
-[  102.278433] UBSAN: array-index-out-of-bounds in drivers/misc/lkdtm/bugs.c:342:16
-[  102.287207] index 8 is out of range for type 'char [8]'
-[  102.298722] ================================================================================
-[  102.313712] lkdtm: FAIL: survived array bounds overflow!
-[  102.318770] lkdtm: Unexpected! This kernel (5.16.0-rc1-s3k-dev-01884-g720dcf79314a ppc) was built with CONFIG_UBSAN_BOUNDS=y
+On Thu, 3 Mar 2022 04:44:44 -0800, Yihao Han wrote:
+> Remove dev_err() messages after platform_get_irq*() failures.
+> platform_get_irq() already prints an error.
+> 
+> Generated by: scripts/coccinelle/api/platform_get_irq.cocci
+> 
+> 
 
-It is not correct because when CONFIG_UBSAN_TRAP is not selected
-you can't expect array bounds overflow to kill the thread.
+I have applied the following to branch ti-drivers-soc-next on [1].
+Thank you!
 
-Modify the logic so that when the kernel is built with
-CONFIG_UBSAN_BOUNDS but without CONFIG_UBSAN_TRAP, you get a warning
-about CONFIG_UBSAN_TRAP not been selected instead.
+[1/1] soc: ti: wkup_m3_ipc: fix platform_get_irq.cocci warning
+      commit: c2b0390132edffad1b52e4e84f797343b10f5ef2
 
-Fixes: c75be56e35b2 ("lkdtm/bugs: Add ARRAY_BOUNDS to selftests")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- drivers/misc/lkdtm/bugs.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent up the chain during
+the next merge window (or sooner if it is a relevant bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
-index f21854ac5cc2..0f4dd9621b75 100644
---- a/drivers/misc/lkdtm/bugs.c
-+++ b/drivers/misc/lkdtm/bugs.c
-@@ -346,7 +346,10 @@ void lkdtm_ARRAY_BOUNDS(void)
- 	kfree(not_checked);
- 	kfree(checked);
- 	pr_err("FAIL: survived array bounds overflow!\n");
--	pr_expected_config(CONFIG_UBSAN_BOUNDS);
-+	if (IS_ENABLED(CONFIG_UBSAN_BOUNDS))
-+		pr_expected_config(CONFIG_UBSAN_TRAP);
-+	else
-+		pr_expected_config(CONFIG_UBSAN_BOUNDS);
- }
- 
- void lkdtm_CORRUPT_LIST_ADD(void)
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+[1] git://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
 -- 
-2.35.1
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
 
