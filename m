@@ -2,81 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB721C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA93AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:26:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348014AbiDKP2L (ORCPT
+        id S1347910AbiDKP2V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46468 "EHLO
+        Mon, 11 Apr 2022 11:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348363AbiDKP2A (ORCPT
+        with ESMTP id S1347967AbiDKP2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:28:00 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95E3F18E2B;
-        Mon, 11 Apr 2022 08:25:00 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 613B01570;
-        Mon, 11 Apr 2022 08:25:00 -0700 (PDT)
-Received: from lpieralisi (unknown [10.57.6.174])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 46CAE3F73B;
-        Mon, 11 Apr 2022 08:24:57 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 16:25:01 +0100
-From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To:     =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>
-Cc:     l.stach@pengutronix.de, hongxing.zhu@nxp.com, robh@kernel.org,
-        bhelgaas@google.com, helgaas@kernel.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, linux-imx@nxp.com,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linus.walleij@linaro.org
-Subject: Re: [PATCH v3] PCI: imx6: Replace legacy gpio interface for gpiod
- interface
-Message-ID: <YlRITQq650DCWg75@lpieralisi>
-References: <YYCOTx68LXu1Tn1i@fedora>
- <YlBFa46v5NtWxGLt@lpieralisi>
- <YlBKyBtbxMpvauLv@fedora>
+        Mon, 11 Apr 2022 11:28:04 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97771A3A1
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:25:17 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id h11so20598555ljb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:25:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rFr6s0nrZU/l/rYSbRMVpOLqR853sTAxGnl/eB7rqRM=;
+        b=vqJYdIQWv8WkNNNn9dPXtN92UFDTRrKywzC32jqHUXQPd0+vkYBmnq9rZ4NZXVIxFT
+         qFZtKKzAXyLtgRUtZW0cMECXBtK3dk3Wyx0Mmsh8UZ/OzlNIFCM15Boa0s9MFTZnFSN3
+         8zObizgXQHcCLVp6LDk/Jzo1jR2NDPvFFPY4ogEXWUB70897ie3SGoK0vWAAx5unyy9n
+         6j5A9PCMQnyGGwVeSCqGXUcxMULTqx2b4wpel2RMEuBXrpI2Je1yyPDmgKNutqRQhKPF
+         E3eAJ4YsBCcURT61ntTfs2vYmJhK1nZzXt1rqLkINEtuod8EjW60nrtXooL3LRDyK+/7
+         0TjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rFr6s0nrZU/l/rYSbRMVpOLqR853sTAxGnl/eB7rqRM=;
+        b=1hv6RyfjlVO2QXpR9KVIO/8G4/1tj2am99NkCOCuFncNrg/OsRptSBPnBdo4KTkogt
+         v6tVNCLNl4XRf8EWw/8NJjJdB4WwzTxyT7EkPDmlFef2ckEXLYpbvA9GgRo2qIjktFKF
+         FuEbdxemUDxxnLq5AKD2xQvmkvqlUdMHB3C4k0T8BGaSWfEiM4ZG+Z+rawxhJK6SwLMF
+         pxUr0k4Y/7ttofBSWOiDRAjWeyyPEsXsR1//Gy/yusz4VBfg1Wu5O1BPGAeOfayyKpW1
+         imWC/OsQaksXbZSdvJztJssEsnOTDWilpxzaCqVlAH18oEiBgk++JTgt8jfVZt9n5vbl
+         8GfQ==
+X-Gm-Message-State: AOAM533HIleI5GmK/JpVuw2QiIjdQF9k8iXvvcWCeeUx1lAi29kQAoJm
+        PfeWjKxmNohQuDC3yStj+USAuw==
+X-Google-Smtp-Source: ABdhPJxUo+KOo46oZZC8/G3tHjCARN4FX+eDd1+/GBegGd9jDdlQ537rMvPHZViYY23J0dOhGwiqZg==
+X-Received: by 2002:a2e:80d7:0:b0:24b:bd8:b89e with SMTP id r23-20020a2e80d7000000b0024b0bd8b89emr20019551ljg.174.1649690715205;
+        Mon, 11 Apr 2022 08:25:15 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id z6-20020a056512308600b0044af5ea2be1sm2837295lfd.274.2022.04.11.08.25.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 08:25:14 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 189A9103CE0; Mon, 11 Apr 2022 18:26:47 +0300 (+03)
+Date:   Mon, 11 Apr 2022 18:26:47 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
+        Wanpeng Li <wanpengli@tencent.com>, jun.nakajima@intel.com,
+        david@redhat.com, "J . Bruce Fields" <bfields@fieldses.org>,
+        dave.hansen@intel.com, "H . Peter Anvin" <hpa@zytor.com>,
+        ak@linux.intel.com, Jonathan Corbet <corbet@lwn.net>,
+        Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
+        Hugh Dickins <hughd@google.com>,
+        Steven Price <steven.price@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Borislav Petkov <bp@alien8.de>, luto@kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Jim Mattson <jmattson@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH v5 03/13] mm/shmem: Support memfile_notifier
+Message-ID: <20220411152647.uvl2ukuwishsckys@box.shutemov.name>
+References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
+ <20220310140911.50924-4-chao.p.peng@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YlBKyBtbxMpvauLv@fedora>
+In-Reply-To: <20220310140911.50924-4-chao.p.peng@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[+Linus]
+On Thu, Mar 10, 2022 at 10:09:01PM +0800, Chao Peng wrote:
+> diff --git a/mm/shmem.c b/mm/shmem.c
+> index 9b31a7056009..7b43e274c9a2 100644
+> --- a/mm/shmem.c
+> +++ b/mm/shmem.c
+> @@ -903,6 +903,28 @@ static struct folio *shmem_get_partial_folio(struct inode *inode, pgoff_t index)
+>  	return page ? page_folio(page) : NULL;
+>  }
+>  
+> +static void notify_fallocate(struct inode *inode, pgoff_t start, pgoff_t end)
+> +{
+> +#ifdef CONFIG_MEMFILE_NOTIFIER
+> +	struct shmem_inode_info *info = SHMEM_I(inode);
+> +
+> +	memfile_notifier_fallocate(&info->memfile_notifiers, start, end);
+> +#endif
 
-On Fri, Apr 08, 2022 at 11:46:32AM -0300, Maíra Canal wrote:
-> On Fri, Apr 08, 2022 at 03:23:39PM +0100, Lorenzo Pieralisi wrote:
-> > On Mon, Nov 01, 2021 at 10:03:11PM -0300, Maíra Canal wrote:
-> > > Considering the current transition of the GPIO subsystem, remove all
-> > > dependencies of the legacy GPIO interface (linux/gpio.h and linux
-> > > /of_gpio.h) and replace it with the descriptor-based GPIO approach.
-> > > 
-> > > Signed-off-by: Maíra Canal <maira.canal@usp.br>
-> > > ---
-> > > V1 -> V2: Rewrite commit log and subject line to match PCI subsystem standard
-> > > V2 -> v3: Change gpiod_set_value_cansleep for gpiod_set_raw_value_cansleep
-> > > ---
-> > >  drivers/pci/controller/dwc/pci-imx6.c | 30 +++++++++------------------
-> > >  1 file changed, 10 insertions(+), 20 deletions(-)
-> > 
-> > Maira, Lucas,
-> > 
-> > what's this patch status ? Please let me know.
-> 
-> 
-> Lorenzo,
-> 
-> Thank you for the feedback. Since I sent v3, I didn't get any feedback from the community.
-> 
-> If you have any feedback, I would gladly work on it.
+All these #ifdefs look ugly. Could you provide dummy memfile_* for
+!MEMFILE_NOTIFIER case?
 
-I would ask Linus to have a look please given that it is GPIO code.
-
-Original thread:
-https://lore.kernel.org/linux-pci/YYCOTx68LXu1Tn1i@fedora
-
-Thanks,
-Lorenzo
+-- 
+ Kirill A. Shutemov
