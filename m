@@ -2,149 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5325AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 08:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6086EC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 08:22:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343713AbiDKIYG (ORCPT
+        id S1343722AbiDKIYR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 04:24:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
+        Mon, 11 Apr 2022 04:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343707AbiDKIYA (ORCPT
+        with ESMTP id S243837AbiDKIYK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 04:24:00 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2081.outbound.protection.outlook.com [40.107.223.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6D53E5C6;
-        Mon, 11 Apr 2022 01:21:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BWqPvU6u+hSTzWyM+iN0JXR+I4rSL5kNB9gXuxgE+TLOu1pOp4RLW/DgKdUvsdbvppDXKpaBUE/y6qUoYXLGKy/X7NmxzIPwSRJqOBsu4hkAwQHzGxfxP1/frRIJqD1gsGs4QW8Kp/JvfwgWUD4lxLlhsu1bFxJilG5gNM4PCRdn6EAsszOYb5umlVstcfYBNYCKRWGmHRWpc3FMkzg3UxWSwuJ0w0qsmhwFBgAs59nIcjhA4pJAlrIbVTITC/+e+miw6MNpVOHf2tk+fM1KyuZEDgCeQCkIXjJxzkpR09Ee1ri9TILOvyrO4e2cRQlCX0aQLIGK9gpNTd3vSEoiXg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n2MNybEqh7TU695ur0SU4zJuCIPhHvk4AQPGgau5aC4=;
- b=eHsceKP+nrC0LMSbYJMUYHtlg2UtncDySJtcwmLs2Omlj3zgzEKNYZt71Y+5RUahcK4skFFQrh8w1nMwiFJ1Kmr1DiBrbIaoTG4duOtRYlmf5MWIeUGyIcDIJe/kCa8TPQw+WUw+DGisstopS/oGMZsrMKq8bkxQHTaoGOI0fRoULfDq9AtIPPVec6B1kWi6FrVWc0Pn4HGoS5lBUqtKM70xHzRd5ceVUGfMtZeYqCwx6rPzPx1ryD+EkK07rf4QaqY6ndemGS8ZCMyVaD5qYNzkdQ2NQ47YDY8hiE9QuCIvdFwsSNnI9hg2d0LPTV2Do+oskJWd4KLA1igbA0NUbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n2MNybEqh7TU695ur0SU4zJuCIPhHvk4AQPGgau5aC4=;
- b=c8qHnNkbroSo5dX3f3oOwQBGkUcSTbANlZWOjo/fFQ6cn30uIi8qztP4Nfgr4agEYpPLeC+0X3Y28yGHcR97x+eQfMtK+VL07cVkcf4vkUSwmacUERf2Fr2UfHsTDeTGQjVh7UvqHtiTLnyew1aheDs/cv7gzUNtusio3tVvFwQjM0NCUDeuQplBIYMgKbH/fqe3HxrzAKB432BwAL2Sbxd42MfidqiJDt3q9L5eJGUwoESm0lT0B/o4wGtWQromHqip/xIylytidkgUYFUzF7zX/S2IYp7MKtBk9qJAQjjqJ/+4rQMZ+7Qk8K52EmtrcQjX70pxHByUbf2QdGNO0w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY4PR12MB1576.namprd12.prod.outlook.com (2603:10b6:910:10::9)
- by DM6PR12MB2796.namprd12.prod.outlook.com (2603:10b6:5:50::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
- 2022 08:21:45 +0000
-Received: from CY4PR12MB1576.namprd12.prod.outlook.com
- ([fe80::a185:161d:ce15:3e07]) by CY4PR12MB1576.namprd12.prod.outlook.com
- ([fe80::a185:161d:ce15:3e07%9]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
- 08:21:44 +0000
-Message-ID: <deef30c1-b213-c483-a3bc-ba06f5c2e37f@nvidia.com>
-Date:   Mon, 11 Apr 2022 13:51:31 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH -next] ASoC: tegra186_asrc: mark runtime-pm functions as
- __maybe_unused
-Content-Language: en-US
-To:     YueHaibing <yuehaibing@huawei.com>, lgirdwood@gmail.com,
-        broonie@kernel.org, perex@perex.cz, tiwai@suse.com,
-        thierry.reding@gmail.com, jonathanh@nvidia.com
-Cc:     alsa-devel@alsa-project.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220411020908.580-1-yuehaibing@huawei.com>
-From:   Sameer Pujar <spujar@nvidia.com>
-In-Reply-To: <20220411020908.580-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: MAXPR01CA0109.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a00:5d::27) To CY4PR12MB1576.namprd12.prod.outlook.com
- (2603:10b6:910:10::9)
+        Mon, 11 Apr 2022 04:24:10 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9793E5CE;
+        Mon, 11 Apr 2022 01:21:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649665317; x=1681201317;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=scsOcqJzNI6mZ2YEH5vHXnC/k0h5kNwTVDSSNWSTjAA=;
+  b=ll/JbAKfULVpsfSXyYAdw+csSpJhOdNX/aNcrMMNB8hfTDbk5kgD04z1
+   qTAC7+2G+miThrHPEp9vPCCxiql1bq/v5Ydsc5qBUfc+I+/16m1p1DIxt
+   ahGsbLlmKOxMeNPyc3g3ntbvhr0lOQK32lbHipJzMhlvFHJ7K93Tlp7lo
+   ewwNewfJmRZ6pzUwBz++eZ+gik6XSMXFn9OEkC0V35cHB1KJD0fnPS39m
+   5/ZSE0pJy3MC2fAKcZEOewoA3hSDT41VeC8eDnRqha6BJLIxzc70f1hZa
+   jdgkyBsOl2wrv/RUle8g7O/qggJ94zYqRss9kjv6Nf04JfqBndYe56dCS
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="348503221"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="348503221"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 01:21:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="622754005"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 11 Apr 2022 01:21:53 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ndpJ3-0001gN-6G;
+        Mon, 11 Apr 2022 08:21:53 +0000
+Date:   Mon, 11 Apr 2022 16:20:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Samuel Holland <samuel@sholland.org>,
+        Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Samuel Holland <samuel@sholland.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH v2 2/4] dmaengine: sun6i: Do not use virt_to_phys
+Message-ID: <202204111641.yuvoMU5q-lkp@intel.com>
+References: <20220411044633.39014-3-samuel@sholland.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 47162614-202f-44b5-4682-08da1b945066
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2796:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB27966B65533E01923044113EA7EA9@DM6PR12MB2796.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7UUVqOiCdTTkOQTjth1s7FEMfOFsoGs9U9OqEmRINEWyATGEPYf2KPZ+nH6Eh/skl/zz+YvJ3jkl7AvwiFht9S/HvFEkDFwu+FyaAhr0+CT2ZmvBHTedtule0c7tA5SfJI6i/ekyI2bSMgOXrziJUnPGhgQzdrKe8hlL+XhmNwQQPC/8JH0rBNSgivd+XKBon1tEWoXPVlOXair9daMdM0xWGJG9iI1XRs5tBUcqbppt4Q7odKbD8R90D8MU1ZYzyCsmgzSEafIia1I2yFLRCfC6iJhih71ufSHQFyNY7R6kG3F0BETEB8ZTKtZ71HWuii3JOihFztEZAsk1WKUnSXkgXHgcbD98kbetITghW3OtuHpcHdJUg8EfzGa27J0wd+SLw7or5bvimFvs68kVSGKlxoKWTibbtD3Z8l4OuQgGTbNzDf7Dmlkh6gPLYHpHf4GFIN8I+DjIf3MmmJahT/YjZUj1dLhHuZtT4ZsCR+dW+WlmXoh7lgkNS8uISQVqohsb80j6hcrnGeOG7ZBlTx7fLyB+6NXNBMD2+wdd9g4leWD5q9j/aPZd+X45dSFkUZochnGz3sZNrcMEF9CKQTr+QXSmGnB4D15uDHOiO7f5GctjrnjurZPBBdI63jnA0DoiX7mCahm2Xz5XXzUnb3VILneb/4uCaA0E+xWjlHK2C1b5csmAowATOJzaxQPwCRrkP9KpYXbz6ladqeKnRTXXvwhs562M7Q+HKEI9Zis=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR12MB1576.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(86362001)(31696002)(26005)(6486002)(508600001)(31686004)(6636002)(36756003)(316002)(66946007)(83380400001)(2616005)(66476007)(6666004)(6506007)(66556008)(53546011)(2906002)(186003)(5660300002)(8936002)(4326008)(8676002)(4744005)(38100700002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R2NzdmFFdjE5c3NpSlUvV2pEVmN5RXgyOGZlS0xiOFRCWXdGVlZjVVhYNldK?=
- =?utf-8?B?R3dYYnZpQ3N3ZmhEUVFTKzBCa1JEa3VXbUVDdzJMVzJOKzJqdlk1WUlyUzJU?=
- =?utf-8?B?QXRvd1JuUmdpcDNjY3A4Vm5hNTRNYTBibGc0QzI4TEwxNTZ1QTc0VExNZVZK?=
- =?utf-8?B?ZTBZem85TUxZbGxHaHFFUGxKb0lYSDU2OWVuWWcxV3ppTnFtNFdyRVF3YU0v?=
- =?utf-8?B?WVhRL1VuWDhoVHdpVkJ0bFd5Q3pCMkFNNitrdGoydFdnNXZ0K1Eza3R5bHV6?=
- =?utf-8?B?bk4yZmNCYTZaNngxZ3pzODNTUkxCamJ5ZXVNUUNDSGJwaGdNcmxLam10MURJ?=
- =?utf-8?B?ZndnRDc2VzFhVmFhcFY0VlZhblgrM244dWtReXNZVjFRdkMxS0hYekFtV1gz?=
- =?utf-8?B?MXkvZU5pcm05bTNMV2dEVDB1d3pRQ05TRXg1Y01HaHhQZWRIK1AxaDJ0Sjlk?=
- =?utf-8?B?L3dhVWlZY2hhVFlialRjWThtejV0dTc0eWZJU2c4bUpET2dkVkc1ellCSkt6?=
- =?utf-8?B?MTA5OGdIaFFpeXRWMWlHY0hVYW9SaDI1Z0xIazlEM1U2WDFsMVREVWY5Q3Zl?=
- =?utf-8?B?U2lRYU1UZFJRQ2RJNUY1OG1UNGVKWXVyUEh4UEVua0kyZDhOVWpNbGlwbXhX?=
- =?utf-8?B?ayt3MWQ5SHBHcjloSVdkTUliWFJxcFZpVllNWHo5NWhiQUpvOFBvMlhwVUps?=
- =?utf-8?B?WjZDNjF1QTZFdzFJRGlNakhRK3RJaklLNVRkZmlldy9jNCs1Nm9jQ2taNlRp?=
- =?utf-8?B?dDFVOHZVS1hFUkFlTDVKRTc1UkFhUW5WdHFPcGszY0xGYnJ1bEtGWkJFT1hV?=
- =?utf-8?B?K3JNcE1SbWx4dWVPQ3E1N1hPN1dPcjhYWGhmeEdVTDlYdVpPMTNQWXNVTjd0?=
- =?utf-8?B?QzFVb29HMDlpdUh0QnVzRlJaMW85U2xtcCtmR00wSHpaYWZUUGJWR01mbTlt?=
- =?utf-8?B?aWphOGpzWklnZko3b0VkSzBNYkNhczVlWDlZSEdxS1ErZUNuNUNQamlQZXBY?=
- =?utf-8?B?VW1VQUQ3STVURnNYdGkzeFRDUHVoL0RmS0hNQ1hUeW4xcHpLSm5ITWh1UHNv?=
- =?utf-8?B?cGw5b1AzcjlkWWFOL0Z3K0NyNUhqMkJyaHNDMTl3ck9ZL0IreXc5MU14N1dq?=
- =?utf-8?B?L0Q0L0xLbUJvNVRhM2l0eVArQmtvclpWZVNKTnZhbURPaFdqOTJVRTZDNWhV?=
- =?utf-8?B?YVk0ZStPbVhpMFc0c1p3ZnhCcWRRRFRDWThtYlo1L3pEaFVoOVYrT2RiNFlw?=
- =?utf-8?B?QVlvQW9aeU5MYS9YZ2dnbWRzTzFONWZpZXpTeWpjVGdPU3JjVVJXbXZIcTJT?=
- =?utf-8?B?dkVtVmpPRDZXSW5GMDJnb210VE5aaTJFWkxSUVBmaElJWHZKYW9wQ1FxdVh0?=
- =?utf-8?B?Mmp4ODdyNUdaS2FMNXNKdFZEVGNYQTZXYlMxSHFqWEFWYXVtdlVIRndDQmFL?=
- =?utf-8?B?YmhIWVNkWHpmU3pZYTZEbE5NVUZxM2wzYUUyaEFiVWt6dzNEc0lBd2k2dEVW?=
- =?utf-8?B?ZzVxKzVUbnlFQmlIZ05kQnlsQ0M2WjVpNTQ1QlZaUUFjRC9aUGNSdnNXejNP?=
- =?utf-8?B?cUFlY1BFcnozZkJVMXV6bzhKTi9ZV1AxdzB2ODBBN0tUNkhEYzE1U0pmRjZt?=
- =?utf-8?B?cTRKRU4zdjZ2b1RPZis5TkNwd1VmNUZxSXNXUWV1emJUTzBNWmZvazBCY0xX?=
- =?utf-8?B?bmlGZ3MvbFppRWFodGdqY1V3Q0ZZMzZucEJtb1JVSG5nVkJhVTNFOHRUaDdR?=
- =?utf-8?B?VWwvY24rMjFDM0t1MzFMTTlzcXlGbW1XQnFYZ1NwSjVvNjRjelJqcUZvNk9D?=
- =?utf-8?B?NUp0UVl1RytMTDZoY1JVWG1TYStGNFJMTE1Yd3dCc3RZZmE1QXEvd0VSZmtl?=
- =?utf-8?B?Ym5xODZnaHJNdnR3WGhVNm40R3dRTERsaEJZWlBuYXRIM0p5MjBoS3NZb0d6?=
- =?utf-8?B?MmZiajVpLzJqWFZ1VThpdzFhcmRvRGk2T3FGNENyVXdDUm1JU21LaExrQzYv?=
- =?utf-8?B?UDMwRmtLanFKOUFiTVVFcEdTUnhxVnBqdDEyS2VDWHgyNTg2M1NLNStjb0Zi?=
- =?utf-8?B?VUxackRiY1pkaDRXczNTaldlakU1NjczaVBtRFpiUzJuK1V5d0xZT215NnAv?=
- =?utf-8?B?YkRsMERGdDZnSUpRcGZ0dHozMnpHUDFKSCtTWXlmeVpTdU41UXVPUFZETzJN?=
- =?utf-8?B?SHBNVTlxdVNEUytpeHIxUUVEdDJDSXlWNFk4ZzJ3ekZkY0labmZuM1VRZWpn?=
- =?utf-8?B?aURzdkVGVlUxT2NFaDRkVCtyYW1INGZ2M01HS2UwUTQ5QjRBVFFFb1RxaEV4?=
- =?utf-8?B?aUUxdFZOM05ISFU2aGdlazVNcE5NUXBERE9PaVpmTEZTdjVuaXBPZz09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 47162614-202f-44b5-4682-08da1b945066
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR12MB1576.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 08:21:44.7773
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: R5EdmBMG1LV9txPftHuOGjZAe5Ezq0Eh39pqUsTOFYOuA995gKX3YHziO++/2b7jIerxWH7QUcWcl4ilSs5BMA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2796
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220411044633.39014-3-samuel@sholland.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Samuel,
 
-On 11-04-2022 07:39, YueHaibing wrote:
-> sound/soc/tegra/tegra186_asrc.c:90:12: error: ‘tegra186_asrc_runtime_resume’ defined but not used [-Werror=unused-function]
->   static int tegra186_asrc_runtime_resume(struct device *dev)
->              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> sound/soc/tegra/tegra186_asrc.c:80:12: error: ‘tegra186_asrc_runtime_suspend’ defined but not used [-Werror=unused-function]
->   static int tegra186_asrc_runtime_suspend(struct device *dev)
->              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->
-> Mark these functions as __maybe_unused to avoid this kind of warning.
->
-> Fixes: a2df8c2d5b36 ("ASoC: tegra: Add Tegra186 based ASRC driver")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->   sound/soc/tegra/tegra186_asrc.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+I love your patch! Perhaps something to improve:
 
-Thanks for the patch.
+[auto build test WARNING on vkoul-dmaengine/next]
+[also build test WARNING on sunxi/sunxi/for-next v5.18-rc2 next-20220411]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Reviewed-by: Sameer Pujar <spujar@nvidia.com>
+url:    https://github.com/intel-lab-lkp/linux/commits/Samuel-Holland/dmaengine-sun6i-Allwinner-D1-support/20220411-124826
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git next
+config: hexagon-randconfig-r041-20220410 (https://download.01.org/0day-ci/archive/20220411/202204111641.yuvoMU5q-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c6e83f560f06cdfe8aa47b248d8bdc58f947274b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/280420721fd264a03a3d3f9fbe2b4e6bfddd0f79
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Samuel-Holland/dmaengine-sun6i-Allwinner-D1-support/20220411-124826
+        git checkout 280420721fd264a03a3d3f9fbe2b4e6bfddd0f79
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/dma/
 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/dma/sun6i-dma.c:253:15: warning: format specifies type 'unsigned long' but the argument has type 'int' [-Wformat]
+                   pchan->idx, pchan->base - sdev->base,
+                               ^~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:155:39: note: expanded from macro 'dev_dbg'
+           dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+                                        ~~~     ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:167:19: note: expanded from macro 'dynamic_dev_dbg'
+                              dev, fmt, ##__VA_ARGS__)
+                                   ~~~    ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:152:56: note: expanded from macro '_dynamic_func_call'
+           __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+                                                                 ^~~~~~~~~~~
+   include/linux/dynamic_debug.h:134:15: note: expanded from macro '__dynamic_func_call'
+                   func(&id, ##__VA_ARGS__);               \
+                               ^~~~~~~~~~~
+   1 warning generated.
+
+
+vim +253 drivers/dma/sun6i-dma.c
+
+   240	
+   241	static inline void sun6i_dma_dump_chan_regs(struct sun6i_dma_dev *sdev,
+   242						    struct sun6i_pchan *pchan)
+   243	{
+   244		dev_dbg(sdev->slave.dev, "Chan %d reg: 0x%lx\n"
+   245			"\t___en(%04x): \t0x%08x\n"
+   246			"\tpause(%04x): \t0x%08x\n"
+   247			"\tstart(%04x): \t0x%08x\n"
+   248			"\t__cfg(%04x): \t0x%08x\n"
+   249			"\t__src(%04x): \t0x%08x\n"
+   250			"\t__dst(%04x): \t0x%08x\n"
+   251			"\tcount(%04x): \t0x%08x\n"
+   252			"\t_para(%04x): \t0x%08x\n\n",
+ > 253			pchan->idx, pchan->base - sdev->base,
+   254			DMA_CHAN_ENABLE,
+   255			readl(pchan->base + DMA_CHAN_ENABLE),
+   256			DMA_CHAN_PAUSE,
+   257			readl(pchan->base + DMA_CHAN_PAUSE),
+   258			DMA_CHAN_LLI_ADDR,
+   259			readl(pchan->base + DMA_CHAN_LLI_ADDR),
+   260			DMA_CHAN_CUR_CFG,
+   261			readl(pchan->base + DMA_CHAN_CUR_CFG),
+   262			DMA_CHAN_CUR_SRC,
+   263			readl(pchan->base + DMA_CHAN_CUR_SRC),
+   264			DMA_CHAN_CUR_DST,
+   265			readl(pchan->base + DMA_CHAN_CUR_DST),
+   266			DMA_CHAN_CUR_CNT,
+   267			readl(pchan->base + DMA_CHAN_CUR_CNT),
+   268			DMA_CHAN_CUR_PARA,
+   269			readl(pchan->base + DMA_CHAN_CUR_PARA));
+   270	}
+   271	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
