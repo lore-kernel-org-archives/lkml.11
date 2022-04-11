@@ -2,126 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:32:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99188C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243115AbiDKLeo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47554 "EHLO
+        id S1343575AbiDKLf0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 07:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237928AbiDKLek (ORCPT
+        with ESMTP id S237098AbiDKLfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:34:40 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A744550F;
-        Mon, 11 Apr 2022 04:32:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649676747; x=1681212747;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=TYy9NxpTkSA66TQfkmpTqBo09yMyp2M0WmZn0CW2F1A=;
-  b=kQ+YQsCg6G/4xCsXFjzLezWgd2rQavHB+BeNX4WZk5QEKds1Fr/ROoJX
-   Y4kqL7Yi8t5j+8mFeHlsaJGmEasqFHZ7Dzv35p/XvFKCt2TbaCck05BUU
-   BG1zL/T/rbI8WWarGTE+5h+WKQld/bwJLThZ9O4ixzhQBQI+2vC4QfBn1
-   jjzADhXwt/6h1oIat1f7QJEN0wxUKXHhhp9DsC31qHonWeoSw9IAiUWt6
-   y6th+uM/bFhQ13rY57IA+iFApzc1yE4d13Rqu4JDBRSJ1cH7ZbKBgcaqa
-   sNu9Gui3RrkSdElcC5EMifGkM79BT7qvViLZzzJduuaypQJuGs/RV48bq
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="259689278"
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="259689278"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:32:26 -0700
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="589846699"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:32:24 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ndsDt-001C3i-1e;
-        Mon, 11 Apr 2022 14:28:45 +0300
-Date:   Mon, 11 Apr 2022 14:28:44 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Gilles Buloz <gilles.buloz@kontron.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH v3 5/5] tty: Use flow-control char function on closing
- path
-Message-ID: <YlQQ7MYBiK98n5XK@smile.fi.intel.com>
-References: <20220411094859.10894-1-ilpo.jarvinen@linux.intel.com>
- <20220411094859.10894-6-ilpo.jarvinen@linux.intel.com>
+        Mon, 11 Apr 2022 07:35:22 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3644553D;
+        Mon, 11 Apr 2022 04:33:08 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id q142so13896771pgq.9;
+        Mon, 11 Apr 2022 04:33:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d0G3ixB92qwgTA41l9ocNesTRW2JojJDnB4Iqey5Sio=;
+        b=JBamKgIpJ9LTPyhHtA1OgmkyWh2tNfbjhdN8ot8D8DsgIwVwZrY5XmLlM0PXOFYeuY
+         9OvT+ROOBccpeVNtxmvscgur2ymuxDF8ZGzeanTP3Tleta5BUZzYQ/h6D6/r8Ze4rf16
+         53OOxHgZ7SUnf6fw41tnlNkUukfOYihOLQI0Q8WGJEjgNUVycKz32caBKRKBZogKd3gp
+         rDO7ep3AUbMA913Rhw+raJxuIF0WBey+9UalrRMUv5PpkDfVLnoPssdGN73m6GUr3RFu
+         Hyj7aUAYhBJL7/szsLpv61IbpjBDsktDTKdkTzdDhT7OVIsiXDOJ5g9kIrsaf8tG8lb0
+         PkDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d0G3ixB92qwgTA41l9ocNesTRW2JojJDnB4Iqey5Sio=;
+        b=aXGoyRxFtv+l+eZ57tP9RhN7ZaqKBELRAi086wh2eMZ7yFheZh0mKYtQshnR/u75j0
+         hxDPXjxiremmpnrWSf0db2PILvMhgPD1CdNhprqW6ryIW1rCuxeVNBd1bnTOGx7FnjuZ
+         f5+fkhiUdV3nuhUiTUH0YleUgiG7yTlpLPpFdi127iY/ujL0skFqBa8VLTr6EUI0BgNg
+         yZMorj2gjlKHa8zWpi0eo53u/CL7ic6AVO+Vugym1iwRfbzQBof3mhyIBRMkGH0i1Ki0
+         NacaHHI96Q6QKKrazW5XTMJGGaS6fXfCrmARsRdczeVG5IlrLa+PrBnIWqiZiidI3b5R
+         qqSg==
+X-Gm-Message-State: AOAM532ckXIIZaOQNjio4E+MF2tlrfLw7nNFjgD2uh+b2rGHQ3wGQNkA
+        iYcY4B+wmxctgQagFr88Gh0=
+X-Google-Smtp-Source: ABdhPJzlTUGEvYEO6cs4FWwL/g97zUiBYkIVYPfvOf7CBaVSJDSltEFU7/WCEt9uBFk7WjSXO5Bomw==
+X-Received: by 2002:a63:de45:0:b0:39c:c255:b30 with SMTP id y5-20020a63de45000000b0039cc2550b30mr18470548pgi.82.1649676788451;
+        Mon, 11 Apr 2022 04:33:08 -0700 (PDT)
+Received: from localhost ([166.111.139.106])
+        by smtp.gmail.com with ESMTPSA id x5-20020aa79a45000000b00505c1ab148esm3697360pfj.131.2022.04.11.04.33.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 04:33:07 -0700 (PDT)
+From:   Zixuan Fu <r33s3n6@gmail.com>
+To:     djwong@kernel.org
+Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>
+Subject: [PATCH] fs: xfs: fix possible NULL pointer dereference in xfs_buf_ioapply_map()
+Date:   Mon, 11 Apr 2022 19:32:50 +0800
+Message-Id: <20220411113250.797833-1-r33s3n6@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220411094859.10894-6-ilpo.jarvinen@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 12:48:59PM +0300, Ilpo Järvinen wrote:
-> Use n_tty_receive_char_flow_ctrl also on the closing path. This makes
-> the code cleaner and consistent.
-> 
-> However, there a small change of regression!
-> 
-> The earlier closing path has a small difference compared with the
-> normal receive path. If START_CHAR and STOP_CHAR are equal, their
-> precedence is different depending on which path a character is
-> processed. I don't know whether this difference was intentional or
-> not, and if equal START_CHAR and STOP_CHAR is actually used anywhere.
-> But it feels not so useful corner case.
-> 
-> While this change would logically belong to those earlier changes,
-> having a separate patch for this is useful. If this regresses, bisect
-> can pinpoint this change rather than the large patch. Also, this
-> change is not necessary to minimal fix for the issue addressed in
-> the previous patch.
+In our fault-injection testing, bio_alloc() may fail with low memory and
+return NULL. In this case, the variable "bio" in xfs_buf_ioapply_map()
+would be NULL and then it is dereferenced by the next instruction
+"bio->bi_iter.bi_sector".
 
-This is nice, if it flies!
-FWIW,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+The failure log is listed as follows:
 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
->  drivers/tty/n_tty.c | 13 ++++---------
->  1 file changed, 4 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-> index fede29ed8daf..e6f47858f98f 100644
-> --- a/drivers/tty/n_tty.c
-> +++ b/drivers/tty/n_tty.c
-> @@ -1414,15 +1414,10 @@ static void n_tty_receive_char_closing(struct tty_struct *tty, unsigned char c,
->  		c = tolower(c);
->  
->  	if (I_IXON(tty)) {
-> -		if (c == STOP_CHAR(tty)) {
-> -			if (!lookahead_done)
-> -				stop_tty(tty);
-> -		} else if (c == START_CHAR(tty) && lookahead_done) {
-> -			return;
-> -		} else if (c == START_CHAR(tty) ||
-> -			 (tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
-> -			  c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
-> -			  c != SUSP_CHAR(tty))) {
-> +		if (!n_tty_receive_char_flow_ctrl(tty, c, lookahead_done) &&
-> +		    tty->flow.stopped && !tty->flow.tco_stopped && I_IXANY(tty) &&
-> +		    c != INTR_CHAR(tty) && c != QUIT_CHAR(tty) &&
-> +		    c != SUSP_CHAR(tty)) {
->  			start_tty(tty);
->  			process_echoes(tty);
->  		}
-> -- 
-> 2.30.2
-> 
+[   11.929658] BUG: kernel NULL pointer dereference, address: 0000000000000015
+...
+[   11.932963] RIP: 0010:xfs_buf_ioapply_map+0x2cc/0x6f0 [xfs]
+...
+[   11.940043] Call Trace:
+[   11.940247]  <TASK>
+[   11.940416]  ? _raw_spin_unlock_irqrestore+0x3c/0x70
+[   11.940827]  _xfs_buf_ioapply+0x134/0x4d0 [xfs]
+[   11.941256]  __xfs_buf_submit+0x585/0x7a0 [xfs]
+[   11.941684]  ? _xfs_buf_read+0xb7/0x120 [xfs]
+[   11.942127]  _xfs_buf_read+0xb7/0x120 [xfs]
+[   11.942535]  xfs_buf_read_map+0x1ba/0x650 [xfs]
+[   11.942981]  ? xfs_read_agf+0x163/0x260 [xfs]
+[   11.943394]  xfs_trans_read_buf_map+0x37c/0x850 [xfs]
+[   11.943883]  ? xfs_read_agf+0x163/0x260 [xfs]
+[   11.944306]  ? xfs_read_agf+0x163/0x260 [xfs]
+[   11.944725]  xfs_read_agf+0x163/0x260 [xfs]
+[   11.945141]  xfs_alloc_read_agf+0xc5/0x480 [xfs]
+[   11.945574]  xfs_alloc_pagf_init+0x89/0x150 [xfs]
+[   11.946037]  xfs_ag_resv_init+0x14b/0x5c0 [xfs]
+[   11.946471]  xfs_fs_reserve_ag_blocks+0xf3/0x290 [xfs]
+[   11.946961]  xfs_mountfs+0x2298/0x2440 [xfs]
+[   11.947372]  xfs_fs_fill_super+0x1eaa/0x21e0 [xfs]
+[   11.947840]  get_tree_bdev+0x3c3/0x5f0
+[   11.948136]  ? xfs_fs_warn_deprecated+0x100/0x100 [xfs]
+[   11.948633]  xfs_fs_get_tree+0x68/0xb0 [xfs]
+[   11.949056]  vfs_get_tree+0x81/0x220
+[   11.949336]  path_mount+0x1061/0x2340
+[   11.949619]  ? kasan_quarantine_put+0x2c/0x1a0
+[   11.949991]  ? slab_free_freelist_hook+0xde/0x160
+[   11.950360]  ? mark_mounts_for_expiry+0x410/0x410
+[   11.950729]  ? user_path_at_empty+0xf6/0x160
+[   11.951072]  ? kmem_cache_free+0xb8/0x1a0
+[   11.951384]  ? user_path_at_empty+0xf6/0x160
+[   11.951717]  __se_sys_mount+0x217/0x2b0
+[   11.952001]  ? __x64_sys_mount+0xd0/0xd0
+[   11.952277]  ? exit_to_user_mode_prepare+0x32/0x130
+[   11.952664]  do_syscall_64+0x41/0x90
+[   11.952960]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+...
+[   11.958483]  </TASK>
 
+This patch adds a NULL check of "bio" and return immediately if it's NULL.
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+---
+ fs/xfs/xfs_buf.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/fs/xfs/xfs_buf.c b/fs/xfs/xfs_buf.c
+index e1afb9e503e1..1be98503b538 100644
+--- a/fs/xfs/xfs_buf.c
++++ b/fs/xfs/xfs_buf.c
+@@ -1447,6 +1447,9 @@ xfs_buf_ioapply_map(
+ 	nr_pages = bio_max_segs(total_nr_pages);
+ 
+ 	bio = bio_alloc(bp->b_target->bt_bdev, nr_pages, op, GFP_NOIO);
++	if (!bio)
++		return;
++
+ 	bio->bi_iter.bi_sector = sector;
+ 	bio->bi_end_io = xfs_buf_bio_end_io;
+ 	bio->bi_private = bp;
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
