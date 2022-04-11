@@ -2,100 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C32DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 07:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB63FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 07:56:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245730AbiDKHw2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 03:52:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60598 "EHLO
+        id S244789AbiDKH6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 03:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245658AbiDKHvv (ORCPT
+        with ESMTP id S1343556AbiDKH6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 03:51:51 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E64C252AC;
-        Mon, 11 Apr 2022 00:49:37 -0700 (PDT)
-X-UUID: 3aa03b9fbe4c4f229b118b7b660b89cf-20220411
-X-UUID: 3aa03b9fbe4c4f229b118b7b660b89cf-20220411
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <moudy.ho@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1098789595; Mon, 11 Apr 2022 15:49:29 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 11 Apr 2022 15:49:28 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 11 Apr
- 2022 15:49:27 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 11 Apr 2022 15:49:27 +0800
-From:   Moudy Ho <moudy.ho@mediatek.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Rob Landley <rob@landley.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        <tfiga@chromium.org>, <drinkcat@chromium.org>,
-        <pihsun@chromium.org>, <hsinyi@google.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        "daoyuan huang" <daoyuan.huang@mediatek.com>,
-        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
-        <allen-kh.cheng@mediatek.com>, <xiandong.wang@mediatek.com>,
-        <randy.wu@mediatek.com>, <moudy.ho@mediatek.com>,
-        <jason-jh.lin@mediatek.com>, <roy-cw.yeh@mediatek.com>,
-        <river.cheng@mediatek.com>, <srv_heupstream@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v15 3/6] dt-bindings: soc: mediatek: move out common module from display folder
-Date:   Mon, 11 Apr 2022 15:49:22 +0800
-Message-ID: <20220411074925.25539-4-moudy.ho@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220411074925.25539-1-moudy.ho@mediatek.com>
-References: <20220411074925.25539-1-moudy.ho@mediatek.com>
+        Mon, 11 Apr 2022 03:58:10 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5CB1D13D0D;
+        Mon, 11 Apr 2022 00:55:56 -0700 (PDT)
+Received: by linux.microsoft.com (Postfix, from userid 1127)
+        id EF7EA205657E; Mon, 11 Apr 2022 00:55:55 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EF7EA205657E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1649663755;
+        bh=2hqdJe2z5thDY+V/BIGSxpcl+9YoCnMAkDESTCF9xJQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gmBaCO43MEeaINcc6CWCMzgY6Zvh99f+2wobY/cTP0Z2sMzuBVznCAZDOddmQkzjp
+         GoZgLolr4cwFzP82BmphuKjEsvSG5Vy/2JwLep3CXHr9WKDpUEiiAgukhv0wnBKc7F
+         sTxi9iNizaNafkdNfYw4zMfiHrZMSuyxunKP5IMI=
+Date:   Mon, 11 Apr 2022 00:55:55 -0700
+From:   Saurabh Singh Sengar <ssengar@linux.microsoft.com>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     Saurabh Singh Sengar <ssengar@microsoft.com>,
+        "drawat.floss@gmail.com" <drawat.floss@gmail.com>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Subject: Re: [PATCH v3] drm/hyperv: Added error message for fb size greater
+ than allocated
+Message-ID: <20220411075555.GA15355@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+References: <1649650437-17977-1-git-send-email-ssengar@linux.microsoft.com>
+ <BYAPR21MB1270B3CFBE674EB0A7537180BFEA9@BYAPR21MB1270.namprd21.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BYAPR21MB1270B3CFBE674EB0A7537180BFEA9@BYAPR21MB1270.namprd21.prod.outlook.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to share the same hardware information with MDP3,
-change the MUTEX dt-binding to the path "soc/mediatek".
+On Mon, Apr 11, 2022 at 06:40:38AM +0000, Dexuan Cui wrote:
+> > Subject: [PATCH v3] drm/hyperv: Added error message for fb size greater than
+> > allocated
+> > 
+> > Added error message when the size of requested framebuffer is more than
+> > the allocated size by vmbus mmio region for framebuffer
+> 
+> "Added" --> "Add"? My impression is that we don't use past tense in the 
 
-Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Acked-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
----
- .../bindings/{display => soc}/mediatek/mediatek,mutex.yaml      | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
- rename Documentation/devicetree/bindings/{display => soc}/mediatek/mediatek,mutex.yaml (97%)
+Ok.
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
-similarity index 97%
-rename from Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
-rename to Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
-index 00e6a1041a9b..40598243c84d 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
-+++ b/Documentation/devicetree/bindings/soc/mediatek/mediatek,mutex.yaml
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: http://devicetree.org/schemas/display/mediatek/mediatek,mutex.yaml#
-+$id: http://devicetree.org/schemas/soc/mediatek/mediatek,mutex.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Mediatek mutex
--- 
-2.18.0
+> Subject and the commit message. See
+> "git log drivers/gpu/drm/hyperv/hyperv_drm_modeset.c".
+>  
+> > --- a/drivers/gpu/drm/hyperv/hyperv_drm_modeset.c
+> > +++ b/drivers/gpu/drm/hyperv/hyperv_drm_modeset.c
+> > @@ -123,8 +123,11 @@ static int hyperv_pipe_check(struct
+> > drm_simple_display_pipe *pipe,
+> >  	if (fb->format->format != DRM_FORMAT_XRGB8888)
+> >  		return -EINVAL;
+> > 
+> > -	if (fb->pitches[0] * fb->height > hv->fb_size)
+> > +	if (fb->pitches[0] * fb->height > hv->fb_size) {
+> > +		drm_err(&hv->dev, "hv->hdev, fb size requested by process %s
+> > for %d X %d (pitch %d) is greater than allocated size %ld\n",
+> Should we use drm_err_ratelimited() instead of drm_err()?
 
+The error is not produced in good cases, for every resolution change which is violating this error should print once.
+I suggest having it print every time some application tries to violate the policy set at boot time.
+If we use ratelimit many resolutions error change will be suppressed. Please let me know your thoughts.
+
+
+> 
+> The line exceeds 80 chars.
+
+At first I tried braking the line to respect 80 character boundary, but checkpatch.pl reported it as a problem.
+And these new lines are suggested by checkpatch.pl itself.
+Looks the recent rule realted to 80 charachters are changed. Ref : https://www.theregister.com/2020/06/01/linux_5_7/#:~:text=Linux%20kernel%20overlord%20Linus%20Torvalds,the%20topic%20of%20line%20lengths.
+
+> 
+> > +		current->comm, fb->width, fb->height, fb->pitches[0], hv->fb_size);
+> >  		return -EINVAL;
+> > +	}
+> 
+> Maybe we can use the below:
+> 	drm_err_ratelimited(&hv->dev, "%s: requested %dX%d (pitch %d) "
+>                      "exceeds fb_size %ld\n",
+>                      current->comm, fb->width, fb->height,
+>                      fb->pitches[0], hv->fb_size);
+> 
+> Note: the first chars of last 3 lines should align with the "&" in the
+> same column. Please run "scripts/checkpatch.pl" against the patch.
+
+I have tested checkpatch.pl before sending, for the current patch there is no problem from checkpatch.pl
