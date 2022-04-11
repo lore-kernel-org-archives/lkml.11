@@ -2,209 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC9AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:11:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F40BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 16:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348377AbiDKQN0 (ORCPT
+        id S1348563AbiDKQOC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 12:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41642 "EHLO
+        Mon, 11 Apr 2022 12:14:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348520AbiDKQMz (ORCPT
+        with ESMTP id S1345205AbiDKQNi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 12:12:55 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2B53D1CF
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:09:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649693376; x=1681229376;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=OLci2HLkgvtNLraSOE6x66701yZnLmVewModuX72G/M=;
-  b=LiqgELdB/B2cAsi/vPi2Mz1IZn6mcYEsz6/UQ9ZJbg34RS9YN41A6gvb
-   eFe1pemZvQBeuZ5FquiPtjyFl3CR8pu6LM3QpIlM2VHLp+Nt2D2mgKEEA
-   /htrV2ehJ2dL/urRRkPI/wx9c6q7kP7fMD9ar5YEoDCrNT2Mg+QRcKJ1l
-   GLzPBO0d32CGTe+ZwBgRYvBUGhDz03vy1EwnTKT2Ew3hMaEfM3GJyuuMb
-   BPU2C0OKt4km6x88HFLV37jKAPnA4aNGSmjPcTB1PbtXJtRbd840xbLhI
-   WZkYg95CfKCmyAU9ecAAqUKmugXFLg2ncwwzM4rJ0QVeBAy4jtFqoIpYQ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="261591422"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="261591422"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 09:09:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; 
-   d="scan'208";a="526036677"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 11 Apr 2022 09:09:31 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ndwba-0001xn-CI;
-        Mon, 11 Apr 2022 16:09:30 +0000
-Date:   Tue, 12 Apr 2022 00:08:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jirislaby:devel 48/48] drivers/tty/serial/max310x.c:750:45: error:
- 'struct uart_state' has no member named 'xmit'
-Message-ID: <202204120057.UCJiKzhW-lkp@intel.com>
+        Mon, 11 Apr 2022 12:13:38 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E1040E61
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:10:30 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id i20so10650573wrb.13
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:10:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=e/UKO7aq94SBKfZjsreZz7LQuRqGyX1nZfKdXNtn4DQ=;
+        b=Z/J52qRPfnLZdQ0L470rDwvtkPzhm9V03L7neg+b1u402HJBgaKHe+C7zJQ0iquVBd
+         xYvv1L/7dcaNhEvWgjcOZ7a1+WeQiNWcf6lp7eRFZoAKwgacOgNlorj7hPOr49e6wIwq
+         /+fR87Kh8d6BGbagZui3KJcoEB1e5HkAL2uQIg82BjQiOyEiZz/1jWiGvbVYEe97Q7zD
+         p/2k+UZQTCnU4xha5cdDRe54CluXLWA39aUw41PtbLHtWB2/tfZyL2CbHN/EUZpzacVx
+         ZTooWK694sFHyuvXAM2FFYrI3fuJFUygYO8bC9C3tDsQLD+dGvsBBXnUbM/B7TZIdEbO
+         MrPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=e/UKO7aq94SBKfZjsreZz7LQuRqGyX1nZfKdXNtn4DQ=;
+        b=7CM6vCuEA3W6RCD3CHoFee+vDb5ExNac9NxRK/HuAtWwrrCsbEdHCmTBBUMgYR8xUP
+         Fb/J5vP1hkZ96VI+a03PpIlSUNQz/ijF4sJCXD5pGk6bsmYwVLoE7bb/cXfUZ7IlN1aV
+         Kjwv2nNjb6ka3UzSWpTHsXdk92wB5CeOaoVGQNHdPmFcXrqbCG0HCkA55Hf3e28d/yFl
+         L9so5b0kcRGXSZKbD+vWnYfPa8cQIqnzrcMWgb21A9D+6aX4oE4Y8ebBatvQNrV8qztE
+         Z9ApEcTcDg1QBwqZ6t/1RyQAvDag6cDOR1wJjG3A4EU5Yae2bYQ0ByOHHnKuFEHmGwfj
+         7nUw==
+X-Gm-Message-State: AOAM530iTT+TEaPhd6vI5SIZ4IuIL1ud1UI/j/HhUmdoU6YbxO2zlvun
+        usCdw5djslAgLtGeITPGLZ8FJg==
+X-Google-Smtp-Source: ABdhPJxGMh4bpG9dA7tQfjqfzADDhs413Y4knEG1ir0hHP7QToWNiaFOX5m46YuRx9ZQ2hbojg87mg==
+X-Received: by 2002:a05:6000:144e:b0:205:9a80:b4c3 with SMTP id v14-20020a056000144e00b002059a80b4c3mr25378634wrx.179.1649693428548;
+        Mon, 11 Apr 2022 09:10:28 -0700 (PDT)
+Received: from localhost.localdomain ([2001:861:44c0:66c0:d1:e096:d183:1bc5])
+        by smtp.gmail.com with ESMTPSA id m3-20020a5d6243000000b001e33760776fsm26481090wrv.10.2022.04.11.09.10.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Apr 2022 09:10:28 -0700 (PDT)
+From:   Neil Armstrong <narmstrong@baylibre.com>
+To:     Guillaume Giraudon <ggiraudon@prism19.com>, kernel-dev@prism19.com
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        linux-amlogic@lists.infradead.org
+Subject: Re: [PATCH v2] arm64: dts: meson-sm1-bananapi-m5: fix wrong GPIO pin labeling for CON1
+Date:   Mon, 11 Apr 2022 18:10:26 +0200
+Message-Id: <164969253195.978802.10778276725936874657.b4-ty@baylibre.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220411144427.874-1-ggiraudon@prism19.com>
+References: <20220411144427.874-1-ggiraudon@prism19.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git devel
-head:   c196e3b15cddb539135de6a3c6bcf32b89213b4c
-commit: c196e3b15cddb539135de6a3c6bcf32b89213b4c [48/48] tty: serial, use kfifo
-config: parisc-buildonly-randconfig-r003-20220411 (https://download.01.org/0day-ci/archive/20220412/202204120057.UCJiKzhW-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?id=c196e3b15cddb539135de6a3c6bcf32b89213b4c
-        git remote add jirislaby https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git
-        git fetch --no-tags jirislaby devel
-        git checkout c196e3b15cddb539135de6a3c6bcf32b89213b4c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash drivers/tty/serial/
+Hi,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On Mon, 11 Apr 2022 10:44:28 -0400, Guillaume Giraudon wrote:
+> The labels for lines 61 through 84 on the periphs-banks were offset by 2.
+> 2 lines are missing in the BOOT GPIO lines (contains 14, should be 16)
+> Added 2 empty entries in BOOT to realigned the rest of GPIO labels
+> to match the Banana Pi M5 schematics.
+> 
+> (Thanks to Neil Armstrong for the heads up on the position of the missing pins)
+> 
+> [...]
 
-All errors (new ones prefixed by >>):
+Thanks, Applied to https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git (v5.18/fixes)
 
-   drivers/tty/serial/max310x.c: In function 'max310x_handle_tx':
->> drivers/tty/serial/max310x.c:750:45: error: 'struct uart_state' has no member named 'xmit'
-     750 |         struct circ_buf *xmit = &port->state->xmit;
-         |                                             ^~
->> drivers/tty/serial/max310x.c:760:13: error: implicit declaration of function 'uart_circ_empty' [-Werror=implicit-function-declaration]
-     760 |         if (uart_circ_empty(xmit) || uart_tx_stopped(port))
-         |             ^~~~~~~~~~~~~~~
->> drivers/tty/serial/max310x.c:764:19: error: implicit declaration of function 'uart_circ_chars_pending' [-Werror=implicit-function-declaration]
-     764 |         to_send = uart_circ_chars_pending(xmit);
-         |                   ^~~~~~~~~~~~~~~~~~~~~~~
->> drivers/tty/serial/max310x.c:765:21: error: implicit declaration of function 'CIRC_CNT_TO_END' [-Werror=implicit-function-declaration]
-     765 |         until_end = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
-         |                     ^~~~~~~~~~~~~~~
->> drivers/tty/serial/max310x.c:765:41: error: invalid use of undefined type 'struct circ_buf'
-     765 |         until_end = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
-         |                                         ^~
-   drivers/tty/serial/max310x.c:765:53: error: invalid use of undefined type 'struct circ_buf'
-     765 |         until_end = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
-         |                                                     ^~
-   drivers/tty/serial/max310x.c:775:55: error: invalid use of undefined type 'struct circ_buf'
-     775 |                         max310x_batch_write(port, xmit->buf + xmit->tail, until_end);
-         |                                                       ^~
-   drivers/tty/serial/max310x.c:775:67: error: invalid use of undefined type 'struct circ_buf'
-     775 |                         max310x_batch_write(port, xmit->buf + xmit->tail, until_end);
-         |                                                                   ^~
-   drivers/tty/serial/max310x.c:776:55: error: invalid use of undefined type 'struct circ_buf'
-     776 |                         max310x_batch_write(port, xmit->buf, to_send - until_end);
-         |                                                       ^~
-   drivers/tty/serial/max310x.c:778:55: error: invalid use of undefined type 'struct circ_buf'
-     778 |                         max310x_batch_write(port, xmit->buf + xmit->tail, to_send);
-         |                                                       ^~
-   drivers/tty/serial/max310x.c:778:67: error: invalid use of undefined type 'struct circ_buf'
-     778 |                         max310x_batch_write(port, xmit->buf + xmit->tail, to_send);
-         |                                                                   ^~
-   drivers/tty/serial/max310x.c:783:21: error: invalid use of undefined type 'struct circ_buf'
-     783 |                 xmit->tail = (xmit->tail + to_send) & (UART_XMIT_SIZE - 1);
-         |                     ^~
-   drivers/tty/serial/max310x.c:783:35: error: invalid use of undefined type 'struct circ_buf'
-     783 |                 xmit->tail = (xmit->tail + to_send) & (UART_XMIT_SIZE - 1);
-         |                                   ^~
-   cc1: some warnings being treated as errors
---
-   drivers/tty/serial/men_z135_uart.c: In function 'men_z135_handle_tx':
->> drivers/tty/serial/men_z135_uart.c:296:45: error: 'struct uart_state' has no member named 'xmit'
-     296 |         struct circ_buf *xmit = &port->state->xmit;
-         |                                             ^~
->> drivers/tty/serial/men_z135_uart.c:306:13: error: implicit declaration of function 'uart_circ_empty' [-Werror=implicit-function-declaration]
-     306 |         if (uart_circ_empty(xmit))
-         |             ^~~~~~~~~~~~~~~
->> drivers/tty/serial/men_z135_uart.c:316:16: error: implicit declaration of function 'uart_circ_chars_pending' [-Werror=implicit-function-declaration]
-     316 |         qlen = uart_circ_chars_pending(xmit);
-         |                ^~~~~~~~~~~~~~~~~~~~~~~
->> drivers/tty/serial/men_z135_uart.c:348:20: error: invalid use of undefined type 'struct circ_buf'
-     348 |         head = xmit->head & (UART_XMIT_SIZE - 1);
-         |                    ^~
-   drivers/tty/serial/men_z135_uart.c:349:20: error: invalid use of undefined type 'struct circ_buf'
-     349 |         tail = xmit->tail & (UART_XMIT_SIZE - 1);
-         |                    ^~
-   drivers/tty/serial/men_z135_uart.c:354:59: error: invalid use of undefined type 'struct circ_buf'
-     354 |         memcpy_toio(port->membase + MEN_Z135_TX_RAM, &xmit->buf[xmit->tail], n);
-         |                                                           ^~
-   drivers/tty/serial/men_z135_uart.c:354:69: error: invalid use of undefined type 'struct circ_buf'
-     354 |         memcpy_toio(port->membase + MEN_Z135_TX_RAM, &xmit->buf[xmit->tail], n);
-         |                                                                     ^~
-   drivers/tty/serial/men_z135_uart.c:355:13: error: invalid use of undefined type 'struct circ_buf'
-     355 |         xmit->tail = (xmit->tail + n) & (UART_XMIT_SIZE - 1);
-         |             ^~
-   drivers/tty/serial/men_z135_uart.c:355:27: error: invalid use of undefined type 'struct circ_buf'
-     355 |         xmit->tail = (xmit->tail + n) & (UART_XMIT_SIZE - 1);
-         |                           ^~
-   cc1: some warnings being treated as errors
-
-
-vim +750 drivers/tty/serial/max310x.c
-
-f65444187a66bf Alexander Shiyan 2012-08-06  747  
-10d8b34a421716 Alexander Shiyan 2013-06-29  748  static void max310x_handle_tx(struct uart_port *port)
-f65444187a66bf Alexander Shiyan 2012-08-06  749  {
-10d8b34a421716 Alexander Shiyan 2013-06-29 @750  	struct circ_buf *xmit = &port->state->xmit;
-d584b65c0ddf20 Jan Kundrát      2017-12-13  751  	unsigned int txlen, to_send, until_end;
-f65444187a66bf Alexander Shiyan 2012-08-06  752  
-10d8b34a421716 Alexander Shiyan 2013-06-29  753  	if (unlikely(port->x_char)) {
-10d8b34a421716 Alexander Shiyan 2013-06-29  754  		max310x_port_write(port, MAX310X_THR_REG, port->x_char);
-10d8b34a421716 Alexander Shiyan 2013-06-29  755  		port->icount.tx++;
-10d8b34a421716 Alexander Shiyan 2013-06-29  756  		port->x_char = 0;
-f65444187a66bf Alexander Shiyan 2012-08-06  757  		return;
-f65444187a66bf Alexander Shiyan 2012-08-06  758  	}
-f65444187a66bf Alexander Shiyan 2012-08-06  759  
-10d8b34a421716 Alexander Shiyan 2013-06-29 @760  	if (uart_circ_empty(xmit) || uart_tx_stopped(port))
-f65444187a66bf Alexander Shiyan 2012-08-06  761  		return;
-f65444187a66bf Alexander Shiyan 2012-08-06  762  
-f65444187a66bf Alexander Shiyan 2012-08-06  763  	/* Get length of data pending in circular buffer */
-f65444187a66bf Alexander Shiyan 2012-08-06 @764  	to_send = uart_circ_chars_pending(xmit);
-d584b65c0ddf20 Jan Kundrát      2017-12-13 @765  	until_end = CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE);
-f65444187a66bf Alexander Shiyan 2012-08-06  766  	if (likely(to_send)) {
-f65444187a66bf Alexander Shiyan 2012-08-06  767  		/* Limit to size of TX FIFO */
-10d8b34a421716 Alexander Shiyan 2013-06-29  768  		txlen = max310x_port_read(port, MAX310X_TXFIFOLVL_REG);
-10d8b34a421716 Alexander Shiyan 2013-06-29  769  		txlen = port->fifosize - txlen;
-f65444187a66bf Alexander Shiyan 2012-08-06  770  		to_send = (to_send > txlen) ? txlen : to_send;
-f65444187a66bf Alexander Shiyan 2012-08-06  771  
-d584b65c0ddf20 Jan Kundrát      2017-12-13  772  		if (until_end < to_send) {
-d584b65c0ddf20 Jan Kundrát      2017-12-13  773  			/* It's a circ buffer -- wrap around.
-d584b65c0ddf20 Jan Kundrát      2017-12-13  774  			 * We could do that in one SPI transaction, but meh. */
-d584b65c0ddf20 Jan Kundrát      2017-12-13  775  			max310x_batch_write(port, xmit->buf + xmit->tail, until_end);
-d584b65c0ddf20 Jan Kundrát      2017-12-13  776  			max310x_batch_write(port, xmit->buf, to_send - until_end);
-d584b65c0ddf20 Jan Kundrát      2017-12-13  777  		} else {
-d584b65c0ddf20 Jan Kundrát      2017-12-13  778  			max310x_batch_write(port, xmit->buf + xmit->tail, to_send);
-d584b65c0ddf20 Jan Kundrát      2017-12-13  779  		}
-d584b65c0ddf20 Jan Kundrát      2017-12-13  780  
-f65444187a66bf Alexander Shiyan 2012-08-06  781  		/* Add data to send */
-10d8b34a421716 Alexander Shiyan 2013-06-29  782  		port->icount.tx += to_send;
-d584b65c0ddf20 Jan Kundrát      2017-12-13  783  		xmit->tail = (xmit->tail + to_send) & (UART_XMIT_SIZE - 1);
-f65444187a66bf Alexander Shiyan 2012-08-06  784  	}
-f65444187a66bf Alexander Shiyan 2012-08-06  785  
-f65444187a66bf Alexander Shiyan 2012-08-06  786  	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-10d8b34a421716 Alexander Shiyan 2013-06-29  787  		uart_write_wakeup(port);
-f65444187a66bf Alexander Shiyan 2012-08-06  788  }
-f65444187a66bf Alexander Shiyan 2012-08-06  789  
-
-:::::: The code at line 750 was first introduced by commit
-:::::: 10d8b34a421716d55a4ff7c2d427c35e88b8fd60 serial: max310x: Driver rework
-
-:::::: TO: Alexander Shiyan <shc_work@mail.ru>
-:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[1/1] arm64: dts: meson-sm1-bananapi-m5: fix wrong GPIO pin labeling for CON1
+      https://git.kernel.org/amlogic/c/962dd65e575dde950ef0844568edc37cfb39f302
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Neil
