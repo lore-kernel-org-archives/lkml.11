@@ -2,90 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B021FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E981C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236263AbiDKG7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 02:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37786 "EHLO
+        id S245124AbiDKG7v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 02:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245124AbiDKG6d (ORCPT
+        with ESMTP id S243206AbiDKG7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 02:58:33 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C702AC5F;
-        Sun, 10 Apr 2022 23:56:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649660179; x=1681196179;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=+KRMi56LVuC86kOFkBF4O8ESf02mAw9nnU+hNYWAH/Y=;
-  b=rAc57Nx/nGjipDWyoTivQwXoNUPOAeDozpyz+YLp7vpnEhXbM6eoOIKL
-   JpjqGC/Vb0be4hTZmywl8HzbVDrFoXbQGATObgFphPpnJ/f0maia91uwk
-   Kr0C/WItqMOG4OOxFr0pYlRtVJKKUA8rwLAEMwqdg74xwHt6O96vjMJ18
-   s=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 10 Apr 2022 23:56:19 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 10 Apr 2022 23:56:17 -0700
-X-QCInternal: smtphost
-Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 11 Apr 2022 12:25:53 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-        id 3509B3AA2; Mon, 11 Apr 2022 12:25:52 +0530 (+0530)
-From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
-To:     will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-        robh+dt@kernel.org, krzk+dt@kernel.org, ulf.hansson@linaro.org,
-        agross@kernel.org, bjorn.andersson@linaro.org
-Cc:     linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org,
-        Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH 3/7] ARM: dts: qcom: sdx65: Add support for SDHCI controller
-Date:   Mon, 11 Apr 2022 12:25:39 +0530
-Message-Id: <1649660143-22400-4-git-send-email-quic_rohiagar@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649660143-22400-1-git-send-email-quic_rohiagar@quicinc.com>
-References: <1649660143-22400-1-git-send-email-quic_rohiagar@quicinc.com>
+        Mon, 11 Apr 2022 02:59:37 -0400
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 55A462CC8B
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 23:57:05 -0700 (PDT)
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(1173:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Mon, 11 Apr 2022 14:49:06 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     krzysztof.kozlowski@linaro.org
+Cc:     robh+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        tglx@linutronix.de, maz@kernel.org, p.zabel@pengutronix.de,
+        linux@armlinux.org.uk, arnd@arndb.de,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Qin Jian <qinjian@cqplus1.com>
+Subject: [PATCH v13 8/9] ARM: sunplus: Add initial support for Sunplus SP7021 SoC
+Date:   Mon, 11 Apr 2022 14:49:58 +0800
+Message-Id: <c6fd4e91d55caee869c9c05896d668a450e42cd1.1649659095.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1649659095.git.qinjian@cqplus1.com>
+References: <cover.1649659095.git.qinjian@cqplus1.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devicetree support for SDHCI controller found in Qualcomm SDX65
-platform. The SDHCI controller is based on the MSM SDHCI v5 IP.
+This patch aims to add an initial support for Sunplus SP7021 SoC.
 
-Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Qin Jian <qinjian@cqplus1.com>
 ---
- arch/arm/boot/dts/qcom-sdx65.dtsi | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ MAINTAINERS                    |  1 +
+ arch/arm/Kconfig               |  2 ++
+ arch/arm/Makefile              |  1 +
+ arch/arm/mach-sunplus/Kconfig  | 27 +++++++++++++++++++++++++++
+ arch/arm/mach-sunplus/Makefile |  9 +++++++++
+ arch/arm/mach-sunplus/sp7021.c | 16 ++++++++++++++++
+ 6 files changed, 56 insertions(+)
+ create mode 100644 arch/arm/mach-sunplus/Kconfig
+ create mode 100644 arch/arm/mach-sunplus/Makefile
+ create mode 100644 arch/arm/mach-sunplus/sp7021.c
 
-diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
-index 365df74..632ac78 100644
---- a/arch/arm/boot/dts/qcom-sdx65.dtsi
-+++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
-@@ -168,6 +168,19 @@
- 			#interrupt-cells = <2>;
- 		};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index cf6873295..38890c055 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2747,6 +2747,7 @@ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
+ F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ F:	Documentation/devicetree/bindings/interrupt-controller/sunplus,sp7021-intc.yaml
+ F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
++F:	arch/arm/mach-sunplus/
+ F:	drivers/clk/clk-sp7021.c
+ F:	drivers/irqchip/irq-sp7021-intc.c
+ F:	drivers/reset/reset-sunplus.c
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 4c97cb40e..1ee9a27a3 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -693,6 +693,8 @@ source "arch/arm/mach-sti/Kconfig"
  
-+		sdhc_1: sdhci@8804000 {
-+			compatible = "qcom,sdx65-sdhci", "qcom,sdhci-msm-v5";
-+			reg = <0x08804000 0x1000>;
-+			reg-names = "hc_mem";
-+			interrupts = <GIC_SPI 210 IRQ_TYPE_LEVEL_HIGH>,
-+					<GIC_SPI 227 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "hc_irq", "pwr_irq";
-+			clocks = <&gcc GCC_SDCC1_APPS_CLK>,
-+				<&gcc GCC_SDCC1_AHB_CLK>;
-+			clock-names = "core", "iface";
-+			status = "disabled";
-+		};
+ source "arch/arm/mach-stm32/Kconfig"
+ 
++source "arch/arm/mach-sunplus/Kconfig"
 +
- 		pdc: interrupt-controller@b210000 {
- 			compatible = "qcom,sdx65-pdc", "qcom,pdc";
- 			reg = <0xb210000 0x10000>;
+ source "arch/arm/mach-sunxi/Kconfig"
+ 
+ source "arch/arm/mach-tegra/Kconfig"
+diff --git a/arch/arm/Makefile b/arch/arm/Makefile
+index 77172d555..1e19d2f4b 100644
+--- a/arch/arm/Makefile
++++ b/arch/arm/Makefile
+@@ -216,6 +216,7 @@ machine-$(CONFIG_ARCH_RENESAS)	 	+= shmobile
+ machine-$(CONFIG_ARCH_INTEL_SOCFPGA)	+= socfpga
+ machine-$(CONFIG_ARCH_STI)		+= sti
+ machine-$(CONFIG_ARCH_STM32)		+= stm32
++machine-$(CONFIG_ARCH_SUNPLUS)		+= sunplus
+ machine-$(CONFIG_ARCH_SUNXI)		+= sunxi
+ machine-$(CONFIG_ARCH_TEGRA)		+= tegra
+ machine-$(CONFIG_ARCH_U8500)		+= ux500
+diff --git a/arch/arm/mach-sunplus/Kconfig b/arch/arm/mach-sunplus/Kconfig
+new file mode 100644
+index 000000000..be20425c2
+--- /dev/null
++++ b/arch/arm/mach-sunplus/Kconfig
+@@ -0,0 +1,27 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++
++menuconfig ARCH_SUNPLUS
++	bool "Sunplus SoCs"
++	depends on ARCH_MULTI_V7
++	help
++	  Support for Sunplus SoC family: SP7021 and succeeding SoC-based systems,
++	  such as the Banana Pi BPI-F2S development board (and derivatives).
++	  (<http://www.sinovoip.com.cn/ecp_view.asp?id=586>)
++	  (<https://tibbo.com/store/plus1.html>)
++
++config SOC_SP7021
++	bool "Sunplus SP7021 SoC support"
++	depends on ARCH_SUNPLUS
++	default ARCH_SUNPLUS
++	select HAVE_ARM_ARCH_TIMER
++	select ARM_GIC
++	select ARM_PSCI
++	select PINCTRL
++	select PINCTRL_SPPCTL
++	select SERIAL_SUNPLUS
++	select SERIAL_SUNPLUS_CONSOLE
++	help
++	  Support for Sunplus SP7021 SoC. It is based on ARM 4-core
++	  Cortex-A7 with various peripherals (ex: I2C, SPI, SDIO,
++	  Ethernet and etc.), FPGA interface,  chip-to-chip bus.
++	  It is designed for industrial control.
+diff --git a/arch/arm/mach-sunplus/Makefile b/arch/arm/mach-sunplus/Makefile
+new file mode 100644
+index 000000000..c902580a7
+--- /dev/null
++++ b/arch/arm/mach-sunplus/Makefile
+@@ -0,0 +1,9 @@
++# SPDX-License-Identifier: GPL-2.0
++#
++# Makefile for the linux kernel.
++#
++
++# Object file lists.
++
++obj-$(CONFIG_SOC_SP7021)	+= sp7021.o
++
+diff --git a/arch/arm/mach-sunplus/sp7021.c b/arch/arm/mach-sunplus/sp7021.c
+new file mode 100644
+index 000000000..774d0a5bd
+--- /dev/null
++++ b/arch/arm/mach-sunplus/sp7021.c
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++/*
++ * Copyright (C) Sunplus Technology Co., Ltd.
++ *       All rights reserved.
++ */
++#include <linux/kernel.h>
++#include <asm/mach/arch.h>
++
++static const char *sp7021_compat[] __initconst = {
++	"sunplus,sp7021",
++	NULL
++};
++
++DT_MACHINE_START(SP7021_DT, "SP7021")
++	.dt_compat	= sp7021_compat,
++MACHINE_END
 -- 
-2.7.4
+2.33.1
 
