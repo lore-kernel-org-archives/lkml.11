@@ -2,114 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A86D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 02:52:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D2AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 02:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244442AbiDKCyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 10 Apr 2022 22:54:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33088 "EHLO
+        id S244431AbiDKCy0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 10 Apr 2022 22:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244420AbiDKCyE (ORCPT
+        with ESMTP id S244422AbiDKCyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 10 Apr 2022 22:54:04 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F2155A6;
-        Sun, 10 Apr 2022 19:51:47 -0700 (PDT)
-X-UUID: 3bdd3723baf247528fc419440bb205bd-20220411
-X-UUID: 3bdd3723baf247528fc419440bb205bd-20220411
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 218981122; Mon, 11 Apr 2022 10:51:42 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 11 Apr 2022 10:51:40 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 11 Apr 2022 10:51:40 +0800
-Message-ID: <8c27890e8b33bce333c2f8afaf4b4f893560ca7f.camel@mediatek.com>
-Subject: Re: [PATCH v1 1/1] dt-bindings: pwrap: mediatek: fix pwrap document
- for mt8195
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Zhiyong Tao <zhiyong.tao@mediatek.com>, <lee.jones@linaro.org>,
-        <robh+dt@kernel.org>, <matthias.bgg@gmail.com>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>,
-        <eddie.huang@mediatek.com>, <a.zummo@towertech.it>,
-        <alexandre.belloni@bootlin.com>, <fshao@chromium.org>
-CC:     <srv_heupstream@mediatek.com>, <hui.liu@mediatek.com>,
-        <hsin-hsiung.wang@mediatek.com>, <sean.wang@mediatek.com>,
-        <macpaul.lin@mediatek.com>, <wen.su@mediatek.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-rtc@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Date:   Mon, 11 Apr 2022 10:51:40 +0800
-In-Reply-To: <20220411014121.15015-2-zhiyong.tao@mediatek.com>
-References: <20220411014121.15015-1-zhiyong.tao@mediatek.com>
-         <20220411014121.15015-2-zhiyong.tao@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Sun, 10 Apr 2022 22:54:23 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2371FD07
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 19:52:10 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id 17so18443606lji.1
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Apr 2022 19:52:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oKaNytCrnwRly85Cf4rMP6kv73OcecChjT7UHRYi0pY=;
+        b=foU1Pomdt1fSDC1+Vo7+ND9Fu80KDnPA26WJ6965htPY3McsZwzjuN5iS1aJSmS/2e
+         c0bzdfE1d1aeur800axp47kax1MwU/ItdIQ48aO+x7f6q14qTO7FouaXMUew5eR39Qjz
+         wxT0pL0KlELChxAByT+Cy8RYGO66VavKzSZonGJg5yLbMduZp/sntcIf5zDmhHXzCPLM
+         IpcVenUyQ/9RAaYt4B2RIiL5Ssz0dcqz+b92GuO6CmPFyu6Y7BpBEUObsG/K1lEwKhVc
+         2cOuKb0CePD1Jnm1oeR0BJQZv5ClNsw58kaSgkK7JuDUfqsfqDXeCcOoudlg7zsmKHql
+         c6gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oKaNytCrnwRly85Cf4rMP6kv73OcecChjT7UHRYi0pY=;
+        b=0B1S47oG9pgaCv8Qff/gVPOw0LyChRFGti63ow7AJF2oqjIloP3d+WNWud9qfbJ7RI
+         N8W1TClzQ/1R8hbc4QMCXUn/6K6hGQwmGOJt8mac64hSvs6JpzBvsbYIROdeOHJT7QU+
+         +XwhrrFS9fDtqqWXUqOWwFtsgl1GiPeniniBBTxpd8CyHRQSmNysie/jh2LwCOk95dRZ
+         aS4sUKv+jZESZuZHrBBGtvxPPzYIwd9a4YOYtS7QzgQ1fQ1lE2gUW0UogRuUqMdpU9g3
+         LgZrJc4VyR6sa/MiU20HTgy0TDbIHLi0EMsBaf1MEyV2AZMWHKWl/qRts9/lPae5sGlB
+         n4YQ==
+X-Gm-Message-State: AOAM530FXyT48wdIF3QLW0qCq5bRZlKEvRD+yJBifARe8JwIb09kY+jG
+        ZTGtkIMpTVUnRVg7dmu990l7xX2ToLQHzw9qHAuZOw==
+X-Google-Smtp-Source: ABdhPJze/vdOb2Ppa73SdqfmkL8HEWn9w36G2tkOYs4HJBUnTuZaOZgaU3/KS+dpOWgdaEdvtAFQmU/3GlJ89pUlBI0=
+X-Received: by 2002:a05:651c:544:b0:249:9db6:2472 with SMTP id
+ q4-20020a05651c054400b002499db62472mr19462133ljp.516.1649645528693; Sun, 10
+ Apr 2022 19:52:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+References: <cover.1648461096.git.zong.li@sifive.com> <YlA1DwdIMoQ1dXZS@matsya>
+In-Reply-To: <YlA1DwdIMoQ1dXZS@matsya>
+From:   Zong Li <zong.li@sifive.com>
+Date:   Mon, 11 Apr 2022 10:51:56 +0800
+Message-ID: <CANXhq0ramPvr=CL2oPsPAnWiF9X0eYVt8HGAVWPE9mZ5PfhG7A@mail.gmail.com>
+Subject: Re: [PATCH v8 0/4] Determine the number of DMA channels by
+ 'dma-channels' property
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Bin Meng <bin.meng@windriver.com>,
+        Green Wan <green.wan@sifive.com>,
+        dmaengine <dmaengine@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+On Fri, Apr 8, 2022 at 9:13 PM Vinod Koul <vkoul@kernel.org> wrote:
+>
+> On 28-03-22, 17:52, Zong Li wrote:
+> > The PDMA driver currently assumes there are four channels by default, it
+> > might cause the error if there is actually less than four channels.
+> > Change that by getting number of channel dynamically from device tree.
+> > For backwards-compatible, it uses the default value (i.e. 4) when there
+> > is no 'dma-channels' information in dts.
+>
+> Applied patch 1 & 4 to dmaengine-next, thanks
 
-After discussed with Zhiyong, this patch will be sent together within mt8195 dts series.
-It's because this change is related to mt8195 dts pwrap node.
+Hi Vinod,
+Thanks for your help and review. For patch 2 and 3, does it mean that
+we should go through the riscv tree?
 
-Follow this link for resend version of this patch,
-
-https://patchwork.kernel.org/project/linux-mediatek/patch/20220411022724.11005-2-tinghan.shen@mediatek.com/
-
-
-Best regards,
-Tinghan
-
-On Mon, 2022-04-11 at 09:41 +0800, Zhiyong Tao wrote:
-> From: "Zhiyong.Tao" <zhiyong.tao@mediatek.com>
-> 
-> fix pwrap document description for mt8195
-> 
-> Signed-off-by: Zhiyong.Tao <zhiyong.tao@mediatek.com>
-> ---
->  .../devicetree/bindings/soc/mediatek/pwrap.txt         | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/soc/mediatek/pwrap.txt
-> b/Documentation/devicetree/bindings/soc/mediatek/pwrap.txt
-> index d74a7a5ae9f2..601647717ceb 100644
-> --- a/Documentation/devicetree/bindings/soc/mediatek/pwrap.txt
-> +++ b/Documentation/devicetree/bindings/soc/mediatek/pwrap.txt
-> @@ -30,20 +30,20 @@ Required properties in pwrap device node.
->  	"mediatek,mt8195-pwrap" for MT8195 SoCs
->  	"mediatek,mt8516-pwrap" for MT8516 SoCs
->  - interrupts: IRQ for pwrap in SOC
-> -- reg-names: Must include the following entries:
-> +- reg-names: Must include "pwrap", "pwrap-bridge" is optinal.
->    "pwrap": Main registers base
->    "pwrap-bridge": bridge base (IP Pairing)
->  - reg: Must contain an entry for each entry in reg-names.
-> -- reset-names: Must include the following entries:
-> -  "pwrap"
-> -  "pwrap-bridge" (IP Pairing)
-> -- resets: Must contain an entry for each entry in reset-names.
->  - clock-names: Must include the following entries:
->    "spi": SPI bus clock
->    "wrap": Main module clock
->  - clocks: Must contain an entry for each entry in clock-names.
->  
->  Optional properities:
-> +- reset-names: Some SoCs include the following entries:
-> +  "pwrap"
-> +  "pwrap-bridge" (IP Pairing)
-> +- resets: Must contain an entry for each entry in reset-names.
->  - pmic: Using either MediaTek PMIC MFD as the child device of pwrap
->    See the following for child node definitions:
->    Documentation/devicetree/bindings/mfd/mt6397.txt
-
+>
+> --
+> ~Vinod
