@@ -2,186 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9776C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:22:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE1A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:23:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345479AbiDKKYy (ORCPT
+        id S1345470AbiDKKZM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45892 "EHLO
+        Mon, 11 Apr 2022 06:25:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345383AbiDKKWj (ORCPT
+        with ESMTP id S1345454AbiDKKY7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:22:39 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920954339D;
-        Mon, 11 Apr 2022 03:20:17 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id q142so13748801pgq.9;
-        Mon, 11 Apr 2022 03:20:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MglEhREufqOz6ECjIz7gIuhKtasDE7aAeqJpWaH1wQw=;
-        b=Ca7UciFkpcK0fE8IfKwqPYpXjKHHJbDVps1xVdNoJLf55d3gI7gvzP2Z5AWzu6x68i
-         OnQ8iMv2eyHWR1ksIrmOAlMP4ufJrsyzCdZX0qJvSm3iZZP0hYmNfNuhaL9AyOkZltZw
-         MFUxyBQM8Hkbl8uXxCWQC1In6/iyEavCO3h/B047zLiVFnoh8nTBpsEjfqdcRHZgD5IT
-         bSXYoIGJIKY6k+vd5LkM3DiYjGmsA+iGI4GSeK2nAuWnHIV+9/Kb1cWOL4H80MRvNfqM
-         hEFTZetCtZuPEioD4R4G2u92mAxkDOV8dldiyhXSfnXyTtOvNt874mEk71B5rEtYY3JX
-         ENKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MglEhREufqOz6ECjIz7gIuhKtasDE7aAeqJpWaH1wQw=;
-        b=cz+CB/800o6/et0Qtk6LX0qWa31kVHj1/aAT0dAcykftgqGwI+aR5VPwcmv/cud2Fd
-         ptm78NvDvTbrmSp8U0G8ScL3AR68uTZpNIrG8uNOk4lAS9+fAPGQY95KlM+clPBKytjb
-         2mmAQ2cMafMTWrSXuxb5o5cXPMw3ywjooKhFfT9nxKELzv6YCYrnICBymmo1Vk4VnOZ0
-         Sepq2lE2bSnqy1futlgdJDbmoUfCTz1gZIPj/3/JssbXeXpiqUVeujRr5dnzkmZq5xGZ
-         p4zwooKsmATEJeODevxyutobG1Z+OPc41t7ahnQhKvTsVNuIVMUfmyYnFyjIc9OWsoUi
-         GC3g==
-X-Gm-Message-State: AOAM530TuY2T4OiLNsh6AXmT6rkN6B162pYlpZtc14NOIHfYXinmEBsN
-        fZinH6oT1xo7RIAR6OBnRFQ=
-X-Google-Smtp-Source: ABdhPJxnIZ5n5ZQBRFsQtrc+f1t5KSZf7D6lA+6uTfi8x4UyJtcEkGU81humOmS+5dAFXjg3BkLvxQ==
-X-Received: by 2002:a63:7c4e:0:b0:380:8ae9:c975 with SMTP id l14-20020a637c4e000000b003808ae9c975mr26522585pgn.25.1649672416765;
-        Mon, 11 Apr 2022 03:20:16 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.112])
-        by smtp.gmail.com with ESMTPSA id h10-20020a056a00230a00b004faa0f67c3esm34012280pfh.23.2022.04.11.03.20.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 03:20:16 -0700 (PDT)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: [PATCH RESEND v12 08/17] KVM: x86/pmu: Reprogram PEBS event to emulate guest PEBS counter
-Date:   Mon, 11 Apr 2022 18:19:37 +0800
-Message-Id: <20220411101946.20262-9-likexu@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220411101946.20262-1-likexu@tencent.com>
-References: <20220411101946.20262-1-likexu@tencent.com>
+        Mon, 11 Apr 2022 06:24:59 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E9843AF7;
+        Mon, 11 Apr 2022 03:21:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649672490; x=1681208490;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=amumK3yMKSrAOE1LG8R18fhmudBi/m9hSWqv87hC1hI=;
+  b=dQrnYfwCQ888lhk66aoVxfsGNp0c04ILBnNC2zVF/0i8lwCDSCmv6Gig
+   tnz9GEvCibWFSzZ/t0xNx1Nho0JMPO9ys+dmCUVQG+t5qcIMoElHU4Tcj
+   +mnuv1deWbdwrvlMyDaMBMM9fM9UdHUZxhZjY0z2toLREZ2O5lh23UwZI
+   WCCeAdtR+psfTKhRusCq9o+o4/utqzozE0SFtluXRFb4I52Z1qP8B0hvr
+   t+ODUAfoG+dIY1Blj91U32Mv4BBvFauR1W4sRddUaczKJkFnTQkK9y3FF
+   1r60VlR93mfPE6WsshsiYm42TI5G1iv5DS443Ql7jAVZVd9qqRYFLo60G
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="261827070"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="261827070"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:21:14 -0700
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="589827163"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:21:11 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ndr6x-001B6F-MI;
+        Mon, 11 Apr 2022 13:17:31 +0300
+Date:   Mon, 11 Apr 2022 13:17:31 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Puranjay Mohan <puranjay12@gmail.com>, gregkh@linuxfoundation.org,
+        rafael@kernel.org, heikki.krogerus@linux.intel.com,
+        kuba@kernel.org, saravanak@google.com,
+        linux-kernel@vger.kernel.org, lars@metafoo.de,
+        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: accel: adxl355: use fwnode_irq_get_byname()
+Message-ID: <YlQAO7jHzUwRUvEU@smile.fi.intel.com>
+References: <20211109200840.135019-1-puranjay12@gmail.com>
+ <20211109200840.135019-3-puranjay12@gmail.com>
+ <YflfEpKj0ilHnQQm@smile.fi.intel.com>
+ <20220227124134.4d4e4644@jic23-huawei>
+ <20220410181306.23202f25@jic23-huawei>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220410181306.23202f25@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+On Sun, Apr 10, 2022 at 06:13:06PM +0100, Jonathan Cameron wrote:
+> On Sun, 27 Feb 2022 12:41:34 +0000
+> Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+> > On Tue, 1 Feb 2022 18:25:54 +0200
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > 
+> > > On Wed, Nov 10, 2021 at 01:38:40AM +0530, Puranjay Mohan wrote:  
+> > > > Use the generic fwnode_irq_get_byname() in place of of_irq_get_byname()
+> > > > to get the IRQ number from the interrupt pin.    
+> > > 
+> > > Heads up, the fwnode_irq_get_byname() is in I2C tree and if Jonathan wants to
+> > > apply this one, the PR [1] can be used.
+> > > 
+> > > [1]: https://lore.kernel.org/linux-i2c/YfRiGR3AT8tzyweG@shikoro/T/#u
+> > >   
+> > 
+> > Thanks Andy. 
+> > 
+> > I'm going to let this go the slow way and pick up this patch after the
+> > merge window when I can avoid pulling in that PR.
+> > 
+> > Basically I'm feeling lazy today :)
+> 
+> Now applied to the togreg branch of iio.git and pushed out as testing to
+> see if 0-day can find any problems.
 
-When a guest counter is configured as a PEBS counter through
-IA32_PEBS_ENABLE, a guest PEBS event will be reprogrammed by
-configuring a non-zero precision level in the perf_event_attr.
+Thanks for keeping an eye on it!
 
-The guest PEBS overflow PMI bit would be set in the guest
-GLOBAL_STATUS MSR when PEBS facility generates a PEBS
-overflow PMI based on guest IA32_DS_AREA MSR.
-
-Even with the same counter index and the same event code and
-mask, guest PEBS events will not be reused for non-PEBS events.
-
-Originally-by: Andi Kleen <ak@linux.intel.com>
-Co-developed-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Like Xu <likexu@tencent.com>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- arch/x86/kvm/pmu.c | 36 +++++++++++++++++++++++++++++++++---
- 1 file changed, 33 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 618f529f1c4d..36487088f72c 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -86,15 +86,22 @@ static void kvm_pmi_trigger_fn(struct irq_work *irq_work)
- static inline void __kvm_perf_overflow(struct kvm_pmc *pmc, bool in_pmi)
- {
- 	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
-+	bool skip_pmi = false;
- 
- 	/* Ignore counters that have been reprogrammed already. */
- 	if (test_and_set_bit(pmc->idx, pmu->reprogram_pmi))
- 		return;
- 
--	__set_bit(pmc->idx, (unsigned long *)&pmu->global_status);
-+	if (pmc->perf_event && pmc->perf_event->attr.precise_ip) {
-+		/* Indicate PEBS overflow PMI to guest. */
-+		skip_pmi = __test_and_set_bit(GLOBAL_STATUS_BUFFER_OVF_BIT,
-+					      (unsigned long *)&pmu->global_status);
-+	} else {
-+		__set_bit(pmc->idx, (unsigned long *)&pmu->global_status);
-+	}
- 	kvm_make_request(KVM_REQ_PMU, pmc->vcpu);
- 
--	if (!pmc->intr)
-+	if (!pmc->intr || skip_pmi)
- 		return;
- 
- 	/*
-@@ -124,6 +131,7 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
- 				  u64 config, bool exclude_user,
- 				  bool exclude_kernel, bool intr)
- {
-+	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
- 	struct perf_event *event;
- 	struct perf_event_attr attr = {
- 		.type = type,
-@@ -135,6 +143,7 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
- 		.exclude_kernel = exclude_kernel,
- 		.config = config,
- 	};
-+	bool pebs = test_bit(pmc->idx, (unsigned long *)&pmu->pebs_enable);
- 
- 	if (type == PERF_TYPE_HARDWARE && config >= PERF_COUNT_HW_MAX)
- 		return;
-@@ -150,6 +159,23 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
- 		 */
- 		attr.sample_period = 0;
- 	}
-+	if (pebs) {
-+		/*
-+		 * The non-zero precision level of guest event makes the ordinary
-+		 * guest event becomes a guest PEBS event and triggers the host
-+		 * PEBS PMI handler to determine whether the PEBS overflow PMI
-+		 * comes from the host counters or the guest.
-+		 *
-+		 * For most PEBS hardware events, the difference in the software
-+		 * precision levels of guest and host PEBS events will not affect
-+		 * the accuracy of the PEBS profiling result, because the "event IP"
-+		 * in the PEBS record is calibrated on the guest side.
-+		 *
-+		 * On Icelake everything is fine. Other hardware (GLC+, TNT+) that
-+		 * could possibly care here is unsupported and needs changes.
-+		 */
-+		attr.precise_ip = 1;
-+	}
- 
- 	event = perf_event_create_kernel_counter(&attr, -1, current,
- 						 kvm_perf_overflow, pmc);
-@@ -163,7 +189,7 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
- 	pmc_to_pmu(pmc)->event_count++;
- 	clear_bit(pmc->idx, pmc_to_pmu(pmc)->reprogram_pmi);
- 	pmc->is_paused = false;
--	pmc->intr = intr;
-+	pmc->intr = intr || pebs;
- }
- 
- static void pmc_pause_counter(struct kvm_pmc *pmc)
-@@ -189,6 +215,10 @@ static bool pmc_resume_counter(struct kvm_pmc *pmc)
- 			      get_sample_period(pmc, pmc->counter)))
- 		return false;
- 
-+	if (!test_bit(pmc->idx, (unsigned long *)&pmc_to_pmu(pmc)->pebs_enable) &&
-+	    pmc->perf_event->attr.precise_ip)
-+		return false;
-+
- 	/* reuse perf_event to serve as pmc_reprogram_counter() does*/
- 	perf_event_enable(pmc->perf_event);
- 	pmc->is_paused = false;
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
