@@ -2,114 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 18:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94222C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 18:15:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349107AbiDKSQw (ORCPT
+        id S1349108AbiDKSRl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 14:16:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
+        Mon, 11 Apr 2022 14:17:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349108AbiDKSQr (ORCPT
+        with ESMTP id S234426AbiDKSRj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 14:16:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A116E64C6;
-        Mon, 11 Apr 2022 11:14:32 -0700 (PDT)
+        Mon, 11 Apr 2022 14:17:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3270317053;
+        Mon, 11 Apr 2022 11:15:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57DEAB817F3;
-        Mon, 11 Apr 2022 18:14:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71BB7C385A4;
-        Mon, 11 Apr 2022 18:14:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3DCDB817F3;
+        Mon, 11 Apr 2022 18:15:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1223BC385A4;
+        Mon, 11 Apr 2022 18:15:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649700870;
-        bh=tlaHWLebE/3fsbDzy1BqRre1Irq1Ran1Bo9T0hGhvGY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=T9/mL/lo9AfzCcQZyV5d4/4yQD9AJkqaGdOY7ydKCtbFM4+z4bwIW1pnqtSJTYeqR
-         ZN+ufL7BMWqyV4PXIBxosC03wnUvfOvArTrsLteuhtGKIcUSSGqlIVDGDboMmzxYL6
-         PeiB9VMOrghGCFwBGqo2+gEcjBlvgDYKu2j4pF8LlRzWGcdYvJU5vE6W3w551LVFeK
-         RMQGNmr7YjLuKJfHg+a8AJQZm2NNVV2uZz/oPr8rZr1HJMBzY5dgO/sCFUfUAzwAvI
-         1vslHFnt8ooVpwPSBzfi+zKaOYfzK4zNfCpwWHlNnX2GwQ5Hd+oBfWfil9CouMqi2g
-         otMkvwrjvUz1A==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>
-Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        patches@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH v2] drm/msm/gpu: Avoid -Wunused-function with !CONFIG_PM_SLEEP
-Date:   Mon, 11 Apr 2022 11:12:50 -0700
-Message-Id: <20220411181249.2758344-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        s=k20201202; t=1649700922;
+        bh=HR43g8dQZ+Bf1PK6RXmGBq51cAbYP3qPfOsUCTcQM/s=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=b+6SlUL0MNqNciSMHvizcaqgsproBh8RhlWrywElPTDdbV1yOn8Zrs4jEcudwNKXI
+         wdMeh7ZImEiqzpvQ1H8RJF2+sik10SHDXdFdJIDem06V78JydjbMDlguteVmZrg8D6
+         Pv80MSf+tS+Yx5ackjJmg+UYHe8ZxASKeqzExZvDBD/uofO/lyNE7HpXqaKjKVvC6N
+         lfF5t1HkHQDh+aETqbWcSWVhe2D+83gopjZ2390ofgnXFzUnzUi6SCFDla3OXUNd3F
+         CCG04moCR8SQ7otnfw0kkZpFgspQAwC09VPPZeC/h1MHUNzVN0hipMxjQU2lmikb5e
+         7iOopVVL7QrNg==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     linux-kernel@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>, sparclinux@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Subject: Re: Build regressions/improvements in v5.18-rc2
+References: <CAHk-=wh0+DYC2+Aeu2=vfUtGaDqVuKxKrxyhwQFoG89rcynzww@mail.gmail.com>
+        <20220411103528.2187797-1-geert@linux-m68k.org>
+        <alpine.DEB.2.22.394.2204111240560.38484@ramsan.of.borg>
+Date:   Mon, 11 Apr 2022 21:15:16 +0300
+In-Reply-To: <alpine.DEB.2.22.394.2204111240560.38484@ramsan.of.borg> (Geert
+        Uytterhoeven's message of "Mon, 11 Apr 2022 12:42:07 +0200 (CEST)")
+Message-ID: <87zgkrqyff.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building with CONFIG_PM=y and CONFIG_PM_SLEEP=n (such as ARCH=riscv
-allmodconfig), the following warnings/errors occur:
+Geert Uytterhoeven <geert@linux-m68k.org> writes:
 
-  drivers/gpu/drm/msm/adreno/adreno_device.c:679:12: error: 'adreno_system_resume' defined but not used [-Werror=unused-function]
-    679 | static int adreno_system_resume(struct device *dev)
-        |            ^~~~~~~~~~~~~~~~~~~~
-  drivers/gpu/drm/msm/adreno/adreno_device.c:655:12: error: 'adreno_system_suspend' defined but not used [-Werror=unused-function]
-    655 | static int adreno_system_suspend(struct device *dev)
-        |            ^~~~~~~~~~~~~~~~~~~~~
-  cc1: all warnings being treated as errors
+> On Mon, 11 Apr 2022, Geert Uytterhoeven wrote:
+>> JFYI, when comparing v5.18-rc2[1] to v5.18-rc1[3], the summaries are:
+>>  - build warnings: +23/-0
+>
+>   + /kisskb/src/arch/sparc/include/asm/cacheflush_32.h: error: 'struct page' declared inside parameter list [-Werror]:  => 38:37
+>   + /kisskb/src/arch/sparc/include/asm/cacheflush_32.h: error: its scope is only this definition or declaration, which is probably not what you want [-Werror]:  => 38:37
+>
+> sparc64/sparc-allmodconfig
+>
+>   + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1639:13, 1756:13
+>   + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct mm_struct *)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1662:29, 1674:29
+>   + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct mm_struct *, long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1767:21
+>   + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct vm_area_struct *, long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1741:29, 1726:29
+>   + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible function types from 'void (*)(struct vm_area_struct *, long unsigned int,  long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int,  long unsigned int)' [-Werror=cast-function-type]:  => 1711:29, 1694:29
+>
+> sparc64-gcc11/sparc-allmodconfig
+>
+>   + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_491' declared with attribute error: FIELD_PREP: mask is not constant:  => 352:38
+>   + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_520' declared with attribute error: FIELD_PREP: mask is not constant:  => 352:38
+>
+> mipsel/mips-allmodconfig
+> arm64-gcc5.4/arm64-allmodconfig
+>
+> Actual error is:
+>
+>     /kisskb/src/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c: In function 'mt76x2e_probe':
+>     /kisskb/src/include/linux/compiler_types.h:352:38: error: call to '__compiletime_assert_520' declared with attribute error: FIELD_PREP: mask is not constant
 
-These functions are only used in SET_SYSTEM_SLEEP_PM_OPS(), which
-evaluates to empty when CONFIG_PM_SLEEP is not set, making these
-functions unused.
+Does this commit fix it:
 
-To resolve this, use the SYSTEM_SLEEP_PM_OPS() and RUNTIME_PM_OPS()
-macros, which were introduced in commit 1a3c7bb08826 ("PM: core: Add new
-*_PM_OPS macros, deprecate old ones"). They are designed to avoid these
-compiler warnings while still guarding their use on
-CONFIG_PM{,_SLEEP}=y.
+https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless.git/commit/?id=dbc2b1764734857d68425468ffa8486e97ab89df
 
-Fixes: 7e4167c9e021 ("drm/msm/gpu: Park scheduler threads for system suspend")
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
+Or is this another issue?
 
-v1 -> v2: https://lore.kernel.org/20220330180541.62250-1-nathan@kernel.org/
-
-* Avoid using #ifdef altogether by using new PM macros.
-
- drivers/gpu/drm/msm/adreno/adreno_device.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
-index 661dfa7681fb..8706bcdd1472 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_device.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
-@@ -599,7 +599,6 @@ static const struct of_device_id dt_match[] = {
- 	{}
- };
- 
--#ifdef CONFIG_PM
- static int adreno_runtime_resume(struct device *dev)
- {
- 	struct msm_gpu *gpu = dev_to_gpu(dev);
-@@ -682,11 +681,9 @@ static int adreno_system_resume(struct device *dev)
- 	return pm_runtime_force_resume(dev);
- }
- 
--#endif
--
- static const struct dev_pm_ops adreno_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(adreno_system_suspend, adreno_system_resume)
--	SET_RUNTIME_PM_OPS(adreno_runtime_suspend, adreno_runtime_resume, NULL)
-+	SYSTEM_SLEEP_PM_OPS(adreno_system_suspend, adreno_system_resume)
-+	RUNTIME_PM_OPS(adreno_runtime_suspend, adreno_runtime_resume, NULL)
- };
- 
- static struct platform_driver adreno_driver = {
-
-base-commit: 0fe35b8dcb8b3c4b751a1a44f1e128b690af71e4
 -- 
-2.35.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
