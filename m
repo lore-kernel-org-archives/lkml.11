@@ -2,121 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB539C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0294FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 11:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244056AbiDKLr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 07:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52248 "EHLO
+        id S1343596AbiDKLsD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 07:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbiDKLr4 (ORCPT
+        with ESMTP id S240921AbiDKLr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 07:47:56 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3AF43481
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 04:45:40 -0700 (PDT)
-Received: from [192.168.0.7] (ip5f5ae91f.dynamic.kabel-deutschland.de [95.90.233.31])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id B154861EA1923;
-        Mon, 11 Apr 2022 13:45:37 +0200 (CEST)
-Message-ID: <ba56a9db-b34f-b2ce-baef-f8861476b3fc@molgen.mpg.de>
-Date:   Mon, 11 Apr 2022 13:45:37 +0200
+        Mon, 11 Apr 2022 07:47:57 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF4F43481;
+        Mon, 11 Apr 2022 04:45:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649677544; x=1681213544;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=r5Ar8qxrxZpK4XRu/tA3qWYavit0uwaROYPXccoJAjE=;
+  b=HKdg96oTw6HeyMFhfPjS2ZBUZOsgiEUl5qaGVH/l/OkajNRH+t3fY+Hz
+   UNjijB2yVrGE97oepAqsQ7Nk0IpUJOXGeaxp5bLWSLKtSH4taKw700uBi
+   +rMVj+nct0sOGo/Hh3BtLdqyTh06TmXqMdM5b2JaBG36GrdBm2bZht5LX
+   QQ8WzViqTz0cwgchPcF3UpQ437fB+RnzXOsePm/+R12GfpZknerrwdub1
+   7xxg546NkLYysTDhZxkENJSOB+DhBXbv+OA6/1Y1PC1gI+8roXZqyVaBL
+   BT1wa3fRq1rSs1gK6dc6qhcXdgUi+lxpqY1jK4lElRr6/vatBtdUt4QpS
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="262274364"
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="262274364"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:45:24 -0700
+X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
+   d="scan'208";a="622798226"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 04:45:16 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1ndsQJ-001CCZ-MO;
+        Mon, 11 Apr 2022 14:41:35 +0300
+Date:   Mon, 11 Apr 2022 14:41:35 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Qianggui Song <qianggui.song@amlogic.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        openbmc@lists.ozlabs.org,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH v4 09/13] pinctrl: meson: Rename REG_* to MESON_REG_*
+Message-ID: <YlQT7w1XSbnkNI9E@smile.fi.intel.com>
+References: <20220401103604.8705-1-andriy.shevchenko@linux.intel.com>
+ <20220401103604.8705-10-andriy.shevchenko@linux.intel.com>
+ <CAMuHMdX8zWA-3_=Je7sB_72G8Ky7-syqCH-RXGxNMazUipW-2g@mail.gmail.com>
+ <YlQAn9+4kdB0F/4d@smile.fi.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCHv2] drm/amdgpu: disable ASPM on Intel AlderLake based
- systems
-Content-Language: en-US
-To:     Richard Gong <richard.gong@amd.com>
-Cc:     airlied@linux.ie, xinhui.pan@amd.com, linux-kernel@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        daniel@ffwll.ch, alexander.deucher@amd.com,
-        Dell.Client.Kernel@dell.com, christian.koenig@amd.com,
-        mario.limonciello@amd.com
-References: <20220408190502.4103670-1-richard.gong@amd.com>
- <44354d78-b340-fbc4-fd6c-060d7ad3404e@molgen.mpg.de>
- <45ea5705-71d6-4008-f094-1aa902e5cc41@amd.com>
- <0d0a3f0f-f021-ccc2-a80a-f789cb53a47b@molgen.mpg.de>
- <192375d0-85ac-ced0-43d6-e5ea4e3c0fae@amd.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <192375d0-85ac-ced0-43d6-e5ea4e3c0fae@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlQAn9+4kdB0F/4d@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Richard,
+On Mon, Apr 11, 2022 at 01:19:11PM +0300, Andy Shevchenko wrote:
+> On Mon, Apr 11, 2022 at 11:04:00AM +0200, Geert Uytterhoeven wrote:
+> > On Fri, Apr 1, 2022 at 12:36 PM Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> wrote:
 
+...
 
-Am 11.04.22 um 13:38 schrieb Gong, Richard:
-
-> On 4/11/2022 2:41 AM, Paul Menzel wrote:
->> [Cc: +<Dell.Client.Kernel@dell.com>]
-
->> Am 11.04.22 um 02:27 schrieb Gong, Richard:
->>
->>> On 4/8/2022 7:19 PM, Paul Menzel wrote:
->>
->>>> Am 08.04.22 um 21:05 schrieb Richard Gong:
->>>>> Active State Power Management (ASPM) feature is enabled since 
->>>>> kernel 5.14.
->>>>> There are some AMD GFX cards (such as WX3200 and RX640) that cannot be
->>>>> used with Intel AlderLake based systems to enable ASPM. Using these 
->>>>> GFX
->>>>
->>>> Alder Lake
->>> will correct in the next version.
->>>>
->>>>> cards as video/display output, Intel Alder Lake based systems will hang
->>>>> during suspend/resume.
->>>>
->>>> Please reflow for 75 characters per line.
->>>>
->>>> Also please mention the exact system you had problems with (also 
->>>> firmware versions).
->>>>
->>>>>
->>>>> Add extra check to disable ASPM on Intel AlderLake based systems.
->>>>
->>>> Is that a problem with Intel Alder Lake or the Dell system? 
->>>> Shouldn’t ASPM just be disabled for the problematic cards for the 
->>>> Dell system. You write newer cards worked fine.
->>>
->>> There is a problem with Dell system (Dell Precision DT workstation), 
->>> which is based on Intel Alder Lake.
->>>
->>> ASPM works just fine on these GPU's. It's more of an issue with 
->>> whether the underlying platform supports ASPM or not.
->>
->> At least you didn’t document what the real issue is,
+> > >         NUM_REG,
+> > 
+> > MESON_NUM_REG?
 > 
-> You can refer to bug tag from the comment messages.
-> 
-> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
+> Hmm... Only one place where it's defined and used, but I can do it, sure.
 
-No, the commit message should be self-contained, and reviewers and 
-readers of the commit message not required to read comments of bug 
-reports. Please add the necessary information to the commit message.
+Updated locally.
 
-
-Kind regards,
-
-Paul
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
->> that ASPM does not work. With current information (some GPU graphics 
->> card with the the Dell system and others don’t), it could be the GPU, 
->> the Dell system (firmware, …), a problem with Alder Lake SOC, or 
->> another bug. I hope you are in contact with Dell to analyze it, so 
->> ASPM can be enabled again.
->>
->> […]
->>
->>
->> Kind regards,
->>
->> Paul
