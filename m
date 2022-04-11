@@ -2,113 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 995B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:45:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B234CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345739AbiDKKsJ (ORCPT
+        id S1345709AbiDKKtV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
+        Mon, 11 Apr 2022 06:49:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345729AbiDKKsD (ORCPT
+        with ESMTP id S231561AbiDKKtS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:48:03 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBEE4186FB
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:45:49 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id 2so14897075pjw.2
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:45:49 -0700 (PDT)
+        Mon, 11 Apr 2022 06:49:18 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D7A43ECC
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:47:05 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id n18so13495747plg.5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 03:47:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cgk0yjKGyZZ3WohS+RmN42unOs/YYInKeZtRcK9rHyc=;
-        b=gR7aCeFK8v+Ud8TJUkbFoMyayQnEYDODrBnCfGbeG+zb/RynV+cSpzceKrCZ5wMykZ
-         dmJ1GCm/a3zMbg2EZrRMFm9rFK6SfVp585WTnBPAGnRhFkFdxq/Fi6o8ahj9YNhlKa1k
-         tYejK/UOqD1IWv4LiIG72TIA0oT0endbHK/XAj4Qt5hlG//asSja7TYXrYOdBaV+iH83
-         Rs25nlpMwGJPWu+zM9ND3b8btzxciDcXgK4kFstlGu73V49WeVebIlsbvkHUSjbBsKeA
-         VtuJyupg7BJOt8WIbFjM8OU8zt8gOg2WqRrHL9HNKC9GbrXj+kAibXOjG67rBu6KlGvW
-         V1mA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=D61e5PhtFJPcIJdrPl1gSUgNp3pemKHhA66zJEsV9FM=;
+        b=A4Jk68wM4X0r58C8JBY86tyj7B6qU/KA0BUvsUrgdYgeFSQPF/0L6mUWUGtpL9BWoh
+         QT53llRS+5kFsvzwsiKgwEeik+Gr7+6FILNA889tzzx782qbFHbldXEfpy+2w4FUV9b7
+         wF7XLqNylZxxCrW2P+3TGcYkQr+ybttO/B3tlzpFA/sDnth1BB1TjRMDVOe1rF91M/4t
+         e4PgtHKnbCbzLxY8uTPe0XKjEmI2yj2g6l+qPmaw0n45MFHQqgVDXqQKzw+Nj6H0onZV
+         q8vynE1L6tPyHigNfK6p3VrWNI/aF0ppwdv0m01vwSAbe4IROB/M3B3y2VZ2oGDy2Y39
+         fdGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cgk0yjKGyZZ3WohS+RmN42unOs/YYInKeZtRcK9rHyc=;
-        b=D8mypGMFuMAjnn3tquaOFUSTvRkOftjG4QzpvBmXfebBnmZzeDucU0qo6QKd8SH+hv
-         ydxmp31dUjGX7AL7KHVsXct96VaY92rSlPUUKLTu+2S1NERuk0oF/K1j0GnMzhK0oTjs
-         3RA9ptwhBR1/MLvY9EWPW/sT/GiFST90sUK213XQ4xCrpD8KiOM7339gcuykxYEnjYH8
-         +CZHYlFJOQyF5PZoeGmrjdp4jMQMAQl8z+aF1CB+wHJ61xXVPAlDA08b6UsPJ5mRL1su
-         7E4OI72F1H/Jt9vVDhRMPoD5iGammYXzwUGRDfX7t7UCyls/IXjpmkNGCsNb4jDBicke
-         xZ1A==
-X-Gm-Message-State: AOAM530VqZYhKEtTwGYQ/25MwrxfY65eQXasBFYPilzzBs8Zpj5vkBg1
-        WzkHZ6xEUcGnhrQalMrD7tU=
-X-Google-Smtp-Source: ABdhPJzw3WifQ58vmxssYy00TXa8ner2CIBlECSTkKcTdxtfk4IL9t+EkZ1GK3YfBLY9hzTzhgfAFA==
-X-Received: by 2002:a17:902:e74c:b0:158:5c47:9181 with SMTP id p12-20020a170902e74c00b001585c479181mr5317652plf.144.1649673949337;
-        Mon, 11 Apr 2022 03:45:49 -0700 (PDT)
-Received: from fuzzserver.tsinghua.edu.cn ([166.111.139.106])
-        by smtp.gmail.com with ESMTPSA id s10-20020a63a30a000000b003987eaef296sm29086232pge.44.2022.04.11.03.45.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 03:45:48 -0700 (PDT)
-From:   Zixuan Fu <r33s3n6@gmail.com>
-To:     shaggy@kernel.org
-Cc:     jfs-discussion@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Subject: [PATCH] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Mon, 11 Apr 2022 18:45:34 +0800
-Message-Id: <20220411104534.744772-1-r33s3n6@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=D61e5PhtFJPcIJdrPl1gSUgNp3pemKHhA66zJEsV9FM=;
+        b=167DMPAGXrRWuP898w43yJ2gWL2wrjQpnlMtSySFPYuQ2o/UsGxSqPr3reUcor5/W4
+         9YCk6TAfVCaeZA4hTMZkLklhk82sypllTRHZylsJyJPQI+vAX7vDV+9Dzn/+v6UmBOMy
+         Wuu8xRPA4BgVZbDZ1wv3LcG+/lA/M07BYurXuWDh1pweOT9nr2y6UuBQ7Cf2aXvVKuIH
+         FxU4SXABjkr/8s5DrsjFVrY7NLq9kmYXMjnNfsTVHa0M/NzAzlf6CNtuNUGxaB+FmnXo
+         se7EBItzM89g6uAzp3x/zc4wIuHaCmRedpwVrzEAeCUb6o3A3hYHLu8edrl+Cg1Wh11Z
+         RDig==
+X-Gm-Message-State: AOAM5329uVXxOYBME3qwZIa4HFJHnLGpOQ9OTEDUR4s1z7LkFku99YHL
+        GuYvUHcpgzLskjMH1hHgZSc9CBmg58wfP/jWKg==
+X-Google-Smtp-Source: ABdhPJw9zQgg8aq+ex04YlfU4TBmmq7cCCdpQ4wKdPETEclZPcjGAnNhQ7WCeWPz51/6DWRoa7PmQB1YWm9dJpyJg0I=
+X-Received: by 2002:a17:90b:1803:b0:1c7:24c4:ab52 with SMTP id
+ lw3-20020a17090b180300b001c724c4ab52mr35530871pjb.240.1649674024416; Mon, 11
+ Apr 2022 03:47:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220410114814.3920474-1-zheyuma97@gmail.com> <f9e0d516-d3a7-c0bf-f673-2a4c3dd9184d@kernel.org>
+In-Reply-To: <f9e0d516-d3a7-c0bf-f673-2a4c3dd9184d@kernel.org>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Mon, 11 Apr 2022 18:46:53 +0800
+Message-ID: <CAMhUBjkhJ2GvuNVH_9b9mm0d8NwS9Jmf51i8RHdfLLpsR=V5HQ@mail.gmail.com>
+Subject: Re: [PATCH] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in 
-"write_metapage(mp)".
+On Mon, Apr 11, 2022 at 6:13 PM Jiri Slaby <jirislaby@kernel.org> wrote:
+>
+> On 10. 04. 22, 13:48, Zheyu Ma wrote:
+> > When the driver fails at alloc_hdlcdev(), and then we remove the driver
+> > module, we will get the following splat:
+> >
+> > [   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
+> > [   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
+> > [   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
+> > [   25.077709] Call Trace:
+> > [   25.077924]  <TASK>
+> > [   25.078108]  unregister_hdlc_device+0x16/0x30
+> > [   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
+> >
+> > Fix this by checking whether the 'info->netdev' is a null pointer first.
+>
+> Hi,
+>
+> LGTM
+>
+> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+>
+> Out of curiosity, do you use the driver, or you only do some static
+> analysis?
 
-The failure log is listed as follows:
+In fact, neither. I test the driver via fuzzing in a simulated environment.
 
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
-
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
----
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index d8502f4989d9..e75f31b81d63 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -385,7 +385,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 	}
- 
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
- 
- 	IREAD_UNLOCK(ipbmap);
- 
--- 
-2.25.1
-
+Zheyu Ma
