@@ -2,220 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F4FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E66C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346987AbiDKOOb (ORCPT
+        id S1346995AbiDKOP7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41094 "EHLO
+        Mon, 11 Apr 2022 10:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232828AbiDKOO3 (ORCPT
+        with ESMTP id S232828AbiDKOPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:14:29 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07266BE03;
-        Mon, 11 Apr 2022 07:12:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649686335; x=1681222335;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=sEqr5NzmV2oXNmNmssDJtCF3OtxLa8r79e2gV3hq7uM=;
-  b=RFevFbGFTNB7kVl7u6FEvSYg4i+7y5ryM8DUYfs4NKYnjVLLlhuIfJi/
-   RJRcJH/amlQYUi5BvbSDy0ga8lygfn36XSj6v4R7P/7BtNHHw+vI2WtKY
-   hjwIjXYECO/9nRV9Qd7uqybbwxjXtzyrvoQ0ce22tQB/Auy1o68A3VQu1
-   A=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 11 Apr 2022 07:12:15 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 07:12:15 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 11 Apr 2022 07:12:14 -0700
-Received: from [10.216.15.65] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 11 Apr
- 2022 07:12:09 -0700
-Message-ID: <4dae4e8c-4b77-8fa9-dec3-20f48f84b68e@quicinc.com>
-Date:   Mon, 11 Apr 2022 19:42:06 +0530
+        Mon, 11 Apr 2022 10:15:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4ECF32068
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:13:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649686419;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0SNHqyoujE1GhBLe1zLEQWUOV0WCvLfbwgxIMJwWNvQ=;
+        b=QrQNfVUiiT84RBbUzp2UlM0cZMJWVYi6QDxzh8NOWffWx+dKQ0avqor1oFULW21/kgyyDH
+        ksswtFffDdpjwcuV/nQfccInglRPT1iCKz2+cjyh8B8gfW0RIiZ36KGzmJqJVbW7jLUyea
+        f0FuP5vH3u/vaZjVHF7sSVniKvPRztc=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-624-OfKBIF1ROASMFS3oImhQVA-1; Mon, 11 Apr 2022 10:13:38 -0400
+X-MC-Unique: OfKBIF1ROASMFS3oImhQVA-1
+Received: by mail-wr1-f69.google.com with SMTP id s8-20020adfc548000000b00207a28e0583so883737wrf.23
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:13:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0SNHqyoujE1GhBLe1zLEQWUOV0WCvLfbwgxIMJwWNvQ=;
+        b=pHewt4SyMHVyEHQB4kCpHXvQgs0QssHvvuiWB+ua7RQbFOGI0j5fLMyRTY4uRJEVdI
+         qGE0sSaIjVRf6DsWzsT8LBAo6HycQaTML4Y0S/EnBbHfbutLStVZIFnIwHBOfHV36hhe
+         EnSrYFg2m2iQuGjOScIQsdZaYqq5stcGtmUkThj3t0cpBHKTXvU1LhVIM1+YQYfa8zLc
+         xfVDe89Bi2Gha4r5YsHD8jNq8Q05At4lpSFlCpW8Z4rCI9Kas7oCjHAyYJ6MoCDvzCba
+         Ddh7z6FYwkBTxF3XVvaasW0J0/gX8wg1wzwmkruw5WIXnubGcfCE3Pr8mefHtYUna5VX
+         nKsw==
+X-Gm-Message-State: AOAM531E/PD+k924k0GqVDKOYoSJ4jsZNW3xBCUI48W+Ry5E6TgpGvQl
+        mHtc41GJjFLOC2tofx4rT29rulX8sZgtTwga37SkMLCT8DioYmPOjsQjOjCdnbATN4GcjHLrZcN
+        r5wFTsGgbl0sbdxK+X81enudd
+X-Received: by 2002:a1c:721a:0:b0:38e:c24d:7b8d with SMTP id n26-20020a1c721a000000b0038ec24d7b8dmr1682798wmc.83.1649686416942;
+        Mon, 11 Apr 2022 07:13:36 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJypN8mGgqi50Hob/p+VhbodRxqFTy9Fb8P7XpksOj9p2Bu5RgSHmeLyVffabHvq+u9lP8hzqA==
+X-Received: by 2002:a1c:721a:0:b0:38e:c24d:7b8d with SMTP id n26-20020a1c721a000000b0038ec24d7b8dmr1682771wmc.83.1649686416724;
+        Mon, 11 Apr 2022 07:13:36 -0700 (PDT)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id q17-20020adff951000000b00205c1b97ac4sm26117938wrr.20.2022.04.11.07.13.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 07:13:36 -0700 (PDT)
+Message-ID: <5c00d6cf-ab0c-850b-821c-36413d894773@redhat.com>
+Date:   Mon, 11 Apr 2022 16:13:34 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v6 3/3] arm64: dts: qcom: sc7280: Add dt nodes for sound
- card
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 2/4] dt-bindings: display: ssd1307fb: Add entry for
+ SINO WEALTH SH1106
 Content-Language: en-US
-To:     Matthias Kaehlcke <mka@chromium.org>
-CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <srinivas.kandagatla@linaro.org>, <dianders@chromium.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>,
-        <quic_rohkumar@quicinc.com>
-References: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
- <1649157220-29304-4-git-send-email-quic_srivasam@quicinc.com>
- <Yk3736Av338XoLH/@google.com>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <Yk3736Av338XoLH/@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Chen-Yu Tsai <wens@kernel.org>
+Cc:     Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Chen-Yu Tsai <wens@csie.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220406172956.3953-1-wens@kernel.org>
+ <20220406172956.3953-3-wens@kernel.org>
+ <CAMuHMdUMc35MrWwbDXvsRNx9qSRf1bACNrhsGpeFcLCETsL4dw@mail.gmail.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <CAMuHMdUMc35MrWwbDXvsRNx9qSRf1bACNrhsGpeFcLCETsL4dw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello Geert,
 
-On 4/7/2022 2:15 AM, Matthias Kaehlcke wrote:
-Thanks for your time Matthias!!!
-> On Tue, Apr 05, 2022 at 04:43:40PM +0530, Srinivasa Rao Mandadapu wrote:
->> Add dt nodes for sound card support, which is using WCD938x headset
->> playback, capture, I2S speaker playback and DMICs via VA macro.
->>
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> ---
->>   arch/arm64/boot/dts/qcom/sc7280-crd.dts  |  8 +++
->>   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 93 ++++++++++++++++++++++++++++++++
->>   2 files changed, 101 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
->> index 224a82d..b1b968a 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
->> +++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
->> @@ -90,6 +90,14 @@ ap_ts_pen_1v8: &i2c13 {
->>   	us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
->>   };
->>   
->> +&sound {
->> +	audio-routing =
->> +		"VA DMIC0", "MIC BIAS1",
->> +		"VA DMIC1", "MIC BIAS1",
->> +		"VA DMIC2", "MIC BIAS3",
->> +		"VA DMIC3", "MIC BIAS3";
->> +};
->> +
->>   &tlmm {
->>   	tp_int_odl: tp-int-odl {
->>   		pins = "gpio7";
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> index e3d8cbf..45e1d82 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> @@ -84,6 +84,99 @@
->>   		pinctrl-names = "default";
->>   		pinctrl-0 = <&nvme_pwren>;
->>   	};
->> +
->> +	sound: sound {
->> +		compatible = "google,sc7280-herobrine";
->> +		model = "sc7280-wcd938x-max98360a-1mic";
->> +
->> +		audio-routing =
->> +				"IN1_HPHL", "HPHL_OUT",
->> +				"IN2_HPHR", "HPHR_OUT",
->> +				"AMIC1", "MIC BIAS1",
->> +				"AMIC2", "MIC BIAS2",
->> +				"VA DMIC0", "MIC BIAS3",
->> +				"VA DMIC1", "MIC BIAS3",
->> +				"VA DMIC2", "MIC BIAS1",
->> +				"VA DMIC3", "MIC BIAS1",
->> +				"TX SWR_ADC0", "ADC1_OUTPUT",
->> +				"TX SWR_ADC1", "ADC2_OUTPUT",
->> +				"TX SWR_ADC2", "ADC3_OUTPUT",
->> +				"TX SWR_DMIC0", "DMIC1_OUTPUT",
->> +				"TX SWR_DMIC1", "DMIC2_OUTPUT",
->> +				"TX SWR_DMIC2", "DMIC3_OUTPUT",
->> +				"TX SWR_DMIC3", "DMIC4_OUTPUT",
->> +				"TX SWR_DMIC4", "DMIC5_OUTPUT",
->> +				"TX SWR_DMIC5", "DMIC6_OUTPUT",
->> +				"TX SWR_DMIC6", "DMIC7_OUTPUT",
->> +				"TX SWR_DMIC7", "DMIC8_OUTPUT";
->> +
->> +		qcom,msm-mbhc-hphl-swh = <1>;
->> +		qcom,msm-mbhc-gnd-swh = <1>;
->> +
->> +		#address-cells = <1>;
->> +		#size-cells = <0>;
->> +		#sound-dai-cells = <0>;
->> +
->> +		dai-link@1 {
->> +			link-name = "Secondary MI2S Playback";
-> The other link names provide information about the other end
-> of the link (DP, WCD, DMIC), while this one describes the SoC side.
-> Shouldn't this be "MAX98360A"? Not sure about the 'Playback' part,
-> it seems 'link-name' is used as stream name, judging from a few
-> samples of peeking into '/proc/asound/pcm' on different devices
-> it seems that 'Playback' or 'Capture' is ususally not part of the
-> stream name.
-Okay. will change accordingly.
->
->> +			reg = <MI2S_SECONDARY>;
->> +			cpu {
->> +				sound-dai = <&lpass_cpu MI2S_SECONDARY>;
->> +			};
->> +
->> +			codec {
->> +				sound-dai = <&max98360a>;
->> +			};
->> +		};
->> +
->> +		dai-link@5 {
->> +			link-name = "DP Playback";
-> See comment above about 'Playback'. Just 'DP' is maybe a bit short, how
-> about 'DisplayPort'?
-Okay. Will change accordingly.
->
->> +			reg = <LPASS_DP_RX>;
->> +			cpu {
->> +				sound-dai = <&lpass_cpu LPASS_DP_RX>;
->> +			};
->> +
->> +			codec {
->> +				sound-dai = <&mdss_dp>;
->> +			};
->> +		};
->> +
->> +		dai-link@6 {
->> +			link-name = "WCD Playback";
-> Most instances I found spell out the codec name. It seems here we need
-> the 'Playback'/'Capture' info (or something else) to not end up with
-> duplicate link names. So my suggestion here would be "WCD9385 Playback".
-Okay. Will  update accordingly.
->
->> +			reg = <LPASS_CDC_DMA_RX0>;
->> +			cpu {
->> +				sound-dai = <&lpass_cpu LPASS_CDC_DMA_RX0>;
->> +			};
->> +
->> +			codec {
->> +				sound-dai = <&wcd938x 0>, <&swr0 0>, <&rxmacro 0>;
->> +			};
->> +		};
->> +
->> +		dai-link@19 {
->> +			link-name = "WCD Capture";
-> "WCD9385 Capture"?
-Okay.
->
->> +			reg = <LPASS_CDC_DMA_TX3>;
->> +			cpu {
->> +				sound-dai = <&lpass_cpu LPASS_CDC_DMA_TX3>;
->> +			};
->> +
->> +			codec {
->> +				sound-dai = <&wcd938x 1>, <&swr1 0>, <&txmacro 0>;
->> +			};
->> +		};
->> +
->> +		dai-link@25 {
->> +			link-name = "DMIC Capture";
->
-> just "DMIC"?
-Okay.
+On 4/11/22 15:35, Geert Uytterhoeven wrote:
+> Hi Chen-Yu,
+
+[snip]
+
+>> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+>> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+>> @@ -13,6 +13,7 @@ maintainers:
+>>  properties:
+>>    compatible:
+>>      enum:
+>> +      - sinowealth,sh1106-i2c
+> 
+> Please don't introduce new compatible values including the bus type.
+> There is no need for that, and this will only lead to more deprecated
+> compatible values soon...
+> 
+> Oops, this is already commit 97a40c23cda5d64a ("dt-bindings:
+> display: ssd1307fb: Add entry for SINO WEALTH SH1106") in
+> drm-misc/for-linux-next...
+> 
+
+Yeah, too late :/ I didn't think it would be controversial at the time.
+
+-- 
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
