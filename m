@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 487B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 19:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 19:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349461AbiDKTIt (ORCPT
+        id S1349470AbiDKTIz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 15:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
+        Mon, 11 Apr 2022 15:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349499AbiDKTHk (ORCPT
+        with ESMTP id S1349399AbiDKTHO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 15:07:40 -0400
+        Mon, 11 Apr 2022 15:07:14 -0400
 Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942103467B;
-        Mon, 11 Apr 2022 12:04:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2509B340C7;
+        Mon, 11 Apr 2022 12:04:41 -0700 (PDT)
 Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
  by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id 0df72b2669e94012; Mon, 11 Apr 2022 21:04:47 +0200
+ id acb6c7b10135b3e8; Mon, 11 Apr 2022 21:04:39 +0200
 Received: from kreacher.localnet (unknown [213.134.175.113])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id B7DD166BDFC;
-        Mon, 11 Apr 2022 21:04:46 +0200 (CEST)
+        by v370.home.net.pl (Postfix) with ESMTPSA id C963166BDFC;
+        Mon, 11 Apr 2022 21:04:38 +0200 (CEST)
 From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
 To:     Linux ACPI <linux-acpi@vger.kernel.org>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
         Bob Moore <robert.moore@intel.com>
-Subject: [PATCH 01/20] ACPICA: Add support for the Windows 11 _OSI string
-Date:   Mon, 11 Apr 2022 20:47:00 +0200
-Message-ID: <4750716.31r3eYUQgx@kreacher>
+Subject: [PATCH 04/20] ACPICA: iASL: NHLT: Fix parsing undocumented bytes at the end of Endpoint Descriptor
+Date:   Mon, 11 Apr 2022 20:49:08 +0200
+Message-ID: <13013560.uLZWGnKmhe@kreacher>
 In-Reply-To: <5578328.DvuYhMxLoT@kreacher>
 References: <5578328.DvuYhMxLoT@kreacher>
 MIME-Version: 1.0
@@ -40,50 +40,41 @@ Content-Type: text/plain; charset="UTF-8"
 X-CLIENT-IP: 213.134.175.113
 X-CLIENT-HOSTNAME: 213.134.175.113
 X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudekiedgudefgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepgfektdehueehteffueelleehhfffgfejtdehvddtfeetjeffveetheehvdejgfdunecuffhomhgrihhnpehgihhthhhusgdrtghomhenucfkphepvddufedrudefgedrudejhedruddufeenucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddujeehrdduudefpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeefpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprhhosggvrhhtrdhmohhorhgvsehinhhtvghlrdgtohhm
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudekiedgudefhecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepgfektdehueehteffueelleehhfffgfejtdehvddtfeetjeffveetheehvdejgfdunecuffhomhgrihhnpehgihhthhhusgdrtghomhenucfkphepvddufedrudefgedrudejhedruddufeenucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddujeehrdduudefpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeefpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprhhosggvrhhtrdhmohhorhgvsehinhhtvghlrdgtohhm
 X-DCC--Metrics: v370.home.net.pl 1024; Body=3 Fuz1=3 Fuz2=3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Piotr Maziarz <piotrx.maziarz@linux.intel.com>
 
-ACPICA commit f2e9fb8345b9146a67f8c63474b65ccfc06d962a
+ACPICA commit 961221a76814ffa0ecc92219ddf857579b0f7d54
 
-See https://github.com/microsoft_docs/windows-driver-docs/commit/a061e31fd77c20cc8e6eb0234e5d3a83e417f48
+Undocumented bytes at the end of Endpoint Descriptor can be present
+independently of Linux-specific structures. Their size can also vary.
 
-Link: https://github.com/acpica/acpica/commit/f2e9fb83
+Link: https://github.com/acpica/acpica/commit/961221a7
 Signed-off-by: Bob Moore <robert.moore@intel.com>
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 ---
- drivers/acpi/acpica/utosi.c |    1 +
- include/acpi/actypes.h      |    1 +
- 2 files changed, 2 insertions(+)
+ include/acpi/actbl2.h |    4 ----
+ 1 file changed, 4 deletions(-)
 
-Index: linux-pm/drivers/acpi/acpica/utosi.c
+Index: linux-pm/include/acpi/actbl2.h
 ===================================================================
---- linux-pm.orig/drivers/acpi/acpica/utosi.c
-+++ linux-pm/drivers/acpi/acpica/utosi.c
-@@ -74,6 +74,7 @@ static struct acpi_interface_info acpi_d
- 	{"Windows 2018.2", NULL, 0, ACPI_OSI_WIN_10_RS5},	/* Windows 10 version 1809 - Added 11/2018 */
- 	{"Windows 2019", NULL, 0, ACPI_OSI_WIN_10_19H1},	/* Windows 10 version 1903 - Added 08/2019 */
- 	{"Windows 2020", NULL, 0, ACPI_OSI_WIN_10_20H1},	/* Windows 10 version 2004 - Added 08/2021 */
-+	{"Windows 2021", NULL, 0, ACPI_OSI_WIN_11},	/* Windows 11 - Added 01/2022 */
+--- linux-pm.orig/include/acpi/actbl2.h
++++ linux-pm/include/acpi/actbl2.h
+@@ -1685,10 +1685,6 @@ struct acpi_nhlt_linux_specific_data {
+ 	u8 device_port_id;
+ };
  
- 	/* Feature Group Strings */
- 
-Index: linux-pm/include/acpi/actypes.h
-===================================================================
---- linux-pm.orig/include/acpi/actypes.h
-+++ linux-pm/include/acpi/actypes.h
-@@ -1303,6 +1303,7 @@ typedef enum {
- #define ACPI_OSI_WIN_10_RS5             0x13
- #define ACPI_OSI_WIN_10_19H1            0x14
- #define ACPI_OSI_WIN_10_20H1            0x15
-+#define ACPI_OSI_WIN_11                 0x16
- 
- /* Definitions of getopt */
- 
+-struct acpi_nhlt_linux_specific_data_b {
+-	u8 specific_data[18];
+-};
+-
+ /*******************************************************************************
+  *
+  * PCCT - Platform Communications Channel Table (ACPI 5.0)
 
 
 
