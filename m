@@ -2,113 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5002C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:58:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344957AbiDKKAD convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:00:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44312 "EHLO
+        id S240332AbiDKKAj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 06:00:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344944AbiDKJ77 (ORCPT
+        with ESMTP id S238270AbiDKKAc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:59:59 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79D3641621
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:57:45 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-60-NdxDbdFkOjqgxG8xxJVvzQ-1; Mon, 11 Apr 2022 10:57:42 +0100
-X-MC-Unique: NdxDbdFkOjqgxG8xxJVvzQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Mon, 11 Apr 2022 10:57:39 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Mon, 11 Apr 2022 10:57:39 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Steven Rostedt' <rostedt@goodmis.org>
-CC:     'Qais Yousef' <qais.yousef@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "juri.lelli@redhat.com" <juri.lelli@redhat.com>,
-        "bsegall@google.com" <bsegall@google.com>,
-        "mgorman@suse.de" <mgorman@suse.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "parth@linux.ibm.com" <parth@linux.ibm.com>,
-        "chris.hyser@oracle.com" <chris.hyser@oracle.com>,
-        "pkondeti@codeaurora.org" <pkondeti@codeaurora.org>,
-        "Valentin.Schneider@arm.com" <Valentin.Schneider@arm.com>,
-        "patrick.bellasi@matbug.net" <patrick.bellasi@matbug.net>,
-        "pjt@google.com" <pjt@google.com>, "pavel@ucw.cz" <pavel@ucw.cz>,
-        "tj@kernel.org" <tj@kernel.org>,
-        "qperret@google.com" <qperret@google.com>,
-        "tim.c.chen@linux.intel.com" <tim.c.chen@linux.intel.com>,
-        Wei Wang <wvw@google.com>
-Subject: RE: Scheduling tasks on idle cpu
-Thread-Topic: Scheduling tasks on idle cpu
-Thread-Index: AdhNfEgLjonPVH3ESQeb3O9OCn/HMQAAZaqAAAMHdiA=
-Date:   Mon, 11 Apr 2022 09:57:39 +0000
-Message-ID: <d95654bac3244397bf4aae581f35834a@AcuMS.aculab.com>
-References: <030aacb0c1304e43ab917924dcf4f138@AcuMS.aculab.com>
- <20220411052641.5370437f@rorschach.local.home>
-In-Reply-To: <20220411052641.5370437f@rorschach.local.home>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 11 Apr 2022 06:00:32 -0400
+X-Greylist: delayed 81 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Apr 2022 02:58:18 PDT
+Received: from fuzzserver.tsinghua.edu.cn (unknown [166.111.139.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487614132F
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:58:17 -0700 (PDT)
+Received: by fuzzserver.tsinghua.edu.cn (Postfix, from userid 1000)
+        id B5906F40E15; Mon, 11 Apr 2022 17:56:53 +0800 (CST)
+From:   Zixuan Fu <r33s3n6@gmail.com>
+To:     shaggy@kernel.org
+Cc:     jfs-discussion@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
+        TOTE Robot <oslab@tsinghua.edu.cn>
+Subject: [PATCH] fs: jfs: fix possible NULL pointer dereference in dbFree()
+Date:   Mon, 11 Apr 2022 17:56:23 +0800
+Message-Id: <20220411095623.678040-1-r33s3n6@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt
-> Sent: 11 April 2022 10:27
-> 
-> On Mon, 11 Apr 2022 08:26:33 +0000
-> David Laight <David.Laight@ACULAB.COM> wrote:
-> 
-> > Does that actually happen?
-> > I've seen the following:
-> >   34533 [017]: sys_futex(uaddr: 1049104, op: 85, val: 1, utime: 1, uaddr2: 1049100, val3: 4000001)
-> >   34533 [017]: sched_migrate_task: pid=34512 prio=120 orig_cpu=14 dest_cpu=17
-> >   34533 [017]: sched_wakeup: pid=34512 prio=120 success=1 target_cpu=017
-> > and pid 34512 doesn't get scheduled until pid 34533 finally sleeps.
-> > This is in spite of there being 5 idle cpu.
-> 
-> What's the topology? I believe the scheduler will refrain from
-> migrating tasks to idle CPUs that are on other NUMA nodes as much as
-> possible. Were those other 5 idle CPUs on another node?
+In our fault-injection testing, the variable "nblocks" in dbFree() can be
+zero when kmalloc_array() fails in dtSearch(). In this case, the variable
+ "mp" in dbFree() would be NULL and then it is dereferenced in 
+"write_metapage(mp)".
 
-There are two physical cpu with 20 cores each (with hyperthreading).
-16, 18, 34, 36 and 38 were idle.
-So both 16 and 18 should be on the same NUMA node.
-All the others are running the same RT thread code.
+The failure log is listed as follows:
 
-	David
+[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
+...
+[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
+[   13.834341] Call Trace:
+[   13.834540]  <TASK>
+[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
+[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
+[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
+[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
+[   13.836092]  kthread+0x3c2/0x4a0
+[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
+[   13.836763]  ? kthread_unuse_mm+0x160/0x160
+[   13.837106]  ret_from_fork+0x1f/0x30
+[   13.837402]  </TASK>
+...
 
-> 
-> -- Steve
-> 
-> 
-> > cpu 14 is busy running a RT thread, but migrating to cpu 17 seems wrong.
-> >
-> > This is on a RHEL7 kernel, I've not replicated it on anything recent.
-> > But I've very much like a RT thread to be able to schedule a non-RT
-> > thread to run on an idle cpu.
+This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+---
+ fs/jfs/jfs_dmap.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
+index d8502f4989d9..e75f31b81d63 100644
+--- a/fs/jfs/jfs_dmap.c
++++ b/fs/jfs/jfs_dmap.c
+@@ -385,7 +385,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
+ 	}
+ 
+ 	/* write the last buffer. */
+-	write_metapage(mp);
++	if (mp)
++		write_metapage(mp);
+ 
+ 	IREAD_UNLOCK(ipbmap);
+ 
+-- 
+2.25.1
 
