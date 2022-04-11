@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C580CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:08:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA049C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:08:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344163AbiDKJKf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39528 "EHLO
+        id S239376AbiDKJKk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 05:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344173AbiDKJK2 (ORCPT
+        with ESMTP id S1344172AbiDKJKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:10:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E42F3EF39
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:08:12 -0700 (PDT)
+        Mon, 11 Apr 2022 05:10:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DB327FE9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 02:08:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD63F60B6F
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:08:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A8E6C385A3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:08:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57F35B81125
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 09:08:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11264C385A3;
+        Mon, 11 Apr 2022 09:08:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649668091;
-        bh=VTuVyQ9Hek52nBomPsSuOUu1r3gvK53kDTMnO838nEU=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=eIXUv9/NuHqzcNK+Z8l/whTbuPIYk7gy/aFuknM3DNTcibMIbyvP3dHhVBDrdooyw
-         k4AYedEnJ9rIHIRJL9i2f/WyW08fFrabiX5bXDZ1l6S7TVcyJzYYwir7ND7mSSUdqO
-         7MQVgYp66OK4oPRmWnE0/FpAC7+V5aKHH/0uUbvM0rbF4NAZGLONOA6KpCXj6bOWFN
-         lmtg/eKm6+WVdgbrIYsi98rQqKBP9U9e/8E8dEFTaJ8rwrjyVlpZeUBtxx+2C27WBn
-         3WqBJc5rMXs+ZHsXBCv2MBzaabkJbHgBKWWpaK0ZgkcQAnDQVvtFyKLjKMJitV1P2Z
-         3MhiAJJnOQAaw==
+        s=k20201202; t=1649668096;
+        bh=fOYgRv8B5h/y7wpaCury1d0zh6qAGN6yx1x6Ku6Tfi0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dAS1VQjjuBQhRzPolVgAQXOJj45Klx556dOLMn4FxqwNsp5pk/Qbr7PJkCEPQd5T2
+         9mXZ0WKwdc5vUo8Le5RRcv7zjJxrm7i7AgF8kdc2S4pxY5LXXa1TCh5M6ePPqwJCYw
+         dnOhfbk7/TLs1tdJgdVKqGWn/8gz6P8qUPFf/4KhgSmhNU0jTSVIYtVbLO3TmV2Aof
+         e9QFALqomt50MpryByAOKZSiFWZwbkI66YEmoDxqbbmjIaFpx71UM9RJynHaFCl28Y
+         sa0Hml/VtAEC3WGmLu4TGsn+FPw7L/ySHh2wzGE3aowk3FSwmzFrdLYwvMhDXDzHFl
+         leDLFmS7AsLRA==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Subject: [PATCH 2/7] habanalabs: remove user interrupt debug print
-Date:   Mon, 11 Apr 2022 12:08:00 +0300
-Message-Id: <20220411090805.1617112-2-ogabbay@kernel.org>
+Cc:     Rajaravi Krishna Katta <rkatta@habana.ai>
+Subject: [PATCH 5/7] habanalabs/gaudi: use lower_32_bits() for casting
+Date:   Mon, 11 Apr 2022 12:08:03 +0300
+Message-Id: <20220411090805.1617112-5-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220411090805.1617112-1-ogabbay@kernel.org>
 References: <20220411090805.1617112-1-ogabbay@kernel.org>
@@ -47,29 +47,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As user interrupts are a common use case, this dump pollutes the
-dmesg log, hence removing it.
+From: Rajaravi Krishna Katta <rkatta@habana.ai>
 
+Use standard kernel macro to take lower 32 bits of 64-bits variable.
+
+Signed-off-by: Rajaravi Krishna Katta <rkatta@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/common/irq.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/misc/habanalabs/gaudi/gaudi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/misc/habanalabs/common/irq.c b/drivers/misc/habanalabs/common/irq.c
-index 5b5a992460c9..8500e15ef743 100644
---- a/drivers/misc/habanalabs/common/irq.c
-+++ b/drivers/misc/habanalabs/common/irq.c
-@@ -282,10 +282,6 @@ irqreturn_t hl_irq_handler_user_cq(int irq, void *arg)
- 	struct hl_user_interrupt *user_cq = arg;
- 	struct hl_device *hdev = user_cq->hdev;
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index b4bd40d47000..2824d2f16a25 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -8957,7 +8957,7 @@ static int gaudi_add_sync_to_engine_map_entry(
+ 	 */
+ 	if (reg_value == 0 || reg_value == 0xffffffff)
+ 		return 0;
+-	reg_value -= (u32)CFG_BASE;
++	reg_value -= lower_32_bits(CFG_BASE);
  
--	dev_dbg(hdev->dev,
--		"got user completion interrupt id %u",
--		user_cq->interrupt_id);
--
- 	/* Handle user cq interrupts registered on all interrupts */
- 	handle_user_cq(hdev, &hdev->common_user_interrupt);
- 
+ 	/* create a new hash entry */
+ 	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
 -- 
 2.25.1
 
