@@ -2,113 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7162CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F9DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 15:33:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348011AbiDKPfW (ORCPT
+        id S1347992AbiDKPfg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 11:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47056 "EHLO
+        Mon, 11 Apr 2022 11:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347947AbiDKPfS (ORCPT
+        with ESMTP id S1348001AbiDKPfc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 11:35:18 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C506E36B43
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:33:03 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id bn33so20595125ljb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:33:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xnPakWPy2yT3pIDHfh65ar6g/dls1kfh8Fm485ETQ5M=;
-        b=dQKM0d07whgvlC9oDhJtSUhDkTW4MoFSVg0vfgfBTGbnyj/vLpwIRlpTJbwhAy5wXy
-         t4NvGLtrVnALpqzfCg7AJJXugL5G+gxtpmDu4P3kfUwP/PxlbMFsvAkSX6LdhPrmqMXT
-         qiLuU+fH5rX1P4bRYOwwYVvuKX3ABpSSlgtg6Az3/bkGGCuw7OQsN/ELNNrrh8dksm+L
-         jdUaWuAeAK2VUjv+c+38AFbQNMQ+BBRMEFHjUicyzn/UUqkyKZ+8hd7a357wBJLh/+Ai
-         HUBjhhdQSdLifDKyLGXJgEw/B/MdcmTILkWCG50hI08mI+XNVGIswEXj19aZoHfNzVBJ
-         crnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xnPakWPy2yT3pIDHfh65ar6g/dls1kfh8Fm485ETQ5M=;
-        b=ZLmxPsacJ9XxwiPXGxScYXjY3xk1d9elasmsuU8S3sQp8OVknf/kMZ8spTXM6sAQvc
-         3rEV3x/M7kFCYv6IQ7dcYXa+gXP5ommFcGrE/nehfGfdtB2R2enALa7RYGIFmfGeRndQ
-         zFM1uBbiavJRxWO9J3f/b4uiHex8CuA1Qu7/kRzCVJWtKHoJCv6REmVV7smV7d5UkDKI
-         V/mEikpMOAhrRbU9dIxdVkmNiyMUW6yz0Y3Md2xihFUVHOIu9EN9lknbcFpEH6DdJzzV
-         KFYHupfqw2Y9x7qv/sIQrfHfC9UBX0aS6jwH8WH1TVFIx21pvPxSg20xT3QOkQUDYZKo
-         mmuA==
-X-Gm-Message-State: AOAM5326+5JR8tJ15toVGIwG/Us3K/tIWIBBSri6JQWm6y5jFJceAATO
-        P81dz+20UZQFOdo2VEU5rj0c4w==
-X-Google-Smtp-Source: ABdhPJznGRs4U58z6UmE7zKZGIORoorFbfftosrGPlCNHfF3AfxicsXpipbZkrEfC0QnRLsaSTmPLw==
-X-Received: by 2002:a2e:3a02:0:b0:24b:6120:1be4 with SMTP id h2-20020a2e3a02000000b0024b61201be4mr4554362lja.451.1649691181857;
-        Mon, 11 Apr 2022 08:33:01 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id c25-20020a2e6819000000b00247de61d3fdsm3162062lja.113.2022.04.11.08.33.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 08:33:01 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id E5DD4103CE0; Mon, 11 Apr 2022 18:34:33 +0300 (+03)
-Date:   Mon, 11 Apr 2022 18:34:33 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        qemu-devel@nongnu.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v5 04/13] mm/shmem: Restrict MFD_INACCESSIBLE memory
- against RLIMIT_MEMLOCK
-Message-ID: <20220411153433.6sqqqd6vzhyfjee6@box.shutemov.name>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <20220310140911.50924-5-chao.p.peng@linux.intel.com>
- <Yk8L0CwKpTrv3Rg3@google.com>
- <20220408130254.GB57095@chaop.bj.intel.com>
+        Mon, 11 Apr 2022 11:35:32 -0400
+X-Greylist: delayed 5153 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Apr 2022 08:33:16 PDT
+Received: from mx0a-0014ca01.pphosted.com (mx0b-0014ca01.pphosted.com [208.86.201.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DE336B5B
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 08:33:16 -0700 (PDT)
+Received: from pps.filterd (m0042333.ppops.net [127.0.0.1])
+        by mx0b-0014ca01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23BC8RCZ026133;
+        Mon, 11 Apr 2022 07:07:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=proofpoint;
+ bh=UatKVkxkfCPI1eM6LsEzbQ6C4PnqXjiSiPAMUYXKzxg=;
+ b=RLTJ0YvpTd7naAP1qYAfEkIufpl12gVBKpmB9mK3j4+gNh/+rzoIHjWMqkssblh0LfrQ
+ koJ2wbFH43yZEjJQ1rC6nW5vtd3nrhJoABH5lG1YuQsvHgvbD2EtYWZrKbvAdtISq1J1
+ ESFqrVvtoiZrhoqUeZJeKPj71Hu+Km8Md500gPyUwSQXUuUErB9EVq+2AV6ZUAUnB+eM
+ RLYBISAVpLoTCcyM2m5ddmeox60DKTMmqbkyFI7ObOnVBBIr9VR/2W+Shj2cptzJQoay
+ JgzbmYX5p87LtfQwTHzEl66gue/+biP8tEwJTp4ylD565gGM5IHbL1z5RXzcKYzfiEMf bA== 
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2108.outbound.protection.outlook.com [104.47.55.108])
+        by mx0b-0014ca01.pphosted.com (PPS) with ESMTPS id 3fb6qvqkd1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Apr 2022 07:07:10 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UghhPaFlOUI16P5rpZS7jB2FvuAO4VuU2W9ZqqujCxALOx643bInqTKBwCleDmPwHaNsaVsP97at9ppQ4bRI2lA78tLh3Tm6Ya8DGSK1yadHpgwrneynnh2IiQSNYRy3qlbMedz7jkaa0FGM24ADA/7cIGvK/HMiu0X3ROqIBe1QwP4kGbRNN30806Sn6DQnWYc7lwN+yXDEu/7CzVnuVPuTEME3k0U3ZlphAqCtK2OeZwbyXYEOt/5OtoW4RKS0gMKZ8YwqWNl00q/u7pwT0am9yGMHysh7tLJl73Z39yowa6yBTEACz3dtg7CnT6LczME7NNGoWhDVK4bfLdtaHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UatKVkxkfCPI1eM6LsEzbQ6C4PnqXjiSiPAMUYXKzxg=;
+ b=iktvMqmv5FOs3976GFbrk8R6CiDp9mD0tn9DjXQy12URi4f2YKCdM4UU3O6bwm25E6SMz5vUwG9dB4Lab2E8Cz65lgkc7FLBP9Q9QlzTuQAvISIsMyyMmE6CN1KOBvE8lZK0nIgz7ACqQkXa8BQg5yH68a6T3yzybOdl29HoRA1anZ6yHx69Z/0aouIiDR8WhwpGZKleU2ApHOX3oUYvT7BpArc4nIG/R9yEgvJ/362+Mjz/Ek3YNCw0RivFcTcwGvOOp18X8Nt8O7UtdBFTLqp/JhvOl1eOqdkFiOyhIS8xtAw+VXDGpsJLYyaZSbFh97yPpdEU86G/MdcbWJqOaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 158.140.1.148) smtp.rcpttodomain=intel.com smtp.mailfrom=cadence.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=cadence.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UatKVkxkfCPI1eM6LsEzbQ6C4PnqXjiSiPAMUYXKzxg=;
+ b=UCsAW2clLk/4zRq64hlXjFuVphiDWrhkyrsJggZdCUC9+nJABkdgGEtrUxmfoMjj6HPtR4rGBioIMS6HA0EIv7Ay1fcdQEGM5viiatW0vJs49RVJMXAnwUXE21xz5Kbh9tMALYwmvTRWrcq3KHpavBVzDu1Heexyofbx61MSgmg=
+Received: from BN1PR10CA0010.namprd10.prod.outlook.com (2603:10b6:408:e0::15)
+ by MN2PR07MB7839.namprd07.prod.outlook.com (2603:10b6:208:3e::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Mon, 11 Apr
+ 2022 14:07:06 +0000
+Received: from BN8NAM12FT041.eop-nam12.prod.protection.outlook.com
+ (2603:10b6:408:e0:cafe::6c) by BN1PR10CA0010.outlook.office365.com
+ (2603:10b6:408:e0::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29 via Frontend
+ Transport; Mon, 11 Apr 2022 14:07:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 158.140.1.148)
+ smtp.mailfrom=cadence.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=cadence.com;
+Received-SPF: Pass (protection.outlook.com: domain of cadence.com designates
+ 158.140.1.148 as permitted sender) receiver=protection.outlook.com;
+ client-ip=158.140.1.148; helo=sjmaillnx2.cadence.com;
+Received: from sjmaillnx2.cadence.com (158.140.1.148) by
+ BN8NAM12FT041.mail.protection.outlook.com (10.13.182.172) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5164.8 via Frontend Transport; Mon, 11 Apr 2022 14:07:06 +0000
+Received: from maileu3.global.cadence.com (maileu3.cadence.com [10.160.88.99])
+        by sjmaillnx2.cadence.com (8.14.4/8.14.4) with ESMTP id 23BE70aR032352
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 11 Apr 2022 07:07:01 -0700
+X-CrossPremisesHeadersFilteredBySendConnector: maileu3.global.cadence.com
+Received: from maileu4.global.cadence.com (10.160.110.201) by
+ maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Mon, 11 Apr 2022 16:06:54 +0200
+Received: from vleu-orange.cadence.com (10.160.88.83) by
+ maileu4.global.cadence.com (10.160.110.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7
+ via Frontend Transport; Mon, 11 Apr 2022 16:06:54 +0200
+Received: from vleu-orange.cadence.com (localhost.localdomain [127.0.0.1])
+        by vleu-orange.cadence.com (8.14.4/8.14.4) with ESMTP id 23BE6rEi015872;
+        Mon, 11 Apr 2022 16:06:53 +0200
+Received: (from jpawar@localhost)
+        by vleu-orange.cadence.com (8.14.4/8.14.4/Submit) id 23BE6qd7015869;
+        Mon, 11 Apr 2022 16:06:52 +0200
+From:   Jayshri Pawar <jpawar@cadence.com>
+To:     <dri-devel@lists.freedesktop.org>
+CC:     <daniel@ffwll.ch>, <airlied@linux.ie>, <andrzej.hajda@intel.com>,
+        <narmstrong@baylibre.com>, <robert.foss@linaro.org>,
+        <Laurent.pinchart@ideasonboard.com>, <jonas@kwiboo.se>,
+        <jernej.skrabec@gmail.com>, <linux-kernel@vger.kernel.org>,
+        <mparab@cadence.com>, <jpawar@cadence.com>, <sjakhade@cadence.com>,
+        <nm@ti.com>, <yogeshs@ti.com>, <kishon@ti.com>
+Subject: [PATCH] drm/bridge: cdns-dsi: Add support for pre_enable and post_enable control functions.
+Date:   Mon, 11 Apr 2022 16:06:06 +0200
+Message-ID: <20220411140606.15654-1-jpawar@cadence.com>
+X-Mailer: git-send-email 2.15.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220408130254.GB57095@chaop.bj.intel.com>
+Content-Type: text/plain
+X-OrganizationHeadersPreserved: maileu3.global.cadence.com
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 08164740-3146-4c96-7251-08da1bc48fd7
+X-MS-TrafficTypeDiagnostic: MN2PR07MB7839:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR07MB783937B5E45389D07DBCCF50C1EA9@MN2PR07MB7839.namprd07.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: c/I/PfTMF2S4lOtdbdRpXzKUBGzkDtMnvTBjb+0RckTjKFdOIX/Y+681VxVChUK5Xfl6qQkfy1yIgugEoHN8OXQ7Wcr2jB4h70fyYt5XweIOOIZATrIKzEp5k9289p6lffN7EEIcGMXZwRDf7X5M5wfcbkEHdxVLdOfd24WxgEdRexW1Ai2cbhEwla6UlXgDhD9OO/Bik8tOMFf5IeVWRf7+yTaT3b/Yj80XQPana2H2LAOOiPw2Q1ix+1ApQ4x8BeP75emCnCKYfpAbBNdVj419VgiRq4SSM22NlUarXbZHRJCBcg7SxHRWMgxeuEIZplH/cy+YECIJcIPFLVlx6KvWrmGvINwXg0ZNItgrkqiy1fGeopRjQn91keQwctp/YhxOExhVEpyVORLtlrhb23Y4vghSN5lbCk/Tg3G33SZkf0TEtrpRpSIvTvdqsMKI9kYj78J4sV/WVtfr89dcoI1G7wGQHbh2ygWSbTgZrGEUHbRGmEHmTKx0aAqg21TtezBzn9kmBbEX78m8dCRKoTEmYZoS1IS3k3OIr/C57/4pCQ2e6lTG/DzBHemJF25D0NojSf+vp13jcNFW8ZJOKtd/+DXnnftUONZUW6RtkMOc5AzxyEFtOmOSgFSWdBBYYEagQzm4YWVhR7hwKahjqsfeAiptxiuFZYH9IpDFBUIauibBqWUfqeTFdb733mPq
+X-Forefront-Antispam-Report: CIP:158.140.1.148;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:sjmaillnx2.cadence.com;PTR:unknown.Cadence.COM;CAT:NONE;SFS:(13230001)(4636009)(36092001)(36840700001)(40470700004)(46966006)(336012)(4326008)(47076005)(82310400005)(8676002)(426003)(36756003)(8936002)(186003)(36860700001)(7636003)(70586007)(83380400001)(70206006)(5660300002)(1076003)(2616005)(42186006)(7416002)(26005)(356005)(6916009)(54906003)(2906002)(6666004)(40460700003)(508600001)(86362001)(316002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: cadence.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 14:07:06.5897
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 08164740-3146-4c96-7251-08da1bc48fd7
+X-MS-Exchange-CrossTenant-Id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=d36035c5-6ce6-4662-a3dc-e762e61ae4c9;Ip=[158.140.1.148];Helo=[sjmaillnx2.cadence.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM12FT041.eop-nam12.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR07MB7839
+X-Proofpoint-GUID: 6BG7kzNuUxqNemMchu1gOn0haZTQrZCJ
+X-Proofpoint-ORIG-GUID: 6BG7kzNuUxqNemMchu1gOn0haZTQrZCJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-11_05,2022-04-11_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0 mlxscore=0
+ suspectscore=0 phishscore=0 priorityscore=1501 impostorscore=0 bulkscore=0
+ adultscore=0 lowpriorityscore=0 mlxlogscore=999 clxscore=1011 spamscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204110078
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Apr 08, 2022 at 09:02:54PM +0800, Chao Peng wrote:
-> > I think the correct approach is to not do the locking automatically for SHM_F_INACCESSIBLE,
-> > and instead require userspace to do shmctl(.., SHM_LOCK, ...) if userspace knows the
-> > consumers don't support migrate/swap.  That'd require wrapping migrate_page() and then
-> > wiring up notifier hooks for migrate/swap, but IMO that's a good thing to get sorted
-> > out sooner than later.  KVM isn't planning on support migrate/swap for TDX or SNP,
-> > but supporting at least migrate for a software-only implementation a la pKVM should
-> > be relatively straightforward.  On the notifiee side, KVM can terminate the VM if it
-> > gets an unexpected migrate/swap, e.g. so that TDX/SEV VMs don't die later with
-> > exceptions and/or data corruption (pre-SNP SEV guests) in the guest.
-> 
-> SHM_LOCK sounds like a good match.
+From: jpawar <jpawar@cadence.com>
 
-Emm, no. shmctl(2) and SHM_LOCK are SysV IPC thing. I don't see how they
-fit here.
+Add support for pre_enable and post_enable drm bridge control functions.
+Making sure that host to be prepared before panel is powered up,
+for the panels like TC358762.
 
+Signed-off-by: jpawar <jpawar@cadence.com>
+---
+ drivers/gpu/drm/bridge/cdns-dsi.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/drivers/gpu/drm/bridge/cdns-dsi.c b/drivers/gpu/drm/bridge/cdns-dsi.c
+index 829e1a144656..20bece84ff8c 100644
+--- a/drivers/gpu/drm/bridge/cdns-dsi.c
++++ b/drivers/gpu/drm/bridge/cdns-dsi.c
+@@ -462,6 +462,7 @@ struct cdns_dsi {
+ 	struct reset_control *dsi_p_rst;
+ 	struct clk *dsi_sys_clk;
+ 	bool link_initialized;
++	bool phy_initialized;
+ 	struct phy *dphy;
+ };
+ 
+@@ -711,11 +712,21 @@ static void cdns_dsi_bridge_disable(struct drm_bridge *bridge)
+ 	pm_runtime_put(dsi->base.dev);
+ }
+ 
++static void cdns_dsi_bridge_post_disable(struct drm_bridge *bridge)
++{
++	struct cdns_dsi_input *input = bridge_to_cdns_dsi_input(bridge);
++	struct cdns_dsi *dsi = input_to_dsi(input);
++
++	pm_runtime_put(dsi->base.dev);
++}
++
+ static void cdns_dsi_hs_init(struct cdns_dsi *dsi)
+ {
+ 	struct cdns_dsi_output *output = &dsi->output;
+ 	u32 status;
+ 
++	if (dsi->phy_initialized)
++		return;
+ 	/*
+ 	 * Power all internal DPHY blocks down and maintain their reset line
+ 	 * asserted before changing the DPHY config.
+@@ -739,6 +750,7 @@ static void cdns_dsi_hs_init(struct cdns_dsi *dsi)
+ 	writel(DPHY_CMN_PSO | DPHY_ALL_D_PDN | DPHY_C_PDN | DPHY_CMN_PDN |
+ 	       DPHY_D_RSTB(output->dev->lanes) | DPHY_C_RSTB,
+ 	       dsi->regs + MCTL_DPHY_CFG0);
++	dsi->phy_initialized = true;
+ }
+ 
+ static void cdns_dsi_init_link(struct cdns_dsi *dsi)
+@@ -914,11 +926,25 @@ static void cdns_dsi_bridge_enable(struct drm_bridge *bridge)
+ 	writel(tmp, dsi->regs + MCTL_MAIN_EN);
+ }
+ 
++static void cdns_dsi_bridge_pre_enable(struct drm_bridge *bridge)
++{
++	struct cdns_dsi_input *input = bridge_to_cdns_dsi_input(bridge);
++	struct cdns_dsi *dsi = input_to_dsi(input);
++
++	if (WARN_ON(pm_runtime_get_sync(dsi->base.dev) < 0))
++		return;
++
++	cdns_dsi_init_link(dsi);
++	cdns_dsi_hs_init(dsi);
++}
++
+ static const struct drm_bridge_funcs cdns_dsi_bridge_funcs = {
+ 	.attach = cdns_dsi_bridge_attach,
+ 	.mode_valid = cdns_dsi_bridge_mode_valid,
+ 	.disable = cdns_dsi_bridge_disable,
++	.pre_enable = cdns_dsi_bridge_pre_enable,
+ 	.enable = cdns_dsi_bridge_enable,
++	.post_disable = cdns_dsi_bridge_post_disable,
+ };
+ 
+ static int cdns_dsi_attach(struct mipi_dsi_host *host,
 -- 
- Kirill A. Shutemov
+2.30.2
+
