@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:56:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F9A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344926AbiDKJ7G (ORCPT
+        id S1344922AbiDKJ7M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
+        Mon, 11 Apr 2022 05:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235994AbiDKJ6x (ORCPT
+        with ESMTP id S1344888AbiDKJ64 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:58:53 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E1B4132F;
-        Mon, 11 Apr 2022 02:56:38 -0700 (PDT)
+        Mon, 11 Apr 2022 05:58:56 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C871641622;
+        Mon, 11 Apr 2022 02:56:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1649670999;
-  x=1681206999;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=c+CrCB3jSesuxm+UkvkLWNLlRUO9xSMBS+b8dMwF3PA=;
-  b=QyIe7OCRSMcAsqUbaa8O58WhCvigFyiSxb67W0PHbg9MReXk3MltTnMB
-   oIyDZT0L2KITsd89dpLFqLsOW4oeE3gkEDdK8IP7yEmaTWxt8rUqyu93g
-   wVYljRI3oJFIU7BEQ+vSoscnrPiBiIelb75ojvahPvQx5rMcMejDrkXtp
-   q10aR7gHplbAykMo2PX9iJHI65QkCgK+rcuU7HkKJhzruYD3UNKu92pDi
-   OHsT8mlJ55HNi1Og6yAjra2nsR91jdcvucDm1mOUNf17KlFIqetUIIqI6
-   XZqKDHNYTXxx8gpEtubVt2TP/5aoX5Q4cTfNPB1J6k/uML3cQLTPO8ct0
-   Q==;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649671002;
+  x=1681207002;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FsUXYvruHmfAYwT/pxCNMHOLQLwKXMVdaCSrwdxakXs=;
+  b=oh26PSRXcSC3AyPFe3uSmTU2Qhtx8vNysQFJ/EV29GmWqDBNQ1hw6Qtm
+   qol3VsFHkUYtS3NZlXoYazGdklNpWb1DOIRKlPy3k6gSO16WwR/n1ZIQc
+   wVEYffW4MEAgxFmfpXAEUFJZaKFP+3shzCYzd2nXPbBc5oGYztEaUtdhv
+   JI0WXtbHVQfEJh2oyeViR33vpk3H0uwKBF4HFZCu8TYiuVqE0wEGgXO/6
+   MjwJn6s7hsa0A1lnzpgIJIG6hkS50Y10M/vF5fc89h6aIzxngDZXCU8iE
+   Aj5aT+nqjbR96CxzJbtNJMIX2bj4gFG6bdwv3fXesBUuNbSG0yVqsBbCc
+   A==;
 From:   Camel Guo <camel.guo@axis.com>
 To:     <inux@roeck-us.net>, <jdelvare@suse.com>, <robh+dt@kernel.org>,
         <krzk+dt@kernel.org>
 CC:     <kernel@axis.com>, Camel Guo <camel.guo@axis.com>,
         <linux-hwmon@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/2] hwmon/tmp401: add support of three advanced features
-Date:   Mon, 11 Apr 2022 11:56:32 +0200
-Message-ID: <20220411095634.1782732-1-camel.guo@axis.com>
+Subject: [PATCH 2/2] hwmon: (tmp401) Add support of three advanced features
+Date:   Mon, 11 Apr 2022 11:56:34 +0200
+Message-ID: <20220411095634.1782732-3-camel.guo@axis.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220411095634.1782732-1-camel.guo@axis.com>
+References: <20220411095634.1782732-1-camel.guo@axis.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -46,35 +48,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According the their datasheets:
-- TMP401, TMP411 and TMP43x support extended temperature range;
-- TMP411 and TMP43x support n-factor correction;
-- TMP43x support beta compensation.
+tmp401 driver supports TMP401, TMP411 and TMP43X temperature sensors.
+According to their datasheet:
+- all of them support extended temperature range feature;
+- TMP411 and TPM43X support n-factor correction feature;
+- TMP43X support beta compensation feature.
 
-In order to make it possible for users to enable these features and set up them
-based on their needs, this patch series adds the following devicetree bindings:
-- ti,extended-range-enable;
-- ti,n-factor;
-- ti,beta-compensation.
-In the meanwhile, tmp401 driver reads them and configures the coressponding
-registers accordingly.
+In order to support setting them during bootup, this commit reads
+ti,extended-range-enable, ti,n-factor and ti,beta-compensation and set
+the corresponding registers during probing.
 
-Cc: linux-hwmon@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Camel Guo <camel.guo@axis.com>
+---
+ drivers/hwmon/tmp401.c | 43 +++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 42 insertions(+), 1 deletion(-)
 
-Camel Guo (2):
-  dt-bindings: hwmon: Add TMP401, TMP411 and TMP43x
-  hwmon: (tmp401) Add support of three advanced features
-
- .../devicetree/bindings/hwmon/ti,tmp401.yaml  | 111 ++++++++++++++++++
- MAINTAINERS                                   |   1 +
- drivers/hwmon/tmp401.c                        |  43 ++++++-
- 3 files changed, 154 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
-
-
-base-commit: ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
+diff --git a/drivers/hwmon/tmp401.c b/drivers/hwmon/tmp401.c
+index b86d9df7105d..75cdf5d2907e 100644
+--- a/drivers/hwmon/tmp401.c
++++ b/drivers/hwmon/tmp401.c
+@@ -41,6 +41,8 @@ enum chips { tmp401, tmp411, tmp431, tmp432, tmp435 };
+ #define TMP401_STATUS				0x02
+ #define TMP401_CONFIG				0x03
+ #define TMP401_CONVERSION_RATE			0x04
++#define TMP4XX_N_FACTOR_REG			0x18
++#define TMP43X_BETA_RANGE			0x25
+ #define TMP401_TEMP_CRIT_HYST			0x21
+ #define TMP401_MANUFACTURER_ID_REG		0xFE
+ #define TMP401_DEVICE_ID_REG			0xFF
+@@ -543,6 +545,7 @@ static int tmp401_init_client(struct tmp401_data *data)
+ 	struct regmap *regmap = data->regmap;
+ 	u32 config, config_orig;
+ 	int ret;
++	u32 val = 0;
+ 
+ 	/* Set conversion rate to 2 Hz */
+ 	ret = regmap_write(regmap, TMP401_CONVERSION_RATE, 5);
+@@ -557,10 +560,48 @@ static int tmp401_init_client(struct tmp401_data *data)
+ 	config_orig = config;
+ 	config &= ~TMP401_CONFIG_SHUTDOWN;
+ 
++	if (of_property_read_bool(data->client->dev.of_node, "ti,extended-range-enable")) {
++		/* Enable measurement over extended temperature range */
++		config |= TMP401_CONFIG_RANGE;
++	}
++
+ 	data->extended_range = !!(config & TMP401_CONFIG_RANGE);
+ 
+-	if (config != config_orig)
++	if (config != config_orig) {
+ 		ret = regmap_write(regmap, TMP401_CONFIG, config);
++		if (ret < 0)
++			return ret;
++	}
++
++	ret = of_property_read_u32(data->client->dev.of_node, "ti,n-factor", &val);
++	if (!ret) {
++		if (data->kind == tmp401) {
++			dev_err(&data->client->dev, "ti,tmp401 does not support n-factor correction\n");
++			return -EINVAL;
++		}
++		if (val > 255) {
++			dev_err(&data->client->dev, "n-factor is invalid (%u)\n", val);
++			return -EINVAL;
++		}
++		ret = regmap_write(regmap, TMP4XX_N_FACTOR_REG, val);
++		if (ret < 0)
++			return ret;
++	}
++
++	ret = of_property_read_u32(data->client->dev.of_node, "ti,beta-compensation", &val);
++	if (!ret) {
++		if (data->kind == tmp401 || data->kind == tmp411) {
++			dev_err(&data->client->dev, "ti,tmp401 or ti,tmp411 does not support beta compensation\n");
++			return -EINVAL;
++		}
++		if (val > 15) {
++			dev_err(&data->client->dev, "beta-compensation is invalid (%u)\n", val);
++			return -EINVAL;
++		}
++		ret = regmap_write(regmap, TMP43X_BETA_RANGE, val);
++		if (ret < 0)
++			return ret;
++	}
+ 
+ 	return ret;
+ }
 -- 
 2.30.2
 
