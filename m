@@ -2,119 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD9B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 10:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237610AbiDKK3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 06:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41520 "EHLO
+        id S1345485AbiDKK3J (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 06:29:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345438AbiDKK3A (ORCPT
+        with ESMTP id S240659AbiDKK26 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 06:29:00 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336473DDEB;
-        Mon, 11 Apr 2022 03:26:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649672807; x=1681208807;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=w/B9OC3B9ubhCDDuz61ASu2Hiu/rM8Lrj6qHHNYq32U=;
-  b=PEkdTgVIBKpikfPJb9nnVxnlA7BOopgtITPDU0Q2kruQ2xYupDh9yJQ6
-   qfP5fAyJwj3rYVAByYgqb7SUqe9BwckDUuSwI/Dqvyv17zU4iY1KOx3I0
-   Vm5eRey3DGlFnO4zf9RWCvGEyIekG+YMytSUVy5ckG/QnBXCUWjA76yB6
-   U4uN9DJSM8vn3vXJrjDT9slo6xRKaVfktAoTPsgzMHBzEeljNLVcjIIiz
-   8rtG/5hweZad0kRBqP5wBm4MgZlSe1DXFDEu4PC+ZzxwNy28x7pnLmZyv
-   77d5ytlLVp2y4KJJaFSOjRmPtIM/wakOiehx+X3kYmepRGuvFcWmh139E
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="348521541"
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="348521541"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:26:46 -0700
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="644032222"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 03:26:40 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1ndrCE-001BAf-W7;
-        Mon, 11 Apr 2022 13:22:58 +0300
-Date:   Mon, 11 Apr 2022 13:22:58 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tom Rix <trix@redhat.com>
-Cc:     balbi@kernel.org, gregkh@linuxfoundation.org, joel@jms.id.au,
-        andrew@aj.id.au, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        alcooperx@gmail.com, christophe.jaillet@wanadoo.fr,
-        cai.huoqing@linux.dev, benh@kernel.crashing.org,
-        neal_liu@aspeedtech.com, miles.chen@mediatek.com,
-        balamanikandan.gunasundar@microchip.com, macpaul.lin@mediatek.com,
-        s.shtylyov@omp.ru, jakobkoschel@gmail.com,
-        stern@rowland.harvard.edu, quic_wcheng@quicinc.com,
-        yashsri421@gmail.com, rdunlap@infradead.org,
-        linux-geode@lists.infradead.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org,
-        bcm-kernel-feedback-list@broadcom.com
-Subject: Re: [PATCH] usb: gadget: udc: clean up comments
-Message-ID: <YlQBgnjpkSurf9PZ@smile.fi.intel.com>
-References: <20220410150828.1891123-1-trix@redhat.com>
+        Mon, 11 Apr 2022 06:28:58 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AFFD22CCB0;
+        Mon, 11 Apr 2022 03:26:44 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6CCF2169C;
+        Mon, 11 Apr 2022 03:26:44 -0700 (PDT)
+Received: from [10.1.30.132] (e127744.cambridge.arm.com [10.1.30.132])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6B34E3F5A1;
+        Mon, 11 Apr 2022 03:26:40 -0700 (PDT)
+Subject: Re: [PATCH v5 3/5] perf tools: sync addition of PERF_MEM_SNOOPX_PEER
+To:     Ali Saidi <alisaidi@amazon.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, leo.yan@linaro.org,
+        acme@kernel.org
+Cc:     benh@kernel.crashing.org, Nick.Forrington@arm.com,
+        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
+        james.clark@arm.com, john.garry@huawei.com, jolsa@kernel.org,
+        kjain@linux.ibm.com, lihuafei1@huawei.com, mark.rutland@arm.com,
+        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
+        peterz@infradead.org, will@kernel.org
+References: <20220408195344.32764-1-alisaidi@amazon.com>
+ <20220408195344.32764-4-alisaidi@amazon.com>
+From:   German Gomez <german.gomez@arm.com>
+Message-ID: <39448754-adf5-f1ba-25e7-8ee3d76f0159@arm.com>
+Date:   Mon, 11 Apr 2022 11:26:34 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220410150828.1891123-1-trix@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220408195344.32764-4-alisaidi@amazon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 10, 2022 at 11:08:28AM -0400, Tom Rix wrote:
-> SPDX
-> *.h use /* */ style comments
-> 
-> For double words, remove
-> with, also
-> 
-> Spelling replacements
-> wayt to way
-> wakup to wakeup
-> Contrl to Control
-> cheks to checks
-> initiaization to initialization
-> dyanmic to dynamic
 
-Something really wrong with indentation above.
+On 08/04/2022 20:53, Ali Saidi wrote:
+> Add a flag to the perf mem data struct to signal that a request caused a
+> cache-to-cache transfer of a line from a peer of the requestor and
+> wasn't sourced from a lower cache level.  The line being moved from one
+> peer cache to another has latency and performance implications. On Arm64
+> Neoverse systems the data source can indicate a cache-to-cache transfer
+> but not if the line is dirty or clean, so instead of overloading HITM
+> define a new flag that indicates this type of transfer.
 
-...
+I think it's fine to merge this and the previous commit rather than have
+two commits with the same msg.
 
->  drivers/usb/gadget/udc/amd5536udc.h       | 2 +-
->  drivers/usb/gadget/udc/aspeed-vhub/core.c | 2 +-
->  drivers/usb/gadget/udc/aspeed-vhub/ep0.c  | 2 +-
->  drivers/usb/gadget/udc/aspeed-vhub/hub.c  | 2 +-
->  drivers/usb/gadget/udc/aspeed-vhub/vhub.h | 4 ++--
->  drivers/usb/gadget/udc/at91_udc.c         | 2 +-
->  drivers/usb/gadget/udc/bdc/bdc_core.c     | 4 ++--
->  drivers/usb/gadget/udc/core.c             | 4 ++--
->  drivers/usb/gadget/udc/trace.h            | 2 +-
-
-I believe that Greg's bot asks to split on per-driver basis.
-OTOH I don't see anything that can be problematic if in one
-change. So, it's up to maintainers then.
-
-...
-
-> --- a/drivers/usb/gadget/udc/amd5536udc.h
-> +++ b/drivers/usb/gadget/udc/amd5536udc.h
-
->   * amd5536.h -- header for AMD 5536 UDC high/full speed USB device controller
-
-At the same time you may drop the filename(s) from the file(s) as this very
-one shows why it's good not to have a filename inside file.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+>
+> Signed-off-by: Ali Saidi <alisaidi@amazon.com>
+> ---
+>  tools/include/uapi/linux/perf_event.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
+> index 82858b697c05..c9e58c79f3e5 100644
+> --- a/tools/include/uapi/linux/perf_event.h
+> +++ b/tools/include/uapi/linux/perf_event.h
+> @@ -1308,7 +1308,7 @@ union perf_mem_data_src {
+>  #define PERF_MEM_SNOOP_SHIFT	19
+>  
+>  #define PERF_MEM_SNOOPX_FWD	0x01 /* forward */
+> -/* 1 free */
+> +#define PERF_MEM_SNOOPX_PEER	0x02 /* xfer from peer */
+>  #define PERF_MEM_SNOOPX_SHIFT  38
+>  
+>  /* locked instruction */
