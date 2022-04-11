@@ -2,80 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C61C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 06:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244927AbiDKGdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 02:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60546 "EHLO
+        id S244942AbiDKGgH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 02:36:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244109AbiDKGda (ORCPT
+        with ESMTP id S244109AbiDKGgF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 02:33:30 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C9A2DD0;
-        Sun, 10 Apr 2022 23:31:16 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id d9so2831681qvm.4;
-        Sun, 10 Apr 2022 23:31:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=RFwUllTIRMIWM5Lf0IwA2ZRf8BL8H37QwlGOURioq/w=;
-        b=etJ5V57g5PfQnWDjf2F/i1XH8sxmr2Jk3ugaxBTtAVGVjDVnHkAL1Mzw22YXp/2pzW
-         hO1GF3KOqLc16q9C/ivy2/doYtAotkPkJZOyHb+vmYO9UqL26pL022gfRXz7w4Mt8vQd
-         udYVtAb+DdYiri7wm9pID8mMnp8izOZ4GSnc2ioC55nuUrU42hnfXyrOsPF/4wu08ZfV
-         /Hb+v/opc4JI6KRVIjas/N8iXUaWB9yu6zWrM2u4073EUu0y2tXwLjshzAe66AtyaVJw
-         mkmcvrc8NEjtRhqwR4r0l2C9C/uEsZEFLCO1+5yXckU5ykpMC3+/SjrxiRDzGTcUAatH
-         SqPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=RFwUllTIRMIWM5Lf0IwA2ZRf8BL8H37QwlGOURioq/w=;
-        b=ClOhqtRMJt/D0V53D4wRfJzevmc7gpXI27ePwAx0Cyb8dQcuTNddndYEsiWCVi95Kq
-         y30aIXFGgBukkLJDb9ZUVRyTRTcMXx51M1tWGIabSUBhpcX1mw7HgpOGjGBTiInIGHEa
-         XeyLF0kkKoxjLd3wGwMLyzPpNWQR1UVuY7LFebzKzIjwP3wURIOIlbT3SqzLhQEiUpPU
-         qwl1OZICaZWn6qWq+qEX7E/EmzojSuvErBt6BX/nBZVpemm6NtEVn+BMv9DZ62qZlW8F
-         zjFXOR+P29LX5IrTx9ILLpPcBI7DWLPnCmnnww6RN2mKoylK5kYaNygNJ6kLgxp9MI48
-         AjQg==
-X-Gm-Message-State: AOAM532tImpZ2+WgLDY2ixCzlCMnmpE157Ss2dnVb+ivQUgdrgWYz6q0
-        1M9znmbkKwjlnQArSZNDMQpJA8gIyiKZ83Y5adbND0sV2dDX3Q==
-X-Google-Smtp-Source: ABdhPJwl4L3Hs3yCGEEHY0TC1QZOnQmzJQUzs2+k+z+sE9vqwzSjaVBk1isZhK0UOkHwrDuK5CJCUQUktKDE+Q9gIc4=
-X-Received: by 2002:a05:6214:1d02:b0:444:263c:fa36 with SMTP id
- e2-20020a0562141d0200b00444263cfa36mr11629953qvd.36.1649658675707; Sun, 10
- Apr 2022 23:31:15 -0700 (PDT)
+        Mon, 11 Apr 2022 02:36:05 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690DD5F57;
+        Sun, 10 Apr 2022 23:33:52 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id DB7D81F4107B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1649658830;
+        bh=u3uQuEDnE9EX2L4+tIGDl0Cqo3qLuBHUkok5AGR5HKE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=E4SbbvgsRYSjlYEcyx+QlzecVo8btv1iWtsyV18q/LB5p/7rOdWIsF38Z/9ozTjVM
+         iO9jXi51hf3mFHqka7QGjl/NSjfeK2C8HqZlxEHXD9JtBYbGOUFigIjv/0qTtkQFah
+         3fftiVGZTEgSicTKgwaLIaws6gZ3rg951Nv+XpLX1q3UXK93tIQyEaBqKb8hD06vBD
+         uRIxgrytEmT1JzrbwsvnH0xusNOXedyBKhyZgB38KuAfEOsxTTGP/PVM2N7yeQemTq
+         OCWCFbedOc2PcaO1kEBqVPOlZ4bUfILziWv1hZg7mXklLxC+m2Z8AGQ6k5+qFjAx37
+         MNZiZAMcITjxA==
+Message-ID: <0ce65e42-6567-9fd5-d959-3bc5aa0457eb@collabora.com>
+Date:   Mon, 11 Apr 2022 09:33:46 +0300
 MIME-Version: 1.0
-From:   Vishnu Motghare <vishnumotghare@gmail.com>
-Date:   Mon, 11 Apr 2022 12:01:04 +0530
-Message-ID: <CADSz7_efMoSG9wYr_jaaXtG8YB0FkhB4862iL40Y-BeUw+UB+A@mail.gmail.com>
-Subject: gianfar ethernet driver losses Rx-Messages
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     claudiu.manoil@nxp.com, davem@davemloft.net, kuba@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [Patch v6 1/4] memory: tegra: Add memory controller channels
+ support
+Content-Language: en-US
+To:     Ashish Mhetre <amhetre@nvidia.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        krzysztof.kozlowski@linaro.org, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     vdumpa@nvidia.com, Snikam@nvidia.com
+References: <20220406052459.10438-1-amhetre@nvidia.com>
+ <20220406052459.10438-2-amhetre@nvidia.com>
+ <3bbbffff-6aa3-7068-6f0c-4372d53daf94@gmail.com>
+ <ba28886f-be5d-9ab2-41d0-942609934263@nvidia.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <ba28886f-be5d-9ab2-41d0-942609934263@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I have Freescale LS1021A target with kernel version - 5.10.35-rt. The
-device has 3 ethernet ports & one of the ports is used for EtherCAT.
-The Samba service is running on the device, which configures on all
-interfaces by default. We have observed that EtherCAT master losses RX
-messages frequently. On analyzing the tcpdump messages, it is seen
-that loss of RX message is seen immediately after NetBIOS packets
-which are from the samba service. The loss of message counter reported
-by EtherCat Master & Kernel driver is the same. To get the missed RX
-error I've applied a patch from the mainline kernel -
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/drivers/net/ethernet/freescale/gianfar.c?id=14870b75fe0be5c565339f008ba25326f86a7ce8
 
-How gianfar ethernet driver lose RX messages immediately after NetBios
-packets? Any help is appreciated.
+On 4/11/22 09:05, Ashish Mhetre wrote:
+> 
+> 
+> On 4/10/2022 7:48 PM, Dmitry Osipenko wrote:
+>> External email: Use caution opening links or attachments
+>>
+>>
+>> 06.04.2022 08:24, Ashish Mhetre пишет:
+>>> +     num_dt_channels =
+>>> of_property_count_elems_of_size(pdev->dev.of_node, "reg",
+>>> +                                                       reg_cells *
+>>> sizeof(u32));
+>>> +     /*
+>>> +      * On tegra186 onwards, memory controller support multiple
+>>> channels.
+>>> +      * Apart from regular memory controller channels, there is one
+>>> broadcast
+>>> +      * channel and one for stream-id registers.
+>>> +      */
+>>> +     if (num_dt_channels < mc->soc->num_channels + 2) {
+>>> +             dev_warn(&pdev->dev, "MC channels are missing, please
+>>> update memory controller DT node with MC channels\n");
+>>> +             return 0;
+>>> +     }
+>>> +
+>>> +     mc->bcast_ch_regs = devm_platform_ioremap_resource_byname(pdev,
+>>> "mc-broadcast");
+>>> +     if (IS_ERR(mc->bcast_ch_regs))
+>>> +             return PTR_ERR(mc->bcast_ch_regs);
+>>
+>> Looks to me that you don't need to use of_property_count_elems_of_size()
+>> and could only check the "mc-broadcast" presence to decide whether this
+>> is an older DT.
+>>
+> Now that we are using reg-names in new DT, yes it'd be fine to just
+> check mc-broadcast to decide it's a new or old DT.
+> 
+>> mc->bcast_ch_regs = devm_platform_ioremap_resource_byname(pdev,
+>> "broadcast");
+>> if (IS_ERR(mc->bcast_ch_regs)) {
+>>          dev_warn(&pdev->dev, "Broadcast channel is missing, please
+>> update your
+>> device-tree\n");
+>>          return PTR_ERR(mc->bcast_ch_regs);
+>> }
+> 
+> return 0;
+> 
+> to avoid DT ABI break, right?
 
-ifconfig output:
-
-ETH1 Link encap:Ethernet  HWaddr 70:B3:D5:AB:45:73
-          inet addr:192.168.137.248  Bcast:255.255.255.255  Mask:255.255.255.0
-          UP BROADCAST RUNNING PROMISC MULTICAST  MTU:1500  Metric:1
-          RX packets:737729 errors:0 dropped:8 overruns:0 frame:0
-          TX packets:737753 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000
-          RX bytes:96268280 (91.8 MiB)  TX bytes:96273512 (91.8 MiB)
-          Base address:0x3000
+Yes, it should be "return 0".
