@@ -2,108 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B846C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 08:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DD7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 08:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343593AbiDKINu (ORCPT
+        id S1343600AbiDKIOv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 04:13:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33394 "EHLO
+        Mon, 11 Apr 2022 04:14:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343588AbiDKINo (ORCPT
+        with ESMTP id S231967AbiDKIOs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 04:13:44 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9907C3E0CB;
-        Mon, 11 Apr 2022 01:11:30 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 9F06F596;
-        Mon, 11 Apr 2022 10:11:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1649664688;
-        bh=MLYkgbpD54iW6+0JAiuvwZl8Q20HOOXZR9m9Prv7njw=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=ce7Bg1cdNzrLNOY6mAtdqI87+BAgT7n8mBUFY0XyebE2eW45SUhW8XDpVvj4tN3a4
-         3ef+02Z4PslMY6wGlvA2hVC7ePDBbiC7o1d2cw2EGLIwSuowcvwKxFd7AomrjMMdU3
-         9yK4dmUoLp+IQ9WJUdmdLA2kUQFb4GTuYAEyqgc0=
-Content-Type: text/plain; charset="utf-8"
+        Mon, 11 Apr 2022 04:14:48 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0BB3DDFA;
+        Mon, 11 Apr 2022 01:12:34 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5ae91f.dynamic.kabel-deutschland.de [95.90.233.31])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 7A71061EA1923;
+        Mon, 11 Apr 2022 10:12:32 +0200 (CEST)
+Message-ID: <ccf4d29e-9efb-23ea-b706-f00cde7ead4b@molgen.mpg.de>
+Date:   Mon, 11 Apr 2022 10:12:32 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220411080120.26008-2-Ping-lei.Lin@mediatek.com>
-References: <20220411080120.26008-1-Ping-lei.Lin@mediatek.com> <20220411080120.26008-2-Ping-lei.Lin@mediatek.com>
-Subject: Re: [PATCH v2 1/2] media: usb: uvc: Add H265 pixel format
-From:   Kieran Bingham <kieran.bingham@ideasonboard.com>
-Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ricardo Ribalda <ribalda@chromium.org>,
-        Ming Qian <ming.qian@nxp.com>,
-        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, ping-lei.lin@mediatek.com,
-        lecopzer.chen@mediatek.com, max.yan@mediatek.com,
-        sherlock.chang@mediatek.com, tm.wu@mediatek.com,
-        James_Lin <Ping-lei.Lin@mediatek.com>
-To:     James_Lin <Ping-lei.Lin@mediatek.com>, linux-kernel@vger.kernel.org
-Date:   Mon, 11 Apr 2022 09:11:25 +0100
-Message-ID: <164966468564.22830.10326597921182135832@Monstersaurus>
-User-Agent: alot/0.10
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v6 1/3] ARM: dts: nuvoton: Add memory controller node
+Content-Language: en-US
+To:     Medad Young <medadyoung@gmail.com>
+Cc:     rric@kernel.org, James Morse <james.morse@arm.com>,
+        tony.luck@intel.com, Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Patrick Venture <venture@google.com>, KWLIU@nuvoton.com,
+        YSCHU@nuvoton.com, JJLIU0@nuvoton.com, KFTING@nuvoton.com,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>, ctcchien@nuvoton.com,
+        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org,
+        LKML <linux-kernel@vger.kernel.org>, linux-edac@vger.kernel.org
+References: <20220322030152.19018-1-ctcchien@nuvoton.com>
+ <20220322030152.19018-2-ctcchien@nuvoton.com>
+ <c73bf178-f5bd-01c6-209d-051706112877@molgen.mpg.de>
+ <CAHpyw9ckLUNe8biEFSjHBndG_WD-7O-QsHO8Rr0eoXbROH0dUQ@mail.gmail.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <CAHpyw9ckLUNe8biEFSjHBndG_WD-7O-QsHO8Rr0eoXbROH0dUQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting James_Lin (2022-04-11 09:01:19)
-> Add H265 pixel format.
-> So driver can recognize external camera devices=20
-> whom use h265 to describe High Efficiency Video Coding method.
->=20
-> Signed-off-by: James_Lin <Ping-lei.Lin@mediatek.com>
-> ---
->  drivers/media/usb/uvc/uvc_driver.c | 5 +++++
->  drivers/media/usb/uvc/uvcvideo.h   | 3 +++
->  2 files changed, 8 insertions(+)
->=20
-> diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/u=
-vc_driver.c
-> index dda0f0aa78b8..ebb807c33e57 100644
-> --- a/drivers/media/usb/uvc/uvc_driver.c
-> +++ b/drivers/media/usb/uvc/uvc_driver.c
-> @@ -154,6 +154,11 @@ static struct uvc_format_desc uvc_fmts[] =3D {
->                 .guid           =3D UVC_GUID_FORMAT_H264,
->                 .fcc            =3D V4L2_PIX_FMT_H264,
->         },
-> +       {
-> +               .name           =3D "H.265",
-> +               .guid           =3D UVC_GUID_FORMAT_H265,
-> +               .fcc            =3D V4L2_PIX_FMT_H265,
+Dear Medad,
 
-This is not yet defined I believe, so this patch needs to be 2/2 in this
-series - with your following patch first so that they can both compile
-independently.
 
-> +       },
->         {
->                 .name           =3D "Greyscale 8 L/R (Y8I)",
->                 .guid           =3D UVC_GUID_FORMAT_Y8I,
-> diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvc=
-video.h
-> index 143230b3275b..41f4d8c33f2a 100644
-> --- a/drivers/media/usb/uvc/uvcvideo.h
-> +++ b/drivers/media/usb/uvc/uvcvideo.h
-> @@ -139,6 +139,9 @@
->  #define UVC_GUID_FORMAT_H264 \
->         { 'H',  '2',  '6',  '4', 0x00, 0x00, 0x10, 0x00, \
->          0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
-> +#define UVC_GUID_FORMAT_H265 \
-> +       { 'H',  '2',  '6',  '5', 0x00, 0x00, 0x10, 0x00, \
-> +        0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
->  #define UVC_GUID_FORMAT_Y8I \
->         { 'Y',  '8',  'I',  ' ', 0x00, 0x00, 0x10, 0x00, \
->          0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
-> --=20
-> 2.18.0
->
+Thank you for your reply.
+
+Am 11.04.22 um 09:56 schrieb Medad Young:
+
+[…]
+
+> Paul Menzel 於 2022年4月9日 週六 下午1:57寫道：
+
+>> Thank you for the patch.
+>>
+>> Am 22.03.22 um 04:01 schrieb Medad CChien:
+>>> ECC must be configured in the BootBlock header.
+>>
+>> bootblock
+>>
+>> I search for *bootblock* in Linux and the git commit messages, and does
+>> not seem to be a common term. Is that term used in the datasheet?
+> 
+> Yes, bootblock is a bootloader of our SOC
+
+Nice. Never heard of it before. Maybe add the project URL as reference 
+for the ignorant like me.
+
+>>> Then, you can read error counts via
+>>> the EDAC kernel framework.
+>>
+>> Please reflow for 75 characters per line. (Also, there is no need to
+>> break lines after a sentence, unless 75 characters are reached or a new
+>> paragraph starts.)
+>>
+>> Tested on what board?
+> 
+> I tested this on Nuvoton's BMC board
+
+It would be nice to have that with the model number documented in the 
+commit message.
+
+>>> Signed-off-by: Medad CChien <ctcchien@nuvoton.com>
+>>
+>> Out of curiosity, is the first C in CChien the letter of your middle
+>> name, or the last name really spelled with two capital letters in the
+>> beginning?
+> 
+> this is a special last name in chinese.
+> my last name does really spell with two capital letters in the beginning.
+
+Interesting. Thank you for teaching me new things.
+
+
+Kind regards,
+
+Paul
