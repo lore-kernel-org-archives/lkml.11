@@ -2,114 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EED53C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 540A7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 09:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343785AbiDKJkI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 05:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38788 "EHLO
+        id S239358AbiDKJkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 05:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344633AbiDKJjt (ORCPT
+        with ESMTP id S1344599AbiDKJkI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 05:39:49 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCE740923;
-        Mon, 11 Apr 2022 02:37:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649669853; x=1681205853;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=wVjlORT4Ee/YTCdDKrpjhYEEMJhlDlPVyc5jVtqX37o=;
-  b=IZ6jW7MC2e6S7MLlR1l0KJdC0Xt1PCVweohDP7hW9dBMBhdLRxOGgO2A
-   KPBHdd+qgPIW8CJR+kIbul2s0zQ1kl5/sodNbATZ60PVgTEBqvp6+CiyA
-   JG6v6sEf9Ba8YtdYpGLMWgkob5bIXP28QUYt/w/U89P3EolvULwCxJ3F7
-   Y2prGcHNRohyVTx24LpqomfQ/zpxrBHJuMVgs51ZgknS4PBCNsAyx6u+P
-   ARNSjWCcuf2CtyWXoUaCC6cNTnVWy4j7gWvt3X4oY638GrAE8Qre2RNJW
-   80WaRV9v9wHKNVInnSGRlQsUF7LU5JpWuUZyQf+7G6cn0LO9sfUv3uJEc
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10313"; a="259671479"
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="259671479"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 02:37:09 -0700
-X-IronPort-AV: E=Sophos;i="5.90,251,1643702400"; 
-   d="scan'208";a="572050567"
-Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2022 02:37:03 -0700
-From:   Zeng Guang <guang.zeng@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
-        Zeng Guang <guang.zeng@intel.com>
-Subject: [PATCH v8 7/9] KVM: Move kvm_arch_vcpu_precreate() under kvm->lock
-Date:   Mon, 11 Apr 2022 17:04:45 +0800
-Message-Id: <20220411090447.5928-8-guang.zeng@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220411090447.5928-1-guang.zeng@intel.com>
-References: <20220411090447.5928-1-guang.zeng@intel.com>
+        Mon, 11 Apr 2022 05:40:08 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E099240921;
+        Mon, 11 Apr 2022 02:37:53 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AA5AE143D;
+        Mon, 11 Apr 2022 02:37:53 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.9.30])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 68CBA3F73B;
+        Mon, 11 Apr 2022 02:37:52 -0700 (PDT)
+Date:   Mon, 11 Apr 2022 10:37:48 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     guoren@kernel.org
+Cc:     arnd@arndb.de, peterz@infradead.org, linux-csky@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guo Ren <guoren@linux.alibaba.com>
+Subject: Re: [PATCH] csky: cmpxchg: Optimize with acquire & release
+Message-ID: <YlP27GT05DdyFjlY@FVFF77S0Q05N>
+References: <20220406124056.684117-1-guoren@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406124056.684117-1-guoren@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Arch specific KVM common data may require pre-allocation or other
-preprocess ready before vCPU creation at runtime. It's safe to
-invoke kvm_arch_vcpu_precreate() within the protection of kvm->lock
-directly rather than take into account in the implementation for each
-architecture.
+Hi Guo,
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Zeng Guang <guang.zeng@intel.com>
----
- arch/s390/kvm/kvm-s390.c | 2 --
- virt/kvm/kvm_main.c      | 2 +-
- 2 files changed, 1 insertion(+), 3 deletions(-)
+On Wed, Apr 06, 2022 at 08:40:56PM +0800, guoren@kernel.org wrote:
+> From: Guo Ren <guoren@linux.alibaba.com>
+> 
+> Optimize arch_xchg|cmpxchg|cmpxchg_local with  ASM acquire|release
+> instructions instead of previous C based.
+> 
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Signed-off-by: Guo Ren <guoren@kernel.org>
+> ---
+>  arch/csky/include/asm/barrier.h |   8 +-
+>  arch/csky/include/asm/cmpxchg.h | 173 ++++++++++++++++++++++++++++++--
+>  2 files changed, 172 insertions(+), 9 deletions(-)
+> 
+> diff --git a/arch/csky/include/asm/barrier.h b/arch/csky/include/asm/barrier.h
+> index f4045dd53e17..a075f17d02dd 100644
+> --- a/arch/csky/include/asm/barrier.h
+> +++ b/arch/csky/include/asm/barrier.h
+> @@ -37,6 +37,9 @@
+>   * bar.brar
+>   * bar.bwaw
+>   */
+> +#define ACQUIRE_FENCE		".long 0x8427c000\n"
+> +#define RELEASE_FENCE		".long 0x842ec000\n"
 
-diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-index 156d1c25a3c1..5c795bbcf1ea 100644
---- a/arch/s390/kvm/kvm-s390.c
-+++ b/arch/s390/kvm/kvm-s390.c
-@@ -3042,9 +3042,7 @@ static int sca_can_add_vcpu(struct kvm *kvm, unsigned int id)
- 	if (!sclp.has_esca || !sclp.has_64bscao)
- 		return false;
- 
--	mutex_lock(&kvm->lock);
- 	rc = kvm->arch.use_esca ? 0 : sca_switch_to_extended(kvm);
--	mutex_unlock(&kvm->lock);
- 
- 	return rc == 0 && id < KVM_S390_ESCA_CPU_SLOTS;
- }
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 70e05af5ebea..a452e678a015 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -3732,9 +3732,9 @@ static int kvm_vm_ioctl_create_vcpu(struct kvm *kvm, u32 id)
- 	}
- 
- 	kvm->created_vcpus++;
-+	r = kvm_arch_vcpu_precreate(kvm, id);
- 	mutex_unlock(&kvm->lock);
- 
--	r = kvm_arch_vcpu_precreate(kvm, id);
- 	if (r)
- 		goto vcpu_decrement;
- 
--- 
-2.27.0
+[...]
 
+> +#define __xchg(new, ptr, size)					\
+> +({								\
+> +	__typeof__(ptr) __ptr = (ptr);				\
+> +	__typeof__(new) __new = (new);				\
+> +	__typeof__(*(ptr)) __ret;				\
+> +	unsigned long tmp;					\
+> +	switch (size) {						\
+> +	case 4:							\
+> +		asm volatile (					\
+> +		"1:	ldex.w		%0, (%3) \n"		\
+> +		ACQUIRE_FENCE					\
+> +		"	mov		%1, %2   \n"		\
+> +		RELEASE_FENCE					\
+> +		"	stex.w		%1, (%3) \n"		\
+> +		"	bez		%1, 1b   \n"		\
+> +			: "=&r" (__ret), "=&r" (tmp)		\
+> +			: "r" (__new), "r"(__ptr)		\
+> +			:);					\
+
+As with the riscv case, I believe this suffers the problem described in:
+
+  8e86f0b409a44193 ("arm64: atomics: fix use of acquire + release for full barrier semantics")
+
+... and does not provide FULL ordering semantics.
+
+[...]
+
+> +#define __cmpxchg(ptr, old, new, size)				\
+> +({								\
+> +	__typeof__(ptr) __ptr = (ptr);				\
+> +	__typeof__(new) __new = (new);				\
+> +	__typeof__(new) __tmp;					\
+> +	__typeof__(old) __old = (old);				\
+> +	__typeof__(*(ptr)) __ret;				\
+> +	switch (size) {						\
+> +	case 4:							\
+> +		asm volatile (					\
+> +		"1:	ldex.w		%0, (%3) \n"		\
+> +		ACQUIRE_FENCE					\
+> +		"	cmpne		%0, %4   \n"		\
+> +		"	bt		2f       \n"		\
+> +		"	mov		%1, %2   \n"		\
+> +		RELEASE_FENCE					\
+> +		"	stex.w		%1, (%3) \n"		\
+> +		"	bez		%1, 1b   \n"		\
+> +		"2:				 \n"		\
+> +			: "=&r" (__ret), "=&r" (__tmp)		\
+> +			: "r" (__new), "r"(__ptr), "r"(__old)	\
+> +			:);					\
+
+Likewise.
+
+Thanks,
+Mark.
