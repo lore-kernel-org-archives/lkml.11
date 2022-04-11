@@ -2,88 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 07:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B7A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 07:41:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245573AbiDKHnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 03:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41356 "EHLO
+        id S245591AbiDKHnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 03:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245587AbiDKHmj (ORCPT
+        with ESMTP id S245574AbiDKHn0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 03:42:39 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C713883
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 00:40:24 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id l9-20020a05600c4f0900b0038ccd1b8642so8462374wmq.0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 00:40:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=3oyYPOVpIkmBff/7EiYsTw/AJNyS2XGBHLuSoNlzrgc=;
-        b=d2HH6ugGb0vTvfwTwMnns8hVdf/MUzdBfmAd2yVAKdDr2qmC2I4QGziGamzcNN/+9f
-         YOdBw38xMBcFMdWpAcm47rjnaQ5BtsqtpHPBFM5y+HRbuzodRgolmmh8G/7t79sE61Ag
-         E0wavwZcosleiwSBQ/FEJkd0Tj/jS3tQ8hiLcIBKfyWki2f3j3MPx5brenieHJUtOPYj
-         rLIyDl/FbFINnAhhgL5v6xZzsAsgpa2QCbvGShcAl9DyBcB8jsro+CW4Hp9LEWhmq69X
-         /AK3KdaoYoOaw72iDO6Noqe0rQGpksMvP+9cPpoE1ESrXmaDlxYBi2JEGsjgaSjVnNbf
-         Nx4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=3oyYPOVpIkmBff/7EiYsTw/AJNyS2XGBHLuSoNlzrgc=;
-        b=rALOQv5b/QyhKGmze1hsRa+7kOFzH80qpZdoanBTB+VHars3i/g1RouQm2gKgyMy9g
-         XWZI9Bdv6umwUTQQz3reYYxAfaCAidDxzysLDy2OkGsVWKTxWDCZDGROOtOM0fvAdW2u
-         QfxR2shoDijP5HyFDEP3tCcAYze+A0pz603suJ0wA1i0HeGyYaO/cc3rBdrz7XCqr+BV
-         L4GqsMCdpKI4qa7qEfeJyn+h2rIkt5NKjMiSLyr8VSGytB2VFZFk0MPNd4Sqdll1ticH
-         bF4MbR94HMjMxnOFlZNxAlvC92D1OtT5+ZDpfBzpx5NPtj6A9Z8MetkSxyhKJ4XxqJDL
-         bB4g==
-X-Gm-Message-State: AOAM530uZquUBMG7MCTNVMbiUL89gwU4BF6ZxqZOp4uENv4IrBgV0Y58
-        1uzhmqOeAyokIbtvOAJQbaJDbg==
-X-Google-Smtp-Source: ABdhPJx62ggZUG3BXe7S+CQUxyEq/166nIQzx3Hblm5hVassqt37mQgy9+cc9KMTOtKbn3qxxPImrw==
-X-Received: by 2002:a7b:c057:0:b0:37b:ebad:c9c8 with SMTP id u23-20020a7bc057000000b0037bebadc9c8mr27467966wmc.61.1649662822962;
-        Mon, 11 Apr 2022 00:40:22 -0700 (PDT)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id v13-20020adfe28d000000b0020375f27a5asm26909964wri.4.2022.04.11.00.40.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 00:40:22 -0700 (PDT)
-Date:   Mon, 11 Apr 2022 09:40:20 +0200
-From:   LABBE Corentin <clabbe@baylibre.com>
-To:     John Keeping <john@metanate.com>
-Cc:     heiko@sntech.de, herbert@gondor.apana.org.au, krzk+dt@kernel.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH v4 18/33] crypto: rockchip: fix style issue
-Message-ID: <YlPbZGt3mVk25CWi@Red>
-References: <20220401201804.2867154-1-clabbe@baylibre.com>
- <20220401201804.2867154-19-clabbe@baylibre.com>
- <YkrY/9xE702mqKR/@donbot>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YkrY/9xE702mqKR/@donbot>
+        Mon, 11 Apr 2022 03:43:26 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F645F70
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 00:41:07 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 73A9C1F37D;
+        Mon, 11 Apr 2022 07:41:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1649662866; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jn50J4OXXzYzRftzsfTWnK2V/NAvOb/ccwOAXbOa7rA=;
+        b=B32e+ZkDqLxKQiB82LhRcriS4BBbCsRbQ7CBAowvjDo8cXZj0bTnjc3lVJCRtLOZqfWoT9
+        eN5zyYwtxd/waVVDEWP72KupUrEqzbwLmQvP7sIaQZ9cw3ycQDqqzKpmU8gKmeN0DkngFZ
+        7gdyPUgFZXalitHmc5y/l7x/KFv5F9g=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1649662866;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jn50J4OXXzYzRftzsfTWnK2V/NAvOb/ccwOAXbOa7rA=;
+        b=yBcd7j5JQW03huMKC4RdjnrINErxiruAZuh9oVX2QkaMsxZvmIao1e0qPl8wB0M9QtM6iw
+        vu6H+km8NWzCrsBA==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 6B7AEA3BA9;
+        Mon, 11 Apr 2022 07:41:06 +0000 (UTC)
+Date:   Mon, 11 Apr 2022 09:41:06 +0200
+Message-ID: <s5hk0bwcbjh.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [BUG] ALSA: echoaudio: warning when the driver fails to probe
+In-Reply-To: <CAMhUBjm2AdyEZ_-EgexdNDN7SvY4f89=4=FwAL+c0Mg0O+X50A@mail.gmail.com>
+References: <CAMhUBjm2AdyEZ_-EgexdNDN7SvY4f89=4=FwAL+c0Mg0O+X50A@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Mon, Apr 04, 2022 at 12:39:43PM +0100, John Keeping a écrit :
-> On Fri, Apr 01, 2022 at 08:17:49PM +0000, Corentin Labbe wrote:
-> > This patch fixes some warning reported by checkpatch
-> > 
-> > Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> > ---
-> >  drivers/crypto/rockchip/rk3288_crypto_ahash.c | 12 ++++++------
-> >  1 file changed, 6 insertions(+), 6 deletions(-)
+On Sun, 10 Apr 2022 11:13:55 +0200,
+Zheyu Ma wrote:
 > 
-> There's also a badly indented comment in rk_hash_run() which could be
-> fixed in this patch.
+> Hello,
+> 
+> I found a bug in echoaudio.c.
+> When the driver fails at the function snd_echo_create(), it should
+> release resources requested before, otherwise we will get the
+> following warning:
+> 
+> [    3.262866] remove_proc_entry: removing non-empty directory
+> 'irq/21', leaking at least 'snd_indigodj'
+> [    3.263577] WARNING: CPU: 3 PID: 261 at fs/proc/generic.c:717
+> remove_proc_entry+0x389/0x3f0
+> [    3.267098] RIP: 0010:remove_proc_entry+0x389/0x3f0
+> [    3.269976] Call Trace:
+> [    3.269979]  <TASK>
+> [    3.269988]  unregister_irq_proc+0x14c/0x170
+> [    3.269997]  irq_free_descs+0x94/0xe0
+> [    3.270004]  mp_unmap_irq+0xb6/0x100
+> [    3.270011]  acpi_unregister_gsi_ioapic+0x27/0x40
+> [    3.270017]  acpi_pci_irq_disable+0x1d3/0x320
+> [    3.270025]  pci_disable_device+0x1ad/0x380
+> [    3.270034]  pcim_release+0x566/0x6d0
+> [    3.270046]  devres_release_all+0x1f1/0x2c0
+> [    3.270057]  really_probe+0xe0/0x920
 
-Hello
+Could you try the patch below?
 
-Thanks, I will fix it.
 
-Regards
+thanks,
+
+Takashi
+
+---
+--- a/sound/pci/echoaudio/echoaudio.c
++++ b/sound/pci/echoaudio/echoaudio.c
+@@ -1906,9 +1906,6 @@ static int snd_echo_create(struct snd_card *card,
+ 
+ 	pci_write_config_byte(pci, PCI_LATENCY_TIMER, 0xC0);
+ 
+-	err = pcim_enable_device(pci);
+-	if (err < 0)
+-		return err;
+ 	pci_set_master(pci);
+ 
+ 	/* Allocate chip if needed */
+@@ -1987,6 +1984,10 @@ static int snd_echo_probe(struct pci_dev *pci,
+ 		return -ENOENT;
+ 	}
+ 
++	err = pcim_enable_device(pci);
++	if (err < 0)
++		return err;
++
+ 	i = 0;
+ 	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+ 				sizeof(*chip), &card);
