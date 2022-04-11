@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9746C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:16:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE854C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Apr 2022 14:16:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347102AbiDKOSg (ORCPT
+        id S1347124AbiDKOSj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 10:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47666 "EHLO
+        Mon, 11 Apr 2022 10:18:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347215AbiDKORa (ORCPT
+        with ESMTP id S1347259AbiDKORd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 10:17:30 -0400
+        Mon, 11 Apr 2022 10:17:33 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB391572B
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:15:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01AE815FCF
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 07:15:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=D/qHlb+7dLjAdRKBkjBI4C8NKknEUaNUR3EGBN9ePTE=; b=AxduoX3dz8de23OJDv7YkCCNvs
-        un/Y+aXd9HBFedosqC8ahNdM2weSL2uKq9FEVLSya7w4LKztddzWySObYPxzK7sY9w818Iv+spHRS
-        rfnJxsl3/uivIRg5pkmgR+kY4V+yMUG+yTKFUdRt1lZ7XS+VqjHw6Iy33j26itiKrPSBCpMON56n3
-        0HolyY0AbXtTfnSVmvoO3+YqE98ajozMsts2hhqYsWBR6IdImNggmyssH3haG8ZBuUepC1ElWUL+r
-        bJs/XUd/tW7vBu2XKBDtXdKrv3o9qMAQDtSwM+X7BznbUxL6JFljdKYsrh1D1e3Jft5rO0qHFNJHY
-        YhaqJ38Q==;
+        bh=eTapU+qb2KEkjsgj15J8pI3EkVyVl4s2YNf0gK+0O7U=; b=ns+Mibr21ehnGbN7J0eHMDIali
+        0DiusLOZ7u9CNVlvwGnRjbsJc1ZiXWu3ReRVS+ip3JQDRfNdZLuknnoAs8+0R+N/JFzQrxC2AoSvb
+        /cKwSoMuNrgM16+Kj1/QVT6QlnmFCwxrEyjHaWKo+nZ6evX16osYY3ujTfCowO+gNuUmGVsqpnUMY
+        riw91L9KUDHIBD3KbL52gXdXF5br4D4fvWxgPhwo9LNFOr+vz97Vkw374CZ6OcCAwmOmeV8ik5B61
+        +ORrXNg5E7iGQRVMKMnXkhcKQT3l9xVEa2+MTIJOU/TdlrY2Sq6F5xNIGZlB/KGKMhvsTME7oz7Nh
+        EHVP+Pcg==;
 Received: from [2001:4bb8:18e:76f5:3747:ef85:d03d:53e4] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nduol-009Kg0-F0; Mon, 11 Apr 2022 14:14:59 +0000
+        id 1nduor-009Kjf-34; Mon, 11 Apr 2022 14:15:05 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
@@ -38,9 +38,9 @@ To:     Jani Nikula <jani.nikula@linux.intel.com>,
 Cc:     Jason Gunthorpe <jgg@nvidia.com>, intel-gfx@lists.freedesktop.org,
         intel-gvt-dev@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 17/34] drm/i915/gvt: devirtualize ->inject_msi
-Date:   Mon, 11 Apr 2022 16:13:46 +0200
-Message-Id: <20220411141403.86980-18-hch@lst.de>
+Subject: [PATCH 19/34] drm/i915/gvt: devirtualize ->gfn_to_mfn
+Date:   Mon, 11 Apr 2022 16:13:48 +0200
+Message-Id: <20220411141403.86980-20-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220411141403.86980-1-hch@lst.de>
 References: <20220411141403.86980-1-hch@lst.de>
@@ -51,169 +51,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just open code the MSI injection in a single place instead of going
-through the method table.
+Just open code it in the only caller.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
+ drivers/gpu/drm/i915/gvt/gtt.c       |  9 +++++----
  drivers/gpu/drm/i915/gvt/hypercall.h |  1 -
- drivers/gpu/drm/i915/gvt/interrupt.c | 38 +++++++++++++++++++++++++++-
- drivers/gpu/drm/i915/gvt/kvmgt.c     | 24 ------------------
- drivers/gpu/drm/i915/gvt/mpt.h       | 37 ---------------------------
- 4 files changed, 37 insertions(+), 63 deletions(-)
+ drivers/gpu/drm/i915/gvt/kvmgt.c     | 16 ----------------
+ drivers/gpu/drm/i915/gvt/mpt.h       | 14 --------------
+ 4 files changed, 5 insertions(+), 35 deletions(-)
 
+diff --git a/drivers/gpu/drm/i915/gvt/gtt.c b/drivers/gpu/drm/i915/gvt/gtt.c
+index 1360412f8ef8a..f6f3b22a70d26 100644
+--- a/drivers/gpu/drm/i915/gvt/gtt.c
++++ b/drivers/gpu/drm/i915/gvt/gtt.c
+@@ -1178,15 +1178,16 @@ static int is_2MB_gtt_possible(struct intel_vgpu *vgpu,
+ 	struct intel_gvt_gtt_entry *entry)
+ {
+ 	const struct intel_gvt_gtt_pte_ops *ops = vgpu->gvt->gtt.pte_ops;
+-	unsigned long pfn;
++	kvm_pfn_t pfn;
+ 
+ 	if (!HAS_PAGE_SIZES(vgpu->gvt->gt->i915, I915_GTT_PAGE_SIZE_2M))
+ 		return 0;
+ 
+-	pfn = intel_gvt_hypervisor_gfn_to_mfn(vgpu, ops->get_pfn(entry));
+-	if (pfn == INTEL_GVT_INVALID_ADDR)
++	if (!vgpu->attached)
++		return -EINVAL;
++	pfn = gfn_to_pfn(vgpu->kvm, ops->get_pfn(entry));
++	if (is_error_noslot_pfn(pfn))
+ 		return -EINVAL;
+-
+ 	return PageTransHuge(pfn_to_page(pfn));
+ }
+ 
 diff --git a/drivers/gpu/drm/i915/gvt/hypercall.h b/drivers/gpu/drm/i915/gvt/hypercall.h
-index 08c622c4079bb..de63bd8dd05ba 100644
+index c1a9eeed04607..dbde492cafc84 100644
 --- a/drivers/gpu/drm/i915/gvt/hypercall.h
 +++ b/drivers/gpu/drm/i915/gvt/hypercall.h
-@@ -45,7 +45,6 @@ struct intel_vgpu;
- struct intel_gvt_mpt {
- 	int (*host_init)(struct device *dev, void *gvt);
+@@ -47,7 +47,6 @@ struct intel_gvt_mpt {
  	void (*host_exit)(struct device *dev, void *gvt);
--	int (*inject_msi)(struct intel_vgpu *vgpu, u32 addr, u16 data);
  	int (*enable_page_track)(struct intel_vgpu *vgpu, u64 gfn);
  	int (*disable_page_track)(struct intel_vgpu *vgpu, u64 gfn);
- 	unsigned long (*gfn_to_mfn)(struct intel_vgpu *vgpu, unsigned long gfn);
-diff --git a/drivers/gpu/drm/i915/gvt/interrupt.c b/drivers/gpu/drm/i915/gvt/interrupt.c
-index 228f623d466d0..012e366baab43 100644
---- a/drivers/gpu/drm/i915/gvt/interrupt.c
-+++ b/drivers/gpu/drm/i915/gvt/interrupt.c
-@@ -397,9 +397,45 @@ static void init_irq_map(struct intel_gvt_irq *irq)
- }
+-	unsigned long (*gfn_to_mfn)(struct intel_vgpu *vgpu, unsigned long gfn);
  
- /* =======================vEvent injection===================== */
-+
-+#define MSI_CAP_CONTROL(offset) (offset + 2)
-+#define MSI_CAP_ADDRESS(offset) (offset + 4)
-+#define MSI_CAP_DATA(offset) (offset + 8)
-+#define MSI_CAP_EN 0x1
-+
- static int inject_virtual_interrupt(struct intel_vgpu *vgpu)
- {
--	return intel_gvt_hypervisor_inject_msi(vgpu);
-+	unsigned long offset = vgpu->gvt->device_info.msi_cap_offset;
-+	u16 control, data;
-+	u32 addr;
-+
-+	control = *(u16 *)(vgpu_cfg_space(vgpu) + MSI_CAP_CONTROL(offset));
-+	addr = *(u32 *)(vgpu_cfg_space(vgpu) + MSI_CAP_ADDRESS(offset));
-+	data = *(u16 *)(vgpu_cfg_space(vgpu) + MSI_CAP_DATA(offset));
-+
-+	/* Do not generate MSI if MSIEN is disabled */
-+	if (!(control & MSI_CAP_EN))
-+		return 0;
-+
-+	if (WARN(control & GENMASK(15, 1), "only support one MSI format\n"))
-+		return -EINVAL;
-+
-+	trace_inject_msi(vgpu->id, addr, data);
-+
-+	/*
-+	 * When guest is powered off, msi_trigger is set to NULL, but vgpu's
-+	 * config and mmio register isn't restored to default during guest
-+	 * poweroff. If this vgpu is still used in next vm, this vgpu's pipe
-+	 * may be enabled, then once this vgpu is active, it will get inject
-+	 * vblank interrupt request. But msi_trigger is null until msi is
-+	 * enabled by guest. so if msi_trigger is null, success is still
-+	 * returned and don't inject interrupt into guest.
-+	 */
-+	if (!vgpu->attached)
-+		return -ESRCH;
-+	if (vgpu->msi_trigger && eventfd_signal(vgpu->msi_trigger, 1) != 1)
-+		return -EFAULT;
-+	return 0;
- }
- 
- static void propagate_event(struct intel_gvt_irq *irq,
+ 	int (*dma_map_guest_page)(struct intel_vgpu *vgpu, unsigned long gfn,
+ 				  unsigned long size, dma_addr_t *dma_addr);
 diff --git a/drivers/gpu/drm/i915/gvt/kvmgt.c b/drivers/gpu/drm/i915/gvt/kvmgt.c
-index 4a6fed80c629a..1d1c026fd8258 100644
+index 93fd7f997c8a1..6d4c67270172a 100644
 --- a/drivers/gpu/drm/i915/gvt/kvmgt.c
 +++ b/drivers/gpu/drm/i915/gvt/kvmgt.c
-@@ -1874,29 +1874,6 @@ void intel_vgpu_detach_regions(struct intel_vgpu *vgpu)
+@@ -1874,21 +1874,6 @@ void intel_vgpu_detach_regions(struct intel_vgpu *vgpu)
  	vgpu->region = NULL;
  }
  
--static int kvmgt_inject_msi(struct intel_vgpu *vgpu, u32 addr, u16 data)
+-static unsigned long kvmgt_gfn_to_pfn(struct intel_vgpu *vgpu,
+-		unsigned long gfn)
 -{
+-	kvm_pfn_t pfn;
+-
 -	if (!vgpu->attached)
--		return -ESRCH;
+-		return INTEL_GVT_INVALID_ADDR;
 -
--	/*
--	 * When guest is poweroff, msi_trigger is set to NULL, but vgpu's
--	 * config and mmio register isn't restored to default during guest
--	 * poweroff. If this vgpu is still used in next vm, this vgpu's pipe
--	 * may be enabled, then once this vgpu is active, it will get inject
--	 * vblank interrupt request. But msi_trigger is null until msi is
--	 * enabled by guest. so if msi_trigger is null, success is still
--	 * returned and don't inject interrupt into guest.
--	 */
--	if (vgpu->msi_trigger == NULL)
--		return 0;
+-	pfn = gfn_to_pfn(vgpu->kvm, gfn);
+-	if (is_error_noslot_pfn(pfn))
+-		return INTEL_GVT_INVALID_ADDR;
 -
--	if (eventfd_signal(vgpu->msi_trigger, 1) == 1)
--		return 0;
--
--	return -EFAULT;
+-	return pfn;
 -}
 -
- static unsigned long kvmgt_gfn_to_pfn(struct intel_vgpu *vgpu,
- 		unsigned long gfn)
+ static int kvmgt_dma_map_guest_page(struct intel_vgpu *vgpu, unsigned long gfn,
+ 		unsigned long size, dma_addr_t *dma_addr)
  {
-@@ -2022,7 +1999,6 @@ static bool kvmgt_is_valid_gfn(struct intel_vgpu *vgpu, unsigned long gfn)
- static const struct intel_gvt_mpt kvmgt_mpt = {
- 	.host_init = kvmgt_host_init,
+@@ -1985,7 +1970,6 @@ static const struct intel_gvt_mpt kvmgt_mpt = {
  	.host_exit = kvmgt_host_exit,
--	.inject_msi = kvmgt_inject_msi,
  	.enable_page_track = kvmgt_page_track_add,
  	.disable_page_track = kvmgt_page_track_remove,
- 	.gfn_to_mfn = kvmgt_gfn_to_pfn,
+-	.gfn_to_mfn = kvmgt_gfn_to_pfn,
+ 	.dma_map_guest_page = kvmgt_dma_map_guest_page,
+ 	.dma_unmap_guest_page = kvmgt_dma_unmap_guest_page,
+ 	.dma_pin_guest_page = kvmgt_dma_pin_guest_page,
 diff --git a/drivers/gpu/drm/i915/gvt/mpt.h b/drivers/gpu/drm/i915/gvt/mpt.h
-index 78efcf1e69469..59369e8b3b692 100644
+index 1a796f2181ba8..2d4bb6eaa08e3 100644
 --- a/drivers/gpu/drm/i915/gvt/mpt.h
 +++ b/drivers/gpu/drm/i915/gvt/mpt.h
-@@ -71,43 +71,6 @@ static inline void intel_gvt_hypervisor_host_exit(struct device *dev, void *gvt)
- 	intel_gvt_host.mpt->host_exit(dev, gvt);
+@@ -99,20 +99,6 @@ static inline int intel_gvt_hypervisor_disable_page_track(
+ 	return intel_gvt_host.mpt->disable_page_track(vgpu, gfn);
  }
  
--#define MSI_CAP_CONTROL(offset) (offset + 2)
--#define MSI_CAP_ADDRESS(offset) (offset + 4)
--#define MSI_CAP_DATA(offset) (offset + 8)
--#define MSI_CAP_EN 0x1
--
 -/**
-- * intel_gvt_hypervisor_inject_msi - inject a MSI interrupt into vGPU
+- * intel_gvt_hypervisor_gfn_to_mfn - translate a GFN to MFN
+- * @vgpu: a vGPU
+- * @gpfn: guest pfn
 - *
 - * Returns:
-- * Zero on success, negative error code if failed.
+- * MFN on success, INTEL_GVT_INVALID_ADDR if failed.
 - */
--static inline int intel_gvt_hypervisor_inject_msi(struct intel_vgpu *vgpu)
+-static inline unsigned long intel_gvt_hypervisor_gfn_to_mfn(
+-		struct intel_vgpu *vgpu, unsigned long gfn)
 -{
--	unsigned long offset = vgpu->gvt->device_info.msi_cap_offset;
--	u16 control, data;
--	u32 addr;
--	int ret;
--
--	control = *(u16 *)(vgpu_cfg_space(vgpu) + MSI_CAP_CONTROL(offset));
--	addr = *(u32 *)(vgpu_cfg_space(vgpu) + MSI_CAP_ADDRESS(offset));
--	data = *(u16 *)(vgpu_cfg_space(vgpu) + MSI_CAP_DATA(offset));
--
--	/* Do not generate MSI if MSIEN is disable */
--	if (!(control & MSI_CAP_EN))
--		return 0;
--
--	if (WARN(control & GENMASK(15, 1), "only support one MSI format\n"))
--		return -EINVAL;
--
--	trace_inject_msi(vgpu->id, addr, data);
--
--	ret = intel_gvt_host.mpt->inject_msi(vgpu, addr, data);
--	if (ret)
--		return ret;
--	return 0;
+-	return intel_gvt_host.mpt->gfn_to_mfn(vgpu, gfn);
 -}
 -
  /**
-  * intel_gvt_hypervisor_enable_page_track - track a guest page
+  * intel_gvt_hypervisor_dma_map_guest_page - setup dma map for guest page
   * @vgpu: a vGPU
 -- 
 2.30.2
