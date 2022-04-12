@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DDB9C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E535FC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354299AbiDLHvh (ORCPT
+        id S1347589AbiDLHwB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
+        Tue, 12 Apr 2022 03:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353222AbiDLHZR (ORCPT
+        with ESMTP id S1353297AbiDLHZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37FA4E393;
-        Tue, 12 Apr 2022 00:00:18 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52404E3A1;
+        Tue, 12 Apr 2022 00:00:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 394D8B81A8F;
-        Tue, 12 Apr 2022 07:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A540CC385A6;
-        Tue, 12 Apr 2022 07:00:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 470B5615A4;
+        Tue, 12 Apr 2022 07:00:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC71C385A1;
+        Tue, 12 Apr 2022 07:00:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746816;
-        bh=mNb1SKCYTL4DnFguMQR5NjP+fQNQ2HDagZRvTBOyfRQ=;
+        s=korg; t=1649746821;
+        bh=Rgi61zWahsZeOyCJSHtZu+TLZbL+bDSAlW85br4uN5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TUN1shseJ3o+2a5IEWHumv8W/n5p2501uKS47megrN3zD9KCo0m9RQ+VB32JkfCGp
-         yT88kuOKhrdZkWCtOim1RJuBYpfmMz2bp4zOnC0UHYOHVNuLgxzkTjA/zisrieMqOm
-         GT1kFSalRxFbBx8DSDfba49YpwV2+MEBa61Fh3Zc=
+        b=Dg0hzlEneC9fU7kMQNCraJrbW1X3MRFqPO8Inf5aE7QABZnw11eeABXOUTvraR1UG
+         iDkeXkhBIh3yQDDnoYoYwCs7OBlAvDE+JJVoQJXsHhAfK1e9eLv1Tdad0xIsQ+HjwN
+         n62G8SJI/nW5M14CIQIzsA78GmkjUSZiU8o9+/2o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Amit Shah <amit@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 140/285] virtio_console: eliminate anonymous module_init & module_exit
-Date:   Tue, 12 Apr 2022 08:29:57 +0200
-Message-Id: <20220412062947.709721342@linuxfoundation.org>
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 142/285] SUNRPC: Fix socket waits for write buffer space
+Date:   Tue, 12 Apr 2022 08:29:59 +0200
+Message-Id: <20220412062947.768562175@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,74 +50,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit fefb8a2a941338d871e2d83fbd65fbfa068857bd ]
+[ Upstream commit 7496b59f588dd52886fdbac7633608097543a0a5 ]
 
-Eliminate anonymous module_init() and module_exit(), which can lead to
-confusion or ambiguity when reading System.map, crashes/oops/bugs,
-or an initcall_debug log.
+The socket layer requires that we use the socket lock to protect changes
+to the sock->sk_write_pending field and others.
 
-Give each of these init and exit functions unique driver-specific
-names to eliminate the anonymous names.
-
-Example 1: (System.map)
- ffffffff832fc78c t init
- ffffffff832fc79e t init
- ffffffff832fc8f8 t init
-
-Example 2: (initcall_debug log)
- calling  init+0x0/0x12 @ 1
- initcall init+0x0/0x12 returned 0 after 15 usecs
- calling  init+0x0/0x60 @ 1
- initcall init+0x0/0x60 returned 0 after 2 usecs
- calling  init+0x0/0x9a @ 1
- initcall init+0x0/0x9a returned 0 after 74 usecs
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Amit Shah <amit@kernel.org>
-Cc: virtualization@lists.linux-foundation.org
-Cc: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20220316192010.19001-3-rdunlap@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/virtio_console.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/sunrpc/xprtsock.c | 54 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 39 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
-index f864b17be7e3..35025f283bf6 100644
---- a/drivers/char/virtio_console.c
-+++ b/drivers/char/virtio_console.c
-@@ -2245,7 +2245,7 @@ static struct virtio_driver virtio_rproc_serial = {
- 	.remove =	virtcons_remove,
- };
- 
--static int __init init(void)
-+static int __init virtio_console_init(void)
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index 37d961c1a5c9..aaba1d8cf552 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -763,12 +763,12 @@ xs_stream_start_connect(struct sock_xprt *transport)
+ /**
+  * xs_nospace - handle transmit was incomplete
+  * @req: pointer to RPC request
++ * @transport: pointer to struct sock_xprt
+  *
+  */
+-static int xs_nospace(struct rpc_rqst *req)
++static int xs_nospace(struct rpc_rqst *req, struct sock_xprt *transport)
  {
- 	int err;
+-	struct rpc_xprt *xprt = req->rq_xprt;
+-	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
++	struct rpc_xprt *xprt = &transport->xprt;
+ 	struct sock *sk = transport->inet;
+ 	int ret = -EAGAIN;
  
-@@ -2280,7 +2280,7 @@ static int __init init(void)
- 	return err;
+@@ -779,25 +779,49 @@ static int xs_nospace(struct rpc_rqst *req)
+ 
+ 	/* Don't race with disconnect */
+ 	if (xprt_connected(xprt)) {
++		struct socket_wq *wq;
++
++		rcu_read_lock();
++		wq = rcu_dereference(sk->sk_wq);
++		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
++		rcu_read_unlock();
++
+ 		/* wait for more buffer space */
++		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
+ 		sk->sk_write_pending++;
+ 		xprt_wait_for_buffer_space(xprt);
+ 	} else
+ 		ret = -ENOTCONN;
+ 
+ 	spin_unlock(&xprt->transport_lock);
++	return ret;
++}
+ 
+-	/* Race breaker in case memory is freed before above code is called */
+-	if (ret == -EAGAIN) {
+-		struct socket_wq *wq;
++static int xs_sock_nospace(struct rpc_rqst *req)
++{
++	struct sock_xprt *transport =
++		container_of(req->rq_xprt, struct sock_xprt, xprt);
++	struct sock *sk = transport->inet;
++	int ret = -EAGAIN;
+ 
+-		rcu_read_lock();
+-		wq = rcu_dereference(sk->sk_wq);
+-		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
+-		rcu_read_unlock();
++	lock_sock(sk);
++	if (!sock_writeable(sk))
++		ret = xs_nospace(req, transport);
++	release_sock(sk);
++	return ret;
++}
+ 
+-		sk->sk_write_space(sk);
+-	}
++static int xs_stream_nospace(struct rpc_rqst *req)
++{
++	struct sock_xprt *transport =
++		container_of(req->rq_xprt, struct sock_xprt, xprt);
++	struct sock *sk = transport->inet;
++	int ret = -EAGAIN;
++
++	lock_sock(sk);
++	if (!sk_stream_memory_free(sk))
++		ret = xs_nospace(req, transport);
++	release_sock(sk);
+ 	return ret;
  }
  
--static void __exit fini(void)
-+static void __exit virtio_console_fini(void)
- {
- 	reclaim_dma_bufs();
- 
-@@ -2290,8 +2290,8 @@ static void __exit fini(void)
- 	class_destroy(pdrvdata.class);
- 	debugfs_remove_recursive(pdrvdata.debugfs_dir);
- }
--module_init(init);
--module_exit(fini);
-+module_init(virtio_console_init);
-+module_exit(virtio_console_fini);
- 
- MODULE_DESCRIPTION("Virtio console driver");
- MODULE_LICENSE("GPL");
+@@ -887,7 +911,7 @@ static int xs_local_send_request(struct rpc_rqst *req)
+ 	case -ENOBUFS:
+ 		break;
+ 	case -EAGAIN:
+-		status = xs_nospace(req);
++		status = xs_stream_nospace(req);
+ 		break;
+ 	default:
+ 		dprintk("RPC:       sendmsg returned unrecognized error %d\n",
+@@ -963,7 +987,7 @@ static int xs_udp_send_request(struct rpc_rqst *req)
+ 		/* Should we call xs_close() here? */
+ 		break;
+ 	case -EAGAIN:
+-		status = xs_nospace(req);
++		status = xs_sock_nospace(req);
+ 		break;
+ 	case -ENETUNREACH:
+ 	case -ENOBUFS:
+@@ -1083,7 +1107,7 @@ static int xs_tcp_send_request(struct rpc_rqst *req)
+ 		/* Should we call xs_close() here? */
+ 		break;
+ 	case -EAGAIN:
+-		status = xs_nospace(req);
++		status = xs_stream_nospace(req);
+ 		break;
+ 	case -ECONNRESET:
+ 	case -ECONNREFUSED:
 -- 
 2.35.1
 
