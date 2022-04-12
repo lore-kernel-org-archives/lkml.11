@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1E46C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C3E0C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352480AbiDLH2m (ORCPT
+        id S1352321AbiDLH2b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57972 "EHLO
+        Tue, 12 Apr 2022 03:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351689AbiDLHMv (ORCPT
+        with ESMTP id S1351744AbiDLHMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA48C29830;
-        Mon, 11 Apr 2022 23:51:08 -0700 (PDT)
+        Tue, 12 Apr 2022 03:12:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8483717045;
+        Mon, 11 Apr 2022 23:52:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 36656CE1C09;
-        Tue, 12 Apr 2022 06:51:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F9D7C385A6;
-        Tue, 12 Apr 2022 06:51:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FE5061045;
+        Tue, 12 Apr 2022 06:52:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C2F6C385A6;
+        Tue, 12 Apr 2022 06:52:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746265;
-        bh=LrO/NPznNV1aounXGisBxWbAil2ax0fJhHmdqmv6spY=;
+        s=korg; t=1649746325;
+        bh=Tx2cWBmqfuUvRqNfdWN2a2/BKlydxGPZPMXIhiHkc6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FTQWHqVxF+I24X1oef0toaMtwQ+WAX3vE25Eem6sT1Fy5atbD3kk7kbUCAaS0tHry
-         DA8+RaBOksS/2sa9XEdvgh5OxSSgQnzde0/dzm7HS1irya/82l/3HIoKC+jQLITpxt
-         +Bh+9JrAa8kSbgRaefp0PWhF3d8gO14am3wx+I8c=
+        b=E01osOvgC5MOD0XIu1acgLZzOjP/3/jC2OrJItPjymMfnQLXy+anZWpStyICN4C40
+         w2pw7Gzd+i8e9GMg57F5tMCDKS1Al+uBPwZ+nnEbBovxypLBOcJMLaHdYU+HxoP16G
+         UDYseO026582off8QPERb5rvV5MKjF7DfNUFT0LU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 219/277] io_uring: defer splice/tee file validity check until command issue
-Date:   Tue, 12 Apr 2022 08:30:22 +0200
-Message-Id: <20220412062948.379725655@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Ethan Lien <ethanlien@synology.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 225/277] btrfs: fix qgroup reserve overflow the qgroup limit
+Date:   Tue, 12 Apr 2022 08:30:28 +0200
+Message-Id: <20220412062948.555052743@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -48,147 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Ethan Lien <ethanlien@synology.com>
 
-commit a3e4bc23d5470b2beb7cc42a86b6a3e75b704c15 upstream.
+commit b642b52d0b50f4d398cb4293f64992d0eed2e2ce upstream.
 
-In preparation for not using the file at prep time, defer checking if this
-file refers to a valid io_uring instance until issue time.
+We use extent_changeset->bytes_changed in qgroup_reserve_data() to record
+how many bytes we set for EXTENT_QGROUP_RESERVED state. Currently the
+bytes_changed is set as "unsigned int", and it will overflow if we try to
+fallocate a range larger than 4GiB. The result is we reserve less bytes
+and eventually break the qgroup limit.
 
-This also means we can get rid of the cleanup flag for splice and tee.
+Unlike regular buffered/direct write, which we use one changeset for
+each ordered extent, which can never be larger than 256M.  For
+fallocate, we use one changeset for the whole range, thus it no longer
+respects the 256M per extent limit, and caused the problem.
 
-Cc: stable@vger.kernel.org # v5.15+
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+The following example test script reproduces the problem:
+
+  $ cat qgroup-overflow.sh
+  #!/bin/bash
+
+  DEV=/dev/sdj
+  MNT=/mnt/sdj
+
+  mkfs.btrfs -f $DEV
+  mount $DEV $MNT
+
+  # Set qgroup limit to 2GiB.
+  btrfs quota enable $MNT
+  btrfs qgroup limit 2G $MNT
+
+  # Try to fallocate a 3GiB file. This should fail.
+  echo
+  echo "Try to fallocate a 3GiB file..."
+  fallocate -l 3G $MNT/3G.file
+
+  # Try to fallocate a 5GiB file.
+  echo
+  echo "Try to fallocate a 5GiB file..."
+  fallocate -l 5G $MNT/5G.file
+
+  # See we break the qgroup limit.
+  echo
+  sync
+  btrfs qgroup show -r $MNT
+
+  umount $MNT
+
+When running the test:
+
+  $ ./qgroup-overflow.sh
+  (...)
+
+  Try to fallocate a 3GiB file...
+  fallocate: fallocate failed: Disk quota exceeded
+
+  Try to fallocate a 5GiB file...
+
+  qgroupid         rfer         excl     max_rfer
+  --------         ----         ----     --------
+  0/5           5.00GiB      5.00GiB      2.00GiB
+
+Since we have no control of how bytes_changed is used, it's better to
+set it to u64.
+
+CC: stable@vger.kernel.org # 4.14+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: Ethan Lien <ethanlien@synology.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |   49 +++++++++++++++++++++----------------------------
- 1 file changed, 21 insertions(+), 28 deletions(-)
+ fs/btrfs/extent_io.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -623,10 +623,10 @@ struct io_epoll {
+--- a/fs/btrfs/extent_io.h
++++ b/fs/btrfs/extent_io.h
+@@ -117,7 +117,7 @@ struct btrfs_bio_ctrl {
+  */
+ struct extent_changeset {
+ 	/* How many bytes are set/cleared in this operation */
+-	unsigned int bytes_changed;
++	u64 bytes_changed;
  
- struct io_splice {
- 	struct file			*file_out;
--	struct file			*file_in;
- 	loff_t				off_out;
- 	loff_t				off_in;
- 	u64				len;
-+	int				splice_fd_in;
- 	unsigned int			flags;
- };
- 
-@@ -1452,14 +1452,6 @@ static void io_prep_async_work(struct io
- 		if (def->unbound_nonreg_file)
- 			req->work.flags |= IO_WQ_WORK_UNBOUND;
- 	}
--
--	switch (req->opcode) {
--	case IORING_OP_SPLICE:
--	case IORING_OP_TEE:
--		if (!S_ISREG(file_inode(req->splice.file_in)->i_mode))
--			req->work.flags |= IO_WQ_WORK_UNBOUND;
--		break;
--	}
- }
- 
- static void io_prep_async_link(struct io_kiocb *req)
-@@ -4027,18 +4019,11 @@ static int __io_splice_prep(struct io_ki
- 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
- 		return -EINVAL;
- 
--	sp->file_in = NULL;
- 	sp->len = READ_ONCE(sqe->len);
- 	sp->flags = READ_ONCE(sqe->splice_flags);
--
- 	if (unlikely(sp->flags & ~valid_flags))
- 		return -EINVAL;
--
--	sp->file_in = io_file_get(req->ctx, req, READ_ONCE(sqe->splice_fd_in),
--				  (sp->flags & SPLICE_F_FD_IN_FIXED));
--	if (!sp->file_in)
--		return -EBADF;
--	req->flags |= REQ_F_NEED_CLEANUP;
-+	sp->splice_fd_in = READ_ONCE(sqe->splice_fd_in);
- 	return 0;
- }
- 
-@@ -4053,20 +4038,27 @@ static int io_tee_prep(struct io_kiocb *
- static int io_tee(struct io_kiocb *req, unsigned int issue_flags)
- {
- 	struct io_splice *sp = &req->splice;
--	struct file *in = sp->file_in;
- 	struct file *out = sp->file_out;
- 	unsigned int flags = sp->flags & ~SPLICE_F_FD_IN_FIXED;
-+	struct file *in;
- 	long ret = 0;
- 
- 	if (issue_flags & IO_URING_F_NONBLOCK)
- 		return -EAGAIN;
-+
-+	in = io_file_get(req->ctx, req, sp->splice_fd_in,
-+				  (sp->flags & SPLICE_F_FD_IN_FIXED));
-+	if (!in) {
-+		ret = -EBADF;
-+		goto done;
-+	}
-+
- 	if (sp->len)
- 		ret = do_tee(in, out, sp->len, flags);
- 
- 	if (!(sp->flags & SPLICE_F_FD_IN_FIXED))
- 		io_put_file(in);
--	req->flags &= ~REQ_F_NEED_CLEANUP;
--
-+done:
- 	if (ret != sp->len)
- 		req_set_fail(req);
- 	io_req_complete(req, ret);
-@@ -4085,15 +4077,22 @@ static int io_splice_prep(struct io_kioc
- static int io_splice(struct io_kiocb *req, unsigned int issue_flags)
- {
- 	struct io_splice *sp = &req->splice;
--	struct file *in = sp->file_in;
- 	struct file *out = sp->file_out;
- 	unsigned int flags = sp->flags & ~SPLICE_F_FD_IN_FIXED;
- 	loff_t *poff_in, *poff_out;
-+	struct file *in;
- 	long ret = 0;
- 
- 	if (issue_flags & IO_URING_F_NONBLOCK)
- 		return -EAGAIN;
- 
-+	in = io_file_get(req->ctx, req, sp->splice_fd_in,
-+				  (sp->flags & SPLICE_F_FD_IN_FIXED));
-+	if (!in) {
-+		ret = -EBADF;
-+		goto done;
-+	}
-+
- 	poff_in = (sp->off_in == -1) ? NULL : &sp->off_in;
- 	poff_out = (sp->off_out == -1) ? NULL : &sp->off_out;
- 
-@@ -4102,8 +4101,7 @@ static int io_splice(struct io_kiocb *re
- 
- 	if (!(sp->flags & SPLICE_F_FD_IN_FIXED))
- 		io_put_file(in);
--	req->flags &= ~REQ_F_NEED_CLEANUP;
--
-+done:
- 	if (ret != sp->len)
- 		req_set_fail(req);
- 	io_req_complete(req, ret);
-@@ -6649,11 +6647,6 @@ static void io_clean_op(struct io_kiocb
- 			kfree(io->free_iov);
- 			break;
- 			}
--		case IORING_OP_SPLICE:
--		case IORING_OP_TEE:
--			if (!(req->splice.flags & SPLICE_F_FD_IN_FIXED))
--				io_put_file(req->splice.file_in);
--			break;
- 		case IORING_OP_OPENAT:
- 		case IORING_OP_OPENAT2:
- 			if (req->open.filename)
+ 	/* Changed ranges */
+ 	struct ulist range_changed;
 
 
