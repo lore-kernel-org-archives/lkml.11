@@ -2,124 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50B48C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF5CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:08:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244921AbiDLLK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
+        id S1344913AbiDLLKe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354088AbiDLLFC (ORCPT
+        with ESMTP id S1356423AbiDLLGr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:05:02 -0400
+        Tue, 12 Apr 2022 07:06:47 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37A73C48E;
-        Tue, 12 Apr 2022 02:56:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5DC6AA40
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:00:12 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id B9CA61F444DB
+        (Authenticated sender: sre)
+        with ESMTPSA id 7E8761F444E6
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649757412;
-        bh=ta29d4wnkNjIs8vxiW+spXtMVlKSVX42O2OgeMWUE4M=;
-        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-        b=kvhz7L+WR7F9HsP7+DAE1iJ09kPWZRmi5f2q6+wTFMWAjrPkNWY3Jzpgqp30kF162
-         9ej87DkBRElok2belFURZJE+6KAffcONlx+uSragUy+EKLYmrLe+OmnInaVU38Utnj
-         oGDfaSbiVVHQL6Yf2olT656ydNf9P6W4M76WukTbNC94PbuWprXpn8hcs1neMp19bi
-         iNzDzyCfCh2mIdCCNxP2XuZopGSbEx58bF1q1D3kWpmOuMeUlqToTVLTBXzlWDyGYS
-         beMdM6XO+lz1xQI7S8U0f+hcwzSbrlRYbQ5mvoaXJTg3bPRXH5hIYNcxpGgH7YbXoc
-         9fEZqqnyfRE+w==
-Message-ID: <2b603d3d-c6c1-13d7-8f77-042317a41d00@collabora.com>
-Date:   Tue, 12 Apr 2022 12:56:46 +0300
+        s=mail; t=1649757611;
+        bh=q0ltO9jPgC2ENTqqGFru2UPens5pv58VO6KgGl1a8cY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KohamFiaBuk0jv4Y0OpQx57PPloK2w3if1pkZ+xv0YQH+HYH/UeC9gmBPFObifoDw
+         30q4AvCXFZvK4MokuW57HMQpw/MXO7juDwXhf14MNJmRMtDRC7honsL2ZUXv4I5Lxx
+         lyptiT02bmMRJkCOpJvFLtfRWGPMuDQ9QB3wrVXV1K9EUBaNLisIOxsDJkY7T0RNbO
+         hn42+PL7EXT97XZlj7HphTnmaX7hFbL0cqeiXQgTxXR4x1npE5Tmq3MX23NrPsBVWo
+         ZKK0niAw+xpEFURyKCaKo+1NPCqTbNZaRhZIXD5uCFjHQ06xiE/NeBS/sCNoyUHqMc
+         KeV82kvqvfHZg==
+Received: by mercury (Postfix, from userid 1000)
+        id 509511060340; Tue, 12 Apr 2022 12:00:09 +0200 (CEST)
+Date:   Tue, 12 Apr 2022 12:00:09 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Qing Wang <wangqing@vivo.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] hsi: clients: remove duplicate assignment
+Message-ID: <20220412100009.nd5akezypy5lycdm@mercury.elektranox.org>
+References: <1648728460-37288-1-git-send-email-wangqing@vivo.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v7 17/20] memory: emif: Use kernel_can_power_off()
-Content-Language: en-US
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Joshua Thompson <funaho@jurai.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Lee Jones <lee.jones@linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-Cc:     linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-sh@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-acpi@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-tegra@vger.kernel.org
-References: <20220411233832.391817-1-dmitry.osipenko@collabora.com>
- <20220411233832.391817-18-dmitry.osipenko@collabora.com>
-In-Reply-To: <20220411233832.391817-18-dmitry.osipenko@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="hnaftqma46pljnb6"
+Content-Disposition: inline
+In-Reply-To: <1648728460-37288-1-git-send-email-wangqing@vivo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 4/12/22 02:38, Dmitry Osipenko wrote:
-> Replace legacy pm_power_off with kernel_can_power_off() helper that
-> is aware about chained power-off handlers.
-> 
-> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+--hnaftqma46pljnb6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On Thu, Mar 31, 2022 at 05:07:38AM -0700, Qing Wang wrote:
+> From: Wang Qing <wangqing@vivo.com>
+>=20
+> netdev_alloc_skb() has assigned ssi->netdev to skb->dev if successed,
+> no need to repeat assignment.
+>=20
+> Signed-off-by: Wang Qing <wangqing@vivo.com>
 > ---
->  drivers/memory/emif.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/memory/emif.c b/drivers/memory/emif.c
-> index edf3ba7447ed..fa6845313a43 100644
-> --- a/drivers/memory/emif.c
-> +++ b/drivers/memory/emif.c
-> @@ -630,7 +630,7 @@ static irqreturn_t emif_threaded_isr(int irq, void *dev_id)
->  		dev_emerg(emif->dev, "SDRAM temperature exceeds operating limit.. Needs shut down!!!\n");
->  
->  		/* If we have Power OFF ability, use it, else try restarting */
-> -		if (pm_power_off) {
-> +		if (kernel_can_power_off()) {
->  			kernel_power_off();
->  		} else {
->  			WARN(1, "FIXME: NO pm_power_off!!! trying restart\n");
 
-Adding ack from Krzysztof that he gave to v6. It's missing in v7 by
-accident.
+Thanks, queued.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+-- Sebastian
+
+>  drivers/hsi/clients/ssi_protocol.c | 1 -
+>  1 file changed, 1 deletion(-)
+>=20
+> diff --git a/drivers/hsi/clients/ssi_protocol.c b/drivers/hsi/clients/ssi=
+_protocol.c
+> index 21f11a5..7aacb19
+> --- a/drivers/hsi/clients/ssi_protocol.c
+> +++ b/drivers/hsi/clients/ssi_protocol.c
+> @@ -796,7 +796,6 @@ static void ssip_rx_strans(struct hsi_client *cl, u32=
+ cmd)
+>  		dev_err(&cl->device, "No memory for rx skb\n");
+>  		goto out1;
+>  	}
+> -	skb->dev =3D ssi->netdev;
+>  	skb_put(skb, len * 4);
+>  	msg =3D ssip_alloc_data(ssi, skb, GFP_ATOMIC);
+>  	if (unlikely(!msg)) {
+> --=20
+> 2.7.4
+>=20
+
+--hnaftqma46pljnb6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmJVTZwACgkQ2O7X88g7
++pqFmQ//Tk7WimaocfFMEigICLkJ9XDeWiK8siEAL2Ent2o2HOyGYtlLVAB81cyr
+xTGyTKvxbnSJ2yyt7qXsgwOFV2U7wlloE9l8PXuBLYFMjtC34nPlKUvOBbVlJX7u
+Z2+3aAJeCjyL9lXesqCmCwJEsY/ObHWTVKLnbvvS/IwQQ9GEpWJKAELauvaWu2y0
+wWcuUubIC1ssTXwVSClTFl4WV+pVg6ZiDJJo/PKYR7AIwnFPit8AVl/oUbTN4VmW
+pNZSDU8uhTcEsoGncd0AEn1rxYjzuwiQajOhd63X/X6s43G4z6/2v77bKYQJZ3c7
+u7b3TyfxCZytJwq9LbDYRPYFgjTJ5egWRZIm6vf3UqIdSPMzZsy4mrWm5lV4Rxta
+wTyW0seYrmorOZdLLvtRRkxfc40zcKw4sQzjp8Jhh0Pc1BII/WzuYI/NkBlL5XB5
+i6g412uOFvU67DWICs03+v5i3zwCHy3RyyzstDWFp9mxhaCdtmwnu7I8oWDnj2QT
+cfJsTC0c2Zf2EohwOtniCdFLYCLaqA+xRg2MMYSy3/MgIEeewWOqy+lTTDqvXTrw
+HBG5TGwUq8/JLdXBGG9rrwxR5pb2IyJexrJ9QB8wlPtxhhbV7u3Wduv/bc5Se916
+yn1JdUB1VE2fR1mMgiK3EDYc9wdaXRpv8USQSv9wtlq61ZkXyAI=
+=uU61
+-----END PGP SIGNATURE-----
+
+--hnaftqma46pljnb6--
