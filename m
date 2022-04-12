@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F72C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350776AbiDLGub (ORCPT
+        id S1350788AbiDLGug (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40400 "EHLO
+        Tue, 12 Apr 2022 02:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351531AbiDLGpA (ORCPT
+        with ESMTP id S1350637AbiDLGmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:45:00 -0400
+        Tue, 12 Apr 2022 02:42:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A7F3B022;
-        Mon, 11 Apr 2022 23:38:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CFA337A84;
+        Mon, 11 Apr 2022 23:36:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F75261904;
-        Tue, 12 Apr 2022 06:38:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E9B5C385A6;
-        Tue, 12 Apr 2022 06:38:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CBC0C618FF;
+        Tue, 12 Apr 2022 06:36:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA017C385A1;
+        Tue, 12 Apr 2022 06:36:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745511;
-        bh=KnJr3+StVYDOWXUCvFCg6bty8dIei47NyGGaIszR3Dw=;
+        s=korg; t=1649745393;
+        bh=eXCTnhBMDSi9LGLaJX4Otpaaqm7MtAtgKEfyeEd7b9M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=toFNDZIW4g5ZeBWmPtb5zrq9lmv7sXTCzgKgWpnSq4u6TTq3Bg0T/o+mKmRy42I/q
-         SGoZaB/enmvUvQb5iBoclDVeCsVX7llQupM9UMFGmVVA4au6QUDJvDcCr2hTABs3dy
-         +BSbeDjZkxKWt0Xch48WmYuB7hzOZBNu+D2gs1QI=
+        b=ev+fynPqvlvPGuErqaX12CXmM8ODR2RPeFZs7b10m+5dPNcvfdaKdN+qm5YJjPid4
+         DJgX++SLBeZ1pw1Jhkfani28KotIxZCPZE/MXUBlRoSLiAndbbYOv6YQDrIILJEkPf
+         OKsb1LCkwgY/eLIbZxGlqxjMGQD1lIu21zM7n0VY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 070/171] init/main.c: return 1 from handled __setup() functions
-Date:   Tue, 12 Apr 2022 08:29:21 +0200
-Message-Id: <20220412062929.909764367@linuxfoundation.org>
+Subject: [PATCH 5.10 082/171] SUNRPC/call_alloc: async tasks mustnt block waiting for memory
+Date:   Tue, 12 Apr 2022 08:29:33 +0200
+Message-Id: <20220412062930.259731583@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -53,55 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: NeilBrown <neilb@suse.de>
 
-[ Upstream commit f9a40b0890658330c83c95511f9d6b396610defc ]
+[ Upstream commit c487216bec83b0c5a8803e5c61433d33ad7b104d ]
 
-initcall_blacklist() should return 1 to indicate that it handled its
-cmdline arguments.
+When memory is short, new worker threads cannot be created and we depend
+on the minimum one rpciod thread to be able to handle everything.
+So it must not block waiting for memory.
 
-set_debug_rodata() should return 1 to indicate that it handled its
-cmdline arguments.  Print a warning if the option string is invalid.
+mempools are particularly a problem as memory can only be released back
+to the mempool by an async rpc task running.  If all available
+workqueue threads are waiting on the mempool, no thread is available to
+return anything.
 
-This prevents these strings from being added to the 'init' program's
-environment as they are not init arguments/parameters.
+rpc_malloc() can block, and this might cause deadlocks.
+So check RPC_IS_ASYNC(), rather than RPC_IS_SWAPPER() to determine if
+blocking is acceptable.
 
-Link: https://lkml.kernel.org/r/20220221050901.23985-1-rdunlap@infradead.org
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- init/main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/sunrpc/sched.c              | 4 +++-
+ net/sunrpc/xprtrdma/transport.c | 4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/init/main.c b/init/main.c
-index 4fe58ed4aca7..3526eaec7508 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -1104,7 +1104,7 @@ static int __init initcall_blacklist(char *str)
- 		}
- 	} while (str_entry);
+diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
+index c045f63d11fa..6e4d476c6324 100644
+--- a/net/sunrpc/sched.c
++++ b/net/sunrpc/sched.c
+@@ -1012,8 +1012,10 @@ int rpc_malloc(struct rpc_task *task)
+ 	struct rpc_buffer *buf;
+ 	gfp_t gfp = GFP_NOFS;
  
--	return 0;
-+	return 1;
- }
++	if (RPC_IS_ASYNC(task))
++		gfp = GFP_NOWAIT | __GFP_NOWARN;
+ 	if (RPC_IS_SWAPPER(task))
+-		gfp = __GFP_MEMALLOC | GFP_NOWAIT | __GFP_NOWARN;
++		gfp |= __GFP_MEMALLOC;
  
- static bool __init_or_module initcall_blacklisted(initcall_t fn)
-@@ -1367,7 +1367,9 @@ static noinline void __init kernel_init_freeable(void);
- bool rodata_enabled __ro_after_init = true;
- static int __init set_debug_rodata(char *str)
- {
--	return strtobool(str, &rodata_enabled);
-+	if (strtobool(str, &rodata_enabled))
-+		pr_warn("Invalid option string for rodata: '%s'\n", str);
-+	return 1;
- }
- __setup("rodata=", set_debug_rodata);
- #endif
+ 	size += sizeof(struct rpc_buffer);
+ 	if (size <= RPC_BUFFER_MAXSIZE)
+diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
+index 8e2368a0c2a2..fb7a0ab27899 100644
+--- a/net/sunrpc/xprtrdma/transport.c
++++ b/net/sunrpc/xprtrdma/transport.c
+@@ -572,8 +572,10 @@ xprt_rdma_allocate(struct rpc_task *task)
+ 	gfp_t flags;
+ 
+ 	flags = RPCRDMA_DEF_GFP;
++	if (RPC_IS_ASYNC(task))
++		flags = GFP_NOWAIT | __GFP_NOWARN;
+ 	if (RPC_IS_SWAPPER(task))
+-		flags = __GFP_MEMALLOC | GFP_NOWAIT | __GFP_NOWARN;
++		flags |= __GFP_MEMALLOC;
+ 
+ 	if (!rpcrdma_check_regbuf(r_xprt, req->rl_sendbuf, rqst->rq_callsize,
+ 				  flags))
 -- 
 2.35.1
 
