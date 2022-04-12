@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1080DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:27:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 792A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358250AbiDLI2r (ORCPT
+        id S1358426AbiDLIaB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42900 "EHLO
+        Tue, 12 Apr 2022 04:30:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353656AbiDLHZv (ORCPT
+        with ESMTP id S1353629AbiDLHZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F395A26AF5;
-        Tue, 12 Apr 2022 00:03:26 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C0A8275CE;
+        Tue, 12 Apr 2022 00:02:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EB5D61045;
-        Tue, 12 Apr 2022 07:03:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E72BC385A6;
-        Tue, 12 Apr 2022 07:03:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27E7760B2B;
+        Tue, 12 Apr 2022 07:02:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39D77C385A6;
+        Tue, 12 Apr 2022 07:02:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747006;
-        bh=hlP2sze5FnxNqcBlA5c2Y8VQGE+NWL4VnSSqf3dvcBE=;
+        s=korg; t=1649746948;
+        bh=grJa2ne9FHgi7+nNGnQAS5AEexdyOk8kKBkr39mXyzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uPHNB27SVWvao1TYLpWOu0jxZha1+NV2EfCsodxonQPC+v+zFJ14FafKDDwe91uAs
-         T9r3UfTkp9sguLfKhCpRzoiXaJlmFTPo60q0Olhe+tT9wUgzo9rWO5+7EVYWxozsW1
-         +lcYoE9R4ewiLhQdtd8H0p383BfSC9AkIxZn0Bcc=
+        b=S6nAuSyy/DdBXoDYi4Z/B5gOLhGzRT5QpBhKF2ETRZoiBoquWk+UMhUblBXvuMTvN
+         jRZHEKREu+ZA87CVWIy8gsytkdcYK7wcqDeAEPJnCwWICGxsseFDERoPZsIjKa/+Ty
+         xcDtVTpv8Ke1YkERbJzsXWa7odMBdSIAkSUtW2zw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 210/285] perf tools: Fix perfs libperf_print callback
-Date:   Tue, 12 Apr 2022 08:31:07 +0200
-Message-Id: <20220412062949.720575697@linuxfoundation.org>
+        stable@vger.kernel.org, "Pudak, Filip" <Filip.Pudak@windriver.com>,
+        "Xiao, Jiguang" <Jiguang.Xiao@windriver.com>,
+        David Ahern <dsahern@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, Pudak@vger.kernel.org,
+        Xiao@vger.kernel.org
+Subject: [PATCH 5.16 187/285] ipv6: Fix stats accounting in ip6_pkt_drop
+Date:   Tue, 12 Apr 2022 08:30:44 +0200
+Message-Id: <20220412062949.060522893@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,37 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: David Ahern <dsahern@kernel.org>
 
-[ Upstream commit aeee9dc53ce405d2161f9915f553114e94e5b677 ]
+[ Upstream commit 1158f79f82d437093aeed87d57df0548bdd68146 ]
 
-eprintf() does not expect va_list as the type of the 4th parameter.
+VRF devices are the loopbacks for VRFs, and a loopback can not be
+assigned to a VRF. Accordingly, the condition in ip6_pkt_drop should
+be '||' not '&&'.
 
-Use veprintf() because it does.
-
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Fixes: 428dab813a56ce94 ("libperf: Merge libperf_set_print() into libperf_init()")
-Cc: Jiri Olsa <jolsa@kernel.org>
-Link: https://lore.kernel.org/r/20220408132625.2451452-1-adrian.hunter@intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 1d3fd8a10bed ("vrf: Use orig netdev to count Ip6InNoRoutes and a fresh route lookup when sending dest unreach")
+Reported-by: Pudak, Filip <Filip.Pudak@windriver.com>
+Reported-by: Xiao, Jiguang <Jiguang.Xiao@windriver.com>
+Signed-off-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220404150908.2937-1-dsahern@kernel.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/perf.c | 2 +-
+ net/ipv6/route.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/perf/perf.c b/tools/perf/perf.c
-index 2f6b67189b42..6aae7b6c376b 100644
---- a/tools/perf/perf.c
-+++ b/tools/perf/perf.c
-@@ -434,7 +434,7 @@ void pthread__unblock_sigwinch(void)
- static int libperf_print(enum libperf_print_level level,
- 			 const char *fmt, va_list ap)
- {
--	return eprintf(level, verbose, fmt, ap);
-+	return veprintf(level, verbose, fmt, ap);
- }
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 75f916b7460c..cac0d65ed124 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -4509,7 +4509,7 @@ static int ip6_pkt_drop(struct sk_buff *skb, u8 code, int ipstats_mib_noroutes)
+ 	struct inet6_dev *idev;
+ 	int type;
  
- int main(int argc, const char **argv)
+-	if (netif_is_l3_master(skb->dev) &&
++	if (netif_is_l3_master(skb->dev) ||
+ 	    dst->dev == net->loopback_dev)
+ 		idev = __in6_dev_get_safely(dev_get_by_index_rcu(net, IP6CB(skb)->iif));
+ 	else
 -- 
 2.35.1
 
