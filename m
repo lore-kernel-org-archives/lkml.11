@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B9B1C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:50:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E457C35296
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354553AbiDLHss (ORCPT
+        id S1377214AbiDLHtE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:48:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45762 "EHLO
+        Tue, 12 Apr 2022 03:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353638AbiDLHPw (ORCPT
+        with ESMTP id S1353682AbiDLHP5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:15:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B48643AA6D;
-        Mon, 11 Apr 2022 23:57:12 -0700 (PDT)
+        Tue, 12 Apr 2022 03:15:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BA13B56D;
+        Mon, 11 Apr 2022 23:57:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BCD060B65;
-        Tue, 12 Apr 2022 06:57:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A347C385A6;
-        Tue, 12 Apr 2022 06:57:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBC33B81B35;
+        Tue, 12 Apr 2022 06:57:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 492A8C385A1;
+        Tue, 12 Apr 2022 06:57:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746627;
-        bh=Uk4DEgvhNDTwAFIByDqxexwDe71PxJf/2uwKWnaCEWw=;
+        s=korg; t=1649746635;
+        bh=fcJRBXGqnmr7nRK5T3/UjEytHL/YIEOJuInmNXpHaI0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mVQpHkblRcInproM69MprEGWP5LLLwwh2ata8xBEVA6JdMnQ58pdN+/WlSWcA522K
-         PYAmaPFTw/krkBQzr4HATxlPG7Q3HEkLslF6oFgEl/zVRAAAQ9fQwgjFDfSviuYadJ
-         46Rz7p+Vybt+MvKkPXk5U1byQJK99Ct2czMFEuNU=
+        b=MeHOlk96lv6uDslBky6yt2lfIuUsHqqdqyiXLhoyTMYHU+OD8Z0heBLGNQWDZZot9
+         q1eH2GGJ4Tuf1xHoZjaGkpQZ4UVib2nDU3tl25T7h+cBTzMUWEmlBdHDif1Rrd+CpI
+         jLb65DctE5HxrWp2b5FiKLvmYQLRqmO2H0VmVkiI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 033/285] scsi: bfa: Replace snprintf() with sysfs_emit()
-Date:   Tue, 12 Apr 2022 08:28:10 +0200
-Message-Id: <20220412062944.632725383@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Greear <greearb@candelatech.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 036/285] mt76: mt7921: fix crash when startup fails.
+Date:   Tue, 12 Apr 2022 08:28:13 +0200
+Message-Id: <20220412062944.718314628@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,167 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+From: Ben Greear <greearb@candelatech.com>
 
-[ Upstream commit 2245ea91fd3a04cafbe2f54911432a8657528c3b ]
+[ Upstream commit 827e7799c61b978fbc2cc9dac66cb62401b2b3f0 ]
 
-coccinelle report:
-./drivers/scsi/bfa/bfad_attr.c:908:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:860:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:888:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:853:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:808:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:728:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:822:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:927:9-17:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:900:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:874:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:714:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/bfa/bfad_attr.c:839:8-16:
-WARNING: use scnprintf or sprintf
+If the nic fails to start, it is possible that the
+reset_work has already been scheduled.  Ensure the
+work item is canceled so we do not have use-after-free
+crash in case cleanup is called before the work item
+is executed.
 
-Use sysfs_emit() instead of scnprintf() or sprintf().
+This fixes crash on my x86_64 apu2 when mt7921k radio
+fails to work.  Radio still fails, but OS does not
+crash.
 
-Link: https://lore.kernel.org/r/def83ff75faec64ba592b867a8499b1367bae303.1643181468.git.yang.guang5@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/bfa/bfad_attr.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/bfa/bfad_attr.c b/drivers/scsi/bfa/bfad_attr.c
-index c8b947c16069..0254e610ea8f 100644
---- a/drivers/scsi/bfa/bfad_attr.c
-+++ b/drivers/scsi/bfa/bfad_attr.c
-@@ -711,7 +711,7 @@ bfad_im_serial_num_show(struct device *dev, struct device_attribute *attr,
- 	char serial_num[BFA_ADAPTER_SERIAL_NUM_LEN];
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+index 8c55562c1a8d..b3bd090a13f4 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+@@ -260,6 +260,7 @@ static void mt7921_stop(struct ieee80211_hw *hw)
  
- 	bfa_get_adapter_serial_num(&bfad->bfa, serial_num);
--	return snprintf(buf, PAGE_SIZE, "%s\n", serial_num);
-+	return sysfs_emit(buf, "%s\n", serial_num);
- }
+ 	cancel_delayed_work_sync(&dev->pm.ps_work);
+ 	cancel_work_sync(&dev->pm.wake_work);
++	cancel_work_sync(&dev->reset_work);
+ 	mt76_connac_free_pending_tx_skbs(&dev->pm, NULL);
  
- static ssize_t
-@@ -725,7 +725,7 @@ bfad_im_model_show(struct device *dev, struct device_attribute *attr,
- 	char model[BFA_ADAPTER_MODEL_NAME_LEN];
- 
- 	bfa_get_adapter_model(&bfad->bfa, model);
--	return snprintf(buf, PAGE_SIZE, "%s\n", model);
-+	return sysfs_emit(buf, "%s\n", model);
- }
- 
- static ssize_t
-@@ -805,7 +805,7 @@ bfad_im_model_desc_show(struct device *dev, struct device_attribute *attr,
- 		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
- 			"Invalid Model");
- 
--	return snprintf(buf, PAGE_SIZE, "%s\n", model_descr);
-+	return sysfs_emit(buf, "%s\n", model_descr);
- }
- 
- static ssize_t
-@@ -819,7 +819,7 @@ bfad_im_node_name_show(struct device *dev, struct device_attribute *attr,
- 	u64        nwwn;
- 
- 	nwwn = bfa_fcs_lport_get_nwwn(port->fcs_port);
--	return snprintf(buf, PAGE_SIZE, "0x%llx\n", cpu_to_be64(nwwn));
-+	return sysfs_emit(buf, "0x%llx\n", cpu_to_be64(nwwn));
- }
- 
- static ssize_t
-@@ -836,7 +836,7 @@ bfad_im_symbolic_name_show(struct device *dev, struct device_attribute *attr,
- 	bfa_fcs_lport_get_attr(&bfad->bfa_fcs.fabric.bport, &port_attr);
- 	strlcpy(symname, port_attr.port_cfg.sym_name.symname,
- 			BFA_SYMNAME_MAXLEN);
--	return snprintf(buf, PAGE_SIZE, "%s\n", symname);
-+	return sysfs_emit(buf, "%s\n", symname);
- }
- 
- static ssize_t
-@@ -850,14 +850,14 @@ bfad_im_hw_version_show(struct device *dev, struct device_attribute *attr,
- 	char hw_ver[BFA_VERSION_LEN];
- 
- 	bfa_get_pci_chip_rev(&bfad->bfa, hw_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", hw_ver);
-+	return sysfs_emit(buf, "%s\n", hw_ver);
- }
- 
- static ssize_t
- bfad_im_drv_version_show(struct device *dev, struct device_attribute *attr,
- 				char *buf)
- {
--	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_VERSION);
-+	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_VERSION);
- }
- 
- static ssize_t
-@@ -871,7 +871,7 @@ bfad_im_optionrom_version_show(struct device *dev,
- 	char optrom_ver[BFA_VERSION_LEN];
- 
- 	bfa_get_adapter_optrom_ver(&bfad->bfa, optrom_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", optrom_ver);
-+	return sysfs_emit(buf, "%s\n", optrom_ver);
- }
- 
- static ssize_t
-@@ -885,7 +885,7 @@ bfad_im_fw_version_show(struct device *dev, struct device_attribute *attr,
- 	char fw_ver[BFA_VERSION_LEN];
- 
- 	bfa_get_adapter_fw_ver(&bfad->bfa, fw_ver);
--	return snprintf(buf, PAGE_SIZE, "%s\n", fw_ver);
-+	return sysfs_emit(buf, "%s\n", fw_ver);
- }
- 
- static ssize_t
-@@ -897,7 +897,7 @@ bfad_im_num_of_ports_show(struct device *dev, struct device_attribute *attr,
- 			(struct bfad_im_port_s *) shost->hostdata[0];
- 	struct bfad_s *bfad = im_port->bfad;
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n",
-+	return sysfs_emit(buf, "%d\n",
- 			bfa_get_nports(&bfad->bfa));
- }
- 
-@@ -905,7 +905,7 @@ static ssize_t
- bfad_im_drv_name_show(struct device *dev, struct device_attribute *attr,
- 				char *buf)
- {
--	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_NAME);
-+	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_NAME);
- }
- 
- static ssize_t
-@@ -924,14 +924,14 @@ bfad_im_num_of_discovered_ports_show(struct device *dev,
- 	rports = kcalloc(nrports, sizeof(struct bfa_rport_qualifier_s),
- 			 GFP_ATOMIC);
- 	if (rports == NULL)
--		return snprintf(buf, PAGE_SIZE, "Failed\n");
-+		return sysfs_emit(buf, "Failed\n");
- 
- 	spin_lock_irqsave(&bfad->bfad_lock, flags);
- 	bfa_fcs_lport_get_rport_quals(port->fcs_port, rports, &nrports);
- 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
- 	kfree(rports);
- 
--	return snprintf(buf, PAGE_SIZE, "%d\n", nrports);
-+	return sysfs_emit(buf, "%d\n", nrports);
- }
- 
- static          DEVICE_ATTR(serial_number, S_IRUGO,
+ 	mt7921_mutex_acquire(dev);
 -- 
 2.35.1
 
