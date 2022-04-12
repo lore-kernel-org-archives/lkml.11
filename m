@@ -2,152 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2F8AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:59:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbiDLLCK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:02:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
+        id S242984AbiDLLCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234907AbiDLLAD (ORCPT
+        with ESMTP id S233157AbiDLLAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:00:03 -0400
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D8B0652DD;
-        Tue, 12 Apr 2022 02:50:57 -0700 (PDT)
-Received: from relay2-d.mail.gandi.net (unknown [217.70.183.194])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id AD279C953C;
-        Tue, 12 Apr 2022 09:41:04 +0000 (UTC)
-Received: (Authenticated sender: herve.codina@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPA id D013B4000C;
-        Tue, 12 Apr 2022 09:40:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649756456;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WLMGN8W4KzuVPgqbnvRFLH6IcEpJsrhI1QCKS4t1hsA=;
-        b=CFoXbTCP8qW+mBf6EviV28hbHNhNM0yDmlj6OgshmaDq+VJ9fH6ho67hSEohJZ+NV6TmHG
-        qTWY6scDoR7TI1uLaEPrNBnDbzPmN73e8J6n3yXX4Wk9WAbCmz3qof01Q5/pzrNOHHSmCb
-        Tm7IxRiB6Z8qbySVOPAAKuSDsKjWt4sIjxw2XraM0Ogui2ot9tkwpzNXy7VWD+OlfChZqu
-        dktUZ7ixvUHaa8h+YpZM2THvKJ024WAwDgEyB1w/UbDaXR3aH8daa81uNUPCtJndQrG7Ro
-        apd6c270L+B4YIhG3+lcfiH/TLxQjKNsUKX+pf4q/n2Vkpl2uFc+5h0OPiGlkQ==
-From:   Herve Codina <herve.codina@bootlin.com>
-To:     Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-Cc:     Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Clement Leger <clement.leger@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>
-Subject: [PATCH 1/6] PCI: rcar-gen2: Add support for clocks
-Date:   Tue, 12 Apr 2022 11:40:24 +0200
-Message-Id: <20220412094029.287562-2-herve.codina@bootlin.com>
+        Tue, 12 Apr 2022 07:00:00 -0400
+X-Greylist: delayed 1140 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 02:50:58 PDT
+Received: from mxout012.mail.hostpoint.ch (mxout012.mail.hostpoint.ch [IPv6:2a00:d70:0:e::312])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E270165163;
+        Tue, 12 Apr 2022 02:50:56 -0700 (PDT)
+Received: from [10.0.2.44] (helo=asmtp014.mail.hostpoint.ch)
+        by mxout012.mail.hostpoint.ch with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.95 (FreeBSD))
+        (envelope-from <dev@pschenker.ch>)
+        id 1neCSD-000OOB-IK;
+        Tue, 12 Apr 2022 11:04:53 +0200
+Received: from 31-10-206-124.static.upc.ch ([31.10.206.124] helo=localhost.localdomain)
+        by asmtp014.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.95 (FreeBSD))
+        (envelope-from <dev@pschenker.ch>)
+        id 1neCSD-000CGw-Ce;
+        Tue, 12 Apr 2022 11:04:53 +0200
+X-Authenticated-Sender-Id: dev@pschenker.ch
+From:   Philippe Schenker <dev@pschenker.ch>
+To:     linux-wireless@vger.kernel.org, Felix Fietkau <nbd@nbd.name>
+Cc:     linux@leemhuis.info, Philippe Schenker <dev@pschenker.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Deren Wu <deren.wu@mediatek.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        YN Chen <YN.Chen@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
+Subject: [PATCH] Revert "mt76: mt7921: enable aspm by default"
+Date:   Tue, 12 Apr 2022 11:04:14 +0200
+Message-Id: <20220412090415.17541-1-dev@pschenker.ch>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412094029.287562-1-herve.codina@bootlin.com>
-References: <20220412094029.287562-1-herve.codina@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PCI rcar-gen2 does not call any clk_prepare_enable().
-This lead to an access failure when the driver tries to access
-the IP (at least on a RZ/N1D platform).
+This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
 
-Prepare and enable clocks using the bulk version of
-clk_prepare_enable() in order to prepare and enable all clocks
-attached to this device.
+This commit introduces a regression on some systems where the kernel is
+crashing in different locations after a reboot was issued.
 
-Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+This issue was bisected on a Thinkpad P14s Gen2 (AMD) with latest firmware.
+
+Link: https://lore.kernel.org/linux-wireless/5077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/
+Signed-off-by: Philippe Schenker <dev@pschenker.ch>
 ---
- drivers/pci/controller/pci-rcar-gen2.c | 28 ++++++++++++++++++++++++--
- 1 file changed, 26 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pci/controller/pci-rcar-gen2.c b/drivers/pci/controller/pci-rcar-gen2.c
-index 35804ea394fd..528bc3780e01 100644
---- a/drivers/pci/controller/pci-rcar-gen2.c
-+++ b/drivers/pci/controller/pci-rcar-gen2.c
-@@ -8,6 +8,7 @@
-  * Author: Valentine Barshak <valentine.barshak@cogentembedded.com>
-  */
- 
-+#include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/init.h>
- #include <linux/interrupt.h>
-@@ -99,6 +100,8 @@ struct rcar_pci {
- 	struct resource mem_res;
- 	struct resource *cfg_res;
- 	int irq;
-+	struct clk_bulk_data *clocks;
-+	int nclocks;
+ drivers/net/wireless/mediatek/mt76/mt7921/pci.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+index 1a01d025bbe5..59f9ee089389 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+@@ -20,10 +20,6 @@ static const struct pci_device_id mt7921_pci_device_table[] = {
+ 	{ },
  };
  
- /* PCI configuration space operations */
-@@ -282,6 +285,7 @@ static int rcar_pci_probe(struct platform_device *pdev)
- 	struct rcar_pci *priv;
- 	struct pci_host_bridge *bridge;
- 	void __iomem *reg;
-+	int ret;
+-static bool mt7921_disable_aspm;
+-module_param_named(disable_aspm, mt7921_disable_aspm, bool, 0644);
+-MODULE_PARM_DESC(disable_aspm, "disable PCI ASPM support");
+-
+ static void
+ mt7921_rx_poll_complete(struct mt76_dev *mdev, enum mt76_rxq_id q)
+ {
+@@ -280,8 +276,7 @@ static int mt7921_pci_probe(struct pci_dev *pdev,
+ 	if (ret)
+ 		goto err_free_pci_vec;
  
- 	bridge = devm_pci_alloc_host_bridge(dev, sizeof(*priv));
- 	if (!bridge)
-@@ -305,13 +309,25 @@ static int rcar_pci_probe(struct platform_device *pdev)
- 	priv->mem_res = *mem_res;
- 	priv->cfg_res = cfg_res;
+-	if (mt7921_disable_aspm)
+-		mt76_pci_disable_aspm(pdev);
++	mt76_pci_disable_aspm(pdev);
  
-+	ret = devm_clk_bulk_get_all(dev, &priv->clocks);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to get clocks %d\n", ret);
-+		return ret;
-+	}
-+	priv->nclocks = ret;
-+
-+	ret = clk_bulk_prepare_enable(priv->nclocks, priv->clocks);
-+	if (ret)
-+		return ret;
-+
- 	priv->irq = platform_get_irq(pdev, 0);
- 	priv->reg = reg;
- 	priv->dev = dev;
- 
- 	if (priv->irq < 0) {
- 		dev_err(dev, "no valid irq found\n");
--		return priv->irq;
-+		ret = priv->irq;
-+		goto disable_clocks;
- 	}
- 
- 	bridge->ops = &rcar_pci_ops;
-@@ -320,7 +336,15 @@ static int rcar_pci_probe(struct platform_device *pdev)
- 
- 	rcar_pci_setup(priv);
- 
--	return pci_host_probe(bridge);
-+	ret = pci_host_probe(bridge);
-+	if (ret < 0)
-+		goto disable_clocks;
-+
-+	return 0;
-+
-+disable_clocks:
-+	clk_bulk_disable_unprepare(priv->nclocks, priv->clocks);
-+	return ret;
- }
- 
- static const struct of_device_id rcar_pci_of_match[] = {
+ 	mdev = mt76_alloc_device(&pdev->dev, sizeof(*dev), &mt7921_ops,
+ 				 &drv_ops);
 -- 
 2.35.1
 
