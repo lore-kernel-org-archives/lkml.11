@@ -2,101 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9EF5C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA73DC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358087AbiDLITS (ORCPT
+        id S1349428AbiDLIPT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
+        Tue, 12 Apr 2022 04:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354857AbiDLH0y (ORCPT
+        with ESMTP id S1355311AbiDLH1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 391FA47384;
-        Tue, 12 Apr 2022 00:06:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9DDD6146F;
-        Tue, 12 Apr 2022 07:06:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC1EFC385A6;
-        Tue, 12 Apr 2022 07:06:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747206;
-        bh=9VK7Q9d8kUXkXOYxC5DYC7ucjglVOtJGawK4c7nKiDA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F43f+qRBYxl7s2JwFmOszL1eurK6nXct+5AkDg/zY5ZJIhvXv3Ier9mF0JbPUCVgP
-         f0TALr1TTQHxsUMkYkmbPLOGMAhX2PURKgfab1FUv46i32rS4C4V/P7nGJretUD/Eu
-         BL5zAp1c3Fog8TSYv5BZHzyARGstukvbp8swSRjc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.16 280/285] x86,static_call: Fix __static_call_return0 for i386
-Date:   Tue, 12 Apr 2022 08:32:17 +0200
-Message-Id: <20220412062951.734171923@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:27:25 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E693449257
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:07:26 -0700 (PDT)
+Received: from kwepemi100003.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KcxZR4TtbzgY8G;
+        Tue, 12 Apr 2022 15:05:35 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100003.china.huawei.com (7.221.188.122) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 15:07:24 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 15:07:23 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Mark Rutland <mark.rutland@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Xie XiuQi <xiexiuqi@huawei.com>,
+        Tong Tiangen <tongtiangen@huawei.com>
+Subject: [RFC PATCH -next V3 3/6] arm64: add support for machine check error safe
+Date:   Tue, 12 Apr 2022 07:25:49 +0000
+Message-ID: <20220412072552.2526871-4-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
+In-Reply-To: <20220412072552.2526871-1-tongtiangen@huawei.com>
+References: <20220412072552.2526871-1-tongtiangen@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+During the processing of arm64 kernel hardware memory errors(do_sea()), if
+the errors is consumed in the kernel, the current processing is panic.
+However, it is not optimal.
 
-commit 1cd5f059d956e6f614ba6666ecdbcf95db05d5f5 upstream.
+Take uaccess for example, if the uaccess operation fails due to memory
+error, only the user process will be affected, kill the user process
+and isolate the user page with hardware memory errors is a better choice.
 
-Paolo reported that the instruction sequence that is used to replace:
+This patch only enable machine error check framework, it add exception
+fixup before kernel panic in do_sea() and only limit the consumption of
+hardware memory errors in kernel mode triggered by user mode processes.
+If fixup successful, panic can be avoided.
 
-    call __static_call_return0
+Consistent with PPC/x86, it is implemented by CONFIG_ARCH_HAS_COPY_MC.
 
-namely:
+Also add copy_mc_to_user() in include/linux/uaccess.h, this helper is
+called when CONFIG_ARCH_HAS_COPOY_MC is open.
 
-    66 66 48 31 c0	data16 data16 xor %rax,%rax
-
-decodes to something else on i386, namely:
-
-    66 66 48		data16 dec %ax
-    31 c0		xor    %eax,%eax
-
-Which is a nonsensical sequence that happens to have the same outcome.
-*However* an important distinction is that it consists of 2
-instructions which is a problem when the thing needs to be overwriten
-with a regular call instruction again.
-
-As such, replace the instruction with something that decodes the same
-on both i386 and x86_64.
-
-Fixes: 3f2a8fc4b15d ("static_call/x86: Add __static_call_return0()")
-Reported-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220318204419.GT8939@worktop.programming.kicks-ass.net
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
 ---
- arch/x86/kernel/static_call.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/arm64/Kconfig               |  1 +
+ arch/arm64/include/asm/extable.h |  1 +
+ arch/arm64/mm/extable.c          | 18 ++++++++++++++++++
+ arch/arm64/mm/fault.c            | 28 ++++++++++++++++++++++++++++
+ include/linux/uaccess.h          |  8 ++++++++
+ 5 files changed, 56 insertions(+)
 
---- a/arch/x86/kernel/static_call.c
-+++ b/arch/x86/kernel/static_call.c
-@@ -12,10 +12,9 @@ enum insn_type {
- };
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index d9325dd95eba..012e38309955 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -19,6 +19,7 @@ config ARM64
+ 	select ARCH_ENABLE_SPLIT_PMD_PTLOCK if PGTABLE_LEVELS > 2
+ 	select ARCH_ENABLE_THP_MIGRATION if TRANSPARENT_HUGEPAGE
+ 	select ARCH_HAS_CACHE_LINE_SIZE
++	select ARCH_HAS_COPY_MC if ACPI_APEI_GHES
+ 	select ARCH_HAS_CURRENT_STACK_POINTER
+ 	select ARCH_HAS_DEBUG_VIRTUAL
+ 	select ARCH_HAS_DEBUG_VM_PGTABLE
+diff --git a/arch/arm64/include/asm/extable.h b/arch/arm64/include/asm/extable.h
+index 72b0e71cc3de..f80ebd0addfd 100644
+--- a/arch/arm64/include/asm/extable.h
++++ b/arch/arm64/include/asm/extable.h
+@@ -46,4 +46,5 @@ bool ex_handler_bpf(const struct exception_table_entry *ex,
+ #endif /* !CONFIG_BPF_JIT */
  
- /*
-- * data16 data16 xorq %rax, %rax - a single 5 byte instruction that clears %rax
-- * The REX.W cancels the effect of any data16.
-+ * cs cs cs xorl %eax, %eax - a single 5 byte instruction that clears %[er]ax
-  */
--static const u8 xor5rax[] = { 0x66, 0x66, 0x48, 0x31, 0xc0 };
-+static const u8 xor5rax[] = { 0x2e, 0x2e, 0x2e, 0x31, 0xc0 };
+ bool fixup_exception(struct pt_regs *regs);
++bool fixup_exception_mc(struct pt_regs *regs);
+ #endif
+diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
+index 489455309695..5de256a25464 100644
+--- a/arch/arm64/mm/extable.c
++++ b/arch/arm64/mm/extable.c
+@@ -9,6 +9,7 @@
  
- static void __ref __static_call_transform(void *insn, enum insn_type type, void *func)
+ #include <asm/asm-extable.h>
+ #include <asm/ptrace.h>
++#include <asm/esr.h>
+ 
+ static inline unsigned long
+ get_ex_fixup(const struct exception_table_entry *ex)
+@@ -73,6 +74,7 @@ bool fixup_exception(struct pt_regs *regs)
+ 
+ 	switch (ex->type) {
+ 	case EX_TYPE_FIXUP:
++	case EX_TYPE_UACCESS_MC:
+ 		return ex_handler_fixup(ex, regs);
+ 	case EX_TYPE_BPF:
+ 		return ex_handler_bpf(ex, regs);
+@@ -84,3 +86,19 @@ bool fixup_exception(struct pt_regs *regs)
+ 
+ 	BUG();
+ }
++
++bool fixup_exception_mc(struct pt_regs *regs)
++{
++	const struct exception_table_entry *ex;
++
++	ex = search_exception_tables(instruction_pointer(regs));
++	if (!ex)
++		return false;
++
++	switch (ex->type) {
++	case EX_TYPE_UACCESS_MC:
++		return ex_handler_fixup(ex, regs);
++	}
++
++	return false;
++}
+diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
+index 77341b160aca..56b13cf8bf1d 100644
+--- a/arch/arm64/mm/fault.c
++++ b/arch/arm64/mm/fault.c
+@@ -695,6 +695,30 @@ static int do_bad(unsigned long far, unsigned int esr, struct pt_regs *regs)
+ 	return 1; /* "fault" */
+ }
+ 
++static bool arm64_process_kernel_sea(unsigned long addr, unsigned int esr,
++				     struct pt_regs *regs, int sig, int code)
++{
++	if (!IS_ENABLED(CONFIG_ARCH_HAS_COPY_MC))
++		return false;
++
++	if (user_mode(regs) || !current->mm)
++		return false;
++
++	if (apei_claim_sea(regs) < 0)
++		return false;
++
++	current->thread.fault_address = 0;
++	current->thread.fault_code = esr;
++
++	if (!fixup_exception_mc(regs))
++		return false;
++
++	arm64_force_sig_fault(sig, code, addr,
++		"Uncorrected hardware memory error in kernel-access\n");
++
++	return true;
++}
++
+ static int do_sea(unsigned long far, unsigned int esr, struct pt_regs *regs)
  {
-
+ 	const struct fault_info *inf;
+@@ -720,6 +744,10 @@ static int do_sea(unsigned long far, unsigned int esr, struct pt_regs *regs)
+ 		 */
+ 		siaddr  = untagged_addr(far);
+ 	}
++
++	if (arm64_process_kernel_sea(siaddr, esr, regs, inf->sig, inf->code))
++		return 0;
++
+ 	arm64_notify_die(inf->name, regs, inf->sig, inf->code, siaddr, esr);
+ 
+ 	return 0;
+diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
+index 546179418ffa..dd952aeecdc1 100644
+--- a/include/linux/uaccess.h
++++ b/include/linux/uaccess.h
+@@ -174,6 +174,14 @@ copy_mc_to_kernel(void *dst, const void *src, size_t cnt)
+ }
+ #endif
+ 
++#ifndef copy_mc_to_user
++static inline unsigned long __must_check
++copy_mc_to_user(void *dst, const void *src, size_t cnt)
++{
++	return raw_copy_to_user(dst, src, cnt);
++}
++#endif
++
+ static __always_inline void pagefault_disabled_inc(void)
+ {
+ 	current->pagefault_disabled++;
+-- 
+2.18.0.huawei.25
 
