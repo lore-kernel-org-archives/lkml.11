@@ -2,84 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 882E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDD4C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356304AbiDLOiE (ORCPT
+        id S1356661AbiDLOiK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 10:38:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47362 "EHLO
+        Tue, 12 Apr 2022 10:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244461AbiDLOha (ORCPT
+        with ESMTP id S244461AbiDLOiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 10:37:30 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B2B5AECC
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 07:35:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649774113; x=1681310113;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=HHsgRkFWikOLC0+eUkqw7b7yg2tukWfTOUQdrXgfpyE=;
-  b=cMEao/8pYoSmlSVxRduXWpJEdU1gzcwOsWCXJv5Y1zugpA/Evr/Q7cBI
-   siP3slCbsQiB9eOsEVhv/sR/ou4zalKsGnkRya6ztp1OjvzPrvrAWGBEO
-   r7qqQQClXbk8VHgkinva5qNqOis+HcusiQsw9eV81VdOJxvuJVdnBRcFV
-   VifFjO1c5weczs2L1sFxVllPviYBQN7WDtAp9gLB9QcfEAqoZHlWyP5nk
-   b8T5iZ0m/OH+bkHPAWr44lGiHpa9+v8f2R1XcoM5CgE4KAFF4leChXti5
-   Ukj8EhQs5MIW/Yzvh4TZEo0o+8F0zY1SMu9iTCKO+3mq6buLDHMlSwwgb
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="261236903"
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="261236903"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 07:35:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="724471172"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 12 Apr 2022 07:35:11 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neHbq-0002uS-Ko;
-        Tue, 12 Apr 2022 14:35:10 +0000
-Date:   Tue, 12 Apr 2022 22:34:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jpoimboe:objtool-run 14/14] Error: unknown option `link'
-Message-ID: <202204122219.oMEWJFBW-lkp@intel.com>
+        Tue, 12 Apr 2022 10:38:07 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C3F35BE6C;
+        Tue, 12 Apr 2022 07:35:48 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 0B09622239;
+        Tue, 12 Apr 2022 16:35:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649774146;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=s23tGVg5wfsxakK5pO6iL+Jzfw1pM3exjiQaOm1BYgk=;
+        b=hcSDKp8yvOYM1X/auajUFIy2zmhU59ZbK9GxqJXte96X/3m8v4ZyaZQRUglRLP3okRPO0R
+        bQTiL5rJv21ilNbKdqqYUtRniSNChW+LzjkGEfyuoAs1G8/Jh/JBczd9wY9KinoodtcoV6
+        c2UNgJOBvTSEv6wZrhe9vlT4hrdBdZQ=
+From:   Michael Walle <michael@walle.cc>
+To:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Li Yang <leoyang.li@nxp.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 0/2] arm64: dts: imx8mn: add 8MNANOD3L-EVK device tree
+Date:   Tue, 12 Apr 2022 16:32:36 +0200
+Message-Id: <20220412143238.1925059-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git objtool-run
-head:   7f408460a07320dc0da22915e82ec3b444fef8c8
-commit: 7f408460a07320dc0da22915e82ec3b444fef8c8 [14/14] todo
-config: x86_64-randconfig-a001-20220411 (https://download.01.org/0day-ci/archive/20220412/202204122219.oMEWJFBW-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git/commit/?id=7f408460a07320dc0da22915e82ec3b444fef8c8
-        git remote add jpoimboe https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git
-        git fetch --no-tags jpoimboe objtool-run
-        git checkout 7f408460a07320dc0da22915e82ec3b444fef8c8
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Add support for the 8MNANOD3L-EVK which features a NXP IMX8MN SoC.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Patch 1 was formerly postet separately, but never picked up. So I've bumped
+its version and added the actual device tree. Please note, there wasn't a
+v1 nor a v2 of patch 2.
 
-All errors (new ones prefixed by >>):
+Michael Walle (2):
+  dt-bindings: arm: fsl: add IMX8MN DDR3L eval board
+  arm64: dts: imx8mn: add 8MNANOD3L-EVK device tree
 
->> Error: unknown option `link'
+ .../devicetree/bindings/arm/fsl.yaml          |   1 +
+ arch/arm64/boot/dts/freescale/Makefile        |   1 +
+ .../boot/dts/freescale/imx8mn-ddr3l-evk.dts   | 114 ++++++++++++++++++
+ 3 files changed, 116 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mn-ddr3l-evk.dts
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.30.2
+
