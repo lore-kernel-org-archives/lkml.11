@@ -2,65 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2367EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D36DC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351870AbiDLMHv (ORCPT
+        id S1348225AbiDLMHl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38608 "EHLO
+        Tue, 12 Apr 2022 08:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352142AbiDLMCu (ORCPT
+        with ESMTP id S1343909AbiDLMCK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:02:50 -0400
-X-Greylist: delayed 138 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 03:59:56 PDT
-Received: from forwardcorp1o.mail.yandex.net (forwardcorp1o.mail.yandex.net [95.108.205.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F7B7EA2E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:59:55 -0700 (PDT)
-Received: from myt5-23f0be3aa648.qloud-c.yandex.net (myt5-23f0be3aa648.qloud-c.yandex.net [IPv6:2a02:6b8:c12:3e29:0:640:23f0:be3a])
-        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id C90C42E0ACC;
-        Tue, 12 Apr 2022 13:57:35 +0300 (MSK)
-Received: from 2a02:6b8:c12:3e23:0:640:132c:43df (2a02:6b8:c12:3e23:0:640:132c:43df [2a02:6b8:c12:3e23:0:640:132c:43df])
-        by myt5-23f0be3aa648.qloud-c.yandex.net (mxbackcorp/Yandex) with HTTP id VvOSPl0K10U1-vZKqNsac;
-        Tue, 12 Apr 2022 13:57:35 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1649761055; bh=FrFKHbqm+gncNNr/GE7P/sCi5NUXYl6uoAtzOQJz0uw=;
-        h=References:Date:Message-Id:Cc:Subject:In-Reply-To:To:From;
-        b=HY0+KUA9/KG1iPaEgqtWOLMqbB6ker3H6nJ+bEKkBUyk/GDVUCriFi6FuoScIBrH6
-         /zBSEZ+7cX49D7nm2UKVbrnih8PWzyX4roPO4J2rz0L7HqFWHFU79W/d4YOPFiowdj
-         HMzfEthsWm2s6Ro706+uJSjgHtPKcPeDDhwdASdE=
-Authentication-Results: myt5-23f0be3aa648.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: by myt5-132c43df2a33.qloud-c.yandex.net with HTTP;
-        Tue, 12 Apr 2022 13:57:35 +0300
-From:   Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org, mingo@redhat.com
-In-Reply-To: <YlVOAw9yUbivp7Ki@hirez.programming.kicks-ass.net>
-References: <1649749204-186363-1-git-send-email-dmtrmonakhov@yandex-team.ru>
-         <1649749204-186363-2-git-send-email-dmtrmonakhov@yandex-team.ru> <YlVOAw9yUbivp7Ki@hirez.programming.kicks-ass.net>
-Subject: Re: [PATCH 2/2] x86/unwind/orc: Fix address check size for deref_stack_iret_regs
-MIME-Version: 1.0
-X-Mailer: Yamail [ http://yandex.ru ] 5.0
-Date:   Tue, 12 Apr 2022 13:57:35 +0300
-Message-Id: <258541649761055@myt5-132c43df2a33.qloud-c.yandex.net>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
+        Tue, 12 Apr 2022 08:02:10 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7156C673D3;
+        Tue, 12 Apr 2022 03:57:09 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app2 (Coremail) with SMTP id by_KCgBn3hX1WlVixrabAQ--.10506S3;
+        Tue, 12 Apr 2022 18:57:00 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     krzk@kernel.org, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        alexander.deucher@amd.com, broonie@kernel.org,
+        akpm@linux-foundation.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH V3 1/2] drivers: nfc: nfcmrvl: fix double free bugs caused by fw_dnld_over()
+Date:   Tue, 12 Apr 2022 18:56:52 +0800
+Message-Id: <a88510674c00ad2065698340e9fee89c93ad5d78.1649759498.git.duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1649759498.git.duoming@zju.edu.cn>
+References: <cover.1649759498.git.duoming@zju.edu.cn>
+In-Reply-To: <cover.1649759498.git.duoming@zju.edu.cn>
+References: <cover.1649759498.git.duoming@zju.edu.cn>
+X-CM-TRANSID: by_KCgBn3hX1WlVixrabAQ--.10506S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxWr47uw4DAry7uw1DGFW5trb_yoWrAF1DpF
+        45XF95Jr1qkr4YgF98ta1DAF98Aw43CrWUGF98Ja4fZrn0yF1vyw1ktay5ZrsFgr4Dta13
+        G3ZxJa4UCFsYyr7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvl1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28I
+        cxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvj
+        DU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwSAVZdtZJwywAFsP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+There are potential double free bugs in nfcmrvl usb driver among
+fw_dnld_rx_work(), fw_dnld_timeout() and nfcmrvl_nci_unregister_dev().
+All these three functions will call fw_dnld_over(). The fw_dnld_rx_work()
+is a work item, the fw_dnld_timeout() is a timer handler and the
+nfcmrvl_nci_unregister_dev() is called when nfcmrvl_nci device is
+detaching. So these three functions could execute concurrently.
 
+The race between fw_dnld_rx_work() and nfcmrvl_nci_unregister_dev()
+can be shown as below:
 
-> On Tue, Apr 12, 2022 at 10:40:04AM +0300, Dmitry Monakhov wrote:
-> 
->> For historical reasons we check only IRET_FRAME_OFFSET, but this check
->> is no longer valid because we also access regs->sp field which is
->> located beyond IRET_FRAME, so it is reasonable to validate full structure.
-> 
-> Uuuh, what? IRET frame is:
-> 
-> ss, sp, flags, cs, ip
-> 
-> that very much includes sp.
-Oh. Indeed you are right. Sorry. Please ignore this patch.
+   (Thread 1)               |      (Thread 2)
+                            |       fw_dnld_rx_work
+                            |        fw_dnld_over
+                            |         release_firmware
+                            |          kfree(fw); //(1)
+nfcmrvl_disconnect          |
+ nfcmrvl_nci_unregister_dev |
+  nfcmrvl_fw_dnld_abort     |
+   fw_dnld_over             |         ...
+    if (priv->fw_dnld.fw)   |
+    release_firmware        |
+     kfree(fw); //(2)       |
+     ...                    |         priv->fw_dnld.fw = NULL;
+
+When the fw_dnld_rx_work work item is executing, we detach the device.
+The release_firmware() will deallocate firmware in position (1),
+but firmware will be deallocated again in position (2), which
+leads to double free.
+
+The race between fw_dnld_rx_work() and fw_dnld_timeout()
+can be shown as below:
+
+   (Thread 1)               |      (Thread 2)
+                            |       fw_dnld_rx_work
+                            |        fw_dnld_over
+                            |         release_firmware
+                            |          kfree(fw); //(1)
+fw_dnld_timeout             |
+ fw_dnld_over               |         ...
+  if (priv->fw_dnld.fw)     |
+   release_firmware         |
+    kfree(fw); //(2)        |
+     ...                    |         priv->fw_dnld.fw = NULL;
+
+The release_firmware() will deallocate firmware in position (1),
+but firmware will be deallocated again in position (2), which
+leads to double free.
+
+The race between fw_dnld_timeout() and nfcmrvl_nci_unregister_dev()
+can be shown as below.
+
+   (Thread 1)               |      (Thread 2)
+                            |     nfcmrvl_disconnect
+                            |      nfcmrvl_nci_unregister_dev
+                            |       nfcmrvl_fw_dnld_abort
+                            |        fw_dnld_over
+                            |         release_firmware
+                            |          kfree(fw); //(1)
+fw_dnld_timeout             |
+ fw_dnld_over               |         ...
+  if (priv->fw_dnld.fw)     |
+   release_firmware         |
+    kfree(fw); //(2)        |
+     ...                    |         priv->fw_dnld.fw = NULL;
+
+The release_firmware() will deallocate firmware in position (1),
+but firmware will be deallocated again in position (2), which
+leads to double free.
+
+This patch adds spin_lock_irq in fw_dnld_over() in order to synchronize
+among different threads that call fw_dnld_over(). The priv->fw_dnld.fw will
+be set to NULL after work item is finished and fw_dnld_over() called by
+other threads will check whether priv->fw_dnld.fw is NULL. So the double
+free bug could be prevented.
+
+Fixes: 3194c6870158e3 ("NFC: nfcmrvl: add firmware download support")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Lin Ma <linma@zju.edu.cn>
+---
+Changes in V3:
+  - Make commit message more clearer.
+  - Use spin_lock_irq to synchronize.
+
+ drivers/nfc/nfcmrvl/fw_dnld.c | 3 +++
+ drivers/nfc/nfcmrvl/fw_dnld.h | 2 ++
+ 2 files changed, 5 insertions(+)
+
+diff --git a/drivers/nfc/nfcmrvl/fw_dnld.c b/drivers/nfc/nfcmrvl/fw_dnld.c
+index e83f65596a8..c22a4556db5 100644
+--- a/drivers/nfc/nfcmrvl/fw_dnld.c
++++ b/drivers/nfc/nfcmrvl/fw_dnld.c
+@@ -92,12 +92,14 @@ static struct sk_buff *alloc_lc_skb(struct nfcmrvl_private *priv, uint8_t plen)
+ 
+ static void fw_dnld_over(struct nfcmrvl_private *priv, u32 error)
+ {
++	spin_lock_irq(&priv->fw_dnld.lock);
+ 	if (priv->fw_dnld.fw) {
+ 		release_firmware(priv->fw_dnld.fw);
+ 		priv->fw_dnld.fw = NULL;
+ 		priv->fw_dnld.header = NULL;
+ 		priv->fw_dnld.binary_config = NULL;
+ 	}
++	spin_unlock_irq(&priv->fw_dnld.lock);
+ 
+ 	atomic_set(&priv->ndev->cmd_cnt, 0);
+ 
+@@ -451,6 +453,7 @@ int nfcmrvl_fw_dnld_init(struct nfcmrvl_private *priv)
+ 	if (!priv->fw_dnld.rx_wq)
+ 		return -ENOMEM;
+ 	skb_queue_head_init(&priv->fw_dnld.rx_q);
++	spin_lock_init(&priv->fw_dnld.lock);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/nfc/nfcmrvl/fw_dnld.h b/drivers/nfc/nfcmrvl/fw_dnld.h
+index 7c4d91b0191..e4fe0fb8aff 100644
+--- a/drivers/nfc/nfcmrvl/fw_dnld.h
++++ b/drivers/nfc/nfcmrvl/fw_dnld.h
+@@ -75,6 +75,8 @@ struct nfcmrvl_fw_dnld {
+ 	struct sk_buff_head rx_q;
+ 
+ 	struct timer_list timer;
++	/* To synchronize among different threads that call fw_dnld_over.*/
++	spinlock_t lock;
+ };
+ 
+ int nfcmrvl_fw_dnld_init(struct nfcmrvl_private *priv);
+-- 
+2.17.1
+
