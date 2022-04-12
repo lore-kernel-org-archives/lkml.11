@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C504C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A32C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229788AbiDLHIV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
+        id S235348AbiDLHI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351861AbiDLGyg (ORCPT
+        with ESMTP id S1351883AbiDLGyi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E30275C5;
-        Mon, 11 Apr 2022 23:44:10 -0700 (PDT)
+        Tue, 12 Apr 2022 02:54:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 666752DABD;
+        Mon, 11 Apr 2022 23:44:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C856660EF8;
-        Tue, 12 Apr 2022 06:44:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B2CC385AB;
-        Tue, 12 Apr 2022 06:44:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38B02B818C8;
+        Tue, 12 Apr 2022 06:44:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A8D7C385A6;
+        Tue, 12 Apr 2022 06:44:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745849;
-        bh=zoKKUcXe1kDU5z83JNQPmKJeI8pD5n3WPLK/949w17w=;
+        s=korg; t=1649745869;
+        bh=8VYxJHjf5df+RxzY9RSH9MmheedKbIm3yqG+hZSn+mY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sD/e8KlXyShPx5NBw0+8VMSVStFt/0vcJ807DeTSrYzY1E3qNwk64Emy+m+o7hHIR
-         dX8qiqsENe3O50FrA7MWmJBYT+rv6MNelGLx7BcbXPmAXhDK7yGG7BpsdwZkb7QGtW
-         NNHMHzDsvHpPKPaM1W54/cmoZkcnFSKXuP2W2qUw=
+        b=V3qwlNjaJp6J1ECilyBSZqJqUOf7PviLjGuBtX5DE659yxMQbfNbYG1N35phmJnk5
+         +ndbLkD0/fW18xS7JVQl2z4Fhr2fhijWEkVZ2pVRBHLNddEE5d1iILadx4pBDnhPc4
+         vgDhs7axrez2ID2g0PkPoxUVMf7W9JLZ6z+depbc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        stable@vger.kernel.org, Xiang Chen <chenxiang66@hisilicon.com>,
+        Qi Liu <liuqi115@huawei.com>,
+        John Garry <john.garry@huawei.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 070/277] scsi: pm8001: Fix tag leaks on error
-Date:   Tue, 12 Apr 2022 08:27:53 +0200
-Message-Id: <20220412062944.073624110@linuxfoundation.org>
+Subject: [PATCH 5.15 077/277] scsi: hisi_sas: Limit users changing debugfs BIST count value
+Date:   Tue, 12 Apr 2022 08:28:00 +0200
+Message-Id: <20220412062944.278811465@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,100 +51,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Xiang Chen <chenxiang66@hisilicon.com>
 
-[ Upstream commit 4c8f04b1905cd4b776d0b720463c091545478ef7 ]
+[ Upstream commit 286ce4c65fbdf5eb9d4d5f4e4997c4e32bf1b073 ]
 
-In pm8001_chip_set_dev_state_req(), pm8001_chip_fw_flash_update_req(),
-pm80xx_chip_phy_ctl_req() and pm8001_chip_reg_dev_req() add missing calls
-to pm8001_tag_free() to free the allocated tag when pm8001_mpi_build_cmd()
-fails.
+Add a file operation for "cnt" file under bist directory, so users can only
+read "cnt" or clear "cnt" to zero, but cannot randomly modify.
 
-Similarly, in pm8001_exec_internal_task_abort(), if the chip ->task_abort
-method fails, the tag allocated for the abort request task must be
-freed. Add the missing call to pm8001_tag_free().
-
-Link: https://lore.kernel.org/r/20220220031810.738362-22-damien.lemoal@opensource.wdc.com
-Reviewed-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Link: https://lore.kernel.org/r/1645703489-87194-6-git-send-email-john.garry@huawei.com
+Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: Qi Liu <liuqi115@huawei.com>
+Signed-off-by: John Garry <john.garry@huawei.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 9 +++++++++
- drivers/scsi/pm8001/pm8001_sas.c | 2 +-
- drivers/scsi/pm8001/pm80xx_hwi.c | 9 +++++++--
- 3 files changed, 17 insertions(+), 3 deletions(-)
+ drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 52 +++++++++++++++++++++++++-
+ 1 file changed, 50 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 2adf1435a187..619fbcf37933 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -4488,6 +4488,9 @@ static int pm8001_chip_reg_dev_req(struct pm8001_hba_info *pm8001_ha,
- 		SAS_ADDR_SIZE);
- 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
- 			sizeof(payload), 0);
-+	if (rc)
-+		pm8001_tag_free(pm8001_ha, tag);
-+
- 	return rc;
- }
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 6010acae4cf3..1f5e0688c0c8 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -3968,6 +3968,54 @@ static const struct file_operations debugfs_bist_phy_v3_hw_fops = {
+ 	.owner = THIS_MODULE,
+ };
  
-@@ -4900,6 +4903,9 @@ pm8001_chip_fw_flash_update_req(struct pm8001_hba_info *pm8001_ha,
- 	ccb->ccb_tag = tag;
- 	rc = pm8001_chip_fw_flash_update_build(pm8001_ha, &flash_update_info,
- 		tag);
-+	if (rc)
-+		pm8001_tag_free(pm8001_ha, tag);
++static ssize_t debugfs_bist_cnt_v3_hw_write(struct file *filp,
++					const char __user *buf,
++					size_t count, loff_t *ppos)
++{
++	struct seq_file *m = filp->private_data;
++	struct hisi_hba *hisi_hba = m->private;
++	unsigned int cnt;
++	int val;
 +
- 	return rc;
- }
- 
-@@ -5004,6 +5010,9 @@ pm8001_chip_set_dev_state_req(struct pm8001_hba_info *pm8001_ha,
- 	payload.nds = cpu_to_le32(state);
- 	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
- 			sizeof(payload), 0);
-+	if (rc)
-+		pm8001_tag_free(pm8001_ha, tag);
++	if (hisi_hba->debugfs_bist_enable)
++		return -EPERM;
 +
- 	return rc;
- 
- }
-diff --git a/drivers/scsi/pm8001/pm8001_sas.c b/drivers/scsi/pm8001/pm8001_sas.c
-index 491cecbbe1aa..5fb08acbc0e5 100644
---- a/drivers/scsi/pm8001/pm8001_sas.c
-+++ b/drivers/scsi/pm8001/pm8001_sas.c
-@@ -831,10 +831,10 @@ pm8001_exec_internal_task_abort(struct pm8001_hba_info *pm8001_ha,
- 
- 		res = PM8001_CHIP_DISP->task_abort(pm8001_ha,
- 			pm8001_dev, flag, task_tag, ccb_tag);
--
- 		if (res) {
- 			del_timer(&task->slow_task->timer);
- 			pm8001_dbg(pm8001_ha, FAIL, "Executing internal task failed\n");
-+			pm8001_tag_free(pm8001_ha, ccb_tag);
- 			goto ex_err;
- 		}
- 		wait_for_completion(&task->slow_task->completion);
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
-index df140eca341f..5561057109de 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.c
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.c
-@@ -4920,8 +4920,13 @@ static int pm80xx_chip_phy_ctl_req(struct pm8001_hba_info *pm8001_ha,
- 	payload.tag = cpu_to_le32(tag);
- 	payload.phyop_phyid =
- 		cpu_to_le32(((phy_op & 0xFF) << 8) | (phyId & 0xFF));
--	return pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
--			sizeof(payload), 0);
++	val = kstrtouint_from_user(buf, count, 0, &cnt);
++	if (val)
++		return val;
 +
-+	rc = pm8001_mpi_build_cmd(pm8001_ha, circularQ, opc, &payload,
-+				  sizeof(payload), 0);
-+	if (rc)
-+		pm8001_tag_free(pm8001_ha, tag);
++	if (cnt)
++		return -EINVAL;
 +
-+	return rc;
- }
++	hisi_hba->debugfs_bist_cnt = 0;
++	return count;
++}
++
++static int debugfs_bist_cnt_v3_hw_show(struct seq_file *s, void *p)
++{
++	struct hisi_hba *hisi_hba = s->private;
++
++	seq_printf(s, "%u\n", hisi_hba->debugfs_bist_cnt);
++
++	return 0;
++}
++
++static int debugfs_bist_cnt_v3_hw_open(struct inode *inode,
++					  struct file *filp)
++{
++	return single_open(filp, debugfs_bist_cnt_v3_hw_show,
++			   inode->i_private);
++}
++
++static const struct file_operations debugfs_bist_cnt_v3_hw_ops = {
++	.open = debugfs_bist_cnt_v3_hw_open,
++	.read = seq_read,
++	.write = debugfs_bist_cnt_v3_hw_write,
++	.llseek = seq_lseek,
++	.release = single_release,
++	.owner = THIS_MODULE,
++};
++
+ static const struct {
+ 	int		value;
+ 	char		*name;
+@@ -4605,8 +4653,8 @@ static void debugfs_bist_init_v3_hw(struct hisi_hba *hisi_hba)
+ 	debugfs_create_file("phy_id", 0600, hisi_hba->debugfs_bist_dentry,
+ 			    hisi_hba, &debugfs_bist_phy_v3_hw_fops);
  
- static u32 pm80xx_chip_is_our_interrupt(struct pm8001_hba_info *pm8001_ha)
+-	debugfs_create_u32("cnt", 0600, hisi_hba->debugfs_bist_dentry,
+-			   &hisi_hba->debugfs_bist_cnt);
++	debugfs_create_file("cnt", 0600, hisi_hba->debugfs_bist_dentry,
++			    hisi_hba, &debugfs_bist_cnt_v3_hw_ops);
+ 
+ 	debugfs_create_file("loopback_mode", 0600,
+ 			    hisi_hba->debugfs_bist_dentry,
 -- 
 2.35.1
 
