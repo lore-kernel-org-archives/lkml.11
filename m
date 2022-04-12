@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C00FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BD3C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:11:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235245AbiDLJJw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
+        id S1358100AbiDLJKH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359132AbiDLHmd (ORCPT
+        with ESMTP id S1358991AbiDLHmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74EF355233;
-        Tue, 12 Apr 2022 00:20:19 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8199F275F0;
+        Tue, 12 Apr 2022 00:19:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22AC7B81B58;
-        Tue, 12 Apr 2022 07:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73A91C385A5;
-        Tue, 12 Apr 2022 07:20:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2DEEFB81A8F;
+        Tue, 12 Apr 2022 07:19:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78966C385A1;
+        Tue, 12 Apr 2022 07:19:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748016;
-        bh=sC+yelsbh94fJQss7tqpXVH0tAA6PB+cx7LgaWENbnY=;
+        s=korg; t=1649747989;
+        bh=a4Wb71T+g9OBqgUU9cgQ7mHXv/YD80iOH6Z0MpXZCeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F7926cvITvgsM7pzN2cmXb5age+GG9m5FaxjF9f8r8C91Wwpdi9DaPYwaYdRbJkrP
-         7V95HDvgtDHJmm66+NsBR2/lVRvobnnw4z92w3+SvkyuGdpfmjOmz3p8+LH1zdhVg8
-         guOYYA1SZDYjo5cDrq5gQ9ZVJOyQg3xRM20Ervuk=
+        b=CehFXo1OHCszJxl5Ts16y6j6NlTtJVGLK2hr/pBHptuLWpcagRUDdHFrVvL6eH6tw
+         Vj5sEg/Hm3dFD1ABaEejnpR+uyl5XLz8NT5x9PLmr+TZ+r4tSVQZu8WK7hizZbRSXQ
+         qnJmuHRXF/F5x6EDYQPrwRIlWXVmExjOn7PFAYJI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Gardner <tim.gardner@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        Alok Prasad <palok@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>
-Subject: [PATCH 5.17 290/343] qed: fix ethtool register dump
-Date:   Tue, 12 Apr 2022 08:31:48 +0200
-Message-Id: <20220412062959.698888922@linuxfoundation.org>
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.17 277/343] io_uring: defer splice/tee file validity check until command issue
+Date:   Tue, 12 Apr 2022 08:31:35 +0200
+Message-Id: <20220412062959.318721633@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,45 +48,147 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit 20921c0c86092b4082c91bd7c88305da74e5520b upstream.
+commit a3e4bc23d5470b2beb7cc42a86b6a3e75b704c15 upstream.
 
-To fix a coverity complain, commit d5ac07dfbd2b
-("qed: Initialize debug string array") removed "sw-platform"
-(one of the common global parameters) from the dump as this
-was used in the dump with an uninitialized string, however
-it did not reduce the number of common global parameters
-which caused the incorrect (unable to parse) register dump
+In preparation for not using the file at prep time, defer checking if this
+file refers to a valid io_uring instance until issue time.
 
-this patch fixes it with reducing NUM_COMMON_GLOBAL_PARAMS
-bye one.
+This also means we can get rid of the cleanup flag for splice and tee.
 
-Cc: stable@vger.kernel.org
-Cc: Tim Gardner <tim.gardner@canonical.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Fixes: d5ac07dfbd2b ("qed: Initialize debug string array")
-Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-Signed-off-by: Alok Prasad <palok@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Reviewed-by: Tim Gardner <tim.gardner@canonical.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: stable@vger.kernel.org # v5.15+
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_debug.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/io_uring.c |   49 +++++++++++++++++++++----------------------------
+ 1 file changed, 21 insertions(+), 28 deletions(-)
 
---- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
-@@ -489,7 +489,7 @@ struct split_type_defs {
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -621,10 +621,10 @@ struct io_epoll {
  
- #define STATIC_DEBUG_LINE_DWORDS	9
+ struct io_splice {
+ 	struct file			*file_out;
+-	struct file			*file_in;
+ 	loff_t				off_out;
+ 	loff_t				off_in;
+ 	u64				len;
++	int				splice_fd_in;
+ 	unsigned int			flags;
+ };
  
--#define NUM_COMMON_GLOBAL_PARAMS	11
-+#define NUM_COMMON_GLOBAL_PARAMS	10
+@@ -1551,14 +1551,6 @@ static void io_prep_async_work(struct io
+ 		if (def->unbound_nonreg_file)
+ 			req->work.flags |= IO_WQ_WORK_UNBOUND;
+ 	}
+-
+-	switch (req->opcode) {
+-	case IORING_OP_SPLICE:
+-	case IORING_OP_TEE:
+-		if (!S_ISREG(file_inode(req->splice.file_in)->i_mode))
+-			req->work.flags |= IO_WQ_WORK_UNBOUND;
+-		break;
+-	}
+ }
  
- #define MAX_RECURSION_DEPTH		10
+ static void io_prep_async_link(struct io_kiocb *req)
+@@ -4144,18 +4136,11 @@ static int __io_splice_prep(struct io_ki
+ 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
+ 		return -EINVAL;
  
+-	sp->file_in = NULL;
+ 	sp->len = READ_ONCE(sqe->len);
+ 	sp->flags = READ_ONCE(sqe->splice_flags);
+-
+ 	if (unlikely(sp->flags & ~valid_flags))
+ 		return -EINVAL;
+-
+-	sp->file_in = io_file_get(req->ctx, req, READ_ONCE(sqe->splice_fd_in),
+-				  (sp->flags & SPLICE_F_FD_IN_FIXED));
+-	if (!sp->file_in)
+-		return -EBADF;
+-	req->flags |= REQ_F_NEED_CLEANUP;
++	sp->splice_fd_in = READ_ONCE(sqe->splice_fd_in);
+ 	return 0;
+ }
+ 
+@@ -4170,20 +4155,27 @@ static int io_tee_prep(struct io_kiocb *
+ static int io_tee(struct io_kiocb *req, unsigned int issue_flags)
+ {
+ 	struct io_splice *sp = &req->splice;
+-	struct file *in = sp->file_in;
+ 	struct file *out = sp->file_out;
+ 	unsigned int flags = sp->flags & ~SPLICE_F_FD_IN_FIXED;
++	struct file *in;
+ 	long ret = 0;
+ 
+ 	if (issue_flags & IO_URING_F_NONBLOCK)
+ 		return -EAGAIN;
++
++	in = io_file_get(req->ctx, req, sp->splice_fd_in,
++				  (sp->flags & SPLICE_F_FD_IN_FIXED));
++	if (!in) {
++		ret = -EBADF;
++		goto done;
++	}
++
+ 	if (sp->len)
+ 		ret = do_tee(in, out, sp->len, flags);
+ 
+ 	if (!(sp->flags & SPLICE_F_FD_IN_FIXED))
+ 		io_put_file(in);
+-	req->flags &= ~REQ_F_NEED_CLEANUP;
+-
++done:
+ 	if (ret != sp->len)
+ 		req_set_fail(req);
+ 	io_req_complete(req, ret);
+@@ -4202,15 +4194,22 @@ static int io_splice_prep(struct io_kioc
+ static int io_splice(struct io_kiocb *req, unsigned int issue_flags)
+ {
+ 	struct io_splice *sp = &req->splice;
+-	struct file *in = sp->file_in;
+ 	struct file *out = sp->file_out;
+ 	unsigned int flags = sp->flags & ~SPLICE_F_FD_IN_FIXED;
+ 	loff_t *poff_in, *poff_out;
++	struct file *in;
+ 	long ret = 0;
+ 
+ 	if (issue_flags & IO_URING_F_NONBLOCK)
+ 		return -EAGAIN;
+ 
++	in = io_file_get(req->ctx, req, sp->splice_fd_in,
++				  (sp->flags & SPLICE_F_FD_IN_FIXED));
++	if (!in) {
++		ret = -EBADF;
++		goto done;
++	}
++
+ 	poff_in = (sp->off_in == -1) ? NULL : &sp->off_in;
+ 	poff_out = (sp->off_out == -1) ? NULL : &sp->off_out;
+ 
+@@ -4219,8 +4218,7 @@ static int io_splice(struct io_kiocb *re
+ 
+ 	if (!(sp->flags & SPLICE_F_FD_IN_FIXED))
+ 		io_put_file(in);
+-	req->flags &= ~REQ_F_NEED_CLEANUP;
+-
++done:
+ 	if (ret != sp->len)
+ 		req_set_fail(req);
+ 	io_req_complete(req, ret);
+@@ -6686,11 +6684,6 @@ static void io_clean_op(struct io_kiocb
+ 			kfree(io->free_iov);
+ 			break;
+ 			}
+-		case IORING_OP_SPLICE:
+-		case IORING_OP_TEE:
+-			if (!(req->splice.flags & SPLICE_F_FD_IN_FIXED))
+-				io_put_file(req->splice.file_in);
+-			break;
+ 		case IORING_OP_OPENAT:
+ 		case IORING_OP_OPENAT2:
+ 			if (req->open.filename)
 
 
