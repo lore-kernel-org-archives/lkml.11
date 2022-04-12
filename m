@@ -2,132 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3335EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF11C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:41:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354777AbiDLMnL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37254 "EHLO
+        id S230015AbiDLMn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 08:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355012AbiDLMis (ORCPT
+        with ESMTP id S1353900AbiDLMmN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:38:48 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on20630.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaa::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF064EDC2;
-        Tue, 12 Apr 2022 04:59:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Whct3Kc53qbsgmsLyzBreQ50eXHK2pFZgcF0hGSL1ZMT1qo5SD66+4rfHN4eRIWnF9jrz4eROHN2wJj+niJu3QeDt5Iqm01UvL7G+sDpkLxXZDUtlWv7n3OKMahsBYUJ5r0aqN51qJvX1XZsORgC+5fyfp0CJBvPRvZgzJVR2aMGGDsVpx2XNL/EFNp3zFxev8hlC3zvUY318RlvtrTC9cO98CcZoZqlIygiNtamZN/9dFkjU3ZJy8wRyg+rPutSXn9Ja7ttZKQknj1LUkd53TR0kXFkjuzqZuxnIT3ZM1aXsx5OsbQqfEmVSupXuUuda2q3joSdwgUeoGQKR7QnvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qnoWV9wc7zlYms5ds6rbvb11cTDLum9TslUT82sGkBU=;
- b=M5jqKlWmD21N04eH4mqJg1+1IVRd5ldMbF4ms6pmTBwmKiIz6eNn2Cz3EYR4qH8eNHH3oHRLD+I4g4SORUMNaRmg9th3IkkHYWQ+MQQ5yPahn5d/EhClFiUxkz2Ue8H1Wd6V3OKLRj8z7GwLkYb9o4BKVIwMqM0e2QoS5pQ76Y3CU3o/HAqlGx6TPy/Gjj6CsJhWKZazeFnTXOVuNOEJ+eIL/5ZIJWm8W0zFrF1LzA25M6p1+c9ONzt/olJX5cJ+d1HeukUZHW36tdw0SWkckuauOt2p2a1DeQEK65Z2kJBCsTIcseYx0vl2ahhbhPmNSwHZG6j8Old/RuxUXspvPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qnoWV9wc7zlYms5ds6rbvb11cTDLum9TslUT82sGkBU=;
- b=K/knDvgE9sGbEblUaAbNKCGAg8+On7qroy8DEGiIuqWJ/9VVnBMsZB1BZxvqz5k/JYhAs2rZaA8c8Z5jwWF1I7KJ2KzP6byIZnWumixjVby5yaDti6u/zJgUiBZ8DvBtb+muxeZW7TEbwyATRXloUK43Qmc5FAZeo1aEIR34zxc=
-Received: from BN9PR03CA0739.namprd03.prod.outlook.com (2603:10b6:408:110::24)
- by BL1PR12MB5061.namprd12.prod.outlook.com (2603:10b6:208:310::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
- 2022 11:59:11 +0000
-Received: from BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:110:cafe::d2) by BN9PR03CA0739.outlook.office365.com
- (2603:10b6:408:110::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5164.18 via Frontend
- Transport; Tue, 12 Apr 2022 11:59:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT035.mail.protection.outlook.com (10.13.177.116) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5144.20 via Frontend Transport; Tue, 12 Apr 2022 11:59:11 +0000
-Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 12 Apr
- 2022 06:59:10 -0500
-From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>
-CC:     <pbonzini@redhat.com>, <mlevitsk@redhat.com>, <seanjc@google.com>,
-        <joro@8bytes.org>, <jon.grimm@amd.com>, <wei.huang2@amd.com>,
-        <terry.bowman@amd.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v2 05/12] KVM: SVM: Update avic_kick_target_vcpus to support 32-bit APIC ID
-Date:   Tue, 12 Apr 2022 06:58:15 -0500
-Message-ID: <20220412115822.14351-6-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412115822.14351-1-suravee.suthikulpanit@amd.com>
-References: <20220412115822.14351-1-suravee.suthikulpanit@amd.com>
+        Tue, 12 Apr 2022 08:42:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E0113DEF;
+        Tue, 12 Apr 2022 05:07:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EC83B818BB;
+        Tue, 12 Apr 2022 12:07:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45D77C385A9;
+        Tue, 12 Apr 2022 12:07:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649765236;
+        bh=ogE5ybnNzjbeaUs8XfhvgUoIApTax4ov6E7K92asMNs=;
+        h=References:In-Reply-To:Reply-To:From:Date:Subject:To:Cc:From;
+        b=D0eLDKVUOEryqXyU30wgT0oTEy0cz/IBaKwg4xHwd+6zv6MHtDFJdDgz5RoGilSzn
+         wtTvZ9lQMiF/VuljH7jAAEFKCiUKlWUH0htyeFlif5dgbPJlc5jbaAiIy8/Wual4pY
+         dt/zfJWayDw6bcWo3oxKz8ku+NdWPo8xHTOWSAWh5fk47gtku9hhwzxwbvpME1k28g
+         sF/MepEwB7/h7R4oHkMDGRrMF2/EGQ9oJJ0pM/fcJ710znASgvZfTpTAV9V46bH07Z
+         ybe7bKFYcKiK8Om358xyiV67yCbz1YdOWEWwt3OAZ6mKejFeiNZLkB2fRoM5gkpcxY
+         8ErR7+RY+Bf+A==
+Received: by mail-vs1-f41.google.com with SMTP id u2so14017745vsl.6;
+        Tue, 12 Apr 2022 05:07:16 -0700 (PDT)
+X-Gm-Message-State: AOAM5309oIEfuOy4YTUes1u9SkB5WY9zW45XbBLMKDurRpumRH6/Ev9x
+        S7Bzh5rpKSsbduID0i1o9a5mt1USvXJ1WVUfCJo=
+X-Google-Smtp-Source: ABdhPJzjEEHJ1j3lKpjqp/WFdHMDZcR/5QTgBJgXwmPXWsXCZQHuWZkG7PxraL3PSeHLZ50+5phOm6ZKNJy+juNEIBM=
+X-Received: by 2002:a05:6102:3098:b0:328:1825:61f8 with SMTP id
+ l24-20020a056102309800b00328182561f8mr7138726vsb.39.1649765235208; Tue, 12
+ Apr 2022 05:07:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6849b8b6-cace-4e6e-ca63-08da1c7bdb89
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5061:EE_
-X-Microsoft-Antispam-PRVS: <BL1PR12MB50611D8DA73058BCAC8FF4DBF3ED9@BL1PR12MB5061.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DCwoAdlYnlBbnvxdYpnemER6mS1BplSWPlI9V1xSdJWNwrCudPCwybQ8I4SK2qIlsl/N4Qoyxa/6WNn6a9fiej1qXjexTjpalc+Oiq3YVgpvMTklp1+5yX4UZakfaiKND9/3lycalwvUzAhwDnbHaW7HwD/e3Rw52tMdokVAVc0MRNmhhj6Sgrmc742sVGRIiJJUm5znYfuFKwF0sd//sa9peaC3kgroSICJ6f0mDrmFLJ1NMKfmKOuyFYzDTtJismg6rL45ei7iSRUVth1rxyJZF94w0IKC+PKgkrHkXeedKNr63PSEVd+LTj7hQlmbiCyyYZUGPwpOvHRZoCMG6OARnV7Nql+v/3LGcuAFghzgDMWjKcyN3x12BQqLRGXVil6W9uXAOgsyECuG831ULbvVUDxqFwU3uQkyNy7GJp++k1VZ/pAz/LtioUhQEuEPo6ZgZIynyGc0o7sIHJA2fxaU9hBMWXJhCXeVIATV9pCTklbp5r/gjnXS+DGSNiztn53MDSCM09fdT4p6FmL1YhZwY1Oc3qr+qeQWYkmaoFOtp94n6k8N8Uo4ciXNs38kZp1Hw8MrSuoDDanKWs5zVX+U1RrkhWSIfyGd0g9wjF3dPrx9/EOw0bTJC/lTiTfiOqPLprCgSeLjPHGxxpNXhHB8Zs4hGTBCNJ2X6xKDY/Kjl0HkPv2wFzZKH80OkjsQ2Wqg2NIWfJOpCA5QudHW9Q==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(86362001)(8676002)(40460700003)(8936002)(186003)(5660300002)(81166007)(356005)(44832011)(2906002)(15650500001)(83380400001)(7696005)(4326008)(70206006)(70586007)(426003)(2616005)(1076003)(16526019)(336012)(26005)(316002)(110136005)(54906003)(47076005)(36860700001)(508600001)(82310400005)(36756003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 11:59:11.5517
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6849b8b6-cace-4e6e-ca63-08da1c7bdb89
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT035.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5061
+References: <20220411211243.11121-1-javierm@redhat.com> <20220411211243.11121-2-javierm@redhat.com>
+In-Reply-To: <20220411211243.11121-2-javierm@redhat.com>
+Reply-To: wens@kernel.org
+From:   Chen-Yu Tsai <wens@kernel.org>
+Date:   Tue, 12 Apr 2022 20:07:03 +0800
+X-Gmail-Original-Message-ID: <CAGb2v65CBZp3DZFGX0GMTaQQPYMKJTJMNoU2V5u7MxsLN7ONKQ@mail.gmail.com>
+Message-ID: <CAGb2v65CBZp3DZFGX0GMTaQQPYMKJTJMNoU2V5u7MxsLN7ONKQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/5] dt-bindings: display: ssd1307fb: Deprecate "-i2c"
+ compatible strings
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In x2APIC mode, ICRH contains 32-bit destination APIC ID.
-So, update the avic_kick_target_vcpus() accordingly.
+On Tue, Apr 12, 2022 at 5:12 AM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+>
+> The current compatible strings for SSD130x I2C controllers contain both an
+> "fb" and "-i2c" suffixes. It seems to indicate that are for a fbdev driver
+> and also that are for devices that can be accessed over an I2C bus.
+>
+> But a DT is supposed to describe the hardware and not Linux implementation
+> details. So let's deprecate those compatible strings and add new ones that
+> only contain the vendor and device name, without any of these suffixes.
+>
+> These will just describe the device and can be matched by both I2C and SPI
+> DRM drivers.
+>
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> Acked-by: Mark Brown <broonie@kernel.org>
+> ---
+>
+> Changes in v2:
+> - Drop the -i2c suffixes from the compatible strings too (Geert Uytterhoeven).
+>
+>  .../bindings/display/solomon,ssd1307fb.yaml   | 37 ++++++++++++-------
+>  1 file changed, 24 insertions(+), 13 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> index ade61d502edd..6b9d0c72739a 100644
+> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+> @@ -12,12 +12,23 @@ maintainers:
+>
+>  properties:
+>    compatible:
+> -    enum:
+> -      - sinowealth,sh1106-i2c
+> -      - solomon,ssd1305fb-i2c
+> -      - solomon,ssd1306fb-i2c
+> -      - solomon,ssd1307fb-i2c
+> -      - solomon,ssd1309fb-i2c
+> +    oneOf:
+> +      # Deprecated compatible strings
+> +      - items:
+> +          - enum:
+> +              - sinowealth,sh1106-i2c
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- arch/x86/kvm/svm/avic.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+I think you can just drop this one, since it was just merged and isn't
+part of any release yet. It's not even in -rc.
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 6c4519db3fc3..609dcbe52a86 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -307,9 +307,15 @@ static void avic_kick_target_vcpus(struct kvm *kvm, struct kvm_lapic *source,
- 	 * since entered the guest will have processed pending IRQs at VMRUN.
- 	 */
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
-+		u32 dest;
-+
-+		if (apic_x2apic_mode(vcpu->arch.apic))
-+			dest = icrh;
-+		else
-+			dest = GET_XAPIC_DEST_FIELD(icrh);
-+
- 		if (kvm_apic_match_dest(vcpu, source, icrl & APIC_SHORT_MASK,
--					GET_XAPIC_DEST_FIELD(icrh),
--					icrl & APIC_DEST_MASK)) {
-+					dest, icrl & APIC_DEST_MASK)) {
- 			vcpu->arch.apic->irr_pending = true;
- 			svm_complete_interrupt_delivery(vcpu,
- 							icrl & APIC_MODE_MASK,
--- 
-2.25.1
-
+ChenYu
