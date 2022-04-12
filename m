@@ -2,186 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 593B0C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95DF4C38A02
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376413AbiDLHoB (ORCPT
+        id S1376555AbiDLHoK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45758 "EHLO
+        Tue, 12 Apr 2022 03:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354204AbiDLHRO (ORCPT
+        with ESMTP id S1354245AbiDLHRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:17:14 -0400
-Received: from m228-62.mailgun.net (m228-62.mailgun.net [159.135.228.62])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 725064B852
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:58:31 -0700 (PDT)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
- s=smtp; t=1649746711; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Subject: Cc: To: To: From: From: Date:
- Sender: Sender; bh=xpRZFsxytzgneOlsluEhnk6HH0jkgAUHzKO26/lNTYc=; b=Hf8fbU6shRw/5GzEsg4siGkpvS5qED3RnAsyTq+SMio33TKrDfogCJRbgXRsm4IzotFdGMJe
- ZFytFAFwncMwl4C0EMk/iFqu1swVQTRyGZMOzeP6nxbYRRR2f8Vk3igOHbUQnKHcauuiThtX
- gFNkSizsr/UrisgZWox2kwGAQHYTGr1XDWmpDzE8b//Gp/ejtHXrT2NfSE47piFBMwWX7nk6
- PBFonWd75EQqvyB+x+G8SQKjB2AmddyLXqAXcQIJHoht6kQBI99C092MMuIzpcvGZiamln17
- HI7K5K5TJ8yra5ta0gJH/LKbaytdsn6wH2UnYqVUNxeZo66s9ysmbQ==
-X-Mailgun-Sending-Ip: 159.135.228.62
-X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
-Received: from AN5Bruno (186-250-90-1.mhnet.com.br [186.250.90.1]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 625523167a6ca2b683fc51ef (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
- Tue, 12 Apr 2022 06:58:29 GMT
-Sender: codeagain@codeagain.dev
-Date:   Tue, 12 Apr 2022 03:58:25 -0300
-From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev
-Cc:     Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Subject: [PATCH v2 3/3] staging: vme: "drivers/staging/vme" tree cleanup
-Message-ID: <142698e3761c1e7ba8b17cdd9dc077472ef81668.1649721450.git.codeagain@codeagain.dev>
-References: <cover.1649721450.git.codeagain@codeagain.dev>
+        Tue, 12 Apr 2022 03:17:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA054B871;
+        Mon, 11 Apr 2022 23:58:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6DE18B81B4E;
+        Tue, 12 Apr 2022 06:58:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B67C7C385A1;
+        Tue, 12 Apr 2022 06:58:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649746714;
+        bh=q1OjChVOmJ4PFhnv9P1M0DRZBGbms2XZZgVzpV0gAW4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YBbk2967DXPw5RdH3e0DPwonq4RPQk4aXdihTHCKGa5TIA2atbasxgntsfHRXGy7W
+         YIOh3vzyiF+dTF2pBmMNEuQW6OLMnuTiB+3OZy5KZinIUhiCmuG5Nzex/k4e/p02hp
+         mafOP+X5+VGQ/Zu2eQwn+iH2ghYPSclDxsbiwTnY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Deren Wu <deren.wu@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 103/285] mt76: fix monitor mode crash with sdio driver
+Date:   Tue, 12 Apr 2022 08:29:20 +0200
+Message-Id: <20220412062946.638370406@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="iejrtspvkosvtjkp"
-Content-Disposition: inline
-In-Reply-To: <cover.1649721450.git.codeagain@codeagain.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Deren Wu <deren.wu@mediatek.com>
 
---iejrtspvkosvtjkp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[ Upstream commit 123bc712b1de0805f9d683687e17b1ec2aba0b68 ]
 
-In <db3b9e990e75> ("Staging: VME: move VME drivers out of staging") the
-vme code, board and bridge drivers were moved out of the staging tree,
-remaining only the VME user device driver.
+mt7921s driver may receive frames with fragment buffers. If there is a
+CTS packet received in monitor mode, the payload is 10 bytes only and
+need 6 bytes header padding after RXD buffer. However, only RXD in the
+first linear buffer, if we pull buffer size RXD-size+6 bytes with
+skb_pull(), that would trigger "BUG_ON(skb->len < skb->data_len)" in
+__skb_pull().
 
-Since this driver is the only one remaining in staging, such multi-level
-struct confuses more than helps. The current structure is as follows:
+To avoid the nonlinear buffer issue, enlarge the RXD size from 128 to
+256 to make sure all MCU operation in linear buffer.
 
-- drivers/staging/vme/
-                      +Makefile
-                      +devices/
-                               +Kconfig
-                               +Makefile
-                               +vme_user.c
-                               +vme_user.h
+[   52.007562] kernel BUG at include/linux/skbuff.h:2313!
+[   52.007578] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+[   52.007987] pc : skb_pull+0x48/0x4c
+[   52.008015] lr : mt7921_queue_rx_skb+0x494/0x890 [mt7921_common]
+[   52.008361] Call trace:
+[   52.008377]  skb_pull+0x48/0x4c
+[   52.008400]  mt76s_net_worker+0x134/0x1b0 [mt76_sdio 35339a92c6eb7d4bbcc806a1d22f56365565135c]
+[   52.008431]  __mt76_worker_fn+0xe8/0x170 [mt76 ef716597d11a77150bc07e3fdd68eeb0f9b56917]
+[   52.008449]  kthread+0x148/0x3ac
+[   52.008466]  ret_from_fork+0x10/0x30
 
-The root Makefile has the only function of calling the other Makefile
-into the devices/ subdirectory. This latter only compiles the vme_user
-driver, since there is no other.
-
-This patch allows a more straightforward understanding of this driver's
-contents by removing the unnecessary Makefile from the 'vme/' subdir,
-moving the contents of 'vme/devices' straight into 'vme/', and renaming
-'vme/' to 'vme_user' (the driver name). It also adjusts the Kconfig and
-the Makefile from drivers/staging to properly reflect the new structure.
-
-CHANGELOG
-v2:
-- Added this patch to the patchset
-
-Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- MAINTAINERS                                          | 2 +-
- drivers/staging/Kconfig                              | 2 +-
- drivers/staging/Makefile                             | 2 +-
- drivers/staging/vme/Makefile                         | 2 --
- drivers/staging/{vme/devices =3D> vme_user}/Kconfig    | 0
- drivers/staging/{vme/devices =3D> vme_user}/Makefile   | 0
- drivers/staging/{vme/devices =3D> vme_user}/vme_user.c | 0
- drivers/staging/{vme/devices =3D> vme_user}/vme_user.h | 0
- 8 files changed, 3 insertions(+), 5 deletions(-)
- delete mode 100644 drivers/staging/vme/Makefile
- rename drivers/staging/{vme/devices =3D> vme_user}/Kconfig (100%)
- rename drivers/staging/{vme/devices =3D> vme_user}/Makefile (100%)
- rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.c (100%)
- rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.h (100%)
+ drivers/net/wireless/mediatek/mt76/mt76.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fd768d43e048..88423218e5e6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21014,7 +21014,7 @@ L:	linux-kernel@vger.kernel.org
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git
- F:	Documentation/driver-api/vme.rst
--F:	drivers/staging/vme/
-+F:	drivers/staging/vme_user/
- F:	drivers/vme/
- F:	include/linux/vme*
-=20
-diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
-index 0545850eb2ff..9f11592336f8 100644
---- a/drivers/staging/Kconfig
-+++ b/drivers/staging/Kconfig
-@@ -88,6 +88,6 @@ source "drivers/staging/qlge/Kconfig"
-=20
- source "drivers/staging/wfx/Kconfig"
-=20
--source "drivers/staging/vme/devices/Kconfig"
-+source "drivers/staging/vme_user/Kconfig"
-=20
- endif # STAGING
-diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
-index 3ffb35ccfae2..1dffa02121ee 100644
---- a/drivers/staging/Makefile
-+++ b/drivers/staging/Makefile
-@@ -14,7 +14,7 @@ obj-$(CONFIG_OCTEON_ETHERNET)	+=3D octeon/
- obj-$(CONFIG_OCTEON_USB)	+=3D octeon-usb/
- obj-$(CONFIG_VT6655)		+=3D vt6655/
- obj-$(CONFIG_VT6656)		+=3D vt6656/
--obj-$(CONFIG_VME_BUS)		+=3D vme/
-+obj-$(CONFIG_VME_BUS)		+=3D vme_user/
- obj-$(CONFIG_IIO)		+=3D iio/
- obj-$(CONFIG_FB_SM750)		+=3D sm750fb/
- obj-$(CONFIG_USB_EMXX)		+=3D emxx_udc/
-diff --git a/drivers/staging/vme/Makefile b/drivers/staging/vme/Makefile
-deleted file mode 100644
-index cf2f686ccffe..000000000000
---- a/drivers/staging/vme/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--obj-y				+=3D devices/
-diff --git a/drivers/staging/vme/devices/Kconfig b/drivers/staging/vme_user=
-/Kconfig
-similarity index 100%
-rename from drivers/staging/vme/devices/Kconfig
-rename to drivers/staging/vme_user/Kconfig
-diff --git a/drivers/staging/vme/devices/Makefile b/drivers/staging/vme_use=
-r/Makefile
-similarity index 100%
-rename from drivers/staging/vme/devices/Makefile
-rename to drivers/staging/vme_user/Makefile
-diff --git a/drivers/staging/vme/devices/vme_user.c b/drivers/staging/vme_u=
-ser/vme_user.c
-similarity index 100%
-rename from drivers/staging/vme/devices/vme_user.c
-rename to drivers/staging/vme_user/vme_user.c
-diff --git a/drivers/staging/vme/devices/vme_user.h b/drivers/staging/vme_u=
-ser/vme_user.h
-similarity index 100%
-rename from drivers/staging/vme/devices/vme_user.h
-rename to drivers/staging/vme_user/vme_user.h
---=20
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wireless/mediatek/mt76/mt76.h
+index e2da720a91b6..f740a8ba164d 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76.h
+@@ -19,7 +19,7 @@
+ 
+ #define MT_MCU_RING_SIZE	32
+ #define MT_RX_BUF_SIZE		2048
+-#define MT_SKB_HEAD_LEN		128
++#define MT_SKB_HEAD_LEN		256
+ 
+ #define MT_MAX_NON_AQL_PKT	16
+ #define MT_TXQ_FREE_THR		32
+-- 
 2.35.1
 
 
---iejrtspvkosvtjkp
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQQTUrsHCxGmQ5vyKRAZtd3tyEY2kgUCYlUjEQAKCRAZtd3tyEY2
-kl8eAP4snnu7VXp+5WvEdegb9U/Z3NohM0xIqXwMgaQE2l2o+AEA6FZFKAx2mukA
-Rl951E2lmtYRuXPD2OZSk6mgMUWzGQg=
-=sCQP
------END PGP SIGNATURE-----
-
---iejrtspvkosvtjkp--
