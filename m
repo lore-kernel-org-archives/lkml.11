@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB2F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA0B7C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:55:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377570AbiDLHue (ORCPT
+        id S1377594AbiDLHul (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
+        Tue, 12 Apr 2022 03:50:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346467AbiDLHWG (ORCPT
+        with ESMTP id S1343870AbiDLHWG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:22:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5212C113;
-        Mon, 11 Apr 2022 23:59:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AF52A730;
+        Mon, 11 Apr 2022 23:59:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18015B81B4E;
-        Tue, 12 Apr 2022 06:59:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A562C385A1;
-        Tue, 12 Apr 2022 06:59:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40142B81B4F;
+        Tue, 12 Apr 2022 06:59:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89643C385A1;
+        Tue, 12 Apr 2022 06:59:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746781;
-        bh=wfOWnBKDHMzsdOEB9VAuP1Z+xiSv2G5c7JafDdG7zx8=;
+        s=korg; t=1649746778;
+        bh=UXOL9ozP+2qJrD/MwC8apLa02lpVVWnL6ePTyLoqf4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XZnd/jEMLi8++7Illd/DLKRjak7Lsr+ZmjT6Y3fE/KZSfi2j+2Yr4FKxQma4/yCyC
-         HI7GTo+Jc0OlTYCkqKTJi41K/xz1uq7aEHnv3v8MIyX06yTnajI+PbHc9KKjqp49oa
-         21KxcgrxWZqiJH1AwSTjGUuwFxGIGz5pwJv0WPlo=
+        b=0mCGfmamr4y2K4Bg0BrSTlrrsQXYHPqKM+2uU99RWfq4vsOZemAkn1/u65oZCOBdP
+         WaCubTZpNmrGPwsMUIqRUexGvXz4IlvXsn649/5YcHQE7813ixiPI+M4SJEyNmGfuH
+         5mmcKaobJG8C3cblVGQxkphokN0l2xe1bMpDdY6U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oded Gabbay <ogabbay@kernel.org>,
+        stable@vger.kernel.org, Ohad Sharabi <osharabi@habana.ai>,
+        Oded Gabbay <ogabbay@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 129/285] habanalabs: reject host map with mmu disabled
-Date:   Tue, 12 Apr 2022 08:29:46 +0200
-Message-Id: <20220412062947.388797867@linuxfoundation.org>
+Subject: [PATCH 5.16 128/285] habanalabs: fix possible memory leak in MMU DR fini
+Date:   Tue, 12 Apr 2022 08:29:45 +0200
+Message-Id: <20220412062947.360228418@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -49,88 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oded Gabbay <ogabbay@kernel.org>
+From: Ohad Sharabi <osharabi@habana.ai>
 
-[ Upstream commit 9a79e3e4a3637c07352d9723b825490a1b04391f ]
+[ Upstream commit eb85eec858c1a5c11d3a0bff403f6440b05b40dc ]
 
-This is not something we can do a workaround. It is clearly an error
-and we should notify the user that it is an error.
+This patch fixes what seems to be copy paste error.
 
+We will have a memory leak if the host-resident shadow is NULL (which
+will likely happen as the DR and HR are not dependent).
+
+Signed-off-by: Ohad Sharabi <osharabi@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/habanalabs/common/memory.c | 30 +++++++++----------------
- 1 file changed, 11 insertions(+), 19 deletions(-)
+ drivers/misc/habanalabs/common/mmu/mmu_v1.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
-index 9bd626a00de3..03416b4ee0b7 100644
---- a/drivers/misc/habanalabs/common/memory.c
-+++ b/drivers/misc/habanalabs/common/memory.c
-@@ -1973,16 +1973,15 @@ static int export_dmabuf_from_handle(struct hl_ctx *ctx, u64 handle, int flags,
- static int mem_ioctl_no_mmu(struct hl_fpriv *hpriv, union hl_mem_args *args)
+diff --git a/drivers/misc/habanalabs/common/mmu/mmu_v1.c b/drivers/misc/habanalabs/common/mmu/mmu_v1.c
+index 0f536f79dd9c..e68e9f71c546 100644
+--- a/drivers/misc/habanalabs/common/mmu/mmu_v1.c
++++ b/drivers/misc/habanalabs/common/mmu/mmu_v1.c
+@@ -467,7 +467,7 @@ static void hl_mmu_v1_fini(struct hl_device *hdev)
  {
- 	struct hl_device *hdev = hpriv->hdev;
--	struct hl_ctx *ctx = hpriv->ctx;
- 	u64 block_handle, device_addr = 0;
-+	struct hl_ctx *ctx = hpriv->ctx;
- 	u32 handle = 0, block_size;
--	int rc, dmabuf_fd = -EBADF;
-+	int rc;
+ 	/* MMU H/W fini was already done in device hw_fini() */
  
- 	switch (args->in.op) {
- 	case HL_MEM_OP_ALLOC:
- 		if (args->in.alloc.mem_size == 0) {
--			dev_err(hdev->dev,
--				"alloc size must be larger than 0\n");
-+			dev_err(hdev->dev, "alloc size must be larger than 0\n");
- 			rc = -EINVAL;
- 			goto out;
- 		}
-@@ -2003,15 +2002,14 @@ static int mem_ioctl_no_mmu(struct hl_fpriv *hpriv, union hl_mem_args *args)
+-	if (!ZERO_OR_NULL_PTR(hdev->mmu_priv.hr.mmu_shadow_hop0)) {
++	if (!ZERO_OR_NULL_PTR(hdev->mmu_priv.dr.mmu_shadow_hop0)) {
+ 		kvfree(hdev->mmu_priv.dr.mmu_shadow_hop0);
+ 		gen_pool_destroy(hdev->mmu_priv.dr.mmu_pgt_pool);
  
- 	case HL_MEM_OP_MAP:
- 		if (args->in.flags & HL_MEM_USERPTR) {
--			device_addr = args->in.map_host.host_virt_addr;
--			rc = 0;
-+			dev_err(hdev->dev, "Failed to map host memory when MMU is disabled\n");
-+			rc = -EPERM;
- 		} else {
--			rc = get_paddr_from_handle(ctx, &args->in,
--							&device_addr);
-+			rc = get_paddr_from_handle(ctx, &args->in, &device_addr);
-+			memset(args, 0, sizeof(*args));
-+			args->out.device_virt_addr = device_addr;
- 		}
- 
--		memset(args, 0, sizeof(*args));
--		args->out.device_virt_addr = device_addr;
- 		break;
- 
- 	case HL_MEM_OP_UNMAP:
-@@ -2019,20 +2017,14 @@ static int mem_ioctl_no_mmu(struct hl_fpriv *hpriv, union hl_mem_args *args)
- 		break;
- 
- 	case HL_MEM_OP_MAP_BLOCK:
--		rc = map_block(hdev, args->in.map_block.block_addr,
--				&block_handle, &block_size);
-+		rc = map_block(hdev, args->in.map_block.block_addr, &block_handle, &block_size);
- 		args->out.block_handle = block_handle;
- 		args->out.block_size = block_size;
- 		break;
- 
- 	case HL_MEM_OP_EXPORT_DMABUF_FD:
--		rc = export_dmabuf_from_addr(ctx,
--				args->in.export_dmabuf_fd.handle,
--				args->in.export_dmabuf_fd.mem_size,
--				args->in.flags,
--				&dmabuf_fd);
--		memset(args, 0, sizeof(*args));
--		args->out.fd = dmabuf_fd;
-+		dev_err(hdev->dev, "Failed to export dma-buf object when MMU is disabled\n");
-+		rc = -EPERM;
- 		break;
- 
- 	default:
 -- 
 2.35.1
 
