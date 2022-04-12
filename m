@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C79C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CAFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:03:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345284AbiDLBFj (ORCPT
+        id S1344616AbiDLBFw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:05:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        Mon, 11 Apr 2022 21:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345622AbiDLA6f (ORCPT
+        with ESMTP id S1345228AbiDLA6a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:58:35 -0400
+        Mon, 11 Apr 2022 20:58:30 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B0831DC2;
-        Mon, 11 Apr 2022 17:51:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC1C2ED77;
+        Mon, 11 Apr 2022 17:51:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 497B6B819A7;
-        Tue, 12 Apr 2022 00:51:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B721AC385A4;
-        Tue, 12 Apr 2022 00:51:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0530B819B4;
+        Tue, 12 Apr 2022 00:51:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AF45C385A4;
+        Tue, 12 Apr 2022 00:51:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724698;
-        bh=KiLKxAwhQGrtz9l1W5hxtuzL5YGt8FyxPu37uOt8AQs=;
+        s=k20201202; t=1649724680;
+        bh=brtuF43pM50XqWsrLtaTVNwuTiY5ZTnr6ySqkkguyiw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qfLPJVgVyOwmAp7iC2s1rZRsXGCWQdMBbon9ggqxstKzR8kDAHyXU4IjGchW+YXXC
-         GZSoqiKtm86JqdCNjXRyKgrROWqjWD8N05Er6oVAKQbfDentAbq1mD35sTedV5wueT
-         0Nl+omT4xDM0mFKiICefYffQXenKxWw7KpQgAg/P3MBie4tmTBJlmweCGbQEautWT1
-         d6uxLEsCw0O9Y9akYkGFMyrox+RFd1ksuWwsoqgDXKJGOlxfVWYB7ICpazMEMIkgmk
-         Gzy7gqospQ+Dq6AlRQtkRO7f6SEQ3HUqCmGnMlv0ZdEvUJ9Pacr8cRq3rYKFcy+odC
-         qvPuQ91Xd/0Eg==
+        b=heKYJAUV1TusNQZFY4WVg0QX3MCXR9b/LHp9iLQQZkQazWvpWPwUKnXeQ4T5Z4dON
+         qCmV/PgO7Y2fISZwfCawFmZA2aj2R4MtguGgwwAspVR6MP/x8ayF5V3lfCysVFzhn/
+         VHdICUGiAN0okf+D/N1ZrJHeZsxkg3NzT1WaygrNNuenMl//iJBCWWIH3bu5nDzm5g
+         UZzyPGRZvmMjC0kH+x7igY87Ej6kfP78vfKARq60tPBGzpg4BmSJRinfNkUanzACed
+         Xv/0oaHvnZdbZgh1uV8WJ/28u3YkLHzxZ+k9uLoHfhG2QeAtOOILuglaZVer8RwZ1d
+         MnEgIXD0QYQng==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexey Galakhov <agalakhov@gmail.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        john.garry@huawei.com, bvanassche@acm.org,
-        johannes.thumshirn@wdc.com, himanshu.madhani@oracle.com,
-        yuyufen@huawei.com, yang.guang5@zte.com.cn,
-        thunder.leizhen@huawei.com, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 18/21] scsi: mvsas: Add PCI ID of RocketRaid 2640
-Date:   Mon, 11 Apr 2022 20:50:37 -0400
-Message-Id: <20220412005042.351105-18-sashal@kernel.org>
+Cc:     Joey Gouly <joey.gouly@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tabba@google.com, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 13/21] arm64: alternatives: mark patch_alternative() as `noinstr`
+Date:   Mon, 11 Apr 2022 20:50:32 -0400
+Message-Id: <20220412005042.351105-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412005042.351105-1-sashal@kernel.org>
 References: <20220412005042.351105-1-sashal@kernel.org>
@@ -56,34 +54,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Galakhov <agalakhov@gmail.com>
+From: Joey Gouly <joey.gouly@arm.com>
 
-[ Upstream commit 5f2bce1e222028dc1c15f130109a17aa654ae6e8 ]
+[ Upstream commit a2c0b0fbe01419f8f5d1c0b9c581631f34ffce8b ]
 
-The HighPoint RocketRaid 2640 is a low-cost SAS controller based on Marvell
-chip. The chip in question was already supported by the kernel, just the
-PCI ID of this particular board was missing.
+The alternatives code must be `noinstr` such that it does not patch itself,
+as the cache invalidation is only performed after all the alternatives have
+been applied.
 
-Link: https://lore.kernel.org/r/20220309212535.402987-1-agalakhov@gmail.com
-Signed-off-by: Alexey Galakhov <agalakhov@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Mark patch_alternative() as `noinstr`. Mark branch_insn_requires_update()
+and get_alt_insn() with `__always_inline` since they are both only called
+through patch_alternative().
+
+Booting a kernel in QEMU TCG with KCSAN=y and ARM64_USE_LSE_ATOMICS=y caused
+a boot hang:
+[    0.241121] CPU: All CPU(s) started at EL2
+
+The alternatives code was patching the atomics in __tsan_read4() from LL/SC
+atomics to LSE atomics.
+
+The following fragment is using LL/SC atomics in the .text section:
+  | <__tsan_unaligned_read4+304>:     ldxr    x6, [x2]
+  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
+  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
+  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
+
+This LL/SC atomic sequence was to be replaced with LSE atomics. However since
+the alternatives code was instrumentable, __tsan_read4() was being called after
+only the first instruction was replaced, which led to the following code in memory:
+  | <__tsan_unaligned_read4+304>:     ldadd   x5, x6, [x2]
+  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
+  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
+  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
+
+This caused an infinite loop as the `stxr` instruction never completed successfully,
+so `w7` was always 0.
+
+Signed-off-by: Joey Gouly <joey.gouly@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220405104733.11476-1-joey.gouly@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mvsas/mv_init.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/kernel/alternative.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/mvsas/mv_init.c b/drivers/scsi/mvsas/mv_init.c
-index 52405ce58ade..2782b1ca4ba1 100644
---- a/drivers/scsi/mvsas/mv_init.c
-+++ b/drivers/scsi/mvsas/mv_init.c
-@@ -646,6 +646,7 @@ static struct pci_device_id mvs_pci_table[] = {
- 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1300), chip_1300 },
- 	{ PCI_VDEVICE(ARECA, PCI_DEVICE_ID_ARECA_1320), chip_1320 },
- 	{ PCI_VDEVICE(ADAPTEC2, 0x0450), chip_6440 },
-+	{ PCI_VDEVICE(TTI, 0x2640), chip_6440 },
- 	{ PCI_VDEVICE(TTI, 0x2710), chip_9480 },
- 	{ PCI_VDEVICE(TTI, 0x2720), chip_9480 },
- 	{ PCI_VDEVICE(TTI, 0x2721), chip_9480 },
+diff --git a/arch/arm64/kernel/alternative.c b/arch/arm64/kernel/alternative.c
+index 73039949b5ce..5f8e4c2df53c 100644
+--- a/arch/arm64/kernel/alternative.c
++++ b/arch/arm64/kernel/alternative.c
+@@ -41,7 +41,7 @@ bool alternative_is_applied(u16 cpufeature)
+ /*
+  * Check if the target PC is within an alternative block.
+  */
+-static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
++static __always_inline bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
+ {
+ 	unsigned long replptr = (unsigned long)ALT_REPL_PTR(alt);
+ 	return !(pc >= replptr && pc <= (replptr + alt->alt_len));
+@@ -49,7 +49,7 @@ static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
+ 
+ #define align_down(x, a)	((unsigned long)(x) & ~(((unsigned long)(a)) - 1))
+ 
+-static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
++static __always_inline u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
+ {
+ 	u32 insn;
+ 
+@@ -94,7 +94,7 @@ static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnp
+ 	return insn;
+ }
+ 
+-static void patch_alternative(struct alt_instr *alt,
++static noinstr void patch_alternative(struct alt_instr *alt,
+ 			      __le32 *origptr, __le32 *updptr, int nr_inst)
+ {
+ 	__le32 *replptr;
 -- 
 2.35.1
 
