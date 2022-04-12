@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E35EC35295
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:07:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA20C47084
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353451AbiDLIDq (ORCPT
+        id S1354252AbiDLIFQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
+        Tue, 12 Apr 2022 04:05:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353668AbiDLHZv (ORCPT
+        with ESMTP id S1353709AbiDLHZw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6096026131;
-        Tue, 12 Apr 2022 00:03:20 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E3327B0C;
+        Tue, 12 Apr 2022 00:03:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1830DB81B4F;
-        Tue, 12 Apr 2022 07:03:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60027C385A1;
-        Tue, 12 Apr 2022 07:03:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74A5560B2B;
+        Tue, 12 Apr 2022 07:03:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86FFCC385A1;
+        Tue, 12 Apr 2022 07:03:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746997;
-        bh=KYvNWmvcufRGisxLQBRQSZB6gdJCISTyyTFtl1WR3T8=;
+        s=korg; t=1649747038;
+        bh=ZE0SPjc+O4SDdCybQMxqSDYtYnTmByEmCyRM9DcJuWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XRIwjy1pecQ77zrWv3TWzhMo3EEC+KSSzKI9BirXS4nNwCY5P8YbyodCCbufM5vPT
-         35UKYaHIx1tz9fKI1vJTp5pXRWO094vw754DCoSu1pXUB62t2/Wu+vz4SBS1FSCwjV
-         ka+i8Hp+mGQfgm2U7DfZEp9AMzxdFO9FVGZB7VXs=
+        b=TrJytjOCnsaj+oX/V7JRjW6GOQ6i8lXjFH2PRujuOeccpIb5E4Jyg/bABhJqyJwuP
+         8EFIXtbSCtyQeyy4Yi2yDQmUaDTtM1W8uXUqV3Nn372+6rQfVS1Q2JWJ9x5/yOp2ED
+         cGsiAhRZEz98JJ/XnMbiefhRvjIPd4yvlrl4Zsdk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Rinaldi <mjrinal@g.clemson.edu>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 166/285] mctp: Use output netdev to allocate skb headroom
-Date:   Tue, 12 Apr 2022 08:30:23 +0200
-Message-Id: <20220412062948.461065145@linuxfoundation.org>
+        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 221/285] highmem: fix checks in __kmap_local_sched_{in,out}
+Date:   Tue, 12 Apr 2022 08:31:18 +0200
+Message-Id: <20220412062950.035975238@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,181 +52,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matt Johnston <matt@codeconstruct.com.au>
+From: Max Filippov <jcmvbkbc@gmail.com>
 
-[ Upstream commit 4a9dda1c1da65beee994f0977a56a9a21c5db2a7 ]
+commit 66f133ceab7456c789f70a242991ed1b27ba1c3d upstream.
 
-Previously the skb was allocated with headroom MCTP_HEADER_MAXLEN,
-but that isn't sufficient if we are using devs that are not MCTP
-specific.
+When CONFIG_DEBUG_KMAP_LOCAL is enabled __kmap_local_sched_{in,out} check
+that even slots in the tsk->kmap_ctrl.pteval are unmapped.  The slots are
+initialized with 0 value, but the check is done with pte_none.  0 pte
+however does not necessarily mean that pte_none will return true.  e.g.
+on xtensa it returns false, resulting in the following runtime warnings:
 
-This also adds a check that the smctp_halen provided to sendmsg for
-extended addressing is the correct size for the netdev.
+ WARNING: CPU: 0 PID: 101 at mm/highmem.c:627 __kmap_local_sched_out+0x51/0x108
+ CPU: 0 PID: 101 Comm: touch Not tainted 5.17.0-rc7-00010-gd3a1cdde80d2-dirty #13
+ Call Trace:
+   dump_stack+0xc/0x40
+   __warn+0x8f/0x174
+   warn_slowpath_fmt+0x48/0xac
+   __kmap_local_sched_out+0x51/0x108
+   __schedule+0x71a/0x9c4
+   preempt_schedule_irq+0xa0/0xe0
+   common_exception_return+0x5c/0x93
+   do_wp_page+0x30e/0x330
+   handle_mm_fault+0xa70/0xc3c
+   do_page_fault+0x1d8/0x3c4
+   common_exception+0x7f/0x7f
 
-Fixes: 833ef3b91de6 ("mctp: Populate socket implementation")
-Reported-by: Matthew Rinaldi <mjrinal@g.clemson.edu>
-Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+ WARNING: CPU: 0 PID: 101 at mm/highmem.c:664 __kmap_local_sched_in+0x50/0xe0
+ CPU: 0 PID: 101 Comm: touch Tainted: G        W         5.17.0-rc7-00010-gd3a1cdde80d2-dirty #13
+ Call Trace:
+   dump_stack+0xc/0x40
+   __warn+0x8f/0x174
+   warn_slowpath_fmt+0x48/0xac
+   __kmap_local_sched_in+0x50/0xe0
+   finish_task_switch$isra$0+0x1ce/0x2f8
+   __schedule+0x86e/0x9c4
+   preempt_schedule_irq+0xa0/0xe0
+   common_exception_return+0x5c/0x93
+   do_wp_page+0x30e/0x330
+   handle_mm_fault+0xa70/0xc3c
+   do_page_fault+0x1d8/0x3c4
+   common_exception+0x7f/0x7f
+
+Fix it by replacing !pte_none(pteval) with pte_val(pteval) != 0.
+
+Link: https://lkml.kernel.org/r/20220403235159.3498065-1-jcmvbkbc@gmail.com
+Fixes: 5fbda3ecd14a ("sched: highmem: Store local kmaps in task struct")
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/mctp.h |  2 --
- net/mctp/af_mctp.c | 46 +++++++++++++++++++++++++++++++++-------------
- net/mctp/route.c   | 14 +++++++++++---
- 3 files changed, 44 insertions(+), 18 deletions(-)
+ mm/highmem.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/mctp.h b/include/net/mctp.h
-index 7e35ec79b909..204ae3aebc0d 100644
---- a/include/net/mctp.h
-+++ b/include/net/mctp.h
-@@ -36,8 +36,6 @@ struct mctp_hdr {
- #define MCTP_HDR_TAG_SHIFT	0
- #define MCTP_HDR_TAG_MASK	GENMASK(2, 0)
+--- a/mm/highmem.c
++++ b/mm/highmem.c
+@@ -624,7 +624,7 @@ void __kmap_local_sched_out(void)
  
--#define MCTP_HEADER_MAXLEN	4
--
- #define MCTP_INITIAL_DEFAULT_NET	1
- 
- static inline bool mctp_address_ok(mctp_eid_t eid)
-diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
-index 871cf6266125..102851189bbf 100644
---- a/net/mctp/af_mctp.c
-+++ b/net/mctp/af_mctp.c
-@@ -90,13 +90,13 @@ static int mctp_bind(struct socket *sock, struct sockaddr *addr, int addrlen)
- static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- {
- 	DECLARE_SOCKADDR(struct sockaddr_mctp *, addr, msg->msg_name);
--	const int hlen = MCTP_HEADER_MAXLEN + sizeof(struct mctp_hdr);
- 	int rc, addrlen = msg->msg_namelen;
- 	struct sock *sk = sock->sk;
- 	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
- 	struct mctp_skb_cb *cb;
- 	struct mctp_route *rt;
--	struct sk_buff *skb;
-+	struct sk_buff *skb = NULL;
-+	int hlen;
- 
- 	if (addr) {
- 		if (addrlen < sizeof(struct sockaddr_mctp))
-@@ -119,6 +119,34 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	if (addr->smctp_network == MCTP_NET_ANY)
- 		addr->smctp_network = mctp_default_net(sock_net(sk));
- 
-+	/* direct addressing */
-+	if (msk->addr_ext && addrlen >= sizeof(struct sockaddr_mctp_ext)) {
-+		DECLARE_SOCKADDR(struct sockaddr_mctp_ext *,
-+				 extaddr, msg->msg_name);
-+		struct net_device *dev;
-+
-+		rc = -EINVAL;
-+		rcu_read_lock();
-+		dev = dev_get_by_index_rcu(sock_net(sk), extaddr->smctp_ifindex);
-+		/* check for correct halen */
-+		if (dev && extaddr->smctp_halen == dev->addr_len) {
-+			hlen = LL_RESERVED_SPACE(dev) + sizeof(struct mctp_hdr);
-+			rc = 0;
-+		}
-+		rcu_read_unlock();
-+		if (rc)
-+			goto err_free;
-+		rt = NULL;
-+	} else {
-+		rt = mctp_route_lookup(sock_net(sk), addr->smctp_network,
-+				       addr->smctp_addr.s_addr);
-+		if (!rt) {
-+			rc = -EHOSTUNREACH;
-+			goto err_free;
-+		}
-+		hlen = LL_RESERVED_SPACE(rt->dev->dev) + sizeof(struct mctp_hdr);
-+	}
-+
- 	skb = sock_alloc_send_skb(sk, hlen + 1 + len,
- 				  msg->msg_flags & MSG_DONTWAIT, &rc);
- 	if (!skb)
-@@ -137,8 +165,8 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	cb = __mctp_cb(skb);
- 	cb->net = addr->smctp_network;
- 
--	/* direct addressing */
--	if (msk->addr_ext && addrlen >= sizeof(struct sockaddr_mctp_ext)) {
-+	if (!rt) {
-+		/* fill extended address in cb */
- 		DECLARE_SOCKADDR(struct sockaddr_mctp_ext *,
- 				 extaddr, msg->msg_name);
- 
-@@ -149,17 +177,9 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+ 		/* With debug all even slots are unmapped and act as guard */
+ 		if (IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL) && !(i & 0x01)) {
+-			WARN_ON_ONCE(!pte_none(pteval));
++			WARN_ON_ONCE(pte_val(pteval) != 0);
+ 			continue;
  		}
+ 		if (WARN_ON_ONCE(pte_none(pteval)))
+@@ -661,7 +661,7 @@ void __kmap_local_sched_in(void)
  
- 		cb->ifindex = extaddr->smctp_ifindex;
-+		/* smctp_halen is checked above */
- 		cb->halen = extaddr->smctp_halen;
- 		memcpy(cb->haddr, extaddr->smctp_haddr, cb->halen);
--
--		rt = NULL;
--	} else {
--		rt = mctp_route_lookup(sock_net(sk), addr->smctp_network,
--				       addr->smctp_addr.s_addr);
--		if (!rt) {
--			rc = -EHOSTUNREACH;
--			goto err_free;
--		}
- 	}
- 
- 	rc = mctp_local_output(sk, rt, skb, addr->smctp_addr.s_addr,
-diff --git a/net/mctp/route.c b/net/mctp/route.c
-index d1e93b7f67d2..caa042ea777e 100644
---- a/net/mctp/route.c
-+++ b/net/mctp/route.c
-@@ -500,6 +500,11 @@ static int mctp_route_output(struct mctp_route *route, struct sk_buff *skb)
- 
- 	if (cb->ifindex) {
- 		/* direct route; use the hwaddr we stashed in sendmsg */
-+		if (cb->halen != skb->dev->addr_len) {
-+			/* sanity check, sendmsg should have already caught this */
-+			kfree_skb(skb);
-+			return -EMSGSIZE;
-+		}
- 		daddr = cb->haddr;
- 	} else {
- 		/* If lookup fails let the device handle daddr==NULL */
-@@ -709,7 +714,7 @@ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
- {
- 	const unsigned int hlen = sizeof(struct mctp_hdr);
- 	struct mctp_hdr *hdr, *hdr2;
--	unsigned int pos, size;
-+	unsigned int pos, size, headroom;
- 	struct sk_buff *skb2;
- 	int rc;
- 	u8 seq;
-@@ -723,6 +728,9 @@ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
- 		return -EMSGSIZE;
- 	}
- 
-+	/* keep same headroom as the original skb */
-+	headroom = skb_headroom(skb);
-+
- 	/* we've got the header */
- 	skb_pull(skb, hlen);
- 
-@@ -730,7 +738,7 @@ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
- 		/* size of message payload */
- 		size = min(mtu - hlen, skb->len - pos);
- 
--		skb2 = alloc_skb(MCTP_HEADER_MAXLEN + hlen + size, GFP_KERNEL);
-+		skb2 = alloc_skb(headroom + hlen + size, GFP_KERNEL);
- 		if (!skb2) {
- 			rc = -ENOMEM;
- 			break;
-@@ -746,7 +754,7 @@ static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
- 			skb_set_owner_w(skb2, skb->sk);
- 
- 		/* establish packet */
--		skb_reserve(skb2, MCTP_HEADER_MAXLEN);
-+		skb_reserve(skb2, headroom);
- 		skb_reset_network_header(skb2);
- 		skb_put(skb2, hlen + size);
- 		skb2->transport_header = skb2->network_header + hlen;
--- 
-2.35.1
-
+ 		/* With debug all even slots are unmapped and act as guard */
+ 		if (IS_ENABLED(CONFIG_DEBUG_KMAP_LOCAL) && !(i & 0x01)) {
+-			WARN_ON_ONCE(!pte_none(pteval));
++			WARN_ON_ONCE(pte_val(pteval) != 0);
+ 			continue;
+ 		}
+ 		if (WARN_ON_ONCE(pte_none(pteval)))
 
 
