@@ -2,117 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEA4C3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF86AC46467
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383169AbiDLIgB (ORCPT
+        id S1383195AbiDLIgL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:36:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54630 "EHLO
+        Tue, 12 Apr 2022 04:36:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356353AbiDLHfS (ORCPT
+        with ESMTP id S1356335AbiDLHfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:35:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E777649F99;
-        Tue, 12 Apr 2022 00:09:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FAB0B81B54;
-        Tue, 12 Apr 2022 07:09:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDDABC385A5;
-        Tue, 12 Apr 2022 07:09:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747347;
-        bh=tOio+VmNko1UzUjmLWTcQDjPm3ck2VQexHps4VvQ8wM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lIBVYePR2RCdel2wN2t4j74OOIcz8cfFSpzP+vIevGoYhVrABxh26vKrYzE3+OXj/
-         Z04/dVh2HTodKYR6B5Qgh3zsqqKs1N0o1PBCZKeaGD+pWGkTFvu0hQpGPiqoJsZOpq
-         mkOvo3bdmMOFq/O5W6f8atqmDpFWIom3zVSpYhh4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yongzhi Liu <lyz_cs@pku.edu.cn>,
-        Melissa Wen <mwen@igalia.com>,
-        Melissa Wen <melissa.srw@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 046/343] drm/v3d: fix missing unlock
-Date:   Tue, 12 Apr 2022 08:27:44 +0200
-Message-Id: <20220412062952.436777574@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:35:17 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D254A3C5;
+        Tue, 12 Apr 2022 00:09:14 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id a11so18367725qtb.12;
+        Tue, 12 Apr 2022 00:09:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ou8zotsDb6wXIPljnzHu4XUowbgMosM63Cn663rp46M=;
+        b=LVlh/tRvH71ktLfuib9NCViHKA8f0kEJc4AmJMpKEDE5aEjyO+V+Vbm2CUWH07lJad
+         8/9Tj/cMllX/mRTxp3rXVBvjiov+7QAmYwTWqc3COJWNC8H4B/h1XOUidXW+zbkzaZwP
+         oD5jdVXyteqNosnRQJ3vAAHRnHa+MMkuAJzZrtJelhDsHes4oqS8RcOcL9BOxZXRTcxw
+         s1KSsomLF/OjH77XNPs2juRaOEuhRKQ87HrpU+/4SzEO0JJM1jzjbW43lpadSFzTLgXN
+         /J/qdATZY47naHznlo84/HmjjjBnQ5bL38g62skwnmnINWkRKGqzDEAW2O9uViIBz45V
+         DK4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ou8zotsDb6wXIPljnzHu4XUowbgMosM63Cn663rp46M=;
+        b=r8mpVtXroBiV6zLDdXxz0XgGHE2bfOp1AcZGWAPvAj4fTrEa2WGRqKnBebYgJiszfz
+         8Ge81IBoAITg50fXURXWdEeCYOFZjmF+2qJZi2oUg4zmbEIDv+WJmSIXNGUa+VNBD+vq
+         iJ9Z1rtQ1BW5dYCQRZob6tt27ZFsrkNxbSWhbgHYCEaQ5kbyVC1Yd03go2hd/sXesn31
+         YckH1G69pEPeSHsLhZfF3F6fCNOwS8op7iR2AJLIc87GPuubrY1TwLyXIsDfrjfwYdvp
+         6TflLg3YKilsyuSfSlESlQvzkZMCEj2+puXN5mJVoqMjNv3K4YgmsHsbXFbEsU4nKU0z
+         L9OA==
+X-Gm-Message-State: AOAM533jL0EweC4YN7eK60dc9G+POmPgg10XqZX9fr71Uc/9E/ejAs6G
+        DIwiNZFlxVd0egqlgb7Oa9E=
+X-Google-Smtp-Source: ABdhPJx4DR/2lIWNbxf+QPOcGkQ+ZbHPL7PSoRYaKAeefy7mBD1ijw/kEHdShjr7h9+JBy+VPiAijA==
+X-Received: by 2002:ac8:7c55:0:b0:2e1:d535:d881 with SMTP id o21-20020ac87c55000000b002e1d535d881mr2266217qtv.188.1649747353658;
+        Tue, 12 Apr 2022 00:09:13 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id x20-20020ac85f14000000b002e1ee1c56c3sm27634358qta.76.2022.04.12.00.09.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 00:09:12 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     broonie@kernel.org
+Cc:     mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
+        linux-spi@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] spi: spi-stm32-qspi: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Tue, 12 Apr 2022 07:09:06 +0000
+Message-Id: <20220412070906.2532091-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongzhi Liu <lyz_cs@pku.edu.cn>
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-[ Upstream commit e57c1a3bd5e8e0c7181f65ae55581f0236a8f284 ]
+Using pm_runtime_resume_and_get is more appropriate
+for simplifing code
 
-[why]
-Unlock is needed on the error handling path to prevent dead lock.
-v3d_submit_cl_ioctl and v3d_submit_csd_ioctl is missing unlock.
-
-[how]
-Fix this by changing goto target on the error handling path. So
-changing the goto to target an error handling path
-that includes drm_gem_unlock reservations.
-
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-Reviewed-by: Melissa Wen <mwen@igalia.com>
-Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/1643377262-109975-1-git-send-email-lyz_cs@pku.edu.cn
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/gpu/drm/v3d/v3d_gem.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/spi/spi-stm32-qspi.c | 30 ++++++++++--------------------
+ 1 file changed, 10 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/gpu/drm/v3d/v3d_gem.c b/drivers/gpu/drm/v3d/v3d_gem.c
-index c7ed2e1cbab6..92bc0faee84f 100644
---- a/drivers/gpu/drm/v3d/v3d_gem.c
-+++ b/drivers/gpu/drm/v3d/v3d_gem.c
-@@ -798,7 +798,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
+diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
+index ffdc55f87e82..b3586521d08e 100644
+--- a/drivers/spi/spi-stm32-qspi.c
++++ b/drivers/spi/spi-stm32-qspi.c
+@@ -463,11 +463,9 @@ static int stm32_qspi_poll_status(struct spi_mem *mem, const struct spi_mem_op *
+ 	if (!spi_mem_supports_op(mem, op))
+ 		return -EOPNOTSUPP;
  
- 		if (!render->base.perfmon) {
- 			ret = -ENOENT;
--			goto fail;
-+			goto fail_perfmon;
- 		}
- 	}
+-	ret = pm_runtime_get_sync(qspi->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(qspi->dev);
++	ret = pm_runtime_resume_and_get(qspi->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
  
-@@ -847,6 +847,7 @@ v3d_submit_cl_ioctl(struct drm_device *dev, void *data,
+ 	mutex_lock(&qspi->lock);
  
- fail_unreserve:
- 	mutex_unlock(&v3d->sched_lock);
-+fail_perfmon:
- 	drm_gem_unlock_reservations(last_job->bo,
- 				    last_job->bo_count, &acquire_ctx);
- fail:
-@@ -1027,7 +1028,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
- 						     args->perfmon_id);
- 		if (!job->base.perfmon) {
- 			ret = -ENOENT;
--			goto fail;
-+			goto fail_perfmon;
- 		}
- 	}
+@@ -490,11 +488,9 @@ static int stm32_qspi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
+ 	struct stm32_qspi *qspi = spi_controller_get_devdata(mem->spi->master);
+ 	int ret;
  
-@@ -1056,6 +1057,7 @@ v3d_submit_csd_ioctl(struct drm_device *dev, void *data,
+-	ret = pm_runtime_get_sync(qspi->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(qspi->dev);
++	ret = pm_runtime_resume_and_get(qspi->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
  
- fail_unreserve:
- 	mutex_unlock(&v3d->sched_lock);
-+fail_perfmon:
- 	drm_gem_unlock_reservations(clean_job->bo, clean_job->bo_count,
- 				    &acquire_ctx);
- fail:
+ 	mutex_lock(&qspi->lock);
+ 	if (op->data.dir == SPI_MEM_DATA_IN && op->data.nbytes)
+@@ -536,11 +532,9 @@ static ssize_t stm32_qspi_dirmap_read(struct spi_mem_dirmap_desc *desc,
+ 	u32 addr_max;
+ 	int ret;
+ 
+-	ret = pm_runtime_get_sync(qspi->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(qspi->dev);
++	ret = pm_runtime_resume_and_get(qspi->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	mutex_lock(&qspi->lock);
+ 	/* make a local copy of desc op_tmpl and complete dirmap rdesc
+@@ -583,11 +577,9 @@ static int stm32_qspi_setup(struct spi_device *spi)
+ 	if (!spi->max_speed_hz)
+ 		return -EINVAL;
+ 
+-	ret = pm_runtime_get_sync(qspi->dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(qspi->dev);
++	ret = pm_runtime_resume_and_get(qspi->dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	presc = DIV_ROUND_UP(qspi->clk_rate, spi->max_speed_hz) - 1;
+ 
+@@ -851,11 +843,9 @@ static int __maybe_unused stm32_qspi_resume(struct device *dev)
+ 
+ 	pinctrl_pm_select_default_state(dev);
+ 
+-	ret = pm_runtime_get_sync(dev);
+-	if (ret < 0) {
+-		pm_runtime_put_noidle(dev);
++	ret = pm_runtime_resume_and_get(dev);
++	if (ret < 0)
+ 		return ret;
+-	}
+ 
+ 	writel_relaxed(qspi->cr_reg, qspi->io_base + QSPI_CR);
+ 	writel_relaxed(qspi->dcr_reg, qspi->io_base + QSPI_DCR);
 -- 
-2.35.1
-
-
+2.25.1
 
