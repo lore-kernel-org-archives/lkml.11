@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E283FC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1321CC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346729AbiDLIP6 (ORCPT
+        id S1378906AbiDLIT1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:15:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43196 "EHLO
+        Tue, 12 Apr 2022 04:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355300AbiDLH1Z (ORCPT
+        with ESMTP id S1355770AbiDLH3U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD1C49250;
-        Tue, 12 Apr 2022 00:07:27 -0700 (PDT)
+        Tue, 12 Apr 2022 03:29:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D064F9D0;
+        Tue, 12 Apr 2022 00:08:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBDC5B81A8F;
-        Tue, 12 Apr 2022 07:07:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42E16C385A1;
-        Tue, 12 Apr 2022 07:07:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89E846153F;
+        Tue, 12 Apr 2022 07:08:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91CDEC385AA;
+        Tue, 12 Apr 2022 07:08:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747244;
-        bh=o4f5gXCbaB4CQFduw7VkVXm88MSd43BcGFbgkllltIQ=;
+        s=korg; t=1649747297;
+        bh=TLcidT5nSdUPWRTJlzEe0XdgaB1ECW1jsaCBputjuLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kDt0lbraaGJc8atbTu4YI5M2N9nKrkrdJuxi6rTCWkzsLaJQjV7Bir70/kCVZmT0O
-         G0HmwDUTF0SIKVfgP3rn0KyMufLA9ns+fWX9XOKsblZb0HE4yrqYB3IYtbvGT8ihM/
-         cWJSl6viH33xX3l3wnbznJRJg5+yxxXeyDWvmOUw=
+        b=qHOCr6OcODzo7Z6OF/xcXOMTaTAEsm17JpJWG7M3hW2Ui5KQ/fEj4TYJ3UrtmeiqH
+         BcyfbQVyyMThxarP9uU56CAn+ThvV8N/CIKEuuXSmqdTavjbvgDqbUBleswBjR6H+Y
+         sj1CkJlpKV8kI0901j36Sat2517jblXZJJO3kUR0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Wenlong <houwenlong.hwl@antgroup.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
+        Oz Shlomo <ozsh@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 010/343] KVM: x86/emulator: Emulate RDPID only if it is enabled in guest
-Date:   Tue, 12 Apr 2022 08:27:08 +0200
-Message-Id: <20220412062951.402249565@linuxfoundation.org>
+Subject: [PATCH 5.17 029/343] net/mlx5e: TC, Hold sample_attr on stack instead of pointer
+Date:   Tue, 12 Apr 2022 08:27:27 +0200
+Message-Id: <20220412062951.946882878@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,79 +51,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Wenlong <houwenlong.hwl@antgroup.com>
+From: Roi Dayan <roid@nvidia.com>
 
-[ Upstream commit a836839cbfe60dc434c5476a7429cf2bae36415d ]
+[ Upstream commit eeed226ed110ed40598e60e29b66643012277be7 ]
 
-When RDTSCP is supported but RDPID is not supported in host,
-RDPID emulation is available. However, __kvm_get_msr() would
-only fail when RDTSCP/RDPID both are disabled in guest, so
-the emulator wouldn't inject a #UD when RDPID is disabled but
-RDTSCP is enabled in guest.
+In later commit we are going to instantiate multiple attr instances
+for flow instead of single attr.
+Parsing TC sample allocates a new memory but there is no symmetric
+cleanup in the infrastructure.
+To avoid asymmetric alloc/free use sample_attr as part of the flow attr
+and not allocated and held as a pointer.
+This will avoid a cleanup leak when sample action is not on the first
+attr.
 
-Fixes: fb6d4d340e05 ("KVM: x86: emulate RDPID")
-Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
-Message-Id: <1dfd46ae5b76d3ed87bde3154d51c64ea64c99c1.1646226788.git.houwenlong.hwl@antgroup.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Roi Dayan <roid@nvidia.com>
+Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/emulate.c     | 4 +++-
- arch/x86/kvm/kvm_emulate.h | 1 +
- arch/x86/kvm/x86.c         | 6 ++++++
- 3 files changed, 10 insertions(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c |  7 +------
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c | 10 +++++-----
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c        |  1 -
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h        |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch_offloads.c |  6 +++---
+ 5 files changed, 10 insertions(+), 16 deletions(-)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 02d061a06aa1..de9d8a27387c 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -3523,8 +3523,10 @@ static int em_rdpid(struct x86_emulate_ctxt *ctxt)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
+index 6699bdf5cf01..b895c378cfaf 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
+@@ -27,11 +27,7 @@ tc_act_parse_sample(struct mlx5e_tc_act_parse_state *parse_state,
+ 		    struct mlx5e_priv *priv,
+ 		    struct mlx5_flow_attr *attr)
  {
- 	u64 tsc_aux = 0;
+-	struct mlx5e_sample_attr *sample_attr;
+-
+-	sample_attr = kzalloc(sizeof(*attr->sample_attr), GFP_KERNEL);
+-	if (!sample_attr)
+-		return -ENOMEM;
++	struct mlx5e_sample_attr *sample_attr = &attr->sample_attr;
  
--	if (ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux))
-+	if (!ctxt->ops->guest_has_rdpid(ctxt))
- 		return emulate_ud(ctxt);
-+
-+	ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux);
- 	ctxt->dst.val = tsc_aux;
- 	return X86EMUL_CONTINUE;
- }
-diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
-index 39eded2426ff..a2a7654d8ace 100644
---- a/arch/x86/kvm/kvm_emulate.h
-+++ b/arch/x86/kvm/kvm_emulate.h
-@@ -226,6 +226,7 @@ struct x86_emulate_ops {
- 	bool (*guest_has_long_mode)(struct x86_emulate_ctxt *ctxt);
- 	bool (*guest_has_movbe)(struct x86_emulate_ctxt *ctxt);
- 	bool (*guest_has_fxsr)(struct x86_emulate_ctxt *ctxt);
-+	bool (*guest_has_rdpid)(struct x86_emulate_ctxt *ctxt);
+ 	sample_attr->rate = act->sample.rate;
+ 	sample_attr->group_num = act->sample.psample_group->group_num;
+@@ -39,7 +35,6 @@ tc_act_parse_sample(struct mlx5e_tc_act_parse_state *parse_state,
+ 	if (act->sample.truncate)
+ 		sample_attr->trunc_size = act->sample.trunc_size;
  
- 	void (*set_nmi_mask)(struct x86_emulate_ctxt *ctxt, bool masked);
+-	attr->sample_attr = sample_attr;
+ 	flow_flag_set(parse_state->flow, SAMPLE);
  
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 9b6166348c94..c81ec70197fb 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -7675,6 +7675,11 @@ static bool emulator_guest_has_fxsr(struct x86_emulate_ctxt *ctxt)
- 	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_FXSR);
- }
+ 	return 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
+index ff4b4f8a5a9d..0faaf9a4b531 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
+@@ -513,7 +513,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
+ 	sample_flow = kzalloc(sizeof(*sample_flow), GFP_KERNEL);
+ 	if (!sample_flow)
+ 		return ERR_PTR(-ENOMEM);
+-	sample_attr = attr->sample_attr;
++	sample_attr = &attr->sample_attr;
+ 	sample_attr->sample_flow = sample_flow;
  
-+static bool emulator_guest_has_rdpid(struct x86_emulate_ctxt *ctxt)
-+{
-+	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_RDPID);
-+}
-+
- static ulong emulator_read_gpr(struct x86_emulate_ctxt *ctxt, unsigned reg)
+ 	/* For NICs with reg_c_preserve support or decap action, use
+@@ -546,6 +546,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
+ 		err = PTR_ERR(sample_flow->sampler);
+ 		goto err_sampler;
+ 	}
++	sample_attr->sampler_id = sample_flow->sampler->sampler_id;
+ 
+ 	/* Create an id mapping reg_c0 value to sample object. */
+ 	restore_obj.type = MLX5_MAPPED_OBJ_SAMPLE;
+@@ -585,8 +586,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
+ 	pre_attr->outer_match_level = attr->outer_match_level;
+ 	pre_attr->chain = attr->chain;
+ 	pre_attr->prio = attr->prio;
+-	pre_attr->sample_attr = attr->sample_attr;
+-	sample_attr->sampler_id = sample_flow->sampler->sampler_id;
++	pre_attr->sample_attr = *sample_attr;
+ 	pre_esw_attr = pre_attr->esw_attr;
+ 	pre_esw_attr->in_mdev = esw_attr->in_mdev;
+ 	pre_esw_attr->in_rep = esw_attr->in_rep;
+@@ -633,11 +633,11 @@ mlx5e_tc_sample_unoffload(struct mlx5e_tc_psample *tc_psample,
+ 	 * will hit fw syndromes.
+ 	 */
+ 	esw = tc_psample->esw;
+-	sample_flow = attr->sample_attr->sample_flow;
++	sample_flow = attr->sample_attr.sample_flow;
+ 	mlx5_eswitch_del_offloaded_rule(esw, sample_flow->pre_rule, sample_flow->pre_attr);
+ 
+ 	sample_restore_put(tc_psample, sample_flow->restore);
+-	mapping_remove(esw->offloads.reg_c0_obj_pool, attr->sample_attr->restore_obj_id);
++	mapping_remove(esw->offloads.reg_c0_obj_pool, attr->sample_attr.restore_obj_id);
+ 	sampler_put(tc_psample, sample_flow->sampler);
+ 	if (sample_flow->post_act_handle)
+ 		mlx5e_tc_post_act_del(tc_psample->post_act, sample_flow->post_act_handle);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index b27532a9301e..7e5c00349ccf 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -1634,7 +1634,6 @@ static void mlx5e_tc_del_fdb_flow(struct mlx5e_priv *priv,
+ 	if (flow_flag_test(flow, L3_TO_L2_DECAP))
+ 		mlx5e_detach_decap(priv, flow);
+ 
+-	kfree(attr->sample_attr);
+ 	kvfree(attr->esw_attr->rx_tun_attr);
+ 	kvfree(attr->parse_attr);
+ 	kfree(flow->attr);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+index 5ffae9b13066..2f09e34db9ff 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
+@@ -71,7 +71,7 @@ struct mlx5_flow_attr {
+ 	struct mlx5_fc *counter;
+ 	struct mlx5_modify_hdr *modify_hdr;
+ 	struct mlx5_ct_attr ct_attr;
+-	struct mlx5e_sample_attr *sample_attr;
++	struct mlx5e_sample_attr sample_attr;
+ 	struct mlx5e_tc_flow_parse_attr *parse_attr;
+ 	u32 chain;
+ 	u16 prio;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index cfcd72bad9af..e7e7b4b0dcdb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -201,12 +201,12 @@ esw_cleanup_decap_indir(struct mlx5_eswitch *esw,
+ static int
+ esw_setup_sampler_dest(struct mlx5_flow_destination *dest,
+ 		       struct mlx5_flow_act *flow_act,
+-		       struct mlx5_flow_attr *attr,
++		       u32 sampler_id,
+ 		       int i)
  {
- 	return kvm_register_read_raw(emul_to_vcpu(ctxt), reg);
-@@ -7757,6 +7762,7 @@ static const struct x86_emulate_ops emulate_ops = {
- 	.guest_has_long_mode = emulator_guest_has_long_mode,
- 	.guest_has_movbe     = emulator_guest_has_movbe,
- 	.guest_has_fxsr      = emulator_guest_has_fxsr,
-+	.guest_has_rdpid     = emulator_guest_has_rdpid,
- 	.set_nmi_mask        = emulator_set_nmi_mask,
- 	.get_hflags          = emulator_get_hflags,
- 	.exiting_smm         = emulator_exiting_smm,
+ 	flow_act->flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
+ 	dest[i].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_SAMPLER;
+-	dest[i].sampler_id = attr->sample_attr->sampler_id;
++	dest[i].sampler_id = sampler_id;
+ 
+ 	return 0;
+ }
+@@ -466,7 +466,7 @@ esw_setup_dests(struct mlx5_flow_destination *dest,
+ 		attr->flags |= MLX5_ESW_ATTR_FLAG_SRC_REWRITE;
+ 
+ 	if (attr->flags & MLX5_ESW_ATTR_FLAG_SAMPLE) {
+-		esw_setup_sampler_dest(dest, flow_act, attr, *i);
++		esw_setup_sampler_dest(dest, flow_act, attr->sample_attr.sampler_id, *i);
+ 		(*i)++;
+ 	} else if (attr->dest_ft) {
+ 		esw_setup_ft_dest(dest, flow_act, esw, attr, spec, *i);
 -- 
 2.35.1
 
