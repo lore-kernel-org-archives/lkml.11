@@ -2,120 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF9DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD0FCC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230295AbiDLInM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:43:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46352 "EHLO
+        id S1357222AbiDLInz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:43:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357129AbiDLHjs (ORCPT
+        with ESMTP id S1357130AbiDLHjs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E8FE0EB;
-        Tue, 12 Apr 2022 00:12:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DC5DB81B4F;
-        Tue, 12 Apr 2022 07:12:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4465C385A1;
-        Tue, 12 Apr 2022 07:12:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747551;
-        bh=eM3zSXnaKtt3m9HyT5kgK2aDOmYWDuK0rx7nb8xNlD0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MMCc+9ahUQKpMS05STeAz763vj2PWQ1YlrSEb4dBgf1//tFI/x1umKtNFyHHy06pQ
-         4KBX6C7F7aZe9/PfcW/Z7QY99LRMrKHPr2DNzA53pQf/S/d22XpSiZ/SFBL7IFuqEE
-         ZgSJOwzT29Lp7rIRUHsYbY+rQWGSxnlhq2fVwb+8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Harold Huang <baymaxhuang@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 121/343] tuntap: add sanity checks about msg_controllen in sendmsg
-Date:   Tue, 12 Apr 2022 08:28:59 +0200
-Message-Id: <20220412062954.878973078@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from m228-13.mailgun.net (m228-13.mailgun.net [159.135.228.13])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 3FCABE0E6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:12:31 -0700 (PDT)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=codeagain.dev; q=dns/txt;
+ s=smtp; t=1649747551; h=In-Reply-To: Content-Type: MIME-Version:
+ References: Message-ID: Subject: Subject: Cc: To: To: From: From: Date:
+ Sender: Sender; bh=NgB4J145WK0eAdmQZ6KKPhAtsa67dfOsSoag6jWRVUs=; b=WyZ1cjrgvT+a9SnTjRln3YU/+bW/OXnDRD/YbS/+C0sMhK9jRhu+HjOy14FiUROYdNetwI6k
+ q8t8GyzU6wi9pEAohN6XPQbW/BkeHjJfwoJ+v3c4tZxq3UtsxD/2OzKroJdUypqdkVShPEQ5
+ 7EcjEcJfuPoDjGilvB33ll5Zo1Ef3CxF1QssEbVTFcC1U9PKaM7gUxefDalXhAA8EcI3JTO0
+ lEIonQcWN3O7SIDVqiG49PeyLMjvi/olxX9EJnw7nkFcUM8wVVhL/s/JskK+gKItmf+QTCUi
+ NcnZKr5f5wP0ikBSS+XudMnyR+5C55n1hdHNuf0EDZbZIDZOGPfn1A==
+X-Mailgun-Sending-Ip: 159.135.228.13
+X-Mailgun-Sid: WyJkNDU4NiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWM2ZCJd
+Received: from AN5Bruno (186-250-90-1.mhnet.com.br [186.250.90.1]) by
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 6255265d77e17d301dacc649 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
+ Tue, 12 Apr 2022 07:12:29 GMT
+Sender: codeagain@codeagain.dev
+Date:   Tue, 12 Apr 2022 04:12:19 -0300
+From:   Bruno Moreira-Guedes <codeagain@codeagain.dev>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Martyn Welch <martyn@welchs.me.uk>,
+        Manohar Vanga <manohar.vanga@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        outreachy@lists.linux.dev,
+        Bruno's Patch Watchbox <patch-reply@codeagain.dev>
+Cc:     Bruno's Patch Watchbox <patch-reply@codeagain.dev>
+Subject: Re: [PATCH v2 0/3] staging: vme: Restructuring menuconfig and tree
+Message-ID: <20220412071219.rapvtaxvoz2yerr5@AN5Bruno>
+References: <cover.1649721450.git.codeagain@codeagain.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="a4cxoghgp7wwa5tg"
+Content-Disposition: inline
+In-Reply-To: <cover.1649721450.git.codeagain@codeagain.dev>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harold Huang <baymaxhuang@gmail.com>
 
-[ Upstream commit 74a335a07a17d131b9263bfdbdcb5e40673ca9ca ]
+--a4cxoghgp7wwa5tg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-In patch [1], tun_msg_ctl was added to allow pass batched xdp buffers to
-tun_sendmsg. Although we donot use msg_controllen in this path, we should
-check msg_controllen to make sure the caller pass a valid msg_ctl.
+Please, disconsider some small errors in the commit message. I have sent
+the patch files generated befor updating some information, so two of the
+patches will be updated
 
-[1]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fe8dd45bb7556246c6b76277b1ba4296c91c2505
+On Tue, Apr 12, 2022 at 03:53:46AM -0300, Bruno Moreira-Guedes wrote:
+> This patch series modify the vme_user driver's place in
+> menuconfig (1/3), fixes a missing `depends on` line in a Kconfig file
+> (2/3), and rearrages the directory tree for the driver allowing a more
+> straightforward comprehension of its contents (3/3).
+>=20
+> Signed-off-by: Bruno Moreira-Guedes <codeagain@codeagain.dev>
+>=20
+> Bruno Moreira-Guedes (3):
+>   staging: vme: Adjusted VME_USER in Kconfig
+This is fine as far as I noticed.
 
-Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
-Suggested-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Harold Huang <baymaxhuang@gmail.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Link: https://lore.kernel.org/r/20220303022441.383865-1-baymaxhuang@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/tap.c   | 3 ++-
- drivers/net/tun.c   | 3 ++-
- drivers/vhost/net.c | 1 +
- 3 files changed, 5 insertions(+), 2 deletions(-)
+>   staging: vme: Fix missing `depends on` at KConfig
+This one refers to VME_BRIDGE somewhere, when it's actually VME_BUS.
+I'll fix it.
 
-diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-index 8e3a28ba6b28..ba2ef5437e16 100644
---- a/drivers/net/tap.c
-+++ b/drivers/net/tap.c
-@@ -1198,7 +1198,8 @@ static int tap_sendmsg(struct socket *sock, struct msghdr *m,
- 	struct xdp_buff *xdp;
- 	int i;
- 
--	if (ctl && (ctl->type == TUN_MSG_PTR)) {
-+	if (m->msg_controllen == sizeof(struct tun_msg_ctl) &&
-+	    ctl && ctl->type == TUN_MSG_PTR) {
- 		for (i = 0; i < ctl->num; i++) {
- 			xdp = &((struct xdp_buff *)ctl->ptr)[i];
- 			tap_get_user_xdp(q, xdp);
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index fed85447701a..de999e0fedbc 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -2489,7 +2489,8 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
- 	if (!tun)
- 		return -EBADFD;
- 
--	if (ctl && (ctl->type == TUN_MSG_PTR)) {
-+	if (m->msg_controllen == sizeof(struct tun_msg_ctl) &&
-+	    ctl && ctl->type == TUN_MSG_PTR) {
- 		struct tun_page tpage;
- 		int n = ctl->num;
- 		int flush = 0;
-diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
-index 28ef323882fb..792ab5f23647 100644
---- a/drivers/vhost/net.c
-+++ b/drivers/vhost/net.c
-@@ -473,6 +473,7 @@ static void vhost_tx_batch(struct vhost_net *net,
- 		goto signal_used;
- 
- 	msghdr->msg_control = &ctl;
-+	msghdr->msg_controllen = sizeof(ctl);
- 	err = sock->ops->sendmsg(sock, msghdr, 0);
- 	if (unlikely(err < 0)) {
- 		vq_err(&nvq->vq, "Fail to batch sending packets\n");
--- 
-2.35.1
+>   staging: vme: "drivers/staging/vme" tree cleanup
+Some changes aren't properly mentioned in the commit message here.
+
+>=20
+>  MAINTAINERS                                          | 2 +-
+I missed to mention this update on MAINTAINERS, due to changes in the
+directory structure.
+
+>  drivers/staging/Kconfig                              | 2 ++
+>  drivers/staging/Makefile                             | 2 +-
+>  drivers/staging/vme/Makefile                         | 2 --
+>  drivers/staging/{vme/devices =3D> vme_user}/Kconfig    | 2 +-
+>  drivers/staging/{vme/devices =3D> vme_user}/Makefile   | 0
+>  drivers/staging/{vme/devices =3D> vme_user}/vme_user.c | 0
+>  drivers/staging/{vme/devices =3D> vme_user}/vme_user.h | 0
+>  drivers/vme/Kconfig                                  | 2 --
+>  9 files changed, 5 insertions(+), 7 deletions(-)
+>  delete mode 100644 drivers/staging/vme/Makefile
+>  rename drivers/staging/{vme/devices =3D> vme_user}/Kconfig (93%)
+>  rename drivers/staging/{vme/devices =3D> vme_user}/Makefile (100%)
+>  rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.c (100%)
+>  rename drivers/staging/{vme/devices =3D> vme_user}/vme_user.h (100%)
+>=20
+> --=20
+> 2.35.1
+>=20
 
 
+--a4cxoghgp7wwa5tg
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQQTUrsHCxGmQ5vyKRAZtd3tyEY2kgUCYlUmUwAKCRAZtd3tyEY2
+kpYTAP4veEOxVUWkbDbgVB46nEao+xSYla9M8a2WC697U2jzeAEAsCrz3rvRG13O
+Eg2WgitpLBPqjykBczHhrBWvpfEIVgo=
+=iBz5
+-----END PGP SIGNATURE-----
+
+--a4cxoghgp7wwa5tg--
