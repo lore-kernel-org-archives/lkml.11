@@ -2,81 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4456C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A19C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352831AbiDLJnB (ORCPT
+        id S1353199AbiDLJn0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:43:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48766 "EHLO
+        Tue, 12 Apr 2022 05:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377327AbiDLJer (ORCPT
+        with ESMTP id S1355838AbiDLJT2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:34:47 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0196A56432
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:44:11 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id C08A0210E3;
-        Tue, 12 Apr 2022 08:44:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1649753049; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AQYiTIlabf0XPtoPR35Y9NtmPHuTSnD6Vh/HNYD4peM=;
-        b=hRp7dEi/PsACelp54CQ1OBM6kEU8Gq6Tq7X0cezfJ0+DoyVl5/vae1o9Go+bJo8xo9hW3/
-        sZEIthWT8iIF3bNQroY/FyUGWNmFFYqrZ2g8rPfPOspll1zvi8v2lrAeupYrCIXzGW+xMr
-        EA7bGKoKu+DS2mtMvDEnbYaT3dWYhsg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1649753049;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AQYiTIlabf0XPtoPR35Y9NtmPHuTSnD6Vh/HNYD4peM=;
-        b=ZAqAzxWwTvuJtGRDX6871BgcbJJkKIBnnPUy470p68hDLtvLo5cRLxelCwTP25rlupgOpC
-        R+qqaLav1sRsfJCg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 28E8E13780;
-        Tue, 12 Apr 2022 08:44:09 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 31QQBtk7VWIUGwAAMHmgww
-        (envelope-from <osalvador@suse.de>); Tue, 12 Apr 2022 08:44:09 +0000
-Date:   Tue, 12 Apr 2022 10:44:07 +0200
-From:   Oscar Salvador <osalvador@suse.de>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, ying.huang@intel.com,
-        songmuchun@bytedance.com, hch@infradead.org, willy@infradead.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/9] mm/vmscan: add a comment about MADV_FREE pages
- check in folio_check_dirty_writeback
-Message-ID: <YlU713dLrXue8NYQ@localhost.localdomain>
-References: <20220409093500.10329-1-linmiaohe@huawei.com>
- <20220409093500.10329-2-linmiaohe@huawei.com>
+        Tue, 12 Apr 2022 05:19:28 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BDA237EA;
+        Tue, 12 Apr 2022 01:25:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649751919; x=1681287919;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=wa0dgOa2bUIhS6s5MOqyz5XHWr88Riy5FGtqVsg0X1c=;
+  b=X0DHIx6KhYh7SORGo/j/iTV+5MUNI4Pk/R6WjU9QHndUKMrtpaqRxdYd
+   7gu4Crbk2bQ0ZAgJoj2FE9Dr1JFx/8+Zu4CNi7Jora4goadkyzoV+EtQx
+   8H0pUzrN3i6+swButjW2gmmxgiyQttOW2wITU3a+ZTJ8kJJ9Fi6S+vVT1
+   oeX0TDZ5sx4B3g/+eiQF9mLWK67UcgipMdk4JjOc7YSvBQCUyWar8P7xo
+   +ngnAHAG4BbEReAUdkyOjcdEpA+VASjar4XoY6HT7jKdOfNlZKo6kS18w
+   WvLVCc7ekjUP8QvIzJiKsYzIDVG9e2If8kEMiDsCy/L31DNFmQM/EyHLu
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="262495645"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="262495645"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 01:25:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="699728288"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by fmsmga001.fm.intel.com with ESMTP; 12 Apr 2022 01:25:10 -0700
+Date:   Tue, 12 Apr 2022 16:25:00 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     "Nikunj A. Dadhania" <nikunj@amd.com>
+Cc:     Vishal Annapurve <vannapurve@google.com>, x86@kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, pbonzini@redhat.com,
+        vkuznets@redhat.com, wanpengli@tencent.com, jmattson@google.com,
+        joro@8bytes.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
+        shauh@kernel.org, yang.zhong@intel.com, drjones@redhat.com,
+        ricarkol@google.com, aaronlewis@google.com, wei.w.wang@intel.com,
+        kirill.shutemov@linux.intel.com, corbet@lwn.net, hughd@google.com,
+        jlayton@kernel.org, bfields@fieldses.org,
+        akpm@linux-foundation.org, yu.c.zhang@linux.intel.com,
+        jun.nakajima@intel.com, dave.hansen@intel.com,
+        michael.roth@amd.com, qperret@google.com, steven.price@arm.com,
+        ak@linux.intel.com, david@redhat.com, luto@kernel.org,
+        vbabka@suse.cz, marcorr@google.com, erdemaktas@google.com,
+        pgonda@google.com, seanjc@google.com, diviness@google.com
+Subject: Re: [RFC V1 PATCH 0/5] selftests: KVM: selftests for fd-based
+ approach of supporting private memory
+Message-ID: <20220412082500.GA7309@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220408210545.3915712-1-vannapurve@google.com>
+ <0790131c-95af-676f-c475-addd1191eacd@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220409093500.10329-2-linmiaohe@huawei.com>
+In-Reply-To: <0790131c-95af-676f-c475-addd1191eacd@amd.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 05:34:52PM +0800, Miaohe Lin wrote:
-> The MADV_FREE pages check in folio_check_dirty_writeback is a bit hard to
-> follow. Add a comment to make the code clear.
+On Mon, Apr 11, 2022 at 05:31:09PM +0530, Nikunj A. Dadhania wrote:
+> On 4/9/2022 2:35 AM, Vishal Annapurve wrote:
+> > This series implements selftests targeting the feature floated by Chao
+> > via:
+> > https://lore.kernel.org/linux-mm/20220310140911.50924-1-chao.p.peng@linux.intel.com/
+> > 
 > 
-> Suggested-by: Huang, Ying <ying.huang@intel.com>
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> Thanks for working on this.
+> 
+> > Below changes aim to test the fd based approach for guest private memory
+> > in context of normal (non-confidential) VMs executing on non-confidential
+> > platforms.
+> > 
+> > Confidential platforms along with the confidentiality aware software
+> > stack support a notion of private/shared accesses from the confidential
+> > VMs.
+> > Generally, a bit in the GPA conveys the shared/private-ness of the
+> > access. Non-confidential platforms don't have a notion of private or
+> > shared accesses from the guest VMs. To support this notion,
+> > KVM_HC_MAP_GPA_RANGE
+> > is modified to allow marking an access from a VM within a GPA range as
+> > always shared or private. Any suggestions regarding implementing this ioctl
+> > alternatively/cleanly are appreciated.
+> > 
+> > priv_memfd_test.c file adds a suite of two basic selftests to access private
+> > memory from the guest via private/shared access and checking if the contents
+> > can be leaked to/accessed by vmm via shared memory view.
+> > 
+> > Test results:
+> > 1) PMPAT - PrivateMemoryPrivateAccess test passes
+> > 2) PMSAT - PrivateMemorySharedAccess test fails currently and needs more
+> > analysis to understand the reason of failure.
+> 
+> That could be because of the return code (*r = -1) from the KVM_EXIT_MEMORY_ERROR. 
+> This gets interpreted as -EPERM in the VMM when the vcpu_run exits.
+> 
+> 	+	vcpu->run->exit_reason = KVM_EXIT_MEMORY_ERROR;
+> 	+	vcpu->run->memory.flags = flags;
+> 	+	vcpu->run->memory.padding = 0;
+> 	+	vcpu->run->memory.gpa = fault->gfn << PAGE_SHIFT;
+> 	+	vcpu->run->memory.size = PAGE_SIZE;
+> 	+	fault->pfn = -1;
+> 	+	*r = -1;
+> 	+	return true;
 
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
+That's true. The current private mem patch treats KVM_EXIT_MEMORY_ERROR as error
+for KVM_RUN. That behavior needs to be discussed, but right now (v5) it hits the
+ASSERT in tools/testing/selftests/kvm/lib/kvm_util.c before you have chance to
+handle KVM_EXIT_MEMORY_ERROR in this patch series.
 
+void vcpu_run(struct kvm_vm *vm, uint32_t vcpuid)
+{
+        int ret = _vcpu_run(vm, vcpuid);
+        TEST_ASSERT(ret == 0, "KVM_RUN IOCTL failed, "
+                "rc: %i errno: %i", ret, errno);
+}
 
--- 
-Oscar Salvador
-SUSE Labs
+Thanks,
+Chao
+
+> 
+> 
+> Regards
+> Nikunj
+> 
+> [1] https://lore.kernel.org/all/20220310140911.50924-10-chao.p.peng@linux.intel.com/#t
