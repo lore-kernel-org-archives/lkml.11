@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61145C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF37C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:02:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344772AbiDLBCn (ORCPT
+        id S1347184AbiDLBDQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34920 "EHLO
+        Mon, 11 Apr 2022 21:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343911AbiDLA5I (ORCPT
+        with ESMTP id S1344193AbiDLA5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:57:08 -0400
+        Mon, 11 Apr 2022 20:57:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F198B25E88;
-        Mon, 11 Apr 2022 17:49:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422EE27B24;
+        Mon, 11 Apr 2022 17:49:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0C81B81996;
-        Tue, 12 Apr 2022 00:49:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 295E0C385A4;
-        Tue, 12 Apr 2022 00:49:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D633DB819C4;
+        Tue, 12 Apr 2022 00:49:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85731C385A4;
+        Tue, 12 Apr 2022 00:49:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724580;
-        bh=F744J9Wch+6CYGO7v0bbvWisdqdhidN8eTq9iIl7cEI=;
+        s=k20201202; t=1649724593;
+        bh=Qem81bJBJ4bXuldztS3i1EFkoRvyIMTGFYIioO0Ei+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FkDxnS0ep5g43ll0sXj0oV8x/+OLo2cw4VbSQxGfRhiUaDfRPi+XRaXLJezCn0Hhs
-         +a9o/W8BaIANVmvSJMgMGaGCd5ntbaUqhuUzvvxyjwVRB/FeiMn50S23JCZPgzQON7
-         RbZKEgD3aVeNZDBWHE4DeICJdw+qoM5Y6afOO6+YDxehrO8iDFu24RMb8Kbg7uAHvu
-         5jQ22gN3xu2AKnK05A2yeF/XoHnXhmqiLBf+w1QN1sP47HblC1/UYoHW/c3904fbGw
-         j15V/+VkoqidXWgLd8TaGOGmpcOoskb2n73ZKnUrZQENYthHVRNG2NLR8G/GYLh+DL
-         uxIzcaXiWNDBA==
+        b=VfOQPCMgMkDy0Ok9n8a/DTr0Kg78uKjD8H7e6+javJ6zHbIcm1653AziY3GfmknAC
+         Lpof3d0qfZ4/f3clQNP2ruhOnjHsTlKP7Rvqs0+hSLm/Yg6etdojzk20+TY6zsdeZl
+         iRAJCCOAUGCBd4i+8kF7mcomB81JBGfDwSMbBrygj1CSHQ2dfwrokCzU2e0tK10SfU
+         kOUqhc+FXsrDoLvuFmgQgjuLLxnv+JDBu6zsBokFROVMRIZzFzpdK9hIwkP3uMB1hr
+         atKYGqmmzS9raEwGx9klUTDKlr5sxrlVURncXceqBo0n4rbe3u7IBUUdvMb9I29akO
+         xWkckZ2zA47hg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     QintaoShen <unSimple1993@163.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, Felix.Kuehling@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 09/30] drm/amdkfd: Check for potential null return of kmalloc_array()
-Date:   Mon, 11 Apr 2022 20:48:43 -0400
-Message-Id: <20220412004906.350678-9-sashal@kernel.org>
+Cc:     Leo Ruan <tingquan.ruan@cn.bosch.com>,
+        Mark Jonas <mark.jonas@de.bosch.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.10 16/30] gpu: ipu-v3: Fix dev_dbg frequency output
+Date:   Mon, 11 Apr 2022 20:48:50 -0400
+Message-Id: <20220412004906.350678-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
 References: <20220412004906.350678-1-sashal@kernel.org>
@@ -55,33 +54,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: QintaoShen <unSimple1993@163.com>
+From: Leo Ruan <tingquan.ruan@cn.bosch.com>
 
-[ Upstream commit ebbb7bb9e80305820dc2328a371c1b35679f2667 ]
+[ Upstream commit 070a88fd4a03f921b73a2059e97d55faaa447dab ]
 
-As the kmalloc_array() may return null, the 'event_waiters[i].wait' would lead to null-pointer dereference.
-Therefore, it is better to check the return value of kmalloc_array() to avoid this confusion.
+This commit corrects the printing of the IPU clock error percentage if
+it is between -0.1% to -0.9%. For example, if the pixel clock requested
+is 27.2 MHz but only 27.0 MHz can be achieved the deviation is -0.8%.
+But the fixed point math had a flaw and calculated error of 0.2%.
 
-Signed-off-by: QintaoShen <unSimple1993@163.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Before:
+  Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
+  IPU clock can give 27000000 with divider 10, error 0.2%
+  Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
+
+After:
+  Clocks: IPU 270000000Hz DI 24716667Hz Needed 27200000Hz
+  IPU clock can give 27000000 with divider 10, error -0.8%
+  Want 27200000Hz IPU 270000000Hz DI 24716667Hz using IPU, 27000000Hz
+
+Signed-off-by: Leo Ruan <tingquan.ruan@cn.bosch.com>
+Signed-off-by: Mark Jonas <mark.jonas@de.bosch.com>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220207151411.5009-1-mark.jonas@de.bosch.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdkfd/kfd_events.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/ipu-v3/ipu-di.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-index ba2c2ce0c55a..159be13ef20b 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
-@@ -531,6 +531,8 @@ static struct kfd_event_waiter *alloc_event_waiters(uint32_t num_events)
- 	event_waiters = kmalloc_array(num_events,
- 					sizeof(struct kfd_event_waiter),
- 					GFP_KERNEL);
-+	if (!event_waiters)
-+		return NULL;
+diff --git a/drivers/gpu/ipu-v3/ipu-di.c b/drivers/gpu/ipu-v3/ipu-di.c
+index b4a31d506fcc..74eca68891ad 100644
+--- a/drivers/gpu/ipu-v3/ipu-di.c
++++ b/drivers/gpu/ipu-v3/ipu-di.c
+@@ -451,8 +451,9 @@ static void ipu_di_config_clock(struct ipu_di *di,
  
- 	for (i = 0; (event_waiters) && (i < num_events) ; i++) {
- 		init_wait(&event_waiters[i].wait);
+ 		error = rate / (sig->mode.pixelclock / 1000);
+ 
+-		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %d.%u%%\n",
+-			rate, div, (signed)(error - 1000) / 10, error % 10);
++		dev_dbg(di->ipu->dev, "  IPU clock can give %lu with divider %u, error %c%d.%d%%\n",
++			rate, div, error < 1000 ? '-' : '+',
++			abs(error - 1000) / 10, abs(error - 1000) % 10);
+ 
+ 		/* Allow a 1% error */
+ 		if (error < 1010 && error >= 990) {
 -- 
 2.35.1
 
