@@ -2,113 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DABC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23260C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230350AbiDLXbk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58118 "EHLO
+        id S230353AbiDLXcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:32:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiDLXbX (ORCPT
+        with ESMTP id S230270AbiDLXbx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:31:23 -0400
-Received: from mail-4327.protonmail.ch (mail-4327.protonmail.ch [185.70.43.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC5B9FCD
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:16:17 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 21:59:16 +0000
-Authentication-Results: mail-4321.protonmail.ch;
-        dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="M2J2L0iK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-        s=protonmail2; t=1649800761;
-        bh=JJtIRzBfNpDrJ/fFtvW6vi1j9+8vDctIDP1NHWiTvOk=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:From:To:Cc:Date:
-         Subject:Reply-To:Feedback-ID:Message-ID;
-        b=M2J2L0iK2Kc/JQTIjkwhDUkVqWiZJr3O/27pjBoOkV0WQ7k3QLKoWiEY4P8AO2cMT
-         OApMkeZx7jZ147jSo5zdtUJ4MYUQI3LZGgFLt5lQy2IbjAyfDr3JdfIat6WFFXrrpK
-         w6L6qXuzVppbmyai1QnXQf3zVPlwQmukLWSYtXStunKKc6w2+Je+8XmI1/jRXcuKZM
-         ugzbjMCdqaBj+SICra5VB2NALMPCUFd/dOxLuvqDVK4p7PmM55sl91uTxRYp3lYwIP
-         Wplktu5ck2NSYZL+AmRdzhMhpS9KKb3ZVDMPNH0oQPlAk2NVHCT0SYTlSBPdbNDOXO
-         jnYDIIyAsO8UQ==
-To:     linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
-        linux-crypto@vger.kernel.org
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jens Axboe <axboe@kernel.dk>, Keith Busch <kbusch@kernel.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alobakin@pm.me>
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH RESEND] asm-generic: fix __get_unaligned_be48() on 32 bit platforms
-Message-ID: <20220412215220.75677-1-alobakin@pm.me>
+        Tue, 12 Apr 2022 19:31:53 -0400
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1D681669
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:17:19 -0700 (PDT)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-e2afb80550so231965fac.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:17:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=n2t5ELawI3mUGg5tVhQenYNK1LUgXG/kP/zI61cw9fw=;
+        b=dlFBx561eGgl6eUR5ImhHgVTKuYkXl/ojvlX22n3XxtoPeqLJaRB/1gDSynytpJ/y4
+         pKsjINyyo5j6bEF3tXEzfdEiqp2M7UykVGgQ3bxgjpGbM4x1Q0oYKdRbXBi4VPwUU/KQ
+         z50kgTSPe+N/xzlXcXuqbB4v0Pkjrgfx+ceJ7iVmwnEMvvzEuM3UJKc6Sn53CK6h6hE+
+         qExCYE5PKCfhumGnT6RDoOeEGMyJV4Eby8DQNFRy+XXU72QMTRToOipl0namuD8ZHMB7
+         MyynSZUVEKN34YHGMqDZ7HtdFvxAmDjG6YuOXQ2lvJWujZQ5PNJceGPZHCPMewzeUW1s
+         U3Hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=n2t5ELawI3mUGg5tVhQenYNK1LUgXG/kP/zI61cw9fw=;
+        b=bq/aMqX5Z4X0NuDxmynUlKrfOZa6DjOk33uQXm0g2BD6jWc3o3PEiRSoLIMOnQyOPo
+         3hb8O/exmNpTml47g2rAazMtOW20Xv5eapEH7rKyyDKvTWTTQE9H60swjhBRqkiGN3ZP
+         clyY1Xd8NeTQGbuwHmMCw0E/SvkEZax/TWlB0d7BYh++aQKMzNkBxK5+ipPO4+XeDLYt
+         DZ5VXgdZV+YsSzlpHMzSnuN5qeWn3C+onoa1PaYOk0qBgDT38Ky1Ub+pzD4YI/99nl1O
+         sXRCQMKy+qz9jffnagL7QRM6XDsTt9l643xP/x4YVaHXx7xh03M4UUfDBXOshu6fNGBJ
+         /krA==
+X-Gm-Message-State: AOAM5317LmDCL2/MCEc+rqTLv92rBMwRCQq7DBo4UUX2hnXIqjnAXKSc
+        mqhpTDIe2QDIC8vu8hZbDA9WdRxt7L9kmHPI
+X-Google-Smtp-Source: ABdhPJyTnRuP1yacOaJWVIrnwQcAXI1nG3rUeVaXhd+WJFZfwEo1k8Wg6LjUniaWx2FofkEzD7TgEQ==
+X-Received: by 2002:a05:6808:11ca:b0:2d9:a01a:488b with SMTP id p10-20020a05680811ca00b002d9a01a488bmr2892353oiv.214.1649800165960;
+        Tue, 12 Apr 2022 14:49:25 -0700 (PDT)
+Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id k10-20020a4abd8a000000b00324907b406fsm12809059oop.21.2022.04.12.14.49.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 14:49:25 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] arm64: dts: qcom: sm8350-hdk: Enable &gpi_dma1
+Date:   Tue, 12 Apr 2022 14:51:37 -0700
+Message-Id: <20220412215137.2385831-3-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412215137.2385831-1-bjorn.andersson@linaro.org>
+References: <20220412215137.2385831-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While testing the new macros for working with 48 bit containers,
-I faced a weird problem:
+Some versions of the firmware for the SM8350 Hardware Development Kit
+(HDK) has FIFO mode disabled for i2c13 and must thus use GPI DMA. Enable
+&gpi_dma1 to allow this.
 
-32 + 16: 0x2ef6e8da 0x79e60000
-48: 0xffffe8da + 0x79e60000
-
-All the bits starting from the 32nd were getting 1d in 9/10 cases.
-The debug showed:
-
-p[0]: 0x00002e0000000000
-p[1]: 0x00002ef600000000
-p[2]: 0xffffffffe8000000
-p[3]: 0xffffffffe8da0000
-p[4]: 0xffffffffe8da7900
-p[5]: 0xffffffffe8da79e6
-
-that the value becomes a garbage after the third OR, i.e. on
-`p[2] << 24`.
-When the 31st bit is 1 and there's no explicit cast to an unsigned,
-it's being considered as a signed int and getting sign-extended on
-OR, so `e8000000` becomes `ffffffffe8000000` and messes up the
-result.
-Cast the @p[2] to u64 as well to avoid this. Now:
-
-32 + 16: 0x7ef6a490 0xddc10000
-48: 0x7ef6a490 + 0xddc10000
-
-p[0]: 0x00007e0000000000
-p[1]: 0x00007ef600000000
-p[2]: 0x00007ef6a4000000
-p[3]: 0x00007ef6a4900000
-p[4]: 0x00007ef6a490dd00
-p[5]: 0x00007ef6a490ddc1
-
-Fixes: c2ea5fcf53d5 ("asm-generic: introduce be48 unaligned accessors")
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
-Resend: target linux-block, expand Ccs a bit
+ arch/arm64/boot/dts/qcom/sm8350-hdk.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
 
- include/asm-generic/unaligned.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/asm-generic/unaligned.h b/include/asm-generic/unaligne=
-d.h
-index 8fc637379899..df30f11b4a46 100644
---- a/include/asm-generic/unaligned.h
-+++ b/include/asm-generic/unaligned.h
-@@ -143,7 +143,7 @@ static inline void put_unaligned_be48(const u64 val, vo=
-id *p)
-
- static inline u64 __get_unaligned_be48(const u8 *p)
- {
--=09return (u64)p[0] << 40 | (u64)p[1] << 32 | p[2] << 24 |
-+=09return (u64)p[0] << 40 | (u64)p[1] << 32 | (u64)p[2] << 24 |
- =09=09p[3] << 16 | p[4] << 8 | p[5];
- }
-
---
-2.35.2
-
+diff --git a/arch/arm64/boot/dts/qcom/sm8350-hdk.dts b/arch/arm64/boot/dts/qcom/sm8350-hdk.dts
+index 8c33fce0b414..246006ab4a2b 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350-hdk.dts
++++ b/arch/arm64/boot/dts/qcom/sm8350-hdk.dts
+@@ -213,6 +213,10 @@ &cdsp {
+ 	firmware-name = "qcom/sm8350/cdsp.mbn";
+ };
+ 
++&gpi_dma1 {
++	status = "okay";
++};
++
+ &gpu {
+ 	status = "okay";
+ };
+-- 
+2.35.1
 
