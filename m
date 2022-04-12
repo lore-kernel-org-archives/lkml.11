@@ -2,367 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64718C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:44:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243701AbiDLNpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57574 "EHLO
+        id S1353493AbiDLNqo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 09:46:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354343AbiDLNo7 (ORCPT
+        with ESMTP id S1348141AbiDLNqe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:44:59 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E75694ECF9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:42:40 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B1EF8150C;
-        Tue, 12 Apr 2022 06:42:40 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.57.94.90])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6864C3F70D;
-        Tue, 12 Apr 2022 06:42:39 -0700 (PDT)
-From:   Vincent Donnefort <vincent.donnefort@arm.com>
-To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org
-Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        morten.rasmussen@arm.com, chris.redpath@arm.com,
-        qperret@google.com, Vincent Donnefort <vincent.donnefort@arm.com>
-Subject: [PATCH v4 6/7] sched/fair: Remove task_util from effective utilization in feec()
-Date:   Tue, 12 Apr 2022 14:42:19 +0100
-Message-Id: <20220412134220.1588482-7-vincent.donnefort@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412134220.1588482-1-vincent.donnefort@arm.com>
-References: <20220412134220.1588482-1-vincent.donnefort@arm.com>
+        Tue, 12 Apr 2022 09:46:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 418D6167FE
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:44:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53252B81D74
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 13:44:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65436C385A1;
+        Tue, 12 Apr 2022 13:44:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649771052;
+        bh=X6XotoyowuMHXvt4AIv+L9FrbiAXaSm0YU6Jcdl7Tow=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=g5t/uoqmEGh7k64siQ/BSapzZauBHrbbv8uDiCTuMWJUPjdWFMiDRGE9tY8FinwPN
+         nnOl6JnKVdTR9zu1cKYJKt86/ihgaNSa3173sqpzmV1f2vF/MB9TXHkEXFGkQKw//h
+         hRiJkvE6WzYxCn4H8xOrixXsGDWkmSDADaTAKjsg=
+Date:   Tue, 12 Apr 2022 15:44:09 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Philipp Hortmann <philipp.g.hortmann@gmail.com>
+Cc:     Forest Bond <forest@alittletooquiet.net>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/7] staging: vt6655: Replace VNSvInPortB with ioread8
+Message-ID: <YlWCKTLemyQose/C@kroah.com>
+References: <cover.1649706687.git.philipp.g.hortmann@gmail.com>
+ <2f1392d831d005709c859aedf75de7e7ca2269cf.1649706687.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2f1392d831d005709c859aedf75de7e7ca2269cf.1649706687.git.philipp.g.hortmann@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The energy estimation in find_energy_efficient_cpu() (feec()) relies on
-the computation of the effective utilization for each CPU of a perf domain
-(PD). This effective utilization is then used as an estimation of the busy
-time for this pd. The function effective_cpu_util() which gives this value,
-scales the utilization relative to IRQ pressure on the CPU to take into
-account that the IRQ time is hidden from the task clock. The IRQ scaling is
-as follow:
+On Mon, Apr 11, 2022 at 10:49:20PM +0200, Philipp Hortmann wrote:
+> Replace macro VNSvInPortB with ioread8.
+> The name of macro and the arguments use CamelCase which
+> is not accepted by checkpatch.pl
+> 
+> Since there are more than one checkpatch issue per line,
+> more steps are rquired to fix.
+> 
+> Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
+> ---
+> V1 -> V2: This patch was 4/7 and is now 3/6
+> V2 -> V3: Changed from rename macro arguments to replace
+>           macro VNSvInPortB with ioread8
+>           This patch was 3/6 and is now 1/7
+> ---
+>  drivers/staging/vt6655/baseband.c    |  6 +++---
+>  drivers/staging/vt6655/card.c        |  2 +-
+>  drivers/staging/vt6655/device_main.c |  4 ++--
+>  drivers/staging/vt6655/mac.h         | 26 ++++++++++----------------
+>  drivers/staging/vt6655/srom.c        |  6 +++---
+>  drivers/staging/vt6655/upc.h         |  3 ---
+>  6 files changed, 19 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/staging/vt6655/baseband.c b/drivers/staging/vt6655/baseband.c
+> index dfdb0ebf43b5..decb55e96f02 100644
+> --- a/drivers/staging/vt6655/baseband.c
+> +++ b/drivers/staging/vt6655/baseband.c
+> @@ -1916,13 +1916,13 @@ bool bb_read_embedded(struct vnt_private *priv, unsigned char by_bb_addr,
+>  	MACvRegBitsOn(iobase, MAC_REG_BBREGCTL, BBREGCTL_REGR);
+>  	/* W_MAX_TIMEOUT is the timeout period */
+>  	for (ww = 0; ww < W_MAX_TIMEOUT; ww++) {
+> -		VNSvInPortB(iobase + MAC_REG_BBREGCTL, &by_value);
+> +		by_value = ioread8(iobase + MAC_REG_BBREGCTL);
 
-   effective_cpu_util = irq + (cpu_cap - irq)/cpu_cap * util
+This type of change is great, but...
 
-Where util is the sum of CFS/RT/DL utilization, cpu_cap the capacity of
-the CPU and irq the IRQ avg time.
+> @@ -597,18 +597,12 @@ do {								\
+>  #define MACvReadEtherAddress(iobase, pbyEtherAddr)		\
+>  do {								\
+>  	VNSvOutPortB(iobase + MAC_REG_PAGE1SEL, 1);		\
+> -	VNSvInPortB(iobase + MAC_REG_PAR0,			\
+> -		    (unsigned char *)pbyEtherAddr);		\
+> -	VNSvInPortB(iobase + MAC_REG_PAR0 + 1,		\
+> -		    pbyEtherAddr + 1);				\
+> -	VNSvInPortB(iobase + MAC_REG_PAR0 + 2,		\
+> -		    pbyEtherAddr + 2);				\
+> -	VNSvInPortB(iobase + MAC_REG_PAR0 + 3,		\
+> -		    pbyEtherAddr + 3);				\
+> -	VNSvInPortB(iobase + MAC_REG_PAR0 + 4,		\
+> -		    pbyEtherAddr + 4);				\
+> -	VNSvInPortB(iobase + MAC_REG_PAR0 + 5,		\
+> -		    pbyEtherAddr + 5);				\
+> +	(*((unsigned char *)pbyEtherAddr) = ioread8(iobase + MAC_REG_PAR0));		\
 
-If now we take as an example a task placement which doesn't raise the OPP
-on the candidate CPU, we can write the energy delta as:
+Why cast one and not all?  No casts should be needed.  If so, the caller
+is wrong.
 
-  delta = OPPcost/cpu_cap * (effective_cpu_util(cpu_util + task_util) -
-                             effective_cpu_util(cpu_util))
-        = OPPcost/cpu_cap * (cpu_cap - irq)/cpu_cap * task_util
+> +	(*(pbyEtherAddr + 1) = ioread8(iobase + MAC_REG_PAR0 + 1));	\
 
-We end-up with an energy delta depending on the IRQ avg time, which is a
-problem: first the time spent on IRQs by a CPU has no effect on the
-additional energy that would be consumed by a task. Second, we don't want
-to favour a CPU with a higher IRQ avg time value.
+That's odd.
 
-Nonetheless, we need to take the IRQ avg time into account. If a task
-placement raises the PD's frequency, it will increase the energy cost for
-the entire time where the CPU is busy. A solution is to only use
-effective_cpu_util() with the CPU contribution part. The task contribution
-is added separately and scaled according to prev_cpu's IRQ time.
+Ok, I guess it's an array, right?  How about:
+	pbyEtherAddr[0] = ioread8(iobase + MAC_REG_PAR0);	\
+	pbyEtherAddr[1] = ioread8(iobase + MAC_REG_PAR0 + 1);	\
+and so on?
 
-No change for the FREQUENCY_UTIL component of the energy estimation. We
-still want to get the actual frequency that would be selected after the
-task placement.
+Much simpler and easier to understand.
 
-Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+And then there's this odd stuff:
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 97eb8afb336c..d17ef80487e4 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -6687,61 +6687,97 @@ static unsigned long cpu_util_next(int cpu, struct task_struct *p, int dst_cpu)
- }
- 
- /*
-- * compute_energy(): Estimates the energy that @pd would consume if @p was
-- * migrated to @dst_cpu. compute_energy() predicts what will be the utilization
-- * landscape of @pd's CPUs after the task migration, and uses the Energy Model
-- * to compute what would be the energy if we decided to actually migrate that
-- * task.
-+ * energy_env - Utilization landscape for energy estimation.
-+ * @task_busy_time: Utilization contribution by the task for which we test the
-+ *                  placement. Given by eenv_task_busy_time().
-+ * @pd_busy_time:   Utilization of the whole perf domain without the task
-+ *                  contribution. Given by eenv_pd_busy_time().
-+ * @cpu_cap:        Maximum CPU capacity for the perf domain.
-+ * @pd_cap:         Entire perf domain capacity. (pd->nr_cpus * cpu_cap).
-+ */
-+struct energy_env {
-+	unsigned long task_busy_time;
-+	unsigned long pd_busy_time;
-+	unsigned long cpu_cap;
-+	unsigned long pd_cap;
-+};
-+
-+/*
-+ * Compute the task busy time for compute_energy(). This time cannot be
-+ * injected directly into effective_cpu_util() because of the IRQ scaling.
-+ * The latter only makes sense with the most recent CPUs where the task has
-+ * run.
-  */
--static long
--compute_energy(struct task_struct *p, int dst_cpu, struct cpumask *cpus,
--	       struct perf_domain *pd)
-+static inline void eenv_task_busy_time(struct energy_env *eenv,
-+				       struct task_struct *p, int prev_cpu)
- {
--	unsigned long max_util = 0, sum_util = 0, cpu_cap;
-+	unsigned long max_cap = arch_scale_cpu_capacity(prev_cpu);
-+	unsigned long irq = cpu_util_irq(cpu_rq(prev_cpu));
-+
-+	if (unlikely(irq >= max_cap)) {
-+		eenv->task_busy_time = max_cap;
-+		return;
-+	}
-+
-+	eenv->task_busy_time =
-+		scale_irq_capacity(task_util_est(p), irq, max_cap);
-+}
-+
-+/*
-+ * Compute the perf_domain (PD) busy time for compute_energy(). Based on the
-+ * utilization for each @pd_cpus, it however doesn't take into account
-+ * clamping since the ratio (utilization / cpu_capacity) is already enough to
-+ * scale the EM reported power consumption at the (eventually clamped)
-+ * cpu_capacity.
-+ *
-+ * The contribution of the task @p for which we want to estimate the
-+ * energy cost is removed (by cpu_util_next()) and must be calculated
-+ * separately (see eenv_task_busy_time). This ensures:
-+ *
-+ *   - A stable PD utilization, no matter which CPU of that PD we want to place
-+ *     the task on.
-+ *
-+ *   - A fair comparison between CPUs as the task contribution (task_util())
-+ *     will always be the same no matter which CPU utilization we rely on
-+ *     (util_avg or util_est).
-+ *
-+ * Set @eenv busy time for the PD that spans @pd_cpus. This busy time can't
-+ * exceed @eenv->pd_cap.
-+ */
-+static inline void eenv_pd_busy_time(struct energy_env *eenv,
-+				     struct cpumask *pd_cpus,
-+				     struct task_struct *p)
-+{
-+	unsigned long busy_time = 0;
- 	int cpu;
- 
--	cpu_cap = arch_scale_cpu_capacity(cpumask_first(cpus));
--	cpu_cap -= arch_scale_thermal_pressure(cpumask_first(cpus));
-+	for_each_cpu(cpu, pd_cpus) {
-+		unsigned long util = cpu_util_next(cpu, p, -1);
- 
--	/*
--	 * The capacity state of CPUs of the current rd can be driven by CPUs
--	 * of another rd if they belong to the same pd. So, account for the
--	 * utilization of these CPUs too by masking pd with cpu_online_mask
--	 * instead of the rd span.
--	 *
--	 * If an entire pd is outside of the current rd, it will not appear in
--	 * its pd list and will not be accounted by compute_energy().
--	 */
--	for_each_cpu(cpu, cpus) {
--		unsigned long util_freq = cpu_util_next(cpu, p, dst_cpu);
--		unsigned long cpu_util, util_running = util_freq;
--		struct task_struct *tsk = NULL;
-+		busy_time += effective_cpu_util(cpu, util, ENERGY_UTIL, NULL);
-+	}
- 
--		/*
--		 * When @p is placed on @cpu:
--		 *
--		 * util_running = max(cpu_util, cpu_util_est) +
--		 *		  max(task_util, _task_util_est)
--		 *
--		 * while cpu_util_next is: max(cpu_util + task_util,
--		 *			       cpu_util_est + _task_util_est)
--		 */
--		if (cpu == dst_cpu) {
--			tsk = p;
--			util_running =
--				cpu_util_next(cpu, p, -1) + task_util_est(p);
--		}
-+	eenv->pd_busy_time = min(eenv->pd_cap, busy_time);
-+}
- 
--		/*
--		 * Busy time computation: utilization clamping is not
--		 * required since the ratio (sum_util / cpu_capacity)
--		 * is already enough to scale the EM reported power
--		 * consumption at the (eventually clamped) cpu_capacity.
--		 */
--		cpu_util = effective_cpu_util(cpu, util_running, ENERGY_UTIL,
--					      NULL);
-+/*
-+ * Compute the maximum utilization for compute_energy() when the task @p
-+ * is placed on the cpu @dst_cpu.
-+ *
-+ * Returns the maximum utilization among @eenv->cpus. This utilization can't
-+ * exceed @eenv->cpu_cap.
-+ */
-+static inline unsigned long
-+eenv_pd_max_util(struct energy_env *eenv, struct cpumask *pd_cpus,
-+		 struct task_struct *p, int dst_cpu)
-+{
-+	unsigned long max_util = 0;
-+	int cpu;
- 
--		sum_util += min(cpu_util, cpu_cap);
-+	for_each_cpu(cpu, pd_cpus) {
-+		struct task_struct *tsk = (cpu == dst_cpu) ? p : NULL;
-+		unsigned long util = cpu_util_next(cpu, p, dst_cpu);
-+		unsigned long cpu_util;
- 
- 		/*
- 		 * Performance domain frequency: utilization clamping
-@@ -6750,12 +6786,30 @@ compute_energy(struct task_struct *p, int dst_cpu, struct cpumask *cpus,
- 		 * NOTE: in case RT tasks are running, by default the
- 		 * FREQUENCY_UTIL's utilization can be max OPP.
- 		 */
--		cpu_util = effective_cpu_util(cpu, util_freq, FREQUENCY_UTIL,
--					      tsk);
--		max_util = max(max_util, min(cpu_util, cpu_cap));
-+		cpu_util = effective_cpu_util(cpu, util, FREQUENCY_UTIL, tsk);
-+		max_util = max(max_util, cpu_util);
- 	}
- 
--	return em_cpu_energy(pd->em_pd, max_util, sum_util, cpu_cap);
-+	return min(max_util, eenv->cpu_cap);
-+}
-+
-+/*
-+ * compute_energy(): Use the Energy Model to estimate the energy that @pd would
-+ * consume for a given utilization landscape @eenv. If @dst_cpu < 0 the task
-+ * contribution is removed from the energy estimation.
-+ */
-+static inline unsigned long
-+compute_energy(struct energy_env *eenv, struct perf_domain *pd,
-+	       struct cpumask *pd_cpus, struct task_struct *p, int dst_cpu)
-+{
-+	unsigned long max_util = eenv_pd_max_util(eenv, pd_cpus, p, dst_cpu);
-+	unsigned long busy_time = eenv->pd_busy_time;
-+
-+	if (dst_cpu >= 0)
-+		busy_time = min(eenv->pd_cap,
-+				eenv->pd_busy_time + eenv->task_busy_time);
-+
-+	return em_cpu_energy(pd->em_pd, max_util, busy_time, eenv->cpu_cap);
- }
- 
- /*
-@@ -6801,11 +6855,12 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- {
- 	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_rq_mask);
- 	unsigned long prev_delta = ULONG_MAX, best_delta = ULONG_MAX;
--	struct root_domain *rd = cpu_rq(smp_processor_id())->rd;
- 	int cpu, best_energy_cpu = prev_cpu, target = -1;
--	unsigned long cpu_cap, util, base_energy = 0;
-+	struct root_domain *rd = this_rq()->rd;
-+	unsigned long base_energy = 0;
- 	struct sched_domain *sd;
- 	struct perf_domain *pd;
-+	struct energy_env eenv;
- 
- 	rcu_read_lock();
- 	pd = rcu_dereference(rd->pd);
-@@ -6828,22 +6883,36 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 	if (!task_util_est(p))
- 		goto unlock;
- 
-+	eenv_task_busy_time(&eenv, p, prev_cpu);
-+
- 	for (; pd; pd = pd->next) {
--		unsigned long cur_delta, spare_cap, max_spare_cap = 0;
-+		unsigned long cpu_cap, cpu_thermal_cap, util;
-+		unsigned long cur_delta, max_spare_cap = 0;
- 		bool compute_prev_delta = false;
- 		unsigned long base_energy_pd;
- 		int max_spare_cap_cpu = -1;
- 
- 		cpumask_and(cpus, perf_domain_span(pd), cpu_online_mask);
- 
--		for_each_cpu_and(cpu, cpus, sched_domain_span(sd)) {
-+		/* Account thermal pressure for the energy estimation */
-+		cpu = cpumask_first(cpus);
-+		cpu_thermal_cap = arch_scale_cpu_capacity(cpu);
-+		cpu_thermal_cap -= arch_scale_thermal_pressure(cpu);
-+
-+		eenv.cpu_cap = cpu_thermal_cap;
-+		eenv.pd_cap = 0;
-+
-+		for_each_cpu(cpu, cpus) {
-+			eenv.pd_cap += cpu_thermal_cap;
-+
-+			if (!cpumask_test_cpu(cpu, sched_domain_span(sd)))
-+				continue;
-+
- 			if (!cpumask_test_cpu(cpu, p->cpus_ptr))
- 				continue;
- 
- 			util = cpu_util_next(cpu, p, cpu);
- 			cpu_cap = capacity_of(cpu);
--			spare_cap = cpu_cap;
--			lsub_positive(&spare_cap, util);
- 
- 			/*
- 			 * Skip CPUs that cannot satisfy the capacity request.
-@@ -6856,15 +6925,17 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 			if (!fits_capacity(util, cpu_cap))
- 				continue;
- 
-+			lsub_positive(&cpu_cap, util);
-+
- 			if (cpu == prev_cpu) {
- 				/* Always use prev_cpu as a candidate. */
- 				compute_prev_delta = true;
--			} else if (spare_cap > max_spare_cap) {
-+			} else if (cpu_cap > max_spare_cap) {
- 				/*
- 				 * Find the CPU with the maximum spare capacity
- 				 * in the performance domain.
- 				 */
--				max_spare_cap = spare_cap;
-+				max_spare_cap = cpu_cap;
- 				max_spare_cap_cpu = cpu;
- 			}
- 		}
-@@ -6873,12 +6944,14 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 			continue;
- 
- 		/* Compute the 'base' energy of the pd, without @p */
--		base_energy_pd = compute_energy(p, -1, cpus, pd);
-+		eenv_pd_busy_time(&eenv, cpus, p);
-+		base_energy_pd = compute_energy(&eenv, pd, cpus, p, -1);
- 		base_energy += base_energy_pd;
- 
- 		/* Evaluate the energy impact of using prev_cpu. */
- 		if (compute_prev_delta) {
--			prev_delta = compute_energy(p, prev_cpu, cpus, pd);
-+			prev_delta = compute_energy(&eenv, pd, cpus, p,
-+						    prev_cpu);
- 			if (prev_delta < base_energy_pd)
- 				goto unlock;
- 			prev_delta -= base_energy_pd;
-@@ -6887,8 +6960,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 
- 		/* Evaluate the energy impact of using max_spare_cap_cpu. */
- 		if (max_spare_cap_cpu >= 0) {
--			cur_delta = compute_energy(p, max_spare_cap_cpu, cpus,
--						   pd);
-+			cur_delta = compute_energy(&eenv, pd, cpus, p,
-+						   max_spare_cap_cpu);
- 			if (cur_delta < base_energy_pd)
- 				goto unlock;
- 			cur_delta -= base_energy_pd;
--- 
-2.25.1
+>  #define MACvGPIOIn(iobase, pbyValue)					\
+> -	VNSvInPortB(iobase + MAC_REG_GPIOCTL1, pbyValue)
+> +	*(pbyValue) = ioread8(iobase + MAC_REG_GPIOCTL1)
 
+pbyValue?  unwind this first, you should be able to just have a normal
+ioread() call, right?
+
+Or, make it a function.
+
+thanks,
+
+greg k-h
