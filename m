@@ -2,229 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B2F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:27:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbiDLX31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
+        id S230281AbiDLX3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230262AbiDLX1q (ORCPT
+        with ESMTP id S229812AbiDLX0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:27:46 -0400
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E54D1129;
-        Tue, 12 Apr 2022 15:12:43 -0700 (PDT)
-Received: by mail-oi1-f181.google.com with SMTP id q129so198151oif.4;
-        Tue, 12 Apr 2022 15:12:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=47WaZ6kjUZsT9iTQ2UXEwksvZRBMq7QZhouU2/Ai3wA=;
-        b=nn6akzkksEjsEa+Rwnpp2HMTxuAp3mqJeP1ata3p5oLL6UQhqbx1fYcpOjuiA06rXV
-         7a/ohOIYcGO/0U88pNb/2EPA/NyceqrkmSX9XQNY8YibocHcPdlqTJYlCAv7vGAxrxOw
-         /KTzcdPO8BOpSWvaYVvXLC2S0+PpAtXNRKO78SVEFVHe+mxzSXXaSc6rUo1ryCUTgLU6
-         P6XMWUFEowaHzudYvJVmHf3VixN31urF0P84SU2bQKnVO0qDdYbE7GdTTaXIPQJ/Is7h
-         3mKWi3l2La2AJ7Y/CU/lx6sPRxUnCpktdYPIk2JovqyaEd3NLk0n7oxCaa9bGZSWfIc0
-         UniA==
-X-Gm-Message-State: AOAM5326+WAHa28aGa6jdVL1Z1QErbQGuwh6RJWKXJYbXMo1A6mk+I8I
-        eR8PkP40eRK4Yqh8hCBgWe6CNHu7NA==
-X-Google-Smtp-Source: ABdhPJy0+SAQRoWAmj5LECu0tTl+2mffhIhmvVHUT1qzdnR8HC/3zPqvSt1AiEHDsaC+FDvuG0T6Jg==
-X-Received: by 2002:a05:6870:796:b0:da:3d6a:101d with SMTP id en22-20020a056870079600b000da3d6a101dmr2996279oab.20.1649799369047;
-        Tue, 12 Apr 2022 14:36:09 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id p18-20020a056830131200b005ccf8ac6207sm13941666otq.80.2022.04.12.14.36.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 14:36:08 -0700 (PDT)
-Received: (nullmailer pid 984530 invoked by uid 1000);
-        Tue, 12 Apr 2022 21:36:08 -0000
-Date:   Tue, 12 Apr 2022 16:36:08 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Camel Guo <camel.guo@axis.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@axis.com
-Subject: Re: [PATCH v2 1/2] dt-bindings: hwmon: Add TMP401, TMP411 and TMP43x
-Message-ID: <YlXwyKkkC1VoPpjU@robh.at.kernel.org>
-References: <20220412135232.1943677-1-camel.guo@axis.com>
- <20220412135232.1943677-2-camel.guo@axis.com>
+        Tue, 12 Apr 2022 19:26:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31801985A0;
+        Tue, 12 Apr 2022 15:37:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFA1861C9C;
+        Tue, 12 Apr 2022 21:00:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2333CC385AF;
+        Tue, 12 Apr 2022 21:00:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649797250;
+        bh=ZpL2a5lPfBdUIedwirE+bwCeUGPgdpinbYEuBaVo93A=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=MCex7/V9j1yaLO/NwFvMfN5Tp5passJZr3HqGxacPnkN/uqVJgDV+rDlkf1JPJwrw
+         jJB0IM3r7a2aAMtm494uCivGxhePa7QfZ+jkvq7y8qLMP/BY8+y8zWkpDjmPQa5I7L
+         S7USJwm6H2O06hVGDOBS6jujqxpB4Ehdbv+IenT2YnlBLa+zjLLRgjhYnqd++AdrUS
+         G1HhigEtmQyZDEFtNzHtsuQ1N1RKuyeK9ygp0C5hWpeJXX3IggUIBvCT1o6nkW7Xty
+         KaPr7X08KWFfkIvdctNrlhRko2OZv2SYWUSZ86O+K8x+Vrw4K3NlwSUJA54zTdvMa/
+         9JFzcxQ9NBJ0Q==
+Received: by mail-yb1-f177.google.com with SMTP id x200so185500ybe.13;
+        Tue, 12 Apr 2022 14:00:50 -0700 (PDT)
+X-Gm-Message-State: AOAM531vS9nc+/mkPDmeNVQcGDxlyvYuGImW7eCpuDnxn5ZsV2d0RjPp
+        LmR1lb/d8Ducsnbsnup/zZZWvuo32EdNcRWTez8=
+X-Google-Smtp-Source: ABdhPJxjBoD724NeqcWAf+nNammAA1fL9bzwhgdCmHoOJV6kU0RCocV1LM2FswYKq8YjUh6v1F76bmQApbI2VBmEnEk=
+X-Received: by 2002:a25:4055:0:b0:641:636e:18dd with SMTP id
+ n82-20020a254055000000b00641636e18ddmr8364049yba.389.1649797249049; Tue, 12
+ Apr 2022 14:00:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220412135232.1943677-2-camel.guo@axis.com>
+References: <20220411233549.740157-1-song@kernel.org> <20220411233549.740157-5-song@kernel.org>
+ <0e8047d07def02db8ef33836ee37de616660045c.camel@intel.com>
+In-Reply-To: <0e8047d07def02db8ef33836ee37de616660045c.camel@intel.com>
+From:   Song Liu <song@kernel.org>
+Date:   Tue, 12 Apr 2022 14:00:35 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW4pde5DTMNzRUHwPoxs6vh9AQPn+ny5-9cFVO4nVnYsGw@mail.gmail.com>
+Message-ID: <CAPhsuW4pde5DTMNzRUHwPoxs6vh9AQPn+ny5-9cFVO4nVnYsGw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf 3/3] bpf: use vmalloc with VM_ALLOW_HUGE_VMAP for bpf_prog_pack
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "mcgrof@kernel.org" <mcgrof@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 03:52:31PM +0200, Camel Guo wrote:
-> Document the TMP401, TMP411 and TMP43x device devicetree bindings
-> 
-> Signed-off-by: Camel Guo <camel.guo@axis.com>
-> ---
-> 
-> Notes:
->  v2:
->  - Fix format and describe hardware properties instead of programming
->    models
-> 
->  .../devicetree/bindings/hwmon/ti,tmp401.yaml  | 112 ++++++++++++++++++
->  MAINTAINERS                                   |   1 +
->  2 files changed, 113 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
-> new file mode 100644
-> index 000000000000..dae4df36935e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
-> @@ -0,0 +1,112 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/hwmon/ti,tmp401.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: TMP401, TPM411 and TMP43x temperature sensor
-> +
-> +maintainers:
-> +  - Guenter Roeck <linux@roeck-us.net>
-> +
-> +description: |
-> +  ±1°C Remote and Local temperature sensor
-> +
-> +  Datasheets:
-> +  https://www.ti.com/lit/ds/symlink/tmp401.pdf
-> +  https://www.ti.com/lit/ds/symlink/tmp411.pdf
-> +  https://www.ti.com/lit/ds/symlink/tmp431.pdf
-> +  https://www.ti.com/lit/ds/symlink/tmp435.pdf
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ti,tmp401
-> +      - ti,tmp411
-> +      - ti,tmp431
-> +      - ti,tmp432
-> +      - ti,tmp435
-> +
-> +  reg:
-> +    maxItems: 1
-> +
+On Tue, Apr 12, 2022 at 10:21 AM Edgecombe, Rick P
+<rick.p.edgecombe@intel.com> wrote:
+>
+> On Mon, 2022-04-11 at 16:35 -0700, Song Liu wrote:
+> > @@ -889,7 +889,6 @@ static struct bpf_prog_pack *alloc_new_pack(void)
+> >         bitmap_zero(pack->bitmap, bpf_prog_pack_size /
+> > BPF_PROG_CHUNK_SIZE);
+> >         list_add_tail(&pack->list, &pack_list);
+> >
+> > -       set_vm_flush_reset_perms(pack->ptr);
+> >         set_memory_ro((unsigned long)pack->ptr, bpf_prog_pack_size /
+> > PAGE_SIZE);
+> >         set_memory_x((unsigned long)pack->ptr, bpf_prog_pack_size /
+> > PAGE_SIZE);
+> >         return pack;
+>
+> Dropping set_vm_flush_reset_perms() is not mentioned in the commit log.
+> It is kind of a fix for a different issue.
+>
+> Now that x86 supports vmalloc huge pages, but VM_FLUSH_RESET_PERMS does
+> not work with them, we should have some comments or warnings to that
+> effect somewhere. Someone may try to pass the flags in together.
 
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
+Good catch! I will add it in the next version.
 
-You don't have any child nodes and these are for child nodes with 'reg'.
+>
+> > @@ -970,7 +969,9 @@ static void bpf_prog_pack_free(struct
+> > bpf_binary_header *hdr)
+> >         if (bitmap_find_next_zero_area(pack->bitmap,
+> > bpf_prog_chunk_count(), 0,
+> >                                        bpf_prog_chunk_count(), 0) ==
+> > 0) {
+> >                 list_del(&pack->list);
+> > -               module_memfree(pack->ptr);
+>
+>
+> > +               set_memory_nx((unsigned long)pack->ptr,
+> > bpf_prog_pack_size / PAGE_SIZE);
+> > +               set_memory_rw((unsigned long)pack->ptr,
+> > bpf_prog_pack_size / PAGE_SIZE);
+> > +               vfree(pack->ptr);
+> >                 kfree(pack);
+>
+> Now that it calls module_alloc_huge() instead of vmalloc_node_range(),
+> should it call module_memfree() instead of vfree()?
 
-> +
-> +  ti,extended-range-enable:
-> +    description:
-> +      When set, this sensor measures over extended temperature range.
-> +    type: boolean
-> +
-> +  ti,n-factor:
+Right. Let me sort that out. (Also, whether we introduce module_alloc_huge()
+or not).
 
-Funny, I just ran across this property today for tmp421...
+>
+>
+>
+> Since there are bugs, simple, immediate fixes seem like the right thing
+> to do, but I had a couple long term focused comments on this new
+> feature:
+>
+> It would be nice if bpf and the other module_alloc() callers could
+> share the same large pages. Meaning, ultimately that this whole thing
+> should probably live outside of bpf. BPF tracing usages might benefit
+> for example, and kprobes and ftrace are not too different than bpf
+> progs from a text allocation perspective.
 
-Can the schema be shared?
+Agreed.
 
-> +    description:
-> +      value to be used for converting remote channel measurements to
-> +      temperature.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    items:
-> +      minimum: 0
-> +      maximum: 255
+>
+> I agree that the module's part is non-trivial. A while back I had tried
+> to do something like bpf_prog_pack() that worked for all the
+> module_alloc() callers. It had some modules changes to allow different
+> permissions to go to different allocations so they could be made to
+> share large pages:
+>
+> https://lore.kernel.org/lkml/20201120202426.18009-1-rick.p.edgecombe@intel.com/
+>
+> I thought the existing kernel special permission allocation methods
+> were just too brittle and intertwined to improve without a new
+> interface. The hope was the new interface could wrap all the arch
+> intricacies instead of leaving them exposed in the cross-arch callers.
+>
+> I wonder what you think of that general direction or if you have any
+> follow up plans for this?
 
-Isn't this property signed and should be -128 to -127? The code treats 
-the existing cases as signed. One schema is correct and one is like you 
-have it.
+Since I am still learning the vmalloc/module_alloc code, I think I am
+not really capable of commenting on the direction. From our use
+cases, we do see performance hit due to large number of BPF
+program fragmenting the page table. Kernel module, OTOH, is not
+too big an issue for us, as we usually build hot modules into the
+kernel. That being said, we are interested in making the huge page
+interface general for BPF program and kernel module. We can
+commit resources to this effort.
 
-> +
-> +  ti,beta-compensation:
-> +    description:
-> +      value to select beta correction range.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    items:
-> +      minimum: 0
-> +      maximum: 15
-
-Drop 'items'. It is not an array.
-
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - ti,tmp401
-> +    then:
-> +      properties:
-> +        ti,n-factor: false
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - ti,tmp401
-> +              - ti,tmp411
-> +    then:
-> +      properties:
-> +        ti,beta-compensation: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      sensor@4c {
-> +        compatible = "ti,tmp401";
-> +        reg = <0x4c>;
-> +      };
-> +    };
-> +  - |
-> +    i2c {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      sensor@4c {
-> +        compatible = "ti,tmp431";
-> +        reg = <0x4c>;
-> +        ti,extended-range-enable;
-> +        ti,n-factor = <0x3b>;
-> +        ti,beta-compensation = <0x7>;
-> +      };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 61d9f114c37f..6b0d8f5cc68e 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -19838,6 +19838,7 @@ TMP401 HARDWARE MONITOR DRIVER
->  M:	Guenter Roeck <linux@roeck-us.net>
->  L:	linux-hwmon@vger.kernel.org
->  S:	Maintained
-> +F:	Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
->  F:	Documentation/hwmon/tmp401.rst
->  F:	drivers/hwmon/tmp401.c
->  
-> -- 
-> 2.30.2
-> 
-> 
+Thanks,
+Song
