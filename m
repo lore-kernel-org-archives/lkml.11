@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B43C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A96C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356615AbiDLHjE (ORCPT
+        id S1356558AbiDLHi6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45720 "EHLO
+        Tue, 12 Apr 2022 03:38:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352696AbiDLHOQ (ORCPT
+        with ESMTP id S1352682AbiDLHOP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BDD2FFE4;
-        Mon, 11 Apr 2022 23:55:03 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11082F038;
+        Mon, 11 Apr 2022 23:54:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C5661572;
-        Tue, 12 Apr 2022 06:55:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2C77C385A6;
-        Tue, 12 Apr 2022 06:55:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5C29B81B50;
+        Tue, 12 Apr 2022 06:54:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 640F8C385A6;
+        Tue, 12 Apr 2022 06:54:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746502;
-        bh=NjdajPgevwPFeDoESXv9ggpNOPP8d0MoRrFLJayDoZ4=;
+        s=korg; t=1649746496;
+        bh=RgR/bhlckyUFWZryIL/9PaFrl2riAKvcRqAMLZbrrAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0RbKWw5r8WYC7ylwkGs2h5j5qApR+aG6pIOB9SKboSq6+d7OlY9W6/dDgXUb78jgN
-         pjwkppWNUUbg52H1TvGadf6UromDSb78NdQ3gIRVFbU+76V0TYPueG0dOWp8Dlabe2
-         XgTHoiH7hRnNv/oWtQlE9rQfoR+M5fkHdCTDzIuw=
+        b=mtSi/LyMDlDig9uquGV/2lXTpkwfYGEp+87sZ4dfpyGO7a+FihISeRgKodKL6v9qK
+         ScT3nND5nqVlu6Loqs4u0VkWvY+C9hZ9vylpNDcKYEtmFMsZ+DgwH3AwsFBgtO3qvy
+         0o9RUu840piTdJqY18wOM5F7qr5M3Xpa2Tt2p/CU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org,
+        Venkateswara Naralasetty <quic_vnaralas@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 004/285] KVM: x86/pmu: Use different raw event masks for AMD and Intel
-Date:   Tue, 12 Apr 2022 08:27:41 +0200
-Message-Id: <20220412062943.801901175@linuxfoundation.org>
+Subject: [PATCH 5.16 026/285] ath11k: fix kernel panic during unload/load ath11k modules
+Date:   Tue, 12 Apr 2022 08:28:03 +0200
+Message-Id: <20220412062944.433540459@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,87 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jim Mattson <jmattson@google.com>
+From: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
 
-[ Upstream commit 95b065bf5c431c06c68056a03a5853b660640ecc ]
+[ Upstream commit 22b59cb965f79ee1accf83172441c9ca0ecb632a ]
 
-The third nybble of AMD's event select overlaps with Intel's IN_TX and
-IN_TXCP bits. Therefore, we can't use AMD64_RAW_EVENT_MASK on Intel
-platforms that support TSX.
+Call netif_napi_del() from ath11k_ahb_free_ext_irq() to fix
+the following kernel panic when unload/load ath11k modules
+for few iterations.
 
-Declare a raw_event_mask in the kvm_pmu structure, initialize it in
-the vendor-specific pmu_refresh() functions, and use that mask for
-PERF_TYPE_RAW configurations in reprogram_gp_counter().
+[  971.201365] Unable to handle kernel paging request at virtual address 6d97a208
+[  971.204227] pgd = 594c2919
+[  971.211478] [6d97a208] *pgd=00000000
+[  971.214120] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+[  971.412024] CPU: 2 PID: 4435 Comm: insmod Not tainted 5.4.89 #0
+[  971.434256] Hardware name: Generic DT based system
+[  971.440165] PC is at napi_by_id+0x10/0x40
+[  971.445019] LR is at netif_napi_add+0x160/0x1dc
 
-Fixes: 710c47651431 ("KVM: x86/pmu: Use AMD64_RAW_EVENT_MASK for PERF_TYPE_RAW")
-Signed-off-by: Jim Mattson <jmattson@google.com>
-Message-Id: <20220308012452.3468611-1-jmattson@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[  971.743127] (napi_by_id) from [<807d89a0>] (netif_napi_add+0x160/0x1dc)
+[  971.751295] (netif_napi_add) from [<7f1209ac>] (ath11k_ahb_config_irq+0xf8/0x414 [ath11k_ahb])
+[  971.759164] (ath11k_ahb_config_irq [ath11k_ahb]) from [<7f12135c>] (ath11k_ahb_probe+0x40c/0x51c [ath11k_ahb])
+[  971.768567] (ath11k_ahb_probe [ath11k_ahb]) from [<80666864>] (platform_drv_probe+0x48/0x94)
+[  971.779670] (platform_drv_probe) from [<80664718>] (really_probe+0x1c8/0x450)
+[  971.789389] (really_probe) from [<80664cc4>] (driver_probe_device+0x15c/0x1b8)
+[  971.797547] (driver_probe_device) from [<80664f60>] (device_driver_attach+0x44/0x60)
+[  971.805795] (device_driver_attach) from [<806650a0>] (__driver_attach+0x124/0x140)
+[  971.814822] (__driver_attach) from [<80662adc>] (bus_for_each_dev+0x58/0xa4)
+[  971.823328] (bus_for_each_dev) from [<80663a2c>] (bus_add_driver+0xf0/0x1e8)
+[  971.831662] (bus_add_driver) from [<806658a4>] (driver_register+0xa8/0xf0)
+[  971.839822] (driver_register) from [<8030269c>] (do_one_initcall+0x78/0x1ac)
+[  971.847638] (do_one_initcall) from [<80392524>] (do_init_module+0x54/0x200)
+[  971.855968] (do_init_module) from [<803945b0>] (load_module+0x1e30/0x1ffc)
+[  971.864126] (load_module) from [<803948b0>] (sys_init_module+0x134/0x17c)
+[  971.871852] (sys_init_module) from [<80301000>] (ret_fast_syscall+0x0/0x50)
+
+Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.6.0.1-00760-QCAHKSWPL_SILICONZ-1
+
+Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/1642583973-21599-1-git-send-email-quic_vnaralas@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/kvm_host.h | 1 +
- arch/x86/kvm/pmu.c              | 3 ++-
- arch/x86/kvm/svm/pmu.c          | 1 +
- arch/x86/kvm/vmx/pmu_intel.c    | 1 +
- 4 files changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/ahb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 5d3645b325e2..92c119831ed4 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -503,6 +503,7 @@ struct kvm_pmu {
- 	u64 global_ctrl_mask;
- 	u64 global_ovf_ctrl_mask;
- 	u64 reserved_bits;
-+	u64 raw_event_mask;
- 	u8 version;
- 	struct kvm_pmc gp_counters[INTEL_PMC_MAX_GENERIC];
- 	struct kvm_pmc fixed_counters[INTEL_PMC_MAX_FIXED];
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index de955ca58d17..255ef63a4354 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -178,6 +178,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
- 	struct kvm *kvm = pmc->vcpu->kvm;
- 	struct kvm_pmu_event_filter *filter;
- 	int i;
-+	struct kvm_pmu *pmu = vcpu_to_pmu(pmc->vcpu);
- 	bool allow_event = true;
+diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
+index 3fb0aa000825..24bd0520926b 100644
+--- a/drivers/net/wireless/ath/ath11k/ahb.c
++++ b/drivers/net/wireless/ath/ath11k/ahb.c
+@@ -391,6 +391,8 @@ static void ath11k_ahb_free_ext_irq(struct ath11k_base *ab)
  
- 	if (eventsel & ARCH_PERFMON_EVENTSEL_PIN_CONTROL)
-@@ -217,7 +218,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+ 		for (j = 0; j < irq_grp->num_irq; j++)
+ 			free_irq(ab->irq_num[irq_grp->irqs[j]], irq_grp);
++
++		netif_napi_del(&irq_grp->napi);
  	}
+ }
  
- 	if (type == PERF_TYPE_RAW)
--		config = eventsel & AMD64_RAW_EVENT_MASK;
-+		config = eventsel & pmu->raw_event_mask;
- 
- 	if (pmc->current_config == eventsel && pmc_resume_counter(pmc))
- 		return;
-diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
-index 7fadfe3c67e7..04e483471dbb 100644
---- a/arch/x86/kvm/svm/pmu.c
-+++ b/arch/x86/kvm/svm/pmu.c
-@@ -282,6 +282,7 @@ static void amd_pmu_refresh(struct kvm_vcpu *vcpu)
- 
- 	pmu->counter_bitmask[KVM_PMC_GP] = ((u64)1 << 48) - 1;
- 	pmu->reserved_bits = 0xfffffff000280000ull;
-+	pmu->raw_event_mask = AMD64_RAW_EVENT_MASK;
- 	pmu->version = 1;
- 	/* not applicable to AMD; but clean them to prevent any fall out */
- 	pmu->counter_bitmask[KVM_PMC_FIXED] = 0;
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 60563a45f3eb..9e380a939c72 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -476,6 +476,7 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 	pmu->counter_bitmask[KVM_PMC_FIXED] = 0;
- 	pmu->version = 0;
- 	pmu->reserved_bits = 0xffffffff00200000ull;
-+	pmu->raw_event_mask = X86_RAW_EVENT_MASK;
- 
- 	entry = kvm_find_cpuid_entry(vcpu, 0xa, 0);
- 	if (!entry)
 -- 
 2.35.1
 
