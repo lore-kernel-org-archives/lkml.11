@@ -2,85 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0135BC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFEB4C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354699AbiDLMXD (ORCPT
+        id S1354427AbiDLMW7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58994 "EHLO
+        Tue, 12 Apr 2022 08:22:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355412AbiDLMTJ (ORCPT
+        with ESMTP id S1355117AbiDLMSo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:19:09 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4F948302;
-        Tue, 12 Apr 2022 04:21:44 -0700 (PDT)
-X-UUID: 3f89bb53b39c4b25bd36018e8de57659-20220412
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4,REQID:4f9eacd0-64ab-4b83-82df-cb8b730852fe,OB:0,LO
-        B:0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:103
-X-CID-INFO: VERSION:1.1.4,REQID:4f9eacd0-64ab-4b83-82df-cb8b730852fe,OB:0,LOB:
-        0,IP:0,URL:8,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
-        ION:quarantine,TS:103
-X-CID-META: VersionHash:faefae9,CLOUDID:98282378-0afa-4dca-bdec-ca54c998425a,C
-        OID:19c63f3034d3,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,Fi
-        le:nil,QS:0,BEC:nil
-X-UUID: 3f89bb53b39c4b25bd36018e8de57659-20220412
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <jia-wei.chang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1758090900; Tue, 12 Apr 2022 19:21:37 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 12 Apr 2022 19:21:36 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 12 Apr 2022 19:21:36 +0800
-From:   Tim Chang <jia-wei.chang@mediatek.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Roger Lu <roger.lu@mediatek.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Jia-Wei Chang <jia-wei.chang@mediatek.com>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <hsinyi@google.com>
-Subject: [PATCH 0/2] soc: mediatek: svs: add support for mt8186
-Date:   Tue, 12 Apr 2022 19:21:25 +0800
-Message-ID: <20220412112127.21570-1-jia-wei.chang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Tue, 12 Apr 2022 08:18:44 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF6D3EF17
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:20:05 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id ks6so12012665ejb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:20:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=pff1FHkCzScGhiiEwscLj/w2S5pj9koRwn3saxgH7gk=;
+        b=iMXBoYnS396Cd/Z+uDskKSV6GYGldeE+FiJxAXFy4SMbtEadb6SXLg+SZtCgJFcpwO
+         1PswoQ9HFZw0tcMl83sL4QZCUhUHOK/RKv+ZLhynmhwMDsIX0sR0Q0TGvB+jGLEBA1Yk
+         +D0LJX/1W7OT+dUU8SH6UFl/w7JyLrIw9ehApCD1x3c8BHI+d8SPXrRcC3GLo2B3pZ8W
+         CvLGPPaUnp7Z5e2JvoeyEJOir0Tb8uofelZqeL8wcXDA68yYcj6iaMY3PYZMaTKA6v97
+         BKMbd9FmIcVXAQ+ysfy9+gki/rOeNR/6iPLVjkMBl/KuCpn6hn1AuUoTUTy9gXQtbFzJ
+         Pwrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pff1FHkCzScGhiiEwscLj/w2S5pj9koRwn3saxgH7gk=;
+        b=OD3/Nkamf0a37vPBAZrBeO5apEn1bRi5KlZqeWVoj6atTJAQ6orxPTR5OzcLul+hjD
+         NtMoCNsMJyRDB2MbrSAMFKQ0qDn6TXzSRVDLFYUOcfbw5Fmp6uk/M74Z9mfn64KSWbj9
+         hctw3h9Y7onDJJyfU2GJT9KXwfNm3M3UlQZUG4Uf2a9MdLeyD/EFOueEZjGhvGMoWlem
+         dv4GBd3cHdTEBj708UEM4F7drSpyNaCyuJWx3s/7cI0VPawfrM3dWBqT2stjLPBGRN8e
+         v2f+sP6tJW0/XGI8k/JvjjOEJMzZZT9ut68RC7Sv0qUwlt0VSEd2Wo1hExZa1VoWznvv
+         AqZQ==
+X-Gm-Message-State: AOAM5331i9ESgOEiIxVwDrWvw8UHjEMxMWGV1eO7RaDGdRtB3hiFH3Tx
+        VzJuvCQHCmG89LX8kP6xexneMg==
+X-Google-Smtp-Source: ABdhPJzNuI3Vu8v6VQW4RdewzbUaT+T480WzP+CA3K9YR5xfQbYVRphQElyLFwUwVG6pacJaYioVKA==
+X-Received: by 2002:a17:906:7742:b0:6e8:3f85:4da1 with SMTP id o2-20020a170906774200b006e83f854da1mr22145291ejn.495.1649762404342;
+        Tue, 12 Apr 2022 04:20:04 -0700 (PDT)
+Received: from [192.168.0.194] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id f3-20020a056402004300b004162aa024c0sm16592968edu.76.2022.04.12.04.20.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 04:20:03 -0700 (PDT)
+Message-ID: <8f4714f8-b528-42d9-de55-aedc1bbc11af@linaro.org>
+Date:   Tue, 12 Apr 2022 13:20:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/4] dt-bindings: usb: qcom,dwc3: Add binding for SDX65
+Content-Language: en-US
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, agross@kernel.org,
+        bjorn.andersson@linaro.org, gregkh@linuxfoundation.org,
+        robh+dt@kernel.org, krzk+dt@kernel.org
+Cc:     manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1649761414-19217-1-git-send-email-quic_rohiagar@quicinc.com>
+ <1649761414-19217-3-git-send-email-quic_rohiagar@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1649761414-19217-3-git-send-email-quic_rohiagar@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+On 12/04/2022 13:03, Rohit Agarwal wrote:
+> Add devicetree binding for SDX65 USB controller based on
+> Qcom designware IP.
+> 
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+> ---
+>  Documentation/devicetree/bindings/usb/qcom,dwc3.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
-This series supports MT8186 Smart Voltage Scaling (SVS) hardware which
-used as optimization of opp voltage table for corresponding dvfs
-drivers.
 
-This series is based on Roger's series [1].
-[1]: Message ID: 20220221063939.14969-1-roger.lu@mediatek.com
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Jia-Wei Chang (2):
-  dt-bindings: soc: mediatek: add mt8186 svs dt-bindings
-  soc: mediatek: svs: add support for mt8186
-
- .../bindings/soc/mediatek/mtk-svs.yaml        |   2 +
- drivers/soc/mediatek/mtk-svs.c                | 349 +++++++++++++++++-
- 2 files changed, 344 insertions(+), 7 deletions(-)
-
--- 
-2.18.0
-
+Best regards,
+Krzysztof
