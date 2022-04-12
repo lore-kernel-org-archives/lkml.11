@@ -2,137 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB20C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26948C47089
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389689AbiDLJYD (ORCPT
+        id S1388551AbiDLJWb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:24:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
+        Tue, 12 Apr 2022 05:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377707AbiDLHxN (ORCPT
+        with ESMTP id S1358192AbiDLHlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:53:13 -0400
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF83A50057
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:31:22 -0700 (PDT)
-Received: by mail-qk1-f172.google.com with SMTP id b189so13076065qkf.11
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:31:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vPZwLQHFGbE+YddKPiwbAMBD+8+olRhnFPT9yzLHixE=;
-        b=M2WEwWhsS5LUsL7JxqIMgLVWkxTd3CZbXf9y7CpyZ4uG0vD8865/ENv6Q1yBk619M9
-         pfNgXIYH+Ob8Uve6sjvq7OLZqyOdUC1/AhXOkZ0EcKc583c/TO3gM4hUqqOFkxiBLgGx
-         BXwdkKyyqgPnTZXQNkvouqe9FQZNMIKris5r1kfjxlRn0Oa3McUKzyQao6pl+gOTk9zp
-         5YvQ5EohAPQOJPlulwAzLNTc2z/rawfx1PbfGfkDNfkSYboNee4Fnrhbj9EJd/Af5i10
-         yjN6dCRxlm3GLk5MBahon+DuDdnqi4T7xnDf1APOY5/OVnEawrAwKqjMP35FXkIoe3oQ
-         1r9A==
-X-Gm-Message-State: AOAM531dttITz2aZpz6qU1kIvLV8HQfJAxksSAwhkzjPYWQZvZ4zbl1v
-        2bg5c88Enf2ryD9ChcUm87++R4u/OFRxIzzO
-X-Google-Smtp-Source: ABdhPJxdI6CnhoDqXHFEF6pMKo5b1kU2hJN1EbOPLOACfXGqo55I0QCiXPjvFHdq4Dw1nLU9MmEHMw==
-X-Received: by 2002:a37:4349:0:b0:680:f1f5:23b0 with SMTP id q70-20020a374349000000b00680f1f523b0mr2096137qka.530.1649748681853;
-        Tue, 12 Apr 2022 00:31:21 -0700 (PDT)
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com. [209.85.128.179])
-        by smtp.gmail.com with ESMTPSA id j21-20020ac85f95000000b002e1cde99863sm26257166qta.83.2022.04.12.00.31.21
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 00:31:21 -0700 (PDT)
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-2edbd522c21so30953057b3.13
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:31:21 -0700 (PDT)
-X-Received: by 2002:a81:4f0d:0:b0:2ec:1556:815 with SMTP id
- d13-20020a814f0d000000b002ec15560815mr8100148ywb.256.1649748680829; Tue, 12
- Apr 2022 00:31:20 -0700 (PDT)
+        Tue, 12 Apr 2022 03:41:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA98424B8;
+        Tue, 12 Apr 2022 00:17:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34920B81B60;
+        Tue, 12 Apr 2022 07:17:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A47F4C385A1;
+        Tue, 12 Apr 2022 07:17:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747849;
+        bh=CYdSPQWbDPzISEWdJ44T/uOqTRiv53C+ON7DnWkJjF0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fwYe9ufFGFVsAbjDXw2+MG6JR1uT5xGQz1zyQjq26eejVXXNNqjGYWowmtiXDEzB6
+         XpyWUuXZu+bf9STpV5J6vOkkwM5hq0TTYdXPoHA4B30R9MrmucNyWJm0SZj0kObzog
+         3XJTo1O2RYeUIfgGOnPhe0KpGeDVMRSxZn8oufxU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Aharon Landau <aharonl@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 227/343] RDMA/mlx5: Add a missing update of cache->last_add
+Date:   Tue, 12 Apr 2022 08:30:45 +0200
+Message-Id: <20220412062957.890059764@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220411211243.11121-1-javierm@redhat.com> <20220411211243.11121-6-javierm@redhat.com>
-In-Reply-To: <20220411211243.11121-6-javierm@redhat.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 12 Apr 2022 09:31:09 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWsmtBdcV=LL4yqprtbum4f9cSu8orjoPACECa5QENmsg@mail.gmail.com>
-Message-ID: <CAMuHMdWsmtBdcV=LL4yqprtbum4f9cSu8orjoPACECa5QENmsg@mail.gmail.com>
-Subject: Re: [PATCH v2 5/5] drm/solomon: Add SSD130x OLED displays SPI support
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Chen-Yu Tsai <wens@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Maxime Ripard <maxime@cerno.tech>,
-        YueHaibing <yuehaibing@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Javier,
+From: Aharon Landau <aharonl@nvidia.com>
 
-On Mon, Apr 11, 2022 at 11:12 PM Javier Martinez Canillas
-<javierm@redhat.com> wrote:
-> The ssd130x driver only provides the core support for these devices but it
-> does not have any bus transport logic. Add a driver to interface over SPI.
->
-> There is a difference in the communication protocol when using 4-wire SPI
-> instead of I2C. For the latter, a control byte that contains a D/C# field
-> has to be sent. This field tells the controller whether the data has to be
-> written to the command register or to the graphics display data memory.
->
-> But for 4-wire SPI that control byte is not used, instead a real D/C# line
-> must be pulled HIGH for commands data and LOW for graphics display data.
->
-> For this reason the standard SPI regmap can't be used and a custom .write
-> bus handler is needed.
->
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-> Acked-by: Mark Brown <broonie@kernel.org>
+[ Upstream commit 1d735eeee63a0beb65180ca0224f239cc0c9f804 ]
 
-Thanks for your patch!
+Update cache->last_add when returning an MR to the cache so that the cache
+work won't remove it.
 
-> --- /dev/null
-> +++ b/drivers/gpu/drm/solomon/ssd130x-spi.c
+Fixes: b9358bdbc713 ("RDMA/mlx5: Fix locking in MR cache work queue")
+Link: https://lore.kernel.org/r/c99f076fce4b44829d434936bbcd3b5fc4c95020.1649062436.git.leonro@nvidia.com
+Signed-off-by: Aharon Landau <aharonl@nvidia.com>
+Reviewed-by: Shay Drory <shayd@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/infiniband/hw/mlx5/mr.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> +static struct gpio_desc *ssd130x_spi_get_dc(struct device *dev)
-> +{
-> +       struct gpio_desc *dc = devm_gpiod_get(dev, "dc", GPIOD_OUT_LOW);
-> +
-> +       if (IS_ERR(dc))
-> +               return ERR_PTR(dev_err_probe(dev, PTR_ERR(dc), "Failed to get dc gpio\n"));
-> +
-> +       return dc;
-> +}
-> +
-> +static int ssd130x_spi_probe(struct spi_device *spi)
-> +{
-> +       struct ssd130x_spi_transport *t;
-> +       struct ssd130x_device *ssd130x;
-> +       struct regmap *regmap;
-> +       struct device *dev = &spi->dev;
-> +
-> +       t = devm_kzalloc(dev, sizeof(*t), GFP_KERNEL);
-> +       if (!t)
-> +               return dev_err_probe(dev, -ENOMEM,
-> +                                    "Failed to allocate SPI transport data\n");
-> +
-> +       t->spi = spi;
-> +
-> +       t->dc = ssd130x_spi_get_dc(&spi->dev);
-> +       if (IS_ERR(t->dc))
-> +               return PTR_ERR(t->dc);
+diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
+index d3b2d02a4872..d40a1460ef97 100644
+--- a/drivers/infiniband/hw/mlx5/mr.c
++++ b/drivers/infiniband/hw/mlx5/mr.c
+@@ -632,6 +632,7 @@ static void mlx5_mr_cache_free(struct mlx5_ib_dev *dev, struct mlx5_ib_mr *mr)
+ {
+ 	struct mlx5_cache_ent *ent = mr->cache_ent;
+ 
++	WRITE_ONCE(dev->cache.last_add, jiffies);
+ 	spin_lock_irq(&ent->lock);
+ 	list_add_tail(&mr->list, &ent->head);
+ 	ent->available_mrs++;
+-- 
+2.35.1
 
-This can be simplified (no need for the PTR_ERR(ERR_PTR(...) dance)
-by open-coding ssd130x_spi_get_dc() here.
 
-Gr{oetje,eeting}s,
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
