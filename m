@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7EDC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF90BC3527C
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383210AbiDLIgR (ORCPT
+        id S1383240AbiDLIg2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:36:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56600 "EHLO
+        Tue, 12 Apr 2022 04:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356336AbiDLHfR (ORCPT
+        with ESMTP id S1356468AbiDLHgA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:35:17 -0400
+        Tue, 12 Apr 2022 03:36:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CFB50E20;
-        Tue, 12 Apr 2022 00:09:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B76F51593;
+        Tue, 12 Apr 2022 00:09:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E833A6153F;
-        Tue, 12 Apr 2022 07:09:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 093B9C385A6;
-        Tue, 12 Apr 2022 07:09:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABBB4616B2;
+        Tue, 12 Apr 2022 07:09:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7075C385A5;
+        Tue, 12 Apr 2022 07:09:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747358;
-        bh=7LWiAcws8u/HCNTAdXqZaaR6yiyYCFrCrnQVnBHB8RU=;
+        s=korg; t=1649747369;
+        bh=EhKLdnK32sN+KL08v3VGfLz6sRmN0hyklQFXg4QHiUo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ujeUn78oruZlw4jcnE9faSYoojcL2G6In2SRG+WPHp17/qgPE93VfX/7m34d9NZPU
-         mHF++FUxgRJjBihUvY76CPFwh87o8MJGQJgnu1zTqBNoUO7PNvtSqW8L3BGvWSnT0+
-         sVOTZrfDsZ3GUfGsFLew+iu5r4txqxaokjGF3ZTc=
+        b=grT319c2ujLtfGksgFJhMKirqqkUQlbVoNP0okN2ctBI203pwiR4cEIALjZjXLV0Q
+         8MxgU3N+29H/97h5nkUMDO3+c73wI5mZhDE2n6LGgWdcuGmg4a9Gp2aHGLa4Qwed7O
+         co1MtbeTqv1QkGsnykSrbG0pjpuH+gUfsEAYy0Yo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 049/343] mt76: dma: initialize skip_unmap in mt76_dma_rx_fill
-Date:   Tue, 12 Apr 2022 08:27:47 +0200
-Message-Id: <20220412062952.522211251@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 053/343] ipv6: make mc_forwarding atomic
+Date:   Tue, 12 Apr 2022 08:27:51 +0200
+Message-Id: <20220412062952.636807042@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -49,87 +50,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 577298ec55dfc8b9aece54520f0258c3f93a6573 ]
+[ Upstream commit 145c7a793838add5e004e7d49a67654dc7eba147 ]
 
-Even if it is only a false-positive since skip_buf0/skip_buf1 are only
-used in mt76_dma_tx_cleanup_idx routine, initialize skip_unmap in
-mt76_dma_rx_fill in order to fix the following UBSAN report:
+This fixes minor data-races in ip6_mc_input() and
+batadv_mcast_mla_rtr_flags_softif_get_ipv6()
 
-[   13.924906] UBSAN: invalid-load in linux-5.15.0/drivers/net/wireless/mediatek/mt76/dma.c:162:13
-[   13.924909] load of value 225 is not a valid value for type '_Bool'
-[   13.924912] CPU: 9 PID: 672 Comm: systemd-udevd Not tainted 5.15.0-18-generic #18-Ubuntu
-[   13.924914] Hardware name: LENOVO 21A0000CMX/21A0000CMX, BIOS R1MET43W (1.13 ) 11/05/2021
-[   13.924915] Call Trace:
-[   13.924917]  <TASK>
-[   13.924920]  show_stack+0x52/0x58
-[   13.924925]  dump_stack_lvl+0x4a/0x5f
-[   13.924931]  dump_stack+0x10/0x12
-[   13.924932]  ubsan_epilogue+0x9/0x45
-[   13.924934]  __ubsan_handle_load_invalid_value.cold+0x44/0x49
-[   13.924935]  ? __iommu_dma_map+0x84/0xf0
-[   13.924939]  mt76_dma_add_buf.constprop.0.cold+0x23/0x85 [mt76]
-[   13.924949]  mt76_dma_rx_fill.isra.0+0x102/0x1f0 [mt76]
-[   13.924954]  mt76_dma_init+0xc9/0x150 [mt76]
-[   13.924959]  ? mt7921_dma_enable+0x110/0x110 [mt7921e]
-[   13.924966]  mt7921_dma_init+0x1e3/0x260 [mt7921e]
-[   13.924970]  mt7921_register_device+0x29d/0x510 [mt7921e]
-[   13.924975]  mt7921_pci_probe.part.0+0x17f/0x1b0 [mt7921e]
-[   13.924980]  mt7921_pci_probe+0x43/0x60 [mt7921e]
-[   13.924984]  local_pci_probe+0x4b/0x90
-[   13.924987]  pci_device_probe+0x115/0x1f0
-[   13.924989]  really_probe+0x21e/0x420
-[   13.924992]  __driver_probe_device+0x115/0x190
-[   13.924994]  driver_probe_device+0x23/0xc0
-[   13.924996]  __driver_attach+0xbd/0x1d0
-[   13.924998]  ? __device_attach_driver+0x110/0x110
-[   13.924999]  bus_for_each_dev+0x7e/0xc0
-[   13.925001]  driver_attach+0x1e/0x20
-[   13.925003]  bus_add_driver+0x135/0x200
-[   13.925005]  driver_register+0x95/0xf0
-[   13.925008]  ? 0xffffffffc0766000
-[   13.925010]  __pci_register_driver+0x68/0x70
-[   13.925011]  mt7921_pci_driver_init+0x23/0x1000 [mt7921e]
-[   13.925015]  do_one_initcall+0x48/0x1d0
-[   13.925019]  ? kmem_cache_alloc_trace+0x19e/0x2e0
-[   13.925022]  do_init_module+0x62/0x280
-[   13.925025]  load_module+0xac9/0xbb0
-[   13.925027]  __do_sys_finit_module+0xbf/0x120
-[   13.925029]  __x64_sys_finit_module+0x18/0x20
-[   13.925030]  do_syscall_64+0x5c/0xc0
-[   13.925033]  ? do_syscall_64+0x69/0xc0
-[   13.925034]  ? sysvec_reschedule_ipi+0x78/0xe0
-[   13.925036]  ? asm_sysvec_reschedule_ipi+0xa/0x20
-[   13.925039]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   13.925040] RIP: 0033:0x7fbf2b90f94d
-[   13.925045] RSP: 002b:00007ffe2ec7e5d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[   13.925047] RAX: ffffffffffffffda RBX: 000056106b0634e0 RCX: 00007fbf2b90f94d
-[   13.925048] RDX: 0000000000000000 RSI: 00007fbf2baa3441 RDI: 0000000000000013
-[   13.925049] RBP: 0000000000020000 R08: 0000000000000000 R09: 0000000000000002
-[   13.925050] R10: 0000000000000013 R11: 0000000000000246 R12: 00007fbf2baa3441
-[   13.925051] R13: 000056106b062620 R14: 000056106b0610c0 R15: 000056106b0640d0
-[   13.925053]  </TASK>
-
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/dma.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/ipv6.h       | 2 +-
+ net/batman-adv/multicast.c | 2 +-
+ net/ipv6/addrconf.c        | 4 ++--
+ net/ipv6/ip6_input.c       | 2 +-
+ net/ipv6/ip6mr.c           | 8 ++++----
+ 5 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
-index 3a9af8931c35..3d644925a4e0 100644
---- a/drivers/net/wireless/mediatek/mt76/dma.c
-+++ b/drivers/net/wireless/mediatek/mt76/dma.c
-@@ -465,6 +465,7 @@ mt76_dma_rx_fill(struct mt76_dev *dev, struct mt76_queue *q)
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index a59d25f19385..b8641dc0ee66 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -51,7 +51,7 @@ struct ipv6_devconf {
+ 	__s32		use_optimistic;
+ #endif
+ #ifdef CONFIG_IPV6_MROUTE
+-	__s32		mc_forwarding;
++	atomic_t	mc_forwarding;
+ #endif
+ 	__s32		disable_ipv6;
+ 	__s32		drop_unicast_in_l2_multicast;
+diff --git a/net/batman-adv/multicast.c b/net/batman-adv/multicast.c
+index f4004cf0ff6f..9f311fddfaf9 100644
+--- a/net/batman-adv/multicast.c
++++ b/net/batman-adv/multicast.c
+@@ -134,7 +134,7 @@ static u8 batadv_mcast_mla_rtr_flags_softif_get_ipv6(struct net_device *dev)
+ {
+ 	struct inet6_dev *in6_dev = __in6_dev_get(dev);
  
- 		qbuf.addr = addr + offset;
- 		qbuf.len = len - offset;
-+		qbuf.skip_unmap = false;
- 		mt76_dma_add_buf(dev, q, &qbuf, 1, 0, buf, NULL);
- 		frames++;
+-	if (in6_dev && in6_dev->cnf.mc_forwarding)
++	if (in6_dev && atomic_read(&in6_dev->cnf.mc_forwarding))
+ 		return BATADV_NO_FLAGS;
+ 	else
+ 		return BATADV_MCAST_WANT_NO_RTR6;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index f908e2fd30b2..4df84013c4e6 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -554,7 +554,7 @@ static int inet6_netconf_fill_devconf(struct sk_buff *skb, int ifindex,
+ #ifdef CONFIG_IPV6_MROUTE
+ 	if ((all || type == NETCONFA_MC_FORWARDING) &&
+ 	    nla_put_s32(skb, NETCONFA_MC_FORWARDING,
+-			devconf->mc_forwarding) < 0)
++			atomic_read(&devconf->mc_forwarding)) < 0)
+ 		goto nla_put_failure;
+ #endif
+ 	if ((all || type == NETCONFA_PROXY_NEIGH) &&
+@@ -5539,7 +5539,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
+ 	array[DEVCONF_USE_OPTIMISTIC] = cnf->use_optimistic;
+ #endif
+ #ifdef CONFIG_IPV6_MROUTE
+-	array[DEVCONF_MC_FORWARDING] = cnf->mc_forwarding;
++	array[DEVCONF_MC_FORWARDING] = atomic_read(&cnf->mc_forwarding);
+ #endif
+ 	array[DEVCONF_DISABLE_IPV6] = cnf->disable_ipv6;
+ 	array[DEVCONF_ACCEPT_DAD] = cnf->accept_dad;
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 80256717868e..d4b1e2c5aa76 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -508,7 +508,7 @@ int ip6_mc_input(struct sk_buff *skb)
+ 	/*
+ 	 *      IPv6 multicast router mode is now supported ;)
+ 	 */
+-	if (dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding &&
++	if (atomic_read(&dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding) &&
+ 	    !(ipv6_addr_type(&hdr->daddr) &
+ 	      (IPV6_ADDR_LOOPBACK|IPV6_ADDR_LINKLOCAL)) &&
+ 	    likely(!(IP6CB(skb)->flags & IP6SKB_FORWARDED))) {
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index 8a2db926b5eb..e3c884678dbe 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -734,7 +734,7 @@ static int mif6_delete(struct mr_table *mrt, int vifi, int notify,
+ 
+ 	in6_dev = __in6_dev_get(dev);
+ 	if (in6_dev) {
+-		in6_dev->cnf.mc_forwarding--;
++		atomic_dec(&in6_dev->cnf.mc_forwarding);
+ 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 					     NETCONFA_MC_FORWARDING,
+ 					     dev->ifindex, &in6_dev->cnf);
+@@ -902,7 +902,7 @@ static int mif6_add(struct net *net, struct mr_table *mrt,
+ 
+ 	in6_dev = __in6_dev_get(dev);
+ 	if (in6_dev) {
+-		in6_dev->cnf.mc_forwarding++;
++		atomic_inc(&in6_dev->cnf.mc_forwarding);
+ 		inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
+ 					     NETCONFA_MC_FORWARDING,
+ 					     dev->ifindex, &in6_dev->cnf);
+@@ -1553,7 +1553,7 @@ static int ip6mr_sk_init(struct mr_table *mrt, struct sock *sk)
+ 	} else {
+ 		rcu_assign_pointer(mrt->mroute_sk, sk);
+ 		sock_set_flag(sk, SOCK_RCU_FREE);
+-		net->ipv6.devconf_all->mc_forwarding++;
++		atomic_inc(&net->ipv6.devconf_all->mc_forwarding);
  	}
+ 	write_unlock_bh(&mrt_lock);
+ 
+@@ -1586,7 +1586,7 @@ int ip6mr_sk_done(struct sock *sk)
+ 			 * so the RCU grace period before sk freeing
+ 			 * is guaranteed by sk_destruct()
+ 			 */
+-			net->ipv6.devconf_all->mc_forwarding--;
++			atomic_dec(&net->ipv6.devconf_all->mc_forwarding);
+ 			write_unlock_bh(&mrt_lock);
+ 			inet6_netconf_notify_devconf(net, RTM_NEWNETCONF,
+ 						     NETCONFA_MC_FORWARDING,
 -- 
 2.35.1
 
