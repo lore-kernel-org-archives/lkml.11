@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49369C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 890BBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358226AbiDLI2g (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:28:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60928 "EHLO
+        id S239608AbiDLI3B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353651AbiDLHZv (ORCPT
+        with ESMTP id S1353621AbiDLHZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CB843EC5;
-        Tue, 12 Apr 2022 00:02:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4F326AC9;
+        Tue, 12 Apr 2022 00:02:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC8AE615B4;
-        Tue, 12 Apr 2022 07:02:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C97C385A6;
-        Tue, 12 Apr 2022 07:02:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37E6560B2B;
+        Tue, 12 Apr 2022 07:02:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 486FEC385A1;
+        Tue, 12 Apr 2022 07:02:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746973;
-        bh=WxC4Ck1eDrzF3juXXdTjdPr+pCGCfmE7AGQzZwZ9QB4=;
+        s=korg; t=1649746929;
+        bh=aYjbmozvRP0Y6GF6WshL6ZK6wocwCPdx4W6SMiYjpFk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I8vElABA6pPZQSviUxYPl4j2mcwG42hDtDTB36+cf6IhMVwhW31yJJP4QuwnDKA3h
-         20F2YkBkmLH4yOnqNhoQEcfu4JlkFBTj0D00P8xIH9Por3/HwJgFqaYHPrzjrNRziX
-         4cVW+gjL/mOhy0NJD2MOPu6aYWS2Za+SVykiaD0Q=
+        b=vefh3T0eCsi4DFO2EzqKiuguWO0wUnFoigSs2kuR9nHpx9HHqSFJCJtEZNAx05EBd
+         HReVOND0b+6grqVDax+NEayXSf75ipik14g/ki5WtgW5MSXrF/BT7eR46Fz2X8ZCfP
+         +Rb2ISTy3B5ZHhR9GhugP9lFm5FeLYBTRuCV7VOs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Mark Zhang <markzhang@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 196/285] net: phy: mscc-miim: reject clause 45 register accesses
-Date:   Tue, 12 Apr 2022 08:30:53 +0200
-Message-Id: <20220412062949.318744997@linuxfoundation.org>
+Subject: [PATCH 5.16 181/285] IB/cm: Cancel mad on the DREQ event when the state is MRA_REP_RCVD
+Date:   Tue, 12 Apr 2022 08:30:38 +0200
+Message-Id: <20220412062948.889424741@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,48 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Mark Zhang <markzhang@nvidia.com>
 
-[ Upstream commit 8d90991e5bf7fdb9f264f5f579d18969913054b7 ]
+[ Upstream commit 107dd7beba403a363adfeb3ffe3734fe38a05cce ]
 
-The driver doesn't support clause 45 register access yet, but doesn't
-check if the access is a c45 one either. This leads to spurious register
-reads and writes. Add the check.
+On the passive side when the disconnectReq event comes, if the current
+state is MRA_REP_RCVD, it needs to cancel the MAD before entering the
+DREQ_RCVD and TIMEWAIT states, otherwise the destroy_id may block until
+this mad will reach timeout.
 
-Fixes: 542671fe4d86 ("net: phy: mscc-miim: Add MDIO driver")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: a977049dacde ("[PATCH] IB: Add the kernel CM implementation")
+Link: https://lore.kernel.org/r/75261c00c1d82128b1d981af9ff46e994186e621.1649062436.git.leonro@nvidia.com
+Signed-off-by: Mark Zhang <markzhang@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/mdio/mdio-mscc-miim.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/infiniband/core/cm.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index 17f98f609ec8..5070ca2f2637 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -76,6 +76,9 @@ static int mscc_miim_read(struct mii_bus *bus, int mii_id, int regnum)
- 	u32 val;
- 	int ret;
- 
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
- 	ret = mscc_miim_wait_pending(bus);
- 	if (ret)
- 		goto out;
-@@ -105,6 +108,9 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
- 	struct mscc_miim_dev *miim = bus->priv;
- 	int ret;
- 
-+	if (regnum & MII_ADDR_C45)
-+		return -EOPNOTSUPP;
-+
- 	ret = mscc_miim_wait_pending(bus);
- 	if (ret < 0)
- 		goto out;
+diff --git a/drivers/infiniband/core/cm.c b/drivers/infiniband/core/cm.c
+index 35f0d5e7533d..1c107d6d03b9 100644
+--- a/drivers/infiniband/core/cm.c
++++ b/drivers/infiniband/core/cm.c
+@@ -2824,6 +2824,7 @@ static int cm_dreq_handler(struct cm_work *work)
+ 	switch (cm_id_priv->id.state) {
+ 	case IB_CM_REP_SENT:
+ 	case IB_CM_DREQ_SENT:
++	case IB_CM_MRA_REP_RCVD:
+ 		ib_cancel_mad(cm_id_priv->msg);
+ 		break;
+ 	case IB_CM_ESTABLISHED:
+@@ -2831,8 +2832,6 @@ static int cm_dreq_handler(struct cm_work *work)
+ 		    cm_id_priv->id.lap_state == IB_CM_MRA_LAP_RCVD)
+ 			ib_cancel_mad(cm_id_priv->msg);
+ 		break;
+-	case IB_CM_MRA_REP_RCVD:
+-		break;
+ 	case IB_CM_TIMEWAIT:
+ 		atomic_long_inc(&work->port->counters[CM_RECV_DUPLICATES]
+ 						     [CM_DREQ_COUNTER]);
 -- 
 2.35.1
 
