@@ -2,106 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A54C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A887DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:20:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357534AbiDLQWO (ORCPT
+        id S1357553AbiDLQWq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 12:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44192 "EHLO
+        Tue, 12 Apr 2022 12:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244084AbiDLQWK (ORCPT
+        with ESMTP id S1357602AbiDLQWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 12:22:10 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9FA4F460;
-        Tue, 12 Apr 2022 09:19:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649780392; x=1681316392;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=0rhW/syVVmAH9bt4RVUxl07dFxjacizqjOlvBoRg8/g=;
-  b=k/FZyHUkaiChIUHg/bzf4Mm5gO0zGiYb4XR9p/zFJokYmHYOhGrBPIcn
-   eLs8moWv7Yc6ujoiaEobel8kdBn5dkjxvpOcAMU96qbIQnMXGQZyQ10Sm
-   J8rbnWYmwfYILNjRY+MAKIXfaw5sfayMF6knLWz9plKviIAKKjwVVSJL6
-   sCLE0ongEsosooaOdfkbqwv7p29usbZ/aSfEQdGf1NGZntXI1tqgIiW5x
-   taKUk1YD179gdTg27A+CmHWHMyTbN0BfChA17DDkZoMJVdWo+16070RbN
-   PFIIi4jxJWgCkpRjfXKZ0YfVxj1F6wpJDlTb4Wg2Uqu3etC/9ZhD4mn5k
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="287438118"
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="287438118"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 09:08:39 -0700
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="551773930"
-Received: from vtelkarx-mobl.amr.corp.intel.com (HELO [10.209.191.73]) ([10.209.191.73])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 09:08:37 -0700
-Message-ID: <ebf3ccef-e6fe-62d5-74e8-91e30e7c2642@intel.com>
-Date:   Tue, 12 Apr 2022 09:08:43 -0700
+        Tue, 12 Apr 2022 12:22:40 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CA05BE7B;
+        Tue, 12 Apr 2022 09:20:22 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23CEn5FQ021037;
+        Tue, 12 Apr 2022 16:20:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=qEU12zVRs4pAi1Eg2/tlkTkk47yXp5gWUvuDPN5CPM0=;
+ b=iHZq7WfGR7qnVQkGyKsKegckLAonYuz0/O9lmbGZ8Orwc7eARm6BX1H9waVS21dIlNgd
+ WximwKK77C1lJYzkz+WHakj0HKHv/AJ4sB/wkhcCG5brUELv4IX6j2l37MqqSzqfkGaW
+ hIzH9VBqBgIMq1rX/fgp55Oa/TLU+N5UAiqC1iHqpEzsXEGXu4BqMn0KrqeQ/Q8LoWwH
+ hTqJzUroROVXP2z214hN497D6brBc3EE6jYuagpCLD2dlvPK9sNe/MaHEKt9ULO1kIfv
+ RM+qsxgtOOus2GQnPHpTmLhfJiqhnfLISbE4vSlZX6KunKuIC2sBeE4XMuAJP5vyp274 rg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fdahybu9s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 16:20:21 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23CGEqvp033315;
+        Tue, 12 Apr 2022 16:20:21 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3fdahybu8y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 16:20:21 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23CGGJHw006357;
+        Tue, 12 Apr 2022 16:20:19 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma01fra.de.ibm.com with ESMTP id 3fb1s8v7q7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 16:20:18 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23CGKFpr44499282
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Apr 2022 16:20:15 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A26A04C04A;
+        Tue, 12 Apr 2022 16:20:15 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9B6AC4C044;
+        Tue, 12 Apr 2022 16:20:14 +0000 (GMT)
+Received: from [9.171.87.149] (unknown [9.171.87.149])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 12 Apr 2022 16:20:14 +0000 (GMT)
+Message-ID: <7d0a1838-5a2a-bf48-ea0c-809211e69cec@linux.ibm.com>
+Date:   Tue, 12 Apr 2022 18:20:14 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
+Subject: Re: [PATCH v5 10/21] KVM: s390: pci: add basic kvm_zdev structure
 Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Mike Rapoport <rppt@kernel.org>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>
-References: <20220405234343.74045-1-kirill.shutemov@linux.intel.com>
- <20220405234343.74045-2-kirill.shutemov@linux.intel.com>
- <93a7cfdf-02e6-6880-c563-76b01c9f41f5@intel.com>
- <ff9e0bad-be9a-97ac-ae88-d22bcfbe80d4@redhat.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCHv4 1/8] mm: Add support for unaccepted memory
-In-Reply-To: <ff9e0bad-be9a-97ac-ae88-d22bcfbe80d4@redhat.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+ <20220404174349.58530-11-mjrosato@linux.ibm.com>
+From:   Christian Borntraeger <borntraeger@linux.ibm.com>
+In-Reply-To: <20220404174349.58530-11-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: G66F49yBnOde7KEIyC3ZOnbNSfttx1kQ
+X-Proofpoint-ORIG-GUID: 8J09If8qnveo03HF1Wji97I3eBSjJC2z
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-12_06,2022-04-12_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ mlxscore=0 impostorscore=0 spamscore=0 malwarescore=0 bulkscore=0
+ lowpriorityscore=0 clxscore=1015 mlxlogscore=866 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204120077
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/12/22 01:15, David Hildenbrand wrote:
-> Can we simply automate this using a kthread or smth like that, which
-> just traverses the free page lists and accepts pages (similar, but
-> different to free page reporting)?
 
-That's definitely doable.
 
-The downside is that this will force premature consumption of physical
-memory resources that the guest may never use.  That's a particular
-problem on TDX systems since there is no way for a VMM to reclaim guest
-memory short of killing the guest.
+Am 04.04.22 um 19:43 schrieb Matthew Rosato:
+> This structure will be used to carry kvm passthrough information related to
+> zPCI devices.
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 
-In other words, I can see a good argument either way:
-1. The kernel should accept everything to avoid the perf nastiness
-2. The kernel should accept only what it needs in order to reduce memory
-   use
-
-I'm kinda partial to #1 though, if I had to pick only one.
-
-The other option might be to tie this all to DEFERRED_STRUCT_PAGE_INIT.
- Have the rule that everything that gets a 'struct page' must be
-accepted.  If you want to do delayed acceptance, you do it via
-DEFERRED_STRUCT_PAGE_INIT.
+Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
