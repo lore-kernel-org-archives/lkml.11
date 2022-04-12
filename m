@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24791C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62726C3A5A3
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358121AbiDLHlG (ORCPT
+        id S1358284AbiDLHlW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
+        Tue, 12 Apr 2022 03:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353118AbiDLHOv (ORCPT
+        with ESMTP id S1353160AbiDLHOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:51 -0400
+        Tue, 12 Apr 2022 03:14:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4690837A16;
-        Mon, 11 Apr 2022 23:56:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B9C37A3F;
+        Mon, 11 Apr 2022 23:56:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB6CD6149D;
-        Tue, 12 Apr 2022 06:56:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDA2AC385A1;
-        Tue, 12 Apr 2022 06:56:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3227561572;
+        Tue, 12 Apr 2022 06:56:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E0EBC385A1;
+        Tue, 12 Apr 2022 06:56:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746590;
-        bh=1eZQ2mG1B5Ze4BFKltM7j3jjf6Smhu+NEKul0MLnFVQ=;
+        s=korg; t=1649746598;
+        bh=4C9l3ozTCA7bF8Ub+SzXQVBfPrIj+YQioOgIA03OWB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FawYAFDtumgTk3RdAZh3ouZ3ngIOtshkFAXxQQo2oUmOqCLMWN4Zn9eEPvVQgDUKn
-         6NkqzVKRsVIjCF3GGEASwr9D5dfIrH0ZYvqXE3Qls1LwWQyiDYrSwekBTBfzf/lE3t
-         pSIBt0+Sbe6/e1pOEROqsEIK/gZXIWIYI6VcK698=
+        b=2XoqtE/grAi92lWry2QkFjFZWbMKmWw9ByWTZyHQMKcRb1YbBGaU+cYTWqw2g8ctZ
+         jWauMuSPG5qurx+G+bQhxEwIRey1uB6xF5SMdczP7vWYJmy4zuoJlgRry6x34fxXgz
+         n58lB3DokZc8lqjITebu2rlQQi32XMBohVMQx7w4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org,
+        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 059/285] usb: dwc3: pci: Set the swnode from inside dwc3_pci_quirks()
-Date:   Tue, 12 Apr 2022 08:28:36 +0200
-Message-Id: <20220412062945.373936337@linuxfoundation.org>
+Subject: [PATCH 5.16 062/285] iwlwifi: mvm: move only to an enabled channel
+Date:   Tue, 12 Apr 2022 08:28:39 +0200
+Message-Id: <20220412062945.459531152@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -49,59 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Miri Korenblit <miriam.rachel.korenblit@intel.com>
 
-[ Upstream commit e285cb403994419e997749c9a52b9370884ae0c8 ]
+[ Upstream commit e04135c07755d001b5cde61048c69a7cc84bb94b ]
 
-The quirk handling may need to set some different properties
-which means using a different swnode, move the setting of the swnode
-to inside dwc3_pci_quirks() so that the quirk handling can choose
-a different swnode.
+During disassociation we're decreasing the phy's ref count.
+If the ref count becomes 0, we're configuring the phy ctxt
+to the default channel (the lowest channel which the device
+can operate on). Currently we're not checking whether the
+the default channel is enabled or not. Fix it by configuring
+the phy ctxt to the lowest channel which is enabled.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220213130524.18748-4-hdegoede@redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220210181930.03f281b6a6bc.I5b63d43ec41996d599e6f37ec3f32e878b3e405e@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/dwc3-pci.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ .../net/wireless/intel/iwlwifi/mvm/phy-ctxt.c | 31 +++++++++++++------
+ 1 file changed, 22 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
-index 06d0e88ec8af..4d9608cc55f7 100644
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -185,7 +185,8 @@ static const struct software_node dwc3_pci_amd_mr_swnode = {
- 	.properties = dwc3_pci_mr_properties,
- };
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
+index 035336a9e755..6d82725cb87d 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+ /*
+- * Copyright (C) 2012-2014, 2018-2021 Intel Corporation
++ * Copyright (C) 2012-2014, 2018-2022 Intel Corporation
+  * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
+  * Copyright (C) 2017 Intel Deutschland GmbH
+  */
+@@ -295,18 +295,31 @@ void iwl_mvm_phy_ctxt_unref(struct iwl_mvm *mvm, struct iwl_mvm_phy_ctxt *ctxt)
+ 	 * otherwise we might not be able to reuse this phy.
+ 	 */
+ 	if (ctxt->ref == 0) {
+-		struct ieee80211_channel *chan;
++		struct ieee80211_channel *chan = NULL;
+ 		struct cfg80211_chan_def chandef;
+-		struct ieee80211_supported_band *sband = NULL;
+-		enum nl80211_band band = NL80211_BAND_2GHZ;
++		struct ieee80211_supported_band *sband;
++		enum nl80211_band band;
++		int channel;
  
--static int dwc3_pci_quirks(struct dwc3_pci *dwc)
-+static int dwc3_pci_quirks(struct dwc3_pci *dwc,
-+			   const struct software_node *swnode)
- {
- 	struct pci_dev			*pdev = dwc->pci;
+-		while (!sband && band < NUM_NL80211_BANDS)
+-			sband = mvm->hw->wiphy->bands[band++];
++		for (band = NL80211_BAND_2GHZ; band < NUM_NL80211_BANDS; band++) {
++			sband = mvm->hw->wiphy->bands[band];
  
-@@ -242,7 +243,7 @@ static int dwc3_pci_quirks(struct dwc3_pci *dwc)
- 		}
- 	}
+-		if (WARN_ON(!sband))
+-			return;
++			if (!sband)
++				continue;
++
++			for (channel = 0; channel < sband->n_channels; channel++)
++				if (!(sband->channels[channel].flags &
++						IEEE80211_CHAN_DISABLED)) {
++					chan = &sband->channels[channel];
++					break;
++				}
  
--	return 0;
-+	return device_add_software_node(&dwc->dwc3->dev, swnode);
- }
+-		chan = &sband->channels[0];
++			if (chan)
++				break;
++		}
++
++		if (WARN_ON(!chan))
++			return;
  
- #ifdef CONFIG_PM
-@@ -307,11 +308,7 @@ static int dwc3_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	dwc->dwc3->dev.parent = dev;
- 	ACPI_COMPANION_SET(&dwc->dwc3->dev, ACPI_COMPANION(dev));
- 
--	ret = device_add_software_node(&dwc->dwc3->dev, (void *)id->driver_data);
--	if (ret < 0)
--		goto err;
--
--	ret = dwc3_pci_quirks(dwc);
-+	ret = dwc3_pci_quirks(dwc, (void *)id->driver_data);
- 	if (ret)
- 		goto err;
- 
+ 		cfg80211_chandef_create(&chandef, chan, NL80211_CHAN_NO_HT);
+ 		iwl_mvm_phy_ctxt_changed(mvm, ctxt, &chandef, 1, 1);
 -- 
 2.35.1
 
