@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1778CC38162
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A17C38A04
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388520AbiDLJW1 (ORCPT
+        id S1389184AbiDLJX1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52678 "EHLO
+        Tue, 12 Apr 2022 05:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358219AbiDLHlL (ORCPT
+        with ESMTP id S1357315AbiDLHj6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2034B42A17;
-        Tue, 12 Apr 2022 00:17:36 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12CD223BD7;
+        Tue, 12 Apr 2022 00:14:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AFECA61045;
-        Tue, 12 Apr 2022 07:17:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C0E0C385A1;
-        Tue, 12 Apr 2022 07:17:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3E626176E;
+        Tue, 12 Apr 2022 07:14:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B46E1C385A6;
+        Tue, 12 Apr 2022 07:14:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747855;
-        bh=HLy3qY+J5ROTEF4rwyotysIW1sSO8dDgG1rHbzkhJac=;
+        s=korg; t=1649747697;
+        bh=pTCguM5hKfS5YojLbcfsg4liUJK9KCMGfsJzuRRUdt4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IM5zbrN3BMuJCxUpezxflmU+o+ZkGW5kB0fUPCdavQw6uze7p0LDLOvUacXxv1fCk
-         AZy2i0SV17idNneDAxZyaq7yrWgPPbvt7jygbZ+K+R/1OP+mGIzFRFf2A+Xn3IvITd
-         gRQrTxFci13ODH0j0/JAInFEmVim0+nAGxnQCFO4=
+        b=iK1kTBV1asbdAzKe4tlQe92rhwRyDYza7E2Ji+uj2yxvy7u/vqWNusZCxsdEPmXsV
+         mSRTLo3zfFj556Ew1AJDyOlB3VeLErp7jcm06YeuFLS2lZ30jw9sSZaP+ah6mL9ILD
+         2FRoni85NSka/N82KofFS0b4Pkljw/wwhWMcY3pg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Enzo Matsumiya <ematsumiya@suse.de>,
-        Shyam Prasad N <sprasad@microsoft.com>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Oded Gabbay <ogabbay@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 229/343] cifs: fix potential race with cifsd thread
-Date:   Tue, 12 Apr 2022 08:30:47 +0200
-Message-Id: <20220412062957.947491639@linuxfoundation.org>
+Subject: [PATCH 5.17 173/343] habanalabs/gaudi: handle axi errors from NIC engines
+Date:   Tue, 12 Apr 2022 08:29:51 +0200
+Message-Id: <20220412062956.361016831@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,52 +49,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paulo Alcantara <pc@cjr.nz>
+From: Oded Gabbay <ogabbay@kernel.org>
 
-[ Upstream commit 687127c81ad32c8900a3fedbc7ed8f686ca95855 ]
+[ Upstream commit 26ef1c000bc21a192618c9ec651dd36ba63ca00c ]
 
-To avoid racing with demultiplex thread while it is handling data on
-socket, use cifs_signal_cifsd_for_reconnect() helper for marking
-current server to reconnect and let the demultiplex thread handle the
-rest.
+Various AXI errors can occur in the NIC engines and are reported to
+the driver by the f/w. Add code to print the errors and ack them to
+the f/w.
 
-Fixes: dca65818c80c ("cifs: use a different reconnect helper for non-cifsd threads")
-Reviewed-by: Enzo Matsumiya <ematsumiya@suse.de>
-Reviewed-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/connect.c | 2 +-
- fs/cifs/netmisc.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/misc/habanalabs/gaudi/gaudi.c | 48 +++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
-index d6f8ccc7bfe2..0270b412f801 100644
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -4465,7 +4465,7 @@ static int tree_connect_dfs_target(const unsigned int xid, struct cifs_tcon *tco
- 	 */
- 	if (rc && server->current_fullpath != server->origin_fullpath) {
- 		server->current_fullpath = server->origin_fullpath;
--		cifs_reconnect(tcon->ses->server, true);
-+		cifs_signal_cifsd_for_reconnect(server, true);
- 	}
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index 013c6da2e3ca..b4dacea80151 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -7819,6 +7819,48 @@ static void gaudi_print_fw_alive_info(struct hl_device *hdev,
+ 		fw_alive->thread_id, fw_alive->uptime_seconds);
+ }
  
- 	dfs_cache_free_tgts(tl);
-diff --git a/fs/cifs/netmisc.c b/fs/cifs/netmisc.c
-index ebe236b9d9f5..235aa1b395eb 100644
---- a/fs/cifs/netmisc.c
-+++ b/fs/cifs/netmisc.c
-@@ -896,7 +896,7 @@ map_and_check_smb_error(struct mid_q_entry *mid, bool logErr)
- 		if (class == ERRSRV && code == ERRbaduid) {
- 			cifs_dbg(FYI, "Server returned 0x%x, reconnecting session...\n",
- 				code);
--			cifs_reconnect(mid->server, false);
-+			cifs_signal_cifsd_for_reconnect(mid->server, false);
- 		}
- 	}
++static void gaudi_print_nic_axi_irq_info(struct hl_device *hdev, u16 event_type,
++						void *data)
++{
++	char desc[64] = "", *type;
++	struct eq_nic_sei_event *eq_nic_sei = data;
++	u16 nic_id = event_type - GAUDI_EVENT_NIC_SEI_0;
++
++	switch (eq_nic_sei->axi_error_cause) {
++	case RXB:
++		type = "RXB";
++		break;
++	case RXE:
++		type = "RXE";
++		break;
++	case TXS:
++		type = "TXS";
++		break;
++	case TXE:
++		type = "TXE";
++		break;
++	case QPC_RESP:
++		type = "QPC_RESP";
++		break;
++	case NON_AXI_ERR:
++		type = "NON_AXI_ERR";
++		break;
++	case TMR:
++		type = "TMR";
++		break;
++	default:
++		dev_err(hdev->dev, "unknown NIC AXI cause %d\n",
++			eq_nic_sei->axi_error_cause);
++		type = "N/A";
++		break;
++	}
++
++	snprintf(desc, sizeof(desc), "NIC%d_%s%d", nic_id, type,
++			eq_nic_sei->id);
++	dev_err_ratelimited(hdev->dev, "Received H/W interrupt %d [\"%s\"]\n",
++		event_type, desc);
++}
++
+ static int gaudi_non_hard_reset_late_init(struct hl_device *hdev)
+ {
+ 	/* GAUDI doesn't support any reset except hard-reset */
+@@ -8066,6 +8108,7 @@ static void gaudi_handle_eqe(struct hl_device *hdev,
+ 				struct hl_eq_entry *eq_entry)
+ {
+ 	struct gaudi_device *gaudi = hdev->asic_specific;
++	u64 data = le64_to_cpu(eq_entry->data[0]);
+ 	u32 ctl = le32_to_cpu(eq_entry->hdr.ctl);
+ 	u32 fw_fatal_err_flag = 0;
+ 	u16 event_type = ((ctl & EQ_CTL_EVENT_TYPE_MASK)
+@@ -8263,6 +8306,11 @@ static void gaudi_handle_eqe(struct hl_device *hdev,
+ 		hl_fw_unmask_irq(hdev, event_type);
+ 		break;
  
++	case GAUDI_EVENT_NIC_SEI_0 ... GAUDI_EVENT_NIC_SEI_4:
++		gaudi_print_nic_axi_irq_info(hdev, event_type, &data);
++		hl_fw_unmask_irq(hdev, event_type);
++		break;
++
+ 	case GAUDI_EVENT_DMA_IF_SEI_0 ... GAUDI_EVENT_DMA_IF_SEI_3:
+ 		gaudi_print_irq_info(hdev, event_type, false);
+ 		gaudi_print_sm_sei_info(hdev, event_type,
 -- 
 2.35.1
 
