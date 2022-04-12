@@ -2,131 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE25DC41535
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC07C3527D
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352776AbiDLMId (ORCPT
+        id S1353489AbiDLMJK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
+        Tue, 12 Apr 2022 08:09:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353066AbiDLMDr (ORCPT
+        with ESMTP id S1354015AbiDLMET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:03:47 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702DADFB2
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:04:24 -0700 (PDT)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kd2sH56MbzdZmY;
-        Tue, 12 Apr 2022 19:03:47 +0800 (CST)
-Received: from dggpeml500009.china.huawei.com (7.185.36.209) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 19:04:22 +0800
-Received: from [10.174.177.235] (10.174.177.235) by
- dggpeml500009.china.huawei.com (7.185.36.209) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 19:04:22 +0800
-Message-ID: <7c6a3d09-0215-cb7d-cf82-0c4fd801d998@huawei.com>
-Date:   Tue, 12 Apr 2022 19:04:21 +0800
+        Tue, 12 Apr 2022 08:04:19 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B3E3F8BB;
+        Tue, 12 Apr 2022 04:06:27 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id o2so9905625lfu.13;
+        Tue, 12 Apr 2022 04:06:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=P00jqtd+ILMRR9Q3mnllZuR6cE+BJcMxpj1JrqSYISk=;
+        b=lVB+k306E9WmYZwtVGX776xFikOkDj8MIVvynihNeUlVqtHPKszbHgxVOvZFoyZ18+
+         D7u4Sqd2codKn+ce6UTVew9fHiR5/0EGvTgwE6US1yPS7PwvoSScfnDjAwcP5vOuc4aZ
+         YlGFHU4o2rYb9vg0B9MzkIX/K8t1JXkkFnlRm6EqJ5NgWGt7fyo1tIADEzIoANiIhEc9
+         WSbmC57CohCUfwQxQZAOX0y1PONDJ5VSgMlUSDSqBN7FcNKjdpM8a4l2vjE/IUc3ajQx
+         KUwsC6OLFImvyC69ajRlE0bQyUm+mt/a395P4TqyVaMityHzlfoUMWZlhkRZwwXTwQne
+         YbjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=P00jqtd+ILMRR9Q3mnllZuR6cE+BJcMxpj1JrqSYISk=;
+        b=HxxO3+8QjPPjBSm+2WwJa+/0XBbHQrKHj3XngLnBQEDqdJo4MVNIII0u6uRFVZgg7p
+         rUO7eggloi7r1O0KNf+po9QITipbhZRu4hFALGnXI2g6pJA2rK9MZzGuBe1acTYcolbz
+         cIj+fAKHDxX3Kvy2Qe0nd+0f+e5u0+cnkQwxDBoTa4fjRSSv38uMBvPnsr8MCFQAub3s
+         M3LmPG5F72GyHFak/EsTrk1+f3uhoKKR2X8Yc7iBud2kSjm1zu0drTXz7HQYUp+44ze5
+         GIsjoFeypOfgoThUWLFZ8jQwhbGGYQQ/EUZijR7lDg+v2duFpFf0whP0/yPSxMw2HrLV
+         GFRw==
+X-Gm-Message-State: AOAM530+/24N/pH4Pu8Ag5tjXy8Gtv6J1rvXgMf6ArdWP9o8Y0Yg/j8/
+        nJIVvRMxZtR5X84V7Z4Mu2I=
+X-Google-Smtp-Source: ABdhPJy9aINakzkHjO+kqosgdA0fO5BWmaepRXpf61n5eIKv/mmt/i8Zy/XATZczcwChIiHU/T6/cw==
+X-Received: by 2002:a05:6512:1398:b0:445:bcef:e4fd with SMTP id p24-20020a056512139800b00445bcefe4fdmr24879325lfa.398.1649761585192;
+        Tue, 12 Apr 2022 04:06:25 -0700 (PDT)
+Received: from mobilestation ([95.79.134.149])
+        by smtp.gmail.com with ESMTPSA id z16-20020a195e50000000b0044a77156ef5sm3623829lfi.242.2022.04.12.04.06.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 04:06:24 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 14:06:22 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Brad Larson <brad@pensando.io>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        linux-arm-kernel@lists.infradead.org, arnd@arndb.de,
+        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
+        broonie@kernel.org, adrian.hunter@intel.com,
+        ulf.hansson@linaro.org, olof@lixom.net, dac2@pensando.io,
+        linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 10/11] spi: dw: Add support for Pensando Elba SoC
+Message-ID: <20220412110622.2xsk3k63dafqxib5@mobilestation>
+References: <20220406233648.21644-1-brad@pensando.io>
+ <20220406233648.21644-11-brad@pensando.io>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [f2fs-dev] [PATCH 4/5] f2fs: get rid of stale fault injection
- code
-Content-Language: en-US
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        <linux-f2fs-devel@lists.sourceforge.net>, <",yuyufen"@huawei.com>
-References: <20220401071909.505086-1-yuyufen@huawei.com>
- <20220401071909.505086-5-yuyufen@huawei.com>
- <0c134e0e-b2d0-0bc0-42fc-cd220ff77e72@kernel.org>
- <25a24259-3ac3-81ab-1c28-f2a4886888b5@huawei.com>
- <778b1f04-a71b-a226-f7a7-4833fc9bf7c2@kernel.org>
- <YlSbqay8y6oaCxR6@google.com>
-From:   Yufen Yu <yuyufen@huawei.com>
-In-Reply-To: <YlSbqay8y6oaCxR6@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.235]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500009.china.huawei.com (7.185.36.209)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406233648.21644-11-brad@pensando.io>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/4/12 5:20, Jaegeuk Kim wrote:
-> On 04/11, Chao Yu wrote:
->> On 2022/4/6 11:01, Yufen Yu via Linux-f2fs-devel wrote:
->>> Hi,
->>>
->>> On 2022/4/1 16:28, Chao Yu wrote:
->>>> On 2022/4/1 15:19, Yufen Yu via Linux-f2fs-devel wrote:
->>>>> Nowly, we can use new fault injection framework. Just delete the
->>>>> stale fault injection code.
->>>>>
->>>>> Signed-off-by: Yufen Yu <yuyufen@huawei.com>
->>>>> ---
->>>>>    fs/f2fs/checkpoint.c |  2 +-
->>>>>    fs/f2fs/f2fs.h       | 51 ++----------------------------------------
->>>>>    fs/f2fs/super.c      | 53 --------------------------------------------
->>>>>    fs/f2fs/sysfs.c      | 23 -------------------
->>>>>    4 files changed, 3 insertions(+), 126 deletions(-)
->>>>>
->>>
->>> ...
->>>
->>>>>                break;
->>>>> @@ -1963,14 +1920,6 @@ static int f2fs_show_options(struct seq_file *seq, struct dentry *root)
->>>>>        if (F2FS_IO_SIZE_BITS(sbi))
->>>>>            seq_printf(seq, ",io_bits=%u",
->>>>>                    F2FS_OPTION(sbi).write_io_size_bits);
->>>>> -#ifdef CONFIG_F2FS_FAULT_INJECTION
->>>>> -    if (test_opt(sbi, FAULT_INJECTION)) {
->>>>> -        seq_printf(seq, ",fault_injection=%u",
->>>>> -                F2FS_OPTION(sbi).fault_info.inject_rate);
->>>>> -        seq_printf(seq, ",fault_type=%u",
->>>>> -                F2FS_OPTION(sbi).fault_info.inject_type);
->>>>> -    }
->>>>> -#endif
->>>>
->>>> This will cause regression due to it breaks application usage w/ -o
->>>> fault_* mountoption..., I don't think this is the right way.
->>>
->>>
->>> Thanks for catching this. I admit it's a problem. But, IMO fault_* mount
->>> option are mostly been used in test, not in actual product. So, I think
->>> it may just affect some test applications. With the common fault injection
->>> framework, it can be more easy and flexible to do fault injection test.
->>> Therefore, I want to remove the two mount options directly.
->>>
->>> If you really worried about compatibility, how about just reserving the
->>> two inject_* options but without doing any thing for them. We actually
->>> configure fault injections by debugfs in this patch.
->>>
->>> Or do you have more better suggestion?
->>
->> Could you please consider to keep original logic of f2fs fault injection
->> if user use inject_* options, otherwise following common fault injection
->> framework?
->>
->> Thoughts?
+On Wed, Apr 06, 2022 at 04:36:47PM -0700, Brad Larson wrote:
+> The Pensando Elba SoC includes a DW apb_ssi v4 controller
+> with device specific chip-select control.  The Elba SoC
+> provides four chip-selects where the native DW IP supports
+> two chip-selects.  The Elba DW_SPI instance has two native
+> CS signals that are always overridden.
 > 
-> I think it'd be useful to test roll-forward recovery flow by using those mount
-> options, since runtime fault injection cannot enable it during mount.
+> Signed-off-by: Brad Larson <brad@pensando.io>
+> ---
+> Change from V3:
+> - Use more descriptive dt property pensando,syscon-spics
+> - Minor changes from review input
 > 
-
-Yeah, I have not catch this point before.
-
-> BTW, what is the real benefit to use the fault injection framework?
+>  drivers/spi/spi-dw-mmio.c | 85 +++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 85 insertions(+)
 > 
+> diff --git a/drivers/spi/spi-dw-mmio.c b/drivers/spi/spi-dw-mmio.c
+> index 5101c4c6017b..f4636b271818 100644
+> --- a/drivers/spi/spi-dw-mmio.c
+> +++ b/drivers/spi/spi-dw-mmio.c
+> @@ -53,6 +53,24 @@ struct dw_spi_mscc {
+>  	void __iomem        *spi_mst; /* Not sparx5 */
+>  };
+>  
+> +struct dw_spi_elba {
+> +	struct regmap *regmap;
+> +	unsigned int reg;
+> +};
+> +
+> +/*
+> + * Elba SoC does not use ssi, pin override is used for cs 0,1 and
+> + * gpios for cs 2,3 as defined in the device tree.
+> + *
+> + * cs:  |       1               0
+> + * bit: |---3-------2-------1-------0
+> + *      |  cs1   cs1_ovr   cs0   cs0_ovr
+> + */
+> +#define ELBA_SPICS_SHIFT(cs)		(2 * (cs))
+> +#define ELBA_SPICS_MASK(cs)		(0x3 << ELBA_SPICS_SHIFT(cs))
+> +#define ELBA_SPICS_SET(cs, val)	\
+> +			((((val) << 1) | 0x1) << ELBA_SPICS_SHIFT(cs))
+> +
+>  /*
+>   * The Designware SPI controller (referred to as master in the documentation)
+>   * automatically deasserts chip select when the tx fifo is empty. The chip
+> @@ -238,6 +256,72 @@ static int dw_spi_canaan_k210_init(struct platform_device *pdev,
+>  	return 0;
+>  }
+>  
 
-I think fault injection framework can provide more easier and flexible
-function than the current one. Furthermore, we can just following it and
-don't need to maintain f2fs own fault injection cold.
+> +static void elba_spics_set_cs(struct dw_spi_elba *dwselba, int cs, int enable)
+> +{
+> +	regmap_update_bits(dwselba->regmap, dwselba->reg, ELBA_SPICS_MASK(cs),
+> +			   ELBA_SPICS_SET(cs, enable));
+> +}
+> +
+> +static void dw_spi_elba_set_cs(struct spi_device *spi, bool enable)
 
-Thanks,
-Yufen
+The methods naming is ambiguous. Moreover it breaks this module naming
+convention. Could you change them to something like:
+dw_spi_elba_override_cs()
+and
+dw_spi_elba_set_cs()
+?
+
+> +{
+> +	struct dw_spi *dws = spi_master_get_devdata(spi->master);
+> +	struct dw_spi_mmio *dwsmmio = container_of(dws, struct dw_spi_mmio, dws);
+> +	struct dw_spi_elba *dwselba = dwsmmio->priv;
+> +	u8 cs;
+> +
+> +	cs = spi->chip_select;
+> +	if (cs < 2) {
+> +		/* overridden native chip-select */
+> +		elba_spics_set_cs(dwselba, spi->chip_select, enable);
+> +	}
+> +
+> +	/*
+> +	 * The DW SPI controller needs a native CS bit selected to start
+> +	 * the serial engine and the platform may have fewer native CSs
+> +	 * than needed, so use CS0 always.
+> +	 */
+> +	spi->chip_select = 0;
+> +	dw_spi_set_cs(spi, enable);
+> +	spi->chip_select = cs;
+> +}
+> +
+> +static int dw_spi_elba_init(struct platform_device *pdev,
+> +			    struct dw_spi_mmio *dwsmmio)
+> +{
+> +	struct of_phandle_args args;
+> +	struct dw_spi_elba *dwselba;
+> +	struct regmap *regmap;
+> +	int rc;
+> +
+> +	rc = of_parse_phandle_with_fixed_args(pdev->dev.of_node,
+> +			"pensando,syscon-spics", 1, 0, &args);
+> +	if (rc) {
+> +		dev_err(&pdev->dev, "could not find spics\n");
+> +		return rc;
+> +	}
+> +
+> +	regmap = syscon_node_to_regmap(args.np);
+> +	if (IS_ERR(regmap))
+> +		return dev_err_probe(&pdev->dev, PTR_ERR(regmap),
+> +				     "could not map spics");
+> +
+> +	dwselba = devm_kzalloc(&pdev->dev, sizeof(*dwselba), GFP_KERNEL);
+> +	if (!dwselba)
+> +		return -ENOMEM;
+> +
+> +	dwselba->regmap = regmap;
+> +	dwselba->reg = args.args[0];
+> +
+> +	/* deassert cs */
+
+> +	elba_spics_set_cs(dwselba, 0, 1);
+> +	elba_spics_set_cs(dwselba, 1, 1);
+
+What if the CS lines are of the active-high type? In that case basically
+you get to do the opposite to what you claim in the comment here.
+
+Note the CS setting into the deactivated state is done in the spi_setup()
+method anyway, at the moment of the peripheral SPI device registration
+stage (see its calling the spi_set_cs() function). Thus what you are doing
+here is redundant.
+
+-Sergey
+
+> +
+> +	dwsmmio->priv = dwselba;
+> +	dwsmmio->dws.set_cs = dw_spi_elba_set_cs;
+> +
+> +	return 0;
+> +}
+> +
+>  static int dw_spi_mmio_probe(struct platform_device *pdev)
+>  {
+>  	int (*init_func)(struct platform_device *pdev,
+> @@ -352,6 +436,7 @@ static const struct of_device_id dw_spi_mmio_of_match[] = {
+>  	{ .compatible = "intel,keembay-ssi", .data = dw_spi_keembay_init},
+>  	{ .compatible = "microchip,sparx5-spi", dw_spi_mscc_sparx5_init},
+>  	{ .compatible = "canaan,k210-spi", dw_spi_canaan_k210_init},
+> +	{ .compatible = "pensando,elba-spi", .data = dw_spi_elba_init},
+>  	{ /* end of table */}
+>  };
+>  MODULE_DEVICE_TABLE(of, dw_spi_mmio_of_match);
+> -- 
+> 2.17.1
+> 
