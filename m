@@ -2,208 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D834C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF793C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 16:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357881AbiDLQyW (ORCPT
+        id S1352733AbiDLQ6K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 12:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
+        Tue, 12 Apr 2022 12:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357878AbiDLQyT (ORCPT
+        with ESMTP id S234206AbiDLQ6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 12:54:19 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam08on2087.outbound.protection.outlook.com [40.107.101.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C096B5AEC9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:52:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IplYyP5pgOnsEqj9CWureOr1m3sKbPGNhj0yelTI00qKL5uyL98jj1syf3+cLfj2/GC1iiUEhGBQ48eBde4r1PYlfc3cKPBqpl2HFUDq9nQ6QJ99Z0fdGpO2jvFB4WekX48SWvKaFJl+YjhwIGt6E4NBIjyZvSh/TSpZGbdPzDCrZz6xo4kW9dMI/py/EIxmYgidzQ4g63TzDj2Cst8U3UDwvCgQf+jIWtblqpSJoNPMkrCu723XXfzAHyYDdAMVbkZZf2u/D+pEHhDpzO9JOE20IffSfzID8+pn5/IidJ8nv5RIEfEC9FJAm5o+WFycJGp8YnBs6apK4jv5avuNcA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=i9+VxQ0kdK53D7JJkJZSl6Tvgt8DhDj5tBw8ovM0yCs=;
- b=ejrdjT79wXuO1qVezBLnxLjEuHmQBd9kzbfP9kaI1bDCbNn04z1Oe/d3SZ1ukrCTfUIjztnpLrjtTIpm8ma5CqO2QFpmPV1sg3i0rNMFHKCmKgZXhh6khj2WttVqu+pSFQ5Ph/v9DBwXT0iCATOfiZ4CbvwCYtBXrZ7c9YoxZWyb9ULSy+GnpTagYeF1s7Mqy7paMV2UwEjKBufwDClsXK6AGG08A0X7cNSqpJe+JGm3VBsX2mtlYToH8X4G4Yz5Q1jv65KfcePmk5AH6gASipP2JwwzXj8ch/Qv37+CL7N5jy0AWOhK7qqqCZpg61qqx0cHklKHFO5jw2aitx2gig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i9+VxQ0kdK53D7JJkJZSl6Tvgt8DhDj5tBw8ovM0yCs=;
- b=n4ucZ4dO3/7J85GFuS7KZqFtUWo0RlJxT1NhPLpRp+mcgxPzS54KQtsUXaeTjc+y6RCql2CSWa0ilx7TiO9naghHUaZVpFhl2dWU+IHbc+EsVIlaHpfOZa+YZRC1jvhuADawISPbsUNkViNK1qu/5HtJyQl1PEtfidM6t8woOHM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM5PR12MB1947.namprd12.prod.outlook.com (2603:10b6:3:111::23)
- by DM5PR12MB1867.namprd12.prod.outlook.com (2603:10b6:3:10d::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
- 2022 16:51:58 +0000
-Received: from DM5PR12MB1947.namprd12.prod.outlook.com
- ([fe80::4967:ac3d:d5eb:ebb4]) by DM5PR12MB1947.namprd12.prod.outlook.com
- ([fe80::4967:ac3d:d5eb:ebb4%9]) with mapi id 15.20.5144.029; Tue, 12 Apr 2022
- 16:51:58 +0000
-Message-ID: <064d8958-a288-64e1-b2a4-c2302a456d5b@amd.com>
-Date:   Tue, 12 Apr 2022 12:51:56 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v1] drm/scheduler: Don't kill jobs in interrupt context
-Content-Language: en-US
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Steven Price <steven.price@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Dmitry Osipenko <digetx@gmail.com>
-References: <20220411221536.283312-1-dmitry.osipenko@collabora.com>
-From:   Andrey Grodzovsky <andrey.grodzovsky@amd.com>
-In-Reply-To: <20220411221536.283312-1-dmitry.osipenko@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: YT1PR01CA0113.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:2c::22) To DM5PR12MB1947.namprd12.prod.outlook.com
- (2603:10b6:3:111::23)
+        Tue, 12 Apr 2022 12:58:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDED5F4E7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 09:55:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A911DB81F14
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 16:55:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB210C385A1;
+        Tue, 12 Apr 2022 16:55:43 +0000 (UTC)
+Date:   Tue, 12 Apr 2022 17:55:40 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Ohhoon Kwon <ohkwon1043@gmail.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        JaeSang Yoo <jsyoo5b@gmail.com>,
+        Wonhyuk Yang <vvghjk1234@gmail.com>,
+        Jiyoup Kim <lakroforce@gmail.com>,
+        Donghyeok Kim <dthex5d@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mm/slab_common: move dma-kmalloc caches creation into
+ new_kmalloc_cache()
+Message-ID: <YlWvDBtW1pVY+H8z@arm.com>
+References: <20220410162511.656541-1-ohkwon1043@gmail.com>
+ <YlQMC9x1hfgonJH/@hyeyoo>
+ <9b02d27a-b4c0-acfa-dc0b-ac4912c1d3e6@suse.cz>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e5d502b5-ec87-46dd-72f2-08da1ca4c242
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1867:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB186750308282B26D13CD2F22EAED9@DM5PR12MB1867.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YUW2hc+J1W9hrY/V+ZkZwEM4Nkm11vxvMoj+p923LEVUpBW1JJULzdwml4gwGdDWWNQaCUU4xwwhWtxtRHuPqSrEzYEp8rdr5oV74T13CQwUz6NGZkZUAhf/r6FmMkGvz6O6vKs81MVf/2mGeNBF0rNTLv42IUXzf0JmrGu4i01iXbQi5LEsZgF/56gxi0PaxSdh0XoRZhUrFNuvgr1aeKQPBQy4o6zWZmY07XnJIyI1KpLeINAIUawI9TIb/IZXaO8Nv+drGSr3yGkNWBXbBDEw8nrWimdGWftgVoJhZQo658cBxOrSd4TLPsHUwRos34SWcuWPqE+MoHQYedeBKosPFnirMWJfVhEDh5PAKhXSpXSCKa9ScQS3f8NgYH0tbWI/uy4V1ozvTICqdfxY33M+0ZtTRpYIKNdeRApiJCKng4B9JPZXpMLtqpalXl+pv0mdaz2kFkuooaPWCYPPYy4uCSzddXIC94Qvsvywg42YOS6iYThIiVJW0Qc1iqtu6Onzy95g25YYILZTpaEZcsoLbITkGGZHTIx8cCdoaWroLfXf2G2RthORr66F5GiZm56fGya1AbsiYrxGrzIwttW67zn5QwpJlqigQT212Tupmx5OuyyIpclPRzIZX0TRtUWnZIB3UxDaU0lXPwFCAV00gynyk6u64oKdLWi9j6m6erHWIuWW3mAEDdC0HoWzNWjR46jPMOzoIXDoiDav6KPURPw/uobxR9UkcyUvXKc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1947.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(31696002)(186003)(7416002)(5660300002)(31686004)(36756003)(8676002)(4326008)(66556008)(316002)(83380400001)(66946007)(110136005)(66476007)(8936002)(86362001)(6512007)(508600001)(2616005)(38100700002)(6486002)(6506007)(53546011)(2906002)(44832011)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UC9WYkd3dzl3K0huSlpvUDJwanJaOHpDaHZoYmpldTNMMmkxaU4rdkNyZDdt?=
- =?utf-8?B?eVhzbTNJZ0s0RGlncVJWTW9sZGxvWDRUZFVTUjAxMGdDaFVqTTM3TFR5eWdm?=
- =?utf-8?B?QTdCc1ZRaFk4VDZGekhzYWpyaFQ3aklzT0cvN2JNa2l3ZytSRHZRb21iaU1M?=
- =?utf-8?B?NlI3dHJtTThwdUgvU3IreHFJV09TNlFqUWZ3dG1ibS9naVQrK2trZldaczRz?=
- =?utf-8?B?NlZKUlFVdmRObzhiNEVnSWMyOFpnakdhQkg4WGwyR0lzSVRsb1dqbWF3RkN5?=
- =?utf-8?B?RVBkS2FFQ3JMRkYzcXZsdldCRGRLREE0WHZyOGE0TWF1OXNTME1NQmw4YXNF?=
- =?utf-8?B?dDJtVXQ3ZHRvRXZHOGk2OFc5cnQvWHI2cml0am5SWUdNRldCbFArU0M3a1Jz?=
- =?utf-8?B?Z2I0Tnd6OTh0V0t0bmJYL1VaQmxGT3VWRUhvUlgrTmtwWVBsaVZhUDhwbmxF?=
- =?utf-8?B?NjFva3lBWjNncTBTUFJGRmcyWCtyZG5XTi9WUUEyeFVkVlFwTVJrYkthK0NQ?=
- =?utf-8?B?b0R4TGE3S0IvSlhmaTBGNXM4RCtsL3RRKzE3bWtjUmVpL0Y1UkI3b3hpUExW?=
- =?utf-8?B?R2pTS1l5NUxXODhJdGpuUHR1UXhRaXNJRldFbWFEcS8yQU9xa0ZZbEtidHdM?=
- =?utf-8?B?MG5xbVBWeDc1R1B0eUYyMHZpalU1OXBkbVB2ZC8rMExGT3FmdDRFSUNaV1hM?=
- =?utf-8?B?c3dxUVV1eitDbDlzZ1JyYWVDK1drMVNwOXpxbGlHOUtJVzVkL0lpNlFvdGNi?=
- =?utf-8?B?WUpPaHdMc0lPb0RzTTcrZWJCdkc5VkREdkR2dGV2Vk44eVJNcWUxV3hWbDV2?=
- =?utf-8?B?WkEyU1lieEw1TkxQSEF3dVNoRHVkMC85Zm9tWkpZWkg3TTlKQnFCZmJPc3h0?=
- =?utf-8?B?NDlKUWZvRUxNM3dsUWMzNGVXalc1QTZNTVh1WGRZOGpUSHNjUW5RRmZ6LzlY?=
- =?utf-8?B?bEl1Nk9MWGZIZThJdXdkTkJubHJyYkRzOXc5VVBteG80cWUyMjkwbXZiVTNL?=
- =?utf-8?B?b1ZaeGRhRGZQWHRES2wzclZCRnZKSzljaFBHU1hKQ1pVRUlNZVRncTJUUzFr?=
- =?utf-8?B?RC9mdVhncmo0RDBqMkhJbjZrTmV4YVVITEd1aXhVbVdwMlB4RW1tT0xFeUtL?=
- =?utf-8?B?NFV6Ym8zZHdtS3QxN3lsQURaVHZzakNVS1FPeDlQNUw0dHhvcVdqWUl4UXNy?=
- =?utf-8?B?Qzg0ZDg4eXA4ZVNMQTd0Ky9UdE5ZalMzclFiS2dodGRMSXg3bHFBT3BRa0NW?=
- =?utf-8?B?Mi92dHNkaGJWYnpaQUlFTk5uN0hHanV3cFlXM3l1Ly9uQnpocXpEc0ZGWGNE?=
- =?utf-8?B?ZU1yL29FUDNlWE0wNk5YZnZDWWpQNEo2aXhib3BHNXVEOVFIaTh5RWJFcEMv?=
- =?utf-8?B?eEhocnV4WHdhbktCSy9KS0tIaGNJWEtzbmpPOUZBYkNhMmEyR045bThNWFcx?=
- =?utf-8?B?bjZKdEtJcmRYOWJLUEllcURiWHZ1clNlcGdVL3hnajdzcVhGSCtGUC9KYW5x?=
- =?utf-8?B?Q1hrRnFGRStxQzJteTZTb2V0bmJLWEV3WGlneHNRVTczM1BURU5GdDk1RUx5?=
- =?utf-8?B?d043aTJ5RXRVY2lsdHdIYUJXcExNWThydXBQdzZVRVB6N1FNU2hQNXlHSi8z?=
- =?utf-8?B?OTgxYXhkbmk0cXdKZVpBWjQwMGZPNm5sREY2SnM2WDBsbzN6d3VBNVBwU0tp?=
- =?utf-8?B?ZW5PN0EwdkYxcEhuNVhSQUxmcXR4dDFkZ1E1QmJmeFVEQnI5ZkswSzlveFI0?=
- =?utf-8?B?NGQwRGV2aWkvOERDaHNXRGFDV2lCWjVzZ1VaelFrTU9wMlVEMmxERWN1UlZ6?=
- =?utf-8?B?T09jZ3JNZkhVckFlb0JFUmNMdnM4emVwNVVUNytLaEJ3cjdlV01HYzJQZFRT?=
- =?utf-8?B?N1g0VWIwb0JtMVJpeERmbVpkTEZOSStLYXY5WlVNblhXZDFoV0hSeW82VzZv?=
- =?utf-8?B?eFVQVVVPbklTYXNsV1FsRFZXeEpoSzJzemt3SWhLSkE5WTNzaVVLWi9HYkM1?=
- =?utf-8?B?Tnk1RCtrT1h3aVo4c1MxLzRmc0lNLzQ2YmRGQWY2ZllabTJqTWk1cUR4Ynh3?=
- =?utf-8?B?NTdwV2h5YnZVNENrWTMwVlRpWHRzS3pRWUxKOG9FMFpFRXpncmhFTmJwSzZt?=
- =?utf-8?B?MFk0eHJlUHFFYTdWWFFLZlpOb05kKzFXRHRtZTRjTXNPd0VBMHJaQ3hma0lQ?=
- =?utf-8?B?bVVnQ2tXMWlPZEw2eWFIaEJNVDJJUnpPNDhyQXlPTitSTkRGOEpxMERjUHoz?=
- =?utf-8?B?SHh0dHJ5OTJJOXBzVXVEWFBhaDdrcnhoemNjMUtkQnd2VkNxL2Z5allMUzZJ?=
- =?utf-8?B?Q1puMlg4WEtzZVFKQW45dzhWdDRLM3RRK0NjY2hPTS95dEFYQnpKZlRpcmJk?=
- =?utf-8?Q?9gXyTbM562m2Q6+8COHdYd57xnjE4xAJETUiVQg8ZqQhi?=
-X-MS-Exchange-AntiSpam-MessageData-1: pPzzlXIi0E3/cg==
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5d502b5-ec87-46dd-72f2-08da1ca4c242
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1947.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 16:51:58.8039
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TsUg8JufNfV45AVNHGMNP5hcTqbmxq62TUV0I8/OYaW/K0WzkLImU1dPns/PTnpTohQGaOyeYlI2JaGDPWdfeQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1867
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9b02d27a-b4c0-acfa-dc0b-ac4912c1d3e6@suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Apr 11, 2022 at 05:31:51PM +0200, Vlastimil Babka wrote:
+> On 4/11/22 13:07, Hyeonggon Yoo wrote:
+> > On Mon, Apr 11, 2022 at 01:25:11AM +0900, Ohhoon Kwon wrote:
+> >> @@ -898,20 +900,6 @@ void __init create_kmalloc_caches(slab_flags_t flags)
+> >>  
+> >>  	/* Kmalloc array is now usable */
+> >>  	slab_state = UP;
+> >> -
+> >> -#ifdef CONFIG_ZONE_DMA
+> >> -	for (i = 0; i <= KMALLOC_SHIFT_HIGH; i++) {
+> >> -		struct kmem_cache *s = kmalloc_caches[KMALLOC_NORMAL][i];
+> >> -
+> >> -		if (s) {
+> >> -			kmalloc_caches[KMALLOC_DMA][i] = create_kmalloc_cache(
+> >> -				kmalloc_info[i].name[KMALLOC_DMA],
+> >> -				kmalloc_info[i].size,
+> >> -				SLAB_CACHE_DMA | flags, 0,
+> >> -				kmalloc_info[i].size);
+> >> -		}
+> >> -	}
+> >> -#endif
+> >>  }
+> >>  #endif /* !CONFIG_SLOB */
+> > 
+> > Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+> 
+> Thanks.
+> Added to:
+> https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git/log/?h=for-5.19/refactor
+> 
+> > BTW this patch may conflict with [1] (not merged yet)
+> > 
+> > [1] https://lore.kernel.org/linux-mm/20220405135758.774016-9-catalin.marinas@arm.com/
+> 
+> FYI Catalin, might want to base v2 on the above once the crypto side is
+> solved. At cursory look it shouldn't be a significant conflict.
 
-On 2022-04-11 18:15, Dmitry Osipenko wrote:
-> Interrupt context can't sleep. Drivers like Panfrost and MSM are taking
-> mutex when job is released, and thus, that code can sleep. This results
-> into "BUG: scheduling while atomic" if locks are contented while job is
-> freed. There is no good reason for releasing scheduler's jobs in IRQ
-> context, hence use normal context to fix the trouble.
+Thanks for the heads-up. I did wonder why this was a separate loop.
 
-
-I am not sure this is the beast Idea to leave job's sw fence signalling 
-to be
-executed in system_wq context which is prone to delays of executing
-various work items from around the system. Seems better to me to leave the
-fence signaling within the IRQ context and offload only the job freeing or,
-maybe handle rescheduling to thread context within drivers implemention
-of .free_job cb. Not really sure which is the better.
-
-Andrey
-
-
->
-> Cc: stable@vger.kernel.org
-> Fixes: 542cff7893a3 ("drm/sched: Avoid lockdep spalt on killing a processes")
-> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> ---
->   drivers/gpu/drm/scheduler/sched_entity.c | 6 +++---
->   include/drm/gpu_scheduler.h              | 4 ++--
->   2 files changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/gpu/drm/scheduler/sched_entity.c b/drivers/gpu/drm/scheduler/sched_entity.c
-> index 191c56064f19..6b25b2f4f5a3 100644
-> --- a/drivers/gpu/drm/scheduler/sched_entity.c
-> +++ b/drivers/gpu/drm/scheduler/sched_entity.c
-> @@ -190,7 +190,7 @@ long drm_sched_entity_flush(struct drm_sched_entity *entity, long timeout)
->   }
->   EXPORT_SYMBOL(drm_sched_entity_flush);
->   
-> -static void drm_sched_entity_kill_jobs_irq_work(struct irq_work *wrk)
-> +static void drm_sched_entity_kill_jobs_work(struct work_struct *wrk)
->   {
->   	struct drm_sched_job *job = container_of(wrk, typeof(*job), work);
->   
-> @@ -207,8 +207,8 @@ static void drm_sched_entity_kill_jobs_cb(struct dma_fence *f,
->   	struct drm_sched_job *job = container_of(cb, struct drm_sched_job,
->   						 finish_cb);
->   
-> -	init_irq_work(&job->work, drm_sched_entity_kill_jobs_irq_work);
-> -	irq_work_queue(&job->work);
-> +	INIT_WORK(&job->work, drm_sched_entity_kill_jobs_work);
-> +	schedule_work(&job->work);
->   }
->   
->   static struct dma_fence *
-> diff --git a/include/drm/gpu_scheduler.h b/include/drm/gpu_scheduler.h
-> index 0fca8f38bee4..addb135eeea6 100644
-> --- a/include/drm/gpu_scheduler.h
-> +++ b/include/drm/gpu_scheduler.h
-> @@ -28,7 +28,7 @@
->   #include <linux/dma-fence.h>
->   #include <linux/completion.h>
->   #include <linux/xarray.h>
-> -#include <linux/irq_work.h>
-> +#include <linux/workqueue.h>
->   
->   #define MAX_WAIT_SCHED_ENTITY_Q_EMPTY msecs_to_jiffies(1000)
->   
-> @@ -295,7 +295,7 @@ struct drm_sched_job {
->   	 */
->   	union {
->   		struct dma_fence_cb		finish_cb;
-> -		struct irq_work 		work;
-> +		struct work_struct 		work;
->   	};
->   
->   	uint64_t			id;
+-- 
+Catalin
