@@ -2,109 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D456C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EBEC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:41:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353992AbiDLMme (ORCPT
+        id S1354412AbiDLMm4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
+        Tue, 12 Apr 2022 08:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355484AbiDLMjN (ORCPT
+        with ESMTP id S1355260AbiDLMjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:39:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0024C32D
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:02:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FDA961017
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:02:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B70BC385A5;
-        Tue, 12 Apr 2022 12:02:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649764941;
-        bh=RL0TS6TyTsdDUGUm/EuXSEF8ETZ+oamHhp+RILM0/YA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=u3mHLMHoovRPWuJ8y8P/Vdf5aWsXfBlbwPd/Lv1CC2gAYrz46aDVuZy2dSkGLSWmE
-         hpBubU2oQjoy5rFdmrvHhehRBFD4euGUaRkf+8y/ARPVcMFqqMajIZJKh10O45Oc9C
-         VsxROyNh+ZUUyk13ISrKKT92HWZsCR8RKZeqBRIs=
-Date:   Tue, 12 Apr 2022 14:02:18 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     Liu Junqi <liujunqi@pku.edu.cn>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Colin Ian King <colin.king@intel.com>,
-        sparmaintainer@unisys.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] MAINTAINERS: Remove D. Kershner from Unisys S-PAR
- maintainers
-Message-ID: <YlVqStHr6acHnF5o@kroah.com>
-References: <20220412103629.8029-1-fmdefrancesco@gmail.com>
- <YlVXV4J41KBzKHtm@kroah.com>
- <2976258.CbtlEUcBR6@leap>
+        Tue, 12 Apr 2022 08:39:05 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CDD462A0A
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:59:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=++CuEWmMFr3JtalWqa+Q+0MtLvDBWWOfSiXyxOg+sfQ=; b=TLrlss4IK1zvwsvPnnO4QFfO+b
+        uEx/FCQ6acqIPpWkdk0xR7EyZUBOLJ3NP47L0i+VaJWIcHgu4QC9SS2oo8wd0rFVCnIikMYM942mP
+        w9HBffir9f1dVb6ufswELWsQmQHEyJ/rdZ+iz5N/x96voji6iDhpzPpkPednuilVT/QizIyDC4m3e
+        lmT9B91bQAz0jWYiggebGhgQMl65v2/cq+xJJB4o3T3QGMxYXxOrS0++ZQL4cA/wEbR50aayPSfy9
+        edJ05lTPPRG02m2Ci99ZUTfshEEFtRbOR9CqGxf396YNnb+r4rtRkFmLD02A1J8IkllcCIR7Fd5ap
+        xf9QLxMA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1neFBP-00DImD-7p; Tue, 12 Apr 2022 11:59:43 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C82D6300250;
+        Tue, 12 Apr 2022 13:59:42 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id A63C926670FA9; Tue, 12 Apr 2022 13:59:42 +0200 (CEST)
+Date:   Tue, 12 Apr 2022 13:59:42 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Oleg Nesterov <oleg@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-kernel@vger.kernel.org, Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Subject: Re: [PATCH v2] ptrace: fix ptrace vs tasklist_lock race on
+ PREEMPT_RT.
+Message-ID: <YlVprihb7pLtrRcF@hirez.programming.kicks-ass.net>
+References: <20220405102849.GA2708@redhat.com>
+ <Ykwn0MpcrZ/N+LOG@hirez.programming.kicks-ass.net>
+ <20220407121340.GA2762@worktop.programming.kicks-ass.net>
+ <87v8vk8q4g.fsf@email.froward.int.ebiederm.org>
+ <20220408090908.GO2731@worktop.programming.kicks-ass.net>
+ <874k332wjp.fsf@email.froward.int.ebiederm.org>
+ <YlCVxlTVL1pyBF08@hirez.programming.kicks-ass.net>
+ <YlQSe6m2tidxwHt0@hirez.programming.kicks-ass.net>
+ <87ee23zqdj.fsf@email.froward.int.ebiederm.org>
+ <YlRgaZnJp2YONKhS@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2976258.CbtlEUcBR6@leap>
+In-Reply-To: <YlRgaZnJp2YONKhS@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 01:08:28PM +0200, Fabio M. De Francesco wrote:
-> On marted? 12 aprile 2022 12:41:27 CEST Greg Kroah-Hartman wrote:
-> > On Tue, Apr 12, 2022 at 12:36:29PM +0200, Fabio M. De Francesco wrote:
-> > > The email address of David Kershner is no more reachable. Remove his
-> > > entry from the MAINTAINERS file for UNISYS S-PAR DRIVERS and change
-> > > the status to "Orphan".
-> > > 
-> > > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> > > ---
-> > > 
-> > > v1->v2: Change also the status of the entry to "Orphan" and rework the
-> > > commit message. (Thanks to Greg Kroah-Hartman).
-> > > 
-> > >  MAINTAINERS | 3 +--
-> > >  1 file changed, 1 insertion(+), 2 deletions(-)
-> > > 
-> > > diff --git a/MAINTAINERS b/MAINTAINERS
-> > > index 3ed62dcd144e..9283c63565b3 100644
-> > > --- a/MAINTAINERS
-> > > +++ b/MAINTAINERS
-> > > @@ -20184,9 +20184,8 @@ F:	include/linux/cdrom.h
-> > >  F:	include/uapi/linux/cdrom.h
-> > >  
-> > >  UNISYS S-PAR DRIVERS
-> > > -M:	David Kershner <david.kershner@unisys.com>
-> > >  L:	sparmaintainer@unisys.com (Unisys internal)
-> > 
-> > Again, please drop this "list" as it obviously is not going to anyone.
-> 
-> OK, I'll also drop the "L:" line. I wasn't sure about it because I see 
-> that there are other entries marked as "Orphan" and the list is still
-> there. But you are right: although the "sparmaintainer" list address is
-> not bouncing, it looks like nobody care to read messages there.
->   
-> > And really, this whole code should be removed, no one seems to be using
-> > it, and if they are, we can easily revert the removal and mark them as
-> > the maintainer.
-> 
-> 1) If I remove the entire drivers/staging/unisys/ I suppose that, in 
-> MAINTAINERS I should also remove the whole entry called "UNISYS S-PAR 
-> DRIVERS", not only the "L:" line. 
 
-Yes, _AND_ you need to also remove all files that are listed for that
-entry.
+For all who I forgot on the Cc list.. continued here:
 
-> 2) Furthermore, I understand that I should also should change the relevant 
-> Kbuild files, otherwise all builds of staging would fail. 
+  https://lkml.kernel.org/r/20220412114421.691372568@infradead.org
 
-Yes.
-
-thanks,
-
-greg k-h
+(once it shows up, the web seems congested just now)
