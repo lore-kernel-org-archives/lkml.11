@@ -2,86 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF2AC35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09EA8C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390400AbiDLJYw (ORCPT
+        id S1389625AbiDLJX7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45430 "EHLO
+        Tue, 12 Apr 2022 05:23:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353684AbiDLIKD (ORCPT
+        with ESMTP id S1377781AbiDLHxt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 04:10:03 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D08E59
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:40:17 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1neB8A-0007gF-Lm; Tue, 12 Apr 2022 09:40:06 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1neB89-00AQZT-Bk; Tue, 12 Apr 2022 09:40:05 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
-Cc:     David Jander <david@protonic.nl>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>
-Subject: [PATCH v1 06/17] arm: dts: imx6qdl-vicut1.dtsi: Fix debug LED gpio pins
-Date:   Tue, 12 Apr 2022 09:39:53 +0200
-Message-Id: <20220412074004.2485264-7-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220412074004.2485264-1-o.rempel@pengutronix.de>
-References: <20220412074004.2485264-1-o.rempel@pengutronix.de>
+        Tue, 12 Apr 2022 03:53:49 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E1A5006D;
+        Tue, 12 Apr 2022 00:31:30 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23C7VJQZ049715;
+        Tue, 12 Apr 2022 02:31:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649748679;
+        bh=mLT0K9e6BMmKkRt/WWpSLI31BeDlL6touk1+htRp8O0=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=K4wQyvAQ8T68dwqIUvGt7/511VO3Ew8yg3G1Afoef0/cmJr15WtwxDTrOcg2FLpQr
+         kI8tE4Dl7ZIxvlTaH9pkGHAUghX5V5Q1lwhh7cAfuErCZqYGElv5TrVsduw7R+RJFh
+         07QaSw9NyZ+/O6spQoMbUnNR4cV5fF5o5PqFW+uo=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23C7VJio031075
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 12 Apr 2022 02:31:19 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 12
+ Apr 2022 02:30:19 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 12 Apr 2022 02:30:19 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23C7UIDO026771;
+        Tue, 12 Apr 2022 02:30:19 -0500
+From:   Jayesh Choudhary <j-choudhary@ti.com>
+To:     <linux-crypto@vger.kernel.org>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <krzysztof.kozlowski+dt@linaro.org>, <j-choudhary@ti.com>,
+        <robh+dt@kernel.org>
+Subject: [PATCH 1/2] dt-bindings: crypto: ti,sa2ul: Add a new compatible for AM62
+Date:   Tue, 12 Apr 2022 13:00:15 +0530
+Message-ID: <20220412073016.6014-2-j-choudhary@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220412073016.6014-1-j-choudhary@ti.com>
+References: <20220412073016.6014-1-j-choudhary@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Jander <david@protonic.nl>
+Add the AM62 version of sa3ul to the compatible list.
 
-While there are LEDs connected on some variants on GPIO4 pins 16 and 17,
-those are not the debug LEDs that should be visible to user-space.
-It should be the same as in imx6dl-victgo.dtsi.
-
-Signed-off-by: David Jander <david@protonic.nl>
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Jayesh Choudhary <j-choudhary@ti.com>
 ---
- arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-index b7a705b39178..a5f962f1028b 100644
---- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-@@ -92,14 +92,14 @@ leds {
- 		led-0 {
- 			label = "debug0";
- 			function = LED_FUNCTION_HEARTBEAT;
--			gpios = <&gpio4 16 GPIO_ACTIVE_HIGH>;
-+			gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
- 			linux,default-trigger = "heartbeat";
- 		};
+diff --git a/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml b/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
+index a410d2cedde6..02f47c2e7998 100644
+--- a/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
++++ b/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
+@@ -15,6 +15,7 @@ properties:
+       - ti,j721e-sa2ul
+       - ti,am654-sa2ul
+       - ti,am64-sa2ul
++      - ti,am62-sa3ul
  
- 		led-1 {
- 			label = "debug1";
- 			function = LED_FUNCTION_DISK;
--			gpios = <&gpio4 17 GPIO_ACTIVE_HIGH>;
-+			gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
- 			linux,default-trigger = "disk-activity";
- 		};
- 
+   reg:
+     maxItems: 1
 -- 
-2.30.2
+2.17.1
 
