@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96089C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD7FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359341AbiDLIof (ORCPT
+        id S1343933AbiDLIoz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:44:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
+        Tue, 12 Apr 2022 04:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357291AbiDLHj4 (ORCPT
+        with ESMTP id S1357327AbiDLHkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75D21EC4D;
-        Tue, 12 Apr 2022 00:14:51 -0700 (PDT)
+        Tue, 12 Apr 2022 03:40:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2922524974;
+        Tue, 12 Apr 2022 00:15:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5ACCB81B66;
-        Tue, 12 Apr 2022 07:14:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31419C385A1;
-        Tue, 12 Apr 2022 07:14:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA15F6171C;
+        Tue, 12 Apr 2022 07:15:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2BABC385A1;
+        Tue, 12 Apr 2022 07:15:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747688;
-        bh=qwVIw6WgvUFZD9gUIdScRL8b7hE6gR9eKQzdOTNlLwo=;
+        s=korg; t=1649747711;
+        bh=keLc67H85t1z1LYE4Ij/7iXTCebH1rFsl3z5VNrPjMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VvGlGj2TWqum4ktSCpfEaSdhkmsj8u76Wh7c7sU7airEamzMq9zZhWgdujYjUcjfE
-         vBjY3TKaFcoSWEkDZ23fd/LfhJPMuV+unucnaWUzoU03R7GfbeO5LqBX0SGOtGJhmC
-         wuKWDbZvdKsodoMVrlumty4qu4CGHinvERqQjZYI=
+        b=ZDaF1Y6jNXeu59sqtCDnuTQC1jJY8C2MadZNXY2JbOC/ia5eg+UX1gmuJNW6kNiBF
+         7hV3Rc9ycHWZtVcq4pSQrSCaLhlkkmZ1tkeffU/by/m4sBTXHk1huIsWXcJp6sOZyo
+         3bQzmDFf3KfQhx0LuZqiXVJs+xvj1Y97mRjr+fL8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Xiubo Li <xiubli@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 170/343] NFSv4: Protect the state recovery thread against direct reclaim
-Date:   Tue, 12 Apr 2022 08:29:48 +0200
-Message-Id: <20220412062956.277072882@linuxfoundation.org>
+Subject: [PATCH 5.17 151/343] ceph: fix inode reference leakage in ceph_get_snapdir()
+Date:   Tue, 12 Apr 2022 08:29:29 +0200
+Message-Id: <20220412062955.737159359@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,74 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit 3e17898aca293a24dae757a440a50aa63ca29671 ]
+[ Upstream commit 322794d3355c33adcc4feace0045d85a8e4ed813 ]
 
-If memory allocation triggers a direct reclaim from the state recovery
-thread, then we can deadlock. Use memalloc_nofs_save/restore to ensure
-that doesn't happen.
+The ceph_get_inode() will search for or insert a new inode into the
+hash for the given vino, and return a reference to it. If new is
+non-NULL, its reference is consumed.
 
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+We should release the reference when in error handing cases.
+
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4state.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ fs/ceph/inode.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
-index f5a62c0d999b..0f4818627ef0 100644
---- a/fs/nfs/nfs4state.c
-+++ b/fs/nfs/nfs4state.c
-@@ -49,6 +49,7 @@
- #include <linux/workqueue.h>
- #include <linux/bitops.h>
- #include <linux/jiffies.h>
-+#include <linux/sched/mm.h>
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index ef4a980a7bf3..c092dce0485c 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -87,13 +87,13 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	if (!S_ISDIR(parent->i_mode)) {
+ 		pr_warn_once("bad snapdir parent type (mode=0%o)\n",
+ 			     parent->i_mode);
+-		return ERR_PTR(-ENOTDIR);
++		goto err;
+ 	}
  
- #include <linux/sunrpc/clnt.h>
+ 	if (!(inode->i_state & I_NEW) && !S_ISDIR(inode->i_mode)) {
+ 		pr_warn_once("bad snapdir inode type (mode=0%o)\n",
+ 			     inode->i_mode);
+-		return ERR_PTR(-ENOTDIR);
++		goto err;
+ 	}
  
-@@ -2560,9 +2561,17 @@ static void nfs4_layoutreturn_any_run(struct nfs_client *clp)
+ 	inode->i_mode = parent->i_mode;
+@@ -113,6 +113,12 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	}
  
- static void nfs4_state_manager(struct nfs_client *clp)
- {
-+	unsigned int memflags;
- 	int status = 0;
- 	const char *section = "", *section_sep = "";
- 
-+	/*
-+	 * State recovery can deadlock if the direct reclaim code tries
-+	 * start NFS writeback. So ensure memory allocations are all
-+	 * GFP_NOFS.
-+	 */
-+	memflags = memalloc_nofs_save();
-+
- 	/* Ensure exclusive access to NFSv4 state */
- 	do {
- 		trace_nfs4_state_mgr(clp);
-@@ -2657,6 +2666,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
- 			clear_bit(NFS4CLNT_RECLAIM_NOGRACE, &clp->cl_state);
- 		}
- 
-+		memalloc_nofs_restore(memflags);
- 		nfs4_end_drain_session(clp);
- 		nfs4_clear_state_manager_bit(clp);
- 
-@@ -2674,6 +2684,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
- 			return;
- 		if (test_and_set_bit(NFS4CLNT_MANAGER_RUNNING, &clp->cl_state) != 0)
- 			return;
-+		memflags = memalloc_nofs_save();
- 	} while (refcount_read(&clp->cl_count) > 1 && !signalled());
- 	goto out_drain;
- 
-@@ -2686,6 +2697,7 @@ static void nfs4_state_manager(struct nfs_client *clp)
- 			clp->cl_hostname, -status);
- 	ssleep(1);
- out_drain:
-+	memalloc_nofs_restore(memflags);
- 	nfs4_end_drain_session(clp);
- 	nfs4_clear_state_manager_bit(clp);
+ 	return inode;
++err:
++	if ((inode->i_state & I_NEW))
++		discard_new_inode(inode);
++	else
++		iput(inode);
++	return ERR_PTR(-ENOTDIR);
  }
+ 
+ const struct inode_operations ceph_file_iops = {
 -- 
 2.35.1
 
