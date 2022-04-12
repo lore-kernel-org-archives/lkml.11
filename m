@@ -2,136 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A141C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A947C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 15:45:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357240AbiDLPqj (ORCPT
+        id S1357182AbiDLPri (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 11:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60200 "EHLO
+        Tue, 12 Apr 2022 11:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357175AbiDLPqc (ORCPT
+        with ESMTP id S1357287AbiDLPre (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 11:46:32 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B44B853
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:44:11 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id f17so2896413ybj.10
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 08:44:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tr9PBKtwF8uwxpVk+FAIjyu0P4+AAl4OjgCwV9dPuUk=;
-        b=FBpU8iZrkesdxN5hege1QVCKw2GwQWoJeqo7hta2MSJUHT2hX/jY4/T2uTIN91Ci2f
-         yJYPP5se3CJcfHE7rZndjKAD9xDCiCMveeeg1bmiRexKgxQ5aeEdPBqeTrXGIIOIApep
-         1Gc2EQUyynrjTlEYC8DRlMwGfwSiq2mE82KBA9kJ0ShAVa58yxE2vcldInV28pJXQAyV
-         DjyEVtey6YGKZBqiSjquLuWMm6sYergrT9hEkKmhf1AtCgt8AKIXrwlx3ep9pRIu/xFC
-         DXVRc2eEE4A8PGgT+6VvpngUsKIKbdLkgRagzaLB9RYyJTJ80U40OtUjoCIS0yNiYrjJ
-         Vk7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tr9PBKtwF8uwxpVk+FAIjyu0P4+AAl4OjgCwV9dPuUk=;
-        b=i4xSZV4hErvbi1IaPCBwKB8sNyHpzPFa3dJyW0FYuTJVwbkBRBchj3tJmGYCpl+fOx
-         euMZS+kiZ+5rB4bOIj1WaJjni8s3GJsFTLm+MuNB4IutJwoQN2ClCFX3IXpOMb3PQM3F
-         HmzhxR+Dvtqd3hlF4sUdBXgzv6Xxxanx/yLDitVqNsSeuW0XS+DMb5T9e/rQNPsvLi2P
-         4jwW3y58Sqeiz2oON1OLOxJD1MiRmbWji4fv1AGxfuWrYLVB6WySmbfn1EbfK989Gp9R
-         WAUnlvvhj2cW3wWKvWx+PCFP4LMoENBrv0q98MmOWyxkM8tBD3CyUBlArfTerHfGx648
-         t9+Q==
-X-Gm-Message-State: AOAM533H3RMAfpsKHP8gtygsFEsc8UDaYzrPbnttGpvMZOpUTaAQuusd
-        vGNDEx6560N9qVbXGJy+3DE1Pxk3TZkNyIuwFI6KHQ==
-X-Google-Smtp-Source: ABdhPJwwQOZn8bktk+JMI7gRj6EbmLkfkWywdQIVdWcSjUAaN/fZLvVFnq2dQrWz2x1R4BWR7pO/68AY6/0C3pCpoH0=
-X-Received: by 2002:a25:df53:0:b0:641:1f31:1d3d with SMTP id
- w80-20020a25df53000000b006411f311d3dmr12954621ybg.603.1649778250882; Tue, 12
- Apr 2022 08:44:10 -0700 (PDT)
+        Tue, 12 Apr 2022 11:47:34 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C555DF25;
+        Tue, 12 Apr 2022 08:45:17 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 15ED91424;
+        Tue, 12 Apr 2022 08:45:17 -0700 (PDT)
+Received: from [10.1.30.135] (e127744.cambridge.arm.com [10.1.30.135])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 218D23F70D;
+        Tue, 12 Apr 2022 08:45:15 -0700 (PDT)
+Subject: Re: [PATCH 1/1] perf tools: Use Python devtools for version
+ autodetection rather than runtime
+From:   German Gomez <german.gomez@arm.com>
+To:     James Clark <james.clark@arm.com>, acme@kernel.org,
+        linux-perf-users@vger.kernel.org
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        linux-kernel@vger.kernel.org
+References: <20220309194313.3350126-1-james.clark@arm.com>
+ <20220309194313.3350126-2-james.clark@arm.com>
+ <1262ee1e-22dc-0cc6-3e60-257e17d9ed26@arm.com>
+Message-ID: <14df315d-7667-d80c-b58f-4ad6a6e1c93c@arm.com>
+Date:   Tue, 12 Apr 2022 16:45:10 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220412062942.022903016@linuxfoundation.org> <CA+G9fYseyeNoxQwEWtiiU8dLs_1coNa+sdV-1nqoif6tER_46Q@mail.gmail.com>
- <CANpmjNP4-jG=kW8FoQpmt4X64en5G=Gd-3zaBebPL7xDFFOHmA@mail.gmail.com>
-In-Reply-To: <CANpmjNP4-jG=kW8FoQpmt4X64en5G=Gd-3zaBebPL7xDFFOHmA@mail.gmail.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 12 Apr 2022 21:13:59 +0530
-Message-ID: <CA+G9fYuJKsYMR2vW+7d=xjDj9zoBtTF5=pSmcQRaiQitAjXCcw@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/277] 5.15.34-rc1 review
-To:     Marco Elver <elver@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        linux-mm <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1262ee1e-22dc-0cc6-3e60-257e17d9ed26@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marco
 
-On Tue, 12 Apr 2022 at 20:32, Marco Elver <elver@google.com> wrote:
+On 12/04/2022 16:30, German Gomez wrote:
+> Hi James,
 >
-> On Tue, 12 Apr 2022 at 16:16, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
-> >
-> > On Tue, 12 Apr 2022 at 12:11, Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > This is the start of the stable review cycle for the 5.15.34 release.
-> > > There are 277 patches in this series, all will be posted as a response
-> > > to this one.  If anyone has any issues with these being applied, please
-> > > let me know.
-> > >
-> > > Responses should be made by Thu, 14 Apr 2022 06:28:59 +0000.
-> > > Anything received after that time might be too late.
-> > >
-> > > The whole patch series can be found in one patch at:
-> > >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.34-rc1.gz
-> > > or in the git tree and branch at:
-> > >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> > > and the diffstat can be found below.
-> > >
-> > > thanks,
-> > >
-> > > greg k-h
-> >
-> >
-> > On linux stable-rc 5.15 x86 and i386 builds failed due to below error [1]
-> > with config [2].
-> >
-> > The finding is when kunit config is enabled the builds pass.
-> > CONFIG_KUNIT=y
-> >
-> > But with CONFIG_KUNIT not set the builds failed.
-> >
-> > x86_64-linux-gnu-ld: mm/kfence/core.o: in function `__kfence_alloc':
-> > core.c:(.text+0x901): undefined reference to `filter_irq_stacks'
-> > make[1]: *** [/builds/linux/Makefile:1183: vmlinux] Error 1
-> >
-> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> >
-> > I see these three commits, I will bisect and get back to you
-> >
-> > 2f222c87ceb4 kfence: limit currently covered allocations when pool nearly full
-> > e25487912879 kfence: move saving stack trace of allocations into
-> > __kfence_alloc()
-> > d99355395380 kfence: count unexpectedly skipped allocations
->
-> My guess is that this commit is missing:
+> On 09/03/2022 19:43, James Clark wrote:
+>> This fixes the issue where the build will fail if only the Python2
+>> runtime is installed but the Python3 devtools are installed. Currently
+>> the workaround is 'make PYTHON=python3'.
+>>
+>> Fix it by autodetecting Python based on whether python[x]-config exists
+>> rather than just python[x] because both are needed for the build. Then
+>> -config is stripped to find the Python runtime.
+>>
+>> Testing
+>> =======
+>>
+>>  * Auto detect links with Python3 when the v3 devtools are installed
+>>    and only Python 2 runtime is installed
+>>  * Auto detect links with Python2 when both devtools are installed
+>>  * Sensible warning is printed if no Python devtools are installed
+>>  * 'make PYTHON=x' still automatically sets PYTHON_CONFIG=x-config
+>>  * 'make PYTHON=x' fails if x-config doesn't exist
+> If x is a valid python but no x-config is found in the system, the build
+> fails, instead of printing a warning like before. If we use this approach
+> I think [1] in the Makefile is never hit and needs to be cleaned up.
 
-This patch is missing Fixes: tag.
+Sorry, small correction:
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f39f21b3ddc7fc0f87eb6dc75ddc81b5bbfb7672
+The line in the Makefile is never hit when PYTHON is explicitly defined (probably not a big deal).
 
-For your information, I have reverted the below commit and build pass.
-
-kfence: limit currently covered allocations when pool nearly full
-
-[ Upstream commit 08f6b10630f284755087f58aa393402e15b92977 ]
-
-- Naresh
-
-> Thanks,
-> -- Marco
+Still I wanted to point the small change in behaviour with the build warning vs. build fail.
