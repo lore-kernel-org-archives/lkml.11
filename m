@@ -2,122 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB04CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E488C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229750AbiDLX00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38968 "EHLO
+        id S229864AbiDLX0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:26:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbiDLXZ5 (ORCPT
+        with ESMTP id S229730AbiDLX0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:25:57 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB85089301
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:12:06 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id p65so487370ybp.9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:12:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=n/5q6ebK0JYN5I7SWFxTUh10KRu428isEGA+YMY0xN4=;
-        b=sWx01FzQ52rz4TlVeDegxVNeDfmRcpQfNXdHuvalmZDAgtXROZkhFaSuKhNQNiEgKI
-         WvlFxWz+QV5Kp6fkSTGX852h4t/pl5pqUJqvuJIOqiEc8LSxKkt8rUF1kXEbKFDR1EzA
-         8+CdvnE7j9qnxeZC8NukluEOv3a4ZauSz4IIdkSmPZjE27pZPt3Ai6KPB1GJeHtjtnZJ
-         f76ruUOfVhARU9cgrFz35mWiNg+SFn+TcMSHqSp5wIbAF7l8BJ4NOEdtAFeVCps1Pig9
-         WZvxSzQLJqSs1bqX7Cgtx/9Ck/qm30gPflZI0IzmDZVBgu72PlUQJ227r/wzW9kqbs5v
-         kdBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=n/5q6ebK0JYN5I7SWFxTUh10KRu428isEGA+YMY0xN4=;
-        b=kHqrvQpl5ZIeSWIrcFx/t5g1rz08CX0Sfps1DM2p4603HmKd53w5dB5HvRNcVENP6R
-         XZJxRfAeSX4AgnaDJb9PT+3MgnL0vaLm9ydQhV2VixownwFq9PIO9GSZbffWe8B/yWa4
-         6YPcL8q1PbjNJoDmr+w8udRv6xvo42kkFGioaVRUk9fFI9Vqf53kHByG4h2MC9sOCPhx
-         v0lLIJL3MbhFWeJZTjhJ2RMezT3zQV5PbNmXMPskMuhZg/XRXrmqYa4GmPmIdlaljTxB
-         s4sQg7YY3ErALiCiRVCtkQoWrrVA2qpJf4u2yWufMwChVntnXlDL7RzcrwdiQWSwCn5p
-         5Qdg==
-X-Gm-Message-State: AOAM531ZjeY/MWD03LA+tdJ3+H9F3J1NXxeMASP6CrYeJKtFm++Yfgdl
-        qbKrI+EPeUX6p+XLtYMkvhTdaPBDGX0mj9EN
-X-Google-Smtp-Source: ABdhPJzM73G6wmlf7ocdRD76spYGYiPKpTlOlDLnwAhgIxZiQVyrqx/COh0e31S0X6g2LDDnvC7doA==
-X-Received: by 2002:a9d:4709:0:b0:5cd:9619:890f with SMTP id a9-20020a9d4709000000b005cd9619890fmr13115445otf.118.1649798943160;
-        Tue, 12 Apr 2022 14:29:03 -0700 (PDT)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id 123-20020a4a0181000000b00324a1217e96sm13290162oor.35.2022.04.12.14.29.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 14:29:02 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 14:31:17 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] dmaengine: qcom: gpi: Add support for ee_offset
-Message-ID: <YlXvpdmBRVaCVBRo@ripper>
-References: <20220406132508.1029348-1-vkoul@kernel.org>
- <20220406132508.1029348-3-vkoul@kernel.org>
+        Tue, 12 Apr 2022 19:26:16 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D083DE7F69;
+        Tue, 12 Apr 2022 15:40:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1649803201; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=V1gGyPRrzq2+IYxEgFqW+9RQDsjKShTJNXfR19CIx0I=;
+        b=2YZwLXLEOWmPN8AG89OD4NVqzNK4VfhnQx7xlDnTY9/fpGKt2Obems9m9WNsIiHrvzDcSk
+        NNWm/rrmyH825SKRrCZa7iZnBkYHm234qRt83tCCnE/uRiz0xYyKZGaWJHx9yd6CaQkwDl
+        nR9cViVY9zzy4XSyG1brnH8GxMYFB8k=
+Date:   Tue, 12 Apr 2022 23:39:50 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v5 2/2] clk: ingenic-tcu: Fix missing TCU clock for X1000
+ SoCs
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, tsbogend@alpha.franken.de,
+        mturquette@baylibre.com, sboyd@kernel.org,
+        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        dan.carpenter@oracle.com
+Message-Id: <EA09AR.6F7SVEL62WAI1@crapouillou.net>
+In-Reply-To: <20220412122750.279058-3-aidanmacdonald.0x0@gmail.com>
+References: <20220412122750.279058-1-aidanmacdonald.0x0@gmail.com>
+        <20220412122750.279058-3-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406132508.1029348-3-vkoul@kernel.org>
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 06 Apr 06:25 PDT 2022, Vinod Koul wrote:
+Hi,
 
-> Controller on newer SoCs like SM8450 have registers at at offset. Add
-> ee_offset to driver_data and add this compatible for the driver.
-> 
-> Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Le mar., avril 12 2022 at 13:27:50 +0100, Aidan MacDonald=20
+<aidanmacdonald.0x0@gmail.com> a =E9crit :
+> The TCU clock gate on X1000 wasn't requested by the driver and could
+> be gated automatically later on in boot, which prevents timers from
+> running and breaks PWM.
+>=20
+> Add a workaround to support old device trees that don't specify the
+> "tcu" clock gate. In this case the kernel will print a warning and
+> attempt to continue without the clock, which is wrong, but it could
+> work if "clk_ignore_unused" is in the kernel arguments.
+>=20
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Tested-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
 
-Regards,
-Bjorn
+Cheers,
+-Paul
 
 > ---
->  drivers/dma/qcom/gpi.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/dma/qcom/gpi.c b/drivers/dma/qcom/gpi.c
-> index 3429ceccd13b..0b402d923eae 100644
-> --- a/drivers/dma/qcom/gpi.c
-> +++ b/drivers/dma/qcom/gpi.c
-> @@ -2152,6 +2152,7 @@ static int gpi_probe(struct platform_device *pdev)
->  {
->  	struct gpi_dev *gpi_dev;
->  	unsigned int i;
-> +	u32 ee_offset;
->  	int ret;
->  
->  	gpi_dev = devm_kzalloc(&pdev->dev, sizeof(*gpi_dev), GFP_KERNEL);
-> @@ -2179,6 +2180,9 @@ static int gpi_probe(struct platform_device *pdev)
->  		return ret;
->  	}
->  
-> +	ee_offset = (uintptr_t)device_get_match_data(gpi_dev->dev);
-> +	gpi_dev->ee_base = gpi_dev->ee_base - ee_offset;
-> +
->  	gpi_dev->ev_factor = EV_FACTOR;
->  
->  	ret = dma_set_mask(gpi_dev->dev, DMA_BIT_MASK(64));
-> @@ -2282,9 +2286,10 @@ static int gpi_probe(struct platform_device *pdev)
->  }
->  
->  static const struct of_device_id gpi_of_match[] = {
-> -	{ .compatible = "qcom,sdm845-gpi-dma" },
-> -	{ .compatible = "qcom,sm8150-gpi-dma" },
-> -	{ .compatible = "qcom,sm8250-gpi-dma" },
-> +	{ .compatible = "qcom,sdm845-gpi-dma", .data = (void *)0x0 },
-> +	{ .compatible = "qcom,sm8150-gpi-dma", .data = (void *)0x0 },
-> +	{ .compatible = "qcom,sm8250-gpi-dma", .data = (void *)0x0 },
-> +	{ .compatible = "qcom,sm8450-gpi-dma", .data = (void *)0x10000 },
->  	{ },
+>  drivers/clk/ingenic/tcu.c | 35 +++++++++++++++++++++++++----------
+>  1 file changed, 25 insertions(+), 10 deletions(-)
+>=20
+> diff --git a/drivers/clk/ingenic/tcu.c b/drivers/clk/ingenic/tcu.c
+> index 77acfbeb4830..201bf6e6b6e0 100644
+> --- a/drivers/clk/ingenic/tcu.c
+> +++ b/drivers/clk/ingenic/tcu.c
+> @@ -31,6 +31,7 @@ struct ingenic_soc_info {
+>  	unsigned int num_channels;
+>  	bool has_ost;
+>  	bool has_tcu_clk;
+> +	bool allow_missing_tcu_clk;
 >  };
->  MODULE_DEVICE_TABLE(of, gpi_of_match);
-> -- 
-> 2.34.1
-> 
+>=20
+>  struct ingenic_tcu_clk_info {
+> @@ -320,7 +321,8 @@ static const struct ingenic_soc_info=20
+> jz4770_soc_info =3D {
+>  static const struct ingenic_soc_info x1000_soc_info =3D {
+>  	.num_channels =3D 8,
+>  	.has_ost =3D false, /* X1000 has OST, but it not belong TCU */
+> -	.has_tcu_clk =3D false,
+> +	.has_tcu_clk =3D true,
+> +	.allow_missing_tcu_clk =3D true,
+>  };
+>=20
+>  static const struct of_device_id __maybe_unused=20
+> ingenic_tcu_of_match[] __initconst =3D {
+> @@ -355,14 +357,27 @@ static int __init ingenic_tcu_probe(struct=20
+> device_node *np)
+>  		tcu->clk =3D of_clk_get_by_name(np, "tcu");
+>  		if (IS_ERR(tcu->clk)) {
+>  			ret =3D PTR_ERR(tcu->clk);
+> -			pr_crit("Cannot get TCU clock\n");
+> -			goto err_free_tcu;
+> -		}
+>=20
+> -		ret =3D clk_prepare_enable(tcu->clk);
+> -		if (ret) {
+> -			pr_crit("Unable to enable TCU clock\n");
+> -			goto err_put_clk;
+> +			/*
+> +			 * Old device trees for some SoCs did not include the
+> +			 * TCU clock because this driver (incorrectly) didn't
+> +			 * use it. In this case we complain loudly and attempt
+> +			 * to continue without the clock, which might work if
+> +			 * booting with workarounds like "clk_ignore_unused".
+> +			 */
+> +			if (tcu->soc_info->allow_missing_tcu_clk && ret =3D=3D -EINVAL) {
+> +				pr_warn("TCU clock missing from device tree, please update your=20
+> device tree\n");
+> +				tcu->clk =3D NULL;
+> +			} else {
+> +				pr_crit("Cannot get TCU clock from device tree\n");
+> +				goto err_free_tcu;
+> +			}
+> +		} else {
+> +			ret =3D clk_prepare_enable(tcu->clk);
+> +			if (ret) {
+> +				pr_crit("Unable to enable TCU clock\n");
+> +				goto err_put_clk;
+> +			}
+>  		}
+>  	}
+>=20
+> @@ -432,10 +447,10 @@ static int __init ingenic_tcu_probe(struct=20
+> device_node *np)
+>  			clk_hw_unregister(tcu->clocks->hws[i]);
+>  	kfree(tcu->clocks);
+>  err_clk_disable:
+> -	if (tcu->soc_info->has_tcu_clk)
+> +	if (tcu->clk)
+>  		clk_disable_unprepare(tcu->clk);
+>  err_put_clk:
+> -	if (tcu->soc_info->has_tcu_clk)
+> +	if (tcu->clk)
+>  		clk_put(tcu->clk);
+>  err_free_tcu:
+>  	kfree(tcu);
+> --
+> 2.35.1
+>=20
+
+
