@@ -2,153 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAAE8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:53:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36174C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:53:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350519AbiDLMzn (ORCPT
+        id S1354675AbiDLMzu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
+        Tue, 12 Apr 2022 08:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355272AbiDLMsJ (ORCPT
+        with ESMTP id S1355838AbiDLMsh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:48:09 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CD51AA;
-        Tue, 12 Apr 2022 05:16:27 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id r13so36972813ejd.5;
-        Tue, 12 Apr 2022 05:16:27 -0700 (PDT)
+        Tue, 12 Apr 2022 08:48:37 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A0D63DA73
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:19:40 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id p15so36942843ejc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:19:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SauRrPtkvH++wq5kM/ENmKVywKLBbnGlq4WrfqqSV+A=;
-        b=KMMgTD4eqHSocfjUAX9sOYUKbAccfIdzUX7Y/cKXBZaA3DdYKoxaDEkMTRpY15o4Pp
-         LEFDk2i7uYe0t8MnS99DWhcmH+n3krrsHjMfb/I9AeIsI7boJcVxlx6SSr3LxEFaO10s
-         E+dBacnWczSHi6Vv6AnA0AFsgkjnfCuvnjTVH0BbxhhbuNqE4UFa+48BgViG/28eaG4b
-         NZ2UlhPW2IbUHdjPVlGa6lA+1bTtbP/b9QYneqAekedYypLIIGTSjCsrCIUhJyEnNBmX
-         FE6NJWukEY4Gyqss5WRrieAK/t7AiE0doun7ScIXJIEFBdGzgs0avwpahmiPVU8aR1Vm
-         oAvQ==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=B9+cI4IoL52revKm+mDw49Lnf0IFiGCiBvB1l4R4Zhs=;
+        b=A6ZS7Z8yI1gNu2iwhHBbnSZ0QbwqlDVmSlNIgYrboFMCpplzOT5VRWB6uCvnftD4ED
+         rA9JU84nd4w1lZ87TUCdGOodAaN/hWWeUmGfOWIikMdV2c6IrLSBBnSZGy9pETQxfNpv
+         rEpYrUjQ3oi2z2VRoXouRjXsigMtkrGChaDBcTNBMnK74w713fbtoc/HFrb9RX1i7eEe
+         TUsREoOo/BgbPe9u7sk1tsBXmY6a6VGYE0Yv5/t9mA9o7vClx/OIL7TxOg1qqDZNuRiJ
+         47btEH27lFwN0nUpE2/xnkKki+WPoQt3EVRqd240hjir6hDDUH32RepsJNlVe395oYTD
+         X+wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=SauRrPtkvH++wq5kM/ENmKVywKLBbnGlq4WrfqqSV+A=;
-        b=4PbbPCtQ+0o0AMjvBnJU3fHhDynChtypLs/tfoxD5SwvfyCkjoW8s+bPdhPSAvOBn3
-         F9Bu/BJpCDHINqBjRwBF1Z+IqGFxobaOjOWWTWuGTyu8ZU4YsM+fo+euEsBEsFIY+iIk
-         rbqBgCmdz+0yGAlo0+HnWXdiVWoX83GrbLtgCEGINxD/ha9+79KZu2V24E8jqIUrAY7Q
-         MkZlDyEdhE7EXHGJeZ53JYWagS0orrI2HtywJh4l5Xw6lGEMmjmppb2o2oUY7aOfoxbp
-         Egg/+zC9PCrkvoEr8gtD++2BpXtwAKBQxsF8xxjtgh7f0Fj4l5JEoIb5+U0VDvZtji1P
-         0Zmw==
-X-Gm-Message-State: AOAM533ctt5iwr+kjpXvLZaG/V4SNVwPV4ha4didb8pxO0g43ufexlxE
-        UgKqEXWbAKLkhpXKbUjn9sk=
-X-Google-Smtp-Source: ABdhPJwaLV9WCXwPNDN9XsaLWYamOBWtMxnQwfCpN462OFM8kyd9vvvxbB2FB9m9bGxFmOH6VZCyVA==
-X-Received: by 2002:a17:906:2991:b0:6cd:ac19:ce34 with SMTP id x17-20020a170906299100b006cdac19ce34mr34558940eje.746.1649765780565;
-        Tue, 12 Apr 2022 05:16:20 -0700 (PDT)
-Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id b5-20020a17090630c500b006e8044fa76bsm8827900ejb.143.2022.04.12.05.16.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 05:16:20 -0700 (PDT)
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Casper Andersson <casper.casan@gmail.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Michael Walle <michael@walle.cc>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Colin Ian King <colin.king@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Di Zhu <zhudi21@huawei.com>, Xu Wang <vulab@iscas.ac.cn>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
-        Mike Rapoport <rppt@kernel.org>,
-        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v3 00/18] Remove use of list iterator after loop body
-Date:   Tue, 12 Apr 2022 14:15:39 +0200
-Message-Id: <20220412121557.3553555-1-jakobkoschel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=B9+cI4IoL52revKm+mDw49Lnf0IFiGCiBvB1l4R4Zhs=;
+        b=5HasDRbwoJ+2cp5LG/L/HYSr4EUBosD3QYZgv6pEcqe2PVZGlxiovQQI2rgI5Uw6Lh
+         /RVBgOgOkigVGF58vp/+Ykd4JgPsKZBcQK4jiib4SpLPWVdwBjicc3M1fRbmmUixng/J
+         mEKvBLjnAiOh099kDqhMi/FvP0eALOYfK6NpRUOQherX8hj1sHlExRfir3kKswkInr7x
+         Jj4EK4C9/2uP+e4+aPVvVHrDFrV3ClhbandEdh87pW3umlhX5fi9PttMYRBBGbQk1S6+
+         ZoBCh0E2/pfO9QcTFTJ3n936bvCeDsXKd+MFXYiBwEdddwRwtaq+5rbxWHkRCgnF+flK
+         IHFA==
+X-Gm-Message-State: AOAM530kmGXmTIDPkwyDDQm6QDRn4JbzRU+v3PCeQQGfFEYwkPvSuaJe
+        WeQ/QdT2tT+ibnVNY+0rgJlgQA==
+X-Google-Smtp-Source: ABdhPJxP5FPJxSzsun3ev7AJry3+ba7d3iA+/B0jezlSiH093DYefWri2aUuJXT5chMPrfaGPZCtxQ==
+X-Received: by 2002:a17:906:7307:b0:6da:92e1:9c83 with SMTP id di7-20020a170906730700b006da92e19c83mr34466390ejc.459.1649765978985;
+        Tue, 12 Apr 2022 05:19:38 -0700 (PDT)
+Received: from [192.168.0.195] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id g14-20020a50e04e000000b0041cd8db541fsm12509112edl.74.2022.04.12.05.19.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 05:19:38 -0700 (PDT)
+Message-ID: <16750a7d-de4b-0bba-9513-c45560d279ba@linaro.org>
+Date:   Tue, 12 Apr 2022 14:19:37 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] memory: renesas-rpc-if: Simplify single/double data
+ register access
+Content-Language: en-US
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Duc Nguyen <duc.nguyen.ub@renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <19358863deae03b1b26f473e878305a1c6e40d19.1649681638.git.geert+renesas@glider.be>
+ <YlVJc3z1xXT2emIc@ninjato>
+ <CAMuHMdUGkba3hiRJPEw26oBdc6_MK_eBO==Z9QeinaoeZv8Qbw@mail.gmail.com>
+ <YlVLEnRaARVmWZnZ@ninjato>
+ <CAMuHMdWAQ08K6NCdBGrY+-vBrsTQHi6UHaER4eCON1t9JEG1RA@mail.gmail.com>
+ <YlVRw4ypp3+0Miz3@ninjato>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YlVRw4ypp3+0Miz3@ninjato>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the list iterator loop does not exit early the list iterator variable
-contains a type-confused pointer to a 'bogus' list element computed based
-on the head [1].
+On 12/04/2022 12:17, Wolfram Sang wrote:
+> 
+>> But that's not what happened. I even compared the assembler output of
+>> various solutions.
+> 
+> I am sure you did. I just said "it looks like..." to state a reason why
+> I don't think it looks prettier. But this turns to bike-shedding for me,
+> just keep it if everyone else is happy.
 
-Often a 'found' variable is used to ensure the list iterator
-variable is only accessed after the loop body if the loop did exit early
-(using a break or goto).
+I vote for removal of ++, because later someone might wonder why it was
+incremented even if not used.
 
-In other cases that list iterator variable is used in
-combination to access the list member which reverses the invocation of
-container_of() and brings back a "safe" pointer to the head of the list.
-
-Since, due to this code patten, there were quite a few bugs discovered [2],
-Linus concluded that the rule should be to never use the list iterator
-after the loop and introduce a dedicated pointer for that [3].
-
-With the new gnu11 standard, it will now be possible to limit the scope
-of the list iterator variable to the traversal loop itself by defining
-the variable within the for loop.
-This, however, requires to remove all uses of the list iterator after
-the loop.
-
-Based on input from Paolo Abeni [4], Vinicius Costa Gomes [5], and
-Jakub Kicinski [6], I've splitted all the net-next related changes into
-two patch sets, where this is part 1.
-
-v2->v3:
-- fix commit authors and signed-off order regarding Vladimir's patches
-  (Sorry about that, wasn't intentional.)
-
-v1->v2:
-- Fixed commit message for PATCH 14/18 and used dedicated variable
-  pointing to the position (Edward Cree)
-- Removed redundant check in mv88e6xxx_port_vlan() (Vladimir Oltean)
-- Refactor mv88e6xxx_port_vlan() using separate list iterator functions
-  (Vladimir Oltean)
-- Refactor sja1105_insert_gate_entry() to use separate list iterator
-  functions (Vladimir Oltean)
-- Allow early return in sja1105_insert_gate_entry() if
-  sja1105_first_entry_longer_than() didn't find any element
-  (Vladimir Oltean)
-- Use list_add_tail() instead of list_add() in sja1105_insert_gate_entry()
-  (Jakub Kicinski)
-- net: netcp: also use separate 'pos' variable instead of duplicating list_add()
-
-Link: https://lwn.net/Articles/887097/ [1]
-Link: https://lore.kernel.org/linux-kernel/20220217184829.1991035-4-jakobkoschel@gmail.com/ [2]
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [3]
-Link: https://lore.kernel.org/linux-kernel/7393b673c626fd75f2b4f8509faa5459254fb87c.camel@redhat.com/ [4]
-Link: https://lore.kernel.org/linux-kernel/877d8a3sww.fsf@intel.com/ [5]
-Link: https://lore.kernel.org/linux-kernel/20220403205502.1b34415d@kernel.org/ [6]
-
+Best regards,
+Krzysztof
