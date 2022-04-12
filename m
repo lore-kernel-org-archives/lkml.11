@@ -2,162 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB944C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C4AC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357362AbiDLJDq (ORCPT
+        id S1386824AbiDLJEZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46300 "EHLO
+        Tue, 12 Apr 2022 05:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358046AbiDLHlB (ORCPT
+        with ESMTP id S1359036AbiDLHm1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9EB440926;
-        Tue, 12 Apr 2022 00:17:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 458D861045;
-        Tue, 12 Apr 2022 07:17:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56389C385A1;
-        Tue, 12 Apr 2022 07:17:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747835;
-        bh=+Rqdjfhvx2D/QpvUz9W69X9XBHp0o3qpRtra3UpwWus=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aORHM98Obl6SCXJ36MDXLZW98vKzryGqzhz1c61fLXLZN2BnHodb0AtwoiHF2D2Hc
-         huTrPYwsAOvAXGzMJJ7vR/CbjrmfS20C3/X78kG1tLWnHfiHKS3L+n6Ywv2dNd7IhZ
-         TMQVcFMEZm30G01QdmTKHKGVCCW3Z5bydrptm/bo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 222/343] bnxt_en: Synchronize tx when xdp redirects happen on same ring
-Date:   Tue, 12 Apr 2022 08:30:40 +0200
-Message-Id: <20220412062957.747431461@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:42:27 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B6F54FBB
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:20:03 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id s6so3938807qta.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:20:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XvbKywfbm/xW7byqKZQzUxfarlYd7JRaSauDk7cot/s=;
+        b=R8F5T5+9GDyIxEi/DKA9g4pcixd9+sQKyQvYDCAo/eL4g9kmL0xUQb4FUzjPaRMS47
+         sOfG15j4SuMQf0pOCoe2h0vQkgr4GQeH6qdvrTNdYtdDzUY4mj9Ck1NzCErFI7dSFPQ7
+         azysapIySswploKHk3qMTX71RL4oF/zuqd2zxvLKam0sGwvLSsr4Bxhnz3c+qs9hPAxV
+         ydHmzj/Kv4Q0OCwR5/FeZUeu4adf1x6QwhUN8DHnEaKXxJTM76XTouyqfgBclt9ZFGXF
+         3b1CsSanEEREH8pCsGLb+q3TVVmJoRXGTc8EwFY8C02KdHcF6J3Hi6YGShc5g3OMNG7R
+         XSyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XvbKywfbm/xW7byqKZQzUxfarlYd7JRaSauDk7cot/s=;
+        b=zVp4q2KB+0PZZlRPqjLrqv1JiFK0RMOt5wscWv2+hYgcCHzXvYgJAU6bPwGCNVQ51T
+         EvH6QgGVYkMu4GdRM2Kg+UbzJebRNtEaDe+22OUb22/hNKnBFpykJhvJGUMZ9SUVz+4V
+         FgH4dnSjYpVzcWlxgiAIcUguferWGNcFOXjGHfIL8smR8kTm1hkTv7rh/WwLo+aTSrYu
+         p164KIs0KQBQDaZHRhtE/rKOhZ2nQwAjWkwoQum652hDTHGFVpmM12j+W+lxfuYmeL9v
+         e6Tpx+u7TVg6oCasiqfA5O1pmPTHE1OkNfQ/E+DOZECbto2KZHx1Ufrt4Ws8uop0dZxB
+         9GRg==
+X-Gm-Message-State: AOAM533WmWiiaaHWO4HdmJUWUKGF5Yd5puhY1VV2thRMQJtJ5Mk9zsQ+
+        iLAgcoQOrsVbrsoGQKfe69KUqa62QuM=
+X-Google-Smtp-Source: ABdhPJxEovphxMbVpe6bGcAdFG8wBzxYcIjvyJGtjzWiHCnDTOKXjW9BJhvdYMMObfsvCtRjPH5dEg==
+X-Received: by 2002:ac8:5e13:0:b0:2e1:cd7e:a29e with SMTP id h19-20020ac85e13000000b002e1cd7ea29emr2229127qtx.31.1649748002212;
+        Tue, 12 Apr 2022 00:20:02 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id e19-20020a05620a209300b0069c0bef5892sm4701145qka.78.2022.04.12.00.20.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 00:20:01 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: xu.xin16@zte.com.cn
+To:     bsingharora@gmail.com, akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, yang.yang29@zte.com.cn,
+        xu xin <xu.xin16@zte.com.cn>
+Subject: [PATCH] kernel: make taskstats available from all net namespaces
+Date:   Tue, 12 Apr 2022 07:19:46 +0000
+Message-Id: <20220412071946.2532318-1-xu.xin16@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: xu xin <xu.xin16@zte.com.cn>
 
-[ Upstream commit 4f81def272de17dc4bbd89ac38f49b2676c9b3d2 ]
+If getdelays run in a non-init network namespace, it will fail in
+getting delayacct stats even if it has privilege of root user, which
+seems to be not very reasonable. We can simply reproduce this by
+executing commands:
+	unshare -n
+	getdelays -d -p <pid>
 
-If there are more CPUs than the number of TX XDP rings, multiple XDP
-redirects can select the same TX ring based on the CPU on which
-XDP redirect is called.  Add locking when needed and use static
-key to decide whether to take the lock.
+I don't think net namespace should be an obstacle to the normal
+execution of getdelay function. So let's make it available from
+all net namespaces.
 
-Fixes: f18c2b77b2e4 ("bnxt_en: optimized XDP_REDIRECT support")
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: xu xin <xu.xin16@zte.com.cn>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 7 +++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     | 2 ++
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 8 ++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h | 2 ++
- 4 files changed, 19 insertions(+)
+ kernel/taskstats.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index b1c98d1408b8..6af0ae1d0c46 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3224,6 +3224,7 @@ static int bnxt_alloc_tx_rings(struct bnxt *bp)
- 		}
- 		qidx = bp->tc_to_qidx[j];
- 		ring->queue_id = bp->q_info[qidx].queue_id;
-+		spin_lock_init(&txr->xdp_tx_lock);
- 		if (i < bp->tx_nr_rings_xdp)
- 			continue;
- 		if (i % bp->tx_nr_rings_per_tc == (bp->tx_nr_rings_per_tc - 1))
-@@ -10294,6 +10295,12 @@ static int __bnxt_open_nic(struct bnxt *bp, bool irq_re_init, bool link_re_init)
- 	if (irq_re_init)
- 		udp_tunnel_nic_reset_ntf(bp->dev);
- 
-+	if (bp->tx_nr_rings_xdp < num_possible_cpus()) {
-+		if (!static_key_enabled(&bnxt_xdp_locking_key))
-+			static_branch_enable(&bnxt_xdp_locking_key);
-+	} else if (static_key_enabled(&bnxt_xdp_locking_key)) {
-+		static_branch_disable(&bnxt_xdp_locking_key);
-+	}
- 	set_bit(BNXT_STATE_OPEN, &bp->state);
- 	bnxt_enable_int(bp);
- 	/* Enable TX queues */
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 666fc1e7a7d2..caf66a35d923 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -800,6 +800,8 @@ struct bnxt_tx_ring_info {
- 	u32			dev_state;
- 
- 	struct bnxt_ring_struct	tx_ring_struct;
-+	/* Synchronize simultaneous xdp_xmit on same ring */
-+	spinlock_t		xdp_tx_lock;
+diff --git a/kernel/taskstats.c b/kernel/taskstats.c
+index 72415e22342b..f7e246336218 100644
+--- a/kernel/taskstats.c
++++ b/kernel/taskstats.c
+@@ -688,6 +688,7 @@ static struct genl_family family __ro_after_init = {
+ 	.module		= THIS_MODULE,
+ 	.ops		= taskstats_ops,
+ 	.n_ops		= ARRAY_SIZE(taskstats_ops),
++	.netnsok	= true,
  };
  
- #define BNXT_LEGACY_COAL_CMPL_PARAMS					\
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-index 52fad0fdeacf..c0541ff00ac8 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-@@ -20,6 +20,8 @@
- #include "bnxt.h"
- #include "bnxt_xdp.h"
- 
-+DEFINE_STATIC_KEY_FALSE(bnxt_xdp_locking_key);
-+
- struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
- 				   struct bnxt_tx_ring_info *txr,
- 				   dma_addr_t mapping, u32 len)
-@@ -227,6 +229,9 @@ int bnxt_xdp_xmit(struct net_device *dev, int num_frames,
- 	ring = smp_processor_id() % bp->tx_nr_rings_xdp;
- 	txr = &bp->tx_ring[ring];
- 
-+	if (static_branch_unlikely(&bnxt_xdp_locking_key))
-+		spin_lock(&txr->xdp_tx_lock);
-+
- 	for (i = 0; i < num_frames; i++) {
- 		struct xdp_frame *xdp = frames[i];
- 
-@@ -250,6 +255,9 @@ int bnxt_xdp_xmit(struct net_device *dev, int num_frames,
- 		bnxt_db_write(bp, &txr->tx_db, txr->tx_prod);
- 	}
- 
-+	if (static_branch_unlikely(&bnxt_xdp_locking_key))
-+		spin_unlock(&txr->xdp_tx_lock);
-+
- 	return nxmit;
- }
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
-index 0df40c3beb05..067bb5e821f5 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
-@@ -10,6 +10,8 @@
- #ifndef BNXT_XDP_H
- #define BNXT_XDP_H
- 
-+DECLARE_STATIC_KEY_FALSE(bnxt_xdp_locking_key);
-+
- struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
- 				   struct bnxt_tx_ring_info *txr,
- 				   dma_addr_t mapping, u32 len);
+ /* Needed early in initialization */
 -- 
-2.35.1
-
-
+2.25.1
 
