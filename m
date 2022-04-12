@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A05C47087
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:33:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0A0C4708A
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353164AbiDLHdm (ORCPT
+        id S1353510AbiDLHdz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
+        Tue, 12 Apr 2022 03:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351880AbiDLHNC (ORCPT
+        with ESMTP id S1351875AbiDLHNC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:13:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1839AE42;
-        Mon, 11 Apr 2022 23:54:01 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4FC26F1;
+        Mon, 11 Apr 2022 23:53:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81F4CB81B44;
-        Tue, 12 Apr 2022 06:54:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAECDC385AA;
-        Tue, 12 Apr 2022 06:53:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C341B81B44;
+        Tue, 12 Apr 2022 06:53:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CAF6C385A1;
+        Tue, 12 Apr 2022 06:53:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746439;
-        bh=e9O41xtZGrmCpXGoo/uLMcFr7AIxfezKsEgG2L32/xc=;
+        s=korg; t=1649746436;
+        bh=ggHIMVDOir28eivHT7Q6oJ4r5wNBVY9vag4cZI+7UJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ROKdipe2sUvSFRqUlxrdTsIK2SpPyvI//mSZAiVdvju1INn9+GRaEqEy1FqhRlW22
-         kDqx5Ng2ngZmjhd/Y3cLp3JbhhW2mxoikjFdrU4Wp+NVlCf/wQGfi1WeJjhH44DAQC
-         w3Gnw4zcN+A7HPYlm6KMxE0Im9Wxk6hAyNP9TAIY=
+        b=iUpN3sV6UOmbj1REG36CLiNt4nuW44NF10apnq06QEgHcmmWdxvB+MryNv9yX2Fxu
+         uKf0LPgc9MnEFRBYtyR0v+gMcH1bgbarLkGp+vEVPFusvTooz8DY4J7TlBzbggOm/0
+         S6SEiNzlAmralp5otL/QRvoJ2NYpMTlVohnOLCb4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.15 274/277] irqchip/gic, gic-v3: Prevent GSI to SGI translations
-Date:   Tue, 12 Apr 2022 08:31:17 +0200
-Message-Id: <20220412062949.970457710@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 273/277] powerpc/64: Fix build failure with allyesconfig in book3s_64_entry.S
+Date:   Tue, 12 Apr 2022 08:31:16 +0200
+Message-Id: <20220412062949.941414766@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -49,59 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 544808f7e21cb9ccdb8f3aa7de594c05b1419061 upstream.
+commit af41d2866f7d75bbb38d487f6ec7770425d70e45 upstream.
 
-At the moment the GIC IRQ domain translation routine happily converts
-ACPI table GSI numbers below 16 to GIC SGIs (Software Generated
-Interrupts aka IPIs). On the Devicetree side we explicitly forbid this
-translation, actually the function will never return HWIRQs below 16 when
-using a DT based domain translation.
+Using conditional branches between two files is hasardous,
+they may get linked too far from each other.
 
-We expect SGIs to be handled in the first part of the function, and any
-further occurrence should be treated as a firmware bug, so add a check
-and print to report this explicitly and avoid lengthy debug sessions.
+  arch/powerpc/kvm/book3s_64_entry.o:(.text+0x3ec): relocation truncated
+  to fit: R_PPC64_REL14 (stub) against symbol `system_reset_common'
+  defined in .text section in arch/powerpc/kernel/head_64.o
 
-Fixes: 64b499d8df40 ("irqchip/gic-v3: Configure SGIs as standard interrupts")
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220404110842.2882446-1-andre.przywara@arm.com
+Reorganise the code to use non conditional branches.
+
+Fixes: 89d35b239101 ("KVM: PPC: Book3S HV P9: Implement the rest of the P9 path in C")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+[mpe: Avoid odd-looking bne ., use named local labels]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/89cf27bf43ee07a0b2879b9e8e2f5cd6386a3645.1648366338.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-gic-v3.c |    6 ++++++
- drivers/irqchip/irq-gic.c    |    6 ++++++
- 2 files changed, 12 insertions(+)
+ arch/powerpc/kvm/book3s_64_entry.S |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -1466,6 +1466,12 @@ static int gic_irq_domain_translate(stru
- 		if(fwspec->param_count != 2)
- 			return -EINVAL;
+--- a/arch/powerpc/kvm/book3s_64_entry.S
++++ b/arch/powerpc/kvm/book3s_64_entry.S
+@@ -407,10 +407,16 @@ END_FTR_SECTION_IFSET(CPU_FTR_DAWR1)
+ 	 */
+ 	ld	r10,HSTATE_SCRATCH0(r13)
+ 	cmpwi	r10,BOOK3S_INTERRUPT_MACHINE_CHECK
+-	beq	machine_check_common
++	beq	.Lcall_machine_check_common
  
-+		if (fwspec->param[0] < 16) {
-+			pr_err(FW_BUG "Illegal GSI%d translation request\n",
-+			       fwspec->param[0]);
-+			return -EINVAL;
-+		}
+ 	cmpwi	r10,BOOK3S_INTERRUPT_SYSTEM_RESET
+-	beq	system_reset_common
++	beq	.Lcall_system_reset_common
+ 
+ 	b	.
 +
- 		*hwirq = fwspec->param[0];
- 		*type = fwspec->param[1];
- 
---- a/drivers/irqchip/irq-gic.c
-+++ b/drivers/irqchip/irq-gic.c
-@@ -1085,6 +1085,12 @@ static int gic_irq_domain_translate(stru
- 		if(fwspec->param_count != 2)
- 			return -EINVAL;
- 
-+		if (fwspec->param[0] < 16) {
-+			pr_err(FW_BUG "Illegal GSI%d translation request\n",
-+			       fwspec->param[0]);
-+			return -EINVAL;
-+		}
++.Lcall_machine_check_common:
++	b	machine_check_common
 +
- 		*hwirq = fwspec->param[0];
- 		*type = fwspec->param[1];
- 
++.Lcall_system_reset_common:
++	b	system_reset_common
+ #endif
 
 
