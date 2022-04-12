@@ -2,127 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CFCDC3527D
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E806C47084
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355296AbiDLIHu (ORCPT
+        id S1355790AbiDLIIz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:07:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
+        Tue, 12 Apr 2022 04:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354931AbiDLH1A (ORCPT
+        with ESMTP id S1355586AbiDLH1p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:00 -0400
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C03134BBE
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:06:54 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id D03D2100006;
-        Tue, 12 Apr 2022 07:06:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649747213;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hHE9xZlRw6yCvZ9NF+G39h3IwPXo9JEMBwpXiVM9BZY=;
-        b=pop483FddIsrAJGnsnh4fpMhHQtW9fV5e+RCouMqROZqVSvYzfxHBAg/OdfnS6aIQJPDL6
-        Xa8gFv8mzozSV0dnTOAn/eKoVLCEAuf34G2l+3xQsuQPvxb2EJYhpjqD2yQKN+HBB2/XDz
-        BEcUjiLn3nvM6XkRdIHOBmnjCdH8J2lJ/3jL3c4kRweGp8ZWuKOto11K4N5ZN2cnJnuJsf
-        lip2hfwR/6V6rcfKo9PhxpU3G7o/S/5cotLqIAwMNKMo89eRFLwl5tBInVnQlUtACV017C
-        j0cEVktrqX1+sHtiCaIBbUg2ZuJqN0+EV3LqRQVZlUWkctqlRo9GvuicB4L5Og==
-Date:   Tue, 12 Apr 2022 09:06:49 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Paul Cercueil <paul@crapouillou.net>,
+        Tue, 12 Apr 2022 03:27:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BF34ECEA;
+        Tue, 12 Apr 2022 00:07:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25446616B9;
+        Tue, 12 Apr 2022 07:07:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A081C385A6;
+        Tue, 12 Apr 2022 07:07:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747269;
+        bh=t0g3o+vjO6oyTmJLg+UH2gahFuYs6k7jNgBfmjGR/W4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bUGHfTCzqHhyzMFI9keWJqlUAHTn+lNt6y+GwYwYvFgmvJ4i6aQNOcCmBEu3jCXSl
+         pUpDFb0zrgg5tM14LI6LTQb74b2eMqrIHtGx3hk1WtJYABtdsokmhDhxlUKHNbm+Rk
+         SjUT6TmrS1qa1PlQysht4ldzFrntDzykHGC7b4zE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Bastian Hecht <hechtb@googlemail.com>,
-        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>,
-        Guennadi Liakhovetski <g.liakhovetski@gmx.de>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] mtd: rawnand: Fix return value check of
- wait_for_completion_timeout
-Message-ID: <20220412090649.33bb3f8b@xps13>
-In-Reply-To: <20220412063703.8537-1-linmq006@gmail.com>
-References: <202204121253.NcZifMQi-lkp@intel.com>
-        <20220412063703.8537-1-linmq006@gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 003/343] rtc: wm8350: Handle error for wm8350_register_irq
+Date:   Tue, 12 Apr 2022 08:27:01 +0200
+Message-Id: <20220412062951.199859086@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Miaoqian,
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-linmq006@gmail.com wrote on Tue, 12 Apr 2022 06:36:52 +0000:
+[ Upstream commit 43f0269b6b89c1eec4ef83c48035608f4dcdd886 ]
 
-> wait_for_completion_timeout() returns unsigned long not int.
-> It returns 0 if timed out, and positive if completed.
-> The check for <=3D 0 is ambiguous and should be =3D=3D 0 here
-> indicating timeout which is the only error case.
->=20
-> Fixes: 83738d87e3a0 ("mtd: sh_flctl: Add DMA capabilty")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
-> change in v2:
-> - initialize ret to 1.
-> ---
->  drivers/mtd/nand/raw/sh_flctl.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/mtd/nand/raw/sh_flctl.c b/drivers/mtd/nand/raw/sh_fl=
-ctl.c
-> index b85b9c6fcc42..2373251f585b 100644
-> --- a/drivers/mtd/nand/raw/sh_flctl.c
-> +++ b/drivers/mtd/nand/raw/sh_flctl.c
-> @@ -384,7 +384,8 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl *=
-flctl, unsigned long *buf,
->  	dma_addr_t dma_addr;
->  	dma_cookie_t cookie;
->  	uint32_t reg;
-> -	int ret;
-> +	int ret =3D 1;
+As the potential failure of the wm8350_register_irq(),
+it should be better to check it and return error if fails.
+Also, it need not free 'wm_rtc->rtc' since it will be freed
+automatically.
 
-Does not look right. I know this function returns > 0 on positive
-outcomes but this does not make any sense in the first place.
+Fixes: 077eaf5b40ec ("rtc: rtc-wm8350: add support for WM8350 RTC")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220303085030.291793-1-jiasheng@iscas.ac.cn
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/rtc/rtc-wm8350.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-This function is static and only called twice, please turn it into
-something like:
-
-if (dma_fifo_transfer())
-	error
-else
-	ok
-
-> +	unsigned long time_left;
-> =20
->  	if (dir =3D=3D DMA_FROM_DEVICE) {
->  		chan =3D flctl->chan_fifo0_rx;
-> @@ -425,13 +426,14 @@ static int flctl_dma_fifo0_transfer(struct sh_flctl=
- *flctl, unsigned long *buf,
->  		goto out;
->  	}
-> =20
-> -	ret =3D
-> +	time_left =3D
->  	wait_for_completion_timeout(&flctl->dma_complete,
->  				msecs_to_jiffies(3000));
-> =20
-> -	if (ret <=3D 0) {
-> +	if (time_left =3D=3D 0) {
->  		dmaengine_terminate_all(chan);
->  		dev_err(&flctl->pdev->dev, "wait_for_completion_timeout\n");
-> +		ret =3D -ETIMEDOUT;
->  	}
-> =20
->  out:
+diff --git a/drivers/rtc/rtc-wm8350.c b/drivers/rtc/rtc-wm8350.c
+index 2018614f258f..6eaa9321c074 100644
+--- a/drivers/rtc/rtc-wm8350.c
++++ b/drivers/rtc/rtc-wm8350.c
+@@ -432,14 +432,21 @@ static int wm8350_rtc_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
+-	wm8350_register_irq(wm8350, WM8350_IRQ_RTC_SEC,
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_RTC_SEC,
+ 			    wm8350_rtc_update_handler, 0,
+ 			    "RTC Seconds", wm8350);
++	if (ret)
++		return ret;
++
+ 	wm8350_mask_irq(wm8350, WM8350_IRQ_RTC_SEC);
+ 
+-	wm8350_register_irq(wm8350, WM8350_IRQ_RTC_ALM,
++	ret = wm8350_register_irq(wm8350, WM8350_IRQ_RTC_ALM,
+ 			    wm8350_rtc_alarm_handler, 0,
+ 			    "RTC Alarm", wm8350);
++	if (ret) {
++		wm8350_free_irq(wm8350, WM8350_IRQ_RTC_SEC, wm8350);
++		return ret;
++	}
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
 
 
-Thanks,
-Miqu=C3=A8l
+
