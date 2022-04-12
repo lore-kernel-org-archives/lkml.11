@@ -2,125 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B02C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C65FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352917AbiDLMPy (ORCPT
+        id S1345299AbiDLMQB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:15:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46098 "EHLO
+        Tue, 12 Apr 2022 08:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354547AbiDLMOI (ORCPT
+        with ESMTP id S1344427AbiDLMON (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:14:08 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893D285977
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:15:17 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id s10so8969750plg.9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:15:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EfqzshiMxPgqo91bqRrogKECfyK/4BP/Cl7KQelj6Dg=;
-        b=bPeubF5u9edpfnmGs04xInTA5275jlp30BzDSTI+ieNDlG4u7/tJ7Rz5RTrhAeA0DD
-         xb3XM6ti+GrjarPym0NKYWxAGrxIlYSSVfiGUr/dIS0YAfsAa/cWKAEtZ14ZadQw81uF
-         LUS8d+iv9X73VtIOegsMfQm/be60nBbUDvuoouSr3+xA55Dq6i6d0JF+5DrQD+VsGKca
-         gfiglXT5A5ClCVJrA0q6LCJhwh1zeAiWiZ6yptsEyZShruJBkFXplBrDQLtEX9sL3YMz
-         /ydrd5vHe6tt3lhL/kJ/qf7IMVRHgzErt1mIGmZMgxdZtI2MWBEHsAu/Ypq3AsqyPbJ+
-         cBEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EfqzshiMxPgqo91bqRrogKECfyK/4BP/Cl7KQelj6Dg=;
-        b=2rj1KeR838NOYmpnbwQblSq+SLXt456cAG5h2OQfai5KdSMOd1Ce06ZnGKyITGH/9N
-         waPa/Q+RurAEQqxsrF+WfZjZ0jiKpG5w/RRqVasTA3/f2oNBIo7Dj1PIQxbSb5DQwHhn
-         rYe5yGpHk9gAM0xF2Ynta88an9J2Rw3iBolAs2wBCRbw2uVIt0OFlf56GO1Xp9k1uAN9
-         iKn8XgIzCuFTobFvelFxjcUL0vsO3LDnwU8ES2XYmQJuyhl6/sHXlYhHHR2pIp7a1xDV
-         8KxV+IZ31ighSrcBpn6ZeAmDArBy9NeJqS3dD3iMovqVvvUNhaAsvW6J7Qwo7gKjDiRj
-         MUnw==
-X-Gm-Message-State: AOAM533joEeB2cVs0wD3OsB9Y/SiqHdB6fY1TtOw41XoQK7Y1b5IcWEl
-        bfTo0YMnKRnwRBtNbFbX4OC9vA==
-X-Google-Smtp-Source: ABdhPJxzz1f3N9EC3y+nmsxylhXN2TisCoqArOTZmzLYhAtuo5R69JHBs9+2JAq88yjyDr3N5O/qwA==
-X-Received: by 2002:a17:90b:3b86:b0:1cb:c243:aed3 with SMTP id pc6-20020a17090b3b8600b001cbc243aed3mr3678637pjb.202.1649762116200;
-        Tue, 12 Apr 2022 04:15:16 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.229])
-        by smtp.gmail.com with ESMTPSA id l25-20020a635719000000b0039da6cdf82dsm402507pgb.83.2022.04.12.04.15.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 04:15:15 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
-        osalvador@suse.de, david@redhat.com, masahiroy@kernel.org
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v7 3/4] mm: hugetlb_vmemmap: use kstrtobool for hugetlb_vmemmap param parsing
-Date:   Tue, 12 Apr 2022 19:14:33 +0800
-Message-Id: <20220412111434.96498-4-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220412111434.96498-1-songmuchun@bytedance.com>
-References: <20220412111434.96498-1-songmuchun@bytedance.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 12 Apr 2022 08:14:13 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B2485BCA;
+        Tue, 12 Apr 2022 04:15:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649762107;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=LAJfLx6J2WmZC4bb1+JwTUQAf3iNcvFDt6K/GjnBeyo=;
+    b=i1+808ypX8DaCa2FQHHrzR2cUPVWbCJQbQR37xzwCqFyRjK/hyEo+6sZb3nZbBAR9I
+    S3qa/W9a4pw1J1Sb5tcBB+l0KYkq+bu4/plZytXmxSiGshI6lN9a2dFx/cCnu8aZr/Hw
+    UV6WTx4PW7VFDGAsK3oQpg36h6j0abq7DUaFCBBctI9z1Ff4gjFSpEP5sZx8SRaROiTk
+    R8VUnKVbnWHkrgXMd6HRHrvbsQ1zMRkBvMzNbVuQeMXtE61uEkPcbWaDqUbxRsqJ3Deu
+    0bXI/lwiAJypVETla80H5TAoHy6x9nj7n7XrSxr2ntn98rafoycluCFUw6TyUmunFTPw
+    lbzQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3iKs="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+    by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
+    with ESMTPSA id k708cfy3CBF74I3
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Tue, 12 Apr 2022 13:15:07 +0200 (CEST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
+Subject: Re: [PATCH 07/18] MIPS: DTS: jz4780: fix otg node as reported by
+ dtbscheck
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <3e088e18-5df9-bf50-0070-b24b8a3c5f41@wanyeetech.com>
+Date:   Tue, 12 Apr 2022 13:15:06 +0200
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, letux-kernel@openphoenux.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <3649C5AE-FDE3-49B4-9A70-431506F78AB7@goldelico.com>
+References: <cover.1649443080.git.hns@goldelico.com>
+ <298162bfa2e7225ccc753865e1ffa39ce2722b2a.1649443080.git.hns@goldelico.com>
+ <bd19b6eb-d53a-b665-749d-46c275c85ccc@linaro.org>
+ <822182F3-5429-4731-9FA1-8F18C5D95DEC@goldelico.com>
+ <535e3eab-a28e-46f3-2a7e-f1ffd1913470@linaro.org>
+ <7B66AC66-EF73-4F75-A775-589A4F98BEFC@goldelico.com>
+ <3e95f567-03f5-bf9c-1856-9fe602e9b025@linaro.org>
+ <81BA49E3-AFDE-4DFD-BB77-2B03488C727B@goldelico.com>
+ <b6090a27-12b7-0c01-6d33-ae32b31b4b74@wanyeetech.com>
+ <8FA36CE4-CD39-4767-B49E-D112E4313036@goldelico.com>
+ <3e088e18-5df9-bf50-0070-b24b8a3c5f41@wanyeetech.com>
+To:     Zhou Yanjie <zhouyanjie@wanyeetech.com>
+X-Mailer: Apple Mail (2.3445.104.21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use kstrtobool rather than open coding "on" and "off" parsing in
-mm/hugetlb_vmemmap.c,  which is more powerful to handle all kinds
-of parameters like 'Yy1Nn0' or [oO][NnFf] for "on" and "off".
+Hi Yanjie,
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- Documentation/admin-guide/kernel-parameters.txt |  6 +++---
- mm/hugetlb_vmemmap.c                            | 10 +++++-----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+> Am 12.04.2022 um 11:49 schrieb Zhou Yanjie =
+<zhouyanjie@wanyeetech.com>:
+>=20
+> Hi Nikolaus,
+>=20
+> On 2022/4/11 =E4=B8=8A=E5=8D=883:13, H. Nikolaus Schaller wrote:
+>> Hi,
+>>=20
+>>=20
+>> If you agree I can add "ingenic,jz4780-otg" to the schema file and =
+keep
+>> the .dts in the v2 of my series.
+>=20
+>=20
+> Sure.
+>=20
+> Or you can wait a bit, I plan to send out new patches later today, it =
+contains "ingenic,jz4780-otg".
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index f3cf9f21f6eb..6ea428023d51 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1669,10 +1669,10 @@
- 			enabled.
- 			Allows heavy hugetlb users to free up some more
- 			memory (7 * PAGE_SIZE for each 2MB hugetlb page).
--			Format: { on | off (default) }
-+			Format: { [oO][Nn]/Y/y/1 | [oO][Ff]/N/n/0 (default) }
- 
--			on:  enable the feature
--			off: disable the feature
-+			[oO][Nn]/Y/y/1: enable the feature
-+			[oO][Ff]/N/n/0: disable the feature
- 
- 			Built with CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON=y,
- 			the default is on.
-diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
-index be73782cc1cf..4b6a5cf16f11 100644
---- a/mm/hugetlb_vmemmap.c
-+++ b/mm/hugetlb_vmemmap.c
-@@ -195,15 +195,15 @@ EXPORT_SYMBOL(hugetlb_optimize_vmemmap_key);
- 
- static int __init hugetlb_vmemmap_early_param(char *buf)
- {
--	if (!buf)
-+	bool enable;
-+
-+	if (kstrtobool(buf, &enable))
- 		return -EINVAL;
- 
--	if (!strcmp(buf, "on"))
-+	if (enable)
- 		static_branch_enable(&hugetlb_optimize_vmemmap_key);
--	else if (!strcmp(buf, "off"))
--		static_branch_disable(&hugetlb_optimize_vmemmap_key);
- 	else
--		return -EINVAL;
-+		static_branch_disable(&hugetlb_optimize_vmemmap_key);
- 
- 	return 0;
- }
--- 
-2.11.0
+Would be fine! I think you will be faster than me :)
+
+So I'll check with your patch and drop mine from my v2 series.
+
+BR and thanks,
+Nikolaus
 
