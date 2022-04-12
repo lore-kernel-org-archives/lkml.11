@@ -2,72 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0829C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:07:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCA7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358606AbiDLSJ6 (ORCPT
+        id S1358620AbiDLSLX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 14:09:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56732 "EHLO
+        Tue, 12 Apr 2022 14:11:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239431AbiDLSJz (ORCPT
+        with ESMTP id S233266AbiDLSLV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 14:09:55 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE854CD5C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:07:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649786857; x=1681322857;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KAG5O+Uw+D2QHrHyu7UtILoUVvKnaKhfn+G8WwPaG38=;
-  b=EFy/kufGybwAw57fsQQCOU3+yzsc2rW8KW/CLUw8aAWx0bnd+uWorh8S
-   MA1COXFKhmn7lbPX1Hz6tQ7yD3E1hPx4PxFH0l6KgRw9Qn9JJcc+R0Uan
-   xCzvG9w2/GnJze23olEK1qeAWkGewPOVlicF92dGc2g0cZctqErE5yklR
-   ifCAMyEsRAIjlzAz+dYwiSYxkfG7gBevasL6rpGPEjanZzZ/TTRqirBWe
-   s67DnExLpyfRUZVSj92Y/3LfjiNxuMGX97m1FUIdsLl3+TFL8JhaKJPQy
-   +o1NYAvwq3FbVKPM6ZbAHrE4+W3FyJmEVrdh8deeBlClv+j4Gkcyp35AG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="260061244"
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="260061244"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 11:01:53 -0700
-X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; 
-   d="scan'208";a="526600127"
-Received: from alison-desk.jf.intel.com (HELO alison-desk) ([10.54.74.41])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 11:01:53 -0700
-Date:   Tue, 12 Apr 2022 11:03:50 -0700
-From:   Alison Schofield <alison.schofield@intel.com>
-To:     Bruno Moreira-Guedes <codeagain@codeagain.dev>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        outreachy@lists.linux.dev,
-        Bruno's Patch Watchbox <patch-reply@codeagain.dev>
-Subject: Re: [PATCH v2 2/3] staging: vme: Fix missing `depends on` at KConfig
-Message-ID: <20220412180350.GB1236898@alison-desk>
-References: <cover.1649721450.git.codeagain@codeagain.dev>
- <aab0591ac73a54059621c722a63635d43a446fd2.1649721450.git.codeagain@codeagain.dev>
+        Tue, 12 Apr 2022 14:11:21 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E309E2DB
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:09:02 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso3786697pju.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:09:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NaJfvw6r9C6/6ZgE258KkI8EH6VfRa6X6YWrh9oOleA=;
+        b=OX3eqNGbpCTJAk6dwMvyfHeuP5RqVZeaO43LUmBjMPpBFmmjd2fev0QkELsTN6iMJf
+         PQpbikonv7csqVlUvEC8FRiMhPuSAKdfV8nLSTHPPjuv4asXoDf0bHDzwqrU1ap1ZjFl
+         K1zhzcyUXwd9vbS5a19iJQwiVix2BecT29Ukkzi9gQlsgjLKvhLXLGZ3PHMYutmfLv2W
+         UDmj8uCvm7jhOj8q+5ktdJqWnya4Orq+1PviAeNt0w89uiSe23RVvYOLtVNdDR3yJklD
+         bgQzcCBflkNRTZf7uD2+FV/KpLGPPZBPIcCuoh1CfpAhRjMfYgVyXkcxhLx0ots4riYn
+         nlyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NaJfvw6r9C6/6ZgE258KkI8EH6VfRa6X6YWrh9oOleA=;
+        b=aLGxv+PsS1fW2Higmmn0YUlfKs2lp6G5jV6tpj5UeMb8V6O/qSyqBDfTFnEuq/dtgD
+         MLj+3WfzZTmULGMI4Vfa9JIPbgQpJWPRwfuPqqtL5teveb40jxNQy3z/EIyQn35SaML9
+         u+z0LrGtP0KANjyWx/PL3ajfY619a39PFfh0O0kiMxfWOyubSkuS0VyiM5gmm547E5NH
+         Eg+IFKs9jwnj8OZLSRF/msE9tZnKkKtyB2f7YWTEnUxWlG/LQ7hgRlvRJ6GcNC13Lem4
+         JxAMu8C8kePXGaLTuLFRoyVgfavVjxNnhBjWQ+oPsjpdD2pihfpjPL4encyBd4JlSbqI
+         AXCw==
+X-Gm-Message-State: AOAM531IdmNae5W3LTdVfaVtFmAfoZvPEH1rhw47LpM6E72rrvMMRcxb
+        unUrZLQaVqCYL+y6YSxnUvtsYw==
+X-Google-Smtp-Source: ABdhPJxEQAVjHzb1MYHA+nWtHDUctstRHCxXpm9/b/levkniy7oeG3hEG34Teo7aaYwmaPAZGbzCNA==
+X-Received: by 2002:a17:90b:1d04:b0:1c7:b10f:e33d with SMTP id on4-20020a17090b1d0400b001c7b10fe33dmr6467766pjb.165.1649786942210;
+        Tue, 12 Apr 2022 11:09:02 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id lx13-20020a17090b4b0d00b001c9989c721esm176444pjb.17.2022.04.12.11.09.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 11:09:01 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 18:08:57 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Ben Gardon <bgardon@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Xu <peterx@redhat.com>, Peter Shier <pshier@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Junaid Shahid <junaids@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Mingwei Zhang <mizhang@google.com>,
+        Jing Zhang <jingzhangos@google.com>
+Subject: Re: [PATCH v4 09/10] KVM: x86/MMU: Require reboot permission to
+ disable NX hugepages
+Message-ID: <YlXAOQOMu4Unryt6@google.com>
+References: <20220411211015.3091615-1-bgardon@google.com>
+ <20220411211015.3091615-10-bgardon@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aab0591ac73a54059621c722a63635d43a446fd2.1649721450.git.codeagain@codeagain.dev>
+In-Reply-To: <20220411211015.3091615-10-bgardon@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 03:56:43AM -0300, Bruno Moreira-Guedes wrote:
+On Mon, Apr 11, 2022, Ben Gardon wrote:
+> Ensure that the userspace actor attempting to disable NX hugepages has
+> permission to reboot the system. Since disabling NX hugepages would
+> allow a guest to crash the system, it is similar to reboot permissions.
+> 
+> This approach is the simplest permission gating, but passing a file
+> descriptor opened for write for the module parameter would also work
+> well and be more precise.
+> The latter approach was suggested by Sean Christopherson.
 
-> [PATCH v2 2/3] staging: vme: Fix missing `depends on` at KConfig
+State _why_ the latter approach wasn't chosen, vague hand waving about this
+being simpler doesn't help the reader understand how unbelievably painful it would
+be to actually get at the module param (I looked briefy, it'd be beyond ugly).
+We can still hand wave a bit, but there should at least be a hint as to why
+option A was chosen instead of option B.
 
-Be direct in the commit msg. Perhaps -
-'Add 'depends on' VME_BUS to Kconfig'
+It'd also be helpful to call out what is lost by requiring CAP_SYS_BOOT, because
+again "precision" is rather vague.  The important aspect of loss of precision
+is that a userspace process can't be given access to _just_ the NX module param
+to opt out of the workaround, it needs full reboot permissions.
 
-That's all!
+E.g.
 
-snip
+  Ideally, KVM would require userspace to prove it has access to KVM's
+  nx_huge_pages module param, e.g. so that userspace can opt out without
+  needing full reboot permissions.  But getting access to the module param
+  file info is a mess since it's buried in layers of sysfs and module
+  glue, and requiring CAP_SYS_BOOT is sufficient for all known use cases.
 
+> Suggested-by: Jim Mattson <jmattson@google.com>
+> Signed-off-by: Ben Gardon <bgardon@google.com>
+> ---
+>  Documentation/virt/kvm/api.rst | 2 ++
+>  arch/x86/kvm/x86.c             | 9 +++++++++
+>  2 files changed, 11 insertions(+)
+> 
+> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+> index 31fb002632bb..021452a9fa91 100644
+> --- a/Documentation/virt/kvm/api.rst
+> +++ b/Documentation/virt/kvm/api.rst
+> @@ -7861,6 +7861,8 @@ should adjust CPUID leaf 0xA to reflect that the PMU is disabled.
+>  :Capability KVM_CAP_PMU_CAPABILITY
+>  :Architectures: x86
+>  :Type: vm
+> +:Returns 0 on success, -EPERM if the userspace process does not
+> +	 have CAP_SYS_BOOT
+>  
+>  This capability disables the NX huge pages mitigation for iTLB MULTIHIT.
+>  
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index de1d211f8aa3..8d3d6c48c5ec 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -6081,6 +6081,15 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
+>  		mutex_unlock(&kvm->lock);
+>  		break;
+>  	case KVM_CAP_VM_DISABLE_NX_HUGE_PAGES:
+> +		/*
+> +		 * Since the risk of disabling NX hugepages is a guest crashing
+> +		 * the system, ensure the userspace process has permission to
+> +		 * reboot the system.
+> +		 */
+> +		if (!capable(CAP_SYS_BOOT)) {
+> +			r = -EPERM;
+> +			break;
+> +		}
 
+This needs to go with the introduction of the cap.  There is zero reason to create
+a window where the kernel is vulnerable.
