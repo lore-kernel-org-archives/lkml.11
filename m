@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD0DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0173C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:11:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345200AbiDLBMh (ORCPT
+        id S1346334AbiDLBM6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34938 "EHLO
+        Mon, 11 Apr 2022 21:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347293AbiDLA7F (ORCPT
+        with ESMTP id S1344593AbiDLA6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:59:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E4331DFA;
-        Mon, 11 Apr 2022 17:52:10 -0700 (PDT)
+        Mon, 11 Apr 2022 20:58:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591B227CF7;
+        Mon, 11 Apr 2022 17:50:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D43BB60B30;
-        Tue, 12 Apr 2022 00:52:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 391D6C385A9;
-        Tue, 12 Apr 2022 00:52:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D57AC60AB4;
+        Tue, 12 Apr 2022 00:50:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28D2CC385AC;
+        Tue, 12 Apr 2022 00:50:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724726;
-        bh=h9/5KSj6OJA2aQ/9/6+/e4MfRq0HbHkAqRzBeWOfW0Q=;
+        s=k20201202; t=1649724606;
+        bh=qZSXjs+NYLT5X2fXq/fCtnOcsC+b4SBYHJgC+XXRr28=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TRkCKf3H73zblppcaby7FNUMbFfA2tJ/qGzAfDxiBug32VOjqG8vQGdfTJHxIAp4N
-         IaVqSGCa32/8X3ukvX5DdV5cPnZ+Cdtx7fI9iPWCDDs0yBEGFJMwAehlLPzJpwwqo0
-         uCgwtQZW5nL7/FDdERoEoZbOdXuSlEgUhePrzDn/RlzNviim9HS2yzLruzyKGDWD6y
-         95se9cDkiVK7YlCVicj+Yaz5JoEOXB1IUqxO+nFuvxGhGFVzPbAgfzlfgNiQIY+Kl7
-         71x1Cbgyn9ePD+yoxdfU57pQW8No/W28HP143+8iOS5snnw6TYbz6QMYxqOLP4/StM
-         v6ZLKPLiFHjkg==
+        b=MRqXkc0QBvmIin2JBDIzvgu/RCMLM90UxnXipBu8XhKPXiI4dIbqCh7tTyI4nC0tK
+         J6Qck9DB5x/l92Do0BPQeTkdzfA50OkguX4W+F+cwbiBrlOeECsECVV0qLEug7UBtY
+         X86Z2lt4Py7gKVpu2zFaqThnQk0ypxE2dRcik7RrjDz2lE1CVhAT6sBpx27ctTp/KD
+         lfk34d9rgvNj3hcZb2fKr9zNjsEVAwJc+e6kXNA9DT632LRAxqDZff26kd86MEH/Lm
+         Ol9Yl+TSJTf9pqCFaOqVVXV6AbrDbGUdVMnS9hFy07bbRbEMRG6Q46rj62gYJOXBUJ
+         3vEDQtwcGLmqw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joey Gouly <joey.gouly@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tabba@google.com, ardb@kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 09/12] arm64: alternatives: mark patch_alternative() as `noinstr`
-Date:   Mon, 11 Apr 2022 20:51:42 -0400
-Message-Id: <20220412005148.351391-9-sashal@kernel.org>
+Cc:     Marcin Kozlowski <marcinguy@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 21/30] net: usb: aqc111: Fix out-of-bounds accesses in RX fixup
+Date:   Mon, 11 Apr 2022 20:48:55 -0400
+Message-Id: <20220412004906.350678-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412005148.351391-1-sashal@kernel.org>
-References: <20220412005148.351391-1-sashal@kernel.org>
+In-Reply-To: <20220412004906.350678-1-sashal@kernel.org>
+References: <20220412004906.350678-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,84 +54,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: Marcin Kozlowski <marcinguy@gmail.com>
 
-[ Upstream commit a2c0b0fbe01419f8f5d1c0b9c581631f34ffce8b ]
+[ Upstream commit afb8e246527536848b9b4025b40e613edf776a9d ]
 
-The alternatives code must be `noinstr` such that it does not patch itself,
-as the cache invalidation is only performed after all the alternatives have
-been applied.
+aqc111_rx_fixup() contains several out-of-bounds accesses that can be
+triggered by a malicious (or defective) USB device, in particular:
 
-Mark patch_alternative() as `noinstr`. Mark branch_insn_requires_update()
-and get_alt_insn() with `__always_inline` since they are both only called
-through patch_alternative().
+ - The metadata array (desc_offset..desc_offset+2*pkt_count) can be out of bounds,
+   causing OOB reads and (on big-endian systems) OOB endianness flips.
+ - A packet can overlap the metadata array, causing a later OOB
+   endianness flip to corrupt data used by a cloned SKB that has already
+   been handed off into the network stack.
+ - A packet SKB can be constructed whose tail is far beyond its end,
+   causing out-of-bounds heap data to be considered part of the SKB's
+   data.
 
-Booting a kernel in QEMU TCG with KCSAN=y and ARM64_USE_LSE_ATOMICS=y caused
-a boot hang:
-[    0.241121] CPU: All CPU(s) started at EL2
+Found doing variant analysis. Tested it with another driver (ax88179_178a), since
+I don't have a aqc111 device to test it, but the code looks very similar.
 
-The alternatives code was patching the atomics in __tsan_read4() from LL/SC
-atomics to LSE atomics.
-
-The following fragment is using LL/SC atomics in the .text section:
-  | <__tsan_unaligned_read4+304>:     ldxr    x6, [x2]
-  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
-  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
-  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
-
-This LL/SC atomic sequence was to be replaced with LSE atomics. However since
-the alternatives code was instrumentable, __tsan_read4() was being called after
-only the first instruction was replaced, which led to the following code in memory:
-  | <__tsan_unaligned_read4+304>:     ldadd   x5, x6, [x2]
-  | <__tsan_unaligned_read4+308>:     add     x6, x6, x5
-  | <__tsan_unaligned_read4+312>:     stxr    w7, x6, [x2]
-  | <__tsan_unaligned_read4+316>:     cbnz    w7, <__tsan_unaligned_read4+304>
-
-This caused an infinite loop as the `stxr` instruction never completed successfully,
-so `w7` was always 0.
-
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/r/20220405104733.11476-1-joey.gouly@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Marcin Kozlowski <marcinguy@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/alternative.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/usb/aqc111.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/kernel/alternative.c b/arch/arm64/kernel/alternative.c
-index 0d345622bbba..3747c8d87bdb 100644
---- a/arch/arm64/kernel/alternative.c
-+++ b/arch/arm64/kernel/alternative.c
-@@ -42,7 +42,7 @@ struct alt_region {
- /*
-  * Check if the target PC is within an alternative block.
-  */
--static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
-+static __always_inline bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
- {
- 	unsigned long replptr = (unsigned long)ALT_REPL_PTR(alt);
- 	return !(pc >= replptr && pc <= (replptr + alt->alt_len));
-@@ -50,7 +50,7 @@ static bool branch_insn_requires_update(struct alt_instr *alt, unsigned long pc)
+diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
+index 0717c18015c9..c9c409518174 100644
+--- a/drivers/net/usb/aqc111.c
++++ b/drivers/net/usb/aqc111.c
+@@ -1102,10 +1102,15 @@ static int aqc111_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 	if (start_of_descs != desc_offset)
+ 		goto err;
  
- #define align_down(x, a)	((unsigned long)(x) & ~(((unsigned long)(a)) - 1))
+-	/* self check desc_offset from header*/
+-	if (desc_offset >= skb_len)
++	/* self check desc_offset from header and make sure that the
++	 * bounds of the metadata array are inside the SKB
++	 */
++	if (pkt_count * 2 + desc_offset >= skb_len)
+ 		goto err;
  
--static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
-+static __always_inline u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnptr)
- {
- 	u32 insn;
++	/* Packets must not overlap the metadata array */
++	skb_trim(skb, desc_offset);
++
+ 	if (pkt_count == 0)
+ 		goto err;
  
-@@ -95,7 +95,7 @@ static u32 get_alt_insn(struct alt_instr *alt, __le32 *insnptr, __le32 *altinsnp
- 	return insn;
- }
- 
--static void patch_alternative(struct alt_instr *alt,
-+static noinstr void patch_alternative(struct alt_instr *alt,
- 			      __le32 *origptr, __le32 *updptr, int nr_inst)
- {
- 	__le32 *replptr;
 -- 
 2.35.1
 
