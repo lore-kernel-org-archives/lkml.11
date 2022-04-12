@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80167C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B48C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240821AbiDLIas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:30:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
+        id S1358492AbiDLIbE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353581AbiDLHZr (ORCPT
+        with ESMTP id S1353587AbiDLHZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3DA43AE6;
-        Tue, 12 Apr 2022 00:01:53 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC8043AE8;
+        Tue, 12 Apr 2022 00:01:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9C76B81A8F;
-        Tue, 12 Apr 2022 07:01:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FBB2C385A6;
-        Tue, 12 Apr 2022 07:01:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8905660B65;
+        Tue, 12 Apr 2022 07:01:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DAB9C385A1;
+        Tue, 12 Apr 2022 07:01:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746910;
-        bh=vp7/qqClhnpA0UO7khQRIFogAEbd0t/N2cEVVt2Ldwo=;
+        s=korg; t=1649746916;
+        bh=sUfbTdgOYaBlIvDge6G7uCvBJzdC1rRZljQx/lsDyaw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QxYSkMlhL37yduVeoFWGug2Gmh4XKhZFLqqcvougtXAs/aVsPYxjoaBp8KhRpQYBY
-         dPThomiKv8Oghh3AH6B7rfIL5E3khOw9qKqljyeN3UqCaPJq/qMrl0ivjg/9EH1tqc
-         LIoJN6qjHKYGk26d3AN/c4tDYDBIilIvTlCU0YlQ=
+        b=AYASFbbwMFn+qQJFIeMI4b6fjWYIiXTKpk7U50MC7PdZpH/dMsPbiuOMN9gW6CUoB
+         qhf8vQDJQKPacRb/8vvm2fesocbTdQ8K1EPfiBVz/Ze4zkHEJrQy5etiIPkI+wZWha
+         gsD181TBWFGUluxQ78WvDIzw25uJBGUcXsg8RzSI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 175/285] bnxt_en: Synchronize tx when xdp redirects happen on same ring
-Date:   Tue, 12 Apr 2022 08:30:32 +0200
-Message-Id: <20220412062948.718876034@linuxfoundation.org>
+Subject: [PATCH 5.16 159/285] vdpa: mlx5: prevent cvq work from hogging CPU
+Date:   Tue, 12 Apr 2022 08:30:16 +0200
+Message-Id: <20220412062948.260582822@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,111 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Jason Wang <jasowang@redhat.com>
 
-[ Upstream commit 4f81def272de17dc4bbd89ac38f49b2676c9b3d2 ]
+[ Upstream commit 55ebf0d60e3cc6c9e8593399e185842c00e12f36 ]
 
-If there are more CPUs than the number of TX XDP rings, multiple XDP
-redirects can select the same TX ring based on the CPU on which
-XDP redirect is called.  Add locking when needed and use static
-key to decide whether to take the lock.
+A userspace triggerable infinite loop could happen in
+mlx5_cvq_kick_handler() if userspace keeps sending a huge amount of
+cvq requests.
 
-Fixes: f18c2b77b2e4 ("bnxt_en: optimized XDP_REDIRECT support")
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixing this by introducing a quota and re-queue the work if we're out
+of the budget (currently the implicit budget is one) . While at it,
+using a per device work struct to avoid on demand memory allocation
+for cvq.
+
+Fixes: 5262912ef3cfc ("vdpa/mlx5: Add support for control VQ and MAC setting")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Link: https://lore.kernel.org/r/20220329042109.4029-1-jasowang@redhat.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Eli Cohen <elic@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 7 +++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     | 2 ++
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 8 ++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h | 2 ++
- 4 files changed, 19 insertions(+)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index fab8dd73fa84..fdbcd48d991d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3196,6 +3196,7 @@ static int bnxt_alloc_tx_rings(struct bnxt *bp)
- 		}
- 		qidx = bp->tc_to_qidx[j];
- 		ring->queue_id = bp->q_info[qidx].queue_id;
-+		spin_lock_init(&txr->xdp_tx_lock);
- 		if (i < bp->tx_nr_rings_xdp)
- 			continue;
- 		if (i % bp->tx_nr_rings_per_tc == (bp->tx_nr_rings_per_tc - 1))
-@@ -10274,6 +10275,12 @@ static int __bnxt_open_nic(struct bnxt *bp, bool irq_re_init, bool link_re_init)
- 	if (irq_re_init)
- 		udp_tunnel_nic_reset_ntf(bp->dev);
- 
-+	if (bp->tx_nr_rings_xdp < num_possible_cpus()) {
-+		if (!static_key_enabled(&bnxt_xdp_locking_key))
-+			static_branch_enable(&bnxt_xdp_locking_key);
-+	} else if (static_key_enabled(&bnxt_xdp_locking_key)) {
-+		static_branch_disable(&bnxt_xdp_locking_key);
-+	}
- 	set_bit(BNXT_STATE_OPEN, &bp->state);
- 	bnxt_enable_int(bp);
- 	/* Enable TX queues */
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 2846d1475667..5f4a0bb36af3 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -800,6 +800,8 @@ struct bnxt_tx_ring_info {
- 	u32			dev_state;
- 
- 	struct bnxt_ring_struct	tx_ring_struct;
-+	/* Synchronize simultaneous xdp_xmit on same ring */
-+	spinlock_t		xdp_tx_lock;
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index 57bed3d74060..be50c15609b7 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -164,6 +164,7 @@ struct mlx5_vdpa_net {
+ 	u32 cur_num_vqs;
+ 	struct notifier_block nb;
+ 	struct vdpa_callback config_cb;
++	struct mlx5_vdpa_wq_ent cvq_ent;
  };
  
- #define BNXT_LEGACY_COAL_CMPL_PARAMS					\
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-index c8083df5e0ab..c59e46c7a1ca 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-@@ -20,6 +20,8 @@
- #include "bnxt.h"
- #include "bnxt_xdp.h"
+ static void free_resources(struct mlx5_vdpa_net *ndev);
+@@ -1627,10 +1628,10 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
+ 	ndev = to_mlx5_vdpa_ndev(mvdev);
+ 	cvq = &mvdev->cvq;
+ 	if (!(ndev->mvdev.actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ)))
+-		goto out;
++		return;
  
-+DEFINE_STATIC_KEY_FALSE(bnxt_xdp_locking_key);
+ 	if (!cvq->ready)
+-		goto out;
++		return;
+ 
+ 	while (true) {
+ 		err = vringh_getdesc_iotlb(&cvq->vring, &cvq->riov, &cvq->wiov, &cvq->head,
+@@ -1664,9 +1665,10 @@ static void mlx5_cvq_kick_handler(struct work_struct *work)
+ 
+ 		if (vringh_need_notify_iotlb(&cvq->vring))
+ 			vringh_notify(&cvq->vring);
 +
- struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
- 				   struct bnxt_tx_ring_info *txr,
- 				   dma_addr_t mapping, u32 len)
-@@ -227,6 +229,9 @@ int bnxt_xdp_xmit(struct net_device *dev, int num_frames,
- 	ring = smp_processor_id() % bp->tx_nr_rings_xdp;
- 	txr = &bp->tx_ring[ring];
- 
-+	if (static_branch_unlikely(&bnxt_xdp_locking_key))
-+		spin_lock(&txr->xdp_tx_lock);
-+
- 	for (i = 0; i < num_frames; i++) {
- 		struct xdp_frame *xdp = frames[i];
- 
-@@ -250,6 +255,9 @@ int bnxt_xdp_xmit(struct net_device *dev, int num_frames,
- 		bnxt_db_write(bp, &txr->tx_db, txr->tx_prod);
++		queue_work(mvdev->wq, &wqent->work);
++		break;
  	}
- 
-+	if (static_branch_unlikely(&bnxt_xdp_locking_key))
-+		spin_unlock(&txr->xdp_tx_lock);
-+
- 	return nxmit;
+-out:
+-	kfree(wqent);
  }
  
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
-index 0df40c3beb05..067bb5e821f5 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
-@@ -10,6 +10,8 @@
- #ifndef BNXT_XDP_H
- #define BNXT_XDP_H
+ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+@@ -1674,7 +1676,6 @@ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+ 	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+ 	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+ 	struct mlx5_vdpa_virtqueue *mvq;
+-	struct mlx5_vdpa_wq_ent *wqent;
  
-+DECLARE_STATIC_KEY_FALSE(bnxt_xdp_locking_key);
-+
- struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
- 				   struct bnxt_tx_ring_info *txr,
- 				   dma_addr_t mapping, u32 len);
+ 	if (!is_index_valid(mvdev, idx))
+ 		return;
+@@ -1683,13 +1684,7 @@ static void mlx5_vdpa_kick_vq(struct vdpa_device *vdev, u16 idx)
+ 		if (!mvdev->wq || !mvdev->cvq.ready)
+ 			return;
+ 
+-		wqent = kzalloc(sizeof(*wqent), GFP_ATOMIC);
+-		if (!wqent)
+-			return;
+-
+-		wqent->mvdev = mvdev;
+-		INIT_WORK(&wqent->work, mlx5_cvq_kick_handler);
+-		queue_work(mvdev->wq, &wqent->work);
++		queue_work(mvdev->wq, &ndev->cvq_ent.work);
+ 		return;
+ 	}
+ 
+@@ -2634,6 +2629,8 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
+ 	if (err)
+ 		goto err_mr;
+ 
++	ndev->cvq_ent.mvdev = mvdev;
++	INIT_WORK(&ndev->cvq_ent.work, mlx5_cvq_kick_handler);
+ 	mvdev->wq = create_singlethread_workqueue("mlx5_vdpa_wq");
+ 	if (!mvdev->wq) {
+ 		err = -ENOMEM;
 -- 
 2.35.1
 
