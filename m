@@ -2,118 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE23C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 20:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E809C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 20:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232618AbiDLUGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 16:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42082 "EHLO
+        id S231313AbiDLUIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 16:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232738AbiDLUGQ (ORCPT
+        with ESMTP id S231829AbiDLUHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 16:06:16 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B79283009
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:57:28 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id c15so25411801ljr.9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:57:28 -0700 (PDT)
+        Tue, 12 Apr 2022 16:07:22 -0400
+Received: from mail-wm1-x349.google.com (mail-wm1-x349.google.com [IPv6:2a00:1450:4864:20::349])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0049CBF8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:59:11 -0700 (PDT)
+Received: by mail-wm1-x349.google.com with SMTP id l41-20020a05600c1d2900b0038ec007ac7fso1700387wms.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 12:59:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KPcbiORevCwEqMtvKJH++KF0drE74ilJoT8gFQ34EnA=;
-        b=TSKs9eKW1GlEw++EEPezIbQGa8d6xcrKEr3la4XqzpfJPISA+7b9KTTEm23XMMJ1YV
-         pcXKlpyq55urGdORKzGxmT1pTvZ/5QXhjKImBF6bFGimi25oLZDpt9M2DbzXX/bDQ+u3
-         9OTNzI18CY7dO2LOX4qCsPXJJ34xmRx72tFYZ9ATSXhsUXzw1klZnP3cX0EZtk+eprNZ
-         tCkMhSq3MAlnJi4/eKNm3VReaN0l0QUhoN+OmB8jE4MWy6cl5AMOOOgXwh+tCG2JI/WG
-         9+gYtMY/ams5vv8fDesBL9oYXhTRQRnTpXvK1Fa0yRuSW4SuRnnTGhhsM6HBGKFzDmOM
-         KMVw==
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:cc;
+        bh=syoYrG4G6wc/D9QpXxmJ5xqKPPyBOCzpGpn970RrPGk=;
+        b=AzIAUSbC0HT1iPMFN81vdTHOeJ5CmdCGjCiwRGHENOURvCjSrPoZVBFIa00KT0UXk+
+         Or3fgc9coJ7lNzQAc0ddVYnjGwFjDclwLFYllf98AUzuBWt16G57jAs/N8M0J7g9LPUu
+         mWMeztpx/ZjRmxCCF2R3ibegnY9anVUyLrSu7m+rwcfbr/hSyS4CVx/LPGNjYUvrDkjh
+         q6wpWRociYBSPlAKBwcqnhAPA1SqU57/6CZxe1mG1jX+IsybNjU21kfS6xE4al9aUgV1
+         mBbGLI4OxFdiSGcFcC8DwVKCSALMD7SWm0N39L/VRN6IySmXhldp2j0kk/owvCDLgcL8
+         mEOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KPcbiORevCwEqMtvKJH++KF0drE74ilJoT8gFQ34EnA=;
-        b=2L7OzwCBgsOnkKhdNtMVfQxi0RBBzbwUSuHL3Y3ue/iQM3jbGP0bL/IeYK6u/algm6
-         aPcvRkbFZI5V/ZLlUJWII5eiShh0zU9av+t7Kc87y8SCDrzZxTBxs0/GFd4yXqfsyl2E
-         s1q+bbpIYEULGUKhnscs8yLVeqLg4GvYY6KIblKy+PjtpnXoukHML+SBC0nVbU5BRSfQ
-         3N2RAmK/zhbkyRm7D5rto7CowB0dQC5XlkrkqImYYZJfUn2ylETuv4+2yC7sKZKETsqJ
-         z9rY0bQG65CK0p1+stxLRtdze1mjJ7w8WSiOYdyaVeoBgo6w36EccFZvHJ/z5k+uGaea
-         RlQQ==
-X-Gm-Message-State: AOAM5319wfh1nOr0Zzt8yFysXQnlItpZtPj0AfYVlAUcrHoAsM4fV3gh
-        BhIkrrava0SlNGBbG4iwRn75ig==
-X-Google-Smtp-Source: ABdhPJzmo2kVaO0teoqOt46A1/R+kt5G8p3jezRBHquWD+rDhCqurcBAW6KPrG7h2kWuiHcT+suCXg==
-X-Received: by 2002:a2e:a795:0:b0:24c:7f68:b382 with SMTP id c21-20020a2ea795000000b0024c7f68b382mr1118017ljf.494.1649793446359;
-        Tue, 12 Apr 2022 12:57:26 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id g4-20020ac24d84000000b00464f178c0bbsm1843697lfe.96.2022.04.12.12.57.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 12:57:25 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id 446751030D2; Tue, 12 Apr 2022 22:58:59 +0300 (+03)
-Date:   Tue, 12 Apr 2022 22:58:59 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     Chao Peng <chao.p.peng@linux.intel.com>,
-        Wanpeng Li <wanpengli@tencent.com>, jun.nakajima@intel.com,
-        kvm@vger.kernel.org, david@redhat.com, qemu-devel@nongnu.org,
-        "J . Bruce Fields" <bfields@fieldses.org>, linux-mm@kvack.org,
-        "H . Peter Anvin" <hpa@zytor.com>, ak@linux.intel.com,
-        Jonathan Corbet <corbet@lwn.net>,
-        Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
-        Hugh Dickins <hughd@google.com>,
-        Steven Price <steven.price@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Jim Mattson <jmattson@google.com>, dave.hansen@intel.com,
-        linux-api@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:cc;
+        bh=syoYrG4G6wc/D9QpXxmJ5xqKPPyBOCzpGpn970RrPGk=;
+        b=vSG1UwmmtyRnWVo+B122CBNP26IaIlPkg11cwXY6mllXAbMeAlzyvDBMz7lvPlMkPa
+         LbU4OrIEMBZpZcbcT8/IcbWU0Ac/qDuV4q2q34cjXFGDMgONDAn3ERSJAeZblEzZZ9o8
+         vKdTLvHj0Bx9fK+2+HNLHID84XACUEi939IiqMKuuu6ITjpy4GBGAea2A3QiGchXbYqk
+         3d32z9cv6QrThYt0O87QAtre2omudi4qxYkAb/32HWgBJubO9WKMekVG5s/DMbUCvb7Y
+         s3fwhpgSGLDLPjgzCVAxgXujQT0csqHL4Rj3fhhyYEYZGhO/2ERG9SVSvqRl88vk4paX
+         B4DQ==
+X-Gm-Message-State: AOAM533erMTviGM7UPHJDqcZIJQmcAOKGDvBMqOMky6gbXgbK3IPan8p
+        mmJnps1FJ68dUUXn0jLY7GJEUj+XB+Hc
+X-Google-Smtp-Source: ABdhPJz4RtEBFxR8dOWxNhwT5sJYg2f8+ScFUMpOLlbygiH0VMVqy9v9t961e6WlRx11zKc7fmqhPYqLSwZT
+X-Received: from zhanwei.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:2da8])
+ (user=zhanwei job=sendgmr) by 2002:a7b:c186:0:b0:38e:c0de:36b6 with SMTP id
+ y6-20020a7bc186000000b0038ec0de36b6mr5724019wmi.53.1649793545148; Tue, 12 Apr
+ 2022 12:59:05 -0700 (PDT)
+Reply-To: Wei Zhang <zhanwei@google.com>
+Date:   Tue, 12 Apr 2022 19:58:45 +0000
+In-Reply-To: <20220412195846.3692374-1-zhanwei@google.com>
+Message-Id: <20220412195846.3692374-2-zhanwei@google.com>
+Mime-Version: 1.0
+References: <20220412195846.3692374-1-zhanwei@google.com>
+X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
+Subject: [PATCH 1/2] KVM: x86: allow guest to send its _stext for kvm profiling
+From:   Wei Zhang <zhanwei@google.com>
+Cc:     Wei Zhang <zhanwei@google.com>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Sangwhan Moon <sxm@google.com>, Ingo Molnar <mingo@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>,
-        linux-fsdevel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Mike Rapoport <rppt@kernel.org>
-Subject: Re: [PATCH v5 00/13] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <20220412195859.gjklfw3fz2lehpb5@box.shutemov.name>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <CALCETrWk1Y47JQC=V028A7Tmc9776Oo4AjgwqRtd9K=XDh6=TA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALCETrWk1Y47JQC=V028A7Tmc9776Oo4AjgwqRtd9K=XDh6=TA@mail.gmail.com>
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 01:16:48PM -0700, Andy Lutomirski wrote:
-> On Thu, Mar 10, 2022 at 6:09 AM Chao Peng <chao.p.peng@linux.intel.com> wrote:
-> >
-> > This is the v5 of this series which tries to implement the fd-based KVM
-> > guest private memory. The patches are based on latest kvm/queue branch
-> > commit:
-> >
-> >   d5089416b7fb KVM: x86: Introduce KVM_CAP_DISABLE_QUIRKS2
-> 
-> Can this series be run and a VM booted without TDX?  A feature like
-> that might help push it forward.
+The profiling buffer is indexed by (pc - _stext) in do_profile_hits(),
+which doesn't work for KVM profiling because the pc represents an address
+in the guest kernel. readprofile is broken in this case, unless the guest
+kernel happens to have the same _stext as the host kernel.
 
-It would require enlightenment of the guest code. We have two options.
+This patch adds a new hypercall so guests could send its _stext to the
+host, which will then be used to adjust the calculation for KVM profiling.
 
-Simple one is to limit enabling to the guest kernel, but it would require
-non-destructive conversion between shared->private memory. This does not
-seem to be compatible with current design.
+Signed-off-by: Wei Zhang <zhanwei@google.com>
+---
+ arch/x86/kvm/x86.c            | 15 +++++++++++++++
+ include/linux/kvm_host.h      |  4 ++++
+ include/uapi/linux/kvm_para.h |  1 +
+ virt/kvm/Kconfig              |  5 +++++
+ 4 files changed, 25 insertions(+)
 
-Other option is get memory private from time 0 of VM boot, but it requires
-modification of virtual BIOS to setup shared ranges as needed. I'm not
-sure if anybody volunteer to work on BIOS code to make it happen.
-
-Hm.
-
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 547ba00ef64f..abeacdd5d362 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -9246,6 +9246,12 @@ int kvm_emulate_hypercall(struct kvm_vcpu *vcpu)
+ 		vcpu->arch.complete_userspace_io = complete_hypercall_exit;
+ 		return 0;
+ 	}
++#ifdef CONFIG_ACCURATE_KVM_PROFILING
++	case KVM_HC_GUEST_STEXT:
++		vcpu->kvm->guest_stext = a0;
++		ret = 0;
++		break;
++#endif
+ 	default:
+ 		ret = -KVM_ENOSYS;
+ 		break;
+@@ -10261,6 +10267,15 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 	 */
+ 	if (unlikely(prof_on == KVM_PROFILING)) {
+ 		unsigned long rip = kvm_rip_read(vcpu);
++#ifdef CONFIG_ACCURATE_KVM_PROFILING
++		/*
++		 * Profiling buffer is indexed by (rip - _stext), but it's
++		 * supposed to be indexed by (rip - guest_stext) instead.
++		 * Therefore apply an offest in advance to get correct results.
++		 */
++		if (vcpu->kvm->guest_stext)
++			rip += (unsigned long)_stext - vcpu->kvm->guest_stext;
++#endif
+ 		profile_hit(KVM_PROFILING, (void *)rip);
+ 	}
+ 
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 3f9b22c4983a..65caaa4d87c4 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -781,6 +781,10 @@ struct kvm {
+ 	struct notifier_block pm_notifier;
+ #endif
+ 	char stats_id[KVM_STATS_NAME_SIZE];
++
++#ifdef CONFIG_ACCURATE_KVM_PROFILING
++	unsigned long guest_stext;
++#endif
+ };
+ 
+ #define kvm_err(fmt, ...) \
+diff --git a/include/uapi/linux/kvm_para.h b/include/uapi/linux/kvm_para.h
+index 960c7e93d1a9..dcb4ba1f033c 100644
+--- a/include/uapi/linux/kvm_para.h
++++ b/include/uapi/linux/kvm_para.h
+@@ -30,6 +30,7 @@
+ #define KVM_HC_SEND_IPI		10
+ #define KVM_HC_SCHED_YIELD		11
+ #define KVM_HC_MAP_GPA_RANGE		12
++#define KVM_HC_GUEST_STEXT		13
+ 
+ /*
+  * hypercalls use architecture specific
+diff --git a/virt/kvm/Kconfig b/virt/kvm/Kconfig
+index a8c5c9f06b3c..8798f75ddade 100644
+--- a/virt/kvm/Kconfig
++++ b/virt/kvm/Kconfig
+@@ -72,3 +72,8 @@ config KVM_XFER_TO_GUEST_WORK
+ 
+ config HAVE_KVM_PM_NOTIFIER
+        bool
++
++# Offer an additional hypercall to a guest so it could pass value of _stext to
++# host, which will be used to adjust the calculation of KVM profiling.
++config ACCURATE_KVM_PROFILING
++       bool
 -- 
- Kirill A. Shutemov
+2.35.1.1178.g4f1659d476-goog
+
