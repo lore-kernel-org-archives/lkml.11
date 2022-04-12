@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BDF3C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5314DC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385247AbiDLIvK (ORCPT
+        id S1385268AbiDLIvO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49116 "EHLO
+        Tue, 12 Apr 2022 04:51:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358598AbiDLHlw (ORCPT
+        with ESMTP id S1358608AbiDLHlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F06153702;
-        Tue, 12 Apr 2022 00:18:24 -0700 (PDT)
+        Tue, 12 Apr 2022 03:41:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9285370C;
+        Tue, 12 Apr 2022 00:18:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78F8BB81B4F;
-        Tue, 12 Apr 2022 07:18:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E24EFC385A1;
-        Tue, 12 Apr 2022 07:18:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 494A3B81B60;
+        Tue, 12 Apr 2022 07:18:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB803C385A5;
+        Tue, 12 Apr 2022 07:18:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747902;
-        bh=SpYTWM87dLN5pE3JWM5u1XNsO9uj74qw3Rk8zGXWkc4=;
+        s=korg; t=1649747905;
+        bh=bo5oyi2RDSbh9N7tonWPZ/m9IiFZzZv7VtlZ2TBZVPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y6uSb+IaQwXDmG8eg3PLUTDyQZF7VV+3U3AHSPKdjXWqsSP4ghOQXHAEbtzg5sQpe
-         RwfvYxxhFfiZ7KeLuo8zZlMNw4lp6gQ2ojupLD/ZbQfjg3JnMeII5HRsYNd9qJUfsQ
-         539b/AhT+UZvUbRq5XXT6MGGf+CF1KhRrXhuTyak=
+        b=TQFmoGxYPP8G0gMEfDZLfyPShvl+CwZmLhRj5SHx5T1dJ7FXq4xn38OMbx91jpGGV
+         TxC7OE1i3GOwo7TKBg9YX5y/BHXjK0F+jZgDFAVcu1UeWbhD3zDQrrIOCNhLsTMlCX
+         7C+3KBIwWt+wrJsJMw6ejX+tWLH396VdD0cDKSOY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anthony Koo <Anthony.Koo@amd.com>,
-        Eric Yang <Eric.Yang2@amd.com>, Alex Hung <alex.hung@amd.com>,
-        Roman Li <Roman.Li@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Arthur Fabre <afabre@cloudflare.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 248/343] drm/amd/display: Remove redundant dsc power gating from init_hw
-Date:   Tue, 12 Apr 2022 08:31:06 +0200
-Message-Id: <20220412062958.485919743@linuxfoundation.org>
+Subject: [PATCH 5.17 249/343] bpf: Support dual-stack sockets in bpf_tcp_check_syncookie
+Date:   Tue, 12 Apr 2022 08:31:07 +0200
+Message-Id: <20220412062958.514317893@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -53,49 +52,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roman Li <Roman.Li@amd.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit 95707203407c4cf0b7e520a99d6f46d8aed4b57f ]
+[ Upstream commit 2e8702cc0cfa1080f29fd64003c00a3e24ac38de ]
 
-[Why]
-DSC Power down code has been moved from dcn31_init_hw into init_pipes()
-Need to remove it from dcn10_init_hw() as well to avoid duplicated action
-on dcn1.x/2.x
+bpf_tcp_gen_syncookie looks at the IP version in the IP header and
+validates the address family of the socket. It supports IPv4 packets in
+AF_INET6 dual-stack sockets.
 
-[How]
-Remove DSC power down code from dcn10_init_hw()
+On the other hand, bpf_tcp_check_syncookie looks only at the address
+family of the socket, ignoring the real IP version in headers, and
+validates only the packet size. This implementation has some drawbacks:
 
-Fixes: 8fa6f4c5715c ("drm/amd/display: fixed the DSC power off sequence during Driver PnP")
+1. Packets are not validated properly, allowing a BPF program to trick
+   bpf_tcp_check_syncookie into handling an IPv6 packet on an IPv4
+   socket.
 
-Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
-Reviewed-by: Eric Yang <Eric.Yang2@amd.com>
-Acked-by: Alex Hung <alex.hung@amd.com>
-Signed-off-by: Roman Li <Roman.Li@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+2. Dual-stack sockets fail the checks on IPv4 packets. IPv4 clients end
+   up receiving a SYNACK with the cookie, but the following ACK gets
+   dropped.
+
+This patch fixes these issues by changing the checks in
+bpf_tcp_check_syncookie to match the ones in bpf_tcp_gen_syncookie. IP
+version from the header is taken into account, and it is validated
+properly with address family.
+
+Fixes: 399040847084 ("bpf: add helper to check for a valid SYN cookie")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Acked-by: Arthur Fabre <afabre@cloudflare.com>
+Link: https://lore.kernel.org/bpf/20220406124113.2795730-1-maximmi@nvidia.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c | 7 -------
- 1 file changed, 7 deletions(-)
+ net/core/filter.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-index 636e2d90ff93..2cefdd96d0cb 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
-@@ -1493,13 +1493,6 @@ void dcn10_init_hw(struct dc *dc)
- 			link->link_status.link_active = true;
- 	}
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 82fcb7533663..48fc95626597 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6777,24 +6777,33 @@ BPF_CALL_5(bpf_tcp_check_syncookie, struct sock *, sk, void *, iph, u32, iph_len
+ 	if (!th->ack || th->rst || th->syn)
+ 		return -ENOENT;
  
--	/* Power gate DSCs */
--	if (!is_optimized_init_done) {
--		for (i = 0; i < res_pool->res_cap->num_dsc; i++)
--			if (hws->funcs.dsc_pg_control != NULL)
--				hws->funcs.dsc_pg_control(hws, res_pool->dscs[i]->inst, false);
--	}
--
- 	/* we want to turn off all dp displays before doing detection */
- 	if (dc->config.power_down_display_on_boot)
- 		dc_link_blank_all_dp_displays(dc);
++	if (unlikely(iph_len < sizeof(struct iphdr)))
++		return -EINVAL;
++
+ 	if (tcp_synq_no_recent_overflow(sk))
+ 		return -ENOENT;
+ 
+ 	cookie = ntohl(th->ack_seq) - 1;
+ 
+-	switch (sk->sk_family) {
+-	case AF_INET:
+-		if (unlikely(iph_len < sizeof(struct iphdr)))
++	/* Both struct iphdr and struct ipv6hdr have the version field at the
++	 * same offset so we can cast to the shorter header (struct iphdr).
++	 */
++	switch (((struct iphdr *)iph)->version) {
++	case 4:
++		if (sk->sk_family == AF_INET6 && ipv6_only_sock(sk))
+ 			return -EINVAL;
+ 
+ 		ret = __cookie_v4_check((struct iphdr *)iph, th, cookie);
+ 		break;
+ 
+ #if IS_BUILTIN(CONFIG_IPV6)
+-	case AF_INET6:
++	case 6:
+ 		if (unlikely(iph_len < sizeof(struct ipv6hdr)))
+ 			return -EINVAL;
+ 
++		if (sk->sk_family != AF_INET6)
++			return -EINVAL;
++
+ 		ret = __cookie_v6_check((struct ipv6hdr *)iph, th, cookie);
+ 		break;
+ #endif /* CONFIG_IPV6 */
 -- 
 2.35.1
 
