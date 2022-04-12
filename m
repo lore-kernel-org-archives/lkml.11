@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4587DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:04:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C3CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344061AbiDLMHD (ORCPT
+        id S1347413AbiDLMHW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
+        Tue, 12 Apr 2022 08:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351850AbiDLMCo (ORCPT
+        with ESMTP id S1351367AbiDLMCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:02:44 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81AE4316;
-        Tue, 12 Apr 2022 03:59:14 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id v4so8363171edl.7;
-        Tue, 12 Apr 2022 03:59:14 -0700 (PDT)
+        Tue, 12 Apr 2022 08:02:37 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6FC76E06;
+        Tue, 12 Apr 2022 03:58:57 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id l7so31104712ejn.2;
+        Tue, 12 Apr 2022 03:58:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vgJhsUA0t53G3i/our+ohO3psku9eyW28VU5QSKiZig=;
-        b=kODKyvrcOrR77JclBDjUYnawnWNK01/GVWtFIsW12r7g8YN0axNvWI+Tkgp6Cyhz0Z
-         C6xzF62i4JoRriVl8LA+AVqe5ltwD1FuxXd+mmLD4NQPGKZJoVvRasG/GPyHXFErFgGm
-         LdswQFXyhPAvPmiYgVHGyDGqaM9j5cr9mD1liWP3Qzxyq55Wf33aoAwgm9b1Zfd8/fHK
-         qhVrmV7f99XAz177959rW+5G/60EOBMlfarhiN5BeLtFcrg8DC+ww502DPmowCO44w/Q
-         GtGbyld1ijFb9Mmlm4wzzE7Icc6yMDgQLt6J7mEhHdzoFwiPtonQbOvYWrZA7yn6f5ls
-         Cqnw==
+        bh=8gxZv9czNrqSsp+NwDMxwad6YKQOb4DD102M9ETWSEU=;
+        b=ITHb5Z6Ro2j7h9KvVs8LnHP+X9FORr367PPN32rttpJ+hrNMecB/3XZ4h+su6UDu5Q
+         UHw8l+Pjwclo5Ysc5IzDvHR9VYp8P7ICq84aWXUN5djTntioSeCBzqLrmWEVOmxMzo/i
+         lTo2zLR/QC4uKo0xVTLDz3Stqpju1oz1DsJ3jrjvDHTyr+zTXgTAcEffm7Wio8myKENt
+         wbSzkkHS7T+8h5HggSK/6g02VLekQa/Em0l750WCJr+KqES7vhEzWKH+ooie57tmdXlR
+         7uNWoRy+loFZl+7EYx6sA58obekFJFD4IGE7LZEGMkR2VSocff0x2mtDG+azcl2C6gjr
+         ZO/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vgJhsUA0t53G3i/our+ohO3psku9eyW28VU5QSKiZig=;
-        b=et81hI/Ngq89hf/9pEMlrwoh6kHsVogITT1h+LI6yGyaT3/qLxLGVa26wuh5+3lDEM
-         P2OoOg6zHcccru8TJCa0vOmuTHqboAP7RcpDezeIbv6zQ/hOUmpoUKQP1WlUiS42yk9H
-         XDDE0JgvfkcAhiDtyVoF9Nl5oTBMpwCnmOhzaDdk0T6ASXSopsvDScqEOzOFszk0FX6L
-         ceWh5iHiZc8tBqXlymZOEtvDRJEmVXJJ+AiNDM7RyeZCTjrd3+5O1GUnEGaiGjy+k84O
-         MuDLLL6DFGOSMBRpOM6+BqrKkFgi7CEd2dyrMnQAE/ASivHPI6PmTfyNP97pqINWDm0x
-         reaw==
-X-Gm-Message-State: AOAM532z6HP1I0oXy95o9MW5htWmhha9a+20dkI/Ns0Ql5B2eJwjjZm2
-        n6IEt0dj1x5FbEmdib8rr94=
-X-Google-Smtp-Source: ABdhPJywkgO95X0rz4DuO846vGglHJszFGcoUayyvWUmqo2BIcn+GJrvbkhswsbiFoR2QzwirmQ+Lg==
-X-Received: by 2002:a05:6402:370b:b0:41d:8508:20af with SMTP id ek11-20020a056402370b00b0041d850820afmr6829552edb.16.1649761152863;
-        Tue, 12 Apr 2022 03:59:12 -0700 (PDT)
+        bh=8gxZv9czNrqSsp+NwDMxwad6YKQOb4DD102M9ETWSEU=;
+        b=rfbcZ8MSUe61tPDzhcYqVo/dnDjjsptHZ3NjcOY7JkBqmJfN5oj1BVzf2ug3Wtbrtz
+         0TmD95eZIdQ+b5uRJK9pd7s74/v1B//lAJERlhuQZq8JUspMjLK0rHy4duUaF4UBsw3I
+         Tst+4ydUT9h17vo+NoaGEikdpRLPN/fwwdvyquHwy/sxDf450DkkjsZjdKG3zLmnO2M6
+         AbVXTHutfChYy1CztKQI3E4meMFq7iWlA/g6Cx1cmMxtEeBBtdjGUrKUMB1G968z3PTo
+         ucQrkyhNvAYFbk++whBZDw9FSXubTIeOGpQK+hASxN+NgBIqETpuGVMPFCwHdic5nwVu
+         ArTQ==
+X-Gm-Message-State: AOAM532+DLgoUmZBYLW5RYgT/dSz4T4ufwvolgqCnmVtAykGS1k3uH/H
+        x+zMA/JkoyZ2ZU64XwcYWDg=
+X-Google-Smtp-Source: ABdhPJzNTHWGl2lSK5El9AwYn/g4QL+TmEsz0QZcXmoF0HHdlRFYvO6ANFjRh9vxOm6k30pcEG3CMw==
+X-Received: by 2002:a17:906:2883:b0:6e8:7012:4185 with SMTP id o3-20020a170906288300b006e870124185mr14014409ejd.204.1649761135581;
+        Tue, 12 Apr 2022 03:58:55 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.59.11
+        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.58.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:59:12 -0700 (PDT)
+        Tue, 12 Apr 2022 03:58:55 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -86,10 +86,11 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         Mike Rapoport <rppt@kernel.org>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next v2 16/18] ps3_gelic: Replace usage of found with dedicated list iterator variable
-Date:   Tue, 12 Apr 2022 12:58:28 +0200
-Message-Id: <20220412105830.3495846-17-jakobkoschel@gmail.com>
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next v2 03/18] net: dsa: sja1105: reorder sja1105_first_entry_longer_than with memory allocation
+Date:   Tue, 12 Apr 2022 12:58:15 +0200
+Message-Id: <20220412105830.3495846-4-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220412105830.3495846-1-jakobkoschel@gmail.com>
 References: <20220412105830.3495846-1-jakobkoschel@gmail.com>
@@ -99,95 +100,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To move the list iterator variable into the list_for_each_entry_*()
-macro in the future it should be avoided to use the list iterator
-variable after the loop body.
+sja1105_first_entry_longer_than() does not make use of the full struct
+sja1105_gate_entry *e, just of e->interval which is set from the passed
+entry_time.
 
-To *never* use the list iterator variable after the loop it was
-concluded to use a separate iterator variable instead of a
-found boolean [1].
+This means that if there is a gate conflict, we have allocated e for
+nothing, just to free it later. Reorder the memory allocation and the
+function call, to avoid that and simplify the error unwind path.
 
-This removes the need to use a found variable and simply checking if
-the variable was set, can determine if the break/goto was hit.
-
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- .../net/ethernet/toshiba/ps3_gelic_wireless.c | 30 +++++++++----------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_vl.c | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c b/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c
-index dc14a66583ff..c8a016c902cd 100644
---- a/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c
-+++ b/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c
-@@ -1495,14 +1495,14 @@ static int gelic_wl_start_scan(struct gelic_wl_info *wl, int always_scan,
-  */
- static void gelic_wl_scan_complete_event(struct gelic_wl_info *wl)
+diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
+index 369be2ac3587..e5ea8eb9ec4e 100644
+--- a/drivers/net/dsa/sja1105/sja1105_vl.c
++++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+@@ -36,7 +36,11 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
  {
-+	struct gelic_wl_scan_info *target = NULL, *iter, *tmp;
- 	struct gelic_eurus_cmd *cmd = NULL;
--	struct gelic_wl_scan_info *target, *tmp;
- 	struct gelic_wl_scan_info *oldest = NULL;
- 	struct gelic_eurus_scan_info *scan_info;
- 	unsigned int scan_info_size;
- 	union iwreq_data data;
- 	unsigned long this_time = jiffies;
--	unsigned int data_len, i, found, r;
-+	unsigned int data_len, i, r;
- 	void *buf;
+ 	struct sja1105_gate_entry *e;
+ 	struct list_head *pos;
+-	int rc;
++
++	pos = sja1105_first_entry_longer_than(&gating_cfg->entries,
++					      entry_time, extack);
++	if (IS_ERR(pos))
++		return PTR_ERR(pos);
  
- 	pr_debug("%s:start\n", __func__);
-@@ -1539,14 +1539,14 @@ static void gelic_wl_scan_complete_event(struct gelic_wl_info *wl)
- 	wl->scan_stat = GELIC_WL_SCAN_STAT_GOT_LIST;
+ 	e = kzalloc(sizeof(*e), GFP_KERNEL);
+ 	if (!e)
+@@ -45,22 +49,11 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
+ 	e->rule = rule;
+ 	e->gate_state = gate_state;
+ 	e->interval = entry_time;
+-
+-	pos = sja1105_first_entry_longer_than(&gating_cfg->entries,
+-					      e->interval, extack);
+-	if (IS_ERR(pos)) {
+-		rc = PTR_ERR(pos);
+-		goto err;
+-	}
+-
+ 	list_add(&e->list, pos->prev);
  
- 	/* mark all entries are old */
--	list_for_each_entry_safe(target, tmp, &wl->network_list, list) {
--		target->valid = 0;
-+	list_for_each_entry_safe(iter, tmp, &wl->network_list, list) {
-+		iter->valid = 0;
- 		/* expire too old entries */
--		if (time_before(target->last_scanned + wl->scan_age,
-+		if (time_before(iter->last_scanned + wl->scan_age,
- 				this_time)) {
--			kfree(target->hwinfo);
--			target->hwinfo = NULL;
--			list_move_tail(&target->list, &wl->network_free_list);
-+			kfree(iter->hwinfo);
-+			iter->hwinfo = NULL;
-+			list_move_tail(&iter->list, &wl->network_free_list);
- 		}
- 	}
+ 	gating_cfg->num_entries++;
  
-@@ -1569,22 +1569,22 @@ static void gelic_wl_scan_complete_event(struct gelic_wl_info *wl)
- 			continue;
- 		}
+ 	return 0;
+-err:
+-	kfree(e);
+-	return rc;
+ }
  
--		found = 0;
-+		target = NULL;
- 		oldest = NULL;
--		list_for_each_entry(target, &wl->network_list, list) {
--			if (ether_addr_equal(&target->hwinfo->bssid[2],
-+		list_for_each_entry(iter, &wl->network_list, list) {
-+			if (ether_addr_equal(&iter->hwinfo->bssid[2],
- 					     &scan_info->bssid[2])) {
--				found = 1;
-+				target = iter;
- 				pr_debug("%s: same BBS found scanned list\n",
- 					 __func__);
- 				break;
- 			}
- 			if (!oldest ||
--			    (target->last_scanned < oldest->last_scanned))
--				oldest = target;
-+			    (iter->last_scanned < oldest->last_scanned))
-+				oldest = iter;
- 		}
- 
--		if (!found) {
-+		if (!target) {
- 			/* not found in the list */
- 			if (list_empty(&wl->network_free_list)) {
- 				/* expire oldest */
+ /* The gate entries contain absolute times in their e->interval field. Convert
 -- 
 2.25.1
 
