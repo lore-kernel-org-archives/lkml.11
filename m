@@ -2,113 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCCE8C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B71EEC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232036AbiDLHa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
+        id S1355986AbiDLHaM (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351840AbiDLHNA (ORCPT
+        with ESMTP id S1351827AbiDLHM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:13:00 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C5C117E1D;
-        Mon, 11 Apr 2022 23:53:24 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AC5691570;
-        Mon, 11 Apr 2022 23:53:23 -0700 (PDT)
-Received: from [10.57.11.184] (unknown [10.57.11.184])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 137983F73B;
-        Mon, 11 Apr 2022 23:53:20 -0700 (PDT)
-Message-ID: <55d4a19d-15d4-4d15-8430-8a8ed8149497@arm.com>
-Date:   Tue, 12 Apr 2022 07:53:19 +0100
+        Tue, 12 Apr 2022 03:12:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEBA1705E;
+        Mon, 11 Apr 2022 23:53:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48AD061451;
+        Tue, 12 Apr 2022 06:53:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52A14C385A6;
+        Tue, 12 Apr 2022 06:53:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649746394;
+        bh=OhkQB/YB9JwzoHdchmhfRn/xWsDTrD2yFnyvdWKmG7M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PVuLBiJNDIdw7OYarTFnGpOcMn/HB/0dSZ8p1XoQ+2VizIlm442G0TM7zTzp25cEg
+         zdYyPmNs6u8alnnng8mN39yMZtuf5LJwpOae/wdSB6d9p+Pb6QSxUlUtnvPKT0YUJo
+         0idSzO5KMkSZG0fqsopfrIU9LqyDkNdqcFWuDCr4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.15 265/277] selftests: cgroup: Test open-time credential usage for migration checks
+Date:   Tue, 12 Apr 2022 08:31:08 +0200
+Message-Id: <20220412062949.713088117@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
+References: <20220412062942.022903016@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RESEND][PATCH 0/8] Introduce support for artificial Energy Model
-Content-Language: en-US
-From:   Lukasz Luba <lukasz.luba@arm.com>
-To:     rafael@kernel.org
-Cc:     dietmar.eggemann@arm.com, Pierre.Gondois@arm.com,
-        ionela.voinescu@arm.com, viresh.kumar@linaro.org,
-        daniel.lezcano@linaro.org, linux-pm@vger.kernel.org,
-        mka@chromium.org, nm@ti.com, sboyd@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, cristian.marussi@arm.com,
-        sudeep.holla@arm.com, matthias.bgg@gmail.com,
-        linux-kernel@vger.kernel.org
-References: <20220321095729.20655-1-lukasz.luba@arm.com>
- <76230a1c-73b8-c471-c62e-3ec9b33461a6@arm.com>
-In-Reply-To: <76230a1c-73b8-c471-c62e-3ec9b33461a6@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rafael,
+From: Tejun Heo <tj@kernel.org>
 
-gentle ping. If you need some help with this maintenance,
-we can help.
+commit 613e040e4dc285367bff0f8f75ea59839bc10947 upstream.
 
-Regards,
-Lukasz
+When a task is writing to an fd opened by a different task, the perm check
+should use the credentials of the latter task. Add a test for it.
 
-On 4/4/22 13:35, Lukasz Luba wrote:
-> Hi Rafael,
-> 
-> 
-> The patch set has been on LKML for quite a while and got one ACK,
-> for the code touching something outside the EM (thermal cooling).
-> 
-> AFAICS there is no interest and objections from others for this code.
-> 
-> Therefore, I have a question:
-> What would be be process to have merge this code?
-> (We had internally a few reviews of this code)
-> 
-> On 3/21/22 09:57, Lukasz Luba wrote:
->> Hi all,
->>
->> This patch set adds new callback and support for artificial Energy 
->> Model (EM).
->> The new EMs have artificially generated performance states.
->> Such EMs can be created from lean information sources, such
->> as the relative energy efficiency between CPUs. The ACPI based
->> platforms provide this information
->> (ACPI 6.4, s5.2.12.14 'GIC CPU Interface (GICC) Structure'
->> 'Processor Power efficiency Class' field).
->>
->> Artificial EMs might require to directly provide the 'cost' of
->> the generated performance state. This patch set adds a new callback
->> .get_cost() for this. The EM framework does not force any model
->> or formula, it's up to the platform code.
->>
->> Artificial EMs aim to leverage the Energy Aware Scheduler
->> (EAS). Other frameworks relying on performance states
->> information (i.e. IPA/DTPM) must be informed of the
->> EM type and might be prevented from using it. This patch
->> sets also does this by introducing a new flag:
->> EM_PERF_DOMAIN_ARTIFICIAL.
->>
->> The patch set is based on current linux-next, where some
->> changes to OPP & EM are queuing.
->>
->> The patch set also contains (patch 7/8 and patch 8/8) logic which 
->> prevents
->> two EM's client frameworks from using this new EM type. Some other 
->> approach,
->> using 'milli-watts', has been proposed and discussed, but refused [1].
->> This new flag is more precised and should not leave space for
->> wrong interpretation.
->>
->> Shortly after this patch set you will see a patch set implementing the
->> platform code and registering this new EM.
->>
-> 
-> 
-> No one from Arm is an official maintainer of the EM code.
-> 
-> Regards,
-> Lukasz
+Tested-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ tools/testing/selftests/cgroup/test_core.c |   68 +++++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
+
+--- a/tools/testing/selftests/cgroup/test_core.c
++++ b/tools/testing/selftests/cgroup/test_core.c
+@@ -674,6 +674,73 @@ cleanup:
+ 	return ret;
+ }
+ 
++/*
++ * cgroup migration permission check should be performed based on the
++ * credentials at the time of open instead of write.
++ */
++static int test_cgcore_lesser_euid_open(const char *root)
++{
++	const uid_t test_euid = 65534;	/* usually nobody, any !root is fine */
++	int ret = KSFT_FAIL;
++	char *cg_test_a = NULL, *cg_test_b = NULL;
++	char *cg_test_a_procs = NULL, *cg_test_b_procs = NULL;
++	int cg_test_b_procs_fd = -1;
++	uid_t saved_uid;
++
++	cg_test_a = cg_name(root, "cg_test_a");
++	cg_test_b = cg_name(root, "cg_test_b");
++
++	if (!cg_test_a || !cg_test_b)
++		goto cleanup;
++
++	cg_test_a_procs = cg_name(cg_test_a, "cgroup.procs");
++	cg_test_b_procs = cg_name(cg_test_b, "cgroup.procs");
++
++	if (!cg_test_a_procs || !cg_test_b_procs)
++		goto cleanup;
++
++	if (cg_create(cg_test_a) || cg_create(cg_test_b))
++		goto cleanup;
++
++	if (cg_enter_current(cg_test_a))
++		goto cleanup;
++
++	if (chown(cg_test_a_procs, test_euid, -1) ||
++	    chown(cg_test_b_procs, test_euid, -1))
++		goto cleanup;
++
++	saved_uid = geteuid();
++	if (seteuid(test_euid))
++		goto cleanup;
++
++	cg_test_b_procs_fd = open(cg_test_b_procs, O_RDWR);
++
++	if (seteuid(saved_uid))
++		goto cleanup;
++
++	if (cg_test_b_procs_fd < 0)
++		goto cleanup;
++
++	if (write(cg_test_b_procs_fd, "0", 1) >= 0 || errno != EACCES)
++		goto cleanup;
++
++	ret = KSFT_PASS;
++
++cleanup:
++	cg_enter_current(root);
++	if (cg_test_b_procs_fd >= 0)
++		close(cg_test_b_procs_fd);
++	if (cg_test_b)
++		cg_destroy(cg_test_b);
++	if (cg_test_a)
++		cg_destroy(cg_test_a);
++	free(cg_test_b_procs);
++	free(cg_test_a_procs);
++	free(cg_test_b);
++	free(cg_test_a);
++	return ret;
++}
++
+ #define T(x) { x, #x }
+ struct corecg_test {
+ 	int (*fn)(const char *root);
+@@ -689,6 +756,7 @@ struct corecg_test {
+ 	T(test_cgcore_proc_migration),
+ 	T(test_cgcore_thread_migration),
+ 	T(test_cgcore_destroy),
++	T(test_cgcore_lesser_euid_open),
+ };
+ #undef T
+ 
+
+
