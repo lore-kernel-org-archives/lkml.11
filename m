@@ -2,88 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFEACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:39:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79176C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351673AbiDLLls (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:41:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47482 "EHLO
+        id S241034AbiDLLmG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354697AbiDLLi6 (ORCPT
+        with ESMTP id S1356312AbiDLLkF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:38:58 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFDB37BE3;
-        Tue, 12 Apr 2022 03:19:51 -0700 (PDT)
-Received: from janitor.denx.de (unknown [62.91.23.180])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: noc@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 8B7E283DA6;
-        Tue, 12 Apr 2022 12:19:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1649758789;
-        bh=3yz4s9o1nz4BvPmYZJ3QuhCwoJciRv228WlmR/aEPOk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ScT8GtsTqsNDdMHsXSJl9Xe194rsBs9Uw9T92Emr0AWZHP+4QqdecgjGABYwgWudY
-         fyrnV59eX6EPHv5MjFRNV5LVg/Btp1pQqpfDYPQP+MvFw1I3Cbv6/jSC5YXrqe4COs
-         PkbFX+rvDO7YD2Zu8mON2kms1YhdB4uP3EtrPbNFaWDRjLUsce5C5OOeVGqatl/cvp
-         xLqPfFZWaeos/ZlTLLcvX7DfUBGki7vHf5q3ar+0uXnnzkts0sMt9WYPSK96KIoGm4
-         cWEl4sqOuDz3dH2qUcZ53jf5k+++Z8njFVN5VeGNLKovxbfjXtsdsq0cVF0GqnbjB4
-         LPHUPPkRU2cGg==
-Received: by janitor.denx.de (Postfix, from userid 108)
-        id 334A2A02B9; Tue, 12 Apr 2022 12:19:49 +0200 (CEST)
-Received: from xpert.denx.de (xpert.denx.de [192.168.0.4])
-        by janitor.denx.de (Postfix) with ESMTPS id F03CCA005F;
-        Tue, 12 Apr 2022 12:19:38 +0200 (CEST)
-Received: by xpert.denx.de (Postfix, from userid 535)
-        id E21983E0786; Tue, 12 Apr 2022 12:19:38 +0200 (CEST)
-From:   Philip Oberfichtner <pro@denx.de>
-To:     devicetree@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Winker Matthias <Matthias.Winker@de.bosch.com>,
-        Philip Oberfichtner <pro@denx.de>
-Subject: [PATCH 1/2] dt-bindings: arm: Add bosch acc board
-Date:   Tue, 12 Apr 2022 12:19:04 +0200
-Message-Id: <20220412101905.514310-2-pro@denx.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220412101905.514310-1-pro@denx.de>
-References: <20220412101905.514310-1-pro@denx.de>
+        Tue, 12 Apr 2022 07:40:05 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413AA506DC
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:21:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649758862; x=1681294862;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=qVx1i45O45JHhoPS6qEj+Q9ZWHEANAaDUwS8g38cHBg=;
+  b=RPhxUans1MAoYVDzLA2iN/3lQhuvXJWGRrX6YvAb0Ab2sVhhS5/17ABr
+   fPvT4NpjVee6FFWP3rfdGUu5W3zFrp4BJJiy1jOZwHa26Fn74aj5vur24
+   YXeb2IdoB/WrlzjZWlpDBUEcvIeCbTp1/2S7f8xYE1rgKe6xO7f+L8r7v
+   MFfeik70nc6PfrgdblZJM1/VGuECySS9T6jPTF/YBeTxRGM+dvRWxQmCm
+   vZn4p5iEtDSpqsPp5nJ07eCopAMHAEkazt716Npt9Vw+GSDM6FrsqtAyQ
+   nU66Uym8PqIu7lPGydxA0RdV4zLUckRGwRxqoWIFLoK77DTOvAY6mTg8S
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="261186863"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="261186863"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 03:21:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="572696153"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 12 Apr 2022 03:21:00 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neDdr-0002l0-V3;
+        Tue, 12 Apr 2022 10:20:59 +0000
+Date:   Tue, 12 Apr 2022 18:20:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [toke:xdp-queueing-04 3/12] syscall.c:undefined reference to
+ `pifo_generic_map_ops'
+Message-ID: <202204121834.8kA9JXKq-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree binding for the Bosch ACC board, based on i.MX6 Dual.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git xdp-queueing-04
+head:   3ef13cb90d84cacaecd65fb853dc30cade943524
+commit: 4198433a927809216d5fc4793eaa31d2883d1090 [3/12] bpf: Add a PIFO priority queue map type
+config: parisc-randconfig-r031-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121834.8kA9JXKq-lkp@intel.com/config)
+compiler: hppa64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git/commit/?id=4198433a927809216d5fc4793eaa31d2883d1090
+        git remote add toke https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git
+        git fetch --no-tags toke xdp-queueing-04
+        git checkout 4198433a927809216d5fc4793eaa31d2883d1090
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc64 SHELL=/bin/bash
 
-Signed-off-by: Philip Oberfichtner <pro@denx.de>
----
- Documentation/devicetree/bindings/arm/fsl.yaml | 1 +
- 1 file changed, 1 insertion(+)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index 08bdd30e511c..9deb568761c1 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -192,6 +192,7 @@ properties:
-         items:
-           - enum:
-               - auvidea,h100              # Auvidea H100
-+              - bosch,imx6q-acc           # Bosch ACC i.MX6 Dual
-               - boundary,imx6q-nitrogen6_max
-               - boundary,imx6q-nitrogen6_som2
-               - boundary,imx6q-nitrogen6x
+All errors (new ones prefixed by >>):
+
+   hppa64-linux-ld: kernel/bpf/syscall.o: in function `.LC598':
+>> syscall.c:(.data.rel.ro+0x13f0): undefined reference to `pifo_generic_map_ops'
+   hppa64-linux-ld: kernel/bpf/btf.o: in function `.LC547':
+>> btf.c:(.data.rel.ro+0xb38): undefined reference to `pifo_generic_map_ops'
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
