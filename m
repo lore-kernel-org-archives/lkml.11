@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B71C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:29:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03E0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346432AbiDLEbQ (ORCPT
+        id S1346485AbiDLEbV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 00:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52828 "EHLO
+        Tue, 12 Apr 2022 00:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346139AbiDLEam (ORCPT
+        with ESMTP id S1346216AbiDLEat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 00:30:42 -0400
+        Tue, 12 Apr 2022 00:30:49 -0400
 Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD012329A0;
-        Mon, 11 Apr 2022 21:28:26 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 6BAE33200E89;
-        Tue, 12 Apr 2022 00:28:25 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A6A32991;
+        Mon, 11 Apr 2022 21:28:33 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id CE6E53201C39;
+        Tue, 12 Apr 2022 00:28:31 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Tue, 12 Apr 2022 00:28:26 -0400
+  by compute5.internal (MEProxy); Tue, 12 Apr 2022 00:28:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1649737705; x=1649824105; bh=rT
-        me4gsdReTHZYq9dpsHcO27YtJUVs0qzpd+cDg5ggo=; b=G+N6Zs7JCoYiGdmbR3
-        Rwf8otMzwqj5blzxGACkhQj2pu5MCAe7gJEJ5c/Mz8AdnskUVugJJRXL2odJeMxs
-        eGVTQC9/nQn6GnDESbn7me3zAcmHLaDGjBIuvadnhnFMxuPg8U6vsInLTyvw6fUa
-        EJ4MlQNg+yQR4ptrFuux6aNDk+ppL+0JyNf/t35L2lGzNpkhajokQKUJ2/sFvuUR
-        jgf38ScgYwhpB6NUF2ERJe20dCLO2y02oG17z9QK9ZCogSxiYRBxWSKkoR+he4+Y
-        fTt0+xAd/DWcT3jtAUhTqxnGEHadrmdZaQZbU5zRF85Yvq8vUE6jiL7Cm4+O/do4
-        +e5Q==
+        :subject:subject:to:to; s=fm2; t=1649737711; x=1649824111; bh=x/
+        kjGEoJjnBOZQliR6L7zzdNmMkF1cO50gChVssOtCM=; b=iyeRGURJSdWVCuhdzF
+        h3hw6HcZS1ZDj6BcZVX8WTX2oPbt5vJ8MrviCAlNwFP95/uL40XHrRNhqYrwqlsn
+        6Dlygpj89dZ8ZNTrYTSpNxyjZb517FoqUCVgo8ph6xRfZZqMjnFdx1BKzYA9tJgE
+        CetwPtSWAf5QNXuYRahEfIwipJew6yoLnIg4wV+Pn+DlPcm/urh6RNrVAk60u5di
+        I7ZT8grxogNSjYGMp81BFUd71cegC8DIE+ugrc8r6QfcWIG8r3HnvJBYMwMQvyTn
+        3jjxjnzNtBV54GaWRT6tjve91logF7tiUcmmEpm0pzrJAAB+utopQmc7T3GfUrXO
+        J8mw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :from:from:in-reply-to:in-reply-to:message-id:mime-version
         :references:reply-to:sender:subject:subject:to:to:x-me-proxy
         :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-        1649737705; x=1649824105; bh=rTme4gsdReTHZYq9dpsHcO27YtJUVs0qzpd
-        +cDg5ggo=; b=jyKlhTmrOMwsc2JvquM2gixmZn2SvbeJwwU8J9pVHEhDQKobzl9
-        gXmAkbg7t/q0udzVrBwTUHT2Lk/JpE8WMlvnIPz1/g3F3RjQ3vhpHMdH5/NQh9d6
-        gUogd4SdiXaTAFZERClBXsvMzeqsNAJlx8Mu/CvXCUFy01utDAgGfCryeACjJYtQ
-        /SuShvNzI2L2Kx909Yf96J/Gz6A0y+46yX9fgPTTSEY8NDYECoflRLc0Wxx3Jeji
-        qS/P4n8jBZ9Bnq+7Fr9Bk3Lk7h5ZAA5Dopjzh+LAoZnDlmpW2iJShN5Ne4Hmpg06
-        JL9vmXuVDCLaE+a1uoLvpFEfmEA6zKw9y4w==
-X-ME-Sender: <xms:6P9UYl-POP1U2JWe_wXqMdm2P8xbQEXj-iXWXq43yUCjE1eRL_MWqw>
-    <xme:6P9UYpuBbnfzCPznh_wUzGeLNYn-EqvAW4WtCUv5bxFzjmIbuC_GFJQaByRagydxD
-    IHA80tBkvk--unWNQ>
-X-ME-Received: <xmr:6P9UYjDJwv6OLIPhaH653aKdqEW9kM-XXftDHMaE-ZU0OFMGcV_mUIq2Rct2BTyXz8piOiRLdNaJX_XByt7hxmSby2LVvQ1OskMP80YRoGks2j6Ewt0hY7lZp4VqqrK3uF0AzQ>
+        1649737711; x=1649824111; bh=x/kjGEoJjnBOZQliR6L7zzdNmMkF1cO50gC
+        hVssOtCM=; b=ItJmB2PV7CUCNKEQeleoFs7BEjojXC8b2/BmGQF4wCowg/Y2tB1
+        8hQwSQX30y0OoqNtuPnmLNteMxmBEu64X7AN1DnpyWykxY/m5OowTdkWklzJhT2a
+        HB2UZBi+Ux4sD6F+y0vaJlKeWrtDcPrSYZ/LSy+pjm2WYW49bGyXUdrnhTjcjgHR
+        om+b0MlKTUlmd694eCNM0Yuek7BRbMLnNZbC56QOfQyJYynGQSETNzXfZM5d+j6o
+        4NXqhUMXLcrrJQooYaUmEKbu2LV3xkap+fN4Ui1zUzn8Y8XKyiJWt67xgTFBEueT
+        ALZMhWWW6GqyHmaqkcxSa+r/+liMj60tUEg==
+X-ME-Sender: <xms:7_9UYhYKs1eqrvRTFuIqUzyPOMwqWlrYa17-NZHfgfiE9_Oms1lfXw>
+    <xme:7_9UYoYridqHP3C9-K0hKWkFGXnGCG6rqssV4aEqB6v7xyJh9VTImgEMUNZXnqOtG
+    P9YgfwOmycx3rcByg>
+X-ME-Received: <xmr:7_9UYj9EapTN4ElSmkmi3V-Z5v2raYt9gKMgy50fSu5OyV8-luPDOHvQvRGMRDpofkufYZv8mn7Jw0X5vzQeZjP7a9eXTU4FRhwtVCyYb83j8zJvGfb5WXi1z9B-eU9HOGu8Rg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekjedgkeduucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
     lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
     frrghtthgvrhhnpeduhfejfedvhffgfeehtefghfeiiefgfeehgfdvvdevfeegjeehjedv
-    gfejheeuieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    gfejheeuieenucevlhhushhtvghrufhiiigvpedvnecurfgrrhgrmhepmhgrihhlfhhroh
     hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:6P9UYpc11NbbJf8bvJ42BGRU4ezdiujA533xGNdxrFUOYgEQ9OuYMw>
-    <xmx:6P9UYqM_-LUIjwtpHLUijEuNf_75avUblg1z-VZ0W-7JwlB3Z-kIUg>
-    <xmx:6P9UYrkmCgnmRV0ilkXxjNGJM5egzTO1pad7aBkqVaLvp0qWeWKlUQ>
-    <xmx:6f9UYrlZS4prjzKImk2j9_eiYe1BOO7RmiSuRpIKNW8gZdBj6ieqhQ>
+X-ME-Proxy: <xmx:7_9UYvoUh3uMlbjGHF0SlN2rdUav0dpm7k8z86JufLObkNee5kjv0g>
+    <xmx:7_9UYspOGFRhjAzGEWMdWPrhniu7GcaAIDe4euryO6ToaullHc5E8w>
+    <xmx:7_9UYlSkQfQiJ5rGwAmXse9tuYoXuSTX175i1ajqSDdj9lj29KxN9Q>
+    <xmx:7_9UYhR0mbzdyBt9ftnKBTCEZo4jWrSSBUiz0PPHU0VI1kaeHRABiQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Apr 2022 00:28:24 -0400 (EDT)
+ 12 Apr 2022 00:28:30 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     Chen-Yu Tsai <wens@csie.org>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
@@ -74,9 +74,9 @@ Cc:     Samuel Holland <samuel@sholland.org>,
         dri-devel@lists.freedesktop.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-sunxi@lists.linux.dev
-Subject: [PATCH v2 05/14] drm/sun4i: Allow building the driver on RISC-V
-Date:   Mon, 11 Apr 2022 23:27:57 -0500
-Message-Id: <20220412042807.47519-6-samuel@sholland.org>
+Subject: [PATCH v2 07/14] sun4i/drm: backend: use mode_set engine callback
+Date:   Mon, 11 Apr 2022 23:27:59 -0500
+Message-Id: <20220412042807.47519-8-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412042807.47519-1-samuel@sholland.org>
 References: <20220412042807.47519-1-samuel@sholland.org>
@@ -86,32 +86,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allwinner D1 is a RISC-V SoC which contains a DE 2.0 engine. Let's
-remove the dependency on a specific CPU architecture, so the driver can
-be built wherever ARCH_SUNXI is selected.
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Newly introduced mode_set callback in engine structure is a much better
+place for setting backend output size and interlace mode for following
+reasons:
+1. Aforementioned properties change only when mode changes, so it's
+   enough to be set only once per mode set. Currently it's done whenever
+   properties of primary plane are changed.
+2. It's assumed that primary plane will always cover whole screen. While
+   this is true most of the time, it's not always. Planes are universal.
+   There is no reason to add artificial limitation to primary plane.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+[Samuel: drop unused 'interlaced' variable]
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
-(no changes since v1)
+Changes in v2:
+ - Use Jernej's patches for mixer mode setting.
 
- drivers/gpu/drm/sun4i/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/sun4i/sun4i_backend.c | 40 +++++++++++++--------------
+ 1 file changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/gpu/drm/sun4i/Kconfig b/drivers/gpu/drm/sun4i/Kconfig
-index befc5a80222d..3a43c436c74a 100644
---- a/drivers/gpu/drm/sun4i/Kconfig
-+++ b/drivers/gpu/drm/sun4i/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config DRM_SUN4I
- 	tristate "DRM Support for Allwinner A10 Display Engine"
--	depends on DRM && (ARM || ARM64) && COMMON_CLK
-+	depends on DRM && COMMON_CLK
- 	depends on ARCH_SUNXI || COMPILE_TEST
- 	select DRM_GEM_CMA_HELPER
- 	select DRM_KMS_HELPER
+diff --git a/drivers/gpu/drm/sun4i/sun4i_backend.c b/drivers/gpu/drm/sun4i/sun4i_backend.c
+index f52ff4e6c662..decd95ad519d 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_backend.c
++++ b/drivers/gpu/drm/sun4i/sun4i_backend.c
+@@ -172,14 +172,6 @@ int sun4i_backend_update_layer_coord(struct sun4i_backend *backend,
+ 
+ 	DRM_DEBUG_DRIVER("Updating layer %d\n", layer);
+ 
+-	if (plane->type == DRM_PLANE_TYPE_PRIMARY) {
+-		DRM_DEBUG_DRIVER("Primary layer, updating global size W: %u H: %u\n",
+-				 state->crtc_w, state->crtc_h);
+-		regmap_write(backend->engine.regs, SUN4I_BACKEND_DISSIZE_REG,
+-			     SUN4I_BACKEND_DISSIZE(state->crtc_w,
+-						   state->crtc_h));
+-	}
+-
+ 	/* Set height and width */
+ 	DRM_DEBUG_DRIVER("Layer size W: %u H: %u\n",
+ 			 state->crtc_w, state->crtc_h);
+@@ -259,7 +251,6 @@ int sun4i_backend_update_layer_formats(struct sun4i_backend *backend,
+ {
+ 	struct drm_plane_state *state = plane->state;
+ 	struct drm_framebuffer *fb = state->fb;
+-	bool interlaced = false;
+ 	u32 val;
+ 	int ret;
+ 
+@@ -267,17 +258,6 @@ int sun4i_backend_update_layer_formats(struct sun4i_backend *backend,
+ 	regmap_update_bits(backend->engine.regs, SUN4I_BACKEND_ATTCTL_REG0(layer),
+ 			   SUN4I_BACKEND_ATTCTL_REG0_LAY_YUVEN, 0);
+ 
+-	if (plane->state->crtc)
+-		interlaced = plane->state->crtc->state->adjusted_mode.flags
+-			& DRM_MODE_FLAG_INTERLACE;
+-
+-	regmap_update_bits(backend->engine.regs, SUN4I_BACKEND_MODCTL_REG,
+-			   SUN4I_BACKEND_MODCTL_ITLMOD_EN,
+-			   interlaced ? SUN4I_BACKEND_MODCTL_ITLMOD_EN : 0);
+-
+-	DRM_DEBUG_DRIVER("Switching display backend interlaced mode %s\n",
+-			 interlaced ? "on" : "off");
+-
+ 	val = SUN4I_BACKEND_ATTCTL_REG0_LAY_GLBALPHA(state->alpha >> 8);
+ 	if (state->alpha != DRM_BLEND_ALPHA_OPAQUE)
+ 		val |= SUN4I_BACKEND_ATTCTL_REG0_LAY_GLBALPHA_EN;
+@@ -654,6 +634,25 @@ static void sun4i_backend_vblank_quirk(struct sunxi_engine *engine)
+ 	spin_unlock(&backend->frontend_lock);
+ };
+ 
++static void sun4i_backend_mode_set(struct sunxi_engine *engine,
++				   const struct drm_display_mode *mode)
++{
++	bool interlaced = !!(mode->flags & DRM_MODE_FLAG_INTERLACE);
++
++	DRM_DEBUG_DRIVER("Updating global size W: %u H: %u\n",
++			 mode->hdisplay, mode->vdisplay);
++
++	regmap_write(engine->regs, SUN4I_BACKEND_DISSIZE_REG,
++		     SUN4I_BACKEND_DISSIZE(mode->hdisplay, mode->vdisplay));
++
++	regmap_update_bits(engine->regs, SUN4I_BACKEND_MODCTL_REG,
++			   SUN4I_BACKEND_MODCTL_ITLMOD_EN,
++			   interlaced ? SUN4I_BACKEND_MODCTL_ITLMOD_EN : 0);
++
++	DRM_DEBUG_DRIVER("Switching display backend interlaced mode %s\n",
++			 interlaced ? "on" : "off");
++}
++
+ static int sun4i_backend_init_sat(struct device *dev) {
+ 	struct sun4i_backend *backend = dev_get_drvdata(dev);
+ 	int ret;
+@@ -765,6 +764,7 @@ static const struct sunxi_engine_ops sun4i_backend_engine_ops = {
+ 	.apply_color_correction		= sun4i_backend_apply_color_correction,
+ 	.disable_color_correction	= sun4i_backend_disable_color_correction,
+ 	.vblank_quirk			= sun4i_backend_vblank_quirk,
++	.mode_set			= sun4i_backend_mode_set,
+ };
+ 
+ static const struct regmap_config sun4i_backend_regmap_config = {
 -- 
 2.35.1
 
