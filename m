@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4290C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD29CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240966AbiDLGwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
+        id S1351077AbiDLGwj (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350880AbiDLGsP (ORCPT
+        with ESMTP id S1350966AbiDLGsV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:48:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7342825590;
-        Mon, 11 Apr 2022 23:39:27 -0700 (PDT)
+        Tue, 12 Apr 2022 02:48:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DE126124;
+        Mon, 11 Apr 2022 23:39:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E44A6618E5;
-        Tue, 12 Apr 2022 06:39:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3B25C385A6;
-        Tue, 12 Apr 2022 06:39:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C1DAB81B4A;
+        Tue, 12 Apr 2022 06:39:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DE4BC385A6;
+        Tue, 12 Apr 2022 06:39:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745566;
-        bh=mf2NLqva9CQqRbe6y11r4Nlep89LmSHIKg7NaLD3ZPc=;
+        s=korg; t=1649745575;
+        bh=fausJmKvDnrkqf0mQXYYUri+fHjDbig+Q6Z80FZUyNc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PmOJpN6vCqzYcOjyN2risae2USVOHo0VkH4tcprFYSeOqr5ZS0E+3+aTMIqskdbWq
-         UOKFg/x8hDHPeBY+AGQryDkhWZlASYDDwAVTa5CKFXRep2EaqUQ6Eh21i9ba0nf1cp
-         PnUAxAxfHmf5JTmlveLNUPui9j8b+QqbibtS7R6U=
+        b=ZjtT33JNgY1YQLNuyJD8NRsXxhTEZYQhLvTHjMLZDwfrnR3p0lH4fHx+DKiK89/vP
+         iS5VIeOTLCLxCEkmJl7a/v0c/5Hu7vDC/8hiju8CHqEw0uYdXDkyGXFk/hqB9OSgtU
+         9gv4HOYLbffB7v9LIs2p/MQ0ST2jabnsfowMz/yU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Michal Hocko <mhocko@suse.com>,
-        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 140/171] mm/mempolicy: fix mpol_new leak in shared_policy_replace
-Date:   Tue, 12 Apr 2022 08:30:31 +0200
-Message-Id: <20220412062931.939727781@linuxfoundation.org>
+        stable@vger.kernel.org, "Pudak, Filip" <Filip.Pudak@windriver.com>,
+        "Xiao, Jiguang" <Jiguang.Xiao@windriver.com>,
+        David Ahern <dsahern@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, Pudak@vger.kernel.org,
+        Xiao@vger.kernel.org
+Subject: [PATCH 5.10 116/171] ipv6: Fix stats accounting in ip6_pkt_drop
+Date:   Tue, 12 Apr 2022 08:30:07 +0200
+Message-Id: <20220412062931.241886142@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -52,51 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: David Ahern <dsahern@kernel.org>
 
-commit 4ad099559b00ac01c3726e5c95dc3108ef47d03e upstream.
+[ Upstream commit 1158f79f82d437093aeed87d57df0548bdd68146 ]
 
-If mpol_new is allocated but not used in restart loop, mpol_new will be
-freed via mpol_put before returning to the caller.  But refcnt is not
-initialized yet, so mpol_put could not do the right things and might
-leak the unused mpol_new.  This would happen if mempolicy was updated on
-the shared shmem file while the sp->lock has been dropped during the
-memory allocation.
+VRF devices are the loopbacks for VRFs, and a loopback can not be
+assigned to a VRF. Accordingly, the condition in ip6_pkt_drop should
+be '||' not '&&'.
 
-This issue could be triggered easily with the below code snippet if
-there are many processes doing the below work at the same time:
-
-  shmid = shmget((key_t)5566, 1024 * PAGE_SIZE, 0666|IPC_CREAT);
-  shm = shmat(shmid, 0, 0);
-  loop many times {
-    mbind(shm, 1024 * PAGE_SIZE, MPOL_LOCAL, mask, maxnode, 0);
-    mbind(shm + 128 * PAGE_SIZE, 128 * PAGE_SIZE, MPOL_DEFAULT, mask,
-          maxnode, 0);
-  }
-
-Link: https://lkml.kernel.org/r/20220329111416.27954-1-linmiaohe@huawei.com
-Fixes: 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Acked-by: Michal Hocko <mhocko@suse.com>
-Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: <stable@vger.kernel.org>	[3.8]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1d3fd8a10bed ("vrf: Use orig netdev to count Ip6InNoRoutes and a fresh route lookup when sending dest unreach")
+Reported-by: Pudak, Filip <Filip.Pudak@windriver.com>
+Reported-by: Xiao, Jiguang <Jiguang.Xiao@windriver.com>
+Signed-off-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220404150908.2937-1-dsahern@kernel.org
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/mempolicy.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/ipv6/route.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -2636,6 +2636,7 @@ alloc_new:
- 	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
- 	if (!mpol_new)
- 		goto err_out;
-+	atomic_set(&mpol_new->refcnt, 1);
- 	goto restart;
- }
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 352e645c546e..776b1b58c5dc 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -4398,7 +4398,7 @@ static int ip6_pkt_drop(struct sk_buff *skb, u8 code, int ipstats_mib_noroutes)
+ 	struct inet6_dev *idev;
+ 	int type;
  
+-	if (netif_is_l3_master(skb->dev) &&
++	if (netif_is_l3_master(skb->dev) ||
+ 	    dst->dev == net->loopback_dev)
+ 		idev = __in6_dev_get_safely(dev_get_by_index_rcu(net, IP6CB(skb)->iif));
+ 	else
+-- 
+2.35.1
+
 
 
