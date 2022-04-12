@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 590CBC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A139CC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383691AbiDLIhy (ORCPT
+        id S1383707AbiDLIh7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46354 "EHLO
+        Tue, 12 Apr 2022 04:37:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356959AbiDLHjg (ORCPT
+        with ESMTP id S1357023AbiDLHjm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3760728E33;
-        Tue, 12 Apr 2022 00:10:38 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDD329C90;
+        Tue, 12 Apr 2022 00:10:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75CCE6157E;
-        Tue, 12 Apr 2022 07:10:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82C2CC385A5;
-        Tue, 12 Apr 2022 07:10:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8EC97B81A8F;
+        Tue, 12 Apr 2022 07:10:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0F17C385A1;
+        Tue, 12 Apr 2022 07:10:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747437;
-        bh=htaFqnftVObrnN1B1DrLIaFhG697hzt0hv0PLXg/hdQ=;
+        s=korg; t=1649747446;
+        bh=DNsSy1b0PI3PmwLmgzdEV6RJCPflO8LhpqM5IpcKNIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rzs9fC5u8kMA7Poha9SykkhkN1mnOp8jrnR2gYoAT5cWwZlUGGaBYtkKrgnaq6bA6
-         E2eGIrfSUNl9utKFBj86NeUxSgBYcgJAkHrrzUeKRjKADh49wVj+a09zvfFIlbL5EA
-         CHskQgImjDzLaG2u2omYK9e6yZ1zj2BfbLNCTqAA=
+        b=irLhlekZtN29YMhS1KqPT4m7C3BTv9fELq+gzr/rTqtDgLtsPsc/uoviAG+G31f7K
+         TssRj/inGdNpLR4dVtLpxsX2LLjCMTcmKcMZzOiAlYqmmVEaEfXOmGDn5xJW446I8W
+         UKx0HIPYL6PB0W+1n3md4Th2WyG1LJ3c8fD32xgI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Kevin Tang <kevin3.tang@gmail.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org,
+        Meenakshikumar Somasundaram <Meenakshikumar.Somasundaram@amd.com>,
+        Jun Lei <Jun.Lei@amd.com>, Jasdeep Dhillon <jdhillon@amd.com>,
+        Sung Joon Kim <sungkim@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 080/343] drm/sprd: fix potential NULL dereference
-Date:   Tue, 12 Apr 2022 08:28:18 +0200
-Message-Id: <20220412062953.409337667@linuxfoundation.org>
+Subject: [PATCH 5.17 082/343] drm/amd/display: reset lane settings after each PHY repeater LT
+Date:   Tue, 12 Apr 2022 08:28:20 +0200
+Message-Id: <20220412062953.467774112@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,41 +54,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Tang <kevin3.tang@gmail.com>
+From: Sung Joon Kim <sungkim@amd.com>
 
-[ Upstream commit 8668658aebb0a19d877d5a81c004baf716c4aaa6 ]
+[ Upstream commit 3b853c316c9321e195414a6fb121d1c2d45b1e87 ]
 
-'drm' could be null in sprd_drm_shutdown, and drm_warn maybe dereference
-it, remove this warning log.
+[why]
+In LTTPR non-transparent mode, we need
+to reset the cached lane settings before performing
+link training on the next PHY repeater. Otherwise,
+the cached lane settings will be used for the next
+clock recovery e.g. VS = MAX (3) which should not be
+the case according to the DP specs. We expect to use
+minimum lane settings on each clock recovery sequence.
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kevin Tang <kevin3.tang@gmail.com>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://lore.kernel.org/all/20220117084044.9210-1-kevin3.tang@gmail.com
+[how]
+Reset DPCD and HW lane settings on each repeater LT.
+Set training pattern to 0 for the repeater that failed LT
+at the proper place.
 
-v1 -> v2:
-- Split checking platform_get_resource() return value to a separate patch
-- Use dev_warn() instead of removing the warning log
-
+Reviewed-by: Meenakshikumar Somasundaram <Meenakshikumar.Somasundaram@amd.com>
+Reviewed-by: Jun Lei <Jun.Lei@amd.com>
+Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
+Signed-off-by: Sung Joon Kim <sungkim@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sprd/sprd_drm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/sprd/sprd_drm.c b/drivers/gpu/drm/sprd/sprd_drm.c
-index a077e2d4d721..af2be97d5ed0 100644
---- a/drivers/gpu/drm/sprd/sprd_drm.c
-+++ b/drivers/gpu/drm/sprd/sprd_drm.c
-@@ -155,7 +155,7 @@ static void sprd_drm_shutdown(struct platform_device *pdev)
- 	struct drm_device *drm = platform_get_drvdata(pdev);
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+index 61b8f29a0c30..49d5271dcfdc 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+@@ -2378,22 +2378,27 @@ static enum link_training_result dp_perform_8b_10b_link_training(
+ 				repeater_id--) {
+ 			status = perform_clock_recovery_sequence(link, link_res, lt_settings, repeater_id);
  
- 	if (!drm) {
--		drm_warn(drm, "drm device is not available, no shutdown\n");
-+		dev_warn(&pdev->dev, "drm device is not available, no shutdown\n");
- 		return;
+-			if (status != LINK_TRAINING_SUCCESS)
++			if (status != LINK_TRAINING_SUCCESS) {
++				repeater_training_done(link, repeater_id);
+ 				break;
++			}
+ 
+ 			status = perform_channel_equalization_sequence(link,
+ 					link_res,
+ 					lt_settings,
+ 					repeater_id);
+ 
++			repeater_training_done(link, repeater_id);
++
+ 			if (status != LINK_TRAINING_SUCCESS)
+ 				break;
+ 
+-			repeater_training_done(link, repeater_id);
++			for (lane = 0; lane < LANE_COUNT_DP_MAX; lane++) {
++				lt_settings->dpcd_lane_settings[lane].raw = 0;
++				lt_settings->hw_lane_settings[lane].VOLTAGE_SWING = 0;
++				lt_settings->hw_lane_settings[lane].PRE_EMPHASIS = 0;
++			}
+ 		}
+-
+-		for (lane = 0; lane < (uint8_t)lt_settings->link_settings.lane_count; lane++)
+-			lt_settings->dpcd_lane_settings[lane].raw = 0;
  	}
  
+ 	if (status == LINK_TRAINING_SUCCESS) {
 -- 
 2.35.1
 
