@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24CEEC35296
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95FA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346102AbiDLHhv (ORCPT
+        id S1353966AbiDLHiF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57342 "EHLO
+        Tue, 12 Apr 2022 03:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352334AbiDLHNx (ORCPT
+        with ESMTP id S1352367AbiDLHN5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:13:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB35C1D331;
-        Mon, 11 Apr 2022 23:54:40 -0700 (PDT)
+        Tue, 12 Apr 2022 03:13:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A9024F02;
+        Mon, 11 Apr 2022 23:54:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12095B81B44;
-        Tue, 12 Apr 2022 06:54:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57797C385A1;
-        Tue, 12 Apr 2022 06:54:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D290CB81B49;
+        Tue, 12 Apr 2022 06:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D09CC385A8;
+        Tue, 12 Apr 2022 06:54:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746477;
-        bh=LAxfqD32x6ZFr0TQ72MXLdGPukvlyZn5mmFfZ5YXYLc=;
+        s=korg; t=1649746480;
+        bh=qjaUBTBW20T7UWuTxWW0iMkCQ6k2PxjPtqmtjDEux3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lg5tNmjnL1YHpi5xDdDngh4X0cn0E2XHXTe4fbkt8369BNHf+sUS+XfS1X2fF9Zle
-         O9Et76JodfwzlSw4vBOPoKn1YVBWN1iKvB1A8KxZbjRgpyPZEsVTIGCJu5d1BAiNSK
-         qKeK7GzlQBNIe9hhuZnCtSQG6NjfJc6eLrIG8FQM=
+        b=02XGFvIti7TCmscmIaBS3nTt/5wdcOWM1XzLnrAXZnvk2vzGXGt0fzZr/qOiwD4z8
+         Tq8M6Dhz1dX3WE7Ql6M7DZm0IKk7oUyZt48G7ffedMiRgblzkNey5WZdihH4UiMid5
+         NFh7Uw9GDU5dp+vRnJfJfSLY07EE2CjgOSLTpNbI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Benjamin Beichler <benjamin.beichler@uni-rostock.de>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        David Yang <davidcomponentone@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 002/285] um: fix and optimize xor select template for CONFIG64 and timetravel mode
-Date:   Tue, 12 Apr 2022 08:27:39 +0200
-Message-Id: <20220412062943.744489101@linuxfoundation.org>
+Subject: [PATCH 5.16 020/285] ptp: replace snprintf with sysfs_emit
+Date:   Tue, 12 Apr 2022 08:27:57 +0200
+Message-Id: <20220412062944.262362779@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,53 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-[ Upstream commit e3a33af812c611d99756e2ec61e9d7068d466bdf ]
+[ Upstream commit e2cf07654efb0fd7bbcb475c6f74be7b5755a8fd ]
 
-Due to dropped inclusion of asm-generic/xor.h, xor_block_8regs symbol is
-missing with CONFIG64 and break compilation, as the asm/xor_64.h also did
-not include it. The patch recreate the logic from arch/x86, which check
-whether AVX is available and add fallbacks for 32bit and 64bit config of
-um.
+coccinelle report:
+./drivers/ptp/ptp_sysfs.c:17:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/ptp/ptp_sysfs.c:390:8-16:
+WARNING: use scnprintf or sprintf
 
-A very minor additional "fix" is, the return of the macro parameter
-instead of NULL, as this is the original intent of the macro, but
-this does not change the actual behavior.
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-Fixes: c0ecca6604b8 ("um: enable the use of optimized xor routines in UML")
-Signed-off-by: Benjamin Beichler <benjamin.beichler@uni-rostock.de>
-Acked-By: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/include/asm/xor.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/ptp/ptp_sysfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/um/include/asm/xor.h b/arch/um/include/asm/xor.h
-index f512704a9ec7..22b39de73c24 100644
---- a/arch/um/include/asm/xor.h
-+++ b/arch/um/include/asm/xor.h
-@@ -4,8 +4,10 @@
+diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
+index 41b92dc2f011..9233bfedeb17 100644
+--- a/drivers/ptp/ptp_sysfs.c
++++ b/drivers/ptp/ptp_sysfs.c
+@@ -14,7 +14,7 @@ static ssize_t clock_name_show(struct device *dev,
+ 			       struct device_attribute *attr, char *page)
+ {
+ 	struct ptp_clock *ptp = dev_get_drvdata(dev);
+-	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
++	return sysfs_emit(page, "%s\n", ptp->info->name);
+ }
+ static DEVICE_ATTR_RO(clock_name);
  
- #ifdef CONFIG_64BIT
- #undef CONFIG_X86_32
-+#define TT_CPU_INF_XOR_DEFAULT (AVX_SELECT(&xor_block_sse_pf64))
- #else
- #define CONFIG_X86_32 1
-+#define TT_CPU_INF_XOR_DEFAULT (AVX_SELECT(&xor_block_8regs))
- #endif
+@@ -387,7 +387,7 @@ static ssize_t ptp_pin_show(struct device *dev, struct device_attribute *attr,
  
- #include <asm/cpufeature.h>
-@@ -16,7 +18,7 @@
- #undef XOR_SELECT_TEMPLATE
- /* pick an arbitrary one - measuring isn't possible with inf-cpu */
- #define XOR_SELECT_TEMPLATE(x)	\
--	(time_travel_mode == TT_MODE_INFCPU ? &xor_block_8regs : NULL)
-+	(time_travel_mode == TT_MODE_INFCPU ? TT_CPU_INF_XOR_DEFAULT : x))
- #endif
+ 	mutex_unlock(&ptp->pincfg_mux);
  
- #endif
+-	return snprintf(page, PAGE_SIZE, "%u %u\n", func, chan);
++	return sysfs_emit(page, "%u %u\n", func, chan);
+ }
+ 
+ static ssize_t ptp_pin_store(struct device *dev, struct device_attribute *attr,
 -- 
 2.35.1
 
