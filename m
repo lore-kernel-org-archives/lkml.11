@@ -2,197 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B60C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E92EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 04:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242765AbiDLEiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 00:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39482 "EHLO
+        id S242119AbiDLEko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 00:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346235AbiDLEht (ORCPT
+        with ESMTP id S231811AbiDLEkk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 00:37:49 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F204229808
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 21:35:32 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id D4ADD3201DB9;
-        Tue, 12 Apr 2022 00:35:31 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Tue, 12 Apr 2022 00:35:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1649738131; x=1649824531; bh=j2
-        yW0eTYN39FoRNg3xRIIdalcdn+niCGjVHB1KPQkdI=; b=Z3K48eDbEhvHKX44+l
-        Nj5wW+1tWiDJLGMbIf9etwqJAK6VruqMnLwRXi3a1+KJnZeX/tVB86Gxtaz4grod
-        ZLoZkAd8n2agfwuN3EwqjPNZu4jTobrRRTMclEvpI7bdJJyJIO/pcZqZFIZVASmJ
-        GW2PFvODvK/m4QS/le+eKrqtzZy7fZeJMU9Rm8XD3QahHCYbOwLy+U50QG8GLWlO
-        +XpoMvtTibn2SUMr6tU5NocdTldsRM7hIY7QT3KxplVr1pmYiRAHgf7QE9lWIK23
-        dJf6f5WwhPgkNBhvWklh3wwcKMdpAMS2AGa1RKmemjYa4r8HhOv/52H2yjVdTbOV
-        KyPg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-        1649738131; x=1649824531; bh=j2yW0eTYN39FoRNg3xRIIdalcdn+niCGjVH
-        B1KPQkdI=; b=hmbWur0HkklfHy7n4+zIKMf954bdryark5G9WcOn+bfws5oBVIB
-        k1yHHGoKn4AZuLKYuu67a6KqhVDr6rl4riF01QJ9z3+cG3/mfUcpoa6iR60DvSUR
-        5Z+6IQ/pz7W/uZ0GRY23ZOqDdi7WnPKotyAsoc1A3ALwSKjg4K+UxrkAWKXPTKY5
-        QtQuaYL43ihBNl51VNM9xaZpPzK7E3vQ7djWGMUYFglWzrDYgQCdosNh2Ueu14hi
-        o8OxZd0nt3roXongHX4iw81jn/+rEfwm/U6icya/xW66pWLbxBqlrM3E++zB7+Je
-        gRAHkEANi69WOtaW60nrH5h1DXiso4oV41g==
-X-ME-Sender: <xms:kwFVYmea1_dG5v8dwLUWr_RtQxLHU8ImgnE28UyvEPt5m52NICN9eQ>
-    <xme:kwFVYgNkbyyABc5qJuENTpyx3Pjz-IxFdYMZyotKjWHlElFgJCplzp6UYWj2-PDbw
-    B0C1EwLl4I8Dhsb5w>
-X-ME-Received: <xmr:kwFVYnifbMP4pV_OqgSAY-QKdKJVtC42b-ZLOgxNxlvsoNfOGrtfyYub3DaplNoiuqEuOz9WC3riXibuIqiiG2kNyp5F6xgvPIIVO2EARECC5qORxMbO6wmuGRplWnHWQXTrww>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudekjedgkedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
-    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
-    frrghtthgvrhhnpeduhfejfedvhffgfeehtefghfeiiefgfeehgfdvvdevfeegjeehjedv
-    gfejheeuieenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:kwFVYj8iCSS1DTUt1ftpmnps0v71IqckcAAzzbLPKtlMKRnRapD7Rg>
-    <xmx:kwFVYivz__xnPVQnhJiUjTEE8bIkoy_f3jhkITHG_6WfqGGtPMK58g>
-    <xmx:kwFVYqHH_aOjS6Hr5CYoKf5eqCiUOrqk337VOXaO8I_qUp38UAEINQ>
-    <xmx:kwFVYsJQN3ot4tiWJQcWkRBUgoH9ijtFTDzS1f_bDEfblbPMo7u5dg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Apr 2022 00:35:30 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: [PATCH 6/6] drm/sun4i: sun8i-hdmi-phy: Group PHY ops functions by generation
-Date:   Mon, 11 Apr 2022 23:35:11 -0500
-Message-Id: <20220412043512.49364-7-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412043512.49364-1-samuel@sholland.org>
-References: <20220412043512.49364-1-samuel@sholland.org>
+        Tue, 12 Apr 2022 00:40:40 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03BF02980C;
+        Mon, 11 Apr 2022 21:38:23 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 94FD71570;
+        Mon, 11 Apr 2022 21:38:23 -0700 (PDT)
+Received: from a077893.arm.com (unknown [10.163.38.213])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 49E993F70D;
+        Mon, 11 Apr 2022 21:38:18 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     christophe.leroy@csgroup.eu, catalin.marinas@arm.com,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH V5 0/7] mm/mmap: Drop arch_vm_get_page_prot() and arch_filter_pgprot()
+Date:   Tue, 12 Apr 2022 10:08:41 +0530
+Message-Id: <20220412043848.80464-1-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that the PHY ops are separated, sort them topologically, with the
-common sun8i_hdmi_phy_set_polarity helper at the top. No function
-contents are changed in this commit.
+protection_map[] is an array based construct that translates given vm_flags
+combination. This array contains page protection map, which is populated by
+the platform via [__S000 .. __S111] and [__P000 .. __P111] exported macros.
+Primary usage for protection_map[] is for vm_get_page_prot(), which is used
+to determine page protection value for a given vm_flags. vm_get_page_prot()
+implementation, could again call platform overrides arch_vm_get_page_prot()
+and arch_filter_pgprot(). Some platforms override protection_map[] that was
+originally built with __SXXX/__PXXX with different runtime values.
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+Currently there are multiple layers of abstraction i.e __SXXX/__PXXX macros
+, protection_map[], arch_vm_get_page_prot() and arch_filter_pgprot() built
+between the platform and generic MM, finally defining vm_get_page_prot().
 
- drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c | 67 ++++++++++++--------------
- 1 file changed, 32 insertions(+), 35 deletions(-)
+Hence this series proposes to drop later two abstraction levels and instead
+just move the responsibility of defining vm_get_page_prot() to the platform
+(still utilizing generic protection_map[] array) itself making it clean and
+simple.
 
-diff --git a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
-index 5be5c360ca7d..cc239106ba49 100644
---- a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
-+++ b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
-@@ -124,7 +124,19 @@ static const struct dw_hdmi_phy_config sun50i_h6_phy_config[] = {
- };
- 
- static void sun8i_hdmi_phy_set_polarity(struct sun8i_hdmi_phy *phy,
--					const struct drm_display_mode *mode);
-+					const struct drm_display_mode *mode)
-+{
-+	u32 val = 0;
-+
-+	if (mode->flags & DRM_MODE_FLAG_NHSYNC)
-+		val |= SUN8I_HDMI_PHY_DBG_CTRL_POL_NHSYNC;
-+
-+	if (mode->flags & DRM_MODE_FLAG_NVSYNC)
-+		val |= SUN8I_HDMI_PHY_DBG_CTRL_POL_NVSYNC;
-+
-+	regmap_update_bits(phy->regs, SUN8I_HDMI_PHY_DBG_CTRL_REG,
-+			   SUN8I_HDMI_PHY_DBG_CTRL_POL_MASK, val);
-+};
- 
- static int sun8i_a83t_hdmi_phy_config(struct dw_hdmi *hdmi, void *data,
- 				      const struct drm_display_info *display,
-@@ -193,6 +205,25 @@ static int sun8i_a83t_hdmi_phy_config(struct dw_hdmi *hdmi, void *data,
- 	return 0;
- }
- 
-+static void sun8i_a83t_hdmi_phy_disable(struct dw_hdmi *hdmi, void *data)
-+{
-+	struct sun8i_hdmi_phy *phy = data;
-+
-+	dw_hdmi_phy_gen2_txpwron(hdmi, 0);
-+	dw_hdmi_phy_gen2_pddq(hdmi, 1);
-+
-+	regmap_update_bits(phy->regs, SUN8I_HDMI_PHY_REXT_CTRL_REG,
-+			   SUN8I_HDMI_PHY_REXT_CTRL_REXT_EN, 0);
-+}
-+
-+static const struct dw_hdmi_phy_ops sun8i_a83t_hdmi_phy_ops = {
-+	.init		= sun8i_a83t_hdmi_phy_config,
-+	.disable	= sun8i_a83t_hdmi_phy_disable,
-+	.read_hpd	= dw_hdmi_phy_read_hpd,
-+	.update_hpd	= dw_hdmi_phy_update_hpd,
-+	.setup_hpd	= dw_hdmi_phy_setup_hpd,
-+};
-+
- static int sun8i_h3_hdmi_phy_config(struct dw_hdmi *hdmi, void *data,
- 				    const struct drm_display_info *display,
- 				    const struct drm_display_mode *mode)
-@@ -348,32 +379,6 @@ static int sun8i_h3_hdmi_phy_config(struct dw_hdmi *hdmi, void *data,
- 	return 0;
- }
- 
--static void sun8i_hdmi_phy_set_polarity(struct sun8i_hdmi_phy *phy,
--					const struct drm_display_mode *mode)
--{
--	u32 val = 0;
--
--	if (mode->flags & DRM_MODE_FLAG_NHSYNC)
--		val |= SUN8I_HDMI_PHY_DBG_CTRL_POL_NHSYNC;
--
--	if (mode->flags & DRM_MODE_FLAG_NVSYNC)
--		val |= SUN8I_HDMI_PHY_DBG_CTRL_POL_NVSYNC;
--
--	regmap_update_bits(phy->regs, SUN8I_HDMI_PHY_DBG_CTRL_REG,
--			   SUN8I_HDMI_PHY_DBG_CTRL_POL_MASK, val);
--};
--
--static void sun8i_a83t_hdmi_phy_disable(struct dw_hdmi *hdmi, void *data)
--{
--	struct sun8i_hdmi_phy *phy = data;
--
--	dw_hdmi_phy_gen2_txpwron(hdmi, 0);
--	dw_hdmi_phy_gen2_pddq(hdmi, 1);
--
--	regmap_update_bits(phy->regs, SUN8I_HDMI_PHY_REXT_CTRL_REG,
--			   SUN8I_HDMI_PHY_REXT_CTRL_REXT_EN, 0);
--}
--
- static void sun8i_h3_hdmi_phy_disable(struct dw_hdmi *hdmi, void *data)
- {
- 	struct sun8i_hdmi_phy *phy = data;
-@@ -385,14 +390,6 @@ static void sun8i_h3_hdmi_phy_disable(struct dw_hdmi *hdmi, void *data)
- 	regmap_write(phy->regs, SUN8I_HDMI_PHY_PLL_CFG1_REG, 0);
- }
- 
--static const struct dw_hdmi_phy_ops sun8i_a83t_hdmi_phy_ops = {
--	.init		= sun8i_a83t_hdmi_phy_config,
--	.disable	= sun8i_a83t_hdmi_phy_disable,
--	.read_hpd	= dw_hdmi_phy_read_hpd,
--	.update_hpd	= dw_hdmi_phy_update_hpd,
--	.setup_hpd	= dw_hdmi_phy_setup_hpd,
--};
--
- static const struct dw_hdmi_phy_ops sun8i_h3_hdmi_phy_ops = {
- 	.init		= sun8i_h3_hdmi_phy_config,
- 	.disable	= sun8i_h3_hdmi_phy_disable,
+This first introduces ARCH_HAS_VM_GET_PAGE_PROT which enables the platforms
+to define custom vm_get_page_prot(). This starts converting platforms that
+define the overrides arch_filter_pgprot() or arch_vm_get_page_prot() which
+enables for those constructs to be dropped off completely.
+
+The series has been inspired from an earlier discuss with Christoph Hellwig
+
+https://lore.kernel.org/all/1632712920-8171-1-git-send-email-anshuman.khandual@arm.com/
+
+This series applies on 5.18-rc2.
+
+This series has been cross built for multiple platforms.
+
+- Anshuman
+
+Cc: Christoph Hellwig <hch@infradead.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: sparclinux@vger.kernel.org
+Cc: linux-mm@kvack.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Changes in V5:
+
+- Collected new tags on various patches in the series
+- Coalesced arm64_arch_vm_get_page_prot() into vm_get_page_prot() per Catalin
+- Modified powerpc's vm_get_page_prot() implementation per Christophe
+
+Changes in V4:
+
+https://lore.kernel.org/all/20220407103251.1209606-1-anshuman.khandual@arm.com/
+
+- ARCH_HAS_VM_GET_PAGE_PROT now excludes generic protection_map[]
+- Changed platform's vm_get_page_prot() to use generic protection_map[]
+- Dropped all platform changes not enabling either arch_vm_get_page_prot() or arch_filter_pgprot() 
+- Dropped all previous tags as code base has changed
+
+Changes in V3:
+
+https://lore.kernel.org/all/1646045273-9343-1-git-send-email-anshuman.khandual@arm.com/
+
+- Dropped variable 'i' from sme_early_init() on x86 platform
+- Moved CONFIG_COLDFIRE vm_get_page_prot() inside arch/m68k/mm/mcfmmu.c
+- Moved CONFIG_SUN3 vm_get_page_prot() inside arch/m68k/mm/sun3mmu.c
+- Dropped cachebits for vm_get_page_prot() inside arch/m68k/mm/motorola.c
+- Dropped PAGE_XXX_C definitions from arch/m68k/include/asm/motorola_pgtable.h
+- Used PAGE_XXX instead for vm_get_page_prot() inside arch/m68k/mm/motorola.c
+- Dropped all references to protection_map[] in the tree
+- Replaced s/extensa/xtensa/ on the patch title
+- Moved left over comments from pgtable.h into init.c on nios2 platform
+
+Changes in V2:
+
+https://lore.kernel.org/all/1645425519-9034-1-git-send-email-anshuman.khandual@arm.com/
+
+- Dropped the entire comment block in [PATCH 30/30] per Geert
+- Replaced __P010 (although commented) with __PAGE_COPY on arm platform
+- Replaced __P101 with PAGE_READONLY on um platform
+
+Changes in V1:
+
+https://lore.kernel.org/all/1644805853-21338-1-git-send-email-anshuman.khandual@arm.com/
+
+- Add white spaces around the | operators 
+- Moved powerpc_vm_get_page_prot() near vm_get_page_prot() on powerpc
+- Moved arm64_vm_get_page_prot() near vm_get_page_prot() on arm64
+- Moved sparc_vm_get_page_prot() near vm_get_page_prot() on sparc
+- Compacted vm_get_page_prot() switch cases on all platforms
+-  _PAGE_CACHE040 inclusion is dependent on CPU_IS_040_OR_060
+- VM_SHARED case should return PAGE_NONE (not PAGE_COPY) on SH platform
+- Reorganized VM_SHARED, VM_EXEC, VM_WRITE, VM_READ
+- Dropped the last patch [RFC V1 31/31] which added macros for vm_flags combinations
+  https://lore.kernel.org/all/1643029028-12710-32-git-send-email-anshuman.khandual@arm.com/
+
+Changes in RFC:
+
+https://lore.kernel.org/all/1643029028-12710-1-git-send-email-anshuman.khandual@arm.com/
+
+
+Anshuman Khandual (6):
+  mm/mmap: Add new config ARCH_HAS_VM_GET_PAGE_PROT
+  powerpc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  arm64/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  sparc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+  mm/mmap: Drop arch_filter_pgprot()
+  mm/mmap: Drop arch_vm_get_page_pgprot()
+
+Christoph Hellwig (1):
+  x86/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+
+ arch/arm64/Kconfig                 |  1 +
+ arch/arm64/include/asm/mman.h      | 24 --------------------
+ arch/arm64/mm/mmap.c               | 25 +++++++++++++++++++++
+ arch/powerpc/Kconfig               |  1 +
+ arch/powerpc/include/asm/mman.h    | 12 ----------
+ arch/powerpc/mm/book3s64/pgtable.c | 20 +++++++++++++++++
+ arch/sparc/Kconfig                 |  1 +
+ arch/sparc/include/asm/mman.h      |  6 -----
+ arch/sparc/mm/init_64.c            | 13 +++++++++++
+ arch/x86/Kconfig                   |  2 +-
+ arch/x86/include/asm/pgtable.h     |  5 -----
+ arch/x86/include/uapi/asm/mman.h   | 14 ------------
+ arch/x86/mm/Makefile               |  2 +-
+ arch/x86/mm/pgprot.c               | 35 ++++++++++++++++++++++++++++++
+ include/linux/mman.h               |  4 ----
+ mm/Kconfig                         |  2 +-
+ mm/mmap.c                          | 14 ++++--------
+ 17 files changed, 103 insertions(+), 78 deletions(-)
+ create mode 100644 arch/x86/mm/pgprot.c
+
 -- 
-2.35.1
+2.25.1
 
