@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37822C352B6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8FC9C38A04
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351827AbiDLHdP (ORCPT
+        id S1352900AbiDLHdd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
+        Tue, 12 Apr 2022 03:33:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351860AbiDLHNB (ORCPT
+        with ESMTP id S1351870AbiDLHNC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:13:01 -0400
+        Tue, 12 Apr 2022 03:13:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF56E04;
-        Mon, 11 Apr 2022 23:53:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3EE2672;
+        Mon, 11 Apr 2022 23:53:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B31E4B81B43;
-        Tue, 12 Apr 2022 06:53:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14E1DC385A1;
-        Tue, 12 Apr 2022 06:53:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8940B81B49;
+        Tue, 12 Apr 2022 06:53:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ADA3C385A1;
+        Tue, 12 Apr 2022 06:53:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746425;
-        bh=jdSrlme+ldB8gp5g95tgqulfRXTKB43uz9/V2NDGTck=;
+        s=korg; t=1649746433;
+        bh=ntbeJfFcUf36LtQuxnH6guNMinHbq9Rd/OpBJmA0IJY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NHcuyZIjDF385c0FsLIrLMqnMvKGtjduTPrH6WsGAyh/JhbFP/3CITd4O6e6iDnJ1
-         xkUjG80K7D+p58RXg145hGfyg1lhYbZf0gYqWyeBTntR+msM+wNw+GAPIbuivNuNUg
-         RRlH2fz/lH+r2ab2930tRC+7IxNWcaQ2o01X3QQQ=
+        b=tfuL6qVHpyDgsRm+rVmvXc8jVA/aEDZ45Um36Yv4EVo0PiuEv7njogPgeqWDa5+YY
+         8hGFxcWqVwZau+Fj8W3L2VZ9bQWMUZkhzAeM/IV6bRejX1SDWV80I41VNpAKRuRjlP
+         xDMm0UERDe2m9SQgpXWcqpRyrfBjJX2e1Bg5qe5s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: [PATCH 5.15 269/277] x86/bug: Prevent shadowing in __WARN_FLAGS
-Date:   Tue, 12 Apr 2022 08:31:12 +0200
-Message-Id: <20220412062949.827938666@linuxfoundation.org>
+        stable@vger.kernel.org, Jingyi Wang <wangjingyi11@huawei.com>,
+        Nianyao Tang <tangnianyao@huawei.com>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.15 272/277] irqchip/gic-v4: Wait for GICR_VPENDBASER.Dirty to clear before descheduling
+Date:   Tue, 12 Apr 2022 08:31:15 +0200
+Message-Id: <20220412062949.912827198@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,83 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Marc Zyngier <maz@kernel.org>
 
-commit 9ce02f0fc68326dd1f87a0a3a4c6ae7fdd39e6f6 upstream.
+commit af27e41612ec7e5b4783f589b753a7c31a37aac8 upstream.
 
-The macro __WARN_FLAGS() uses a local variable named "f". This being a
-common name, there is a risk of shadowing other variables.
+The way KVM drives GICv4.{0,1} is as follows:
+- vcpu_load() makes the VPE resident, instructing the RD to start
+  scanning for interrupts
+- just before entering the guest, we check that the RD has finished
+  scanning and that we can start running the vcpu
+- on preemption, we deschedule the VPE by making it invalid on
+  the RD
 
-For example, GCC would yield:
+However, we are preemptible between the first two steps. If it so
+happens *and* that the RD was still scanning, we nonetheless write
+to the GICR_VPENDBASER register while Dirty is set, and bad things
+happen (we're in UNPRED land).
 
-| In file included from ./include/linux/bug.h:5,
-|                  from ./include/linux/cpumask.h:14,
-|                  from ./arch/x86/include/asm/cpumask.h:5,
-|                  from ./arch/x86/include/asm/msr.h:11,
-|                  from ./arch/x86/include/asm/processor.h:22,
-|                  from ./arch/x86/include/asm/timex.h:5,
-|                  from ./include/linux/timex.h:65,
-|                  from ./include/linux/time32.h:13,
-|                  from ./include/linux/time.h:60,
-|                  from ./include/linux/stat.h:19,
-|                  from ./include/linux/module.h:13,
-|                  from virt/lib/irqbypass.mod.c:1:
-| ./include/linux/rcupdate.h: In function 'rcu_head_after_call_rcu':
-| ./arch/x86/include/asm/bug.h:80:21: warning: declaration of 'f' shadows a parameter [-Wshadow]
-|    80 |         __auto_type f = BUGFLAG_WARNING|(flags);                \
-|       |                     ^
-| ./include/asm-generic/bug.h:106:17: note: in expansion of macro '__WARN_FLAGS'
-|   106 |                 __WARN_FLAGS(BUGFLAG_ONCE |                     \
-|       |                 ^~~~~~~~~~~~
-| ./include/linux/rcupdate.h:1007:9: note: in expansion of macro 'WARN_ON_ONCE'
-|  1007 |         WARN_ON_ONCE(func != (rcu_callback_t)~0L);
-|       |         ^~~~~~~~~~~~
-| In file included from ./include/linux/rbtree.h:24,
-|                  from ./include/linux/mm_types.h:11,
-|                  from ./include/linux/buildid.h:5,
-|                  from ./include/linux/module.h:14,
-|                  from virt/lib/irqbypass.mod.c:1:
-| ./include/linux/rcupdate.h:1001:62: note: shadowed declaration is here
-|  1001 | rcu_head_after_call_rcu(struct rcu_head *rhp, rcu_callback_t f)
-|       |                                               ~~~~~~~~~~~~~~~^
+This affects both the 4.0 and 4.1 implementations.
 
-For reference, sparse also warns about it, c.f. [1].
+Make sure Dirty is cleared before performing the deschedule,
+meaning that its_clear_vpend_valid() becomes a sort of full VPE
+residency barrier.
 
-This patch renames the variable from f to __flags (with two underscore
-prefixes as suggested in the Linux kernel coding style [2]) in order
-to prevent collisions.
-
-[1] https://lore.kernel.org/all/CAFGhKbyifH1a+nAMCvWM88TK6fpNPdzFtUXPmRGnnQeePV+1sw@mail.gmail.com/
-
-[2] Linux kernel coding style, section 12) Macros, Enums and RTL,
-paragraph 5) namespace collisions when defining local variables in
-macros resembling functions
-https://www.kernel.org/doc/html/latest/process/coding-style.html#macros-enums-and-rtl
-
-Fixes: bfb1a7c91fb7 ("x86/bug: Merge annotate_reachable() into_BUG_FLAGS() asm")
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lkml.kernel.org/r/20220324023742.106546-1-mailhol.vincent@wanadoo.fr
+Reported-by: Jingyi Wang <wangjingyi11@huawei.com>
+Tested-by: Nianyao Tang <tangnianyao@huawei.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Fixes: 57e3cebd022f ("KVM: arm64: Delay the polling of the GICR_VPENDBASER.Dirty bit")
+Link: https://lore.kernel.org/r/4aae10ba-b39a-5f84-754b-69c2eb0a2c03@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/bug.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-gic-v3-its.c |   28 +++++++++++++++++++---------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
---- a/arch/x86/include/asm/bug.h
-+++ b/arch/x86/include/asm/bug.h
-@@ -77,9 +77,9 @@ do {								\
-  */
- #define __WARN_FLAGS(flags)					\
- do {								\
--	__auto_type f = BUGFLAG_WARNING|(flags);		\
-+	__auto_type __flags = BUGFLAG_WARNING|(flags);		\
- 	instrumentation_begin();				\
--	_BUG_FLAGS(ASM_UD2, f, ASM_REACHABLE);			\
-+	_BUG_FLAGS(ASM_UD2, __flags, ASM_REACHABLE);		\
- 	instrumentation_end();					\
- } while (0)
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -3007,18 +3007,12 @@ static int __init allocate_lpi_tables(vo
+ 	return 0;
+ }
  
+-static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
++static u64 read_vpend_dirty_clear(void __iomem *vlpi_base)
+ {
+ 	u32 count = 1000000;	/* 1s! */
+ 	bool clean;
+ 	u64 val;
+ 
+-	val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
+-	val &= ~GICR_VPENDBASER_Valid;
+-	val &= ~clr;
+-	val |= set;
+-	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
+-
+ 	do {
+ 		val = gicr_read_vpendbaser(vlpi_base + GICR_VPENDBASER);
+ 		clean = !(val & GICR_VPENDBASER_Dirty);
+@@ -3029,10 +3023,26 @@ static u64 its_clear_vpend_valid(void __
+ 		}
+ 	} while (!clean && count);
+ 
+-	if (unlikely(val & GICR_VPENDBASER_Dirty)) {
++	if (unlikely(!clean))
+ 		pr_err_ratelimited("ITS virtual pending table not cleaning\n");
++
++	return val;
++}
++
++static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
++{
++	u64 val;
++
++	/* Make sure we wait until the RD is done with the initial scan */
++	val = read_vpend_dirty_clear(vlpi_base);
++	val &= ~GICR_VPENDBASER_Valid;
++	val &= ~clr;
++	val |= set;
++	gicr_write_vpendbaser(val, vlpi_base + GICR_VPENDBASER);
++
++	val = read_vpend_dirty_clear(vlpi_base);
++	if (unlikely(val & GICR_VPENDBASER_Dirty))
+ 		val |= GICR_VPENDBASER_PendingLast;
+-	}
+ 
+ 	return val;
+ }
 
 
