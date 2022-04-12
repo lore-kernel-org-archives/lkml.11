@@ -2,51 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13DFDC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83589C35280
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:35:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356101AbiDLHeU (ORCPT
+        id S1356400AbiDLHfd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:34:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
+        Tue, 12 Apr 2022 03:35:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351802AbiDLHM6 (ORCPT
+        with ESMTP id S1347457AbiDLHLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:12:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604F45F71;
-        Mon, 11 Apr 2022 23:52:56 -0700 (PDT)
+        Tue, 12 Apr 2022 03:11:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947794AE0D;
+        Mon, 11 Apr 2022 23:50:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F05866149D;
-        Tue, 12 Apr 2022 06:52:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C705CC385A1;
-        Tue, 12 Apr 2022 06:52:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC742B818C8;
+        Tue, 12 Apr 2022 06:50:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23A5CC385B4;
+        Tue, 12 Apr 2022 06:50:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746375;
-        bh=+HBkRHeQ9J6cUZ/b15CBtPCaJKaKSmFT4Juh+W+THhk=;
+        s=korg; t=1649746201;
+        bh=E3sHZwE7Y3egda4sYsmhC+E3OtwsJ2haWtifZ+1d1k8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UwTfjqrJAkpQb45MJCSMPUBy/D3kLCNkr5gv5jdmD1lkzCgZtQ6+KhLdjtNkla3gA
-         V/EcCp8SnmWWeAQI5boO4qUU4nkEawbriGgKKVWIw8/b79BV3ibtt+1EgA3fRLS3JW
-         2aZDQoFuveRhkY6vLMV8zJj7LXyTMLd+V33Nm850=
+        b=TUQR0LSfGoWC5ez7JAi2L4RrsxTZm3bypxmtj42bqFoHytbD85IVSGyh5QcZaFLBx
+         qE2xx++Ucalb2WB2l5kFhFzlNF1UY3C3i9/YpMGLhYEtS1XueZnpzefXqjCJfp4Tqf
+         0a7by7RosJ4LlygoOtwZU1rUiFyX1SY6I0tD3wrI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Fangrui Song <maskray@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        John Keeping <john@metanate.com>, Leo Yan <leo.yan@linaro.org>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: [PATCH 5.15 259/277] tools build: Use $(shell ) instead of `` to get embedded libperls ccopts
-Date:   Tue, 12 Apr 2022 08:31:02 +0200
-Message-Id: <20220412062949.538827562@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 198/277] io_uring: dont touch scm_fp_list after queueing skb
+Date:   Tue, 12 Apr 2022 08:30:01 +0200
+Message-Id: <20220412062947.768668204@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -58,48 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-commit 541f695cbcb6932c22638b06e0cbe1d56177e2e9 upstream.
+[ Upstream commit a07211e3001435fe8591b992464cd8d5e3c98c5a ]
 
-Just like its done for ldopts and for both in tools/perf/Makefile.config.
+It's safer to not touch scm_fp_list after we queued an skb to which it
+was assigned, there might be races lurking if we screw subtle sync
+guarantees on the io_uring side.
 
-Using `` to initialize PERL_EMBED_CCOPTS somehow precludes using:
-
-  $(filter-out SOMETHING_TO_FILTER,$(PERL_EMBED_CCOPTS))
-
-And we need to do it to allow for building with versions of clang where
-some gcc options selected by distros are not available.
-
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com> # Debian/Selfmade LLVM-14 (x86-64)
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Fangrui Song <maskray@google.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: John Keeping <john@metanate.com>
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Michael Petlan <mpetlan@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Link: http://lore.kernel.org/lkml/YktYX2OnLtyobRYD@kernel.org
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 6b06314c47e14 ("io_uring: add file set registration")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/build/feature/Makefile |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/io_uring.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/tools/build/feature/Makefile
-+++ b/tools/build/feature/Makefile
-@@ -213,7 +213,7 @@ strip-libs = $(filter-out -l%,$(1))
- PERL_EMBED_LDOPTS = $(shell perl -MExtUtils::Embed -e ldopts 2>/dev/null)
- PERL_EMBED_LDFLAGS = $(call strip-libs,$(PERL_EMBED_LDOPTS))
- PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
--PERL_EMBED_CCOPTS = `perl -MExtUtils::Embed -e ccopts 2>/dev/null`
-+PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
- FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 21823d1e91de..2faa558778ba 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -8126,8 +8126,12 @@ static int __io_sqe_files_scm(struct io_ring_ctx *ctx, int nr, int offset)
+ 		refcount_add(skb->truesize, &sk->sk_wmem_alloc);
+ 		skb_queue_head(&sk->sk_receive_queue, skb);
  
- ifeq ($(CC_NO_CLANG), 0)
+-		for (i = 0; i < nr_files; i++)
+-			fput(fpl->fp[i]);
++		for (i = 0; i < nr; i++) {
++			struct file *file = io_file_from_index(ctx, i + offset);
++
++			if (file)
++				fput(file);
++		}
+ 	} else {
+ 		kfree_skb(skb);
+ 		free_uid(fpl->user);
+-- 
+2.35.1
+
 
 
