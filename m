@@ -2,87 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8805AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0C38C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:19:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354396AbiDLMVf (ORCPT
+        id S1354055AbiDLMVt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
+        Tue, 12 Apr 2022 08:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356661AbiDLMUG (ORCPT
+        with ESMTP id S1356222AbiDLMTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:20:06 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BA3FEC
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 04:25:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649762717; x=1681298717;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Vrtyg0fI9hlwODxSv/wgu1mOgXTv7MtKj6UCryh/WTE=;
-  b=TSyue/v4UZMsg9+WOgHaW3kdC/SXf9UVpPGVYtwuc+9PVScKu8zRyS4g
-   8ZRlkiRHmlUmRzRppt7RRyqPa2Xct95joj07pl7/QvUH7Hd26bsXo3TyC
-   8ZnnkpTtuonLDR6FoSgBHfKFZn6jWPE/IwnPpC4BFU9ZodyP+g7fzL93V
-   IrYr+Igg2Iki8KbHEJS5qDLlhKsk7PCAlvYUrzWo3kM/1JAI6rbD4688U
-   JWLhEey9/8g5sbztWIATGcbX1QROfXhK7SCj9vk64SGcBPh6YTZ9dygOd
-   Rkozf1LIwnYIZUHq9HB8JJjymeBXyGJk7J/sV/lcORPwE40Xe8lg1BIi8
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="262532659"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="262532659"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 04:23:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="623229113"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 12 Apr 2022 04:23:29 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neEcL-0002oC-4N;
-        Tue, 12 Apr 2022 11:23:29 +0000
-Date:   Tue, 12 Apr 2022 19:22:35 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:crng/random/jd/not-zero-entropy 3/12] ERROR:
- modpost: "random_get_entropy_fallback" [crypto/jitterentropy_rng.ko]
- undefined!
-Message-ID: <202204121935.rH2YGQsx-lkp@intel.com>
+        Tue, 12 Apr 2022 08:19:39 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB4222F;
+        Tue, 12 Apr 2022 04:24:07 -0700 (PDT)
+X-UUID: d52c9a3afb984682af61dc8ceae6b463-20220412
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4,REQID:da2e59b6-cda6-484b-ab3f-d7ca1d2f473f,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.4,REQID:da2e59b6-cda6-484b-ab3f-d7ca1d2f473f,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:faefae9,CLOUDID:7baee6a8-d103-4e36-82b9-b0e86991b3df,C
+        OID:IGNORED,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:0,EDM:-3,File:ni
+        l,QS:0,BEC:nil
+X-UUID: d52c9a3afb984682af61dc8ceae6b463-20220412
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 615625054; Tue, 12 Apr 2022 19:24:03 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 12 Apr 2022 19:24:02 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 12 Apr 2022 19:24:02 +0800
+Message-ID: <cc41bd1fba599acf937e73762ae196432f8c72bf.camel@mediatek.com>
+Subject: Re: [PATCH V2 12/15] cpufreq: mediatek: Use maximum voltage in init
+ stage
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, <rafael@kernel.org>,
+        <viresh.kumar@linaro.org>, <robh+dt@kernel.org>,
+        <krzk+dt@kernel.org>
+CC:     <matthias.bgg@gmail.com>, <jia-wei.chang@mediatek.com>,
+        <roger.lu@mediatek.com>, <hsinyi@google.com>,
+        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 12 Apr 2022 19:24:02 +0800
+In-Reply-To: <5f788a8f-7092-19ca-8499-d3626c4a386d@collabora.com>
+References: <20220408045908.21671-1-rex-bc.chen@mediatek.com>
+         <20220408045908.21671-13-rex-bc.chen@mediatek.com>
+         <5f788a8f-7092-19ca-8499-d3626c4a386d@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block crng/random/jd/not-zero-entropy
-head:   4ee3bf173a552cd996e048d57f65bb5b471ab577
-commit: aeeed98e20910aeafd5db8c56b449810b60bad9f [3/12] timekeeping: add raw clock fallback for random_get_entropy()
-config: parisc-defconfig (https://download.01.org/0day-ci/archive/20220412/202204121935.rH2YGQsx-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/aeeed98e20910aeafd5db8c56b449810b60bad9f
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block crng/random/jd/not-zero-entropy
-        git checkout aeeed98e20910aeafd5db8c56b449810b60bad9f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash
+On Fri, 2022-04-08 at 15:37 +0200, AngeloGioacchino Del Regno wrote:
+> Il 08/04/22 06:59, Rex-BC Chen ha scritto:
+> > From: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> > 
+> > Two or more clients may use the same regulator, and it could cause
+> > the
+> > issue of high-freqeuncy-low-voltage.
+> > To prevent this, we use maximum voltage in
+> > mtk_cpu_dvfs_info_init().
+> > 
+> > Signed-off-by: Jia-Wei Chang <jia-wei.chang@mediatek.com>
+> 
+> Is this happening for proc-supply (proc_reg)?
+> ...because it looks like it is, so you should send this commit
+> separately
+> and with an appropriate Fixes: tag.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hello Angelo,
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+The commit message is not clear.
+The clients are cpufreq and mediatek cci.
+I think there is no any error before introducing mediatek cci into
+cpufreq.
 
->> ERROR: modpost: "random_get_entropy_fallback" [crypto/jitterentropy_rng.ko] undefined!
+The order of this patch should be after "cpufreq: mediatek: Link CCI
+device to CPU".
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+If so, I will also correct the commit message in next version.
+
+BRs,
+Rex
+
