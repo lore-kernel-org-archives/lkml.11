@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC714C3527B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376612AbiDLItz (ORCPT
+        id S1376568AbiDLItu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
+        Tue, 12 Apr 2022 04:49:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357860AbiDLHkt (ORCPT
+        with ESMTP id S1357825AbiDLHkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:40:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC22E3A182;
-        Tue, 12 Apr 2022 00:17:02 -0700 (PDT)
+        Tue, 12 Apr 2022 03:40:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47EB39825;
+        Tue, 12 Apr 2022 00:16:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4863D617D2;
-        Tue, 12 Apr 2022 07:17:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50AE8C385A6;
-        Tue, 12 Apr 2022 07:17:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 707FAB81B4F;
+        Tue, 12 Apr 2022 07:16:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2B24C385A5;
+        Tue, 12 Apr 2022 07:16:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747821;
-        bh=QglxR7xqTgao+Mu3n8Nk9NbuD0NuJMjSZJ6+4whERrI=;
+        s=korg; t=1649747816;
+        bh=gd8iSxgW8PBNOLgAnqpE0vsod2iKWP2nUWete6C1iPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rrO3PYIEqIwOXpkIxLIPAsVCdsmDpMuAEsT4qbBGXj2bZ+Neq1MDOpheZMC1gu/+p
-         nrfVfvNFZVJ+EyFZ/GJ0+hLieVYiqrw5Dr4UTfIsVu+msvTmnwLOjPvaLDZXmUKhgI
-         oPF4prDsEDFicL23yGcn1asMRVBY8klhHU9tZoxE=
+        b=F4xRpSp5ocd3Cytdl3ARFLq60N3PCYEu7tZk91LaQv7HKwP/QayebN3X2g+dZzmiQ
+         tIA2UdbIhcov4VEJm8X840LTHkL49mqD/Wed9A1eHLVe/14eCgUeNGYwJ1CWzQ6X5N
+         EnUVPMYOyWuuiXfEQkK1RRIn+oSw/3sx3n8nxclU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Axel Lin <axel.lin@ingics.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 218/343] regulator: rtq2134: Fix missing active_discharge_on setting
-Date:   Tue, 12 Apr 2022 08:30:36 +0200
-Message-Id: <20220412062957.635055412@linuxfoundation.org>
+Subject: [PATCH 5.17 216/343] drm/imx: Fix memory leak in imx_pd_connector_get_modes
+Date:   Tue, 12 Apr 2022 08:30:34 +0200
+Message-Id: <20220412062957.578295261@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,34 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Axel Lin <axel.lin@ingics.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit 17049bf9de55a42ee96fd34520aff8a484677675 ]
+[ Upstream commit bce81feb03a20fca7bbdd1c4af16b4e9d5c0e1d3 ]
 
-The active_discharge_on setting was missed, so output discharge resistor
-is always disabled. Fix it.
+Avoid leaking the display mode variable if of_get_drm_display_mode
+fails.
 
-Fixes: 0555d41497de ("regulator: rtq2134: Add support for Richtek RTQ2134 SubPMIC")
-Signed-off-by: Axel Lin <axel.lin@ingics.com>
-Link: https://lore.kernel.org/r/20220404022514.449231-1-axel.lin@ingics.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 76ecd9c9fb24 ("drm/imx: parallel-display: check return code from of_get_drm_display_mode()")
+Addresses-Coverity-ID: 1443943 ("Resource leak")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220108165230.44610-1-jose.exposito89@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/rtq2134-regulator.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/imx/parallel-display.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/regulator/rtq2134-regulator.c b/drivers/regulator/rtq2134-regulator.c
-index f21e3f8b21f2..8e13dea354a2 100644
---- a/drivers/regulator/rtq2134-regulator.c
-+++ b/drivers/regulator/rtq2134-regulator.c
-@@ -285,6 +285,7 @@ static const unsigned int rtq2134_buck_ramp_delay_table[] = {
- 		.enable_mask = RTQ2134_VOUTEN_MASK, \
- 		.active_discharge_reg = RTQ2134_REG_BUCK##_id##_CFG0, \
- 		.active_discharge_mask = RTQ2134_ACTDISCHG_MASK, \
-+		.active_discharge_on = RTQ2134_ACTDISCHG_MASK, \
- 		.ramp_reg = RTQ2134_REG_BUCK##_id##_RSPCFG, \
- 		.ramp_mask = RTQ2134_RSPUP_MASK, \
- 		.ramp_delay_table = rtq2134_buck_ramp_delay_table, \
+diff --git a/drivers/gpu/drm/imx/parallel-display.c b/drivers/gpu/drm/imx/parallel-display.c
+index 06cb1a59b9bc..63ba2ad84679 100644
+--- a/drivers/gpu/drm/imx/parallel-display.c
++++ b/drivers/gpu/drm/imx/parallel-display.c
+@@ -75,8 +75,10 @@ static int imx_pd_connector_get_modes(struct drm_connector *connector)
+ 		ret = of_get_drm_display_mode(np, &imxpd->mode,
+ 					      &imxpd->bus_flags,
+ 					      OF_USE_NATIVE_MODE);
+-		if (ret)
++		if (ret) {
++			drm_mode_destroy(connector->dev, mode);
+ 			return ret;
++		}
+ 
+ 		drm_mode_copy(mode, &imxpd->mode);
+ 		mode->type |= DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED;
 -- 
 2.35.1
 
