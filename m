@@ -2,143 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4C09C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355623AbiDLNPw (ORCPT
+        id S1352527AbiDLNP6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59364 "EHLO
+        Tue, 12 Apr 2022 09:15:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356788AbiDLNOK (ORCPT
+        with ESMTP id S1355783AbiDLNNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:14:10 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C65D2BC;
-        Tue, 12 Apr 2022 06:01:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649768468; x=1681304468;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=bifhyOCkRst28z4/YuVYetStnqamZXAtDYuVHvzQJXk=;
-  b=IbLkmIQ9b2/KgphnMB4zaDlajpuTi7hTl5MGS2nemVHv7FUFJ4fvSpnd
-   Bso+UT2x9Z/4TUoSm1iYe63mt4paqyyVJvyACR2UF8DP3NbX9CO7ECUyw
-   WStgSJ9G6P2+WRm8Ukfq2zhjZ0F+Gq31mSSF7g0DyiEgA0oSJKHKrWkJN
-   4=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 12 Apr 2022 06:01:07 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 06:01:07 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Apr 2022 06:01:06 -0700
-Received: from [10.216.28.9] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 12 Apr
- 2022 06:01:02 -0700
-Message-ID: <be05410d-8b68-ca5f-63a6-4565bcd43f66@quicinc.com>
-Date:   Tue, 12 Apr 2022 18:30:59 +0530
+        Tue, 12 Apr 2022 09:13:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0B46A9
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:56:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649768184;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fKGY79qeJkiZPEmiUhd4p41YrGI5Je/IzqvYghVlks4=;
+        b=JgnLxN17bYza845u/zoiL3tMPrxJscVHPtm9xXzK4YNRqZCJbUfBqlKGDGDGmfziEVzr9E
+        uY0jmT0oAi8PDKGRrm95UwtN8FJ4Ec9ypPluRbtw0yKEeoL09GAi5qOQT+IXd1zxl4rOmD
+        8+0qcHC0q56DefF3uXP7Xj9YOu8Llx0=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-249-5mibjntWPGmzDU3VsBJ5Wg-1; Tue, 12 Apr 2022 08:56:23 -0400
+X-MC-Unique: 5mibjntWPGmzDU3VsBJ5Wg-1
+Received: by mail-qt1-f198.google.com with SMTP id o17-20020ac872d1000000b002edcca4ce06so4205894qtp.7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:56:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=fKGY79qeJkiZPEmiUhd4p41YrGI5Je/IzqvYghVlks4=;
+        b=v9hQdKaqHNmvC1pdNa5cOVLKIR+xw0Czn13X8Q9j4Ishiawhgoppu9cRakjep/9wmh
+         bBoyw9zx+wt/I1qn68K9ubWD0hyLYhOVTkIl+qCAm/HQUwPW85ts8XGw4GNPX7YJKoEl
+         t2gmapzqiHKfvgb/3S1fKLhHZ5hBYd8wJmlGZ69mugHeytaERRtOVKgQ51pz58abSJAT
+         nqM+vG/g2HUzBvuLKSzaHnxFZeIk+u0wzPUNDFJa+ffTQIgfHAgtpdn4ugm0dPcT/BQX
+         ZCvQzgyMzFWkdBotvbkxGR2i9xrG6urAOKaYVgmFknKKWXJUOjPZeXfvqlez6n6AKYvF
+         RLwQ==
+X-Gm-Message-State: AOAM531PVdvXCO5kS3v4zBbRHSAOTIX2TzqtOAF1DfuU5dEhbqF5TtAz
+        hnsL+OVenT1ts7Mg1wFAnQd/0kOv7HF2vKUnap/NYkcpUN92yCz9xaPOF7M6vhAHUw00BJG17SY
+        E5x07Ff558ZbQqek7ywNzSyQO
+X-Received: by 2002:a05:6214:20e6:b0:440:f6d0:fe55 with SMTP id 6-20020a05621420e600b00440f6d0fe55mr31833047qvk.57.1649768183319;
+        Tue, 12 Apr 2022 05:56:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwfGzch4mtv0CtgEFK5dNCfGzrVh3HY2NYysAp6bl6G8/cDuBO5Qvh7If1QbYl5wRAYXhjOTw==
+X-Received: by 2002:a05:6214:20e6:b0:440:f6d0:fe55 with SMTP id 6-20020a05621420e600b00440f6d0fe55mr31832990qvk.57.1649768183030;
+        Tue, 12 Apr 2022 05:56:23 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-96-237.dyn.eolo.it. [146.241.96.237])
+        by smtp.gmail.com with ESMTPSA id j19-20020a05622a039300b002ecc2ebfd87sm10430205qtx.32.2022.04.12.05.56.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 05:56:22 -0700 (PDT)
+Message-ID: <d303c605bdb951f1471800aca10bd97f47372295.camel@redhat.com>
+Subject: Re: [PATCH net-next v2 05/18] net: dsa: mv88e6xxx: remove redundant
+ check in mv88e6xxx_port_vlan()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jakob Koschel <jakobkoschel@gmail.com>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Casper Andersson <casper.casan@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Walle <michael@walle.cc>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Eric Dumazet <edumazet@google.com>,
+        Xu Wang <vulab@iscas.ac.cn>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
+        Mike Rapoport <rppt@kernel.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Date:   Tue, 12 Apr 2022 14:56:15 +0200
+In-Reply-To: <8BAFAAD1-D9AB-4339-BE81-18BE564F78F6@gmail.com>
+References: <20220412105830.3495846-1-jakobkoschel@gmail.com>
+         <20220412105830.3495846-6-jakobkoschel@gmail.com>
+         <YlViPWWKhvoV2DLN@shell.armlinux.org.uk>
+         <8BAFAAD1-D9AB-4339-BE81-18BE564F78F6@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v6 1/3] arm64: dts: qcom: sc7280: Add nodes for va tx and
- rx macros and external codecs
-Content-Language: en-US
-To:     Matthias Kaehlcke <mka@chromium.org>
-CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <srinivas.kandagatla@linaro.org>, <dianders@chromium.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>,
-        <quic_rohkumar@quicinc.com>
-References: <1649157220-29304-1-git-send-email-quic_srivasam@quicinc.com>
- <1649157220-29304-2-git-send-email-quic_srivasam@quicinc.com>
- <Yky2Iwt+tvxvu4/S@google.com>
- <8fea1165-c8b6-6ce2-86dc-82274af8c43d@quicinc.com>
- <YlSHPU7XITS2dju/@google.com>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <YlSHPU7XITS2dju/@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 2022-04-12 at 13:37 +0200, Jakob Koschel wrote:
+> 
+> > On 12. Apr 2022, at 13:27, Russell King (Oracle) <linux@armlinux.org.uk> wrote:
+> > 
+> > On Tue, Apr 12, 2022 at 12:58:17PM +0200, Jakob Koschel wrote:
+> > > We know that "dev > dst->last_switch" in the "else" block.
+> > > In other words, that "dev - dst->last_switch" is > 0.
+> > > 
+> > > dsa_port_bridge_num_get(dp) can be 0, but the check
+> > > "if (bridge_num + dst->last_switch != dev) continue", rewritten as
+> > > "if (bridge_num != dev - dst->last_switch) continue", aka
+> > > "if (bridge_num != something which cannot be 0) continue",
+> > > makes it redundant to have the extra "if (!bridge_num) continue" logic,
+> > > since a bridge_num of zero would have been skipped anyway.
+> > > 
+> > > Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > 
+> > Isn't this Vladimir's patch?
+> > 
+> > If so, it should be commited as Vladimir as the author, and Vladimir's
+> > sign-off should appear before yours. When sending out such patches,
+> > there should be a From: line for Vladimir as the first line in the body
+> > of the patch email.
+> 
+> yes, you are right. I wasn't sure on how to send those commits, but
+> I guess if I just set the commit author correctly it should be fine.
+> 
+> regarding the order: I thought I did it correctly doing bottom up but
+> I confused the order, wasn't on purpose. Sorry about that.
+> 
+> I'll resend after verifying all the authors and sign-offs are correct.
 
-On 4/12/2022 1:23 AM, Matthias Kaehlcke wrote:
-Thanks for your time Matthias!!!
-> On Mon, Apr 11, 2022 at 07:32:33PM +0530, Srinivasa Rao Mandadapu wrote:
->> On 4/6/2022 3:05 AM, Matthias Kaehlcke wrote:
->> Thanks for your time Matthias!!!
->>> On Tue, Apr 05, 2022 at 04:43:38PM +0530, Srinivasa Rao Mandadapu wrote:
->>>> SC7280 has VA, TX and RX macros with SoundWire Controllers to attach with
->>>> codecs like WCD938x, max98360a using soundwire masters and i2s bus.
->>>> Add these nodes for sc7280 based platforms audio use case.
->>>> Add tlmm gpio property in wcd938x node for switching CTIA/OMTP Headset.
->>>>
->>>> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->>>> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->>>> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->>>> ---
->>> A change log would be helpful for reviewers
->> Change log added in cover letter.
->  From my perspective as a reviewer I find it more practical to have a
-> change log per patch.
-Okay. will do accordingly from next time.
->
->>>> diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
->>>> index de646d9..c6a04c3 100644
->>>> --- a/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
->>>> +++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi
->>>> @@ -20,6 +20,14 @@
->>>>    #include "sc7280-chrome-common.dtsi"
->>>>    / {
->>>> +	max98360a: audio-codec-0 {
->>>> +		compatible = "maxim,max98360a";
->>>> +		pinctrl-names = "default";
->>>> +		pinctrl-0 = <&amp_en>;
->>>> +		sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
->>>> +		#sound-dai-cells = <0>;
->>>> +	};
->>>> +
->>> This node shouldn't be at top but with the other device nodes, in
->>> alphabetical order, i.e. before 'pwmleds'.
->> Actually we are sorting as per node name. Hence kept it here. As per
->> previous reviewer comments, sorted accordingly.
->>
->> Please suggest better approach.
-> True, I forgot the node names are used for sorting, not the labels.
-Okay.
->
->>>> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->>>> index db74fc3..78ec84c 100644
->>>> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
->>>> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->>>> @@ -822,6 +822,127 @@
->>>>    			#power-domain-cells = <1>;
->>>>    		};
->>>> +		rxmacro: codec@3200000 {
->>> These node are not at the correct position. They should be sorted by
->>> address and hence be inserted between 'lpasscc@3000000' and
->>> 'interconnect@3c40000'.
->> Actually we are sorting as per node(codec) name. Hence kept it here. As per
->> previous reviewer comments, sorted accordingly.
-> Could you provide a pointer to those comments?
-Sorry. it seems we misunderstood.
->
-> My understanding is that we are sorting by node name when nodes don't have
-> addresses or for overrides in board files/snippets, however the nodes under
-> 'soc@0' are sorted by address.
->
-> Another nit: 'rx_macro, tx_macro, va_macro' instead of the labels without
-> underscore? Not really important, but maybe slightly more readable and
-> would match the 'spelling' of the compatible strings.
-Okay. Will change accordingly!!!
+whoops, too late...
+
+Please, do wait at least 24h before reposting, as pointed out in the
+documentation:
+
+https://elixir.bootlin.com/linux/v5.18-rc2/source/Documentation/process/maintainer-netdev.rst#L148
+
+Thanks,
+
+Paolo
+
+
