@@ -2,102 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D85C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 21:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A602C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 21:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbiDLVFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 17:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
+        id S230465AbiDLVFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 17:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiDLVFO (ORCPT
+        with ESMTP id S229436AbiDLVFg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 17:05:14 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2AD14924A
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 13:52:30 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id r11so14418379ila.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 13:52:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=a8eg2yzAecVeUuwX/DvYd1G0G8R3IZjwawoKgnX7++A=;
-        b=RoRUBLBNEdFp6tHUcgRo1ArWP9/7EpvS8lI3VgZN4k528t6NxFPQEZ240Fl3J3qPbA
-         hDk7g5226Whc1WrnoxKw0HGvFkfSx1GZPBsBbOVUI9c0DDlsXd164UJDlaedPbNPktXw
-         NP0r7q73+2fTY9yoBPt5V9WSFQ/+wBCNHlCcI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=a8eg2yzAecVeUuwX/DvYd1G0G8R3IZjwawoKgnX7++A=;
-        b=d8znIrTp9MEnMsPuEuNzBTgqis5OWKB7H5MHWeGeQKT/dG+r5G7VWgGgg3sY6EsOQT
-         iox3GN3OiBnXZ3kBvZAT8EWxlqnCoGj2D+3WB0YErfxjlBUXeDrLrRig/K/CY5fcObpd
-         z5yP/TXRYD3uxCvEqq4ubdHT6gFZI9DXa69V7miCYAVO+Oe1SV6lU1WDc3G/irwqOmbd
-         hISob/+mjSJkTJZYEEjwnz6WdCEekDhXYtSdETmNdT+E3bnoFwSIWfQFDWltyELwOlqY
-         p2RY6IgF+OFB5vAGK9hMUcr6dY2CG58t+XnWsqacEXytTHuS0cCzqL0dB2uPWa1kODUT
-         mMjQ==
-X-Gm-Message-State: AOAM533TfYuktiLtmgrBfAtT1H9AO6SoKXe7YZGcGouOxFac+HjliskJ
-        hRIAHJauACQHU2Au3uT7WFrWBxfIfVxD4Q==
-X-Google-Smtp-Source: ABdhPJyZwF3N9eKCE+uoniArzYLmJrGKYpGN52eFh5MJtZwJUiayFr7Ejn+4wk0Cgoeay+Yn7sAs4g==
-X-Received: by 2002:a5e:a717:0:b0:649:6328:792b with SMTP id b23-20020a5ea717000000b006496328792bmr16283519iod.54.1649795939583;
-        Tue, 12 Apr 2022 13:38:59 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id l14-20020a05660227ce00b00645ebb013c1sm25513647ios.45.2022.04.12.13.38.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Apr 2022 13:38:59 -0700 (PDT)
-Message-ID: <34645b35-d857-cb57-77e2-2b913a2a0f95@ieee.org>
-Date:   Tue, 12 Apr 2022 15:38:58 -0500
+        Tue, 12 Apr 2022 17:05:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD4914A6C7;
+        Tue, 12 Apr 2022 13:52:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46AC7B82008;
+        Tue, 12 Apr 2022 20:43:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C4B8C385A8;
+        Tue, 12 Apr 2022 20:43:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649796219;
+        bh=M3bH5tJjawfGnNazRXpM08pIjIgoih+NhAuD9hNkluo=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=Lvuhw04fQ+8xsrTQdeje0PY30Cg8y9LsU5yjeS7MSItnguP23C4pkhneTLtxaHs5h
+         BWRjToIXF/92r8tc7ouehiBPzd3JDMzYQs+G2G6n8JtJiN+ga5Vz794liB9UV9oLtB
+         7Dvu5xRbOy/h8Stx5jiJ2mQX4zUfhLpTQoC8NqTr97mCr7pAvyhkMfWQkypp5LUCPw
+         1NONMqj3Mu0XbVwUKK8sZ5T//2z19Aour3kivk/DTEVdAUWLBqJfPu3Eh77nAp2XOg
+         kR0l72hbK/o8A4UktSFukggyclm73MnCgmUxKIsaXV1+eMYgkFZTQ51mdSrxhMJt/B
+         nzJVwHKVMSVBA==
+From:   Mark Brown <broonie@kernel.org>
+To:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        paul.kocialkowski@bootlin.com
+Cc:     thomas.petazzoni@bootlin.com
+In-Reply-To: <20220412122207.130181-1-paul.kocialkowski@bootlin.com>
+References: <20220412122207.130181-1-paul.kocialkowski@bootlin.com>
+Subject: Re: [PATCH] spi: core: Only check bits_per_word validity when explicitly provided
+Message-Id: <164979621877.474093.2840489613136118928.b4-ty@kernel.org>
+Date:   Tue, 12 Apr 2022 21:43:38 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 1/2] staging: greybus: correct typo in comment
-Content-Language: en-US
-To:     Jaehee Park <jhpark1013@gmail.com>, johan@kernel.org
-Cc:     elder@kernel.org, gregkh@linuxfoundation.org,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, outreachy@lists.linux.dev
-References: <cover.1649793138.git.jhpark1013@gmail.com>
- <811ff26b07cf61efcc2814ed5033e8864ef16d7e.1649793138.git.jhpark1013@gmail.com>
-From:   Alex Elder <elder@ieee.org>
-In-Reply-To: <811ff26b07cf61efcc2814ed5033e8864ef16d7e.1649793138.git.jhpark1013@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/12/22 2:59 PM, Jaehee Park wrote:
-> Correct a spelling typo from 'Atleast' to 'At least' in comment.
-> Issue found by checkpatch.
+On Tue, 12 Apr 2022 14:22:07 +0200, Paul Kocialkowski wrote:
+> On SPI device probe, the core will call spi_setup in spi_add_device
+> before the corresponding driver was probed. When this happens, the
+> bits_per_word member of the device is not yet set by the driver,
+> resulting in the default being set to 8 bits-per-word.
 > 
-> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
-
-Thanks for updating the subject and description.
-
-Looks good to me.
-
-Reviewed-by: Alex Elder <elder@linaro.org>
-
-(When you send version 3 of these patches, please include the
-above line above your "Signed-off-by" line, to indicate I've
-reviewed it.)
-
-> ---
->   drivers/staging/greybus/arche-apb-ctrl.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> However some controllers do not support 8 bits-per-word at all, which
+> results in a failure when checking the bits-per-word validity.
 > 
-> diff --git a/drivers/staging/greybus/arche-apb-ctrl.c b/drivers/staging/greybus/arche-apb-ctrl.c
-> index bbf3ba744fc4..45afa208d004 100644
-> --- a/drivers/staging/greybus/arche-apb-ctrl.c
-> +++ b/drivers/staging/greybus/arche-apb-ctrl.c
-> @@ -445,7 +445,7 @@ static int __maybe_unused arche_apb_ctrl_suspend(struct device *dev)
->   static int __maybe_unused arche_apb_ctrl_resume(struct device *dev)
->   {
->   	/*
-> -	 * Atleast for ES2 we have to meet the delay requirement between
-> +	 * At least for ES2 we have to meet the delay requirement between
->   	 * unipro switch and AP bridge init, depending on whether bridge is in
->   	 * OFF state or standby state.
->   	 *
+> [...]
 
+Applied to
+
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+
+Thanks!
+
+[1/1] spi: core: Only check bits_per_word validity when explicitly provided
+      commit: b3fe2e516741368a643d79527ebccfe557217a53
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
