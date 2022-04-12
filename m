@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B149C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BDF3C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382706AbiDLIut (ORCPT
+        id S1385247AbiDLIvK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
+        Tue, 12 Apr 2022 04:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358429AbiDLHlh (ORCPT
+        with ESMTP id S1358598AbiDLHlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C004C4B1FF;
-        Tue, 12 Apr 2022 00:18:03 -0700 (PDT)
+        Tue, 12 Apr 2022 03:41:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F06153702;
+        Tue, 12 Apr 2022 00:18:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54A6861045;
-        Tue, 12 Apr 2022 07:18:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EEEDC385A5;
-        Tue, 12 Apr 2022 07:18:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78F8BB81B4F;
+        Tue, 12 Apr 2022 07:18:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E24EFC385A1;
+        Tue, 12 Apr 2022 07:18:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747882;
-        bh=GPpkSk4rc2KNtiaOqLhemdsMz2WcHV50oomCVtVcdMI=;
+        s=korg; t=1649747902;
+        bh=SpYTWM87dLN5pE3JWM5u1XNsO9uj74qw3Rk8zGXWkc4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mOsDc0laNHm8uffU0k4lLpl1ik5Nfw5oEpcTnmZMGkCrMQk6LPrwAe93mmRwXekLW
-         8fyzec21Ar6ZOLcLIFomP9E2EsiQtGIxgViK/2vAYzLSEcVdNkyhUlj9u4YKyb1yqO
-         YX4PKmP33czPnSLHX2Mp2qNXZLpfMY96pVQ8fCwY=
+        b=Y6uSb+IaQwXDmG8eg3PLUTDyQZF7VV+3U3AHSPKdjXWqsSP4ghOQXHAEbtzg5sQpe
+         RwfvYxxhFfiZ7KeLuo8zZlMNw4lp6gQ2ojupLD/ZbQfjg3JnMeII5HRsYNd9qJUfsQ
+         539b/AhT+UZvUbRq5XXT6MGGf+CF1KhRrXhuTyak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Kevin Groeneveld <kgroeneveld@lenbrook.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Anthony Koo <Anthony.Koo@amd.com>,
+        Eric Yang <Eric.Yang2@amd.com>, Alex Hung <alex.hung@amd.com>,
+        Roman Li <Roman.Li@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 200/343] scsi: sr: Fix typo in CDROM(CLOSETRAY|EJECT) handling
-Date:   Tue, 12 Apr 2022 08:30:18 +0200
-Message-Id: <20220412062957.127204179@linuxfoundation.org>
+Subject: [PATCH 5.17 248/343] drm/amd/display: Remove redundant dsc power gating from init_hw
+Date:   Tue, 12 Apr 2022 08:31:06 +0200
+Message-Id: <20220412062958.485919743@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,39 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Groeneveld <kgroeneveld@lenbrook.com>
+From: Roman Li <Roman.Li@amd.com>
 
-[ Upstream commit bc5519c18a32ce855bb51b9f5eceb77a9489d080 ]
+[ Upstream commit 95707203407c4cf0b7e520a99d6f46d8aed4b57f ]
 
-Commit 2e27f576abc6 ("scsi: scsi_ioctl: Call scsi_cmd_ioctl() from
-scsi_ioctl()") seems to have a typo as it is checking ret instead of cmd in
-the if statement checking for CDROMCLOSETRAY and CDROMEJECT.  This changes
-the behaviour of these ioctls as the cdrom_ioctl handling of these is more
-restrictive than the scsi_ioctl version.
+[Why]
+DSC Power down code has been moved from dcn31_init_hw into init_pipes()
+Need to remove it from dcn10_init_hw() as well to avoid duplicated action
+on dcn1.x/2.x
 
-Link: https://lore.kernel.org/r/20220323002242.21157-1-kgroeneveld@lenbrook.com
-Fixes: 2e27f576abc6 ("scsi: scsi_ioctl: Call scsi_cmd_ioctl() from scsi_ioctl()")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Kevin Groeneveld <kgroeneveld@lenbrook.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+[How]
+Remove DSC power down code from dcn10_init_hw()
+
+Fixes: 8fa6f4c5715c ("drm/amd/display: fixed the DSC power off sequence during Driver PnP")
+
+Reviewed-by: Anthony Koo <Anthony.Koo@amd.com>
+Reviewed-by: Eric Yang <Eric.Yang2@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Roman Li <Roman.Li@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
-index f925b1f1f9ad..a0beb11abdc9 100644
---- a/drivers/scsi/sr.c
-+++ b/drivers/scsi/sr.c
-@@ -578,7 +578,7 @@ static int sr_block_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd,
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+index 636e2d90ff93..2cefdd96d0cb 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+@@ -1493,13 +1493,6 @@ void dcn10_init_hw(struct dc *dc)
+ 			link->link_status.link_active = true;
+ 	}
  
- 	scsi_autopm_get_device(sdev);
- 
--	if (ret != CDROMCLOSETRAY && ret != CDROMEJECT) {
-+	if (cmd != CDROMCLOSETRAY && cmd != CDROMEJECT) {
- 		ret = cdrom_ioctl(&cd->cdi, bdev, mode, cmd, arg);
- 		if (ret != -ENOSYS)
- 			goto put;
+-	/* Power gate DSCs */
+-	if (!is_optimized_init_done) {
+-		for (i = 0; i < res_pool->res_cap->num_dsc; i++)
+-			if (hws->funcs.dsc_pg_control != NULL)
+-				hws->funcs.dsc_pg_control(hws, res_pool->dscs[i]->inst, false);
+-	}
+-
+ 	/* we want to turn off all dp displays before doing detection */
+ 	if (dc->config.power_down_display_on_boot)
+ 		dc_link_blank_all_dp_displays(dc);
 -- 
 2.35.1
 
