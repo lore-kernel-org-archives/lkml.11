@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF611C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D41D7C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352350AbiDLHFM (ORCPT
+        id S1352383AbiDLHFR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
+        Tue, 12 Apr 2022 03:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351600AbiDLGyD (ORCPT
+        with ESMTP id S1351566AbiDLGx7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31331C93F;
-        Mon, 11 Apr 2022 23:43:20 -0700 (PDT)
+        Tue, 12 Apr 2022 02:53:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485AF18B23;
+        Mon, 11 Apr 2022 23:43:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06BCB60A69;
-        Tue, 12 Apr 2022 06:43:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18D13C385A8;
-        Tue, 12 Apr 2022 06:43:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0E86B818BD;
+        Tue, 12 Apr 2022 06:43:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46513C385A1;
+        Tue, 12 Apr 2022 06:43:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745799;
-        bh=/UJ5yLOjeuVhq3IYMjo1/56Qep39DC/8Dkp4b1VWymY=;
+        s=korg; t=1649745785;
+        bh=RK1P+lxAlpTSRIgTV9ds1Ee091xqtC7VpXkyeyyd4so=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oAAxlna5RSdrWmcRD9pqEhEnXxJ96O/PrujF0LqJLPIWQ9exbGKtsMCgMLRzjo5UA
-         y1HyMmfOcIV5O4WUgcPfgV/RzC+auWry2ynkrxVKapEFPzBXqSKPtpl6Vsq//SUmUR
-         9RA/Lr7yzWAIxV/OewNZjsupH/3ExL6t03lOFIC0=
+        b=XzV1azLZhPicoBKxLMEz/EQXjr0qh/jXNDcCzTFGl8i1qtmzcVYSyyTpqZExAX1+Z
+         bcNQVHM7P6J2hqlax0ctPN09cS5t1lqHJTQumyyLrwDDLy8bEMOVSE86TKUUqNf6y0
+         7Hx48aUbOmoR5ibOoiTQ8cKOEEmcgiEjBX/2PIek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
-        Peter Gonda <pgonda@google.com>,
+        stable@vger.kernel.org,
+        Kevin Barnett <kevin.barnett@microchip.com>,
+        Scott Benesh <scott.benesh@microchip.com>,
+        Scott Teel <scott.teel@microchip.com>,
+        Mahesh Rajashekhara <mahesh.rajashekhara@microchip.com>,
+        Don Brace <don.brace@microchip.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 012/277] KVM: SVM: Fix kvm_cache_regs.h inclusions for is_guest_mode()
-Date:   Tue, 12 Apr 2022 08:26:55 +0200
-Message-Id: <20220412062942.391647864@linuxfoundation.org>
+Subject: [PATCH 5.15 046/277] scsi: smartpqi: Fix kdump issue when controller is locked up
+Date:   Tue, 12 Apr 2022 08:27:29 +0200
+Message-Id: <20220412062943.383149045@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -51,54 +55,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Gonda <pgonda@google.com>
+From: Mahesh Rajashekhara <mahesh.rajashekhara@microchip.com>
 
-[ Upstream commit 4a9e7b9ea252842bc8b14d495706ac6317fafd5d ]
+[ Upstream commit 3ada501d602abf02353445c03bb3258146445d90 ]
 
-Include kvm_cache_regs.h to pick up the definition of is_guest_mode(),
-which is referenced by nested_svm_virtualize_tpr() in svm.h. Remove
-include from svm_onhpyerv.c which was done only because of lack of
-include in svm.h.
+Avoid dropping into shell if the controller is in locked up state.
 
-Fixes: 883b0a91f41ab ("KVM: SVM: Move Nested SVM Implementation to nested.c")
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: kvm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Peter Gonda <pgonda@google.com>
-Message-Id: <20220304161032.2270688-1-pgonda@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Driver issues SIS soft reset to bring back the controller to SIS mode while
+OS boots into kdump mode.
+
+If the controller is in lockup state, SIS soft reset does not work.
+
+Since the controller lockup code has not been cleared, driver considers the
+firmware is no longer up and running. Driver returns back an error code to
+OS and the kdump fails.
+
+Link: https://lore.kernel.org/r/164375212337.440833.11955356190354940369.stgit@brunhilda.pdev.net
+Reviewed-by: Kevin Barnett <kevin.barnett@microchip.com>
+Reviewed-by: Scott Benesh <scott.benesh@microchip.com>
+Reviewed-by: Scott Teel <scott.teel@microchip.com>
+Signed-off-by: Mahesh Rajashekhara <mahesh.rajashekhara@microchip.com>
+Signed-off-by: Don Brace <don.brace@microchip.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/svm/svm.h          | 2 ++
- arch/x86/kvm/svm/svm_onhyperv.c | 1 -
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/scsi/smartpqi/smartpqi_init.c | 39 ++++++++++++++++-----------
+ 1 file changed, 23 insertions(+), 16 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index ff0855c03c91..a4c13e517487 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -22,6 +22,8 @@
- #include <asm/svm.h>
- #include <asm/sev-common.h>
+diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
+index a5453f5e87c3..2e690d8a3444 100644
+--- a/drivers/scsi/smartpqi/smartpqi_init.c
++++ b/drivers/scsi/smartpqi/smartpqi_init.c
+@@ -7653,6 +7653,21 @@ static int pqi_force_sis_mode(struct pqi_ctrl_info *ctrl_info)
+ 	return pqi_revert_to_sis_mode(ctrl_info);
+ }
  
-+#include "kvm_cache_regs.h"
++static void pqi_perform_lockup_action(void)
++{
++	switch (pqi_lockup_action) {
++	case PANIC:
++		panic("FATAL: Smart Family Controller lockup detected");
++		break;
++	case REBOOT:
++		emergency_restart();
++		break;
++	case NONE:
++	default:
++		break;
++	}
++}
 +
- #define __sme_page_pa(x) __sme_set(page_to_pfn(x) << PAGE_SHIFT)
+ static int pqi_ctrl_init(struct pqi_ctrl_info *ctrl_info)
+ {
+ 	int rc;
+@@ -7677,8 +7692,15 @@ static int pqi_ctrl_init(struct pqi_ctrl_info *ctrl_info)
+ 	 * commands.
+ 	 */
+ 	rc = sis_wait_for_ctrl_ready(ctrl_info);
+-	if (rc)
++	if (rc) {
++		if (reset_devices) {
++			dev_err(&ctrl_info->pci_dev->dev,
++				"kdump init failed with error %d\n", rc);
++			pqi_lockup_action = REBOOT;
++			pqi_perform_lockup_action();
++		}
+ 		return rc;
++	}
  
- #define	IOPM_SIZE PAGE_SIZE * 3
-diff --git a/arch/x86/kvm/svm/svm_onhyperv.c b/arch/x86/kvm/svm/svm_onhyperv.c
-index 98aa981c04ec..8cdc62c74a96 100644
---- a/arch/x86/kvm/svm/svm_onhyperv.c
-+++ b/arch/x86/kvm/svm/svm_onhyperv.c
-@@ -4,7 +4,6 @@
-  */
+ 	/*
+ 	 * Get the controller properties.  This allows us to determine
+@@ -8402,21 +8424,6 @@ static int pqi_ofa_ctrl_restart(struct pqi_ctrl_info *ctrl_info, unsigned int de
+ 	return pqi_ctrl_init_resume(ctrl_info);
+ }
  
- #include <linux/kvm_host.h>
--#include "kvm_cache_regs.h"
- 
- #include <asm/mshyperv.h>
- 
+-static void pqi_perform_lockup_action(void)
+-{
+-	switch (pqi_lockup_action) {
+-	case PANIC:
+-		panic("FATAL: Smart Family Controller lockup detected");
+-		break;
+-	case REBOOT:
+-		emergency_restart();
+-		break;
+-	case NONE:
+-	default:
+-		break;
+-	}
+-}
+-
+ static struct pqi_raid_error_info pqi_ctrl_offline_raid_error_info = {
+ 	.data_out_result = PQI_DATA_IN_OUT_HARDWARE_ERROR,
+ 	.status = SAM_STAT_CHECK_CONDITION,
 -- 
 2.35.1
 
