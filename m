@@ -2,79 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4227C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33054C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344267AbiDLLwz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:52:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46126 "EHLO
+        id S235273AbiDLLyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355021AbiDLLtJ (ORCPT
+        with ESMTP id S1349398AbiDLLuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:49:09 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62FFF67;
-        Tue, 12 Apr 2022 03:32:32 -0700 (PDT)
+        Tue, 12 Apr 2022 07:50:55 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F44A5C672
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:36:35 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id bh17so36415872ejb.8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649759553; x=1681295553;
-  h=from:to:cc:subject:date:message-id;
-  bh=MMIUO1AN7gN05AzZCun/kXzznO7BJ9UyKv14hpLUruU=;
-  b=p0d/Zx108iEl4D63i2ebDkuQp/QO9gO9orIW5Pay78JrPzuLZoLZxbRB
-   KRWBthGIdWJjyTyPohCbej2NNxtIgSlVtr85yt/hdcLWbNNuiwCDOAAYW
-   s6SCqstHOge8Em5Mg3BRsoemHX79ctnmokY6qKLtCWwPEMv6g6gaJYvAT
-   E=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 12 Apr 2022 03:32:33 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 12 Apr 2022 03:32:30 -0700
-X-QCInternal: smtphost
-Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 12 Apr 2022 16:02:11 +0530
-Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
-        id 934595963; Tue, 12 Apr 2022 16:02:10 +0530 (IST)
-From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-To:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org
-Cc:     quic_rampraka@quicinc.com, quic_pragalla@quicinc.com,
-        quic_sartgarg@quicinc.com, quic_nitirawa@quicinc.com,
-        quic_sayalil@quicinc.com,
-        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-Subject: [PATCH V4 0/2] Add reset entries for SDCC controllers
-Date:   Tue, 12 Apr 2022 16:02:06 +0530
-Message-Id: <1649759528-15125-1-git-send-email-quic_c_sbhanu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4PcsMg+q67rUY+iwTUmqhjT1/lhzigUjVIV5oK/dKWQ=;
+        b=MWjq2X3LXfOy9aWDfdMxrIpa3BKedC4klyMHBw3bmnWe7Tve27AEctjKwz5Nn6mPnz
+         NeRaifIMQDGdTECwFcSVeSE0ZTtzfxfmFPKPXQI6TdZiiIZ8FU1GcLHC66r844TWfXNA
+         2hNAM4SPO94hgWlIjWrQwPjOom4mCEoWh4XQ0qdyVN7gM/E2MYlKMXVP6Mpv2cdvIvaF
+         yIBcKAe7O6Mah9lRRHG36sW6/8dbphjP5+4xqsPdtMpHMlPxWOyLDxya/pb7HCRhKGur
+         UoycDElxIgfRUe2bfBKFieO35Ld1dTnLILjQWdIsdvmoIx+L6L5zOTr6MeUUXwolzkUk
+         0aRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4PcsMg+q67rUY+iwTUmqhjT1/lhzigUjVIV5oK/dKWQ=;
+        b=lWayFpz8OP5/xm3CTYoUeV8AD0VG2Qvsqwo0UNu5rO/J49XQTTI5j+IZejOJfkIieb
+         hhIEgqz4QISsq6dytftaopArBM9bu9mB2VGZr5tpNaH4pKJM0XVma5UXZp8CE8lyLVPL
+         Eij3ztEHp9F/bJ1RAZGsIbnAyzmyJlQ4sGEyZFmRIKsru1N/ky00NV7PqIv7as8exstb
+         MZ8QaAZsnGRBbxfgfwnwKG3Ux6kgfGYzjmsUJ5pzMcfYdCURUkEJA8QMKjotKXbFwSHE
+         81KHx1SoXD0UjgZKlRWnXaZ4i8IplY5pw0xeUXm0J+f5D7kmVvZAVArwsFVQBWppmsSb
+         x/6g==
+X-Gm-Message-State: AOAM530+ccVxaiTesNsdp5GtSHMgwE6GmpyJ/dC/Ia6dKOY6ektd3mk3
+        c9VkTFGVPpJXflWI2s3oNOY=
+X-Google-Smtp-Source: ABdhPJyWCclXWoRuMsc2m37Yrqt4HQVOqNDv7jXpsEhBrDVXdVN+L5thfGR7t3HzdtDEarE5Y0YpsQ==
+X-Received: by 2002:a17:906:58d3:b0:6da:bdb2:2727 with SMTP id e19-20020a17090658d300b006dabdb22727mr33698192ejs.549.1649759793668;
+        Tue, 12 Apr 2022 03:36:33 -0700 (PDT)
+Received: from localhost.localdomain (host-82-60-208-254.retail.telecomitalia.it. [82.60.208.254])
+        by smtp.gmail.com with ESMTPSA id o14-20020a170906774e00b006d5b915f27dsm13032798ejn.169.2022.04.12.03.36.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 03:36:32 -0700 (PDT)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Liu Junqi <liujunqi@pku.edu.cn>,
+        Bart Van Assche <bvanassche@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Colin Ian King <colin.king@intel.com>,
+        sparmaintainer@unisys.com, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Subject: [PATCH v2] MAINTAINERS: Remove D. Kershner from Unisys S-PAR maintainers
+Date:   Tue, 12 Apr 2022 12:36:29 +0200
+Message-Id: <20220412103629.8029-1-fmdefrancesco@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The email address of David Kershner is no more reachable. Remove his
+entry from the MAINTAINERS file for UNISYS S-PAR DRIVERS and change
+the status to "Orphan".
 
-Changes since V3:
-	- Removed reset-names from bindings and DT file as suggested by
-	  Stephen Boyd.
-	- Removed comments for resets as suggested by Stephen Boyd.
+Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+---
 
-Changes since V2:
-	- Updated commit subject and comments in dtsi file.
-	- Added resets entry in sdhci-msm dt-bindings.
+v1->v2: Change also the status of the entry to "Orphan" and rework the
+commit message. (Thanks to Greg Kroah-Hartman).
 
-Changes since V1:
-	- Updated commit message, subject and comments in dtsi file as
-	  suggested by Krzysztof Kozlowski.
+ MAINTAINERS | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Shaik Sajida Bhanu (2):
-  dt-bindings: mmc: sdhci-msm: Add gcc resets strings
-  arm64: dts: qcom: sc7280: Add reset entries for SDCC controllers
-
- Documentation/devicetree/bindings/mmc/sdhci-msm.txt | 5 +++++
- arch/arm64/boot/dts/qcom/sc7280.dtsi                | 4 ++++
- 2 files changed, 9 insertions(+)
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3ed62dcd144e..9283c63565b3 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -20184,9 +20184,8 @@ F:	include/linux/cdrom.h
+ F:	include/uapi/linux/cdrom.h
+ 
+ UNISYS S-PAR DRIVERS
+-M:	David Kershner <david.kershner@unisys.com>
+ L:	sparmaintainer@unisys.com (Unisys internal)
+-S:	Supported
++S:	Orphan
+ F:	drivers/staging/unisys/
+ F:	drivers/visorbus/
+ F:	include/linux/visorbus.h
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
+2.34.1
 
