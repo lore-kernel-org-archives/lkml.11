@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7490CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F97AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345730AbiDLBGx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34704 "EHLO
+        id S240864AbiDLBHE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345200AbiDLA63 (ORCPT
+        with ESMTP id S1345187AbiDLA63 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Apr 2022 20:58:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D995A35AA3;
-        Mon, 11 Apr 2022 17:51:09 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CFB3389B;
+        Mon, 11 Apr 2022 17:51:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7684960B2F;
-        Tue, 12 Apr 2022 00:51:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 082E0C385A9;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36EDDB819B4;
         Tue, 12 Apr 2022 00:51:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF8D0C385AA;
+        Tue, 12 Apr 2022 00:51:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724668;
-        bh=5TNfAkGdooXx4QD2kDXi4ZKavUADi/pYubz4lYm1M0k=;
+        s=k20201202; t=1649724666;
+        bh=e/J7Zh0cwREkQWVg11hQDdBOpmm8Zvf+QbJOy6b0NLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hgrJMPEu0WgQnX9tu26ONO+l9GXkUpab7w8ZZpE47dX4ww1F+HIGSJVs/Q5evRd55
-         QHANpDJam8Zmu4bwsce49sreI/PW/s66YkeZQf6j9cv2MOTxHjFWcPAfspk5yCGwAd
-         NKTKkPWKHmjlZAbEQWDMTr+nW06ejg79sMmtExtglsW7Jv/gkYsuyYhA3YWiApIUoX
-         9PyokeqUn+48i1mDpjb1ZF8JdLFa96czP30t8KccEOQonyYxJnYzro/MMdHMBMR7oQ
-         +lS+aR8PQBdiq+XwRk/ZyMu0JXtK4GpD6rqAetjl3ZK73XwA0ShBWnKUPMIujL+dNe
-         NLHWYOhFg/AFw==
+        b=o8EXH3q/Y/ZXIVmFsK8CvigqwFutfcGz+Y0AJLQTXNbDGGOhe0TI550pEa9MXmJHs
+         2GC6TApGfEB1OSc1+Ei4Tkwo2qGYm5GAyHXHpZUuH5FUwl7UJMo9bHwf/W03X4p1Gi
+         c5QNOsyT5s1hl9zoSbZS71FGm+iFYmw2UHxxdCdqiGKj/jFKtZxViNf26b/eI1+Sc9
+         wryTKCMHxwmsPBg4hNKWI9oYuFKPOoMUT/c3W949euYN5V8QN3UC3AS8WzChbkT4HT
+         ULYe9nrjCjT+uPTSZUbJB0ZBS1wrzjmFveGm55YbIZLmrSg2oT2PiefbWoI2r/1e7i
+         m36EjGiT118hw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
-        Bodo Stroesser <bostroesser@gmail.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 07/21] scsi: target: tcmu: Fix possible page UAF
-Date:   Mon, 11 Apr 2022 20:50:26 -0400
-Message-Id: <20220412005042.351105-7-sashal@kernel.org>
+Cc:     QintaoShen <unSimple1993@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, Felix.Kuehling@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 05/21] drm/amdkfd: Check for potential null return of kmalloc_array()
+Date:   Mon, 11 Apr 2022 20:50:24 -0400
+Message-Id: <20220412005042.351105-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412005042.351105-1-sashal@kernel.org>
 References: <20220412005042.351105-1-sashal@kernel.org>
@@ -54,55 +54,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+From: QintaoShen <unSimple1993@163.com>
 
-[ Upstream commit a6968f7a367f128d120447360734344d5a3d5336 ]
+[ Upstream commit ebbb7bb9e80305820dc2328a371c1b35679f2667 ]
 
-tcmu_try_get_data_page() looks up pages under cmdr_lock, but it does not
-take refcount properly and just returns page pointer. When
-tcmu_try_get_data_page() returns, the returned page may have been freed by
-tcmu_blocks_release().
+As the kmalloc_array() may return null, the 'event_waiters[i].wait' would lead to null-pointer dereference.
+Therefore, it is better to check the return value of kmalloc_array() to avoid this confusion.
 
-We need to get_page() under cmdr_lock to avoid concurrent
-tcmu_blocks_release().
-
-Link: https://lore.kernel.org/r/20220311132206.24515-1-xiaoguang.wang@linux.alibaba.com
-Reviewed-by: Bodo Stroesser <bostroesser@gmail.com>
-Signed-off-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: QintaoShen <unSimple1993@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/target/target_core_user.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_events.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
-index 71144e33272a..077c56cbed4e 100644
---- a/drivers/target/target_core_user.c
-+++ b/drivers/target/target_core_user.c
-@@ -1488,6 +1488,7 @@ static struct page *tcmu_try_get_block_page(struct tcmu_dev *udev, uint32_t dbi)
- 	mutex_lock(&udev->cmdr_lock);
- 	page = tcmu_get_block_page(udev, dbi);
- 	if (likely(page)) {
-+		get_page(page);
- 		mutex_unlock(&udev->cmdr_lock);
- 		return page;
- 	}
-@@ -1526,6 +1527,7 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
- 		/* For the vmalloc()ed cmd area pages */
- 		addr = (void *)(unsigned long)info->mem[mi].addr + offset;
- 		page = vmalloc_to_page(addr);
-+		get_page(page);
- 	} else {
- 		uint32_t dbi;
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+index d674d4b3340f..adbb2fec2e0f 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_events.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_events.c
+@@ -532,6 +532,8 @@ static struct kfd_event_waiter *alloc_event_waiters(uint32_t num_events)
+ 	event_waiters = kmalloc_array(num_events,
+ 					sizeof(struct kfd_event_waiter),
+ 					GFP_KERNEL);
++	if (!event_waiters)
++		return NULL;
  
-@@ -1536,7 +1538,6 @@ static vm_fault_t tcmu_vma_fault(struct vm_fault *vmf)
- 			return VM_FAULT_SIGBUS;
- 	}
- 
--	get_page(page);
- 	vmf->page = page;
- 	return 0;
- }
+ 	for (i = 0; (event_waiters) && (i < num_events) ; i++) {
+ 		init_wait(&event_waiters[i].wait);
 -- 
 2.35.1
 
