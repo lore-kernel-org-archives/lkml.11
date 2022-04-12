@@ -2,62 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52179C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA7A5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 17:01:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357948AbiDLRDg (ORCPT
+        id S1357960AbiDLREI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 13:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42208 "EHLO
+        Tue, 12 Apr 2022 13:04:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357937AbiDLRDd (ORCPT
+        with ESMTP id S1357949AbiDLREG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 13:03:33 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417BB5AA7D;
-        Tue, 12 Apr 2022 10:01:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ZobwdKDR8UFpxo0I04piMgWRCYUu3TUJlS17j3rNz7s=; b=y3ElFikfZUSkkLGbo8Rm2tcTQn
-        Jn8xViy8TPgEirODUrwanG+HVm5EJ9E8QxZgDLPxQ2+tH8foKvbPz86jNQGdPPPG20cYaLdcvjkBk
-        C+eISWmNp+GHuQPHBiA05hdj/ybil/AIywmLwR4vArtn//3t6Nb/8ixMqz9ak/U+nbco=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1neJtB-00FUHh-6y; Tue, 12 Apr 2022 19:01:13 +0200
-Date:   Tue, 12 Apr 2022 19:01:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [Patch net-next 1/3] net: phy: LAN937x: added
- PHY_POLL_CABLE_TEST flag
-Message-ID: <YlWwWd3HuT47GIGp@lunn.ch>
-References: <20220412063317.4173-1-arun.ramadoss@microchip.com>
- <20220412063317.4173-2-arun.ramadoss@microchip.com>
+        Tue, 12 Apr 2022 13:04:06 -0400
+Received: from smtp-bc08.mail.infomaniak.ch (smtp-bc08.mail.infomaniak.ch [45.157.188.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3EC606E5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 10:01:46 -0700 (PDT)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KdBpJ6HZ5zMpnmq;
+        Tue, 12 Apr 2022 19:01:44 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KdBpJ1qx0zlhSMv;
+        Tue, 12 Apr 2022 19:01:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1649782904;
+        bh=D4tvm9gd+xzUFoj5yn93Kf1fcGNxfhLoNVwUtiNm+N4=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=vUPtmY2PWXnsJ4TYj6Y7RdZSDDITDLN6j2/m1GJVMdZ2zsDKceJ4Y1S9myjmEaNGT
+         156NoyTctEQ+cTGCMTEnFFa5UEjTZtUetCtqbVDJrIa9Q0RgxKnzR5x2BFyJmbqTPQ
+         zlM+bWZ3SC32rojpmYekoRt2AsLf274IZ68YvZ4E=
+Message-ID: <f5bee21a-6527-d9e2-34a8-a4d930ba85a4@digikod.net>
+Date:   Tue, 12 Apr 2022 19:02:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412063317.4173-2-arun.ramadoss@microchip.com>
+User-Agent: 
+Content-Language: en-US
+To:     Tom Rix <trix@redhat.com>, Miguel Ojeda <ojeda@kernel.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+References: <20220412153906.428179-1-mic@digikod.net>
+ <c94e68e0-b1e7-4fd8-ce76-5647b8309933@redhat.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v1] clang-format: Update and extend the for_each list with
+ tools/
+In-Reply-To: <c94e68e0-b1e7-4fd8-ce76-5647b8309933@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 12:03:15PM +0530, Arun Ramadoss wrote:
-> Added the phy_poll_cable_test flag for the lan937x phy driver.
-> Tested using command -  ethtool --cable-test <dev>
 
-Does this need back porting? Cable test has been in this driver for a
-while. If so, please separate it out, and submit it for net, not
-next-next.
+On 12/04/2022 18:51, Tom Rix wrote:
+> 
+> On 4/12/22 8:39 AM, Mickaël Salaün wrote:
+>> Add tools/ to the shell fragment generating the for_each list and update
+>> it.  This is useful to format files in the tools directory (e.g.
+>> selftests) with the same coding style as the kernel.
+>>
+>> Cc: Miguel Ojeda <ojeda@kernel.org>
+>> Signed-off-by: Mickaël Salaün <mic@digikod.net>
+>> Link: https://lore.kernel.org/r/20220412153906.428179-1-mic@digikod.net
+>> ---
+>>   .clang-format | 177 ++++++++++++++++++++++++++++++++++++++++++--------
+>>   1 file changed, 149 insertions(+), 28 deletions(-)
+>>
+>> diff --git a/.clang-format b/.clang-format
+>> index fa959436bcfd..70d4e7ec4cf9 100644
+>> --- a/.clang-format
+>> +++ b/.clang-format
+>> @@ -65,36 +65,53 @@ ExperimentalAutoDetectBinPacking: false
+>>   #FixNamespaceComments: false # Unknown to clang-format-4.0
+>>   # Taken from:
+>> -#   git grep -h '^#define [^[:space:]]*for_each[^[:space:]]*(' 
+>> include/ \
+>> +#   git grep -h '^#define [^[:space:]]*for_each[^[:space:]]*(' 
+>> include/ tools/ \
+>>   #   | sed "s,^#define \([^[:space:]]*for_each[^[:space:]]*\)(.*$,  - 
+>> '\1'," \
+>>   #   | sort | uniq
+>>   ForEachMacros:
+>> +  - '__ata_qc_for_each'
+>> +  - '__bio_for_each_bvec'
+>> +  - '__bio_for_each_segment'
+>> +  - '__evlist__for_each_entry'
+>> +  - '__evlist__for_each_entry_continue'
+>> +  - '__evlist__for_each_entry_from'
+>> +  - '__evlist__for_each_entry_reverse'
+>> +  - '__evlist__for_each_entry_safe'
+>> +  - '__for_each_mem_range'
+>> +  - '__for_each_mem_range_rev'
+>> +  - '__for_each_thread'
+>> +  - '__hlist_for_each_rcu'
+>> +  - '__map__for_each_symbol_by_name'
+>> +  - '__perf_evlist__for_each_entry'
+>> +  - '__perf_evlist__for_each_entry_reverse'
+>> +  - '__perf_evlist__for_each_entry_safe'
+>> +  - '__rq_for_each_bio'
+>> +  - '__shost_for_each_device'
+>>     - 'apei_estatus_for_each_section'
+>>     - 'ata_for_each_dev'
+>>     - 'ata_for_each_link'
+>> -  - '__ata_qc_for_each'
+> 
+> Several macros were removed.
+> 
+> Is this intentional ?
 
-Fixes: 788050256c41 ("net: phy: microchip_t1: add cable test support for lan87xx phy")
-
-       Andrew
+It is an update for v5.18-rc2 so in includes some other changes. I can 
+send a v2 with only the tools/ update if it ease the update.
