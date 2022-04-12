@@ -2,271 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D947C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C78C0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354383AbiDLMrc (ORCPT
+        id S1355868AbiDLMt0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:47:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34102 "EHLO
+        Tue, 12 Apr 2022 08:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353876AbiDLMrN (ORCPT
+        with ESMTP id S1355156AbiDLMsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 08:47:13 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBFCF7EA1C;
-        Tue, 12 Apr 2022 05:10:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649765456; x=1681301456;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=H3y2PO8iP1I2VKt5VHY/5jS3296P+ova6WPUU37ZDYU=;
-  b=LCwSRPoD9b2KFpawNEJKy3JDmx4uDi81yNqhaHN3Gbi39hIcl12KEzr5
-   kWTSxy4bspvRwhoTa3qMoS+gY9j9AbP1rdzLipno/mdGEa5xtCH+f3jw7
-   4Ej1dsP7Uu5zkkXxHHGJ8qSf5gXHFel2I1yqPfFJdP2race8ZzhrEQubZ
-   6S8JwSso2kwQO/UcJleqqRQ5oLVqFgt6jvNzwYpXyekiwNQrgs4BqfSfY
-   KcLpmO2vW8cCg9O5dLz3kxpWM5vF/RZW1izgkWuyR+FHrhf/9BZL6/Z0v
-   rz7WulDQ6afLkl96B4gqIPq6lze4skEyxvg9aD5Hhf1iTm7PAlvEdMnKg
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="261798001"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="261798001"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 05:10:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="526015878"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by orsmga002.jf.intel.com with ESMTP; 12 Apr 2022 05:10:16 -0700
-Date:   Tue, 12 Apr 2022 20:10:05 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v5 09/13] KVM: Handle page fault for private memory
-Message-ID: <20220412121005.GC7309@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <20220310140911.50924-10-chao.p.peng@linux.intel.com>
- <YkJbxiL/Az7olWlq@google.com>
+        Tue, 12 Apr 2022 08:48:05 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A0E17E20
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:15:09 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id be5so10644267plb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:15:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=m76DlOnMkrs3Z3EokaOUMbfkFeUFvtm1mHdRPM+LTLI=;
+        b=nkdKW4+uIivnulUOM7VrrCeoXgzFDZDIWMHNSu1OpQTkC0IlzT557HJSvgfpkWhnFU
+         7OFAvtCOxam/oPY9Vms/3yyyZRddfc8bsqf1MwesABnSEIeVYUo3BTG6qpUs+wm1x4pY
+         NpEBdSXZc7EpEkh1KlOrDR7X6c9DKgPEmxpB/AQRcuPDh4xdHVsMEIJtraS7XH4NDFtn
+         5Pmk/76+CCDXLLwRr2cJvcw+8D+XhMC1ZKlHE/WpUnBGXfp1LC6RWJxQ9a/tNvY7MO3Z
+         X+c4BkGgRbFTQbJNjvCGfjiml9Sg7Iax4bS0W7fv4hrrFIHsl5MPJUI0xP0u27V7Um0i
+         p5Kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=m76DlOnMkrs3Z3EokaOUMbfkFeUFvtm1mHdRPM+LTLI=;
+        b=ISyCGvd55G/a59qIgpdD5GKc/q75MTOAY6EJLfPV+7Nclrm/q8ZwszOcqQTVUcpYbF
+         +89fGfnAiCoX5l8A9fMRMrnKUOjSmqxeH08T1JzP9ZANjg/9WZEeXIsDQCIrw8LMtW4d
+         iGrIipDn/6rHSSshThJI3c+HHRLgvn0fqmbybjruxes1ydUJd+/oXoasUlPYnna+RwQW
+         +kwqRL/89AkApf60BRnVYHhiSaCXkyi2lnNkMRr2MGhnWahu4wjfk2hzNHCrMlr7jBGR
+         wFlCjWJ20yIdIZg0o9mcNVHCZpFjZ8uT9vFGULnFrpKYODmqL1glvfSZjslF+LHVxPMr
+         9hpg==
+X-Gm-Message-State: AOAM533+YTwMnVeNOsfFz7OpJWnvbI0/ln7szyd1upXesLkFnhjJIFOC
+        UGM9xjZ2mNVU63D+Ta7kNq+N7RpwpUw=
+X-Google-Smtp-Source: ABdhPJxk/xVs2QDTp3erfZ5PqAWWKalL7g7NK4E9pjBykM8olG8Izjrvb/wrMReK8q9SrLhc/jCfPg==
+X-Received: by 2002:a17:90b:383:b0:1cb:b7f1:9c69 with SMTP id ga3-20020a17090b038300b001cbb7f19c69mr4725735pjb.220.1649765709363;
+        Tue, 12 Apr 2022 05:15:09 -0700 (PDT)
+Received: from localhost ([47.251.4.198])
+        by smtp.gmail.com with ESMTPSA id e14-20020a62aa0e000000b00505c05545f8sm7032389pff.108.2022.04.12.05.15.08
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 Apr 2022 05:15:08 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH V5 2/7] x86/entry: Switch the stack after error_entry() returns
+Date:   Tue, 12 Apr 2022 20:15:36 +0800
+Message-Id: <20220412121541.4595-3-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
+In-Reply-To: <20220412121541.4595-1-jiangshanlai@gmail.com>
+References: <20220412121541.4595-1-jiangshanlai@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkJbxiL/Az7olWlq@google.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 01:07:18AM +0000, Sean Christopherson wrote:
-> On Thu, Mar 10, 2022, Chao Peng wrote:
-> > @@ -3890,7 +3893,59 @@ static bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
-> >  				  kvm_vcpu_gfn_to_hva(vcpu, gfn), &arch);
-> >  }
-> >  
-> > -static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault, int *r)
-> > +static bool kvm_vcpu_is_private_gfn(struct kvm_vcpu *vcpu, gfn_t gfn)
-> > +{
-> > +	/*
-> > +	 * At this time private gfn has not been supported yet. Other patch
-> > +	 * that enables it should change this.
-> > +	 */
-> > +	return false;
-> > +}
-> > +
-> > +static bool kvm_faultin_pfn_private(struct kvm_vcpu *vcpu,
-> > +				    struct kvm_page_fault *fault,
-> > +				    bool *is_private_pfn, int *r)
-> 
-> @is_private_pfn should be a field in @fault, not a separate parameter, and it
-> should be a const property set by the original caller.  I would also name it
-> "is_private", because if KVM proceeds past this point, it will be a property of
-> the fault/access _and_ the pfn
-> 
-> I say it's a property of the fault because the below kvm_vcpu_is_private_gfn()
-> should instead be:
-> 
-> 	if (fault->is_private)
-> 
-> The kvm_vcpu_is_private_gfn() check is TDX centric.  For SNP, private vs. shared
-> is communicated via error code.  For software-only (I'm being optimistic ;-) ),
-> we'd probably need to track private vs. shared internally in KVM, I don't think
-> we'd want to force it to be a property of the gfn.
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-Make sense.
+error_entry() calls sync_regs(), and fixup_bad_iret() before sync_regs()
+if it is a fault from bad IRET, to copy the pt_regs to the kernel stack
+and switches the kernel stack directly after sync_regs().
 
-> 
-> Then you can also move the fault->is_private waiver into is_page_fault_stale(),
-> and drop the local is_private_pfn in direct_page_fault().
-> 
-> > +{
-> > +	int order;
-> > +	unsigned int flags = 0;
-> > +	struct kvm_memory_slot *slot = fault->slot;
-> > +	long pfn = kvm_memfile_get_pfn(slot, fault->gfn, &order);
-> 
-> If get_lock_pfn() and thus kvm_memfile_get_pfn() returns a pure error code instead
-> of multiplexing the pfn, then this can be:
-> 
-> 	bool is_private_pfn;
-> 
-> 	is_private_pfn = !!kvm_memfile_get_pfn(slot, fault->gfn, &fault->pfn, &order);
-> 
-> That self-documents the "pfn < 0" == shared logic.
+But error_entry() itself is also a function call, so the code has to
+stash the address error_entry() is going to return to, in %r12 and
+makes the work complicated.
 
-Yes, agreed.
+Move the code of switching stack after error_entry() and get rid of the
+need to handle the return address.
 
-> 
-> > +
-> > +	if (kvm_vcpu_is_private_gfn(vcpu, fault->addr >> PAGE_SHIFT)) {
-> > +		if (pfn < 0)
-> > +			flags |= KVM_MEMORY_EXIT_FLAG_PRIVATE;
-> > +		else {
-> > +			fault->pfn = pfn;
-> > +			if (slot->flags & KVM_MEM_READONLY)
-> > +				fault->map_writable = false;
-> > +			else
-> > +				fault->map_writable = true;
-> > +
-> > +			if (order == 0)
-> > +				fault->max_level = PG_LEVEL_4K;
-> 
-> This doesn't correctly handle order > 0, but less than the next page size, in which
-> case max_level needs to be PG_LEVEL_4k.  It also doesn't handle the case where
-> max_level > PG_LEVEL_2M.
-> 
-> That said, I think the proper fix is to have the get_lock_pfn() API return the max
-> mapping level, not the order.  KVM, and presumably any other secondary MMU that might
-> use these APIs, doesn't care about the order of the struct page, KVM cares about the
-> max size/level of page it can map into the guest.  And similar to the previous patch,
-> "order" is specific to struct page, which we are trying to avoid.
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+---
+ arch/x86/entry/entry_64.S | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-I remembered I suggested return max mapping level instead of order but
-Kirill reminded me that PG_LEVEL_* is x86 specific, then changed back
-to 'order'. It's just a matter of backing store or KVM to convert
-'order' to mapping level.
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index e9d896717ab4..e1efc56fbcd4 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -326,6 +326,8 @@ SYM_CODE_END(ret_from_fork)
+ .macro idtentry_body cfunc has_error_code:req
+ 
+ 	call	error_entry
++	movq	%rax, %rsp			/* switch to the task stack if from userspace */
++	ENCODE_FRAME_POINTER
+ 	UNWIND_HINT_REGS
+ 
+ 	movq	%rsp, %rdi			/* pt_regs pointer into 1st argument*/
+@@ -999,14 +1001,10 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	/* We have user CR3.  Change to kernel CR3. */
+ 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
+ 
++	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
+ .Lerror_entry_from_usermode_after_swapgs:
+ 	/* Put us onto the real thread stack. */
+-	popq	%r12				/* save return addr in %12 */
+-	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
+ 	call	sync_regs
+-	movq	%rax, %rsp			/* switch stack */
+-	ENCODE_FRAME_POINTER
+-	pushq	%r12
+ 	RET
+ 
+ 	/*
+@@ -1038,6 +1036,7 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	 */
+ .Lerror_entry_done_lfence:
+ 	FENCE_SWAPGS_KERNEL_ENTRY
++	leaq	8(%rsp), %rax			/* return pt_regs pointer */
+ 	RET
+ 
+ .Lbstep_iret:
+@@ -1058,12 +1057,9 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	 * Pretend that the exception came from user mode: set up pt_regs
+ 	 * as if we faulted immediately after IRET.
+ 	 */
+-	popq	%r12				/* save return addr in %12 */
+-	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
++	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
+ 	call	fixup_bad_iret
+-	mov	%rax, %rsp
+-	ENCODE_FRAME_POINTER
+-	pushq	%r12
++	mov	%rax, %rdi
+ 	jmp	.Lerror_entry_from_usermode_after_swapgs
+ SYM_CODE_END(error_entry)
+ 
+-- 
+2.19.1.6.gb485710b
 
-> 
-> > +			*is_private_pfn = true;
-> 
-> This is where KVM guarantees that is_private_pfn == fault->is_private.
-> 
-> > +			*r = RET_PF_FIXED;
-> > +			return true;
-> 
-> Ewww.  This is super confusing.  Ditto for the "*r = -1" magic number.  I totally
-> understand why you took this approach, it's just hard to follow because it kinda
-> follows the kvm_faultin_pfn() semantics, but then inverts true and false in this
-> one case.
-> 
-> I think the least awful option is to forego the helper and open code everything.
-> If we ever refactor kvm_faultin_pfn() to be less weird then we can maybe move this
-> to a helper.
-> 
-> Open coding isn't too bad if you reorganize things so that the exit-to-userspace
-> path is a dedicated, early check.  IMO, it's a lot easier to read this way, open
-> coded or not.
-
-Yes the existing way of handling this is really awful, including the handling for 'r'
-that will be finally return to KVM_RUN as part of the uAPI. Let me try your above
-suggestion.
-
-> 
-> I think this is correct?  "is_private_pfn" and "level" are locals, everything else
-> is in @fault.
-> 
-> 	if (kvm_slot_is_private(slot)) {
-> 		is_private_pfn = !!kvm_memfile_get_pfn(slot, fault->gfn,
-> 						       &fault->pfn, &level);
-> 
-> 		if (fault->is_private != is_private_pfn) {
-> 			if (is_private_pfn)
-> 				kvm_memfile_put_pfn(slot, fault->pfn);
-> 
-> 			vcpu->run->exit_reason = KVM_EXIT_MEMORY_ERROR;
-> 			if (fault->is_private)
-> 				vcpu->run->memory.flags = KVM_MEMORY_EXIT_FLAG_PRIVATE;
-> 			else
-> 				vcpu->run->memory.flags = 0;
-> 			vcpu->run->memory.padding = 0;
-> 			vcpu->run->memory.gpa = fault->gfn << PAGE_SHIFT;
-> 			vcpu->run->memory.size = PAGE_SIZE;
-> 			*r = 0;
-> 			return true;
-> 		}
-> 
-> 		/*
-> 		 * fault->pfn is all set if the fault is for a private pfn, just
-> 		 * need to update other metadata.
-> 		 */
-> 		if (fault->is_private) {
-> 			fault->max_level = min(fault->max_level, level);
-> 			fault->map_writable = !(slot->flags & KVM_MEM_READONLY);
-> 			return false;
-> 		}
-> 
-> 		/* Fault is shared, fallthrough to the standard path. */
-> 	}
-> 
-> 	async = false;
-> 
-> > @@ -4016,7 +4076,7 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
-> >  	else
-> >  		write_lock(&vcpu->kvm->mmu_lock);
-> >  
-> > -	if (is_page_fault_stale(vcpu, fault, mmu_seq))
-> > +	if (!is_private_pfn && is_page_fault_stale(vcpu, fault, mmu_seq))
-> 
-> As above, I'd prefer this check go in is_page_fault_stale().  It means shadow MMUs
-> will suffer a pointless check, but I don't think that's a big issue.  Oooh, unless
-> we support software-only, which would play nice with nested and probably even legacy
-> shadow paging.  Fun :-)
-
-Sounds good.
-
-> 
-> >  		goto out_unlock;
-> >  
-> >  	r = make_mmu_pages_available(vcpu);
-> > @@ -4033,7 +4093,12 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
-> >  		read_unlock(&vcpu->kvm->mmu_lock);
-> >  	else
-> >  		write_unlock(&vcpu->kvm->mmu_lock);
-> > -	kvm_release_pfn_clean(fault->pfn);
-> > +
-> > +	if (is_private_pfn)
-> 
-> And this can be
-> 
-> 	if (fault->is_private)
-> 
-> Same feedback for paging_tmpl.h.
-
-Agreed.
-
-Thanks,
-Chao
