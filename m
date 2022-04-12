@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D439C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFC1C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352247AbiDLHFB (ORCPT
+        id S1352210AbiDLHE6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:05:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48954 "EHLO
+        Tue, 12 Apr 2022 03:04:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351592AbiDLGyC (ORCPT
+        with ESMTP id S1351559AbiDLGx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:54:02 -0400
+        Tue, 12 Apr 2022 02:53:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3742937AA5;
-        Mon, 11 Apr 2022 23:43:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78486186F2;
+        Mon, 11 Apr 2022 23:42:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 013CCB81B29;
-        Tue, 12 Apr 2022 06:43:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A370C385B9;
-        Tue, 12 Apr 2022 06:43:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D07FB818BD;
+        Tue, 12 Apr 2022 06:42:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 979E7C385A6;
+        Tue, 12 Apr 2022 06:42:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745796;
-        bh=KyppwBAxf1ZILb2cK4QcPAex7NnhClg9RsYTWWUiftI=;
+        s=korg; t=1649745769;
+        bh=MULgWNzYKIeZ6LHFtLTCYQ836O4d8ZKzFDBUaakDnv4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jwgQyhhq0I8EciK2M9L4PiBrFHsQTJ7cL8yr/KFfeBgvOLiUl+jD5/1Z52xhySbbc
-         aA8okF/TfZWeolBkWx2IqJ/PEOjpa7bSu60jCL2ab2e6Gqx+E2EnQfYRdzkhCLGuE6
-         AYE1gEafxrSpDHfURqKjQv6z/wXiHUteFDqWXRkE=
+        b=pPzHXGUxxBfTLBMKoiC8aJYcMfGNdP43UONn0//suExuHtf6teWzqRAQ1hikkrzDM
+         jem4pSjxBA9NDkKbaSvRns+dj/CdTmWRpCSPrHeR6SS5swu9WsZnacZLLfvGoA6I95
+         Mt6aINWO+D8c/1bTPBsNfJrTXU8m/5cjbqi2uFK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Neal Liu <neal_liu@aspeedtech.com>,
+        stable@vger.kernel.org, Avraham Stern <avraham.stern@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 049/277] usb: ehci: add pci device support for Aspeed platforms
-Date:   Tue, 12 Apr 2022 08:27:32 +0200
-Message-Id: <20220412062943.470818844@linuxfoundation.org>
+Subject: [PATCH 5.15 040/277] cfg80211: dont add non transmitted BSS to 6GHz scanned channels
+Date:   Tue, 12 Apr 2022 08:27:23 +0200
+Message-Id: <20220412062943.209285627@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,50 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neal Liu <neal_liu@aspeedtech.com>
+From: Avraham Stern <avraham.stern@intel.com>
 
-[ Upstream commit c3c9cee592828528fd228b01d312c7526c584a42 ]
+[ Upstream commit 5666ee154f4696c011dfa8544aaf5591b6b87515 ]
 
-Enable Aspeed quirks in commit 7f2d73788d90 ("usb: ehci:
-handshake CMD_RUN instead of STS_HALT") to support Aspeed
-ehci-pci device.
+When adding 6GHz channels to scan request based on reported
+co-located APs, don't add channels that have only APs with
+"non-transmitted" BSSes if they only match the wildcard SSID since
+they will be found by probing the "transmitted" BSS.
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Link: https://lore.kernel.org/r/20220208101657.76459-1-neal_liu@aspeedtech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Avraham Stern <avraham.stern@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20220202104617.f6ddf099f934.I231e55885d3644f292d00dfe0f42653269f2559e@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ehci-pci.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/wireless/scan.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/host/ehci-pci.c b/drivers/usb/host/ehci-pci.c
-index e87cf3a00fa4..638f03b89739 100644
---- a/drivers/usb/host/ehci-pci.c
-+++ b/drivers/usb/host/ehci-pci.c
-@@ -21,6 +21,9 @@ static const char hcd_name[] = "ehci-pci";
- /* defined here to avoid adding to pci_ids.h for single instance use */
- #define PCI_DEVICE_ID_INTEL_CE4100_USB	0x2e70
+diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+index adc0d14cfd86..8e1e578d64bc 100644
+--- a/net/wireless/scan.c
++++ b/net/wireless/scan.c
+@@ -702,8 +702,12 @@ static bool cfg80211_find_ssid_match(struct cfg80211_colocated_ap *ap,
  
-+#define PCI_VENDOR_ID_ASPEED		0x1a03
-+#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
+ 	for (i = 0; i < request->n_ssids; i++) {
+ 		/* wildcard ssid in the scan request */
+-		if (!request->ssids[i].ssid_len)
++		if (!request->ssids[i].ssid_len) {
++			if (ap->multi_bss && !ap->transmitted_bssid)
++				continue;
 +
- /*-------------------------------------------------------------------------*/
- #define PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC		0x0939
- static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
-@@ -222,6 +225,12 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
- 			ehci->has_synopsys_hc_bug = 1;
- 		}
- 		break;
-+	case PCI_VENDOR_ID_ASPEED:
-+		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
-+			ehci_info(ehci, "applying Aspeed HC workaround\n");
-+			ehci->is_aspeed = 1;
+ 			return true;
 +		}
-+		break;
- 	}
  
- 	/* optional debug port, normally in the first BAR */
+ 		if (ap->ssid_len &&
+ 		    ap->ssid_len == request->ssids[i].ssid_len) {
+@@ -829,6 +833,9 @@ static int cfg80211_scan_6ghz(struct cfg80211_registered_device *rdev)
+ 		    !cfg80211_find_ssid_match(ap, request))
+ 			continue;
+ 
++		if (!request->n_ssids && ap->multi_bss && !ap->transmitted_bssid)
++			continue;
++
+ 		cfg80211_scan_req_add_chan(request, chan, true);
+ 		memcpy(scan_6ghz_params->bssid, ap->bssid, ETH_ALEN);
+ 		scan_6ghz_params->short_ssid = ap->short_ssid;
 -- 
 2.35.1
 
