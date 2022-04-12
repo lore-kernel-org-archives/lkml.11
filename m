@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A821C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D68BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 06:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239119AbiDLGkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 02:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51754 "EHLO
+        id S234566AbiDLGkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 02:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350274AbiDLGhw (ORCPT
+        with ESMTP id S1350373AbiDLGh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 02:37:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9CD13F9B;
-        Mon, 11 Apr 2022 23:34:27 -0700 (PDT)
+        Tue, 12 Apr 2022 02:37:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D637E16582;
+        Mon, 11 Apr 2022 23:34:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97D6AB81B43;
-        Tue, 12 Apr 2022 06:34:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8299C385A1;
-        Tue, 12 Apr 2022 06:34:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31EBE618E8;
+        Tue, 12 Apr 2022 06:34:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EBE3C385A8;
+        Tue, 12 Apr 2022 06:34:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649745265;
-        bh=0Xvo/FYcifaVUfTs3/xwXHOJ7VYRQ1FCx50940HjPqc=;
+        s=korg; t=1649745276;
+        bh=rzzAmT6fQbiP8oxPG7hBpZ1S7wtXC1T9IgCKxkkMd80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sst5qVTl7aw/ph+DlTd3GG3IfrRUhX0ahBqRbZ1O3RokDFqZPxMlRCgzIL5oIC4rj
-         OFCgQLzkaKKBtlYHLbI5monpAaAjdpQyOjJpxQAjfSSH6rE7hDI9cj1a7qVXcrRqBi
-         J4pX7CfpWQKq43CLxn+Npe11xXA2jcy2BFhtwrdw=
+        b=Uz9Vhki2z4/j+k9numtRdBsAkB7j5yTyg4IsRRL1x/iO77deoGMPJ70gfMbfPa9m7
+         A3MJ1ta/x9C1qQkhcpP4vmoiIRg0X2E9Y2C0WnAkP8UQj/LQI4PKInCZrZJLqpRbUZ
+         Uj59GMJ8LTHS4V8nfnWW11jHGK8H4Rx++eKuObpk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jordy Zomer <jordy@pwning.systems>,
-        Mike Snitzer <snitzer@redhat.com>,
+        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 037/171] dm ioctl: prevent potential spectre v1 gadget
-Date:   Tue, 12 Apr 2022 08:28:48 +0200
-Message-Id: <20220412062928.961467864@linuxfoundation.org>
+Subject: [PATCH 5.10 041/171] scsi: pm8001: Fix pm8001_mpi_task_abort_resp()
+Date:   Tue, 12 Apr 2022 08:28:52 +0200
+Message-Id: <20220412062929.075043030@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062927.870347203@linuxfoundation.org>
 References: <20220412062927.870347203@linuxfoundation.org>
@@ -49,41 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jordy Zomer <jordy@jordyzomer.github.io>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit cd9c88da171a62c4b0f1c70e50c75845969fbc18 ]
+[ Upstream commit 7e6b7e740addcea450041b5be8e42f0a4ceece0f ]
 
-It appears like cmd could be a Spectre v1 gadget as it's supplied by a
-user and used as an array index. Prevent the contents of kernel memory
-from being leaked to userspace via speculative execution by using
-array_index_nospec.
+The call to pm8001_ccb_task_free() at the end of
+pm8001_mpi_task_abort_resp() already frees the ccb tag. So when the device
+NCQ_ABORT_ALL_FLAG is set, the tag should not be freed again.  Also change
+the hardcoded 0xBFFFFFFF value to ~NCQ_ABORT_ALL_FLAG as it ought to be.
 
-Signed-off-by: Jordy Zomer <jordy@pwning.systems>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Link: https://lore.kernel.org/r/20220220031810.738362-19-damien.lemoal@opensource.wdc.com
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/dm-ioctl.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/scsi/pm8001/pm8001_hwi.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
-index 1ca65b434f1f..b839705654d4 100644
---- a/drivers/md/dm-ioctl.c
-+++ b/drivers/md/dm-ioctl.c
-@@ -17,6 +17,7 @@
- #include <linux/dm-ioctl.h>
- #include <linux/hdreg.h>
- #include <linux/compat.h>
-+#include <linux/nospec.h>
+diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
+index cd0e1d31db70..e0803ce2957b 100644
+--- a/drivers/scsi/pm8001/pm8001_hwi.c
++++ b/drivers/scsi/pm8001/pm8001_hwi.c
+@@ -3669,12 +3669,11 @@ int pm8001_mpi_task_abort_resp(struct pm8001_hba_info *pm8001_ha, void *piomb)
+ 	mb();
  
- #include <linux/uaccess.h>
+ 	if (pm8001_dev->id & NCQ_ABORT_ALL_FLAG) {
+-		pm8001_tag_free(pm8001_ha, tag);
+ 		sas_free_task(t);
+-		/* clear the flag */
+-		pm8001_dev->id &= 0xBFFFFFFF;
+-	} else
++		pm8001_dev->id &= ~NCQ_ABORT_ALL_FLAG;
++	} else {
+ 		t->task_done(t);
++	}
  
-@@ -1696,6 +1697,7 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
- 	if (unlikely(cmd >= ARRAY_SIZE(_ioctls)))
- 		return NULL;
- 
-+	cmd = array_index_nospec(cmd, ARRAY_SIZE(_ioctls));
- 	*ioctl_flags = _ioctls[cmd].flags;
- 	return _ioctls[cmd].fn;
+ 	return 0;
  }
 -- 
 2.35.1
