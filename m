@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F5CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 12:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245543AbiDLMEz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:04:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39860 "EHLO
+        id S244135AbiDLME7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 08:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351251AbiDLMCg (ORCPT
+        with ESMTP id S1351243AbiDLMCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 08:02:36 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2BF765A6;
-        Tue, 12 Apr 2022 03:58:55 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id ks6so11907419ejb.1;
-        Tue, 12 Apr 2022 03:58:55 -0700 (PDT)
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D20C76595;
+        Tue, 12 Apr 2022 03:58:53 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id bg10so36566167ejb.4;
+        Tue, 12 Apr 2022 03:58:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FowTEmVpm1uPIFJNe+klnaydiP7lfevazg4UCPLydfM=;
-        b=K7tdn/q/E1KWRJsGRBNoo8W3aoSvNQK66Im4Nk/Szs4rsCwKSPSUMqsmadZAf36Vn1
-         PmqO1YfKAILsMrn38IZBTNi12ZTE0WJZRwUUBIIPPLp6IT91kIWFiH8YkyP6f7F8qPTh
-         uuw53VEL/i5KKVXcqIS8kirS//a8IJR0TE/SBcdtyrAgvCyL7PHKDMTaMTZxmKxw5yUh
-         ILCaV4J0hAyoFLPQwxGs6FdHYv2ATMwW6OEnuCFejmAoRxf0/hr5de0M3a3YSxCCE8F3
-         3jBq7O4JK6sk970XlEkRdHOmf7sqnOSMlWNAgkBbJhXYyJLZ4zShhuo5KqihsxnSQHs4
-         LF4g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+eJGktqK5V7HDq2U3VQXwapNjHNoENEgBXt1QNATELQ=;
+        b=ZoFzb3tloXo+McRmkV6Gjg4GWW6lT27yGVpQhLtkyv6VtKJAkz3EOXC4aqUvcXQxTA
+         fZk3vQyLWDrVKZghgFc8vooDWaYuBRlPXfhKU+uU/xhrw6hd7uU4BFjbWhlzkFjAmGPZ
+         AIZAfM2nYSXw9Ziw9eywORZ+2hSZYIx9hW/8V3WAYu6elqDnzP3N5e2LzkpnKJ43TMAg
+         iLr3BrXHMV+92mMcEL6FrJKEr+fP3v1xYy4dAD5BLkMFLvOjt24AkA2BpkvT1SFiy4I5
+         OnZ9KtzFh9kv4tfn0kHZtUOosQl6A6yWQT8ZQdfvLARlvhWkUPNuOfcm+A8pYz1USsFA
+         K9dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FowTEmVpm1uPIFJNe+klnaydiP7lfevazg4UCPLydfM=;
-        b=lSVDvyqIKgDHyWONgIV1RoYTHu35Iwe/RpKSteE+fIkYohtaQhqsowCxO/d3PxYavg
-         7Ts9j2fwjp8wBSTTwrP2Pv4nL6unaf6zuUesmwaWHWI3ZfDxHCmLp0UmmtjWAjIMzyi2
-         pPNDgjd1rlPH0m4V+SFsRP3tANS80mJ7qGVk7N8SHyVX3ONc4xk76BlXZtBBBEwbvSmw
-         shyTkxDOZYQ42bJwPfmCvNq+vIzxsFuOi/UJ6QcGCvSz4g+tuJdbc/liPSkfA+FHfYC1
-         z6pC5Yf9AcGwNC9KY67RtHR/vHqzb3Tfgl0CvW15SMx/tr+Mtaz74ClVZhEzIA/B6Q+A
-         ZvjQ==
-X-Gm-Message-State: AOAM532VMSmRkTWZdd+h5uYbElfiIiJJGTwPbRXWjgqYdcCmGuiPeEA+
-        HHJD3G/im6ndUdUJj0n6y84=
-X-Google-Smtp-Source: ABdhPJxeVh1mBXlBFPbmPYNjA6S+0AQ4F7u+x+GbgHabraLPigOwM3eS3FHJaM0cQytVS2bSqurDvw==
-X-Received: by 2002:a17:906:a005:b0:6e8:947b:7530 with SMTP id p5-20020a170906a00500b006e8947b7530mr8124695ejy.320.1649761134236;
-        Tue, 12 Apr 2022 03:58:54 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+eJGktqK5V7HDq2U3VQXwapNjHNoENEgBXt1QNATELQ=;
+        b=HMopq+KcYuG1ZW1IisA9oALTsc3/VcHlfzlq+0hZeFOCYfuO379WjlwsUemsE63Cos
+         MTYUNOVx6byXWjOz/Tge4TvBuY95G8b0191x5eTq5lylheH/JT9OS73rRVc6O2I03JBQ
+         e1tFfmHi/XW8qkRgRTw+9y0Y8bi5rqRX+61MslrPmK9NuescZjISUKDQZP/s59vBtHAi
+         EjpOS2Dx8yUAhVoEV5CHWBVUmucAgHNiqXBFV7x8ewCfTmdDWi54Ymm6FYRp74aoQAQU
+         W0Jb+Sipvorb7hzQx8ZKOravOUBmx6s5/WLYbd+kzJhZMe27TS+eD/CFCZkQCwFtvM9d
+         B7WQ==
+X-Gm-Message-State: AOAM530T+L/eNdT5RVPQjLsa+io+2t9EbIi9HZIln5YyLnfZJe81tHbj
+        ykjOm9UwoJoZv0q1n25i72HOd05fRggIlQ==
+X-Google-Smtp-Source: ABdhPJxep0FXI5E4VuHszT83H2dajpT8we3g05o3csYxYlKrvvyOU9hf7TeqHG/soEwhIlAY6GoNJQ==
+X-Received: by 2002:a17:906:1603:b0:6ce:362:c938 with SMTP id m3-20020a170906160300b006ce0362c938mr34467412ejd.253.1649761131410;
+        Tue, 12 Apr 2022 03:58:51 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.58.52
+        by smtp.googlemail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm16986370edz.35.2022.04.12.03.58.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 03:58:53 -0700 (PDT)
+        Tue, 12 Apr 2022 03:58:50 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -85,120 +85,114 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         Mike Rapoport <rppt@kernel.org>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v2 02/18] net: dsa: sja1105: remove use of iterator after list_for_each_entry() loop
-Date:   Tue, 12 Apr 2022 12:58:14 +0200
-Message-Id: <20220412105830.3495846-3-jakobkoschel@gmail.com>
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: [PATCH net-next v2 00/18] Remove use of list iterator after loop body
+Date:   Tue, 12 Apr 2022 12:58:12 +0200
+Message-Id: <20220412105830.3495846-1-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412105830.3495846-1-jakobkoschel@gmail.com>
-References: <20220412105830.3495846-1-jakobkoschel@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The link below explains that there is a desire to syntactically change
-list_for_each_entry() and list_for_each() such that it becomes
-impossible to use the iterator variable outside the scope of the loop.
+When the list iterator loop does not exit early the list iterator variable
+contains a type-confused pointer to a 'bogus' list element computed based
+on the head [1].
 
-Although sja1105_insert_gate_entry() makes legitimate use of the
-iterator pointer when it breaks out, the pattern it uses may become
-illegal, so it needs to change.
+Often a 'found' variable is used to ensure the list iterator
+variable is only accessed after the loop body if the loop did exit early
+(using a break or goto).
 
-It is deemed acceptable to use a copy of the loop iterator, and
-sja1105_insert_gate_entry() only needs to know the list_head element
-before which the list insertion should be made. So let's profit from the
-occasion and refactor the list iteration to a dedicated function.
+In other cases that list iterator variable is used in
+combination to access the list member which reverses the invocation of
+container_of() and brings back a "safe" pointer to the head of the list.
 
-An additional benefit is given by the fact that with the helper function
-in place, we no longer need to special-case the empty list, since it is
-equivalent to not having found any gating entry larger than the
-specified interval in the list. We just need to insert at the tail of
-that list (list_add vs list_add_tail on an empty list does the same
-thing).
+Since, due to this code patten, there were quite a few bugs discovered [2],
+Linus concluded that the rule should be to never use the list iterator
+after the loop and introduce a dedicated pointer for that [3].
 
-Link: https://patchwork.kernel.org/project/netdevbpf/patch/20220407102900.3086255-3-jakobkoschel@gmail.com/#24810127
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/sja1105/sja1105_vl.c | 46 ++++++++++++++++++----------
- 1 file changed, 29 insertions(+), 17 deletions(-)
+With the new gnu11 standard, it will now be possible to limit the scope
+of the list iterator variable to the traversal loop itself by defining
+the variable within the for loop.
+This, however, requires to remove all uses of the list iterator after
+the loop.
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c b/drivers/net/dsa/sja1105/sja1105_vl.c
-index b7e95d60a6e4..369be2ac3587 100644
---- a/drivers/net/dsa/sja1105/sja1105_vl.c
-+++ b/drivers/net/dsa/sja1105/sja1105_vl.c
-@@ -7,6 +7,27 @@
- 
- #define SJA1105_SIZE_VL_STATUS			8
- 
-+static struct list_head *
-+sja1105_first_entry_longer_than(struct list_head *entries,
-+				s64 interval,
-+				struct netlink_ext_ack *extack)
-+{
-+	struct sja1105_gate_entry *p;
-+
-+	list_for_each_entry(p, entries, list) {
-+		if (p->interval == interval) {
-+			NL_SET_ERR_MSG_MOD(extack, "Gate conflict");
-+			return ERR_PTR(-EBUSY);
-+		}
-+
-+		if (interval < p->interval)
-+			return &p->list;
-+	}
-+
-+	/* Empty list, or specified interval is largest within the list */
-+	return entries;
-+}
-+
- /* Insert into the global gate list, sorted by gate action time. */
- static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
- 				     struct sja1105_rule *rule,
-@@ -14,6 +35,7 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
- 				     struct netlink_ext_ack *extack)
- {
- 	struct sja1105_gate_entry *e;
-+	struct list_head *pos;
- 	int rc;
- 
- 	e = kzalloc(sizeof(*e), GFP_KERNEL);
-@@ -24,25 +46,15 @@ static int sja1105_insert_gate_entry(struct sja1105_gating_config *gating_cfg,
- 	e->gate_state = gate_state;
- 	e->interval = entry_time;
- 
--	if (list_empty(&gating_cfg->entries)) {
--		list_add(&e->list, &gating_cfg->entries);
--	} else {
--		struct sja1105_gate_entry *p;
--
--		list_for_each_entry(p, &gating_cfg->entries, list) {
--			if (p->interval == e->interval) {
--				NL_SET_ERR_MSG_MOD(extack,
--						   "Gate conflict");
--				rc = -EBUSY;
--				goto err;
--			}
--
--			if (e->interval < p->interval)
--				break;
--		}
--		list_add(&e->list, p->list.prev);
-+	pos = sja1105_first_entry_longer_than(&gating_cfg->entries,
-+					      e->interval, extack);
-+	if (IS_ERR(pos)) {
-+		rc = PTR_ERR(pos);
-+		goto err;
- 	}
- 
-+	list_add(&e->list, pos->prev);
-+
- 	gating_cfg->num_entries++;
- 
- 	return 0;
--- 
+Based on input from Paolo Abeni [4], Vinicius Costa Gomes [5], and
+Jakub Kicinski [6], I've splitted all the net-next related changes into
+two patch sets, where this is part 1.
+
+v1->v2:
+- Fixed commit message for PATCH 14/18 and used dedicated variable
+  pointing to the position (Edward Cree)
+- Removed redundant check in mv88e6xxx_port_vlan() (Vladimir Oltean)
+- Refactor mv88e6xxx_port_vlan() using separate list iterator functions
+  (Vladimir Oltean)
+- Refactor sja1105_insert_gate_entry() to use separate list iterator
+  functions (Vladimir Oltean)
+- Allow early return in sja1105_insert_gate_entry() if
+  sja1105_first_entry_longer_than() didn't find any element
+  (Vladimir Oltean)
+- Use list_add_tail() instead of list_add() in sja1105_insert_gate_entry()
+  (Jakub Kicinski)
+- net: netcp: also use separate 'pos' variable instead of duplicating list_add()
+
+Link: https://lwn.net/Articles/887097/ [1]
+Link: https://lore.kernel.org/linux-kernel/20220217184829.1991035-4-jakobkoschel@gmail.com/ [2]
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [3]
+Link: https://lore.kernel.org/linux-kernel/7393b673c626fd75f2b4f8509faa5459254fb87c.camel@redhat.com/ [4]
+Link: https://lore.kernel.org/linux-kernel/877d8a3sww.fsf@intel.com/ [5]
+Link: https://lore.kernel.org/linux-kernel/20220403205502.1b34415d@kernel.org/ [6]
+
+Jakob Koschel (18):
+  connector: Replace usage of found with dedicated list iterator
+    variable
+  net: dsa: sja1105: remove use of iterator after list_for_each_entry()
+    loop
+  net: dsa: sja1105: reorder sja1105_first_entry_longer_than with memory
+    allocation
+  net: dsa: sja1105: use list_add_tail(pos) instead of
+    list_add(pos->prev)
+  net: dsa: mv88e6xxx: remove redundant check in mv88e6xxx_port_vlan()
+  net: dsa: mv88e6xxx: refactor mv88e6xxx_port_vlan()
+  net: dsa: Replace usage of found with dedicated list iterator variable
+  net: sparx5: Replace usage of found with dedicated list iterator
+    variable
+  qed: Use dedicated list iterator variable
+  qed: Replace usage of found with dedicated list iterator variable
+  qed: Remove usage of list iterator variable after the loop
+  net: qede: Replace usage of found with dedicated list iterator
+    variable
+  net: qede: Remove check of list iterator against head past the loop
+    body
+  sfc: Remove usage of list iterator for list_add() after the loop body
+  net: netcp: Remove usage of list iterator for list_add() after loop
+    body
+  ps3_gelic: Replace usage of found with dedicated list iterator
+    variable
+  ipvlan: Remove usage of list iterator variable for the loop body
+  team: Remove use of list iterator variable for
+    list_for_each_entry_from()
+
+ drivers/connector/cn_queue.c                  | 13 ++---
+ drivers/net/dsa/mv88e6xxx/chip.c              | 57 ++++++++++---------
+ drivers/net/dsa/sja1105/sja1105_vl.c          | 51 +++++++++--------
+ .../microchip/sparx5/sparx5_mactable.c        | 25 ++++----
+ drivers/net/ethernet/qlogic/qed/qed_dev.c     | 11 ++--
+ drivers/net/ethernet/qlogic/qed/qed_iwarp.c   | 26 ++++-----
+ drivers/net/ethernet/qlogic/qed/qed_spq.c     |  6 +-
+ .../net/ethernet/qlogic/qede/qede_filter.c    | 11 ++--
+ drivers/net/ethernet/qlogic/qede/qede_rdma.c  | 11 ++--
+ drivers/net/ethernet/sfc/rx_common.c          |  8 ++-
+ drivers/net/ethernet/ti/netcp_core.c          | 14 +++--
+ .../net/ethernet/toshiba/ps3_gelic_wireless.c | 30 +++++-----
+ drivers/net/ipvlan/ipvlan_main.c              |  7 ++-
+ drivers/net/team/team.c                       | 20 ++++---
+ net/dsa/dsa.c                                 | 11 ++--
+ 15 files changed, 163 insertions(+), 138 deletions(-)
+
+
+base-commit: 3e732ebf7316ac83e8562db7e64cc68aec390a18
+--
 2.25.1
 
