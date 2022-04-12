@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E57C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E866CC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380023AbiDLIVO (ORCPT
+        id S1380093AbiDLIVT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
+        Tue, 12 Apr 2022 04:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354064AbiDLH0C (ORCPT
+        with ESMTP id S1353960AbiDLHZ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D35D17A9F;
-        Tue, 12 Apr 2022 00:05:30 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968E312AE3;
+        Tue, 12 Apr 2022 00:05:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50EB3B81A8F;
-        Tue, 12 Apr 2022 07:05:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B18ADC385A6;
-        Tue, 12 Apr 2022 07:05:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 489A2B81B4E;
+        Tue, 12 Apr 2022 07:05:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2BD0C385A6;
+        Tue, 12 Apr 2022 07:05:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747128;
-        bh=McsC9ZufxaUuzydXB9cDgdwI6fwZUeI+va5tpXteTiA=;
+        s=korg; t=1649747114;
+        bh=FBesncHoP0Ov3S83wnwhUVjLgMn3giE2KDvtaHZAkXc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KMavsTZW0iom5ZjIrKNSaI19zZ7PZ9fre7+zCeXnl9thxqjJ6/IskZ0E0gthxdotW
-         Y6b3uFi2SImAtr23PQvqwBjTk+XunwHzHKBymN53xnDJUewG97SynyDmAq9UolFsMS
-         mRRN8XwYJJz5ot8ToVPvNdgAkXwMihx1pXzE8svk=
+        b=v0PHlsK5yZJdJNbumCurIr8+3gBEFWImVh5VJ0rj38uT7rjStRT6CtmWlxsVlktza
+         OlNpZG5zbV1AEQIwZ3n9pCBDZVZzccWV/wjeL3uAZ1C5FWKGKphwbXDCFHP4l87Y6W
+         nrxqc8MJwGF6QoD8RM3haH+8lxzLErmEKhBFoE54=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 254/285] drm/amdgpu/smu10: fix SoC/fclk units in auto mode
-Date:   Tue, 12 Apr 2022 08:31:51 +0200
-Message-Id: <20220412062950.991069461@linuxfoundation.org>
+        stable@vger.kernel.org, Drew Fustini <dfustini@baylibre.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Suman Anna <s-anna@ti.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Tony Lindgren <tony@atomide.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 208/285] iommu/omap: Fix regression in probe for NULL pointer dereference
+Date:   Tue, 12 Apr 2022 08:31:05 +0200
+Message-Id: <20220412062949.662554328@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -49,54 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Tony Lindgren <tony@atomide.com>
 
-commit 2f25d8ce09b7ba5d769c132ba3d4eb84a941d2cb upstream.
+[ Upstream commit 71ff461c3f41f6465434b9e980c01782763e7ad8 ]
 
-SMU takes clock limits in Mhz units.  socclk and fclk were
-using 10 khz units in some cases.  Switch to Mhz units.
-Fixes higher than required SoC clocks.
+Commit 3f6634d997db ("iommu: Use right way to retrieve iommu_ops") started
+triggering a NULL pointer dereference for some omap variants:
 
-Fixes: 97cf32996c46d9 ("drm/amd/pm: Removed fixed clock in auto mode DPM")
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+__iommu_probe_device from probe_iommu_group+0x2c/0x38
+probe_iommu_group from bus_for_each_dev+0x74/0xbc
+bus_for_each_dev from bus_iommu_probe+0x34/0x2e8
+bus_iommu_probe from bus_set_iommu+0x80/0xc8
+bus_set_iommu from omap_iommu_init+0x88/0xcc
+omap_iommu_init from do_one_initcall+0x44/0x24
+
+This is caused by omap iommu probe returning 0 instead of ERR_PTR(-ENODEV)
+as noted by Jason Gunthorpe <jgg@ziepe.ca>.
+
+Looks like the regression already happened with an earlier commit
+6785eb9105e3 ("iommu/omap: Convert to probe/release_device() call-backs")
+that changed the function return type and missed converting one place.
+
+Cc: Drew Fustini <dfustini@baylibre.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Suman Anna <s-anna@ti.com>
+Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+Fixes: 6785eb9105e3 ("iommu/omap: Convert to probe/release_device() call-backs")
+Fixes: 3f6634d997db ("iommu: Use right way to retrieve iommu_ops")
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Tested-by: Drew Fustini <dfustini@baylibre.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Link: https://lore.kernel.org/r/20220331062301.24269-1-tony@atomide.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iommu/omap-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c
-+++ b/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu10_hwmgr.c
-@@ -773,13 +773,13 @@ static int smu10_dpm_force_dpm_level(str
- 		smum_send_msg_to_smc_with_parameter(hwmgr,
- 						PPSMC_MSG_SetHardMinFclkByFreq,
- 						hwmgr->display_config->num_display > 3 ?
--						data->clock_vol_info.vdd_dep_on_fclk->entries[0].clk :
-+						(data->clock_vol_info.vdd_dep_on_fclk->entries[0].clk / 100) :
- 						min_mclk,
- 						NULL);
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 91749654fd49..be60f6f3a265 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1661,7 +1661,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+ 	num_iommus = of_property_count_elems_of_size(dev->of_node, "iommus",
+ 						     sizeof(phandle));
+ 	if (num_iommus < 0)
+-		return 0;
++		return ERR_PTR(-ENODEV);
  
- 		smum_send_msg_to_smc_with_parameter(hwmgr,
- 						PPSMC_MSG_SetHardMinSocclkByFreq,
--						data->clock_vol_info.vdd_dep_on_socclk->entries[0].clk,
-+						data->clock_vol_info.vdd_dep_on_socclk->entries[0].clk / 100,
- 						NULL);
- 		smum_send_msg_to_smc_with_parameter(hwmgr,
- 						PPSMC_MSG_SetHardMinVcn,
-@@ -792,11 +792,11 @@ static int smu10_dpm_force_dpm_level(str
- 						NULL);
- 		smum_send_msg_to_smc_with_parameter(hwmgr,
- 						PPSMC_MSG_SetSoftMaxFclkByFreq,
--						data->clock_vol_info.vdd_dep_on_fclk->entries[index_fclk].clk,
-+						data->clock_vol_info.vdd_dep_on_fclk->entries[index_fclk].clk / 100,
- 						NULL);
- 		smum_send_msg_to_smc_with_parameter(hwmgr,
- 						PPSMC_MSG_SetSoftMaxSocclkByFreq,
--						data->clock_vol_info.vdd_dep_on_socclk->entries[index_socclk].clk,
-+						data->clock_vol_info.vdd_dep_on_socclk->entries[index_socclk].clk / 100,
- 						NULL);
- 		smum_send_msg_to_smc_with_parameter(hwmgr,
- 						PPSMC_MSG_SetSoftMaxVcn,
+ 	arch_data = kcalloc(num_iommus + 1, sizeof(*arch_data), GFP_KERNEL);
+ 	if (!arch_data)
+-- 
+2.35.1
+
 
 
