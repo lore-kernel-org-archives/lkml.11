@@ -2,98 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C4AC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4D3C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386824AbiDLJEZ (ORCPT
+        id S1386801AbiDLJES (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
+        Tue, 12 Apr 2022 05:04:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359036AbiDLHm1 (ORCPT
+        with ESMTP id S1358841AbiDLHmQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:27 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B6F54FBB
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:20:03 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id s6so3938807qta.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:20:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XvbKywfbm/xW7byqKZQzUxfarlYd7JRaSauDk7cot/s=;
-        b=R8F5T5+9GDyIxEi/DKA9g4pcixd9+sQKyQvYDCAo/eL4g9kmL0xUQb4FUzjPaRMS47
-         sOfG15j4SuMQf0pOCoe2h0vQkgr4GQeH6qdvrTNdYtdDzUY4mj9Ck1NzCErFI7dSFPQ7
-         azysapIySswploKHk3qMTX71RL4oF/zuqd2zxvLKam0sGwvLSsr4Bxhnz3c+qs9hPAxV
-         ydHmzj/Kv4Q0OCwR5/FeZUeu4adf1x6QwhUN8DHnEaKXxJTM76XTouyqfgBclt9ZFGXF
-         3b1CsSanEEREH8pCsGLb+q3TVVmJoRXGTc8EwFY8C02KdHcF6J3Hi6YGShc5g3OMNG7R
-         XSyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XvbKywfbm/xW7byqKZQzUxfarlYd7JRaSauDk7cot/s=;
-        b=zVp4q2KB+0PZZlRPqjLrqv1JiFK0RMOt5wscWv2+hYgcCHzXvYgJAU6bPwGCNVQ51T
-         EvH6QgGVYkMu4GdRM2Kg+UbzJebRNtEaDe+22OUb22/hNKnBFpykJhvJGUMZ9SUVz+4V
-         FgH4dnSjYpVzcWlxgiAIcUguferWGNcFOXjGHfIL8smR8kTm1hkTv7rh/WwLo+aTSrYu
-         p164KIs0KQBQDaZHRhtE/rKOhZ2nQwAjWkwoQum652hDTHGFVpmM12j+W+lxfuYmeL9v
-         e6Tpx+u7TVg6oCasiqfA5O1pmPTHE1OkNfQ/E+DOZECbto2KZHx1Ufrt4Ws8uop0dZxB
-         9GRg==
-X-Gm-Message-State: AOAM533WmWiiaaHWO4HdmJUWUKGF5Yd5puhY1VV2thRMQJtJ5Mk9zsQ+
-        iLAgcoQOrsVbrsoGQKfe69KUqa62QuM=
-X-Google-Smtp-Source: ABdhPJxEovphxMbVpe6bGcAdFG8wBzxYcIjvyJGtjzWiHCnDTOKXjW9BJhvdYMMObfsvCtRjPH5dEg==
-X-Received: by 2002:ac8:5e13:0:b0:2e1:cd7e:a29e with SMTP id h19-20020ac85e13000000b002e1cd7ea29emr2229127qtx.31.1649748002212;
-        Tue, 12 Apr 2022 00:20:02 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id e19-20020a05620a209300b0069c0bef5892sm4701145qka.78.2022.04.12.00.20.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 00:20:01 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.xin16@zte.com.cn
-To:     bsingharora@gmail.com, akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org, yang.yang29@zte.com.cn,
-        xu xin <xu.xin16@zte.com.cn>
-Subject: [PATCH] kernel: make taskstats available from all net namespaces
-Date:   Tue, 12 Apr 2022 07:19:46 +0000
-Message-Id: <20220412071946.2532318-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 12 Apr 2022 03:42:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B5F54187;
+        Tue, 12 Apr 2022 00:19:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD6EF616B2;
+        Tue, 12 Apr 2022 07:19:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB9CFC385AB;
+        Tue, 12 Apr 2022 07:19:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649747965;
+        bh=50NiPYZNS7W5h3kIdqJdXNGJ3ub+7+rCMrcv/3A7b9c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DuVEBbmtKA6mbNoqJKRi5JzgZ6GyB4GXGYw4YE0f7ojbk3Spj0onVzJ0jmbIprvyW
+         b7ubUa3qUSxsrvm+qJamdlcCkTZBXqTl9mC6rn5LowxbWGNTM1G+DgZFB93fGC2Ezj
+         isMVJJkRN+/KA4yUNqsga9fm51GBz9XosH9NV33U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.17 269/343] mmc: renesas_sdhi: special 4tap settings only apply to HS400
+Date:   Tue, 12 Apr 2022 08:31:27 +0200
+Message-Id: <20220412062959.087272710@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: xu xin <xu.xin16@zte.com.cn>
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-If getdelays run in a non-init network namespace, it will fail in
-getting delayacct stats even if it has privilege of root user, which
-seems to be not very reasonable. We can simply reproduce this by
-executing commands:
-	unshare -n
-	getdelays -d -p <pid>
+commit 46d4820f949a3030b19ee482c68a50b06dd27590 upstream.
 
-I don't think net namespace should be an obstacle to the normal
-execution of getdelay function. So let's make it available from
-all net namespaces.
+Previous documentation was vague, so we included SDR104 for slow SDnH
+clock settings. It turns out now, that it is only needed for HS400.
 
-Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+Fixes: bb6d3fa98a41 ("clk: renesas: rcar-gen3: Switch to new SD clock handling")
+Cc: stable@vger.kernel.org
+Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Link: https://lore.kernel.org/r/20220404100508.3209-1-wsa+renesas@sang-engineering.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/taskstats.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/mmc/host/renesas_sdhi_core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/taskstats.c b/kernel/taskstats.c
-index 72415e22342b..f7e246336218 100644
---- a/kernel/taskstats.c
-+++ b/kernel/taskstats.c
-@@ -688,6 +688,7 @@ static struct genl_family family __ro_after_init = {
- 	.module		= THIS_MODULE,
- 	.ops		= taskstats_ops,
- 	.n_ops		= ARRAY_SIZE(taskstats_ops),
-+	.netnsok	= true,
- };
+--- a/drivers/mmc/host/renesas_sdhi_core.c
++++ b/drivers/mmc/host/renesas_sdhi_core.c
+@@ -144,9 +144,9 @@ static unsigned int renesas_sdhi_clk_upd
+ 		return clk_get_rate(priv->clk);
  
- /* Needed early in initialization */
--- 
-2.25.1
+ 	if (priv->clkh) {
++		/* HS400 with 4TAP needs different clock settings */
+ 		bool use_4tap = priv->quirks && priv->quirks->hs400_4taps;
+-		bool need_slow_clkh = (host->mmc->ios.timing == MMC_TIMING_UHS_SDR104) ||
+-				      (host->mmc->ios.timing == MMC_TIMING_MMC_HS400);
++		bool need_slow_clkh = host->mmc->ios.timing == MMC_TIMING_MMC_HS400;
+ 		clkh_shift = use_4tap && need_slow_clkh ? 1 : 2;
+ 		ref_clk = priv->clkh;
+ 	}
+
 
