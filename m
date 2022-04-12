@@ -2,166 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01834C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59622C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229605AbiDLXWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
+        id S229712AbiDLXXK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:23:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiDLXWj (ORCPT
+        with ESMTP id S229882AbiDLXWo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:22:39 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2051.outbound.protection.outlook.com [40.107.236.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65098CF48F
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:08:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cTUh9ea4uplN9Dcy4GKesyumSG1Eu9H8lOqeb6/jzj5M4HSAJGFtJ/nFa4sXjwO28UIAhhr4RYfv4TyMxCYWXLE6hN2pb4Hrnvt9G+8TiFKNcW1/cETkzUwbjzJkqzEqacGoYWBzdoIfJgWs4zCPTanH7naF7Ep3NzXDvb43VZ81sxGbW4gCxuwRo+BlvNejbEGqzuMl/9HuuhscYcKlIjxkSrq0oU00SK+8AHyaPmM/wrg/8nOxaHDBmXbB7aaS1+1q9SSFDqGXLz+J89nLjFBhZ6EhIWBYtR7A60oRYZmHcyHF8Y8wSOlefkW+hHrFKmfVArEXg4+Qn96nB7mhXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=feKgFyWTBY9vsJnZz6EY9lyCPDWYEyUBNvsY+5VSy/Q=;
- b=f5m6Xb1PDSI+1pcpfduS241ta+wjuknNikBa4wu2p1Y1ggJtot7LQOSEH2PG7PtGUzZRsHWW20699YUyVcha67bAgBNUnHDdS0BQbkovjk1aEK47x4Vr7tXjHamd+2niSwjVYkiN2mfHaK0eE4eUthH1PGczhplwjLSuRAfas1xej6lm1HaDOxmgBEsRo2RYZKleWwznh+v3Doj0TU+TNKdm04jMqcj4g+b417Nf4kUKPS7JY6X+cX2fMst+yW2DaSnzy0j/F3KQtBtUnYnx2y8LjsldMt4i3LpXfyqDuCeEBMTN4XvtsmHMmoFIu/JcvEpYQOlLLHwh+K4rU+bYQg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linux.ie smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=feKgFyWTBY9vsJnZz6EY9lyCPDWYEyUBNvsY+5VSy/Q=;
- b=4wxfd+P5fuM8YVT19D05cqxaIBzDPr6VOrDx9W2c6G/gtDPS+HEbaPFNj3kpl+1ttWEOqFxSimM6AY2LCu9hIAdgG4PH22aFNMvZf3ehuAJpN19S4uNU9hBQCGhbonPGAizaE0F9qRpTF5eofwbhSwGZwCEkMx6qIJHNRt6SG8E=
-Received: from DM6PR11CA0050.namprd11.prod.outlook.com (2603:10b6:5:14c::27)
- by DM5PR12MB1580.namprd12.prod.outlook.com (2603:10b6:4:10::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
- 2022 21:52:12 +0000
-Received: from DM6NAM11FT036.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:14c:cafe::1e) by DM6PR11CA0050.outlook.office365.com
- (2603:10b6:5:14c::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29 via Frontend
- Transport; Tue, 12 Apr 2022 21:52:12 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT036.mail.protection.outlook.com (10.13.172.64) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5164.19 via Frontend Transport; Tue, 12 Apr 2022 21:52:12 +0000
-Received: from doryam3r2rack03-34.amd.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 16:52:11 -0500
-From:   Richard Gong <richard.gong@amd.com>
-To:     <alexander.deucher@amd.com>, <christian.koenig@amd.com>,
-        <xinhui.pan@amd.com>, <airlied@linux.ie>, <daniel@ffwll.ch>
-CC:     <amd-gfx@lists.freedesktop.org>, <dri-devel@lists.freedesktop.org>,
-        <linux-kernel@vger.kernel.org>, <mario.limonciello@amd.com>,
-        <richard.gong@amd.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCHv4] drm/amdgpu: disable ASPM on Intel Alder Lake based systems
-Date:   Tue, 12 Apr 2022 16:50:00 -0500
-Message-ID: <20220412215000.897344-1-richard.gong@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 12 Apr 2022 19:22:44 -0400
+Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCA46376;
+        Tue, 12 Apr 2022 15:51:55 -0700 (PDT)
+Received: by mail-vs1-xe36.google.com with SMTP id n5so28398vsc.4;
+        Tue, 12 Apr 2022 15:51:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ezdzc9fwB75FHs1RJU/8xMrtLkAqryX8e9lSQiCG6+o=;
+        b=cU9m/K7Eni83YVgmrXwmtrkQj72C5hzDjLWdtTFybmcwnahHAfZEs0iJx1d8hNPrL9
+         xLycI8nlRheQ1e3GZSFw+o8gPaVGVlgIlQ5Ip3jUXrCXhK2FUZtv2Oco1mOXlR0rl07a
+         D1x8VEftu5H+lm98oDGx1Z6quG27tqLunILzlWPwv9r+INhfInQ3G1tjUhJa84jztczf
+         wU7Q2I06GHcTllXmnxqHBjlkF4E3P5+yLNQM38rUAzaUFloU0b/oP9wvTMj7SaXTSyvl
+         psRBO6sjwXyjtAKMXk+JBM2B4Gbw5o+wY3ubKZkov1HV6cnIvH2yWDgQk1mKp00kX6+F
+         urOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ezdzc9fwB75FHs1RJU/8xMrtLkAqryX8e9lSQiCG6+o=;
+        b=Ms5KjXn+BzqAI4G07rSPr/NLU1Pn16+Qk8cGsEzKKIftJGyamedcoPrfk4kvbId6tg
+         90VCCB8xGQWSchpGamRZqo0rTDhrEICR9WrBJT/6Gl/dNTHdecE7oGVJKW2ER18D+4SR
+         BBuWvluHJ8M+W1vVP746Oigvr+DKo3+sbgeO49gCF3Mto7lGWlfCnIe5L7AbBhG8/9Y0
+         DLCSdWkMp73lJ2BxeNP6etu2/vYCgIYAwbLfZxkK4my9r6SsvNfyHdmk3yjbWdEWHadl
+         bc9he0U5nKSYmTXOezUPQt/xnrw39+keOCZJlsX0q8zDOydPgdPw82qxA/36dY0RNtOH
+         +XiA==
+X-Gm-Message-State: AOAM5324c5ypZFP8OWzLf9n8kvOGQGs3FaJR7SVZHk389jYjPGQZoO/3
+        l+uSfRycX8TXeLs7HEnTD4sSVImO/oDgWxQsGpzS+Bbypz4=
+X-Google-Smtp-Source: ABdhPJzFmqDl3FEyc+heWcRNc23/etW3e72ExFo4mTnsv5LYt8gIlxwoTVFLMaA+QTD9Uvi6pY0ytv9F1xXaDufGqkA=
+X-Received: by 2002:a67:f693:0:b0:328:295b:3077 with SMTP id
+ n19-20020a67f693000000b00328295b3077mr6317205vso.80.1649803914668; Tue, 12
+ Apr 2022 15:51:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4b262629-cc60-46ec-3114-08da1cceb391
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1580:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1580C35E59E32FCA4898A20495ED9@DM5PR12MB1580.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CwGeFqowpQAizLK6QW5664aPukU/8X3vl6KTMKbcl2GUbPW2pf2usudCYP4Ygekq2iCJRgkVhrE0sApG3COA6lVpMSOCi8I5jYXHw0rn4qpo0grrXOkBpuOSVxr57D434tiyr2R2r+QzSQJ+WaZ0Hm40K+nzDCfbABjb9q9BH0U3AqESsoEHGnw9bKKzK9f4CZneLfQfUck4+tP9uPeZAUjhGhyKqdClVJEvWrF7RzadCBZVnwwSUMM7sq8/LZxuzWOXFmZ+v1RSChdje7m7bQOe1knKkQPV+PM9Kh4TSQy8c5dbEXeizSme4XrfIKEywXc/TvLVrk1zA14M8Y0lNCXneuKD8/nqsO2BFL9hn4gkfUxrVUwrq8d3WamhU/JRYVm1UrP7orqzheIUF+7a770tLnNdCo/zIkm8SGtHLuxD2CTQiC/AY3TV29lUU7YO9Oyn98LWUz8vr7BbplkGbQUjZ7yiBF66EFYP/M3OEd1xa+UuiPShhz/N6rZ9a/b7K9lVVcDpAeyzQhyESBbgtdyhFZ0IjkKk+GRfiDAXlMikLTytBPQCR7IigsJaNOfRyJuSMaFcalvBdZOo3CY4OOQgqNcceY6vomv8TC2APno7yy9vG0XQ8cspyXM5eeldMKMIFScFkXIEVju7WX8LizNeHNduBzZTBd7W5kWzM+TnM0C1WQZmKsyue9tgFsuAqel5KkcBFTA7Jy3y65AXJw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(8676002)(4326008)(5660300002)(70206006)(70586007)(2906002)(86362001)(40460700003)(36756003)(356005)(6666004)(1076003)(81166007)(16526019)(82310400005)(110136005)(44832011)(54906003)(2616005)(186003)(36860700001)(508600001)(47076005)(966005)(26005)(83380400001)(426003)(336012)(316002)(8936002)(7696005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Apr 2022 21:52:12.6886
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b262629-cc60-46ec-3114-08da1cceb391
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT036.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1580
+References: <20220407125224.310255-1-jolsa@kernel.org> <20220407125224.310255-5-jolsa@kernel.org>
+ <CAEf4BzbE1n3Lie+tWTzN69RQUWgjxePorxRr9J8CuiQVUfy-kA@mail.gmail.com> <20220412094923.0abe90955e5db486b7bca279@kernel.org>
+In-Reply-To: <20220412094923.0abe90955e5db486b7bca279@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 12 Apr 2022 15:51:43 -0700
+Message-ID: <CAEf4BzaQRcZGMqq5wqHo3wSHZAAVvY6AhizDk_dV_GtnwHuxLQ@mail.gmail.com>
+Subject: Re: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>, Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Active State Power Management (ASPM) feature is enabled since kernel 5.14.
-There are some AMD GFX cards (such as WX3200 and RX640) that won't work
-with ASPM-enabled Intel Alder Lake based systems. Using these GFX cards as
-video/display output, Intel Alder Lake based systems will hang during
-suspend/resume.
+On Mon, Apr 11, 2022 at 5:49 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+>
+> On Mon, 11 Apr 2022 15:15:40 -0700
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+>
+> > > +#define DEBUGFS "/sys/kernel/debug/tracing/"
+> > > +
+> > > +static int get_syms(char ***symsp, size_t *cntp)
+> > > +{
+> > > +       size_t cap = 0, cnt = 0, i;
+> > > +       char *name, **syms = NULL;
+> > > +       struct hashmap *map;
+> > > +       char buf[256];
+> > > +       FILE *f;
+> > > +       int err;
+> > > +
+> > > +       /*
+> > > +        * The available_filter_functions contains many duplicates,
+> > > +        * but other than that all symbols are usable in kprobe multi
+> > > +        * interface.
+> > > +        * Filtering out duplicates by using hashmap__add, which won't
+> > > +        * add existing entry.
+> > > +        */
+> > > +       f = fopen(DEBUGFS "available_filter_functions", "r");
+> >
+> > I'm really curious how did you manage to attach to everything in
+> > available_filter_functions because when I'm trying to do that I fail.
+> > available_filter_functions has a bunch of functions that should not be
+> > attachable (e.g., notrace functions). Look just at __bpf_tramp_exit:
+> >
+> >   void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr);
+>
+> Hmm, this sounds like a bug in ftrace side. IIUC, the
+> "available_filter_functions" only shows the functions which is NOT
+> instrumented by mcount, we should not see any notrace functions on it.
+>
+> Technically, this is done by __no_instrument_function__ attribute.
+>
+> #if defined(CC_USING_HOTPATCH)
+> #define notrace                 __attribute__((hotpatch(0, 0)))
+> #elif defined(CC_USING_PATCHABLE_FUNCTION_ENTRY)
+> #define notrace                 __attribute__((patchable_function_entry(0, 0)))
+> #else
+> #define notrace                 __attribute__((__no_instrument_function__))
+> #endif
+>
+> >
+> > So first, curious what I am doing wrong or rather why it succeeds in
+> > your case ;)
+> >
+> > But second, just wanted to plea to "fix" available_filter_functions to
+> > not list stuff that should not be attachable. Can you please take a
+> > look and checks what's going on there and why do we have notrace
+> > functions (and what else should *NOT* be there)?
+>
+> Can you share how did you reproduce the issue? I'll check it.
+>
 
-The issue was initially reported on one system (Dell Precision 3660 with
-BIOS version 0.14.81), but was later confirmed to affect at least 4 Alder
-Lake based systems.
+$ sudo cat /sys/kernel/debug/tracing/available_filter_functions | grep
+__bpf_tramp
+__bpf_tramp_image_release
+__bpf_tramp_image_put_rcu_tasks
+__bpf_tramp_image_put_rcu
+__bpf_tramp_image_put_deferred
+__bpf_tramp_exit
 
-Add extra check to disable ASPM on Intel Alder Lake based systems.
 
-Fixes: 0064b0ce85bb ("drm/amd/pm: enable ASPM by default")
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Richard Gong <richard.gong@amd.com>
----
-v4: s/CONFIG_X86_64/CONFIG_X86
-    enhanced check logic
-v3: s/intel_core_asom_chk/aspm_support_quirk_check
-    correct build error with W=1 option
-v2: correct commit description
-    move the check from chip family to problematic platform
----
- drivers/gpu/drm/amd/amdgpu/vi.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+__bpf_tramp_exit is notrace function, so shouldn't be here. Notice
+that __bpf_tramp_enter (which is also notrace) are not in
+available_filter_functions.
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c b/drivers/gpu/drm/amd/amdgpu/vi.c
-index 039b90cdc3bc..b33e0a9bee65 100644
---- a/drivers/gpu/drm/amd/amdgpu/vi.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vi.c
-@@ -81,6 +81,10 @@
- #include "mxgpu_vi.h"
- #include "amdgpu_dm.h"
- 
-+#if IS_ENABLED(CONFIG_X86)
-+#include <asm/intel-family.h>
-+#endif
-+
- #define ixPCIE_LC_L1_PM_SUBSTATE	0x100100C6
- #define PCIE_LC_L1_PM_SUBSTATE__LC_L1_SUBSTATES_OVERRIDE_EN_MASK	0x00000001L
- #define PCIE_LC_L1_PM_SUBSTATE__LC_PCI_PM_L1_2_OVERRIDE_MASK	0x00000002L
-@@ -1134,13 +1138,24 @@ static void vi_enable_aspm(struct amdgpu_device *adev)
- 		WREG32_PCIE(ixPCIE_LC_CNTL, data);
- }
- 
-+static bool aspm_support_quirk_check(void)
-+{
-+	if (IS_ENABLED(CONFIG_X86)) {
-+		struct cpuinfo_x86 *c = &cpu_data(0);
-+
-+		return !(c->x86 == 6 && c->x86_model == INTEL_FAM6_ALDERLAKE);
-+	}
-+
-+	return true;
-+}
-+
- static void vi_program_aspm(struct amdgpu_device *adev)
- {
- 	u32 data, data1, orig;
- 	bool bL1SS = false;
- 	bool bClkReqSupport = true;
- 
--	if (!amdgpu_device_should_use_aspm(adev))
-+	if (!amdgpu_device_should_use_aspm(adev) || !aspm_support_quirk_check())
- 		return;
- 
- 	if (adev->flags & AMD_IS_APU ||
--- 
-2.25.1
+So it's quite bizarre and inconsistent.
 
+> Thank you,
+>
+>
+> --
+> Masami Hiramatsu <mhiramat@kernel.org>
