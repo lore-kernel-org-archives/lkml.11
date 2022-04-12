@@ -2,102 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B15C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82417C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:21:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355734AbiDLNWc (ORCPT
+        id S1356145AbiDLNWx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56612 "EHLO
+        Tue, 12 Apr 2022 09:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355838AbiDLNWQ (ORCPT
+        with ESMTP id S1355531AbiDLNWR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:22:16 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACC752B30
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 06:10:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649769015; x=1681305015;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FtOtwsR/6/Gleg8tQpLT6Wl9kjWox0FUNsf+RY7PPeY=;
-  b=WUJLf1ltwwJzaQQkzAikTNtqpJ/irEJaoNnzBEQl1l/ZMIAUBHg6peuM
-   qPeMPQn56mshbiXrW2HfGswdSuk49qy3B/hCqPhhexC371tNGLY3Elhai
-   Clml1HDW3TbAo6+BptoG53N8dsMNTkPYP1bKDUtptTRxOXK07yZjGnknI
-   r454F1g+ZhvrJkV8Pk6aiZgLzHUB8Ny46z9yGPkPBiamV2Z8ciW9wGg6j
-   o6VK4vBG9kkCHmro4BbjfsgiF746wuT1PLjmXsNMU7oHkt99I5yWvZtjf
-   7l0LgekAm6Tg6asIebV9qYVpEON3Ia5fctMlOEjnbnS1JMBRMzwVF2iC7
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="249654246"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="249654246"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 06:10:09 -0700
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="572758885"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.210.174]) ([10.254.210.174])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 06:10:05 -0700
-Message-ID: <06240213-dbc6-ea1c-ca49-28663387ac70@linux.intel.com>
-Date:   Tue, 12 Apr 2022 21:10:03 +0800
+        Tue, 12 Apr 2022 09:22:17 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697E150B34;
+        Tue, 12 Apr 2022 06:10:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=WuiFiHeMvZDkq8Q1J+rs3YTSaLxbzfLA/uH6C46aS9A=; b=SYbDldAR1Y7f5n17R+WO4UvgWZ
+        4t+btoG7FyDmhtSvTemy98cGzaqJcwMXRlrejM7/9s81cWnn2FznXZmZLA71pOGPbtwKsuZYAosJX
+        oR87WRwmH+SdZYYSasxIZeM/MrV9xJ/y3zKaGzEi+wWUcNn16X1saCFl1ZfpX6s/9VBY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1neGI0-00FSJU-IF; Tue, 12 Apr 2022 15:10:36 +0200
+Date:   Tue, 12 Apr 2022 15:10:36 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     Puranjay Mohan <p-mohan@ti.com>, linux-kernel@vger.kernel.org,
+        bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
+        nm@ti.com, ssantosh@kernel.org, s-anna@ti.com,
+        linux-arm-kernel@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, vigneshr@ti.com,
+        kishon@ti.com, Roger Quadros <rogerq@kernel.org>
+Subject: Re: [RFC 13/13] net: ti: icssg-prueth: Add ICSSG ethernet driver
+Message-ID: <YlV6TKTl5uQGZrQX@lunn.ch>
+References: <20220406094358.7895-1-p-mohan@ti.com>
+ <20220406094358.7895-14-p-mohan@ti.com>
+ <Yk3d/cC36fhNmfY2@lunn.ch>
+ <468d4d9b-44b4-2894-2a75-4caab1e72147@ti.com>
+ <f3ae48a8-7177-3a92-bdfd-3b243a5527c1@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Cc:     baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH RFC v3 02/12] iommu: Add a flag to indicate immutable
- singleton group
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>
-References: <20220410102443.294128-1-baolu.lu@linux.intel.com>
- <20220410102443.294128-3-baolu.lu@linux.intel.com>
- <BN9PR11MB527689614CBD807A113493B48CED9@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527689614CBD807A113493B48CED9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f3ae48a8-7177-3a92-bdfd-3b243a5527c1@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/4/12 15:39, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Sunday, April 10, 2022 6:25 PM
->> @@ -898,6 +941,20 @@ int iommu_group_add_device(struct iommu_group
->> *group, struct device *dev)
->>   	list_add_tail(&device->list, &group->devices);
->>   	if (group->domain  && !iommu_is_attach_deferred(dev))
->>   		ret = __iommu_attach_device(group->domain, dev);
->> +
->> +	/*
->> +	 * Use standard PCI bus topology, isolation features, and DMA
->> +	 * alias quirks to set the immutable singleton attribute. If
->> +	 * the device came from DT, assume it is static and then
->> +	 * singleton can know from the device count in the group.
->> +	 */
->> +	if (dev_is_pci(dev))
->> +		group->immutable_singleton =
->> +				pci_immutably_isolated(to_pci_dev(dev));
->> +	else if (is_of_node(dev_fwnode(dev)))
->> +		group->immutable_singleton =
->> +				(iommu_group_device_count(group) == 1);
->> +
+> > > > +	if (phy_if == PHY_INTERFACE_MODE_RGMII_ID ||
+> > > > +	    phy_if == PHY_INTERFACE_MODE_RGMII_TXID)
+> > > > +		rgmii_tx_id |= ICSSG_CTRL_RGMII_ID_MODE;
+> > > > +
+> > > > +	regmap_update_bits(ctrl_mmr, icssgctrl_reg, ICSSG_CTRL_RGMII_ID_MODE, rgmii_tx_id);
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > > > 
+> > > 
+> > > O.K, so this does not do what i initially thought it was doing. I was
+> > > thinking it was to fine tune the delay, ti,syscon-rgmii-delay would be
+> > > a small pico second value to allow the 2ns delay to be tuned to the
+> > > board.
+> > > 
+> > > But now i think this is actually inserting the full 2ns delay?
+> > > 
+> > > The problem is, you also pass phy_if to of_phy_connect() so the PHY
+> > > will also insert the delay if requested. So you end up with double
+> > > delays for rgmii_id and rgmii_txid.
 > 
-> btw probably we also want to check when a 2nd device is added
-> to a group marked as singleton, just in case some weird thing happens?
+> It's misunderstanding here. The bit field name in TRM is RGMII0_ID_MODE
+> and meaning:
+> 0h - Internal transmit delay is enabled
+> 1h - Internal transmit delay is not enabled.
+> 
+> So here internal delay will be disabled for RGMII_ID/RGMII_TXID.
 
-It depends on how we judge whether the group to which a DT device
-belongs is a singleton. As I explained in another thread, current trick
-doesn't support doing this.
+And enabled for the others?
 
-Best regards,
-baolu
+Why don't you always disable the delays and let the PHY do it? That is
+what pretty much every other MAC/PHY combination does.
+
+    Andrew
