@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E789C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8F5C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380441AbiDLIWK (ORCPT
+        id S1380460AbiDLIWS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:22:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43074 "EHLO
+        Tue, 12 Apr 2022 04:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353885AbiDLHZ4 (ORCPT
+        with ESMTP id S1353858AbiDLHZ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F677101DF;
-        Tue, 12 Apr 2022 00:05:08 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44CFE013;
+        Tue, 12 Apr 2022 00:04:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43377B81B4E;
-        Tue, 12 Apr 2022 07:05:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABD26C385A6;
-        Tue, 12 Apr 2022 07:05:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71A3360B2E;
+        Tue, 12 Apr 2022 07:04:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8722FC385A6;
+        Tue, 12 Apr 2022 07:04:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747106;
-        bh=9vXVE7hBRTZaQD7r+RaOOhVUqQdP69FtVpG2CWo9kbo=;
+        s=korg; t=1649747097;
+        bh=WNmc1U1T4VK9eOAieNnS6QYXaRY1fquINd9tlCqMHNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jewLxgZI/kOuNuSZCw8Sy//Y5fnbCGgGHLtNEcBBYr8R3ecPZ9GhSqsknffUyFwXX
-         aIQsrdxE1f7QJYyPaWPC9qUViWppCQB/i1UiHyx0TEkcY4lMVmEpSevDkfkN4zN4BZ
-         dInpNn8s0duSfLbFL/FTtBIOYCEHWwLOXCa1YStw=
+        b=0SEp48skaw6qBI4sQ1YCRfeW6oC9IVq9zM0fSsmLH6LzNQQH5no6jyTaEH/myKSNy
+         EQ+ovNEmUCvH9EnlyfwRfASCULyYGdTmkic5QLqJaFWFmEGawt2kuPuaqQdyCPLH/f
+         WfuB93zey1An1vX/qs7PcSqKFuxr2ssetMIVlwu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 205/285] SUNRPC: Handle ENOMEM in call_transmit_status()
-Date:   Tue, 12 Apr 2022 08:31:02 +0200
-Message-Id: <20220412062949.576620725@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 240/285] drbd: fix an invalid memory access caused by incorrect use of list iterator
+Date:   Tue, 12 Apr 2022 08:31:37 +0200
+Message-Id: <20220412062950.589685667@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,42 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit d3c15033b240767d0287f1c4a529cbbe2d5ded8a ]
+commit ae4d37b5df749926891583d42a6801b5da11e3c1 upstream.
 
-Both call_transmit() and call_bc_transmit() can now return ENOMEM, so
-let's make sure that we handle the errors gracefully.
+The bug is here:
+	idr_remove(&connection->peer_devices, vnr);
 
-Fixes: 0472e4766049 ("SUNRPC: Convert socket page send code to use iov_iter()")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+If the previous for_each_connection() don't exit early (no goto hit
+inside the loop), the iterator 'connection' after the loop will be a
+bogus pointer to an invalid structure object containing the HEAD
+(&resource->connections). As a result, the use of 'connection' above
+will lead to a invalid memory access (including a possible invalid free
+as idr_remove could call free_layer).
+
+The original intention should have been to remove all peer_devices,
+but the following lines have already done the work. So just remove
+this line and the unneeded label, to fix this bug.
+
+Cc: stable@vger.kernel.org
+Fixes: c06ece6ba6f1b ("drbd: Turn connection->volumes into connection->peer_devices")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
+Reviewed-by: Lars Ellenberg <lars.ellenberg@linbit.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/clnt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/block/drbd/drbd_main.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index b36d235d2d6d..bf1fd6caaf92 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -2197,6 +2197,7 @@ call_transmit_status(struct rpc_task *task)
- 		 * socket just returned a connection error,
- 		 * then hold onto the transport lock.
- 		 */
-+	case -ENOMEM:
- 	case -ENOBUFS:
- 		rpc_delay(task, HZ>>2);
- 		fallthrough;
-@@ -2280,6 +2281,7 @@ call_bc_transmit_status(struct rpc_task *task)
- 	case -ENOTCONN:
- 	case -EPIPE:
- 		break;
-+	case -ENOMEM:
- 	case -ENOBUFS:
- 		rpc_delay(task, HZ>>2);
- 		fallthrough;
--- 
-2.35.1
-
+--- a/drivers/block/drbd/drbd_main.c
++++ b/drivers/block/drbd/drbd_main.c
+@@ -2791,12 +2791,12 @@ enum drbd_ret_code drbd_create_device(st
+ 
+ 	if (init_submitter(device)) {
+ 		err = ERR_NOMEM;
+-		goto out_idr_remove_vol;
++		goto out_idr_remove_from_resource;
+ 	}
+ 
+ 	err = add_disk(disk);
+ 	if (err)
+-		goto out_idr_remove_vol;
++		goto out_idr_remove_from_resource;
+ 
+ 	/* inherit the connection state */
+ 	device->state.conn = first_connection(resource)->cstate;
+@@ -2810,8 +2810,6 @@ enum drbd_ret_code drbd_create_device(st
+ 	drbd_debugfs_device_add(device);
+ 	return NO_ERROR;
+ 
+-out_idr_remove_vol:
+-	idr_remove(&connection->peer_devices, vnr);
+ out_idr_remove_from_resource:
+ 	for_each_connection(connection, resource) {
+ 		peer_device = idr_remove(&connection->peer_devices, vnr);
 
 
