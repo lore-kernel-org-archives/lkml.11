@@ -2,84 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2FF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:39:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343652AbiDLLlI (ORCPT
+        id S1347565AbiDLLlY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57306 "EHLO
+        Tue, 12 Apr 2022 07:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356307AbiDLLkF (ORCPT
+        with ESMTP id S1352602AbiDLLht (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:40:05 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A059B506CE
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:21:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649758861; x=1681294861;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=w0qqzuPg6fre0pLykL1SiwIqyX/9przAgXnZ0xEkhnI=;
-  b=cRo+g183uBDtmtSiEW3ppgB5MNVeLQah1fzj6MlIuwP9o7Y5qvFojtDu
-   O5/EVh+ZHaBjYdMmBUSAvooSZw5JRr7OzbNRSe6cq0BtrNeLDDvjmb2y9
-   GVoF17y4KpHIx/56gjH7zk2QppMWOKugx+Lit4oWxDY6WEs5EfOG+hp8l
-   pGXx3gv601swgZObGyUYGWyO+tzRMmcmRexJHWjznRaLqPdq0nVZXtu9a
-   a7nXGXBMjESZKUCXGw4SIgWEsnTDzB9LUJoQBJf1GcU8+giNjHUFOwATy
-   QcIuRcFMmhd13csKSOGzXTKhc4mHwXTQ+gXIShLIyTGHqJGxxNLSDy0aK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="242925939"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="242925939"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 03:21:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="559271710"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 12 Apr 2022 03:21:00 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neDdr-0002kx-Lb;
-        Tue, 12 Apr 2022 10:20:59 +0000
-Date:   Tue, 12 Apr 2022 18:20:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jpoimboe:objtool-run 14/14] ld.lld: error: unknown argument '--link'
-Message-ID: <202204121858.7ox6amp1-lkp@intel.com>
+        Tue, 12 Apr 2022 07:37:49 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF33219
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:17:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=lvq+dp4SVUtTyznMC+oj6omSMZVw
+        vOhhf9wU8J4aQDE=; b=A6Lw9TJ9/QI4XkB6TOnlYq7CIB/RLS+HWw/twpb9Zw+v
+        FzkUG2HK4vfHcvgX1smi8GNEoR7gTXJTLpPlBaZzZV5hicYgPeDaJX0nfByEbyqY
+        peYG2jDxm/N4AJT5+RJddfXMkzENJGbChSi3wic7NVKLEue0Y7bbV7/XtPLgXRc=
+Received: (qmail 995989 invoked from network); 12 Apr 2022 12:17:39 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 12 Apr 2022 12:17:39 +0200
+X-UD-Smtp-Session: l3s3148p1@TKDcXnLczOcgAQnoAGZ4AFi7qjeMIP6q
+Date:   Tue, 12 Apr 2022 12:17:39 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Duc Nguyen <duc.nguyen.ub@renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] memory: renesas-rpc-if: Simplify single/double data
+ register access
+Message-ID: <YlVRw4ypp3+0Miz3@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Duc Nguyen <duc.nguyen.ub@renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <19358863deae03b1b26f473e878305a1c6e40d19.1649681638.git.geert+renesas@glider.be>
+ <YlVJc3z1xXT2emIc@ninjato>
+ <CAMuHMdUGkba3hiRJPEw26oBdc6_MK_eBO==Z9QeinaoeZv8Qbw@mail.gmail.com>
+ <YlVLEnRaARVmWZnZ@ninjato>
+ <CAMuHMdWAQ08K6NCdBGrY+-vBrsTQHi6UHaER4eCON1t9JEG1RA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="+PJSAI9U9iARmGKo"
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAMuHMdWAQ08K6NCdBGrY+-vBrsTQHi6UHaER4eCON1t9JEG1RA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git objtool-run
-head:   7f408460a07320dc0da22915e82ec3b444fef8c8
-commit: 7f408460a07320dc0da22915e82ec3b444fef8c8 [14/14] todo
-config: i386-randconfig-a003-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121858.7ox6amp1-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git/commit/?id=7f408460a07320dc0da22915e82ec3b444fef8c8
-        git remote add jpoimboe https://git.kernel.org/pub/scm/linux/kernel/git/jpoimboe/linux.git
-        git fetch --no-tags jpoimboe objtool-run
-        git checkout 7f408460a07320dc0da22915e82ec3b444fef8c8
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+--+PJSAI9U9iARmGKo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-All errors (new ones prefixed by >>):
 
->> ld.lld: error: unknown argument '--link'
+> But that's not what happened. I even compared the assembler output of
+> various solutions.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I am sure you did. I just said "it looks like..." to state a reason why
+I don't think it looks prettier. But this turns to bike-shedding for me,
+just keep it if everyone else is happy.
+
+
+--+PJSAI9U9iARmGKo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJVUb8ACgkQFA3kzBSg
+KbYFtxAAnMVfoYwfPBsJgmeGyalXpEG+cLcE1gOTw7oMGiHPxT6foxFB9GZBW7m0
+ZnqughRm+tMhzFvb/sHwI/W9m1dP1g4+U7OZQYiVFCGo5Dqgl2QADwU1kVZAgTl4
+tXz3W4VdX80rOI4bhLPopQ72Z/GmTlxedu6HpjPz57LF2YRDioL7DO9j9V1O9QSz
+knPl1Jz9+rPxBXtJ+CW5/WfJ7hL6U8LA4D6BCFHfEI+xH9AjWEOCIFRSHiV2QDHY
+mV9AuEDbto6Fw3iSSebi4SgkzYE3h0/jNTbHE8jYuZiZ03U5f+d9q5ixldnC5Ljq
+ec9MVbB8VAoPAjN8XV1pP5c+n07xMQjNRchEzKem4b1jNkSWAZnMpUuaJCJnxk1e
+MkZgFSDM6EuGlYGuV+A9JrkidHzdUzwsq8o4JwjEN3st+Tj5yOFL1M+iiFjxCzMo
+hngWeRHxhI2gJf6RrLJYIudbN6koKPH9QzNikyaIYkz3hAdGHgPDHiUw1tTfFovO
+0wWCJbBLVJ5Z1RWiPdRDwl/KPWr9/pWrlNQngPX8NHLCAwUzCicCt4ChJduPDcMt
+YLd0v6VG/5TBRfHSuSfjOk0b3ItOZ4QjleYBhbQQ5VAAyEKHuZzXUqFGYCVhPT5M
+DT67uH1tS9STOUFxUT6af4DGGzz5oTRI+mvXFqIOtzdDR2+azj8=
+=ALuo
+-----END PGP SIGNATURE-----
+
+--+PJSAI9U9iARmGKo--
