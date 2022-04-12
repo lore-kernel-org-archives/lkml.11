@@ -2,170 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:36:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 054AEC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377383AbiDLJfE (ORCPT
+        id S1385150AbiDLJfk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:35:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43744 "EHLO
+        Tue, 12 Apr 2022 05:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388457AbiDLJWN (ORCPT
+        with ESMTP id S1390181AbiDLJYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 05:22:13 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8BF847070;
-        Tue, 12 Apr 2022 01:28:52 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id k29so3790pgm.12;
-        Tue, 12 Apr 2022 01:28:52 -0700 (PDT)
+        Tue, 12 Apr 2022 05:24:36 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F53249912
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:41:03 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id h126-20020a1c2184000000b0038eb17fb7d6so1249225wmh.2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 01:41:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8dj27SHCv5b3Wvo3cWAib4es//0Hr77RKSwBft96qwE=;
-        b=MvkGj8kC7BvSx/tQjd+DEgKZ3id7BVEEJPlg5EhjgkhKoKyPuN7dwigevkaC7aO3ti
-         TB+WEIQd1SWESEKgzNQ88pB9DSZfVlcmghDv+FlCjq8kLDzEZ/HN3ZO1BxyF847G/hiJ
-         Ebw8J7p+BmGJ3jSMuhUG9bp24ZE9ruXFhTJ2cN5xMDRRwPWLNtqO9EP0XqgmkDAPeGFG
-         wzVaBGkIOZ5EfEs3nIWtvZgycRZ0KlXeCPgADt8QUmhYiI1nRc4lXDIjXUoUTDN/W87y
-         ChiyWJiBtqzQLEHIvTYWb1hT9jRpsij8HmYHI55Uf2RDs8XF5nQ7bKVjYf9IRbJyavCh
-         6Ksw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JVS8yoTed/57DjCwKIW1A/c1IofL37wt+tYJEPzUAmU=;
+        b=Z+VbZn7FPHNe/GBsQyuivnzzgGzYvxBZDES1LMjk+AMruKFaWMliPs/DaWe4wQcj1V
+         Z46VUcXBRlve5tWnD6t/jEuT+5XKFrUE5df/ekH+6vCNCqWOXn6MuAX1Kaz4F4MRmb0u
+         prutTbcdiNtijUHwv3SzkXxA25iy5vFpLZA4E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8dj27SHCv5b3Wvo3cWAib4es//0Hr77RKSwBft96qwE=;
-        b=kOsZ1Au2VBHrnCaM9v5XM2BPMUdV1YJJYxHlSYWWrGPjCcTgLNGfNemJffBKP4FHOw
-         o2RfP4tcHcOlvPckO0Eyoz1VCupc+Hun564WjZUQk+meyhQFADeHkmSGZFIhKEq4PQGz
-         pfF25xFi4IUG491MBVaIszl1N/RY+cKIDxd0C0vO0MurEqijoZps4uzrtQI3xmMil7IL
-         LzM9IX9rXA2jgpa5O3Guy1Dmu/q8kKGeUc06r9EYYTZ/l4GGpqxvulfSTpYAtKsBqhDs
-         PCApAFQSHnxixWVpPueiDJgSb09GXvzmEfJ5WIBPo8BTeRnUpWALgT8pcCsYqgtfrAAh
-         xlSQ==
-X-Gm-Message-State: AOAM530ZQcYdJpx5169VL3XKPkFr2oHrmpxP/8X+xuWL9e8a0vxK2swb
-        zEgYmrU1q5cWll6+f1sPKzU=
-X-Google-Smtp-Source: ABdhPJwmL6nvNIgc2qB6277prLSlKDBoJ9rDxe+gbZfcxGjX2/wQgi65ZQMUL2G6CWQlHoa4lFSqiw==
-X-Received: by 2002:a05:6a00:e14:b0:4fe:3cdb:23f with SMTP id bq20-20020a056a000e1400b004fe3cdb023fmr3450814pfb.86.1649752132287;
-        Tue, 12 Apr 2022 01:28:52 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id o1-20020a637e41000000b003804d0e2c9esm1981783pgn.35.2022.04.12.01.28.50
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JVS8yoTed/57DjCwKIW1A/c1IofL37wt+tYJEPzUAmU=;
+        b=AJIBmg9Isl68T/d8fM5yZKnPuSoXBaO4wH8+d238DsuEsMI0D4T7Ug8IYE3KmI/1/d
+         NpzK0VdYzv5Bj7XAEK8NPWlMVgLCBM4th18kv50n8OfGRRIDfW34lYpv1w0e3279iNsw
+         RwgA24ezXeyD0BYvYYh4/ACZumoyYA3iQpw9snkC8pnN/kM60czMOaRe7mK9Voqxtu40
+         rh/SOIBkqZyt0h1Ow9M1fmo8S9g6AjUtdKV+yPAGI/mfl+rz/c1RikNWfkc9iosnOKGD
+         p1lR8LRkT9Y+TCb+mz5fbMhhfpa1dI5N156QPqv76u9DSpP/6JTz8z/h8v88lJOrLGZ1
+         xZQw==
+X-Gm-Message-State: AOAM533Aair09RgiUyGJNHFERTEj6YfppEFOTjxIusqpvlN4Y+nia1dx
+        +9UiJiU7fVNW0fX/HyTeKMD+hw==
+X-Google-Smtp-Source: ABdhPJyHye7sxKTODHYVlr0Iw88mdVOrIKEdTmPAKEL4TcsxZIZQomuSpVY1efYdnCyhwPqDkolHGQ==
+X-Received: by 2002:a05:600c:1c0e:b0:38c:ae37:c1d2 with SMTP id j14-20020a05600c1c0e00b0038cae37c1d2mr2964820wms.205.1649752861339;
+        Tue, 12 Apr 2022 01:41:01 -0700 (PDT)
+Received: from google.com ([37.228.205.1])
+        by smtp.gmail.com with ESMTPSA id h10-20020a05600c144a00b0038ccc75a6adsm1769601wmi.37.2022.04.12.01.41.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 01:28:51 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     grygorii.strashko@ti.com
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] net: ethernet: ti: cpsw: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Tue, 12 Apr 2022 08:28:47 +0000
-Message-Id: <20220412082847.2532584-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 12 Apr 2022 01:41:00 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 08:40:58 +0000
+From:   Fabio Baltieri <fabiobaltieri@chromium.org>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        chrome-platform@lists.linux.dev, linux-pwm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/4] drivers: pwm: pwm-cros-ec: add channel type
+ support
+Message-ID: <YlU7GoSYMPapAsVv@google.com>
+References: <20220411152114.2165933-1-fabiobaltieri@chromium.org>
+ <20220411152114.2165933-3-fabiobaltieri@chromium.org>
+ <YlUq8W+xjdxqYCo5@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlUq8W+xjdxqYCo5@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+Hi Tzung-Bi,
 
-Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
-pm_runtime_put_noidle. This change is just to simplify the code, no
-actual functional changes.
+On Tue, Apr 12, 2022 at 03:32:01PM +0800, Tzung-Bi Shih wrote:
+> On Mon, Apr 11, 2022 at 03:21:12PM +0000, Fabio Baltieri wrote:
+> > Add support for EC_PWM_TYPE_DISPLAY_LIGHT and EC_PWM_TYPE_KB_LIGHT pwm
+> > types to the PWM cros_ec_pwm driver. This allows specifying one of these
+> > PWM channel by functionality, and let the EC firmware pick the correct
+> > channel, thus abstracting the hardware implementation from the kernel
+> > driver.
+> > 
+> > To use it, define the node with the "google,cros-ec-pwm-type"
+> > compatible.
+> 
+> Not sure whether you decide to leave the prefix as is or not[1], just another
+> reminder: to be neat, suggest to remove "drivers: " prefix from the commit
+> title.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/net/ethernet/ti/cpsw.c | 36 ++++++++++++----------------------
- 1 file changed, 12 insertions(+), 24 deletions(-)
+Sorry I messed up there, fixed in on the wrong branch and then forgot to
+re-fix it once I moved to the wrong one -- I'll make sure to get that
+right now, thanks for your patience.
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index 03575c017500..9f37b5b196a5 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -756,11 +756,9 @@ static int cpsw_ndo_open(struct net_device *ndev)
- 	int ret;
- 	u32 reg;
- 
--	ret = pm_runtime_get_sync(cpsw->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(cpsw->dev);
-+	ret = pm_runtime_resume_and_get(cpsw->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	netif_carrier_off(ndev);
- 
-@@ -968,11 +966,9 @@ static int cpsw_ndo_set_mac_address(struct net_device *ndev, void *p)
- 	if (!is_valid_ether_addr(addr->sa_data))
- 		return -EADDRNOTAVAIL;
- 
--	ret = pm_runtime_get_sync(cpsw->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(cpsw->dev);
-+	ret = pm_runtime_resume_and_get(cpsw->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	if (cpsw->data.dual_emac) {
- 		vid = cpsw->slaves[priv->emac_port].port_vlan;
-@@ -1052,11 +1048,9 @@ static int cpsw_ndo_vlan_rx_add_vid(struct net_device *ndev,
- 	if (vid == cpsw->data.default_vlan)
- 		return 0;
- 
--	ret = pm_runtime_get_sync(cpsw->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(cpsw->dev);
-+	ret = pm_runtime_resume_and_get(cpsw->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	if (cpsw->data.dual_emac) {
- 		/* In dual EMAC, reserved VLAN id should not be used for
-@@ -1090,11 +1084,9 @@ static int cpsw_ndo_vlan_rx_kill_vid(struct net_device *ndev,
- 	if (vid == cpsw->data.default_vlan)
- 		return 0;
- 
--	ret = pm_runtime_get_sync(cpsw->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(cpsw->dev);
-+	ret = pm_runtime_resume_and_get(cpsw->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	if (cpsw->data.dual_emac) {
- 		int i;
-@@ -1567,11 +1559,9 @@ static int cpsw_probe(struct platform_device *pdev)
- 	/* Need to enable clocks with runtime PM api to access module
- 	 * registers
- 	 */
--	ret = pm_runtime_get_sync(dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(dev);
-+	ret = pm_runtime_resume_and_get(dev);
-+	if (ret < 0)
- 		goto clean_runtime_disable_ret;
--	}
- 
- 	ret = cpsw_probe_dt(&cpsw->data, pdev);
- 	if (ret)
-@@ -1734,11 +1724,9 @@ static int cpsw_remove(struct platform_device *pdev)
- 	struct cpsw_common *cpsw = platform_get_drvdata(pdev);
- 	int i, ret;
- 
--	ret = pm_runtime_get_sync(&pdev->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(&pdev->dev);
-+	ret = pm_runtime_resume_and_get(&pdev->dev);
-+	if (ret < 0)
- 		return ret;
--	}
- 
- 	for (i = 0; i < cpsw->data.slaves; i++)
- 		if (cpsw->slaves[i].ndev)
+> 
+> [1]: https://patchwork.kernel.org/project/chrome-platform/patch/20220331125818.3776912-3-fabiobaltieri@chromium.org/
+> 
+> > +#ifdef CONFIG_OF
+> > +static const struct of_device_id cros_ec_pwm_of_match[] = {
+> > +	{
+> > +		.compatible = "google,cros-ec-pwm",
+> > +	},
+> > +	{
+> > +		.compatible = "google,cros-ec-pwm-type",
+> > +		.data = OF_CROS_EC_PWM_TYPE,
+> > +	},
+> > +	{},
+> > +};
+> > +MODULE_DEVICE_TABLE(of, cros_ec_pwm_of_match);
+> > +#else
+> > +#define cros_ec_pwm_of_match NULL
+> > +#endif
+> > +
+> >  static int cros_ec_pwm_probe(struct platform_device *pdev)
+> >  {
+> >  	struct cros_ec_device *ec = dev_get_drvdata(pdev->dev.parent);
+> >  	struct device *dev = &pdev->dev;
+> > +	const struct of_device_id *id;
+> >  	struct cros_ec_pwm_device *ec_pwm;
+> >  	struct pwm_chip *chip;
+> >  	int ret;
+> > @@ -251,17 +312,27 @@ static int cros_ec_pwm_probe(struct platform_device *pdev)
+> >  	chip = &ec_pwm->chip;
+> >  	ec_pwm->ec = ec;
+> >  
+> > +	id = of_match_device(cros_ec_pwm_of_match, dev);
+> > +	if (id && id->data == OF_CROS_EC_PWM_TYPE)
+> > +		ec_pwm->use_pwm_type = true;
+> > +
+> [...]
+> > -#ifdef CONFIG_OF
+> > -static const struct of_device_id cros_ec_pwm_of_match[] = {
+> > -	{ .compatible = "google,cros-ec-pwm" },
+> > -	{},
+> > -};
+> > -MODULE_DEVICE_TABLE(of, cros_ec_pwm_of_match);
+> > -#endif
+> > -
+> 
+> Use dev->driver->of_match_table to access the table so that the table
+> declaration doesn't actually need a move.  Instead, the helper function
+> of_device_get_match_data() is preferred.
+> 
+> Alternatively, it could use
+> of_device_is_compatible(..."google,cros-ec-pwm-type") so that it doesn't
+> need to introduce OF_CROS_EC_PWM_TYPE and reduce some bits.  I would prefer
+> this way.
+
+That's a very good point, should simplify things a fair bit, did not
+realize of_device_is_compatible() was an option somehow, will rework it
+for that and send a v4 soon. Thanks for the pointer.
+
+Fabio
+
 -- 
-2.25.1
-
+Fabio Baltieri
