@@ -2,97 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09494C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356294AbiDLNxp (ORCPT
+        id S1356310AbiDLNzG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:53:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50000 "EHLO
+        Tue, 12 Apr 2022 09:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239232AbiDLNxn (ORCPT
+        with ESMTP id S229554AbiDLNzD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:53:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759A155BEE;
-        Tue, 12 Apr 2022 06:51:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1076161AE3;
-        Tue, 12 Apr 2022 13:51:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 220A3C385A5;
-        Tue, 12 Apr 2022 13:51:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649771484;
-        bh=1IVfo5Yk3XxTLv9hzGny7mpq5l2FdcstMt/R+wNLyuE=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=NXIhiHyK5WCGGNiGBzTM7XGQGQZ2WIBhvMOJsI+i5rf1/ifqSOQYeMAbV0QqH31nP
-         UnxOMeGZ37DpdN71iDEScRhAKKsnQBY37J0MULfHnVKVG0nUr23NxnOzV26AHLRGqU
-         0afi+Ph68N2/3FuwfUttrCjKYhaDIOvBHfP2FMtc2TJPV/FE5g76WVxCWfroCQjdlh
-         CXdy5sSDeXjn89nz5LsXsM4JmQhRYf9Lao3CYLd+El9KlUDOVBmaXtdqijGtyaYGJu
-         bvvvuFGwjeQF2a0Cz+7UXkmMfo1/yZp8CtpgbnE8EJMipIkNUbU1a+WQYWzBGs04dA
-         yOhGmq0WRCZHA==
-Content-Type: text/plain; charset="utf-8"
+        Tue, 12 Apr 2022 09:55:03 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C02A56779;
+        Tue, 12 Apr 2022 06:52:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1649771566;
+  x=1681307566;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Sw81HetSmMl7lbXyyIeCGFJ3QO8cFxHXwNZbEtDzDlE=;
+  b=O49R+o93vemcgc+xoyyxEXOZnNuKyNmuJflVQ3PuwSAgHnVMcrAztJV7
+   GRyNhWqDbWPidXNAZhaRkHkbBvXEMlQtouyhuaaZv8zDfafN6QGFoebpl
+   tDsVVUMT503EzaHcXRCbaFlfHpRKx7QEU4+kZFEBZ5iy+yLplhnNEiRMc
+   dtfjYGm5UFsgD9m1SdnLOeLR5CUw4oHWYJ/35hvXcWS5dTdpxluN4QIpy
+   eSEQO3njdzhJUyws6XYdzC7b2jQQ4QZcl9Prz0wwFt5As//X98y0PX9Q4
+   aYDw/wnr8LDlkivsXgLj/5e9fhtilbAFuZbucxFQe2NmE9UWUAexmqs+k
+   A==;
+From:   Camel Guo <camel.guo@axis.com>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+CC:     Camel Guo <camel.guo@axis.com>, <linux-hwmon@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel@axis.com>
+Subject: [PATCH v2 0/2] hwmon/tmp401: add support of three advanced features
+Date:   Tue, 12 Apr 2022 15:52:30 +0200
+Message-ID: <20220412135232.1943677-1-camel.guo@axis.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2] cw1200: fix incorrect check to determine if no element
- is
- found in list
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220320035436.11293-1-xiam0nd.tong@gmail.com>
-References: <20220320035436.11293-1-xiam0nd.tong@gmail.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     pizza@shaftnet.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linville@tuxdriver.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jakobkoschel@gmail.com,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164977147986.6629.2901483762629864309.kvalo@kernel.org>
-Date:   Tue, 12 Apr 2022 13:51:21 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
+According the their datasheets:
+- TMP401, TMP411 and TMP43x support extended temperature range;
+- TMP411 and TMP43x support n-factor correction;
+- TMP43x support beta compensation.
 
-> The bug is here: "} else if (item) {".
-> 
-> The list iterator value will *always* be set and non-NULL by
-> list_for_each_entry(), so it is incorrect to assume that the iterator
-> value will be NULL if the list is empty or no element is found in list.
-> 
-> Use a new value 'iter' as the list iterator, while use the old value
-> 'item' as a dedicated pointer to point to the found element, which
-> 1. can fix this bug, due to now 'item' is NULL only if it's not found.
-> 2. do not need to change all the uses of 'item' after the loop.
-> 3. can also limit the scope of the list iterator 'iter' *only inside*
->    the traversal loop by simply declaring 'iter' inside the loop in the
->    future, as usage of the iterator outside of the list_for_each_entry
->    is considered harmful. https://lkml.org/lkml/2022/2/17/1032
-> 
-> Fixes: a910e4a94f692 ("cw1200: add driver for the ST-E CW1100 & CW1200 WLAN chipsets")
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+In order to make it possible for users to enable these features and set up them
+based on their needs, this patch series adds the following devicetree bindings:
+- ti,extended-range-enable;
+- ti,n-factor;
+- ti,beta-compensation.
+In the meanwhile, tmp401 driver reads them and configures the coressponding
+registers accordingly.
 
-Failed to apply, please rebase on top of latest wireless-next.
+v2:
+- dt-bindings: fix format and describe hardware properties instead of
+  programming models in ti,tmp401.yaml.
 
-Recorded preimage for 'drivers/net/wireless/st/cw1200/queue.c'
-error: Failed to merge in the changes.
-hint: Use 'git am --show-current-patch=diff' to see the failed patch
-Applying: cw1200: fix incorrect check to determine if no element is found in list
-Using index info to reconstruct a base tree...
-M	drivers/net/wireless/st/cw1200/queue.c
-Falling back to patching base and 3-way merge...
-Auto-merging drivers/net/wireless/st/cw1200/queue.c
-CONFLICT (content): Merge conflict in drivers/net/wireless/st/cw1200/queue.c
-Patch failed at 0001 cw1200: fix incorrect check to determine if no element is found in list
+Cc: linux-hwmon@vger.kernel.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-Patch set to Changes Requested.
+Camel Guo (2):
+  dt-bindings: hwmon: Add TMP401, TMP411 and TMP43x
+  hwmon: (tmp401) Add support of three advanced features
 
+ .../devicetree/bindings/hwmon/ti,tmp401.yaml  | 112 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ drivers/hwmon/tmp401.c                        |  43 ++++++-
+ 3 files changed, 155 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp401.yaml
+
+
+base-commit: ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220320035436.11293-1-xiam0nd.tong@gmail.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.30.2
 
