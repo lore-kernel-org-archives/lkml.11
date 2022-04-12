@@ -2,275 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2058C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:26:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A8E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:26:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230033AbiDLX2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41588 "EHLO
+        id S230101AbiDLX2p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:28:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230297AbiDLX1r (ORCPT
+        with ESMTP id S230377AbiDLX1x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:27:47 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D923D1133
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:12:57 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id z33so526907ybh.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:12:57 -0700 (PDT)
+        Tue, 12 Apr 2022 19:27:53 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63C6E125D;
+        Tue, 12 Apr 2022 15:34:59 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id l7so432716ejn.2;
+        Tue, 12 Apr 2022 15:34:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wH4O0dnTVGL+IJJ5WtWlvfWg3+EbrXvX3Kihn0J2PXo=;
-        b=I5+hrPJVkQspvFYxISEhKos6XFff3LFzGkbpLmGszEe268qN4q+QCJVCmpkoRonzoE
-         ktz5K4AfgFtEQPUt9/KfqNr0v/RuX3O8SpMICcZtbfV9IYCcE/EQhxlZFtRXYFK8g3js
-         8b99ki+jzImCibf7j2hfvYKdkBf6bTxusS1GxZ0JqHwZ3klRvGfaQtNRZYZ5HNbwQ0AC
-         0eCE6Nmm6+shnUqs6P8vTeipUNJeVsHhXSR008ZFyqf5sW3grlNU0Gfnz2sBC2ElWlqv
-         yVvvVwSpBg4dTqa88urPeL44iMIu+IcpRKTX0UYbbZoapbXwkJw/ujMd5u7ERBcuFg+1
-         XyuA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FafwHJHCvkay4y+ls36HJhZzn1yzq14wSSj6X3swf1s=;
+        b=Dzvnd0rPx94Q971Tqc9OactuCidS+CcvfBihaMSIB6c93FCmcYavPo3PQ+O1DaIfbR
+         iOYNOQyUFXKiBdd26mUWabthDPhNpeFx5B8o8OOiRMmvFAriub7uoNIQAqlIVjgA3y0b
+         Nzu3SaJUgoTAhVLLbf2j/eXSqfvY6v/0uiB/BjHZW9RvZXup1wMIbuYL0IuZp8xHZakS
+         l8EdBL7nvLygGN40kZLSsDKp1u/3/QNlR3EzsHj9erGLwLIToAbdFZYBjOglT6TvArqK
+         2+W++bx8ZE4Ln9mE2QxtmSlhJNyuiPl8V1pExYLJAfPAOKirg2ly92HSOr4asx1RfULv
+         QV2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wH4O0dnTVGL+IJJ5WtWlvfWg3+EbrXvX3Kihn0J2PXo=;
-        b=d6V4VGEi/6v++La5p9NqGk09WPHG7ISBbVCmu9I0UDaY/YSj4+gRF8I7R0VpOADIhi
-         KytYE4NsDh/gK4j8aHY6EB8vtnwxbly8IzOrXDaKX9XutEgx0joJb29MzkdNtOAJMkTv
-         EHl/mM8QRQa09+3nfbfy3dykFQx2FkOZOOy3SiPfmH/GrycRCr7yrbDKKmN1TpR6f7lT
-         PK/K0d8M+qGXReBNmNT1VjaZfQHtl2GA2eUG7vDaoEmYDevloA67OwTO03COUp/bpM1R
-         lzB5NktOazmyXIbeZHf1QBGUYcLujZqXU4+HStquX7euNV4Z11WDbMHuXfVT+1a4hi8a
-         PG4Q==
-X-Gm-Message-State: AOAM532oQOtUMmFQcbtPPBeXqAB3CdZW+35uc6nVwJFPEkKMStgJ+NIe
-        JbrrEcF3uqnnuKHctHhxJFfdrfVyFzxYusV351vMJA==
-X-Google-Smtp-Source: ABdhPJzvS25fbqqpnFD9zvaGzHWtio02lXzCY8OviuNmMVilALYdiNcs9gyJo1XU7qRSgVDhmSSksr7jNwlJ+Fnk+3k=
-X-Received: by 2002:a25:add6:0:b0:641:2562:4022 with SMTP id
- d22-20020a25add6000000b0064125624022mr11991204ybe.391.1649801576439; Tue, 12
- Apr 2022 15:12:56 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FafwHJHCvkay4y+ls36HJhZzn1yzq14wSSj6X3swf1s=;
+        b=HG3JO9mDQL/6qZMY5V1UHF9iUNYVACWRWqqudJaKnkWcseMqNKzd8Yk3jOZ6SCs0Bz
+         z7/Fe2MuI/2tYRh72AvyhmiDQLVy4KZtIhYctsggqisARGT9AggNpi4d87Imn0RTFCPW
+         S0jxkRwLUsisfH/YwbbIWE0Nu+7+5yQpLu29TIy6KX6ChB3+Zg7k9kRKyW63jxOAj1xx
+         MaD2jxcXoySstMGNBTQ7yy5rJxW0W1AtZKmkifsFYOCgrMMSVAq0UR7TwtIiQodn06HY
+         72s9b2lxO0br3Cr9fsZtrXVDtnI9//g/M07e7yS5O8L0ZcwsD+L9fTwzUajhjvyr8XIw
+         iVLQ==
+X-Gm-Message-State: AOAM532s+x7q5O2yueral1uIvBq6Sg6RQnoHqgz4Pz+DtzkzridmNhJ1
+        HGmd8mjR2GEsgKKGGfrm0IWiIPuFSiU=
+X-Google-Smtp-Source: ABdhPJyCPaqifSUltjbLOIjqRmekqDuH9+xXz8yac5SgvHPlXlNL/9gn0d81nbGQj31HuPnxA7sQjA==
+X-Received: by 2002:a17:907:1b09:b0:6d8:faa8:4a06 with SMTP id mp9-20020a1709071b0900b006d8faa84a06mr36414759ejc.701.1649802898274;
+        Tue, 12 Apr 2022 15:34:58 -0700 (PDT)
+Received: from Ansuel-xps. (host-80-182-176-248.pool80182.interbusiness.it. [80.182.176.248])
+        by smtp.gmail.com with ESMTPSA id g2-20020a50bf42000000b0041cc5233252sm342550edk.57.2022.04.12.15.34.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 15:34:57 -0700 (PDT)
+Message-ID: <6255fe91.1c69fb81.3ce58.2045@mx.google.com>
+X-Google-Original-Message-ID: <YlXcG1EB1yu4NEOG@Ansuel-xps.>
+Date:   Tue, 12 Apr 2022 22:07:55 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
+Subject: Re: [PATCH v3 03/18] ARM: dts: qcom: add missing rpm regulators and
+ cells for ipq8064
+References: <20220309190152.7998-1-ansuelsmth@gmail.com>
+ <20220309190152.7998-4-ansuelsmth@gmail.com>
+ <YlXXH3ikA5Tcdx9R@builder.lan>
 MIME-Version: 1.0
-References: <20220411211015.3091615-1-bgardon@google.com> <20220411211015.3091615-4-bgardon@google.com>
- <YlTN3yq1iBPkw6Aa@google.com> <CANgfPd8mZ9-zQBvK=OASQ+n7eq_FpvpStMc_yD-UsmFdQ3OCvA@mail.gmail.com>
- <YlXMxcKVgWxHtiGR@google.com> <YlXa7+mOQOV26XUH@google.com>
-In-Reply-To: <YlXa7+mOQOV26XUH@google.com>
-From:   Ben Gardon <bgardon@google.com>
-Date:   Tue, 12 Apr 2022 15:12:45 -0700
-Message-ID: <CANgfPd9vsnNtDpPbaTeUoSBGpFwua+FueBd4Xe-1svycjtL-kQ@mail.gmail.com>
-Subject: Re: [PATCH v4 03/10] KVM: selftests: Read binary stats desc in lib
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Mingwei Zhang <mizhang@google.com>,
-        LKML <linux-kernel@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>, Peter Shier <pshier@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Junaid Shahid <junaids@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jing Zhang <jingzhangos@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlXXH3ikA5Tcdx9R@builder.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 1:03 PM Sean Christopherson <seanjc@google.com> wrote:
+On Tue, Apr 12, 2022 at 02:46:39PM -0500, Bjorn Andersson wrote:
+> On Wed 09 Mar 13:01 CST 2022, Ansuel Smith wrote:
+> 
+> > Add cells definition for rpm node
+> 
+> Why do we need the cells?
 >
-> On Tue, Apr 12, 2022, Sean Christopherson wrote:
-> > On Tue, Apr 12, 2022, Ben Gardon wrote:
-> > > On Mon, Apr 11, 2022 at 5:55 PM Mingwei Zhang <mizhang@google.com> wrote:
-> > > > I was very confused on header->name_size. So this field means the
-> > > > maximum string size of a stats name, right? Can we update the comments
-> > > > in the kvm.h to specify that? By reading the comments, I don't really
-> > > > feel this is how we should use this field.
-> > >
-> > > I believe that's right. I agree the documentation on that was a little
-> > > confusing.
-> >
-> > Heh, a little.  I got tripped up looking at this too.  Give me a few minutes and
-> > I'll attach a cleanup patch to add comments and fix the myriad style issues.
-> >
-> > This whole file is painful to look at.  Aside from violating preferred kernel
-> > style, it's horribly consistent with itself.  Well, except for the 80 char limit,
-> > to which it has a fanatical devotion.
->
-> If you send a new version of this series, can you add this on top?
 
-Will do.
+Mh I'm referring to address-cells and size-cells required for reg or dtb
+will give warnings.
 
->
-> From: Sean Christopherson <seanjc@google.com>
-> Date: Tue, 12 Apr 2022 11:49:59 -0700
-> Subject: [PATCH] KVM: selftests: Clean up coding style in binary stats test
->
-> Fix a variety of code style violations and/or inconsistencies in the
-> binary stats test.  The 80 char limit is a soft limit and can and should
-> be ignored/violated if doing so improves the overall code readability.
->
-> Specifically, provide consistent indentation and don't split expressions
-> at arbitrary points just to honor the 80 char limit.
->
-> Opportunistically expand/add comments to call out the more subtle aspects
-> of the code.
->
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  .../selftests/kvm/kvm_binary_stats_test.c     | 91 ++++++++++++-------
->  1 file changed, 56 insertions(+), 35 deletions(-)
->
-> diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> index 97b180249ba0..944ed52e3f07 100644
-> --- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> +++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-> @@ -37,32 +37,42 @@ static void stats_test(int stats_fd)
->         /* Read kvm stats header */
->         read_vm_stats_header(stats_fd, &header);
->
-> +       /*
-> +        * The base size of the descriptor is defined by KVM's ABI, but the
-> +        * size of the name field is variable as far as KVM's ABI is concerned.
-> +        * But, the size of name is constant for a given instance of KVM and
-> +        * is provided by KVM in the overall stats header.
-> +        */
->         size_desc = sizeof(*stats_desc) + header.name_size;
->
->         /* Read kvm stats id string */
->         id = malloc(header.name_size);
->         TEST_ASSERT(id, "Allocate memory for id string");
-> +
->         ret = read(stats_fd, id, header.name_size);
->         TEST_ASSERT(ret == header.name_size, "Read id string");
->
->         /* Check id string, that should start with "kvm" */
->         TEST_ASSERT(!strncmp(id, "kvm", 3) && strlen(id) < header.name_size,
-> -                               "Invalid KVM stats type, id: %s", id);
-> +                   "Invalid KVM stats type, id: %s", id);
->
->         /* Sanity check for other fields in header */
->         if (header.num_desc == 0) {
->                 printf("No KVM stats defined!");
->                 return;
->         }
-> -       /* Check overlap */
-> -       TEST_ASSERT(header.desc_offset > 0 && header.data_offset > 0
-> -                       && header.desc_offset >= sizeof(header)
-> -                       && header.data_offset >= sizeof(header),
-> -                       "Invalid offset fields in header");
-> +       /*
-> +        * The descriptor and data offsets must be valid, they must not overlap
-> +        * the header, and the descriptor and data blocks must not overlap each
-> +        * other.  Note, the data block is rechecked after its size is known.
-> +        */
-> +       TEST_ASSERT(header.desc_offset && header.desc_offset >= sizeof(header) &&
-> +                   header.data_offset && header.data_offset >= sizeof(header),
-> +                   "Invalid offset fields in header");
-> +
->         TEST_ASSERT(header.desc_offset > header.data_offset ||
-> -                       (header.desc_offset + size_desc * header.num_desc <=
-> -                                                       header.data_offset),
-> -                       "Descriptor block is overlapped with data block");
-> +                   (header.desc_offset + size_desc * header.num_desc <= header.data_offset),
-> +                   "Descriptor block is overlapped with data block");
->
->         /* Read kvm stats descriptors */
->         stats_desc = alloc_vm_stats_desc(stats_fd, &header);
-> @@ -70,15 +80,22 @@ static void stats_test(int stats_fd)
->
->         /* Sanity check for fields in descriptors */
->         for (i = 0; i < header.num_desc; ++i) {
-> +               /*
-> +                * Note, size_desc includes the of the name field, which is
-> +                * variable, i.e. this is NOT equivalent to &stats_desc[i].
-> +                */
->                 pdesc = (void *)stats_desc + i * size_desc;
-> -               /* Check type,unit,base boundaries */
-> -               TEST_ASSERT((pdesc->flags & KVM_STATS_TYPE_MASK)
-> -                               <= KVM_STATS_TYPE_MAX, "Unknown KVM stats type");
-> -               TEST_ASSERT((pdesc->flags & KVM_STATS_UNIT_MASK)
-> -                               <= KVM_STATS_UNIT_MAX, "Unknown KVM stats unit");
-> -               TEST_ASSERT((pdesc->flags & KVM_STATS_BASE_MASK)
-> -                               <= KVM_STATS_BASE_MAX, "Unknown KVM stats base");
-> -               /* Check exponent for stats unit
-> +
-> +               /* Check type, unit, and base boundaries */
-> +               TEST_ASSERT((pdesc->flags & KVM_STATS_TYPE_MASK) <= KVM_STATS_TYPE_MAX,
-> +                           "Unknown KVM stats type");
-> +               TEST_ASSERT((pdesc->flags & KVM_STATS_UNIT_MASK) <= KVM_STATS_UNIT_MAX,
-> +                           "Unknown KVM stats unit");
-> +               TEST_ASSERT((pdesc->flags & KVM_STATS_BASE_MASK) <= KVM_STATS_BASE_MAX,
-> +                           "Unknown KVM stats base");
-> +
-> +               /*
-> +                * Check exponent for stats unit
->                  * Exponent for counter should be greater than or equal to 0
->                  * Exponent for unit bytes should be greater than or equal to 0
->                  * Exponent for unit seconds should be less than or equal to 0
-> @@ -89,47 +106,51 @@ static void stats_test(int stats_fd)
->                 case KVM_STATS_UNIT_NONE:
->                 case KVM_STATS_UNIT_BYTES:
->                 case KVM_STATS_UNIT_CYCLES:
-> -                       TEST_ASSERT(pdesc->exponent >= 0,
-> -                                       "Unsupported KVM stats unit");
-> +                       TEST_ASSERT(pdesc->exponent >= 0, "Unsupported KVM stats unit");
->                         break;
->                 case KVM_STATS_UNIT_SECONDS:
-> -                       TEST_ASSERT(pdesc->exponent <= 0,
-> -                                       "Unsupported KVM stats unit");
-> +                       TEST_ASSERT(pdesc->exponent <= 0, "Unsupported KVM stats unit");
->                         break;
->                 }
->                 /* Check name string */
->                 TEST_ASSERT(strlen(pdesc->name) < header.name_size,
-> -                               "KVM stats name(%s) too long", pdesc->name);
-> +                           "KVM stats name(%s) too long", pdesc->name);
->                 /* Check size field, which should not be zero */
-> -               TEST_ASSERT(pdesc->size, "KVM descriptor(%s) with size of 0",
-> -                               pdesc->name);
-> +               TEST_ASSERT(pdesc->size,
-> +                           "KVM descriptor(%s) with size of 0", pdesc->name);
->                 /* Check bucket_size field */
->                 switch (pdesc->flags & KVM_STATS_TYPE_MASK) {
->                 case KVM_STATS_TYPE_LINEAR_HIST:
->                         TEST_ASSERT(pdesc->bucket_size,
-> -                           "Bucket size of Linear Histogram stats (%s) is zero",
-> -                           pdesc->name);
-> +                                   "Bucket size of Linear Histogram stats (%s) is zero",
-> +                                   pdesc->name);
->                         break;
->                 default:
->                         TEST_ASSERT(!pdesc->bucket_size,
-> -                           "Bucket size of stats (%s) is not zero",
-> -                           pdesc->name);
-> +                                   "Bucket size of stats (%s) is not zero",
-> +                                   pdesc->name);
->                 }
->                 size_data += pdesc->size * sizeof(*stats_data);
->         }
-> -       /* Check overlap */
-> -       TEST_ASSERT(header.data_offset >= header.desc_offset
-> -               || header.data_offset + size_data <= header.desc_offset,
-> -               "Data block is overlapped with Descriptor block");
-> +
-> +       /*
-> +        * Now that the size of the data block is known, verify the data block
-> +        * doesn't overlap the descriptor block.
-> +        */
-> +       TEST_ASSERT(header.data_offset >= header.desc_offset ||
-> +                   header.data_offset + size_data <= header.desc_offset,
-> +                   "Data block is overlapped with Descriptor block");
-> +
->         /* Check validity of all stats data size */
->         TEST_ASSERT(size_data >= header.num_desc * sizeof(*stats_data),
-> -                       "Data size is not correct");
-> +                   "Data size is not correct");
-> +
->         /* Check stats offset */
->         for (i = 0; i < header.num_desc; ++i) {
->                 pdesc = (void *)stats_desc + i * size_desc;
->                 TEST_ASSERT(pdesc->offset < size_data,
-> -                       "Invalid offset (%u) for stats: %s",
-> -                       pdesc->offset, pdesc->name);
-> +                           "Invalid offset (%u) for stats: %s",
-> +                           pdesc->offset, pdesc->name);
->         }
->
->         /* Read kvm stats data one by one */
->
-> base-commit: f9955a6aaa037a7a8198a817b9d272efcf10961a
-> --
->
+> > and add missing regulators for the 4
+> > regulator present on ipq8064. There regulators are controlled by rpm and
+> > to correctly works gsbi4_i2c require to be NEVER disabled or rpm will
+> 
+> Are you saying "...to correctly work, gsbi4_i2c must NEVER be disabled..."?
+> 
+> If so, that's good information, but how does it relate to this
+> particular change?
+> 
+
+It doesn't but since it I had many days trying to debug the regulators
+not working only to discover that the problem was with the pin, I thought
+it was a good idea to add this info. Should I just drop it or should i
+add some comments in the dts?
+
+> Regards,
+> Bjorn
+> 
+> > reject any regulator change request.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > Tested-by: Jonathan McDowell <noodles@earth.li>
+> > ---
+> >  arch/arm/boot/dts/qcom-ipq8064.dtsi | 36 +++++++++++++++++++++++++++++
+> >  1 file changed, 36 insertions(+)
+> > 
+> > diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > index b309bc0fbbcd..0938838a4af8 100644
+> > --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > @@ -842,10 +842,46 @@ rpm: rpm@108000 {
+> >  			clocks = <&gcc RPM_MSG_RAM_H_CLK>;
+> >  			clock-names = "ram";
+> >  
+> > +			#address-cells = <1>;
+> > +			#size-cells = <0>;
+> > +
+> >  			rpmcc: clock-controller {
+> >  				compatible = "qcom,rpmcc-ipq806x", "qcom,rpmcc";
+> >  				#clock-cells = <1>;
+> >  			};
+> > +
+> > +			smb208_regulators: regulators {
+> > +				compatible = "qcom,rpm-smb208-regulators";
+> > +				status = "okay";
+> > +
+> > +				smb208_s1a: s1a {
+> > +					regulator-min-microvolt = <1050000>;
+> > +					regulator-max-microvolt = <1150000>;
+> > +
+> > +					qcom,switch-mode-frequency = <1200000>;
+> > +				};
+> > +
+> > +				smb208_s1b: s1b {
+> > +					regulator-min-microvolt = <1050000>;
+> > +					regulator-max-microvolt = <1150000>;
+> > +
+> > +					qcom,switch-mode-frequency = <1200000>;
+> > +				};
+> > +
+> > +				smb208_s2a: s2a {
+> > +					regulator-min-microvolt = < 800000>;
+> > +					regulator-max-microvolt = <1250000>;
+> > +
+> > +					qcom,switch-mode-frequency = <1200000>;
+> > +				};
+> > +
+> > +				smb208_s2b: s2b {
+> > +					regulator-min-microvolt = < 800000>;
+> > +					regulator-max-microvolt = <1250000>;
+> > +
+> > +					qcom,switch-mode-frequency = <1200000>;
+> > +				};
+> > +			};
+> >  		};
+> >  
+> >  		tcsr: syscon@1a400000 {
+> > -- 
+> > 2.34.1
+> > 
+
+-- 
+	Ansuel
