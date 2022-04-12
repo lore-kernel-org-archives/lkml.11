@@ -2,86 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66745C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:26:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF33C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230221AbiDLX3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44314 "EHLO
+        id S230226AbiDLX3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:29:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230030AbiDLX0q (ORCPT
+        with ESMTP id S230106AbiDLX0t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:26:46 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD08A88A1;
-        Tue, 12 Apr 2022 15:36:28 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KdJ7Z0tPbz4xLQ;
-        Wed, 13 Apr 2022 07:02:02 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1649797322;
-        bh=r2XCP+C01lmUpMxczGDkvBp+3Q3NgFqgOAMSr2km3yw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=g7Y6uxdIG7NSlD1cN8Au0Suewd1eXzOVebr/NeAg7JIkiL5twMadZ7IwGCxsNMzkW
-         Ml++oqdZb67s7kOm3uhOX7kr8V/2bzB8gdOgHQMN4ZqLGZ4DMsjcJJZk1sH+l+Y/vM
-         1b16XSuXEvxKpC/kwNWPxqgIJD6IXgJFGlmHUXtaEtBMl9hNmlmCGp8XEtApO/0YUc
-         fMQ7Tba7Eiyu7QvugcWQg8C9dI1boOwSFsUEN82V0t0Wu/ur1/HB/lk9+R07WSogrl
-         6Qs9wX0ExacpJovoTVYLQM5yOoVCUIiz32aBVojz6nu80pnYonhY6R5StNtyraUFjq
-         WpvJ/1Bo/IJxA==
-Date:   Wed, 13 Apr 2022 07:02:01 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the omap-fixes tree
-Message-ID: <20220413070201.248a9b11@canb.auug.org.au>
+        Tue, 12 Apr 2022 19:26:49 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD045E5E2A;
+        Tue, 12 Apr 2022 15:37:16 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id bh17so392487ejb.8;
+        Tue, 12 Apr 2022 15:37:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Fi7MSAw9JJfEvAstthfKaej5RCtbNw/RZ/uRsivb1lk=;
+        b=P0UAHya9e7CASxMUbhq+/+mZprtCmglz9V4rIrQxtp/2QWoEr6dcyh2A77/WSJ9ZQ9
+         MzS3J/xT0o1MaHzzIWjNkb+O3ATx8QEftezuDBugYJJKvaR2wK5xHunebttC/0nHQTd6
+         xQVcX/ye+UobRN4t/8PjkZd9H18AYH7RXVDTD2tUlOPiTO6mXikOzUUB/Kid2+axYFjd
+         xTR5Fku5CdDPgoL7balX19T3uzgItp0GQe1Ij2eWWZKiyWoiIGI6SnMvOu+Iq7Y0+d5G
+         fP9FxGITJMK2Zx/cg7mfn9RhZ4ifYp2D3g08reHUUW6CjUnLn+iz0nJVfEz8ABt0QNej
+         MIaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Fi7MSAw9JJfEvAstthfKaej5RCtbNw/RZ/uRsivb1lk=;
+        b=ATOEVXBWRxPWWCAWzOUABYPf9OAfxa/gtez7QfIPn6jvxJJkFbOGk7qL1VHY2X3Bcv
+         C3lpJCQTq7F7sSkXdYy4SUo0ctdJau45mnpjBRalUQ+tYM7UoKbhQgvXhxhqQzYw5Yw0
+         JgzpEDcYAcBusp6uGB/F4g5O3xNc8FcV5ZXQb5nZ7IAxfFbL9NmzZrfBuiWg9p1+tp2Y
+         aR8peEIrrTe9/ees3mKMVu6IwDtMNsfNSM8+vxYJoVwtMYKqtKR7OfXRVJp/hjq7E2Tg
+         006MXx4alk5dZiR0n+s8q15JldenHzoGI7byUmrdGDlLZ8j24tBc8dlRawCro6QrzBg8
+         xC5A==
+X-Gm-Message-State: AOAM531OBFQk1J4dfJj1RcD0Z9YienAj9qkycfIk78quoKiWfEEjyyt3
+        c1sdxR6Jq3m17rUVPuUveXg=
+X-Google-Smtp-Source: ABdhPJyYVVu7QfZdAoEiOX9n+x0N4MK17YbtHf77uSWQez4CJOaLjbCP0v6dWK2uaL8ANUwRNSw+gQ==
+X-Received: by 2002:a17:906:3082:b0:6e0:111f:8986 with SMTP id 2-20020a170906308200b006e0111f8986mr35114749ejv.677.1649803035186;
+        Tue, 12 Apr 2022 15:37:15 -0700 (PDT)
+Received: from Ansuel-xps. (host-80-182-176-248.pool80182.interbusiness.it. [80.182.176.248])
+        by smtp.gmail.com with ESMTPSA id u10-20020a50d94a000000b004131aa2525esm336339edj.49.2022.04.12.15.37.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 15:37:14 -0700 (PDT)
+Message-ID: <6255ff1a.1c69fb81.bae17.1e86@mx.google.com>
+X-Google-Original-Message-ID: <YlXcpPCmMBPPzuXM@Ansuel-xps.>
+Date:   Tue, 12 Apr 2022 22:10:12 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jonathan McDowell <noodles@earth.li>
+Subject: Re: [PATCH v3 13/18] ARM: dts: qcom: add opp table for cpu and l2
+ for ipq8064
+References: <20220309190152.7998-1-ansuelsmth@gmail.com>
+ <20220309190152.7998-14-ansuelsmth@gmail.com>
+ <YlXcHJminisFjobl@builder.lan>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/p830KfUM=nX+TE28sd0D0e.";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YlXcHJminisFjobl@builder.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/p830KfUM=nX+TE28sd0D0e.
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Apr 12, 2022 at 03:07:56PM -0500, Bjorn Andersson wrote:
+> On Wed 09 Mar 13:01 CST 2022, Ansuel Smith wrote:
+> 
+> > Add opp table for cpu and l2 cache. While the current cpufreq is
+> > the generic one that doesn't scale the L2 cache, we add the l2
+> > cache opp anyway for the sake of completeness. This will be handy in the
+> > future when a dedicated cpufreq driver is introduced for krait cores
+> > that will correctly scale l2 cache with the core freq.
+> > 
+> > Opp-level is set based on the logic of
+> > 0: idle level
+> > 1: normal level
+> > 2: turbo level
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > Tested-by: Jonathan McDowell <noodles@earth.li>
+> > ---
+> >  arch/arm/boot/dts/qcom-ipq8064.dtsi | 99 +++++++++++++++++++++++++++++
+> >  1 file changed, 99 insertions(+)
+> > 
+> > diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > index 7dd0b901cd30..a1079583def9 100644
+> > --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+> > @@ -48,6 +48,105 @@ L2: l2-cache {
+> >  		};
+> >  	};
+> >  
+> > +	opp_table_l2: opp_table_l2 {
+> 
+> Please don't use '_' in the node names.
+> 
+> > +		compatible = "operating-points-v2";
+> > +
+> > +		opp-384000000 {
+> > +			opp-hz = /bits/ 64 <384000000>;
+> > +			opp-microvolt = <1100000>;
+> > +			clock-latency-ns = <100000>;
+> > +			opp-level = <0>;
+> > +		};
+> > +
+> > +		opp-1000000000 {
+> > +			opp-hz = /bits/ 64 <1000000000>;
+> > +			opp-microvolt = <1100000>;
+> > +			clock-latency-ns = <100000>;
+> > +			opp-level = <1>;
+> > +		};
+> > +
+> > +		opp-1200000000 {
+> > +			opp-hz = /bits/ 64 <1200000000>;
+> > +			opp-microvolt = <1150000>;
+> > +			clock-latency-ns = <100000>;
+> > +			opp-level = <2>;
+> > +		};
+> > +	};
+> > +
+> > +	opp_table0: opp_table0 {
+> 
+> Perhaps you can name this opp-table-kryo, to make it consistent with
+> opp-table-l2 above?
+> 
+> Regards,
+> Bjorn
+>
 
-Hi all,
+Considering this is krait, I think I should use krait. Also about this
+we have from ages the wrong compatible but we had too keep kryo to not
+break compatibility with old dt. Can I fix this for once and just add
+this additional compatible?
 
-In commit
+> > +		compatible = "operating-points-v2-kryo-cpu";
+> > +		nvmem-cells = <&speedbin_efuse>;
+> > +
+> > +		/*
+> > +		 * Voltage thresholds are <target min max>
+> > +		 */
+> > +		opp-384000000 {
+> > +			opp-hz = /bits/ 64 <384000000>;
+> > +			opp-microvolt-speed0-pvs0-v0 = <1000000 950000 1050000>;
+> > +			opp-microvolt-speed0-pvs1-v0 = <925000 878750 971250>;
+> > +			opp-microvolt-speed0-pvs2-v0 = <875000 831250 918750>;
+> > +			opp-microvolt-speed0-pvs3-v0 = <800000 760000 840000>;
+> > +			opp-supported-hw = <0x1>;
+> > +			clock-latency-ns = <100000>;
+> > +			opp-level = <0>;
+> > +		};
+> > +
+> > +		opp-600000000 {
+> > +			opp-hz = /bits/ 64 <600000000>;
+> > +			opp-microvolt-speed0-pvs0-v0 = <1050000 997500 1102500>;
+> > +			opp-microvolt-speed0-pvs1-v0 = <975000 926250 1023750>;
+> > +			opp-microvolt-speed0-pvs2-v0 = <925000 878750 971250>;
+> > +			opp-microvolt-speed0-pvs3-v0 = <850000 807500 892500>;
+> > +			opp-supported-hw = <0x1>;
+> > +			clock-latency-ns = <100000>;
+> > +			opp-level = <1>;
+> > +		};
+> > +
+> > +		opp-800000000 {
+> > +			opp-hz = /bits/ 64 <800000000>;
+> > +			opp-microvolt-speed0-pvs0-v0 = <1100000 1045000 1155000>;
+> > +			opp-microvolt-speed0-pvs1-v0 = <1025000 973750 1076250>;
+> > +			opp-microvolt-speed0-pvs2-v0 = <995000 945250 1044750>;
+> > +			opp-microvolt-speed0-pvs3-v0 = <900000 855000 945000>;
+> > +			opp-supported-hw = <0x1>;
+> > +			clock-latency-ns = <100000>;
+> > +			opp-level = <1>;
+> > +		};
+> > +
+> > +		opp-1000000000 {
+> > +			opp-hz = /bits/ 64 <1000000000>;
+> > +			opp-microvolt-speed0-pvs0-v0 = <1150000 1092500 1207500>;
+> > +			opp-microvolt-speed0-pvs1-v0 = <1075000 1021250 1128750>;
+> > +			opp-microvolt-speed0-pvs2-v0 = <1025000 973750 1076250>;
+> > +			opp-microvolt-speed0-pvs3-v0 = <950000 902500 997500>;
+> > +			opp-supported-hw = <0x1>;
+> > +			clock-latency-ns = <100000>;
+> > +			opp-level = <1>;
+> > +		};
+> > +
+> > +		opp-1200000000 {
+> > +			opp-hz = /bits/ 64 <1200000000>;
+> > +			opp-microvolt-speed0-pvs0-v0 = <1200000 1140000 1260000>;
+> > +			opp-microvolt-speed0-pvs1-v0 = <1125000 1068750 1181250>;
+> > +			opp-microvolt-speed0-pvs2-v0 = <1075000 1021250 1128750>;
+> > +			opp-microvolt-speed0-pvs3-v0 = <1000000 950000 1050000>;
+> > +			opp-supported-hw = <0x1>;
+> > +			clock-latency-ns = <100000>;
+> > +			opp-level = <2>;
+> > +		};
+> > +
+> > +		opp-1400000000 {
+> > +			opp-hz = /bits/ 64 <1400000000>;
+> > +			opp-microvolt-speed0-pvs0-v0 = <1250000 1187500 1312500>;
+> > +			opp-microvolt-speed0-pvs1-v0 = <1175000 1116250 1233750>;
+> > +			opp-microvolt-speed0-pvs2-v0 = <1125000 1068750 1181250>;
+> > +			opp-microvolt-speed0-pvs3-v0 = <1050000 997500 1102500>;
+> > +			opp-supported-hw = <0x1>;
+> > +			clock-latency-ns = <100000>;
+> > +			opp-level = <2>;
+> > +		};
+> > +	};
+> > +
+> >  	thermal-zones {
+> >  		sensor0-thermal {
+> >  			polling-delay-passive = <0>;
+> > -- 
+> > 2.34.1
+> > 
 
-  9be24a73de12 ("ARM: dts: Fix mmc order for omap3-gta04")
-
-Fixes tag
-
-  Fixes: commit a1ebdb374199 ("ARM: dts: Fix swapped mmc order for omap3")
-
-has these problem(s):
-
-  - leading word 'commit' unexpected
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/p830KfUM=nX+TE28sd0D0e.
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJV6MkACgkQAVBC80lX
-0GzbmggAlC8IVnuZUEfb4mhk3oTqmchFNv53GiCQA5dk9OMYbiTBjxvpSoCyvF1L
-llv0dlBSPraHTxZ3HSPQciLO/we/Ujv8l6d4eDrcVzyFewqoDgqmhyapu/GgTReK
-RVRRm8vdl66HQX0KYduJjRNgJTP6TFitQgWKnQ1pLTWX+nJhSgfV5dUDUsIFgMWA
-ysiPhUzURtD+hLJ9pQhayFG0OX1k8zSBc3Cm1GAJtiOz3x39ctbFFLHpZz+FlFZH
-s1mWtCC/lkRzV57H+oBokvRJbcA1d1nLoWiW+6DtjPf7PbW7UETg8HDkcXGT74He
-Kf7DwjSEUA0d1rT79dYHJ5xN4QIXlg==
-=xZbo
------END PGP SIGNATURE-----
-
---Sig_/p830KfUM=nX+TE28sd0D0e.--
+-- 
+	Ansuel
