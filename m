@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B780C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEB7C352A1
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384254AbiDLIj4 (ORCPT
+        id S1382491AbiDLIdi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:39:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
+        Tue, 12 Apr 2022 04:33:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357176AbiDLHjv (ORCPT
+        with ESMTP id S1353469AbiDLHZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D948913F77;
-        Tue, 12 Apr 2022 00:13:29 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FC9434A5;
+        Tue, 12 Apr 2022 00:00:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7455861708;
-        Tue, 12 Apr 2022 07:13:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FDFBC385A5;
-        Tue, 12 Apr 2022 07:13:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BA79B81B4E;
+        Tue, 12 Apr 2022 07:00:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93E42C385A1;
+        Tue, 12 Apr 2022 07:00:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747608;
-        bh=9xQ3uX4h9l1REPAIIrIh96bR7xnygsUSU5H1Cu9F32g=;
+        s=korg; t=1649746833;
+        bh=33wyTYRMCt/vjpaH5MwKGMEAkzb4U7cqLtDy9m2wrOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FKCsTg5k+KAleHqAC7ViVP+z9u1P1tyXhi9KVoKQGq+XFtN/1aJe/ho5XN22uD8hx
-         UOw4zzsNY2LQYhYQdZrcYSMZOMPfooXYcqLBUb5RSZNAtvypy1tr1pSdRLfaRWup6O
-         NvZohir7O8Y+3f2v00DtoouwoAqde7W7ycn82qrQ=
+        b=cCcnfB5nQCZMdoR4nID66NIraJbWZFyIYI1aTxDgH5CbbK/wUSvSfOpsiDn3pJ5TV
+         ReEYc8KAi7zcCpYPbFDnG65WOKKGdYUjFkyol8cRl2s6/48X9OdpU7asy7Q6NthyrK
+         yx3ucev0HgR2LqYtQTYoLOCUVjwxjbsE8sNjedR8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jorge Lopez <jorge.lopez2@hp.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org,
+        Linux Kernel Functional Testing <lkft@linaro.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 140/343] platform/x86: hp-wmi: Fix 0x05 error code reported by several WMI calls
-Date:   Tue, 12 Apr 2022 08:29:18 +0200
-Message-Id: <20220412062955.426856975@linuxfoundation.org>
+Subject: [PATCH 5.16 145/285] selftests: net: Add tls config dependency for tls selftests
+Date:   Tue, 12 Apr 2022 08:30:02 +0200
+Message-Id: <20220412062947.853545144@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,150 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jorge Lopez <jorge.lopez2@hp.com>
+From: Naresh Kamboju <naresh.kamboju@linaro.org>
 
-[ Upstream commit be9d73e64957bbd31ee9a0d11adc0f720974c558 ]
+[ Upstream commit d9142e1cf3bbdaf21337767114ecab26fe702d47 ]
 
-Several WMI queries leverage hp_wmi_read_int function to read their
-data. hp_wmi_read_int function was corrected in a previous patch.
-Now, this function invokes hp_wmi_perform_query with input parameter
-of size zero and the output buffer of size 4.
+selftest net tls test cases need TLS=m without this the test hangs.
+Enabling config TLS solves this problem and runs to complete.
+  - CONFIG_TLS=m
 
-WMI commands calling hp_wmi_perform_query with input buffer size value
-of zero are listed below.
-
-HPWMI_DISPLAY_QUERY
-HPWMI_HDDTEMP_QUERY
-HPWMI_ALS_QUERY
-HPWMI_HARDWARE_QUERY
-HPWMI_WIRELESS_QUERY
-HPWMI_BIOS_QUERY
-HPWMI_FEATURE_QUERY
-HPWMI_HOTKEY_QUERY
-HPWMI_FEATURE2_QUERY
-HPWMI_WIRELESS2_QUERY
-HPWMI_POSTCODEERROR_QUERY
-HPWMI_THERMAL_PROFILE_QUERY
-HPWMI_FAN_SPEED_MAX_GET_QUERY
-
-Invoking those WMI commands with an input buffer size greater
-than zero will cause error 0x05 to be returned.
-
-All WMI commands executed by the driver were reviewed and changes
-were made to ensure the expected input and output buffer size match
-the WMI specification.
-
-Changes were validated on a HP ZBook Workstation notebook,
-HP EliteBook x360, and HP EliteBook 850 G8.  Additional
-validation was included in the test process to ensure no other
-commands were incorrectly handled.
-
-Signed-off-by: Jorge Lopez <jorge.lopez2@hp.com>
-Link: https://lore.kernel.org/r/20220310210853.28367-4-jorge.lopez2@hp.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Signed-off-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/hp-wmi.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ tools/testing/selftests/net/config | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
-index f822ef6eb93c..88f0bfd6ecf1 100644
---- a/drivers/platform/x86/hp-wmi.c
-+++ b/drivers/platform/x86/hp-wmi.c
-@@ -330,7 +330,7 @@ static int hp_wmi_get_fan_speed(int fan)
- 	char fan_data[4] = { fan, 0, 0, 0 };
- 
- 	int ret = hp_wmi_perform_query(HPWMI_FAN_SPEED_GET_QUERY, HPWMI_GM,
--				       &fan_data, sizeof(fan_data),
-+				       &fan_data, sizeof(char),
- 				       sizeof(fan_data));
- 
- 	if (ret != 0)
-@@ -399,7 +399,7 @@ static int omen_thermal_profile_set(int mode)
- 		return -EINVAL;
- 
- 	ret = hp_wmi_perform_query(HPWMI_SET_PERFORMANCE_MODE, HPWMI_GM,
--				   &buffer, sizeof(buffer), sizeof(buffer));
-+				   &buffer, sizeof(buffer), 0);
- 
- 	if (ret)
- 		return ret < 0 ? ret : -EINVAL;
-@@ -436,7 +436,7 @@ static int hp_wmi_fan_speed_max_set(int enabled)
- 	int ret;
- 
- 	ret = hp_wmi_perform_query(HPWMI_FAN_SPEED_MAX_SET_QUERY, HPWMI_GM,
--				   &enabled, sizeof(enabled), sizeof(enabled));
-+				   &enabled, sizeof(enabled), 0);
- 
- 	if (ret)
- 		return ret < 0 ? ret : -EINVAL;
-@@ -449,7 +449,7 @@ static int hp_wmi_fan_speed_max_get(void)
- 	int val = 0, ret;
- 
- 	ret = hp_wmi_perform_query(HPWMI_FAN_SPEED_MAX_GET_QUERY, HPWMI_GM,
--				   &val, sizeof(val), sizeof(val));
-+				   &val, 0, sizeof(val));
- 
- 	if (ret)
- 		return ret < 0 ? ret : -EINVAL;
-@@ -461,7 +461,7 @@ static int __init hp_wmi_bios_2008_later(void)
- {
- 	int state = 0;
- 	int ret = hp_wmi_perform_query(HPWMI_FEATURE_QUERY, HPWMI_READ, &state,
--				       sizeof(state), sizeof(state));
-+				       0, sizeof(state));
- 	if (!ret)
- 		return 1;
- 
-@@ -472,7 +472,7 @@ static int __init hp_wmi_bios_2009_later(void)
- {
- 	u8 state[128];
- 	int ret = hp_wmi_perform_query(HPWMI_FEATURE2_QUERY, HPWMI_READ, &state,
--				       sizeof(state), sizeof(state));
-+				       0, sizeof(state));
- 	if (!ret)
- 		return 1;
- 
-@@ -550,7 +550,7 @@ static int hp_wmi_rfkill2_refresh(void)
- 	int err, i;
- 
- 	err = hp_wmi_perform_query(HPWMI_WIRELESS2_QUERY, HPWMI_READ, &state,
--				   sizeof(state), sizeof(state));
-+				   0, sizeof(state));
- 	if (err)
- 		return err;
- 
-@@ -639,7 +639,7 @@ static ssize_t als_store(struct device *dev, struct device_attribute *attr,
- 		return ret;
- 
- 	ret = hp_wmi_perform_query(HPWMI_ALS_QUERY, HPWMI_WRITE, &tmp,
--				       sizeof(tmp), sizeof(tmp));
-+				       sizeof(tmp), 0);
- 	if (ret)
- 		return ret < 0 ? ret : -EINVAL;
- 
-@@ -660,9 +660,9 @@ static ssize_t postcode_store(struct device *dev, struct device_attribute *attr,
- 	if (clear == false)
- 		return -EINVAL;
- 
--	/* Clear the POST error code. It is kept until until cleared. */
-+	/* Clear the POST error code. It is kept until cleared. */
- 	ret = hp_wmi_perform_query(HPWMI_POSTCODEERROR_QUERY, HPWMI_WRITE, &tmp,
--				       sizeof(tmp), sizeof(tmp));
-+				       sizeof(tmp), 0);
- 	if (ret)
- 		return ret < 0 ? ret : -EINVAL;
- 
-@@ -952,7 +952,7 @@ static int __init hp_wmi_rfkill2_setup(struct platform_device *device)
- 	int err, i;
- 
- 	err = hp_wmi_perform_query(HPWMI_WIRELESS2_QUERY, HPWMI_READ, &state,
--				   sizeof(state), sizeof(state));
-+				   0, sizeof(state));
- 	if (err)
- 		return err < 0 ? err : -EINVAL;
- 
+diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
+index ead7963b9bf0..cecb921a0dbf 100644
+--- a/tools/testing/selftests/net/config
++++ b/tools/testing/selftests/net/config
+@@ -43,5 +43,6 @@ CONFIG_NET_ACT_TUNNEL_KEY=m
+ CONFIG_NET_ACT_MIRRED=m
+ CONFIG_BAREUDP=m
+ CONFIG_IPV6_IOAM6_LWTUNNEL=y
++CONFIG_TLS=m
+ CONFIG_CRYPTO_SM4=y
+ CONFIG_AMT=m
 -- 
 2.35.1
 
