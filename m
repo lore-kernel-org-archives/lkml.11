@@ -2,113 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94488C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:17:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10ACBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 14:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356485AbiDLOTQ (ORCPT
+        id S1355634AbiDLOVG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 10:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41388 "EHLO
+        Tue, 12 Apr 2022 10:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235000AbiDLOTO (ORCPT
+        with ESMTP id S229922AbiDLOVE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 10:19:14 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6CB4201B8;
-        Tue, 12 Apr 2022 07:16:56 -0700 (PDT)
+        Tue, 12 Apr 2022 10:21:04 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4DE72B257;
+        Tue, 12 Apr 2022 07:18:46 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id k10so19221280oia.0;
+        Tue, 12 Apr 2022 07:18:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649773016; x=1681309016;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=GLjqyzQYMnGSzgVdFrP5fPLH9ciyOjiLJCqlZIStZkY=;
-  b=xsSYaEVncQdddrNeTwR1zXy0rof6wuhxXROKGHhgI3gvgZGQgVnUvO/2
-   bwdQR8qb6xh33K5efg3/TiM95BwwHwEZZigrBiUhdASzVM/DZLfrB6z3C
-   p6pmhIRbhXyJX7l4f6yEhIbC9WAEDqPapnVjn46Nb6cGN7NzGNl0Jn6pn
-   A=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 12 Apr 2022 07:16:56 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 07:16:55 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Apr 2022 07:16:55 -0700
-Received: from jhugo-lnx.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Apr 2022 07:16:54 -0700
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-To:     <kys@microsoft.com>, <haiyangz@microsoft.com>,
-        <sthemmin@microsoft.com>, <wei.liu@kernel.org>,
-        <decui@microsoft.com>, <lorenzo.pieralisi@arm.com>,
-        <robh@kernel.org>, <kw@linux.com>, <bhelgaas@google.com>,
-        <jakeo@microsoft.com>
-CC:     <bjorn.andersson@linaro.org>, <linux-hyperv@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>
-Subject: [PATCH] PCI: hv: Fix multi-MSI to allow more than one MSI vector
-Date:   Tue, 12 Apr 2022 08:16:31 -0600
-Message-ID: <1649772991-10285-1-git-send-email-quic_jhugo@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=obv/k21gZE+V92h4u03QULKQ3LtytSGxFnD77czROmA=;
+        b=EAAEBVlOAqOyiW1tC4Ocs2HJi/WOyZDgN6RRcmql+HY0hA5+QGV21TCNUGhH7JNB2l
+         Hk6t4IG8jK1vQQOuNFGfg1JLiYkuTqIwejo1POrVPR0NQlp43e819Jbkm48JQDWYtIjT
+         +lb2T9w+vDUG2AX1oky5qrJhRe0hdu9s0ivy0yDKgOhddOykO60QR8M72Ycf/oqTwpEU
+         2kpvfBakSQK0sCU7mM1O3Q+DQ87dIdJeQDJOVU3r6x5pq6Tnzrq5lx6fo7DdEWnKaSpk
+         m5TxC9gPV6zqyrEAHJyrzOPGzxhDfZ5TIOc2MbkzmF2dVSq2gFWWaEgA4yN7qt+kuG7O
+         ucSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=obv/k21gZE+V92h4u03QULKQ3LtytSGxFnD77czROmA=;
+        b=Yst6+xzFMQtnzGyF1A88qCLANA3/A2nmyODgSIzunPKC9crbNE3FmsNUVxJPsZ9Gmw
+         NuTDgX6HM5VrLYF+IsaKVy3CZXwX+GPV10UHmYUHsGe4Mt55Pqwdl2ASYnvg23U/awII
+         paIMHiiVCqWkDJ45C3ty9fEyW5+OD5yKjKAGlXjt6Im9MPnkAZ0ZRx3JDMDEFeZ10FJf
+         i+7uiRt/Zn4x+H3+hxf/v0jqFnm3bbEXvYfKEfAq59pYUJn4cDLZ8CbJAkPDXNyPekub
+         LqKitoyis8sgUex0vThddQgdVr1JjaIb2STQBobwAbCpOkifHy7e5xuaPIgcbHpXH8+m
+         c/Mg==
+X-Gm-Message-State: AOAM532ZMwemuBdNMqLkUpR87yAH8up4yqVNqFKw68J5JvYBcasQaEC0
+        6yCD3MJRJ1+ludhqu2yXWGA=
+X-Google-Smtp-Source: ABdhPJwwRy1UvOvDwBp6yA+VwcIK7ZVdFBc4qHV4BN+/MjC7zbwOdmbapdiftY1O+qAYdRi6vD4Nuw==
+X-Received: by 2002:a05:6808:4cf:b0:2ef:8af8:4a4 with SMTP id a15-20020a05680804cf00b002ef8af804a4mr1843693oie.159.1649773126149;
+        Tue, 12 Apr 2022 07:18:46 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id p1-20020a05683003c100b005c927b6e645sm13487706otc.20.2022.04.12.07.18.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 07:18:45 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <4dc6a76b-cdb4-e43e-cd04-4d77f9133ddf@roeck-us.net>
+Date:   Tue, 12 Apr 2022 07:18:43 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] watchdog: rti-wdt: Fix pm_runtime_get_sync() error
+ checking
+Content-Language: en-US
+To:     Miaoqian Lin <linmq006@gmail.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Tero Kristo <t-kristo@ti.com>, linux-watchdog@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220412070824.23708-1-linmq006@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220412070824.23708-1-linmq006@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the allocation of multiple MSI vectors for multi-MSI fails in the core
-PCI framework, the framework will retry the allocation as a single MSI
-vector, assuming that meets the min_vecs specified by the requesting
-driver.
+On 4/12/22 00:08, Miaoqian Lin wrote:
+> If the device is already in a runtime PM enabled state
+> pm_runtime_get_sync() will return 1, so a test for negative
+> value should be used to check for errors.
+> 
+> Fixes: 2d63908bdbfb ("watchdog: Add K3 RTI watchdog support")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 
-Hyper-V advertises that multi-MSI is supported, but reuses the VECTOR
-domain to implement that for x86.  The VECTOR domain does not support
-multi-MSI, so the alloc will always fail and fallback to a single MSI
-allocation.
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-In short, Hyper-V advertises a capability it does not implement.
-
-Hyper-V can support multi-MSI because it coordinates with the hypervisor
-to map the MSIs in the IOMMU's interrupt remapper, which is something the
-VECTOR domain does not have.  Therefore the fix is simple - copy what the
-x86 IOMMU drivers (AMD/Intel-IR) do by removing
-X86_IRQ_ALLOC_CONTIGUOUS_VECTORS after calling the VECTOR domain's
-pci_msi_prepare().
-
-Fixes: 4daace0d8ce8 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
----
- drivers/pci/controller/pci-hyperv.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index d270a204..41be63e 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -614,7 +614,16 @@ static void hv_set_msi_entry_from_desc(union hv_msi_entry *msi_entry,
- static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
- 			  int nvec, msi_alloc_info_t *info)
- {
--	return pci_msi_prepare(domain, dev, nvec, info);
-+	int ret = pci_msi_prepare(domain, dev, nvec, info);
-+
-+	/*
-+	 * By using the interrupt remapper in the hypervisor IOMMU, contiguous
-+	 * CPU vectors in not needed for multi-MSI
-+	 */
-+	if (info->type == X86_IRQ_ALLOC_TYPE_PCI_MSI)
-+		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
-+
-+	return ret;
- }
- 
- /**
--- 
-2.7.4
+> ---
+>   drivers/watchdog/rti_wdt.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/watchdog/rti_wdt.c b/drivers/watchdog/rti_wdt.c
+> index db843f825860..00ebeffc674f 100644
+> --- a/drivers/watchdog/rti_wdt.c
+> +++ b/drivers/watchdog/rti_wdt.c
+> @@ -226,7 +226,7 @@ static int rti_wdt_probe(struct platform_device *pdev)
+>   
+>   	pm_runtime_enable(dev);
+>   	ret = pm_runtime_get_sync(dev);
+> -	if (ret) {
+> +	if (ret < 0) {
+>   		pm_runtime_put_noidle(dev);
+>   		pm_runtime_disable(&pdev->dev);
+>   		return dev_err_probe(dev, ret, "runtime pm failed\n");
 
