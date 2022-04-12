@@ -2,98 +2,371 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98702C46467
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52011C47091
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378651AbiDLIMR (ORCPT
+        id S1378694AbiDLIMd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42902 "EHLO
+        Tue, 12 Apr 2022 04:12:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354602AbiDLH02 (ORCPT
+        with ESMTP id S1355338AbiDLH11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3330146165;
-        Tue, 12 Apr 2022 00:06:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87D6061748;
-        Tue, 12 Apr 2022 07:06:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9452DC36B17;
-        Tue, 12 Apr 2022 07:06:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747181;
-        bh=ueCG/4U08Yns50W24hGz63YxADmJDJ9yGaJ7Tmf5doA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vf6mDUBv4y/EXeWR84J0o5eUSgQctwLgRbJjL6vnkeWUFgClk0wLrxoJlyV44YyTj
-         cJ9JKNdbKfUKuVG5de7av4ikR94RmDO4/XU+/xOrnMJzOqzB/1q6IbdNHcslIPe8Ut
-         usQuOptFU/oiBdIMs2EdAGw2NYw669fW7JENIzL8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qiuhao Li <qiuhao@sysec.org>,
-        Gaoning Pan <pgn@zju.edu.cn>, Yongkang Jia <kangel@zju.edu.cn>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 272/285] KVM: avoid NULL pointer dereference in kvm_dirty_ring_push
-Date:   Tue, 12 Apr 2022 08:32:09 +0200
-Message-Id: <20220412062951.507981108@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Apr 2022 03:27:27 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAB949274
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:07:31 -0700 (PDT)
+Received: from kwepemi100005.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kcxby2VM7z1HBjq;
+        Tue, 12 Apr 2022 15:06:54 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100005.china.huawei.com (7.221.188.155) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 15:07:28 +0800
+Received: from localhost.localdomain (10.175.112.125) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Apr 2022 15:07:26 +0800
+From:   Tong Tiangen <tongtiangen@huawei.com>
+To:     Mark Rutland <mark.rutland@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Xie XiuQi <xiexiuqi@huawei.com>,
+        Tong Tiangen <tongtiangen@huawei.com>
+Subject: [RFC PATCH -next V3 6/6] arm64: add cow to machine check safe
+Date:   Tue, 12 Apr 2022 07:25:52 +0000
+Message-ID: <20220412072552.2526871-7-tongtiangen@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
+In-Reply-To: <20220412072552.2526871-1-tongtiangen@huawei.com>
+References: <20220412072552.2526871-1-tongtiangen@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+In the cow(copy on write) processing, the data of the user process is
+copied, when hardware memory error is encountered during copy, only the
+relevant processes are affected, so killing the user process and isolate
+the user page with hardware memory errors is a more reasonable choice than
+kernel panic.
 
-commit 5593473a1e6c743764b08e3b6071cb43b5cfa6c4 upstream.
+Add new helper copy_page_mc() which provide a page copy implementation with
+machine check safe. At present, only used in cow. In future, we can expand
+more scenes. As long as the consequences of page copy failure are not
+fatal(eg: only affect user process), we can use this helper.
 
-kvm_vcpu_release() will call kvm_dirty_ring_free(), freeing
-ring->dirty_gfns and setting it to NULL.  Afterwards, it calls
-kvm_arch_vcpu_destroy().
+The copy_page_mc() in copy_page_mc.S is largely borrows from copy_page()
+in copy_page.S and the main difference is copy_page_mc() add some extable
+entry to support machine check safe. largely to keep the patch simple. If
+needed those optimizations can be folded in.
 
-However, if closing the file descriptor races with KVM_RUN in such away
-that vcpu->arch.st.preempted == 0, the following call stack leads to a
-NULL pointer dereference in kvm_dirty_run_push():
+Add new extable type EX_TYPE_COPY_PAGE_MC which used in copy_page_mc().
 
- mark_page_dirty_in_slot+0x192/0x270 arch/x86/kvm/../../../virt/kvm/kvm_main.c:3171
- kvm_steal_time_set_preempted arch/x86/kvm/x86.c:4600 [inline]
- kvm_arch_vcpu_put+0x34e/0x5b0 arch/x86/kvm/x86.c:4618
- vcpu_put+0x1b/0x70 arch/x86/kvm/../../../virt/kvm/kvm_main.c:211
- vmx_free_vcpu+0xcb/0x130 arch/x86/kvm/vmx/vmx.c:6985
- kvm_arch_vcpu_destroy+0x76/0x290 arch/x86/kvm/x86.c:11219
- kvm_vcpu_destroy arch/x86/kvm/../../../virt/kvm/kvm_main.c:441 [inline]
+This type only be processed in fixup_exception_mc(), The reason is that
+copy_page_mc() is consistent with copy_page() except machine check safe is
+considered, and copy_page() do not need to consider exception fixup.
 
-The fix is to release the dirty page ring after kvm_arch_vcpu_destroy
-has run.
-
-Reported-by: Qiuhao Li <qiuhao@sysec.org>
-Reported-by: Gaoning Pan <pgn@zju.edu.cn>
-Reported-by: Yongkang Jia <kangel@zju.edu.cn>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
 ---
- virt/kvm/kvm_main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/include/asm/asm-extable.h |  5 ++
+ arch/arm64/include/asm/page.h        | 10 +++
+ arch/arm64/lib/Makefile              |  2 +
+ arch/arm64/lib/copy_page_mc.S        | 99 ++++++++++++++++++++++++++++
+ arch/arm64/mm/copypage.c             | 36 ++++++++--
+ arch/arm64/mm/extable.c              |  1 +
+ include/linux/highmem.h              |  8 +++
+ mm/memory.c                          |  2 +-
+ 8 files changed, 156 insertions(+), 7 deletions(-)
+ create mode 100644 arch/arm64/lib/copy_page_mc.S
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -439,8 +439,8 @@ static void kvm_vcpu_init(struct kvm_vcp
+diff --git a/arch/arm64/include/asm/asm-extable.h b/arch/arm64/include/asm/asm-extable.h
+index 62eafb651773..274bd7edcff6 100644
+--- a/arch/arm64/include/asm/asm-extable.h
++++ b/arch/arm64/include/asm/asm-extable.h
+@@ -11,6 +11,7 @@
+ /* _MC indicates that can fixup from machine check errors */
+ #define EX_TYPE_UACCESS_MC		5
+ #define EX_TYPE_UACCESS_MC_ERR_ZERO	6
++#define EX_TYPE_COPY_PAGE_MC		7
  
- void kvm_vcpu_destroy(struct kvm_vcpu *vcpu)
+ #ifdef __ASSEMBLY__
+ 
+@@ -39,6 +40,10 @@
+ 	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_UACCESS_MC, 0)
+ 	.endm
+ 
++	.macro          _asm_extable_copy_page_mc, insn, fixup
++	__ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_COPY_PAGE_MC, 0)
++	.endm
++
+ /*
+  * Create an exception table entry for `insn` if `fixup` is provided. Otherwise
+  * do nothing.
+diff --git a/arch/arm64/include/asm/page.h b/arch/arm64/include/asm/page.h
+index 993a27ea6f54..832571a7dddb 100644
+--- a/arch/arm64/include/asm/page.h
++++ b/arch/arm64/include/asm/page.h
+@@ -29,6 +29,16 @@ void copy_user_highpage(struct page *to, struct page *from,
+ void copy_highpage(struct page *to, struct page *from);
+ #define __HAVE_ARCH_COPY_HIGHPAGE
+ 
++#ifdef CONFIG_ARCH_HAS_COPY_MC
++extern void copy_page_mc(void *to, const void *from);
++void copy_highpage_mc(struct page *to, struct page *from);
++#define __HAVE_ARCH_COPY_HIGHPAGE_MC
++
++void copy_user_highpage_mc(struct page *to, struct page *from,
++		unsigned long vaddr, struct vm_area_struct *vma);
++#define __HAVE_ARCH_COPY_USER_HIGHPAGE_MC
++#endif
++
+ struct page *alloc_zeroed_user_highpage_movable(struct vm_area_struct *vma,
+ 						unsigned long vaddr);
+ #define __HAVE_ARCH_ALLOC_ZEROED_USER_HIGHPAGE_MOVABLE
+diff --git a/arch/arm64/lib/Makefile b/arch/arm64/lib/Makefile
+index 29490be2546b..0d9f292ef68a 100644
+--- a/arch/arm64/lib/Makefile
++++ b/arch/arm64/lib/Makefile
+@@ -15,6 +15,8 @@ endif
+ 
+ lib-$(CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE) += uaccess_flushcache.o
+ 
++lib-$(CONFIG_ARCH_HAS_COPY_MC) += copy_page_mc.o
++
+ obj-$(CONFIG_CRC32) += crc32.o
+ 
+ obj-$(CONFIG_FUNCTION_ERROR_INJECTION) += error-inject.o
+diff --git a/arch/arm64/lib/copy_page_mc.S b/arch/arm64/lib/copy_page_mc.S
+new file mode 100644
+index 000000000000..93b4203bdf45
+--- /dev/null
++++ b/arch/arm64/lib/copy_page_mc.S
+@@ -0,0 +1,99 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2012 ARM Ltd.
++ */
++
++#include <linux/linkage.h>
++#include <linux/const.h>
++#include <asm/assembler.h>
++#include <asm/page.h>
++#include <asm/cpufeature.h>
++#include <asm/alternative.h>
++#include <asm/asm-extable.h>
++
++/*
++ * Copy a page from src to dest (both are page aligned) with machine check
++ *
++ * Parameters:
++ *	x0 - dest
++ *	x1 - src
++ */
++SYM_FUNC_START(__pi_copy_page_mc)
++alternative_if ARM64_HAS_NO_HW_PREFETCH
++	// Prefetch three cache lines ahead.
++	prfm	pldl1strm, [x1, #128]
++	prfm	pldl1strm, [x1, #256]
++	prfm	pldl1strm, [x1, #384]
++alternative_else_nop_endif
++
++100:	ldp	x2, x3, [x1]
++101:	ldp	x4, x5, [x1, #16]
++102:	ldp	x6, x7, [x1, #32]
++103:	ldp	x8, x9, [x1, #48]
++104:	ldp	x10, x11, [x1, #64]
++105:	ldp	x12, x13, [x1, #80]
++106:	ldp	x14, x15, [x1, #96]
++107:	ldp	x16, x17, [x1, #112]
++
++	add	x0, x0, #256
++	add	x1, x1, #128
++1:
++	tst	x0, #(PAGE_SIZE - 1)
++
++alternative_if ARM64_HAS_NO_HW_PREFETCH
++	prfm	pldl1strm, [x1, #384]
++alternative_else_nop_endif
++
++	stnp	x2, x3, [x0, #-256]
++200:	ldp	x2, x3, [x1]
++	stnp	x4, x5, [x0, #16 - 256]
++201:	ldp	x4, x5, [x1, #16]
++	stnp	x6, x7, [x0, #32 - 256]
++202:	ldp	x6, x7, [x1, #32]
++	stnp	x8, x9, [x0, #48 - 256]
++203:	ldp	x8, x9, [x1, #48]
++	stnp	x10, x11, [x0, #64 - 256]
++204:	ldp	x10, x11, [x1, #64]
++	stnp	x12, x13, [x0, #80 - 256]
++205:	ldp	x12, x13, [x1, #80]
++	stnp	x14, x15, [x0, #96 - 256]
++206:	ldp	x14, x15, [x1, #96]
++	stnp	x16, x17, [x0, #112 - 256]
++207:	ldp	x16, x17, [x1, #112]
++
++	add	x0, x0, #128
++	add	x1, x1, #128
++
++	b.ne	1b
++
++	stnp	x2, x3, [x0, #-256]
++	stnp	x4, x5, [x0, #16 - 256]
++	stnp	x6, x7, [x0, #32 - 256]
++	stnp	x8, x9, [x0, #48 - 256]
++	stnp	x10, x11, [x0, #64 - 256]
++	stnp	x12, x13, [x0, #80 - 256]
++	stnp	x14, x15, [x0, #96 - 256]
++	stnp	x16, x17, [x0, #112 - 256]
++
++300:	ret
++
++_asm_extable_copy_page_mc 100b, 300b
++_asm_extable_copy_page_mc 101b, 300b
++_asm_extable_copy_page_mc 102b, 300b
++_asm_extable_copy_page_mc 103b, 300b
++_asm_extable_copy_page_mc 104b, 300b
++_asm_extable_copy_page_mc 105b, 300b
++_asm_extable_copy_page_mc 106b, 300b
++_asm_extable_copy_page_mc 107b, 300b
++_asm_extable_copy_page_mc 200b, 300b
++_asm_extable_copy_page_mc 201b, 300b
++_asm_extable_copy_page_mc 202b, 300b
++_asm_extable_copy_page_mc 203b, 300b
++_asm_extable_copy_page_mc 204b, 300b
++_asm_extable_copy_page_mc 205b, 300b
++_asm_extable_copy_page_mc 206b, 300b
++_asm_extable_copy_page_mc 207b, 300b
++
++SYM_FUNC_END(__pi_copy_page_mc)
++SYM_FUNC_ALIAS(copy_page_mc, __pi_copy_page_mc)
++EXPORT_SYMBOL(copy_page_mc)
+diff --git a/arch/arm64/mm/copypage.c b/arch/arm64/mm/copypage.c
+index 0dea80bf6de4..0f28edfcb234 100644
+--- a/arch/arm64/mm/copypage.c
++++ b/arch/arm64/mm/copypage.c
+@@ -14,13 +14,8 @@
+ #include <asm/cpufeature.h>
+ #include <asm/mte.h>
+ 
+-void copy_highpage(struct page *to, struct page *from)
++static void do_mte(struct page *to, struct page *from, void *kto, void *kfrom)
  {
--	kvm_dirty_ring_free(&vcpu->dirty_ring);
- 	kvm_arch_vcpu_destroy(vcpu);
-+	kvm_dirty_ring_free(&vcpu->dirty_ring);
+-	void *kto = page_address(to);
+-	void *kfrom = page_address(from);
+-
+-	copy_page(kto, kfrom);
+-
+ 	if (system_supports_mte() && test_bit(PG_mte_tagged, &from->flags)) {
+ 		set_bit(PG_mte_tagged, &to->flags);
+ 		page_kasan_tag_reset(to);
+@@ -35,6 +30,15 @@ void copy_highpage(struct page *to, struct page *from)
+ 		mte_copy_page_tags(kto, kfrom);
+ 	}
+ }
++
++void copy_highpage(struct page *to, struct page *from)
++{
++	void *kto = page_address(to);
++	void *kfrom = page_address(from);
++
++	copy_page(kto, kfrom);
++	do_mte(to, from, kto, kfrom);
++}
+ EXPORT_SYMBOL(copy_highpage);
  
- 	/*
- 	 * No need for rcu_read_lock as VCPU_RUN is the only place that changes
-
+ void copy_user_highpage(struct page *to, struct page *from,
+@@ -44,3 +48,23 @@ void copy_user_highpage(struct page *to, struct page *from,
+ 	flush_dcache_page(to);
+ }
+ EXPORT_SYMBOL_GPL(copy_user_highpage);
++
++#ifdef CONFIG_ARCH_HAS_COPY_MC
++void copy_highpage_mc(struct page *to, struct page *from)
++{
++	void *kto = page_address(to);
++	void *kfrom = page_address(from);
++
++	copy_page_mc(kto, kfrom);
++	do_mte(to, from, kto, kfrom);
++}
++EXPORT_SYMBOL(copy_highpage_mc);
++
++void copy_user_highpage_mc(struct page *to, struct page *from,
++			unsigned long vaddr, struct vm_area_struct *vma)
++{
++	copy_highpage_mc(to, from);
++	flush_dcache_page(to);
++}
++EXPORT_SYMBOL_GPL(copy_user_highpage_mc);
++#endif
+diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
+index ca7388f3923b..7ee67fcf9e81 100644
+--- a/arch/arm64/mm/extable.c
++++ b/arch/arm64/mm/extable.c
+@@ -98,6 +98,7 @@ bool fixup_exception_mc(struct pt_regs *regs)
+ 
+ 	switch (ex->type) {
+ 	case EX_TYPE_UACCESS_MC:
++	case EX_TYPE_COPY_PAGE_MC:
+ 		return ex_handler_fixup(ex, regs);
+ 	case EX_TYPE_UACCESS_MC_ERR_ZERO:
+ 		return ex_handler_uaccess_err_zero(ex, regs);
+diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+index 39bb9b47fa9c..a9dbf331b038 100644
+--- a/include/linux/highmem.h
++++ b/include/linux/highmem.h
+@@ -283,6 +283,10 @@ static inline void copy_user_highpage(struct page *to, struct page *from,
+ 
+ #endif
+ 
++#ifndef __HAVE_ARCH_COPY_USER_HIGHPAGE_MC
++#define copy_user_highpage_mc copy_user_highpage
++#endif
++
+ #ifndef __HAVE_ARCH_COPY_HIGHPAGE
+ 
+ static inline void copy_highpage(struct page *to, struct page *from)
+@@ -298,6 +302,10 @@ static inline void copy_highpage(struct page *to, struct page *from)
+ 
+ #endif
+ 
++#ifndef __HAVE_ARCH_COPY_HIGHPAGE_MC
++#define cop_highpage_mc copy_highpage
++#endif
++
+ static inline void memcpy_page(struct page *dst_page, size_t dst_off,
+ 			       struct page *src_page, size_t src_off,
+ 			       size_t len)
+diff --git a/mm/memory.c b/mm/memory.c
+index 76e3af9639d9..d5f62234152d 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -2767,7 +2767,7 @@ static inline bool cow_user_page(struct page *dst, struct page *src,
+ 	unsigned long addr = vmf->address;
+ 
+ 	if (likely(src)) {
+-		copy_user_highpage(dst, src, addr, vma);
++		copy_user_highpage_mc(dst, src, addr, vma);
+ 		return true;
+ 	}
+ 
+-- 
+2.18.0.huawei.25
 
