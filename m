@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D43DC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BBC1C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:11:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355022AbiDLIGp (ORCPT
+        id S1355052AbiDLIGy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
+        Tue, 12 Apr 2022 04:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354097AbiDLH0D (ORCPT
+        with ESMTP id S1354069AbiDLH0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:26:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01517183AF;
-        Tue, 12 Apr 2022 00:05:36 -0700 (PDT)
+        Tue, 12 Apr 2022 03:26:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1E618349;
+        Tue, 12 Apr 2022 00:05:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6049B81B4E;
-        Tue, 12 Apr 2022 07:05:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 293B9C385A6;
-        Tue, 12 Apr 2022 07:05:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6787760B2B;
+        Tue, 12 Apr 2022 07:05:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 723C3C385A1;
+        Tue, 12 Apr 2022 07:05:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747133;
-        bh=qVZQZO1froVUTZ6TwlksDchw3cHLrw0uS/UZVNIs+5k=;
+        s=korg; t=1649747130;
+        bh=98APagSa0U42erfRQUeR32abN7Mgn6/L5uXCLR4wu94=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vrNMr9muHEC+CxZbM1H8mNNiqpHplYua50Y7dOSd7WWi2wiQhHF5rt4owBuLlyL3a
-         8FMg3VhakrAhIQXK5Bvz4bZhgw5xOMBWYbY3N+0WA7HekVRUMbLSf7yyXm7zeg0b4T
-         oYIY7EHYpX6VHteJg7V+tpwDuv6X/JC8aLOur/lI=
+        b=0yHXB6LO0xMH56XZgP+slhTJVqixzSRNEmzsDsLOfYoCasG/ibJ/7Bo46+jkwW3n3
+         tthA1DnPhtyrMetPLlR2zTDOtcm9I+Q3ge1z7PFgfXP6rm8QXsrD6SN0MfcqgNOa9y
+         QOX7GDXU0BLp9aLC1jWsWQye7jFll8Ms4abFQxkA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.16 256/285] drm/nouveau/pmu: Add missing callbacks for Tegra devices
-Date:   Tue, 12 Apr 2022 08:31:53 +0200
-Message-Id: <20220412062951.049355968@linuxfoundation.org>
+        stable@vger.kernel.org, Emily Deng <Emily.Deng@amd.com>,
+        James Zhu <James.Zhu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 255/285] drm/amdgpu/vcn: Fix the register setting for vcn1
+Date:   Tue, 12 Apr 2022 08:31:52 +0200
+Message-Id: <20220412062951.020268143@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -51,69 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Karol Herbst <kherbst@redhat.com>
+From: Emily Deng <Emily.Deng@amd.com>
 
-commit 38d4e5cf5b08798f093374e53c2f4609d5382dd5 upstream.
+commit 02fc996d5098f4c3f65bdf6cdb6b28e3f29ba789 upstream.
 
-Fixes a crash booting on those platforms with nouveau.
+Correct the code error for setting register UVD_GFX10_ADDR_CONFIG.
+Need to use inst_idx, or it only will set VCN0.
 
-Fixes: 4cdd2450bf73 ("drm/nouveau/pmu/gm200-: use alternate falcon reset sequence")
-Cc: Ben Skeggs <bskeggs@redhat.com>
-Cc: Karol Herbst <kherbst@redhat.com>
-Cc: dri-devel@lists.freedesktop.org
-Cc: nouveau@lists.freedesktop.org
-Cc: <stable@vger.kernel.org> # v5.17+
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220322124800.2605463-1-kherbst@redhat.com
+Signed-off-by: Emily Deng <Emily.Deng@amd.com>
+Reviewed-by: James Zhu <James.Zhu@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c |    1 +
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c |    2 +-
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c |    1 +
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h  |    1 +
- 4 files changed, 4 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
-@@ -216,6 +216,7 @@ gm20b_pmu = {
- 	.intr = gt215_pmu_intr,
- 	.recv = gm20b_pmu_recv,
- 	.initmsg = gm20b_pmu_initmsg,
-+	.reset = gf100_pmu_reset,
- };
+--- a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
+@@ -569,8 +569,8 @@ static void vcn_v3_0_mc_resume_dpg_mode(
+ 			AMDGPU_GPU_PAGE_ALIGN(sizeof(struct amdgpu_fw_shared)), 0, indirect);
  
- #if IS_ENABLED(CONFIG_ARCH_TEGRA_210_SOC)
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
-@@ -23,7 +23,7 @@
-  */
- #include "priv.h"
+ 	/* VCN global tiling registers */
+-	WREG32_SOC15_DPG_MODE(0, SOC15_DPG_MODE_OFFSET(
+-		UVD, 0, mmUVD_GFX10_ADDR_CONFIG), adev->gfx.config.gb_addr_config, 0, indirect);
++	WREG32_SOC15_DPG_MODE(inst_idx, SOC15_DPG_MODE_OFFSET(
++		UVD, inst_idx, mmUVD_GFX10_ADDR_CONFIG), adev->gfx.config.gb_addr_config, 0, indirect);
+ }
  
--static void
-+void
- gp102_pmu_reset(struct nvkm_pmu *pmu)
- {
- 	struct nvkm_device *device = pmu->subdev.device;
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
-@@ -83,6 +83,7 @@ gp10b_pmu = {
- 	.intr = gt215_pmu_intr,
- 	.recv = gm20b_pmu_recv,
- 	.initmsg = gm20b_pmu_initmsg,
-+	.reset = gp102_pmu_reset,
- };
- 
- #if IS_ENABLED(CONFIG_ARCH_TEGRA_210_SOC)
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
-@@ -41,6 +41,7 @@ int gt215_pmu_send(struct nvkm_pmu *, u3
- 
- bool gf100_pmu_enabled(struct nvkm_pmu *);
- void gf100_pmu_reset(struct nvkm_pmu *);
-+void gp102_pmu_reset(struct nvkm_pmu *pmu);
- 
- void gk110_pmu_pgob(struct nvkm_pmu *, bool);
- 
+ static void vcn_v3_0_disable_static_power_gating(struct amdgpu_device *adev, int inst)
 
 
