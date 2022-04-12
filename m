@@ -2,59 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C8CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A00FC46467
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357259AbiDLIR5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:17:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43172 "EHLO
+        id S245485AbiDLIRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355125AbiDLH1K (ORCPT
+        with ESMTP id S1352344AbiDLH2d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:27:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263A148332;
-        Tue, 12 Apr 2022 00:07:11 -0700 (PDT)
+        Tue, 12 Apr 2022 03:28:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 189674F452;
+        Tue, 12 Apr 2022 00:08:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 831A4B81B4D;
-        Tue, 12 Apr 2022 07:07:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC52C385A8;
-        Tue, 12 Apr 2022 07:07:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3740B81B50;
+        Tue, 12 Apr 2022 07:08:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CB5DC385A6;
+        Tue, 12 Apr 2022 07:08:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747228;
-        bh=sXplmjtci3GWzKPGj7qmndHKq1WQI2fvhmgLsZ33CEY=;
+        s=korg; t=1649747286;
+        bh=2QzFLpKuDfKD58gEd49LRz6JCO86eIm3Yu/3IGO+lDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ya39TrhC7pOQ5dpmI0Ywg74BhsGI+zqKBPjvQh0+8MaElBhMIFRKoTzwDuoerDDoi
-         JeUrkx6Cmc1g8VrL7R4+hpJXxdCEyTq1XmSEqAj5F1gw7I8WTLOxDefkbKBi+S+9CB
-         oRHSoHA/2WN5pcGUDBBPU+ThFJH6QIrWDgX6fPzI=
+        b=sYc3/AHNnYNW7dDTYK71cURAqdz+cAVDghi4qsac88+vjciEtTKLR8/qPesMyDEsn
+         yismtYqYsY742C2KD3TKK/E3IFspvozc5Y2AU3YO+8FdxO4EvmKbkuBFPZA9/z45T9
+         VFBD6HYG+ZIr8gTZm9yNdFv70PEnr2Wuj7FkbTQY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
-        Zack Rusin <zackr@vmware.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Helge Deller <deller@gmx.de>, Sam Ravnborg <sam@ravnborg.org>,
-        Zheyu Ma <zheyuma97@gmail.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH 5.16 249/285] fbdev: Fix unregistering of framebuffers without device
-Date:   Tue, 12 Apr 2022 08:31:46 +0200
-Message-Id: <20220412062950.845598901@linuxfoundation.org>
+        stable@vger.kernel.org, Ravi Bangoria <ravi.bangoria@amd.com>,
+        Jim Mattson <jmattson@google.com>,
+        Like Xu <likexu@tencent.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 009/343] KVM: x86/pmu: Fix and isolate TSX-specific performance event logic
+Date:   Tue, 12 Apr 2022 08:27:07 +0200
+Message-Id: <20220412062951.373345079@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
-References: <20220412062943.670770901@linuxfoundation.org>
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -63,98 +51,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Zimmermann <tzimmermann@suse.de>
+From: Like Xu <likexu@tencent.com>
 
-commit 0f525289ff0ddeb380813bd81e0f9bdaaa1c9078 upstream.
+[ Upstream commit e644896f5106aa3f6d7e8c7adf2e4dc0fce53555 ]
 
-OF framebuffers do not have an underlying device in the Linux
-device hierarchy. Do a regular unregister call instead of hot
-unplugging such a non-existing device. Fixes a NULL dereference.
-An example error message on ppc64le is shown below.
+HSW_IN_TX* bits are used in generic code which are not supported on
+AMD. Worse, these bits overlap with AMD EventSelect[11:8] and hence
+using HSW_IN_TX* bits unconditionally in generic code is resulting in
+unintentional pmu behavior on AMD. For example, if EventSelect[11:8]
+is 0x2, pmc_reprogram_counter() wrongly assumes that
+HSW_IN_TX_CHECKPOINTED is set and thus forces sampling period to be 0.
 
-  BUG: Kernel NULL pointer dereference on read at 0x00000060
-  Faulting instruction address: 0xc00000000080dfa4
-  Oops: Kernel access of bad area, sig: 11 [#1]
-  LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
-  [...]
-  CPU: 2 PID: 139 Comm: systemd-udevd Not tainted 5.17.0-ae085d7f9365 #1
-  NIP:  c00000000080dfa4 LR: c00000000080df9c CTR: c000000000797430
-  REGS: c000000004132fe0 TRAP: 0300   Not tainted  (5.17.0-ae085d7f9365)
-  MSR:  8000000002009033 <SF,VEC,EE,ME,IR,DR,RI,LE>  CR: 28228282  XER: 20000000
-  CFAR: c00000000000c80c DAR: 0000000000000060 DSISR: 40000000 IRQMASK: 0
-  GPR00: c00000000080df9c c000000004133280 c00000000169d200 0000000000000029
-  GPR04: 00000000ffffefff c000000004132f90 c000000004132f88 0000000000000000
-  GPR08: c0000000015658f8 c0000000015cd200 c0000000014f57d0 0000000048228283
-  GPR12: 0000000000000000 c00000003fffe300 0000000020000000 0000000000000000
-  GPR16: 0000000000000000 0000000113fc4a40 0000000000000005 0000000113fcfb80
-  GPR20: 000001000f7283b0 0000000000000000 c000000000e4a588 c000000000e4a5b0
-  GPR24: 0000000000000001 00000000000a0000 c008000000db0168 c0000000021f6ec0
-  GPR28: c0000000016d65a8 c000000004b36460 0000000000000000 c0000000016d64b0
-  NIP [c00000000080dfa4] do_remove_conflicting_framebuffers+0x184/0x1d0
-  [c000000004133280] [c00000000080df9c] do_remove_conflicting_framebuffers+0x17c/0x1d0 (unreliable)
-  [c000000004133350] [c00000000080e4d0] remove_conflicting_framebuffers+0x60/0x150
-  [c0000000041333a0] [c00000000080e6f4] remove_conflicting_pci_framebuffers+0x134/0x1b0
-  [c000000004133450] [c008000000e70438] drm_aperture_remove_conflicting_pci_framebuffers+0x90/0x100 [drm]
-  [c000000004133490] [c008000000da0ce4] bochs_pci_probe+0x6c/0xa64 [bochs]
-  [...]
-  [c000000004133db0] [c00000000002aaa0] system_call_exception+0x170/0x2d0
-  [c000000004133e10] [c00000000000c3cc] system_call_common+0xec/0x250
+Also per the SDM, both bits 32 and 33 "may only be set if the processor
+supports HLE or RTM" and for "IN_TXCP (bit 33): this bit may only be set
+for IA32_PERFEVTSEL2."
 
-The bug [1] was introduced by commit 27599aacbaef ("fbdev: Hot-unplug
-firmware fb devices on forced removal"). Most firmware framebuffers
-have an underlying platform device, which can be hot-unplugged
-before loading the native graphics driver. OF framebuffers do not
-(yet) have that device. Fix the code by unregistering the framebuffer
-as before without a hot unplug.
+Opportunistically eliminate code redundancy, because if the HSW_IN_TX*
+bit is set in pmc->eventsel, it is already set in attr.config.
 
-Tested with 5.17 on qemu ppc64le emulation.
-
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Fixes: 27599aacbaef ("fbdev: Hot-unplug firmware fb devices on forced removal")
-Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-Cc: Zack Rusin <zackr@vmware.com>
-Cc: Javier Martinez Canillas <javierm@redhat.com>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: stable@vger.kernel.org # v5.11+
-Cc: Helge Deller <deller@gmx.de>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Cc: Zheyu Ma <zheyuma97@gmail.com>
-Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: linux-fbdev@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Link: https://lore.kernel.org/all/YkHXO6LGHAN0p1pq@debian/ # [1]
-Link: https://patchwork.freedesktop.org/patch/msgid/20220404194402.29974-1-tzimmermann@suse.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Ravi Bangoria <ravi.bangoria@amd.com>
+Reported-by: Jim Mattson <jmattson@google.com>
+Fixes: 103af0a98788 ("perf, kvm: Support the in_tx/in_tx_cp modifiers in KVM arch perfmon emulation v5")
+Co-developed-by: Ravi Bangoria <ravi.bangoria@amd.com>
+Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
+Signed-off-by: Like Xu <likexu@tencent.com>
+Message-Id: <20220309084257.88931-1-likexu@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/core/fbmem.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ arch/x86/kvm/pmu.c           | 15 +++++----------
+ arch/x86/kvm/vmx/pmu_intel.c | 13 ++++++++++---
+ 2 files changed, 15 insertions(+), 13 deletions(-)
 
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -1581,7 +1581,14 @@ static void do_remove_conflicting_frameb
- 			 * If it's not a platform device, at least print a warning. A
- 			 * fix would add code to remove the device from the system.
- 			 */
--			if (dev_is_platform(device)) {
-+			if (!device) {
-+				/* TODO: Represent each OF framebuffer as its own
-+				 * device in the device hierarchy. For now, offb
-+				 * doesn't have such a device, so unregister the
-+				 * framebuffer as before without warning.
-+				 */
-+				do_unregister_framebuffer(registered_fb[i]);
-+			} else if (dev_is_platform(device)) {
- 				registered_fb[i]->forced_out = true;
- 				platform_device_unregister(to_platform_device(device));
- 			} else {
+diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+index 902b6d700215..eca39f56c231 100644
+--- a/arch/x86/kvm/pmu.c
++++ b/arch/x86/kvm/pmu.c
+@@ -96,8 +96,7 @@ static void kvm_perf_overflow(struct perf_event *perf_event,
+ 
+ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
+ 				  u64 config, bool exclude_user,
+-				  bool exclude_kernel, bool intr,
+-				  bool in_tx, bool in_tx_cp)
++				  bool exclude_kernel, bool intr)
+ {
+ 	struct perf_event *event;
+ 	struct perf_event_attr attr = {
+@@ -116,16 +115,14 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
+ 
+ 	attr.sample_period = get_sample_period(pmc, pmc->counter);
+ 
+-	if (in_tx)
+-		attr.config |= HSW_IN_TX;
+-	if (in_tx_cp) {
++	if ((attr.config & HSW_IN_TX_CHECKPOINTED) &&
++	    guest_cpuid_is_intel(pmc->vcpu)) {
+ 		/*
+ 		 * HSW_IN_TX_CHECKPOINTED is not supported with nonzero
+ 		 * period. Just clear the sample period so at least
+ 		 * allocating the counter doesn't fail.
+ 		 */
+ 		attr.sample_period = 0;
+-		attr.config |= HSW_IN_TX_CHECKPOINTED;
+ 	}
+ 
+ 	event = perf_event_create_kernel_counter(&attr, -1, current,
+@@ -233,9 +230,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+ 	pmc_reprogram_counter(pmc, type, config,
+ 			      !(eventsel & ARCH_PERFMON_EVENTSEL_USR),
+ 			      !(eventsel & ARCH_PERFMON_EVENTSEL_OS),
+-			      eventsel & ARCH_PERFMON_EVENTSEL_INT,
+-			      (eventsel & HSW_IN_TX),
+-			      (eventsel & HSW_IN_TX_CHECKPOINTED));
++			      eventsel & ARCH_PERFMON_EVENTSEL_INT);
+ }
+ EXPORT_SYMBOL_GPL(reprogram_gp_counter);
+ 
+@@ -271,7 +266,7 @@ void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int idx)
+ 			      kvm_x86_ops.pmu_ops->pmc_perf_hw_id(pmc),
+ 			      !(en_field & 0x2), /* exclude user */
+ 			      !(en_field & 0x1), /* exclude kernel */
+-			      pmi, false, false);
++			      pmi);
+ }
+ EXPORT_SYMBOL_GPL(reprogram_fixed_counter);
+ 
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index 8ba12294a7c5..5fa3870b8988 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -389,6 +389,7 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 	struct kvm_pmc *pmc;
+ 	u32 msr = msr_info->index;
+ 	u64 data = msr_info->data;
++	u64 reserved_bits;
+ 
+ 	switch (msr) {
+ 	case MSR_CORE_PERF_FIXED_CTR_CTRL:
+@@ -443,7 +444,11 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		} else if ((pmc = get_gp_pmc(pmu, msr, MSR_P6_EVNTSEL0))) {
+ 			if (data == pmc->eventsel)
+ 				return 0;
+-			if (!(data & pmu->reserved_bits)) {
++			reserved_bits = pmu->reserved_bits;
++			if ((pmc->idx == 2) &&
++			    (pmu->raw_event_mask & HSW_IN_TX_CHECKPOINTED))
++				reserved_bits ^= HSW_IN_TX_CHECKPOINTED;
++			if (!(data & reserved_bits)) {
+ 				reprogram_gp_counter(pmc, data);
+ 				return 0;
+ 			}
+@@ -534,8 +539,10 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 	entry = kvm_find_cpuid_entry(vcpu, 7, 0);
+ 	if (entry &&
+ 	    (boot_cpu_has(X86_FEATURE_HLE) || boot_cpu_has(X86_FEATURE_RTM)) &&
+-	    (entry->ebx & (X86_FEATURE_HLE|X86_FEATURE_RTM)))
+-		pmu->reserved_bits ^= HSW_IN_TX|HSW_IN_TX_CHECKPOINTED;
++	    (entry->ebx & (X86_FEATURE_HLE|X86_FEATURE_RTM))) {
++		pmu->reserved_bits ^= HSW_IN_TX;
++		pmu->raw_event_mask |= (HSW_IN_TX|HSW_IN_TX_CHECKPOINTED);
++	}
+ 
+ 	bitmap_set(pmu->all_valid_pmc_idx,
+ 		0, pmu->nr_arch_gp_counters);
+-- 
+2.35.1
+
 
 
