@@ -2,101 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD43C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD722C4727C
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:25:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352498AbiDLHYJ (ORCPT
+        id S1352547AbiDLHYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
+        Tue, 12 Apr 2022 03:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343548AbiDLHJI (ORCPT
+        with ESMTP id S245734AbiDLHJI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:09:08 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6207E49F31
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:49:32 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id p10so30455263lfa.12
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:49:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SAV9zD/9i3JbiiASrVcLIQyrbdWy7ico6dvybKeWvXs=;
-        b=M/AHANmKGN/x+pUfTld06wGLxBZO8idhvqokFKh3BT7GGmJsUzvYs7TnI5abkdSjIW
-         PMSxmtD12lJgdcdZ2OqdkCSLdMxu98RMRLkVkArQbM54XQ1sY2yeEjL+w00BVnLPR1SX
-         sv1fHZETALyHeOuUK7+l+iTeLbFoU0iMZrz7U=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SAV9zD/9i3JbiiASrVcLIQyrbdWy7ico6dvybKeWvXs=;
-        b=fF02Mk7zV2mAAi1c6CR6gttAfsfNRXnKork0eWfrdUdrQ8AzpO5Hr+W0a0RzGjgQb4
-         N5sW55eUCQrnkrqi92WSz/jAPx/PpJBUZo6fmmrT7YVJCGOSb2uy/Oxpw4SgHzkkExhP
-         UrC3CjMi/7y+XMq3yRD+fvAHRmrznpkceU4ChwbHd7kLOOWtUSwpd/mWAaS+KMukBZG2
-         zBK82h4GfHWeMMbcbv0gXZsWkC6I3vOji6Fz0BAscRZEHqiZ9YdCZXcOHON7x7RjuL6P
-         y0ws4QVc1oOpPrXd9cYJKFvw4fJcokCBtc3CpEDBxUNS+RTSv3SiJNx8lYdLGu3w7f0U
-         ZDmA==
-X-Gm-Message-State: AOAM5334QU/morHIWbboU1GXACKqiYRKHaPi2oY+a0HwaWIthz29Lw3r
-        1nCeKzKSEeFlMUMfjIJuZDtawPl9Q4j05JOH
-X-Google-Smtp-Source: ABdhPJxtCZT+Xd9QOaYV8hT7Fv/lZpTQCI5H5M4p+s5pEMsAHV/d3wUx7454NSi6YM2m+scDqVUuQQ==
-X-Received: by 2002:a05:6512:b06:b0:44a:f7bf:a425 with SMTP id w6-20020a0565120b0600b0044af7bfa425mr24423404lfu.445.1649746170480;
-        Mon, 11 Apr 2022 23:49:30 -0700 (PDT)
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com. [209.85.208.175])
-        by smtp.gmail.com with ESMTPSA id bq1-20020a056512150100b004481de98e5bsm3545389lfb.305.2022.04.11.23.49.29
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Apr 2022 23:49:29 -0700 (PDT)
-Received: by mail-lj1-f175.google.com with SMTP id r18so7210386ljp.0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 23:49:29 -0700 (PDT)
-X-Received: by 2002:a2e:a549:0:b0:249:9ec3:f2b with SMTP id
- e9-20020a2ea549000000b002499ec30f2bmr22850127ljn.358.1649746169549; Mon, 11
- Apr 2022 23:49:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5094849F2B;
+        Mon, 11 Apr 2022 23:49:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B24EB81B4D;
+        Tue, 12 Apr 2022 06:49:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C8BC385A1;
+        Tue, 12 Apr 2022 06:49:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649746170;
+        bh=nPLzPo/W56YZK/GGNpaRlRiMxvPuMvqwPhfW/qv0P84=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cPVpxRMio79QnEEPw3hlSKlnGQVclQgFy6LS1p+2+sS2v3l8EUAnyQ5hy9fh6/wUa
+         Jnsd0fE05oqmXUUFk9FU4Iqos9NNRR6aJmtJsyPwg9eriHBY1KLs6uP1PEsBSnIsS6
+         eewotImUPXcHpu74VdkP7xIt/9M1nRgq84Gt5MXk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 146/277] rtc: mc146818-lib: fix RTC presence check
+Date:   Tue, 12 Apr 2022 08:29:09 +0200
+Message-Id: <20220412062946.261637822@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
+References: <20220412062942.022903016@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <alpine.LRH.2.02.2204111023230.6206@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHk-=wijDnLH2K3Rh2JJo-SmWL_ntgzQCDxPeXbJ9A-vTF3ZvA@mail.gmail.com>
- <alpine.LRH.2.02.2204111236390.31647@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHk-=wgsHK4pDDoEgCyKgGyo-AMGpy1jg2QbstaCR0G-v568yg@mail.gmail.com>
-In-Reply-To: <CAHk-=wgsHK4pDDoEgCyKgGyo-AMGpy1jg2QbstaCR0G-v568yg@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 11 Apr 2022 20:49:13 -1000
-X-Gmail-Original-Message-ID: <CAHk-=wjfLQdsjMBRQm=UB+RB08Cs6G41+kk2ybe7JHuu4ydhRQ@mail.gmail.com>
-Message-ID: <CAHk-=wjfLQdsjMBRQm=UB+RB08Cs6G41+kk2ybe7JHuu4ydhRQ@mail.gmail.com>
-Subject: Re: [PATCH] stat: don't fail if the major number is >= 256
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Apr 11, 2022 at 7:37 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> Correct. It's literally the compat structure that has no basis in reality.
->
-> Or it might be some truly ancient thing, but I really don't think so.
+From: Mateusz Jończyk <mat.jonczyk@o2.pl>
 
-I was intrigued, so I went back and checked.
+[ Upstream commit ea6fa4961aab8f90a8aa03575a98b4bda368d4b6 ]
 
-        unsigned short st_dev;
-        unsigned short __pad1;
+To prevent an infinite loop in mc146818_get_time(),
+commit 211e5db19d15 ("rtc: mc146818: Detect and handle broken RTCs")
+added a check for RTC availability. Together with a later fix, it
+checked if bit 6 in register 0x0d is cleared.
 
-is in fact historical. But it was changed to
+This, however, caused a false negative on a motherboard with an AMD
+SB710 southbridge; according to the specification [1], bit 6 of register
+0x0d of this chipset is a scratchbit. This caused a regression in Linux
+5.11 - the RTC was determined broken by the kernel and not used by
+rtc-cmos.c [3]. This problem was also reported in Fedora [4].
 
-        unsigned long  st_dev;
+As a better alternative, check whether the UIP ("Update-in-progress")
+bit is set for longer then 10ms. If that is the case, then apparently
+the RTC is either absent (and all register reads return 0xff) or broken.
+Also limit the number of loop iterations in mc146818_get_time() to 10 to
+prevent an infinite loop there.
 
-(for i386, so this is a 32-bit 'unsigned long') on April 2, 2003.
+The functions mc146818_get_time() and mc146818_does_rtc_work() will be
+refactored later in this patch series, in order to fix a separate
+problem with reading / setting the RTC alarm time. This is done so to
+avoid a confusion about what is being fixed when.
 
-From the BK tree conversion:
+In a previous approach to this problem, I implemented a check whether
+the RTC_HOURS register contains a value <= 24. This, however, sometimes
+did not work correctly on my Intel Kaby Lake laptop. According to
+Intel's documentation [2], "the time and date RAM locations (0-9) are
+disconnected from the external bus" during the update cycle so reading
+this register without checking the UIP bit is incorrect.
 
-    https://git.kernel.org/pub/scm/linux/kernel/git/tglx/history.git/commit/?id=e95b2065677fe32512a597a79db94b77b90c968d
+[1] AMD SB700/710/750 Register Reference Guide, page 308,
+https://developer.amd.com/wordpress/media/2012/10/43009_sb7xx_rrg_pub_1.00.pdf
 
-so I think we should just make sure that the 64-bit compat system call
-is compatible with that 2003+ state, not with some truly ancient
-state.
+[2] 7th Generation Intel ® Processor Family I/O for U/Y Platforms [...] Datasheet
+Volume 1 of 2, page 209
+Intel's Document Number: 334658-006,
+https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/7th-and-8th-gen-core-family-mobile-u-y-processor-lines-i-o-datasheet-vol-1.pdf
 
-                      Linus
+[3] Functions in arch/x86/kernel/rtc.c apparently were using it.
+
+[4] https://bugzilla.redhat.com/show_bug.cgi?id=1936688
+
+Fixes: 211e5db19d15 ("rtc: mc146818: Detect and handle broken RTCs")
+Fixes: ebb22a059436 ("rtc: mc146818: Dont test for bit 0-5 in Register D")
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Alessandro Zummo <a.zummo@towertech.it>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20211210200131.153887-5-mat.jonczyk@o2.pl
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/rtc/rtc-cmos.c         | 10 ++++------
+ drivers/rtc/rtc-mc146818-lib.c | 34 ++++++++++++++++++++++++++++++----
+ include/linux/mc146818rtc.h    |  1 +
+ 3 files changed, 35 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/rtc/rtc-cmos.c b/drivers/rtc/rtc-cmos.c
+index d0f58cca5c20..b90a603d6b12 100644
+--- a/drivers/rtc/rtc-cmos.c
++++ b/drivers/rtc/rtc-cmos.c
+@@ -800,16 +800,14 @@ cmos_do_probe(struct device *dev, struct resource *ports, int rtc_irq)
+ 
+ 	rename_region(ports, dev_name(&cmos_rtc.rtc->dev));
+ 
+-	spin_lock_irq(&rtc_lock);
+-
+-	/* Ensure that the RTC is accessible. Bit 6 must be 0! */
+-	if ((CMOS_READ(RTC_VALID) & 0x40) != 0) {
+-		spin_unlock_irq(&rtc_lock);
+-		dev_warn(dev, "not accessible\n");
++	if (!mc146818_does_rtc_work()) {
++		dev_warn(dev, "broken or not accessible\n");
+ 		retval = -ENXIO;
+ 		goto cleanup1;
+ 	}
+ 
++	spin_lock_irq(&rtc_lock);
++
+ 	if (!(flags & CMOS_RTC_FLAGS_NOFREQ)) {
+ 		/* force periodic irq to CMOS reset default of 1024Hz;
+ 		 *
+diff --git a/drivers/rtc/rtc-mc146818-lib.c b/drivers/rtc/rtc-mc146818-lib.c
+index 97e3cebb4da9..70137566981e 100644
+--- a/drivers/rtc/rtc-mc146818-lib.c
++++ b/drivers/rtc/rtc-mc146818-lib.c
+@@ -8,10 +8,36 @@
+ #include <linux/acpi.h>
+ #endif
+ 
++/*
++ * If the UIP (Update-in-progress) bit of the RTC is set for more then
++ * 10ms, the RTC is apparently broken or not present.
++ */
++bool mc146818_does_rtc_work(void)
++{
++	int i;
++	unsigned char val;
++	unsigned long flags;
++
++	for (i = 0; i < 10; i++) {
++		spin_lock_irqsave(&rtc_lock, flags);
++		val = CMOS_READ(RTC_FREQ_SELECT);
++		spin_unlock_irqrestore(&rtc_lock, flags);
++
++		if ((val & RTC_UIP) == 0)
++			return true;
++
++		mdelay(1);
++	}
++
++	return false;
++}
++EXPORT_SYMBOL_GPL(mc146818_does_rtc_work);
++
+ unsigned int mc146818_get_time(struct rtc_time *time)
+ {
+ 	unsigned char ctrl;
+ 	unsigned long flags;
++	unsigned int iter_count = 0;
+ 	unsigned char century = 0;
+ 	bool retry;
+ 
+@@ -20,13 +46,13 @@ unsigned int mc146818_get_time(struct rtc_time *time)
+ #endif
+ 
+ again:
+-	spin_lock_irqsave(&rtc_lock, flags);
+-	/* Ensure that the RTC is accessible. Bit 6 must be 0! */
+-	if (WARN_ON_ONCE((CMOS_READ(RTC_VALID) & 0x40) != 0)) {
+-		spin_unlock_irqrestore(&rtc_lock, flags);
++	if (iter_count > 10) {
+ 		memset(time, 0, sizeof(*time));
+ 		return -EIO;
+ 	}
++	iter_count++;
++
++	spin_lock_irqsave(&rtc_lock, flags);
+ 
+ 	/*
+ 	 * Check whether there is an update in progress during which the
+diff --git a/include/linux/mc146818rtc.h b/include/linux/mc146818rtc.h
+index 0661af17a758..69c80c4325bf 100644
+--- a/include/linux/mc146818rtc.h
++++ b/include/linux/mc146818rtc.h
+@@ -123,6 +123,7 @@ struct cmos_rtc_board_info {
+ #define RTC_IO_EXTENT_USED      RTC_IO_EXTENT
+ #endif /* ARCH_RTC_LOCATION */
+ 
++bool mc146818_does_rtc_work(void);
+ unsigned int mc146818_get_time(struct rtc_time *time);
+ int mc146818_set_time(struct rtc_time *time);
+ 
+-- 
+2.35.1
+
+
+
