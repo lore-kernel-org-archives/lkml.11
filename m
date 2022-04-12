@@ -2,78 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5444C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43EF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355826AbiDLNYh (ORCPT
+        id S1355897AbiDLNYo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55442 "EHLO
+        Tue, 12 Apr 2022 09:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356304AbiDLNXF (ORCPT
+        with ESMTP id S1356574AbiDLNXS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:23:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CC52196;
-        Tue, 12 Apr 2022 06:13:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 613D4B81D07;
-        Tue, 12 Apr 2022 13:13:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93CC7C385A5;
-        Tue, 12 Apr 2022 13:13:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649769231;
-        bh=D6Jlv2JUyY3cAN0adwNthYMXFUd3G0DuUSmPixoa1Hk=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=PoCjwU3YP9NmCxrWjNmDlhRjC/5rGVTTSS1PWbxkpHHcU/y55P0HdQwVoVxcRW/8u
-         t7CFFZCJAqqdamlKCr4D7fEAAjiXuf6i7nhqyyOfSlAdSkQ8CS8ON5o6KCl6iR4kBV
-         5vCcNAsluyrFwibSOngLQj1kgbWWtRejlg48H3tXBrBN89+nx60gDAcA0bswjOKGat
-         UPHAdZUKq8ezQX2YYJVu2LlDu7i7V/F8A+YZlRIWAIq3Q34lRG79+NOJLSYVkymryn
-         0i9KwTrf5RbkwhoA1h2gYiNG10qRlRhqTqbl0/bXEzncdZuYNty//FCm9TOjsF9oX2
-         kJkQbBLwTjGZA==
-Content-Type: text/plain; charset="utf-8"
+        Tue, 12 Apr 2022 09:23:18 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485C913EBF;
+        Tue, 12 Apr 2022 06:14:47 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 23CBgE2v008904;
+        Tue, 12 Apr 2022 13:14:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=pLTJILFWv8SMp1Gxs+TBC09oDeHM+2WiTPbdP91mfHs=;
+ b=MOMKJ7kd488Bg/i2/BspB/Ri5+YzqBJNMRxZGtSAE1JoB1yl/6TIymGG4XbAvUpnqs6A
+ MF8AkwVGxaXWHC8k0wL11OQKRoEx/MwUQqA0geQ+wxjD6i8xtk+P7eoVqN9XFAZq31/v
+ rJcsl4ly9PK65yNmZ0kH0B5eBZ5bmrThP5o7u615hh//jkNznoIGC8MyFJwvMKrEkgmu
+ 6yEf7nnkqSD3dJMOCUYLSXzdcoxHV+qjXcu9K4DzhGl7MKay8J85KjzNrz7Ho2ZCM2Pm
+ J5taZCAM7Qb8feem6XuktQOGsKn+9Dwn4W3DDJUHWFxD8JN2pTptDvrZGfZJ02W49lvK ig== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3fd8sbj2qw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 13:14:44 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 23CD0i2I019215;
+        Tue, 12 Apr 2022 13:14:43 GMT
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3fd8sbj2qm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 13:14:43 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 23CD7teF006999;
+        Tue, 12 Apr 2022 13:14:43 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma02wdc.us.ibm.com with ESMTP id 3fb1s9r4ra-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 13:14:43 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 23CDEgj226542584
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Apr 2022 13:14:42 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 505E9B2066;
+        Tue, 12 Apr 2022 13:14:42 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2C563B2064;
+        Tue, 12 Apr 2022 13:14:38 +0000 (GMT)
+Received: from [9.211.106.50] (unknown [9.211.106.50])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue, 12 Apr 2022 13:14:38 +0000 (GMT)
+Message-ID: <b143e333-0add-8042-12de-7e9e8b275ec0@linux.ibm.com>
+Date:   Tue, 12 Apr 2022 09:14:36 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next 2/2] ath9k: Remove unnecessary print function
- dev_err()
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220408000113.129906-2-yang.lee@linux.alibaba.com>
-References: <20220408000113.129906-2-yang.lee@linux.alibaba.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        loic.poulain@linaro.org, toke@toke.dk, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164976922680.15500.1095811162535053166.kvalo@kernel.org>
-Date:   Tue, 12 Apr 2022 13:13:48 +0000 (UTC)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v5 15/21] KVM: s390: pci: add routines to start/stop
+ interpretive execution
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     linux-s390@vger.kernel.org, alex.williamson@redhat.com,
+        cohuck@redhat.com, schnelle@linux.ibm.com, farman@linux.ibm.com,
+        pmorel@linux.ibm.com, borntraeger@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com, frankja@linux.ibm.com,
+        david@redhat.com, imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, pbonzini@redhat.com, corbet@lwn.net,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <20220404174349.58530-1-mjrosato@linux.ibm.com>
+ <20220404174349.58530-16-mjrosato@linux.ibm.com>
+ <20220408124707.GY64706@ziepe.ca>
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20220408124707.GY64706@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ug2cA0NUQiUtzyMfzAv0jirnerPyC71J
+X-Proofpoint-ORIG-GUID: FbaeDxowGGk6k4drG8ggKIZDsBOdLcFr
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-12_04,2022-04-12_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ impostorscore=0 mlxscore=0 spamscore=0 adultscore=0 phishscore=0
+ clxscore=1011 bulkscore=0 mlxlogscore=713 lowpriorityscore=0
+ malwarescore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2204120062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Yang Li <yang.lee@linux.alibaba.com> wrote:
-
-> The print function dev_err() is redundant because
-> platform_get_irq_byname() already prints an error.
+On 4/8/22 8:47 AM, Jason Gunthorpe wrote:
+> On Mon, Apr 04, 2022 at 01:43:43PM -0400, Matthew Rosato wrote:
+>> +int kvm_s390_pci_register_kvm(struct device *dev, void *data)
+>> +{
+>> +	struct zpci_dev *zdev = NULL;
+>> +	struct kvm *kvm = data;
+>> +
+>> +	/* Only proceed for zPCI devices, quietly ignore others */
+>> +	if (dev_is_pci(dev))
+>> +		zdev = to_zpci_dev(dev);
+>> +	if (!zdev)
+>> +		return 0;
 > 
-> Eliminate the follow coccicheck warning:
-> ./drivers/net/wireless/ath/ath9k/ahb.c:103:2-9: line 103 is redundant
-> because platform_get_irq() already prints an error
+> Especially since this only works if we have zpci device
 > 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+> So having the zpci code hook the kvm notifier and then call the arch
+> code from the zpci area seems pretty OK
+> 
+> Also why is a struct kvm * being passed as a void *?
 
-Patch applied to ath-next branch of ath.git, thanks.
+Only because the function is intended to be called via 
+iommu_group_for_each_dev (next patch) which requires int (*fn)(struct 
+device *, void *)
 
-d7ceee8051ba ath9k: Remove unnecessary print function dev_err()
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220408000113.129906-2-yang.lee@linux.alibaba.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
