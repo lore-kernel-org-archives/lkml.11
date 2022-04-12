@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6032C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 00:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243563AbiDLAt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 20:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42262 "EHLO
+        id S243735AbiDLAuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 20:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242375AbiDLAsA (ORCPT
+        with ESMTP id S242732AbiDLAsE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 20:48:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBB12ED60;
-        Mon, 11 Apr 2022 17:45:44 -0700 (PDT)
+        Mon, 11 Apr 2022 20:48:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642632ED66;
+        Mon, 11 Apr 2022 17:45:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D95BB8186F;
-        Tue, 12 Apr 2022 00:45:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43D2BC385AC;
-        Tue, 12 Apr 2022 00:45:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10CA2B8186F;
+        Tue, 12 Apr 2022 00:45:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E9F9C385BB;
+        Tue, 12 Apr 2022 00:45:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649724341;
-        bh=k0wSfYR0ig7xQ4rb/4er1kpUOZcttmdGmeX4lBcM9V8=;
+        s=k20201202; t=1649724345;
+        bh=9WpKRmzPIMz90Vitck4aKghxMNPz4j5Xq4Pusf3jXaU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LWs604TCBuyH2KfdcLHcOYkqK1kUERvphWcvB4RlqLE94kS3I9xX1mFIFDYhddg+G
-         HJBfF2Hi0PrbLSEb7LFek8n6t2aP0aP0ZGSnRjvmhJlCaGrzGWqyK5dxOaaP1YacVS
-         Yb3fMeDiMqQuY1eXOs41Hhh5CzyhWdUS8KyATlY3GUXdkI5+s0FHnBBqY2z94B9m9t
-         r6kPbw0Imxi06yP9kYiE4484zbnlVbArD1bj4nQZVMtG1UpojvXYpxV8P4Y291PC4u
-         RftU0MNhMEvhglYtefyaSGwPu7P90Npd/dKsdwYWUYbwNbi8+vyfueKUJNDAzLmyVv
-         Fp6lISc0MQdHA==
+        b=OFblDA1EBB/X1yythFSKEX22KixprECoYJ3+OrrUTn5PEoWFUNzxwcKxK43e/DWgv
+         Db5VsRyfAbtp/mlATztTHpJ1VeHjHnNE1tsZjoMvG1ZxNA+BZ0XK2ICyFcxDUe/zYi
+         pCQ9Rk1TTAYa6ZRY0eo94Hg4VK/bbFBguS+HZM2DU9jJf2jUjI9hkUolot4kp8T2bE
+         NwSgQEENu2bw1y/pgjYRuGK9k7F2+MYrzQQRaQV50eVZ0JTjMJCxagtmLp8HEMhyqR
+         jP7ILTnV9b6sAbmdKyGuFj150U62jVCaZ79Mztezc5C3+HoS2Y7P9qKlb5VdNqL6f2
+         Ay33iXhl6OIyA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Steve Capper <steve.capper@arm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        aneesh.kumar@linux.ibm.com, npiggin@gmail.com,
-        linux-arch@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH AUTOSEL 5.17 29/49] tlb: hugetlb: Add more sizes to tlb_remove_huge_tlb_entry
-Date:   Mon, 11 Apr 2022 20:43:47 -0400
-Message-Id: <20220412004411.349427-29-sashal@kernel.org>
+Cc:     Boqun Feng <boqun.feng@gmail.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        decui@microsoft.com, linux-hyperv@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 31/49] Drivers: hv: balloon: Disable balloon and hot-add accordingly
+Date:   Mon, 11 Apr 2022 20:43:49 -0400
+Message-Id: <20220412004411.349427-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412004411.349427-1-sashal@kernel.org>
 References: <20220412004411.349427-1-sashal@kernel.org>
@@ -56,64 +53,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve Capper <steve.capper@arm.com>
+From: Boqun Feng <boqun.feng@gmail.com>
 
-[ Upstream commit 697a1d44af8ba0477ee729e632f4ade37999249a ]
+[ Upstream commit be5802795cf8d0b881745fa9ba7790293b382280 ]
 
-tlb_remove_huge_tlb_entry only considers PMD_SIZE and PUD_SIZE when
-updating the mmu_gather structure.
+Currently there are known potential issues for balloon and hot-add on
+ARM64:
 
-Unfortunately on arm64 there are two additional huge page sizes that
-need to be covered: CONT_PTE_SIZE and CONT_PMD_SIZE. Where an end-user
-attempts to employ contiguous huge pages, a VM_BUG_ON can be experienced
-due to the fact that the tlb structure hasn't been correctly updated by
-the relevant tlb_flush_p.._range() call from tlb_remove_huge_tlb_entry.
+*	Unballoon requests from Hyper-V should only unballoon ranges
+	that are guest page size aligned, otherwise guests cannot handle
+	because it's impossible to partially free a page. This is a
+	problem when guest page size > 4096 bytes.
 
-This patch adds inequality logic to the generic implementation of
-tlb_remove_huge_tlb_entry s.t. CONT_PTE_SIZE and CONT_PMD_SIZE are
-effectively covered on arm64. Also, as well as ptes, pmds and puds;
-p4ds are now considered too.
+*	Memory hot-add requests from Hyper-V should provide the NUMA
+	node id of the added ranges or ARM64 should have a functional
+	memory_add_physaddr_to_nid(), otherwise the node id is missing
+	for add_memory().
 
-Reported-by: David Hildenbrand <david@redhat.com>
-Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Link: https://lore.kernel.org/linux-mm/811c5c8e-b3a2-85d2-049c-717f17c3a03a@redhat.com/
-Signed-off-by: Steve Capper <steve.capper@arm.com>
-Acked-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220330112543.863-1-steve.capper@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+These issues require discussions on design and implementation. In the
+meanwhile, post_status() is working and essential to guest monitoring.
+Therefore instead of disabling the entire hv_balloon driver, the
+ballooning (when page size > 4096 bytes) and hot-add are disabled
+accordingly for now. Once the issues are fixed, they can be re-enable in
+these cases.
+
+Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/20220325023212.1570049-3-boqun.feng@gmail.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/asm-generic/tlb.h | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/hv/hv_balloon.c | 36 ++++++++++++++++++++++++++++++++++--
+ 1 file changed, 34 insertions(+), 2 deletions(-)
 
-diff --git a/include/asm-generic/tlb.h b/include/asm-generic/tlb.h
-index 2c68a545ffa7..71942a1c642d 100644
---- a/include/asm-generic/tlb.h
-+++ b/include/asm-generic/tlb.h
-@@ -565,10 +565,14 @@ static inline void tlb_flush_p4d_range(struct mmu_gather *tlb,
- #define tlb_remove_huge_tlb_entry(h, tlb, ptep, address)	\
- 	do {							\
- 		unsigned long _sz = huge_page_size(h);		\
--		if (_sz == PMD_SIZE)				\
--			tlb_flush_pmd_range(tlb, address, _sz);	\
--		else if (_sz == PUD_SIZE)			\
-+		if (_sz >= P4D_SIZE)				\
-+			tlb_flush_p4d_range(tlb, address, _sz);	\
-+		else if (_sz >= PUD_SIZE)			\
- 			tlb_flush_pud_range(tlb, address, _sz);	\
-+		else if (_sz >= PMD_SIZE)			\
-+			tlb_flush_pmd_range(tlb, address, _sz);	\
-+		else						\
-+			tlb_flush_pte_range(tlb, address, _sz);	\
- 		__tlb_remove_tlb_entry(tlb, ptep, address);	\
- 	} while (0)
+diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
+index 439f99b8b5de..3cf334c46c31 100644
+--- a/drivers/hv/hv_balloon.c
++++ b/drivers/hv/hv_balloon.c
+@@ -1653,6 +1653,38 @@ static void disable_page_reporting(void)
+ 	}
+ }
  
++static int ballooning_enabled(void)
++{
++	/*
++	 * Disable ballooning if the page size is not 4k (HV_HYP_PAGE_SIZE),
++	 * since currently it's unclear to us whether an unballoon request can
++	 * make sure all page ranges are guest page size aligned.
++	 */
++	if (PAGE_SIZE != HV_HYP_PAGE_SIZE) {
++		pr_info("Ballooning disabled because page size is not 4096 bytes\n");
++		return 0;
++	}
++
++	return 1;
++}
++
++static int hot_add_enabled(void)
++{
++	/*
++	 * Disable hot add on ARM64, because we currently rely on
++	 * memory_add_physaddr_to_nid() to get a node id of a hot add range,
++	 * however ARM64's memory_add_physaddr_to_nid() always return 0 and
++	 * DM_MEM_HOT_ADD_REQUEST doesn't have the NUMA node information for
++	 * add_memory().
++	 */
++	if (IS_ENABLED(CONFIG_ARM64)) {
++		pr_info("Memory hot add disabled on ARM64\n");
++		return 0;
++	}
++
++	return 1;
++}
++
+ static int balloon_connect_vsp(struct hv_device *dev)
+ {
+ 	struct dm_version_request version_req;
+@@ -1724,8 +1756,8 @@ static int balloon_connect_vsp(struct hv_device *dev)
+ 	 * currently still requires the bits to be set, so we have to add code
+ 	 * to fail the host's hot-add and balloon up/down requests, if any.
+ 	 */
+-	cap_msg.caps.cap_bits.balloon = 1;
+-	cap_msg.caps.cap_bits.hot_add = 1;
++	cap_msg.caps.cap_bits.balloon = ballooning_enabled();
++	cap_msg.caps.cap_bits.hot_add = hot_add_enabled();
+ 
+ 	/*
+ 	 * Specify our alignment requirements as it relates
 -- 
 2.35.1
 
