@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7622BC4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77D21C3527C
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377744AbiDLHxW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:53:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
+        id S235640AbiDLH5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:57:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353565AbiDLHZq (ORCPT
+        with ESMTP id S1353550AbiDLHZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D64443496;
-        Tue, 12 Apr 2022 00:01:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F5C26100;
+        Tue, 12 Apr 2022 00:01:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35C20B81B4E;
-        Tue, 12 Apr 2022 07:01:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 897FDC385A1;
-        Tue, 12 Apr 2022 07:01:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28E4CB81B35;
+        Tue, 12 Apr 2022 07:01:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97799C385A6;
+        Tue, 12 Apr 2022 07:01:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746890;
-        bh=vkPmgKey2lf/3Sf8BVlNeaFbqFAGzmVNLtpEoE4dmDk=;
+        s=korg; t=1649746880;
+        bh=kUn2qAPqnhLi5OlFTb3kcm5yBG9tINbEWnBPKsnb0Rs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ly+rYHM0LzKca9IbpSnLBfQ6n9qC22KLJD5dkoGTulqSUGXRFuEBfJ4Kw/n+rMCdk
-         HcVP2rl1fGY2wIOGe6sit6FAxV6OKqXPSgZ/i0hbgBH2SabnW6UekIo3TwZI5w6H0Z
-         elaJ99DtETin9aLLYs9sd+rrX3dV7uhVbou/pZbE=
+        b=fvD1R0xsGOFMGzCzY9MqOWkVKx8EclApREnhBeWbeZc5D/qLG36d+5Ojuybt7lmlA
+         kFEAiTOpZb9d8+TKvNkrihCFPeXEBLFKu1BMdhpFEJudACwP0B5ngeWZBNHTeEWxAh
+         cwX8h8eNu3f8jVMNR6knDVS/kAyfsMR4emxyFN4M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 168/285] net: stmmac: Fix unset max_speed difference between DT and non-DT platforms
-Date:   Tue, 12 Apr 2022 08:30:25 +0200
-Message-Id: <20220412062948.519258794@linuxfoundation.org>
+Subject: [PATCH 5.16 123/285] opp: Expose of-nodes name in debugfs
+Date:   Tue, 12 Apr 2022 08:29:40 +0200
+Message-Id: <20220412062947.215634701@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,53 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen-Yu Tsai <wens@csie.org>
+From: Viresh Kumar <viresh.kumar@linaro.org>
 
-[ Upstream commit c21cabb0fd0b54b8b54235fc1ecfe1195a23bcb2 ]
+[ Upstream commit 021dbecabc93b1610b5db989d52a94e0c6671136 ]
 
-In commit 9cbadf094d9d ("net: stmmac: support max-speed device tree
-property"), when DT platforms don't set "max-speed", max_speed is set to
--1; for non-DT platforms, it stays the default 0.
+It is difficult to find which OPPs are active at the moment, specially
+if there are multiple OPPs with same frequency available in the device
+tree (controlled by supported hardware feature).
 
-Prior to commit eeef2f6b9f6e ("net: stmmac: Start adding phylink support"),
-the check for a valid max_speed setting was to check if it was greater
-than zero. This commit got it right, but subsequent patches just checked
-for non-zero, which is incorrect for DT platforms.
+Expose name of the DT node to find out the exact OPP.
 
-In commit 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
-the conversion switched completely to checking for non-zero value as a
-valid value, which caused 1000base-T to stop getting advertised by
-default.
+While at it, also expose level field.
 
-Instead of trying to fix all the checks, simply leave max_speed alone if
-DT property parsing fails.
-
-Fixes: 9cbadf094d9d ("net: stmmac: support max-speed device tree property")
-Fixes: 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
-Signed-off-by: Chen-Yu Tsai <wens@csie.org>
-Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220331184832.16316-1-wens@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Leo Yan <leo.yan@linaro.org>
+Tested-by: Leo Yan <leo.yan@linaro.org>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/opp/debugfs.c | 5 +++++
+ drivers/opp/opp.h     | 1 +
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 5d29f336315b..11e1055e8260 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -431,8 +431,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, u8 *mac)
- 	plat->phylink_node = np;
+diff --git a/drivers/opp/debugfs.c b/drivers/opp/debugfs.c
+index 596c185b5dda..b5f2f9f39392 100644
+--- a/drivers/opp/debugfs.c
++++ b/drivers/opp/debugfs.c
+@@ -10,6 +10,7 @@
+ #include <linux/debugfs.h>
+ #include <linux/device.h>
+ #include <linux/err.h>
++#include <linux/of.h>
+ #include <linux/init.h>
+ #include <linux/limits.h>
+ #include <linux/slab.h>
+@@ -131,9 +132,13 @@ void opp_debug_create_one(struct dev_pm_opp *opp, struct opp_table *opp_table)
+ 	debugfs_create_bool("suspend", S_IRUGO, d, &opp->suspend);
+ 	debugfs_create_u32("performance_state", S_IRUGO, d, &opp->pstate);
+ 	debugfs_create_ulong("rate_hz", S_IRUGO, d, &opp->rate);
++	debugfs_create_u32("level", S_IRUGO, d, &opp->level);
+ 	debugfs_create_ulong("clock_latency_ns", S_IRUGO, d,
+ 			     &opp->clock_latency_ns);
  
- 	/* Get max speed of operation from device tree */
--	if (of_property_read_u32(np, "max-speed", &plat->max_speed))
--		plat->max_speed = -1;
-+	of_property_read_u32(np, "max-speed", &plat->max_speed);
++	opp->of_name = of_node_full_name(opp->np);
++	debugfs_create_str("of_name", S_IRUGO, d, (char **)&opp->of_name);
++
+ 	opp_debug_create_supplies(opp, opp_table, d);
+ 	opp_debug_create_bw(opp, opp_table, d);
  
- 	plat->bus_id = of_alias_get_id(np, "ethernet");
- 	if (plat->bus_id < 0)
+diff --git a/drivers/opp/opp.h b/drivers/opp/opp.h
+index 407c3bfe51d9..45e3a55239a1 100644
+--- a/drivers/opp/opp.h
++++ b/drivers/opp/opp.h
+@@ -96,6 +96,7 @@ struct dev_pm_opp {
+ 
+ #ifdef CONFIG_DEBUG_FS
+ 	struct dentry *dentry;
++	const char *of_name;
+ #endif
+ };
+ 
 -- 
 2.35.1
 
