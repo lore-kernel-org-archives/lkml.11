@@ -2,96 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A47C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 02:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA4E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 02:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343576AbiDLCk5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 22:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50756 "EHLO
+        id S244302AbiDLCom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 22:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238840AbiDLCks (ORCPT
+        with ESMTP id S235006AbiDLCok (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 22:40:48 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECA519C35
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 19:38:32 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-d6ca46da48so19401073fac.12
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 19:38:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bsj0qNf1cqMOve8zTWuJ9drSqXyGdLK4Rj/oCK1m/Vw=;
-        b=XgOzj0UeLzDuVIHBr4rcreeBNCwlWGmgYsjRFbX4BFVJevtNwnkJNh1j0zC+/uCDwS
-         NLH8fVwppFIpzyPYQYlv7EGsEJXDiQAjj02zu/LPpAgv+cUKNLpQpEodJpSR35MQvnOL
-         vG/YOFXZnWse/RhQIM5+xlgkGzRwKjNcvKSLT9cAzUcRBSvGsC8lH1HpRdG0MGFFxMJR
-         9s5lqMbmfo+jfWpsksadb0qyE20SvBA6TBBRrHksRfdxSeNxgyXe5mJmItVby9ZWDsp2
-         pabGIvhlsHAnQPG4GXtkiLi6zBmHobjjwQbXwT3TEjkFAHf4vZ8GKJDpLj4IyCOAhbae
-         Ul6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bsj0qNf1cqMOve8zTWuJ9drSqXyGdLK4Rj/oCK1m/Vw=;
-        b=7VSAm6fNTa+nFrXPBjNb7fDuRshCF9FfJXKVdBOSd/sCU7i3eNl/TmWgFI5QSAGeyq
-         QoD2ODihu3ELl6KNcTC+o8EisdrshbhGf2Q5nwBPShFcd/wtkwzZTAFUpMYvG/6qD17d
-         6H6+eei2uLFmr9iZTvom7GhUAHyxsAnfBcFmpyDdDjpyZLrLL5GBbEgDvDQVx/bZEubB
-         exHagWiT0R+XZCG/gGkoHzAHDmOv4QxL8Q5sQCXmBg8jhHhm/p9w/nYNZ79u4yJml8RK
-         1gtg92dQj4wUDM0dFJ+oWYrPF5yJUgnMp6sVd4kBiDW1wrdLQfhDlDQ8/XtNCS9B0JiL
-         sHBA==
-X-Gm-Message-State: AOAM531H5V33w6+PSY34b/6I9qMvG8FsyR6uBGzIZrTDR9p9Xhh5VjRu
-        zYKniU8/IK5B3az+tz6IYoM=
-X-Google-Smtp-Source: ABdhPJwn/eT7Uj7b2LPhT6qe+2cTBrkNzNfeW2ilc6QDKRQT9NdJmPl9aVBmcnoAGFAqimrtB/qAVw==
-X-Received: by 2002:a05:6870:a1a0:b0:dd:e471:8baf with SMTP id a32-20020a056870a1a000b000dde4718bafmr1148349oaf.40.1649731112320;
-        Mon, 11 Apr 2022 19:38:32 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14c:4c2:8a9b::1002])
-        by smtp.gmail.com with ESMTPSA id p14-20020a9d744e000000b005b235f5cf92sm12995256otk.65.2022.04.11.19.38.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 19:38:32 -0700 (PDT)
-From:   Tales Lelo da Aparecida <tales.aparecida@gmail.com>
-To:     Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>,
-        Melissa Wen <melissa.srw@gmail.com>,
-        Haneen Mohammed <hamohammed.sa@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        andrealmeid@riseup.net
-Cc:     Tales Lelo da Aparecida <tales.aparecida@gmail.com>
-Subject: [PATCH 1/1] drm/vkms: check plane_composer->map[0] before using it
-Date:   Mon, 11 Apr 2022 20:38:01 -0300
-Message-Id: <20220411233801.36297-2-tales.aparecida@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220411233801.36297-1-tales.aparecida@gmail.com>
-References: <20220411233801.36297-1-tales.aparecida@gmail.com>
+        Mon, 11 Apr 2022 22:44:40 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D01696405;
+        Mon, 11 Apr 2022 19:42:23 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Kcqkh2W4Xz4xL3;
+        Tue, 12 Apr 2022 12:42:20 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1649731341;
+        bh=wujwRAot37JL55MqU+GtyATZfJeL2yNw42zsycqJ4n0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=cr5zEH04ZKqQORY0HXV8RNUSFgk/z8rTTHfXxmIpQheASB/rsTAiYrrb5DLwIu+IK
+         awuQCazO/CyqNeaiyZuciAQzgp7vg9pip4spL61TVD6f/bFVF/axL9hRxfzeMSMeZ2
+         44UsNGxGwm8/JGfYhzci1pozZb4hE5u1W/XuWK+B5Mw5GsYpFX9TQBQ7UXxIFeX+8/
+         m2dBSigy2JIyQyi+EnkQNyxjhavHWcaT1jcPaclHx3b0XmqXUVipy4PMJSQMsL0HSg
+         i2Kwbl1Wjf1QPORBBxyzpezOhJDDzUNO5MJ2rJw51UtL/iGlVyhcQj/iK1R8ueIJw/
+         ztK/Tm1dAxJ9A==
+Date:   Tue, 12 Apr 2022 12:42:19 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Minghao Chi <chi.minghao@zte.com.cn>
+Subject: linux-next: manual merge of the dmaengine tree with the
+ dmaengine-fixes tree
+Message-ID: <20220412124219.3738092c@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/+L_ahD.uv0hKb8zaYfb/47Q";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix a copypasta error, which resulted in checking repeatedly if the
-primary_composer->map[0] was null, instead of checking each
-plane_composer while composing planes.
+--Sig_/+L_ahD.uv0hKb8zaYfb/47Q
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Tales Lelo da Aparecida <tales.aparecida@gmail.com>
----
- drivers/gpu/drm/vkms/vkms_composer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi all,
 
-diff --git a/drivers/gpu/drm/vkms/vkms_composer.c b/drivers/gpu/drm/vkms/vkms_composer.c
-index c6a1036bf2ea..b47ac170108c 100644
---- a/drivers/gpu/drm/vkms/vkms_composer.c
-+++ b/drivers/gpu/drm/vkms/vkms_composer.c
-@@ -157,7 +157,7 @@ static void compose_plane(struct vkms_composer *primary_composer,
- 	void *vaddr;
- 	void (*pixel_blend)(const u8 *p_src, u8 *p_dst);
- 
--	if (WARN_ON(iosys_map_is_null(&primary_composer->map[0])))
-+	if (WARN_ON(iosys_map_is_null(&plane_composer->map[0])))
- 		return;
- 
- 	vaddr = plane_composer->map[0].vaddr;
--- 
-2.35.1
+Today's linux-next merge of the dmaengine tree got a conflict in:
 
+  drivers/dma/mediatek/mtk-hsdma.c
+
+between commit:
+
+  5cfde5b82f05 ("dmaengine: mediatek: mtk-hsdma: Use platform_get_irq() to =
+get the interrupt")
+
+from the dmaengine-fixes tree and commit:
+
+  bb40bb695ec8 ("dmaengine: mediatek: mtk-hsdma: Use platform_get_irq() to =
+get the interrupt")
+
+from the dmaengine tree.
+
+I fixed it up (I arbitrarily used the former) and can carry the fix as
+necessary. This is now fixed as far as linux-next is concerned, but any
+non trivial conflicts should be mentioned to your upstream maintainer
+when your tree is submitted for merging.  You may also want to consider
+cooperating with the maintainer of the conflicting tree to minimise any
+particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/+L_ahD.uv0hKb8zaYfb/47Q
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmJU5wsACgkQAVBC80lX
+0GyOBwf/Y4EtwwwUQSxKpHDu1iDabPAT00CPndUhMwf5YCXUR++so8RHYW7EzUc+
+uqQuAg9tByMQgr0hD1v0gHdzFoMUoPLils6C5iptUeJczBWTd+Lj/I8misoGEezE
+xJtHX3DAWvWp0mBf+Mgv4J5PPZQArx0xV6I0pUl6Tl+2WYll5eUypnxRKkU62LM8
+ooMBJ5WpuMNIIIPJIVqNbYxcM8D7QAymhPT7o00EOB8hQlCYBxwS3uIpV6H7zDo4
+/MmquDkByGRlHPZjVaVue7pkyeW/Qtv73Rg2beHSAsg31NRh2UJgMKK/fUqXNtcf
+9fOz6rB0P5/17ETGwM7lgz2K0CAjVA==
+=78uY
+-----END PGP SIGNATURE-----
+
+--Sig_/+L_ahD.uv0hKb8zaYfb/47Q--
