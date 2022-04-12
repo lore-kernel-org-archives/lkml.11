@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA59C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D65C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352230AbiDLJN3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:13:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
+        id S235691AbiDLJPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 05:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358342AbiDLHl0 (ORCPT
+        with ESMTP id S1357851AbiDLHks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:41:26 -0400
+        Tue, 12 Apr 2022 03:40:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB271EC48;
-        Tue, 12 Apr 2022 00:17:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1710539B85;
+        Tue, 12 Apr 2022 00:16:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9651F6153F;
-        Tue, 12 Apr 2022 07:17:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99AF6C385C4;
-        Tue, 12 Apr 2022 07:17:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C180617E6;
+        Tue, 12 Apr 2022 07:16:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 476DBC385DF;
+        Tue, 12 Apr 2022 07:16:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747869;
-        bh=HROHGGsBFbO4vq3IAw5etvco6016oKrSMD4SXiABxIc=;
+        s=korg; t=1649747818;
+        bh=dvOuvkLBEN4EUP6zEmDLAeop9VeIEiE+x9OuTkj65Xc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SVS2fAVx69/TqZEzGnhu1FgOBCYOaAIsaTn4GWSIdLG6ckpw2ho56MdoxYznXaVwy
-         0IsdIxFyF/nIOXh61EkLqeFeIzXZwTzYSDHVakIIfyKf3ZICisex0xbEfunXbJYdHS
-         +osTBlI8kJ0WFl1CisO7sXMRePpsKfEQPUAqfUPY=
+        b=EE1wGx2EWHCDnwiDXaJLS6zPE4QZr7dGdjTae798/UrO4xK5ZdKQJO9MoDsG6zmIu
+         9wyZb//HmbHmUtaP4NiF0fZM6rY/nZdKDMvUDqz1vceJwn59gk6qD63OwzASWVGLIC
+         8SVusRTrw8VaXBlURXSmErY+BuxkfHwUqhfFPGSw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Alice Michael <alice.michael@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 233/343] ice: Set txq_teid to ICE_INVAL_TEID on ring creation
-Date:   Tue, 12 Apr 2022 08:30:51 +0200
-Message-Id: <20220412062958.061361475@linuxfoundation.org>
+        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 217/343] drm/imx: dw_hdmi-imx: Fix bailout in error cases of probe
+Date:   Tue, 12 Apr 2022 08:30:35 +0200
+Message-Id: <20220412062957.606464113@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -55,69 +55,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+From: Liu Ying <victor.liu@nxp.com>
 
-[ Upstream commit ccfee1822042b87e5135d33cad8ea353e64612d2 ]
+[ Upstream commit e8083acc3f8cc2097917018e947fd4c857f60454 ]
 
-When VF is freshly created, but not brought up, ring->txq_teid
-value is by default set to 0.
-But 0 is a valid TEID. On some platforms the Root Node of
-Tx scheduler has a TEID = 0. This can cause issues as shown below.
+In dw_hdmi_imx_probe(), if error happens after dw_hdmi_probe() returns
+successfully, dw_hdmi_remove() should be called where necessary as
+bailout.
 
-The proper way is to set ring->txq_teid to ICE_INVAL_TEID (0xFFFFFFFF).
-
-Testing Hints:
-echo 1 > /sys/class/net/ens785f0/device/sriov_numvfs
-ip link set dev ens785f0v0 up
-ip link set dev ens785f0v0 down
-
-If we have freshly created VF and quickly turn it on and off, so there
-would be no time to reach VIRTCHNL_OP_CONFIG_VSI_QUEUES stage, then
-VIRTCHNL_OP_DISABLE_QUEUES stage will fail with error:
-[  639.531454] disable queue 89 failed 14
-[  639.532233] Failed to disable LAN Tx queues, error: ICE_ERR_AQ_ERROR
-[  639.533107] ice 0000:02:00.0: Failed to stop Tx ring 0 on VSI 5
-
-The reason for the fail is that we are trying to send AQ command to
-delete queue 89, which has never been created and receive an "invalid
-argument" error from firmware.
-
-As this queue has never been created, it's teid and ring->txq_teid
-have default value 0.
-ice_dis_vsi_txq has a check against non-existent queues:
-
-node = ice_sched_find_node_by_teid(pi->root, q_teids[i]);
-if (!node)
-	continue;
-
-But on some platforms the Root Node of Tx scheduler has a teid = 0.
-Hence, ice_sched_find_node_by_teid finds a node with teid = 0 (it is
-pi->root), and we go further to submit an erroneous request to firmware.
-
-Fixes: 37bb83901286 ("ice: Move common functions out of ice_main.c part 7/7")
-Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Alice Michael <alice.michael@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: c805ec7eb210 ("drm/imx: dw_hdmi-imx: move initialization into probe")
+Cc: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Signed-off-by: Liu Ying <victor.liu@nxp.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220128091944.3831256-1-victor.liu@nxp.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/imx/dw_hdmi-imx.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 20d755822d43..5fd2bbeab2d1 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -1452,6 +1452,7 @@ static int ice_vsi_alloc_rings(struct ice_vsi *vsi)
- 		ring->tx_tstamps = &pf->ptp.port.tx;
- 		ring->dev = dev;
- 		ring->count = vsi->num_tx_desc;
-+		ring->txq_teid = ICE_INVAL_TEID;
- 		WRITE_ONCE(vsi->tx_rings[i], ring);
+diff --git a/drivers/gpu/drm/imx/dw_hdmi-imx.c b/drivers/gpu/drm/imx/dw_hdmi-imx.c
+index 87428fb23d9f..a2277a0d6d06 100644
+--- a/drivers/gpu/drm/imx/dw_hdmi-imx.c
++++ b/drivers/gpu/drm/imx/dw_hdmi-imx.c
+@@ -222,6 +222,7 @@ static int dw_hdmi_imx_probe(struct platform_device *pdev)
+ 	struct device_node *np = pdev->dev.of_node;
+ 	const struct of_device_id *match = of_match_node(dw_hdmi_imx_dt_ids, np);
+ 	struct imx_hdmi *hdmi;
++	int ret;
+ 
+ 	hdmi = devm_kzalloc(&pdev->dev, sizeof(*hdmi), GFP_KERNEL);
+ 	if (!hdmi)
+@@ -243,10 +244,15 @@ static int dw_hdmi_imx_probe(struct platform_device *pdev)
+ 	hdmi->bridge = of_drm_find_bridge(np);
+ 	if (!hdmi->bridge) {
+ 		dev_err(hdmi->dev, "Unable to find bridge\n");
++		dw_hdmi_remove(hdmi->hdmi);
+ 		return -ENODEV;
  	}
  
+-	return component_add(&pdev->dev, &dw_hdmi_imx_ops);
++	ret = component_add(&pdev->dev, &dw_hdmi_imx_ops);
++	if (ret)
++		dw_hdmi_remove(hdmi->hdmi);
++
++	return ret;
+ }
+ 
+ static int dw_hdmi_imx_remove(struct platform_device *pdev)
 -- 
 2.35.1
 
