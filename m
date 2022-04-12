@@ -2,90 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA554C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:25:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D03C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:25:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbiDLX1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
+        id S230162AbiDLX1V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:27:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbiDLX0Z (ORCPT
+        with ESMTP id S230072AbiDLX00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:26:25 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F64C76645
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:12:30 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id i20so504620ybj.7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:12:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxtx.org; s=google;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xmRmkkroX/ZukAgPQbgu7GtPsckYSYxEzxmb7aKkIko=;
-        b=ZR7DAm07c+QEkfiyPHmQCfDS7timLcGfYeugikAQaMwU5Vit90FIFszf5HT8IqDTN6
-         MlDYXRrRhfYEJ4DRsY1nVyh5QoVxbY43AJ2//P+ZernsR/FLHrckT1w6XF1e9+YlnHK9
-         7gN820jcbxY2GEZcn5feLjjKV0aY9lY2dtVyU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=xmRmkkroX/ZukAgPQbgu7GtPsckYSYxEzxmb7aKkIko=;
-        b=lIlroZV6WBMN27ySPXtfNK8uZgMgkncwucGBPPT4BReV6nLHROUtlMdY5JvN5oSi9I
-         5HOzovE6bhVWGVtYp2jGD9oB/DM+wtZi5KhqVqQaNC8r7f8pWmni5jywQ7BJO7aT48dy
-         wx5sz83al8dzgI8b8zZujEoSAsUYZj/jpVKXKpbr8xOWiLZsd5gaN/dYjSJw3b6AYo5w
-         hmMNMj69zZPBE9FqEceyeUCyS7GtxUA88DiNSqFO5Ft5n3e/JkIzdAumiwFeCW0BtO+F
-         AF1RFyjFKKFhjZtMUwSIWLr6zASpMHXSKQ+8LRvBjdGCo7Y2E27y6bj6CfTz9S1/56uL
-         C7/g==
-X-Gm-Message-State: AOAM5328IznxBHtRbBbV/p/P4v8+Kj9mATNuzmFHNxhyfkJaB622Pdyp
-        spp2rrzpazkmLAQ/6S2726A1M3YmAHB3mFRB
-X-Google-Smtp-Source: ABdhPJzbwC3w2M+vc7pyB5lM/HW6D/4TCKadUkygTIT+t7hZVldVzOyZ115iTy8XP73vsW0amgCbkA==
-X-Received: by 2002:a4a:d109:0:b0:321:28d0:b7fa with SMTP id k9-20020a4ad109000000b0032128d0b7famr12254834oor.17.1649794132285;
-        Tue, 12 Apr 2022 13:08:52 -0700 (PDT)
-Received: from fedora64.linuxtx.org (104-189-158-32.lightspeed.rcsntx.sbcglobal.net. [104.189.158.32])
-        by smtp.gmail.com with ESMTPSA id b188-20020aca34c5000000b002da579c994dsm12690706oia.31.2022.04.12.13.08.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 13:08:51 -0700 (PDT)
-Sender: Justin Forbes <jmforbes@linuxtx.org>
-Date:   Tue, 12 Apr 2022 15:08:49 -0500
-From:   Justin Forbes <jforbes@fedoraproject.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.17 000/343] 5.17.3-rc1 review
-Message-ID: <YlXcUXUjSumMUipj@fedora64.linuxtx.org>
-References: <20220412062951.095765152@linuxfoundation.org>
+        Tue, 12 Apr 2022 19:26:26 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217155E16F;
+        Tue, 12 Apr 2022 15:38:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1649803132; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xNAG0SZZHvrLl10xQGGWue13a4HRKmHPzD7hJXX4nXw=;
+        b=JrCsWn2rWIljaUBYBbe4lfE1WQfRTPty5lP17RS5P46896a7F0Klgi9OrmOXuP9gLhIkNH
+        SG1EzrVTvrFCtbI+6rPgdFfNjm3BNfEQ+cz4GyEfA1e0Fs3s8MWOnmdedVoks84rkkFpKu
+        qVg9d2d/TTBZq+Y0afxP2tEHOqRfv08=
+Date:   Tue, 12 Apr 2022 23:38:42 +0100
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v5 1/2] mips: dts: ingenic: Add TCU clock to x1000/x1830
+ tcu device node
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, tsbogend@alpha.franken.de,
+        mturquette@baylibre.com, sboyd@kernel.org,
+        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        dan.carpenter@oracle.com
+Message-Id: <I809AR.0C3UZTFR7V5I1@crapouillou.net>
+In-Reply-To: <20220412122750.279058-2-aidanmacdonald.0x0@gmail.com>
+References: <20220412122750.279058-1-aidanmacdonald.0x0@gmail.com>
+        <20220412122750.279058-2-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Apr 12, 2022 at 08:26:58AM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.17.3 release.
-> There are 343 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 14 Apr 2022 06:28:59 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.3-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+Hi,
 
-Tested rc1 against the Fedora build system (aarch64, armv7, ppc64le,
-s390x, x86_64), and boot tested x86_64. No regressions noted.
+Le mar., avril 12 2022 at 13:27:49 +0100, Aidan MacDonald=20
+<aidanmacdonald.0x0@gmail.com> a =E9crit :
+> This clock is a gate for the TCU hardware block on these SoCs, but
+> it wasn't included in the device tree since the ingenic-tcu driver
+> erroneously did not request it.
+>=20
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+
+Cheers,
+-Paul
+
+> ---
+>  arch/mips/boot/dts/ingenic/x1000.dtsi | 5 +++--
+>  arch/mips/boot/dts/ingenic/x1830.dtsi | 5 +++--
+>  2 files changed, 6 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi=20
+> b/arch/mips/boot/dts/ingenic/x1000.dtsi
+> index 8bd27edef216..c69df8eb158e 100644
+> --- a/arch/mips/boot/dts/ingenic/x1000.dtsi
+> +++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
+> @@ -111,8 +111,9 @@ tcu: timer@10002000 {
+>=20
+>  		clocks =3D <&cgu X1000_CLK_RTCLK>,
+>  			 <&cgu X1000_CLK_EXCLK>,
+> -			 <&cgu X1000_CLK_PCLK>;
+> -		clock-names =3D "rtc", "ext", "pclk";
+> +			 <&cgu X1000_CLK_PCLK>,
+> +			 <&cgu X1000_CLK_TCU>;
+> +		clock-names =3D "rtc", "ext", "pclk", "tcu";
+>=20
+>  		interrupt-controller;
+>  		#interrupt-cells =3D <1>;
+> diff --git a/arch/mips/boot/dts/ingenic/x1830.dtsi=20
+> b/arch/mips/boot/dts/ingenic/x1830.dtsi
+> index 2595df8671c7..4408df24ca98 100644
+> --- a/arch/mips/boot/dts/ingenic/x1830.dtsi
+> +++ b/arch/mips/boot/dts/ingenic/x1830.dtsi
+> @@ -104,8 +104,9 @@ tcu: timer@10002000 {
+>=20
+>  		clocks =3D <&cgu X1830_CLK_RTCLK>,
+>  			 <&cgu X1830_CLK_EXCLK>,
+> -			 <&cgu X1830_CLK_PCLK>;
+> -		clock-names =3D "rtc", "ext", "pclk";
+> +			 <&cgu X1830_CLK_PCLK>,
+> +			 <&cgu X1830_CLK_TCU>;
+> +		clock-names =3D "rtc", "ext", "pclk", "tcu";
+>=20
+>  		interrupt-controller;
+>  		#interrupt-cells =3D <1>;
+> --
+> 2.35.1
+>=20
+
+
