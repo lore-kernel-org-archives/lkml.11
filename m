@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 113AEC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6205CC4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353447AbiDLHPY (ORCPT
+        id S1353571AbiDLHPo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
+        Tue, 12 Apr 2022 03:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235739AbiDLHAo (ORCPT
+        with ESMTP id S1351193AbiDLHCm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:00:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A7F4348F;
-        Mon, 11 Apr 2022 23:46:46 -0700 (PDT)
+        Tue, 12 Apr 2022 03:02:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C4B43ECC;
+        Mon, 11 Apr 2022 23:46:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06DDC6109E;
-        Tue, 12 Apr 2022 06:46:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18843C385A1;
-        Tue, 12 Apr 2022 06:46:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB5C2B818BD;
+        Tue, 12 Apr 2022 06:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39703C385AA;
+        Tue, 12 Apr 2022 06:46:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746005;
-        bh=Rsjvxg+k8r2vza09ZjsYYA3qoPxRWtfGsNYwNg5EE+M=;
+        s=korg; t=1649746013;
+        bh=WGH4Nk/mK73Nx2Dwc3zx9xhY+0nYNzKoDgVnbf+FosI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KUwMALSouWxC+uhPDvQaJUMvETsSulSMKiINPPz8jZWtwFhOSUSBetSa6cegq1uJ4
-         ZjRHVKR+kHV+dLAnVozwDJrHusWu22KJXMkGRniA4T4eL57qbq55EyLJgzEx/jJ3y1
-         Q0GjQXoN9SvTXRy+/h3som7RVg1eU8wewgSion5s=
+        b=1ywn4gI3FbYsWRVN76SFkirNS6jwkioF2aEIJgPeI1ejQGUEWkx4z9sW4EBuMvjfP
+         v8ASfpgcFSDbVGJO4gRr8fjTMqllB+naS3QHB6h37YWdGfrnvPR94XYLlzbr4k8zM7
+         e7YrD3Jb3xa6FcdYlejfkjT6+f2pj5I+aLaTYGF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 125/277] clk: ti: Preserve node in ti_dt_clocks_register()
-Date:   Tue, 12 Apr 2022 08:28:48 +0200
-Message-Id: <20220412062945.657969492@linuxfoundation.org>
+Subject: [PATCH 5.15 128/277] SUNRPC/xprt: async tasks mustnt block waiting for memory
+Date:   Tue, 12 Apr 2022 08:28:51 +0200
+Message-Id: <20220412062945.743633747@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -50,54 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: NeilBrown <neilb@suse.de>
 
-[ Upstream commit 80864594ff2ad002e2755daf97d46ff0c86faf1f ]
+[ Upstream commit a721035477fb5fb8abc738fbe410b07c12af3dc5 ]
 
-In preparation for making use of the clock-output-names, we want to
-keep node around in ti_dt_clocks_register().
+When memory is short, new worker threads cannot be created and we depend
+on the minimum one rpciod thread to be able to handle everything.  So it
+must not block waiting for memory.
 
-This change should not needed as a fix currently.
+xprt_dynamic_alloc_slot can block indefinitely.  This can tie up all
+workqueue threads and NFS can deadlock.  So when called from a
+workqueue, set __GFP_NORETRY.
 
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Link: https://lore.kernel.org/r/20220204071449.16762-3-tony@atomide.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+The rdma alloc_slot already does not block.  However it sets the error
+to -EAGAIN suggesting this will trigger a sleep.  It does not.  As we
+can see in call_reserveresult(), only -ENOMEM causes a sleep.  -EAGAIN
+causes immediate retry.
+
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/ti/clk.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ net/sunrpc/xprt.c               | 5 ++++-
+ net/sunrpc/xprtrdma/transport.c | 2 +-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clk/ti/clk.c b/drivers/clk/ti/clk.c
-index 3da33c786d77..29eafab4353e 100644
---- a/drivers/clk/ti/clk.c
-+++ b/drivers/clk/ti/clk.c
-@@ -131,7 +131,7 @@ int ti_clk_setup_ll_ops(struct ti_clk_ll_ops *ops)
- void __init ti_dt_clocks_register(struct ti_dt_clk oclks[])
+diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
+index d95426c0bd3a..61603c2664a6 100644
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -1686,12 +1686,15 @@ static bool xprt_throttle_congested(struct rpc_xprt *xprt, struct rpc_task *task
+ static struct rpc_rqst *xprt_dynamic_alloc_slot(struct rpc_xprt *xprt)
  {
- 	struct ti_dt_clk *c;
--	struct device_node *node, *parent;
-+	struct device_node *node, *parent, *child;
- 	struct clk *clk;
- 	struct of_phandle_args clkspec;
- 	char buf[64];
-@@ -171,10 +171,13 @@ void __init ti_dt_clocks_register(struct ti_dt_clk oclks[])
- 		node = of_find_node_by_name(NULL, buf);
- 		if (num_args && compat_mode) {
- 			parent = node;
--			node = of_get_child_by_name(parent, "clock");
--			if (!node)
--				node = of_get_child_by_name(parent, "clk");
--			of_node_put(parent);
-+			child = of_get_child_by_name(parent, "clock");
-+			if (!child)
-+				child = of_get_child_by_name(parent, "clk");
-+			if (child) {
-+				of_node_put(parent);
-+				node = child;
-+			}
- 		}
+ 	struct rpc_rqst *req = ERR_PTR(-EAGAIN);
++	gfp_t gfp_mask = GFP_KERNEL;
  
- 		clkspec.np = node;
+ 	if (xprt->num_reqs >= xprt->max_reqs)
+ 		goto out;
+ 	++xprt->num_reqs;
+ 	spin_unlock(&xprt->reserve_lock);
+-	req = kzalloc(sizeof(struct rpc_rqst), GFP_NOFS);
++	if (current->flags & PF_WQ_WORKER)
++		gfp_mask |= __GFP_NORETRY | __GFP_NOWARN;
++	req = kzalloc(sizeof(*req), gfp_mask);
+ 	spin_lock(&xprt->reserve_lock);
+ 	if (req != NULL)
+ 		goto out;
+diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
+index a52277115500..32df23796747 100644
+--- a/net/sunrpc/xprtrdma/transport.c
++++ b/net/sunrpc/xprtrdma/transport.c
+@@ -521,7 +521,7 @@ xprt_rdma_alloc_slot(struct rpc_xprt *xprt, struct rpc_task *task)
+ 	return;
+ 
+ out_sleep:
+-	task->tk_status = -EAGAIN;
++	task->tk_status = -ENOMEM;
+ 	xprt_add_backlog(xprt, task);
+ }
+ 
 -- 
 2.35.1
 
