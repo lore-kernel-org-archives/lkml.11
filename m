@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 004F3C3527E
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E73C4707A
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386661AbiDLI6x (ORCPT
+        id S1386677AbiDLI65 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
+        Tue, 12 Apr 2022 04:58:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357042AbiDLHjn (ORCPT
+        with ESMTP id S1357085AbiDLHjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D68F165A5;
-        Tue, 12 Apr 2022 00:10:57 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E609FC6;
+        Tue, 12 Apr 2022 00:11:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8EC2B81895;
-        Tue, 12 Apr 2022 07:10:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 291E9C385A1;
-        Tue, 12 Apr 2022 07:10:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9713661701;
+        Tue, 12 Apr 2022 07:11:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A07EDC385A1;
+        Tue, 12 Apr 2022 07:11:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747454;
-        bh=75XHWw54css5obuqON8cmpEPngRNcXM5PRhjE/n61S0=;
+        s=korg; t=1649747499;
+        bh=nCTmKaY5tqg5mpxtTmdTE1Ti9amTVIWQFxjrQKhEUwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ehsqCT31AYccLV1qEKz3UcsrcmwFLWOqWvnQy+kd43AHZ9i1B5ZiWjcUFV2lBB6r2
-         2RXSudOH51y1HTKjDfRvwYa71QUdlwg3HwvBz1+w948C2/FQH/eiEASxI+Ik5kZdyq
-         cma1pjZKY5ewLZTEfnzFGtAjnKqoNH/U4+S5saF0=
+        b=j4utKWVgxiYg1YbpfDs8CFjrw3Wb2XYsC574rSNb6oO0GoiF7gJLrkxY15nvU0VOj
+         CALwaGmOAbi+dPasWlZoT4ZU41J4JGq03bQPQ3Z6xhpHA1HwDLnNrWOY0c43mf6toi
+         jvEWQTkUX5Uv5KuFADrv3SRaqOLMLzV3fMNLaD+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 085/343] HID: apple: Report Magic Keyboard 2021 with fingerprint reader battery over USB
-Date:   Tue, 12 Apr 2022 08:28:23 +0200
-Message-Id: <20220412062953.552831502@linuxfoundation.org>
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 100/343] vfio/pci: Stub vfio_pci_vga_rw when !CONFIG_VFIO_PCI_VGA
+Date:   Tue, 12 Apr 2022 08:28:38 +0200
+Message-Id: <20220412062953.986525765@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,47 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Alex Williamson <alex.williamson@redhat.com>
 
-[ Upstream commit cbfcfbfc384890a062a5d0cc4792df094a6cc7a8 ]
+[ Upstream commit 6e031ec0e5a2dda53e12e0d2a7e9b15b47a3c502 ]
 
-Like the Apple Magic Keyboard 2015, when connected over USB, the 2021
-version with fingerprint reader registers 2 different interfaces. One of
-them is used to report the battery level.
+Resolve build errors reported against UML build for undefined
+ioport_map() and ioport_unmap() functions.  Without this config
+option a device cannot have vfio_pci_core_device.has_vga set,
+so the existing function would always return -EINVAL anyway.
 
-However, unlike when connected over Bluetooth, the battery level is not
-reported automatically and it is required to fetch it manually.
-
-Add the APPLE_RDESC_BATTERY quirk to fix the battery report descriptor
-and manually fetch the battery level.
-
-Tested with the ANSI variant of the keyboard with and without numpad.
-
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Link: https://lore.kernel.org/r/20220123125737.2658758-1-geert@linux-m68k.org
+Link: https://lore.kernel.org/r/164306582968.3758255.15192949639574660648.stgit@omen
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-apple.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/vfio/pci/vfio_pci_rdwr.c | 2 ++
+ include/linux/vfio_pci_core.h    | 9 +++++++++
+ 2 files changed, 11 insertions(+)
 
-diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
-index 18de4ccb0fb2..590376d776a1 100644
---- a/drivers/hid/hid-apple.c
-+++ b/drivers/hid/hid-apple.c
-@@ -752,11 +752,11 @@ static const struct hid_device_id apple_devices[] = {
- 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021),
- 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021),
--		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK | APPLE_RDESC_BATTERY },
- 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_FINGERPRINT_2021),
- 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021),
--		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
-+		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK | APPLE_RDESC_BATTERY },
- 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021),
- 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
+diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
+index 57d3b2cbbd8e..82ac1569deb0 100644
+--- a/drivers/vfio/pci/vfio_pci_rdwr.c
++++ b/drivers/vfio/pci/vfio_pci_rdwr.c
+@@ -288,6 +288,7 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 	return done;
+ }
  
++#ifdef CONFIG_VFIO_PCI_VGA
+ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite)
+ {
+@@ -355,6 +356,7 @@ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 
+ 	return done;
+ }
++#endif
+ 
+ static void vfio_pci_ioeventfd_do_write(struct vfio_pci_ioeventfd *ioeventfd,
+ 					bool test_mem)
+diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
+index ef9a44b6cf5d..ae6f4838ab75 100644
+--- a/include/linux/vfio_pci_core.h
++++ b/include/linux/vfio_pci_core.h
+@@ -159,8 +159,17 @@ extern ssize_t vfio_pci_config_rw(struct vfio_pci_core_device *vdev,
+ extern ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite);
+ 
++#ifdef CONFIG_VFIO_PCI_VGA
+ extern ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite);
++#else
++static inline ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev,
++				      char __user *buf, size_t count,
++				      loff_t *ppos, bool iswrite)
++{
++	return -EINVAL;
++}
++#endif
+ 
+ extern long vfio_pci_ioeventfd(struct vfio_pci_core_device *vdev, loff_t offset,
+ 			       uint64_t data, int count, int fd);
 -- 
 2.35.1
 
