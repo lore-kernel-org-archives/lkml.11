@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1321CC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96014C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378906AbiDLIT1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43184 "EHLO
+        id S244981AbiDLIRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355770AbiDLH3U (ORCPT
+        with ESMTP id S1355139AbiDLH1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:29:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D064F9D0;
-        Tue, 12 Apr 2022 00:08:19 -0700 (PDT)
+        Tue, 12 Apr 2022 03:27:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1434839A;
+        Tue, 12 Apr 2022 00:07:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89E846153F;
-        Tue, 12 Apr 2022 07:08:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91CDEC385AA;
-        Tue, 12 Apr 2022 07:08:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5255DB81A8F;
+        Tue, 12 Apr 2022 07:07:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DEFCC385A6;
+        Tue, 12 Apr 2022 07:07:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747297;
-        bh=TLcidT5nSdUPWRTJlzEe0XdgaB1ECW1jsaCBputjuLE=;
+        s=korg; t=1649747231;
+        bh=vls4zsqU9sJp4tWeqhCblfDb12VqS9RG9GrlYCpE/YY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qHOCr6OcODzo7Z6OF/xcXOMTaTAEsm17JpJWG7M3hW2Ui5KQ/fEj4TYJ3UrtmeiqH
-         BcyfbQVyyMThxarP9uU56CAn+ThvV8N/CIKEuuXSmqdTavjbvgDqbUBleswBjR6H+Y
-         sj1CkJlpKV8kI0901j36Sat2517jblXZJJO3kUR0=
+        b=0J2sgtW5pDypseMzgR3KqysdPpcZQxwlksTleegUOpkn/I6N/1wSoAKcDouMuSnMT
+         4yS0eXwe19dTCZRt6mTEQu9QC5opZH/bHqzdzB7MTXQwLCw3k5xpF7NcHHHjgYkiLr
+         /xt5c28p31+hm0XJop1/pfZ8Qui12V+rfTooBLj4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Oz Shlomo <ozsh@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 029/343] net/mlx5e: TC, Hold sample_attr on stack instead of pointer
-Date:   Tue, 12 Apr 2022 08:27:27 +0200
-Message-Id: <20220412062951.946882878@linuxfoundation.org>
+        stable@vger.kernel.org, Shirish S <shirish.s@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 250/285] amd/display: set backlight only if required
+Date:   Tue, 12 Apr 2022 08:31:47 +0200
+Message-Id: <20220412062950.876290151@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,156 +49,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Shirish S <shirish.s@amd.com>
 
-[ Upstream commit eeed226ed110ed40598e60e29b66643012277be7 ]
+commit 4052287a75eb3fc0f487fcc5f768a38bede455c8 upstream.
 
-In later commit we are going to instantiate multiple attr instances
-for flow instead of single attr.
-Parsing TC sample allocates a new memory but there is no symmetric
-cleanup in the infrastructure.
-To avoid asymmetric alloc/free use sample_attr as part of the flow attr
-and not allocated and held as a pointer.
-This will avoid a cleanup leak when sample action is not on the first
-attr.
+[Why]
+comparing pwm bl values (coverted) with user brightness(converted)
+levels in commit_tail leads to continuous setting of backlight via dmub
+as they don't to match.
+This leads overdrive in queuing of commands to DMCU that sometimes lead
+to depending on load on DMCU fw:
 
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+"[drm:dc_dmub_srv_wait_idle] *ERROR* Error waiting for DMUB idle: status=3"
+
+[How]
+Store last successfully set backlight value and compare with it instead
+of pwm reads which is not what we should compare with.
+
+Signed-off-by: Shirish S <shirish.s@amd.com>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c |  7 +------
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c | 10 +++++-----
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c        |  1 -
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.h        |  2 +-
- .../net/ethernet/mellanox/mlx5/core/eswitch_offloads.c |  6 +++---
- 5 files changed, 10 insertions(+), 16 deletions(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    7 ++++---
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h |    6 ++++++
+ 2 files changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
-index 6699bdf5cf01..b895c378cfaf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c
-@@ -27,11 +27,7 @@ tc_act_parse_sample(struct mlx5e_tc_act_parse_state *parse_state,
- 		    struct mlx5e_priv *priv,
- 		    struct mlx5_flow_attr *attr)
- {
--	struct mlx5e_sample_attr *sample_attr;
--
--	sample_attr = kzalloc(sizeof(*attr->sample_attr), GFP_KERNEL);
--	if (!sample_attr)
--		return -ENOMEM;
-+	struct mlx5e_sample_attr *sample_attr = &attr->sample_attr;
- 
- 	sample_attr->rate = act->sample.rate;
- 	sample_attr->group_num = act->sample.psample_group->group_num;
-@@ -39,7 +35,6 @@ tc_act_parse_sample(struct mlx5e_tc_act_parse_state *parse_state,
- 	if (act->sample.truncate)
- 		sample_attr->trunc_size = act->sample.trunc_size;
- 
--	attr->sample_attr = sample_attr;
- 	flow_flag_set(parse_state->flow, SAMPLE);
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-index ff4b4f8a5a9d..0faaf9a4b531 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/sample.c
-@@ -513,7 +513,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 	sample_flow = kzalloc(sizeof(*sample_flow), GFP_KERNEL);
- 	if (!sample_flow)
- 		return ERR_PTR(-ENOMEM);
--	sample_attr = attr->sample_attr;
-+	sample_attr = &attr->sample_attr;
- 	sample_attr->sample_flow = sample_flow;
- 
- 	/* For NICs with reg_c_preserve support or decap action, use
-@@ -546,6 +546,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 		err = PTR_ERR(sample_flow->sampler);
- 		goto err_sampler;
- 	}
-+	sample_attr->sampler_id = sample_flow->sampler->sampler_id;
- 
- 	/* Create an id mapping reg_c0 value to sample object. */
- 	restore_obj.type = MLX5_MAPPED_OBJ_SAMPLE;
-@@ -585,8 +586,7 @@ mlx5e_tc_sample_offload(struct mlx5e_tc_psample *tc_psample,
- 	pre_attr->outer_match_level = attr->outer_match_level;
- 	pre_attr->chain = attr->chain;
- 	pre_attr->prio = attr->prio;
--	pre_attr->sample_attr = attr->sample_attr;
--	sample_attr->sampler_id = sample_flow->sampler->sampler_id;
-+	pre_attr->sample_attr = *sample_attr;
- 	pre_esw_attr = pre_attr->esw_attr;
- 	pre_esw_attr->in_mdev = esw_attr->in_mdev;
- 	pre_esw_attr->in_rep = esw_attr->in_rep;
-@@ -633,11 +633,11 @@ mlx5e_tc_sample_unoffload(struct mlx5e_tc_psample *tc_psample,
- 	 * will hit fw syndromes.
- 	 */
- 	esw = tc_psample->esw;
--	sample_flow = attr->sample_attr->sample_flow;
-+	sample_flow = attr->sample_attr.sample_flow;
- 	mlx5_eswitch_del_offloaded_rule(esw, sample_flow->pre_rule, sample_flow->pre_attr);
- 
- 	sample_restore_put(tc_psample, sample_flow->restore);
--	mapping_remove(esw->offloads.reg_c0_obj_pool, attr->sample_attr->restore_obj_id);
-+	mapping_remove(esw->offloads.reg_c0_obj_pool, attr->sample_attr.restore_obj_id);
- 	sampler_put(tc_psample, sample_flow->sampler);
- 	if (sample_flow->post_act_handle)
- 		mlx5e_tc_post_act_del(tc_psample->post_act, sample_flow->post_act_handle);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index b27532a9301e..7e5c00349ccf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1634,7 +1634,6 @@ static void mlx5e_tc_del_fdb_flow(struct mlx5e_priv *priv,
- 	if (flow_flag_test(flow, L3_TO_L2_DECAP))
- 		mlx5e_detach_decap(priv, flow);
- 
--	kfree(attr->sample_attr);
- 	kvfree(attr->esw_attr->rx_tun_attr);
- 	kvfree(attr->parse_attr);
- 	kfree(flow->attr);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index 5ffae9b13066..2f09e34db9ff 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -71,7 +71,7 @@ struct mlx5_flow_attr {
- 	struct mlx5_fc *counter;
- 	struct mlx5_modify_hdr *modify_hdr;
- 	struct mlx5_ct_attr ct_attr;
--	struct mlx5e_sample_attr *sample_attr;
-+	struct mlx5e_sample_attr sample_attr;
- 	struct mlx5e_tc_flow_parse_attr *parse_attr;
- 	u32 chain;
- 	u16 prio;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index cfcd72bad9af..e7e7b4b0dcdb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -201,12 +201,12 @@ esw_cleanup_decap_indir(struct mlx5_eswitch *esw,
- static int
- esw_setup_sampler_dest(struct mlx5_flow_destination *dest,
- 		       struct mlx5_flow_act *flow_act,
--		       struct mlx5_flow_attr *attr,
-+		       u32 sampler_id,
- 		       int i)
- {
- 	flow_act->flags |= FLOW_ACT_IGNORE_FLOW_LEVEL;
- 	dest[i].type = MLX5_FLOW_DESTINATION_TYPE_FLOW_SAMPLER;
--	dest[i].sampler_id = attr->sample_attr->sampler_id;
-+	dest[i].sampler_id = sampler_id;
- 
- 	return 0;
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -3924,7 +3924,7 @@ static u32 convert_brightness_to_user(co
+ 				 max - min);
  }
-@@ -466,7 +466,7 @@ esw_setup_dests(struct mlx5_flow_destination *dest,
- 		attr->flags |= MLX5_ESW_ATTR_FLAG_SRC_REWRITE;
  
- 	if (attr->flags & MLX5_ESW_ATTR_FLAG_SAMPLE) {
--		esw_setup_sampler_dest(dest, flow_act, attr, *i);
-+		esw_setup_sampler_dest(dest, flow_act, attr->sample_attr.sampler_id, *i);
- 		(*i)++;
- 	} else if (attr->dest_ft) {
- 		esw_setup_ft_dest(dest, flow_act, esw, attr, spec, *i);
--- 
-2.35.1
-
+-static int amdgpu_dm_backlight_set_level(struct amdgpu_display_manager *dm,
++static void amdgpu_dm_backlight_set_level(struct amdgpu_display_manager *dm,
+ 					 int bl_idx,
+ 					 u32 user_brightness)
+ {
+@@ -3955,7 +3955,8 @@ static int amdgpu_dm_backlight_set_level
+ 			DRM_DEBUG("DM: Failed to update backlight on eDP[%d]\n", bl_idx);
+ 	}
+ 
+-	return rc ? 0 : 1;
++	if (rc)
++		dm->actual_brightness[bl_idx] = user_brightness;
+ }
+ 
+ static int amdgpu_dm_backlight_update_status(struct backlight_device *bd)
+@@ -9804,7 +9805,7 @@ static void amdgpu_dm_atomic_commit_tail
+ 	/* restore the backlight level */
+ 	for (i = 0; i < dm->num_of_edps; i++) {
+ 		if (dm->backlight_dev[i] &&
+-		    (amdgpu_dm_backlight_get_level(dm, i) != dm->brightness[i]))
++		    (dm->actual_brightness[i] != dm->brightness[i]))
+ 			amdgpu_dm_backlight_set_level(dm, i, dm->brightness[i]);
+ 	}
+ #endif
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.h
+@@ -540,6 +540,12 @@ struct amdgpu_display_manager {
+ 	 * cached backlight values.
+ 	 */
+ 	u32 brightness[AMDGPU_DM_MAX_NUM_EDP];
++	/**
++	 * @actual_brightness:
++	 *
++	 * last successfully applied backlight values.
++	 */
++	u32 actual_brightness[AMDGPU_DM_MAX_NUM_EDP];
+ };
+ 
+ enum dsc_clock_force_state {
 
 
