@@ -2,83 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58959C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:46:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D87B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231281AbiDLXsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45748 "EHLO
+        id S231142AbiDLXtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230469AbiDLXsS (ORCPT
+        with ESMTP id S231447AbiDLXs6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:48:18 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E4A4F46E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 16:39:14 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id 12so396233pll.12
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 16:39:14 -0700 (PDT)
+        Tue, 12 Apr 2022 19:48:58 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAE913E08
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 16:44:00 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id 125so113767pgc.11
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 16:44:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=1W9oqCN8wDLLRslf/UifsNepVBCi7XynHll3+gMPRpM=;
-        b=Iby22yXoSsvViW3rkRtC2j9XvhDXUHDcEKXVAUh3nxOBKa+D35eEI1P9zG/qR/FbkU
-         o37YxymqN7f14bHb827UH4PZu14eRI/7IxF35bXw4S/mxvOzeRYUgje1ioYu6OPIsrCr
-         zbmwKvI6JmVeDyvYJ2AhMa4in4KV63nL2xz5CfRnhxgYwSYJfW2f8KOgPnAHMh3wusNK
-         JtM+rUHYEXi/5u6eX2lAwSeok1cQqU8cGMuMVunmdFNC22gUJlijICPFznUR1xvMq87F
-         L0yT92C3yS21up56Q1+QCubcRsEUzYlTAlshl+5YE5omPdLJmKjbssSyzoBGaMSiPtZ9
-         XDtQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VU9lamI5SC1v1PEkHOXanlr6Bu5BMP3jBswdNfiKvIQ=;
+        b=NM7LQJaUFLfZJuurMa99JDAcodT6/NkyxUNSaCP4tMIQ/62Y0Sx5IhV8eE61wE51cG
+         0ZvWfb+hv4tq3A+3o0ppm5eLCGH3NIWKNL3uHrjEuD7i3GSgcEHeuDQsvLKZBsdnC9D4
+         aTTBptwt8A3GdOWNLnCuZ23PLnOpSt2m/S7n4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=1W9oqCN8wDLLRslf/UifsNepVBCi7XynHll3+gMPRpM=;
-        b=dAgNDb8hUAZj1Awd2fwVaACkLVMT3sHiB9NDVFEMkfwfcZjPaDPzH14MhMvqqyZ3dA
-         ZAWbQ950z8di4AAQ1gKq9xAVKMhO3xMoFM0pGUnFyZed5y6jBe3u4y4/06dmXTxzgsyG
-         CCsb0toZF6bmxjjE+XtN3DyFZuUT2Lmp/8QEFiU9xVhQYQew92M0jMhHzvegys9GbiVG
-         gWc16molc9/bCCXAmBMnobObBluqQiUc1dPfp3+tuRHKMf4HnI4pJLIybUl6w6Htrv83
-         9tQrdAiG0qeZlcRJVMd/ZT4+xy4eD+VXgYP3rFYHX+g5/7fIEoJFvyesrSdPxrwzdmWg
-         cQcg==
-X-Gm-Message-State: AOAM5315hW8FOgNLvbn8NpJV4j+2EY3ZaWbs+cpEpWVjXXePcE9XNvCq
-        R74Rq+XUEwNzRK2FqtADnZxEMA==
-X-Google-Smtp-Source: ABdhPJwJCq1wrTnCE9M8nKuiUtWRQTeyL0PV2chpR3Dh57p5Gdj48FHjQn6gzhR6F96aat17BHv0zQ==
-X-Received: by 2002:a17:90b:4a89:b0:1c7:3933:d802 with SMTP id lp9-20020a17090b4a8900b001c73933d802mr7513659pjb.75.1649806753618;
-        Tue, 12 Apr 2022 16:39:13 -0700 (PDT)
-Received: from [2620:15c:29:204:1a89:45ec:16da:55dc] ([2620:15c:29:204:1a89:45ec:16da:55dc])
-        by smtp.gmail.com with ESMTPSA id w123-20020a623081000000b005056a4d71e3sm19342083pfw.77.2022.04.12.16.39.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 16:39:13 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 16:39:12 -0700 (PDT)
-From:   David Rientjes <rientjes@google.com>
-To:     JaeSang Yoo <js.yoo.5b@gmail.com>
-cc:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Ohhoon Kwon <ohkwon1043@gmail.com>,
-        Wonhyuk Yang <vvghjk1234@gmail.com>,
-        Jiyoup Kim <lakroforce@gmail.com>,
-        Donghyeok Kim <dthex5d@gmail.com>,
-        JaeSang Yoo <jsyoo5b@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/slub: remove meaningless node check in
- ___slab_alloc()
-In-Reply-To: <20220409144239.2649257-1-jsyoo5b@gmail.com>
-Message-ID: <5b18a8db-7e10-3bf1-cd23-8f9521a4784d@google.com>
-References: <20220409144239.2649257-1-jsyoo5b@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VU9lamI5SC1v1PEkHOXanlr6Bu5BMP3jBswdNfiKvIQ=;
+        b=Rm0/i8/wXwMTeD5CpZmcMJQgTImO+7axH6w/encyCCGMCzwH3v2Vrq+VuuQI0CaB+L
+         bxynTzXHSxqtG3BA4Gv5sNpf3ZZ+CPKi56IaO0G5ueBCbZSt5PomDY8vIRUm5pNFKsde
+         neFFEUuAVXf7+zmOOmpGUOHtjGMTWb3U8g/BseI4icIaQrCCiJ0rn/YWzstEsDdZZ0z6
+         L1jPOsqaOwAl28AWdiL3jOq+k/sno0xIyxq0Urin2UH19XW0Pqqxa+21+xJZ4xr0bgcy
+         UjiInu4UM2+1JKOdejCltxIMw5DuY/Od3vx301Uhm3mcYzycEE8MiSrYFkG6GG6IYghV
+         LsMw==
+X-Gm-Message-State: AOAM530yOa4YTJrPk4XmCBQTdnC03niJeIp6GN9Rp8FM65ekN2JJOVwn
+        y/WFsuoaIyQ1g1LmK4yPTahO+A==
+X-Google-Smtp-Source: ABdhPJxNXKAaV4IqGlohWzqhZmvrIFVjMoymPiM1ubqd8P9LQ4+qOPnOC3+57Gry/tXWIjUz340EBw==
+X-Received: by 2002:a05:6a00:a15:b0:4fb:4112:870e with SMTP id p21-20020a056a000a1500b004fb4112870emr40298678pfh.11.1649807039988;
+        Tue, 12 Apr 2022 16:43:59 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:3a41:5079:6f1b:397c])
+        by smtp.gmail.com with UTF8SMTPSA id b12-20020a17090aa58c00b001ca977b49d5sm618740pjq.31.2022.04.12.16.43.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 16:43:59 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 16:43:57 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_rohkumar@quicinc.com,
+        srinivas.kandagatla@linaro.org, dianders@chromium.org,
+        swboyd@chromium.org, judyhsiao@chromium.org,
+        Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Subject: Re: [PATCH v7 2/2] arm64: dts: qcom: sc7280: add lpass lpi pin
+ controller node
+Message-ID: <YlYOvf71AZxXPSAL@google.com>
+References: <1649685184-8448-1-git-send-email-quic_srivasam@quicinc.com>
+ <1649685184-8448-3-git-send-email-quic_srivasam@quicinc.com>
+ <YlSCWC47tITuW/BZ@google.com>
+ <9bacee6d-ab44-2975-c523-38164d016af5@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <9bacee6d-ab44-2975-c523-38164d016af5@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 9 Apr 2022, JaeSang Yoo wrote:
-
-> node_match() with node=NUMA_NO_NODE always returns 1.
-> Duplicate check by goto statement is meaningless. Remove it.
+On Tue, Apr 12, 2022 at 06:18:33PM +0530, Srinivasa Rao Mandadapu wrote:
 > 
-> Signed-off-by: JaeSang Yoo <jsyoo5b@gmail.com>
+> On 4/12/2022 1:02 AM, Matthias Kaehlcke wrote:
+> Thanks for your time Matthias!!!
+> > On Mon, Apr 11, 2022 at 07:23:04PM +0530, Srinivasa Rao Mandadapu wrote:
+> > > Add LPASS LPI pinctrl node required for Audio functionality on sc7280
+> > > based platforms.
+> > > 
+> > > Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> > > Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> > > Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> > > ---
+> > >   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  84 ++++++++++++++++++++++++
+> > >   arch/arm64/boot/dts/qcom/sc7280.dtsi     | 107 +++++++++++++++++++++++++++++++
+> > >   2 files changed, 191 insertions(+)
+> > > 
+> > > diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> > > index 4ba2274..ea751dc 100644
+> > > --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> > > +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+> > > @@ -238,6 +238,90 @@
+> > >   	modem-init;
+> > >   };
+> > > +&dmic01 {
+> > Shouldn't these nodes be in the PINCTRL section at their respective
+> > positions in alphabetical order?
+> 
+> These are not part of tlmm pin control section. These are part of lpass_tlmm
+> section.
 
-Acked-by: David Rientjes <rientjes@google.com>
+Agreed, these shouldn't be in the tlmm section, but it still seems nice to
+separate them from device nodes.
+
+Some sc7180-trogdor devices have a section like this:
+
+/* PINCTRL - modifications to sc7180-trogdor.dtsi */
+
+In any case I don't care too much about the IDP, but this might come up again
+for sc7280-herobrine boards.
+
+> In your previous comment you asked to remove &lpass_tlmm. Hence brought out.
+> 
+> > 
+> > nit: since you are keeping the groups the group names are a bit generic IMO.
+> > e.g. it is fairly obvious that 'dmic01_clk' refers to a clock pin, however
+> > just 'dmic01' is a bit vague. You could consider adding the prefix 'lpass_'
+> > to the group names for more clarity.
+> as dmic01 has both clk and data section, I don't think keeping clk is
+> appropriate here.
+
+Agreed, _clk isn't appropriate as long as it's a group of pins, that would be
+for a label per pin.
+
+> >  From the schematics I interpret that the LPASS GPIOs 0-9 are mapped to the
+> > SC7280 GPIOs 144-153. Is that correct?
+> Yes. But we refer with GPIOs 0-9 in driver.
+
+Thanks, just wanted to make sure my understanding is correct.
