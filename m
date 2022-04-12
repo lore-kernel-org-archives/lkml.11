@@ -2,153 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 701DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B49D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234261AbiDLL0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
+        id S1346051AbiDLL1L (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347599AbiDLLZd (ORCPT
+        with ESMTP id S1352819AbiDLLZm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 07:25:33 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C97A0BFA
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:06:10 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-df22f50e0cso20272609fac.3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:06:10 -0700 (PDT)
+        Tue, 12 Apr 2022 07:25:42 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89CF2B1BE
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:08:35 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso2327379pju.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:08:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:user-agent:references:in-reply-to:mime-version:date:message-id
-         :subject:to:cc;
-        bh=tZvbGpFjILGpekjAvGDF0y9dQ6Kd+gBt4gVMWfKJuAk=;
-        b=Xo8+YSn3qT7Jhf9u4FuGYXY6Bov1PRuEhL0/Es2kDk9T156ExPENxfB+L80w1q/WN8
-         AY7X2X8pBC+egX5EAP7hbmLqVYYquyMaM+9TMa0V8rrwt4eOMwpnKS1rXrmKnJYddRKl
-         WXqMioKIAM/xFynvUhz/5U8QrlcdzmdQycq7DES/Sco99BT/85Gs/jV5R1n5nlmInzkN
-         Xusklq+2enfKbeU1Z/uYCXgSMZElx/lRCPsCgmbehOhUkX+zIy72zJ9+1JEhZnnHiF0b
-         7lrsXEthfoBv0c5BqbSXLUfcVprx8t79rP5dVaUdlBdoIR+brcAYyZc6c3+7XT7Jw7uM
-         vcvQ==
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TPHPVEhymfv8oSdQwn6KZ7VGPONNXumfRuRVQxny474=;
+        b=ZjcjKgTMmHHkgO/IqeBOUs/4V91uJO5cAnoFfwZcqQBWRdM1x4KzQIdkPWTuz8bEsK
+         feTlunsl4JYlrvlr23mjh2z18M9kwNNH3XhmPEiqJZeP8LyDDqgGtMBuzvLuwFxX28gL
+         xDFlsfpaL5UvYRq+zvzdmGLNmKF+bJVW2e/evZmzoH0Wxuu4QLKaJUzR/51eZF5Juny+
+         M5la1s5esTCj0/GiWzDL5wIqLF4WVQ94Q7+t4Dr/m2wjxYFX31MQjO3eKpwFn5dmzO91
+         Gi+X+HH4ABfSdlvOr1Kyq+tDAqsq/FuYVw3piPy1cdn4sjluJjkX22igFUSYX6qoCIxT
+         tZ8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:user-agent:references:in-reply-to
-         :mime-version:date:message-id:subject:to:cc;
-        bh=tZvbGpFjILGpekjAvGDF0y9dQ6Kd+gBt4gVMWfKJuAk=;
-        b=oOReS94c5FmvKcXv+cVaxJMEfEaGVEcnVUxFv2u97mz44FG0uxESYEKke31Mb34Sy4
-         +ufexYafQpDfmb/K1Q6Rf65Rs/MZeTy9bUoBuC9ty0HRpklxSA0/bamPd+V5xw3OngWA
-         8qw8q2+RrRv3ceDBij4oeuSVr8fV3+c9xoT/QEEcZTRHA4B/yVGJI6Qpmt313Y5RgX1P
-         ONBMNicaeHLMrw6DNLANSkx40uXOpczhnt2xx6m2w51xeyLtcvtDRK9FVIKU5jraN+1e
-         +bpZ24/zSToLx3l5mlAOQA1GsvcueXcWGgYtdBc49kuGrjahWBjkKbLKZsOtMwMq+y2h
-         73tQ==
-X-Gm-Message-State: AOAM532MktM7Wu/VW6frQaoxqt/ibbjrtmJuczfoLBZzwolr41Muecc7
-        K7nIineWX803aRm1L3ZBmO9YzDk1lzjbyWlVZU95Bw==
-X-Google-Smtp-Source: ABdhPJw3WX7NFQkxU4ADRLrRdzB/pHuRSdo1xjaZj5zggo6wW/RSRVmkJtH7xxbo7eDcNYsrg++TE2K0RicigcNQMoo=
-X-Received: by 2002:a05:6870:f21a:b0:dd:9bec:caf8 with SMTP id
- t26-20020a056870f21a00b000dd9beccaf8mr1670792oao.78.1649757969594; Tue, 12
- Apr 2022 03:06:09 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 12 Apr 2022 03:06:08 -0700
-From:   Guillaume Ranquet <granquet@baylibre.com>
-User-Agent: meli 0.7.2
-References: <20220327223927.20848-1-granquet@baylibre.com> <20220327223927.20848-4-granquet@baylibre.com>
- <YkOPB5W7uXkOc72/@robh.at.kernel.org>
-In-Reply-To: <YkOPB5W7uXkOc72/@robh.at.kernel.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TPHPVEhymfv8oSdQwn6KZ7VGPONNXumfRuRVQxny474=;
+        b=BAKSsbygZ8K6KAkQDvE3qzFiT/NhY2ZjBOTwgx+lruuWdEfK6sRhbpwyCQOVogVrpX
+         94eb/RNbsDPsCj6kR1iH0j+pxydpZZR/rdmLrrTuBBpFGRYwSetkR0ZMfsS5exjT8ztq
+         44v9VEzmJsqadsg5LZhc6fc3x9nAWYebel6+9DIGL75iaaxlXTotDDqN6EuUtkEnh1Ai
+         GxsI7CU6QR4oJZ4W4qe8rQyoc0MjVkPzjoQ8sMt/76ozv0yV3fuOZyepqVFSuLWvugLh
+         5FYpfwyjq/IFTc1C4LCCpu4SKaS/fYkTep4WuyAtYJkW67Lwq9+jUIF77hwpZ2GGeF1v
+         Wy5w==
+X-Gm-Message-State: AOAM53205uVuk9Eg4O8zsDDKoXklhA75AF0ePXExP46EnVYjRhC5ndMK
+        QDzAGX2MBMrWqvlJ6OWpWtfWyw==
+X-Google-Smtp-Source: ABdhPJySjcKVeXxfT2LuJJZ9/EQNv5DqP9lc+SlW7FJiaLZVmsog51C0vqN5X/FzN69RtBMGMMpdFQ==
+X-Received: by 2002:a17:90b:2790:b0:1cb:5cb5:f8ab with SMTP id pw16-20020a17090b279000b001cb5cb5f8abmr4132834pjb.190.1649758115322;
+        Tue, 12 Apr 2022 03:08:35 -0700 (PDT)
+Received: from localhost.localdomain ([122.182.197.47])
+        by smtp.gmail.com with ESMTPSA id j9-20020a056a00130900b004f73df40914sm37515088pfu.82.2022.04.12.03.08.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Apr 2022 03:08:34 -0700 (PDT)
+From:   Anup Patel <apatel@ventanamicro.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Atish Patra <atishp@atishpatra.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH 2/6] RISC-V: KVM: Add Sv57x4 mode support for G-stage
+Date:   Tue, 12 Apr 2022 15:37:09 +0530
+Message-Id: <20220412100713.1415094-3-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220412100713.1415094-1-apatel@ventanamicro.com>
+References: <20220412100713.1415094-1-apatel@ventanamicro.com>
 MIME-Version: 1.0
-Date:   Tue, 12 Apr 2022 03:06:08 -0700
-Message-ID: <CABnWg9tvh31wibtTO2nETfJ9XtST0Ejjea0_2q1Hd5GRs9DN4Q@mail.gmail.com>
-Subject: Re: [PATCH v9 03/22] dt-bindings: mediatek,dp_phy: Add Display Port
- PHY binding
-To:     Rob Herring <robh@kernel.org>
-Cc:     airlied@linux.ie, angelogioacchino.delregno@collabora.com,
-        chunfeng.yun@mediatek.com, chunkuang.hu@kernel.org,
-        ck.hu@mediatek.com, daniel@ffwll.ch, deller@gmx.de,
-        jitao.shi@mediatek.com, kishon@ti.com, krzk+dt@kernel.org,
-        maarten.lankhorst@linux.intel.com, matthias.bgg@gmail.com,
-        mripard@kernel.org, p.zabel@pengutronix.de, tzimmermann@suse.de,
-        vkoul@kernel.org, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-phy@lists.infradead.org, markyacoub@google.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 30 Mar 2022 00:58, Rob Herring <robh@kernel.org> wrote:
->On Mon, Mar 28, 2022 at 12:39:08AM +0200, Guillaume Ranquet wrote:
->> This phy controller is embedded in the Display Port Controller on mt8195 SoCs.
->
->Sorry, but I think you need to go back to what you had in v8. While yes,
->the phy and controller IP often do change independently, this h/w looks
->pretty interwined.
+Latest QEMU supports G-stage Sv57x4 mode so this patch extends KVM
+RISC-V G-stage handling to detect and use Sv57x4 mode when available.
 
-Understood, I'll revert back to v8.
+Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+---
+ arch/riscv/include/asm/csr.h |  1 +
+ arch/riscv/kvm/main.c        |  3 +++
+ arch/riscv/kvm/mmu.c         | 11 ++++++++++-
+ 3 files changed, 14 insertions(+), 1 deletion(-)
 
->
->You could make the controller a phy provider to itself if you wanted.
+diff --git a/arch/riscv/include/asm/csr.h b/arch/riscv/include/asm/csr.h
+index e935f27b10fd..cc40521e438b 100644
+--- a/arch/riscv/include/asm/csr.h
++++ b/arch/riscv/include/asm/csr.h
+@@ -117,6 +117,7 @@
+ #define HGATP_MODE_SV32X4	_AC(1, UL)
+ #define HGATP_MODE_SV39X4	_AC(8, UL)
+ #define HGATP_MODE_SV48X4	_AC(9, UL)
++#define HGATP_MODE_SV57X4	_AC(10, UL)
+ 
+ #define HGATP32_MODE_SHIFT	31
+ #define HGATP32_VMID_SHIFT	22
+diff --git a/arch/riscv/kvm/main.c b/arch/riscv/kvm/main.c
+index c374dad82eee..1549205fe5fe 100644
+--- a/arch/riscv/kvm/main.c
++++ b/arch/riscv/kvm/main.c
+@@ -105,6 +105,9 @@ int kvm_arch_init(void *opaque)
+ 	case HGATP_MODE_SV48X4:
+ 		str = "Sv48x4";
+ 		break;
++	case HGATP_MODE_SV57X4:
++		str = "Sv57x4";
++		break;
+ 	default:
+ 		return -ENODEV;
+ 	}
+diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
+index dc0520792e31..8823eb32dcde 100644
+--- a/arch/riscv/kvm/mmu.c
++++ b/arch/riscv/kvm/mmu.c
+@@ -751,14 +751,23 @@ void kvm_riscv_gstage_update_hgatp(struct kvm_vcpu *vcpu)
+ void kvm_riscv_gstage_mode_detect(void)
+ {
+ #ifdef CONFIG_64BIT
++	/* Try Sv57x4 G-stage mode */
++	csr_write(CSR_HGATP, HGATP_MODE_SV57X4 << HGATP_MODE_SHIFT);
++	if ((csr_read(CSR_HGATP) >> HGATP_MODE_SHIFT) == HGATP_MODE_SV57X4) {
++		gstage_mode = (HGATP_MODE_SV57X4 << HGATP_MODE_SHIFT);
++		gstage_pgd_levels = 5;
++		goto skip_sv48x4_test;
++	}
++
+ 	/* Try Sv48x4 G-stage mode */
+ 	csr_write(CSR_HGATP, HGATP_MODE_SV48X4 << HGATP_MODE_SHIFT);
+ 	if ((csr_read(CSR_HGATP) >> HGATP_MODE_SHIFT) == HGATP_MODE_SV48X4) {
+ 		gstage_mode = (HGATP_MODE_SV48X4 << HGATP_MODE_SHIFT);
+ 		gstage_pgd_levels = 4;
+ 	}
+-	csr_write(CSR_HGATP, 0);
++skip_sv48x4_test:
+ 
++	csr_write(CSR_HGATP, 0);
+ 	__kvm_riscv_hfence_gvma_all();
+ #endif
+ }
+-- 
+2.25.1
 
-Not sure I follow, could you point me to an example?
-
-Thx,
-Guillaume.
->
->>
->> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
->> ---
->>  .../bindings/phy/mediatek,dp-phy.yaml         | 43 +++++++++++++++++++
->>  1 file changed, 43 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/phy/mediatek,dp-phy.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/phy/mediatek,dp-phy.yaml b/Documentation/devicetree/bindings/phy/mediatek,dp-phy.yaml
->> new file mode 100644
->> index 000000000000..1f5ffca4e140
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/phy/mediatek,dp-phy.yaml
->> @@ -0,0 +1,43 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +# Copyright (c) 2022 MediaTek
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/phy/mediatek,dp-phy.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: MediaTek Display Port PHY
->> +
->> +maintainers:
->> +  - CK Hu <ck.hu@mediatek.com>
->> +  - Jitao shi <jitao.shi@mediatek.com>
->> +
->> +description: |
->> +  Device tree bindings for the Mediatek (embedded) Display Port PHY
->> +  present on some Mediatek SoCs.
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - mediatek,mt8195-dp-phy
->> +
->> +  mediatek,dp-syscon:
->> +    $ref: /schemas/types.yaml#/definitions/phandle
->> +    description: Phandle to the Display Port node.
->> +
->> +  "#phy-cells":
->> +    const: 0
->> +
->> +required:
->> +  - compatible
->> +  - mediatek,dp-syscon
->> +  - "#phy-cells"
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    dp_phy: dp-phy {
->> +      compatible = "mediatek,mt8195-dp-phy";
->> +      mediatek,dp-syscon = <&dp_tx>;
->> +      #phy-cells = <0>;
->> +    };
->> --
->> 2.34.1
->>
->>
