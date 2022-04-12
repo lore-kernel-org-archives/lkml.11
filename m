@@ -2,118 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19995C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 19:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B40C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 19:33:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358071AbiDLTez (ORCPT
+        id S1358856AbiDLTfV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 15:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
+        Tue, 12 Apr 2022 15:35:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244085AbiDLTev (ORCPT
+        with ESMTP id S243498AbiDLTfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 15:34:51 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC4549CAE;
-        Tue, 12 Apr 2022 12:32:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1649791953; x=1681327953;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yqoB7cYv0kxyD6VAhUk1RPiQtFKpfEZtLhAhhc5teB0=;
-  b=FuGpmisN04XO933OU7s1BefVJB6ugr0n1G+gr6dF+Tf/7Hvg2u6heSxh
-   lpQknFuxibrUn3t1H1n/5FNfE/+69LyJfC8VH7rEIq3ySL5tjbWVIRqgg
-   iuq4ZjWKiF/h0DwXHAg2YWvy+x3ZS07jqXH8oFWAgg4533RhdufX/lp/L
-   4=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 12 Apr 2022 12:32:33 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 12:32:32 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Apr 2022 12:32:32 -0700
-Received: from [10.226.58.18] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 12 Apr
- 2022 12:32:30 -0700
-Message-ID: <98bee89c-608b-79a2-d796-4a2b260cf927@quicinc.com>
-Date:   Tue, 12 Apr 2022 13:32:29 -0600
+        Tue, 12 Apr 2022 15:35:17 -0400
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D654A3D5;
+        Tue, 12 Apr 2022 12:32:58 -0700 (PDT)
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-deb9295679so21841764fac.6;
+        Tue, 12 Apr 2022 12:32:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=k0JEyUctm+WKncuIF5YDm3I/aHHGOlYRWAe57/MVe48=;
+        b=YGZCGKtGTSzMAXb6bZ2qzaTjlRcNJW96ShcF4wBXtdauJWoIJcw3cx3ZRaTgcKavtI
+         Dz5UCMI8wuoalpDX2RfVDAB7tLSpW1VoTl6w+UxDJemB+hD5XKG7rP1eTZrzkJ6v5XgQ
+         bgH9BQq8wd9fjZCR3mrbW5rO5tGkUtRTo0I2djeI59s7kaa84hPdVDUMgWuof8EOXjTd
+         ffxKgz96qnN4Axfy/G1cnTIJYsrpd3T9yHesv0J0aw5+OL2faHANgKmhXujvNfqiS9g1
+         +3UY+sXbyGiQoU+0HDnrgFUeI8kRTqHbYSMtDMoidujbEsocjEdYIzqH/MKWmoaFUj4C
+         KswQ==
+X-Gm-Message-State: AOAM530y9HNxgUiJwyzveli7QNtwGuoNnL1DR/dwm41k0ueAzkQjp+3g
+        cfM8Og/vdVUY2jeZ+gBvaHr1+iA3MTyuDbSU
+X-Google-Smtp-Source: ABdhPJzKqpnOQeF5ge0Mlri3CvfaQN7htbpNRbOIl+GvNjpi7xpgJnJ65un1tqGlusbQDbUOW2YM5A==
+X-Received: by 2002:a05:6870:eaa9:b0:d6:f977:f757 with SMTP id s41-20020a056870eaa900b000d6f977f757mr2841115oap.18.1649791978050;
+        Tue, 12 Apr 2022 12:32:58 -0700 (PDT)
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com. [209.85.210.44])
+        by smtp.gmail.com with ESMTPSA id s65-20020acac244000000b002ef4ee8c800sm12785918oif.13.2022.04.12.12.32.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Apr 2022 12:32:57 -0700 (PDT)
+Received: by mail-ot1-f44.google.com with SMTP id n19-20020a9d7113000000b005cd9cff76c3so14068864otj.1;
+        Tue, 12 Apr 2022 12:32:57 -0700 (PDT)
+X-Received: by 2002:a81:5210:0:b0:2ef:21e3:54dd with SMTP id
+ g16-20020a815210000000b002ef21e354ddmr5208597ywb.438.1649791608129; Tue, 12
+ Apr 2022 12:26:48 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] PCI: hv: Fix multi-MSI to allow more than one MSI vector
-Content-Language: en-US
-To:     <kys@microsoft.com>, <haiyangz@microsoft.com>,
-        <sthemmin@microsoft.com>, <wei.liu@kernel.org>,
-        <decui@microsoft.com>, <lorenzo.pieralisi@arm.com>,
-        <robh@kernel.org>, <kw@linux.com>, <bhelgaas@google.com>,
-        <jakeo@microsoft.com>
-CC:     <bjorn.andersson@linaro.org>, <linux-hyperv@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1649772991-10285-1-git-send-email-quic_jhugo@quicinc.com>
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-In-Reply-To: <1649772991-10285-1-git-send-email-quic_jhugo@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220412172754.149498-1-Jason@zx2c4.com> <20220412172754.149498-3-Jason@zx2c4.com>
+In-Reply-To: <20220412172754.149498-3-Jason@zx2c4.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 12 Apr 2022 21:26:36 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXexfkgfrLcUis3DSWJ=SSC-CargHbMvopsjoWrvNacFg@mail.gmail.com>
+Message-ID: <CAMuHMdXexfkgfrLcUis3DSWJ=SSC-CargHbMvopsjoWrvNacFg@mail.gmail.com>
+Subject: Re: [PATCH v3 02/10] m68k: use fallback for random_get_entropy()
+ instead of zero
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, "Theodore Ts'o" <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 4/12/2022 8:16 AM, Jeffrey Hugo wrote:
-> If the allocation of multiple MSI vectors for multi-MSI fails in the core
-> PCI framework, the framework will retry the allocation as a single MSI
-> vector, assuming that meets the min_vecs specified by the requesting
-> driver.
-> 
-> Hyper-V advertises that multi-MSI is supported, but reuses the VECTOR
-> domain to implement that for x86.  The VECTOR domain does not support
-> multi-MSI, so the alloc will always fail and fallback to a single MSI
-> allocation.
-> 
-> In short, Hyper-V advertises a capability it does not implement.
-> 
-> Hyper-V can support multi-MSI because it coordinates with the hypervisor
-> to map the MSIs in the IOMMU's interrupt remapper, which is something the
-> VECTOR domain does not have.  Therefore the fix is simple - copy what the
-> x86 IOMMU drivers (AMD/Intel-IR) do by removing
-> X86_IRQ_ALLOC_CONTIGUOUS_VECTORS after calling the VECTOR domain's
-> pci_msi_prepare().
-> 
-> Fixes: 4daace0d8ce8 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
-> Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-> ---
->   drivers/pci/controller/pci-hyperv.c | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-> index d270a204..41be63e 100644
-> --- a/drivers/pci/controller/pci-hyperv.c
-> +++ b/drivers/pci/controller/pci-hyperv.c
-> @@ -614,7 +614,16 @@ static void hv_set_msi_entry_from_desc(union hv_msi_entry *msi_entry,
->   static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
->   			  int nvec, msi_alloc_info_t *info)
->   {
-> -	return pci_msi_prepare(domain, dev, nvec, info);
-> +	int ret = pci_msi_prepare(domain, dev, nvec, info);
-> +
-> +	/*
-> +	 * By using the interrupt remapper in the hypervisor IOMMU, contiguous
-> +	 * CPU vectors in not needed for multi-MSI
+On Tue, Apr 12, 2022 at 7:29 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> In the event that random_get_entropy() can't access a cycle counter or
+> similar, falling back to returning 0 is really not the best we can do.
+> Instead, at least calling random_get_entropy_fallback() would be
+> preferable, because that always needs to return _something_, even
+> falling back to jiffies eventually. It's not as though
+> random_get_entropy_fallback() is super high precision or guaranteed to
+> be entropic, but basically anything that's not zero all the time is
+> better than returning zero all the time.
+>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-I just noticed that "in" should be "is".
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-> +	 */
-> +	if (info->type == X86_IRQ_ALLOC_TYPE_PCI_MSI)
-> +		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
-> +
-> +	return ret;
->   }
->   
->   /**
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
