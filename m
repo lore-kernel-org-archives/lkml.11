@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49389C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 395B4C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353564AbiDLHZq (ORCPT
+        id S1353422AbiDLHZd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        Tue, 12 Apr 2022 03:25:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351606AbiDLHMq (ORCPT
+        with ESMTP id S1351610AbiDLHMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:12:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3A128E17;
-        Mon, 11 Apr 2022 23:50:29 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27DF29812;
+        Mon, 11 Apr 2022 23:50:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A77BB81B35;
-        Tue, 12 Apr 2022 06:50:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD197C385A1;
-        Tue, 12 Apr 2022 06:50:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D3DE61476;
+        Tue, 12 Apr 2022 06:50:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57473C385A6;
+        Tue, 12 Apr 2022 06:50:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746227;
-        bh=8Vq4tCwQN/t2nUnt+x188nmWSw9x8VrD9CrYBjvJx5c=;
+        s=korg; t=1649746232;
+        bh=XAj7FCfm0M/jy4rFK9gDsnIs+X5IJ8/MZGnWY/bFg0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kQK5X8+4sBXSm1n/9B1TeMBzYOXkP8v4w7G3pLN7jP1MU10dnYgqARcudCGbZ89wC
-         T8Qg/TcZiFjG5tuW+WW1/fR8XE2s7+zoGofIkPN3+nWosVco8aqVHQI5wgkJOt/w2x
-         l4gIV486JcCch5X+EMczOzx2OgGvWa0fGYkkAgYE=
+        b=uqOHCu7zzQ7L1xnE6IIihwBqk/oDOKlpsZHjNW5LckSe6h5JVe7H7CD8H1QxU3s/z
+         5LObkrY91HeQWyM1DdEttbwmIUUTKQn2RjYpbuVz5ZQGzD0Pv7obaq5ENGowCdtpA1
+         GTvzHqO1F8KUGguCCz8mNeFmYIoW1jKNLAIV2vJg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Will Deacon <will@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Chanho Park <chanho61.park@samsung.com>
-Subject: [PATCH 5.15 206/277] arm64: Add part number for Arm Cortex-A78AE
-Date:   Tue, 12 Apr 2022 08:30:09 +0200
-Message-Id: <20220412062948.001763072@linuxfoundation.org>
+        stable@vger.kernel.org, Avri Altman <avri.altman@wdc.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 208/277] scsi: ufs: ufs-pci: Add support for Intel MTL
+Date:   Tue, 12 Apr 2022 08:30:11 +0200
+Message-Id: <20220412062948.059258356@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062942.022903016@linuxfoundation.org>
 References: <20220412062942.022903016@linuxfoundation.org>
@@ -52,56 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chanho Park <chanho61.park@samsung.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-commit 83bea32ac7ed37bbda58733de61fc9369513f9f9 upstream.
+commit 4049f7acef3eb37c1ea0df45f3ffc29404f4e708 upstream.
 
-Add the MIDR part number info for the Arm Cortex-A78AE[1] and add it to
-spectre-BHB affected list[2].
+Add PCI ID and callbacks to support Intel Meteor Lake (MTL).
 
-[1]: https://developer.arm.com/Processors/Cortex-A78AE
-[2]: https://developer.arm.com/Arm%20Security%20Center/Spectre-BHB
-
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: James Morse <james.morse@arm.com>
-Signed-off-by: Chanho Park <chanho61.park@samsung.com>
-Link: https://lore.kernel.org/r/20220407091128.8700-1-chanho61.park@samsung.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/20220404055038.2208051-1-adrian.hunter@intel.com
+Cc: stable@vger.kernel.org # v5.15+
+Reviewed-by: Avri Altman <avri.altman@wdc.com>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/cputype.h |    2 ++
- arch/arm64/kernel/proton-pack.c  |    1 +
- 2 files changed, 3 insertions(+)
+ drivers/scsi/ufs/ufshcd-pci.c |   17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -75,6 +75,7 @@
- #define ARM_CPU_PART_CORTEX_A77		0xD0D
- #define ARM_CPU_PART_NEOVERSE_V1	0xD40
- #define ARM_CPU_PART_CORTEX_A78		0xD41
-+#define ARM_CPU_PART_CORTEX_A78AE	0xD42
- #define ARM_CPU_PART_CORTEX_X1		0xD44
- #define ARM_CPU_PART_CORTEX_A510	0xD46
- #define ARM_CPU_PART_CORTEX_A710	0xD47
-@@ -123,6 +124,7 @@
- #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
- #define MIDR_NEOVERSE_V1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V1)
- #define MIDR_CORTEX_A78	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78)
-+#define MIDR_CORTEX_A78AE	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78AE)
- #define MIDR_CORTEX_X1	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X1)
- #define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
- #define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
---- a/arch/arm64/kernel/proton-pack.c
-+++ b/arch/arm64/kernel/proton-pack.c
-@@ -853,6 +853,7 @@ u8 spectre_bhb_loop_affected(int scope)
- 	if (scope == SCOPE_LOCAL_CPU) {
- 		static const struct midr_range spectre_bhb_k32_list[] = {
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78),
-+			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78AE),
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A78C),
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_X1),
- 			MIDR_ALL_VERSIONS(MIDR_CORTEX_A710),
+--- a/drivers/scsi/ufs/ufshcd-pci.c
++++ b/drivers/scsi/ufs/ufshcd-pci.c
+@@ -428,6 +428,12 @@ static int ufs_intel_adl_init(struct ufs
+ 	return ufs_intel_common_init(hba);
+ }
+ 
++static int ufs_intel_mtl_init(struct ufs_hba *hba)
++{
++	hba->caps |= UFSHCD_CAP_CRYPTO | UFSHCD_CAP_WB_EN;
++	return ufs_intel_common_init(hba);
++}
++
+ static struct ufs_hba_variant_ops ufs_intel_cnl_hba_vops = {
+ 	.name                   = "intel-pci",
+ 	.init			= ufs_intel_common_init,
+@@ -465,6 +471,16 @@ static struct ufs_hba_variant_ops ufs_in
+ 	.device_reset		= ufs_intel_device_reset,
+ };
+ 
++static struct ufs_hba_variant_ops ufs_intel_mtl_hba_vops = {
++	.name                   = "intel-pci",
++	.init			= ufs_intel_mtl_init,
++	.exit			= ufs_intel_common_exit,
++	.hce_enable_notify	= ufs_intel_hce_enable_notify,
++	.link_startup_notify	= ufs_intel_link_startup_notify,
++	.resume			= ufs_intel_resume,
++	.device_reset		= ufs_intel_device_reset,
++};
++
+ #ifdef CONFIG_PM_SLEEP
+ static int ufshcd_pci_restore(struct device *dev)
+ {
+@@ -579,6 +595,7 @@ static const struct pci_device_id ufshcd
+ 	{ PCI_VDEVICE(INTEL, 0x98FA), (kernel_ulong_t)&ufs_intel_lkf_hba_vops },
+ 	{ PCI_VDEVICE(INTEL, 0x51FF), (kernel_ulong_t)&ufs_intel_adl_hba_vops },
+ 	{ PCI_VDEVICE(INTEL, 0x54FF), (kernel_ulong_t)&ufs_intel_adl_hba_vops },
++	{ PCI_VDEVICE(INTEL, 0x7E47), (kernel_ulong_t)&ufs_intel_mtl_hba_vops },
+ 	{ }	/* terminate list */
+ };
+ 
 
 
