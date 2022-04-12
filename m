@@ -2,99 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 920F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D679C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 10:56:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239920AbiDLK6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 06:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40674 "EHLO
+        id S241594AbiDLK7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 06:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245287AbiDLKwe (ORCPT
+        with ESMTP id S1359040AbiDLKyl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 06:52:34 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6757A22BC7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 02:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=Fj8VO6yUX/TG+ZwJZmOwkh7zNQnO
-        gn90D0zMWyzIvnU=; b=lKHbOYSHXrHXzoAU0xuLD4BzV2ze1u63QPuRIEgJhIFL
-        X9sTyU4Jv8qE7LzoB5wW7DmVxTNj/YMhzpZPyjjxhmEvSH8SsSa1hEFGO0hui6E4
-        muRRWsVrk2hjNF6YzGn6AJdgDFATY/OvX2Y6/FXb1q4LJNtUyVS9zpT0lJBDmjU=
-Received: (qmail 987440 invoked from network); 12 Apr 2022 11:49:07 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 12 Apr 2022 11:49:07 +0200
-X-UD-Smtp-Session: l3s3148p1@WEzI+HHcDucgAQnoAGZ4AFi7qjeMIP6q
-Date:   Tue, 12 Apr 2022 11:49:06 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Duc Nguyen <duc.nguyen.ub@renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] memory: renesas-rpc-if: Simplify single/double data
- register access
-Message-ID: <YlVLEnRaARVmWZnZ@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Duc Nguyen <duc.nguyen.ub@renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <19358863deae03b1b26f473e878305a1c6e40d19.1649681638.git.geert+renesas@glider.be>
- <YlVJc3z1xXT2emIc@ninjato>
- <CAMuHMdUGkba3hiRJPEw26oBdc6_MK_eBO==Z9QeinaoeZv8Qbw@mail.gmail.com>
+        Tue, 12 Apr 2022 06:54:41 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0134B8A324;
+        Tue, 12 Apr 2022 02:49:51 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 23C9nfKe095086;
+        Tue, 12 Apr 2022 04:49:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649756981;
+        bh=+Po/OBwMzMNY+mde2GzDHYUOKX11dNsA5+yYDGz7VLc=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=V7TII7TZR4mvruoLKh3kAxvfLUKV6AL8PGcIARUFTc2n7xgH4hWFHtONJM3zzw/eM
+         vxR6nEWEqZPFftuvUZs/YC+l1a7PAlWi39hhZu8bZ/wk4UobUk1aKwrjI4Jo4y78s2
+         2yV6umjTqndL5TTy8rpNhg7Ab0Dbz/GJp8N5vbSE=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 23C9nfBa023699
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 12 Apr 2022 04:49:41 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 12
+ Apr 2022 04:49:41 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 12 Apr 2022 04:49:41 -0500
+Received: from [10.249.96.184] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 23C9ncAZ101283;
+        Tue, 12 Apr 2022 04:49:38 -0500
+Message-ID: <78ec4bb7-b575-2554-9a29-e25c28022bdf@ti.com>
+Date:   Tue, 12 Apr 2022 12:49:39 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="S735XdVRzV/i3nen"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdUGkba3hiRJPEw26oBdc6_MK_eBO==Z9QeinaoeZv8Qbw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] net: ethernet: ti: cpsw: using pm_runtime_resume_and_get
+ instead of pm_runtime_get_sync
+Content-Language: en-US
+To:     <cgel.zte@gmail.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux-omap@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+References: <20220412082847.2532584-1-chi.minghao@zte.com.cn>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+In-Reply-To: <20220412082847.2532584-1-chi.minghao@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---S735XdVRzV/i3nen
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
+On 12/04/2022 11:28, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> Using pm_runtime_resume_and_get() to replace pm_runtime_get_sync and
+> pm_runtime_put_noidle. This change is just to simplify the code, no
+> actual functional changes.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> ---
+>   drivers/net/ethernet/ti/cpsw.c | 36 ++++++++++++----------------------
+>   1 file changed, 12 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+> index 03575c017500..9f37b5b196a5 100644
+> --- a/drivers/net/ethernet/ti/cpsw.c
+> +++ b/drivers/net/ethernet/ti/cpsw.c
+> @@ -756,11 +756,9 @@ static int cpsw_ndo_open(struct net_device *ndev)
+>   	int ret;
+>   	u32 reg;
+>   
+> -	ret = pm_runtime_get_sync(cpsw->dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(cpsw->dev);
+> +	ret = pm_runtime_resume_and_get(cpsw->dev);
+> +	if (ret < 0)
+>   		return ret;
+> -	}
+>   
+>   	netif_carrier_off(ndev);
+>   
+> @@ -968,11 +966,9 @@ static int cpsw_ndo_set_mac_address(struct net_device *ndev, void *p)
+>   	if (!is_valid_ether_addr(addr->sa_data))
+>   		return -EADDRNOTAVAIL;
+>   
+> -	ret = pm_runtime_get_sync(cpsw->dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(cpsw->dev);
+> +	ret = pm_runtime_resume_and_get(cpsw->dev);
+> +	if (ret < 0)
+>   		return ret;
+> -	}
+>   
+>   	if (cpsw->data.dual_emac) {
+>   		vid = cpsw->slaves[priv->emac_port].port_vlan;
+> @@ -1052,11 +1048,9 @@ static int cpsw_ndo_vlan_rx_add_vid(struct net_device *ndev,
+>   	if (vid == cpsw->data.default_vlan)
+>   		return 0;
+>   
+> -	ret = pm_runtime_get_sync(cpsw->dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(cpsw->dev);
+> +	ret = pm_runtime_resume_and_get(cpsw->dev);
+> +	if (ret < 0)
+>   		return ret;
+> -	}
+>   
+>   	if (cpsw->data.dual_emac) {
+>   		/* In dual EMAC, reserved VLAN id should not be used for
+> @@ -1090,11 +1084,9 @@ static int cpsw_ndo_vlan_rx_kill_vid(struct net_device *ndev,
+>   	if (vid == cpsw->data.default_vlan)
+>   		return 0;
+>   
+> -	ret = pm_runtime_get_sync(cpsw->dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(cpsw->dev);
+> +	ret = pm_runtime_resume_and_get(cpsw->dev);
+> +	if (ret < 0)
+>   		return ret;
+> -	}
+>   
+>   	if (cpsw->data.dual_emac) {
+>   		int i;
+> @@ -1567,11 +1559,9 @@ static int cpsw_probe(struct platform_device *pdev)
+>   	/* Need to enable clocks with runtime PM api to access module
+>   	 * registers
+>   	 */
+> -	ret = pm_runtime_get_sync(dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(dev);
+> +	ret = pm_runtime_resume_and_get(dev);
+> +	if (ret < 0)
+>   		goto clean_runtime_disable_ret;
+> -	}
+>   
+>   	ret = cpsw_probe_dt(&cpsw->data, pdev);
+>   	if (ret)
+> @@ -1734,11 +1724,9 @@ static int cpsw_remove(struct platform_device *pdev)
+>   	struct cpsw_common *cpsw = platform_get_drvdata(pdev);
+>   	int i, ret;
+>   
+> -	ret = pm_runtime_get_sync(&pdev->dev);
+> -	if (ret < 0) {
+> -		pm_runtime_put_noidle(&pdev->dev);
+> +	ret = pm_runtime_resume_and_get(&pdev->dev);
+> +	if (ret < 0)
+>   		return ret;
+> -	}
+>   
+>   	for (i = 0; i < cpsw->data.slaves; i++)
+>   		if (cpsw->slaves[i].ndev)
 
-> > > +                     regmap_write(rpc->regmap, RPCIF_SMWDR0, *p++);
-> >
-> > Last '++' can be omitted?
->=20
-> I know. But I think it looks nicer this way ;-)
+Thank you.
+Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
 
-I have to admit it looks a little like "I copy&pasted without thinking"
-to me :)
-
-
---S735XdVRzV/i3nen
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJVSxIACgkQFA3kzBSg
-KbYQCw//Tg4IDheuIWgzV7n9xNtp7Dk17Iz4LggQVlK/eKuuSJbsCwoapbtTVzGi
-tM+BG5tigk87t1bjkhUzbjK9vxclhEcLmi80UquzPswl4frW4nM/1SBFCuIlXmV9
-YqZnJlyM2e7RXjiftKfvmZO85x2eyvjv4nqEtj8b4tzog6HaPACQdQJYuxMxBz+Q
-635MoH0kP20jKL/7u+2lyAq97IkuR0sSXngakNiAB92T2WGJUTUcmBJaVGV7qQNG
-Zh0FH96JrX2RIq1Yl+s6Tfipsfgivw+l2gsgxQOKwuvcTyUZcuvWkZtL1A1tf0d4
-crws5bMBIxXJV1oKU/gU/azoy3xoGDOoz2TFn9dulprQSogW+/5sx2mA/usdU2j/
-IpbjZ4wiS6piDlXzplqXQDZjfVMSfnncfGjqmWRAmBVV0KV6BdSzEFBNsDqnx31D
-PkcY8ezxBL34YzKRJ2N+CwdozzAAxisA6DtuvK5nLdNbjz0P6tQsYYZjJUSsE587
-4g5cUbCpV72ZFYCuqNbcQFvuYA9/+fJQDdf/IrF4kvYP6LudwXRsIp0Nb79Xo4Z9
-9QQ/TmDDv6wQ4cEhDobBY/DcVhbvB+SOZ5dbPMJhIKooi0YWhNw7MikbVMmmDzRD
-jBXKkFQRfM8aShBo+dTG+Fs1MmZWiKoNLhYGpG3+9If+aZBcd/0=
-=C8Jw
------END PGP SIGNATURE-----
-
---S735XdVRzV/i3nen--
+-- 
+Best regards,
+Grygorii, Ukraine
