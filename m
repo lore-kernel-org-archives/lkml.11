@@ -2,342 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1537AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6623CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 13:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355821AbiDLNIL (ORCPT
+        id S1355205AbiDLNI2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 09:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43758 "EHLO
+        Tue, 12 Apr 2022 09:08:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356341AbiDLND0 (ORCPT
+        with ESMTP id S1356980AbiDLNEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 09:03:26 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EACBB6CA49
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:45:08 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A9E79150C;
-        Tue, 12 Apr 2022 05:45:08 -0700 (PDT)
-Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3DE7E3F70D;
-        Tue, 12 Apr 2022 05:45:06 -0700 (PDT)
-From:   James Morse <james.morse@arm.com>
-To:     x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
+        Tue, 12 Apr 2022 09:04:12 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573F539B8C
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:48:23 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id bg24so5982112pjb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 05:48:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SBWFAF/XPapM1EK+gmdZ5oUq3bsgCRTxORe+fGjXmTg=;
+        b=hS5tvpYdRrcQrLpo6fyXay4Ko5tB5b0Tk9kxF6AXKdzCyRXRoKXlRtxnU0LPrXzC2T
+         RVrBLWWd7e5dI5mwyLXJfdQOLRQ//pBARSuvuIAsUb5g2IxgOjr9QCmNueWBYCULomA8
+         JI0C1mUlAXbCR9eLQBpFpfhJOQqV0yvnJb3pFmJ+s16ppdIZVkB2ds8cI3pf65QacvAH
+         MwIQEUA1PjaP3S/rvKF7GavLtSJ7gdJWbWt1zRMQm/Muu1YuL8TxSDjlIfq3RQXNXLyf
+         WY0a+kjOgpq7UvXsef0O5WHaQxgE04XbXEBmlHn1C2FVjiuI2V5pHcLuhbk8IBpg3pEn
+         sGCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SBWFAF/XPapM1EK+gmdZ5oUq3bsgCRTxORe+fGjXmTg=;
+        b=Q4xRjOrtGbxA7vsgBzXXTZlk7+gK2qcLRyTno3EazF+0V7G3B4dfUV0QGCyVtKeOGh
+         p88tdY/51rifAx/vcm6ITPAgoT7O+jf5APDiSEJUYRLJsy6BoHzNgaMiOp9SXNYJ2q6A
+         Pba0dvdYdyI91rVaWhehVwwR2hBO2XbknXR3c7cBckdBFSdqn+pBeecMCGcbk8Tk/i/6
+         VhZWDdAnTxALftQlQ8zWr1fs/mdTac8qSNE9d8CqbolBgzH+9c2y96H7ogIVpkmxHLil
+         keHUQOX7NpBPGA4glhPT8dbHVHlTTdgL3uITH2heLP1LfTjYqf7t+PuVgiz8RYndHOJS
+         tVqQ==
+X-Gm-Message-State: AOAM530Wn88OWEjTVBt9bSvtCEsaBkhglCp60xe8VjRMXYM/LpFi1NKd
+        1DMKkj7hBjq51hzC4JTIr8qmCzWyG9c=
+X-Google-Smtp-Source: ABdhPJw9nAilFk9LEP5VDPn8u/Q1uNGHuCf5UWZLKTzXDnHNJJE78DTtE3aajXwFTiKfSlgWF+YjvA==
+X-Received: by 2002:a17:902:c94d:b0:158:4e50:7a32 with SMTP id i13-20020a170902c94d00b001584e507a32mr13357373pla.163.1649767702559;
+        Tue, 12 Apr 2022 05:48:22 -0700 (PDT)
+Received: from localhost ([47.251.4.198])
+        by smtp.gmail.com with ESMTPSA id n24-20020aa79058000000b00505686a982asm17899192pfo.125.2022.04.12.05.48.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 Apr 2022 05:48:22 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     x86@kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andy Lutomirski <luto@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        H Peter Anvin <hpa@zytor.com>,
-        Babu Moger <Babu.Moger@amd.com>,
-        James Morse <james.morse@arm.com>,
-        shameerali.kolothum.thodi@huawei.com,
-        D Scott Phillips OS <scott@os.amperecomputing.com>,
-        lcherian@marvell.com, bobo.shaobowang@huawei.com,
-        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
-        baolin.wang@linux.alibaba.com
-Subject: [PATCH v4 08/21] x86/resctrl: Switch over to the resctrl mbps_val list
-Date:   Tue, 12 Apr 2022 12:44:06 +0000
-Message-Id: <20220412124419.30689-9-james.morse@arm.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220412124419.30689-1-james.morse@arm.com>
-References: <20220412124419.30689-1-james.morse@arm.com>
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Oleg Nesterov <oleg@redhat.com>,
+        "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH V2] x86/sev: Mark the code returning to user space as syscall gap
+Date:   Tue, 12 Apr 2022 20:49:08 +0800
+Message-Id: <20220412124909.10467-1-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Updates to resctrl's software controller follow the same path as
-other configuration updates, but they don't modify the hardware state.
-rdtgroup_schemata_write() uses parse_line() and the resource's
-parse_ctrlval() function to stage the configuration.
-resctrl_arch_update_domains() then updates the mbps_val[] array
-instead, and resctrl_arch_update_domains() skips the rdt_ctrl_update()
-call that would update hardware.
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-This complicates the interface between resctrl's filesystem parts
-and architecture specific code. It should be possible for mba_sc
-to be completely implemented by the filesystem parts of resctrl. This
-would allow it to work on a second architecture with no additional code.
-resctrl_arch_update_domains() using the mbps_val[] array prevents this.
+When returning to user space, the %rsp is user controlled value.
 
-Change parse_bw() to write the configuration value directly to the
-mbps_val[] array in the domain structure. Change rdtgroup_schemata_write()
-to skip the call to resctrl_arch_update_domains(), meaning all the
-mba_sc specific code in resctrl_arch_update_domains() can be removed.
-On the read-side, show_doms() and update_mba_bw() are changed to read
-the mbps_val[] array from the domain structure. With this,
-resctrl_arch_get_config() no longer needs to consider mba_sc resources.
+If it is SNP-guest and the hypervisor decides to mess with the code-page
+for this path while a CPU is executing it.  This will cause a #VC on
+that CPU and that could hit in the syscall return path and mislead
+the #VC handler.
 
-Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
-Tested-by: Xin Hao <xhao@linux.alibaba.com>
-Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
-Tested-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
+So make ip_within_syscall_gap() return true in this case.
+
+Cc: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 ---
-Changes since v3:
- * Added the rdtgroup_init_mba() hunk to avoid ~0 being written
-   to the ctrl_val array, and to only reset mbps_val[] when its going
-   to be used.
+[V1]: https://lore.kernel.org/lkml/20211213042215.3096-4-jiangshanlai@gmail.com/
 
-Changes since v2:
- * Fixed some names in the commit message.
- * Added missing 'or mbps_val[]' code to rdtgroup_size_show()
+Changed from V1:
+	Update changelog.
 
-Changes since v1:
- * Squashed out struct resctrl_mba_sc
- * Removed stray paragraphs from commit message
----
- arch/x86/kernel/cpu/resctrl/ctrlmondata.c | 44 ++++++++++++++---------
- arch/x86/kernel/cpu/resctrl/monitor.c     | 10 +++---
- arch/x86/kernel/cpu/resctrl/rdtgroup.c    | 31 ++++++++--------
- 3 files changed, 48 insertions(+), 37 deletions(-)
+ arch/x86/entry/entry_64.S        | 2 ++
+ arch/x86/entry/entry_64_compat.S | 2 ++
+ arch/x86/include/asm/proto.h     | 4 ++++
+ arch/x86/include/asm/ptrace.h    | 4 ++++
+ 4 files changed, 12 insertions(+)
 
-diff --git a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-index 87666275eed9..9f45207a6c74 100644
---- a/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-+++ b/arch/x86/kernel/cpu/resctrl/ctrlmondata.c
-@@ -61,6 +61,7 @@ int parse_bw(struct rdt_parse_data *data, struct resctrl_schema *s,
- 	     struct rdt_domain *d)
- {
- 	struct resctrl_staged_config *cfg;
-+	u32 closid = data->rdtgrp->closid;
- 	struct rdt_resource *r = s->res;
- 	unsigned long bw_val;
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 4faac48ebec5..4f678b6045cd 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -215,8 +215,10 @@ syscall_return_via_sysret:
  
-@@ -72,6 +73,12 @@ int parse_bw(struct rdt_parse_data *data, struct resctrl_schema *s,
+ 	popq	%rdi
+ 	popq	%rsp
++SYM_INNER_LABEL(entry_SYSRETQ_unsafe_stack, SYM_L_GLOBAL)
+ 	swapgs
+ 	sysretq
++SYM_INNER_LABEL(entry_SYSRETQ_end, SYM_L_GLOBAL)
+ SYM_CODE_END(entry_SYSCALL_64)
  
- 	if (!bw_validate(data->buf, &bw_val, r))
- 		return -EINVAL;
-+
-+	if (is_mba_sc(r)) {
-+		d->mbps_val[closid] = bw_val;
-+		return 0;
-+	}
-+
- 	cfg->new_ctrl = bw_val;
- 	cfg->have_new_ctrl = true;
- 
-@@ -261,14 +268,13 @@ static u32 get_config_index(u32 closid, enum resctrl_conf_type type)
- 
- static bool apply_config(struct rdt_hw_domain *hw_dom,
- 			 struct resctrl_staged_config *cfg, u32 idx,
--			 cpumask_var_t cpu_mask, bool mba_sc)
-+			 cpumask_var_t cpu_mask)
- {
- 	struct rdt_domain *dom = &hw_dom->d_resctrl;
--	u32 *dc = !mba_sc ? hw_dom->ctrl_val : hw_dom->mbps_val;
- 
--	if (cfg->new_ctrl != dc[idx]) {
-+	if (cfg->new_ctrl != hw_dom->ctrl_val[idx]) {
- 		cpumask_set_cpu(cpumask_any(&dom->cpu_mask), cpu_mask);
--		dc[idx] = cfg->new_ctrl;
-+		hw_dom->ctrl_val[idx] = cfg->new_ctrl;
- 
- 		return true;
- 	}
-@@ -284,14 +290,12 @@ int resctrl_arch_update_domains(struct rdt_resource *r, u32 closid)
- 	enum resctrl_conf_type t;
- 	cpumask_var_t cpu_mask;
- 	struct rdt_domain *d;
--	bool mba_sc;
- 	int cpu;
- 	u32 idx;
- 
- 	if (!zalloc_cpumask_var(&cpu_mask, GFP_KERNEL))
- 		return -ENOMEM;
- 
--	mba_sc = is_mba_sc(r);
- 	msr_param.res = NULL;
- 	list_for_each_entry(d, &r->domains, list) {
- 		hw_dom = resctrl_to_arch_dom(d);
-@@ -301,7 +305,7 @@ int resctrl_arch_update_domains(struct rdt_resource *r, u32 closid)
- 				continue;
- 
- 			idx = get_config_index(closid, t);
--			if (!apply_config(hw_dom, cfg, idx, cpu_mask, mba_sc))
-+			if (!apply_config(hw_dom, cfg, idx, cpu_mask))
- 				continue;
- 
- 			if (!msr_param.res) {
-@@ -315,11 +319,7 @@ int resctrl_arch_update_domains(struct rdt_resource *r, u32 closid)
- 		}
- 	}
- 
--	/*
--	 * Avoid writing the control msr with control values when
--	 * MBA software controller is enabled
--	 */
--	if (cpumask_empty(cpu_mask) || mba_sc)
-+	if (cpumask_empty(cpu_mask))
- 		goto done;
- 	cpu = get_cpu();
- 	/* Update resource control msr on this CPU if it's in cpu_mask. */
-@@ -406,6 +406,14 @@ ssize_t rdtgroup_schemata_write(struct kernfs_open_file *of,
- 
- 	list_for_each_entry(s, &resctrl_schema_all, list) {
- 		r = s->res;
-+
-+		/*
-+		 * Writes to mba_sc resources update the software controller,
-+		 * not the control msr.
-+		 */
-+		if (is_mba_sc(r))
-+			continue;
-+
- 		ret = resctrl_arch_update_domains(r, rdtgrp->closid);
- 		if (ret)
- 			goto out;
-@@ -433,9 +441,7 @@ u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
- 	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
- 	u32 idx = get_config_index(closid, type);
- 
--	if (!is_mba_sc(r))
--		return hw_dom->ctrl_val[idx];
--	return hw_dom->mbps_val[idx];
-+	return hw_dom->ctrl_val[idx];
- }
- 
- static void show_doms(struct seq_file *s, struct resctrl_schema *schema, int closid)
-@@ -450,8 +456,12 @@ static void show_doms(struct seq_file *s, struct resctrl_schema *schema, int clo
- 		if (sep)
- 			seq_puts(s, ";");
- 
--		ctrl_val = resctrl_arch_get_config(r, dom, closid,
--						   schema->conf_type);
-+		if (is_mba_sc(r))
-+			ctrl_val = dom->mbps_val[closid];
-+		else
-+			ctrl_val = resctrl_arch_get_config(r, dom, closid,
-+							   schema->conf_type);
-+
- 		seq_printf(s, r->format_str, dom->id, max_data_width,
- 			   ctrl_val);
- 		sep = true;
-diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
-index 497cadf3285d..5cc1e6b229d4 100644
---- a/arch/x86/kernel/cpu/resctrl/monitor.c
-+++ b/arch/x86/kernel/cpu/resctrl/monitor.c
-@@ -447,13 +447,11 @@ static void update_mba_bw(struct rdtgroup *rgrp, struct rdt_domain *dom_mbm)
- 	hw_dom_mba = resctrl_to_arch_dom(dom_mba);
- 
- 	cur_bw = pmbm_data->prev_bw;
--	user_bw = resctrl_arch_get_config(r_mba, dom_mba, closid, CDP_NONE);
-+	user_bw = dom_mba->mbps_val[closid];
- 	delta_bw = pmbm_data->delta_bw;
--	/*
--	 * resctrl_arch_get_config() chooses the mbps/ctrl value to return
--	 * based on is_mba_sc(). For now, reach into the hw_dom.
--	 */
--	cur_msr_val = hw_dom_mba->ctrl_val[closid];
-+
-+	/* MBA monitor resource doesn't support CDP */
-+	cur_msr_val = resctrl_arch_get_config(r_mba, dom_mba, closid, CDP_NONE);
+ /*
+diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
+index 4fdb007cddbd..3c0e14960e2b 100644
+--- a/arch/x86/entry/entry_64_compat.S
++++ b/arch/x86/entry/entry_64_compat.S
+@@ -297,6 +297,7 @@ sysret32_from_system_call:
+ 	 * code.  We zero R8-R10 to avoid info leaks.
+          */
+ 	movq	RSP-ORIG_RAX(%rsp), %rsp
++SYM_INNER_LABEL(entry_SYSRETL_compat_unsafe_stack, SYM_L_GLOBAL)
  
  	/*
- 	 * For Ctrl groups read data from child monitor groups.
-diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-index 9d5be6a73644..07904308245c 100644
---- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-+++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-@@ -1356,11 +1356,13 @@ static int rdtgroup_size_show(struct kernfs_open_file *of,
- 			      struct seq_file *s, void *v)
- {
- 	struct resctrl_schema *schema;
-+	enum resctrl_conf_type type;
- 	struct rdtgroup *rdtgrp;
- 	struct rdt_resource *r;
- 	struct rdt_domain *d;
- 	unsigned int size;
- 	int ret = 0;
-+	u32 closid;
- 	bool sep;
- 	u32 ctrl;
+ 	 * The original userspace %rsp (RSP-ORIG_RAX(%rsp)) is stored
+@@ -314,6 +315,7 @@ sysret32_from_system_call:
+ 	xorl	%r10d, %r10d
+ 	swapgs
+ 	sysretl
++SYM_INNER_LABEL(entry_SYSRETL_compat_end, SYM_L_GLOBAL)
+ SYM_CODE_END(entry_SYSCALL_compat)
  
-@@ -1386,8 +1388,11 @@ static int rdtgroup_size_show(struct kernfs_open_file *of,
- 		goto out;
- 	}
+ /*
+diff --git a/arch/x86/include/asm/proto.h b/arch/x86/include/asm/proto.h
+index 0f899c8d7a4e..647d71535ce3 100644
+--- a/arch/x86/include/asm/proto.h
++++ b/arch/x86/include/asm/proto.h
+@@ -13,6 +13,8 @@ void syscall_init(void);
+ #ifdef CONFIG_X86_64
+ void entry_SYSCALL_64(void);
+ void entry_SYSCALL_64_safe_stack(void);
++void entry_SYSRETQ_unsafe_stack(void);
++void entry_SYSRETQ_end(void);
+ long do_arch_prctl_64(struct task_struct *task, int option, unsigned long arg2);
+ #endif
  
-+	closid = rdtgrp->closid;
-+
- 	list_for_each_entry(schema, &resctrl_schema_all, list) {
- 		r = schema->res;
-+		type = schema->conf_type;
- 		sep = false;
- 		seq_printf(s, "%*s:", max_name_width, schema->name);
- 		list_for_each_entry(d, &r->domains, list) {
-@@ -1396,9 +1401,12 @@ static int rdtgroup_size_show(struct kernfs_open_file *of,
- 			if (rdtgrp->mode == RDT_MODE_PSEUDO_LOCKSETUP) {
- 				size = 0;
- 			} else {
--				ctrl = resctrl_arch_get_config(r, d,
--							       rdtgrp->closid,
--							       schema->conf_type);
-+				if (is_mba_sc(r))
-+					ctrl = d->mbps_val[closid];
-+				else
-+					ctrl = resctrl_arch_get_config(r, d,
-+								       closid,
-+								       type);
- 				if (r->rid == RDT_RESOURCE_MBA)
- 					size = ctrl;
- 				else
-@@ -1922,9 +1930,6 @@ static void mba_sc_domain_destroy(struct rdt_resource *r,
- static int set_mba_sc(bool mba_sc)
- {
- 	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_MBA].r_resctrl;
--	u32 num_closid = resctrl_arch_get_num_closid(r);
--	struct rdt_domain *d;
--	int i;
+@@ -28,6 +30,8 @@ void entry_SYSENTER_compat(void);
+ void __end_entry_SYSENTER_compat(void);
+ void entry_SYSCALL_compat(void);
+ void entry_SYSCALL_compat_safe_stack(void);
++void entry_SYSRETL_compat_unsafe_stack(void);
++void entry_SYSRETL_compat_end(void);
+ void entry_INT80_compat(void);
+ #ifdef CONFIG_XEN_PV
+ void xen_entry_INT80_compat(void);
+diff --git a/arch/x86/include/asm/ptrace.h b/arch/x86/include/asm/ptrace.h
+index 4357e0f2cd5f..f4db78b09c8f 100644
+--- a/arch/x86/include/asm/ptrace.h
++++ b/arch/x86/include/asm/ptrace.h
+@@ -186,9 +186,13 @@ static __always_inline bool ip_within_syscall_gap(struct pt_regs *regs)
+ 	bool ret = (regs->ip >= (unsigned long)entry_SYSCALL_64 &&
+ 		    regs->ip <  (unsigned long)entry_SYSCALL_64_safe_stack);
  
- 	if (!is_mbm_enabled() || !is_mba_linear() ||
- 	    mba_sc == is_mba_sc(r))
-@@ -1932,11 +1937,6 @@ static int set_mba_sc(bool mba_sc)
++	ret = ret || (regs->ip >= (unsigned long)entry_SYSRETQ_unsafe_stack &&
++		      regs->ip <  (unsigned long)entry_SYSRETQ_end);
+ #ifdef CONFIG_IA32_EMULATION
+ 	ret = ret || (regs->ip >= (unsigned long)entry_SYSCALL_compat &&
+ 		      regs->ip <  (unsigned long)entry_SYSCALL_compat_safe_stack);
++	ret = ret || (regs->ip >= (unsigned long)entry_SYSRETL_compat_unsafe_stack &&
++		      regs->ip <  (unsigned long)entry_SYSRETL_compat_end);
+ #endif
  
- 	r->membw.mba_sc = mba_sc;
- 
--	list_for_each_entry(d, &r->domains, list) {
--		for (i = 0; i < num_closid; i++)
--			d->mbps_val[i] = MBA_MAX_MBPS;
--	}
--
- 	return 0;
- }
- 
-@@ -2809,15 +2809,18 @@ static int rdtgroup_init_cat(struct resctrl_schema *s, u32 closid)
- }
- 
- /* Initialize MBA resource with default values. */
--static void rdtgroup_init_mba(struct rdt_resource *r)
-+static void rdtgroup_init_mba(struct rdt_resource *r, u32 closid)
- {
- 	struct resctrl_staged_config *cfg;
- 	struct rdt_domain *d;
- 
- 	list_for_each_entry(d, &r->domains, list) {
- 		cfg = &d->staged_config[CDP_NONE];
--		cfg->new_ctrl = is_mba_sc(r) ? MBA_MAX_MBPS : r->default_ctrl;
-+		cfg->new_ctrl = r->default_ctrl;
- 		cfg->have_new_ctrl = true;
-+
-+		if (is_mba_sc(r))
-+			d->mbps_val[closid] = MBA_MAX_MBPS;
- 	}
- }
- 
-@@ -2831,7 +2834,7 @@ static int rdtgroup_init_alloc(struct rdtgroup *rdtgrp)
- 	list_for_each_entry(s, &resctrl_schema_all, list) {
- 		r = s->res;
- 		if (r->rid == RDT_RESOURCE_MBA) {
--			rdtgroup_init_mba(r);
-+			rdtgroup_init_mba(r, rdtgrp->closid);
- 		} else {
- 			ret = rdtgroup_init_cat(s, rdtgrp->closid);
- 			if (ret < 0)
+ 	return ret;
 -- 
-2.30.2
+2.19.1.6.gb485710b
 
