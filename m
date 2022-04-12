@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43948C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FEC6C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358510AbiDLIbP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42852 "EHLO
+        id S237209AbiDLIbu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:31:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353580AbiDLHZr (ORCPT
+        with ESMTP id S1353575AbiDLHZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:25:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C413F43AE4;
-        Tue, 12 Apr 2022 00:01:48 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22D543ACB;
+        Tue, 12 Apr 2022 00:01:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ED0460B2E;
-        Tue, 12 Apr 2022 07:01:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69C05C385A6;
-        Tue, 12 Apr 2022 07:01:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DCAC60B65;
+        Tue, 12 Apr 2022 07:01:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26ADAC385A1;
+        Tue, 12 Apr 2022 07:01:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746907;
-        bh=YiaJDBbTcuhQHMi1q1uJq5SwFO2vcgROG+bHHXW7V2Y=;
+        s=korg; t=1649746899;
+        bh=dvOuvkLBEN4EUP6zEmDLAeop9VeIEiE+x9OuTkj65Xc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vOaR6hY8Bc/z49kFiI34yVD2ajrvI1bMOFP2Euqu9jCap5cnEH763JsPtgfHZVh3A
-         jmK9INguS4RS9kePAID5BFi4zZT9r5FDYESFz8TP7xSjDW8ziDogLitxCltWwlNLtN
-         jvPCgXGzU3g8kzPipAzxTcOb3bk/ZPwrw1jL0nPw=
+        b=aBhbH6f/iChIXsnt8ixi8MDzpjZ8Iz1BaIUSq/dRvMb/AV6hfAJkbC7NokX9dz8dP
+         eefp53PfsItMmV1RxhZzl8rWl5r/csPRIPvtGDSlgqN1u940mfKJx8+Ljk4+smO8c7
+         FpnakphqBeDLysSp/8wS7fgmLGMOiKHnLraXujkE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Auld <pauld@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 174/285] arch/arm64: Fix topology initialization for core scheduling
-Date:   Tue, 12 Apr 2022 08:30:31 +0200
-Message-Id: <20220412062948.690247666@linuxfoundation.org>
+        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 171/285] drm/imx: dw_hdmi-imx: Fix bailout in error cases of probe
+Date:   Tue, 12 Apr 2022 08:30:28 +0200
+Message-Id: <20220412062948.603954297@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,72 +55,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Auld <pauld@redhat.com>
+From: Liu Ying <victor.liu@nxp.com>
 
-[ Upstream commit 5524cbb1bfcdff0cad0aaa9f94e6092002a07259 ]
+[ Upstream commit e8083acc3f8cc2097917018e947fd4c857f60454 ]
 
-Arm64 systems rely on store_cpu_topology() to call update_siblings_masks()
-to transfer the toplogy to the various cpu masks. This needs to be done
-before the call to notify_cpu_starting() which tells the scheduler about
-each cpu found, otherwise the core scheduling data structures are setup
-in a way that does not match the actual topology.
+In dw_hdmi_imx_probe(), if error happens after dw_hdmi_probe() returns
+successfully, dw_hdmi_remove() should be called where necessary as
+bailout.
 
-With smt_mask not setup correctly we bail on `cpumask_weight(smt_mask) == 1`
-for !leaders in:
-
- notify_cpu_starting()
-   cpuhp_invoke_callback_range()
-     sched_cpu_starting()
-       sched_core_cpu_starting()
-
-which leads to rq->core not being correctly set for !leader-rq's.
-
-Without this change stress-ng (which enables core scheduling in its prctl
-tests in newer versions -- i.e. with PR_SCHED_CORE support) causes a warning
-and then a crash (trimmed for legibility):
-
-[ 1853.805168] ------------[ cut here ]------------
-[ 1853.809784] task_rq(b)->core != rq->core
-[ 1853.809792] WARNING: CPU: 117 PID: 0 at kernel/sched/fair.c:11102 cfs_prio_less+0x1b4/0x1c4
-...
-[ 1854.015210] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
-...
-[ 1854.231256] Call trace:
-[ 1854.233689]  pick_next_task+0x3dc/0x81c
-[ 1854.237512]  __schedule+0x10c/0x4cc
-[ 1854.240988]  schedule_idle+0x34/0x54
-
-Fixes: 9edeaea1bc45 ("sched: Core-wide rq->lock")
-Signed-off-by: Phil Auld <pauld@redhat.com>
-Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Tested-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Link: https://lore.kernel.org/r/20220331153926.25742-1-pauld@redhat.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: c805ec7eb210 ("drm/imx: dw_hdmi-imx: move initialization into probe")
+Cc: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Signed-off-by: Liu Ying <victor.liu@nxp.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220128091944.3831256-1-victor.liu@nxp.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/smp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/imx/dw_hdmi-imx.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
-index 27df5c1e6baa..3b46041f2b97 100644
---- a/arch/arm64/kernel/smp.c
-+++ b/arch/arm64/kernel/smp.c
-@@ -234,6 +234,7 @@ asmlinkage notrace void secondary_start_kernel(void)
- 	 * Log the CPU info before it is marked online and might get read.
- 	 */
- 	cpuinfo_store_cpu();
-+	store_cpu_topology(cpu);
+diff --git a/drivers/gpu/drm/imx/dw_hdmi-imx.c b/drivers/gpu/drm/imx/dw_hdmi-imx.c
+index 87428fb23d9f..a2277a0d6d06 100644
+--- a/drivers/gpu/drm/imx/dw_hdmi-imx.c
++++ b/drivers/gpu/drm/imx/dw_hdmi-imx.c
+@@ -222,6 +222,7 @@ static int dw_hdmi_imx_probe(struct platform_device *pdev)
+ 	struct device_node *np = pdev->dev.of_node;
+ 	const struct of_device_id *match = of_match_node(dw_hdmi_imx_dt_ids, np);
+ 	struct imx_hdmi *hdmi;
++	int ret;
  
- 	/*
- 	 * Enable GIC and timers.
-@@ -242,7 +243,6 @@ asmlinkage notrace void secondary_start_kernel(void)
+ 	hdmi = devm_kzalloc(&pdev->dev, sizeof(*hdmi), GFP_KERNEL);
+ 	if (!hdmi)
+@@ -243,10 +244,15 @@ static int dw_hdmi_imx_probe(struct platform_device *pdev)
+ 	hdmi->bridge = of_drm_find_bridge(np);
+ 	if (!hdmi->bridge) {
+ 		dev_err(hdmi->dev, "Unable to find bridge\n");
++		dw_hdmi_remove(hdmi->hdmi);
+ 		return -ENODEV;
+ 	}
  
- 	ipi_setup(cpu);
+-	return component_add(&pdev->dev, &dw_hdmi_imx_ops);
++	ret = component_add(&pdev->dev, &dw_hdmi_imx_ops);
++	if (ret)
++		dw_hdmi_remove(hdmi->hdmi);
++
++	return ret;
+ }
  
--	store_cpu_topology(cpu);
- 	numa_add_cpu(cpu);
- 
- 	/*
+ static int dw_hdmi_imx_remove(struct platform_device *pdev)
 -- 
 2.35.1
 
