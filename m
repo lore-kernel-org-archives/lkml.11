@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CFF2C47085
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE3A5C352A7
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384449AbiDLIlu (ORCPT
+        id S1359076AbiDLIdN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:41:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49118 "EHLO
+        Tue, 12 Apr 2022 04:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357169AbiDLHju (ORCPT
+        with ESMTP id S1353518AbiDLHZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51AE613F70;
-        Tue, 12 Apr 2022 00:13:24 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67346434B7;
+        Tue, 12 Apr 2022 00:00:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC8B56153F;
-        Tue, 12 Apr 2022 07:13:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9B44C385A1;
-        Tue, 12 Apr 2022 07:13:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11334B81B4D;
+        Tue, 12 Apr 2022 07:00:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65183C385A1;
+        Tue, 12 Apr 2022 07:00:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747603;
-        bh=YgBs7SCqNKxfkEo9PqweIDQmp3ZWSfZhb89F6s7+12c=;
+        s=korg; t=1649746854;
+        bh=GPMcE/Z5TPn8lD0AfTRMCJGO/tcYseOLuUzJh3fgWPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sxsGcLuYm28rCDJxFsUD5y1Fl756+A7c1xBH6gju3YtzwnF75m46NVzjNx2sgqVq1
-         7XQuxW4851Z+MlOY/7ZQesS10muEuMGvj69wSi6NoVboCNM+CVBHZpzdYNqVyQdcj9
-         eOAfVoa2AUkN8KEamicmGujyGweS3xhHBv6p3y7I=
+        b=aZO3QMMV5fVUTS0T6Gz9Q/bsvhrc/JMsRmnkJmzqD52HCvkht2Qe5AD0nhJHtZaS5
+         5PSP8Ofqhoqroham33+9wOS1/7fbji+FukdRDLRTni7jtWHpZXgVieyeCv5zi5736T
+         BOp5+aYGJifPQBNllWlUaX4V/VmWEhXxxPgo4E3c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 138/343] net/mlx5e: Remove overzealous validations in netlink EEPROM query
-Date:   Tue, 12 Apr 2022 08:29:16 +0200
-Message-Id: <20220412062955.369912798@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 153/285] Drivers: hv: vmbus: Fix potential crash on module unload
+Date:   Tue, 12 Apr 2022 08:30:10 +0200
+Message-Id: <20220412062948.089098173@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
-References: <20220412062951.095765152@linuxfoundation.org>
+In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
+References: <20220412062943.670770901@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,66 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+From: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
-[ Upstream commit 970adfb76095fa719778d70a6b86030d2feb88dd ]
+[ Upstream commit 792f232d57ff28bbd5f9c4abe0466b23d5879dc8 ]
 
-Unlike the legacy EEPROM callbacks, when using the netlink EEPROM query
-(get_module_eeprom_by_page) the driver should not try to validate the
-query parameters, but just perform the read requested by the userspace.
+The vmbus driver relies on the panic notifier infrastructure to perform
+some operations when a panic event is detected. Since vmbus can be built
+as module, it is required that the driver handles both registering and
+unregistering such panic notifier callback.
 
-Recent discussion in the mailing list:
-https://lore.kernel.org/netdev/20220120093051.70845141@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net/
+After commit 74347a99e73a ("x86/Hyper-V: Unload vmbus channel in hv panic callback")
+though, the panic notifier registration is done unconditionally in the module
+initialization routine whereas the unregistering procedure is conditionally
+guarded and executes only if HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE capability
+is set.
 
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+This patch fixes that by unconditionally unregistering the panic notifier
+in the module's exit routine as well.
+
+Fixes: 74347a99e73a ("x86/Hyper-V: Unload vmbus channel in hv panic callback")
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/20220315203535.682306-1-gpiccoli@igalia.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/port.c    | 23 -------------------
- 1 file changed, 23 deletions(-)
+ drivers/hv/vmbus_drv.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-index 7b16a1188aab..fd79860de723 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-@@ -433,35 +433,12 @@ int mlx5_query_module_eeprom_by_page(struct mlx5_core_dev *dev,
- 				     struct mlx5_module_eeprom_query_params *params,
- 				     u8 *data)
- {
--	u8 module_id;
- 	int err;
+diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+index 44bd0b6ff505..a939ca1a8d54 100644
+--- a/drivers/hv/vmbus_drv.c
++++ b/drivers/hv/vmbus_drv.c
+@@ -2776,10 +2776,15 @@ static void __exit vmbus_exit(void)
+ 	if (ms_hyperv.misc_features & HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE) {
+ 		kmsg_dump_unregister(&hv_kmsg_dumper);
+ 		unregister_die_notifier(&hyperv_die_block);
+-		atomic_notifier_chain_unregister(&panic_notifier_list,
+-						 &hyperv_panic_block);
+ 	}
  
- 	err = mlx5_query_module_num(dev, &params->module_number);
- 	if (err)
- 		return err;
- 
--	err = mlx5_query_module_id(dev, params->module_number, &module_id);
--	if (err)
--		return err;
--
--	switch (module_id) {
--	case MLX5_MODULE_ID_SFP:
--		if (params->page > 0)
--			return -EINVAL;
--		break;
--	case MLX5_MODULE_ID_QSFP:
--	case MLX5_MODULE_ID_QSFP28:
--	case MLX5_MODULE_ID_QSFP_PLUS:
--		if (params->page > 3)
--			return -EINVAL;
--		break;
--	case MLX5_MODULE_ID_DSFP:
--		break;
--	default:
--		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
--		return -EINVAL;
--	}
--
- 	if (params->i2c_address != MLX5_I2C_ADDR_HIGH &&
- 	    params->i2c_address != MLX5_I2C_ADDR_LOW) {
- 		mlx5_core_err(dev, "I2C address not recognized: 0x%x\n", params->i2c_address);
++	/*
++	 * The panic notifier is always registered, hence we should
++	 * also unconditionally unregister it here as well.
++	 */
++	atomic_notifier_chain_unregister(&panic_notifier_list,
++					 &hyperv_panic_block);
++
+ 	free_page((unsigned long)hv_panic_page);
+ 	unregister_sysctl_table(hv_ctl_table_hdr);
+ 	hv_ctl_table_hdr = NULL;
 -- 
 2.35.1
 
