@@ -2,222 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F608C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B9C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 18:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356929AbiDLTBE (ORCPT
+        id S1358908AbiDLTBJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 15:01:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
+        Tue, 12 Apr 2022 15:01:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358811AbiDLTAX (ORCPT
+        with ESMTP id S1358819AbiDLTAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 15:00:23 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEFED43AD5;
-        Tue, 12 Apr 2022 11:58:02 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id 3so7058444qkj.5;
-        Tue, 12 Apr 2022 11:58:02 -0700 (PDT)
+        Tue, 12 Apr 2022 15:00:24 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21734C790
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:58:05 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id p15so39151485ejc.7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 11:58:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qOnwkaEGKViV2QJ1JXpZ5IddTHppSw1fGZxu+INfSyI=;
-        b=TZmjNKf/0qJBTGgkZltGqOBKg5S0YR+tK17WaFiOwq6nHwdCxAaBYAGfGov++BIdJn
-         fWeRCJmWYcXvlvE+6J4czrRnilTz5OV5S6lxmqRtjySXZ/O2LZCudqUKn6upDcU0c/7F
-         /lKufz63s6XHtcTwDE8+xwa+i/MMFv3x4eitEl3bFgwOR+A4nCowudePUNSs4aBjyta6
-         7GfbSoNTvvYSATbrmd9mpQX2B0nkjzQUBuZJ/D0KAYOvfi+yT/v9WL1Ti8aJCzPQP69v
-         4s3SnV3HRdFPvND6TE8cQx3HuT9zZ90GM4cxgTTuf0v13lgxlClFLcU+k6abuR3sP2eW
-         llmg==
+        bh=0DvvGyyTAhUrGmw9SU82p+PyQ16OeZEs2v/UZsOf+ig=;
+        b=Lf3wBfHlGcpJEIkvlyDzvWIMzmkSxJ72dchDveMBA16ZhoSUGNMV0NDM29nKyVzN+n
+         ijRe4lYj8gPUTIfYT9Zzl7CWEwx/NLnnXzM5GgrdJOKwG9xWZbc8hk5qVI7F2r57Bu9l
+         jpmIeAkGWXfG90/3Yv5h4gkSQutf4VA8uuSI3pDth0yeglsebHmgl97ZGS+a9M6dsyEV
+         eu+99nP2jD4N0n7xu3/hNMWpvkUZEBkNFphmv7pLsnFs+RvIaE2O/Ib+UJDqAapggSgW
+         vS+musv03qEkS5/xMjl7nFyRDYupByQPHtHx+cPgg/C+B/cNOQ+4TatGcIfikFzLbF6u
+         RBSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qOnwkaEGKViV2QJ1JXpZ5IddTHppSw1fGZxu+INfSyI=;
-        b=6Se5oNpNcQ2l128uU7sm0GemlExBBmaSti93mJHW9Zyq55V8GVoURhS61nH+aBFSQM
-         r1Hpsz3roiHFKzTcFGqxOODaMe7brS1W9PNvhW/CJo/l49kl1qcTUdJMOfuFShKAwwvG
-         qawnMaiMkgsyUdCOAnMQ9Sq39LpEWMHbBG4mLJrTVV8BGJ8VjglsO5VJzRpV2rdC9JJW
-         Mk651SE2bPVFpRxLVBF4F4M02MHMug65KUm8nZDWZ4gEaordUq07JYIePyQkcQPZdrES
-         TsWzuL1NKPTk5OmOkrK5KphCJPoMW6JXnUsFJ4Y0HmeG7k6CKXBFhU8jjzCiSMAzbcRl
-         x3gw==
-X-Gm-Message-State: AOAM532Qh8NR39fOyHGDDjwufQG0U7Uot/GYHb695NVAQTU3iq5KFToq
-        vEn5kUAgn5YJE/aJD7zqB3M=
-X-Google-Smtp-Source: ABdhPJytyARNf+NUo54WSUHWnNsaIESDGWaTpic2NDMrdjhU2sXrVY+MmLuxf5en5VxeRtoTpzuqjw==
-X-Received: by 2002:a37:557:0:b0:69c:2490:cd06 with SMTP id 84-20020a370557000000b0069c2490cd06mr4226982qkf.724.1649789881740;
-        Tue, 12 Apr 2022 11:58:01 -0700 (PDT)
-Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id d18-20020a05622a05d200b002f07ed88a54sm1820610qtb.46.2022.04.12.11.58.01
+        bh=0DvvGyyTAhUrGmw9SU82p+PyQ16OeZEs2v/UZsOf+ig=;
+        b=RDizJfIH6E4n9+K8obk2HVv3OVQdz03BYR+LNoleKQFXEQyjuxDCKQbJmrxtEnLLSh
+         qQO4xnz3PReB67en8PxwQP8icucH/Owfy0AxpDbnH/gvNOWYyfU9coJgV/07LrPz2bSe
+         ZT4DE4d3gF7BluA58h+xFDguMfP3QyQNcuSEBLIM1u3mfia8LQzjFReUiVYoBCPN+iAU
+         gFNrTATYoesKZArIEDMcZcfxx1cxKpIOe1E+wU/bDRYwraP83AGJBhndwAg4TjmRc5hK
+         AuCcc69pd3W4nOX2GAFmLlLQ4H7RZfzrFVFw/k4KwxXK4hatmxWcOWxnBlazYORNhs2s
+         UXZg==
+X-Gm-Message-State: AOAM5311FRrwNq2mxv7Cg6UmnYXcHPDAkzWLlsPEqaIlmbYTHOpdp38q
+        6W96yxhxQ7ciTfA3yRgONBg=
+X-Google-Smtp-Source: ABdhPJze3T0Yyj+kvM5Ad2BP4neIXA9XzxUdinMLLQ2K9KROMPh5IFmM7Gp73mjGs3bVxb3rwJSLwg==
+X-Received: by 2002:a17:907:968e:b0:6db:aed5:43c8 with SMTP id hd14-20020a170907968e00b006dbaed543c8mr36178503ejc.636.1649789884555;
+        Tue, 12 Apr 2022 11:58:04 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb6b.dynamic.kabel-deutschland.de. [95.90.187.107])
+        by smtp.gmail.com with ESMTPSA id q22-20020a170906771600b006cf8a37ebf5sm13443482ejm.103.2022.04.12.11.58.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Apr 2022 11:58:01 -0700 (PDT)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     linux-rockchip@lists.infradead.org,
-        Peter Geis <pgwipeout@gmail.com>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 2/4] PCI: dwc: rockchip: add legacy interrupt support
-Date:   Tue, 12 Apr 2022 14:57:49 -0400
-Message-Id: <20220412185751.124783-3-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220412185751.124783-1-pgwipeout@gmail.com>
-References: <20220412185751.124783-1-pgwipeout@gmail.com>
+        Tue, 12 Apr 2022 11:58:04 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH 4/6] staging: r8188eu: reduce variables in block_write()
+Date:   Tue, 12 Apr 2022 20:57:52 +0200
+Message-Id: <20220412185754.8695-5-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412185754.8695-1-straube.linux@gmail.com>
+References: <20220412185754.8695-1-straube.linux@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The legacy interrupts on the rk356x pcie controller are handled by a
-single muxed interrupt. Add irq domain support to the pcie-dw-rockchip
-driver to support the virtual domain.
+For cleaner code and improved readability we can reduce the number
+of local variables in block_write(). Use a single variable for block
+size, number of blocks and remaining size.
 
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/pci/controller/dwc/pcie-dw-rockchip.c | 92 ++++++++++++++++++-
- 1 file changed, 89 insertions(+), 3 deletions(-)
+ drivers/staging/r8188eu/core/rtw_fw.c | 43 +++++++++++----------------
+ 1 file changed, 18 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-dw-rockchip.c b/drivers/pci/controller/dwc/pcie-dw-rockchip.c
-index c9b341e55cbb..d14518039674 100644
---- a/drivers/pci/controller/dwc/pcie-dw-rockchip.c
-+++ b/drivers/pci/controller/dwc/pcie-dw-rockchip.c
-@@ -10,9 +10,12 @@
- 
- #include <linux/clk.h>
- #include <linux/gpio/consumer.h>
-+#include <linux/irqchip/chained_irq.h>
-+#include <linux/irqdomain.h>
- #include <linux/mfd/syscon.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
-+#include <linux/of_irq.h>
- #include <linux/phy/phy.h>
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
-@@ -36,10 +39,12 @@
- #define PCIE_LINKUP			(PCIE_SMLH_LINKUP | PCIE_RDLH_LINKUP)
- #define PCIE_L0S_ENTRY			0x11
- #define PCIE_CLIENT_GENERAL_CONTROL	0x0
-+#define PCIE_CLIENT_INTR_MASK_LEGACY	0x1c
- #define PCIE_CLIENT_GENERAL_DEBUG	0x104
--#define PCIE_CLIENT_HOT_RESET_CTRL      0x180
-+#define PCIE_CLIENT_HOT_RESET_CTRL	0x180
- #define PCIE_CLIENT_LTSSM_STATUS	0x300
--#define PCIE_LTSSM_ENABLE_ENHANCE       BIT(4)
-+#define PCIE_LEGACY_INT_ENABLE		GENMASK(7, 0)
-+#define PCIE_LTSSM_ENABLE_ENHANCE	BIT(4)
- #define PCIE_LTSSM_STATUS_MASK		GENMASK(5, 0)
- 
- struct rockchip_pcie {
-@@ -51,6 +56,7 @@ struct rockchip_pcie {
- 	struct reset_control		*rst;
- 	struct gpio_desc		*rst_gpio;
- 	struct regulator                *vpcie3v3;
-+	struct irq_domain		*irq_domain;
- };
- 
- static int rockchip_pcie_readl_apb(struct rockchip_pcie *rockchip,
-@@ -65,6 +71,68 @@ static void rockchip_pcie_writel_apb(struct rockchip_pcie *rockchip,
- 	writel_relaxed(val, rockchip->apb_base + reg);
- }
- 
-+static void rockchip_pcie_legacy_int_handler(struct irq_desc *desc)
-+{
-+	struct irq_chip *chip = irq_desc_get_chip(desc);
-+	struct rockchip_pcie *rockchip = irq_desc_get_handler_data(desc);
-+	struct device *dev = rockchip->pci.dev;
-+	u32 reg;
-+	u32 hwirq;
-+	u32 virq;
-+
-+	chained_irq_enter(chip, desc);
-+
-+	reg = rockchip_pcie_readl_apb(rockchip, 0x8);
-+
-+	while (reg) {
-+		hwirq = ffs(reg) - 1;
-+		reg &= ~BIT(hwirq);
-+
-+		virq = irq_find_mapping(rockchip->irq_domain, hwirq);
-+		if (virq)
-+			generic_handle_irq(virq);
-+		else
-+			dev_err(dev, "unexpected IRQ, INT%d\n", hwirq);
-+	}
-+
-+	chained_irq_exit(chip, desc);
-+}
-+
-+static int rockchip_pcie_intx_map(struct irq_domain *domain, unsigned int irq,
-+				  irq_hw_number_t hwirq)
-+{
-+	irq_set_chip_and_handler(irq, &dummy_irq_chip, handle_simple_irq);
-+	irq_set_chip_data(irq, domain->host_data);
-+
-+	return 0;
-+}
-+
-+static const struct irq_domain_ops intx_domain_ops = {
-+	.map = rockchip_pcie_intx_map,
-+};
-+
-+static int rockchip_pcie_init_irq_domain(struct rockchip_pcie *rockchip)
-+{
-+	struct device *dev = rockchip->pci.dev;
-+	struct device_node *intc;
-+
-+	intc = of_get_child_by_name(dev->of_node, "legacy-interrupt-controller");
-+	if (!intc) {
-+		dev_err(dev, "missing child interrupt-controller node\n");
-+		return -EINVAL;
-+	}
-+
-+	rockchip->irq_domain = irq_domain_add_linear(intc, PCI_NUM_INTX,
-+						    &intx_domain_ops, rockchip);
-+	of_node_put(intc);
-+	if (!rockchip->irq_domain) {
-+		dev_err(dev, "failed to get a INTx IRQ domain\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- static void rockchip_pcie_enable_ltssm(struct rockchip_pcie *rockchip)
+diff --git a/drivers/staging/r8188eu/core/rtw_fw.c b/drivers/staging/r8188eu/core/rtw_fw.c
+index 3cea4e41ab13..b4ab050a6f23 100644
+--- a/drivers/staging/r8188eu/core/rtw_fw.c
++++ b/drivers/staging/r8188eu/core/rtw_fw.c
+@@ -74,49 +74,42 @@ static void fw_download_enable(struct adapter *padapter, bool enable)
+ static int block_write(struct adapter *padapter, u8 *buffer, u32 size)
  {
- 	rockchip_pcie_writel_apb(rockchip, PCIE_CLIENT_ENABLE_LTSSM,
-@@ -111,9 +179,27 @@ static int rockchip_pcie_host_init(struct pcie_port *pp)
- {
- 	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
- 	struct rockchip_pcie *rockchip = to_rockchip_pcie(pci);
--	u32 val = HIWORD_UPDATE_BIT(PCIE_LTSSM_ENABLE_ENHANCE);
-+	struct device *dev = rockchip->pci.dev;
-+	int irq, ret;
-+	u32 val;
-+
-+	irq = of_irq_get_byname(dev->of_node, "legacy");
-+	if (irq < 0)
-+		return irq;
-+
-+	irq_set_chained_handler_and_data(irq, rockchip_pcie_legacy_int_handler, rockchip);
-+
-+	ret = rockchip_pcie_init_irq_domain(rockchip);
-+	if (ret < 0)
-+		dev_err(dev, "failed to init irq domain\n");
-+
-+	/* enable legacy interrupts */
-+	val = HIWORD_UPDATE_BIT(PCIE_LEGACY_INT_ENABLE);
-+	val &= ~PCIE_LEGACY_INT_ENABLE;
-+	rockchip_pcie_writel_apb(rockchip, val, PCIE_CLIENT_INTR_MASK_LEGACY);
+ 	int ret = _SUCCESS;
+-	u32	blockSize_p1 = 4;	/*  (Default) Phase #1 : PCI muse use 4-byte write to download FW */
+-	u32	blockSize_p2 = 8;	/*  Phase #2 : Use 8-byte, if Phase#1 use big size to write FW. */
+-	u32	blockSize_p3 = 1;	/*  Phase #3 : Use 1-byte, the remnant of FW image. */
+-	u32	blockCount_p1 = 0, blockCount_p2 = 0, blockCount_p3 = 0;
+-	u32	remainSize_p1 = 0, remainSize_p2 = 0;
++	u32 blocks, block_size, remain;
+ 	u32	i = 0, offset = 0;
  
- 	/* LTSSM enable control mode */
-+	val = HIWORD_UPDATE_BIT(PCIE_LTSSM_ENABLE_ENHANCE);
- 	rockchip_pcie_writel_apb(rockchip, val, PCIE_CLIENT_HOT_RESET_CTRL);
+-	blockSize_p1 = MAX_REG_BLOCK_SIZE;
++	block_size = MAX_REG_BLOCK_SIZE;
  
- 	rockchip_pcie_writel_apb(rockchip, PCIE_CLIENT_RC_MODE,
+-	/* 3 Phase #1 */
+-	blockCount_p1 = size / blockSize_p1;
+-	remainSize_p1 = size % blockSize_p1;
++	blocks = size / block_size;
++	remain = size % block_size;
+ 
+-	for (i = 0; i < blockCount_p1; i++) {
+-		ret = rtw_writeN(padapter, (FW_8188E_START_ADDRESS + i * blockSize_p1), blockSize_p1, (buffer + i * blockSize_p1));
++	for (i = 0; i < blocks; i++) {
++		ret = rtw_writeN(padapter, (FW_8188E_START_ADDRESS + i * block_size), block_size, (buffer + i * block_size));
+ 		if (ret == _FAIL)
+ 			goto exit;
+ 	}
+ 
+-	/* 3 Phase #2 */
+-	if (remainSize_p1) {
+-		offset = blockCount_p1 * blockSize_p1;
++	if (remain) {
++		offset = blocks * block_size;
++		block_size = 8;
+ 
+-		blockCount_p2 = remainSize_p1 / blockSize_p2;
+-		remainSize_p2 = remainSize_p1 % blockSize_p2;
+-
+-		for (i = 0; i < blockCount_p2; i++) {
+-			ret = rtw_writeN(padapter, (FW_8188E_START_ADDRESS + offset + i * blockSize_p2), blockSize_p2, (buffer + offset + i * blockSize_p2));
++		blocks = remain / block_size;
++		remain = remain % block_size;
+ 
++		for (i = 0; i < blocks; i++) {
++			ret = rtw_writeN(padapter, (FW_8188E_START_ADDRESS + offset + i * block_size), block_size, (buffer + offset + i * block_size));
+ 			if (ret == _FAIL)
+ 				goto exit;
+ 		}
+ 	}
+ 
+-	/* 3 Phase #3 */
+-	if (remainSize_p2) {
+-		offset = (blockCount_p1 * blockSize_p1) + (blockCount_p2 * blockSize_p2);
++	if (remain) {
++		offset += blocks * block_size;
+ 
+-		blockCount_p3 = remainSize_p2 / blockSize_p3;
++		/* block size 1 */
++		blocks = remain;
+ 
+-		for (i = 0; i < blockCount_p3; i++) {
++		for (i = 0; i < blocks; i++) {
+ 			ret = rtw_write8(padapter, (FW_8188E_START_ADDRESS + offset + i), *(buffer + offset + i));
+-
+ 			if (ret == _FAIL)
+ 				goto exit;
+ 		}
 -- 
-2.25.1
+2.35.1
 
