@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A00FC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E09C3527B
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245485AbiDLIRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:17:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42832 "EHLO
+        id S1379444AbiDLIUb (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:20:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352344AbiDLH2d (ORCPT
+        with ESMTP id S1355863AbiDLH3b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:28:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 189674F452;
-        Tue, 12 Apr 2022 00:08:10 -0700 (PDT)
+        Tue, 12 Apr 2022 03:29:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76CC4FC4E;
+        Tue, 12 Apr 2022 00:08:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3740B81B50;
-        Tue, 12 Apr 2022 07:08:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CB5DC385A6;
-        Tue, 12 Apr 2022 07:08:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A88F616C5;
+        Tue, 12 Apr 2022 07:08:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DA69C385A1;
+        Tue, 12 Apr 2022 07:08:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747286;
-        bh=2QzFLpKuDfKD58gEd49LRz6JCO86eIm3Yu/3IGO+lDs=;
+        s=korg; t=1649747303;
+        bh=uvmvK5G4Vh3vydzA/XSSQgtsGxMG1xvRkHz1oUWROgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sYc3/AHNnYNW7dDTYK71cURAqdz+cAVDghi4qsac88+vjciEtTKLR8/qPesMyDEsn
-         yismtYqYsY742C2KD3TKK/E3IFspvozc5Y2AU3YO+8FdxO4EvmKbkuBFPZA9/z45T9
-         VFBD6HYG+ZIr8gTZm9yNdFv70PEnr2Wuj7FkbTQY=
+        b=1kf8i/TBlbV5LdNnS5aw6QXIdeXrZBoSzhiz8U6hp9wVVy8aMuxH2yYnrInxn5vW4
+         GBvji5V1SY7MOKT5T/cVp+a9wqqLl4gmO62ibe0d2CgA54WzFnF23arYXU5YlZpM75
+         EWkcw72dU+ebfaEE1qQ1PJyDxIrQ6jVSbA2UdgHg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ravi Bangoria <ravi.bangoria@amd.com>,
-        Jim Mattson <jmattson@google.com>,
-        Like Xu <likexu@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Philip Yang <Philip.Yang@amd.com>,
+        Ruili Ji <ruili.ji@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 009/343] KVM: x86/pmu: Fix and isolate TSX-specific performance event logic
-Date:   Tue, 12 Apr 2022 08:27:07 +0200
-Message-Id: <20220412062951.373345079@linuxfoundation.org>
+Subject: [PATCH 5.17 031/343] drm/amdkfd: Ensure mm remain valid in svm deferred_list work
+Date:   Tue, 12 Apr 2022 08:27:29 +0200
+Message-Id: <20220412062952.004344561@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,129 +52,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+From: Philip Yang <Philip.Yang@amd.com>
 
-[ Upstream commit e644896f5106aa3f6d7e8c7adf2e4dc0fce53555 ]
+[ Upstream commit 367c9b0f1b8750a704070e7ae85234d591290434 ]
 
-HSW_IN_TX* bits are used in generic code which are not supported on
-AMD. Worse, these bits overlap with AMD EventSelect[11:8] and hence
-using HSW_IN_TX* bits unconditionally in generic code is resulting in
-unintentional pmu behavior on AMD. For example, if EventSelect[11:8]
-is 0x2, pmc_reprogram_counter() wrongly assumes that
-HSW_IN_TX_CHECKPOINTED is set and thus forces sampling period to be 0.
+svm_deferred_list work should continue to handle deferred_range_list
+which maybe split to child range to avoid child range leak, and remove
+ranges mmu interval notifier to avoid mm mm_count leak. So taking mm
+reference when adding range to deferred list, to ensure mm is valid in
+the scheduled deferred_list_work, and drop the mm referrence after range
+is handled.
 
-Also per the SDM, both bits 32 and 33 "may only be set if the processor
-supports HLE or RTM" and for "IN_TXCP (bit 33): this bit may only be set
-for IA32_PERFEVTSEL2."
-
-Opportunistically eliminate code redundancy, because if the HSW_IN_TX*
-bit is set in pmc->eventsel, it is already set in attr.config.
-
-Reported-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Reported-by: Jim Mattson <jmattson@google.com>
-Fixes: 103af0a98788 ("perf, kvm: Support the in_tx/in_tx_cp modifiers in KVM arch perfmon emulation v5")
-Co-developed-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
-Signed-off-by: Like Xu <likexu@tencent.com>
-Message-Id: <20220309084257.88931-1-likexu@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reported-by: Ruili Ji <ruili.ji@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/pmu.c           | 15 +++++----------
- arch/x86/kvm/vmx/pmu_intel.c | 13 ++++++++++---
- 2 files changed, 15 insertions(+), 13 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_svm.c | 62 ++++++++++++++++------------
+ 1 file changed, 36 insertions(+), 26 deletions(-)
 
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 902b6d700215..eca39f56c231 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -96,8 +96,7 @@ static void kvm_perf_overflow(struct perf_event *perf_event,
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+index f2805ba74c80..225affcddbc1 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+@@ -1985,10 +1985,9 @@ svm_range_update_notifier_and_interval_tree(struct mm_struct *mm,
+ }
  
- static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
- 				  u64 config, bool exclude_user,
--				  bool exclude_kernel, bool intr,
--				  bool in_tx, bool in_tx_cp)
-+				  bool exclude_kernel, bool intr)
+ static void
+-svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange)
++svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange,
++			 struct mm_struct *mm)
  {
- 	struct perf_event *event;
- 	struct perf_event_attr attr = {
-@@ -116,16 +115,14 @@ static void pmc_reprogram_counter(struct kvm_pmc *pmc, u32 type,
+-	struct mm_struct *mm = prange->work_item.mm;
+-
+ 	switch (prange->work_item.op) {
+ 	case SVM_OP_NULL:
+ 		pr_debug("NULL OP 0x%p prange 0x%p [0x%lx 0x%lx]\n",
+@@ -2071,34 +2070,41 @@ static void svm_range_deferred_list_work(struct work_struct *work)
+ 	pr_debug("enter svms 0x%p\n", svms);
  
- 	attr.sample_period = get_sample_period(pmc, pmc->counter);
+ 	p = container_of(svms, struct kfd_process, svms);
+-	/* Avoid mm is gone when inserting mmu notifier */
+-	mm = get_task_mm(p->lead_thread);
+-	if (!mm) {
+-		pr_debug("svms 0x%p process mm gone\n", svms);
+-		return;
+-	}
+-retry:
+-	mmap_write_lock(mm);
+-
+-	/* Checking for the need to drain retry faults must be inside
+-	 * mmap write lock to serialize with munmap notifiers.
+-	 */
+-	if (unlikely(atomic_read(&svms->drain_pagefaults))) {
+-		mmap_write_unlock(mm);
+-		svm_range_drain_retry_fault(svms);
+-		goto retry;
+-	}
  
--	if (in_tx)
--		attr.config |= HSW_IN_TX;
--	if (in_tx_cp) {
-+	if ((attr.config & HSW_IN_TX_CHECKPOINTED) &&
-+	    guest_cpuid_is_intel(pmc->vcpu)) {
- 		/*
- 		 * HSW_IN_TX_CHECKPOINTED is not supported with nonzero
- 		 * period. Just clear the sample period so at least
- 		 * allocating the counter doesn't fail.
- 		 */
- 		attr.sample_period = 0;
--		attr.config |= HSW_IN_TX_CHECKPOINTED;
+ 	spin_lock(&svms->deferred_list_lock);
+ 	while (!list_empty(&svms->deferred_range_list)) {
+ 		prange = list_first_entry(&svms->deferred_range_list,
+ 					  struct svm_range, deferred_list);
+-		list_del_init(&prange->deferred_list);
+ 		spin_unlock(&svms->deferred_list_lock);
+ 
+ 		pr_debug("prange 0x%p [0x%lx 0x%lx] op %d\n", prange,
+ 			 prange->start, prange->last, prange->work_item.op);
+ 
++		mm = prange->work_item.mm;
++retry:
++		mmap_write_lock(mm);
++
++		/* Checking for the need to drain retry faults must be inside
++		 * mmap write lock to serialize with munmap notifiers.
++		 */
++		if (unlikely(atomic_read(&svms->drain_pagefaults))) {
++			mmap_write_unlock(mm);
++			svm_range_drain_retry_fault(svms);
++			goto retry;
++		}
++
++		/* Remove from deferred_list must be inside mmap write lock, for
++		 * two race cases:
++		 * 1. unmap_from_cpu may change work_item.op and add the range
++		 *    to deferred_list again, cause use after free bug.
++		 * 2. svm_range_list_lock_and_flush_work may hold mmap write
++		 *    lock and continue because deferred_list is empty, but
++		 *    deferred_list work is actually waiting for mmap lock.
++		 */
++		spin_lock(&svms->deferred_list_lock);
++		list_del_init(&prange->deferred_list);
++		spin_unlock(&svms->deferred_list_lock);
++
+ 		mutex_lock(&svms->lock);
+ 		mutex_lock(&prange->migrate_mutex);
+ 		while (!list_empty(&prange->child_list)) {
+@@ -2109,19 +2115,20 @@ static void svm_range_deferred_list_work(struct work_struct *work)
+ 			pr_debug("child prange 0x%p op %d\n", pchild,
+ 				 pchild->work_item.op);
+ 			list_del_init(&pchild->child_list);
+-			svm_range_handle_list_op(svms, pchild);
++			svm_range_handle_list_op(svms, pchild, mm);
+ 		}
+ 		mutex_unlock(&prange->migrate_mutex);
+ 
+-		svm_range_handle_list_op(svms, prange);
++		svm_range_handle_list_op(svms, prange, mm);
+ 		mutex_unlock(&svms->lock);
++		mmap_write_unlock(mm);
++
++		/* Pairs with mmget in svm_range_add_list_work */
++		mmput(mm);
+ 
+ 		spin_lock(&svms->deferred_list_lock);
  	}
- 
- 	event = perf_event_create_kernel_counter(&attr, -1, current,
-@@ -233,9 +230,7 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
- 	pmc_reprogram_counter(pmc, type, config,
- 			      !(eventsel & ARCH_PERFMON_EVENTSEL_USR),
- 			      !(eventsel & ARCH_PERFMON_EVENTSEL_OS),
--			      eventsel & ARCH_PERFMON_EVENTSEL_INT,
--			      (eventsel & HSW_IN_TX),
--			      (eventsel & HSW_IN_TX_CHECKPOINTED));
-+			      eventsel & ARCH_PERFMON_EVENTSEL_INT);
+ 	spin_unlock(&svms->deferred_list_lock);
+-
+-	mmap_write_unlock(mm);
+-	mmput(mm);
+ 	pr_debug("exit svms 0x%p\n", svms);
  }
- EXPORT_SYMBOL_GPL(reprogram_gp_counter);
  
-@@ -271,7 +266,7 @@ void reprogram_fixed_counter(struct kvm_pmc *pmc, u8 ctrl, int idx)
- 			      kvm_x86_ops.pmu_ops->pmc_perf_hw_id(pmc),
- 			      !(en_field & 0x2), /* exclude user */
- 			      !(en_field & 0x1), /* exclude kernel */
--			      pmi, false, false);
-+			      pmi);
- }
- EXPORT_SYMBOL_GPL(reprogram_fixed_counter);
- 
-diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
-index 8ba12294a7c5..5fa3870b8988 100644
---- a/arch/x86/kvm/vmx/pmu_intel.c
-+++ b/arch/x86/kvm/vmx/pmu_intel.c
-@@ -389,6 +389,7 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	struct kvm_pmc *pmc;
- 	u32 msr = msr_info->index;
- 	u64 data = msr_info->data;
-+	u64 reserved_bits;
- 
- 	switch (msr) {
- 	case MSR_CORE_PERF_FIXED_CTR_CTRL:
-@@ -443,7 +444,11 @@ static int intel_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		} else if ((pmc = get_gp_pmc(pmu, msr, MSR_P6_EVNTSEL0))) {
- 			if (data == pmc->eventsel)
- 				return 0;
--			if (!(data & pmu->reserved_bits)) {
-+			reserved_bits = pmu->reserved_bits;
-+			if ((pmc->idx == 2) &&
-+			    (pmu->raw_event_mask & HSW_IN_TX_CHECKPOINTED))
-+				reserved_bits ^= HSW_IN_TX_CHECKPOINTED;
-+			if (!(data & reserved_bits)) {
- 				reprogram_gp_counter(pmc, data);
- 				return 0;
- 			}
-@@ -534,8 +539,10 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
- 	entry = kvm_find_cpuid_entry(vcpu, 7, 0);
- 	if (entry &&
- 	    (boot_cpu_has(X86_FEATURE_HLE) || boot_cpu_has(X86_FEATURE_RTM)) &&
--	    (entry->ebx & (X86_FEATURE_HLE|X86_FEATURE_RTM)))
--		pmu->reserved_bits ^= HSW_IN_TX|HSW_IN_TX_CHECKPOINTED;
-+	    (entry->ebx & (X86_FEATURE_HLE|X86_FEATURE_RTM))) {
-+		pmu->reserved_bits ^= HSW_IN_TX;
-+		pmu->raw_event_mask |= (HSW_IN_TX|HSW_IN_TX_CHECKPOINTED);
-+	}
- 
- 	bitmap_set(pmu->all_valid_pmc_idx,
- 		0, pmu->nr_arch_gp_counters);
+@@ -2139,6 +2146,9 @@ svm_range_add_list_work(struct svm_range_list *svms, struct svm_range *prange,
+ 			prange->work_item.op = op;
+ 	} else {
+ 		prange->work_item.op = op;
++
++		/* Pairs with mmput in deferred_list_work */
++		mmget(mm);
+ 		prange->work_item.mm = mm;
+ 		list_add_tail(&prange->deferred_list,
+ 			      &prange->svms->deferred_range_list);
 -- 
 2.35.1
 
