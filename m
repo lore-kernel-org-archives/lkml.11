@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1379C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA1CC35280
 	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:40:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384196AbiDLIje (ORCPT
+        id S1384241AbiDLIjq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48318 "EHLO
+        Tue, 12 Apr 2022 04:39:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357165AbiDLHju (ORCPT
+        with ESMTP id S1357177AbiDLHjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:39:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BEF13E17;
-        Tue, 12 Apr 2022 00:13:18 -0700 (PDT)
+        Tue, 12 Apr 2022 03:39:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC9113EAD;
+        Tue, 12 Apr 2022 00:13:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 953B5B81B40;
-        Tue, 12 Apr 2022 07:13:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD1C8C385A5;
-        Tue, 12 Apr 2022 07:13:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50ADAB81A8F;
+        Tue, 12 Apr 2022 07:13:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B25A8C385A5;
+        Tue, 12 Apr 2022 07:13:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747595;
-        bh=RVaYlPGXRy05pVmg1yjhV4/vNvos4ZHe2Jm0XS9O1A4=;
+        s=korg; t=1649747606;
+        bh=oaKURCUL+ymgN1tWdKGVd0Jf/51rzZ/0MT5vgz0oFlM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sV7IiFK0/hjtka2jlJmuMMbPMrgWzUlRfMzyJVGbYCC2m8IR0XxriJShTj2FMXNL+
-         qKVdiNBIUVP6wcKI+Oyg1q54lPLqauwpDGDGhrQbsEwmXY/GZf0lPByq+HBF4IF1Gt
-         k94MvXD7XgI0BNhxpueRCYLJQh5W7QDGfDqcC7tI=
+        b=m87WWX7Z/hgrT2CBQlvOoPXOu77ycf16qEDIsHrt2uaU/5XS3tCY8Vo09y1BsXeO9
+         3LXJIJyQ96kGpOiK1xnxHW1Mkn7qyP5vppi2Crbqqm8JrpFrMRUL9A+0hAAlJt5zDn
+         R578ZonVOVwBg63XT4HFyFHW6e6L16BqwjJqCK0c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Michael T. Kloos" <michael@michaelkloos.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
+        stable@vger.kernel.org, Jorge Lopez <jorge.lopez2@hp.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 135/343] riscv: Fixed misaligned memory access. Fixed pointer comparison.
-Date:   Tue, 12 Apr 2022 08:29:13 +0200
-Message-Id: <20220412062955.285001325@linuxfoundation.org>
+Subject: [PATCH 5.17 139/343] platform/x86: hp-wmi: Fix SW_TABLET_MODE detection method
+Date:   Tue, 12 Apr 2022 08:29:17 +0200
+Message-Id: <20220412062955.398785893@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -51,419 +50,195 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael T. Kloos <michael@michaelkloos.com>
+From: Jorge Lopez <jorge.lopez2@hp.com>
 
-[ Upstream commit 9d1f0ec9f71780e69ceb9d91697600c747d6e02e ]
+[ Upstream commit 520ee4ea1cc60251a6e3c911cf0336278aa52634 ]
 
-Rewrote the RISC-V memmove() assembly implementation.  The
-previous implementation did not check memory alignment and it
-compared 2 pointers with a signed comparison.  The misaligned
-memory access would cause the kernel to crash on systems that
-did not emulate it in firmware and did not support it in hardware.
-Firmware emulation is slow and may not exist.  The RISC-V spec
-does not guarantee that support for misaligned memory accesses
-will exist.  It should not be depended on.
+The purpose of this patch is to introduce a fix and removal of the
+current hack when determining tablet mode status.
 
-This patch now checks for XLEN granularity of co-alignment between
-the pointers.  Failing that, copying is done by loading from the 2
-contiguous and naturally aligned XLEN memory locations containing
-the overlapping XLEN sized data to be copied.  The data is shifted
-into the correct place and binary or'ed together on each
-iteration.  The result is then stored into the corresponding
-naturally aligned XLEN sized location in the destination.  For
-unaligned data at the terminations of the regions to be copied
-or for copies less than (2 * XLEN) in size, byte copy is used.
+Determining the tablet mode status requires reading Byte 0 bit 2 as
+reported by HPWMI_HARDWARE_QUERY.  The investigation identified the
+failure was rooted in two areas: HPWMI_HARDWARE_QUERY failure (0x05)
+and reading Byte 0, bit 2 only to determine the table mode status.
+HPWMI_HARDWARE_QUERY WMI failure also rendered the dock state value
+invalid.
 
-This patch also now uses unsigned comparison for the pointers and
-migrates to the newer assembler annotations from the now deprecated
-ones.
+The latest changes use SMBIOS Type 3 (chassis type) and WMI Command
+0x40 (device_mode_status) information to determine if the device is
+in tablet mode or not.
 
-Signed-off-by: Michael T. Kloos <michael@michaelkloos.com>
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+hp_wmi_hw_state function was split into two functions;
+hp_wmi_get_dock_state and hp_wmi_get_tablet_mode.  The new functions
+separate how dock_state and tablet_mode is handled in a cleaner
+manner.
+
+All changes were validated on a HP ZBook Workstation notebook,
+HP EliteBook x360, and HP EliteBook 850 G8.
+
+Signed-off-by: Jorge Lopez <jorge.lopez2@hp.com>
+Link: https://lore.kernel.org/r/20220310210853.28367-3-jorge.lopez2@hp.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/lib/memmove.S | 368 +++++++++++++++++++++++++++++++++------
- 1 file changed, 310 insertions(+), 58 deletions(-)
+ drivers/platform/x86/hp-wmi.c | 71 +++++++++++++++++++++++++----------
+ 1 file changed, 52 insertions(+), 19 deletions(-)
 
-diff --git a/arch/riscv/lib/memmove.S b/arch/riscv/lib/memmove.S
-index 07d1d2152ba5..e0609e1f0864 100644
---- a/arch/riscv/lib/memmove.S
-+++ b/arch/riscv/lib/memmove.S
-@@ -1,64 +1,316 @@
--/* SPDX-License-Identifier: GPL-2.0 */
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2022 Michael T. Kloos <michael@michaelkloos.com>
-+ */
+diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
+index 48a46466f086..f822ef6eb93c 100644
+--- a/drivers/platform/x86/hp-wmi.c
++++ b/drivers/platform/x86/hp-wmi.c
+@@ -35,10 +35,6 @@ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("wmi:95F24279-4D7B-4334-9387-ACCDC67EF61C");
+ MODULE_ALIAS("wmi:5FB7F034-2C63-45e9-BE91-3D44E2C707E4");
  
- #include <linux/linkage.h>
- #include <asm/asm.h>
+-static int enable_tablet_mode_sw = -1;
+-module_param(enable_tablet_mode_sw, int, 0444);
+-MODULE_PARM_DESC(enable_tablet_mode_sw, "Enable SW_TABLET_MODE reporting (-1=auto, 0=no, 1=yes)");
+-
+ #define HPWMI_EVENT_GUID "95F24279-4D7B-4334-9387-ACCDC67EF61C"
+ #define HPWMI_BIOS_GUID "5FB7F034-2C63-45e9-BE91-3D44E2C707E4"
+ #define HP_OMEN_EC_THERMAL_PROFILE_OFFSET 0x95
+@@ -107,6 +103,7 @@ enum hp_wmi_commandtype {
+ 	HPWMI_FEATURE2_QUERY		= 0x0d,
+ 	HPWMI_WIRELESS2_QUERY		= 0x1b,
+ 	HPWMI_POSTCODEERROR_QUERY	= 0x2a,
++	HPWMI_SYSTEM_DEVICE_MODE	= 0x40,
+ 	HPWMI_THERMAL_PROFILE_QUERY	= 0x4c,
+ };
  
--ENTRY(__memmove)
--WEAK(memmove)
--        move    t0, a0
--        move    t1, a1
--
--        beq     a0, a1, exit_memcpy
--        beqz    a2, exit_memcpy
--        srli    t2, a2, 0x2
--
--        slt     t3, a0, a1
--        beqz    t3, do_reverse
--
--        andi    a2, a2, 0x3
--        li      t4, 1
--        beqz    t2, byte_copy
--
--word_copy:
--        lw      t3, 0(a1)
--        addi    t2, t2, -1
--        addi    a1, a1, 4
--        sw      t3, 0(a0)
--        addi    a0, a0, 4
--        bnez    t2, word_copy
--        beqz    a2, exit_memcpy
--        j       byte_copy
--
--do_reverse:
--        add     a0, a0, a2
--        add     a1, a1, a2
--        andi    a2, a2, 0x3
--        li      t4, -1
--        beqz    t2, reverse_byte_copy
--
--reverse_word_copy:
--        addi    a1, a1, -4
--        addi    t2, t2, -1
--        lw      t3, 0(a1)
--        addi    a0, a0, -4
--        sw      t3, 0(a0)
--        bnez    t2, reverse_word_copy
--        beqz    a2, exit_memcpy
--
--reverse_byte_copy:
--        addi    a0, a0, -1
--        addi    a1, a1, -1
-+SYM_FUNC_START(__memmove)
-+SYM_FUNC_START_WEAK(memmove)
-+	/*
-+	 * Returns
-+	 *   a0 - dest
-+	 *
-+	 * Parameters
-+	 *   a0 - Inclusive first byte of dest
-+	 *   a1 - Inclusive first byte of src
-+	 *   a2 - Length of copy n
-+	 *
-+	 * Because the return matches the parameter register a0,
-+	 * we will not clobber or modify that register.
-+	 *
-+	 * Note: This currently only works on little-endian.
-+	 * To port to big-endian, reverse the direction of shifts
-+	 * in the 2 misaligned fixup copy loops.
-+	 */
+@@ -217,6 +214,19 @@ struct rfkill2_device {
+ static int rfkill2_count;
+ static struct rfkill2_device rfkill2[HPWMI_MAX_RFKILL2_DEVICES];
  
-+	/* Return if nothing to do */
-+	beq a0, a1, return_from_memmove
-+	beqz a2, return_from_memmove
-+
-+	/*
-+	 * Register Uses
-+	 *      Forward Copy: a1 - Index counter of src
-+	 *      Reverse Copy: a4 - Index counter of src
-+	 *      Forward Copy: t3 - Index counter of dest
-+	 *      Reverse Copy: t4 - Index counter of dest
-+	 *   Both Copy Modes: t5 - Inclusive first multibyte/aligned of dest
-+	 *   Both Copy Modes: t6 - Non-Inclusive last multibyte/aligned of dest
-+	 *   Both Copy Modes: t0 - Link / Temporary for load-store
-+	 *   Both Copy Modes: t1 - Temporary for load-store
-+	 *   Both Copy Modes: t2 - Temporary for load-store
-+	 *   Both Copy Modes: a5 - dest to src alignment offset
-+	 *   Both Copy Modes: a6 - Shift ammount
-+	 *   Both Copy Modes: a7 - Inverse Shift ammount
-+	 *   Both Copy Modes: a2 - Alternate breakpoint for unrolled loops
-+	 */
-+
-+	/*
-+	 * Solve for some register values now.
-+	 * Byte copy does not need t5 or t6.
-+	 */
-+	mv   t3, a0
-+	add  t4, a0, a2
-+	add  a4, a1, a2
-+
-+	/*
-+	 * Byte copy if copying less than (2 * SZREG) bytes. This can
-+	 * cause problems with the bulk copy implementation and is
-+	 * small enough not to bother.
-+	 */
-+	andi t0, a2, -(2 * SZREG)
-+	beqz t0, byte_copy
-+
-+	/*
-+	 * Now solve for t5 and t6.
-+	 */
-+	andi t5, t3, -SZREG
-+	andi t6, t4, -SZREG
-+	/*
-+	 * If dest(Register t3) rounded down to the nearest naturally
-+	 * aligned SZREG address, does not equal dest, then add SZREG
-+	 * to find the low-bound of SZREG alignment in the dest memory
-+	 * region.  Note that this could overshoot the dest memory
-+	 * region if n is less than SZREG.  This is one reason why
-+	 * we always byte copy if n is less than SZREG.
-+	 * Otherwise, dest is already naturally aligned to SZREG.
-+	 */
-+	beq  t5, t3, 1f
-+		addi t5, t5, SZREG
-+	1:
-+
-+	/*
-+	 * If the dest and src are co-aligned to SZREG, then there is
-+	 * no need for the full rigmarole of a full misaligned fixup copy.
-+	 * Instead, do a simpler co-aligned copy.
-+	 */
-+	xor  t0, a0, a1
-+	andi t1, t0, (SZREG - 1)
-+	beqz t1, coaligned_copy
-+	/* Fall through to misaligned fixup copy */
-+
-+misaligned_fixup_copy:
-+	bltu a1, a0, misaligned_fixup_copy_reverse
-+
-+misaligned_fixup_copy_forward:
-+	jal  t0, byte_copy_until_aligned_forward
-+
-+	andi a5, a1, (SZREG - 1) /* Find the alignment offset of src (a1) */
-+	slli a6, a5, 3 /* Multiply by 8 to convert that to bits to shift */
-+	sub  a5, a1, t3 /* Find the difference between src and dest */
-+	andi a1, a1, -SZREG /* Align the src pointer */
-+	addi a2, t6, SZREG /* The other breakpoint for the unrolled loop*/
-+
-+	/*
-+	 * Compute The Inverse Shift
-+	 * a7 = XLEN - a6 = XLEN + -a6
-+	 * 2s complement negation to find the negative: -a6 = ~a6 + 1
-+	 * Add that to XLEN.  XLEN = SZREG * 8.
-+	 */
-+	not  a7, a6
-+	addi a7, a7, (SZREG * 8 + 1)
-+
-+	/*
-+	 * Fix Misalignment Copy Loop - Forward
-+	 * load_val0 = load_ptr[0];
-+	 * do {
-+	 * 	load_val1 = load_ptr[1];
-+	 * 	store_ptr += 2;
-+	 * 	store_ptr[0 - 2] = (load_val0 >> {a6}) | (load_val1 << {a7});
-+	 *
-+	 * 	if (store_ptr == {a2})
-+	 * 		break;
-+	 *
-+	 * 	load_val0 = load_ptr[2];
-+	 * 	load_ptr += 2;
-+	 * 	store_ptr[1 - 2] = (load_val1 >> {a6}) | (load_val0 << {a7});
-+	 *
-+	 * } while (store_ptr != store_ptr_end);
-+	 * store_ptr = store_ptr_end;
-+	 */
-+
-+	REG_L t0, (0 * SZREG)(a1)
-+	1:
-+	REG_L t1, (1 * SZREG)(a1)
-+	addi  t3, t3, (2 * SZREG)
-+	srl   t0, t0, a6
-+	sll   t2, t1, a7
-+	or    t2, t0, t2
-+	REG_S t2, ((0 * SZREG) - (2 * SZREG))(t3)
-+
-+	beq   t3, a2, 2f
-+
-+	REG_L t0, (2 * SZREG)(a1)
-+	addi  a1, a1, (2 * SZREG)
-+	srl   t1, t1, a6
-+	sll   t2, t0, a7
-+	or    t2, t1, t2
-+	REG_S t2, ((1 * SZREG) - (2 * SZREG))(t3)
-+
-+	bne   t3, t6, 1b
-+	2:
-+	mv    t3, t6 /* Fix the dest pointer in case the loop was broken */
-+
-+	add  a1, t3, a5 /* Restore the src pointer */
-+	j byte_copy_forward /* Copy any remaining bytes */
-+
-+misaligned_fixup_copy_reverse:
-+	jal  t0, byte_copy_until_aligned_reverse
-+
-+	andi a5, a4, (SZREG - 1) /* Find the alignment offset of src (a4) */
-+	slli a6, a5, 3 /* Multiply by 8 to convert that to bits to shift */
-+	sub  a5, a4, t4 /* Find the difference between src and dest */
-+	andi a4, a4, -SZREG /* Align the src pointer */
-+	addi a2, t5, -SZREG /* The other breakpoint for the unrolled loop*/
-+
-+	/*
-+	 * Compute The Inverse Shift
-+	 * a7 = XLEN - a6 = XLEN + -a6
-+	 * 2s complement negation to find the negative: -a6 = ~a6 + 1
-+	 * Add that to XLEN.  XLEN = SZREG * 8.
-+	 */
-+	not  a7, a6
-+	addi a7, a7, (SZREG * 8 + 1)
-+
-+	/*
-+	 * Fix Misalignment Copy Loop - Reverse
-+	 * load_val1 = load_ptr[0];
-+	 * do {
-+	 * 	load_val0 = load_ptr[-1];
-+	 * 	store_ptr -= 2;
-+	 * 	store_ptr[1] = (load_val0 >> {a6}) | (load_val1 << {a7});
-+	 *
-+	 * 	if (store_ptr == {a2})
-+	 * 		break;
-+	 *
-+	 * 	load_val1 = load_ptr[-2];
-+	 * 	load_ptr -= 2;
-+	 * 	store_ptr[0] = (load_val1 >> {a6}) | (load_val0 << {a7});
-+	 *
-+	 * } while (store_ptr != store_ptr_end);
-+	 * store_ptr = store_ptr_end;
-+	 */
-+
-+	REG_L t1, ( 0 * SZREG)(a4)
-+	1:
-+	REG_L t0, (-1 * SZREG)(a4)
-+	addi  t4, t4, (-2 * SZREG)
-+	sll   t1, t1, a7
-+	srl   t2, t0, a6
-+	or    t2, t1, t2
-+	REG_S t2, ( 1 * SZREG)(t4)
-+
-+	beq   t4, a2, 2f
-+
-+	REG_L t1, (-2 * SZREG)(a4)
-+	addi  a4, a4, (-2 * SZREG)
-+	sll   t0, t0, a7
-+	srl   t2, t1, a6
-+	or    t2, t0, t2
-+	REG_S t2, ( 0 * SZREG)(t4)
-+
-+	bne   t4, t5, 1b
-+	2:
-+	mv    t4, t5 /* Fix the dest pointer in case the loop was broken */
-+
-+	add  a4, t4, a5 /* Restore the src pointer */
-+	j byte_copy_reverse /* Copy any remaining bytes */
-+
 +/*
-+ * Simple copy loops for SZREG co-aligned memory locations.
-+ * These also make calls to do byte copies for any unaligned
-+ * data at their terminations.
++ * Chassis Types values were obtained from SMBIOS reference
++ * specification version 3.00. A complete list of system enclosures
++ * and chassis types is available on Table 17.
 + */
-+coaligned_copy:
-+	bltu a1, a0, coaligned_copy_reverse
++static const char * const tablet_chassis_types[] = {
++	"30", /* Tablet*/
++	"31", /* Convertible */
++	"32"  /* Detachable */
++};
 +
-+coaligned_copy_forward:
-+	jal t0, byte_copy_until_aligned_forward
++#define DEVICE_MODE_TABLET	0x06
 +
-+	1:
-+	REG_L t1, ( 0 * SZREG)(a1)
-+	addi  a1, a1, SZREG
-+	addi  t3, t3, SZREG
-+	REG_S t1, (-1 * SZREG)(t3)
-+	bne   t3, t6, 1b
+ /* map output size to the corresponding WMI method id */
+ static inline int encode_outsize_for_pvsz(int outsize)
+ {
+@@ -345,14 +355,39 @@ static int hp_wmi_read_int(int query)
+ 	return val;
+ }
+ 
+-static int hp_wmi_hw_state(int mask)
++static int hp_wmi_get_dock_state(void)
+ {
+ 	int state = hp_wmi_read_int(HPWMI_HARDWARE_QUERY);
+ 
+ 	if (state < 0)
+ 		return state;
+ 
+-	return !!(state & mask);
++	return !!(state & HPWMI_DOCK_MASK);
++}
 +
-+	j byte_copy_forward /* Copy any remaining bytes */
++static int hp_wmi_get_tablet_mode(void)
++{
++	char system_device_mode[4] = { 0 };
++	const char *chassis_type;
++	bool tablet_found;
++	int ret;
 +
-+coaligned_copy_reverse:
-+	jal t0, byte_copy_until_aligned_reverse
++	chassis_type = dmi_get_system_info(DMI_CHASSIS_TYPE);
++	if (!chassis_type)
++		return -ENODEV;
 +
-+	1:
-+	REG_L t1, (-1 * SZREG)(a4)
-+	addi  a4, a4, -SZREG
-+	addi  t4, t4, -SZREG
-+	REG_S t1, ( 0 * SZREG)(t4)
-+	bne   t4, t5, 1b
++	tablet_found = match_string(tablet_chassis_types,
++				    ARRAY_SIZE(tablet_chassis_types),
++				    chassis_type) >= 0;
++	if (!tablet_found)
++		return -ENODEV;
 +
-+	j byte_copy_reverse /* Copy any remaining bytes */
++	ret = hp_wmi_perform_query(HPWMI_SYSTEM_DEVICE_MODE, HPWMI_READ,
++				   system_device_mode, 0, sizeof(system_device_mode));
++	if (ret < 0)
++		return ret;
 +
-+/*
-+ * These are basically sub-functions within the function.  They
-+ * are used to byte copy until the dest pointer is in alignment.
-+ * At which point, a bulk copy method can be used by the
-+ * calling code.  These work on the same registers as the bulk
-+ * copy loops.  Therefore, the register values can be picked
-+ * up from where they were left and we avoid code duplication
-+ * without any overhead except the call in and return jumps.
-+ */
-+byte_copy_until_aligned_forward:
-+	beq  t3, t5, 2f
-+	1:
-+	lb   t1,  0(a1)
-+	addi a1, a1, 1
-+	addi t3, t3, 1
-+	sb   t1, -1(t3)
-+	bne  t3, t5, 1b
-+	2:
-+	jalr zero, 0x0(t0) /* Return to multibyte copy loop */
-+
-+byte_copy_until_aligned_reverse:
-+	beq  t4, t6, 2f
-+	1:
-+	lb   t1, -1(a4)
-+	addi a4, a4, -1
-+	addi t4, t4, -1
-+	sb   t1,  0(t4)
-+	bne  t4, t6, 1b
-+	2:
-+	jalr zero, 0x0(t0) /* Return to multibyte copy loop */
-+
-+/*
-+ * Simple byte copy loops.
-+ * These will byte copy until they reach the end of data to copy.
-+ * At that point, they will call to return from memmove.
-+ */
- byte_copy:
--        lb      t3, 0(a1)
--        addi    a2, a2, -1
--        sb      t3, 0(a0)
--        add     a1, a1, t4
--        add     a0, a0, t4
--        bnez    a2, byte_copy
--
--exit_memcpy:
--        move a0, t0
--        move a1, t1
--        ret
--END(__memmove)
-+	bltu a1, a0, byte_copy_reverse
-+
-+byte_copy_forward:
-+	beq  t3, t4, 2f
-+	1:
-+	lb   t1,  0(a1)
-+	addi a1, a1, 1
-+	addi t3, t3, 1
-+	sb   t1, -1(t3)
-+	bne  t3, t4, 1b
-+	2:
-+	ret
-+
-+byte_copy_reverse:
-+	beq  t4, t3, 2f
-+	1:
-+	lb   t1, -1(a4)
-+	addi a4, a4, -1
-+	addi t4, t4, -1
-+	sb   t1,  0(t4)
-+	bne  t4, t3, 1b
-+	2:
-+
-+return_from_memmove:
-+	ret
-+
-+SYM_FUNC_END(memmove)
-+SYM_FUNC_END(__memmove)
++	return system_device_mode[0] == DEVICE_MODE_TABLET;
+ }
+ 
+ static int omen_thermal_profile_set(int mode)
+@@ -568,7 +603,7 @@ static ssize_t als_show(struct device *dev, struct device_attribute *attr,
+ static ssize_t dock_show(struct device *dev, struct device_attribute *attr,
+ 			 char *buf)
+ {
+-	int value = hp_wmi_hw_state(HPWMI_DOCK_MASK);
++	int value = hp_wmi_get_dock_state();
+ 	if (value < 0)
+ 		return value;
+ 	return sprintf(buf, "%d\n", value);
+@@ -577,7 +612,7 @@ static ssize_t dock_show(struct device *dev, struct device_attribute *attr,
+ static ssize_t tablet_show(struct device *dev, struct device_attribute *attr,
+ 			   char *buf)
+ {
+-	int value = hp_wmi_hw_state(HPWMI_TABLET_MASK);
++	int value = hp_wmi_get_tablet_mode();
+ 	if (value < 0)
+ 		return value;
+ 	return sprintf(buf, "%d\n", value);
+@@ -699,10 +734,10 @@ static void hp_wmi_notify(u32 value, void *context)
+ 	case HPWMI_DOCK_EVENT:
+ 		if (test_bit(SW_DOCK, hp_wmi_input_dev->swbit))
+ 			input_report_switch(hp_wmi_input_dev, SW_DOCK,
+-					    hp_wmi_hw_state(HPWMI_DOCK_MASK));
++					    hp_wmi_get_dock_state());
+ 		if (test_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit))
+ 			input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE,
+-					    hp_wmi_hw_state(HPWMI_TABLET_MASK));
++					    hp_wmi_get_tablet_mode());
+ 		input_sync(hp_wmi_input_dev);
+ 		break;
+ 	case HPWMI_PARK_HDD:
+@@ -780,19 +815,17 @@ static int __init hp_wmi_input_setup(void)
+ 	__set_bit(EV_SW, hp_wmi_input_dev->evbit);
+ 
+ 	/* Dock */
+-	val = hp_wmi_hw_state(HPWMI_DOCK_MASK);
++	val = hp_wmi_get_dock_state();
+ 	if (!(val < 0)) {
+ 		__set_bit(SW_DOCK, hp_wmi_input_dev->swbit);
+ 		input_report_switch(hp_wmi_input_dev, SW_DOCK, val);
+ 	}
+ 
+ 	/* Tablet mode */
+-	if (enable_tablet_mode_sw > 0) {
+-		val = hp_wmi_hw_state(HPWMI_TABLET_MASK);
+-		if (val >= 0) {
+-			__set_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit);
+-			input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE, val);
+-		}
++	val = hp_wmi_get_tablet_mode();
++	if (!(val < 0)) {
++		__set_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit);
++		input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE, val);
+ 	}
+ 
+ 	err = sparse_keymap_setup(hp_wmi_input_dev, hp_wmi_keymap, NULL);
+@@ -1227,10 +1260,10 @@ static int hp_wmi_resume_handler(struct device *device)
+ 	if (hp_wmi_input_dev) {
+ 		if (test_bit(SW_DOCK, hp_wmi_input_dev->swbit))
+ 			input_report_switch(hp_wmi_input_dev, SW_DOCK,
+-					    hp_wmi_hw_state(HPWMI_DOCK_MASK));
++					    hp_wmi_get_dock_state());
+ 		if (test_bit(SW_TABLET_MODE, hp_wmi_input_dev->swbit))
+ 			input_report_switch(hp_wmi_input_dev, SW_TABLET_MODE,
+-					    hp_wmi_hw_state(HPWMI_TABLET_MASK));
++					    hp_wmi_get_tablet_mode());
+ 		input_sync(hp_wmi_input_dev);
+ 	}
+ 
 -- 
 2.35.1
 
