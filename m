@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E535FC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7FFCC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:56:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347589AbiDLHwB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:52:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32804 "EHLO
+        id S244729AbiDLHwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 03:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353297AbiDLHZT (ORCPT
+        with ESMTP id S1353351AbiDLHZV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:25:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52404E3A1;
-        Tue, 12 Apr 2022 00:00:22 -0700 (PDT)
+        Tue, 12 Apr 2022 03:25:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A8743484;
+        Tue, 12 Apr 2022 00:00:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 470B5615A4;
-        Tue, 12 Apr 2022 07:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC71C385A1;
-        Tue, 12 Apr 2022 07:00:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2EB5B81B50;
+        Tue, 12 Apr 2022 07:00:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08BD3C385A6;
+        Tue, 12 Apr 2022 07:00:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746821;
-        bh=Rgi61zWahsZeOyCJSHtZu+TLZbL+bDSAlW85br4uN5Q=;
+        s=korg; t=1649746824;
+        bh=8zM8QI4pd7hbRwGTnpQmopHT4m0J7CoRJmXnqWJoGhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dg0hzlEneC9fU7kMQNCraJrbW1X3MRFqPO8Inf5aE7QABZnw11eeABXOUTvraR1UG
-         iDkeXkhBIh3yQDDnoYoYwCs7OBlAvDE+JJVoQJXsHhAfK1e9eLv1Tdad0xIsQ+HjwN
-         n62G8SJI/nW5M14CIQIzsA78GmkjUSZiU8o9+/2o=
+        b=IZy30D8hlx7gttbsTosl1Va3HAlj2hdTLZE7+NCCKg7WoBwP0rkI75NTLkdhzsNF9
+         sR7c7TKhdEk7Ev/crmBGv/gN6kktZHKo2UVHlFxYwD/taNjmmK/ywHonq7SZo8tFnP
+         nv+KuqHO4xCoPXa1yARoTyTh5MFJHvVGdhOPjhJo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org,
         Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 142/285] SUNRPC: Fix socket waits for write buffer space
-Date:   Tue, 12 Apr 2022 08:29:59 +0200
-Message-Id: <20220412062947.768562175@linuxfoundation.org>
+Subject: [PATCH 5.16 143/285] NFS: nfsiod should not block forever in mempool_alloc()
+Date:   Tue, 12 Apr 2022 08:30:00 +0200
+Message-Id: <20220412062947.796831775@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -52,124 +51,131 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 7496b59f588dd52886fdbac7633608097543a0a5 ]
+[ Upstream commit 515dcdcd48736576c6f5c197814da6f81c60a21e ]
 
-The socket layer requires that we use the socket lock to protect changes
-to the sock->sk_write_pending field and others.
+The concern is that since nfsiod is sometimes required to kick off a
+commit, it can get locked up waiting forever in mempool_alloc() instead
+of failing gracefully and leaving the commit until later.
 
-Reported-by: Chuck Lever <chuck.lever@oracle.com>
+Try to allocate from the slab first, with GFP_KERNEL | __GFP_NORETRY,
+then fall back to a non-blocking attempt to allocate from the memory
+pool.
+
 Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xprtsock.c | 54 +++++++++++++++++++++++++++++++------------
- 1 file changed, 39 insertions(+), 15 deletions(-)
+ fs/nfs/internal.h      |  7 +++++++
+ fs/nfs/pnfs_nfs.c      |  8 ++++++--
+ fs/nfs/write.c         | 24 +++++++++---------------
+ include/linux/nfs_fs.h |  2 +-
+ 4 files changed, 23 insertions(+), 18 deletions(-)
 
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 37d961c1a5c9..aaba1d8cf552 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -763,12 +763,12 @@ xs_stream_start_connect(struct sock_xprt *transport)
- /**
-  * xs_nospace - handle transmit was incomplete
-  * @req: pointer to RPC request
-+ * @transport: pointer to struct sock_xprt
-  *
-  */
--static int xs_nospace(struct rpc_rqst *req)
-+static int xs_nospace(struct rpc_rqst *req, struct sock_xprt *transport)
- {
--	struct rpc_xprt *xprt = req->rq_xprt;
--	struct sock_xprt *transport = container_of(xprt, struct sock_xprt, xprt);
-+	struct rpc_xprt *xprt = &transport->xprt;
- 	struct sock *sk = transport->inet;
- 	int ret = -EAGAIN;
- 
-@@ -779,25 +779,49 @@ static int xs_nospace(struct rpc_rqst *req)
- 
- 	/* Don't race with disconnect */
- 	if (xprt_connected(xprt)) {
-+		struct socket_wq *wq;
-+
-+		rcu_read_lock();
-+		wq = rcu_dereference(sk->sk_wq);
-+		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
-+		rcu_read_unlock();
-+
- 		/* wait for more buffer space */
-+		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
- 		sk->sk_write_pending++;
- 		xprt_wait_for_buffer_space(xprt);
- 	} else
- 		ret = -ENOTCONN;
- 
- 	spin_unlock(&xprt->transport_lock);
-+	return ret;
-+}
- 
--	/* Race breaker in case memory is freed before above code is called */
--	if (ret == -EAGAIN) {
--		struct socket_wq *wq;
-+static int xs_sock_nospace(struct rpc_rqst *req)
-+{
-+	struct sock_xprt *transport =
-+		container_of(req->rq_xprt, struct sock_xprt, xprt);
-+	struct sock *sk = transport->inet;
-+	int ret = -EAGAIN;
- 
--		rcu_read_lock();
--		wq = rcu_dereference(sk->sk_wq);
--		set_bit(SOCKWQ_ASYNC_NOSPACE, &wq->flags);
--		rcu_read_unlock();
-+	lock_sock(sk);
-+	if (!sock_writeable(sk))
-+		ret = xs_nospace(req, transport);
-+	release_sock(sk);
-+	return ret;
-+}
- 
--		sk->sk_write_space(sk);
--	}
-+static int xs_stream_nospace(struct rpc_rqst *req)
-+{
-+	struct sock_xprt *transport =
-+		container_of(req->rq_xprt, struct sock_xprt, xprt);
-+	struct sock *sk = transport->inet;
-+	int ret = -EAGAIN;
-+
-+	lock_sock(sk);
-+	if (!sk_stream_memory_free(sk))
-+		ret = xs_nospace(req, transport);
-+	release_sock(sk);
- 	return ret;
+diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
+index 12f6acb483bb..85957db80975 100644
+--- a/fs/nfs/internal.h
++++ b/fs/nfs/internal.h
+@@ -572,6 +572,13 @@ nfs_write_match_verf(const struct nfs_writeverf *verf,
+ 		!nfs_write_verifier_cmp(&req->wb_verf, &verf->verifier);
  }
  
-@@ -887,7 +911,7 @@ static int xs_local_send_request(struct rpc_rqst *req)
- 	case -ENOBUFS:
- 		break;
- 	case -EAGAIN:
--		status = xs_nospace(req);
-+		status = xs_stream_nospace(req);
- 		break;
- 	default:
- 		dprintk("RPC:       sendmsg returned unrecognized error %d\n",
-@@ -963,7 +987,7 @@ static int xs_udp_send_request(struct rpc_rqst *req)
- 		/* Should we call xs_close() here? */
- 		break;
- 	case -EAGAIN:
--		status = xs_nospace(req);
-+		status = xs_sock_nospace(req);
- 		break;
- 	case -ENETUNREACH:
- 	case -ENOBUFS:
-@@ -1083,7 +1107,7 @@ static int xs_tcp_send_request(struct rpc_rqst *req)
- 		/* Should we call xs_close() here? */
- 		break;
- 	case -EAGAIN:
--		status = xs_nospace(req);
-+		status = xs_stream_nospace(req);
- 		break;
- 	case -ECONNRESET:
- 	case -ECONNREFUSED:
++static inline gfp_t nfs_io_gfp_mask(void)
++{
++	if (current->flags & PF_WQ_WORKER)
++		return GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN;
++	return GFP_KERNEL;
++}
++
+ /* unlink.c */
+ extern struct rpc_task *
+ nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
+diff --git a/fs/nfs/pnfs_nfs.c b/fs/nfs/pnfs_nfs.c
+index 316f68f96e57..657c242a18ff 100644
+--- a/fs/nfs/pnfs_nfs.c
++++ b/fs/nfs/pnfs_nfs.c
+@@ -419,7 +419,7 @@ static struct nfs_commit_data *
+ pnfs_bucket_fetch_commitdata(struct pnfs_commit_bucket *bucket,
+ 			     struct nfs_commit_info *cinfo)
+ {
+-	struct nfs_commit_data *data = nfs_commitdata_alloc(false);
++	struct nfs_commit_data *data = nfs_commitdata_alloc();
+ 
+ 	if (!data)
+ 		return NULL;
+@@ -515,7 +515,11 @@ pnfs_generic_commit_pagelist(struct inode *inode, struct list_head *mds_pages,
+ 	unsigned int nreq = 0;
+ 
+ 	if (!list_empty(mds_pages)) {
+-		data = nfs_commitdata_alloc(true);
++		data = nfs_commitdata_alloc();
++		if (!data) {
++			nfs_retry_commit(mds_pages, NULL, cinfo, -1);
++			return -ENOMEM;
++		}
+ 		data->ds_commit_index = -1;
+ 		list_splice_init(mds_pages, &data->pages);
+ 		list_add_tail(&data->list, &list);
+diff --git a/fs/nfs/write.c b/fs/nfs/write.c
+index e86aff429993..8eb7466182ac 100644
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -70,27 +70,17 @@ static mempool_t *nfs_wdata_mempool;
+ static struct kmem_cache *nfs_cdata_cachep;
+ static mempool_t *nfs_commit_mempool;
+ 
+-struct nfs_commit_data *nfs_commitdata_alloc(bool never_fail)
++struct nfs_commit_data *nfs_commitdata_alloc(void)
+ {
+ 	struct nfs_commit_data *p;
+ 
+-	if (never_fail)
+-		p = mempool_alloc(nfs_commit_mempool, GFP_NOIO);
+-	else {
+-		/* It is OK to do some reclaim, not no safe to wait
+-		 * for anything to be returned to the pool.
+-		 * mempool_alloc() cannot handle that particular combination,
+-		 * so we need two separate attempts.
+-		 */
++	p = kmem_cache_zalloc(nfs_cdata_cachep, nfs_io_gfp_mask());
++	if (!p) {
+ 		p = mempool_alloc(nfs_commit_mempool, GFP_NOWAIT);
+-		if (!p)
+-			p = kmem_cache_alloc(nfs_cdata_cachep, GFP_NOIO |
+-					     __GFP_NOWARN | __GFP_NORETRY);
+ 		if (!p)
+ 			return NULL;
++		memset(p, 0, sizeof(*p));
+ 	}
+-
+-	memset(p, 0, sizeof(*p));
+ 	INIT_LIST_HEAD(&p->pages);
+ 	return p;
+ }
+@@ -1825,7 +1815,11 @@ nfs_commit_list(struct inode *inode, struct list_head *head, int how,
+ 	if (list_empty(head))
+ 		return 0;
+ 
+-	data = nfs_commitdata_alloc(true);
++	data = nfs_commitdata_alloc();
++	if (!data) {
++		nfs_retry_commit(head, NULL, cinfo, -1);
++		return -ENOMEM;
++	}
+ 
+ 	/* Set up the argument struct */
+ 	nfs_init_commit(data, head, NULL, cinfo);
+diff --git a/include/linux/nfs_fs.h b/include/linux/nfs_fs.h
+index 92525222abfd..445e9343be3e 100644
+--- a/include/linux/nfs_fs.h
++++ b/include/linux/nfs_fs.h
+@@ -584,7 +584,7 @@ extern int nfs_wb_all(struct inode *inode);
+ extern int nfs_wb_page(struct inode *inode, struct page *page);
+ extern int nfs_wb_page_cancel(struct inode *inode, struct page* page);
+ extern int  nfs_commit_inode(struct inode *, int);
+-extern struct nfs_commit_data *nfs_commitdata_alloc(bool never_fail);
++extern struct nfs_commit_data *nfs_commitdata_alloc(void);
+ extern void nfs_commit_free(struct nfs_commit_data *data);
+ bool nfs_commit_end(struct nfs_mds_commit_info *cinfo);
+ 
 -- 
 2.35.1
 
