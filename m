@@ -2,110 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B07FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 11:09:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345486AbiDLLKy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 07:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36586 "EHLO
+        id S241458AbiDLLLV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 07:11:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348306AbiDLLIC (ORCPT
+        with ESMTP id S1349086AbiDLLIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 07:08:02 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D3556D85E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 03:00:54 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: sre)
-        with ESMTPSA id 3AF211F444E6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1649757653;
-        bh=HPiTDVueKNU/TOwKxs3+euO8AAobj3H/uPs0cSthAG8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gWrnjNV5CmSYL9CuyzCEuB/k4WFbCnzmUcRyk/XdGkft7FpRmyvca/8QN8YDTQfcE
-         1jhZUCbS7NDNB5nFfgF1n485Di8PK4H4um+Wz22tHIzT2f6IJeUGuMp+hPNtLJ1pf+
-         UC8pvXjOB7Z56HTPwKmNBKd8lz0LKg4JowmSu0uRNr5aS9TEjykRYZDFXwVHiMK2bt
-         lT5ReXpCb6M+IleOMucxRim+l97xvdAWuCMqfW/HqoRsX1R1MkHpdVeSEDhq3TX3ky
-         8Ni4fErgRpH1zXsRYEmq9SnNNTabXL3WAnJVJMQLJMPn5VS3qrX7Q9ur8P/r83CJFG
-         asEHtRq40j9YQ==
-Received: by mercury (Postfix, from userid 1000)
-        id 22FA11060340; Tue, 12 Apr 2022 12:00:51 +0200 (CEST)
-Date:   Tue, 12 Apr 2022 12:00:51 +0200
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] HSI: omap_ssi: Fix refcount leak in ssi_probe
-Message-ID: <20220412100051.g2mx734l3ogz4tcw@mercury.elektranox.org>
-References: <20220404085234.11435-1-linmq006@gmail.com>
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C0F6D861;
+        Tue, 12 Apr 2022 03:00:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649757654; x=1681293654;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=7tP6Hmh57tdYk/XI1EXwttwZcLinGHP54ZjZICaf18M=;
+  b=IP4f0St3HE7L2DS7hFIdTuebHeYZiuc6JfnnlMxXwmubZqUHOtNVKNWM
+   artZ7LqNw8WFU6JHXkn9iPI21FPpOyJXAjtRe/1HzZ4V82CahukFxbE9Z
+   u2Ci12dNKjgV2/jRdCcLUncWxxVOMdtAWVRtHQ2ABbP8AhcBGPQ8r8H0f
+   Ebqd6OBAUyqPnHPlOMIPGxtTmMRJlOwdnUlIy5/6eRGJZSG/+GUv5knlm
+   tmpQTePvY/bRyGMaXbQq2znJUit+L2B4LPZ2Z2F/LtKaRPKj8vBfvedKJ
+   RwW93wHjbh9Tb877TyjkJHT6aARn5Jh61+A76TiQFesSoLtcDEwff36T+
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="261183851"
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="261183851"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 03:00:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
+   d="scan'208";a="525976363"
+Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 12 Apr 2022 03:00:47 -0700
+Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1neDKJ-0002jQ-1f;
+        Tue, 12 Apr 2022 10:00:47 +0000
+Date:   Tue, 12 Apr 2022 18:00:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Samuel Holland <samuel@sholland.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH 04/10] drm/sun4i: Allow building the driver on RISC-V
+Message-ID: <202204121758.QeUxJKUh-lkp@intel.com>
+References: <20220411043423.37333-5-samuel@sholland.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ixa6kldo263d7ftb"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220404085234.11435-1-linmq006@gmail.com>
+In-Reply-To: <20220411043423.37333-5-samuel@sholland.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Samuel,
 
---ixa6kldo263d7ftb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I love your patch! Yet something to improve:
 
-Hi,
+[auto build test ERROR on sunxi/sunxi/for-next]
+[also build test ERROR on drm/drm-next linus/master v5.18-rc2 next-20220412]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-On Mon, Apr 04, 2022 at 08:52:32AM +0000, Miaoqian Lin wrote:
-> When returning or breaking early from a
-> for_each_available_child_of_node() loop, we need to explicitly call
-> of_node_put() on the child node to possibly release the node.
->=20
-> Fixes: b209e047bc74 ("HSI: Introduce OMAP SSI driver")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
+url:    https://github.com/intel-lab-lkp/linux/commits/Samuel-Holland/drm-sun4i-Allwinner-D1-Display-Engine-2-0-Support/20220411-123701
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/sunxi/linux.git sunxi/for-next
+config: hexagon-allyesconfig (https://download.01.org/0day-ci/archive/20220412/202204121758.QeUxJKUh-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c6e83f560f06cdfe8aa47b248d8bdc58f947274b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/829dac8ee2cbb6d1b7bda1c513cc2ad1939fca53
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Samuel-Holland/drm-sun4i-Allwinner-D1-Display-Engine-2-0-Support/20220411-123701
+        git checkout 829dac8ee2cbb6d1b7bda1c513cc2ad1939fca53
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
 
-Thanks, queued.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
--- Sebastian
+All errors (new ones prefixed by >>):
 
->  drivers/hsi/controllers/omap_ssi_core.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/hsi/controllers/omap_ssi_core.c b/drivers/hsi/contro=
-llers/omap_ssi_core.c
-> index 44a3f5660c10..eb9820158318 100644
-> --- a/drivers/hsi/controllers/omap_ssi_core.c
-> +++ b/drivers/hsi/controllers/omap_ssi_core.c
-> @@ -524,6 +524,7 @@ static int ssi_probe(struct platform_device *pd)
->  		if (!childpdev) {
->  			err =3D -ENODEV;
->  			dev_err(&pd->dev, "failed to create ssi controller port\n");
-> +			of_node_put(child);
->  			goto out3;
->  		}
->  	}
-> --=20
-> 2.17.1
->=20
+>> drivers/gpu/drm/sun4i/sun4i_hdmi_i2c.c:59:3: error: implicit declaration of function 'readsb' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+                   readsb(hdmi->base + hdmi->variant->ddc_fifo_reg, buf, len);
+                   ^
+   drivers/gpu/drm/sun4i/sun4i_hdmi_i2c.c:59:3: note: did you mean 'readb'?
+   arch/hexagon/include/asm/io.h:83:18: note: 'readb' declared here
+   static inline u8 readb(const volatile void __iomem *addr)
+                    ^
+>> drivers/gpu/drm/sun4i/sun4i_hdmi_i2c.c:61:3: error: implicit declaration of function 'writesb' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+                   writesb(hdmi->base + hdmi->variant->ddc_fifo_reg, buf, len);
+                   ^
+   drivers/gpu/drm/sun4i/sun4i_hdmi_i2c.c:61:3: note: did you mean 'writeb'?
+   arch/hexagon/include/asm/io.h:122:20: note: 'writeb' declared here
+   static inline void writeb(u8 data, volatile void __iomem *addr)
+                      ^
+   2 errors generated.
 
---ixa6kldo263d7ftb
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+vim +/readsb +59 drivers/gpu/drm/sun4i/sun4i_hdmi_i2c.c
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmJVTdIACgkQ2O7X88g7
-+ppUIQ//T7c/a0qTM32ohIR1Ub6EjXz7gD34N39VYe8WSU66275ZD25TQ/fPQSqO
-zSQ+ih1eV2oCHsr33EUqS5SkIsAYrG6J0IXM/Qg8u9yW6MzOenwVQAbsMIIsf9l2
-ezMDYmJNJASyZHcOMsBp0YYfNmcUVlTFSAcZzsUE0ti4rfVr4vYI+Qg+y0Fj6bDd
-Zt43pTPeIe29KLHDxmIcvgmxh3w4YOlQ1NcJkbw3KdK7ATZdlXS9fHCwA+e/s5XN
-vIj5HezNbtDihY6AOhiFmeSd4KB1dD6IvMzGDDSoGyNDKeWK2H5noXD6A74m4ahg
-3nu+VZ9YLJ+YL8vSijvdO+TNZf1nDfRWHWM3PVdpxrJpgNmIIt7Z4T5zUHW4vjGa
-iUIpeOY6nQaX3rgdm5/Ghe1NVE0Mxg7OakAQKt+EPmBKb8VaIG4H1FmGtlHAiJng
-jfRaF5wbtKqpCr53n/bakV2Jb8A8qXxnQHUG55al+oQQgXCx282551mHTbxVTPeA
-CU5yajV9nEx/6WMPfHExwWR57XOv73RbnC0xzs4Tur/DweApHlH0rqi0iEmDfLgx
-6lmnX3qXXuvgyt0/WlipDScetMIGrdeST/X5z5rk29Br/3jXyUVZ2ed7JmzMDuNM
-f5ZqVk42EqzAEotHVEjfujgrtJarZ5I4Vb60F5WVfHh5JkUft3E=
-=jxKn
------END PGP SIGNATURE-----
+f0a3dd33ba685b Jonathan Liu 2017-07-02  24  
+f0a3dd33ba685b Jonathan Liu 2017-07-02  25  static int fifo_transfer(struct sun4i_hdmi *hdmi, u8 *buf, int len, bool read)
+f0a3dd33ba685b Jonathan Liu 2017-07-02  26  {
+f0a3dd33ba685b Jonathan Liu 2017-07-02  27  	/*
+f0a3dd33ba685b Jonathan Liu 2017-07-02  28  	 * 1 byte takes 9 clock cycles (8 bits + 1 ACK) = 90 us for 100 kHz
+f0a3dd33ba685b Jonathan Liu 2017-07-02  29  	 * clock. As clock rate is fixed, just round it up to 100 us.
+f0a3dd33ba685b Jonathan Liu 2017-07-02  30  	 */
+f0a3dd33ba685b Jonathan Liu 2017-07-02  31  	const unsigned long byte_time_ns = 100;
+f0a3dd33ba685b Jonathan Liu 2017-07-02  32  	const u32 mask = SUN4I_HDMI_DDC_INT_STATUS_ERROR_MASK |
+f0a3dd33ba685b Jonathan Liu 2017-07-02  33  			 SUN4I_HDMI_DDC_INT_STATUS_FIFO_REQUEST |
+f0a3dd33ba685b Jonathan Liu 2017-07-02  34  			 SUN4I_HDMI_DDC_INT_STATUS_TRANSFER_COMPLETE;
+f0a3dd33ba685b Jonathan Liu 2017-07-02  35  	u32 reg;
+939d749ad6649c Chen-Yu Tsai 2017-10-10  36  	/*
+939d749ad6649c Chen-Yu Tsai 2017-10-10  37  	 * If threshold is inclusive, then the FIFO may only have
+939d749ad6649c Chen-Yu Tsai 2017-10-10  38  	 * RX_THRESHOLD number of bytes, instead of RX_THRESHOLD + 1.
+939d749ad6649c Chen-Yu Tsai 2017-10-10  39  	 */
+939d749ad6649c Chen-Yu Tsai 2017-10-10  40  	int read_len = RX_THRESHOLD +
+939d749ad6649c Chen-Yu Tsai 2017-10-10  41  		(hdmi->variant->ddc_fifo_thres_incl ? 0 : 1);
+f0a3dd33ba685b Jonathan Liu 2017-07-02  42  
+939d749ad6649c Chen-Yu Tsai 2017-10-10  43  	/*
+939d749ad6649c Chen-Yu Tsai 2017-10-10  44  	 * Limit transfer length by FIFO threshold or FIFO size.
+939d749ad6649c Chen-Yu Tsai 2017-10-10  45  	 * For TX the threshold is for an empty FIFO.
+939d749ad6649c Chen-Yu Tsai 2017-10-10  46  	 */
+939d749ad6649c Chen-Yu Tsai 2017-10-10  47  	len = min_t(int, len, read ? read_len : SUN4I_HDMI_DDC_FIFO_SIZE);
+f0a3dd33ba685b Jonathan Liu 2017-07-02  48  
+f0a3dd33ba685b Jonathan Liu 2017-07-02  49  	/* Wait until error, FIFO request bit set or transfer complete */
+939d749ad6649c Chen-Yu Tsai 2017-10-10  50  	if (regmap_field_read_poll_timeout(hdmi->field_ddc_int_status, reg,
+939d749ad6649c Chen-Yu Tsai 2017-10-10  51  					   reg & mask, len * byte_time_ns,
+939d749ad6649c Chen-Yu Tsai 2017-10-10  52  					   100000))
+f0a3dd33ba685b Jonathan Liu 2017-07-02  53  		return -ETIMEDOUT;
+f0a3dd33ba685b Jonathan Liu 2017-07-02  54  
+f0a3dd33ba685b Jonathan Liu 2017-07-02  55  	if (reg & SUN4I_HDMI_DDC_INT_STATUS_ERROR_MASK)
+f0a3dd33ba685b Jonathan Liu 2017-07-02  56  		return -EIO;
+f0a3dd33ba685b Jonathan Liu 2017-07-02  57  
+f0a3dd33ba685b Jonathan Liu 2017-07-02  58  	if (read)
+939d749ad6649c Chen-Yu Tsai 2017-10-10 @59  		readsb(hdmi->base + hdmi->variant->ddc_fifo_reg, buf, len);
+f0a3dd33ba685b Jonathan Liu 2017-07-02  60  	else
+939d749ad6649c Chen-Yu Tsai 2017-10-10 @61  		writesb(hdmi->base + hdmi->variant->ddc_fifo_reg, buf, len);
+f0a3dd33ba685b Jonathan Liu 2017-07-02  62  
+939d749ad6649c Chen-Yu Tsai 2017-10-10  63  	/* Clear FIFO request bit by forcing a write to that bit */
+939d749ad6649c Chen-Yu Tsai 2017-10-10  64  	regmap_field_force_write(hdmi->field_ddc_int_status,
+939d749ad6649c Chen-Yu Tsai 2017-10-10  65  				 SUN4I_HDMI_DDC_INT_STATUS_FIFO_REQUEST);
+f0a3dd33ba685b Jonathan Liu 2017-07-02  66  
+f0a3dd33ba685b Jonathan Liu 2017-07-02  67  	return len;
+f0a3dd33ba685b Jonathan Liu 2017-07-02  68  }
+f0a3dd33ba685b Jonathan Liu 2017-07-02  69  
 
---ixa6kldo263d7ftb--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
