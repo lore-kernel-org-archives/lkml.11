@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55453C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 20:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 630EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 20:26:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229765AbiDLU2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 16:28:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
+        id S229665AbiDLU2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 16:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232193AbiDLU1k (ORCPT
+        with ESMTP id S232218AbiDLU1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 16:27:40 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1E29DD972
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E2599DD975
         for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 13:25:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649794457;
+        s=mimecast20190719; t=1649794458;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=liyDBksEV8Ds9UUCGHCo4lLnPFrUOPH88WtIoxg4upQ=;
-        b=ikjxQWgczlg9yB+Ghi2Se8M9YW5ksD7f5UW4xWvcb+39nDaOJqQJ5DNH1ODX8fc2m+AIOb
-        XK6BtTg7oDHV94vTLKksTy0Tc1yRkeZ0u1prnpwdzJ5v7Fni9W+x0HU52sHVOEzBInI2cs
-        7R86l2KkZgHK7aBAcV69BSQtV/ewiGo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=wKeEjLPVCQWQYsPyoUlmVTqyS0GcmUXtUuQ8I/MM+9k=;
+        b=d1APatTUtJgTTmLWKehB8mbBAuQPeaXhE7p9YFm+MmGo4ja/FFno4+FEofGTvyeX5gNU3P
+        IOpT9zp0uU5PlCfeJBiFyaiIPlnbEP0e27O0YpzjcRS3YTqnLXVI9Z3lIISYYRMsYGZCy1
+        kKNK9DnhbhWryN9x3jlwQG+Mm0IzsN0=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-410-Au-6FQUQOHajVPJRVZWeNw-1; Tue, 12 Apr 2022 16:14:14 -0400
-X-MC-Unique: Au-6FQUQOHajVPJRVZWeNw-1
+ us-mta-460-9r7wI2JXNEKUjGeycyMjeA-1; Tue, 12 Apr 2022 16:14:14 -0400
+X-MC-Unique: 9r7wI2JXNEKUjGeycyMjeA-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E4BA4185A7B2;
-        Tue, 12 Apr 2022 20:14:13 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 68A721C05155;
+        Tue, 12 Apr 2022 20:14:14 +0000 (UTC)
 Received: from cmirabil.remote.csb (unknown [10.22.32.76])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 79386416363;
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F3397416363;
         Tue, 12 Apr 2022 20:14:13 +0000 (UTC)
 From:   Charles Mirabile <cmirabil@redhat.com>
 To:     linux-kernel@vger.kernel.org
@@ -49,9 +49,9 @@ Cc:     Charles Mirabile <cmirabil@redhat.com>,
         linux-arm-kernel@lists.infradead.org, fedora-rpi@googlegroups.com,
         Mwesigwa Guma <mguma@redhat.com>,
         Joel Savitz <jsavitz@redhat.com>
-Subject: [PATCH v8 5/6] MAINTAINERS: Add sensehat driver authors to MAINTAINERS
-Date:   Tue, 12 Apr 2022 16:13:42 -0400
-Message-Id: <20220412201343.8074-6-cmirabil@redhat.com>
+Subject: [PATCH v8 6/6] DO NOT MERGE: full sensehat device tree overlay for raspberry pi 4
+Date:   Tue, 12 Apr 2022 16:13:43 -0400
+Message-Id: <20220412201343.8074-7-cmirabil@redhat.com>
 In-Reply-To: <20220412201343.8074-1-cmirabil@redhat.com>
 References: <20220412201343.8074-1-cmirabil@redhat.com>
 MIME-Version: 1.0
@@ -61,7 +61,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds the driver authors to MAINAINERS.
+This patch shold not be merged - dtbs files are not stored in the
+kernel tree. We just provide this file so the code can be tested.
+
+This overlay is suitable for testing the driver, it can be compiled with
+dtc and put in the /boot/overlays/ folder then specified in config.txt
+by putting the lines:
+
+dtoverlay=		#suppress loading of default overlay for HAT
+dtoverlay=sensehat	#load custom overlay
+
+at the beginning before any other lines in config.txt
 
 Co-developed-by: Mwesigwa Guma <mguma@redhat.com>
 Signed-off-by: Mwesigwa Guma <mguma@redhat.com>
@@ -69,31 +79,70 @@ Co-developed-by: Joel Savitz <jsavitz@redhat.com>
 Signed-off-by: Joel Savitz <jsavitz@redhat.com>
 Signed-off-by: Charles Mirabile <cmirabil@redhat.com>
 ---
- MAINTAINERS | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ sensehat.dtbs | 54 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+ create mode 100644 sensehat.dtbs
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 61d9f114c37f..708bdccee4b3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17745,6 +17745,17 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-chemical-sunrise-co2
- F:	Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml
- F:	drivers/iio/chemical/sunrise_co2.c
- 
-+SENSEHAT DRIVER
-+M:	Charles Mirabile <cmirabil@redhat.com>
-+M:	Mwesigwa Guma <mguma@redhat.com>
-+M:	Joel Savitz <jsavitz@redhat.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/auxdisplay/raspberrypi,sensehat-display.yaml
-+F:	Documentation/devicetree/bindings/input/raspberrypi,sensehat-joystick.yaml
-+F:	Documentation/devicetree/bindings/mfd/raspberrypi,sensehat.yaml
-+F:	drivers/auxdisplay/sensehat-display.c
-+F:	drivers/input/joystick/sensehat-joystick.c
+diff --git a/sensehat.dtbs b/sensehat.dtbs
+new file mode 100644
+index 000000000000..82d129c847fb
+--- /dev/null
++++ b/sensehat.dtbs
+@@ -0,0 +1,54 @@
++/dts-v1/;
++/plugin/;
 +
- SENSIRION SCD30 CARBON DIOXIDE SENSOR DRIVER
- M:	Tomasz Duszynski <tomasz.duszynski@octakon.com>
- S:	Maintained
++/ {
++	compatible = "brcm,bcm2835";
++};
++
++&i2c1 {
++	#address-cells = <0x01>;
++	#size-cells = <0x00>;
++	status = "okay";
++
++	sensehat@46 {
++		#address-cells = <0x01>;
++		#size-cells = <0x00>;
++		compatible = "raspberrypi,sensehat";
++		reg = <0x46>;
++		interrupt-parent = <&gpio>;
++		status = "okay";
++		display {
++			compatible = "raspberrypi,sensehat-display";
++			status = "okay";
++		};
++		joystick {
++			compatible = "raspberrypi,sensehat-joystick";
++			interrupts = <23 1>;
++			status = "okay";
++		};
++	};
++
++	lsm9ds1-magn@1c {
++		compatible = "st,lsm9ds1-magn";
++		reg = <0x1c>;
++		status = "okay";
++	};
++
++	lsm9ds1-accel@6a {
++		compatible = "st,lsm9ds1-accel";
++		reg = <0x6a>;
++		status = "okay";
++	};
++
++	lps25h-press@5c {
++		compatible = "st,lps25h-press";
++		reg = <0x5c>;
++		status = "okay";
++	};
++
++	hts221-humid@5f {
++		compatible = "st,hts221-humid\0st,hts221";
++		reg = <0x5f>;
++		status = "okay";
++	};
++};
 -- 
 2.31.1
 
