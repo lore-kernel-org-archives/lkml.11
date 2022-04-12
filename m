@@ -2,97 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C5C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:12:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3092DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 01:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244071AbiDLBOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Apr 2022 21:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42758 "EHLO
+        id S233395AbiDLBTi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Apr 2022 21:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350975AbiDLBKe (ORCPT
+        with ESMTP id S241921AbiDLBRa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Apr 2022 21:10:34 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C22E13FA7;
-        Mon, 11 Apr 2022 18:07:29 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1ne503-0007LK-4Y; Tue, 12 Apr 2022 03:07:19 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Paolo Bonzini <pbonzini@redhat.com>, KVM <kvm@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Anup Patel <apatel@ventanamicro.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: Fixes tags need some work in the kvm-fixes tree
-Date:   Tue, 12 Apr 2022 03:07:18 +0200
-Message-ID: <2099797.irdbgypaU6@diego>
-In-Reply-To: <20220412080045.301da5ef@canb.auug.org.au>
-References: <20220412080045.301da5ef@canb.auug.org.au>
+        Mon, 11 Apr 2022 21:17:30 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715E7387B5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 18:12:31 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso1135434pjh.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Apr 2022 18:12:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Q/Xg6ga80J/OVjhLPewSy7w7ND5AlRAN7OUXJQ4TYtA=;
+        b=HHldRoUblJBfsJVN4QNVPrznetchzYAfkycaQUL6nBM2bArvEdxJ+6F2fsFwaNTOtf
+         uJA3H15AnKBtrC4G9I4eTGnyaQzjIphF+l+sPnRzVHuCAfR6JJq+qfvHFRkk3jgBthAk
+         0RmkjJxXiSUCNu99kAogukrPk9HpGgAMxKaAO3Ejud8u1R1UILDnYgitsyUmD2LW8aeM
+         aAKX9wOBI4ZeX+KYelGD0OyymiVtFt4ZiD8WgZ37N6QYa+2aFVrj7opXubFBcEtoDC65
+         sHeGpNOJnkoKhzhRhOZxt1S/OmpkXdeiN4vnJ2GxBCtEbllFbHIyi6+siodBhIxVHquW
+         A4iA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Q/Xg6ga80J/OVjhLPewSy7w7ND5AlRAN7OUXJQ4TYtA=;
+        b=pKOMf6rP60AewAmZ4wdDR15VZzrHJzrX6VOakHOdujLwLW2qM6e3CqbdCRV2fwpuAh
+         gZL+jj/1T0aXFQLKq4GgeZD/JawKRYN0Z5B8U1OvI3q/BdA8rxCaSMEpQvgF4rBhp3jm
+         cgjBRoZ8VF+M2vdLTg23tHnQN1QnYnbRjbDgHYV9cVow/8XFRRI+NoLXyKQhqUwAzPMf
+         Y2CLlVyzffszQ+qDi6DmlYn6L+edBBNn9vT31trOfRqoMK0hEOZvaASq9pO5joQ/kv2h
+         enttFKYuopbikPNlzp2iT/LhhebzvgLdZj7vjB4R4hWtIPdkJRsY2NxN2+UAJazQKapA
+         2dvQ==
+X-Gm-Message-State: AOAM532e4Jjl2GuPCSZ5s8TFjbhEYG2EWljzXpcI6dHIOs/BT5f51Gmb
+        48gCl4CbQqh5degmnCo82XCZCIIBjZLFdQ==
+X-Google-Smtp-Source: ABdhPJx3HLMcm4CPuIJjAy9/1D40rZdTsVlxqtwNr6sg0Yv4f5XEyOq5sCWeeFg4nczVPVotgUqQlg==
+X-Received: by 2002:a17:90b:2248:b0:1cb:be19:822e with SMTP id hk8-20020a17090b224800b001cbbe19822emr2148730pjb.22.1649725950479;
+        Mon, 11 Apr 2022 18:12:30 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id u206-20020a6279d7000000b00505fdc42bf9sm217263pfc.101.2022.04.11.18.12.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Apr 2022 18:12:30 -0700 (PDT)
+Message-ID: <01626f93-e982-8631-4196-112a8bb4a01a@kernel.dk>
+Date:   Mon, 11 Apr 2022 19:12:28 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3 1/2] block: add sync_blockdev_range()
+Content-Language: en-US
+To:     Namjae Jeon <linkinjeon@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>
+Cc:     "Yuezhang.Mo@sony.com" <Yuezhang.Mo@sony.com>,
+        "sj1557.seo@samsung.com" <sj1557.seo@samsung.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "Andy.Wu@sony.com" <Andy.Wu@sony.com>,
+        "Wataru.Aoyama@sony.com" <Wataru.Aoyama@sony.com>
+References: <HK2PR04MB3891FCECADD7AECEEF5DD63081E99@HK2PR04MB3891.apcprd04.prod.outlook.com>
+ <Yk/DpSwR8kGKWJYl@infradead.org>
+ <CAKYAXd9NAUjdxT2GOWGoPvH5nOXSFtD7u0t_9rCiZx7hSGC0PA@mail.gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <CAKYAXd9NAUjdxT2GOWGoPvH5nOXSFtD7u0t_9rCiZx7hSGC0PA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Dienstag, 12. April 2022, 00:00:45 CEST schrieb Stephen Rothwell:
-> Hi all,
+On 4/10/22 8:08 PM, Namjae Jeon wrote:
+> 2022-04-08 14:09 GMT+09:00, Christoph Hellwig <hch@infradead.org>:
+>> Looks good:
+>>
+>> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Thanks for your review!
 > 
-> In commit
+> Hi Jens,
 > 
->   4054eee92902 ("RISC-V: KVM: include missing hwcap.h into vcpu_fp")
-> 
-> Fixes tag
-> 
->   Fixes: 0a86512dc113 ("RISC-V: KVM: Factor-out FP virtualization into separate
+> Can I apply this patch with your Ack to exfat #dev ?
 
-hmm, when I sent it [0], the fixes tag was
-Fixes: 0a86512dc113 ("RISC-V: KVM: Factor-out FP virtualization into separate sources")
+Yes go ahead:
 
-Did it get somehow mangled when the patch got applied?
+Reviewed-by: Jens Axboe <axboe@kernel.dk>
 
-
-[0] https://lore.kernel.org/all/20220408092415.1603661-1-heiko@sntech.de/
-
-> 
-> has these problem(s):
-> 
->   - Subject has leading but no trailing parentheses
->   - Subject has leading but no trailing quotes
-> 
-> In commit
-> 
->   ebdef0de2dbc ("KVM: selftests: riscv: Fix alignment of the guest_hang() function")
-> 
-> Fixes tag
-> 
->   Fixes: 3e06cdf10520 ("KVM: selftests: Add initial support for RISC-V
-> 
-> has these problem(s):
-> 
->   - Subject has leading but no trailing parentheses
->   - Subject has leading but no trailing quotes
-> 
-> In commit
-> 
->   fac372536439 ("KVM: selftests: riscv: Set PTE A and D bits in VS-stage page table")
-> 
-> Fixes tag
-> 
->   Fixes: 3e06cdf10520 ("KVM: selftests: Add initial support for RISC-V
-> 
-> has these problem(s):
-> 
->   - Subject has leading but no trailing parentheses
->   - Subject has leading but no trailing quotes
-> 
-> Please do not split fixes tags over more than one line.
-> 
-> 
-
-
-
+-- 
+Jens Axboe
 
