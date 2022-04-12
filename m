@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E49EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2074BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 23:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbiDLXZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 19:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
+        id S230012AbiDLXZ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 19:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229869AbiDLXY3 (ORCPT
+        with ESMTP id S229817AbiDLXYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 19:24:29 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02E718E05
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:44:01 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2ec06f77db8so2787857b3.8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:44:01 -0700 (PDT)
+        Tue, 12 Apr 2022 19:24:31 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F04167C3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:44:12 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id b11-20020a5b008b000000b00624ea481d55so239647ybp.19
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 15:44:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=vu+tbewZC1L8tNZcdnISH4xxfmEZ4vDTSNrfXZHLvPE=;
-        b=A+K8pYUBsHgL6smGFqlwdaGolyd1WSaLs2CJu781D2KugJNhkIcxatZ/BkJUcRGwsD
-         BmMWeCu8OCCkYzco2VjqflXFLm4AzUcmyxBs8n0TaTIOMdjnESI5O2EicQhFPqdp0NN7
-         fNiyrKG7UB9dFuczLb0Wysld+4bWa7aodWBsavyrCBP88t2S53hrfnrN7MzPLGFKXvHr
-         /YhN1rKHnO9BC7DT3iaP6/lwbF2qGlgqPA2iURWyhzsLr3eeV+hiMP26g5hWkgmt/66H
-         sKWrEKFx8HcrbShKcF+wKv41p4dD63z1a0Mbz7JP0apEU6pOYr5sI9IPmD2PxHm6FdIA
-         oUnw==
+        bh=j+uFg3UvBPSpe9z7EjPoimwDUI3tSTdqXoWzVBlT8YA=;
+        b=HwHLzedYjS+IUQlGju+jlS6RAWdrjLVCflB7Xg274v3cbLF+QlAtwn7wjvHLdSDhqN
+         79sVvq9GJAKECcvYiEUbpfCo7qi4m2Py1AIn+EqIDAKohghe0dJsBHFSvlcEa5eItEev
+         kOgkGWC9oEjNEfxmCkZDiys1r5J3xDmZhpxRvWqbXbbUtViAFPWehEyFU4Jv/Mq+jsaN
+         4/N1m8Ce4geOGMsUa+kbjt4EzQpw1xL7JrpF9vsOZUrwMy5DnelCHza15FNsTzM0+LGK
+         ia2ZBL5PjqiQiavZ8ITilA0jznoXtTbJ0/OJmQUUw4c5tEVk73kZuMCaUfrccOAZj4ur
+         6vPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=vu+tbewZC1L8tNZcdnISH4xxfmEZ4vDTSNrfXZHLvPE=;
-        b=OISqykdTWiwOJVHAiSz9iOtWTBC1hl3lEmM37mP2vksSMY4Idfcm/r2DZwH4TCLAp2
-         DFsEOPYAAJY5LmIWngk9PyzvbxtRURIaOw7MJFjd+uglZCbXOhZj1cZydAopOb1H65m5
-         ZTAGlyzwwv4gZPBrZRN83EZXTVIXw6SBYbHzLl4LOI87kMh54bo4PTn75xf2dvJ4C4bp
-         T+D6TIe9/Zl0JMatXqCLm6d4r62xXxWzHIveExDWFZlsnlTWk/Prkb0iVx/a1r29ba1+
-         tNGRBBDE5S3/gssLjMEboM6tq0hl7P2TTlKgMb1XpLh5QkzRqwAmTDKTigPtN46R4DYW
-         vMLg==
-X-Gm-Message-State: AOAM533/AcH8wXum2YTPEVadomMtvN1sYEGEnxDUNxA9imBzn6eI3WK/
-        FPwN2FpUl2yl/npudO9BS+VblcpB4+zL/hM=
-X-Google-Smtp-Source: ABdhPJwYB6gmE/AnTTYvT4XgOL27Ob0XRx2o/4au0mtEC42h0VLwXwN0PWba0iF+eWL2UPJd2GUmprS1JHEoLq4=
+        bh=j+uFg3UvBPSpe9z7EjPoimwDUI3tSTdqXoWzVBlT8YA=;
+        b=X0MErT6L95RWv2UlvDodgQwBHUCnzRkGdhDOwE0Nnw/iCjEutKw13IPgN/myNrrHjE
+         MTYo27uAIi88oEwyXmkbsEsMFdEpU+tCpDBLy00/NkO7Ma5wyBoolT7rA4qcOUj0WspR
+         0XYWr65KO8iI6sIKgCZBVIbD1Fip4DLEabQmTxMgFu+d7vkly1lsjt2UNxDblDIuoB97
+         HNVcYW9qlYF/tIPTEduNpmOr6uiqK9wJu46NOyDkBrxcP+76cSvZt//vD2Z2dRZEPtz0
+         Y8fB2LfAv//zRxf0Uw/Bt7EDmUsFDbPsMRRSYo8x32TOTy6fKmI8/JVYRmpEz+pJsumJ
+         zvIw==
+X-Gm-Message-State: AOAM531pJRXBTfa1DchciLMU8MhpMkl6sYz5yUoC0xCjv4+MFZp5jqWx
+        0cXK4B8s0q/VHgSYKuxRjwhqv29eBjyjVl8=
+X-Google-Smtp-Source: ABdhPJxmaX4f7eR9NYtp3dHD+Hth17rj4XFauB+9rp80Ol/yYeoj7tX+cNd/8JowOkjsiHpI5vVGwiL3Gc6cx14=
 X-Received: from tansuresh.svl.corp.google.com ([2620:15c:2c5:13:8573:aa64:c3e8:ebc])
- (user=tansuresh job=sendgmr) by 2002:a81:1e42:0:b0:2ec:3343:6b3e with SMTP id
- e63-20020a811e42000000b002ec33436b3emr9165499ywe.171.1649803441033; Tue, 12
- Apr 2022 15:44:01 -0700 (PDT)
-Date:   Tue, 12 Apr 2022 15:43:46 -0700
-In-Reply-To: <20220412224348.1038613-1-tansuresh@google.com>
-Message-Id: <20220412224348.1038613-2-tansuresh@google.com>
+ (user=tansuresh job=sendgmr) by 2002:a81:2fd1:0:b0:2e5:d8d8:f60 with SMTP id
+ v200-20020a812fd1000000b002e5d8d80f60mr31882457ywv.164.1649803452193; Tue, 12
+ Apr 2022 15:44:12 -0700 (PDT)
+Date:   Tue, 12 Apr 2022 15:43:48 -0700
+In-Reply-To: <20220412224348.1038613-3-tansuresh@google.com>
+Message-Id: <20220412224348.1038613-4-tansuresh@google.com>
 Mime-Version: 1.0
 References: <20220412224348.1038613-1-tansuresh@google.com>
+ <20220412224348.1038613-2-tansuresh@google.com> <20220412224348.1038613-3-tansuresh@google.com>
 X-Mailer: git-send-email 2.36.0.rc0.470.gd361397f0d-goog
-Subject: [PATCH v2 1/3] driver core: Support asynchronous driver shutdown
+Subject: [PATCH v2 3/3] nvme: Add async shutdown support
 From:   Tanjore Suresh <tansuresh@google.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J . Wysocki" <rafael@kernel.org>,
@@ -66,113 +67,346 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This changes the bus driver interface with additional entry points
-to enable devices to implement asynchronous shutdown. The existing
-synchronous interface to shutdown is unmodified and retained for
-backward compatibility.
+This works with the asynchronous shutdown mechanism setup for the PCI
+drivers and participates to provide both pre and post shutdown
+routines at pci_driver structure level.
 
-This changes the common device shutdown code to enable devices to
-participate in asynchronous shutdown implementation.
+The shutdown_pre routine starts the shutdown and does not wait for the
+shutdown to complete.  The shutdown_post routine waits for the shutdown
+to complete on individual controllers that this driver instance
+controls. This mechanism optimizes to speed up the shutdown in a
+system which host many controllers.
 
 Signed-off-by: Tanjore Suresh <tansuresh@google.com>
 ---
- drivers/base/core.c        | 38 +++++++++++++++++++++++++++++++++++++-
- include/linux/device/bus.h | 12 ++++++++++++
- 2 files changed, 49 insertions(+), 1 deletion(-)
+ drivers/nvme/host/core.c | 28 ++++++++++----
+ drivers/nvme/host/nvme.h |  8 ++++
+ drivers/nvme/host/pci.c  | 80 +++++++++++++++++++++++++---------------
+ 3 files changed, 80 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 3d6430eb0c6a..ba267ae70a22 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -4479,6 +4479,7 @@ EXPORT_SYMBOL_GPL(device_change_owner);
- void device_shutdown(void)
- {
- 	struct device *dev, *parent;
-+	LIST_HEAD(async_shutdown_list);
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 677fa4bf76d3..24b08789fd34 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -2173,16 +2173,30 @@ EXPORT_SYMBOL_GPL(nvme_enable_ctrl);
  
- 	wait_for_device_probe();
- 	device_block_probing();
-@@ -4523,7 +4524,13 @@ void device_shutdown(void)
- 				dev_info(dev, "shutdown_pre\n");
- 			dev->class->shutdown_pre(dev);
- 		}
--		if (dev->bus && dev->bus->shutdown) {
-+		if (dev->bus && dev->bus->async_shutdown_start) {
-+			if (initcall_debug)
-+				dev_info(dev, "async_shutdown_start\n");
-+			dev->bus->async_shutdown_start(dev);
-+			list_add_tail(&dev->kobj.entry,
-+				&async_shutdown_list);
-+		} else if (dev->bus && dev->bus->shutdown) {
- 			if (initcall_debug)
- 				dev_info(dev, "shutdown\n");
- 			dev->bus->shutdown(dev);
-@@ -4543,6 +4550,35 @@ void device_shutdown(void)
- 		spin_lock(&devices_kset->list_lock);
- 	}
- 	spin_unlock(&devices_kset->list_lock);
+ int nvme_shutdown_ctrl(struct nvme_ctrl *ctrl)
+ {
+-	unsigned long timeout = jiffies + (ctrl->shutdown_timeout * HZ);
+-	u32 csts;
+ 	int ret;
+ 
++	ret = nvme_shutdown_ctrl_start(ctrl);
++	if (ret)
++		return ret;
++	return nvme_wait_for_shutdown_cmpl(ctrl);
++}
++EXPORT_SYMBOL_GPL(nvme_shutdown_ctrl);
 +
-+	/*
-+	 * Second pass spin for only devices, that have configured
-+	 * Asynchronous shutdown.
-+	 */
-+	while (!list_empty(&async_shutdown_list)) {
-+		dev = list_entry(async_shutdown_list.next, struct device,
-+				kobj.entry);
-+		parent = get_device(dev->parent);
-+		get_device(dev);
-+		/*
-+		 * Make sure the device is off the  list
-+		 */
-+		list_del_init(&dev->kobj.entry);
-+		if (parent)
-+			device_lock(parent);
-+		device_lock(dev);
-+		if (dev->bus && dev->bus->async_shutdown_end) {
-+			if (initcall_debug)
-+				dev_info(dev,
-+				"async_shutdown_end called\n");
-+			dev->bus->async_shutdown_end(dev);
-+		}
-+		device_unlock(dev);
-+		if (parent)
-+			device_unlock(parent);
-+		put_device(dev);
-+		put_device(parent);
-+	}
++int nvme_shutdown_ctrl_start(struct nvme_ctrl *ctrl)
++{
++
+ 	ctrl->ctrl_config &= ~NVME_CC_SHN_MASK;
+ 	ctrl->ctrl_config |= NVME_CC_SHN_NORMAL;
+ 
+-	ret = ctrl->ops->reg_write32(ctrl, NVME_REG_CC, ctrl->ctrl_config);
+-	if (ret)
+-		return ret;
++	return ctrl->ops->reg_write32(ctrl, NVME_REG_CC, ctrl->ctrl_config);
++}
++EXPORT_SYMBOL_GPL(nvme_shutdown_ctrl_start);
++
++int nvme_wait_for_shutdown_cmpl(struct nvme_ctrl *ctrl)
++{
++	unsigned long deadline = jiffies + (ctrl->shutdown_timeout * HZ);
++	u32 csts;
++	int ret;
+ 
+ 	while ((ret = ctrl->ops->reg_read32(ctrl, NVME_REG_CSTS, &csts)) == 0) {
+ 		if ((csts & NVME_CSTS_SHST_MASK) == NVME_CSTS_SHST_CMPLT)
+@@ -2191,7 +2205,7 @@ int nvme_shutdown_ctrl(struct nvme_ctrl *ctrl)
+ 		msleep(100);
+ 		if (fatal_signal_pending(current))
+ 			return -EINTR;
+-		if (time_after(jiffies, timeout)) {
++		if (time_after(jiffies, deadline)) {
+ 			dev_err(ctrl->device,
+ 				"Device shutdown incomplete; abort shutdown\n");
+ 			return -ENODEV;
+@@ -2200,7 +2214,7 @@ int nvme_shutdown_ctrl(struct nvme_ctrl *ctrl)
+ 
+ 	return ret;
  }
+-EXPORT_SYMBOL_GPL(nvme_shutdown_ctrl);
++EXPORT_SYMBOL_GPL(nvme_wait_for_shutdown_cmpl);
+ 
+ static int nvme_configure_timestamp(struct nvme_ctrl *ctrl)
+ {
+diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+index f4b674a8ce20..87f5803ef577 100644
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -170,6 +170,12 @@ enum {
+ 	NVME_REQ_USERCMD		= (1 << 1),
+ };
+ 
++enum shutdown_type {
++	DO_NOT_SHUTDOWN = 0,
++	SHUTDOWN_TYPE_SYNC = 1,
++	SHUTDOWN_TYPE_ASYNC = 2,
++};
++
+ static inline struct nvme_request *nvme_req(struct request *req)
+ {
+ 	return blk_mq_rq_to_pdu(req);
+@@ -672,6 +678,8 @@ bool nvme_wait_reset(struct nvme_ctrl *ctrl);
+ int nvme_disable_ctrl(struct nvme_ctrl *ctrl);
+ int nvme_enable_ctrl(struct nvme_ctrl *ctrl);
+ int nvme_shutdown_ctrl(struct nvme_ctrl *ctrl);
++int nvme_shutdown_ctrl_start(struct nvme_ctrl *ctrl);
++int nvme_wait_for_shutdown_cmpl(struct nvme_ctrl *ctrl);
+ int nvme_init_ctrl(struct nvme_ctrl *ctrl, struct device *dev,
+ 		const struct nvme_ctrl_ops *ops, unsigned long quirks);
+ void nvme_uninit_ctrl(struct nvme_ctrl *ctrl);
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 2e98ac3f3ad6..e812509462e8 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -107,7 +107,7 @@ MODULE_PARM_DESC(noacpi, "disable acpi bios quirks");
+ struct nvme_dev;
+ struct nvme_queue;
+ 
+-static void nvme_dev_disable(struct nvme_dev *dev, bool shutdown);
++static void nvme_dev_disable(struct nvme_dev *dev, int shutdown_type);
+ static bool __nvme_disable_io_queues(struct nvme_dev *dev, u8 opcode);
  
  /*
-diff --git a/include/linux/device/bus.h b/include/linux/device/bus.h
-index a039ab809753..f582c9d21515 100644
---- a/include/linux/device/bus.h
-+++ b/include/linux/device/bus.h
-@@ -49,6 +49,16 @@ struct fwnode_handle;
-  *		will never get called until they do.
-  * @remove:	Called when a device removed from this bus.
-  * @shutdown:	Called at shut-down time to quiesce the device.
-+ * @async_shutdown_start:	Called at the shutdown-time to start
-+ *				the shutdown process on the device.
-+ *				This entry point will be called only
-+ *				when the bus driver has indicated it would
-+ *				like to participate in asynchronous shutdown
-+ *				completion.
-+ * @async_shutdown_end:	Called at shutdown-time  to complete the shutdown
-+ *			process of the device. This entry point will be called
-+ *			only when the bus drive has indicated it would like to
-+ *			participate in the asynchronous shutdown completion.
-  *
-  * @online:	Called to put the device back online (after offlining it).
-  * @offline:	Called to put the device offline for hot-removal. May fail.
-@@ -93,6 +103,8 @@ struct bus_type {
- 	void (*sync_state)(struct device *dev);
- 	void (*remove)(struct device *dev);
- 	void (*shutdown)(struct device *dev);
-+	void (*async_shutdown_start)(struct device *dev);
-+	void (*async_shutdown_end)(struct device *dev);
+@@ -1357,7 +1357,7 @@ static enum blk_eh_timer_return nvme_timeout(struct request *req, bool reserved)
+ 	 */
+ 	if (nvme_should_reset(dev, csts)) {
+ 		nvme_warn_reset(dev, csts);
+-		nvme_dev_disable(dev, false);
++		nvme_dev_disable(dev, DO_NOT_SHUTDOWN);
+ 		nvme_reset_ctrl(&dev->ctrl);
+ 		return BLK_EH_DONE;
+ 	}
+@@ -1392,7 +1392,7 @@ static enum blk_eh_timer_return nvme_timeout(struct request *req, bool reserved)
+ 			 "I/O %d QID %d timeout, disable controller\n",
+ 			 req->tag, nvmeq->qid);
+ 		nvme_req(req)->flags |= NVME_REQ_CANCELLED;
+-		nvme_dev_disable(dev, true);
++		nvme_dev_disable(dev, SHUTDOWN_TYPE_SYNC);
+ 		return BLK_EH_DONE;
+ 	case NVME_CTRL_RESETTING:
+ 		return BLK_EH_RESET_TIMER;
+@@ -1410,7 +1410,7 @@ static enum blk_eh_timer_return nvme_timeout(struct request *req, bool reserved)
+ 			 "I/O %d QID %d timeout, reset controller\n",
+ 			 req->tag, nvmeq->qid);
+ 		nvme_req(req)->flags |= NVME_REQ_CANCELLED;
+-		nvme_dev_disable(dev, false);
++		nvme_dev_disable(dev, DO_NOT_SHUTDOWN);
+ 		nvme_reset_ctrl(&dev->ctrl);
  
- 	int (*online)(struct device *dev);
- 	int (*offline)(struct device *dev);
+ 		return BLK_EH_DONE;
+@@ -1503,11 +1503,13 @@ static void nvme_suspend_io_queues(struct nvme_dev *dev)
+ 		nvme_suspend_queue(&dev->queues[i]);
+ }
+ 
+-static void nvme_disable_admin_queue(struct nvme_dev *dev, bool shutdown)
++static void nvme_disable_admin_queue(struct nvme_dev *dev, int shutdown_type)
+ {
+ 	struct nvme_queue *nvmeq = &dev->queues[0];
+ 
+-	if (shutdown)
++	if (shutdown_type == SHUTDOWN_TYPE_ASYNC)
++		nvme_shutdown_ctrl_start(&dev->ctrl);
++	else if (shutdown_type == SHUTDOWN_TYPE_SYNC)
+ 		nvme_shutdown_ctrl(&dev->ctrl);
+ 	else
+ 		nvme_disable_ctrl(&dev->ctrl);
+@@ -2669,7 +2671,7 @@ static void nvme_pci_disable(struct nvme_dev *dev)
+ 	}
+ }
+ 
+-static void nvme_dev_disable(struct nvme_dev *dev, bool shutdown)
++static void nvme_dev_disable(struct nvme_dev *dev, int shutdown_type)
+ {
+ 	bool dead = true, freeze = false;
+ 	struct pci_dev *pdev = to_pci_dev(dev->dev);
+@@ -2691,14 +2693,14 @@ static void nvme_dev_disable(struct nvme_dev *dev, bool shutdown)
+ 	 * Give the controller a chance to complete all entered requests if
+ 	 * doing a safe shutdown.
+ 	 */
+-	if (!dead && shutdown && freeze)
++	if (!dead && (shutdown_type != DO_NOT_SHUTDOWN) && freeze)
+ 		nvme_wait_freeze_timeout(&dev->ctrl, NVME_IO_TIMEOUT);
+ 
+ 	nvme_stop_queues(&dev->ctrl);
+ 
+ 	if (!dead && dev->ctrl.queue_count > 0) {
+ 		nvme_disable_io_queues(dev);
+-		nvme_disable_admin_queue(dev, shutdown);
++		nvme_disable_admin_queue(dev, shutdown_type);
+ 	}
+ 	nvme_suspend_io_queues(dev);
+ 	nvme_suspend_queue(&dev->queues[0]);
+@@ -2710,12 +2712,12 @@ static void nvme_dev_disable(struct nvme_dev *dev, bool shutdown)
+ 	blk_mq_tagset_wait_completed_request(&dev->tagset);
+ 	blk_mq_tagset_wait_completed_request(&dev->admin_tagset);
+ 
+-	/*
+-	 * The driver will not be starting up queues again if shutting down so
+-	 * must flush all entered requests to their failed completion to avoid
+-	 * deadlocking blk-mq hot-cpu notifier.
+-	 */
+-	if (shutdown) {
++	if (shutdown_type == SHUTDOWN_TYPE_SYNC) {
++		/*
++		 * The driver will not be starting up queues again if shutting down so
++		 * must flush all entered requests to their failed completion to avoid
++		 * deadlocking blk-mq hot-cpu notifier.
++		 */
+ 		nvme_start_queues(&dev->ctrl);
+ 		if (dev->ctrl.admin_q && !blk_queue_dying(dev->ctrl.admin_q))
+ 			nvme_start_admin_queue(&dev->ctrl);
+@@ -2723,11 +2725,11 @@ static void nvme_dev_disable(struct nvme_dev *dev, bool shutdown)
+ 	mutex_unlock(&dev->shutdown_lock);
+ }
+ 
+-static int nvme_disable_prepare_reset(struct nvme_dev *dev, bool shutdown)
++static int nvme_disable_prepare_reset(struct nvme_dev *dev, int type)
+ {
+ 	if (!nvme_wait_reset(&dev->ctrl))
+ 		return -EBUSY;
+-	nvme_dev_disable(dev, shutdown);
++	nvme_dev_disable(dev, type);
+ 	return 0;
+ }
+ 
+@@ -2785,7 +2787,7 @@ static void nvme_remove_dead_ctrl(struct nvme_dev *dev)
+ 	 */
+ 	nvme_change_ctrl_state(&dev->ctrl, NVME_CTRL_DELETING);
+ 	nvme_get_ctrl(&dev->ctrl);
+-	nvme_dev_disable(dev, false);
++	nvme_dev_disable(dev, DO_NOT_SHUTDOWN);
+ 	nvme_kill_queues(&dev->ctrl);
+ 	if (!queue_work(nvme_wq, &dev->remove_work))
+ 		nvme_put_ctrl(&dev->ctrl);
+@@ -2810,7 +2812,7 @@ static void nvme_reset_work(struct work_struct *work)
+ 	 * moving on.
+ 	 */
+ 	if (dev->ctrl.ctrl_config & NVME_CC_ENABLE)
+-		nvme_dev_disable(dev, false);
++		nvme_dev_disable(dev, DO_NOT_SHUTDOWN);
+ 	nvme_sync_queues(&dev->ctrl);
+ 
+ 	mutex_lock(&dev->shutdown_lock);
+@@ -3151,7 +3153,7 @@ static void nvme_reset_prepare(struct pci_dev *pdev)
+ 	 * state as pci_dev device lock is held, making it impossible to race
+ 	 * with ->remove().
+ 	 */
+-	nvme_disable_prepare_reset(dev, false);
++	nvme_disable_prepare_reset(dev, DO_NOT_SHUTDOWN);
+ 	nvme_sync_queues(&dev->ctrl);
+ }
+ 
+@@ -3163,13 +3165,32 @@ static void nvme_reset_done(struct pci_dev *pdev)
+ 		flush_work(&dev->ctrl.reset_work);
+ }
+ 
+-static void nvme_shutdown(struct pci_dev *pdev)
++static void nvme_async_shutdown_start(struct pci_dev *pdev)
+ {
+ 	struct nvme_dev *dev = pci_get_drvdata(pdev);
+ 
+-	nvme_disable_prepare_reset(dev, true);
++	nvme_disable_prepare_reset(dev, SHUTDOWN_TYPE_ASYNC);
+ }
+ 
++static void nvme_async_shutdown_end(struct pci_dev *pdev)
++{
++	struct nvme_dev *dev = pci_get_drvdata(pdev);
++
++	mutex_lock(&dev->shutdown_lock);
++	nvme_wait_for_shutdown_cmpl(&dev->ctrl);
++
++	/*
++	 * The driver will not be starting up queues again if shutting down so
++	 * must flush all entered requests to their failed completion to avoid
++	 * deadlocking blk-mq hot-cpu notifier.
++	 */
++	nvme_start_queues(&dev->ctrl);
++	if (dev->ctrl.admin_q && !blk_queue_dying(dev->ctrl.admin_q))
++		nvme_start_admin_queue(&dev->ctrl);
++
++	mutex_unlock(&dev->shutdown_lock);
++
++}
+ static void nvme_remove_attrs(struct nvme_dev *dev)
+ {
+ 	if (dev->attrs_added)
+@@ -3191,13 +3212,13 @@ static void nvme_remove(struct pci_dev *pdev)
+ 
+ 	if (!pci_device_is_present(pdev)) {
+ 		nvme_change_ctrl_state(&dev->ctrl, NVME_CTRL_DEAD);
+-		nvme_dev_disable(dev, true);
++		nvme_dev_disable(dev, SHUTDOWN_TYPE_SYNC);
+ 	}
+ 
+ 	flush_work(&dev->ctrl.reset_work);
+ 	nvme_stop_ctrl(&dev->ctrl);
+ 	nvme_remove_namespaces(&dev->ctrl);
+-	nvme_dev_disable(dev, true);
++	nvme_dev_disable(dev, SHUTDOWN_TYPE_SYNC);
+ 	nvme_remove_attrs(dev);
+ 	nvme_free_host_mem(dev);
+ 	nvme_dev_remove_admin(dev);
+@@ -3259,7 +3280,7 @@ static int nvme_suspend(struct device *dev)
+ 	if (pm_suspend_via_firmware() || !ctrl->npss ||
+ 	    !pcie_aspm_enabled(pdev) ||
+ 	    (ndev->ctrl.quirks & NVME_QUIRK_SIMPLE_SUSPEND))
+-		return nvme_disable_prepare_reset(ndev, true);
++		return nvme_disable_prepare_reset(ndev, SHUTDOWN_TYPE_SYNC);
+ 
+ 	nvme_start_freeze(ctrl);
+ 	nvme_wait_freeze(ctrl);
+@@ -3302,7 +3323,7 @@ static int nvme_suspend(struct device *dev)
+ 		 * Clearing npss forces a controller reset on resume. The
+ 		 * correct value will be rediscovered then.
+ 		 */
+-		ret = nvme_disable_prepare_reset(ndev, true);
++		ret = nvme_disable_prepare_reset(ndev, SHUTDOWN_TYPE_SYNC);
+ 		ctrl->npss = 0;
+ 	}
+ unfreeze:
+@@ -3314,7 +3335,7 @@ static int nvme_simple_suspend(struct device *dev)
+ {
+ 	struct nvme_dev *ndev = pci_get_drvdata(to_pci_dev(dev));
+ 
+-	return nvme_disable_prepare_reset(ndev, true);
++	return nvme_disable_prepare_reset(ndev, SHUTDOWN_TYPE_SYNC);
+ }
+ 
+ static int nvme_simple_resume(struct device *dev)
+@@ -3351,7 +3372,7 @@ static pci_ers_result_t nvme_error_detected(struct pci_dev *pdev,
+ 	case pci_channel_io_frozen:
+ 		dev_warn(dev->ctrl.device,
+ 			"frozen state error detected, reset controller\n");
+-		nvme_dev_disable(dev, false);
++		nvme_dev_disable(dev, DO_NOT_SHUTDOWN);
+ 		return PCI_ERS_RESULT_NEED_RESET;
+ 	case pci_channel_io_perm_failure:
+ 		dev_warn(dev->ctrl.device,
+@@ -3478,7 +3499,8 @@ static struct pci_driver nvme_driver = {
+ 	.id_table	= nvme_id_table,
+ 	.probe		= nvme_probe,
+ 	.remove		= nvme_remove,
+-	.shutdown	= nvme_shutdown,
++	.async_shutdown_start   = nvme_async_shutdown_start,
++	.async_shutdown_end  = nvme_async_shutdown_end,
+ #ifdef CONFIG_PM_SLEEP
+ 	.driver		= {
+ 		.pm	= &nvme_dev_pm_ops,
 -- 
 2.36.0.rc0.470.gd361397f0d-goog
 
