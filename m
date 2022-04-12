@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C1E8C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 07:49:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377129AbiDLHrg (ORCPT
+        id S1377194AbiDLHr7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45734 "EHLO
+        Tue, 12 Apr 2022 03:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352874AbiDLHOd (ORCPT
+        with ESMTP id S1353071AbiDLHOs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:14:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6757F3137A;
-        Mon, 11 Apr 2022 23:55:15 -0700 (PDT)
+        Tue, 12 Apr 2022 03:14:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED99255AD;
+        Mon, 11 Apr 2022 23:56:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0656FB81B43;
-        Tue, 12 Apr 2022 06:55:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50978C385A1;
-        Tue, 12 Apr 2022 06:55:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B0A560B2B;
+        Tue, 12 Apr 2022 06:56:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F5BFC385A1;
+        Tue, 12 Apr 2022 06:56:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649746512;
-        bh=79S49V6b0/rMojkpv1DYVKJ96IF3SgOqW38WP5Qw2YQ=;
+        s=korg; t=1649746573;
+        bh=TbRJXNLQ6oxcJqYxM+ZbMOebR23pGsGpKcEgFZC/WIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lz1ds3huSHQmBgyPbPrEEw2+Z53gFXUPo+R6IfzhqeN+IsbdnSxbRYTeSw5dmaMNm
-         lTkoh/DdSLUb0Xweplb/Z7yLuH5DrcE7E+X/4k1vqOp/Da2tAw7hq/MgutKFIYQ90e
-         knAcB0816R71QJqE051JCcVlk8OlCQ3TkSnNGoVI=
+        b=HKY+/vLHL3CeQX+GZMlRQXSUvAMwVjFHVUnZ0yHZcXPbvkRcwpGD6f7K2OiGREnZy
+         iEwBcBtqS04AdzlUZEK22B7dPYg99MMCec1gT9oX8bp7ZuP7LjTC73jXP4/qimGP5u
+         Qh+GuDLZb2AdBo9WxU1gmW1apL5IUqFm98M0p4vU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Wenlong <houwenlong.hwl@antgroup.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 008/285] KVM: x86/emulator: Emulate RDPID only if it is enabled in guest
-Date:   Tue, 12 Apr 2022 08:27:45 +0200
-Message-Id: <20220412062943.915528084@linuxfoundation.org>
+Subject: [PATCH 5.16 054/285] scsi: mpi3mr: Fix memory leaks
+Date:   Tue, 12 Apr 2022 08:28:31 +0200
+Message-Id: <20220412062945.230545350@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062943.670770901@linuxfoundation.org>
 References: <20220412062943.670770901@linuxfoundation.org>
@@ -50,79 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Wenlong <houwenlong.hwl@antgroup.com>
+From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
 
-[ Upstream commit a836839cbfe60dc434c5476a7429cf2bae36415d ]
+[ Upstream commit d44b5fefb22e139408ae12b864da1ecb9ad9d1d2 ]
 
-When RDTSCP is supported but RDPID is not supported in host,
-RDPID emulation is available. However, __kvm_get_msr() would
-only fail when RDTSCP/RDPID both are disabled in guest, so
-the emulator wouldn't inject a #UD when RDPID is disabled but
-RDTSCP is enabled in guest.
+Fix memory leaks related to operational reply queue's memory segments which
+are not getting freed while unloading the driver.
 
-Fixes: fb6d4d340e05 ("KVM: x86: emulate RDPID")
-Signed-off-by: Hou Wenlong <houwenlong.hwl@antgroup.com>
-Message-Id: <1dfd46ae5b76d3ed87bde3154d51c64ea64c99c1.1646226788.git.houwenlong.hwl@antgroup.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Link: https://lore.kernel.org/r/20220210095817.22828-9-sreekanth.reddy@broadcom.com
+Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/emulate.c     | 4 +++-
- arch/x86/kvm/kvm_emulate.h | 1 +
- arch/x86/kvm/x86.c         | 6 ++++++
- 3 files changed, 10 insertions(+), 1 deletion(-)
+ drivers/scsi/mpi3mr/mpi3mr_fw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 5705446c1213..769ba8ffd700 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -3514,8 +3514,10 @@ static int em_rdpid(struct x86_emulate_ctxt *ctxt)
- {
- 	u64 tsc_aux = 0;
- 
--	if (ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux))
-+	if (!ctxt->ops->guest_has_rdpid(ctxt))
- 		return emulate_ud(ctxt);
-+
-+	ctxt->ops->get_msr(ctxt, MSR_TSC_AUX, &tsc_aux);
- 	ctxt->dst.val = tsc_aux;
- 	return X86EMUL_CONTINUE;
- }
-diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
-index 68b420289d7e..fb09cd22cb7f 100644
---- a/arch/x86/kvm/kvm_emulate.h
-+++ b/arch/x86/kvm/kvm_emulate.h
-@@ -226,6 +226,7 @@ struct x86_emulate_ops {
- 	bool (*guest_has_long_mode)(struct x86_emulate_ctxt *ctxt);
- 	bool (*guest_has_movbe)(struct x86_emulate_ctxt *ctxt);
- 	bool (*guest_has_fxsr)(struct x86_emulate_ctxt *ctxt);
-+	bool (*guest_has_rdpid)(struct x86_emulate_ctxt *ctxt);
- 
- 	void (*set_nmi_mask)(struct x86_emulate_ctxt *ctxt, bool masked);
- 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index ff181a6c1005..08522041df59 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -7466,6 +7466,11 @@ static bool emulator_guest_has_fxsr(struct x86_emulate_ctxt *ctxt)
- 	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_FXSR);
- }
- 
-+static bool emulator_guest_has_rdpid(struct x86_emulate_ctxt *ctxt)
-+{
-+	return guest_cpuid_has(emul_to_vcpu(ctxt), X86_FEATURE_RDPID);
-+}
-+
- static ulong emulator_read_gpr(struct x86_emulate_ctxt *ctxt, unsigned reg)
- {
- 	return kvm_register_read_raw(emul_to_vcpu(ctxt), reg);
-@@ -7548,6 +7553,7 @@ static const struct x86_emulate_ops emulate_ops = {
- 	.guest_has_long_mode = emulator_guest_has_long_mode,
- 	.guest_has_movbe     = emulator_guest_has_movbe,
- 	.guest_has_fxsr      = emulator_guest_has_fxsr,
-+	.guest_has_rdpid     = emulator_guest_has_rdpid,
- 	.set_nmi_mask        = emulator_set_nmi_mask,
- 	.get_hflags          = emulator_get_hflags,
- 	.exiting_smm         = emulator_exiting_smm,
+diff --git a/drivers/scsi/mpi3mr/mpi3mr_fw.c b/drivers/scsi/mpi3mr/mpi3mr_fw.c
+index 2daf633ea295..9bb64a7b2af7 100644
+--- a/drivers/scsi/mpi3mr/mpi3mr_fw.c
++++ b/drivers/scsi/mpi3mr/mpi3mr_fw.c
+@@ -1275,7 +1275,7 @@ static void mpi3mr_free_op_req_q_segments(struct mpi3mr_ioc *mrioc, u16 q_idx)
+ 			    MPI3MR_MAX_SEG_LIST_SIZE,
+ 			    mrioc->req_qinfo[q_idx].q_segment_list,
+ 			    mrioc->req_qinfo[q_idx].q_segment_list_dma);
+-			mrioc->op_reply_qinfo[q_idx].q_segment_list = NULL;
++			mrioc->req_qinfo[q_idx].q_segment_list = NULL;
+ 		}
+ 	} else
+ 		size = mrioc->req_qinfo[q_idx].segment_qd *
 -- 
 2.35.1
 
