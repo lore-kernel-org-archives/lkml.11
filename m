@@ -2,154 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D43E4C4707F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B435C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 09:07:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387109AbiDLJFg (ORCPT
+        id S1387178AbiDLJF5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 05:05:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60236 "EHLO
+        Tue, 12 Apr 2022 05:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359825AbiDLHnn (ORCPT
+        with ESMTP id S1359260AbiDLHmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:43:43 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B81243AE0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Apr 2022 00:26:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649748383; x=1681284383;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5OyqKZ2t12lVTvKw/fJWrzDUz4nPfGALPPcWHIJFgN8=;
-  b=O+Qvlm3KUxP6NVMuF9f3Uk8PHtLEqAfxKw7hl4eGYCN5b31hkBJvLS1M
-   aUVFvkSmYbolPm7NkycXFjPBRL3+yPHekPwZ7rEu8+lP3cjWpo7vaGX3m
-   Gixz6Yr6xG4ExcXlWfLWQ37eohuUu/fCETc/hZq1gZNLcd+owgIKhnO14
-   0VOmEQNTQuAQPWlj0dA2SKe3803QAl3yAgBnsZ+szM3l42GIk1cIrBcre
-   KdVEg7nt/MExsG3DxptHOB9k5174nlPqBG9fQsaetQk69QFeAZjMIQMqJ
-   Jni85dpNPkRsJW0SH29DcVw6BTOamZCtPUZrO9AsI9lbtIJKI1W4aXCPv
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="259893989"
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="259893989"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2022 00:26:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,253,1643702400"; 
-   d="scan'208";a="644602157"
-Received: from lkp-server02.sh.intel.com (HELO d3fc50ef50de) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 12 Apr 2022 00:26:17 -0700
-Received: from kbuild by d3fc50ef50de with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1neAun-0002cr-5k;
-        Tue, 12 Apr 2022 07:26:17 +0000
-Date:   Tue, 12 Apr 2022 15:25:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        Tue, 12 Apr 2022 03:42:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853462BB09;
+        Tue, 12 Apr 2022 00:21:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23CDC61045;
+        Tue, 12 Apr 2022 07:21:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01A9CC385A1;
+        Tue, 12 Apr 2022 07:21:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1649748077;
+        bh=bScr1sUFM94SlTUGziiSSo1pd7DcDs5dN8ORKndYxrE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xNCyJqi0D5gni5rYImrx0qVqVK8BWN5upCL7YMJLOGcgkCyZ56DUw7eelHfeDTYWw
+         1jYX7JE1u5WBOIsJm9UiY3CKirEH+b9EZYjfi57nb04Hfsxs6BX7hB/Ef7foeZ0lqU
+         1Q8pJRJMfcHcA48x5FRiyh9dMqa1bm4SzQfj0ZzU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
         David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Rob Clark <robdclark@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        dri-devel@lists.freedesktop.org,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Subject: Re: [PATCH v3 11/15] drm/shmem-helper: Add generic memory shrinker
-Message-ID: <202204121523.qVMxOvZg-lkp@intel.com>
-References: <20220411215937.281655-12-dmitry.osipenko@collabora.com>
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 5.17 310/343] drm/amdkfd: Create file descriptor after client is added to smi_clients list
+Date:   Tue, 12 Apr 2022 08:32:08 +0200
+Message-Id: <20220412063000.270200900@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
+References: <20220412062951.095765152@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220411215937.281655-12-dmitry.osipenko@collabora.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dmitry,
+From: Lee Jones <lee.jones@linaro.org>
 
-I love your patch! Perhaps something to improve:
+commit e79a2398e1b2d47060474dca291542368183bc0f upstream.
 
-[auto build test WARNING on next-20220411]
-[cannot apply to drm/drm-next v5.18-rc2 v5.18-rc1 v5.17 v5.18-rc2]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+This ensures userspace cannot prematurely clean-up the client before
+it is fully initialised which has been proven to cause issues in the
+past.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Dmitry-Osipenko/Add-generic-memory-shrinker-to-VirtIO-GPU-and-Panfrost-DRM-drivers/20220412-060325
-base:    d12d7e1cfe38e0c36d28c7a9fbbc436ad0d17c14
-config: i386-randconfig-a005-20220411 (https://download.01.org/0day-ci/archive/20220412/202204121523.qVMxOvZg-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fe2478d44e4f7f191c43fef629ac7a23d0251e72)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/683ba8a9d72ba7770a61a9266a2b33949f3874f2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Dmitry-Osipenko/Add-generic-memory-shrinker-to-VirtIO-GPU-and-Panfrost-DRM-drivers/20220412-060325
-        git checkout 683ba8a9d72ba7770a61a9266a2b33949f3874f2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/
+Cc: Felix Kuehling <Felix.Kuehling@amd.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: "Christian König" <christian.koenig@amd.com>
+Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: amd-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c |   24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
+@@ -268,15 +268,6 @@ int kfd_smi_event_open(struct kfd_dev *d
+ 		return ret;
+ 	}
+ 
+-	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
+-			       O_RDWR);
+-	if (ret < 0) {
+-		kfifo_free(&client->fifo);
+-		kfree(client);
+-		return ret;
+-	}
+-	*fd = ret;
+-
+ 	init_waitqueue_head(&client->wait_queue);
+ 	spin_lock_init(&client->lock);
+ 	client->events = 0;
+@@ -286,5 +277,20 @@ int kfd_smi_event_open(struct kfd_dev *d
+ 	list_add_rcu(&client->list, &dev->smi_clients);
+ 	spin_unlock(&dev->smi_lock);
+ 
++	ret = anon_inode_getfd(kfd_smi_name, &kfd_smi_ev_fops, (void *)client,
++			       O_RDWR);
++	if (ret < 0) {
++		spin_lock(&dev->smi_lock);
++		list_del_rcu(&client->list);
++		spin_unlock(&dev->smi_lock);
++
++		synchronize_rcu();
++
++		kfifo_free(&client->fifo);
++		kfree(client);
++		return ret;
++	}
++	*fd = ret;
++
+ 	return 0;
+ }
 
-All warnings (new ones prefixed by >>):
 
->> drivers/gpu/drm/drm_gem_shmem_helper.c:289:11: warning: variable 'new_state' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           else if (shmem->madv < 0)
-                    ^~~~~~~~~~~~~~~
-   drivers/gpu/drm/drm_gem_shmem_helper.c:292:46: note: uninitialized use occurs here
-           drm_gem_shmem_set_pages_state_locked(shmem, new_state);
-                                                       ^~~~~~~~~
-   drivers/gpu/drm/drm_gem_shmem_helper.c:289:7: note: remove the 'if' if its condition is always true
-           else if (shmem->madv < 0)
-                ^~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/drm_gem_shmem_helper.c:278:2: note: variable 'new_state' is declared here
-           enum drm_gem_shmem_pages_state new_state;
-           ^
-   1 warning generated.
-
-
-vim +289 drivers/gpu/drm/drm_gem_shmem_helper.c
-
-   273	
-   274	static void drm_gem_shmem_update_pages_state_locked(struct drm_gem_shmem_object *shmem)
-   275	{
-   276		struct drm_gem_object *obj = &shmem->base;
-   277		struct drm_gem_shmem_shrinker *gem_shrinker = obj->dev->shmem_shrinker;
-   278		enum drm_gem_shmem_pages_state new_state;
-   279	
-   280		if (!gem_shrinker || obj->import_attach)
-   281			return;
-   282	
-   283		mutex_lock(&gem_shrinker->lock);
-   284	
-   285		if (!shmem->madv)
-   286			new_state = DRM_GEM_SHMEM_PAGES_STATE_ACTIVE;
-   287		else if (shmem->madv > 0)
-   288			new_state = DRM_GEM_SHMEM_PAGES_STATE_PURGEABLE;
- > 289		else if (shmem->madv < 0)
-   290			new_state = DRM_GEM_SHMEM_PAGES_STATE_PURGED;
-   291	
-   292		drm_gem_shmem_set_pages_state_locked(shmem, new_state);
-   293	
-   294		mutex_unlock(&gem_shrinker->lock);
-   295	}
-   296	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
