@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA67DC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C0FEC46467
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384610AbiDLI53 (ORCPT
+        id S1386451AbiDLI6J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
+        Tue, 12 Apr 2022 04:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359383AbiDLHm7 (ORCPT
+        with ESMTP id S1359259AbiDLHmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Apr 2022 03:42:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE102C113;
-        Tue, 12 Apr 2022 00:21:53 -0700 (PDT)
+        Tue, 12 Apr 2022 03:42:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4DC2B253;
+        Tue, 12 Apr 2022 00:21:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF714B81B4F;
-        Tue, 12 Apr 2022 07:21:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43330C385A5;
-        Tue, 12 Apr 2022 07:21:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53B7B6153F;
+        Tue, 12 Apr 2022 07:21:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A239C385A1;
+        Tue, 12 Apr 2022 07:21:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649748110;
-        bh=Sh3dOBmsLvqM/A9bPwyaG++I0BeeNMWpTYmy+3cxDe4=;
+        s=korg; t=1649748074;
+        bh=qVZQZO1froVUTZ6TwlksDchw3cHLrw0uS/UZVNIs+5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ueZHA8lOhHWsMUZJ/qealdLHjaVx+Wa43Oo7kvN1dWpfxp63Y5PXC9NAhYt6sEdvH
-         1kkW1eG8unvCHYuGgzPHzRwppRJzgR175OasBlg71TcYBivbsYGIZ0E2iUEBThXInt
-         DUTkqOUBcZ4ZxqwCBzmHTsjVzA1mYCnmUdjzxMKc=
+        b=WYOlBrW5XwLS6TEGR6KFD4gikTUrVl10RnYBY8RheGegig0AQGXqDjHuz7ho3xH/S
+         JCtv/XAA4opxP5/LaPNsSPcxG1Tv7KF0Tq0SRzZ7xoveOrjW21S9FCYMCbt84ilTim
+         RPyPo0m5HcUM/mFP4QJl897aI4JcRU7z+Zg/OTuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Ethan Lien <ethanlien@synology.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.17 283/343] btrfs: fix qgroup reserve overflow the qgroup limit
-Date:   Tue, 12 Apr 2022 08:31:41 +0200
-Message-Id: <20220412062959.491813829@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.17 309/343] drm/nouveau/pmu: Add missing callbacks for Tegra devices
+Date:   Tue, 12 Apr 2022 08:32:07 +0200
+Message-Id: <20220412063000.240457912@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,90 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ethan Lien <ethanlien@synology.com>
+From: Karol Herbst <kherbst@redhat.com>
 
-commit b642b52d0b50f4d398cb4293f64992d0eed2e2ce upstream.
+commit 38d4e5cf5b08798f093374e53c2f4609d5382dd5 upstream.
 
-We use extent_changeset->bytes_changed in qgroup_reserve_data() to record
-how many bytes we set for EXTENT_QGROUP_RESERVED state. Currently the
-bytes_changed is set as "unsigned int", and it will overflow if we try to
-fallocate a range larger than 4GiB. The result is we reserve less bytes
-and eventually break the qgroup limit.
+Fixes a crash booting on those platforms with nouveau.
 
-Unlike regular buffered/direct write, which we use one changeset for
-each ordered extent, which can never be larger than 256M.  For
-fallocate, we use one changeset for the whole range, thus it no longer
-respects the 256M per extent limit, and caused the problem.
-
-The following example test script reproduces the problem:
-
-  $ cat qgroup-overflow.sh
-  #!/bin/bash
-
-  DEV=/dev/sdj
-  MNT=/mnt/sdj
-
-  mkfs.btrfs -f $DEV
-  mount $DEV $MNT
-
-  # Set qgroup limit to 2GiB.
-  btrfs quota enable $MNT
-  btrfs qgroup limit 2G $MNT
-
-  # Try to fallocate a 3GiB file. This should fail.
-  echo
-  echo "Try to fallocate a 3GiB file..."
-  fallocate -l 3G $MNT/3G.file
-
-  # Try to fallocate a 5GiB file.
-  echo
-  echo "Try to fallocate a 5GiB file..."
-  fallocate -l 5G $MNT/5G.file
-
-  # See we break the qgroup limit.
-  echo
-  sync
-  btrfs qgroup show -r $MNT
-
-  umount $MNT
-
-When running the test:
-
-  $ ./qgroup-overflow.sh
-  (...)
-
-  Try to fallocate a 3GiB file...
-  fallocate: fallocate failed: Disk quota exceeded
-
-  Try to fallocate a 5GiB file...
-
-  qgroupid         rfer         excl     max_rfer
-  --------         ----         ----     --------
-  0/5           5.00GiB      5.00GiB      2.00GiB
-
-Since we have no control of how bytes_changed is used, it's better to
-set it to u64.
-
-CC: stable@vger.kernel.org # 4.14+
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: Ethan Lien <ethanlien@synology.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 4cdd2450bf73 ("drm/nouveau/pmu/gm200-: use alternate falcon reset sequence")
+Cc: Ben Skeggs <bskeggs@redhat.com>
+Cc: Karol Herbst <kherbst@redhat.com>
+Cc: dri-devel@lists.freedesktop.org
+Cc: nouveau@lists.freedesktop.org
+Cc: <stable@vger.kernel.org> # v5.17+
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220322124800.2605463-1-kherbst@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/extent_io.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c |    1 +
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c |    2 +-
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c |    1 +
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h  |    1 +
+ 4 files changed, 4 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/extent_io.h
-+++ b/fs/btrfs/extent_io.h
-@@ -118,7 +118,7 @@ struct btrfs_bio_ctrl {
-  */
- struct extent_changeset {
- 	/* How many bytes are set/cleared in this operation */
--	unsigned int bytes_changed;
-+	u64 bytes_changed;
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c
+@@ -216,6 +216,7 @@ gm20b_pmu = {
+ 	.intr = gt215_pmu_intr,
+ 	.recv = gm20b_pmu_recv,
+ 	.initmsg = gm20b_pmu_initmsg,
++	.reset = gf100_pmu_reset,
+ };
  
- 	/* Changed ranges */
- 	struct ulist range_changed;
+ #if IS_ENABLED(CONFIG_ARCH_TEGRA_210_SOC)
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp102.c
+@@ -23,7 +23,7 @@
+  */
+ #include "priv.h"
+ 
+-static void
++void
+ gp102_pmu_reset(struct nvkm_pmu *pmu)
+ {
+ 	struct nvkm_device *device = pmu->subdev.device;
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gp10b.c
+@@ -83,6 +83,7 @@ gp10b_pmu = {
+ 	.intr = gt215_pmu_intr,
+ 	.recv = gm20b_pmu_recv,
+ 	.initmsg = gm20b_pmu_initmsg,
++	.reset = gp102_pmu_reset,
+ };
+ 
+ #if IS_ENABLED(CONFIG_ARCH_TEGRA_210_SOC)
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/priv.h
+@@ -41,6 +41,7 @@ int gt215_pmu_send(struct nvkm_pmu *, u3
+ 
+ bool gf100_pmu_enabled(struct nvkm_pmu *);
+ void gf100_pmu_reset(struct nvkm_pmu *);
++void gp102_pmu_reset(struct nvkm_pmu *pmu);
+ 
+ void gk110_pmu_pgob(struct nvkm_pmu *, bool);
+ 
 
 
