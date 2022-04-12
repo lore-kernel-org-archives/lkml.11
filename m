@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA90EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359540AbiDLIpR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
+        id S243221AbiDLIp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:45:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357317AbiDLHj6 (ORCPT
+        with ESMTP id S1357314AbiDLHj6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1A1245AC;
-        Tue, 12 Apr 2022 00:15:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0513B1EC50;
+        Tue, 12 Apr 2022 00:14:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0B82B81B4F;
-        Tue, 12 Apr 2022 07:15:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EA89C385A1;
-        Tue, 12 Apr 2022 07:15:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3DF7B81B62;
+        Tue, 12 Apr 2022 07:14:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03DECC385A5;
+        Tue, 12 Apr 2022 07:14:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747702;
-        bh=Rsjvxg+k8r2vza09ZjsYYA3qoPxRWtfGsNYwNg5EE+M=;
+        s=korg; t=1649747694;
+        bh=hVu1gpPr0uY/FdIH5Ckm7DMmE8MOGJVH0WdABw0+KkI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RmxTZHodww+JRVFMTlm8KhElpLOlSMZ9l4scSHTf8ma87llwwTQDGPLfRgRB+1L26
-         +gBlK2IhDdYCTiaCr9ZJVjUBQffctJAP1a8OHzo5pY2+fIw0j42E8n6EdeZr1Zzs3Y
-         ItsaQSX7tiAr6Eh4WQSpPMjciQHo7mr6t0Plma1I=
+        b=kq/fd40+Roli2ois3ydVmruXjYHZkpD9kj9TSrKVnY3yZZE5g7eNkSLrZ+d25zZuw
+         Tsi0tcq5sY67fLBQ+4C7FF7LFCljmqDub2e/1nMYK1KkcF4r/FTh///946Z9QBwHgw
+         Rcco5AyABcTv0yiTl7Nqe7ou6K3zVXY2HAA96Rjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Oded Gabbay <ogabbay@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 175/343] clk: ti: Preserve node in ti_dt_clocks_register()
-Date:   Tue, 12 Apr 2022 08:29:53 +0200
-Message-Id: <20220412062956.418376336@linuxfoundation.org>
+Subject: [PATCH 5.17 172/343] habanalabs: reject host map with mmu disabled
+Date:   Tue, 12 Apr 2022 08:29:50 +0200
+Message-Id: <20220412062956.333257395@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -50,54 +48,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Oded Gabbay <ogabbay@kernel.org>
 
-[ Upstream commit 80864594ff2ad002e2755daf97d46ff0c86faf1f ]
+[ Upstream commit 9a79e3e4a3637c07352d9723b825490a1b04391f ]
 
-In preparation for making use of the clock-output-names, we want to
-keep node around in ti_dt_clocks_register().
+This is not something we can do a workaround. It is clearly an error
+and we should notify the user that it is an error.
 
-This change should not needed as a fix currently.
-
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Link: https://lore.kernel.org/r/20220204071449.16762-3-tony@atomide.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/ti/clk.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ drivers/misc/habanalabs/common/memory.c | 30 +++++++++----------------
+ 1 file changed, 11 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/clk/ti/clk.c b/drivers/clk/ti/clk.c
-index 3da33c786d77..29eafab4353e 100644
---- a/drivers/clk/ti/clk.c
-+++ b/drivers/clk/ti/clk.c
-@@ -131,7 +131,7 @@ int ti_clk_setup_ll_ops(struct ti_clk_ll_ops *ops)
- void __init ti_dt_clocks_register(struct ti_dt_clk oclks[])
+diff --git a/drivers/misc/habanalabs/common/memory.c b/drivers/misc/habanalabs/common/memory.c
+index c1eefaebacb6..bcc6e547e071 100644
+--- a/drivers/misc/habanalabs/common/memory.c
++++ b/drivers/misc/habanalabs/common/memory.c
+@@ -1967,16 +1967,15 @@ static int export_dmabuf_from_handle(struct hl_ctx *ctx, u64 handle, int flags,
+ static int mem_ioctl_no_mmu(struct hl_fpriv *hpriv, union hl_mem_args *args)
  {
- 	struct ti_dt_clk *c;
--	struct device_node *node, *parent;
-+	struct device_node *node, *parent, *child;
- 	struct clk *clk;
- 	struct of_phandle_args clkspec;
- 	char buf[64];
-@@ -171,10 +171,13 @@ void __init ti_dt_clocks_register(struct ti_dt_clk oclks[])
- 		node = of_find_node_by_name(NULL, buf);
- 		if (num_args && compat_mode) {
- 			parent = node;
--			node = of_get_child_by_name(parent, "clock");
--			if (!node)
--				node = of_get_child_by_name(parent, "clk");
--			of_node_put(parent);
-+			child = of_get_child_by_name(parent, "clock");
-+			if (!child)
-+				child = of_get_child_by_name(parent, "clk");
-+			if (child) {
-+				of_node_put(parent);
-+				node = child;
-+			}
+ 	struct hl_device *hdev = hpriv->hdev;
+-	struct hl_ctx *ctx = hpriv->ctx;
+ 	u64 block_handle, device_addr = 0;
++	struct hl_ctx *ctx = hpriv->ctx;
+ 	u32 handle = 0, block_size;
+-	int rc, dmabuf_fd = -EBADF;
++	int rc;
+ 
+ 	switch (args->in.op) {
+ 	case HL_MEM_OP_ALLOC:
+ 		if (args->in.alloc.mem_size == 0) {
+-			dev_err(hdev->dev,
+-				"alloc size must be larger than 0\n");
++			dev_err(hdev->dev, "alloc size must be larger than 0\n");
+ 			rc = -EINVAL;
+ 			goto out;
+ 		}
+@@ -1997,15 +1996,14 @@ static int mem_ioctl_no_mmu(struct hl_fpriv *hpriv, union hl_mem_args *args)
+ 
+ 	case HL_MEM_OP_MAP:
+ 		if (args->in.flags & HL_MEM_USERPTR) {
+-			device_addr = args->in.map_host.host_virt_addr;
+-			rc = 0;
++			dev_err(hdev->dev, "Failed to map host memory when MMU is disabled\n");
++			rc = -EPERM;
+ 		} else {
+-			rc = get_paddr_from_handle(ctx, &args->in,
+-							&device_addr);
++			rc = get_paddr_from_handle(ctx, &args->in, &device_addr);
++			memset(args, 0, sizeof(*args));
++			args->out.device_virt_addr = device_addr;
  		}
  
- 		clkspec.np = node;
+-		memset(args, 0, sizeof(*args));
+-		args->out.device_virt_addr = device_addr;
+ 		break;
+ 
+ 	case HL_MEM_OP_UNMAP:
+@@ -2013,20 +2011,14 @@ static int mem_ioctl_no_mmu(struct hl_fpriv *hpriv, union hl_mem_args *args)
+ 		break;
+ 
+ 	case HL_MEM_OP_MAP_BLOCK:
+-		rc = map_block(hdev, args->in.map_block.block_addr,
+-				&block_handle, &block_size);
++		rc = map_block(hdev, args->in.map_block.block_addr, &block_handle, &block_size);
+ 		args->out.block_handle = block_handle;
+ 		args->out.block_size = block_size;
+ 		break;
+ 
+ 	case HL_MEM_OP_EXPORT_DMABUF_FD:
+-		rc = export_dmabuf_from_addr(ctx,
+-				args->in.export_dmabuf_fd.handle,
+-				args->in.export_dmabuf_fd.mem_size,
+-				args->in.flags,
+-				&dmabuf_fd);
+-		memset(args, 0, sizeof(*args));
+-		args->out.fd = dmabuf_fd;
++		dev_err(hdev->dev, "Failed to export dma-buf object when MMU is disabled\n");
++		rc = -EPERM;
+ 		break;
+ 
+ 	default:
 -- 
 2.35.1
 
