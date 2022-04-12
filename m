@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81422C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17251C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Apr 2022 08:43:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357126AbiDLIoR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Apr 2022 04:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49156 "EHLO
+        id S243778AbiDLIo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Apr 2022 04:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357293AbiDLHj4 (ORCPT
+        with ESMTP id S1357292AbiDLHj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Apr 2022 03:39:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA9F1E3D4;
-        Tue, 12 Apr 2022 00:14:42 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF99B1D331;
+        Tue, 12 Apr 2022 00:14:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9EDB3B81B62;
-        Tue, 12 Apr 2022 07:14:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0577AC385A1;
-        Tue, 12 Apr 2022 07:14:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B111661708;
+        Tue, 12 Apr 2022 07:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF59DC385A5;
+        Tue, 12 Apr 2022 07:14:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649747680;
-        bh=ZqlXdUHFwKSPIS8dpBAWhiyXJFdqK6peU9QQ/0n3vBQ=;
+        s=korg; t=1649747683;
+        bh=S185JdGuYdxwHgdWpnMtDHTAglDdL1ACtJY7q/XQotg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iweCU7X67mX5vijQ1xv3ga5c6XANO0ldz1B6DCsal14ipc3uOWzYPOGRZ4M7jThxA
-         d2xYV/zG6QPsLCzX2ytzM4IpHR4R6mwtlA83fiFskGeQdbV1IVLtpy4zafs22J8BzS
-         WK7gWysLD6K400BUQppZFQDEdFiw+1wrPUJWBqlk=
+        b=BYFrxcs3Rtqa717BBctsNw1ZIqQHerdUt2mbT91x0eueToD6tRFfaZ/FhdBpv8kd0
+         xbGW/nADNhhQjnEs2il6APnMjpueKGEXGhljCSp6kTpciF8b5k2lNwb3cQMIShMjpd
+         aGCDi/LJdq2Kw1KgsnSd1tqg3TPsUie0y45D6v5E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Yufen <wangyufen@huawei.com>,
-        Paul Moore <paul@paul-moore.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Lucas Denefle <lucas.denefle@converge.io>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 150/343] netlabel: fix out-of-bounds memory accesses
-Date:   Tue, 12 Apr 2022 08:29:28 +0200
-Message-Id: <20220412062955.708919528@linuxfoundation.org>
+Subject: [PATCH 5.17 168/343] w1: w1_therm: fixes w1_seq for ds28ea00 sensors
+Date:   Tue, 12 Apr 2022 08:29:46 +0200
+Message-Id: <20220412062956.219559747@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220412062951.095765152@linuxfoundation.org>
 References: <20220412062951.095765152@linuxfoundation.org>
@@ -52,68 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Lucas Denefle <lucas.denefle@converge.io>
 
-[ Upstream commit f22881de730ebd472e15bcc2c0d1d46e36a87b9c ]
+[ Upstream commit 41a92a89eee819298f805c40187ad8b02bb53426 ]
 
-In calipso_map_cat_ntoh(), in the for loop, if the return value of
-netlbl_bitmap_walk() is equal to (net_clen_bits - 1), when
-netlbl_bitmap_walk() is called next time, out-of-bounds memory accesses
-of bitmap[byte_offset] occurs.
+w1_seq was failing due to several devices responding to the
+CHAIN_DONE at the same time. Now properly selects the current
+device in the chain with MATCH_ROM. Also acknowledgment was
+read twice.
 
-The bug was found during fuzzing. The following is the fuzzing report
- BUG: KASAN: slab-out-of-bounds in netlbl_bitmap_walk+0x3c/0xd0
- Read of size 1 at addr ffffff8107bf6f70 by task err_OH/252
-
- CPU: 7 PID: 252 Comm: err_OH Not tainted 5.17.0-rc7+ #17
- Hardware name: linux,dummy-virt (DT)
- Call trace:
-  dump_backtrace+0x21c/0x230
-  show_stack+0x1c/0x60
-  dump_stack_lvl+0x64/0x7c
-  print_address_description.constprop.0+0x70/0x2d0
-  __kasan_report+0x158/0x16c
-  kasan_report+0x74/0x120
-  __asan_load1+0x80/0xa0
-  netlbl_bitmap_walk+0x3c/0xd0
-  calipso_opt_getattr+0x1a8/0x230
-  calipso_sock_getattr+0x218/0x340
-  calipso_sock_getattr+0x44/0x60
-  netlbl_sock_getattr+0x44/0x80
-  selinux_netlbl_socket_setsockopt+0x138/0x170
-  selinux_socket_setsockopt+0x4c/0x60
-  security_socket_setsockopt+0x4c/0x90
-  __sys_setsockopt+0xbc/0x2b0
-  __arm64_sys_setsockopt+0x6c/0x84
-  invoke_syscall+0x64/0x190
-  el0_svc_common.constprop.0+0x88/0x200
-  do_el0_svc+0x88/0xa0
-  el0_svc+0x128/0x1b0
-  el0t_64_sync_handler+0x9c/0x120
-  el0t_64_sync+0x16c/0x170
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Acked-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Lucas Denefle <lucas.denefle@converge.io>
+Link: https://lore.kernel.org/r/20220223113558.232750-1-lucas.denefle@converge.io
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netlabel/netlabel_kapi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/w1/slaves/w1_therm.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/netlabel/netlabel_kapi.c b/net/netlabel/netlabel_kapi.c
-index beb0e573266d..54c083003947 100644
---- a/net/netlabel/netlabel_kapi.c
-+++ b/net/netlabel/netlabel_kapi.c
-@@ -885,6 +885,8 @@ int netlbl_bitmap_walk(const unsigned char *bitmap, u32 bitmap_len,
- 	unsigned char bitmask;
- 	unsigned char byte;
+diff --git a/drivers/w1/slaves/w1_therm.c b/drivers/w1/slaves/w1_therm.c
+index 565578002d79..c7b8a8e787e2 100644
+--- a/drivers/w1/slaves/w1_therm.c
++++ b/drivers/w1/slaves/w1_therm.c
+@@ -2089,16 +2089,20 @@ static ssize_t w1_seq_show(struct device *device,
+ 		if (sl->reg_num.id == reg_num->id)
+ 			seq = i;
  
-+	if (offset >= bitmap_len)
-+		return -1;
- 	byte_offset = offset / 8;
- 	byte = bitmap[byte_offset];
- 	bit_spot = offset;
++		if (w1_reset_bus(sl->master))
++			goto error;
++
++		/* Put the device into chain DONE state */
++		w1_write_8(sl->master, W1_MATCH_ROM);
++		w1_write_block(sl->master, (u8 *)&rn, 8);
+ 		w1_write_8(sl->master, W1_42_CHAIN);
+ 		w1_write_8(sl->master, W1_42_CHAIN_DONE);
+ 		w1_write_8(sl->master, W1_42_CHAIN_DONE_INV);
+-		w1_read_block(sl->master, &ack, sizeof(ack));
+ 
+ 		/* check for acknowledgment */
+ 		ack = w1_read_8(sl->master);
+ 		if (ack != W1_42_SUCCESS_CONFIRM_BYTE)
+ 			goto error;
+-
+ 	}
+ 
+ 	/* Exit from CHAIN state */
 -- 
 2.35.1
 
